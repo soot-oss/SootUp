@@ -232,7 +232,7 @@ class JimpleVisitorImpl {
               : ctx.parameter_list().accept(new ParameterListVisitor());
       MethodSignature methodSignature =
           identifierFactory.getMethodSignature(
-              ctx.name().getText(), clazz, getType(ctx.type().getText()), params);
+              ctx.method_name().getText(), clazz, getType(ctx.type().getText()), params);
 
       OverridingMethodSource oms = new OverridingMethodSource(methodSignature, b);
 
@@ -415,8 +415,7 @@ class JimpleVisitorImpl {
       } else if (ctx.NULL() != null) {
         return NullConstant.getInstance();
       }
-      // TODO
-      throw new RuntimeException("Unknown Constant");
+      throw new IllegalStateException("Unknown Constant");
     }
 
     @Override
