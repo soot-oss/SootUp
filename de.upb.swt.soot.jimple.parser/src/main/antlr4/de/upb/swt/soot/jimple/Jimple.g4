@@ -102,7 +102,6 @@ grammar Jimple;
   STRING_CHAR : [^\u0034\u0092] ;
 
 
-  AT_IDENTIFIER : '@' (('parameter' DEC_DIGIT+ ':') | 'this' ':' | 'caughtexception');
 
   BOOL_CONSTANT : 'true' | 'false';
   INTEGER_CONSTANT : (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
@@ -190,9 +189,10 @@ grammar Jimple;
     /*invoke*/       invoke_expr ;
 
     assignments:
-    /*identity*/     local=name COLON_EQUALS AT_IDENTIFIER type  |
-    /*identity_no_type*/ local=name COLON_EQUALS AT_IDENTIFIER  |
-    /*assign*/       variable EQUALS expression ;
+    /*identity*/     local=name COLON_EQUALS at_identifier |
+    /*assign*/       (reference | local=name) EQUALS expression ;
+
+  at_identifier : '@' ( 'parameter' parameter_idx=DEC_DIGIT+ ':' type | 'this:' type | caught='caughtexception');
 
   case_stmt:
     case_label COLON goto_stmt SEMICOLON;
@@ -219,10 +219,6 @@ grammar Jimple;
     /*unop*/        unop_expr |
     /*immediate*/   immediate;
 
-  variable:
-    /*reference*/ reference |
-    /*local*/     local=name;
-
   bool_expr:
     /*binop*/ binop_expr |
     /*unop*/  unop_expr;
@@ -238,17 +234,19 @@ grammar Jimple;
   unop_expr:
     unop immediate;
 
+// TODO
   nonstatic_invoke:
     /*special*/   SPECIALINVOKE |
     /*virtual*/   VIRTUALINVOKE |
     /*interface*/ INTERFACEINVOKE;
-
+// TODO
   unnamed_method_signature:
     CMPLT type L_PAREN parameter_list? R_PAREN CMPGT;
-
+// TODO
   method_signature:
     CMPLT class_name=name first=COLON type method_name L_PAREN parameter_list? R_PAREN CMPGT;
 
+// TODO
   reference:
     /*array*/ name fixed_array_descriptor |
     /*field*/
@@ -299,6 +297,5 @@ grammar Jimple;
     /*div*/   DIV;
 
   unop:
-    /*lengthof*/ LENGTHOF |
-    /*neg*/      NEG;
+     LENGTHOF | NEG;
 

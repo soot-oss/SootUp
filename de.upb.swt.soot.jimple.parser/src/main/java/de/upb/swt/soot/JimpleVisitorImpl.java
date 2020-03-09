@@ -388,8 +388,7 @@ class JimpleVisitorImpl {
         for (JimpleParser.Case_stmtContext it : ctx.case_stmt()) {
           Stmt stmt = buildGotoStmt(it.goto_stmt(), pos);
           final JimpleParser.Case_labelContext case_labelContext = it.case_label();
-          if (case_labelContext.getText() != null
-              && case_labelContext.getText().toLowerCase().equals("default")) {
+          if (case_labelContext.getText() != null && case_labelContext.DEFAULT() != null) {
             defaultTarget = stmt;
           } else {
             final int value = Integer.parseInt(case_labelContext.getText());
@@ -405,46 +404,61 @@ class JimpleVisitorImpl {
         } else {
           return Jimple.newLookupSwitchStmt(key, lookup, targets, defaultTarget, pos);
         }
-      } else if (ctx.assignments() != null) {
-        if (ctx.assignments().EQUALS() == null) {
-          if (ctx.assignments().type() != null) {
-            // TODO: WHAT :D
-            ctx.assignments().type();
-            //    return Jimple.newIdentityStmt( ctx.assignments().local_name().accept(new
-            // ValueVisitor()), , pos);
-          } else {
-            ctx.assignments().local.accept(new ValueVisitor());
-            //     return Jimple.newIdentityStmt(,,pos);
-          }
-        } else {
-          return Jimple.newAssignStmt(
-              ctx.assignments().variable().accept(new ValueVisitor()),
-              ctx.assignments().expression().accept(new ValueVisitor()),
-              pos);
-        }
+      } else {
+        final JimpleParser.AssignmentsContext assignments = ctx.assignments();
+        if (assignments != null) {
+          if (assignments.EQUALS() == null) {
+            Value left = assignments.local.accept(new ValueVisitor());
+            final String type = assignments.at_identifier().type().getText();
 
-      } else if (ctx.IF() != null) {
-        JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
-        final Stmt stmt = Jimple.newIfStmt(ctx.bool_expr().accept(new ValueVisitor()), target, pos);
-        unresolvedGotoStmts.put(ctx.goto_stmt().label_name.getText(), stmt);
-        return stmt;
-      } else if (ctx.goto_stmt() != null) {
-        return buildGotoStmt(ctx.goto_stmt(), pos);
-      } else if (ctx.NOP() != null) {
-        return Jimple.newNopStmt(pos);
-      } else if (ctx.RET() != null) {
-        return Jimple.newRetStmt(ctx.immediate().accept(new ValueVisitor()), pos);
-      } else if (ctx.RETURN() != null) {
-        if (ctx.immediate() == null) {
-          return Jimple.newReturnVoidStmt(pos);
-        } else {
-          return Jimple.newReturnStmt(ctx.immediate().accept(new ValueVisitor()), pos);
+            Value ref;
+            final JimpleParser.At_identifierContext at_identifierContext =
+                assignments.at_identifier();
+            if (at_identifierContext.caught != null) {
+              ref = JavaJimple.getInstance().newCaughtExceptionRef();
+            } else if (at_identifierContext.parameter_idx != null) {
+              int idx = Integer.parseInt(at_identifierContext.parameter_idx.getText());
+              ref = Jimple.newParameterRef(getType(type), idx);
+            } else {
+              // TODO: redesign jimple itself? -> is it possible to make a this: to a different ->
+              // doesnt make sense..?
+              ref = Jimple.newThisRef(clazz);
+            }
+            return Jimple.newIdentityStmt(left, ref, pos);
+
+          } else {
+            Value left =
+                assignments.local != null
+                    ? assignments.local.accept(new ValueVisitor())
+                    : assignments.reference().accept(new ValueVisitor());
+            return Jimple.newAssignStmt(
+                left, assignments.expression().accept(new ValueVisitor()), pos);
+          }
+
+        } else if (ctx.IF() != null) {
+          JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
+          final Stmt stmt =
+              Jimple.newIfStmt(ctx.bool_expr().accept(new ValueVisitor()), target, pos);
+          unresolvedGotoStmts.put(ctx.goto_stmt().label_name.getText(), stmt);
+          return stmt;
+        } else if (ctx.goto_stmt() != null) {
+          return buildGotoStmt(ctx.goto_stmt(), pos);
+        } else if (ctx.NOP() != null) {
+          return Jimple.newNopStmt(pos);
+        } else if (ctx.RET() != null) {
+          return Jimple.newRetStmt(ctx.immediate().accept(new ValueVisitor()), pos);
+        } else if (ctx.RETURN() != null) {
+          if (ctx.immediate() == null) {
+            return Jimple.newReturnVoidStmt(pos);
+          } else {
+            return Jimple.newReturnStmt(ctx.immediate().accept(new ValueVisitor()), pos);
+          }
+        } else if (ctx.THROW() != null) {
+          return Jimple.newThrowStmt(ctx.immediate().accept(new ValueVisitor()), pos);
+        } else if (ctx.invoke_expr() != null) {
+          // TODO
+          // return Jimple.newSpecialInvokeExpr();
         }
-      } else if (ctx.THROW() != null) {
-        return Jimple.newThrowStmt(ctx.immediate().accept(new ValueVisitor()), pos);
-      } else if (ctx.invoke_expr() != null) {
-        // TODO
-        // return Jimple.newSpecialInvokeExpr();
       }
       throw new RuntimeException("Unknown Stmt");
     }
