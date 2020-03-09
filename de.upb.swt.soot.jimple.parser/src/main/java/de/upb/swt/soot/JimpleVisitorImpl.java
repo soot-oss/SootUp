@@ -11,13 +11,10 @@ import de.upb.swt.soot.core.jimple.common.constant.*;
 import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.types.UnknownType;
+import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.jimple.JimpleBaseVisitor;
@@ -253,7 +250,13 @@ class JimpleVisitorImpl {
             Type localtype =
                 it.UNKNOWN() == null
                     ? UnknownType.getInstance()
-                    : getType(it.nonvoid_type().getText());
+                    : getType(it.nonvoid_type.getText());
+
+            // validate nonvoid
+            if (localtype == VoidType.getInstance()) {
+              throw new IllegalStateException("void is not allowed here.");
+            }
+
             for (String localname : it.name_list().accept(new NameListVisitor())) {
               locals.add(new Local(localname, localtype));
             }
@@ -320,6 +323,7 @@ class JimpleVisitorImpl {
     return modifierSet.isEmpty() ? EnumSet.noneOf(Modifier.class) : EnumSet.copyOf(modifierSet);
   }
 
+  // TODO: simplify and validate nonvoid in logic
   private static class ParameterListVisitor extends JimpleBaseVisitor<List<Type>> {
     @Override
     public List<Type> visitParameter_list(JimpleParser.Parameter_listContext ctx) {
@@ -336,14 +340,13 @@ class JimpleVisitorImpl {
 
   private static class ArgListVisitor extends JimpleBaseVisitor<List<Type>> {
     @Override
-    public List<Type> visitParameter_list(JimpleParser.Parameter_listContext ctx) {
+    public List<Type> visitArg_list(JimpleParser.Arg_listContext ctx) {
       List<Type> interfaces = new ArrayList<>();
-      JimpleParser.Parameter_listContext class_name_listContextIterator = ctx;
+      JimpleParser.Arg_listContext parameterIterator = ctx;
       do {
-        interfaces.add(
-            identifierFactory.getClassType(class_name_listContextIterator.parameter.getText()));
-        class_name_listContextIterator = ctx.parameter_list();
-      } while (class_name_listContextIterator != null);
+        interfaces.add(identifierFactory.getClassType(parameterIterator.immediate().getText()));
+        parameterIterator = ctx.arg_list();
+      } while (parameterIterator != null);
 
       return interfaces;
     }
@@ -354,8 +357,10 @@ class JimpleVisitorImpl {
     @Override
     public Stmt visitStatement(JimpleParser.StatementContext ctx) {
       Stmt stmt = ctx.stmt().accept(new StmtVisitor());
-      if (ctx.label_name() != null) {
-        jumpTargets.put(ctx.label_name().getText(), stmt);
+      if (ctx.label_name != null) {
+        // FIXME use a StmtBox ?
+        // JStmtBox target = (JStmtBox) Jimple.newStmtBox(stmt);
+        jumpTargets.put(ctx.label_name.getText(), stmt);
       }
       return stmt;
     }
@@ -373,10 +378,32 @@ class JimpleVisitorImpl {
       } else if (ctx.EXITMONITOR() != null) {
         return Jimple.newExitMonitorStmt(ctx.immediate().accept(new ValueVisitor()), pos);
       } else if (ctx.SWITCH() != null) {
+
+        Value key = ctx.immediate().accept(new ValueVisitor());
+        List<IntConstant> lookup = new ArrayList<>();
+        List<Stmt> targets = new ArrayList<>();
+        int min = Integer.MAX_VALUE;
+        Stmt defaultTarget = null;
+
+        for (JimpleParser.Case_stmtContext it : ctx.case_stmt()) {
+          Stmt stmt = buildGotoStmt(it.goto_stmt(), pos);
+          final JimpleParser.Case_labelContext case_labelContext = it.case_label();
+          if (case_labelContext.getText() != null
+              && case_labelContext.getText().toLowerCase().equals("default")) {
+            defaultTarget = stmt;
+          } else {
+            final int value = Integer.parseInt(case_labelContext.getText());
+            min = min <= value ? min : value;
+            lookup.add(IntConstant.getInstance(value));
+            targets.add(stmt);
+          }
+        }
+
         if (ctx.SWITCH().getText().charAt(0) == 't') {
-          //        return Jimple.newTableSwitchStmt();
+          int high = min + lookup.size();
+          return Jimple.newTableSwitchStmt(key, min, high, targets, defaultTarget, pos);
         } else {
-          //          return Jimple.newLookupSwitchStmt();
+          return Jimple.newLookupSwitchStmt(key, lookup, targets, defaultTarget, pos);
         }
       } else if (ctx.assignments() != null) {
         if (ctx.assignments().EQUALS() == null) {
@@ -399,13 +426,10 @@ class JimpleVisitorImpl {
       } else if (ctx.IF() != null) {
         JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
         final Stmt stmt = Jimple.newIfStmt(ctx.bool_expr().accept(new ValueVisitor()), target, pos);
-        unresolvedGotoStmts.put(ctx.goto_stmt().label_name().getText(), stmt);
+        unresolvedGotoStmts.put(ctx.goto_stmt().label_name.getText(), stmt);
         return stmt;
       } else if (ctx.goto_stmt() != null) {
-        JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
-        final Stmt stmt = Jimple.newGotoStmt(target, pos);
-        unresolvedGotoStmts.put(ctx.goto_stmt().label_name().getText(), stmt);
-        return stmt;
+        return buildGotoStmt(ctx.goto_stmt(), pos);
       } else if (ctx.NOP() != null) {
         return Jimple.newNopStmt(pos);
       } else if (ctx.RET() != null) {
@@ -423,6 +447,14 @@ class JimpleVisitorImpl {
         // return Jimple.newSpecialInvokeExpr();
       }
       throw new RuntimeException("Unknown Stmt");
+    }
+
+    @Nonnull
+    private Stmt buildGotoStmt(JimpleParser.Goto_stmtContext ctx, StmtPositionInfo pos) {
+      JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
+      final Stmt stmt = Jimple.newGotoStmt(target, pos);
+      unresolvedGotoStmts.put(ctx.label_name.getText(), stmt);
+      return stmt;
     }
   }
 
@@ -443,6 +475,7 @@ class JimpleVisitorImpl {
     @Override
     public Expr visitInvoke_expr(JimpleParser.Invoke_exprContext ctx) {
       // TODO
+      // new ArgListVisitor()
       return null;
     }
 

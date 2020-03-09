@@ -150,35 +150,16 @@ grammar Jimple;
 
   method_name: '<init>' | '<clinit>' | name;
 
-
   type:
     /*void*/   VOID |
-    /*novoid*/ nonvoid_type;
+    /*novoid*/ name;
 
   parameter_list:
-    /*single*/ parameter=nonvoid_type |
-    /*multi*/  parameter=nonvoid_type COMMA parameter_list;
+    /*single*/ parameter=name |
+    /*multi*/  parameter=name COMMA parameter_list;
 
   throws_clause:
     'throws' name_list;
-
-  base_type_no_name:
-    /*boolean*/ BOOLEAN |
-    /*byte*/    BYTE |
-    /*char*/    CHAR |
-    /*short*/   SHORT |
-    /*int*/     INT |
-    /*long*/    LONG |
-    /*float*/   FLOAT |
-    /*double*/  DOUBLE |
-    /*null*/    NULL_TYPE;
-
-
-  base_type: base_type_no_name | classname=name;
-
-  nonvoid_type:
-    /*base*/   base_type_no_name array_brackets* |
-    /*ident*/  name array_brackets*;
 
   array_brackets:
                      L_BRACKET R_BRACKET;
@@ -188,10 +169,10 @@ grammar Jimple;
     /*full*/         L_BRACE declaration* statement* catch_clause* R_BRACE;
 
   declaration:
-                     (UNKNOWN | nonvoid_type) name_list SEMICOLON;
+                     (UNKNOWN | nonvoid_type=name) name_list SEMICOLON;
 
     statement:
-    /*label*/        name COLON stmt SEMICOLON |
+    /*label*/        label_name=name COLON stmt SEMICOLON |
                      stmt SEMICOLON;
 
   stmt:
@@ -227,11 +208,11 @@ grammar Jimple;
     'catch' exceptiontype=name 'from' from=name 'to' to=name 'with' with=name SEMICOLON;
 
   expression:
-    /*new simple*/  NEW base_type |
-    /*new array*/   NEWARRAY L_PAREN nonvoid_type R_PAREN fixed_array_descriptor |
-    /*new multi*/   NEWMULTIARRAY L_PAREN base_type R_PAREN (L_BRACKET immediate? R_BRACKET)+ |
-    /*cast*/        L_PAREN nonvoid_type R_PAREN immediate |
-    /*instanceof*/  immediate INSTANCEOF nonvoid_type |
+    /*new simple*/  NEW base_type=name |
+    /*new array*/   NEWARRAY L_PAREN nonvoid_type=name R_PAREN fixed_array_descriptor |
+    /*new multi*/   NEWMULTIARRAY L_PAREN base_type=name R_PAREN (L_BRACKET immediate? R_BRACKET)+ |
+    /*cast*/        L_PAREN nonvoid_type=name R_PAREN immediate |
+    /*instanceof*/  immediate INSTANCEOF nonvoid_type=name |
     /*invoke*/      invoke_expr |
     /*reference*/   reference |
     /*binop*/       binop_expr |
