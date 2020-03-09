@@ -33,7 +33,6 @@ grammar Jimple;
   GOTO : 'goto';
   IF : 'if';
   INSTANCEOF : 'instanceof';
-  INTERFACEINVOKE : 'interfaceinvoke';
   LENGTHOF : 'lengthof';
   // enable to read old Jimple
   SWITCH : 'lookupswitch' | 'tableswitch' | 'switch';
@@ -44,12 +43,17 @@ grammar Jimple;
   NOP : 'nop';
   RET : 'ret';
   RETURN : 'return';
-  SPECIALINVOKE : 'specialinvoke';
+  fragment SPECIALINVOKE : 'specialinvoke';
+  fragment VIRTUALINVOKE : 'virtualinvoke';
+  fragment INTERFACEINVOKE : 'interfaceinvoke';
+  NONSTATIC_INVOKE: SPECIALINVOKE | VIRTUALINVOKE | INTERFACEINVOKE;
+
   STATICINVOKE : 'staticinvoke';
   DYNAMICINVOKE : 'dynamicinvoke';
+
+
   THROW : 'throw';
   THROWS : 'throws';
-  VIRTUALINVOKE : 'virtualinvoke';
   NULL : 'null';
   FROM : 'from';
   TO : 'to';
@@ -87,7 +91,7 @@ grammar Jimple;
   DIV : '/';
 
   fragment DEC_DIGIT : [0-9];
-  fragment DEC_CONSTANT : DEC_DIGIT+;
+  DEC_CONSTANT : DEC_DIGIT+;
 
   fragment HEX_DIGIT : DEC_DIGIT | [A-Fa-f];
   fragment HEX_CONSTANT : '0' ('x' | 'X') HEX_DIGIT+;
@@ -100,8 +104,6 @@ grammar Jimple;
 
   // escapes and any char except '\' (92) or '"' (34).
   STRING_CHAR : [^\u0034\u0092] ;
-
-
 
   BOOL_CONSTANT : 'true' | 'false';
   INTEGER_CONSTANT : (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
@@ -139,40 +141,38 @@ grammar Jimple;
     /*multi*/  name COMMA name_list;
 
   member:
-        field | method;
+                field | method;
 
   field:
-        modifier* type name SEMICOLON;
+                modifier* type name SEMICOLON;
 
   method:
      modifier* type method_name L_PAREN parameter_list? R_PAREN throws_clause? method_body;
 
-  method_name: '<init>' | '<clinit>' | name;
+  method_name:
+                '<init>' | '<clinit>' | name;
 
   type:
-    /*void*/   VOID |
-    /*novoid*/ name;
+    /*void*/    VOID |
+    /*novoid*/  name;
 
   parameter_list:
-    /*single*/ parameter=name |
-    /*multi*/  parameter=name COMMA parameter_list;
+    /*single*/   parameter=name |
+    /*multi*/    parameter=name COMMA parameter_list;
 
   throws_clause:
     'throws' name_list;
 
-  array_brackets:
-                     L_BRACKET R_BRACKET;
-
   method_body:
-    /*empty*/        SEMICOLON |
-    /*full*/         L_BRACE declaration* statement* catch_clause* R_BRACE;
+    /*empty*/    SEMICOLON |
+    /*full*/     L_BRACE declaration* statement* catch_clause* R_BRACE;
 
   declaration:
-                     (UNKNOWN | nonvoid_type=name) name_list SEMICOLON;
+                 (UNKNOWN | nonvoid_type=name) name_list SEMICOLON;
 
     statement:
-    /*label*/        label_name=name COLON stmt SEMICOLON |
-                     stmt SEMICOLON;
+    /*label*/    label_name=name COLON stmt SEMICOLON |
+                 stmt SEMICOLON;
 
   stmt:
     /*breakpoint*/   BREAKPOINT |
@@ -192,7 +192,7 @@ grammar Jimple;
     /*identity*/     local=name COLON_EQUALS at_identifier |
     /*assign*/       (reference | local=name) EQUALS expression ;
 
-  at_identifier : '@' ( 'parameter' parameter_idx=DEC_DIGIT+ ':' type | 'this:' type | caught='caughtexception');
+  at_identifier : '@' ( 'parameter' parameter_idx=DEC_CONSTANT ':' type | 'this:' type | caught='caughtexception');
 
   case_stmt:
     case_label COLON goto_stmt SEMICOLON;
@@ -211,8 +211,8 @@ grammar Jimple;
     /*new simple*/  NEW base_type=name |
     /*new array*/   NEWARRAY L_PAREN nonvoid_type=name R_PAREN fixed_array_descriptor |
     /*new multi*/   NEWMULTIARRAY L_PAREN base_type=name R_PAREN (L_BRACKET immediate? R_BRACKET)+ |
-    /*cast*/        L_PAREN nonvoid_type=name R_PAREN immediate |
-    /*instanceof*/  immediate INSTANCEOF nonvoid_type=name |
+    /*cast*/        L_PAREN nonvoid_cast=name R_PAREN op=immediate |
+    /*instanceof*/  op=immediate INSTANCEOF nonvoid_type=name |
     /*invoke*/      invoke_expr |
     /*reference*/   reference |
     /*binop*/       binop_expr |
@@ -223,10 +223,11 @@ grammar Jimple;
     /*binop*/ binop_expr |
     /*unop*/  unop_expr;
 
+// TODO
   invoke_expr:
-    /*nonstatic*/ nonstatic_invoke name DOT method_signature L_PAREN arg_list? R_PAREN |
-    /*static*/    STATICINVOKE method_signature L_PAREN arg_list? R_PAREN |
-    /*dynamic*/   DYNAMICINVOKE STRING_CONSTANT dynmethod=unnamed_method_signature firstl=L_PAREN dynargs=arg_list? firstr=R_PAREN bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
+    /*nonstatic*/ nonstaticinvoke=NONSTATIC_INVOKE local_name=name DOT method_signature L_PAREN arg_list? R_PAREN |
+    /*static*/    staticinvoke=STATICINVOKE method_signature L_PAREN arg_list? R_PAREN |
+    /*dynamic*/   dynamicinvoke=DYNAMICINVOKE unnamed_method_name=STRING_CONSTANT CMPLT type L_PAREN parameter_list? R_PAREN CMPGT L_PAREN dynargs=arg_list? R_PAREN bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
 
   binop_expr:
     left=immediate op=binop right=immediate;
@@ -234,27 +235,17 @@ grammar Jimple;
   unop_expr:
     unop immediate;
 
-// TODO
-  nonstatic_invoke:
-    /*special*/   SPECIALINVOKE |
-    /*virtual*/   VIRTUALINVOKE |
-    /*interface*/ INTERFACEINVOKE;
-// TODO
-  unnamed_method_signature:
-    CMPLT type L_PAREN parameter_list? R_PAREN CMPGT;
-// TODO
   method_signature:
-    CMPLT class_name=name first=COLON type method_name L_PAREN parameter_list? R_PAREN CMPGT;
+    CMPLT class_name=name COLON type method_name L_PAREN parameter_list? R_PAREN CMPGT;
 
-// TODO
   reference:
     /*array*/ name fixed_array_descriptor |
     /*field*/
-    /*local*/ name DOT field_signature |
-    /*sig*/   field_signature;
+    /*instance*/ name DOT field_signature |
+    /*static*/   field_signature;
 
   field_signature:
-    CMPLT class_signature=name first=COLON type field_name=name CMPGT;
+    CMPLT classname=name COLON type fieldname=name CMPGT;
 
   fixed_array_descriptor:
     L_BRACKET immediate R_BRACKET;

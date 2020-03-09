@@ -12,6 +12,7 @@ import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.*;
+import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.*;
@@ -29,13 +30,14 @@ import org.antlr.v4.runtime.*;
 
 class JimpleVisitorImpl {
 
-  static final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-  private static Map<String, PackageName> imports = new HashMap<>();
-  private static ClassType clazz = null;
-  private static HashMap<String, Stmt> unresolvedGotoStmts = new HashMap<>();
-  private static HashMap<String, Stmt> jumpTargets = new HashMap<>();
+  final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+  private Map<String, PackageName> imports = new HashMap<>();
+  private ClassType clazz = null;
+  private HashMap<String, Stmt> unresolvedGotoStmts = new HashMap<>();
+  private HashMap<String, Stmt> jumpTargets = new HashMap<>();
+  private HashMap<String, Local> locals = new HashMap<>();
 
-  private static Type getType(String typename) {
+  private Type getType(String typename) {
     PackageName packageName = imports.get(typename);
     Type type =
         packageName == null
@@ -44,7 +46,7 @@ class JimpleVisitorImpl {
     return type;
   }
 
-  private static ClassType getClassType(String typename) {
+  private ClassType getClassType(String typename) {
     PackageName packageName = imports.get(typename);
     ClassType type =
         packageName == null
@@ -63,7 +65,7 @@ class JimpleVisitorImpl {
     return traverseResult;
   }
 
-  private static class ClassVisitor extends JimpleBaseVisitor<SootClassSource> {
+  private class ClassVisitor extends JimpleBaseVisitor<SootClassSource> {
 
     @Override
     @Nonnull
@@ -163,7 +165,7 @@ class JimpleVisitorImpl {
     }
   }
 
-  private static class NameListVisitor extends JimpleBaseVisitor<Collection<String>> {
+  private class NameListVisitor extends JimpleBaseVisitor<Collection<String>> {
 
     public List<String> visitThrows_clause(JimpleParser.Throws_clauseContext ctx) {
       List<String> list = new ArrayList<>();
@@ -192,7 +194,7 @@ class JimpleVisitorImpl {
     }
   }
 
-  private static class MemberVisitor extends JimpleBaseVisitor<SootClassMember> {
+  private class MemberVisitor extends JimpleBaseVisitor<SootClassMember> {
 
     @Override
     public SootField visitField(JimpleParser.FieldContext ctx) {
@@ -233,7 +235,7 @@ class JimpleVisitorImpl {
           ctx.throws_clause() == null
               ? Collections.emptyList()
               : ctx.throws_clause().accept(new NameListVisitor()).stream()
-                  .map(item -> identifierFactory.getClassType(item))
+                  .map(identifierFactory::getClassType)
                   .collect(Collectors.toList());
 
       Body body;
@@ -315,7 +317,7 @@ class JimpleVisitorImpl {
     }
   }
 
-  private static EnumSet<Modifier> getModifiers(List<JimpleParser.ModifierContext> modifier) {
+  private EnumSet<Modifier> getModifiers(List<JimpleParser.ModifierContext> modifier) {
     Set<Modifier> modifierSet =
         modifier.stream()
             .map(modifierContext -> Modifier.valueOf(modifierContext.getText().toUpperCase()))
@@ -324,7 +326,7 @@ class JimpleVisitorImpl {
   }
 
   // TODO: simplify and validate nonvoid in logic
-  private static class ParameterListVisitor extends JimpleBaseVisitor<List<Type>> {
+  private class ParameterListVisitor extends JimpleBaseVisitor<List<Type>> {
     @Override
     public List<Type> visitParameter_list(JimpleParser.Parameter_listContext ctx) {
       List<Type> interfaces = new ArrayList<>();
@@ -338,21 +340,21 @@ class JimpleVisitorImpl {
     }
   }
 
-  private static class ArgListVisitor extends JimpleBaseVisitor<List<Type>> {
+  private class ArgListVisitor extends JimpleBaseVisitor<List<Value>> {
     @Override
-    public List<Type> visitArg_list(JimpleParser.Arg_listContext ctx) {
-      List<Type> interfaces = new ArrayList<>();
-      JimpleParser.Arg_listContext parameterIterator = ctx;
+    public List<Value> visitArg_list(JimpleParser.Arg_listContext ctx) {
+      List<Value> args = new ArrayList<>();
+      JimpleParser.Arg_listContext immediateIterator = ctx;
       do {
-        interfaces.add(identifierFactory.getClassType(parameterIterator.immediate().getText()));
-        parameterIterator = ctx.arg_list();
-      } while (parameterIterator != null);
+        args.add(immediateIterator.immediate().accept(new ValueVisitor()));
+        immediateIterator = ctx.arg_list();
+      } while (immediateIterator != null);
 
-      return interfaces;
+      return args;
     }
   }
 
-  private static class StmtVisitor extends JimpleBaseVisitor<Stmt> {
+  private class StmtVisitor extends JimpleBaseVisitor<Stmt> {
 
     @Override
     public Stmt visitStatement(JimpleParser.StatementContext ctx) {
@@ -392,7 +394,7 @@ class JimpleVisitorImpl {
             defaultTarget = stmt;
           } else {
             final int value = Integer.parseInt(case_labelContext.getText());
-            min = min <= value ? min : value;
+            min = Math.min(min, value);
             lookup.add(IntConstant.getInstance(value));
             targets.add(stmt);
           }
@@ -420,8 +422,7 @@ class JimpleVisitorImpl {
               int idx = Integer.parseInt(at_identifierContext.parameter_idx.getText());
               ref = Jimple.newParameterRef(getType(type), idx);
             } else {
-              // TODO: redesign jimple itself? -> is it possible to make a this: to a different ->
-              // doesnt make sense..?
+              // TODO: check: is it possible to make a this: to a different class?!
               ref = Jimple.newThisRef(clazz);
             }
             return Jimple.newIdentityStmt(left, ref, pos);
@@ -472,25 +473,156 @@ class JimpleVisitorImpl {
     }
   }
 
-  private static class ValueVisitor extends JimpleBaseVisitor<Value> {
+  private class ValueVisitor extends JimpleBaseVisitor<Value> {
 
     @Override
-    public Expr visitReference(JimpleParser.ReferenceContext ctx) {
-      // TODO
-      return null;
+    public Value visitExpression(JimpleParser.ExpressionContext ctx) {
+      // TODO: check naming: base_type <-> reference_type?
+      // TODO: check wich basetype / nonvoid_type / ... are valid..
+
+      if (ctx.NEW() != null) {
+        final Type type = getType(ctx.base_type.getText());
+        if (!(type instanceof ReferenceType)) {
+          throw new IllegalStateException("only base types are allowed");
+        }
+        return Jimple.newNewExpr((ReferenceType) type);
+      } else if (ctx.NEWARRAY() != null) {
+        final Type type = getType(ctx.nonvoid_type.getText());
+        if (!(type instanceof ReferenceType)) {
+          throw new IllegalStateException("only base types are allowed");
+        }
+        Value dim = ctx.fixed_array_descriptor().immediate().accept(this);
+        return JavaJimple.getInstance().newNewArrayExpr(type, dim);
+      } else if (ctx.NEWMULTIARRAY() != null) {
+        final Type type = getType(ctx.base_type.getText());
+        if (!(type instanceof ReferenceType)) {
+          throw new IllegalStateException("only base types are allowed");
+        }
+        List<? extends Value> sizes =
+            ctx.immediate().stream().map(imm -> imm.accept(this)).collect(Collectors.toList());
+        if (sizes.size() < 1) {
+          throw new IllegalStateException("size list must have at least one element;");
+        }
+        ArrayType arrtype = JavaIdentifierFactory.getInstance().getArrayType(type, sizes.size());
+        return Jimple.newNewMultiArrayExpr(arrtype, sizes);
+      } else if (ctx.nonvoid_cast != null) {
+        final Type type = getType(ctx.nonvoid_cast.getText());
+        Value val = ctx.op.accept(this);
+        return Jimple.newCastExpr(val, type);
+      } else if (ctx.INSTANCEOF() != null) {
+        final Type type = getType(ctx.nonvoid_type.getText());
+        Value val = ctx.op.accept(this);
+        return Jimple.newInstanceOfExpr(val, type);
+      }
+      return super.visitExpression(ctx);
     }
 
     @Override
-    public Expr visitBool_expr(JimpleParser.Bool_exprContext ctx) {
-      // TODO
-      return null;
+    public Value visitImmediate(JimpleParser.ImmediateContext ctx) {
+      if (ctx.name() != null) {
+        String localname = ctx.name().getText();
+        // FIXME: determine type
+        return getLocal(UnknownType.getInstance(), localname);
+      }
+      return ctx.constant().accept(this);
+    }
+
+    @Override
+    public Value visitReference(JimpleParser.ReferenceContext ctx) {
+
+      if (ctx.fixed_array_descriptor() != null) {
+        // array
+        Value idx = ctx.fixed_array_descriptor().immediate().accept(this);
+        Value type =
+            null; // TODO: how create a link between name and array(local?); ctx.name().getText();
+
+        return JavaJimple.getInstance().newArrayRef(type, idx);
+      } else if (ctx.DOT() != null) {
+        // instance field
+        String base = ctx.name().getText();
+        FieldSignature fs = getFieldSignature(ctx.field_signature());
+
+        // FIXME unknown type!
+        return Jimple.newInstanceFieldRef(getLocal(UnknownType.getInstance(), base), fs);
+
+      } else {
+        // static field
+        FieldSignature fs = getFieldSignature(ctx.field_signature());
+        return Jimple.newStaticFieldRef(fs);
+      }
+    }
+
+    private FieldSignature getFieldSignature(JimpleParser.Field_signatureContext ctx) {
+      String classname = ctx.classname.getText();
+      Type type = getType(ctx.type().getText());
+      String fieldname = ctx.fieldname.getText();
+      return identifierFactory.getFieldSignature(fieldname, getClassType(classname), type);
+    }
+
+    private MethodSignature getMethodSignature(JimpleParser.Method_signatureContext ctx) {
+      String classname = ctx.class_name.getText();
+      Type type = getType(ctx.type().getText());
+      String methodname = ctx.method_name().getText();
+      List<Type> params = ctx.parameter_list().accept(new ParameterListVisitor());
+      return identifierFactory.getMethodSignature(
+          methodname, getClassType(classname), type, params);
     }
 
     @Override
     public Expr visitInvoke_expr(JimpleParser.Invoke_exprContext ctx) {
-      // TODO
-      // new ArgListVisitor()
-      return null;
+
+      if (ctx.nonstaticinvoke != null) {
+        Local base = getLocal(UnknownType.getInstance(), ctx.local_name.getText());
+        MethodSignature methodSig = getMethodSignature(ctx.method_signature());
+        List<Value> arglist =
+            ctx.arg_list() != null
+                ? ctx.arg_list().get(0).accept(new ArgListVisitor())
+                : Collections.emptyList();
+
+        switch (ctx.nonstaticinvoke.getText().charAt(0)) {
+          case 'i':
+            return Jimple.newInterfaceInvokeExpr(base, methodSig, arglist);
+          case 'v':
+            return Jimple.newVirtualInvokeExpr(base, methodSig, arglist);
+          case 's':
+            return Jimple.newSpecialInvokeExpr(base, methodSig, arglist);
+          default:
+            throw new IllegalStateException("malformed nonstatic invoke");
+        }
+
+      } else if (ctx.staticinvoke != null) {
+        MethodSignature methodSig = getMethodSignature(ctx.method_signature());
+        List<Value> arglist = ctx.arg_list().get(0).accept(new ArgListVisitor());
+        return Jimple.newStaticInvokeExpr(methodSig, arglist);
+      } else if (ctx.dynamicinvoke != null) {
+
+        Type type = getType(ctx.type().getText());
+        List<Type> bootstrapMethodRefParams =
+            ctx.parameter_list() != null
+                ? ctx.parameter_list().accept(new ParameterListVisitor())
+                : Collections.emptyList();
+        String unnamed_method_name = ctx.unnamed_method_name.getText();
+
+        MethodSignature bootstrapMethodRef =
+            identifierFactory.getMethodSignature(
+                unnamed_method_name,
+                identifierFactory.getClassType(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
+                type,
+                bootstrapMethodRefParams);
+
+        MethodSignature methodRef = getMethodSignature(ctx.bsm);
+        List<? extends Value> args =
+            ctx.dynargs != null
+                ? ctx.dynargs.accept(new ArgListVisitor())
+                : Collections.emptyList();
+        List<? extends Value> bootstrapArgs =
+            ctx.staticargs != null
+                ? ctx.staticargs.accept(new ArgListVisitor())
+                : Collections.emptyList();
+
+        return Jimple.newDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, args);
+      }
+      throw new IllegalStateException("malformed Invoke Expression.");
     }
 
     @Override
@@ -571,5 +703,9 @@ class JimpleVisitorImpl {
         return Jimple.newLengthExpr(value);
       }
     }
+  }
+
+  public Local getLocal(Type type, String name) {
+    return locals.computeIfAbsent(name, localname -> new Local(name, type));
   }
 }
