@@ -115,7 +115,6 @@ grammar Jimple;
 
   BLANK : [ \t\r\n] ->skip;        // TODO: check problem w/Strings?
 
-
  /*
   * Parser Rules
   */
@@ -175,29 +174,25 @@ grammar Jimple;
     /*null*/    NULL_TYPE;
 
 
-  base_type: base_type_no_name | /*class_name*/    classname=name;
+  base_type: base_type_no_name | classname=name;
 
   nonvoid_type:
     /*base*/   base_type_no_name array_brackets* |
     /*ident*/  name array_brackets*;
 
   array_brackets:
-    L_BRACKET R_BRACKET;
+                     L_BRACKET R_BRACKET;
 
   method_body:
-    /*empty*/ SEMICOLON |
-    /*full*/  L_BRACE declaration* statement* catch_clause* R_BRACE;
+    /*empty*/        SEMICOLON |
+    /*full*/         L_BRACE declaration* statement* catch_clause* R_BRACE;
 
   declaration:
-    jimple_type name_list SEMICOLON;
-
-  jimple_type:
-    /*unknown*/ UNKNOWN |
-    /*nonvoid*/ nonvoid_type;
+                     (UNKNOWN | nonvoid_type) name_list SEMICOLON;
 
     statement:
-    /*label*/        label_name COLON stmt SEMICOLON |
-                      stmt SEMICOLON;
+    /*label*/        name COLON stmt SEMICOLON |
+                     stmt SEMICOLON;
 
   stmt:
     /*breakpoint*/   BREAKPOINT |
@@ -218,9 +213,6 @@ grammar Jimple;
     /*identity_no_type*/ local=name COLON_EQUALS AT_IDENTIFIER  |
     /*assign*/       variable EQUALS expression ;
 
-  label_name:
-    name;
-
   case_stmt:
     case_label COLON goto_stmt SEMICOLON;
 
@@ -229,10 +221,10 @@ grammar Jimple;
     /*default*/  DEFAULT;
 
   goto_stmt:
-    'goto' label_name;
+    'goto' label_name=name;
 
   catch_clause:
-    'catch' classname=name 'from' label_name 'to' label_name 'with' label_name SEMICOLON;
+    'catch' exceptiontype=name 'from' from=name 'to' to=name 'with' with=name SEMICOLON;
 
   expression:
     /*new simple*/  NEW base_type |

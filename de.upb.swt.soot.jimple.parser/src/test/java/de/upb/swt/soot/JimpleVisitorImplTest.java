@@ -69,6 +69,14 @@ public class JimpleVisitorImplTest {
   }
 
   @Test
+  public void parseClassWShortMethod() {
+    CharStream cs =
+        CharStreams.fromString(
+            "public class Noclass extends java.lang.Object \n { public void nobody();  } ");
+    checkJimpleClass(cs);
+  }
+
+  @Test
   public void parseClassWMethod() {
     CharStream cs =
         CharStreams.fromString(
@@ -189,7 +197,7 @@ public class JimpleVisitorImplTest {
   public void testSimpleLongComment() {
     CharStream cs =
         CharStreams.fromString(
-            "/* One */ \n"
+            "/* One */ /**/ /* ** * //* ** / */"
                 + "import Medium.Table; \n"
                 + "public class BigTable extends Table \n {"
                 + " public void <init>(){} \n"
@@ -199,7 +207,7 @@ public class JimpleVisitorImplTest {
   }
 
   @Test
-  public void testLongComment() {
+  public void testLongCommentEverywhere() {
     CharStream cs =
         CharStreams.fromString(
             "/*One*/ \n"
@@ -207,7 +215,7 @@ public class JimpleVisitorImplTest {
                 + "/* One*/ \n"
                 + "import /*Comment*//*more */Medium.Table; \n"
                 + "/* \n Two */"
-                + "public /* Crumble*/ class   BigTable extends Table \n {"
+                + "public /* Crumble*/ class  BigTable extends Table \n {"
                 // + "\n /*\n  Three \n \n */"
                 + " public void <init>(){}"
                 + "private void another(){}  "

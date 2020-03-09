@@ -11,11 +11,13 @@ import de.upb.swt.soot.core.jimple.common.constant.*;
 import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.jimple.JimpleBaseVisitor;
@@ -127,7 +129,10 @@ class JimpleVisitorImpl {
 
       // implements_clause
       if (ctx.implements_clause() != null) {
-        interfaces = (Set<ClassType>) ctx.implements_clause().accept(new NameListVisitor());
+        interfaces =
+            ctx.implements_clause().accept(new NameListVisitor()).stream()
+                .map(item -> identifierFactory.getClassType(item))
+                .collect(Collectors.toSet());
       } else {
         interfaces = Collections.emptySet();
       }
@@ -161,30 +166,29 @@ class JimpleVisitorImpl {
     }
   }
 
-  private static class NameListVisitor extends JimpleBaseVisitor<Collection<ClassType>> {
+  private static class NameListVisitor extends JimpleBaseVisitor<Collection<String>> {
 
-    public List<ClassType> visitThrows_clause(JimpleParser.Throws_clauseContext ctx) {
-      List<ClassType> list = new ArrayList<>();
+    public List<String> visitThrows_clause(JimpleParser.Throws_clauseContext ctx) {
+      List<String> list = new ArrayList<>();
       iterate(list, ctx.name_list());
       return list;
     }
 
     @Override
-    public Set<ClassType> visitImplements_clause(JimpleParser.Implements_clauseContext ctx) {
-      Set<ClassType> interfaces = new HashSet<>();
+    public Set<String> visitImplements_clause(JimpleParser.Implements_clauseContext ctx) {
+      Set<String> interfaces = new HashSet<>();
       iterate(interfaces, ctx.name_list());
       return interfaces;
     }
 
-    public Collection<ClassType> iterate(
-        Collection<ClassType> list, JimpleParser.Name_listContext ctx) {
+    public Collection<String> iterate(Collection<String> list, JimpleParser.Name_listContext ctx) {
       JimpleParser.Name_listContext name_listContextIterator = ctx.name_list();
 
       while (name_listContextIterator != null) {
         if (name_listContextIterator.name() == null) {
           break;
         }
-        list.add(identifierFactory.getClassType(name_listContextIterator.name().getText()));
+        list.add(name_listContextIterator.name().getText());
         name_listContextIterator = name_listContextIterator.name_list();
       }
       return list;
@@ -206,44 +210,89 @@ class JimpleVisitorImpl {
     @Override
     @Nonnull
     public SootMethod visitMethod(@Nonnull JimpleParser.MethodContext ctx) {
-      StmtVisitor stmtVisitor = new StmtVisitor();
-      List<Stmt> stmts =
-          ctx.method_body().statement().stream()
-              .map(instruction -> instruction.accept(stmtVisitor))
-              .collect(Collectors.toList());
 
-      // TODO
-      Set<Local> locals = new HashSet<>();
+      EnumSet<Modifier> modifier =
+          ctx.modifier() == null ? EnumSet.noneOf(Modifier.class) : getModifiers(ctx.modifier());
 
-      // TODO
-      List<Trap> traps = new ArrayList<>();
+      final Type type = getType(ctx.type().getText());
+      if (type == null) {
+        throw new IllegalStateException("returntype not found");
+      }
 
-      Position position =
-          new Position(
-              ctx.start.getLine(),
-              ctx.start.getCharPositionInLine(),
-              ctx.stop.getLine(),
-              ctx.stop.getCharPositionInLine());
+      final String methodname = ctx.method_name().getText();
+      if (methodname == null) {
+        throw new IllegalStateException("methodname not found");
+      }
 
-      Body b = new Body(locals, traps, stmts, position);
       List<Type> params =
           ctx.parameter_list() == null
               ? Collections.emptyList()
               : ctx.parameter_list().accept(new ParameterListVisitor());
-      MethodSignature methodSignature =
-          identifierFactory.getMethodSignature(
-              ctx.method_name().getText(), clazz, getType(ctx.type().getText()), params);
 
-      OverridingMethodSource oms = new OverridingMethodSource(methodSignature, b);
+      MethodSignature methodSignature =
+          identifierFactory.getMethodSignature(methodname, clazz, type, params);
 
       List<ClassType> exceptions =
           ctx.throws_clause() == null
               ? Collections.emptyList()
-              : (List<ClassType>) ctx.throws_clause().accept(new NameListVisitor());
+              : ctx.throws_clause().accept(new NameListVisitor()).stream()
+                  .map(item -> identifierFactory.getClassType(item))
+                  .collect(Collectors.toList());
 
-      EnumSet<Modifier> modifier = getModifiers(ctx.modifier());
+      Body body;
+      if (ctx.method_body() == null) {
+        throw new IllegalStateException("Body not found");
+      } else if (ctx.method_body().SEMICOLON() != null) {
+        // no body is given
+        body = null;
+      } else {
 
-      // TODO: associate labels with goto boxes
+        Set<Local> locals = new HashSet<>();
+        if (ctx.method_body().declaration() != null) {
+          for (JimpleParser.DeclarationContext it : ctx.method_body().declaration()) {
+            Type localtype =
+                it.UNKNOWN() == null
+                    ? UnknownType.getInstance()
+                    : getType(it.nonvoid_type().getText());
+            for (String localname : it.name_list().accept(new NameListVisitor())) {
+              locals.add(new Local(localname, localtype));
+            }
+          }
+        }
+
+        // statement
+        JimpleVisitorImpl.StmtVisitor stmtVisitor = new JimpleVisitorImpl.StmtVisitor();
+        List<Stmt> stmts =
+            ctx.method_body().statement() != null
+                ? ctx.method_body().statement().stream()
+                    .map(instruction -> instruction.accept(stmtVisitor))
+                    .collect(Collectors.toList())
+                : Collections.emptyList();
+
+        // catch_clause
+        List<Trap> traps = new ArrayList<>();
+        if (ctx.method_body().catch_clause() != null) {
+          for (JimpleParser.Catch_clauseContext it : ctx.method_body().catch_clause()) {
+            ClassType exceptionType = getClassType(it.exceptiontype.getText());
+            // FIXME traps.. how do those stmtBoxes work?
+            // Jimple.newTrap( exceptionType, jumpTargets.get(it.from),
+            // jumpTargets.get(it.to),jumpTargets.get(it.with) );
+          }
+        }
+
+        Position position =
+            new Position(
+                ctx.start.getLine(),
+                ctx.start.getCharPositionInLine(),
+                ctx.stop.getLine(),
+                ctx.stop.getCharPositionInLine());
+
+        body = new Body(locals, traps, stmts, position);
+      }
+
+      OverridingMethodSource oms = new OverridingMethodSource(methodSignature, body);
+
+      // TODO: associate labels with goto boxes; maybe with trap labels somehow too?
       for (Map.Entry<String, Stmt> item : unresolvedGotoStmts.entrySet()) {
         final Stmt stmt = jumpTargets.get(item.getKey());
         if (stmt != null) {
