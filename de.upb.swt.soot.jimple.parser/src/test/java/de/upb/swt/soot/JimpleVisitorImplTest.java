@@ -51,63 +51,6 @@ public class JimpleVisitorImplTest {
   }
 
   @Test
-  public void parseClassWField() {
-    CharStream cs =
-        CharStreams.fromString(
-            "public class EmptyClass extends java.lang.Object\n"
-                + " {      static int globalCounter;\n } ");
-    checkJimpleClass(cs);
-  }
-
-  @Test
-  public void parseClassWFields() {
-    CharStream cs =
-        CharStreams.fromString(
-            "public class EmptyClass extends java.lang.Object\n"
-                + " {     static int globalCounter;\n long sth;} ");
-    checkJimpleClass(cs);
-  }
-
-  @Test
-  public void parseClassWShortMethod() {
-    CharStream cs =
-        CharStreams.fromString(
-            "public class Noclass extends java.lang.Object \n { public void nobody();  } ");
-    checkJimpleClass(cs);
-  }
-
-  @Test
-  public void parseClassWMethod() {
-    CharStream cs =
-        CharStreams.fromString(
-            "public class EmptyClass extends java.lang.Object \n { public void <init>(){}  } ");
-    checkJimpleClass(cs);
-  }
-
-  @Test
-  public void parseClassWMethods() {
-    CharStream cs =
-        CharStreams.fromString(
-            "public class EmptyClass extends java.lang.Object \n { public void <init>(){}"
-                + "private void another(){}  } ");
-
-    checkJimpleClass(cs);
-  }
-
-  @Test
-  public void parseInterleavingClassMembers() {
-    CharStream cs1 =
-        CharStreams.fromString(
-            "public class Interleaving1 extends java.lang.Object \n { public void <init>(){} static int globalCounter; protected void another(){}  } ");
-    checkJimpleClass(cs1);
-
-    CharStream cs2 =
-        CharStreams.fromString(
-            "public class Interleaving2 extends java.lang.Object \n { private bool flag; void <init>(){} static int globalCounter; protected void another(){}  } ");
-    checkJimpleClass(cs2);
-  }
-
-  @Test
   public void parseClassImplements() {
     CharStream cs1 =
         CharStreams.fromString(
@@ -161,6 +104,76 @@ public class JimpleVisitorImplTest {
                 + "public class BigTable extends Table \n { public void <init>(){}"
                 + "private void another(){}  } ");
     checkJimpleClass(cs);
+  }
+
+  @Test
+  public void parseClassWField() {
+    CharStream cs =
+        CharStreams.fromString(
+            "public class EmptyClass extends java.lang.Object\n"
+                + " {      static int globalCounter;\n } ");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void parseClassWFields() {
+    CharStream cs =
+        CharStreams.fromString(
+            "public class EmptyClass extends java.lang.Object\n"
+                + " {     static int globalCounter;\n long sth;} ");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void parseClassMethodWOBody() {
+    CharStream cs =
+        CharStreams.fromString(
+            "public class Noclass extends java.lang.Object \n { public abstract void nobody();  } ");
+    checkJimpleClass(cs);
+
+    CharStream cs2 =
+        CharStreams.fromString(
+            "public class Noclass extends java.lang.Object \n { public native void withoutbody();  } ");
+    checkJimpleClass(cs2);
+  }
+
+  @Test
+  public void parseClassWMethod() {
+    CharStream cs =
+        CharStreams.fromString(
+            "public class EmptyClass extends java.lang.Object \n { public void <init>(){}  } ");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void parseClassWMethods() {
+    CharStream cs =
+        CharStreams.fromString(
+            "public class EmptyClass extends java.lang.Object \n { public void <init>(){}"
+                + "private void another(){}  } ");
+
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void parseInterleavingClassMembers() {
+    CharStream cs1 =
+        CharStreams.fromString(
+            "public class Interleaving1 extends java.lang.Object \n { public void <init>(){} static int globalCounter; protected void another(){}  } ");
+    checkJimpleClass(cs1);
+
+    CharStream cs2 =
+        CharStreams.fromString(
+            "public class Interleaving2 extends java.lang.Object \n { private bool flag; void <init>(){} static int globalCounter; protected void another(){}  } ");
+    checkJimpleClass(cs2);
+  }
+
+  @Test
+  public void parseMethodWithParameter() {
+    CharStream cs1 =
+        CharStreams.fromString(
+            "public class Param extends java.lang.Object \n { public void <init>(java.lang.String){} \n void another(int, float, double, bool, java.lang.String){}  } ");
+    checkJimpleClass(cs1);
   }
 
   @Test

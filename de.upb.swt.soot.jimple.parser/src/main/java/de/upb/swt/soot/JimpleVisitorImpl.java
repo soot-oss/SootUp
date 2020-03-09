@@ -303,9 +303,8 @@ class JimpleVisitorImpl {
           }
 
         } else {
-          // TODO: choose a better Exception
-          throw new RuntimeException(
-              "dont jump into the space. target Stmt not found i.e. no label: " + item.getKey());
+          throw new IllegalStateException(
+              "don't jump into the space! target Stmt not found i.e. no label: " + item.getKey());
         }
       }
 
@@ -325,12 +324,11 @@ class JimpleVisitorImpl {
     @Override
     public List<Type> visitParameter_list(JimpleParser.Parameter_listContext ctx) {
       List<Type> interfaces = new ArrayList<>();
-      JimpleParser.Parameter_listContext class_name_listContextIterator = ctx;
+      JimpleParser.Parameter_listContext parameterIterator = ctx;
       do {
-        interfaces.add(
-            identifierFactory.getClassType(class_name_listContextIterator.parameter.getText()));
-        class_name_listContextIterator = ctx.parameter_list();
-      } while (class_name_listContextIterator != null);
+        interfaces.add(identifierFactory.getClassType(parameterIterator.parameter.getText()));
+        parameterIterator = parameterIterator.parameter_list();
+      } while (parameterIterator != null);
 
       return interfaces;
     }
