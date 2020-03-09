@@ -27,4 +27,5 @@ package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.basic.Value;
 
+/*   An Expression is a Language construct that returns a Value  */
 public interface Expr extends Value {}

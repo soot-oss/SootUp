@@ -44,6 +44,7 @@ import javax.annotation.Nonnull;
 public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copyable {
 
   private final MethodSignature bootstrapMethodSignature;
+  // TODO: use immutable List?
   private final ValueBox[] bootstrapMethodSignatureArgBoxes;
   private final int tag;
 
@@ -56,8 +57,9 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
       List<? extends Value> methodArgs) {
     super(methodSignature, ValueBoxUtils.toValueBoxes(methodArgs));
     if (!methodSignature
-        .toString()
-        .startsWith("<" + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + ": ")) {
+        .getDeclClassType()
+        .getClassName()
+        .equals(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME)) {
       throw new IllegalArgumentException(
           "Receiver type of JDynamicInvokeExpr must be "
               + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME

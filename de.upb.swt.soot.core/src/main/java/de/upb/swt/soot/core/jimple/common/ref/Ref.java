@@ -27,4 +27,7 @@ package de.upb.swt.soot.core.jimple.common.ref;
 
 import de.upb.swt.soot.core.jimple.basic.Value;
 
+/*
+ *   References e.g. Locals, Fields, Array elements
+ * */
 public interface Ref extends Value {}
