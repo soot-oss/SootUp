@@ -166,7 +166,7 @@ class JimpleVisitorImpl {
     @Override
     public List<String> visitName_list(JimpleParser.Name_listContext ctx) {
       List<String> list = new ArrayList<>();
-      iterate(list, ctx.name_list());
+      iterate(list, ctx);
       return list;
     }
 
@@ -263,7 +263,7 @@ class JimpleVisitorImpl {
       } else {
 
         // declare locals
-        Set<Local> locals = new HashSet<>();
+        locals = new HashMap<>();
         if (ctx.method_body().declaration() != null) {
           for (JimpleParser.DeclarationContext it : ctx.method_body().declaration()) {
             Type localtype =
@@ -274,13 +274,13 @@ class JimpleVisitorImpl {
               throw new IllegalStateException("void is not an allowed Type for a Local.");
             }
 
-            // FIXME!
+            // FIXME Local declaration!
             List<String> list =
                 (List<String>)
                     (it.name_list() != null
                         ? it.name_list().accept(new NameListVisitor())
                         : it.accept(new NameListVisitor()));
-            list.forEach(localname -> locals.add(new Local(localname, localtype)));
+            list.forEach(localname -> locals.put(localname, new Local(localname, localtype)));
           }
         }
 
@@ -311,7 +311,7 @@ class JimpleVisitorImpl {
                 ctx.stop.getLine(),
                 ctx.stop.getCharPositionInLine());
 
-        body = new Body(locals, traps, stmts, position);
+        body = new Body(new HashSet<>(locals.values()), traps, stmts, position);
       }
 
       OverridingMethodSource oms = new OverridingMethodSource(methodSignature, body);
