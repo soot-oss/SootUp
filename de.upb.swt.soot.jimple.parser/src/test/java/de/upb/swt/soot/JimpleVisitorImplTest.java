@@ -110,17 +110,31 @@ public class JimpleVisitorImplTest {
   public void parseClassWField() {
     CharStream cs =
         CharStreams.fromString(
-            "public class EmptyClass extends java.lang.Object\n"
-                + " {      static int globalCounter;\n } ");
+            "public class StaticFieldClass extends java.lang.Object \n  { static bool globalCounter;  } ");
     checkJimpleClass(cs);
+
+    CharStream cs1 =
+        CharStreams.fromString(
+            "public class StaticFieldClass extends java.lang.Object \n  { bool $flag;  } ");
+    checkJimpleClass(cs1);
+
+    CharStream cs2 =
+        CharStreams.fromString(
+            "public class StaticFieldClass extends java.lang.Object \n  { java.lang.String globalCounter;  } ");
+    checkJimpleClass(cs2);
+
+    CharStream cs3 =
+        CharStreams.fromString(
+            "public class StaticFieldClass extends java.lang.Object \n  { int globalCounter;  } ");
+    checkJimpleClass(cs3);
   }
 
   @Test
   public void parseClassWFields() {
     CharStream cs =
         CharStreams.fromString(
-            "public class EmptyClass extends java.lang.Object\n"
-                + " {     static int globalCounter;\n long sth;} ");
+            "public class InstanceField extends java.lang.Object\n"
+                + " {     public int globalCounter;\n long sth;} ");
     checkJimpleClass(cs);
   }
 
@@ -235,6 +249,53 @@ public class JimpleVisitorImplTest {
                 //    + "/* Another opening /* */"
                 //   + "/* \n End \n */"
                 + "} ");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void testInvoke() {
+    // FIXME!!
+    CharStream cs =
+        CharStreams.fromString(
+            "class Invoke{"
+                + "public void <init>()\n"
+                + "    {\n"
+                + "      de.upb.soot.instructions.expr.DynamicInvokeExprTest r0;\n"
+                + "      r0 := @this: de.upb.soot.instructions.expr.DynamicInvokeExprTest;\n"
+                +
+                //      "      specialinvoke r0.<java.lang.Object: void <init>()>();\n" +
+                "      return;\n"
+                + "    }"
+                + "}");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void testOther() {
+
+    CharStream cs =
+        CharStreams.fromString(
+            "class de.upb.soot.concrete.fieldReference.A extends java.lang.Object\n"
+                + "  {\n"
+                + "  static int it;\n"
+                + "    public java.lang.String j;\n"
+                + "\n"
+                + "    void <init>()\n"
+                + "    {\n"
+                + "      de.upb.soot.concrete.fieldReference.A r0;\n"
+                + "\n"
+                + "      r0 := @this: de.upb.soot.concrete.fieldReference.A;\n"
+                + "\n"
+                + "      specialinvoke r0.<java.lang.Object: void <init>()>();\n"
+                + "\n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: int i> = 15;\n"
+                + "\n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"greater\";\n"
+                + "\n"
+                + "      return;\n"
+                + "    }\n"
+                + "  }\n"
+                + "\n");
     checkJimpleClass(cs);
   }
 }

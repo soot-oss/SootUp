@@ -167,11 +167,32 @@ class JimpleVisitorImpl {
 
   private class NameListVisitor extends JimpleBaseVisitor<Collection<String>> {
 
+    @Override
+    public List<String> visitName_list(JimpleParser.Name_listContext ctx) {
+      List<String> list = new ArrayList<>();
+      iterate(list, ctx.name_list());
+      return list;
+    }
+
+    @Override
+    public List<String> visitName(JimpleParser.NameContext ctx) {
+      return Collections.singletonList(ctx.getText());
+    }
+
+    /*
+    @Override
+    public List<String> visitDeclaration(JimpleParser.DeclarationContext ctx) {
+      List<String> list = new ArrayList<>();
+      iterate(list, ctx.name_list());
+      return list;
+    }
+
     public List<String> visitThrows_clause(JimpleParser.Throws_clauseContext ctx) {
       List<String> list = new ArrayList<>();
       iterate(list, ctx.name_list());
       return list;
     }
+    */
 
     @Override
     public Set<String> visitImplements_clause(JimpleParser.Implements_clauseContext ctx) {
@@ -181,8 +202,7 @@ class JimpleVisitorImpl {
     }
 
     public Collection<String> iterate(Collection<String> list, JimpleParser.Name_listContext ctx) {
-      JimpleParser.Name_listContext name_listContextIterator = ctx.name_list();
-
+      JimpleParser.Name_listContext name_listContextIterator = ctx;
       while (name_listContextIterator != null) {
         if (name_listContextIterator.name() == null) {
           break;
@@ -259,9 +279,12 @@ class JimpleVisitorImpl {
               throw new IllegalStateException("void is not allowed here.");
             }
 
-            for (String localname : it.name_list().accept(new NameListVisitor())) {
-              locals.add(new Local(localname, localtype));
-            }
+            List<String> list =
+                (List<String>)
+                    (it.name_list() != null
+                        ? it.name_list().accept(new NameListVisitor())
+                        : it.accept(new NameListVisitor()));
+            list.forEach(localname -> locals.add(new Local(localname, localtype)));
           }
         }
 
@@ -422,7 +445,7 @@ class JimpleVisitorImpl {
               int idx = Integer.parseInt(at_identifierContext.parameter_idx.getText());
               ref = Jimple.newParameterRef(getType(type), idx);
             } else {
-              // TODO: check: is it possible to make a this: to a different class?!
+              // TODO: check: is it possible/valid to make a @this: to a different class?!
               ref = Jimple.newThisRef(clazz);
             }
             return Jimple.newIdentityStmt(left, ref, pos);
@@ -474,6 +497,12 @@ class JimpleVisitorImpl {
   }
 
   private class ValueVisitor extends JimpleBaseVisitor<Value> {
+
+    @Override
+    public Value visitName(JimpleParser.NameContext ctx) {
+      // FIXME local type
+      return getLocal(UnknownType.getInstance(), ctx.getText());
+    }
 
     @Override
     public Value visitExpression(JimpleParser.ExpressionContext ctx) {

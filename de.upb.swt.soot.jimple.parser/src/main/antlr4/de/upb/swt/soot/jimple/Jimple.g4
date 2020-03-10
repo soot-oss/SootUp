@@ -6,6 +6,7 @@ grammar Jimple;
 
   CLASS : 'class';
 
+/*
   VOID : 'void';
   BOOLEAN : 'boolean';
   BYTE : 'byte';
@@ -17,7 +18,7 @@ grammar Jimple;
   DOUBLE : 'double';
   NULL_TYPE : 'null_type';
   UNKNOWN : 'unknown';
-
+*/
   EXTENDS : 'extends';
   IMPLEMENTS : 'implements';
 
@@ -110,7 +111,7 @@ grammar Jimple;
   FLOAT_CONSTANT : ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
   STRING_CONSTANT : '"' STRING_CHAR* '"';
 
-  IDENTIFIER: [A-Za-z$_][A-Za-z0-9$._]+;
+  IDENTIFIER: [A-Za-z$_]([A-Za-z0-9$_] | '.' [A-Za-z0-9$_] )*;
   LINE_COMMENT : '//' ~('\n'|'\r')* ->skip;
   LONG_COMMENT : '/*' ~('*')* '*'+ ( ~('*' | '/')* ~('*')* '*'+)* '/' -> skip;
 
@@ -131,7 +132,7 @@ grammar Jimple;
 
   extends_clause : 'extends' classname=name;
 
-  implements_clause : 'implements' name_list;
+  implements_clause : 'implements' names=name_list;
 
   name:
     /*ident*/ IDENTIFIER ;
@@ -147,7 +148,7 @@ grammar Jimple;
                 modifier* type name SEMICOLON;
 
   method:
-     modifier* type method_name L_PAREN parameter_list? R_PAREN throws_clause? method_body;
+                modifier* type method_name L_PAREN parameter_list? R_PAREN throws_clause? method_body;
 
   method_name:
                 '<init>' | '<clinit>' | name;
