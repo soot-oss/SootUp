@@ -131,7 +131,7 @@ public abstract class MinimalBytecodeTestSuiteBase {
   }
 
   public SootClass loadClass(ClassType clazz) {
-    Optional<AbstractClass<? extends AbstractClassSource>> cs =
+    Optional<SootClass> cs =
         customTestWatcher.getJavaView().getClass(clazz);
     assertTrue("no matching class signature found", cs.isPresent());
     return (SootClass) cs.get();
