@@ -20,7 +20,10 @@ public class MethodAcceptingLamExprTest extends MinimalSourceTestSuiteBase {
 
   @Ignore
   @Override
-  public void defaultTest() {
+  public void defaultTest() {}
+
+  @Ignore
+  public void ignoreTest() {
     super.defaultTest();
   }
   /** TODO update the expectedBodyStmts when Lambda are supported by Wala */

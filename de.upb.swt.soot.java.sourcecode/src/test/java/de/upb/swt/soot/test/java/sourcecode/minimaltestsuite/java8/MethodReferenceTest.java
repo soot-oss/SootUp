@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.Test;
 
 public class MethodReferenceTest extends MinimalSourceTestSuiteBase {
 
@@ -17,6 +18,10 @@ public class MethodReferenceTest extends MinimalSourceTestSuiteBase {
   }
 
   /** TODO Update the source code when WALA supports lambda expression */
+  @Test
+  @Override
+  public void defaultTest() {}
+
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
