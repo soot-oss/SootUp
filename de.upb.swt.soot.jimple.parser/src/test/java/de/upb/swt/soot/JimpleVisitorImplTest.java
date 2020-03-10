@@ -273,6 +273,65 @@ public class JimpleVisitorImplTest {
   }
 
   @Test
+  public void testGreedyStringFix() {
+    CharStream cs =
+        CharStreams.fromString(
+            "class de.upb.soot.concrete.fieldReference.A extends java.lang.Object\n"
+                + "  {\n"
+                + "    public java.lang.String j;\n"
+                + "    void <init>()\n"
+                + "    {\n"
+                + "      de.upb.soot.concrete.fieldReference.A r0;\n"
+                + "      r0 := @this: de.upb.soot.concrete.fieldReference.A; \n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"something \"; \n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"stupid\"; \n"
+                + "      return;\n"
+                + "    }\n"
+                + "  }\n"
+                + "\n");
+    System.out.println(cs);
+
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void testCommentInStringConstant() {
+    CharStream cs =
+        CharStreams.fromString(
+            "class de.upb.soot.concrete.fieldReference.A extends java.lang.Object\n"
+                + "  {\n"
+                + "    public java.lang.String j;\n"
+                + "    void <init>()\n"
+                + "    {\n//nonsense \n"
+                + "      de.upb.soot.concrete.fieldReference.A r0;// nonsense\n"
+                + "      r0 := @this: de.upb.soot.concrete.fieldReference.A; \n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"something \"; \n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"stupid\"; \n"
+                + "      return;//nonsense\n"
+                + "    }\n"
+                + "  }\n"
+                + "\n");
+    System.out.println(cs);
+
+    checkJimpleClass(cs);
+
+    CharStream cs1 =
+        CharStreams.fromString(
+            "class de.upb.soot.concrete.fieldReference.A extends java.lang.Object\n"
+                + "  {\n"
+                + "    void <init>()\n"
+                + "    {\n"
+                + "      de.upb.soot.concrete.fieldReference.A r0;\n"
+                + "      r0 := @this: de.upb.soot.concrete.fieldReference.A;\n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"gre/*blabla*/ater\";\n"
+                + "      return;\n"
+                + "    }\n"
+                + "  }\n"
+                + "\n");
+    checkJimpleClass(cs1);
+  }
+
+  @Test
   public void testInvoke() {
     // FIXME!!
     CharStream cs =
