@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
@@ -19,6 +20,7 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
         "<init>", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  @Test
   @Override
   public void defaultTest() {
     SootMethod sootMethod = loadMethod(getInitMethodSignature());

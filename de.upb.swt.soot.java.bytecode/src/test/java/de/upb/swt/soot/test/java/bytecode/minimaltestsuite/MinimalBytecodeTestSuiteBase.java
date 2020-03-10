@@ -3,8 +3,6 @@ package de.upb.swt.soot.test.java.bytecode.minimaltestsuite;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -131,8 +129,7 @@ public abstract class MinimalBytecodeTestSuiteBase {
   }
 
   public SootClass loadClass(ClassType clazz) {
-    Optional<SootClass> cs =
-        customTestWatcher.getJavaView().getClass(clazz);
+    Optional<SootClass> cs = customTestWatcher.getJavaView().getClass(clazz);
     assertTrue("no matching class signature found", cs.isPresent());
     return (SootClass) cs.get();
   }

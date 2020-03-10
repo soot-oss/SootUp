@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
@@ -21,6 +22,7 @@ public class MethodAcceptingLamExprTest extends MinimalBytecodeTestSuiteBase {
         "lambdaAsParamMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  @Test
   @Override
   public void defaultTest() {}
 

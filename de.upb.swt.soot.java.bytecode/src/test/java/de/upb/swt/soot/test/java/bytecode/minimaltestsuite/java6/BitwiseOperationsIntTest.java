@@ -13,6 +13,7 @@ import org.junit.experimental.categories.Category;
 public class BitwiseOperationsIntTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
+  @Override
   public void defaultTest() {
 
     SootMethod method = loadMethod(getMethodSignature("bitwiseOpAnd"));
