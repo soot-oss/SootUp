@@ -5,20 +5,6 @@ grammar Jimple;
  */
 
   CLASS : 'class';
-
-/*
-  VOID : 'void';
-  BOOLEAN : 'boolean';
-  BYTE : 'byte';
-  SHORT : 'short';
-  CHAR : 'char';
-  INT : 'int';
-  LONG : 'long';
-  FLOAT : 'float';
-  DOUBLE : 'double';
-  NULL_TYPE : 'null_type';
-  UNKNOWN : 'unknown';
-*/
   EXTENDS : 'extends';
   IMPLEMENTS : 'implements';
 
@@ -35,7 +21,6 @@ grammar Jimple;
   IF : 'if';
   INSTANCEOF : 'instanceof';
   LENGTHOF : 'lengthof';
-  // enable to read old Jimple
   SWITCH : 'lookupswitch' | 'tableswitch' | 'switch';
   NEG : 'neg';
   NEW : 'new';
@@ -91,25 +76,22 @@ grammar Jimple;
   MULT : '*';
   DIV : '/';
 
-  fragment DEC_DIGIT : [0-9];
-  DEC_CONSTANT : DEC_DIGIT+;
 
-  fragment HEX_DIGIT : DEC_DIGIT | [A-Fa-f];
+  fragment DEC_CONSTANT : [0-9]+;
+  fragment HEX_DIGIT: [0-9A-Fa-f];
   fragment HEX_CONSTANT : '0' ('x' | 'X') HEX_DIGIT+;
 
-/*
   fragment ESCAPABLE_CHAR : '\\' | ' ' | '\'' | '.' | '"' | 'n' | 't' | 'r' | 'b' | 'f';
   fragment ESCAPE_CODE : 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT;
   fragment ESCAPE_CHAR : '\\' (ESCAPABLE_CHAR | ESCAPE_CODE);
-*/
 
   // escapes and any char except '\' (92) or '"' (34).
-  STRING_CHAR : [^\u0034\u0092] ;
+  fragment STRING_CHAR :  ESCAPE_CHAR | [^\u0034\u0092] ;
 
   BOOL_CONSTANT : 'true' | 'false';
   INTEGER_CONSTANT : (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
   FLOAT_CONSTANT : ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
-  STRING_CONSTANT : '"' STRING_CHAR* '"';
+  STRING_CONSTANT : '"' [A-Za-z0-9]*'"';
 
   IDENTIFIER: [A-Za-z$_]([A-Za-z0-9$_] | '.' [A-Za-z0-9$_] )*;
   LINE_COMMENT : '//' ~('\n'|'\r')* ->skip;
@@ -224,7 +206,6 @@ grammar Jimple;
     /*binop*/ binop_expr |
     /*unop*/  unop_expr;
 
-// TODO
   invoke_expr:
     /*nonstatic*/ nonstaticinvoke=NONSTATIC_INVOKE local_name=name DOT method_signature L_PAREN arg_list? R_PAREN |
     /*static*/    staticinvoke=STATICINVOKE method_signature L_PAREN arg_list? R_PAREN |

@@ -354,11 +354,10 @@ class JimpleVisitorImpl {
     public List<Type> visitParameter_list(JimpleParser.Parameter_listContext ctx) {
       List<Type> interfaces = new ArrayList<>();
       JimpleParser.Parameter_listContext parameterIterator = ctx;
-      do {
+      while (parameterIterator != null) {
         interfaces.add(identifierFactory.getClassType(parameterIterator.parameter.getText()));
         parameterIterator = parameterIterator.parameter_list();
-      } while (parameterIterator != null);
-
+      }
       return interfaces;
     }
   }
@@ -480,8 +479,7 @@ class JimpleVisitorImpl {
         } else if (ctx.THROW() != null) {
           return Jimple.newThrowStmt(ctx.immediate().accept(new ValueVisitor()), pos);
         } else if (ctx.invoke_expr() != null) {
-          // TODO
-          // return Jimple.newSpecialInvokeExpr();
+          return Jimple.newInvokeStmt(ctx.invoke_expr().accept(new ValueVisitor()), pos);
         }
       }
       throw new RuntimeException("Unknown Stmt");
@@ -592,7 +590,11 @@ class JimpleVisitorImpl {
       String classname = ctx.class_name.getText();
       Type type = getType(ctx.type().getText());
       String methodname = ctx.method_name().getText();
-      List<Type> params = ctx.parameter_list().accept(new ParameterListVisitor());
+      final JimpleParser.Parameter_listContext parameter_list = ctx.parameter_list();
+      List<Type> params =
+          parameter_list != null
+              ? parameter_list.accept(new ParameterListVisitor())
+              : Collections.emptyList();
       return identifierFactory.getMethodSignature(
           methodname, getClassType(classname), type, params);
     }
@@ -604,7 +606,7 @@ class JimpleVisitorImpl {
         Local base = getLocal(UnknownType.getInstance(), ctx.local_name.getText());
         MethodSignature methodSig = getMethodSignature(ctx.method_signature());
         List<Value> arglist =
-            ctx.arg_list() != null
+            ctx.arg_list() != null && ctx.arg_list().size() > 0
                 ? ctx.arg_list().get(0).accept(new ArgListVisitor())
                 : Collections.emptyList();
 
