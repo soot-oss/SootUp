@@ -10,12 +10,15 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.util.Utils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
+
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,7 +37,7 @@ import org.junit.runner.Description;
 @Category(Java8Test.class)
 public abstract class MinimalSourceTestSuiteBase {
 
-  static final String baseDir = "../shared-test-resources/minimaltestsuite/";
+  static final String baseDir = "../shared-test-resources/miniTestSuite/";
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
   @ClassRule public static CustomTestWatcher customTestWatcher = new CustomTestWatcher();
@@ -129,7 +132,7 @@ public abstract class MinimalSourceTestSuiteBase {
   }
 
   public SootClass loadClass(ClassType clazz) {
-    Optional<AbstractClass<? extends AbstractClassSource>> cs =
+    Optional<SootClass> cs =
         customTestWatcher.getJavaView().getClass(clazz);
     assertTrue("no matching class signature found", cs.isPresent());
     return (SootClass) cs.get();
