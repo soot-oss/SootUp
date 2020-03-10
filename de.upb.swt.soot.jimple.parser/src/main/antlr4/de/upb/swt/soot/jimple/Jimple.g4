@@ -77,7 +77,7 @@ grammar Jimple;
   DIV : '/';
 
 
-  fragment DEC_CONSTANT : [0-9]+;
+  DEC_CONSTANT : [0-9]+;
   fragment HEX_DIGIT: [0-9A-Fa-f];
   fragment HEX_CONSTANT : '0' ('x' | 'X') HEX_DIGIT+;
 
@@ -86,14 +86,15 @@ grammar Jimple;
   fragment ESCAPE_CHAR : '\\' (ESCAPABLE_CHAR | ESCAPE_CODE);
 
   // escapes and any char except '\' (92) or '"' (34).
-  fragment STRING_CHAR :  ESCAPE_CHAR | [^\u0034\u0092] ;
+  fragment STRING_CHAR :  ESCAPE_CHAR | ~[\u0034\u0092] ;
 
   BOOL_CONSTANT : 'true' | 'false';
   INTEGER_CONSTANT : (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
   FLOAT_CONSTANT : ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
-  STRING_CONSTANT : '"' [A-Za-z0-9]*'"';
+  STRING_CONSTANT : '"' STRING_CHAR*'"';
 
   IDENTIFIER: [A-Za-z$_]([A-Za-z0-9$_] | '.' [A-Za-z0-9$_] )*;
+
   LINE_COMMENT : '//' ~('\n'|'\r')* ->skip;
   LONG_COMMENT : '/*' ~('*')* '*'+ ( ~('*' | '/')* ~('*')* '*'+)* '/' -> skip;
 
@@ -136,7 +137,7 @@ grammar Jimple;
                 '<init>' | '<clinit>' | name;
 
   type:
-    /*void*/    VOID |
+    /*void*/    'void' |
     /*novoid*/  name;
 
   parameter_list:
@@ -151,7 +152,7 @@ grammar Jimple;
     /*full*/     L_BRACE declaration* statement* catch_clause* R_BRACE;
 
   declaration:
-                 (UNKNOWN | nonvoid_type=name) name_list SEMICOLON;
+                 (unknown='unknown' | nonvoid_type=name) name_list SEMICOLON;
 
     statement:
     /*label*/    label_name=name COLON stmt SEMICOLON |
@@ -185,10 +186,10 @@ grammar Jimple;
     /*default*/  DEFAULT;
 
   goto_stmt:
-    'goto' label_name=name;
+    GOTO label_name=name;
 
   catch_clause:
-    'catch' exceptiontype=name 'from' from=name 'to' to=name 'with' with=name SEMICOLON;
+    CATCH exceptiontype=name FROM from=name TO to=name WITH with=name SEMICOLON;
 
   expression:
     /*new simple*/  NEW base_type=name |

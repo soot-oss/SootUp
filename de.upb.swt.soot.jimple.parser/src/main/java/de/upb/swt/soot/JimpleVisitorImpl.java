@@ -270,13 +270,11 @@ class JimpleVisitorImpl {
         if (ctx.method_body().declaration() != null) {
           for (JimpleParser.DeclarationContext it : ctx.method_body().declaration()) {
             Type localtype =
-                it.UNKNOWN() == null
-                    ? UnknownType.getInstance()
-                    : getType(it.nonvoid_type.getText());
+                it.unknown == null ? UnknownType.getInstance() : getType(it.nonvoid_type.getText());
 
             // validate nonvoid
             if (localtype == VoidType.getInstance()) {
-              throw new IllegalStateException("void is not allowed here.");
+              throw new IllegalStateException("void is not an allowed Type for a Local.");
             }
 
             List<String> list =
@@ -499,7 +497,7 @@ class JimpleVisitorImpl {
     @Override
     public Value visitName(JimpleParser.NameContext ctx) {
       // FIXME local type
-      return getLocal(UnknownType.getInstance(), ctx.getText());
+      return getLocal(ctx.getText());
     }
 
     @Override
@@ -549,7 +547,7 @@ class JimpleVisitorImpl {
       if (ctx.name() != null) {
         String localname = ctx.name().getText();
         // FIXME: determine type
-        return getLocal(UnknownType.getInstance(), localname);
+        return getLocal(localname);
       }
       return ctx.constant().accept(this);
     }
@@ -570,7 +568,7 @@ class JimpleVisitorImpl {
         FieldSignature fs = getFieldSignature(ctx.field_signature());
 
         // FIXME unknown type!
-        return Jimple.newInstanceFieldRef(getLocal(UnknownType.getInstance(), base), fs);
+        return Jimple.newInstanceFieldRef(getLocal(base), fs);
 
       } else {
         // static field
@@ -603,7 +601,7 @@ class JimpleVisitorImpl {
     public Expr visitInvoke_expr(JimpleParser.Invoke_exprContext ctx) {
 
       if (ctx.nonstaticinvoke != null) {
-        Local base = getLocal(UnknownType.getInstance(), ctx.local_name.getText());
+        Local base = getLocal(ctx.local_name.getText());
         MethodSignature methodSig = getMethodSignature(ctx.method_signature());
         List<Value> arglist =
             ctx.arg_list() != null && ctx.arg_list().size() > 0
@@ -736,7 +734,11 @@ class JimpleVisitorImpl {
     }
   }
 
-  public Local getLocal(Type type, String name) {
-    return locals.computeIfAbsent(name, localname -> new Local(name, type));
+  public Local getLocal(String name) {
+    final Local local = locals.get(name);
+    if (local == null) {
+      throw new IllegalStateException("a Stmt tried to reference an undeclared Local: " + name);
+    }
+    return local;
   }
 }
