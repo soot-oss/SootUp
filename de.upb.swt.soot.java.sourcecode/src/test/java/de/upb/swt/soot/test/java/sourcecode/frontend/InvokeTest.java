@@ -10,7 +10,7 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.util.Utils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
+import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,7 +25,7 @@ import org.junit.experimental.categories.Category;
 /** @author Linghui Luo */
 @Category(Java8Test.class)
 public class InvokeTest {
-  private WalaClassLoader loader;
+  private WalaJavaClassProvider loader;
 
   private JavaIdentifierFactory identifierFactory;
   private JavaClassType declareClassSig;
@@ -33,7 +33,7 @@ public class InvokeTest {
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
-    loader = new WalaClassLoader(srcDir);
+    loader = new WalaJavaClassProvider(srcDir);
     identifierFactory = JavaIdentifierFactory.getInstance();
   }
 
@@ -260,13 +260,12 @@ public class InvokeTest {
     assertNotNull(body);
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: InvokeVirtual",
                 "$r1 := @parameter0: InvokeVirtual",
                 "$r2 = r0.<InvokeVirtual: java.lang.String x>",
-                "$r3 = r0.<InvokeVirtual: java.lang.String x>",
+                "$r3 = $r1.<InvokeVirtual: java.lang.String x>",
                 "$z0 = virtualinvoke $r2.<java.lang.String: boolean equals(java.lang.Object)>($r3)",
                 "return $z0")
             .collect(Collectors.toCollection(ArrayList::new));

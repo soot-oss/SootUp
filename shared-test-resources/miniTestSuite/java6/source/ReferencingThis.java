@@ -9,7 +9,8 @@ class ReferencingThis{
     }
 
     ReferencingThis(int a,int b){
-        this.a= a; this.b=b;
+        this.a= a;
+        this.b= b;
         System.out.println("'this' keyword to refer current class instance variables");
     }
 
@@ -28,17 +29,16 @@ class ReferencingThis{
         System.out.println(a+" "+b);
     }
 
-    /*void method(){
-        System.out.println("'this' keyword to refer current class instance variables");
-        this.show();
-    }*/
-
     void thisMethod(){
         System.out.println(" this keyword as an argument in the constructor call");
         ReferencingThis obj= new ReferencingThis(this.a, this.b);
         obj.show();
-        //obj= new ReferencingThis(5,9);
-        //obj.show();
+    }
 
+    public static void main(String[] args) {
+        ReferencingThis referencingThis = new ReferencingThis();
+        referencingThis.show();
+        referencingThis.thisDisplay(referencingThis);
+        referencingThis.thisMethod();
     }
 }

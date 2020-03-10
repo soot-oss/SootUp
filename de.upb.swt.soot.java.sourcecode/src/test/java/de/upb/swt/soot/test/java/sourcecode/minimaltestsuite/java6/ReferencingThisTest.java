@@ -21,11 +21,11 @@ public class ReferencingThisTest extends MinimalSourceTestSuiteBase {
             "r0 := @this: ReferencingThis",
             "$r1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\" this keyword as an argument in the constructor call\")",
-            "r0 = new ReferencingThis",
+            "$r2 = new ReferencingThis",
             "$i0 = r0.<ReferencingThis: int a>",
             "$i1 = r0.<ReferencingThis: int b>",
-            "specialinvoke $u0.<ReferencingThis: void <init>(int,int)>($i0, $i1)",
-            "virtualinvoke $u0.<ReferencingThis: void show()>()",
+            "specialinvoke $r2.<ReferencingThis: void <init>(int,int)>($i0, $i1)",
+            "virtualinvoke $r2.<ReferencingThis: void show()>()",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

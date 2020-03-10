@@ -23,8 +23,8 @@ public class MethodReferenceTest extends MinimalSourceTestSuiteBase {
             "r0 := @this: MethodReference",
             "$r1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"Instance Method\")",
-            "r0 = new MethodReference",
-            "specialinvoke $u0.<MethodReference: void <init>()>()",
+            "$r2 = new MethodReference",
+            "specialinvoke $r2.<MethodReference: void <init>()>()",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

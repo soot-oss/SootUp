@@ -21,7 +21,13 @@ public class StringWithUnicodeCharTest extends MinimalSourceTestSuiteBase {
 
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("r0 := @this: StringWithUnicodeChar", "$r1 = \"$\" + \"123\"", "return")
+    return Stream.of(
+            "r0 := @this: StringWithUnicodeChar",
+            "$r2 = new java.lang.StringBuilder",
+            "specialinvoke $r2.<java.lang.StringBuilder: void <init>(java.lang.String)>(\"$\")",
+            "$r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"123\")",
+            "$r1 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+            "return")
         .collect(Collectors.toList());
   }
 }

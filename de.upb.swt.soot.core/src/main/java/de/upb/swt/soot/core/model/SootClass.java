@@ -23,9 +23,9 @@ package de.upb.swt.soot.core.model;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Iterables;
-import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
@@ -65,13 +65,13 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootClass extends AbstractClass<ClassSource> {
+public class SootClass extends AbstractClass<SootClassSource> {
 
   @Nonnull protected final SourceType sourceType;
 
   @Nonnull protected final ClassType classSignature;
 
-  public SootClass(ClassSource classSource, SourceType sourceType) {
+  public SootClass(SootClassSource classSource, SourceType sourceType) {
     super(classSource);
     this.sourceType = sourceType;
     this.classSignature = classSource.getClassType();
@@ -368,7 +368,7 @@ public class SootClass extends AbstractClass<ClassSource> {
   }
 
   @Override
-  public ClassSource getClassSource() {
+  public SootClassSource getClassSource() {
     return classSource;
   }
 
@@ -380,7 +380,7 @@ public class SootClass extends AbstractClass<ClassSource> {
 
   /**
    * Creates a new SootClass based on a new {@link OverridingClassSource}. This is useful to change
-   * selected parts of a {@link SootClass} without recreating a {@link ClassSource} completely.
+   * selected parts of a {@link SootClass} without recreating a {@link SootClassSource} completely.
    * {@link OverridingClassSource} allows for replacing specific parts of a class, such as fields
    * and methods.
    */
@@ -391,7 +391,7 @@ public class SootClass extends AbstractClass<ClassSource> {
   }
 
   @Nonnull
-  public SootClass withClassSource(ClassSource classSource) {
+  public SootClass withClassSource(SootClassSource classSource) {
     return new SootClass(classSource, sourceType);
   }
 

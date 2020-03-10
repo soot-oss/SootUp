@@ -1,5 +1,8 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.Assert.assertTrue;
+
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.Collections;
@@ -13,20 +16,28 @@ public class NativeMethodTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "nullVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "returnResult", getDeclaredClassSignature(), "int", Collections.singletonList("int"));
   }
 
   @Test
-  public void defaultTest() {}
+  public void defaultTest() {
+    /**
+     * Can not pass assertJimpleStmts() as body for native method is empty and current check does nt
+     * allow that
+     */
+  }
 
   @Ignore
   public void ignoreTest() {
-    /** Can not check Native code feature */
+
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
+    assertTrue(method.isNative());
   }
 
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("r0 := @this: NullVariable", "$r1 = null", "return")
+    return Stream.of("r0 := @this: NativeMethod", "$r1 = null", "return")
         .collect(Collectors.toList());
   }
 }

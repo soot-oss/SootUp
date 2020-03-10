@@ -39,7 +39,10 @@ public class MultiInterfaceImplClassTest extends MinimalSourceTestSuiteBase {
             "$r1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r1.<java.io.PrintStream: void print(java.lang.String)>(\"Method from InterfaceImpl is implemented\")",
             "$r2 = <java.lang.System: java.io.PrintStream out>",
-            "$r3 = \"Variable from InterfaceImpl is \" + 10",
+            "$r4 = new java.lang.StringBuilder",
+            "specialinvoke $r4.<java.lang.StringBuilder: void <init>(java.lang.String)>(\"Variable from InterfaceImpl is \")",
+            "$r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(10)",
+            "$r3 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
             "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r3)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));

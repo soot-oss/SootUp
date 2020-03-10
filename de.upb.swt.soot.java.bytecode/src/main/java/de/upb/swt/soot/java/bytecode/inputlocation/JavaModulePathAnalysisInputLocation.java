@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
-import de.upb.swt.soot.core.frontend.ClassSource;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.ClassResolvingException;
@@ -51,7 +51,7 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
    * path.
    *
    * @param modulePath The class path to search in The {@link ClassProvider} for generating {@link
-   *     ClassSource}es for the files found on the class path
+   *     SootClassSource}es for the files found on the class path
    */
   public JavaModulePathAnalysisInputLocation(@Nonnull String modulePath) {
     this.modulePath = modulePath;

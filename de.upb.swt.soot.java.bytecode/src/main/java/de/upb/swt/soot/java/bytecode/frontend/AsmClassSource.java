@@ -1,8 +1,8 @@
 package de.upb.swt.soot.java.bytecode.frontend;
 
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.model.Modifier;
@@ -32,7 +32,7 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
 /** A ClassSource that reads from Java bytecode */
-class AsmClassSource extends ClassSource {
+class AsmClassSource extends SootClassSource {
 
   @Nonnull private final ClassNode classNode;
 

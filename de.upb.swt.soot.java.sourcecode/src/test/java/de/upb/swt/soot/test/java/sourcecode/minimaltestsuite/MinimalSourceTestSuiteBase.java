@@ -3,18 +3,21 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.util.Utils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
-import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,14 +29,14 @@ import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
 /**
- * @author Markus Schmidt,
+ * @author Markus Schmidt
  * @author Hasitha Rajapakse
  * @author Kaustubh Kelkar
  */
 @Category(Java8Test.class)
 public abstract class MinimalSourceTestSuiteBase {
 
-  static final String baseDir = "../shared-test-resources/miniTestSuite";
+  static final String baseDir = "../shared-test-resources/minimaltestsuite/";
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
   @ClassRule public static CustomTestWatcher customTestWatcher = new CustomTestWatcher();
@@ -136,7 +139,7 @@ public abstract class MinimalSourceTestSuiteBase {
 
   public SootMethod loadMethod(MethodSignature methodSignature) {
     SootClass clazz = loadClass(methodSignature.getDeclClassType());
-    Optional<SootMethod> m = clazz.getMethod(methodSignature);
+    Optional<SootMethod> m= clazz.getMethod(methodSignature);
     assertTrue("No matching method signature found", m.isPresent());
     SootMethod method = m.get();
     return method;
