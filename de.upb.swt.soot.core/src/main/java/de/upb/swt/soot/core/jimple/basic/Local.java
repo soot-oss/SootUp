@@ -74,7 +74,7 @@ public final class Local implements Value, Immediate, Copyable {
 
   @Override
   public int equivHashCode() {
-    return Objects.hash(name, type);
+    return Objects.hash(name);
   }
 
   /** Returns the name of this object. */
