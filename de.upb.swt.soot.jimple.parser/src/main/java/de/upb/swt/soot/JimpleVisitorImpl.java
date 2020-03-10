@@ -39,20 +39,16 @@ class JimpleVisitorImpl {
 
   private Type getType(String typename) {
     PackageName packageName = imports.get(typename);
-    Type type =
-        packageName == null
-            ? identifierFactory.getType(typename)
-            : identifierFactory.getClassType(typename, packageName.getPackageName());
-    return type;
+    return packageName == null
+        ? identifierFactory.getType(typename)
+        : identifierFactory.getClassType(typename, packageName.getPackageName());
   }
 
   private ClassType getClassType(String typename) {
     PackageName packageName = imports.get(typename);
-    ClassType type =
-        packageName == null
-            ? identifierFactory.getClassType(typename)
-            : identifierFactory.getClassType(typename, packageName.getPackageName());
-    return type;
+    return packageName == null
+        ? identifierFactory.getClassType(typename)
+        : identifierFactory.getClassType(typename, packageName.getPackageName());
   }
 
   public SootClassSource parse(CharStream charStream) {
@@ -90,8 +86,8 @@ class JimpleVisitorImpl {
               .map(item -> identifierFactory.getClassType(item.location.getText()))
               .collect(
                   Collectors.toMap(
-                      e -> e.getClassName(),
-                      e -> e.getPackageName(),
+                      ClassType::getClassName,
+                      ClassType::getPackageName,
                       (a, b) -> {
                         if (!a.equals(b)) {
                           throw new IllegalStateException(
@@ -266,17 +262,19 @@ class JimpleVisitorImpl {
         body = null;
       } else {
 
+        // declare locals
         Set<Local> locals = new HashSet<>();
         if (ctx.method_body().declaration() != null) {
           for (JimpleParser.DeclarationContext it : ctx.method_body().declaration()) {
             Type localtype =
-                it.unknown == null ? UnknownType.getInstance() : getType(it.nonvoid_type.getText());
+                it.unknown != null ? UnknownType.getInstance() : getType(it.nonvoid_type.getText());
 
             // validate nonvoid
             if (localtype == VoidType.getInstance()) {
               throw new IllegalStateException("void is not an allowed Type for a Local.");
             }
 
+            // FIXME!
             List<String> list =
                 (List<String>)
                     (it.name_list() != null
@@ -496,7 +494,6 @@ class JimpleVisitorImpl {
 
     @Override
     public Value visitName(JimpleParser.NameContext ctx) {
-      // FIXME local type
       return getLocal(ctx.getText());
     }
 
@@ -545,9 +542,7 @@ class JimpleVisitorImpl {
     @Override
     public Value visitImmediate(JimpleParser.ImmediateContext ctx) {
       if (ctx.name() != null) {
-        String localname = ctx.name().getText();
-        // FIXME: determine type
-        return getLocal(localname);
+        return getLocal(ctx.name().getText());
       }
       return ctx.constant().accept(this);
     }
@@ -558,16 +553,13 @@ class JimpleVisitorImpl {
       if (ctx.fixed_array_descriptor() != null) {
         // array
         Value idx = ctx.fixed_array_descriptor().immediate().accept(this);
-        Value type =
-            null; // TODO: how create a link between name and array(local?); ctx.name().getText();
-
+        Value type = getLocal(ctx.name().getText());
         return JavaJimple.getInstance().newArrayRef(type, idx);
       } else if (ctx.DOT() != null) {
         // instance field
         String base = ctx.name().getText();
         FieldSignature fs = getFieldSignature(ctx.field_signature());
 
-        // FIXME unknown type!
         return Jimple.newInstanceFieldRef(getLocal(base), fs);
 
       } else {

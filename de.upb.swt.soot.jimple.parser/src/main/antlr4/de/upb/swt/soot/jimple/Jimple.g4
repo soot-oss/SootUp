@@ -4,6 +4,9 @@ grammar Jimple;
  * Lexer Rules
  */
 
+  LINE_COMMENT : '//' ~('\n'|'\r')* ->skip;
+  LONG_COMMENT : '/*' ~('*')* '*'+ ( ~('*' | '/')* ~('*')* '*'+)* '/' -> skip;
+
   CLASS : 'class';
   EXTENDS : 'extends';
   IMPLEMENTS : 'implements';
@@ -76,6 +79,10 @@ grammar Jimple;
   MULT : '*';
   DIV : '/';
 
+  BOOL_CONSTANT : 'true' | 'false';
+  INTEGER_CONSTANT : (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
+  FLOAT_CONSTANT : ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
+  STRING_CONSTANT : '"' STRING_CHAR*'"';
 
   DEC_CONSTANT : [0-9]+;
   fragment HEX_DIGIT: [0-9A-Fa-f];
@@ -88,15 +95,7 @@ grammar Jimple;
   // escapes and any char except '\' (92) or '"' (34).
   fragment STRING_CHAR :  ESCAPE_CHAR | ~[\u0034\u0092] ;
 
-  BOOL_CONSTANT : 'true' | 'false';
-  INTEGER_CONSTANT : (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
-  FLOAT_CONSTANT : ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
-  STRING_CONSTANT : '"' STRING_CHAR*'"';
-
   IDENTIFIER: [A-Za-z$_]([A-Za-z0-9$_] | '.' [A-Za-z0-9$_] )*;
-
-  LINE_COMMENT : '//' ~('\n'|'\r')* ->skip;
-  LONG_COMMENT : '/*' ~('*')* '*'+ ( ~('*' | '/')* ~('*')* '*'+)* '/' -> skip;
 
   BLANK : [ \t\r\n] ->skip;        // TODO: check problem w/Strings?
 

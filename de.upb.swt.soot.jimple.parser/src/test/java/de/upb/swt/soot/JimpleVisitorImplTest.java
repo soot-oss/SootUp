@@ -262,9 +262,8 @@ public class JimpleVisitorImplTest {
                 + "    {\n"
                 + "      de.upb.soot.instructions.expr.DynamicInvokeExprTest r0;\n"
                 + "      r0 := @this: de.upb.soot.instructions.expr.DynamicInvokeExprTest;\n"
-                +
-                //      "      specialinvoke r0.<java.lang.Object: void <init>()>();\n" +
-                "      return;\n"
+                + "      specialinvoke r0.<java.lang.Object: void <init>()>();\n"
+                + "      return;\n"
                 + "    }"
                 + "}");
     checkJimpleClass(cs);
