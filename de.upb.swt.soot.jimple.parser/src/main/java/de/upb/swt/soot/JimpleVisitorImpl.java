@@ -650,9 +650,9 @@ class JimpleVisitorImpl {
     public Constant visitConstant(JimpleParser.ConstantContext ctx) {
 
       if (ctx.INTEGER_CONSTANT() != null) {
-        return IntConstant.getInstance(Integer.valueOf(ctx.INTEGER_CONSTANT().getText()));
+        return IntConstant.getInstance(Integer.parseInt(ctx.INTEGER_CONSTANT().getText()));
       } else if (ctx.FLOAT_CONSTANT() != null) {
-        return FloatConstant.getInstance(Float.valueOf(ctx.FLOAT_CONSTANT().getText()));
+        return FloatConstant.getInstance(Float.parseFloat(ctx.FLOAT_CONSTANT().getText()));
       } else if (ctx.CLASS() != null) {
         final String text = ctx.CLASS().getText();
         return JavaJimple.getInstance().newStringConstant(text.substring(1, text.length() - 1));
