@@ -274,7 +274,6 @@ class JimpleVisitorImpl {
               throw new IllegalStateException("void is not an allowed Type for a Local.");
             }
 
-            // FIXME Local declaration!
             List<String> list =
                 (List<String>)
                     (it.name_list() != null

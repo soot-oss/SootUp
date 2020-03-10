@@ -139,6 +139,26 @@ public class JimpleVisitorImplTest {
   }
 
   @Test
+  public void parseDuplicateFields() {
+    // TODO: throw invalid info
+    CharStream cs =
+        CharStreams.fromString(
+            "public class DuplicateField extends java.lang.Object\n"
+                + " {     public int globalCounter; public int globalCounter;} ");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void parseDuplicateFieldsDiffType() {
+    // TODO: throw invalid info
+    CharStream cs =
+        CharStreams.fromString(
+            "public class DuplicateField extends java.lang.Object\n"
+                + " {     public int globalCounter; bool globalCounter;} ");
+    checkJimpleClass(cs);
+  }
+
+  @Test
   public void parseClassMethodWOBody() {
     CharStream cs =
         CharStreams.fromString(
