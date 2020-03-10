@@ -97,7 +97,7 @@ grammar Jimple;
 
   IDENTIFIER: [A-Za-z$_]([A-Za-z0-9$_] | '.' [A-Za-z0-9$_] )*;
 
-  BLANK : [ \t\r\n] ->skip;        // TODO: check problem w/Strings?
+  BLANK : [ \t\r\n] ->skip;
 
  /*
   * Parser Rules

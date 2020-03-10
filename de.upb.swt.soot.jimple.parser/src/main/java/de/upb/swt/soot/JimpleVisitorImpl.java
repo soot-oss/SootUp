@@ -57,8 +57,7 @@ class JimpleVisitorImpl {
     JimpleParser parser = new JimpleParser(tokens);
 
     ClassVisitor classVisitor = new ClassVisitor();
-    SootClassSource traverseResult = classVisitor.visit(parser.file());
-    return traverseResult;
+    return classVisitor.visit(parser.file());
   }
 
   private class ClassVisitor extends JimpleBaseVisitor<SootClassSource> {
@@ -126,7 +125,7 @@ class JimpleVisitorImpl {
       if (ctx.implements_clause() != null) {
         interfaces =
             ctx.implements_clause().accept(new NameListVisitor()).stream()
-                .map(item -> identifierFactory.getClassType(item))
+                .map(identifierFactory::getClassType)
                 .collect(Collectors.toSet());
       } else {
         interfaces = Collections.emptySet();
@@ -161,7 +160,7 @@ class JimpleVisitorImpl {
     }
   }
 
-  private class NameListVisitor extends JimpleBaseVisitor<Collection<String>> {
+  private static class NameListVisitor extends JimpleBaseVisitor<Collection<String>> {
 
     @Override
     public List<String> visitName_list(JimpleParser.Name_listContext ctx) {
@@ -175,21 +174,6 @@ class JimpleVisitorImpl {
       return Collections.singletonList(ctx.getText());
     }
 
-    /*
-    @Override
-    public List<String> visitDeclaration(JimpleParser.DeclarationContext ctx) {
-      List<String> list = new ArrayList<>();
-      iterate(list, ctx.name_list());
-      return list;
-    }
-
-    public List<String> visitThrows_clause(JimpleParser.Throws_clauseContext ctx) {
-      List<String> list = new ArrayList<>();
-      iterate(list, ctx.name_list());
-      return list;
-    }
-    */
-
     @Override
     public Set<String> visitImplements_clause(JimpleParser.Implements_clauseContext ctx) {
       Set<String> interfaces = new HashSet<>();
@@ -197,7 +181,7 @@ class JimpleVisitorImpl {
       return interfaces;
     }
 
-    public Collection<String> iterate(Collection<String> list, JimpleParser.Name_listContext ctx) {
+    public void iterate(Collection<String> list, JimpleParser.Name_listContext ctx) {
       JimpleParser.Name_listContext name_listContextIterator = ctx;
       while (name_listContextIterator != null) {
         if (name_listContextIterator.name() == null) {
@@ -206,7 +190,6 @@ class JimpleVisitorImpl {
         list.add(name_listContextIterator.name().getText());
         name_listContextIterator = name_listContextIterator.name_list();
       }
-      return list;
     }
   }
 
