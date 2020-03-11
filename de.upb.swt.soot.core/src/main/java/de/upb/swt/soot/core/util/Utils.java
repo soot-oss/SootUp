@@ -12,9 +12,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 /** @author Linghui Luo */
 public class Utils {
@@ -88,11 +90,27 @@ public class Utils {
       printer.printTo(body, writerOut);
     }
 
-    return Arrays.stream(writer.toString().split("\n"))
+    return filterJimple(writer.toString());
+  }
+
+  @Nonnull
+  public static ArrayList<String> filterJimple(String str) {
+    return Arrays.stream(str.split("\n"))
         .skip(1) // Remove method declaration
         .map(String::trim)
         .map(line -> line.endsWith(";") ? line.substring(0, line.length() - 1) : line)
         .filter(line -> !line.isEmpty() && !"{".equals(line) && !"}".equals(line))
         .collect(Collectors.toCollection(ArrayList::new));
+  }
+
+  /** Helper for writing tests . */
+  public static void printJimple(List<String> stmts) {
+    StringBuilder sb = new StringBuilder();
+    stmts.forEach(
+        item -> sb.append('"').append(StringEscapeUtils.escapeJava(item)).append('"').append(','));
+    if (stmts.size() > 0) {
+      sb.setLength(sb.length() - 1);
+    }
+    System.out.print(sb.toString());
   }
 }

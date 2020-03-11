@@ -1,15 +1,17 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.Test;
 
 /** @author Kaustubh Kelkar */
-public class DeclareIntTest extends MinimalTestSuiteBase {
+public class DeclareIntTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         "declareIntMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
@@ -30,5 +32,11 @@ public class DeclareIntTest extends MinimalTestSuiteBase {
             "virtualinvoke $r3.<java.io.PrintStream: void println(int)>($i2)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
+  }
+
+  @Test
+  public void defaultTest() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
   }
 }

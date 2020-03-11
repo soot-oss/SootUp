@@ -11,7 +11,6 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.nio.file.Paths;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -33,7 +32,7 @@ public class WalaJavaClassProviderTest {
     SootClassSource classSource =
         provider.createClassSource(inputLocation, Paths.get(srcDir), type);
 
-    Assert.assertEquals(type, classSource.getClassType());
+    assertEquals(type, classSource.getClassType());
 
     SootClassSource content = classSource;
     assertNotNull(content);

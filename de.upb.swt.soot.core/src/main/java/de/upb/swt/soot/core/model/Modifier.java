@@ -55,14 +55,7 @@ public enum Modifier {
   // dex specifific modifiers
   SYNTHETIC(0x1000),
   CONSTRUCTOR(0x10000),
-  DECLARED_SYNCHRONIZED(0x20000),
-
-  // modifier for java 9 modules
-  OPEN(0x0020),
-  REQUIRES_TRANSITIVE(0x0020),
-  REQUIRES_STATIC(0x0040),
-  REQUIRES_SYNTHETIC(0x1000),
-  REQUIRES_MANDATED(0x8000);
+  DECLARED_SYNCHRONIZED(0x20000);
 
   private final int bytecode;
 

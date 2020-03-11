@@ -4,13 +4,13 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class MethodAcceptingVarTest extends MinimalTestSuiteBase {
+public class MethodAcceptingVarTest extends MinimalSourceTestSuiteBase {
 
   @Test
   public void defaultTest() {
