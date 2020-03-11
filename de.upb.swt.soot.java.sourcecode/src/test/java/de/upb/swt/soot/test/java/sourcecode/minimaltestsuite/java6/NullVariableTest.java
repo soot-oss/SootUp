@@ -7,7 +7,7 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Utils;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +16,7 @@ import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class NullVariableTest extends MinimalTestSuiteBase {
+public class NullVariableTest extends MinimalSourceTestSuiteBase {
 
   @Override
   public MethodSignature getMethodSignature() {
