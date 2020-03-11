@@ -117,4 +117,13 @@ public class LegacyJimplePrinterTest {
             "return"),
         Utils.filterJimple(sw2.toString()));
   }
+
+  @Test(expected = RuntimeException.class)
+  public void testValidOptions() {
+    Printer p = new Printer(Printer.Option.UseImports, Printer.Option.LegacyMode);
+    p.printTo(
+        buildClass(
+            Collections.singletonList(new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo()))),
+        new PrintWriter(new StringWriter()));
+  }
 }
