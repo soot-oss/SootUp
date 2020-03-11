@@ -117,9 +117,8 @@ public class Printer {
       printer.modifier(Modifier.toString(modifiers));
       printer.literal(modifiers.size() == 0 ? "" : " ");
 
-      // TODO: CHECK: why is an interface not called interface?!
       // TODO: [ms] exclude Annotation, too when annotation branch is merged
-
+      // add class if its a class; interface is added via Modifier;
       printer.literal(cl.isInterface() ? "" : "class ");
       printer.typeSignature(cl.getType());
     }
