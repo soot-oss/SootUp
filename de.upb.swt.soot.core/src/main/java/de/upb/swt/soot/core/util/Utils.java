@@ -104,13 +104,18 @@ public class Utils {
   }
 
   /** Helper for writing tests . */
-  public static void printJimple(List<String> stmts) {
+  public static String printedJimpleToArrayRepresentation(String printejimple) {
+    ArrayList<String> arr = filterJimple(printejimple);
+    return printJimpleStmtsForTest(arr);
+  }
+
+  public static String printJimpleStmtsForTest(List<String> stmts) {
     StringBuilder sb = new StringBuilder();
     stmts.forEach(
         item -> sb.append('"').append(StringEscapeUtils.escapeJava(item)).append('"').append(','));
     if (stmts.size() > 0) {
       sb.setLength(sb.length() - 1);
     }
-    System.out.print(sb.toString());
+    return sb.toString();
   }
 }

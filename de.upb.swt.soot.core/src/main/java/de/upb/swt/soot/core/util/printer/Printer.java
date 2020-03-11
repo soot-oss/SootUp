@@ -239,6 +239,7 @@ public class Printer {
     printer.createLabelMaps(body);
     printer.enableImports(options.contains(Option.UseImports));
     printTo(body, printer, out);
+    out.print(printer);
   }
 
   /**
@@ -275,8 +276,6 @@ public class Printer {
     printer.literal("}");
     incJimpleLnNum();
     printer.newline();
-
-    out.print(printer);
   }
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
