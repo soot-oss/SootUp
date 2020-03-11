@@ -20,7 +20,6 @@ public class StaticImportTest extends MinimalSourceTestSuiteBase {
   }
 
   @Test
-  @Override
   public void defaultTest() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());

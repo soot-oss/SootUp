@@ -3,6 +3,7 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 import static org.junit.Assert.assertTrue;
 
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.ArrayList;
@@ -20,9 +21,9 @@ public class MultiInterfaceImplClassTest extends MinimalSourceTestSuiteBase {
   }
 
   @Test
-  @Override
   public void defaultTest() {
-    super.defaultTest();
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
     SootClass clazz = loadClass(getDeclaredClassSignature());
     assertTrue(
         clazz.getInterfaces().stream()

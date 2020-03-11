@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/***@Author: Kaustubh Kelkar*/
+/***@author Kaustubh Kelkar*/
 
 class UncheckedCast{
 

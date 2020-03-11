@@ -5,11 +5,13 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java7;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
@@ -23,7 +25,8 @@ public class SwitchCaseStatementWithStringTest extends MinimalSourceTestSuiteBas
 
   @Override
   public List<String> expectedBodyStmts() {
-    // TODO: INFO: the generated jimple contains a bug - $i1,$i1,$i3 are undefined/not set
+    // TODO: [ms] the generated jimple is not correct: $i1,$i1,$i3 are undefined/not assigned to
+    // anything
     return Stream.of(
             "r0 := @this: SwitchCaseStatementWithString",
             "$r1 = \"something\"",
@@ -47,5 +50,11 @@ public class SwitchCaseStatementWithStringTest extends MinimalSourceTestSuiteBas
             "label5:",
             "return")
         .collect(Collectors.toList());
+  }
+
+  @Test
+  public void defaultTest() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
   }
 }

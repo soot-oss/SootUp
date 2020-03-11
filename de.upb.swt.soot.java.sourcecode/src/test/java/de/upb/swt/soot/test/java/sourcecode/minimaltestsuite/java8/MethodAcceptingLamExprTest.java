@@ -1,5 +1,6 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java8;
 
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.ArrayList;
@@ -18,13 +19,11 @@ public class MethodAcceptingLamExprTest extends MinimalSourceTestSuiteBase {
         "lambdaAsParamMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  @org.junit.Test
   @Ignore
-  @Override
-  public void defaultTest() {}
-
-  @Ignore
-  public void ignoreTest() {
-    super.defaultTest();
+  public void defaultTest() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
   }
   /** TODO update the expectedBodyStmts when Lambda are supported by Wala */
   @Override

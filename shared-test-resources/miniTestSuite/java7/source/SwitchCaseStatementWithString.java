@@ -1,4 +1,4 @@
-/** @author: Markus Schmidt */
+/** @author Markus Schmidt */
 
 public class SwitchCaseStatementWithString {
     public void switchCaseStatementString() {
