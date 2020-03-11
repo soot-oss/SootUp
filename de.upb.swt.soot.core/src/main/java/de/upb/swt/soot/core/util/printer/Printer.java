@@ -123,9 +123,8 @@ public class Printer {
       printer.modifier(Modifier.toString(modifiers));
       printer.literal(modifiers.size() == 0 ? "" : " ");
 
-      // TODO: [ms] exclude Annotation, too when annotation branch is merged
-      // add class if its a class; interface is added via Modifier;
-      printer.literal(cl.isInterface() ? "" : "class ");
+      printer.literal(
+          Modifier.isInterface(modifiers) || Modifier.isAnnotation(modifiers) ? "" : "class ");
       printer.typeSignature(cl.getType());
     }
 

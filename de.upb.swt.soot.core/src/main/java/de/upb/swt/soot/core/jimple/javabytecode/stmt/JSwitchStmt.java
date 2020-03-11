@@ -316,6 +316,8 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
     getKeyBox().toString(up);
     up.literal(")");
     up.newline();
+    up.incIndent();
+    up.handleIndent();
     up.literal("{");
     up.newline();
     final int size = values.size();
@@ -339,7 +341,9 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
     up.literal(" ");
     getDefaultTargetBox().toString(up);
     up.literal(";");
+    up.decIndent();
     up.newline();
+    up.handleIndent();
     up.literal("}");
   }
 
