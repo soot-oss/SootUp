@@ -131,7 +131,7 @@ public abstract class MinimalBytecodeTestSuiteBase {
   public SootClass loadClass(ClassType clazz) {
     Optional<SootClass> cs = customTestWatcher.getJavaView().getClass(clazz);
     assertTrue("no matching class signature found", cs.isPresent());
-    return (SootClass) cs.get();
+    return cs.get();
   }
 
   public SootMethod loadMethod(MethodSignature methodSignature) {
@@ -147,14 +147,6 @@ public abstract class MinimalBytecodeTestSuiteBase {
     assertNotNull(body);
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-
-    /** Code to create expected statements */
-    StringBuffer stringBuffer = new StringBuffer();
-    for (String s : actualStmts) {
-      stringBuffer.append("\"" + s + "\",");
-    }
-    System.out.println(stringBuffer);
-    /** *********************************** */
     assertEquals(expectedStmts, actualStmts);
   }
 

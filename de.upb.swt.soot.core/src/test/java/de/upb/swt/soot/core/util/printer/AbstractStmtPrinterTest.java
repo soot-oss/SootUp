@@ -18,145 +18,10 @@ public class AbstractStmtPrinterTest {
     PackageName def = new PackageName("d.e.f");
     PackageName anotherAbc = new PackageName("a.b.c");
 
-    ClassType classOneFromAbc =
-        new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
-
-          @Override
-          public String getFullyQualifiedName() {
-            return getPackageName().toString() + "." + getClassName();
-          }
-
-          @Override
-          public String getClassName() {
-            return "ClassOne";
-          }
-
-          @Override
-          public PackageName getPackageName() {
-            return abc;
-          }
-
-          @Override
-          public int hashCode() {
-            return Objects.hashCode(getPackageName(), getClassName());
-          }
-
-          @Override
-          public boolean equals(Object o) {
-            ClassType that = (ClassType) o;
-            return Objects.equal(getPackageName(), that.getPackageName())
-                && Objects.equal(getClassName(), that.getClassName());
-          }
-        };
-
-    ClassType classOneFromDef =
-        new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
-
-          @Override
-          public String getFullyQualifiedName() {
-            return getPackageName().toString() + "." + getClassName();
-          }
-
-          @Override
-          public String getClassName() {
-            return "ClassOne";
-          }
-
-          @Override
-          public PackageName getPackageName() {
-            return def;
-          }
-
-          @Override
-          public int hashCode() {
-            return Objects.hashCode(getPackageName(), getClassName());
-          }
-
-          @Override
-          public boolean equals(Object o) {
-            ClassType that = (ClassType) o;
-            return Objects.equal(getPackageName(), that.getPackageName())
-                && Objects.equal(getClassName(), that.getClassName());
-          }
-        };
-
-    ClassType anotherRefToClassOneFromAbc =
-        new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
-
-          @Override
-          public String getFullyQualifiedName() {
-            return getPackageName().toString() + "." + getClassName();
-          }
-
-          @Override
-          public String getClassName() {
-            return "ClassOne";
-          }
-
-          @Override
-          public PackageName getPackageName() {
-            return anotherAbc;
-          }
-
-          @Override
-          public int hashCode() {
-            return Objects.hashCode(getPackageName(), getClassName());
-          }
-
-          @Override
-          public boolean equals(Object o) {
-            ClassType that = (ClassType) o;
-            return Objects.equal(getPackageName(), that.getPackageName())
-                && Objects.equal(getClassName(), that.getClassName());
-          }
-        };
-
-    ClassType classTwoFromAbc =
-        new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
-
-          @Override
-          public String getFullyQualifiedName() {
-            return getPackageName().toString() + "." + getClassName();
-          }
-
-          @Override
-          public String getClassName() {
-            return "ClassTwo";
-          }
-
-          @Override
-          public PackageName getPackageName() {
-            return abc;
-          }
-
-          @Override
-          public int hashCode() {
-            return Objects.hashCode(getPackageName(), getClassName());
-          }
-
-          @Override
-          public boolean equals(Object o) {
-            ClassType that = (ClassType) o;
-            return Objects.equal(getPackageName(), that.getPackageName())
-                && Objects.equal(getClassName(), that.getClassName());
-          }
-        };
+    ClassType classOneFromAbc = generateClass("ClassOne", abc);
+    ClassType classOneFromDef = generateClass("ClassOne", def);
+    ClassType anotherRefToClassOneFromAbc = generateClass("ClassOne", abc);
+    ClassType classTwoFromAbc = generateClass("ClassTwo", abc);
 
     // basic sanity checks
     assertEquals(classOneFromAbc.hashCode(), anotherRefToClassOneFromAbc.hashCode());
@@ -171,5 +36,41 @@ public class AbstractStmtPrinterTest {
 
     assertFalse(p.addImport(classOneFromDef)); // check collision
     assertTrue(p.addImport(classTwoFromAbc));
+  }
+
+  private ClassType generateClass(String name, PackageName pckg) {
+    return new ClassType() {
+      @Override
+      public boolean isBuiltInClass() {
+        return false;
+      }
+
+      @Override
+      public String getFullyQualifiedName() {
+        return getPackageName().toString() + "." + getClassName();
+      }
+
+      @Override
+      public String getClassName() {
+        return name;
+      }
+
+      @Override
+      public PackageName getPackageName() {
+        return pckg;
+      }
+
+      @Override
+      public int hashCode() {
+        return Objects.hashCode(getPackageName(), getClassName());
+      }
+
+      @Override
+      public boolean equals(Object o) {
+        ClassType that = (ClassType) o;
+        return Objects.equal(getPackageName(), that.getPackageName())
+            && Objects.equal(getClassName(), that.getClassName());
+      }
+    };
   }
 }

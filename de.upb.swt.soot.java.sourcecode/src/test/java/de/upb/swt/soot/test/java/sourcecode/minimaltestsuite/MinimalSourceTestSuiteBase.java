@@ -124,6 +124,7 @@ public abstract class MinimalSourceTestSuiteBase {
   }
 
   @Test
+  // TODO: [ms] move down to respective tests
   public void defaultTest() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
