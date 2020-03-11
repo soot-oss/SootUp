@@ -191,7 +191,7 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
     output.append(c);
   }
 
-  protected void handleIndent() {
+  public void handleIndent() {
     if (startOfLine) {
       for (int i = indent; i > 0; i--) {
         output.append(indentChar);

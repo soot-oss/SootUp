@@ -49,6 +49,8 @@ public interface StmtPrinter {
 
   void setIndent(int offset);
 
+  void handleIndent();
+
   void incIndent();
 
   void decIndent();

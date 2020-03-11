@@ -320,7 +320,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
     up.newline();
     final int size = values.size();
     for (int i = 0; i < size; i++) {
-      up.literal("    ");
+      up.handleIndent();
       up.literal(Jimple.CASE);
       up.literal(" ");
       up.constant(values.get(i));
@@ -332,7 +332,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       up.newline();
     }
 
-    up.literal("    ");
+    up.handleIndent();
     up.literal(Jimple.DEFAULT);
     up.literal(": ");
     up.literal(Jimple.GOTO);

@@ -54,7 +54,8 @@ public class Printer {
     UseAbbreviations,
     OmitLocalsDeclaration,
     AddJimpleLn,
-    UseImports
+    UseImports,
+    LegacyMode
   }
 
   private final Set<Option> options = EnumSet.noneOf(Option.class);
@@ -93,17 +94,22 @@ public class Printer {
   }
 
   public void printTo(SootClass cl, PrintWriter out) {
-    LabeledStmtPrinter printer;
-    if (useAbbreviations()) {
-      printer = new BriefStmtPrinter();
-    } else {
-      printer = new NormalStmtPrinter();
-    }
+    LabeledStmtPrinter printer = determinePrinter();
     printer.enableImports(options.contains(Option.UseImports));
-    printTo(cl, out, printer);
+    printTo(cl, printer, out);
   }
 
-  public void printTo(SootClass cl, PrintWriter out, LabeledStmtPrinter printer) {
+  private LabeledStmtPrinter determinePrinter() {
+    if (useAbbreviations()) {
+      return new BriefStmtPrinter();
+    } else if (options.contains(Option.LegacyMode)) {
+      return new LegacyJimplePrinter();
+    } else {
+      return new NormalStmtPrinter();
+    }
+  }
+
+  private void printTo(SootClass cl, LabeledStmtPrinter printer, PrintWriter out) {
     // add jimple line number tags
     setJimpleLnNum(1);
 
@@ -173,7 +179,7 @@ public class Printer {
     }
 
     // Print methods
-    printMethods(cl, printer);
+    printMethods(cl, printer, out);
     printer.literal("}");
 
     printer.newline();
@@ -194,7 +200,7 @@ public class Printer {
     out.println(printer.toString());
   }
 
-  private void printMethods(SootClass cl, LabeledStmtPrinter printer) {
+  private void printMethods(SootClass cl, LabeledStmtPrinter printer, PrintWriter out) {
     Iterator<? extends Method> methodIt = cl.getMethods().iterator();
     if (methodIt.hasNext()) {
       printer.incIndent();
@@ -207,7 +213,7 @@ public class Printer {
         if (method.hasBody()) {
           Body body = method.getBody();
           printer.createLabelMaps(body);
-          printTo(body, printer);
+          printTo(body, printer, out);
 
         } else {
           printer.handleIndent();
@@ -226,19 +232,14 @@ public class Printer {
   }
 
   /**
-   * Prints out the method corresponding to b Body, (declaration and body), in the textual format
-   * corresponding to the IR used to encode b body.
+   * Prints out the method corresponding to body Body, (declaration and body), in the textual format
+   * corresponding to the IR used to encode body body.
    */
-  public void printTo(Body b, PrintWriter out) {
-    LabeledStmtPrinter printer;
-    if (useAbbreviations()) {
-      printer = new BriefStmtPrinter(b);
-    } else {
-      printer = new NormalStmtPrinter(b);
-    }
+  public void printTo(Body body, PrintWriter out) {
+    LabeledStmtPrinter printer = determinePrinter();
+    printer.createLabelMaps(body);
     printer.enableImports(options.contains(Option.UseImports));
-    printTo(b, printer);
-    out.print(printer);
+    printTo(body, printer, out);
   }
 
   /**
@@ -247,7 +248,7 @@ public class Printer {
    *
    * @param printer the StmtPrinter that determines how to print the statements
    */
-  public void printTo(Body b, LabeledStmtPrinter printer) {
+  private void printTo(Body b, LabeledStmtPrinter printer, PrintWriter out) {
 
     b.getMethod().toString(printer);
 
@@ -275,6 +276,8 @@ public class Printer {
     printer.literal("}");
     incJimpleLnNum();
     printer.newline();
+
+    out.print(printer);
   }
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
@@ -334,8 +337,10 @@ public class Printer {
       while (trapIt.hasNext()) {
         Trap trap = trapIt.next();
 
-        // TODO: [ms] set indent here?
-        printer.literal("        catch ");
+        // FIXME [ms] catch clauses werden iwie gemergt ?!?!?
+
+        printer.noIndent();
+        printer.literal(" catch ");
         printer.typeSignature(trap.getExceptionType());
         printer.literal(" from ");
         printer.literal(printer.getLabels().get(trap.getBeginStmt()));
@@ -344,7 +349,7 @@ public class Printer {
         printer.literal(" with ");
         printer.literal(printer.getLabels().get(trap.getHandlerStmt()));
         printer.literal(";");
-
+        printer.newline();
         incJimpleLnNum();
       }
     }
