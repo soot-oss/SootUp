@@ -76,7 +76,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import scala.Char;
 
 /**
  * This class converts wala instruction to jimple statement.
@@ -1106,7 +1105,7 @@ public class InstructionConverter {
     if (value instanceof Boolean) {
       return BooleanConstant.getInstance((boolean) value);
     } else if (value instanceof Byte
-        || value instanceof Char
+        || value instanceof Character
         || value instanceof Short
         || value instanceof Integer) {
       return IntConstant.getInstance((int) value);
