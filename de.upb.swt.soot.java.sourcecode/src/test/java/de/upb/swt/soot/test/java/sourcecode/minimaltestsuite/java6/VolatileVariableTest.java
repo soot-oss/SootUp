@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 
 /** @author Kaustubh Kelkar */
-public class VolatileVariableTest extends MinimalTestSuiteBase {
+public class VolatileVariableTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         "increaseCounter", getDeclaredClassSignature(), "int", Collections.emptyList());

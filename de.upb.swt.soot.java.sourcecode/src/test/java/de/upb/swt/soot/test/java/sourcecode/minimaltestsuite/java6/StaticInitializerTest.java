@@ -4,14 +4,14 @@ import static org.junit.Assert.assertTrue;
 
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /** @author Kaustubh Kelkar */
-public class StaticInitializerTest extends MinimalTestSuiteBase {
+public class StaticInitializerTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         "methodStaticInitializer", getDeclaredClassSignature(), "void", Collections.emptyList());

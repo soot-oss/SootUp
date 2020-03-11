@@ -6,7 +6,7 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +15,7 @@ import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
-public class DeclareEnumWithConstructorTest extends MinimalTestSuiteBase {
+public class DeclareEnumWithConstructorTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getInitMethodSignature() {
     return identifierFactory.getMethodSignature(
