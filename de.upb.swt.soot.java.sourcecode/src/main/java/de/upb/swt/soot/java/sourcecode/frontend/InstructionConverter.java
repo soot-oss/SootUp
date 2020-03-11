@@ -580,6 +580,8 @@ public class InstructionConverter {
     // is it just variable declaration?
     if (type == NullType.getInstance()) {
       // FIXME: [ms] determine type of def side
+      // if null is assigned or if its just a local declaration we can't use the right side (i.e.
+      // null) to determine the locals type
       type = UnknownType.getInstance();
     }
     Local left = getLocal(type, def);
