@@ -27,13 +27,16 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   private final List<StmtBox> stmtBoxes;
   private final StmtBox[] targetBoxes;
   private List<IntConstant> values;
+  private final boolean isTableSwitch;
 
   private JSwitchStmt(
+      boolean isTableSwitch,
       StmtPositionInfo positionInfo,
       ValueBox keyBox,
       StmtBox defaultTargetBox,
       StmtBox... targetBoxes) {
     super(positionInfo);
+    this.isTableSwitch = isTableSwitch;
     this.keyBox = keyBox;
     this.defaultTargetBox = defaultTargetBox;
     this.targetBoxes = targetBoxes;
@@ -85,7 +88,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       StmtBox[] targetBoxes,
       StmtBox defaultTargetBox,
       StmtPositionInfo positionInfo) {
-    this(positionInfo, keyBox, defaultTargetBox, targetBoxes);
+    this(true, positionInfo, keyBox, defaultTargetBox, targetBoxes);
 
     if (lowIndex > highIndex) {
       throw new RuntimeException(
@@ -143,8 +146,12 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       StmtBox[] targetBoxes,
       StmtBox defaultTargetBox,
       StmtPositionInfo positionInfo) {
-    this(positionInfo, keyBox, defaultTargetBox, targetBoxes);
+    this(false, positionInfo, keyBox, defaultTargetBox, targetBoxes);
     values = Collections.unmodifiableList(new ArrayList<>(lookupValues));
+  }
+
+  public boolean isTableSwitch() {
+    return isTableSwitch;
   }
 
   private static StmtBox[] getTargetBoxesArray(List<? extends Stmt> targets) {

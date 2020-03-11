@@ -32,10 +32,10 @@ public class LegacyJimplePrinter extends NormalStmtPrinter {
   @Override
   public void stmt(Stmt currentStmt) {
     startStmt(currentStmt);
-    // replace switch with lookupswitch (TODO: [ms] or tableswitch if possible)
+    // replace switch with lookupswitch
     if (currentStmt instanceof JSwitchStmt) {
       // prepend to switch Stmt
-      literal("lookup");
+      literal(((JSwitchStmt) currentStmt).isTableSwitch() ? "table" : "lookup");
     }
     currentStmt.toString(this);
     endStmt(currentStmt);
