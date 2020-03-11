@@ -4,14 +4,14 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.*;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class SwitchCaseStatementTest extends MinimalTestSuiteBase {
+public class SwitchCaseStatementTest extends MinimalSourceTestSuiteBase {
 
   @Test
   public void defaultTest() {
@@ -53,7 +53,7 @@ public class SwitchCaseStatementTest extends MinimalTestSuiteBase {
             "r0 := @this: SwitchCaseStatement",
             "$i0 = 2",
             "$r1 = null",
-            "lookupswitch($i0)",
+            "switch($i0)",
             "case 1: goto label2",
             "case 2: goto [?= null]",
             "case 3: goto [?= null]",

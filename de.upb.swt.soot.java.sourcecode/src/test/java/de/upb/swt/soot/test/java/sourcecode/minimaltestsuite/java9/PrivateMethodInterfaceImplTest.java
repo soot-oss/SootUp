@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +14,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /** @author Kaustubh Kelkar */
-public class PrivateMethodInterfaceImplTest extends MinimalTestSuiteBase {
+public class PrivateMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
 
   @Override
   public MethodSignature getMethodSignature() {
