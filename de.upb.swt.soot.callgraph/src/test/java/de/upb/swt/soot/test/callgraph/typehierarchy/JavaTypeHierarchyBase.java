@@ -15,7 +15,7 @@ import org.junit.runner.Description;
 
 /** @author: Hasitha Rajapakse * */
 public class JavaTypeHierarchyBase {
-  //Test Resource Folder Path
+  // Test Resource Folder Path
   static final String baseDir = "src/test/resources/javatypehierarchy/";
 
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
@@ -34,13 +34,8 @@ public class JavaTypeHierarchyBase {
 
       String prevClassName = getClassName();
 
-      //TestCaseName with Path: decription.getClassName(): de.upb.swt.soot.test.callgraph.typehierarchy.testcase.AbstractClassHeritanceTest
-      //TestCaseName without Path: extractClassName(TestCaseName with Path): AbstractClassHeritanceTest
-      //setClassName(TestCaseName): AbstractClassHeritance
       setClassName(extractClassName(description.getClassName()));
 
-      //use the path src/test/resources/javatypehierarchy/AbstractClassInheritance to generate a project
-      //use the project to generate a view
       if (!prevClassName.equals(getClassName())) {
         srcCode =
             new JavaSourcePathAnalysisInputLocation(
