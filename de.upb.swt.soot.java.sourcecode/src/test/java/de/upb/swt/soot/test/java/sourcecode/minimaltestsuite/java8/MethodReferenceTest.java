@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
+import org.junit.Ignore;
 
 public class MethodReferenceTest extends MinimalSourceTestSuiteBase {
 
@@ -19,9 +19,11 @@ public class MethodReferenceTest extends MinimalSourceTestSuiteBase {
   }
 
   /** TODO Update the source code when WALA supports lambda expression */
-  @Test
-  @Override
-  public void defaultTest() {}
+  @Ignore
+  public void defaultTest() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
+  }
 
   @Override
   public List<String> expectedBodyStmts() {
@@ -33,11 +35,5 @@ public class MethodReferenceTest extends MinimalSourceTestSuiteBase {
             "specialinvoke $r2.<MethodReference: void <init>()>()",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
-  }
-
-  @Test
-  public void defaultTest() {
-    SootMethod method = loadMethod(getMethodSignature());
-    assertJimpleStmts(method, expectedBodyStmts());
   }
 }

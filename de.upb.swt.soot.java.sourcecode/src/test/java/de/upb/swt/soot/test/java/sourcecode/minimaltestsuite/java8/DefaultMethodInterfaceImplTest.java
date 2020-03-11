@@ -3,7 +3,6 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java8;
 import static org.junit.Assert.assertTrue;
 
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.ArrayList;
@@ -11,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
+import org.junit.Ignore;
 
 /** @author Kaustubh Kelkar */
 public class DefaultMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
@@ -25,24 +24,6 @@ public class DefaultMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getDefaultMethodSignature() {
     return identifierFactory.getMethodSignature(
         "defaultInterfaceMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
-  }
-
-  /** TODO Update the source code once default methods in WALA are supported */
-  @Test
-  public void defaultTest() {
-    SootMethod method1 = loadMethod(getMethodSignature());
-    assertJimpleStmts(method1, expectedBodyStmts());
-    SootMethod method = loadMethod(getMethodSignature());
-    assertJimpleStmts(method, expectedBodyStmts());
-    method = loadMethod(getDefaultMethodSignature());
-    assertJimpleStmts(method, expectedBodyStmts1());
-    SootClass clazz = loadClass(getDeclaredClassSignature());
-    assertTrue(
-        clazz.getInterfaces().stream()
-            .anyMatch(
-                javaClassType -> {
-                  return javaClassType.getClassName().equalsIgnoreCase("DefaultMethodInterface");
-                }));
   }
 
   @Override
@@ -62,5 +43,21 @@ public class DefaultMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
             "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"Method defaultInterfaceMethod() is implemented\")",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
+  }
+
+  /** TODO Update the source code once default methods in WALA are supported */
+  @Ignore
+  public void defaultTest() {
+
+    assertJimpleStmts(loadMethod(getMethodSignature()), expectedBodyStmts());
+    assertJimpleStmts(loadMethod(getMethodSignature()), expectedBodyStmts());
+    assertJimpleStmts(loadMethod(getDefaultMethodSignature()), expectedBodyStmts1());
+
+    SootClass clazz = loadClass(getDeclaredClassSignature());
+    assertTrue(
+        clazz.getInterfaces().stream()
+            .anyMatch(
+                javaClassType ->
+                    javaClassType.getClassName().equalsIgnoreCase("DefaultMethodInterface")));
   }
 }
