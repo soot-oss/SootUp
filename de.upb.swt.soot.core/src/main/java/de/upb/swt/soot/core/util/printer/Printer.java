@@ -337,8 +337,6 @@ public class Printer {
       while (trapIt.hasNext()) {
         Trap trap = trapIt.next();
 
-        // FIXME [ms] catch clauses werden iwie gemergt ?!?!?
-
         printer.noIndent();
         printer.literal(" catch ");
         printer.typeSignature(trap.getExceptionType());
