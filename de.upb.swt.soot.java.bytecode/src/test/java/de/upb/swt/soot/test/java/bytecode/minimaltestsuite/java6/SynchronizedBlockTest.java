@@ -22,7 +22,7 @@ public class SynchronizedBlockTest extends MinimalBytecodeTestSuiteBase {
   }
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     // FIXME [ms] catch blocks are printed invalidly
     assertJimpleStmts(method, expectedBodyStmts());

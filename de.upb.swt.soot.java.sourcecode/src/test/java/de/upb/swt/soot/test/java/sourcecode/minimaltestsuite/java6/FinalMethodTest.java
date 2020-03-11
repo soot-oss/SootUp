@@ -18,7 +18,7 @@ import org.junit.experimental.categories.Category;
 public class FinalMethodTest extends MinimalSourceTestSuiteBase {
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
     assertTrue(method.isFinal());

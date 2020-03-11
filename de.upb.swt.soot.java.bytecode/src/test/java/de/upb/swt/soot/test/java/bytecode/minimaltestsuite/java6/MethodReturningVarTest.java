@@ -13,7 +13,7 @@ import org.junit.experimental.categories.Category;
 public class MethodReturningVarTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature("short"));
     assertJimpleStmts(
         method, expectedBodyStmts("l0 := @this: MethodReturningVar", "l1 = 10", "return l1"));

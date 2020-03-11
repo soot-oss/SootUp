@@ -20,7 +20,7 @@ public class NativeMethodTest extends MinimalSourceTestSuiteBase {
   }
 
   @Test
-  public void defaultTest() {
+  public void test() {
     /**
      * Can not pass assertJimpleStmts() as body for native method is empty and current check does nt
      * allow that

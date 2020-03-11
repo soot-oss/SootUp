@@ -27,9 +27,9 @@ public class DeclareInnerClassTest extends MinimalBytecodeTestSuiteBase {
   }
 
   @Test
-  @Override
-  public void defaultTest() {
-    super.defaultTest();
+  public void test() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
     //        loadMethod(expectedBodyStmts1(), getStaticMethodSignature());
     //        SootMethod staticMethod = loadMethod(expectedBodyStmts1(),
     // getStaticMethodSignature());

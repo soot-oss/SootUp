@@ -31,7 +31,7 @@ public class NullVariableTest extends MinimalSourceTestSuiteBase {
   }
 
   @Ignore
-  public void defaultTest() {
+  public void test() {
     // FIXME see InstructionConverter.convertUnaryOpInstruction(...)
     SootMethod method = loadMethod(getMethodSignature());
     assertEquals(

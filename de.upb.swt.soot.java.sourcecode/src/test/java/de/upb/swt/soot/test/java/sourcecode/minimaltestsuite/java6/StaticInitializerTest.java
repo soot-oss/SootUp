@@ -19,7 +19,7 @@ public class StaticInitializerTest extends MinimalSourceTestSuiteBase {
   }
 
   @org.junit.Test
-  public void defaultTest() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
     SootClass clazz = loadClass(getDeclaredClassSignature());

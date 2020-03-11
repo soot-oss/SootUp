@@ -31,9 +31,9 @@ public class DefaultMethodInterfaceImplTest extends MinimalBytecodeTestSuiteBase
   }
 
   @Test
-  @Override
-  public void defaultTest() {
-    super.defaultTest();
+  public void test() {
+    SootMethod method1 = loadMethod(getMethodSignature());
+    assertJimpleStmts(method1, expectedBodyStmts());
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
     method = loadMethod(getDefaultMethodSignature());

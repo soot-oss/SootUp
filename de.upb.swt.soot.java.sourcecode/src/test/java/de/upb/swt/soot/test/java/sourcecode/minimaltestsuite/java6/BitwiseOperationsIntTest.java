@@ -13,7 +13,7 @@ import org.junit.experimental.categories.Category;
 public class BitwiseOperationsIntTest extends MinimalSourceTestSuiteBase {
 
   @Test
-  public void defaultTest() {
+  public void test() {
 
     SootMethod method = loadMethod(getMethodSignature("bitwiseOpAnd"));
     assertJimpleStmts(

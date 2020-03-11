@@ -47,7 +47,7 @@ public class StaticMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
 
   // TODO: enable test when TypeMethodReference is Supported by Wala/SourceCodeFrontend
   @Ignore
-  public void defaultTest() {
+  public void test() {
     assertJimpleStmts(loadMethod(getStaticMethodSignature()), expectedBodyStmts1());
 
     SootMethod staticMethod = loadMethod(getStaticMethodSignature());

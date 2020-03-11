@@ -12,7 +12,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase {
   @Test
-  public void defaultTest() {
+  public void test() {
 
     SootMethod method = loadMethod(getMethodSignature("intArrays"));
     assertJimpleStmts(

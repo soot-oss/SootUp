@@ -21,8 +21,7 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
   }
 
   @Test
-  @Override
-  public void defaultTest() {
+  public void test() {
     SootMethod sootMethod = loadMethod(getInitMethodSignature());
     assertJimpleStmts(sootMethod, expectedBodyStmts());
     /** TODO sootClass.isEnum() return false as it checks for if the DeclareEnumConstructor class */

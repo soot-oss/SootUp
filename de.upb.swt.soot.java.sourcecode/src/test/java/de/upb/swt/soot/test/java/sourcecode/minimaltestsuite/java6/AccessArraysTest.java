@@ -13,7 +13,7 @@ import org.junit.experimental.categories.Category;
 public class AccessArraysTest extends MinimalSourceTestSuiteBase {
 
   @Ignore
-  public void defaultTest() {
+  public void test() {
 
     // FIXME see InstructionConverter.convertUnaryOpInstruction(...)
 

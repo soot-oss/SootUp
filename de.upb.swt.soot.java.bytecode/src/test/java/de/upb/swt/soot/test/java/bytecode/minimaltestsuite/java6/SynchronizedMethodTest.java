@@ -23,9 +23,8 @@ public class SynchronizedMethodTest extends MinimalBytecodeTestSuiteBase {
         "run", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Override
   @Ignore
-  public void defaultTest() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
     // FIXME [ms] method is not synchronized

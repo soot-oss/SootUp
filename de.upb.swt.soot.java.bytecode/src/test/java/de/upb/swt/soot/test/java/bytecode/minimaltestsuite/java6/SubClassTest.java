@@ -59,4 +59,10 @@ public class SubClassTest extends MinimalBytecodeTestSuiteBase {
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
+
+  @Test
+  public void test() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
+  }
 }

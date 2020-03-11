@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import java.util.ArrayList;
@@ -22,9 +23,10 @@ public class InstanceOfCheckTest extends MinimalBytecodeTestSuiteBase {
         "instanceOfCheckMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Override
-  public void defaultTest() {
-    super.defaultTest();
+  @org.junit.Test
+  public void test() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
     SootClass sootClass = loadClass(getDeclaredClassSignature());
     if (sootClass.getSuperclass().isPresent()) {
       assertEquals("InstanceOfCheckSuper", sootClass.getSuperclass().get().getClassName());

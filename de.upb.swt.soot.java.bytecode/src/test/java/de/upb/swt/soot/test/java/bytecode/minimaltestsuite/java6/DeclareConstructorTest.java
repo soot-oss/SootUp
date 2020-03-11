@@ -28,8 +28,7 @@ public class DeclareConstructorTest extends MinimalBytecodeTestSuiteBase {
   }
 
   @Test
-  @Override
-  public void defaultTest() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignatureInitOneParam());
     assertJimpleStmts(method, expectedBodyStmts());
     method = loadMethod(getMethodSignatureInitTwoParam());

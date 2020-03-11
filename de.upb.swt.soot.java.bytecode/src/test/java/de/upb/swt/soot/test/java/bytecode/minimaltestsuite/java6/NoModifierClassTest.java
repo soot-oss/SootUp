@@ -15,7 +15,7 @@ import org.junit.experimental.categories.Category;
 public class NoModifierClassTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootClass clazz = loadClass(getDeclaredClassSignature());
     // TODO SYNCHRONIZED modifier  does not work
     // assertEquals(EnumSet.noneOf(Modifier.class), clazz.getModifiers());

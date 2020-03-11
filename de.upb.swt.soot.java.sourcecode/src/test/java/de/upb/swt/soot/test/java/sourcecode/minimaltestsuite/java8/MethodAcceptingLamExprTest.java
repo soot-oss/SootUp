@@ -21,7 +21,7 @@ public class MethodAcceptingLamExprTest extends MinimalSourceTestSuiteBase {
 
   @org.junit.Test
   @Ignore
-  public void defaultTest() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
   }

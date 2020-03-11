@@ -14,7 +14,7 @@ import org.junit.experimental.categories.Category;
 public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
-  public void defaultTest() {
+  public void test() {
     // add test after fixing jimple
   }
 

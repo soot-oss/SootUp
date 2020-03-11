@@ -21,7 +21,7 @@ public class InstanceOfCheckTest extends MinimalSourceTestSuiteBase {
   }
 
   @org.junit.Test
-  public void defaultTest() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
     SootClass sootClass = loadClass(getDeclaredClassSignature());

@@ -19,7 +19,7 @@ import org.junit.experimental.categories.Category;
 public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
 
   @Test
-  public void defaultTest() {
+  public void test() {
 
     SootMethod method = loadMethod(getMethodSignature("shortVariable"));
     assertJimpleStmts(
