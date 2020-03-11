@@ -17,17 +17,13 @@ public class SymbolsAsClassNameTest extends MinimalSourceTestSuiteBase {
         "αρετηAsClassName", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Override
+  @Ignore
   public void defaultTest() {
+    // this only works on Unicode filesystems
     /**
      * Exception in thread "main" java.nio.file.InvalidPathException: Illegal char <?> at index 1:
      * a?et?.java
      */
-  }
-
-  @Ignore
-  public void ignoreTest() {
-    super.defaultTest();
     SootClass sootClass = loadClass(getDeclaredClassSignature());
     System.out.println(sootClass.getClassSource().getClassType().getClassName());
   }

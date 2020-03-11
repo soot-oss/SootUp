@@ -1,4 +1,4 @@
-/** @author: Hasitha Rajapakse */
+/** @author Hasitha Rajapakse */
 
 public class Person {
     public int age = 0;

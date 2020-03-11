@@ -17,29 +17,7 @@ import com.ibm.wala.shrikeBT.IBinaryOpInstruction;
 import com.ibm.wala.shrikeBT.IConditionalBranchInstruction.IOperator;
 import com.ibm.wala.shrikeBT.IConditionalBranchInstruction.Operator;
 import com.ibm.wala.shrikeBT.IShiftInstruction;
-import com.ibm.wala.ssa.SSAArrayLengthInstruction;
-import com.ibm.wala.ssa.SSAArrayLoadInstruction;
-import com.ibm.wala.ssa.SSAArrayReferenceInstruction;
-import com.ibm.wala.ssa.SSAArrayStoreInstruction;
-import com.ibm.wala.ssa.SSABinaryOpInstruction;
-import com.ibm.wala.ssa.SSACheckCastInstruction;
-import com.ibm.wala.ssa.SSAConditionalBranchInstruction;
-import com.ibm.wala.ssa.SSAConversionInstruction;
-import com.ibm.wala.ssa.SSAFieldAccessInstruction;
-import com.ibm.wala.ssa.SSAGetCaughtExceptionInstruction;
-import com.ibm.wala.ssa.SSAGetInstruction;
-import com.ibm.wala.ssa.SSAGotoInstruction;
-import com.ibm.wala.ssa.SSAInstanceofInstruction;
-import com.ibm.wala.ssa.SSAInstruction;
-import com.ibm.wala.ssa.SSALoadMetadataInstruction;
-import com.ibm.wala.ssa.SSAMonitorInstruction;
-import com.ibm.wala.ssa.SSANewInstruction;
-import com.ibm.wala.ssa.SSAPutInstruction;
-import com.ibm.wala.ssa.SSAReturnInstruction;
-import com.ibm.wala.ssa.SSASwitchInstruction;
-import com.ibm.wala.ssa.SSAThrowInstruction;
-import com.ibm.wala.ssa.SSAUnaryOpInstruction;
-import com.ibm.wala.ssa.SymbolTable;
+import com.ibm.wala.ssa.*;
 import com.ibm.wala.types.FieldReference;
 import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeReference;
@@ -82,6 +60,7 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.ReferenceType;
@@ -161,38 +140,41 @@ public class InstructionConverter {
       stmts.add(convertConversionInstruction(debugInfo, (SSAConversionInstruction) inst));
     } else if ((inst instanceof SSAInstanceofInstruction)) {
       stmts.add(convertInstanceofInstruction(debugInfo, (SSAInstanceofInstruction) inst));
-    } else if ((inst instanceof SSABinaryOpInstruction)) {
-      stmts.addAll(convertBinaryOpInstruction(debugInfo, (SSABinaryOpInstruction) inst));
-    } else if ((inst instanceof SSAUnaryOpInstruction)) {
-      stmts.add(convertUnaryOpInstruction(debugInfo, (SSAUnaryOpInstruction) inst));
-    } else if ((inst instanceof SSAThrowInstruction)) {
-      stmts.add(convertThrowInstruction(debugInfo, (SSAThrowInstruction) inst));
-    } else if ((inst instanceof SSASwitchInstruction)) {
-      stmts.add(convertSwitchInstruction(debugInfo, (SSASwitchInstruction) inst));
-    } else if ((inst instanceof SSALoadMetadataInstruction)) {
-      stmts.add(convertLoadMetadataInstruction(debugInfo, (SSALoadMetadataInstruction) inst));
-    } else if ((inst instanceof EnclosingObjectReference)) {
-      stmts.add(convertEnclosingObjectReference(debugInfo, (EnclosingObjectReference) inst));
-    } else if ((inst instanceof AstLexicalRead)) {
-      stmts = convertAstLexicalRead(debugInfo, (AstLexicalRead) inst);
-    } else if ((inst instanceof AstLexicalWrite)) {
-      stmts = convertAstLexicalWrite(debugInfo, (AstLexicalWrite) inst);
-    } else if ((inst instanceof AstAssertInstruction)) {
-      stmts = convertAssertInstruction(debugInfo, (AstAssertInstruction) inst);
-    } else if ((inst instanceof SSACheckCastInstruction)) {
-      stmts.add(convertCheckCastInstruction(debugInfo, (SSACheckCastInstruction) inst));
-    } else if ((inst instanceof SSAMonitorInstruction)) {
-      stmts.add(convertMonitorInstruction(debugInfo, (SSAMonitorInstruction) inst));
-    } else if ((inst instanceof SSAGetCaughtExceptionInstruction)) {
+    } else if (inst instanceof SSABinaryOpInstruction) {
+      stmts.addAll(this.convertBinaryOpInstruction(debugInfo, (SSABinaryOpInstruction) inst));
+    } else if (inst instanceof SSAUnaryOpInstruction) {
+      stmts.add(this.convertUnaryOpInstruction(debugInfo, (SSAUnaryOpInstruction) inst));
+    } else if (inst instanceof SSAThrowInstruction) {
+      stmts.add(this.convertThrowInstruction(debugInfo, (SSAThrowInstruction) inst));
+    } else if (inst instanceof SSASwitchInstruction) {
+      stmts.add(this.convertSwitchInstruction(debugInfo, (SSASwitchInstruction) inst));
+    } else if (inst instanceof SSALoadMetadataInstruction) {
+      stmts.add(this.convertLoadMetadataInstruction(debugInfo, (SSALoadMetadataInstruction) inst));
+    } else if (inst instanceof EnclosingObjectReference) {
+      stmts.add(this.convertEnclosingObjectReference(debugInfo, (EnclosingObjectReference) inst));
+    } else if (inst instanceof AstLexicalRead) {
+      stmts = (this.convertAstLexicalRead(debugInfo, (AstLexicalRead) inst));
+    } else if (inst instanceof AstLexicalWrite) {
+      stmts = (this.convertAstLexicalWrite(debugInfo, (AstLexicalWrite) inst));
+    } else if (inst instanceof AstAssertInstruction) {
+      stmts = this.convertAssertInstruction(debugInfo, (AstAssertInstruction) inst);
+    } else if (inst instanceof SSACheckCastInstruction) {
+      stmts.add(this.convertCheckCastInstruction(debugInfo, (SSACheckCastInstruction) inst));
+    } else if (inst instanceof SSAMonitorInstruction) {
       stmts.add(
-          convertGetCaughtExceptionInstruction(debugInfo, (SSAGetCaughtExceptionInstruction) inst));
-    } else if ((inst instanceof SSAArrayLengthInstruction)) {
-      stmts.add(convertArrayLengthInstruction(debugInfo, (SSAArrayLengthInstruction) inst));
-    } else if ((inst instanceof SSAArrayReferenceInstruction)) {
-      if ((inst instanceof SSAArrayLoadInstruction)) {
-        stmts.add(convertArrayLoadInstruction(debugInfo, (SSAArrayLoadInstruction) inst));
-      } else if ((inst instanceof SSAArrayStoreInstruction)) {
-        stmts.add(convertArrayStoreInstruction(debugInfo, (SSAArrayStoreInstruction) inst));
+          this.convertMonitorInstruction(
+              debugInfo, (SSAMonitorInstruction) inst)); // for synchronized statement
+    } else if (inst instanceof SSAGetCaughtExceptionInstruction) {
+      stmts.add(
+          this.convertGetCaughtExceptionInstruction(
+              debugInfo, (SSAGetCaughtExceptionInstruction) inst));
+    } else if (inst instanceof SSAArrayLengthInstruction) {
+      stmts.add(this.convertArrayLengthInstruction(debugInfo, (SSAArrayLengthInstruction) inst));
+    } else if (inst instanceof SSAArrayReferenceInstruction) {
+      if (inst instanceof SSAArrayLoadInstruction) {
+        stmts.add(this.convertArrayLoadInstruction(debugInfo, (SSAArrayLoadInstruction) inst));
+      } else if (inst instanceof SSAArrayStoreInstruction) {
+        stmts.add(this.convertArrayStoreInstruction(debugInfo, (SSAArrayStoreInstruction) inst));
       } else {
         throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
       }
@@ -593,7 +575,15 @@ public class InstructionConverter {
     } else {
       op = getLocal(type, use);
     }
+
     type = op.getType();
+    // is it just variable declaration?
+    if (type == NullType.getInstance()) {
+      // FIXME: [ms] determine type of def side
+      // if null is assigned or if its just a local declaration we can't use the right side (i.e.
+      // null) to determine the locals type
+      type = UnknownType.getInstance();
+    }
     Local left = getLocal(type, def);
 
     Position[] operandPos = new Position[2];
@@ -684,6 +674,14 @@ public class InstructionConverter {
         rvalue,
         WalaIRToJimpleConverter.convertPositionInfo(
             debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
+  }
+
+  private Stmt convertComparisonInstruction(
+      DebuggingInformation debugInfo, SSAComparisonInstruction inst) {
+    // TODO imlement
+    return Jimple.newNopStmt(
+        WalaIRToJimpleConverter.convertPositionInfo(
+            debugInfo.getInstructionPosition(inst.iIndex()), null));
   }
 
   private Stmt convertInstanceofInstruction(
@@ -790,6 +788,9 @@ public class InstructionConverter {
       Type classType = converter.convertType(target.getDeclaringClass());
       Local base = getLocal(classType, receiver);
       if (callee.isSpecial()) {
+        Type baseType = UnknownType.getInstance();
+        // TODO. baseType could be a problem.
+        base = getLocal(baseType, receiver);
         invoke = Jimple.newSpecialInvokeExpr(base, methodSig, args); // constructor
       } else if (callee.isVirtual()) {
         invoke = Jimple.newVirtualInvokeExpr(base, methodSig, args);
@@ -975,7 +976,7 @@ public class InstructionConverter {
 
   private List<Stmt> convertBinaryOpInstruction(
       DebuggingInformation debugInfo, SSABinaryOpInstruction binOpInst) {
-    List<Stmt> ret = new ArrayList();
+    List<Stmt> ret = new ArrayList<>();
     int def = binOpInst.getDef();
     int val1 = binOpInst.getUse(0);
     int val2 = binOpInst.getUse(1);
@@ -994,10 +995,11 @@ public class InstructionConverter {
       op2 = getLocal(type, val2);
     }
     if (type.equals(UnknownType.getInstance())) type = op2.getType();
-    AbstractBinopExpr binExpr = null;
+    AbstractBinopExpr binExpr;
     IBinaryOpInstruction.IOperator operator = binOpInst.getOperator();
     if (operator.equals(IBinaryOpInstruction.Operator.ADD)) {
       if (type.toString().equals("java.lang.String")) {
+        // from wala java source code frontend we get also string addition(concatenation).
         Value result = getLocal(type, def);
         return convertStringAddition(op1, op2, result, type, binOpInst.iIndex(), debugInfo);
       }
@@ -1104,7 +1106,10 @@ public class InstructionConverter {
     Object value = symbolTable.getConstantValue(valueNumber);
     if (value instanceof Boolean) {
       return BooleanConstant.getInstance((boolean) value);
-    } else if (value instanceof Byte || value instanceof Short || value instanceof Integer) {
+    } else if (value instanceof Byte
+        || value instanceof Character
+        || value instanceof Short
+        || value instanceof Integer) {
       return IntConstant.getInstance((int) value);
     } else if (symbolTable.isLongConstant(valueNumber)) {
       return LongConstant.getInstance((long) value);
@@ -1127,8 +1132,7 @@ public class InstructionConverter {
     }
     if (valueNumber == 1) {
       // in wala symbol numbers start at 1 ... the "this" parameter will be symbol
-      // number 1 in a
-      // non-static method.
+      // number 1 in a non-static method.
       if (!walaMethod.isStatic()) {
         Local thisLocal = localGenerator.getThisLocal();
         locals.put(valueNumber, thisLocal);
@@ -1173,8 +1177,7 @@ public class InstructionConverter {
       }
     }
 
-    // FIXME: [ms] targetbox of JGotoStmt is null @PositionInfoTest.java
-    // ->testSwitchInstruction()
+    // FIXME: [ms] targetbox of JGotoStmt is null @PositionInfoTest.java ->testSwitchInstruction()
     if (this.targetsOfGotoStmts.containsValue(iindex)) {
       for (JGotoStmt gotoStmt : this.targetsOfGotoStmts.keySet()) {
         if (this.targetsOfGotoStmts.get(gotoStmt).equals(iindex)) {

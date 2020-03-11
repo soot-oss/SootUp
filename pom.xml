@@ -48,7 +48,6 @@
     <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
     <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
   </properties>
-
   <profiles>
     <profile>
       <id>Java8</id>

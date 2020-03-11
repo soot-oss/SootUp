@@ -51,7 +51,7 @@ public class DeclareEnumWithConstructorTest extends MinimalSourceTestSuiteBase {
         Collections.emptyList());
   }
 
-  @Override
+  @org.junit.Test
   public void defaultTest() {
     SootMethod sootMethod = loadMethod(getInitMethodSignature());
     assertJimpleStmts(sootMethod, expectedBodyStmts());

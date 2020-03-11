@@ -1,6 +1,7 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.Collections;
@@ -17,9 +18,9 @@ public class DeclareInnerClassTest extends MinimalSourceTestSuiteBase {
   }
 
   @Test
-  @Override
   public void defaultTest() {
-    super.defaultTest();
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
     //        loadMethod(expectedBodyStmts1(), getStaticMethodSignature());
     //        SootMethod staticMethod = loadMethod(expectedBodyStmts1(),
     // getStaticMethodSignature());

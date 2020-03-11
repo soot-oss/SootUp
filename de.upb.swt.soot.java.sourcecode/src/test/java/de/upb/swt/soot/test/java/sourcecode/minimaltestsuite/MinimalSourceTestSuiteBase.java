@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.ClassRule;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -121,13 +120,6 @@ public abstract class MinimalSourceTestSuiteBase {
 
   protected JavaClassType getDeclaredClassSignature() {
     return identifierFactory.getClassType(getClassName(customTestWatcher.classPath));
-  }
-
-  @Test
-  // TODO: [ms] move down to respective tests
-  public void defaultTest() {
-    SootMethod method = loadMethod(getMethodSignature());
-    assertJimpleStmts(method, expectedBodyStmts());
   }
 
   public SootClass loadClass(ClassType clazz) {

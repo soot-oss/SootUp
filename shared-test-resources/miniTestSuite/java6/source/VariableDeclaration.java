@@ -1,6 +1,4 @@
-
-/** @author: Hasitha Rajapakse */
-
+/** @author Hasitha Rajapakse */
 
 public class VariableDeclaration {
 
@@ -30,6 +28,10 @@ public class VariableDeclaration {
 
     public void doubleVariable() {
         double g = 1.96969654d;
+    }
+
+    public void classTypeDefWithoutAssignment(){
+        String str;
     }
 
 }

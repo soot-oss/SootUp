@@ -1,6 +1,7 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.Collections;
@@ -20,24 +21,20 @@ public class αρετηTest extends MinimalSourceTestSuiteBase {
   }
 
   @Override
-  public void defaultTest() {}
-
-  @Ignore
-  public void ignoreTest() {
-    // FIXME: fails (due to missing unicode support?)
-  }
-
-  @Override
   public List<String> expectedBodyStmts() {
-    // TODO: likely the Jimple lines need a change when it works until here (remove next line(assert
-    // false) then)
-    assert false;
-
+    // TODO: likely the Jimple lines need a change when it works until here
     return Stream.of(
             "l0 := @this: \\u03b1\\u03c1\\u03b5\\u03c4\\u03b7",
             "$stack1 = <java.lang.System: java.io.PrintStream; out>",
             "virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>(\"this is \\u03b1\\u03c1\\u03b5\\u03c4\\u03b7 class\")",
             "return")
         .collect(Collectors.toList());
+  }
+
+  @Ignore
+  public void test() {
+    // fails due to missing unicode support in some filesystems
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
   }
 }

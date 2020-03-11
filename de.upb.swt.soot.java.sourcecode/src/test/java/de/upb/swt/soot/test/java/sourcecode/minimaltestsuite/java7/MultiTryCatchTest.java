@@ -1,5 +1,6 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java7;
 
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.Test;
 
 public class MultiTryCatchTest extends MinimalSourceTestSuiteBase {
 
@@ -48,5 +50,11 @@ public class MultiTryCatchTest extends MinimalSourceTestSuiteBase {
             "label4:",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
+  }
+
+  @Test
+  public void defaultTest() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
   }
 }
