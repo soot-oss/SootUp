@@ -28,6 +28,7 @@ public class RepeatingAnnotationsTest extends MinimalBytecodeTestSuiteBase {
 
   @Ignore
   public void annotationTest() {
+    // TODO: after annotations are implemented
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
     SootClass sootClass = loadClass(getDeclaredClassSignature());
