@@ -165,15 +165,20 @@ public class Printer {
       Iterator<? extends Field> fieldIt = cl.getFields().iterator();
 
       if (fieldIt.hasNext()) {
+        printer.incIndent();
         while (fieldIt.hasNext()) {
           SootField f = (SootField) fieldIt.next();
-
-          printer.literal("    " + f.getDeclaration() + ";");
+          printer.newline();
+          printer.handleIndent();
+          printer.literal(f.getDeclaration());
+          printer.literal(";");
           printer.newline();
           if (addJimpleLn()) {
             setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f));
           }
         }
+
+        printer.decIndent();
       }
     }
 
