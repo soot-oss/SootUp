@@ -18,30 +18,42 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyBase {
 
+  ViewTypeHierarchy typeHierarchy =
+      (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
+  /** Test: {@link java.lang.Object} is superclass of "SuperClass" */
   @Test
-  public void method() {
-
-    ViewTypeHierarchy typeHierarchy =
-        (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
-    /** Test: {@link java.lang.Object} is superclass of "SuperClass" */
+  public void testSuperClassExtendsObject() {
     assertEquals(
         typeHierarchy.superClassOf(getClassType("SuperClass")), getClassType("java.lang.Object"));
+  }
 
-    /** Test: "SuperClass" is a subclass of {@link java.lang.Object} */
+  /** Test: "SuperClass" is a subclass of {@link java.lang.Object} */
+  @Test
+  public void testObjectIsSuperclassOfSuperClass() {
     Set<ClassType> subClassSet = new HashSet<ClassType>();
     subClassSet = typeHierarchy.subclassesOf(getClassType("java.lang.Object"));
     assertTrue(subClassSet.contains(getClassType("SuperClass")));
+  }
 
-    /** Test: "ClassInheritanceWithAdditionalMethod"'s superclass is "SuperClass" */
+  /** Test: "ClassInheritanceWithAdditionalMethod"'s superclass is "SuperClass" */
+  @Test
+  public void testClassInheritanceClassExtendsSuperClass() {
     assertEquals(
         typeHierarchy.superClassOf(getClassType("ClassInheritanceWithAdditionalMethod")),
         getClassType("SuperClass"));
+  }
 
-    /** Test: "ClassInheritanceWithAdditionalMethod" is subclass of "SuperClass" */
-    subClassSet = typeHierarchy.subclassesOf(getClassType("SuperClass"));
-    assertTrue(subClassSet.contains(getClassType("ClassInheritanceWithAdditionalMethod")));
+  /** Test: "ClassInheritanceWithAdditionalMethod" is subclass of "SuperClass" */
+  @Test
+  public void testSuperClassIsSuperclassOfClassInheritanceClass() {
+    assertEquals(
+        typeHierarchy.superClassOf(getClassType("ClassInheritanceWithAdditionalMethod")),
+        getClassType("SuperClass"));
+  }
 
-    /** Test: "ClassInheritanceWithAdditionalMethod" has additional method. */
+  /** Test: "ClassInheritanceWithAdditionalMethod" has additional method. */
+  @Test
+  public void ClassInheritanceClassHasAddtionalMethod() {
     SootClass sootClass =
         (SootClass)
             customTestWatcher
