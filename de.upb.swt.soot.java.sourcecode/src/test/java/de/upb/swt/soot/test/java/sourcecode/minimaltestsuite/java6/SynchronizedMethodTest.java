@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
+import org.junit.Ignore;
 
 public class SynchronizedMethodTest extends MinimalSourceTestSuiteBase {
 
@@ -19,7 +19,7 @@ public class SynchronizedMethodTest extends MinimalSourceTestSuiteBase {
         "run", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Test
+  @Ignore
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
