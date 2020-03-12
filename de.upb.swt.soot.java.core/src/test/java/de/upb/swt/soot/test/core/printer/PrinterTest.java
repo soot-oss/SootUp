@@ -25,11 +25,11 @@ import org.junit.Test;
 
 /** @author Markus Schmidt */
 public class PrinterTest {
-  // import collisions are already testet in AbstractStmtPrinterTest
+  // import collisions are already testet in AbstractStmtPrinterTest covered in
+  // AbstractStmtPrinterTest
 
   @Test
   public void testPrintedExample() {
-    // covered in AbstractStmtPrinterTest
 
     Printer p = new Printer(Printer.Option.UseImports);
     final StringWriter writer = new StringWriter();
