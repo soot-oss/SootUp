@@ -112,8 +112,6 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyB
      * <p>Set<String> methodsStringsInSuperClass = methodsSetOfSuperClass.stream() .map(sootMethod
      * -> sootMethod.getName() + sootMethod.getParameterTypes()) .collect(Collectors.toSet());
      *
-     * <p>methodsStrings.addAll(methodsStringsInSuperClass);
-     *
      * <p>assertNotEquals(methodsStrings, methodsStringsInSuperClass);
      */
   }
