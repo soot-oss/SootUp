@@ -25,7 +25,6 @@ import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.types.Type;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Soot's counterpart of the source language's field concept. Soot representation of a Java field.
@@ -82,41 +81,8 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
    * @return A {@link SootField} builder.
    */
   @Nonnull
-  public static SignatureStep builder() {
-    return new SootFieldBuildStep();
-  }
-
-  /**
-   * Defines a stepwise builder for the {@link SootField} class.
-   *
-   * @see #builder()
-   * @author Jan Martin Persch
-   */
-  interface SignatureStep {
-    /**
-     * Sets the {@link FieldSignature}.
-     *
-     * @param value The value to set.
-     * @return This fluent builder.
-     */
-    @Nonnull
-    ModifiersStep withSignature(@Nonnull FieldSignature value);
-  }
-
-  interface ModifiersStep extends SootClassMember.Builder.ModifiersStep<BuildStep> {
-    @Nonnull
-    BuildStep withModifiers(@Nonnull Iterable<Modifier> modifiers);
-  }
-
-  interface BuildStep extends SootClassMember.Builder<FieldSignature, SootField> {
-    /**
-     * Builds the {@link SootField}.
-     *
-     * @return The created {@link SootField}.
-     * @throws BuilderException A build error occurred.
-     */
-    @Nonnull
-    SootField build();
+  public static SootFieldBuilder builder() {
+    return new SootFieldBuilder();
   }
 
   /**
@@ -124,12 +90,11 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
    *
    * @author Jan Martin Persch
    */
-  protected static class SootFieldBuildStep
-      extends SootClassMemberBuilder<FieldSignature, SootField>
-      implements SignatureStep, ModifiersStep, BuildStep {
+  public static class SootFieldBuilder
+      implements Builder.ModifierStep, Builder.BuildStep, Builder<FieldSignature, SootField> {
 
-    @Nullable private FieldSignature signature;
-    @Nullable private Iterable<Modifier> modifiers;
+    private FieldSignature signature;
+    private Iterable<Modifier> modifiers;
 
     @Nonnull
     protected FieldSignature getSignature() {
@@ -141,19 +106,20 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
       return modifiers;
     }
 
+    @Override
     @Nonnull
-    public ModifiersStep withSignature(@Nonnull FieldSignature signature) {
+    public ModifierStep withSignature(@Nonnull FieldSignature signature) {
       this.signature = signature;
       return this;
     }
 
+    @Override
     @Nonnull
-    public BuildStep withModifiers(@Nonnull Iterable<Modifier> modifiers) {
+    public BuildStep<FieldSignature> withModifiers(@Nonnull Iterable<Modifier> modifiers) {
       this.modifiers = modifiers;
       return this;
     }
 
-    @Override
     @Nonnull
     public SootField build() {
       return new SootField(getSignature(), getModifiers());

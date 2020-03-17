@@ -1,9 +1,9 @@
 package de.upb.swt.soot.java.core;
 
 import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.SootClassMember;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.signatures.FieldSignature;
+import java.util.Collections;
 import javax.annotation.Nonnull;
 
 public class JavaSootField extends SootField {
@@ -35,67 +35,61 @@ public class JavaSootField extends SootField {
     return new JavaSootField(getSignature(), getModifiers(), annotations);
   }
 
-
-
-   /* Creates a {@link JavaSootField} builder.
-   *
-           * @return A {@link JavaSootField} builder.
-   */
   @Nonnull
-  public static JavaSootField.Builder.SignatureStep builder() {
+  public static JavaSootFieldBuilder builder() {
     return new JavaSootFieldBuilder();
   }
-
-  /**
-   * Defines a stepwise builder for the {@link SootField} class.
-   *
-   * @see #builder()
-   * @author Jan Martin Persch
-   */
-  public interface Builder extends SootClassMember.Builder<FieldSignature, JavaSootField> {
-
-    interface ModifiersStep2 extends ModifiersStep {
-
-    }
-
-    interface AnnotationStep extends SootClassMember.Builder.ModifiersStep<JavaSootField.Builder> {
-
-      @Nonnull
-      AnnotationStep withAnnotations(@Nonnull Iterable<AnnotationType> annotations) {
-
-    }
-  }
-
-
   /**
    * Defines a {@link JavaSootField} builder to provide a fluent API.
    *
    * @author Jan Martin Persch
    * @author Markus Schmidt
    */
-  protected static class JavaSootFieldBuildStep extends SootFieldBuildStep implements SignatureStep, ModifiersStep, Builder{
+  public static class JavaSootFieldBuilder extends SootFieldBuilder
+      implements Builder.ModifierStep, Builder.BuildStep, Builder<FieldSignature, SootField> {
 
-    /** Creates a new instance of the {@link SootFieldBuildStep} class. */
-    JavaSootFieldBuildStep() {
-      super(JavaSootField.class);
-    }
-
-    private Iterable<AnnotationType> annotations;
+    private Iterable<AnnotationType> annotations = null;
+    private FieldSignature signature;
+    private Iterable<Modifier> modifiers;
 
     @Nonnull
-    public Builder withAnnotations(@Nonnull Iterable<AnnotationType> annotations) {
+    protected FieldSignature getSignature() {
+      return signature;
+    }
+
+    @Nonnull
+    protected Iterable<Modifier> getModifiers() {
+      return modifiers;
+    }
+
+    // FIXME: kein StepWiseBuilder mehr!!!
+
+    @Nonnull
+    public Builder.ModifierStep withSignature(@Nonnull FieldSignature signature) {
+      this.signature = signature;
+      return this;
+    }
+
+    @Nonnull
+    public BuildStep withModifiers(@Nonnull Iterable<Modifier> modifiers) {
+      this.modifiers = modifiers;
+      return this;
+    }
+
+    @Nonnull
+    public BuildStep withAnnotations(@Nonnull Iterable<AnnotationType> annotations) {
       this.annotations = annotations;
       return this;
+    }
+
+    public Iterable<AnnotationType> getAnnotations() {
+      return annotations != null ? annotations : Collections.emptyList();
     }
 
     @Override
     @Nonnull
     public JavaSootField build() {
       return new JavaSootField(getSignature(), getModifiers(), getAnnotations());
-    }
-
-    public Iterable<AnnotationType> getAnnotations() {
-      return annotations;
     }
   }
 }

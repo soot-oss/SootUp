@@ -285,18 +285,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     MethodSignatureStep withSource(@Nonnull MethodSource value);
   }
 
-  interface MethodSignatureStep {
-    /**
-     * Sets the {@link MethodSignature}.
-     *
-     * @param value The value to set.
-     * @return This fluent builder.
-     */
-    @Nonnull
-    ModifiersStep withSignature(@Nonnull MethodSignature value);
-  }
-
-  interface ModifiersStep extends SootClassMember.Builder.ModifiersStep<ThrownExceptionsStep> {}
+  interface ModifierStep extends SootClassMember.Builder.ModifierStep<ThrownExceptionsStep> {}
 
   interface ThrownExceptionsStep extends Builder {
     /**
@@ -309,29 +298,17 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     Builder withThrownExceptions(@Nonnull Iterable<ClassType> value);
   }
 
-  interface Builder extends SootClassMember.Builder<MethodSignature, SootMethod> {
-    /**
-     * Builds the {@link SootMethod}.
-     *
-     * @return The created {@link SootMethod}.
-     * @throws BuilderException A build error occurred.
-     */
-    @Nonnull
-    SootMethod build();
-  }
-
   /**
    * Defines a {@link SootMethod} builder that provides a fluent API.
    *
    * @author Jan Martin Persch
    */
   protected static class SootMethodBuilder
-      extends SootClassMemberBuilder<MethodSignature, SootMethod>
       implements MethodSourceStep,
           MethodSignatureStep,
-          ModifiersStep,
+          ModifierStep,
           ThrownExceptionsStep,
-          Builder {
+          Builder<MethodSignature, SootMethod> {
 
     @Nullable private MethodSource _source;
 
@@ -373,9 +350,10 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
      * Sets the method sub-signature.
      *
      * @param value The value to set.
+     * @return
      */
     @Nonnull
-    public ModifiersStep withSignature(@Nonnull MethodSignature value) {
+    public ModifierStep withSignature(@Nonnull MethodSignature value) {
       this._methodSignature = value;
 
       return this;
@@ -383,21 +361,11 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
     @Nullable private Iterable<Modifier> _modifiers;
 
-    /**
-     * Gets the modifiers.
-     *
-     * @return The value to get.
-     */
     @Nonnull
     protected Iterable<Modifier> getModifiers() {
       return _modifiers;
     }
 
-    /**
-     * Sets the modifiers.
-     *
-     * @param value The value to set.
-     */
     @Nonnull
     public ThrownExceptionsStep withModifiers(@Nonnull Iterable<Modifier> value) {
       this._modifiers = value;
@@ -407,21 +375,11 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
     @Nonnull private Iterable<ClassType> thrownExceptions = Collections.emptyList();
 
-    /**
-     * Gets the thrown exceptions.
-     *
-     * @return The value to get.
-     */
     @Nonnull
     protected Iterable<ClassType> getThrownExceptions() {
       return thrownExceptions;
     }
 
-    /**
-     * Sets the thrown exceptions.
-     *
-     * @param value The value to set.
-     */
     @Nonnull
     public Builder withThrownExceptions(@Nonnull Iterable<ClassType> value) {
       this.thrownExceptions = value;

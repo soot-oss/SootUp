@@ -88,8 +88,7 @@ public abstract class AbstractClassMemberSubSignature {
   }
 
   @Nonnull
-  public abstract AbstractClassMemberSignature toFullSignature(
-      @Nonnull ClassType declClassSignature);
+  public abstract SootClassMemberSignature toFullSignature(@Nonnull ClassType declClassSignature);
 
   private final Supplier<String> _cachedToString =
       Suppliers.memoize(() -> String.format("%s %s", getType(), getName()));

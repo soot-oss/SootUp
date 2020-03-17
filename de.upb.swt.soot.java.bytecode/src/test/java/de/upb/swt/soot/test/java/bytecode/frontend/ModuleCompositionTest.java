@@ -115,11 +115,10 @@ public class ModuleCompositionTest {
                 null,
                 null,
                 null,
-                ImmutableUtils.immutableSet(
-                    SootField.builder()
-                        .withSignature(nameFieldSubSignature.toFullSignature(classSignature))
-                        .withModifiers(Modifier.PUBLIC)
-                        .build()),
+                SootField.builder()
+                    .withSignature(nameFieldSubSignature.toFullSignature(classSignature))
+                    .withModifiers(Modifier.PUBLIC)
+                    .build(),
                 ImmutableUtils.immutableSet(
                     SootMethod.builder()
                         .withSource(

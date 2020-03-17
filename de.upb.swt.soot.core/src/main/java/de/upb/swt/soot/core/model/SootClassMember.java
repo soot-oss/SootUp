@@ -22,8 +22,8 @@ package de.upb.swt.soot.core.model;
  */
 
 import com.google.common.collect.ImmutableSet;
-import de.upb.swt.soot.core.signatures.AbstractClassMemberSignature;
 import de.upb.swt.soot.core.signatures.AbstractClassMemberSubSignature;
+import de.upb.swt.soot.core.signatures.SootClassMemberSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import java.util.EnumSet;
@@ -37,12 +37,12 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
+public abstract class SootClassMember<Sig extends SootClassMemberSignature> {
 
-  @Nonnull private final S _signature;
+  @Nonnull private final Sig _signature;
   @Nonnull private final ImmutableSet<Modifier> _modifiers;
 
-  SootClassMember(@Nonnull S signature, @Nonnull Iterable<Modifier> modifiers) {
+  SootClassMember(@Nonnull Sig signature, @Nonnull Iterable<Modifier> modifiers) {
     this._signature = signature;
     this._modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
   }
@@ -102,7 +102,7 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
 
   /** Returns the Soot signature of this methodRef. Used to refer to methods unambiguously. */
   @Nonnull
-  public S getSignature() {
+  public Sig getSignature() {
     return _signature;
   }
 
@@ -119,14 +119,16 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
   /**
    * Defines the base interface for {@link SootClassMember} builders.
    *
-   * @param <T> The type of the class to build.
+   * @param <Member> The type of class we want to build.
    * @author Jan Martin Persch
    */
-  public interface Builder<S extends AbstractClassMemberSignature, T extends SootClassMember<S>> {
+  public interface Builder<
+      Sig extends SootClassMemberSignature, Member extends SootClassMember<Sig>> {
 
-    // TODO: [ms] add SignatureStep consistently
+    @Nonnull
+    ModifierStep withSignature(@Nonnull Sig signature);
 
-    interface ModifiersStep<B> {
+    interface ModifierStep {
       /**
        * Sets the {@link Modifier modifiers}.
        *
@@ -134,7 +136,7 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
        * @return This fluent builder.
        */
       @Nonnull
-      B withModifiers(@Nonnull Iterable<Modifier> value);
+      BuildStep withModifiers(@Nonnull Iterable<Modifier> value);
 
       /**
        * Sets the {@link Modifier modifiers}.
@@ -144,29 +146,20 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
        * @return This fluent builder.
        */
       @Nonnull
-      default B withModifiers(@Nonnull Modifier first, @Nonnull Modifier... rest) {
+      default BuildStep withModifiers(@Nonnull Modifier first, @Nonnull Modifier... rest) {
         return this.withModifiers(EnumSet.of(first, rest));
       }
     }
 
-    /**
-     * Builds the {@link SootMethod}.
-     *
-     * @return The created {@link SootMethod}.
-     * @throws BuilderException A build error occurred.
-     */
-    @Nonnull
-    T build();
-  }
-
-  /**
-   * Defines base class for {@link SootClassMember} builders.
-   *
-   * @author Jan Martin Persch
-   */
-  abstract static class SootClassMemberBuilder<
-      S extends AbstractClassMemberSignature, T extends SootClassMember<S>> {
-    // TODO [ms] make sth with the remaining
-
+    interface BuildStep<Sig extends SootClassMemberSignature> {
+      /**
+       * Builds the {@link SootMethod}.
+       *
+       * @return The created {@link SootMethod}.
+       * @throws BuilderException A build error occurred.
+       */
+      @Nonnull
+      SootClassMember<Sig> build();
+    }
   }
 }
