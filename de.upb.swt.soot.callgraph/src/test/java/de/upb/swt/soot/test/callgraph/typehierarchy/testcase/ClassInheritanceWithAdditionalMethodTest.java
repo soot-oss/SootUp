@@ -1,6 +1,7 @@
 package de.upb.swt.soot.test.callgraph.typehierarchy.testcase;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Zun Wang */
 @Category(Java8Test.class)
 public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyBase {
 
@@ -96,23 +98,5 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyB
       }
     }
     assertTrue(hasAdditionalMethod);
-
-    /**
-     * methodSignaturesOfSootClass.addAll(methodSignaturesOfSuperClass);
-     * System.out.println("Method-signatures in subclass:"); for(MethodSubSignature m :
-     * methodSignaturesOfSootClass){ System.out.println(" " + m.toString()); }
-     * System.out.println("Method-signatures in superclass:"); for(MethodSubSignature m :
-     * methodSignaturesOfSuperClass){ System.out.println(" " + m.toString()); }
-     */
-
-    /**
-     * Set<String> methodsStrings = methodsSetOfSootClass.stream() .map(sootMethod ->
-     * sootMethod.getName() + sootMethod.getParameterTypes()) .collect(Collectors.toSet());
-     *
-     * <p>Set<String> methodsStringsInSuperClass = methodsSetOfSuperClass.stream() .map(sootMethod
-     * -> sootMethod.getName() + sootMethod.getParameterTypes()) .collect(Collectors.toSet());
-     *
-     * <p>assertNotEquals(methodsStrings, methodsStringsInSuperClass);
-     */
   }
 }
