@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
-import org.junit.Test;
 
 /** @author Kaustubh Kelkar */
 public class TypeInferenceTest extends MinimalSourceTestSuiteBase {
@@ -18,9 +17,6 @@ public class TypeInferenceTest extends MinimalSourceTestSuiteBase {
     return identifierFactory.getMethodSignature(
         "printFile", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
-
-  @Test
-  public void defaultTest() {}
 
   @Ignore
   public void ignoreTest() {

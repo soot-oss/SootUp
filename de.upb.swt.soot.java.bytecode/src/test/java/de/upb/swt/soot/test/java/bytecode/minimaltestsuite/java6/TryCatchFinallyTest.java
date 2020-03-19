@@ -22,8 +22,7 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
   }
 
   @Test
-  @Override
-  public void defaultTest() {
+  public void test() {
     /** TODO [KK] Stack positions changing. Add to issue list. */
   }
 

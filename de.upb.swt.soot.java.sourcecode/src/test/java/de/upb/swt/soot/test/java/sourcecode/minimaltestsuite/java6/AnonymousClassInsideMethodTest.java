@@ -32,7 +32,7 @@ public class AnonymousClassInsideMethodTest extends MinimalSourceTestSuiteBase {
   }
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
   }

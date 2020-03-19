@@ -20,7 +20,7 @@ public class MethodReferenceTest extends MinimalSourceTestSuiteBase {
 
   /** TODO Update the source code when WALA supports lambda expression */
   @Ignore
-  public void defaultTest() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
   }

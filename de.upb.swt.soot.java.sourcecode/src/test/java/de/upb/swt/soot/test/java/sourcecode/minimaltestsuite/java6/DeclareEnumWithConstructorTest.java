@@ -52,7 +52,7 @@ public class DeclareEnumWithConstructorTest extends MinimalSourceTestSuiteBase {
   }
 
   @org.junit.Test
-  public void defaultTest() {
+  public void test() {
     SootMethod sootMethod = loadMethod(getInitMethodSignature());
     assertJimpleStmts(sootMethod, expectedBodyStmts());
 

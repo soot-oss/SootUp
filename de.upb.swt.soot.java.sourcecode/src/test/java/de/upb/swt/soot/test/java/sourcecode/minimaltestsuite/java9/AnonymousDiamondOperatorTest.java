@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
-import org.junit.Test;
 
 /** @author Kaustubh Kelkar */
 public class AnonymousDiamondOperatorTest extends MinimalSourceTestSuiteBase {
@@ -19,11 +18,8 @@ public class AnonymousDiamondOperatorTest extends MinimalSourceTestSuiteBase {
         "innerClassDiamond", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Test
-  public void defaultTest() {}
-
   @Ignore
-  public void ignoreTest() {
+  public void test() {
     /** TODO Check for anonymous declarations once Java 9 is supported in WALA */
   }
 

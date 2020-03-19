@@ -18,7 +18,7 @@ public class SymbolsAsClassNameTest extends MinimalSourceTestSuiteBase {
   }
 
   @Ignore
-  public void defaultTest() {
+  public void test() {
     // this only works on Unicode filesystems
     /**
      * Exception in thread "main" java.nio.file.InvalidPathException: Illegal char <?> at index 1:

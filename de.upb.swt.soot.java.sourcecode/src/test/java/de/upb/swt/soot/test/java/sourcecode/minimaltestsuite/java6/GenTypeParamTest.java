@@ -24,7 +24,7 @@ public class GenTypeParamTest extends MinimalSourceTestSuiteBase {
             "r0 := @this: GenTypeParam",
             "$r1 = new java.util.ArrayList",
             "specialinvoke $r1.<java.util.ArrayList: void <init>(int)>(3)",
-            "$r2 = newarray (java.lang.Object[])[3]",
+            "$r2 = newarray (java.lang.Object)[3]",
             "$r2[0] = 1",
             "$r2[1] = 2",
             "$r2[2] = 3",
@@ -41,7 +41,7 @@ public class GenTypeParamTest extends MinimalSourceTestSuiteBase {
   }
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
   }

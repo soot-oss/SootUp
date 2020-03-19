@@ -22,7 +22,7 @@ public class StaticMethodTest extends MinimalSourceTestSuiteBase {
   }
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootMethod method1 = loadMethod(getMethodSignature());
     assertJimpleStmts(method1, expectedBodyStmts());
     SootMethod method = loadMethod(getMethodSignature());

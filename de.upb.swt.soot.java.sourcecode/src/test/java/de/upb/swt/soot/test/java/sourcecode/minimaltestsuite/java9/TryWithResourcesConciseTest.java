@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
-import org.junit.Test;
 
 /** @author Kaustubh Kelkar */
 public class TryWithResourcesConciseTest extends MinimalSourceTestSuiteBase {
@@ -19,12 +18,9 @@ public class TryWithResourcesConciseTest extends MinimalSourceTestSuiteBase {
         "printFile", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Test
-  public void defaultTest() {}
-
   @Ignore
-  public void ignoreTest() {
-    /** TODO Java 9 is not supported in WALA, feature can not be tested */
+  public void test() {
+    /** TODO [kk] Java 9 is not supported by WALA, feature can not be tested */
   }
 
   @Override

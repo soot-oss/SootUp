@@ -18,7 +18,7 @@ import org.junit.experimental.categories.Category;
 public class NoModifierClassTest extends MinimalSourceTestSuiteBase {
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootClass clazz = loadClass(getDeclaredClassSignature());
     assertEquals(EnumSet.noneOf(Modifier.class), clazz.getModifiers());
 

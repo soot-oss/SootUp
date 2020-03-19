@@ -25,7 +25,7 @@ public class ForEachLoopTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: ForEachLoop",
-            "$r1 = newarray (int[])[9]",
+            "$r1 = newarray (int)[9]",
             "$r1[0] = 10",
             "$r1[1] = 20",
             "$r1[2] = 30",
@@ -56,7 +56,7 @@ public class ForEachLoopTest extends MinimalSourceTestSuiteBase {
   }
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
   }

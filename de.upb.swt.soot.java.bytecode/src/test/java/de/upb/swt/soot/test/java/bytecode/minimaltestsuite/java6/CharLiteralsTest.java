@@ -13,7 +13,7 @@ import org.junit.experimental.categories.Category;
 public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature("charCharacter"));
     assertJimpleStmts(method, expectedBodyStmts("l0 := @this: CharLiterals", "l1 = 97", "return"));
 

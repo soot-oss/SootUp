@@ -22,7 +22,7 @@ import org.junit.experimental.categories.Category;
 public class PublicClassTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootClass clazz = loadClass(getDeclaredClassSignature());
     assertEquals(EnumSet.of(Modifier.PUBLIC, Modifier.SYNCHRONIZED), clazz.getModifiers());
 

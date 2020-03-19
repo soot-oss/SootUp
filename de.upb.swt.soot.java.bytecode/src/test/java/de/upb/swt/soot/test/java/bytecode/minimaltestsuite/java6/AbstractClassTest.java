@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import java.util.Collections;
@@ -18,12 +19,13 @@ import org.junit.experimental.categories.Category;
 public class AbstractClassTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootClass clazz = loadClass(getDeclaredClassSignature());
     // The SuperClass is the abstract one
     SootClass superClazz = loadClass(clazz.getSuperclass().get());
     assertTrue(superClazz.isAbstract());
-    super.defaultTest();
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
   }
 
   @Override

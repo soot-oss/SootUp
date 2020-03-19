@@ -19,7 +19,7 @@ import org.junit.experimental.categories.Category;
 public class AbstractClassTest extends MinimalSourceTestSuiteBase {
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootClass clazz = loadClass(getDeclaredClassSignature());
     // The SuperClass is the abstract one
     SootClass superClazz = loadClass(clazz.getSuperclass().get());

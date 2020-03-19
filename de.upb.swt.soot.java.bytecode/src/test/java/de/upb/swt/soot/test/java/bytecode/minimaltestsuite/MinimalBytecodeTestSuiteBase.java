@@ -21,7 +21,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.ClassRule;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -122,16 +121,10 @@ public abstract class MinimalBytecodeTestSuiteBase {
     return identifierFactory.getClassType(getClassName(customTestWatcher.classPath));
   }
 
-  @Test
-  public void defaultTest() {
-    SootMethod method = loadMethod(getMethodSignature());
-    assertJimpleStmts(method, expectedBodyStmts());
-  }
-
   public SootClass loadClass(ClassType clazz) {
     Optional<SootClass> cs = customTestWatcher.getJavaView().getClass(clazz);
     assertTrue("no matching class signature found", cs.isPresent());
-    return (SootClass) cs.get();
+    return cs.get();
   }
 
   public SootMethod loadMethod(MethodSignature methodSignature) {
@@ -147,14 +140,6 @@ public abstract class MinimalBytecodeTestSuiteBase {
     assertNotNull(body);
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-
-    /** Code to create expected statements */
-    StringBuffer stringBuffer = new StringBuffer();
-    for (String s : actualStmts) {
-      stringBuffer.append("\"" + s + "\",");
-    }
-    System.out.println(stringBuffer);
-    /** *********************************** */
     assertEquals(expectedStmts, actualStmts);
   }
 

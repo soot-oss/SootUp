@@ -1,22 +1,18 @@
 package de.upb.swt.soot.core.signatures;
 
-import de.upb.swt.soot.core.types.ClassType;
+import com.google.common.base.Suppliers;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.util.printer.StmtPrinter;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
 /**
  * Defines a sub-signature of a field, containing the field name and the type signature.
  *
  * @author Jan Martin Persch
- * @author Jan Martin Persch
  */
 public class FieldSubSignature extends AbstractClassMemberSubSignature
     implements Comparable<FieldSubSignature> {
-  // region Fields
-
-  // endregion /Fields/
-
-  // region Constructor
 
   /**
    * Creates a new instance of the {@link FieldSubSignature} class.
@@ -28,24 +24,24 @@ public class FieldSubSignature extends AbstractClassMemberSubSignature
     super(name, type);
   }
 
-  // endregion /Constructor/
-
-  // region Properties
-
-  // endregion /Properties/
-
-  // region Methods
-
   @Override
   public int compareTo(@Nonnull FieldSubSignature o) {
     return super.compareTo(o);
   }
 
+  private final Supplier<String> _cachedToString =
+      Suppliers.memoize(() -> String.format("%s %s", getType(), getName()));
+
   @Override
   @Nonnull
-  public FieldSignature toFullSignature(@Nonnull ClassType declClassSignature) {
-    return new FieldSignature(declClassSignature, this);
+  public String toString() {
+    return _cachedToString.get();
   }
 
-  // endregion /Methods/
+  @Override
+  public void toString(StmtPrinter printer) {
+    printer.typeSignature(getType());
+    printer.literal(" ");
+    printer.literal(getName());
+  }
 }

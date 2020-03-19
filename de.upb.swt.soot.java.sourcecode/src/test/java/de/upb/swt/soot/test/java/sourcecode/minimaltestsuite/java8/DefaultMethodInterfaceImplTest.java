@@ -47,7 +47,7 @@ public class DefaultMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
 
   /** TODO Update the source code once default methods in WALA are supported */
   @Ignore
-  public void defaultTest() {
+  public void test() {
 
     assertJimpleStmts(loadMethod(getMethodSignature()), expectedBodyStmts());
     assertJimpleStmts(loadMethod(getMethodSignature()), expectedBodyStmts());

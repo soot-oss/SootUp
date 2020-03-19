@@ -27,7 +27,9 @@
 
 package de.upb.swt.soot.core.model;
 
+import java.util.EnumSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -36,20 +38,23 @@ import javax.annotation.Nonnull;
  * methods to query these.
  */
 public enum Modifier {
-  ABSTRACT(0x0400),
-  FINAL(0x0010),
-  INTERFACE(0x0200),
-  NATIVE(0x0100),
+  PUBLIC(0x0001),
   PRIVATE(0x0002),
   PROTECTED(0x0004),
-  PUBLIC(0x0001),
+
+  ABSTRACT(0x0400),
   STATIC(0x0008),
+  FINAL(0x0010),
+
   SYNCHRONIZED(0x0020),
+  NATIVE(0x0100),
   TRANSIENT(0x0080), /* VARARGS for methods */
   VOLATILE(0x0040), /* BRIDGE for methods */
   STRICTFP(0x0800),
   ANNOTATION(0x2000),
   ENUM(0x4000),
+  INTERFACE(0x0200),
+
   MODULE(0x8000),
 
   // dex specifific modifiers
@@ -60,7 +65,7 @@ public enum Modifier {
   private final int bytecode;
 
   Modifier(int i) {
-    this.bytecode = i;
+    bytecode = i;
   }
 
   public static boolean isAbstract(@Nonnull Set<Modifier> m) {
@@ -193,11 +198,22 @@ public enum Modifier {
       builder.append("interface ");
     }
 
-    return (builder.toString()).trim();
+    // trim
+    final int lastCharPos = builder.length() - 1;
+    if (lastCharPos > 0) {
+      builder.setLength(lastCharPos);
+    }
+    return builder.toString();
+  }
+
+  @Nonnull
+  // depends on the natural order of the Enums!
+  public static String toString(@Nonnull EnumSet<Modifier> m) {
+    return m.stream().map((mod) -> mod.name().toLowerCase()).collect(Collectors.joining(" "));
   }
 
   /** @return the bytecode of this Modifier. */
   public int getBytecode() {
-    return this.bytecode;
+    return bytecode;
   }
 }

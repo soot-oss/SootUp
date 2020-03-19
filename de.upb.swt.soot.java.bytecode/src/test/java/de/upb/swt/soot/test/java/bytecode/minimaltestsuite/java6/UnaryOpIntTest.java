@@ -1,6 +1,7 @@
 package de.upb.swt.soot.test.java.bytecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import java.util.ArrayList;
@@ -21,9 +22,9 @@ public class UnaryOpIntTest extends MinimalBytecodeTestSuiteBase {
   }
 
   @Test
-  @Override
-  public void defaultTest() {
-    super.defaultTest();
+  public void test() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
     /**
      * TODO Do we need to check the type of variable as int?
      * assertTrue(getFields().stream().anyMatch(sootField -> {return

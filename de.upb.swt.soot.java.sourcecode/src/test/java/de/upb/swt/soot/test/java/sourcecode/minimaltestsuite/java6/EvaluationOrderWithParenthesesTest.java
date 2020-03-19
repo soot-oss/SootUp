@@ -32,7 +32,7 @@ public class EvaluationOrderWithParenthesesTest extends MinimalSourceTestSuiteBa
   }
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
   }

@@ -2,6 +2,7 @@ package de.upb.swt.soot.test.java.bytecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import java.util.Collections;
@@ -20,17 +21,16 @@ public class SymbolsAsClassNameTest extends MinimalBytecodeTestSuiteBase {
         "αρετηAsClassName", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Override
-  public void defaultTest() {
-    /**
-     * Exception in thread "main" java.nio.file.InvalidPathException: Illegal char <?> at index 1:
-     * a?et?.java
-     */
-  }
-
   @Ignore
-  public void ignoreTest() {
-    super.defaultTest();
+  public void test() {
+    /**
+     * TODO: does only work on a Unicode filesystem
+     *
+     * <p>Exception in thread "main" java.nio.file.InvalidPathException: Illegal char <?> at index
+     * 1: a?et?.java
+     */
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
     SootClass sootClass = loadClass(getDeclaredClassSignature());
     System.out.println(sootClass.getClassSource().getClassType().getClassName());
   }

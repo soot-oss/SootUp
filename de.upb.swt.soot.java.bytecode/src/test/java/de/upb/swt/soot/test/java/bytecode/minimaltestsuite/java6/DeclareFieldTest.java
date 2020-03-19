@@ -30,9 +30,10 @@ public class DeclareFieldTest extends MinimalBytecodeTestSuiteBase {
         "staticDisplay", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Override
-  public void defaultTest() {
-    super.defaultTest();
+  @org.junit.Test
+  public void test() {
+    SootMethod method1 = loadMethod(getMethodSignature());
+    assertJimpleStmts(method1, expectedBodyStmts());
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
     method = loadMethod(getStaticMethodSignature());

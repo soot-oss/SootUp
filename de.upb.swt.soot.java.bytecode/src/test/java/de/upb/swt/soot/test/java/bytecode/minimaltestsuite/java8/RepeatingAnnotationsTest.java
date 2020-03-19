@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import java.util.ArrayList;
@@ -13,7 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
@@ -26,12 +26,11 @@ public class RepeatingAnnotationsTest extends MinimalBytecodeTestSuiteBase {
         "annotaionMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Test
-  public void defaultTest() {}
-
   @Ignore
   public void annotationTest() {
-    super.defaultTest();
+    // TODO: after annotations are implemented
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
     SootClass sootClass = loadClass(getDeclaredClassSignature());
     assertTrue(Modifier.isAnnotation(sootClass.getModifiers()));
   }

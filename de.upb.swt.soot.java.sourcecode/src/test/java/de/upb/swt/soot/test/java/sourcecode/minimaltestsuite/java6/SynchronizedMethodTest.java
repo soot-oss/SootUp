@@ -1,5 +1,7 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.Assert.assertTrue;
+
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
@@ -8,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.Ignore;
 
 public class SynchronizedMethodTest extends MinimalSourceTestSuiteBase {
 
@@ -16,11 +19,12 @@ public class SynchronizedMethodTest extends MinimalSourceTestSuiteBase {
         "run", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @org.junit.Test
-  public void defaultTest() {
+  @Ignore
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
-    /** TODO assertTrue(method.isSynchronized()); */
+    // FIXME method is not marked as synchronized
+    assertTrue(method.isSynchronized());
   }
 
   @Override

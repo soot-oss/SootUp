@@ -18,8 +18,7 @@ import org.junit.experimental.categories.Category;
 public class MultiTryCatchTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
-  @Override
-  public void defaultTest() {
+  public void test() {
     /** TODO [KK] Stack positions changing. Add to issue list. */
   }
 
