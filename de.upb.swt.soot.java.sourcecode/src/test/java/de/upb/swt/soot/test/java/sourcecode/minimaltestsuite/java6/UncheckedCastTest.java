@@ -21,7 +21,7 @@ public class UncheckedCastTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: UncheckedCast",
-            "$r1 = newarray (java.lang.Object[])[4]",
+            "$r1 = newarray (java.lang.Object)[4]",
             "$r1[0] = 5",
             "$r1[1] = 8",
             "$r1[2] = 9",
