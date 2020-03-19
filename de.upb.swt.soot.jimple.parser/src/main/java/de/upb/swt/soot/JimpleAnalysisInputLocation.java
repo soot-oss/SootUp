@@ -7,9 +7,14 @@ import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import javax.annotation.Nonnull;
 
 public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
+  public JimpleAnalysisInputLocation(Set<String> locationSet) {
+    // TODO: implement
+  }
+
   @Nonnull
   @Override
   public Optional<? extends AbstractClassSource> getClassSource(@Nonnull ClassType type) {
