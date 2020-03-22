@@ -37,9 +37,14 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
 
   private final ValueBox baseBox;
 
+  // new attribute
+  private Value base;
+
   AbstractInstanceInvokeExpr(ValueBox baseBox, MethodSignature methodSig, ValueBox[] argBoxes) {
     super(methodSig, argBoxes);
     this.baseBox = baseBox;
+    // new attribute
+    this.base = baseBox.getValue();
   }
 
   public Value getBase() {
@@ -63,6 +68,23 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
     list.addAll(baseBox.getValue().getUseBoxes());
     list.add(baseBox);
 
+    return list;
+  }
+
+  // new method
+  @Override
+  public List<Value> getUses() {
+    List<Value> list = new ArrayList<>();
+    // getArgs in super class must be modified (not yet)
+    List<Value> args = getArgs();
+    if (args != null) {
+      list.addAll(args);
+      for (Value arg : args) {
+        list.addAll(arg.getUses());
+      }
+    }
+    list.addAll(base.getUses());
+    list.add(base);
     return list;
   }
 

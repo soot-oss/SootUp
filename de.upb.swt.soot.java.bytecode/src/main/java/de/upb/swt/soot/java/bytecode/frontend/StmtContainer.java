@@ -1,9 +1,6 @@
 package de.upb.swt.soot.java.bytecode.frontend;
 
-import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
@@ -45,8 +42,20 @@ class StmtContainer extends Stmt {
     throw new UnsupportedOperationException();
   }
 
+  // new method
+  @Override
+  public List<Value> getUses() {
+    throw new UnsupportedOperationException();
+  }
+
   @Override
   public List<ValueBox> getDefBoxes() {
+    throw new UnsupportedOperationException();
+  }
+
+  // new method
+  @Override
+  public List<Value> getDefs() {
     throw new UnsupportedOperationException();
   }
 

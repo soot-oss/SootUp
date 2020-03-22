@@ -34,10 +34,14 @@ import java.util.List;
 public abstract class AbstractOpStmt extends AbstractStmt {
 
   protected final ValueBox opBox;
+  // new attribute
+  protected Value op;
 
   protected AbstractOpStmt(ValueBox opBox, StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.opBox = opBox;
+    // new attribute
+    this.op = opBox.getValue();
   }
 
   public final Value getOp() {
@@ -54,6 +58,14 @@ public abstract class AbstractOpStmt extends AbstractStmt {
     List<ValueBox> list = new ArrayList<>(opBox.getValue().getUseBoxes());
     list.add(opBox);
 
+    return list;
+  }
+
+  // new method
+  @Override
+  public final List<Value> getUses() {
+    List<Value> list = new ArrayList<>(op.getUses());
+    list.add(op);
     return list;
   }
 

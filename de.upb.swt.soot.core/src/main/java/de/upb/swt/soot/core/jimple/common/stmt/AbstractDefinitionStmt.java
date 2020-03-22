@@ -37,10 +37,18 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
   private final ValueBox leftBox;
   private final ValueBox rightBox;
 
+  // new attributes
+  private Value leftOp;
+  private Value rightOp;
+
   AbstractDefinitionStmt(ValueBox leftBox, ValueBox rightBox, StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.leftBox = leftBox;
     this.rightBox = rightBox;
+
+    // new attributes
+    this.leftOp = leftBox.getValue();
+    this.rightOp = rightBox.getValue();
   }
 
   public final Value getLeftOp() {
@@ -64,11 +72,26 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
     return Collections.singletonList(leftBox);
   }
 
+  // new method
+  @Override
+  public final List<Value> getDefs() {
+    return Collections.singletonList(leftOp);
+  }
+
   @Override
   public final List<ValueBox> getUseBoxes() {
     List<ValueBox> list = new ArrayList<>(getLeftOp().getUseBoxes());
     list.add(rightBox);
     list.addAll(getRightOp().getUseBoxes());
+    return list;
+  }
+
+  // new method
+  @Override
+  public final List<Value> getUses() {
+    List<Value> list = new ArrayList<>(leftOp.getUses());
+    list.add(rightOp);
+    list.addAll(rightOp.getUses());
     return list;
   }
 

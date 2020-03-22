@@ -43,6 +43,10 @@ public interface Value extends Acceptor, EquivTo {
    */
   List<ValueBox> getUseBoxes();
 
+  //new method
+  /** Returns a List Values which are used by (ie contained within) this Value. */
+  List<Value> getUses();
+
   /** Returns the Soot type of this Value. */
   Type getType();
 

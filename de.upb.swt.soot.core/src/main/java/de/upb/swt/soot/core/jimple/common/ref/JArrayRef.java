@@ -47,6 +47,10 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   private final ValueBox indexBox;
   private final IdentifierFactory identifierFactory;
 
+  // new attributes
+  private Value base;
+  private Value index;
+
   public JArrayRef(Value base, Value index, IdentifierFactory identifierFactory) {
     this(Jimple.newLocalBox(base), Jimple.newImmediateBox(index), identifierFactory);
   }
@@ -55,6 +59,9 @@ public final class JArrayRef implements ConcreteRef, Copyable {
     this.baseBox = baseBox;
     this.indexBox = indexBox;
     this.identifierFactory = identifierFactory;
+    // new attributes;
+    this.base = baseBox.getValue();
+    this.index = indexBox.getValue();
   }
 
   private Type determineType(IdentifierFactory identifierFactory) {
@@ -137,6 +144,16 @@ public final class JArrayRef implements ConcreteRef, Copyable {
     useBoxes.add(indexBox);
 
     return useBoxes;
+  }
+
+  // new method
+  @Override
+  public List<Value> getUses() {
+    List<Value> list = new ArrayList<>(base.getUses());
+    list.add(base);
+    list.addAll(index.getUses());
+    list.add(index);
+    return list;
   }
 
   @Override
