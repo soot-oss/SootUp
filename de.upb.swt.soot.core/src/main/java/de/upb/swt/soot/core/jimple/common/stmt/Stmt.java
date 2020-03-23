@@ -41,7 +41,7 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     return Collections.emptyList();
   }
 
-  // new method*
+  // new method
   /** Returns a list of Values defined in this Unit. */
   public List<Value> getDefs() {
     return Collections.emptyList();
