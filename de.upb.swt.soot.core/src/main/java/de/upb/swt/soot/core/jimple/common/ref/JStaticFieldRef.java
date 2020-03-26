@@ -2,7 +2,6 @@ package de.upb.swt.soot.core.jimple.common.ref;
 
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.util.Copyable;
@@ -25,11 +24,6 @@ public final class JStaticFieldRef extends FieldRef implements Copyable {
   @Override
   public void toString(StmtPrinter up) {
     up.fieldSignature(getFieldSignature());
-  }
-
-  @Override
-  public List<ValueBox> getUseBoxes() {
-    return Collections.emptyList();
   }
 
   @Override

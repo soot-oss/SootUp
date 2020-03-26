@@ -46,7 +46,7 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
 
   private final ArrayType baseType;
   private final ValueBox[] sizeBoxes;
-  // new attribute
+  // new attribute: later if ValueBox is deleted, then add "final" to it.
   private Value[] sizes;
 
   /**
@@ -61,7 +61,7 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
     for (int i = 0; i < sizes.size(); i++) {
       sizeBoxes[i] = Jimple.newImmediateBox(sizes.get(i));
     }
-    // new attribute
+    // new attribute: later if ValueBox is deleted, then fit the constructor.
     this.sizes = Arrays.stream(sizeBoxes).map(ValueBox::getValue).toArray(Value[]::new);
   }
 
@@ -141,19 +141,6 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
     return toReturn;
   }
 
-  @Override
-  public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> list = new ArrayList<>();
-    Collections.addAll(list, sizeBoxes);
-
-    for (ValueBox element : sizeBoxes) {
-      list.addAll(element.getValue().getUseBoxes());
-    }
-
-    return list;
-  }
-
-  // new method
   @Override
   public final List<Value> getUses() {
     List<Value> list = new ArrayList<>();

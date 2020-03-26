@@ -37,13 +37,7 @@ import java.util.List;
  * <p>Values are typed, clonable and must declare which other Values they use (contain).
  */
 public interface Value extends Acceptor, EquivTo {
-  /**
-   * Returns a List of boxes corresponding to Values which are used by (ie contained within) this
-   * Value.
-   */
-  List<ValueBox> getUseBoxes();
 
-  // new method
   /** Returns a List Values which are used by (ie contained within) this Value. */
   List<Value> getUses();
 

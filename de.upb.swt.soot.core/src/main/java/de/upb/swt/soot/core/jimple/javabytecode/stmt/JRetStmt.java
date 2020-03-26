@@ -43,7 +43,7 @@ import javax.annotation.Nonnull;
 public final class JRetStmt extends AbstractStmt implements Copyable {
 
   private final ValueBox stmtAddressBox;
-  // new attribute
+  // new attributes: later if ValueBox is deleted, then add "final" to it.
   private Value stmtAddress;
   // List useBoxes;
 
@@ -55,7 +55,7 @@ public final class JRetStmt extends AbstractStmt implements Copyable {
     super(positionInfo);
     this.stmtAddressBox = stmtAddressBox;
 
-    // new attribute
+    // new attributes: later if ValueBox is deleted, then fit the constructor.
     this.stmtAddress = stmtAddressBox.getValue();
   }
 
@@ -79,16 +79,6 @@ public final class JRetStmt extends AbstractStmt implements Copyable {
     return stmtAddressBox;
   }
 
-  @Override
-  public List<ValueBox> getUseBoxes() {
-
-    List<ValueBox> useBoxes = new ArrayList<>(stmtAddressBox.getValue().getUseBoxes());
-    useBoxes.add(stmtAddressBox);
-
-    return useBoxes;
-  }
-
-  // new method
   @Override
   public List<Value> getUses() {
     List<Value> list = new ArrayList<>(stmtAddress.getUses());

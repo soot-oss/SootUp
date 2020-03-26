@@ -37,7 +37,7 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
   private final ValueBox leftBox;
   private final ValueBox rightBox;
 
-  // new attributes
+  // new attributes: later if ValueBox is deleted, then add "final" to it.
   private Value leftOp;
   private Value rightOp;
 
@@ -46,7 +46,7 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
     this.leftBox = leftBox;
     this.rightBox = rightBox;
 
-    // new attributes
+    // new attribute: later if ValueBox is deleted, then fit the constructor.
     this.leftOp = leftBox.getValue();
     this.rightOp = rightBox.getValue();
   }
@@ -68,25 +68,10 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
   }
 
   @Override
-  public final List<ValueBox> getDefBoxes() {
-    return Collections.singletonList(leftBox);
-  }
-
-  // new method
-  @Override
   public final List<Value> getDefs() {
     return Collections.singletonList(leftOp);
   }
 
-  @Override
-  public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> list = new ArrayList<>(getLeftOp().getUseBoxes());
-    list.add(rightBox);
-    list.addAll(getRightOp().getUseBoxes());
-    return list;
-  }
-
-  // new method
   @Override
   public final List<Value> getUses() {
     List<Value> list = new ArrayList<>(leftOp.getUses());

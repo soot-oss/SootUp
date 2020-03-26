@@ -32,12 +32,12 @@ import java.util.List;
 
 public abstract class AbstractUnopExpr implements Expr {
   private final ValueBox opBox;
-  // new attribute
+  // new attribute: later if ValueBox is deleted, then add "final" to it.
   private Value op;
 
   AbstractUnopExpr(ValueBox opBox) {
     this.opBox = opBox;
-    // new attribute
+    // new attribute: later if ValueBox is deleted, then fit the constructor.
     this.op = opBox.getValue();
   }
 
@@ -47,16 +47,6 @@ public abstract class AbstractUnopExpr implements Expr {
 
   public ValueBox getOpBox() {
     return opBox;
-  }
-
-  /** Returns a list of type ValueBox that contains values of type ValueBox. */
-  @Override
-  public final List<ValueBox> getUseBoxes() {
-
-    List<ValueBox> list = new ArrayList<>(opBox.getValue().getUseBoxes());
-    list.add(opBox);
-
-    return list;
   }
 
   @Override

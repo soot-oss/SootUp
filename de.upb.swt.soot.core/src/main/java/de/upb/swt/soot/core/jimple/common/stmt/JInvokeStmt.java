@@ -43,7 +43,7 @@ import javax.annotation.Nonnull;
 public final class JInvokeStmt extends AbstractStmt implements Copyable {
 
   private final ValueBox invokeExprBox;
-  // new attribute
+  // new attributes: later if ValueBox is deleted, then add "final" to it.
   private Value invokeExpr;
 
   public JInvokeStmt(Value invokeExpr, StmtPositionInfo positionInfo) {
@@ -53,7 +53,7 @@ public final class JInvokeStmt extends AbstractStmt implements Copyable {
   private JInvokeStmt(ValueBox invokeExprBox, StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.invokeExprBox = invokeExprBox;
-    // new attribute
+    // new attribute: later if ValueBox is deleted, then fit the constructor.
     this.invokeExpr = invokeExprBox.getValue();
   }
 
@@ -82,15 +82,6 @@ public final class JInvokeStmt extends AbstractStmt implements Copyable {
     return invokeExprBox;
   }
 
-  @Override
-  public List<ValueBox> getUseBoxes() {
-
-    List<ValueBox> list = new ArrayList<>(invokeExprBox.getValue().getUseBoxes());
-    list.add(invokeExprBox);
-
-    return list;
-  }
-  // new method
   @Override
   public List<Value> getUses() {
     List<Value> list = new ArrayList<>(invokeExpr.getUses());

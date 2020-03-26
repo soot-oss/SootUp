@@ -27,7 +27,6 @@ package de.upb.swt.soot.core.jimple.common.ref;
 
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
@@ -65,11 +64,6 @@ public final class JThisRef implements IdentityRef, Copyable {
     up.identityRef(this);
   }
 
-  @Override
-  public final List<ValueBox> getUseBoxes() {
-    return Collections.emptyList();
-  }
-  // new method
   @Override
   public final List<Value> getUses() {
     return Collections.emptyList();
