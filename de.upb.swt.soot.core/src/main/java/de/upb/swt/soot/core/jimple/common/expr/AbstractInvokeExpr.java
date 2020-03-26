@@ -42,10 +42,15 @@ public abstract class AbstractInvokeExpr implements Expr {
 
   private final MethodSignature methodSignature;
   private final ValueBox[] argBoxes;
+  // new attribute
+  private Value[] args;
 
   protected AbstractInvokeExpr(MethodSignature method, ValueBox[] argBoxes) {
     this.methodSignature = method;
     this.argBoxes = argBoxes.length == 0 ? null : argBoxes;
+
+    // new attribute
+    this.args = Arrays.stream(argBoxes).map(ValueBox::getValue).toArray(Value[]::new);
   }
 
   public MethodSignature getMethodSignature() {
@@ -90,6 +95,20 @@ public abstract class AbstractInvokeExpr implements Expr {
     Collections.addAll(list, argBoxes);
     for (ValueBox element : argBoxes) {
       list.addAll(element.getValue().getUseBoxes());
+    }
+    return list;
+  }
+
+  // new method
+  @Override
+  public List<Value> getUses() {
+    if (args == null) {
+      return Collections.emptyList();
+    }
+    List<Value> list = new ArrayList<>();
+    Collections.addAll(list, args);
+    for (Value arg : args) {
+      list.addAll(arg.getUses());
     }
     return list;
   }

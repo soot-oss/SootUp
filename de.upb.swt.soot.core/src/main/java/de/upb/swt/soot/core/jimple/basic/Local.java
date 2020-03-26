@@ -105,6 +105,12 @@ public final class Local implements Value, Immediate, Copyable {
     return Collections.emptyList();
   }
 
+  // new method
+  @Override
+  public final List<Value> getUses() {
+    return Collections.emptyList();
+  }
+
   @Override
   public void accept(Visitor sw) {
     ((JimpleValueVisitor) sw).caseLocal(this);

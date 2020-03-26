@@ -41,6 +41,11 @@ public interface Constant extends Value, Immediate {
   }
 
   @Override
+  default List<Value> getUses() {
+    return Collections.emptyList();
+  }
+
+  @Override
   default boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseConstant(this, o);
   }
