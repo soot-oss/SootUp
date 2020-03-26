@@ -32,13 +32,9 @@ import java.util.List;
 
 public abstract class AbstractUnopExpr implements Expr {
   private final ValueBox opBox;
-  // new attribute
-  private Value op;
 
   AbstractUnopExpr(ValueBox opBox) {
     this.opBox = opBox;
-    // new attribute
-    this.op = opBox.getValue();
   }
 
   public Value getOp() {
@@ -55,14 +51,6 @@ public abstract class AbstractUnopExpr implements Expr {
 
     List<ValueBox> list = new ArrayList<>(opBox.getValue().getUseBoxes());
     list.add(opBox);
-
-    return list;
-  }
-
-  @Override
-  public final List<Value> getUses() {
-    List<Value> list = new ArrayList<>(op.getUses());
-    list.add(op);
 
     return list;
   }

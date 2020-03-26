@@ -1,6 +1,9 @@
 package de.upb.swt.soot.core.jimple.common.stmt;
 
-import de.upb.swt.soot.core.jimple.basic.*;
+import de.upb.swt.soot.core.jimple.basic.EquivTo;
+import de.upb.swt.soot.core.jimple.basic.StmtBox;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
@@ -27,23 +30,11 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     return Collections.emptyList();
   }
 
-  // new method
-  /** Returns a list of Values used in this Unit. */
-  public List<Value> getUses() {
-    return Collections.emptyList();
-  }
-
   /**
    * Returns a list of Boxes containing Values defined in this Unit. The list of boxes is
    * dynamically updated as the structure changes.
    */
   public List<ValueBox> getDefBoxes() {
-    return Collections.emptyList();
-  }
-
-  // new method
-  /** Returns a list of Values defined in this Unit. */
-  public List<Value> getDefs() {
     return Collections.emptyList();
   }
 
@@ -93,22 +84,6 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
         valueBoxes.addAll(useBoxes);
         return valueBoxes;
       }
-    }
-  }
-
-  // new method
-  public List<Value> getUsesAndDefs() {
-    List<Value> uses = getUses();
-    List<Value> defs = getDefs();
-    if (uses.isEmpty()) {
-      return defs;
-    } else if (defs.isEmpty()) {
-      return uses;
-    } else {
-      List<Value> values = new ArrayList<>();
-      values.addAll(defs);
-      values.addAll(uses);
-      return values;
     }
   }
 

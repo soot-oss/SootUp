@@ -29,9 +29,6 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   private List<IntConstant> values;
   private final boolean isTableSwitch;
 
-  // new attribute
-  private Value key;
-
   private JSwitchStmt(
       boolean isTableSwitch,
       StmtPositionInfo positionInfo,
@@ -43,8 +40,6 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
     this.keyBox = keyBox;
     this.defaultTargetBox = defaultTargetBox;
     this.targetBoxes = targetBoxes;
-    // new attribute
-    this.key = keyBox.getValue();
 
     // Build up stmtBoxes
     List<StmtBox> list = new ArrayList<>();
@@ -194,14 +189,6 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
     List<ValueBox> list = new ArrayList<>(keyBox.getValue().getUseBoxes());
     list.add(keyBox);
 
-    return list;
-  }
-
-  // new method
-  @Override
-  public final List<Value> getUses() {
-    List<Value> list = new ArrayList<>(key.getUses());
-    list.add(key);
     return list;
   }
 

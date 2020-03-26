@@ -26,8 +26,6 @@ import javax.annotation.Nonnull;
 public final class JInstanceFieldRef extends FieldRef implements Copyable {
 
   private final ValueBox baseBox;
-  // new attribute
-  private Value base;
 
   /**
    * Create a reference to a class' instance field.
@@ -38,8 +36,6 @@ public final class JInstanceFieldRef extends FieldRef implements Copyable {
   public JInstanceFieldRef(Value base, FieldSignature fieldSig) {
     super(fieldSig);
     this.baseBox = Jimple.newLocalBox(base);
-    // new attribute
-    this.base = base;
   }
 
   @Override
@@ -70,14 +66,6 @@ public final class JInstanceFieldRef extends FieldRef implements Copyable {
     useBoxes.add(baseBox);
 
     return useBoxes;
-  }
-
-  // new method
-  @Override
-  public final List<Value> getUses() {
-    List<Value> list = new ArrayList<>(base.getUses());
-    list.add(base);
-    return list;
   }
 
   @Override
