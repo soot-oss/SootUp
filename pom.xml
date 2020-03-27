@@ -28,9 +28,6 @@
     <maven.compiler.version>3.8.0</maven.compiler.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <!-- <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
-      <checkstyle.version>8.9</checkstyle.version> <checkstyle.dir.path>${basedir}/codingstyle</checkstyle.dir.path>
-      <checkstyle.file.path>${checkstyle.dir.path}/google_checkstyle.xml</checkstyle.file.path> -->
     <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
     <jacoco-maven-plugin.version>0.8.4</jacoco-maven-plugin.version>
     <jacoco-badge-maven-plugin.version>0.1.3</jacoco-badge-maven-plugin.version>
@@ -85,19 +82,6 @@
 
   <build>
     <plugins>
-      <!-- plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-compiler-plugin</artifactId>
-        <version>${maven.compiler.version}</version> <configuration> <source>${maven.compiler.source}</source>
-        <target>${maven.compiler.target}</target> </configuration> </plugin> <plugin>
-        <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>${maven-checkstyle-plugin.version}</version> <dependencies> <dependency>
-        <groupId>com.puppycrawl.tools</groupId> <artifactId>checkstyle</artifactId>
-        <version>${checkstyle.version}</version> </dependency> </dependencies> <executions>
-        <execution> <id>checkstyle</id> <phase>verify</phase> <goals> <goal>check</goal>
-        </goals> </execution> </executions> <configuration> <propertyExpansion>config_loc=${checkstyle.dir.path}</propertyExpansion>
-        <configLocation>${checkstyle.file.path}</configLocation> <suppressionsLocation>${checkstyle.dir.path}/checkstyle_supressions.xml</suppressionsLocation>
-        <encoding>UTF-8</encoding> <logViolationsToConsole>true</logViolationsToConsole>
-        <failOnViolation>true</failOnViolation> <violationSeverity>warning</violationSeverity>
-        </configuration> </plugin> -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
