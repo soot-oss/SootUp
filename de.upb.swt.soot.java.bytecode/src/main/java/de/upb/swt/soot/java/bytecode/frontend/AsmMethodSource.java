@@ -456,11 +456,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         continue;
       }
       if (local != null && !operand.value.equivTo(local)) {
-        List<ValueBox> uses = operand.value.getUseBoxes();
+        List<Value> uses = operand.value.getUses();
         boolean noref = true;
-        for (ValueBox use : uses) {
-          Value val = use.getValue();
-          if (val.equivTo(local)) {
+        for (Value use : uses) {
+          if (use.equivTo(local)) {
             noref = false;
             break;
           }

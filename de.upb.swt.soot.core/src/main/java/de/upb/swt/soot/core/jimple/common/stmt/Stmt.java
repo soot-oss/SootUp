@@ -19,29 +19,13 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
   @Nullable private List<StmtBox> boxesPointingToThis = null;
 
   /**
-   * Returns a list of Boxes containing Values used in this Unit. The list of boxes is dynamically
-   * updated as the structure changes. Note that they are returned in usual evaluation order. (this
-   * is important for aggregation)
+   * Returns a list of Values used in this Unit. Note that they are returned in usual evaluation
+   * order.
    */
-  public List<ValueBox> getUseBoxes() {
-    return Collections.emptyList();
-  }
-
-  // new method
-  /** Returns a list of Values used in this Unit. */
   public List<Value> getUses() {
     return Collections.emptyList();
   }
 
-  /**
-   * Returns a list of Boxes containing Values defined in this Unit. The list of boxes is
-   * dynamically updated as the structure changes.
-   */
-  public List<ValueBox> getDefBoxes() {
-    return Collections.emptyList();
-  }
-
-  // new method
   /** Returns a list of Values defined in this Unit. */
   public List<Value> getDefs() {
     return Collections.emptyList();
@@ -78,25 +62,7 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     }
   }
 
-  /** Returns a list of ValueBoxes, either used or defined in this Unit. */
-  public List<ValueBox> getUseAndDefBoxes() {
-    List<ValueBox> useBoxes = getUseBoxes();
-    List<ValueBox> defBoxes = getDefBoxes();
-    if (useBoxes.isEmpty()) {
-      return defBoxes;
-    } else {
-      if (defBoxes.isEmpty()) {
-        return useBoxes;
-      } else {
-        List<ValueBox> valueBoxes = new ArrayList<>();
-        valueBoxes.addAll(defBoxes);
-        valueBoxes.addAll(useBoxes);
-        return valueBoxes;
-      }
-    }
-  }
-
-  // new method
+  /** Returns a list of Values, either used or defined or both in this Unit. */
   public List<Value> getUsesAndDefs() {
     List<Value> uses = getUses();
     List<Value> defs = getDefs();

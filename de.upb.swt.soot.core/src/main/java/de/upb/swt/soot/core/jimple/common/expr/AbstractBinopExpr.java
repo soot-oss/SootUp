@@ -37,7 +37,7 @@ public abstract class AbstractBinopExpr implements Expr {
   private final ValueBox op1Box;
   private final ValueBox op2Box;
 
-  // new attributes
+  // new attributes : later if ValueBox is deleted, then add "final" to it.
   private Value op1;
   private Value op2;
 
@@ -45,7 +45,7 @@ public abstract class AbstractBinopExpr implements Expr {
     this.op1Box = op1Box;
     this.op2Box = op2Box;
 
-    // new attributes
+    // new attributes: later if ValueBox is deleted, then fit the constructor.
     this.op1 = op1Box.getValue();
     this.op2 = op2Box.getValue();
   }
@@ -66,18 +66,6 @@ public abstract class AbstractBinopExpr implements Expr {
     return op2Box;
   }
 
-  @Override
-  public final List<ValueBox> getUseBoxes() {
-
-    List<ValueBox> list = new ArrayList<>(op1Box.getValue().getUseBoxes());
-    list.add(op1Box);
-    list.addAll(op2Box.getValue().getUseBoxes());
-    list.add(op2Box);
-
-    return list;
-  }
-
-  // new method
   @Override
   public final List<Value> getUses() {
     List<Value> list = new ArrayList<>(op1.getUses());

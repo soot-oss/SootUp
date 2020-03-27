@@ -28,7 +28,6 @@ package de.upb.swt.soot.core.jimple.common.expr;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.ReferenceType;
@@ -81,12 +80,6 @@ public final class JNewExpr implements Expr, Copyable {
     return type;
   }
 
-  @Override
-  public List<ValueBox> getUseBoxes() {
-    return Collections.emptyList();
-  }
-
-  // new method
   @Override
   public List<Value> getUses() {
     return Collections.emptyList();

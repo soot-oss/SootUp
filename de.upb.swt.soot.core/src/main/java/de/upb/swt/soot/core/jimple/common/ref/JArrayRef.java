@@ -47,7 +47,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   private final ValueBox indexBox;
   private final IdentifierFactory identifierFactory;
 
-  // new attributes
+  // new attributes : later if ValueBox is deleted, then add "final" to it.
   private Value base;
   private Value index;
 
@@ -59,7 +59,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
     this.baseBox = baseBox;
     this.indexBox = indexBox;
     this.identifierFactory = identifierFactory;
-    // new attributes;
+    // new attributes: later if ValueBox is deleted, then fit the constructor.
     this.base = baseBox.getValue();
     this.index = indexBox.getValue();
   }
@@ -134,19 +134,6 @@ public final class JArrayRef implements ConcreteRef, Copyable {
     return indexBox;
   }
 
-  @Override
-  public List<ValueBox> getUseBoxes() {
-
-    List<ValueBox> useBoxes = new ArrayList<>(baseBox.getValue().getUseBoxes());
-    useBoxes.add(baseBox);
-
-    useBoxes.addAll(indexBox.getValue().getUseBoxes());
-    useBoxes.add(indexBox);
-
-    return useBoxes;
-  }
-
-  // new method
   @Override
   public List<Value> getUses() {
     List<Value> list = new ArrayList<>(base.getUses());

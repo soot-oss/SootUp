@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 public final class JInstanceFieldRef extends FieldRef implements Copyable {
 
   private final ValueBox baseBox;
-  // new attribute
+  // new attribute: later if ValueBox is deleted, then add "final" to it.
   private Value base;
 
   /**
@@ -62,17 +62,6 @@ public final class JInstanceFieldRef extends FieldRef implements Copyable {
     return baseBox;
   }
 
-  /** Returns a list useBoxes of type ValueBox. */
-  @Override
-  public final List<ValueBox> getUseBoxes() {
-
-    List<ValueBox> useBoxes = new ArrayList<>(baseBox.getValue().getUseBoxes());
-    useBoxes.add(baseBox);
-
-    return useBoxes;
-  }
-
-  // new method
   @Override
   public final List<Value> getUses() {
     List<Value> list = new ArrayList<>(base.getUses());

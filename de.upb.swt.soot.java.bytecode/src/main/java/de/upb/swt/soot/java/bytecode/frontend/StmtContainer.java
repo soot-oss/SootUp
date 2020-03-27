@@ -38,22 +38,10 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public List<ValueBox> getUseBoxes() {
-    throw new UnsupportedOperationException();
-  }
-
-  // new method
-  @Override
   public List<Value> getUses() {
     throw new UnsupportedOperationException();
   }
 
-  @Override
-  public List<ValueBox> getDefBoxes() {
-    throw new UnsupportedOperationException();
-  }
-
-  // new method
   @Override
   public List<Value> getDefs() {
     throw new UnsupportedOperationException();
@@ -70,7 +58,7 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public List<ValueBox> getUseAndDefBoxes() {
+  public List<Value> getUsesAndDefs() {
     throw new UnsupportedOperationException();
   }
 
