@@ -1,6 +1,7 @@
 pipeline {
   agent none
   options {
+    buildDiscarder(logRotator(numToKeepStr: '1')) 
     parallelsAlwaysFailFast()
   }
   stages {

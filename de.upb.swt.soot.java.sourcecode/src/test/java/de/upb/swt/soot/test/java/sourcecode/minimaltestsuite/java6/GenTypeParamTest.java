@@ -1,14 +1,16 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.Test;
 
-public class GenTypeParamTest extends MinimalTestSuiteBase {
+public class GenTypeParamTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
@@ -22,7 +24,7 @@ public class GenTypeParamTest extends MinimalTestSuiteBase {
             "r0 := @this: GenTypeParam",
             "$r1 = new java.util.ArrayList",
             "specialinvoke $r1.<java.util.ArrayList: void <init>(int)>(3)",
-            "$r2 = newarray (java.lang.Object[])[3]",
+            "$r2 = newarray (java.lang.Object)[3]",
             "$r2[0] = 1",
             "$r2[1] = 2",
             "$r2[2] = 3",
@@ -36,5 +38,11 @@ public class GenTypeParamTest extends MinimalTestSuiteBase {
             "virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.Object)>($r7)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
+  }
+
+  @Test
+  public void test() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
   }
 }

@@ -152,8 +152,7 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
     argBoxesToPrinter(up);
 
     up.literal(") ");
-    MethodSignature op = this.bootstrapMethodSignature;
-    up.methodSignature(op);
+    up.methodSignature(bootstrapMethodSignature);
     up.literal("(");
     final int len = bootstrapMethodSignatureArgBoxes.length;
     if (0 < len) {

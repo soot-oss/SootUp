@@ -28,7 +28,6 @@ package de.upb.swt.soot.core.jimple.common.constant;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +35,7 @@ import java.util.List;
 public interface Constant extends Value, Immediate {
 
   @Override
-  default List<ValueBox> getUseBoxes() {
+  default List<Value> getUses() {
     return Collections.emptyList();
   }
 

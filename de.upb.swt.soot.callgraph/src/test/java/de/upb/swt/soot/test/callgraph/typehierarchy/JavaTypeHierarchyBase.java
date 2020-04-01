@@ -15,12 +15,15 @@ import org.junit.runner.Description;
 
 /** @author: Hasitha Rajapakse * */
 public class JavaTypeHierarchyBase {
+  // Test Resource Folder Path
   static final String baseDir = "src/test/resources/javatypehierarchy/";
+
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
   @ClassRule public static CustomTestWatcher customTestWatcher = new CustomTestWatcher();
 
   public static class CustomTestWatcher extends TestWatcher {
+
     private String className = JavaTypeHierarchyBase.class.getSimpleName();
     private AnalysisInputLocation srcCode;
     private JavaView view;
@@ -28,8 +31,11 @@ public class JavaTypeHierarchyBase {
 
     @Override
     protected void starting(Description description) {
+
       String prevClassName = getClassName();
+
       setClassName(extractClassName(description.getClassName()));
+
       if (!prevClassName.equals(getClassName())) {
         srcCode =
             new JavaSourcePathAnalysisInputLocation(
@@ -61,6 +67,7 @@ public class JavaTypeHierarchyBase {
   }
 
   public static String extractClassName(String classPath) {
+
     String classPathArray = classPath.substring(classPath.lastIndexOf(".") + 1);
     String testDirectoryName = "";
     if (!classPathArray.isEmpty()) {

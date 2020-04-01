@@ -2,7 +2,7 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
 
-public class DeclareConstructorTest extends MinimalTestSuiteBase {
+public class DeclareConstructorTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignatureInitOneParam() {
     return identifierFactory.getMethodSignature(
@@ -24,8 +24,7 @@ public class DeclareConstructorTest extends MinimalTestSuiteBase {
   }
 
   @Test
-  @Override
-  public void defaultTest() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignatureInitOneParam());
     assertJimpleStmts(method, expectedBodyStmts());
     method = loadMethod(getMethodSignatureInitTwoParam());

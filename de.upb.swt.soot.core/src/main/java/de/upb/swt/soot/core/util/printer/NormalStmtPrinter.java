@@ -7,9 +7,6 @@ import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.signatures.FieldSignature;
-import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.Type;
 
 /** StmtPrinter implementation for normal (full) Jimple */
 public class NormalStmtPrinter extends LabeledStmtPrinter {
@@ -18,13 +15,6 @@ public class NormalStmtPrinter extends LabeledStmtPrinter {
 
   public NormalStmtPrinter(Body b) {
     super(b);
-  }
-
-  @Override
-  public void typeSignature(Type t) {
-    handleIndent();
-    String s = t == null ? "<null>" : t.toString();
-    output.append(s);
   }
 
   @Override
@@ -43,14 +33,14 @@ public class NormalStmtPrinter extends LabeledStmtPrinter {
   public void identityRef(IdentityRef r) {
     handleIndent();
     if (r instanceof JThisRef) {
-      literal("@this: ");
+      output.append("@this: ");
       typeSignature(r.getType());
     } else if (r instanceof JParameterRef) {
       JParameterRef pr = (JParameterRef) r;
-      literal("@parameter" + pr.getIndex() + ": ");
+      output.append("@parameter" + pr.getIndex() + ": ");
       typeSignature(r.getType());
     } else if (r instanceof JCaughtExceptionRef) {
-      literal("@caughtexception");
+      output.append("@caughtexception");
     } else {
       throw new RuntimeException();
     }
@@ -58,17 +48,6 @@ public class NormalStmtPrinter extends LabeledStmtPrinter {
 
   @Override
   public void literal(String s) {
-    handleIndent();
     output.append(s);
-  }
-
-  @Override
-  public void methodSignature(MethodSignature sig) {
-    output.append(sig.toString());
-  }
-
-  @Override
-  public void fieldSignature(FieldSignature fieldSig) {
-    output.append(fieldSig.toString());
   }
 }

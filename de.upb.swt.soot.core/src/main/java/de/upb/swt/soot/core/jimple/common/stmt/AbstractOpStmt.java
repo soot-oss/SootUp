@@ -34,10 +34,14 @@ import java.util.List;
 public abstract class AbstractOpStmt extends AbstractStmt {
 
   protected final ValueBox opBox;
+  // new attribute: later if ValueBox is deleted, then add "final" to it.
+  protected Value op;
 
   protected AbstractOpStmt(ValueBox opBox, StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.opBox = opBox;
+    // new attribute: later if ValueBox is deleted, then fit the constructor
+    this.op = opBox.getValue();
   }
 
   public final Value getOp() {
@@ -49,11 +53,9 @@ public abstract class AbstractOpStmt extends AbstractStmt {
   }
 
   @Override
-  public final List<ValueBox> getUseBoxes() {
-
-    List<ValueBox> list = new ArrayList<>(opBox.getValue().getUseBoxes());
-    list.add(opBox);
-
+  public final List<Value> getUses() {
+    List<Value> list = new ArrayList<>(op.getUses());
+    list.add(op);
     return list;
   }
 

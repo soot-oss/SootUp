@@ -65,6 +65,10 @@ public final class AsmUtil {
    * @return fully qualified name.
    */
   public static String toQualifiedName(@Nonnull String internal) {
+    final int endpos = internal.length() - 1;
+    if (endpos > 2 && internal.charAt(endpos) == ';' && internal.charAt(0) == 'L') {
+      internal = internal.substring(1, endpos);
+    }
     return internal.replace('/', '.');
   }
 
@@ -78,6 +82,18 @@ public final class AsmUtil {
       }
     }
     return modifierEnumSet;
+  }
+
+  /**
+   * Converts a type descriptor to a Jimple reference type.
+   *
+   * @param desc the descriptor.
+   * @return the reference type.
+   */
+  public static Type toJimpleClassType(String desc) {
+    return desc.charAt(0) == '['
+        ? toJimpleType(desc)
+        : JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(desc));
   }
 
   @Nonnull
@@ -140,6 +156,7 @@ public final class AsmUtil {
 
   @Nonnull
   public static List<Type> toJimpleSignatureDesc(@Nonnull String desc) {
+    // TODO: [ms] check to improve/simplify this method
     List<Type> types = new ArrayList<>(2);
     int len = desc.length();
     int idx = 0;

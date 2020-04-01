@@ -29,16 +29,65 @@ import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.PackageName;
+import de.upb.swt.soot.core.types.ArrayType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nonnull;
 
 /** Partial default StmtPrinter implementation. */
 public abstract class AbstractStmtPrinter implements StmtPrinter {
 
   protected boolean startOfLine = true;
-  protected String indent = "        ";
+
+  protected final char indentChar = '\u0020';
+  protected final int indentStep = 4;
+  protected int indent = 0;
+
   protected StringBuilder output = new StringBuilder();
-  protected HashSet<String> quotableLocals;
+  private HashMap<String, PackageName> imports = new HashMap<>();
+
+  boolean useImports = false;
+
+  void enableImports(boolean enable) {
+    useImports = enable;
+  }
+
+  /**
+   * * addImport keeps track of imported Packages/Classes
+   *
+   * @return whether this ClassName does not collide with another ClassName from a different package
+   *     that was already added
+   */
+  public boolean addImport(Type referencedImport) {
+    if (referencedImport instanceof ClassType) {
+      final String referencedClassName = ((ClassType) referencedImport).getClassName();
+      final PackageName referencedPackageName = ((ClassType) referencedImport).getPackageName();
+      // handle ClassName/import collisions
+      final PackageName packageName = imports.get(referencedClassName);
+      if (packageName == null) {
+        imports.put(referencedClassName, referencedPackageName);
+        return true;
+      } else if (packageName.equals(referencedPackageName)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public Map<String, PackageName> getImports() {
+    return imports;
+  }
+
+  public void stmt(Stmt currentStmt) {
+    startStmt(currentStmt);
+    currentStmt.toString(this);
+    endStmt(currentStmt);
+    output.append(";");
+    newline();
+  }
 
   @Override
   public void startStmt(Stmt u) {
@@ -70,32 +119,47 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   }
 
   @Override
+  public void setIndent(int offset) {
+    indent += offset;
+  }
+
+  @Override
   public void incIndent() {
-    indent = indent + "    ";
+    indent += indentStep;
   }
 
   @Override
   public void decIndent() {
-    if (indent.length() >= 4) {
-      indent = indent.substring(4);
-    }
-  }
-
-  @Override
-  public void setIndent(String indent) {
-    this.indent = indent;
-  }
-
-  @Override
-  public String getIndent() {
-    return indent;
+    indent -= indentStep;
   }
 
   @Override
   public abstract void literal(String s);
 
+  public void modifier(String str) {
+    handleIndent();
+    output.append(str);
+  };
+
   @Override
-  public abstract void typeSignature(Type t);
+  public void typeSignature(@Nonnull Type type) {
+    handleIndent();
+    if (type == null) {
+      output.append("<null>");
+      return;
+    } else if (useImports) {
+      if (type instanceof ClassType) {
+        if (addImport(type)) {
+          output.append(((ClassType) type).getClassName());
+          return;
+        }
+      } else if (type instanceof ArrayType) {
+        ((ArrayType) type).toString(this);
+        return;
+      }
+    }
+    output.append(type);
+  }
 
   @Override
   public abstract void method(SootMethod m);
@@ -124,25 +188,20 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   @Override
   public void constant(Constant c) {
     handleIndent();
-    output.append(c.toString());
+    output.append(c);
+  }
+
+  public void handleIndent() {
+    if (startOfLine) {
+      for (int i = indent; i > 0; i--) {
+        output.append(indentChar);
+      }
+    }
+    startOfLine = false;
   }
 
   @Override
   public String toString() {
-    String ret = output.toString();
-    output = new StringBuilder();
-    return ret;
-  }
-
-  @Override
-  public StringBuilder output() {
-    return output;
-  }
-
-  protected void handleIndent() {
-    if (startOfLine) {
-      output.append(indent);
-    }
-    startOfLine = false;
+    return output.toString();
   }
 }

@@ -117,7 +117,9 @@ public class ModuleCompositionTest {
                 null,
                 ImmutableUtils.immutableSet(
                     SootField.builder()
-                        .withSignature(nameFieldSubSignature.toFullSignature(classSignature))
+                        .withSignature(
+                            JavaIdentifierFactory.getInstance()
+                                .getFieldSignature(classSignature, nameFieldSubSignature))
                         .withModifiers(Modifier.PUBLIC)
                         .build()),
                 ImmutableUtils.immutableSet(
@@ -139,7 +141,9 @@ public class ModuleCompositionTest {
                               }
                             })
                         .withSignature(
-                            optionalToStreamMethodSubSignature.toFullSignature(classSignature))
+                            JavaIdentifierFactory.getInstance()
+                                .getMethodSignature(
+                                    classSignature, optionalToStreamMethodSubSignature))
                         .withModifiers(Modifier.PUBLIC)
                         .build()),
                 null,
