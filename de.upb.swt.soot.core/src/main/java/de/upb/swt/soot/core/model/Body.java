@@ -21,11 +21,7 @@ package de.upb.swt.soot.core.model;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
-import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
@@ -292,31 +288,31 @@ public final class Body implements Copyable {
   }
 
   /**
-   * Returns the results of iterating through all Stmts in this Body and querying them for ValueBoxes defined.
-   * All of the ValueBoxes found are then returned as a List.
+   * Returns the results of iterating through all Stmts in this Body and querying them for
+   * ValueBoxes defined. All of the ValueBoxes found are then returned as a List.
    *
    * @return a List of all the ValueBoxes for Values defined by this Body's Stmts.
    */
-  public Collection<ValueBox> getUseBoxes() {
-    ArrayList<ValueBox> useBoxList = new ArrayList<>();
+  public Collection<Value> getUseBoxes() {
+    ArrayList<Value> useBoxList = new ArrayList<>();
 
     for (Stmt stmt : stmts) {
-      useBoxList.addAll(stmt.getDefBoxes());
+      useBoxList.addAll(stmt.getUses());
     }
     return useBoxList;
   }
 
   /**
-   * Returns the results of iterating through all Stmts in this Body and querying them for ValueBoxes defined.
-   * All of the ValueBoxes found are then returned as a List.
+   * Returns the results of iterating through all Stmts in this Body and querying them for
+   * ValueBoxes defined. All of the ValueBoxes found are then returned as a List.
    *
    * @return a List of all the ValueBoxes for Values defined by this Body's Stmts.
    */
-  public Collection<ValueBox> getDefBoxes() {
-    ArrayList<ValueBox> defBoxList = new ArrayList<>();
+  public Collection<Value> getDefBoxes() {
+    ArrayList<Value> defBoxList = new ArrayList<>();
 
     for (Stmt stmt : stmts) {
-      defBoxList.addAll(stmt.getDefBoxes());
+      defBoxList.addAll(stmt.getDefs());
     }
     return defBoxList;
   }
