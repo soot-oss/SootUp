@@ -13,12 +13,10 @@ import de.upb.swt.soot.java.bytecode.interceptors.UnusedLocalEliminator;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
