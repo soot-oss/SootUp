@@ -4,14 +4,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import com.ibm.wala.util.collections.ArraySet;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.ref.FieldRef;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,13 +43,18 @@ public class SubClassShadowingTest extends MinimalSourceTestSuiteBase {
   @Test
   public void testClassesOfStringLocalAreDifferent() {
     List<Stmt> stmts = methodBody.getStmts();
-    Set<String> clazzes = new ArraySet<String>();
+    Set<ClassType> clazzes = new HashSet<>();
     for (Stmt stmt : stmts) {
-      if (stmt.toString().contains("info")) {
-        clazzes.add(getClassName(stmt));
+      if (stmt instanceof JAssignStmt) {
+        final Value rightOp = ((JAssignStmt) stmt).getRightOp();
+        if (rightOp instanceof FieldRef) {
+          final ClassType declClassType =
+              ((FieldRef) rightOp).getFieldSignature().getDeclClassType();
+          clazzes.add(declClassType);
+        }
       }
     }
-    assertTrue(clazzes.size() > 1);
+    assertTrue(clazzes.size() == 3);
   }
 
   @Override
