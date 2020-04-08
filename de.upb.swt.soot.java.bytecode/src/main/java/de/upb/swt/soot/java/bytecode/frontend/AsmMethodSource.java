@@ -47,7 +47,6 @@ import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.FieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
-import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractOpStmt;
@@ -511,7 +510,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       frame.setOut(opr);
     } else {
       opr = out[0];
-      type = opr.<JFieldRef>value().getFieldSignature().getType();
+      type = opr.<FieldRef>value().getFieldSignature().getType();
       if (insn.getOpcode() == GETFIELD) {
         frame.mergeIn(pop());
       }
@@ -559,7 +558,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       setUnit(insn, as);
     } else {
       opr = out[0];
-      type = opr.<JFieldRef>value().getFieldSignature().getType();
+      type = opr.<FieldRef>value().getFieldSignature().getType();
       rvalue = pop(type);
       if (notInstance) {
         /* PUTSTATIC only needs one operand on the stack, the rvalue */
