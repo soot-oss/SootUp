@@ -194,14 +194,12 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    */
   @Override
   public JArrayRef getArrayRef() {
-    if (!containsArrayRef()) {
-      throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
-    }
-
-    if (getLeftBox().getValue() instanceof JArrayRef) {
+    if (getLeftOp() instanceof JArrayRef) {
       return (JArrayRef) getLeftBox().getValue();
-    } else {
+    } else if (getRightOp() instanceof JArrayRef) {
       return (JArrayRef) getRightBox().getValue();
+    } else {
+      throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
     }
   }
 
