@@ -5,7 +5,9 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.ref.FieldRef;
+import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.signatures.FieldSignature;
@@ -29,19 +31,25 @@ public class SubClassShadowingTest extends MinimalSourceTestSuiteBase {
 
     List<Stmt> stmts = methodBody.getStmts();
     Set<ClassType> clazzes = new HashSet<>();
+    boolean parameterLocal = false;
     for (Stmt stmt : stmts) {
       if (stmt instanceof JAssignStmt) {
         final Value rightOp = ((JAssignStmt) stmt).getRightOp();
         if (rightOp instanceof FieldRef) {
           final FieldSignature fieldSignature = ((FieldRef) rightOp).getFieldSignature();
-          if (fieldSignature.getName() == "info") {
+          if (fieldSignature.getName().equals("info")) {
             final ClassType declClassType = fieldSignature.getDeclClassType();
             clazzes.add(declClassType);
           }
         }
+      } else if (stmt instanceof JIdentityStmt
+          && ((JIdentityStmt) stmt).getRightOp() instanceof JParameterRef) {
+        // "info" refers to parameter; but name information for Locals is currently not kept
+        parameterLocal = true;
       }
     }
-    assertTrue(clazzes.size() == 3);
+    assertTrue(parameterLocal);
+    assertTrue(clazzes.size() == 2);
   }
 
   @Override
