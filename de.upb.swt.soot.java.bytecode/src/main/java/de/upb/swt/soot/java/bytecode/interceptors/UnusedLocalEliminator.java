@@ -27,7 +27,6 @@ public class UnusedLocalEliminator implements BodyInterceptor {
   @Override
   public Body interceptBody(@Nonnull Body originalBody) {
 
-    Set<Local> originalLocals = originalBody.getLocals();
     Set<Local> locals = new HashSet<>();
 
     // Traverse statements copying all used uses and defs
@@ -35,7 +34,6 @@ public class UnusedLocalEliminator implements BodyInterceptor {
       for (Value value : stmt.getUsesAndDefs()) {
         if (value instanceof Local) {
           Local local = (Local) value;
-          assert originalLocals.contains(local);
           locals.add(local);
         }
       }

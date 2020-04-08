@@ -42,17 +42,14 @@ public class UnusedLocalEliminatorTest {
 
     Set<Local> originalLocals = originalBody.getLocals();
     Set<Local> processedLocals = processedBody.getLocals();
+    JavaClassType objectType = JavaIdentifierFactory.getInstance().getClassType("java.lang.Object");
+    JavaClassType stringType = JavaIdentifierFactory.getInstance().getClassType("java.lang.String");
 
     assertEquals(4, originalLocals.size());
     assertEquals(2, processedLocals.size());
     processedLocals = processedBody.getLocals();
-    for (Local local : originalLocals) {
-      if (local.getName().equals("a") || local.getName().equals("b")) {
-        assertTrue(processedLocals.contains(local));
-      } else {
-        assertFalse(processedLocals.contains(local));
-      }
-    }
+    assertTrue(processedLocals.contains(new Local("a", objectType)));
+    assertTrue(processedLocals.contains(new Local("b", stringType)));
   }
 
   @Test

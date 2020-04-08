@@ -293,7 +293,7 @@ public final class Body implements Copyable {
    *
    * @return a List of all the ValueBoxes for Values defined by this Body's Stmts.
    */
-  public Collection<Value> getUseBoxes() {
+  public Collection<Value> getUses() {
     ArrayList<Value> useBoxList = new ArrayList<>();
 
     for (Stmt stmt : stmts) {
@@ -308,7 +308,7 @@ public final class Body implements Copyable {
    *
    * @return a List of all the ValueBoxes for Values defined by this Body's Stmts.
    */
-  public Collection<Value> getDefBoxes() {
+  public Collection<Value> getDefs() {
     ArrayList<Value> defBoxList = new ArrayList<>();
 
     for (Stmt stmt : stmts) {
