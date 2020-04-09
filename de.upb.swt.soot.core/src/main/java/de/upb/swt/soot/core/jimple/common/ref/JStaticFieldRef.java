@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-public final class JStaticFieldRef extends FieldRef implements Copyable {
+public final class JStaticFieldRef extends JFieldRef implements Copyable {
 
   public JStaticFieldRef(FieldSignature fieldSig) {
     super(fieldSig);

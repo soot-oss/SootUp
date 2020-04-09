@@ -2,8 +2,8 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.ref.FieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
+import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.visitor.Acceptor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -123,7 +123,7 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     return false;
   }
 
-  public FieldRef getFieldRef() {
+  public JFieldRef getFieldRef() {
     throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
   }
 

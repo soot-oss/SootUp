@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-public final class JInstanceFieldRef extends FieldRef implements Copyable {
+public final class JInstanceFieldRef extends JFieldRef implements Copyable {
 
   private final ValueBox baseBox;
   // new attribute: later if ValueBox is deleted, then add "final" to it.

@@ -33,11 +33,11 @@ import de.upb.swt.soot.core.views.View;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
-public abstract class FieldRef implements ConcreteRef {
+public abstract class JFieldRef implements ConcreteRef {
 
   private final FieldSignature fieldSignature;
 
-  FieldRef(FieldSignature fieldSignature) {
+  JFieldRef(FieldSignature fieldSignature) {
     this.fieldSignature = fieldSignature;
   }
 
@@ -47,7 +47,7 @@ public abstract class FieldRef implements ConcreteRef {
   }
 
   public FieldSignature getFieldSignature() {
-    return this.fieldSignature;
+    return fieldSignature;
   }
 
   @Override
