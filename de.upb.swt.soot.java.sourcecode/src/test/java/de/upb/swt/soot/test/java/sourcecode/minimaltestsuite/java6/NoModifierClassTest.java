@@ -8,17 +8,17 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author: Hasitha Rajapakse */
 @Category(Java8Test.class)
-public class NoModifierClassTest extends MinimalTestSuiteBase {
+public class NoModifierClassTest extends MinimalSourceTestSuiteBase {
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootClass clazz = loadClass(getDeclaredClassSignature());
     assertEquals(EnumSet.noneOf(Modifier.class), clazz.getModifiers());
 

@@ -42,10 +42,15 @@ public abstract class AbstractInvokeExpr implements Expr {
 
   private final MethodSignature methodSignature;
   private final ValueBox[] argBoxes;
+  // new attribute: later if ValueBox is deleted, then add "final" to it.
+  private Value[] args;
 
   protected AbstractInvokeExpr(MethodSignature method, ValueBox[] argBoxes) {
     this.methodSignature = method;
     this.argBoxes = argBoxes.length == 0 ? null : argBoxes;
+
+    // new attribute: later if ValueBox is deleted, then fit the constructor
+    this.args = Arrays.stream(argBoxes).map(ValueBox::getValue).toArray(Value[]::new);
   }
 
   public MethodSignature getMethodSignature() {
@@ -82,14 +87,14 @@ public abstract class AbstractInvokeExpr implements Expr {
   }
 
   @Override
-  public List<ValueBox> getUseBoxes() {
-    if (argBoxes == null) {
+  public List<Value> getUses() {
+    if (args == null) {
       return Collections.emptyList();
     }
-    List<ValueBox> list = new ArrayList<>();
-    Collections.addAll(list, argBoxes);
-    for (ValueBox element : argBoxes) {
-      list.addAll(element.getValue().getUseBoxes());
+    List<Value> list = new ArrayList<>();
+    Collections.addAll(list, args);
+    for (Value arg : args) {
+      list.addAll(arg.getUses());
     }
     return list;
   }

@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class NativeMethodTest extends MinimalTestSuiteBase {
+public class NativeMethodTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
@@ -20,7 +20,7 @@ public class NativeMethodTest extends MinimalTestSuiteBase {
   }
 
   @Test
-  public void defaultTest() {
+  public void test() {
     /**
      * Can not pass assertJimpleStmts() as body for native method is empty and current check does nt
      * allow that

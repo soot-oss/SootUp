@@ -5,13 +5,9 @@ import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.signatures.FieldSignature;
-import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.Type;
 
 /** StmtPrinter implementation for normal Jimple */
 public class BriefStmtPrinter extends LabeledStmtPrinter {
@@ -23,16 +19,11 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
   }
 
   @Override
-  public void startStmt(Stmt u) {
-    super.startStmt(u);
-  }
-
-  @Override
   public void method(SootMethod m) {
     handleIndent();
     if (m.isStatic()) {
       output.append(m.getDeclaringClassType().getFullyQualifiedName());
-      literal(".");
+      output.append(".");
     }
     output.append(m.getSignature().getName());
   }
@@ -42,7 +33,7 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
     handleIndent();
     if (f.isStatic()) {
       output.append(f.getDeclaringClassType().getFullyQualifiedName());
-      literal(".");
+      output.append(".");
     }
     output.append(f.getSignature().getName());
   }
@@ -51,12 +42,12 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
   public void identityRef(IdentityRef r) {
     handleIndent();
     if (r instanceof JThisRef) {
-      literal("@this");
+      output.append("@this");
     } else if (r instanceof JParameterRef) {
       JParameterRef pr = (JParameterRef) r;
-      literal("@parameter" + pr.getIndex());
+      output.append("@parameter" + pr.getIndex());
     } else if (r instanceof JCaughtExceptionRef) {
-      literal("@caughtexception");
+      output.append("@caughtexception");
     } else {
       throw new RuntimeException();
     }
@@ -66,7 +57,6 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
 
   @Override
   public void literal(String s) {
-    handleIndent();
     if (eatSpace && s.equals(" ")) {
       eatSpace = false;
       return;
@@ -80,21 +70,5 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
     }
 
     output.append(s);
-  }
-
-  @Override
-  public void typeSignature(Type t) {
-    handleIndent();
-    output.append(t.toString());
-  }
-
-  @Override
-  public void methodSignature(MethodSignature sig) {
-    output.append(sig.toString());
-  }
-
-  @Override
-  public void fieldSignature(FieldSignature fieldSig) {
-    output.append(fieldSig.toString());
   }
 }

@@ -8,7 +8,7 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,10 +17,10 @@ import org.junit.experimental.categories.Category;
 
 /** @author: Hasitha Rajapakse */
 @Category(Java8Test.class)
-public class PublicClassTest extends MinimalTestSuiteBase {
+public class PublicClassTest extends MinimalSourceTestSuiteBase {
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootClass clazz = loadClass(getDeclaredClassSignature());
     assertEquals(EnumSet.of(Modifier.PUBLIC), clazz.getModifiers());
 

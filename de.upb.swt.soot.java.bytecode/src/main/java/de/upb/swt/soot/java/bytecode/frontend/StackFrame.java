@@ -21,7 +21,7 @@ final class StackFrame {
   @Nullable private Operand[] out;
   @Nullable private Local[] inStackLocals;
   @Nullable private ValueBox[] boxes;
-  @Nullable private ArrayList<Operand[]> in;
+  @Nullable private ArrayList<Operand[]> in = new ArrayList<>(1);
   @Nonnull private final AsmMethodSource src;
 
   /**
@@ -35,7 +35,7 @@ final class StackFrame {
 
   /** @return operands produced by this frame. */
   @Nullable
-  Operand[] out() {
+  Operand[] getOut() {
     return out;
   }
 
@@ -44,13 +44,10 @@ final class StackFrame {
    *
    * @param oprs the operands.
    */
-  void in(@Nonnull Operand... oprs) {
-    ArrayList<Operand[]> in = this.in;
-    if (in == null) {
-      in = this.in = new ArrayList<>(1);
-    } else {
-      in.clear();
-    }
+  void setIn(@Nonnull Operand... oprs) {
+    in.clear();
+    // TODO: [ms] check if its ever called multiple times
+    // -> is .clear() / the ArrayList necessary?
     in.add(oprs);
     inStackLocals = new Local[oprs.length];
   }
@@ -60,7 +57,7 @@ final class StackFrame {
    *
    * @param boxes the boxes.
    */
-  void boxes(ValueBox... boxes) {
+  void setBoxes(ValueBox... boxes) {
     this.boxes = boxes;
   }
 
@@ -69,7 +66,7 @@ final class StackFrame {
    *
    * @param oprs the operands.
    */
-  void out(Operand... oprs) {
+  void setOut(Operand... oprs) {
     out = oprs;
   }
 
@@ -81,16 +78,13 @@ final class StackFrame {
    *     old operands.
    */
   void mergeIn(@Nonnull Operand... oprs) {
-    ArrayList<Operand[]> in = this.in;
     if (in.get(0).length != oprs.length) {
       throw new IllegalArgumentException("Invalid in operands length!");
     }
     int nrIn = in.size();
-    boolean diff = false;
-    for (int i = 0; i != oprs.length; i++) {
+    for (int i = 0; i < oprs.length; i++) {
       Operand newOp = oprs[i];
 
-      diff = true;
       /* merge, since prevOp != newOp */
       Local stack = inStackLocals[i];
       if (stack != null) {
@@ -186,7 +180,8 @@ final class StackFrame {
        * newOp.stackOrValue()); src.mergeUnits(newOp.insn, as); } newOp.addBox(as.getRightOpBox());
        */
     }
-    if (diff) {
+    // add if there is a difference
+    if (0 < oprs.length) {
       in.add(oprs);
     }
   }

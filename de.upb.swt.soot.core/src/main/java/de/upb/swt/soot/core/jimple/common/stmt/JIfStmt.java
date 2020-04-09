@@ -46,6 +46,9 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
   private final ValueBox conditionBox;
   private final StmtBox targetBox;
 
+  // new attribute: later if ValueBox is deleted, then add "final" to it.
+  private Value condition;
+
   private final List<StmtBox> targetBoxes;
 
   public JIfStmt(Value condition, Stmt target, StmtPositionInfo positionInfo) {
@@ -61,6 +64,8 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
     this.conditionBox = conditionBox;
     this.targetBox = targetBox;
 
+    // new attribute: later if ValueBox is deleted, then fit the constructor.
+    this.condition = conditionBox.getValue();
     targetBoxes = Collections.singletonList(targetBox);
   }
 
@@ -108,12 +113,10 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public List<ValueBox> getUseBoxes() {
-
-    List<ValueBox> useBoxes = new ArrayList<>(conditionBox.getValue().getUseBoxes());
-    useBoxes.add(conditionBox);
-
-    return useBoxes;
+  public List<Value> getUses() {
+    List<Value> list = new ArrayList<>(condition.getUses());
+    list.add(condition);
+    return list;
   }
 
   @Override

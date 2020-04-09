@@ -36,6 +36,7 @@ import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -45,6 +46,8 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
 
   private final ArrayType baseType;
   private final ValueBox[] sizeBoxes;
+  // new attribute: later if ValueBox is deleted, then add "final" to it.
+  private Value[] sizes;
 
   /**
    * Initiates a JNewMultiArrayExpr.
@@ -58,6 +61,8 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
     for (int i = 0; i < sizes.size(); i++) {
       sizeBoxes[i] = Jimple.newImmediateBox(sizes.get(i));
     }
+    // new attribute: later if ValueBox is deleted, then fit the constructor.
+    this.sizes = Arrays.stream(sizeBoxes).map(ValueBox::getValue).toArray(Value[]::new);
   }
 
   @Override
@@ -137,14 +142,12 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
   }
 
   @Override
-  public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> list = new ArrayList<>();
-    Collections.addAll(list, sizeBoxes);
-
-    for (ValueBox element : sizeBoxes) {
-      list.addAll(element.getValue().getUseBoxes());
+  public final List<Value> getUses() {
+    List<Value> list = new ArrayList<>();
+    Collections.addAll(list, sizes);
+    for (Value size : sizes) {
+      list.addAll(size.getUses());
     }
-
     return list;
   }
 

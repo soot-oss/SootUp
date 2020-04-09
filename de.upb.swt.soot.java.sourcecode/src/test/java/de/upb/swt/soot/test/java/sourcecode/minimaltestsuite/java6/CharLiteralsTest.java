@@ -4,16 +4,16 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.Collections;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class CharLiteralsTest extends MinimalTestSuiteBase {
+public class CharLiteralsTest extends MinimalSourceTestSuiteBase {
 
   @Test
-  public void defaultTest() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature("charCharacter"));
     assertJimpleStmts(method, expectedBodyStmts("r0 := @this: CharLiterals", "$i0 = 97", "return"));
 
