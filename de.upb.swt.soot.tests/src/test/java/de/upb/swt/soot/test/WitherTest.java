@@ -1,11 +1,24 @@
 package de.upb.swt.soot.test;
 
+import static org.junit.Assert.*;
+
 import categories.Java8Test;
+import de.upb.swt.soot.core.frontend.SootClassSource;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.JavaSootClassSource;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
+import java.util.Arrays;
+import java.util.Optional;
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
@@ -23,12 +36,13 @@ public class WitherTest {
     declareClassSig = identifierFactory.getClassType("BinaryOperations");
   }
 
-  @Ignore
+  @Test
   public void testWithers() {
-    /*
+
     Optional<SootClassSource> classSource = loader.getClassSource(declareClassSig);
     assertTrue(classSource.isPresent());
-    SootClass sootClass = new SootClass(classSource.get(), SourceType.Application);
+    JavaSootClass sootClass =
+        new JavaSootClass((JavaSootClassSource) classSource.get(), SourceType.Application);
 
     Optional<SootMethod> m =
         sootClass.getMethod(
@@ -45,7 +59,7 @@ public class WitherTest {
     Local local = (Local) stmt.getLeftOp();
     Local newLocal = local.withName("newName");
     Stmt newStmt = stmt.withLocal(newLocal);
-    SootClass newSootClass =
+    JavaSootClass newSootClass =
         sootClass.withReplacedMethod(
             method, method.withBodyStmts(newStmts -> newStmts.set(0, newStmt)));
 
@@ -58,6 +72,5 @@ public class WitherTest {
 
     assertNotEquals(
         "newName", ((Local) ((JIdentityStmt) body.getStmts().get(0)).getLeftOp()).getName());
-     */
   }
 }

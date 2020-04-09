@@ -1,8 +1,6 @@
 package de.upb.swt.soot.java.core;
 
 import com.google.common.base.Suppliers;
-import de.upb.swt.soot.core.frontend.OverridingClassSource;
-import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
@@ -40,10 +38,10 @@ public class JavaSootClass extends SootClass {
   // Convenience withers that delegate to an OverridingClassSource
 
   /**
-   * Creates a new SootClass based on a new {@link OverridingClassSource}. This is useful to change
-   * selected parts of a {@link SootClass} without recreating a {@link SootClassSource} completely.
-   * {@link OverridingClassSource} allows for replacing specific parts of a class, such as fields
-   * and methods.
+   * Creates a new JavaSootClass based on a new {@link OverridingJavaClassSource}. This is useful to
+   * change selected parts of a {@link SootClass} without recreating a {@link JavaSootClassSource}
+   * completely. {@link OverridingJavaClassSource} allows for replacing specific parts of a class,
+   * such as fields and methods.
    */
   @Nonnull
   public JavaSootClass withOverridingClassSource(
