@@ -111,7 +111,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       }
     }
     if (nrDims != closed) {
-      throw new IllegalArgumentException("Invalid type descriptor");
+      throw new IllegalArgumentException("Invalid type descriptor(" + typeDesc + ")");
     }
 
     String typeName = stringBuilder.toString();

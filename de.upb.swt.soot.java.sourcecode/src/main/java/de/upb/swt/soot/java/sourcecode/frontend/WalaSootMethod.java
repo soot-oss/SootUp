@@ -8,11 +8,13 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaSootMethod;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+// TODO: [ms] is it possible to get rid of this class? necessity to hold DebuggingInformation
+// (getDebugInfo is not called)
 public class WalaSootMethod extends JavaSootMethod {
 
   @Nullable private final DebuggingInformation debugInfo;
@@ -37,7 +39,7 @@ public class WalaSootMethod extends JavaSootMethod {
         methodSignature,
         modifiers,
         thrownExceptions,
-        new ArrayList() // TODO: [ms] implement annotations
+        Collections.emptyList() // TODO: [ms] implement annotations
         );
     this.debugInfo = debugInfo;
   }

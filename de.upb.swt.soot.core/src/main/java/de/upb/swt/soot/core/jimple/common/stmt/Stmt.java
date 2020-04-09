@@ -1,9 +1,6 @@
 package de.upb.swt.soot.core.jimple.common.stmt;
 
-import de.upb.swt.soot.core.jimple.basic.EquivTo;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.FieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
@@ -22,19 +19,15 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
   @Nullable private List<StmtBox> boxesPointingToThis = null;
 
   /**
-   * Returns a list of Boxes containing Values used in this Unit. The list of boxes is dynamically
-   * updated as the structure changes. Note that they are returned in usual evaluation order. (this
-   * is important for aggregation)
+   * Returns a list of Values used in this Unit. Note that they are returned in usual evaluation
+   * order.
    */
-  public List<ValueBox> getUseBoxes() {
+  public List<Value> getUses() {
     return Collections.emptyList();
   }
 
-  /**
-   * Returns a list of Boxes containing Values defined in this Unit. The list of boxes is
-   * dynamically updated as the structure changes.
-   */
-  public List<ValueBox> getDefBoxes() {
+  /** Returns a list of Values defined in this Unit. */
+  public List<Value> getDefs() {
     return Collections.emptyList();
   }
 
@@ -69,21 +62,19 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     }
   }
 
-  /** Returns a list of ValueBoxes, either used or defined in this Unit. */
-  public List<ValueBox> getUseAndDefBoxes() {
-    List<ValueBox> useBoxes = getUseBoxes();
-    List<ValueBox> defBoxes = getDefBoxes();
-    if (useBoxes.isEmpty()) {
-      return defBoxes;
+  /** Returns a list of Values, either used or defined or both in this Unit. */
+  public List<Value> getUsesAndDefs() {
+    List<Value> uses = getUses();
+    List<Value> defs = getDefs();
+    if (uses.isEmpty()) {
+      return defs;
+    } else if (defs.isEmpty()) {
+      return uses;
     } else {
-      if (defBoxes.isEmpty()) {
-        return useBoxes;
-      } else {
-        List<ValueBox> valueBoxes = new ArrayList<>();
-        valueBoxes.addAll(defBoxes);
-        valueBoxes.addAll(useBoxes);
-        return valueBoxes;
-      }
+      List<Value> values = new ArrayList<>();
+      values.addAll(defs);
+      values.addAll(uses);
+      return values;
     }
   }
 

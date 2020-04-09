@@ -15,6 +15,7 @@ import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
+import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
@@ -38,7 +39,6 @@ import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.*;
-import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.net.URL;
@@ -416,23 +416,16 @@ public class WalaIRToJimpleConverter {
           stmts.add(stmt);
         }
 
-        int startPara = 0;
-        if (!walaMethod.isStatic()) {
-          // wala's first parameter is this reference for non-static methodRef
-          startPara = 1;
-        }
-        for (; startPara < walaMethod.getNumberOfParameters(); startPara++) {
-          TypeReference t = walaMethod.getParameterType(startPara);
+        // wala's first parameter is the "this" reference for non-static methods
+        for (int i = walaMethod.isStatic() ? 0 : 1; i < walaMethod.getNumberOfParameters(); i++) {
+          TypeReference t = walaMethod.getParameterType(i);
           Type type = convertType(t);
-          Local paraLocal = localGenerator.generateParameterLocal(type, startPara);
-          int index = startPara;
-          if (!walaMethod.isStatic()) {
-            index = startPara - 1;
-          }
+          Local paraLocal = localGenerator.generateParameterLocal(type, i);
+
           Stmt stmt =
               Jimple.newIdentityStmt(
                   paraLocal,
-                  Jimple.newParameterRef(type, index),
+                  Jimple.newParameterRef(type, walaMethod.isStatic() ? i : i - 1),
                   convertPositionInfo(debugInfo.getInstructionPosition(0), null));
           stmts.add(stmt);
         }
@@ -505,11 +498,12 @@ public class WalaIRToJimpleConverter {
           isSpecial = true;
           break;
         }
-        if (i != 0) {
-          sb.append(".");
-        }
-        sb.append(subName);
+        sb.append(subName).append('.');
       }
+      if (subNames.length != 0) {
+        sb.setLength(sb.length() - 1);
+      }
+
       if (isSpecial) {
         String lastSubName = subNames[subNames.length - 1];
         String[] temp = lastSubName.split(">");
@@ -570,15 +564,14 @@ public class WalaIRToJimpleConverter {
     de.upb.swt.soot.core.model.Position[] operandPos =
         Arrays.stream(operandPosition)
             .map(
-                instrPos -> {
-                  return instrPos == null
-                      ? null
-                      : new de.upb.swt.soot.core.model.Position(
-                          instrPos.getFirstLine(),
-                          instrPos.getFirstCol(),
-                          instrPos.getLastLine(),
-                          instrPos.getLastCol());
-                })
+                instrPos ->
+                    instrPos == null
+                        ? null
+                        : new de.upb.swt.soot.core.model.Position(
+                            instrPos.getFirstLine(),
+                            instrPos.getFirstCol(),
+                            instrPos.getLastLine(),
+                            instrPos.getLastCol()))
             .toArray(de.upb.swt.soot.core.model.Position[]::new);
 
     return new StmtPositionInfo(convertPosition(instructionPosition), operandPos);

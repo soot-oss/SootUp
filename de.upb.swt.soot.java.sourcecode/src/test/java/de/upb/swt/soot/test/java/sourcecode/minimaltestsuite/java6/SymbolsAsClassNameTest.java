@@ -2,7 +2,7 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,24 +10,20 @@ import java.util.stream.Stream;
 import org.junit.Ignore;
 
 /** @author Kaustubh Kelkar */
-public class SymbolsAsClassNameTest extends MinimalTestSuiteBase {
+public class SymbolsAsClassNameTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         "αρετηAsClassName", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Override
-  public void defaultTest() {
+  @Ignore
+  public void test() {
+    // this only works on Unicode filesystems
     /**
      * Exception in thread "main" java.nio.file.InvalidPathException: Illegal char <?> at index 1:
      * a?et?.java
      */
-  }
-
-  @Ignore
-  public void ignoreTest() {
-    super.defaultTest();
     SootClass sootClass = loadClass(getDeclaredClassSignature());
     System.out.println(sootClass.getClassSource().getClassType().getClassName());
   }

@@ -45,9 +45,14 @@ public final class JInstanceOfExpr implements Expr, Copyable {
   private final ValueBox opBox;
   private final Type checkType;
 
+  // new attribute: later if ValueBox is deleted, then add "final" to it.
+  private Value op;
+
   public JInstanceOfExpr(Value op, Type checkType) {
     this.opBox = Jimple.newImmediateBox(op);
     this.checkType = checkType;
+    // new attribute: later if ValueBox is deleted, then fit the constructor.
+    this.op = op;
   }
 
   @Override
@@ -84,11 +89,9 @@ public final class JInstanceOfExpr implements Expr, Copyable {
   }
 
   @Override
-  public final List<ValueBox> getUseBoxes() {
-
-    List<ValueBox> list = new ArrayList<>(opBox.getValue().getUseBoxes());
-    list.add(opBox);
-
+  public final List<Value> getUses() {
+    List<Value> list = new ArrayList<>(op.getUses());
+    list.add(op);
     return list;
   }
 

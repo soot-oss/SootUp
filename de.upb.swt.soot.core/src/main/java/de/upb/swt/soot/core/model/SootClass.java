@@ -36,22 +36,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
-/*
- * Incomplete and inefficient implementation.
- *
- * Implementation notes:
- *
- * 1. The getFieldOf() methodRef is slow because it traverses the list of fields, comparing the names,
- * one by one.  If you establish a Dictionary of Name->Field, you will need to add a
- * notifyOfNameChange() methodRef, and register fields which belong to classes, because the hashtable
- * will need to be updated.  I will do this later. - kor  16-Sep-97
- *
- * 2. Note 1 is kept for historical (i.e. amusement) reasons.  In fact, there is no longer a list of fields;
- * these are kept in a Chain now.  But that's ok; there is no longer a getFieldOf() methodRef,
- * either.  There still is no efficient way to get a field by name, although one could establish
- * a Chain of EquivalentValue-like objects and do an O(1) search on that.  - plam 2-24-00
- */
-
 /**
  * Soot's counterpart of the source languages class concept. Soot representation of a Java class.
  * They are usually created by a Scene, but can also be constructed manually through the given

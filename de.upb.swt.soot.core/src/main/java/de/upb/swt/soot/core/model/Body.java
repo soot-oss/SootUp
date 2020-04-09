@@ -143,7 +143,7 @@ public class Body implements Copyable {
   synchronized void setMethod(@Nullable SootMethod value) {
     if (this._method != null) {
       throw new IllegalStateException(
-          "The declaring class of this soot class member has already been set.");
+          "The declaring class of this SootMethod has already been set.");
     }
 
     this._method = value;

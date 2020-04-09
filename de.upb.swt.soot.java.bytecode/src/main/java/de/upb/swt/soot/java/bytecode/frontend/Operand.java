@@ -92,6 +92,20 @@ final class Operand {
   }
 
   @Override
+  public String toString() {
+    return "Operand{"
+        + "insn="
+        + insn
+        + ", value="
+        + value
+        + ", stack="
+        + stack
+        + ", boxes="
+        + boxes
+        + '}';
+  }
+
+  @Override
   public boolean equals(Object other) {
     return other instanceof Operand && equivTo((Operand) other);
   }

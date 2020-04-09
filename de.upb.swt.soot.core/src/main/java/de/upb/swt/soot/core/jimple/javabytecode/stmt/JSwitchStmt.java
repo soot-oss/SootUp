@@ -26,16 +26,24 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   private final List<StmtBox> stmtBoxes;
   private final StmtBox[] targetBoxes;
   private List<IntConstant> values;
+  private final boolean isTableSwitch;
+
+  // new attributes: later if ValueBox is deleted, then add "final" to it.
+  private Value key;
 
   private JSwitchStmt(
+      boolean isTableSwitch,
       StmtPositionInfo positionInfo,
       ValueBox keyBox,
       StmtBox defaultTargetBox,
       StmtBox... targetBoxes) {
     super(positionInfo);
+    this.isTableSwitch = isTableSwitch;
     this.keyBox = keyBox;
     this.defaultTargetBox = defaultTargetBox;
     this.targetBoxes = targetBoxes;
+    // new attributes: later if ValueBox is deleted, then fit the constructor.
+    this.key = keyBox.getValue();
 
     // Build up stmtBoxes
     List<StmtBox> list = new ArrayList<>();
@@ -84,7 +92,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       StmtBox[] targetBoxes,
       StmtBox defaultTargetBox,
       StmtPositionInfo positionInfo) {
-    this(positionInfo, keyBox, defaultTargetBox, targetBoxes);
+    this(true, positionInfo, keyBox, defaultTargetBox, targetBoxes);
 
     if (lowIndex > highIndex) {
       throw new RuntimeException(
@@ -142,8 +150,12 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       StmtBox[] targetBoxes,
       StmtBox defaultTargetBox,
       StmtPositionInfo positionInfo) {
-    this(positionInfo, keyBox, defaultTargetBox, targetBoxes);
+    this(false, positionInfo, keyBox, defaultTargetBox, targetBoxes);
     values = Collections.unmodifiableList(new ArrayList<>(lookupValues));
+  }
+
+  public boolean isTableSwitch() {
+    return isTableSwitch;
   }
 
   private static StmtBox[] getTargetBoxesArray(List<? extends Stmt> targets) {
@@ -176,11 +188,9 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public final List<ValueBox> getUseBoxes() {
-
-    List<ValueBox> list = new ArrayList<>(keyBox.getValue().getUseBoxes());
-    list.add(keyBox);
-
+  public final List<Value> getUses() {
+    List<Value> list = new ArrayList<>(key.getUses());
+    list.add(key);
     return list;
   }
 
@@ -268,35 +278,35 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    String endOfLine = " ";
 
     sb.append(Jimple.SWITCH)
-        .append("(")
-        .append(getKey().toString())
-        .append(")")
-        .append(endOfLine)
-        .append("{")
-        .append(endOfLine);
+        .append('(')
+        .append(getKey())
+        .append(')')
+        .append(' ')
+        .append('{')
+        .append(" ");
 
     for (int i = 0; i < values.size(); i++) {
       Stmt target = getTarget(i);
-      sb.append("    " + Jimple.CASE + " ")
+      sb.append("    ")
+          .append(Jimple.CASE)
+          .append(' ')
           .append(values.get(i))
           .append(": ")
           .append(Jimple.GOTO)
-          .append(" ")
+          .append(' ')
           .append(target == this ? "self" : target)
-          .append(";")
-          .append(endOfLine);
+          .append(';')
+          .append(' ');
     }
 
     Stmt target = getDefaultTarget();
     sb.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " ")
         .append(target == this ? "self" : target)
-        .append(";")
-        .append(endOfLine);
-
-    sb.append("}");
+        .append(';')
+        .append(' ')
+        .append('}');
 
     return sb.toString();
   }
@@ -308,11 +318,13 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
     getKeyBox().toString(up);
     up.literal(")");
     up.newline();
+    up.incIndent();
+    up.handleIndent();
     up.literal("{");
     up.newline();
     final int size = values.size();
     for (int i = 0; i < size; i++) {
-      up.literal("    ");
+      up.handleIndent();
       up.literal(Jimple.CASE);
       up.literal(" ");
       up.constant(values.get(i));
@@ -324,14 +336,16 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       up.newline();
     }
 
-    up.literal("    ");
+    up.handleIndent();
     up.literal(Jimple.DEFAULT);
     up.literal(": ");
     up.literal(Jimple.GOTO);
     up.literal(" ");
     getDefaultTargetBox().toString(up);
     up.literal(";");
+    up.decIndent();
     up.newline();
+    up.handleIndent();
     up.literal("}");
   }
 

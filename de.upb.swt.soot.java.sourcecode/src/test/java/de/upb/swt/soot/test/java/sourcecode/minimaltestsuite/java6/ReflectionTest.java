@@ -1,14 +1,16 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.Test;
 
-public class ReflectionTest extends MinimalTestSuiteBase {
+public class ReflectionTest extends MinimalSourceTestSuiteBase {
 
   @Override
   public MethodSignature getMethodSignature() {
@@ -25,7 +27,7 @@ public class ReflectionTest extends MinimalTestSuiteBase {
             "$r2 = class \"Ljava/lang/Class\"",
             "$r3 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.Object)>($r2)",
-            "$r4 = newarray (java.lang.Class[])[0]",
+            "$r4 = newarray (java.lang.Class)[0]",
             "$r5 = virtualinvoke $r2.<java.lang.Class: java.lang.reflect.Constructor getConstructor(java.lang.Class[])>($r4)",
             "$r6 = <java.lang.System: java.io.PrintStream out>",
             "$r7 = virtualinvoke $r5.<java.lang.reflect.Constructor: java.lang.String getName()>()",
@@ -36,5 +38,11 @@ public class ReflectionTest extends MinimalTestSuiteBase {
             "virtualinvoke $r8.<java.io.PrintStream: void println(int)>($i0)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
+  }
+
+  @Test
+  public void test() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
   }
 }

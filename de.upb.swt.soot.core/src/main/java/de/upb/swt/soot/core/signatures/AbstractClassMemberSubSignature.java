@@ -2,8 +2,8 @@ package de.upb.swt.soot.core.signatures;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Suppliers;
-import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,23 +16,14 @@ import javax.annotation.Nullable;
  * @author Jan Martin Persch
  */
 public abstract class AbstractClassMemberSubSignature {
-  // region Fields
-
-  // endregion /Fields/
-
-  // region Constructor
 
   /** Creates a new instance of the {@link AbstractClassMemberSubSignature} class. */
   protected AbstractClassMemberSubSignature(@Nonnull String name, @Nonnull Type type) {
-    this._name = name;
-    this._type = type;
+    this.name = name;
+    this.type = type;
   }
 
-  // endregion /Constructor/
-
-  // region Properties
-
-  @Nonnull private final String _name;
+  @Nonnull private final String name;
 
   /**
    * Gets the name.
@@ -41,10 +32,10 @@ public abstract class AbstractClassMemberSubSignature {
    */
   @Nonnull
   public String getName() {
-    return this._name;
+    return name;
   }
 
-  @Nonnull private final Type _type;
+  @Nonnull private final Type type;
 
   /**
    * Gets the type.
@@ -53,12 +44,8 @@ public abstract class AbstractClassMemberSubSignature {
    */
   @Nonnull
   public Type getType() {
-    return this._type;
+    return type;
   }
-
-  // endregion /Properties/
-
-  // region Methods
 
   @Override
   public boolean equals(@Nullable Object o) {
@@ -87,9 +74,6 @@ public abstract class AbstractClassMemberSubSignature {
     return this.getType().toString().compareTo(o.getType().toString());
   }
 
-  @Nonnull
-  public abstract SootClassMemberSignature toFullSignature(@Nonnull ClassType declClassSignature);
-
   private final Supplier<String> _cachedToString =
       Suppliers.memoize(() -> String.format("%s %s", getType(), getName()));
 
@@ -99,5 +83,5 @@ public abstract class AbstractClassMemberSubSignature {
     return _cachedToString.get();
   }
 
-  // endregion /Methods/
+  public abstract void toString(StmtPrinter printer);
 }
