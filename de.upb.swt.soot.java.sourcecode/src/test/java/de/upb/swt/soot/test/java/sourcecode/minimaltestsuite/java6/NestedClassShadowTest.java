@@ -4,16 +4,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import com.ibm.wala.util.collections.ArraySet;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,8 +36,7 @@ public class NestedClassShadowTest extends MinimalSourceTestSuiteBase {
   /** Test: OuterClass of NestedClass is NestedClassShadow */
   @Test
   public void testOuterClass() {
-    assertEquals(
-        loadClass(getDeclaredClassSignature()), loadClass(sootNestedClass.getOuterClass().get()));
+    assertEquals(getDeclaredClassSignature(), sootNestedClass.getOuterClass().get());
   }
 
   /** Test: How many Locals with ClassType {@link java.lang.String} */
@@ -48,31 +52,29 @@ public class NestedClassShadowTest extends MinimalSourceTestSuiteBase {
     assertEquals(3, stringLocals.size());
   }
 
-  /** Test: Locals--info are from different class */
+  /** Test: Locals--info are from different classes */
   @Test
   public void testClassesOfStringLocalAreDifferent() {
     SootMethod method = sootNestedClass.getMethod(getMethodSignature()).get();
     Body methodBody = method.getBody();
     List<Stmt> stmts = methodBody.getStmts();
-    Set<String> clazzNames = new ArraySet<String>();
+    Set<Type> classTypes = new HashSet<Type>();
     for (Stmt stmt : stmts) {
-      if (stmt.toString().contains("info")) {
-        clazzNames.add(getClassName(stmt));
+      if (stmt instanceof JAssignStmt) {
+        final Value rightOp = ((JAssignStmt) stmt).getRightOp();
+        if (rightOp instanceof JInstanceFieldRef) {
+          final ClassType declClassType =
+              ((JInstanceFieldRef) rightOp).getFieldSignature().getDeclClassType();
+          classTypes.add(declClassType);
+        }
       }
     }
-    assertTrue(clazzNames.size() > 1);
+    assertTrue(classTypes.size() > 1);
   }
 
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         "printInfo", nestedClass, "void", Collections.singletonList("java.lang.String"));
-  }
-
-  private String getClassName(Stmt stmt) {
-    String s = stmt.toString();
-    int angleBracket = s.indexOf('<');
-    int colon = s.indexOf(':');
-    return s.substring(angleBracket + 1, colon);
   }
 }
