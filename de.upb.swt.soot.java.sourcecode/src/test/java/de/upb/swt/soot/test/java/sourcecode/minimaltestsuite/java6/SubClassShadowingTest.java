@@ -4,19 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import com.ibm.wala.util.collections.ArraySet;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
-import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,22 +35,17 @@ public class SubClassShadowingTest extends MinimalSourceTestSuiteBase {
     assertEquals(3, stringLocals.size());
   }
 
-  /** Test: Locals--info are from different classes */
+  /** Test: Locals--info are from different class */
   @Test
   public void testClassesOfStringLocalAreDifferent() {
     List<Stmt> stmts = methodBody.getStmts();
-    Set<Type> classTypes = new HashSet<Type>();
+    Set<String> clazzes = new ArraySet<String>();
     for (Stmt stmt : stmts) {
-      if (stmt instanceof JAssignStmt) {
-        final Value rightOp = ((JAssignStmt) stmt).getRightOp();
-        if (rightOp instanceof JInstanceFieldRef) {
-          final ClassType declClassType =
-              ((JInstanceFieldRef) rightOp).getFieldSignature().getDeclClassType();
-          classTypes.add(declClassType);
-        }
+      if (stmt.toString().contains("info")) {
+        clazzes.add(getClassName(stmt));
       }
     }
-    assertTrue(classTypes.size() > 1);
+    assertTrue(clazzes.size() > 1);
   }
 
   @Override
@@ -65,5 +55,12 @@ public class SubClassShadowingTest extends MinimalSourceTestSuiteBase {
         getDeclaredClassSignature(),
         "void",
         Collections.singletonList("java.lang.String"));
+  }
+
+  private String getClassName(Stmt stmt) {
+    String s = stmt.toString();
+    int angleBracket = s.indexOf('<');
+    int colon = s.indexOf(':');
+    return s.substring(angleBracket + 1, colon);
   }
 }
