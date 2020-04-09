@@ -36,54 +36,34 @@ public class JavaSootField extends SootField {
   }
 
   @Nonnull
-  public static JavaSootFieldBuilder builder() {
+  public static AnnotationOrSignatureStep builder() {
     return new JavaSootFieldBuilder();
   }
+
+  public interface AnnotationOrSignatureStep extends SignatureStep {
+    BuildStep withAnnotation(Iterable<AnnotationType> annotations);
+  }
+
   /**
-   * Defines a {@link JavaSootField} builder to provide a fluent API.
+   * Defines a {@link JavaSootFieldBuilder} to provide a fluent API.
    *
-   * @author Jan Martin Persch
    * @author Markus Schmidt
    */
   public static class JavaSootFieldBuilder extends SootFieldBuilder
-      implements Builder.ModifierStep, Builder.BuildStep, Builder<FieldSignature, SootField> {
+      implements AnnotationOrSignatureStep {
 
     private Iterable<AnnotationType> annotations = null;
-    private FieldSignature signature;
-    private Iterable<Modifier> modifiers;
 
     @Nonnull
-    protected FieldSignature getSignature() {
-      return signature;
-    }
-
-    @Nonnull
-    protected Iterable<Modifier> getModifiers() {
-      return modifiers;
-    }
-
-    // FIXME: kein StepWiseBuilder mehr!!!
-
-    @Nonnull
-    public Builder.ModifierStep withSignature(@Nonnull FieldSignature signature) {
-      this.signature = signature;
-      return this;
-    }
-
-    @Nonnull
-    public BuildStep withModifiers(@Nonnull Iterable<Modifier> modifiers) {
-      this.modifiers = modifiers;
-      return this;
-    }
-
-    @Nonnull
-    public BuildStep withAnnotations(@Nonnull Iterable<AnnotationType> annotations) {
-      this.annotations = annotations;
-      return this;
-    }
-
     public Iterable<AnnotationType> getAnnotations() {
       return annotations != null ? annotations : Collections.emptyList();
+    }
+
+    @Override
+    @Nonnull
+    public BuildStep withAnnotation(Iterable<AnnotationType> annotations) {
+      this.annotations = annotations;
+      return this;
     }
 
     @Override

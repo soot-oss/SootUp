@@ -251,6 +251,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   /** @see OverridingMethodSource#withBodyStmts(Consumer) */
   @Nonnull
   public SootMethod withBodyStmts(Consumer<List<Stmt>> stmtModifier) {
+
     return new SootMethod(
         new OverridingMethodSource(methodSource).withBodyStmts(stmtModifier),
         getSignature(),
@@ -259,43 +260,46 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   }
 
   /**
-   * Creates a {@link SootMethod} builder.
+   * Creates a builder for {@link SootMethod}s.
    *
-   * @return A {@link SootMethod} builder.
+   * @return A {@link SootMethodBuilder}.
    */
   @Nonnull
   public static MethodSourceStep builder() {
     return new SootMethodBuilder();
   }
 
-  /**
-   * Defines a stepwise builder for the {@link SootMethod} class.
-   *
-   * @see #builder()
-   * @author Jan Martin Persch
-   */
-  interface MethodSourceStep {
-    /**
-     * Sets the {@link MethodSource}.
-     *
-     * @param value The value to set.
-     * @return This fluent builder.
-     */
+  public interface MethodSourceStep {
     @Nonnull
-    MethodSignatureStep withSource(@Nonnull MethodSource value);
+    SignatureStep withSource(@Nonnull MethodSource value);
   }
 
-  interface ModifierStep extends SootClassMember.Builder.ModifierStep<ThrownExceptionsStep> {}
-
-  interface ThrownExceptionsStep extends Builder {
-    /**
-     * Sets the exceptions thrown by the method to build. This step is optional.
-     *
-     * @param value The value to set.
-     * @return This fluent builder.
-     */
+  public interface SignatureStep {
     @Nonnull
-    Builder withThrownExceptions(@Nonnull Iterable<ClassType> value);
+    ModifierStep withSignature(@Nonnull MethodSignature value);
+  }
+
+  public interface ModifierStep {
+    @Nonnull
+    ThrownExceptionsStep withModifier(@Nonnull Iterable<Modifier> modifier);
+
+    @Nonnull
+    default ThrownExceptionsStep withModifiers(@Nonnull Modifier first, @Nonnull Modifier... rest) {
+      return withModifier(EnumSet.of(first, rest));
+    }
+  }
+
+  public interface ThrownExceptionsStep {
+    @Nonnull
+    BuildStep withThrownExceptions(@Nonnull Iterable<ClassType> value);
+
+    @Nonnull
+    SootMethod build();
+  }
+
+  public interface BuildStep {
+    @Nonnull
+    SootMethod build();
   }
 
   /**
@@ -303,86 +307,59 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
    *
    * @author Jan Martin Persch
    */
-  protected static class SootMethodBuilder
-      implements MethodSourceStep,
-          MethodSignatureStep,
-          ModifierStep,
-          ThrownExceptionsStep,
-          Builder<MethodSignature, SootMethod> {
+  public static class SootMethodBuilder
+      implements MethodSourceStep, SignatureStep, ModifierStep, ThrownExceptionsStep, BuildStep {
 
-    @Nullable private MethodSource _source;
-
-    /**
-     * Gets the method source content.
-     *
-     * @return The value to get.
-     */
-    @Nonnull
-    protected MethodSource getSource() {
-      return _source;
-    }
-
-    /**
-     * Sets the method source content.
-     *
-     * @param value The value to set.
-     */
-    @Nonnull
-    public MethodSignatureStep withSource(@Nonnull MethodSource value) {
-      this._source = value;
-
-      return this;
-    }
-
-    private @Nullable MethodSignature _methodSignature;
-
-    /**
-     * Gets the method sub-signature.
-     *
-     * @return The value to get.
-     */
-    @Nonnull
-    protected MethodSignature getSignature() {
-      return _methodSignature;
-    }
-
-    /**
-     * Sets the method sub-signature.
-     *
-     * @param value The value to set.
-     * @return
-     */
-    @Nonnull
-    public ModifierStep withSignature(@Nonnull MethodSignature value) {
-      this._methodSignature = value;
-
-      return this;
-    }
-
-    @Nullable private Iterable<Modifier> _modifiers;
+    @Nullable private MethodSource source;
+    @Nullable private Iterable<Modifier> modifiers;
+    @Nullable private MethodSignature methodSignature;
+    @Nonnull private Iterable<ClassType> thrownExceptions = Collections.emptyList();
 
     @Nonnull
     protected Iterable<Modifier> getModifiers() {
-      return _modifiers;
+      return modifiers;
     }
 
     @Nonnull
-    public ThrownExceptionsStep withModifiers(@Nonnull Iterable<Modifier> value) {
-      this._modifiers = value;
-
-      return this;
+    protected MethodSource getSource() {
+      return source;
     }
 
-    @Nonnull private Iterable<ClassType> thrownExceptions = Collections.emptyList();
+    @Nonnull
+    protected MethodSignature getSignature() {
+      return methodSignature;
+    }
 
     @Nonnull
     protected Iterable<ClassType> getThrownExceptions() {
       return thrownExceptions;
     }
 
+    @Override
     @Nonnull
-    public Builder withThrownExceptions(@Nonnull Iterable<ClassType> value) {
-      this.thrownExceptions = value;
+    public SignatureStep withSource(@Nonnull MethodSource source) {
+      this.source = source;
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public ModifierStep withSignature(@Nonnull MethodSignature methodSignature) {
+      this.methodSignature = methodSignature;
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public ThrownExceptionsStep withModifier(@Nonnull Iterable<Modifier> modifiers) {
+      this.modifiers = modifiers;
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public BuildStep withThrownExceptions(@Nonnull Iterable<ClassType> thrownExceptions) {
+      this.thrownExceptions = thrownExceptions;
       return this;
     }
 

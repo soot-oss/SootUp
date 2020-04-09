@@ -24,6 +24,7 @@ package de.upb.swt.soot.core.model;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.types.Type;
+import java.util.EnumSet;
 import javax.annotation.Nonnull;
 
 /**
@@ -76,13 +77,33 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
   }
 
   /**
-   * Creates a {@link SootField} builder.
+   * Creates a {@link SootField}
    *
-   * @return A {@link SootField} builder.
+   * @return A {@link SootField}
    */
   @Nonnull
-  public static SootFieldBuilder builder() {
+  public static SignatureStep builder() {
     return new SootFieldBuilder();
+  }
+
+  public interface SignatureStep {
+    @Nonnull
+    ModifierStep withSignature(@Nonnull FieldSignature value);
+  }
+
+  public interface ModifierStep {
+    @Nonnull
+    BuildStep withModifier(@Nonnull Iterable<Modifier> modifier);
+
+    @Nonnull
+    default BuildStep withModifiers(@Nonnull Modifier first, @Nonnull Modifier... rest) {
+      return withModifier(EnumSet.of(first, rest));
+    }
+  }
+
+  public interface BuildStep {
+    @Nonnull
+    SootField build();
   }
 
   /**
@@ -90,8 +111,7 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
    *
    * @author Jan Martin Persch
    */
-  public static class SootFieldBuilder
-      implements Builder.ModifierStep, Builder.BuildStep, Builder<FieldSignature, SootField> {
+  public static class SootFieldBuilder implements SignatureStep, ModifierStep, BuildStep {
 
     private FieldSignature signature;
     private Iterable<Modifier> modifiers;
@@ -115,11 +135,12 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
 
     @Override
     @Nonnull
-    public BuildStep<FieldSignature> withModifiers(@Nonnull Iterable<Modifier> modifiers) {
+    public BuildStep withModifier(@Nonnull Iterable<Modifier> modifiers) {
       this.modifiers = modifiers;
       return this;
     }
 
+    @Override
     @Nonnull
     public SootField build() {
       return new SootField(getSignature(), getModifiers());

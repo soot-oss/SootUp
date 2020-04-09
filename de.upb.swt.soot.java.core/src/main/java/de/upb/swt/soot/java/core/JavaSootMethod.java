@@ -8,6 +8,7 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -101,6 +102,42 @@ public class JavaSootMethod extends SootMethod {
         getAnnotations());
   }
 
-  // TODO: [ms] enhance Builder with Annotations
+  @Nonnull
+  public static AnnotationOrSignatureStep builder() {
+    return new JavaSootMethodBuilder();
+  }
 
+  public interface AnnotationOrSignatureStep extends MethodSourceStep {
+    BuildStep withAnnotation(Iterable<AnnotationType> annotations);
+  }
+
+  /**
+   * Defines a {@link JavaSootField.JavaSootFieldBuilder} to provide a fluent API.
+   *
+   * @author Markus Schmidt
+   */
+  public static class JavaSootMethodBuilder extends SootMethodBuilder
+      implements AnnotationOrSignatureStep {
+
+    private Iterable<AnnotationType> annotations = null;
+
+    @Nonnull
+    public Iterable<AnnotationType> getAnnotations() {
+      return annotations != null ? annotations : Collections.emptyList();
+    }
+
+    @Override
+    @Nonnull
+    public BuildStep withAnnotation(Iterable<AnnotationType> annotations) {
+      this.annotations = annotations;
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public JavaSootMethod build() {
+      return new JavaSootMethod(
+          getSource(), getSignature(), getModifiers(), getThrownExceptions(), getAnnotations());
+    }
+  }
 }
