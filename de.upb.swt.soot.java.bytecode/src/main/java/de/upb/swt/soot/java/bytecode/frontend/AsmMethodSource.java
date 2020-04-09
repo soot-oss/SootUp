@@ -44,7 +44,6 @@ import de.upb.swt.soot.core.jimple.common.expr.JInstanceOfExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNewArrayExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNewMultiArrayExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.ref.FieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
@@ -1253,7 +1252,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     return v;
   }
 
-  private FieldRef toSootFieldRef(Handle methodHandle) {
+  private JFieldRef toSootFieldRef(Handle methodHandle) {
     String bsmClsName = AsmUtil.toQualifiedName(methodHandle.getOwner());
     JavaClassType bsmCls = JavaIdentifierFactory.getInstance().getClassType(bsmClsName);
     Type t = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc()).get(0);

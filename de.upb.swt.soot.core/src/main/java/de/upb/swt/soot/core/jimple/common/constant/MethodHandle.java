@@ -25,7 +25,7 @@
 
 package de.upb.swt.soot.core.jimple.common.constant;
 
-import de.upb.swt.soot.core.jimple.common.ref.FieldRef;
+import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -83,7 +83,7 @@ public class MethodHandle implements Constant {
   }
 
   private final MethodSignature methodRef;
-  private final FieldRef fieldRef;
+  private final JFieldRef fieldRef;
 
   public int tag;
 
@@ -94,7 +94,7 @@ public class MethodHandle implements Constant {
     this.type = type;
   }
 
-  public MethodHandle(FieldRef ref, int tag, Type type) {
+  public MethodHandle(JFieldRef ref, int tag, Type type) {
     this.fieldRef = ref;
     this.tag = tag;
     this.methodRef = null;
