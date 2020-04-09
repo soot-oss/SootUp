@@ -24,5 +24,5 @@
  */
 
 package de.upb.swt.soot.core.jimple.common.ref;
-
+/** This marker interface is used for JFieldRef's and ArrayRef's */
 public interface ConcreteRef extends Ref {}
