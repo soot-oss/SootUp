@@ -13,8 +13,8 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.ref.FieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
+import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -228,7 +228,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    */
   @Override
   public boolean containsFieldRef() {
-    return ((getLeftOp() instanceof FieldRef) || (getRightOp() instanceof FieldRef));
+    return ((getLeftOp() instanceof JFieldRef) || (getRightOp() instanceof JFieldRef));
   }
 
   /*
@@ -237,15 +237,15 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getFieldRef()
    */
   @Override
-  public FieldRef getFieldRef() {
+  public JFieldRef getFieldRef() {
     if (!containsFieldRef()) {
-      throw new RuntimeException("getFieldRef() called with no FieldRef present!");
+      throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
     }
 
-    if (getLeftBox().getValue() instanceof FieldRef) {
-      return (FieldRef) getLeftBox().getValue();
+    if (getLeftBox().getValue() instanceof JFieldRef) {
+      return (JFieldRef) getLeftBox().getValue();
     } else {
-      return (FieldRef) getRightBox().getValue();
+      return (JFieldRef) getRightBox().getValue();
     }
   }
 
@@ -257,10 +257,10 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   @Override
   public ValueBox getFieldRefBox() {
     if (!containsFieldRef()) {
-      throw new RuntimeException("getFieldRefBox() called with no FieldRef present!");
+      throw new RuntimeException("getFieldRefBox() called with no JFieldRef present!");
     }
 
-    if (getLeftBox().getValue() instanceof FieldRef) {
+    if (getLeftBox().getValue() instanceof JFieldRef) {
       return getLeftBox();
     } else {
       return getRightBox();

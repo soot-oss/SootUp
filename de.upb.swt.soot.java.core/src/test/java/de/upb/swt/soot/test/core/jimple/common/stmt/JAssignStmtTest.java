@@ -118,7 +118,7 @@ public class JAssignStmtTest {
     // equivTo with comparator
     Assert.assertFalse(lStmt.equivTo(deepStmt, new IgnoreLocalNameComparator()));
 
-    // test JFieldRef cast for FieldRef - should not throw an Exception
+    // test JFieldRef cast for JFieldRef - should not throw an Exception
     Local someLocal =
         new Local("r42", JavaIdentifierFactory.getInstance().getClassType("Abc.def.Alphabet"));
     final JStaticFieldRef somefield =

@@ -30,7 +30,7 @@ import org.junit.experimental.categories.Category;
 
 /** @author Linghui Luo */
 @Category(Java8Test.class)
-public class FieldRefTest {
+public class JFieldRefTest {
 
   View view;
 
