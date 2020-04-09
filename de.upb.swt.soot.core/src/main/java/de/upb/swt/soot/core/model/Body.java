@@ -77,7 +77,7 @@ public class Body implements Copyable {
   private final List<Stmt> stmts;
 
   /** The methodRef associated with this Body. */
-  @Nullable private volatile SootMethod _method;
+  @Nullable private volatile SootMethod method;
 
   @Nullable private final Position position;
 
@@ -125,28 +125,24 @@ public class Body implements Copyable {
    * @return the methodRef that owns this body.
    */
   public SootMethod getMethod() {
-    SootMethod owner = this._method;
-
-    if (owner == null) {
+    if (method == null) {
       throw new IllegalStateException(
           "The owning method of this body instance has not been not set yet.");
     }
-
-    return owner;
+    return method;
   }
 
   /**
    * Sets the methodRef associated with this Body.
    *
-   * @param value the methodRef that owns this body.
+   * @param method the methodRef that owns this body.
    */
-  synchronized void setMethod(@Nullable SootMethod value) {
-    if (this._method != null) {
+  synchronized void setMethod(@Nullable SootMethod method) {
+    if (this.method != null) {
       throw new IllegalStateException(
           "The declaring class of this SootMethod has already been set.");
     }
-
-    this._method = value;
+    this.method = method;
   }
 
   /** Returns the number of locals declared in this body. */
@@ -208,12 +204,12 @@ public class Body implements Copyable {
     throw new RuntimeException("couldn't find this-assignment!" + " in " + getMethod());
   }
 
-  /** Return LHS of the first identity stmt assigning from \@this. * */
+  /** Return LHS of the first identity stmt assigning from \@this. */
   public Local getThisLocal() {
     return (Local) (((JIdentityStmt) getThisStmt()).getLeftOp());
   }
 
-  /** Return LHS of the first identity stmt assigning from \@parameter i. * */
+  /** Return LHS of the first identity stmt assigning from \@parameter i. */
   public Local getParameterLocal(int i) {
     for (Stmt s : getStmts()) {
       if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
@@ -278,7 +274,7 @@ public class Body implements Copyable {
 
   @Nullable
   public Position getPosition() {
-    return this.position;
+    return position;
   }
 
   public void validateIdentityStatements() {
