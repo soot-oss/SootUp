@@ -42,7 +42,7 @@ public abstract class AnalysisInputLocationTest {
 
   //  public static final String jarFile = "../shared-test-resources/Soot-4.0-SNAPSHOT.jar";
 
-  protected static final int CLASSES_IN_JAR = 25;
+  protected static final int CLASSES_IN_JAR = 4;
   private IdentifierFactory identifierFactory;
   private ClassProvider classProvider;
 

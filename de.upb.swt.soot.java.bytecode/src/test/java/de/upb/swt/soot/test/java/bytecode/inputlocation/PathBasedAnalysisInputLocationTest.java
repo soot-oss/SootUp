@@ -22,6 +22,10 @@ package de.upb.swt.soot.test.java.bytecode.inputlocation;
  * #L%
  */
 import categories.Java8Test;
+import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -29,15 +33,16 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
-  //  final Path jar = Paths.get("../shared-test-resources/Soot-4.0-SNAPSHOT.jar");
-
   @Test
   public void testJar() {
-    //    PathBasedAnalysisInputLocation pathBasedNamespace =
-    //        PathBasedAnalysisInputLocation.createForClassContainer(jar);
-    //    System.err.println(jar.toFile().getAbsolutePath());
-    //    final ClassType sig =
-    //        getIdentifierFactory().getClassType("PathBasedNamespace", "de.upb.soot.namespaces");
-    //    testClassReceival(pathBasedNamespace, sig, CLASSES_IN_JAR);
+
+    final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
+    PathBasedAnalysisInputLocation pathBasedNamespace =
+        PathBasedAnalysisInputLocation.createForClassContainer(jar);
+    System.err.println(jar.toFile().getAbsolutePath());
+    final ClassType class1 = getIdentifierFactory().getClassType("Employee", "ds");
+    final ClassType mainClass = getIdentifierFactory().getClassType("MiniApp");
+    testClassReceival(pathBasedNamespace, class1, CLASSES_IN_JAR);
+    testClassReceival(pathBasedNamespace, mainClass, CLASSES_IN_JAR);
   }
 }

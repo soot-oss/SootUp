@@ -45,6 +45,6 @@ public class JrtFileSystemNamespaceTest extends AnalysisInputLocationTest {
   public void discoverModules() {
     JrtFileSystemAnalysisInputLocation ns = new JrtFileSystemAnalysisInputLocation();
     Collection<String> modules = ns.discoverModules();
-    Assert.assertThat(modules.size(), new GreaterOrEqual<>(70));
+    Assert.assertThat(modules.size(), new GreaterOrEqual<>(65));
   }
 }

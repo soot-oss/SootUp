@@ -15,6 +15,7 @@
 
 # Package Files #
 *.jar
+!shared-test-resources/java-miniapps/MiniApp.jar
 *.war
 *.ear
 *.zip
