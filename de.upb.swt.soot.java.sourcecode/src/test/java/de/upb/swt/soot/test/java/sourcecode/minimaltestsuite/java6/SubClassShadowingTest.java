@@ -1,17 +1,20 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import com.ibm.wala.util.collections.ArraySet;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,13 +42,18 @@ public class SubClassShadowingTest extends MinimalSourceTestSuiteBase {
   @Test
   public void testClassesOfStringLocalAreDifferent() {
     List<Stmt> stmts = methodBody.getStmts();
-    Set<String> clazzes = new ArraySet<String>();
+    Set<ClassType> classTypes = new HashSet<ClassType>();
     for (Stmt stmt : stmts) {
-      if (stmt.toString().contains("info")) {
-        clazzes.add(getClassName(stmt));
+      if (stmt instanceof JAssignStmt) {
+        final Value rightOp = ((JAssignStmt) stmt).getRightOp();
+        if (rightOp instanceof JInstanceFieldRef) {
+          final ClassType declClassType =
+              ((JInstanceFieldRef) rightOp).getFieldSignature().getDeclClassType();
+          classTypes.add(declClassType);
+        }
       }
     }
-    assertTrue(clazzes.size() > 1);
+    assertEquals(2, classTypes.size());
   }
 
   @Override
@@ -55,12 +63,5 @@ public class SubClassShadowingTest extends MinimalSourceTestSuiteBase {
         getDeclaredClassSignature(),
         "void",
         Collections.singletonList("java.lang.String"));
-  }
-
-  private String getClassName(Stmt stmt) {
-    String s = stmt.toString();
-    int angleBracket = s.indexOf('<');
-    int colon = s.indexOf(':');
-    return s.substring(angleBracket + 1, colon);
   }
 }

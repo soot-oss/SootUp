@@ -1,7 +1,6 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -69,7 +68,7 @@ public class LocalClassShadowTest extends MinimalSourceTestSuiteBase {
         }
       }
     }
-    assertTrue(classTypes.size() > 1);
+    assertEquals(2, classTypes.size());
   }
 
   @Override
