@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -95,17 +96,26 @@ public class Utils {
 
   @Nonnull
   public static ArrayList<String> filterJimple(String str) {
-    return Arrays.stream(str.split("\n"))
-        .skip(1) // Remove method declaration
+    return filterJimple(
+        Arrays.stream(str.split("\n")).skip(1) // Remove method declaration
+        );
+  }
+
+  public static ArrayList<String> filterJimple(Stream<String> stream) {
+    return stream
         .map(String::trim)
         .map(line -> line.endsWith(";") ? line.substring(0, line.length() - 1) : line)
         .filter(line -> !line.isEmpty() && !"{".equals(line) && !"}".equals(line))
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
+  public static void printJimpleForTest(SootMethod m) {
+    System.out.println(printedJimpleToArrayRepresentation(m.getBody()));
+  }
+
   /** Helper for writing tests . */
-  public static String printedJimpleToArrayRepresentation(String printejimple) {
-    ArrayList<String> arr = filterJimple(printejimple);
+  public static String printedJimpleToArrayRepresentation(Body b) {
+    ArrayList<String> arr = filterJimple(Utils.bodyStmtsAsStrings(b).stream());
     return printJimpleStmtsForTest(arr);
   }
 

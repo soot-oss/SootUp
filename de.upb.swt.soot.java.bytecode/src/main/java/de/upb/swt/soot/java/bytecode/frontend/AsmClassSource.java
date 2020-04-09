@@ -71,16 +71,13 @@ class AsmClassSource extends SootClassSource {
                 throw new AsmFrontendException(
                     String.format("Failed to create Method Signature %s", methodSource));
               }
+
               AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
               asmClassClassSourceContent.setDeclaringClass(cs);
 
               List<ClassType> exceptions = new ArrayList<>();
-              Iterable<JavaClassType> exceptionsSignatures =
-                  AsmUtil.asmIdToSignature(methodSource.exceptions);
+              exceptions.addAll(AsmUtil.asmIdToSignature(methodSource.exceptions));
 
-              for (JavaClassType exceptionSig : exceptionsSignatures) {
-                exceptions.add(exceptionSig);
-              }
               String methodName = methodSource.name;
               EnumSet<Modifier> modifiers = AsmUtil.getModifiers(methodSource.access);
               List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(methodSource.desc);
