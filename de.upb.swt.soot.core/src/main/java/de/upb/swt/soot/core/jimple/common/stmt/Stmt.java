@@ -15,8 +15,8 @@ import javax.annotation.Nullable;
 
 public abstract class Stmt implements EquivTo, Acceptor, Copyable {
 
-  /** List of UnitBoxes pointing to this Unit. */
-  @Nullable private List<StmtBox> boxesPointingToThis = null;
+  /** List of Units pointing to this Unit. */
+  @Nullable private List<Stmt> stmtsPointingToThis = null;
 
   /**
    * Returns a list of Values used in this Unit. Note that they are returned in usual evaluation
@@ -31,34 +31,31 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     return Collections.emptyList();
   }
 
-  /**
-   * Returns a list of Boxes containing Units defined in this Unit; typically branch targets. The
-   * list of boxes is dynamically updated as the structure changes.
-   */
-  public List<StmtBox> getStmtBoxes() {
+  /** Returns a list of Units defined in this Unit; typically branch targets. */
+  public List<Stmt> getStmts() {
     return Collections.emptyList();
   }
 
-  /** Returns a list of Boxes pointing to this Unit. */
-  public List<StmtBox> getBoxesPointingToThis() {
-    if (boxesPointingToThis == null) {
+  /** Returns a list of units pointing to this Unit. */
+  public List<Stmt> getStmtsPointingToThis() {
+    if (stmtsPointingToThis == null) {
       return Collections.emptyList();
     }
-    return Collections.unmodifiableList(boxesPointingToThis);
+    return Collections.unmodifiableList(stmtsPointingToThis);
   }
 
   @Deprecated
-  private void addBoxPointingToThis(StmtBox b) {
-    if (boxesPointingToThis == null) {
-      boxesPointingToThis = new ArrayList<>();
+  private void addStmtPointingToThis(Stmt stmt) {
+    if (stmtsPointingToThis == null) {
+      stmtsPointingToThis = new ArrayList<>();
     }
-    boxesPointingToThis.add(b);
+    stmtsPointingToThis.add(stmt);
   }
 
   @Deprecated
-  private void removeBoxPointingToThis(StmtBox b) {
-    if (boxesPointingToThis != null) {
-      boxesPointingToThis.remove(b);
+  private void removeStmtPointingToThis(Stmt stmt) {
+    if (stmtsPointingToThis != null) {
+      stmtsPointingToThis.remove(stmt);
     }
   }
 
@@ -103,10 +100,6 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
   }
 
-  public ValueBox getInvokeExprBox() {
-    throw new RuntimeException("getInvokeExprBox() called with no invokeExpr present!");
-  }
-
   public boolean containsArrayRef() {
     return false;
   }
@@ -115,20 +108,12 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
   }
 
-  public ValueBox getArrayRefBox() {
-    throw new RuntimeException("getArrayRefBox() called with no ArrayRef present!");
-  }
-
   public boolean containsFieldRef() {
     return false;
   }
 
   public JFieldRef getFieldRef() {
     throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
-  }
-
-  public ValueBox getFieldRefBox() {
-    throw new RuntimeException("getFieldRefBox() called with no JFieldRef present!");
   }
 
   public abstract StmtPositionInfo getPositionInfo();
@@ -141,14 +126,14 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void addBoxPointingToThis(Stmt stmt, StmtBox box) {
-      stmt.addBoxPointingToThis(box);
+    public static void addStmtPointingToThis(Stmt stmt, Stmt newStmt) {
+      stmt.addStmtPointingToThis(newStmt);
     }
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void removeBoxPointingToThis(Stmt stmt, StmtBox box) {
-      stmt.removeBoxPointingToThis(box);
+    public static void removeStmtPointingToThis(Stmt stmt, Stmt removedStmt) {
+      stmt.removeStmtPointingToThis(removedStmt);
     }
 
     private $Accessor() {}

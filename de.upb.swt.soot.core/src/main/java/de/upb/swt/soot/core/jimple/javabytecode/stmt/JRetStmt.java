@@ -26,10 +26,7 @@
 package de.upb.swt.soot.core.jimple.javabytecode.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractStmt;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -42,41 +39,41 @@ import javax.annotation.Nonnull;
 /** Represents the deprecated JVM <code>ret</code> statement */
 public final class JRetStmt extends AbstractStmt implements Copyable {
 
-  private final ValueBox stmtAddressBox;
-  // new attributes: later if ValueBox is deleted, then add "final" to it.
-  private Value stmtAddress;
-  // List useBoxes;
+  private final Value stmtAddress;
 
   public JRetStmt(Value stmtAddress, StmtPositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(stmtAddress), positionInfo);
-  }
-
-  private JRetStmt(ValueBox stmtAddressBox, StmtPositionInfo positionInfo) {
     super(positionInfo);
-    this.stmtAddressBox = stmtAddressBox;
-
-    // new attributes: later if ValueBox is deleted, then fit the constructor.
-    this.stmtAddress = stmtAddressBox.getValue();
+    if (stmtAddress == null) {
+      throw new IllegalArgumentException("value may not be null");
+    }
+    if (stmtAddress instanceof Immediate) {
+      this.stmtAddress = stmtAddress;
+    } else {
+      throw new RuntimeException(
+          "JRetStmt "
+              + this
+              + " cannot contain value: "
+              + stmtAddress
+              + " ("
+              + stmtAddress.getClass()
+              + ")");
+    }
   }
 
   @Override
   public String toString() {
-    return Jimple.RET + " " + stmtAddressBox.getValue().toString();
+    return Jimple.RET + " " + stmtAddress.toString();
   }
 
   @Override
   public void toString(StmtPrinter up) {
     up.literal(Jimple.RET);
     up.literal(" ");
-    stmtAddressBox.toString(up);
+    stmtAddress.toString(up);
   }
 
   public Value getStmtAddress() {
-    return stmtAddressBox.getValue();
-  }
-
-  public ValueBox getStmtAddressBox() {
-    return stmtAddressBox;
+    return stmtAddress;
   }
 
   @Override
@@ -108,7 +105,7 @@ public final class JRetStmt extends AbstractStmt implements Copyable {
 
   @Override
   public int equivHashCode() {
-    return stmtAddressBox.getValue().equivHashCode();
+    return stmtAddress.equivHashCode();
   }
 
   @Nonnull

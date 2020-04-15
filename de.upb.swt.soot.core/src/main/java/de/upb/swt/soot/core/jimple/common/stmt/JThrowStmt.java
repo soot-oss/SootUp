@@ -29,7 +29,6 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -40,23 +39,19 @@ import javax.annotation.Nonnull;
 public final class JThrowStmt extends AbstractOpStmt implements Copyable {
 
   public JThrowStmt(Value op, StmtPositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(op), positionInfo);
-  }
-
-  protected JThrowStmt(ValueBox opBox, StmtPositionInfo positionInfo) {
-    super(opBox, positionInfo);
+    super(op, positionInfo);
   }
 
   @Override
   public String toString() {
-    return "throw " + opBox.getValue().toString();
+    return "throw " + op.toString();
   }
 
   @Override
   public void toString(StmtPrinter up) {
     up.literal(Jimple.THROW);
     up.literal(" ");
-    opBox.toString(up);
+    op.toString(up);
   }
 
   @Override

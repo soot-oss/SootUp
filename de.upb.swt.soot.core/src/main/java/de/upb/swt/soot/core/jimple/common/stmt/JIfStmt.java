@@ -27,10 +27,9 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -43,30 +42,31 @@ import javax.annotation.Nonnull;
 /** If the condition is true, jumps to the target, otherwise continues to the next stmt. */
 public final class JIfStmt extends AbstractStmt implements Copyable {
 
-  private final ValueBox conditionBox;
-  private final StmtBox targetBox;
+  private final Value condition;
+  private final Stmt target;
 
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
-  private Value condition;
-
-  private final List<StmtBox> targetBoxes;
+  private final List<Stmt> targets;
 
   public JIfStmt(Value condition, Stmt target, StmtPositionInfo positionInfo) {
-    this(condition, Jimple.newStmtBox(target), positionInfo);
-  }
-
-  public JIfStmt(Value condition, StmtBox target, StmtPositionInfo positionInfo) {
-    this(Jimple.newConditionExprBox(condition), target, positionInfo);
-  }
-
-  private JIfStmt(ValueBox conditionBox, StmtBox targetBox, StmtPositionInfo positionInfo) {
     super(positionInfo);
-    this.conditionBox = conditionBox;
-    this.targetBox = targetBox;
+    if (condition == null) {
+      throw new IllegalArgumentException("value may not be null");
+    }
+    if (condition instanceof AbstractConditionExpr) {
+      this.condition = condition;
+    } else {
+      throw new RuntimeException(
+          "JIfStmt "
+              + this
+              + " cannot contain value: "
+              + condition
+              + " ("
+              + condition.getClass()
+              + ")");
+    }
+    this.target = target;
 
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
-    this.condition = conditionBox.getValue();
-    targetBoxes = Collections.singletonList(targetBox);
+    this.targets = Collections.singletonList(target);
   }
 
   @Override
@@ -83,33 +83,26 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
   public void toString(StmtPrinter up) {
     up.literal(Jimple.IF);
     up.literal(" ");
-    conditionBox.toString(up);
+    condition.toString(up);
     up.literal(" ");
     up.literal(Jimple.GOTO);
     up.literal(" ");
-    targetBox.toString(up);
+    target.toString(up);
   }
 
   public Value getCondition() {
-    return conditionBox.getValue();
-  }
-
-  public ValueBox getConditionBox() {
-    return conditionBox;
+    return condition;
   }
 
   public Stmt getTarget() {
-    return targetBox.getStmt();
+    return target;
   }
 
   /** Violates immutability. Only use this for legacy code. */
   @Deprecated
-  private void setTarget(Stmt target) {
-    StmtBox.$Accessor.setStmt(targetBox, target);
-  }
-
-  public StmtBox getTargetBox() {
-    return targetBox;
+  private void setTarget(Stmt newTarget) {
+    StmtHandler stmtHandler = new StmtHandler(target);
+    StmtHandler.$Accessor.setStmt(stmtHandler, newTarget);
   }
 
   @Override
@@ -120,8 +113,8 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public final List<StmtBox> getStmtBoxes() {
-    return targetBoxes;
+  public final List<Stmt> getStmts() {
+    return targets;
   }
 
   @Override
@@ -146,7 +139,7 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
 
   @Override
   public int equivHashCode() {
-    return conditionBox.getValue().equivHashCode() + 31 * targetBox.getStmt().equivHashCode();
+    return condition.equivHashCode() + 31 * target.equivHashCode();
   }
 
   @Nonnull

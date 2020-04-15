@@ -27,7 +27,6 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -40,17 +39,13 @@ import javax.annotation.Nonnull;
 /** Unconditionally jumps to the target */
 public final class JGotoStmt extends AbstractStmt implements Copyable {
 
-  private final StmtBox targetBox;
-  private final List<StmtBox> targetBoxes;
+  private final Stmt target;
+  private final List<Stmt> targets;
 
   public JGotoStmt(Stmt target, StmtPositionInfo positionInfo) {
-    this(Jimple.newStmtBox(target), positionInfo);
-  }
-
-  public JGotoStmt(StmtBox box, StmtPositionInfo positionInfo) {
     super(positionInfo);
-    targetBox = box;
-    targetBoxes = Collections.singletonList(box);
+    this.target = target;
+    targets = Collections.singletonList(target);
   }
 
   @Override
@@ -67,26 +62,23 @@ public final class JGotoStmt extends AbstractStmt implements Copyable {
   public void toString(StmtPrinter up) {
     up.literal(Jimple.GOTO);
     up.literal(" ");
-    targetBox.toString(up);
+    target.toString(up);
   }
 
   public Stmt getTarget() {
-    return targetBox.getStmt();
+    return target;
   }
 
   /** Violates immutability. Only use this for legacy code. */
   @Deprecated
-  private void setTarget(Stmt target) {
-    StmtBox.$Accessor.setStmt(targetBox, target);
-  }
-
-  public StmtBox getTargetBox() {
-    return targetBox;
+  private void setTarget(Stmt newTarget) {
+    StmtHandler stmtHandler = new StmtHandler(target);
+    StmtHandler.$Accessor.setStmt(stmtHandler, target);
   }
 
   @Override
-  public List<StmtBox> getStmtBoxes() {
-    return targetBoxes;
+  public List<Stmt> getStmts() {
+    return targets;
   }
 
   @Override
@@ -111,7 +103,7 @@ public final class JGotoStmt extends AbstractStmt implements Copyable {
 
   @Override
   public int equivHashCode() {
-    return targetBox.getStmt().equivHashCode();
+    return target.equivHashCode();
   }
 
   @Nonnull

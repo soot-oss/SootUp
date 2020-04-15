@@ -29,7 +29,6 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractOpStmt;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -41,23 +40,19 @@ import javax.annotation.Nonnull;
 public final class JExitMonitorStmt extends AbstractOpStmt implements Copyable {
 
   public JExitMonitorStmt(Value op, StmtPositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(op), positionInfo);
-  }
-
-  private JExitMonitorStmt(ValueBox opBox, StmtPositionInfo positionInfo) {
-    super(opBox, positionInfo);
+    super(op, positionInfo);
   }
 
   @Override
   public String toString() {
-    return Jimple.EXITMONITOR + " " + opBox.getValue().toString();
+    return Jimple.EXITMONITOR + " " + op.toString();
   }
 
   @Override
   public void toString(StmtPrinter up) {
     up.literal(Jimple.EXITMONITOR);
     up.literal(" ");
-    opBox.toString(up);
+    op.toString(up);
   }
 
   @Override

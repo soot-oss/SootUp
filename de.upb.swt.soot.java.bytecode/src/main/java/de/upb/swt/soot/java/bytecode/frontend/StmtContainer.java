@@ -48,12 +48,12 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public List<StmtBox> getStmtBoxes() {
+  public List<Stmt> getStmts() {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public List<StmtBox> getBoxesPointingToThis() {
+  public List<Stmt> getStmtsPointingToThis() {
     throw new UnsupportedOperationException();
   }
 
@@ -88,11 +88,6 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public ValueBox getInvokeExprBox() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public boolean containsArrayRef() {
     throw new UnsupportedOperationException();
   }
@@ -103,22 +98,12 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public ValueBox getArrayRefBox() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public boolean containsFieldRef() {
     throw new UnsupportedOperationException();
   }
 
   @Override
   public JFieldRef getFieldRef() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public ValueBox getFieldRefBox() {
     throw new UnsupportedOperationException();
   }
 

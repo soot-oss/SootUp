@@ -25,11 +25,9 @@
 
 package de.upb.swt.soot.core.jimple.common.stmt;
 
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -42,19 +40,25 @@ import javax.annotation.Nonnull;
 /** A method call */
 public final class JInvokeStmt extends AbstractStmt implements Copyable {
 
-  private final ValueBox invokeExprBox;
-  // new attributes: later if ValueBox is deleted, then add "final" to it.
-  private Value invokeExpr;
+  private final Value invokeExpr;
 
   public JInvokeStmt(Value invokeExpr, StmtPositionInfo positionInfo) {
-    this(Jimple.newInvokeExprBox(invokeExpr), positionInfo);
-  }
-
-  private JInvokeStmt(ValueBox invokeExprBox, StmtPositionInfo positionInfo) {
     super(positionInfo);
-    this.invokeExprBox = invokeExprBox;
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
-    this.invokeExpr = invokeExprBox.getValue();
+    if (invokeExpr == null) {
+      throw new IllegalArgumentException("value may not be null");
+    }
+    if (invokeExpr instanceof AbstractInvokeExpr) {
+      this.invokeExpr = invokeExpr;
+    } else {
+      throw new RuntimeException(
+          "JInvokeStmt "
+              + this
+              + " cannot contain value: "
+              + invokeExpr
+              + " ("
+              + invokeExpr.getClass()
+              + ")");
+    }
   }
 
   @Override
@@ -64,22 +68,17 @@ public final class JInvokeStmt extends AbstractStmt implements Copyable {
 
   @Override
   public String toString() {
-    return invokeExprBox.getValue().toString();
+    return invokeExpr.toString();
   }
 
   @Override
   public void toString(StmtPrinter up) {
-    invokeExprBox.toString(up);
+    invokeExpr.toString(up);
   }
 
   @Override
   public AbstractInvokeExpr getInvokeExpr() {
-    return (AbstractInvokeExpr) invokeExprBox.getValue();
-  }
-
-  @Override
-  public ValueBox getInvokeExprBox() {
-    return invokeExprBox;
+    return (AbstractInvokeExpr) invokeExpr;
   }
 
   @Override
@@ -111,16 +110,16 @@ public final class JInvokeStmt extends AbstractStmt implements Copyable {
 
   @Override
   public int equivHashCode() {
-    return invokeExprBox.getValue().equivHashCode();
+    return invokeExpr.equivHashCode();
   }
 
   @Nonnull
   public JInvokeStmt withInvokeExpr(Value invokeExpr) {
-    return new JInvokeStmt(invokeExprBox, getPositionInfo());
+    return new JInvokeStmt(invokeExpr, getPositionInfo());
   }
 
   @Nonnull
   public JInvokeStmt withPositionInfo(StmtPositionInfo positionInfo) {
-    return new JInvokeStmt(invokeExprBox, positionInfo);
+    return new JInvokeStmt(getInvokeExpr(), positionInfo);
   }
 }

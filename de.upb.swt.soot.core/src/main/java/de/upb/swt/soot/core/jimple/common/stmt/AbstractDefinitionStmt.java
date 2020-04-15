@@ -27,44 +27,27 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractDefinitionStmt extends AbstractStmt {
 
-  private final ValueBox leftBox;
-  private final ValueBox rightBox;
+  private final Value leftOp;
+  private final Value rightOp;
 
-  // new attributes: later if ValueBox is deleted, then add "final" to it.
-  private Value leftOp;
-  private Value rightOp;
-
-  AbstractDefinitionStmt(ValueBox leftBox, ValueBox rightBox, StmtPositionInfo positionInfo) {
+  AbstractDefinitionStmt(Value leftOp, Value rightOp, StmtPositionInfo positionInfo) {
     super(positionInfo);
-    this.leftBox = leftBox;
-    this.rightBox = rightBox;
-
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
-    this.leftOp = leftBox.getValue();
-    this.rightOp = rightBox.getValue();
+    this.leftOp = leftOp;
+    this.rightOp = rightOp;
   }
 
   public final Value getLeftOp() {
-    return leftBox.getValue();
+    return leftOp;
   }
 
   public final Value getRightOp() {
-    return rightBox.getValue();
-  }
-
-  public final ValueBox getLeftOpBox() {
-    return leftBox;
-  }
-
-  public final ValueBox getRightOpBox() {
-    return rightBox;
+    return rightOp;
   }
 
   @Override
@@ -88,13 +71,5 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
   @Override
   public boolean branches() {
     return false;
-  }
-
-  public ValueBox getLeftBox() {
-    return leftBox;
-  }
-
-  public ValueBox getRightBox() {
-    return rightBox;
   }
 }

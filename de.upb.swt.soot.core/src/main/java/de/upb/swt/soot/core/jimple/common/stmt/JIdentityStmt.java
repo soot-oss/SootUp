@@ -25,11 +25,8 @@
 
 package de.upb.swt.soot.core.jimple.common.stmt;
 
-import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.*;
+import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
@@ -40,24 +37,43 @@ import javax.annotation.Nonnull;
 public final class JIdentityStmt extends AbstractDefinitionStmt implements Copyable {
 
   public JIdentityStmt(Value local, Value identityValue, StmtPositionInfo positionInfo) {
-    this(Jimple.newLocalBox(local), Jimple.newIdentityRefBox(identityValue), positionInfo);
-  }
+    super(local, identityValue, positionInfo);
+    if (local == null || identityValue == null) {
+      throw new IllegalArgumentException("value may not be null");
+    }
+    if (!(local instanceof Local)) {
+      throw new RuntimeException(
+          "JIdentityStmt "
+              + this
+              + " cannot contain value: "
+              + local
+              + " ("
+              + local.getClass()
+              + ")");
+    }
 
-  protected JIdentityStmt(
-      ValueBox localBox, ValueBox identityValueBox, StmtPositionInfo positionInfo) {
-    super(localBox, identityValueBox, positionInfo);
+    if (!(identityValue instanceof IdentityRef)) {
+      throw new RuntimeException(
+          "JIdentityStmt "
+              + this
+              + " cannot contain value: "
+              + identityValue
+              + " ("
+              + identityValue.getClass()
+              + ")");
+    }
   }
 
   @Override
   public String toString() {
-    return getLeftBox().getValue().toString() + " := " + getRightBox().getValue().toString();
+    return getLeftOp().toString() + " := " + getRightOp().toString();
   }
 
   @Override
   public void toString(StmtPrinter up) {
-    getLeftBox().toString(up);
+    getLeftOp().toString(up);
     up.literal(" := ");
-    getRightBox().toString(up);
+    getRightOp().toString(up);
   }
 
   @Override
@@ -66,7 +82,7 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Copya
   }
 
   public Type getType() {
-    return getLeftBox().getValue().getType();
+    return getLeftOp().getType();
   }
 
   @Override
@@ -76,7 +92,7 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Copya
 
   @Override
   public int equivHashCode() {
-    return getLeftBox().getValue().equivHashCode() + 31 * getRightBox().getValue().equivHashCode();
+    return getLeftOp().equivHashCode() + 31 * getRightOp().equivHashCode();
   }
 
   @Nonnull

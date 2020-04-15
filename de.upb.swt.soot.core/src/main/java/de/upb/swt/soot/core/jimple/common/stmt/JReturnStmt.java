@@ -29,7 +29,6 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -40,23 +39,19 @@ import javax.annotation.Nonnull;
 public final class JReturnStmt extends AbstractOpStmt implements Copyable {
 
   public JReturnStmt(Value returnValue, StmtPositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(returnValue), positionInfo);
-  }
-
-  protected JReturnStmt(ValueBox returnValueBox, StmtPositionInfo positionInfo) {
-    super(returnValueBox, positionInfo);
+    super(returnValue, positionInfo);
   }
 
   @Override
   public String toString() {
-    return Jimple.RETURN + " " + opBox.getValue().toString();
+    return Jimple.RETURN + " " + op.toString();
   }
 
   @Override
   public void toString(StmtPrinter up) {
     up.literal(Jimple.RETURN);
     up.literal(" ");
-    opBox.toString(up);
+    op.toString(up);
   }
 
   @Override
