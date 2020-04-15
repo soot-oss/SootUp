@@ -16,7 +16,7 @@
 # Package Files #
 *.jar
 !shared-test-resources/java-miniapps/MiniApp.jar
-#!shared-test-resources/Soot-4.0-SNAPSHOT.jar
+!shared-test-resources/Soot-4.0-SNAPSHOT.jar
 *.war
 *.ear
 *.zip
