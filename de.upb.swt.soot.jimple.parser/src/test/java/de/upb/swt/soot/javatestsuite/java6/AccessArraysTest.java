@@ -1,16 +1,16 @@
 /** @author: Hasitha Rajapakse */
-package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
+package de.upb.swt.soot.javatestsuite.java6;
 
-import categories.Java8Test;
+import de.upb.swt.soot.categories.Java8Test;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
-import java.util.*;
+import de.upb.swt.soot.javatestsuite.JimpleTestSuiteBase;
+import java.util.Collections;
 import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class AccessArraysTest extends MinimalSourceTestSuiteBase {
+public class AccessArraysTest extends JimpleTestSuiteBase {
 
   @Ignore
   public void test() {
