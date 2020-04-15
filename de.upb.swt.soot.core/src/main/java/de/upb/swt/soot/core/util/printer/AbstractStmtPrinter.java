@@ -118,7 +118,7 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   @Override
   public void local(Local l) {
     handleIndent();
-    output.append(l.getName());
+    output.append(l.toString());
   }
 
   @Override

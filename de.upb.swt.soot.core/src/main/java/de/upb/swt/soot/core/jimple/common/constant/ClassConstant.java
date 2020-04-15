@@ -25,10 +25,10 @@
 
 package de.upb.swt.soot.core.jimple.common.constant;
 
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.util.StringTools;
 
 public class ClassConstant implements Constant {
   private final String value;
@@ -160,6 +160,6 @@ public class ClassConstant implements Constant {
 
   @Override
   public String toString() {
-    return "class " + StringTools.getQuotedStringOf(value);
+    return "class " + Jimple.escape(value);
   }
 }

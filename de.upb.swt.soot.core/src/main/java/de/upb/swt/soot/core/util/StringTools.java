@@ -28,10 +28,7 @@ import java.text.StringCharacterIterator;
 /** Utility methods for string manipulations commonly used in Soot. */
 public class StringTools {
 
-  /**
-   * Returns fromString, but with non-isalpha() characters printed as <code>'\\unnnn'</code>. Used
-   * by SootClass to generate output.
-   */
+  /** Returns fromString, but with non-isalpha() characters printed as <code>'\\unnnn'</code>. */
   public static java.lang.String getEscapedStringOf(String fromString) {
     char[] fromStringArray;
     int cr;

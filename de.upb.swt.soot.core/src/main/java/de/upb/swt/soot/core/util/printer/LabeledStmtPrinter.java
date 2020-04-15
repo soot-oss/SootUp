@@ -1,5 +1,6 @@
 package de.upb.swt.soot.core.util.printer;
 
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.StmtBox;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -61,7 +62,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       setIndent(oldIndent);
       String label = labels.get(u);
       if (label == null || "<unnamed>".equals(label)) {
-        label = "[?= " + u + "]";
+        label = "[?= " + Jimple.escape(u.toString()) + "]";
       }
       output.append(label);
     }
@@ -70,13 +71,13 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       String ref = references.get(u);
 
       if (startOfLine) {
-        String newIndent = "(" + ref + ")" + indent.substring(ref.length() + 2);
+        String newIndent = "(" + Jimple.escape(ref) + ")" + indent.substring(ref.length() + 2);
 
         setIndent(newIndent);
         handleIndent();
         setIndent(oldIndent);
       } else {
-        output.append(ref);
+        output.append(Jimple.escape(ref));
       }
     }
   }

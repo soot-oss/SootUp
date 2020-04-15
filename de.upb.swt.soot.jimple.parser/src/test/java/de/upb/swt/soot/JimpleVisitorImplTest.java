@@ -1,8 +1,9 @@
 package de.upb.swt.soot;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import de.upb.swt.soot.core.frontend.SootClassSource;
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.util.printer.Printer;
@@ -15,8 +16,8 @@ public class JimpleVisitorImplTest {
 
   void checkJimpleClass(CharStream cs) {
 
-    JimpleVisitorImpl parser = new JimpleVisitorImpl();
-    final SootClassSource scs = parser.parse(cs);
+    JimpleVisitorImpl jimpleVisitor = new JimpleVisitorImpl();
+    final SootClassSource scs = jimpleVisitor.run(cs);
 
     StringWriter output = new StringWriter();
     Printer p = new Printer();
@@ -262,9 +263,12 @@ public class JimpleVisitorImplTest {
                 + "/* One*/ \n"
                 + "import /*Comment*//*more */Medium.Table; \n"
                 + "/* \n Two */"
-                + "public /* Crumble*/ class // nope // no \n /* a class destroys it*/ BigTable extends Table \n {"
-                // + "\n /*\n  Three \n \n */"
-                + " public void <init>(){}"
+                + "public /* Crumble*/ class // nope // no \n"
+                + "/* a class destroys it*/"
+                + " BigTable extends Table"
+                + " \n {"
+                //        + "\n /*\n  Three \n \n */ "
+                + "public void <init>(){}"
                 + "private void another(){}  "
                 //    + "/* Another opening /* */"
                 //   + "/* \n End \n */"
@@ -369,5 +373,28 @@ public class JimpleVisitorImplTest {
                 + "  }\n"
                 + "\n");
     checkJimpleClass(cs);
+  }
+
+  @Test
+  public void testOuterclass() {
+    CharStream cs =
+        CharStreams.fromString("class OuterClass$InnerClass{" + "public void <init>(){}" + "}");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void testEscaping() {
+    assertEquals("a", Jimple.escape("a"));
+    assertEquals("name$morename", Jimple.escape("name$morename"));
+    assertEquals("$i0", Jimple.escape("$i0"));
+
+    // keywords
+    assertEquals("\"void\"", Jimple.escape("void"));
+    assertEquals("\"int\"", Jimple.escape("int"));
+    assertEquals("\"class\"", Jimple.escape("class"));
+    assertEquals("\"throws\"", Jimple.escape("throws"));
+
+    // TODO unicode
+
   }
 }

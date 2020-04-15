@@ -2,8 +2,8 @@ package de.upb.swt.soot.javatestsuite;
 
 import static org.junit.Assert.*;
 
-import categories.Java8Test;
 import de.upb.swt.soot.JimpleAnalysisInputLocation;
+import de.upb.swt.soot.categories.Java8Test;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.AbstractClass;
@@ -37,12 +37,11 @@ public abstract class JimpleTestSuiteBase {
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   private View view;
 
-  // Helper to save Jimple files
+  /** Helper to save Jimple files */
   @Test
   void saveFilesToJimple() {
 
     String inputDir = "../shared-test-resources/minimaltestsuite/";
-
     Set<String> locationSet =
         new HashSet(
             Arrays.asList(
@@ -79,6 +78,18 @@ public abstract class JimpleTestSuiteBase {
         e.printStackTrace();
       }
     }
+  }
+
+  public void listJavaSources() {
+    // TODO: implement
+  }
+
+  public void exportJavaJimple() {
+    // TODO: implement to keep Jimple in sync with sourcecode
+  }
+
+  public void exportJavaBytecode() {
+    // TODO: implement later to keep Bytecode in sync with sourcecode
   }
 
   @Before
@@ -124,7 +135,7 @@ public abstract class JimpleTestSuiteBase {
 
   protected JavaClassType getDeclaredClassSignature() {
     // FIXME
-    return identifierFactory.getClassType(getClassName(customTestWatcher.classPath));
+    return identifierFactory.getClassType(getClassName("THE-FILE-PATH"));
   }
 
   public SootClass loadClass(ClassType clazz) {

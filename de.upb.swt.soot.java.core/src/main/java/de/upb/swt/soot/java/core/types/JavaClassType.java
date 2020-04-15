@@ -4,6 +4,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.inputlocation.FileType;
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
@@ -77,7 +78,7 @@ public class JavaClassType extends ClassType {
       sb.append('.');
     }
     sb.append(className);
-    return sb.toString();
+    return Jimple.escape(sb.toString());
   }
 
   @Override

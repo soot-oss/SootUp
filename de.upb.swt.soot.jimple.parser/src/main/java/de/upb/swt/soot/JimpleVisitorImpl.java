@@ -33,8 +33,8 @@ class JimpleVisitorImpl {
   final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   private Map<String, PackageName> imports = new HashMap<>();
   private ClassType clazz = null;
-  private HashMap<String, Stmt> unresolvedGotoStmts = new HashMap<>();
-  private HashMap<String, Stmt> jumpTargets = new HashMap<>();
+  private final HashMap<String, Stmt> unresolvedGotoStmts = new HashMap<>();
+  private final HashMap<String, Stmt> jumpTargets = new HashMap<>();
   private HashMap<String, Local> locals = new HashMap<>();
 
   private Type getType(String typename) {
@@ -51,7 +51,7 @@ class JimpleVisitorImpl {
         : identifierFactory.getClassType(typename, packageName.getPackageName());
   }
 
-  public SootClassSource parse(CharStream charStream) {
+  public SootClassSource run(CharStream charStream) {
     JimpleLexer lexer = new JimpleLexer(charStream);
     TokenStream tokens = new CommonTokenStream(lexer);
     JimpleParser parser = new JimpleParser(tokens);
@@ -70,7 +70,6 @@ class JimpleVisitorImpl {
       Set<SootMethod> methods = new HashSet<>();
       ClassType superclass;
       Set<ClassType> interfaces;
-      // FIXME implement outerclass
       ClassType outerclass = null;
 
       // position
@@ -97,7 +96,18 @@ class JimpleVisitorImpl {
 
       // class_name
       if (ctx.classname != null) {
-        clazz = getClassType(ctx.classname.getText());
+
+        // "$" in classname is a heuristic for an inner/outer class
+        // FIXME: we dont print outerclass in the Printer
+        final String classname = ctx.classname.getText();
+        final int dollarPostition = classname.indexOf('$');
+        if (dollarPostition > -1) {
+          outerclass = getClassType(classname.substring(0, dollarPostition));
+          clazz = getClassType(classname.substring(dollarPostition + 1));
+        } else {
+          clazz = getClassType(classname);
+        }
+
       } else {
         throw new IllegalStateException("Class is not well formed.");
       }
@@ -117,7 +127,6 @@ class JimpleVisitorImpl {
       if (ctx.extends_clause() != null) {
         superclass = getClassType(ctx.extends_clause().classname.getText());
       } else {
-        // TODO:
         superclass = null;
       }
 
@@ -133,7 +142,7 @@ class JimpleVisitorImpl {
 
       // member
       for (int i = 0; i < ctx.member().size(); i++) {
-        SootClassMember scm = ctx.member(i).accept(new MemberVisitor());
+        SootClassMember scm = ctx.member(i).accept(new ClassMemberVisitor());
         if (scm instanceof SootMethod) {
           methods.add((SootMethod) scm);
         } else {
@@ -193,7 +202,7 @@ class JimpleVisitorImpl {
     }
   }
 
-  private class MemberVisitor extends JimpleBaseVisitor<SootClassMember> {
+  private class ClassMemberVisitor extends JimpleBaseVisitor<SootClassMember> {
 
     @Override
     public SootField visitField(JimpleParser.FieldContext ctx) {
@@ -223,9 +232,11 @@ class JimpleVisitorImpl {
       }
 
       List<Type> params =
-          ctx.parameter_list() == null
+          ctx.name_list() == null
               ? Collections.emptyList()
-              : ctx.parameter_list().accept(new ParameterListVisitor());
+              : ctx.name_list().accept(new NameListVisitor()).stream()
+                  .map(identifierFactory::getType)
+                  .collect(Collectors.toList());
 
       MethodSignature methodSignature =
           identifierFactory.getMethodSignature(methodname, clazz, type, params);
@@ -257,6 +268,7 @@ class JimpleVisitorImpl {
               throw new IllegalStateException("void is not an allowed Type for a Local.");
             }
 
+            // TODO: [ms] check is distinction necessary and not already handled?
             List<String> list =
                 (List<String>)
                     (it.name_list() != null
@@ -326,20 +338,6 @@ class JimpleVisitorImpl {
     return modifierSet.isEmpty() ? EnumSet.noneOf(Modifier.class) : EnumSet.copyOf(modifierSet);
   }
 
-  // TODO: simplify and validate nonvoid in logic
-  private class ParameterListVisitor extends JimpleBaseVisitor<List<Type>> {
-    @Override
-    public List<Type> visitParameter_list(JimpleParser.Parameter_listContext ctx) {
-      List<Type> interfaces = new ArrayList<>();
-      JimpleParser.Parameter_listContext parameterIterator = ctx;
-      while (parameterIterator != null) {
-        interfaces.add(identifierFactory.getClassType(parameterIterator.parameter.getText()));
-        parameterIterator = parameterIterator.parameter_list();
-      }
-      return interfaces;
-    }
-  }
-
   private class ArgListVisitor extends JimpleBaseVisitor<List<Value>> {
     @Override
     public List<Value> visitArg_list(JimpleParser.Arg_listContext ctx) {
@@ -392,11 +390,13 @@ class JimpleVisitorImpl {
           final JimpleParser.Case_labelContext case_labelContext = it.case_label();
           if (case_labelContext.getText() != null && case_labelContext.DEFAULT() != null) {
             defaultTarget = stmt;
-          } else {
+          } else if (case_labelContext.getText() != null) {
             final int value = Integer.parseInt(case_labelContext.getText());
             min = Math.min(min, value);
             lookup.add(IntConstant.getInstance(value));
             targets.add(stmt);
+          } else {
+            throw new RuntimeException("Labels are invalid.");
           }
         }
 
@@ -422,7 +422,8 @@ class JimpleVisitorImpl {
               int idx = Integer.parseInt(at_identifierContext.parameter_idx.getText());
               ref = Jimple.newParameterRef(getType(type), idx);
             } else {
-              // TODO: check: is it possible/valid to make a @this: to a different class?!
+              // @this: refers always to the current class so we reuse the Type retreived from the
+              // classname
               ref = Jimple.newThisRef(clazz);
             }
             return Jimple.newIdentityStmt(left, ref, pos);
@@ -482,7 +483,7 @@ class JimpleVisitorImpl {
     @Override
     public Value visitExpression(JimpleParser.ExpressionContext ctx) {
       // TODO: check naming: base_type <-> reference_type?
-      // TODO: check wich basetype / nonvoid_type / ... are valid..
+      // TODO: check wich basetype / nonvoid_type / ... are valid
 
       if (ctx.NEW() != null) {
         final Type type = getType(ctx.base_type.getText());
@@ -562,10 +563,12 @@ class JimpleVisitorImpl {
       String classname = ctx.class_name.getText();
       Type type = getType(ctx.type().getText());
       String methodname = ctx.method_name().getText();
-      final JimpleParser.Parameter_listContext parameter_list = ctx.parameter_list();
+      final JimpleParser.Name_listContext parameterList = ctx.name_list();
       List<Type> params =
-          parameter_list != null
-              ? parameter_list.accept(new ParameterListVisitor())
+          parameterList != null
+              ? parameterList.accept(new NameListVisitor()).stream()
+                  .map(identifierFactory::getType)
+                  .collect(Collectors.toList())
               : Collections.emptyList();
       return identifierFactory.getMethodSignature(
           methodname, getClassType(classname), type, params);
@@ -601,8 +604,10 @@ class JimpleVisitorImpl {
 
         Type type = getType(ctx.type().getText());
         List<Type> bootstrapMethodRefParams =
-            ctx.parameter_list() != null
-                ? ctx.parameter_list().accept(new ParameterListVisitor())
+            ctx.name_list() != null
+                ? ctx.name_list().accept(new NameListVisitor()).stream()
+                    .map(identifierFactory::getType)
+                    .collect(Collectors.toList())
                 : Collections.emptyList();
         String unnamed_method_name = ctx.unnamed_method_name.getText();
 

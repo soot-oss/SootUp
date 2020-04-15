@@ -43,7 +43,7 @@ public class JimpleReader extends JimpleBaseListener {
   private SootClassSource parse(CharStream source, IdentifierFactory identifierFactory) {
 
     JimpleVisitorImpl visitor = new JimpleVisitorImpl();
-    visitor.parse(source);
+    visitor.run(source);
 
     // FIXME
     AnalysisInputLocation inputlocation = null;

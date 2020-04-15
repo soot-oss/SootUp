@@ -90,10 +90,8 @@ import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.*;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import de.upb.swt.soot.core.util.StringTools;
+import java.util.*;
 
 /**
  * The Jimple class contains all the constructors for the components of the Jimple grammar for the
@@ -170,7 +168,7 @@ public abstract class Jimple {
   public static final String TRUE = "true";
   public static final String FALSE = "false";
 
-  /** Returns a list of collections. */
+  /** Returns a list of keywords for Jimple. */
   public static List<String> jimpleKeywordList() {
     List<String> l = new LinkedList<>();
     Collections.addAll(
@@ -239,6 +237,12 @@ public abstract class Jimple {
         TRUE,
         FALSE);
     return l;
+  }
+
+  /** Escapes reserved Jimple keywords e.g. used in (Stmt)Printer, necessary in the JimpleParser */
+  public static String escape(String str) {
+    str = jimpleKeywordList().contains(str) ? '"' + str + '"' : str;
+    return StringTools.getEscapedStringOf(str);
   }
 
   public abstract IdentifierFactory getIdentifierFactory();

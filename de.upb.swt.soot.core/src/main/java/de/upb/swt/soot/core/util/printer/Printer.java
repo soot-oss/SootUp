@@ -54,6 +54,8 @@ import java.util.StringTokenizer;
  */
 public class Printer {
 
+  // TODO: [ms] enhancement: add an option to print a class with all its inherited methods (and
+  // fields)
   public enum Option {
     UseAbbreviations,
     OmitLocalsDeclaration,

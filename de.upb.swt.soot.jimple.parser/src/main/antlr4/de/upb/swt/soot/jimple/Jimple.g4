@@ -130,7 +130,7 @@ grammar Jimple;
                 modifier* type name SEMICOLON;
 
   method:
-                modifier* type method_name L_PAREN parameter_list? R_PAREN throws_clause? method_body;
+                modifier* type method_name L_PAREN name_list? R_PAREN throws_clause? method_body;
 
   method_name:
                 '<init>' | '<clinit>' | name;
@@ -138,10 +138,6 @@ grammar Jimple;
   type:
     /*void*/    'void' |
     /*novoid*/  name;
-
-  parameter_list:
-    /*single*/   parameter=name |
-    /*multi*/    parameter=name COMMA parameter_list;
 
   throws_clause:
     'throws' name_list;
@@ -209,7 +205,7 @@ grammar Jimple;
   invoke_expr:
     /*nonstatic*/ nonstaticinvoke=NONSTATIC_INVOKE local_name=name DOT method_signature L_PAREN arg_list? R_PAREN |
     /*static*/    staticinvoke=STATICINVOKE method_signature L_PAREN arg_list? R_PAREN |
-    /*dynamic*/   dynamicinvoke=DYNAMICINVOKE unnamed_method_name=STRING_CONSTANT CMPLT type L_PAREN parameter_list? R_PAREN CMPGT L_PAREN dynargs=arg_list? R_PAREN bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
+    /*dynamic*/   dynamicinvoke=DYNAMICINVOKE unnamed_method_name=STRING_CONSTANT CMPLT type L_PAREN name_list? R_PAREN CMPGT L_PAREN dynargs=arg_list? R_PAREN bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
 
   binop_expr:
     left=immediate op=binop right=immediate;
@@ -218,7 +214,7 @@ grammar Jimple;
     unop immediate;
 
   method_signature:
-    CMPLT class_name=name COLON type method_name L_PAREN parameter_list? R_PAREN CMPGT;
+    CMPLT class_name=name COLON type method_name L_PAREN name_list? R_PAREN CMPGT;
 
   reference:
     /*array*/ name fixed_array_descriptor |
