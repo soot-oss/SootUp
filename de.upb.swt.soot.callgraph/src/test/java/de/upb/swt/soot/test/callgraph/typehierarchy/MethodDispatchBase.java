@@ -10,7 +10,6 @@ import de.upb.swt.soot.java.core.views.JavaView;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.util.Collections;
 import org.junit.ClassRule;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -73,7 +72,4 @@ public class MethodDispatchBase {
     }
     return testDirectoryName;
   }
-
-  @Test
-  public void method() {}
 }
