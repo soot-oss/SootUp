@@ -50,7 +50,7 @@ public abstract class StmtBox {
   private void setStmt(@Nullable Stmt stmt) {
     // Remove this from set of back pointers.
     if (this.stmt != null) {
-      Stmt.$Accessor.removeBoxPointingToThis(this.stmt, this);
+      Stmt.$Accessor.removeStmtPointingToThis(this.stmt, this.stmt);
     }
 
     // Perform link
@@ -58,7 +58,7 @@ public abstract class StmtBox {
 
     // Add this to back pointers
     if (this.stmt != null) {
-      Stmt.$Accessor.addBoxPointingToThis(this.stmt, this);
+      Stmt.$Accessor.addStmtPointingToThis(this.stmt, this.stmt);
     }
   }
 
@@ -89,8 +89,8 @@ public abstract class StmtBox {
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void setStmt(StmtBox box, Stmt stmt) {
-      box.setStmt(stmt);
+    public static void setStmt(StmtBox box, Stmt newStmt) {
+      box.setStmt(newStmt);
     }
 
     private $Accessor() {}

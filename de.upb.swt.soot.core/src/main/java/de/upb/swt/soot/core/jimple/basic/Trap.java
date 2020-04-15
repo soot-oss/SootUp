@@ -8,7 +8,7 @@ import de.upb.swt.soot.core.types.ClassType;
  *
  * @author Linghui Luo
  */
-public interface Trap extends StmtBoxOwner {
+public interface Trap extends StmtOwner {
 
   ClassType getExceptionType();
 

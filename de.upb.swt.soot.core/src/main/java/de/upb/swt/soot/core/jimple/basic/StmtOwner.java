@@ -22,6 +22,7 @@
 
 package de.upb.swt.soot.core.jimple.basic;
 
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.List;
 
 /**
@@ -32,7 +33,7 @@ import java.util.List;
  *
  * @author Navindra Umanee
  */
-public interface StmtBoxOwner {
+public interface StmtOwner {
 
-  List<StmtBox> getStmtBoxes();
+  List<Stmt> getStmts();
 }

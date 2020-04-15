@@ -37,58 +37,44 @@ public class AbstractTrap implements Trap {
   private transient ClassType exception;
 
   /** The first unit being trapped. */
-  private final StmtBox beginStmtBox;
+  private final Stmt beginStmt;
 
   /** The unit just before the last unit being trapped. */
-  private final StmtBox endStmtBox;
+  private final Stmt endStmt;
 
   /** The unit to which execution flows after the caught exception is triggered. */
-  private final StmtBox handlerStmtBox;
+  private final Stmt handlerStmt;
 
-  /** The list of unitBoxes referred to in this Trap (begin, end and handler. */
-  private final List<StmtBox> unitBoxes;
+  /** The list of units referred to in this Trap (begin, end and handler). */
+  private final List<Stmt> units;
 
   /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
-  AbstractTrap(
-      ClassType exception, StmtBox beginStmtBox, StmtBox endStmtBox, StmtBox handlerStmtBox) {
+  AbstractTrap(ClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
     this.exception = exception;
-    this.beginStmtBox = beginStmtBox;
-    this.endStmtBox = endStmtBox;
-    this.handlerStmtBox = handlerStmtBox;
-    this.unitBoxes =
-        Collections.unmodifiableList(Arrays.asList(beginStmtBox, endStmtBox, handlerStmtBox));
+    this.beginStmt = beginStmt;
+    this.endStmt = endStmt;
+    this.handlerStmt = handlerStmt;
+    this.units = Collections.unmodifiableList(Arrays.asList(beginStmt, endStmt, handlerStmt));
   }
 
   @Override
   public Stmt getBeginStmt() {
-    return beginStmtBox.getStmt();
+    return beginStmt;
   }
 
   @Override
   public Stmt getEndStmt() {
-    return endStmtBox.getStmt();
+    return endStmt;
   }
 
   @Override
   public Stmt getHandlerStmt() {
-    return handlerStmtBox.getStmt();
-  }
-
-  public StmtBox getHandlerStmtBox() {
-    return handlerStmtBox;
-  }
-
-  public StmtBox getBeginStmtBox() {
-    return beginStmtBox;
-  }
-
-  public StmtBox getEndStmtBox() {
-    return endStmtBox;
+    return handlerStmt;
   }
 
   @Override
-  public List<StmtBox> getStmtBoxes() {
-    return unitBoxes;
+  public List<Stmt> getStmts() {
+    return units;
   }
 
   @Override

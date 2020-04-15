@@ -399,7 +399,7 @@ public class JimpleComparator {
     if (!(o instanceof JParameterRef)) {
       return false;
     }
-    return obj.getIndex() == ((JParameterRef) o).getIndex()
+    return obj.getNum() == ((JParameterRef) o).getNum()
         && obj.getType().equals(((JParameterRef) o).getType());
   }
 
