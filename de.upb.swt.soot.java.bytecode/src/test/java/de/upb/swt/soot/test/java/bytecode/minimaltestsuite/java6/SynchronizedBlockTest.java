@@ -29,16 +29,15 @@ public class SynchronizedBlockTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
   public List<String> expectedBodyStmts() {
-    // TODO: [ms] check it catch-range between labels is referenced itself in old soot, too
     return Stream.of(
             "l0 := @this: SynchronizedBlock",
-            "$stack3 = l0.<SynchronizedBlock: Sender sender>",
+            "$stack3 = l0.<SynchronizedBlock: java.lang.String msg>",
             "l1 = $stack3",
             "entermonitor $stack3",
             "label1:",
-            "$stack5 = l0.<SynchronizedBlock: Sender sender>",
+            "$stack5 = <java.lang.System: java.io.PrintStream out>",
             "$stack4 = l0.<SynchronizedBlock: java.lang.String msg>",
-            "virtualinvoke $stack5.<Sender: void send(java.lang.String)>($stack4)",
+            "virtualinvoke $stack5.<java.io.PrintStream: void println(java.lang.String)>($stack4)",
             "$stack6 = l1",
             "exitmonitor $stack6",
             "label2:",
