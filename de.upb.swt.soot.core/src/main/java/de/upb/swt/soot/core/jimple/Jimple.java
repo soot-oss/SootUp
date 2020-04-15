@@ -517,10 +517,6 @@ public abstract class Jimple {
     return new JGotoStmt(target, posInfo);
   }
 
-  public static JGotoStmt newGotoStmt(StmtBox stmtBox, StmtPositionInfo posInfo) {
-    return new JGotoStmt(stmtBox, posInfo);
-  }
-
   /** Constructs a NopStmt() grammar chunk. */
   public static JNopStmt newNopStmt(StmtPositionInfo posInfo) {
     return new JNopStmt(posInfo);
@@ -543,11 +539,6 @@ public abstract class Jimple {
 
   /** Constructs a IfStmt(Condition, Stmt) grammar chunk. */
   public static JIfStmt newIfStmt(Value condition, Stmt target, StmtPositionInfo posInfo) {
-    return new JIfStmt(condition, target, posInfo);
-  }
-
-  /** Constructs a IfStmt(Condition, UnitBox) grammar chunk. */
-  public static JIfStmt newIfStmt(Value condition, StmtBox target, StmtPositionInfo posInfo) {
     return new JIfStmt(condition, target, posInfo);
   }
 
@@ -578,16 +569,6 @@ public abstract class Jimple {
     return new JSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
   }
 
-  public static JSwitchStmt newTableSwitchStmt(
-      Value key,
-      int lowIndex,
-      int highIndex,
-      List<? extends StmtBox> targets,
-      StmtBox defaultTarget,
-      StmtPositionInfo posInfo) {
-    return new JSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
-  }
-
   /**
    * Constructs a LookupSwitchStmt(Immediate, List of Immediate, List of Unit, Stmt) grammar chunk.
    */
@@ -596,15 +577,6 @@ public abstract class Jimple {
       List<IntConstant> lookupValues,
       List<? extends Stmt> targets,
       Stmt defaultTarget,
-      StmtPositionInfo posInfo) {
-    return new JSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
-  }
-
-  public static JSwitchStmt newLookupSwitchStmt(
-      Value key,
-      List<IntConstant> lookupValues,
-      List<? extends StmtBox> targets,
-      StmtBox defaultTarget,
       StmtPositionInfo posInfo) {
     return new JSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
   }
@@ -680,8 +652,7 @@ public abstract class Jimple {
     return new JNewMultiArrayExpr(type, sizes);
   }
 
-  public static JTrap newTrap(
-      ClassType exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt) {
+  public static JTrap newTrap(ClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
     return new JTrap(exception, beginStmt, endStmt, handlerStmt);
   }
 }

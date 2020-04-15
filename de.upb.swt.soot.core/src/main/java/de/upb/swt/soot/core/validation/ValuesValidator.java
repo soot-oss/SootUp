@@ -3,9 +3,9 @@ package de.upb.swt.soot.core.validation;
 import de.upb.swt.soot.core.model.Body;
 import java.util.List;
 
-public class ValueBoxesValidator implements BodyValidator {
+public class ValuesValidator implements BodyValidator {
 
-  /** Verifies that a ValueBox is not used in more than one place. */
+  /** Verifies that a Value is not used in more than one place. */
   @Override
   public void validate(Body body, List<ValidationException> exception) {
     // TODO: check code from old soot below

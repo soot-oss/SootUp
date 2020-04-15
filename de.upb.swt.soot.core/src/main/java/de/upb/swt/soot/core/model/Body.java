@@ -30,18 +30,7 @@ import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.EscapedWriter;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.Printer;
-import de.upb.swt.soot.core.validation.BodyValidator;
-import de.upb.swt.soot.core.validation.CheckEscapingValidator;
-import de.upb.swt.soot.core.validation.CheckInitValidator;
-import de.upb.swt.soot.core.validation.CheckTypesValidator;
-import de.upb.swt.soot.core.validation.CheckVoidLocalesValidator;
-import de.upb.swt.soot.core.validation.IdentityStatementsValidator;
-import de.upb.swt.soot.core.validation.LocalsValidator;
-import de.upb.swt.soot.core.validation.StmtBoxesValidator;
-import de.upb.swt.soot.core.validation.TrapsValidator;
-import de.upb.swt.soot.core.validation.UsesValidator;
-import de.upb.swt.soot.core.validation.ValidationException;
-import de.upb.swt.soot.core.validation.ValueBoxesValidator;
+import de.upb.swt.soot.core.validation.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -76,9 +65,9 @@ public final class Body implements Copyable {
       ImmutableUtils.immutableList(
           new LocalsValidator(),
           new TrapsValidator(),
-          new StmtBoxesValidator(),
+          new StmtsValidator(),
           new UsesValidator(),
-          new ValueBoxesValidator(),
+          new ValuesValidator(),
           new CheckInitValidator(),
           new CheckTypesValidator(),
           new CheckVoidLocalesValidator(),
@@ -149,12 +138,12 @@ public final class Body implements Copyable {
     }
   }
 
-  /** Verifies that a ValueBox is not used in more than one place. */
-  public void validateValueBoxes() {
-    runValidation(new ValueBoxesValidator());
+  /** Verifies that a Value is not used in more than one place. */
+  public void validateValues() {
+    runValidation(new ValuesValidator());
   }
 
-  /** Verifies that each Local of getUseAndDefBoxes() is in this body's locals Chain. */
+  /** Verifies that each Local of getUsesAndDefs() is in this body's locals Chain. */
   public void validateLocals() {
     runValidation(new LocalsValidator());
   }
@@ -164,9 +153,9 @@ public final class Body implements Copyable {
     runValidation(new TrapsValidator());
   }
 
-  /** Verifies that the StmtBoxes of this Body all point to a Stmt contained within this body. */
-  public void validateStmtBoxes() {
-    runValidation(new StmtBoxesValidator());
+  /** Verifies that the Stmts of this Body all point to a Stmt contained within this body. */
+  public void validateStmts() {
+    runValidation(new StmtsValidator());
   }
 
   /** Verifies that each use in this Body has a def. */
@@ -206,7 +195,7 @@ public final class Body implements Copyable {
       if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
         JIdentityStmt is = (JIdentityStmt) s;
         JParameterRef pr = (JParameterRef) is.getRightOp();
-        if (pr.getIndex() == i) {
+        if (pr.getNum() == i) {
           return (Local) is.getLeftOp();
         }
       }
@@ -230,7 +219,7 @@ public final class Body implements Copyable {
         JIdentityStmt is = (JIdentityStmt) u;
         if (is.getRightOp() instanceof JParameterRef) {
           JParameterRef pr = (JParameterRef) is.getRightOp();
-          retVal.add(pr.getIndex(), (Local) is.getLeftOp());
+          retVal.add(pr.getNum(), (Local) is.getLeftOp());
         }
       }
     }
@@ -288,55 +277,55 @@ public final class Body implements Copyable {
   }
 
   /**
-   * Returns the results of iterating through all Stmts in this Body and querying them for
-   * ValueBoxes defined. All of the ValueBoxes found are then returned as a List.
+   * Returns the results of iterating through all Stmts in this Body and querying them for Values
+   * defined. All of the Values found are then returned as a List.
    *
-   * @return a List of all the ValueBoxes for Values defined by this Body's Stmts.
+   * @return a List of all the Values for Values defined by this Body's Stmts.
    */
   public Collection<Value> getUses() {
-    ArrayList<Value> useBoxList = new ArrayList<>();
+    ArrayList<Value> useList = new ArrayList<>();
 
     for (Stmt stmt : stmts) {
-      useBoxList.addAll(stmt.getUses());
+      useList.addAll(stmt.getUses());
     }
-    return useBoxList;
+    return useList;
   }
 
   /**
-   * Returns the results of iterating through all Stmts in this Body and querying them for
-   * ValueBoxes defined. All of the ValueBoxes found are then returned as a List.
+   * Returns the results of iterating through all Stmts in this Body and querying them for Values
+   * defined. All of the Values found are then returned as a List.
    *
-   * @return a List of all the ValueBoxes for Values defined by this Body's Stmts.
+   * @return a List of all the Values for Values defined by this Body's Stmts.
    */
   public Collection<Value> getDefs() {
-    ArrayList<Value> defBoxList = new ArrayList<>();
+    ArrayList<Value> defList = new ArrayList<>();
 
     for (Stmt stmt : stmts) {
-      defBoxList.addAll(stmt.getDefs());
+      defList.addAll(stmt.getDefs());
     }
-    return defBoxList;
+    return defList;
   }
 
   /**
-   * Returns the result of iterating through all Stmts in this body and querying them for their
-   * StmtBoxes. All StmtBoxes thus found are returned. Branching Stmts and statements which use
-   * PhiExpr will have StmtBoxes; a StmtBox contains a Stmt that is either a target of a branch or
-   * is being used as a pointer to the end of a CFG block.
+   * Returns the result of iterating through all Stmts in this body. All Stmts thus found are
+   * returned. Branching Stmts and statements which use PhiExpr will have Stmts; a Stmt contains a
+   * Stmt that is either a target of a branch or is being used as a pointer to the end of a CFG
+   * block.
    *
    * <p>This methodRef is typically used for pointer patching, e.g. when the unit chain is cloned.
    *
-   * @return A collection of all the StmtBoxes held by this body's units.
+   * @return A collection of all the Stmts held by this body's units.
    */
-  public Collection<StmtBox> getAllStmtBoxes() {
-    List<StmtBox> stmtBoxList = new ArrayList<>();
+  public Collection<Stmt> getAllStmts() {
+    List<Stmt> stmtList = new ArrayList<>();
     for (Stmt item : stmts) {
-      stmtBoxList.addAll(item.getStmtBoxes());
+      stmtList.addAll(item.getStmts());
     }
 
     for (Trap item : traps) {
-      stmtBoxList.addAll(item.getStmtBoxes());
+      stmtList.addAll(item.getStmts());
     }
-    return Collections.unmodifiableCollection(stmtBoxList);
+    return Collections.unmodifiableCollection(stmtList);
   }
 
   @Nonnull

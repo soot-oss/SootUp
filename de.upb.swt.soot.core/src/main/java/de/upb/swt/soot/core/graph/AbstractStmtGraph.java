@@ -1,6 +1,5 @@
 package de.upb.swt.soot.core.graph;
 
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -76,8 +75,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
       }
 
       if (currentStmt.branches()) {
-        for (StmtBox targetBox : currentStmt.getStmtBoxes()) {
-          Stmt target = targetBox.getStmt();
+        for (Stmt target : currentStmt.getStmts()) {
           // Arbitrary bytecode can branch to the same
           // target it falls through to, so we screen for duplicates:
           if (!successors.contains(target)) {
@@ -98,7 +96,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
   }
 
   /**
-   * Utility methodRef used in the construction of {@link IStmtGraph}s, to be called only after the
+   * Utility methodRef used in the construction of @link IStmtGraph}s, to be called only after the
    * stmtToPreds and stmtToSuccs maps have been built.
    *
    * <p><code>IStmtGraph</code> provides an implementation of <code>buildHeadsAndTails()</code>

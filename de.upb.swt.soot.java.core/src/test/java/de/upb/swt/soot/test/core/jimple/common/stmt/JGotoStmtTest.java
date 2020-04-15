@@ -23,9 +23,7 @@
 package de.upb.swt.soot.test.core.jimple.common.stmt;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.jimple.basic.JStmtBox;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
@@ -51,16 +49,10 @@ public class JGotoStmtTest {
     Stmt targetStmt = new JThrowStmt(local1, nop);
     Stmt gStmt = new JGotoStmt(targetStmt, nop);
 
-    // StmtBox
-    StmtBox targetStmtBox = new JStmtBox(targetStmt);
-    Stmt gStmtBox = new JGotoStmt(targetStmtBox, nop);
-
     // toString
     Assert.assertEquals("goto [?= throw $r0]", gStmt.toString());
-    Assert.assertEquals("goto [?= throw $r0]", gStmtBox.toString());
 
     // equivTo
-    Assert.assertTrue(gStmt.equivTo(gStmtBox));
     Assert.assertFalse(gStmt.equivTo(targetStmt));
 
     Assert.assertTrue(gStmt.equivTo(new JGotoStmt(new JThrowStmt(local1, nop), nop)));
