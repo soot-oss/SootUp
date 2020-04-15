@@ -10,11 +10,8 @@ import java.io.IOException;
 public class MiniApp {
 
     public static void main(String[] args) throws IOException {
-        System.out.println("Working Directory = " +
-                System.getProperty("user.dir"));
         Operations operations= new Operations();
-        //operations.readFromFile("E:/Masters_CS_UPB/WHB/FutureSoot/testsuite/shared-test-resources/java-miniapps/src/testFile.txt");
-		operations.readFromFile(args[0]);
+        operations.readFromFile(args[0]);
         operations.addEmployee(new Employee("Irina",5000));
         operations.addDepartment(new Department(new Employee("Irina",5000),"Accounting"));
         System.out.println(operations.getDepartmentList().toString());;
