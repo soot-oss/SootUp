@@ -25,8 +25,8 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -35,31 +35,35 @@ import java.util.List;
 
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
 
-  private final ValueBox baseBox;
+  private final Value base;
 
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
-  private Value base;
-
-  AbstractInstanceInvokeExpr(ValueBox baseBox, MethodSignature methodSig, ValueBox[] argBoxes) {
-    super(methodSig, argBoxes);
-    this.baseBox = baseBox;
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
-    this.base = baseBox.getValue();
+  AbstractInstanceInvokeExpr(Value base, MethodSignature methodSig, Value[] args) {
+    super(methodSig, args);
+    if (base == null) {
+      throw new IllegalArgumentException("value may not be null");
+    }
+    if (base instanceof Local) {
+      this.base = base;
+    } else {
+      throw new RuntimeException(
+          "InstanceInvokeExpr "
+              + this
+              + " cannot contain value: "
+              + base
+              + " ("
+              + base.getClass()
+              + ")");
+    }
   }
 
   public Value getBase() {
-    return baseBox.getValue();
-  }
-
-  public ValueBox getBaseBox() {
-    return baseBox;
+    return base;
   }
 
   @Override
   public List<Value> getUses() {
     List<Value> list = new ArrayList<>();
 
-    // getArgs in super class must be modified (not yet)
     List<Value> args = getArgs();
     if (args != null) {
       list.addAll(args);
@@ -80,6 +84,6 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return baseBox.getValue().equivHashCode() * 101 + getMethodSignature().hashCode() * 17;
+    return base.equivHashCode() * 101 + getMethodSignature().hashCode() * 17;
   }
 }

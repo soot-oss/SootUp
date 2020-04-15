@@ -38,12 +38,9 @@ import javax.annotation.Nonnull;
 /** An expression that invokes an interface method. */
 public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
-  /**
-   * Assigns bootstrapArgs to bsmArgBoxes, an array of type ValueBox. And methodArgs to an array
-   * argBoxes.
-   */
+  /** methodArgs to an array args. */
   public JInterfaceInvokeExpr(Value base, MethodSignature method, List<? extends Value> args) {
-    super(Jimple.newLocalBox(base), method, ValueBoxUtils.toValueBoxes(args));
+    super(base, method, ValueUtils.toValuesArray(args));
 
     // FIXME: [JMP] Move this into view or somewhere, where `SootClass` and its context are
     // available
@@ -76,7 +73,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
         .append(".")
         .append(getMethodSignature())
         .append("(");
-    argBoxesToString(builder);
+    argsToString(builder);
     builder.append(")");
     return builder.toString();
   }
@@ -86,11 +83,11 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
   public void toString(StmtPrinter up) {
     up.literal(Jimple.INTERFACEINVOKE);
     up.literal(" ");
-    getBaseBox().toString(up);
+    getBase().toString(up);
     up.literal(".");
     up.methodSignature(getMethodSignature());
     up.literal("(");
-    argBoxesToPrinter(up);
+    argsToPrinter(up);
     up.literal(")");
   }
 
@@ -102,7 +99,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
   }
 
   @Nonnull
-  public JInterfaceInvokeExpr Method(MethodSignature method) {
+  public JInterfaceInvokeExpr withMethodSignature(MethodSignature method) {
     return new JInterfaceInvokeExpr(getBase(), method, getArgs());
   }
 

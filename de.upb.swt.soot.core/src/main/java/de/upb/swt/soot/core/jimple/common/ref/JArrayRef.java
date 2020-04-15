@@ -26,10 +26,7 @@
 package de.upb.swt.soot.core.jimple.common.ref;
 
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.NullType;
@@ -43,29 +40,31 @@ import javax.annotation.Nonnull;
 
 public final class JArrayRef implements ConcreteRef, Copyable {
 
-  private final ValueBox baseBox;
-  private final ValueBox indexBox;
+  private final Value base;
+  private final Value index;
   private final IdentifierFactory identifierFactory;
 
-  // new attributes : later if ValueBox is deleted, then add "final" to it.
-  private Value base;
-  private Value index;
-
   public JArrayRef(Value base, Value index, IdentifierFactory identifierFactory) {
-    this(Jimple.newLocalBox(base), Jimple.newImmediateBox(index), identifierFactory);
-  }
 
-  private JArrayRef(ValueBox baseBox, ValueBox indexBox, IdentifierFactory identifierFactory) {
-    this.baseBox = baseBox;
-    this.indexBox = indexBox;
+    if (base == null || index == null) {
+      throw new IllegalArgumentException("value may not be null");
+    }
+    if (base instanceof Local) {
+      this.base = base;
+    } else {
+      throw new RuntimeException(
+          "JArrayRef " + this + " cannot contain value: " + base + " (" + base.getClass() + ")");
+    }
+    if (index instanceof Immediate) {
+      this.index = index;
+    } else {
+      throw new RuntimeException(
+          "JArrayRef " + this + " cannot contain value: " + index + " (" + index.getClass() + ")");
+    }
     this.identifierFactory = identifierFactory;
-    // new attributes: later if ValueBox is deleted, then fit the constructor.
-    this.base = baseBox.getValue();
-    this.index = indexBox.getValue();
   }
 
   private Type determineType(IdentifierFactory identifierFactory) {
-    Value base = baseBox.getValue();
     Type type = base.getType();
 
     if (type.equals(UnknownType.getInstance())) {
@@ -107,31 +106,23 @@ public final class JArrayRef implements ConcreteRef, Copyable {
 
   @Override
   public String toString() {
-    return baseBox.getValue().toString() + "[" + indexBox.getValue().toString() + "]";
+    return base.toString() + "[" + index.toString() + "]";
   }
 
   @Override
   public void toString(StmtPrinter up) {
-    baseBox.toString(up);
+    base.toString(up);
     up.literal("[");
-    indexBox.toString(up);
+    index.toString(up);
     up.literal("]");
   }
 
   public Value getBase() {
-    return baseBox.getValue();
-  }
-
-  public ValueBox getBaseBox() {
-    return baseBox;
+    return base;
   }
 
   public Value getIndex() {
-    return indexBox.getValue();
-  }
-
-  public ValueBox getIndexBox() {
-    return indexBox;
+    return index;
   }
 
   @Override

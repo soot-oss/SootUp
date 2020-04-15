@@ -25,45 +25,42 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractBinopExpr implements Expr {
 
-  private final ValueBox op1Box;
-  private final ValueBox op2Box;
+  private final Value op1;
+  private final Value op2;
 
-  // new attributes : later if ValueBox is deleted, then add "final" to it.
-  private Value op1;
-  private Value op2;
-
-  AbstractBinopExpr(ValueBox op1Box, ValueBox op2Box) {
-    this.op1Box = op1Box;
-    this.op2Box = op2Box;
-
-    // new attributes: later if ValueBox is deleted, then fit the constructor.
-    this.op1 = op1Box.getValue();
-    this.op2 = op2Box.getValue();
+  AbstractBinopExpr(Value op1, Value op2) {
+    if (op1 == null || op2 == null) {
+      throw new IllegalArgumentException("value may not be null");
+    }
+    if (op1 instanceof Immediate) {
+      this.op1 = op1;
+    } else {
+      throw new RuntimeException(
+          "BinoExpr " + this + " cannot contain value: " + op1 + " (" + op1.getClass() + ")");
+    }
+    if (op2 instanceof Immediate) {
+      this.op2 = op2;
+    } else {
+      throw new RuntimeException(
+          "BinoExpr " + this + " cannot contain value: " + op2 + " (" + op2.getClass() + ")");
+    }
   }
 
   public Value getOp1() {
-    return op1Box.getValue();
+    return op1;
   }
 
   public Value getOp2() {
-    return op2Box.getValue();
-  }
-
-  public ValueBox getOp1Box() {
-    return op1Box;
-  }
-
-  public ValueBox getOp2Box() {
-    return op2Box;
+    return op2;
   }
 
   @Override
@@ -83,8 +80,7 @@ public abstract class AbstractBinopExpr implements Expr {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return op1Box.getValue().equivHashCode() * 101 + op2Box.getValue().equivHashCode() + 17
-        ^ getSymbol().hashCode();
+    return op1.equivHashCode() * 101 + op2.equivHashCode() + 17 ^ getSymbol().hashCode();
   }
 
   /** Returns the unique symbol for an operator. */
@@ -92,8 +88,6 @@ public abstract class AbstractBinopExpr implements Expr {
 
   @Override
   public String toString() {
-    Value op1 = op1Box.getValue();
-    Value op2 = op2Box.getValue();
     String leftOp = op1.toString();
     String rightOp = op2.toString();
     return leftOp + getSymbol() + rightOp;
@@ -101,8 +95,8 @@ public abstract class AbstractBinopExpr implements Expr {
 
   @Override
   public void toString(StmtPrinter up) {
-    op1Box.toString(up);
+    op1.toString(up);
     up.literal(getSymbol());
-    op2Box.toString(up);
+    op2.toString(up);
   }
 }

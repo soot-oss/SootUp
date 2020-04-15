@@ -40,9 +40,9 @@ import javax.annotation.Nonnull;
 /** An expression that invokes a static method. */
 public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copyable {
 
-  /** Stores the values of new ImmediateBox to the argBoxes array. */
+  /** Stores the values to the args array. */
   public JStaticInvokeExpr(MethodSignature method, List<? extends Value> args) {
-    super(method, ValueBoxUtils.toValueBoxes(args));
+    super(method, ValueUtils.toValuesArray(args));
   }
 
   @Override
@@ -60,7 +60,7 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copya
   public String toString() {
     StringBuilder builder = new StringBuilder();
     builder.append(Jimple.STATICINVOKE).append(" ").append(getMethodSignature()).append("(");
-    argBoxesToString(builder);
+    argsToString(builder);
     builder.append(")");
     return builder.toString();
   }
@@ -72,7 +72,7 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copya
     up.literal(" ");
     up.methodSignature(getMethodSignature());
     up.literal("(");
-    argBoxesToPrinter(up);
+    argsToPrinter(up);
     up.literal(")");
   }
 

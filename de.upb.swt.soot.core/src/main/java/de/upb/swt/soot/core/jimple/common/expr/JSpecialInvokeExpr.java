@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
 public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
   public JSpecialInvokeExpr(Local base, MethodSignature method, List<? extends Value> args) {
-    super(Jimple.newLocalBox(base), method, ValueBoxUtils.toValueBoxes(args));
+    super(base, method, ValueUtils.toValuesArray(args));
   }
 
   @Override
@@ -58,7 +58,7 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr impleme
         .append(".")
         .append(getMethodSignature())
         .append("(");
-    argBoxesToString(builder);
+    argsToString(builder);
     builder.append(")");
 
     return builder.toString();
@@ -69,11 +69,11 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr impleme
   public void toString(StmtPrinter up) {
     up.literal(Jimple.SPECIALINVOKE);
     up.literal(" ");
-    getBaseBox().toString(up);
+    getBase().toString(up);
     up.literal(".");
     up.methodSignature(getMethodSignature());
     up.literal("(");
-    argBoxesToPrinter(up);
+    argsToPrinter(up);
     up.literal(")");
   }
 

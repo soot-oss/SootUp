@@ -41,7 +41,7 @@ import javax.annotation.Nonnull;
 public final class JNegExpr extends AbstractUnopExpr implements Copyable {
 
   public JNegExpr(Value op) {
-    super(Jimple.newImmediateBox(op));
+    super(op);
   }
 
   @Override
@@ -64,7 +64,7 @@ public final class JNegExpr extends AbstractUnopExpr implements Copyable {
   public void toString(StmtPrinter up) {
     up.literal(Jimple.NEG);
     up.literal(" ");
-    getOpBox().toString(up);
+    getOp().toString(up);
   }
 
   @Override

@@ -27,9 +27,9 @@ package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.ArrayType;
@@ -44,17 +44,27 @@ import javax.annotation.Nonnull;
 public final class JNewArrayExpr implements Expr, Copyable {
 
   private final Type baseType;
-  private final ValueBox sizeBox;
+  private final Value size;
   private final IdentifierFactory identifierFactory;
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
-  private Value size;
 
   public JNewArrayExpr(Type baseType, Value size, IdentifierFactory identifierFactory) {
     this.baseType = baseType;
-    this.sizeBox = Jimple.newImmediateBox(size);
+    if (size == null) {
+      throw new IllegalArgumentException("value may not be null");
+    }
+    if (size instanceof Immediate) {
+      this.size = size;
+    } else {
+      throw new RuntimeException(
+          "JNewArrayExpr "
+              + this
+              + " cannot contain value: "
+              + size
+              + " ("
+              + size.getClass()
+              + ")");
+    }
     this.identifierFactory = identifierFactory;
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
-    this.size = size;
   }
 
   private static Type simplify(Type baseType, IdentifierFactory identifierFactory) {
@@ -74,17 +84,12 @@ public final class JNewArrayExpr implements Expr, Copyable {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return sizeBox.getValue().equivHashCode() * 101 + baseType.hashCode() * 17;
+    return size.equivHashCode() * 101 + baseType.hashCode() * 17;
   }
 
   @Override
   public String toString() {
-    return (Jimple.NEWARRAY + " (")
-        + getBaseTypeString()
-        + ")"
-        + "["
-        + sizeBox.getValue().toString()
-        + "]";
+    return (Jimple.NEWARRAY + " (") + getBaseTypeString() + ")" + "[" + size.toString() + "]";
   }
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
@@ -96,7 +101,7 @@ public final class JNewArrayExpr implements Expr, Copyable {
     up.typeSignature(baseType);
     up.literal(")");
     up.literal("[");
-    sizeBox.toString(up);
+    size.toString(up);
     up.literal("]");
   }
 
@@ -108,12 +113,8 @@ public final class JNewArrayExpr implements Expr, Copyable {
     return baseType;
   }
 
-  public ValueBox getSizeBox() {
-    return sizeBox;
-  }
-
   public Value getSize() {
-    return sizeBox.getValue();
+    return size;
   }
 
   /** Returns a list of type Value, contains a list of values with size */

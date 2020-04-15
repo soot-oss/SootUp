@@ -25,10 +25,9 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
-import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
@@ -41,16 +40,20 @@ import javax.annotation.Nonnull;
 /** An expression that casts a value to a certain type. */
 public final class JCastExpr implements Expr, Copyable {
 
-  private final ValueBox opBox;
-  private final Type type;
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
   private final Value op;
+  private final Type type;
 
   public JCastExpr(Value op, Type type) {
-    this.opBox = Jimple.newImmediateBox(op);
+    if (op == null) {
+      throw new IllegalArgumentException("value may not be null");
+    }
+    if (op instanceof Immediate) {
+      this.op = op;
+    } else {
+      throw new RuntimeException(
+          "JCastExpr " + this + " cannot contain value: " + op + " (" + op.getClass() + ")");
+    }
     this.type = type;
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
-    this.op = op;
   }
 
   @Override
@@ -61,12 +64,12 @@ public final class JCastExpr implements Expr, Copyable {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return opBox.getValue().equivHashCode() * 101 + type.hashCode() + 17;
+    return op.equivHashCode() * 101 + type.hashCode() + 17;
   }
 
   @Override
   public String toString() {
-    return "(" + type.toString() + ") " + opBox.getValue().toString();
+    return "(" + type.toString() + ") " + op.toString();
   }
 
   @Override
@@ -74,15 +77,11 @@ public final class JCastExpr implements Expr, Copyable {
     up.literal("(");
     up.typeSignature(type);
     up.literal(") ");
-    opBox.toString(up);
+    op.toString(up);
   }
 
   public Value getOp() {
-    return opBox.getValue();
-  }
-
-  public ValueBox getOpBox() {
-    return opBox;
+    return op;
   }
 
   @Override

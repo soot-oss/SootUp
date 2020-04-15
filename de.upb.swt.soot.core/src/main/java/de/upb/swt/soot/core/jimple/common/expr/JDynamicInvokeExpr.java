@@ -27,9 +27,9 @@
 package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.model.SootClass;
@@ -38,23 +38,21 @@ import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copyable {
 
   private final MethodSignature bootstrapMethodSignature;
-  private final ValueBox[] bootstrapMethodSignatureArgBoxes;
+  private final Value[] bootstrapMethodSignatureArgs;
   private final int tag;
 
-  /** Assigns values returned by newImmediateBox to an array bsmArgBoxes of type ValueBox. */
   public JDynamicInvokeExpr(
       MethodSignature bootstrapMethodSignature,
       List<? extends Value> bootstrapArgs,
       MethodSignature methodSignature,
       int tag,
       List<? extends Value> methodArgs) {
-    super(methodSignature, ValueBoxUtils.toValueBoxes(methodArgs));
+    super(methodSignature, ValueUtils.toValuesArray(methodArgs));
     if (!methodSignature
         .toString()
         .startsWith("<" + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + ": ")) {
@@ -64,11 +62,26 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
               + "!");
     }
     this.bootstrapMethodSignature = bootstrapMethodSignature;
-    this.bootstrapMethodSignatureArgBoxes = new ValueBox[bootstrapArgs.size()];
+    this.bootstrapMethodSignatureArgs = new Value[bootstrapArgs.size()];
     this.tag = tag;
 
     for (int i = 0; i < bootstrapArgs.size(); i++) {
-      this.bootstrapMethodSignatureArgBoxes[i] = Jimple.newImmediateBox(bootstrapArgs.get(i));
+      Value value = bootstrapArgs.get(i);
+      if (value == null) {
+        throw new IllegalArgumentException("value may not be null");
+      }
+      if (value instanceof Immediate) {
+        this.bootstrapMethodSignatureArgs[i] = value;
+      } else {
+        throw new RuntimeException(
+            "JDynamicInvokeExpr "
+                + this
+                + " cannot contain value: "
+                + value
+                + " ("
+                + value.getClass()
+                + ")");
+      }
     }
   }
 
@@ -94,11 +107,11 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   }
 
   public int getBootstrapArgCount() {
-    return bootstrapMethodSignatureArgBoxes.length;
+    return bootstrapMethodSignatureArgs.length;
   }
 
   public Value getBootstrapArg(int index) {
-    return bootstrapMethodSignatureArgBoxes[index].getValue();
+    return bootstrapMethodSignatureArgs[index];
   }
 
   @Override
@@ -122,17 +135,17 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
     builder.append(getMethodSignature().getSubSignature());
     builder.append(">(");
 
-    argBoxesToString(builder);
+    argsToString(builder);
 
     builder.append(") ");
     builder.append(this.getBootstrapMethodSignature());
     builder.append("(");
-    final int len = bootstrapMethodSignatureArgBoxes.length;
+    final int len = bootstrapMethodSignatureArgs.length;
     if (0 < len) {
-      builder.append(bootstrapMethodSignatureArgBoxes[0].getValue().toString());
+      builder.append(bootstrapMethodSignatureArgs[0].toString());
       for (int i = 1; i < len; i++) {
         builder.append(", ");
-        builder.append(bootstrapMethodSignatureArgBoxes[i].getValue().toString());
+        builder.append(bootstrapMethodSignatureArgs[i].toString());
       }
     }
     builder.append(")");
@@ -149,17 +162,17 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
             + "\" <"
             + getMethodSignature().getSubSignature()
             + ">(");
-    argBoxesToPrinter(up);
+    argsToPrinter(up);
 
     up.literal(") ");
     up.methodSignature(bootstrapMethodSignature);
     up.literal("(");
-    final int len = bootstrapMethodSignatureArgBoxes.length;
+    final int len = bootstrapMethodSignatureArgs.length;
     if (0 < len) {
-      bootstrapMethodSignatureArgBoxes[0].toString(up);
+      bootstrapMethodSignatureArgs[0].toString(up);
       for (int i = 1; i < len; i++) {
         up.literal(", ");
-        bootstrapMethodSignatureArgBoxes[i].toString(up);
+        bootstrapMethodSignatureArgs[i].toString(up);
       }
     }
     up.literal(")");
@@ -170,11 +183,9 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
     ((ExprVisitor) sw).caseDynamicInvokeExpr(this);
   }
 
-  /** Returns a list containing elements of type ValueBox. */
+  /** Returns a list args of type Value. */
   public List<Value> getBootstrapArgs() {
-    return Arrays.stream(bootstrapMethodSignatureArgBoxes)
-        .map(ValueBox::getValue)
-        .collect(Collectors.toList());
+    return Arrays.asList(bootstrapMethodSignatureArgs);
   }
 
   public int getHandleTag() {
