@@ -24,12 +24,12 @@ public class SynchronizedBlockTest extends MinimalBytecodeTestSuiteBase {
   @Test
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
-    // FIXME [ms] catch blocks are printed invalidly
     assertJimpleStmts(method, expectedBodyStmts());
   }
 
   @Override
   public List<String> expectedBodyStmts() {
+    // TODO: [ms] check it catch-range between labels is referenced itself in old soot, too
     return Stream.of(
             "l0 := @this: SynchronizedBlock",
             "$stack3 = l0.<SynchronizedBlock: Sender sender>",
