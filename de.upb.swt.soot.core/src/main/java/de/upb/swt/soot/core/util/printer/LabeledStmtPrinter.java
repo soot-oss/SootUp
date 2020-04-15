@@ -7,20 +7,17 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.signatures.FieldSubSignature;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   /** branch targets * */
   protected Map<Stmt, String> labels;
-  /** for unit references in Phi nodes * */
+  /** for stmt references in Phi nodes * */
   protected Map<Stmt, String> references;
-
-  protected String labelIndent = "\u0020\u0020\u0020\u0020\u0020";
 
   public LabeledStmtPrinter() {}
 
@@ -28,11 +25,11 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     createLabelMaps(b);
   }
 
-  public Map<Stmt, String> labels() {
+  public Map<Stmt, String> getLabels() {
     return labels;
   }
 
-  public Map<Stmt, String> references() {
+  public Map<Stmt, String> getReferences() {
     return references;
   }
 
@@ -49,33 +46,34 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   public abstract void identityRef(IdentityRef r);
 
   @Override
-  public abstract void typeSignature(Type t);
-
-  @Override
   public void stmtRef(Stmt u, boolean branchTarget) {
-    String oldIndent = getIndent();
 
     // normal case, ie labels
     if (branchTarget) {
-      setIndent(labelIndent);
+
+      setIndent(-indentStep / 2);
       handleIndent();
-      setIndent(oldIndent);
+      setIndent(indentStep / 2);
+
       String label = labels.get(u);
       if (label == null || "<unnamed>".equals(label)) {
-        label = "[?= " + Jimple.escape(u.toString()) + "]";
+        output.append("[?= ").append(Jimple.escape(u.toString())).append(']');
+      } else {
+        output.append(Jimple.escape(label));
       }
-      output.append(label);
+
     }
+    // TODO: [ms] still necessary? (-> shimple is not supported anymore)
     // refs to control flow predecessors (for Shimple)
     else {
       String ref = references.get(u);
 
       if (startOfLine) {
-        String newIndent = "(" + Jimple.escape(ref) + ")" + indent.substring(ref.length() + 2);
-
-        setIndent(newIndent);
+        setIndent(-indentStep / 2);
         handleIndent();
-        setIndent(oldIndent);
+        setIndent(indentStep / 2);
+
+        output.append('(').append(ref).append(')');
       } else {
         output.append(Jimple.escape(ref));
       }
@@ -121,6 +119,43 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       if (refStmts.contains(s)) {
         references.put(s, Integer.toString(refCount++));
       }
+    }
+  }
+
+  @Override
+  public void methodSignature(MethodSignature methodSig) {
+    if (useImports) {
+      output.append('<');
+      typeSignature(methodSig.getDeclClassType());
+      output.append(": ");
+      typeSignature(methodSig.getType());
+      output.append(' ').append(methodSig.getName()).append('(');
+
+      final List<Type> parameterTypes = methodSig.getSubSignature().getParameterTypes();
+      for (Type parameterType : parameterTypes) {
+        typeSignature(parameterType);
+        output.append(',');
+      }
+      if (parameterTypes.size() > 0) {
+        output.setLength(output.length() - 1);
+      }
+      output.append(")>");
+    } else {
+      output.append(methodSig.toString());
+    }
+  }
+
+  @Override
+  public void fieldSignature(FieldSignature fieldSig) {
+    if (useImports) {
+      output.append('<');
+      typeSignature(fieldSig.getDeclClassType());
+      output.append(": ");
+      final FieldSubSignature subSignature = fieldSig.getSubSignature();
+      typeSignature(subSignature.getType());
+      output.append(' ').append(subSignature.getName()).append('>');
+    } else {
+      output.append(fieldSig.toString());
     }
   }
 }

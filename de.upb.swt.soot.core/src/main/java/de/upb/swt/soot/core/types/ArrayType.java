@@ -1,6 +1,7 @@
 package de.upb.swt.soot.core.types;
 
 import com.google.common.base.Objects;
+import de.upb.swt.soot.core.util.printer.StmtPrinter;
 
 /**
  * Represents the type of an array, e.g. <code>int[]</code>, <code>Object[]</code> or <code>
@@ -25,6 +26,13 @@ public class ArrayType extends ReferenceType {
       sb.append("[]");
     }
     return sb.toString();
+  }
+
+  public void toString(StmtPrinter printer) {
+    printer.typeSignature(baseType);
+    for (int i = 0; i < dimension; i++) {
+      printer.literal("[]");
+    }
   }
 
   @Override

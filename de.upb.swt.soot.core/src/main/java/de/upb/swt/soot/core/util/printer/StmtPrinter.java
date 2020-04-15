@@ -47,15 +47,15 @@ public interface StmtPrinter {
 
   void endValueBox(ValueBox u);
 
+  void setIndent(int offset);
+
+  void handleIndent();
+
   void incIndent();
 
   void decIndent();
 
   void noIndent();
-
-  void setIndent(String newIndent);
-
-  String getIndent();
 
   void literal(String s);
 
@@ -79,5 +79,5 @@ public interface StmtPrinter {
 
   void identityRef(IdentityRef r);
 
-  StringBuilder output();
+  void modifier(String toString);
 }

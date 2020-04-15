@@ -61,14 +61,12 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
     this.classProvider = new WalaJavaClassProvider(sourcePaths, exclusionFilePath);
   }
 
-  @Nonnull
   @Override
   public Optional<? extends AbstractClassSource> getClassSource(@Nonnull ClassType type) {
     return getClassSource(type, SourcecodeClassLoadingOptions.Default);
   }
 
   @Nonnull
-  @Override
   public Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory) {
     return getClassSources(identifierFactory, SourcecodeClassLoadingOptions.Default);
@@ -94,5 +92,9 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
       }
     }
     return Optional.empty();
+  }
+
+  public String getExclusionFilePath() {
+    return exclusionFilePath;
   }
 }

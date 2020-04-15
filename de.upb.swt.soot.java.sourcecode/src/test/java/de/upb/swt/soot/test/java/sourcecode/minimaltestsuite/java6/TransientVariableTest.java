@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,21 +14,14 @@ import java.util.stream.Stream;
 import org.junit.Ignore;
 
 /** @author Kaustubh Kelkar */
-public class TransientVariableTest extends MinimalTestSuiteBase {
+public class TransientVariableTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         "transientVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Override
-  public void defaultTest() {
-    // TODO: once the transient bug is fixed replace with the body of ignoredTest - can not @Ignore
-    // the overriden @Test method
-  }
-
   @Ignore
-  public void ignoredTest() {
-    super.defaultTest();
+  public void testTransientVar() {
     SootClass clazz = loadClass(getDeclaredClassSignature());
     assertTrue(
         clazz.getFields().stream()

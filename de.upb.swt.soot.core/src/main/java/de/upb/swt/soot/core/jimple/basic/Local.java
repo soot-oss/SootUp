@@ -102,7 +102,7 @@ public final class Local implements Value, Immediate, Copyable {
   }
 
   @Override
-  public final List<ValueBox> getUseBoxes() {
+  public final List<Value> getUses() {
     return Collections.emptyList();
   }
 

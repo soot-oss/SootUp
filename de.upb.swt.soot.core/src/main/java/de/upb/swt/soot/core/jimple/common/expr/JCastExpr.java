@@ -43,10 +43,14 @@ public final class JCastExpr implements Expr, Copyable {
 
   private final ValueBox opBox;
   private final Type type;
+  // new attribute: later if ValueBox is deleted, then add "final" to it.
+  private final Value op;
 
   public JCastExpr(Value op, Type type) {
     this.opBox = Jimple.newImmediateBox(op);
     this.type = type;
+    // new attribute: later if ValueBox is deleted, then fit the constructor.
+    this.op = op;
   }
 
   @Override
@@ -82,10 +86,9 @@ public final class JCastExpr implements Expr, Copyable {
   }
 
   @Override
-  public final List<ValueBox> getUseBoxes() {
-
-    List<ValueBox> list = new ArrayList<>(opBox.getValue().getUseBoxes());
-    list.add(opBox);
+  public final List<Value> getUses() {
+    List<Value> list = new ArrayList<>(op.getUses());
+    list.add(op);
 
     return list;
   }

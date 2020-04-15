@@ -50,7 +50,7 @@ public abstract class AbstractClassMemberSignature implements Signature {
 
   @Override
   public String toString() {
-    return "<" + declClassSignature.toString() + ": " + getSubSignature() + '>';
+    return "<" + declClassSignature + ": " + getSubSignature() + '>';
   }
 
   /** The signature of the declaring class. */

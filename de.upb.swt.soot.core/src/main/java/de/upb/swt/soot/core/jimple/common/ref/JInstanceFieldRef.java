@@ -23,9 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-public final class JInstanceFieldRef extends FieldRef implements Copyable {
+public final class JInstanceFieldRef extends JFieldRef implements Copyable {
 
   private final ValueBox baseBox;
+  // new attribute: later if ValueBox is deleted, then add "final" to it.
+  private Value base;
 
   /**
    * Create a reference to a class' instance field.
@@ -36,6 +38,8 @@ public final class JInstanceFieldRef extends FieldRef implements Copyable {
   public JInstanceFieldRef(Value base, FieldSignature fieldSig) {
     super(fieldSig);
     this.baseBox = Jimple.newLocalBox(base);
+    // new attribute
+    this.base = base;
   }
 
   @Override
@@ -58,14 +62,11 @@ public final class JInstanceFieldRef extends FieldRef implements Copyable {
     return baseBox;
   }
 
-  /** Returns a list useBoxes of type ValueBox. */
   @Override
-  public final List<ValueBox> getUseBoxes() {
-
-    List<ValueBox> useBoxes = new ArrayList<>(baseBox.getValue().getUseBoxes());
-    useBoxes.add(baseBox);
-
-    return useBoxes;
+  public final List<Value> getUses() {
+    List<Value> list = new ArrayList<>(base.getUses());
+    list.add(base);
+    return list;
   }
 
   @Override

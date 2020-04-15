@@ -24,15 +24,20 @@ package de.upb.swt.soot.test.core.jimple.common.stmt;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.IgnoreLocalNameComparator;
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JAddExpr;
+import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
+import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.PrimitiveType;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.language.JavaJimple;
 import java.util.Comparator;
 import org.junit.Assert;
 import org.junit.Test;
@@ -112,5 +117,26 @@ public class JAssignStmtTest {
 
     // equivTo with comparator
     Assert.assertFalse(lStmt.equivTo(deepStmt, new IgnoreLocalNameComparator()));
+
+    // test JFieldRef cast for FieldRef - should not throw an Exception
+    Local someLocal =
+        new Local("r42", JavaIdentifierFactory.getInstance().getClassType("Abc.def.Alphabet"));
+    final JStaticFieldRef somefield =
+        Jimple.newStaticFieldRef(
+            JavaIdentifierFactory.getInstance()
+                .getFieldSignature(
+                    "somefield",
+                    JavaIdentifierFactory.getInstance().getClassType("Abc.def.Alphabet"),
+                    PrimitiveType.getInt()));
+    final JAssignStmt jAssignStmtField =
+        Jimple.newAssignStmt(someLocal, somefield, StmtPositionInfo.createNoStmtPositionInfo());
+    jAssignStmtField.getFieldRef();
+
+    // test JFieldRef cast for ArrayRef - should not throw an Exception
+    final JArrayRef jArrayRef =
+        JavaJimple.getInstance().newArrayRef(someLocal, IntConstant.getInstance(2));
+    final JAssignStmt jAssignStmtArr =
+        Jimple.newAssignStmt(someLocal, jArrayRef, StmtPositionInfo.createNoStmtPositionInfo());
+    jAssignStmtArr.getArrayRef();
   }
 }

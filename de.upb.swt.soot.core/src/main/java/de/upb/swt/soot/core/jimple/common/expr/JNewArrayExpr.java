@@ -46,11 +46,15 @@ public final class JNewArrayExpr implements Expr, Copyable {
   private final Type baseType;
   private final ValueBox sizeBox;
   private final IdentifierFactory identifierFactory;
+  // new attribute: later if ValueBox is deleted, then add "final" to it.
+  private Value size;
 
   public JNewArrayExpr(Type baseType, Value size, IdentifierFactory identifierFactory) {
     this.baseType = baseType;
     this.sizeBox = Jimple.newImmediateBox(size);
     this.identifierFactory = identifierFactory;
+    // new attribute: later if ValueBox is deleted, then fit the constructor.
+    this.size = size;
   }
 
   private static Type simplify(Type baseType, IdentifierFactory identifierFactory) {
@@ -112,14 +116,12 @@ public final class JNewArrayExpr implements Expr, Copyable {
     return sizeBox.getValue();
   }
 
-  /** Returns a list of type ValueBox, contains a list of values of sizeBox. */
+  /** Returns a list of type Value, contains a list of values with size */
   @Override
-  public final List<ValueBox> getUseBoxes() {
-
-    List<ValueBox> useBoxes = new ArrayList<>(sizeBox.getValue().getUseBoxes());
-    useBoxes.add(sizeBox);
-
-    return useBoxes;
+  public final List<Value> getUses() {
+    List<Value> uses = new ArrayList<>(size.getUses());
+    uses.add(size);
+    return uses;
   }
 
   /** Returns an instance of ArrayType(). */

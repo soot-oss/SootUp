@@ -1,17 +1,16 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java9;
 
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
-import org.junit.Test;
 
 /** @author Kaustubh Kelkar */
-public class TryWithResourcesConciseTest extends MinimalTestSuiteBase {
+public class TryWithResourcesConciseTest extends MinimalSourceTestSuiteBase {
 
   @Override
   public MethodSignature getMethodSignature() {
@@ -19,12 +18,9 @@ public class TryWithResourcesConciseTest extends MinimalTestSuiteBase {
         "printFile", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Test
-  public void defaultTest() {}
-
   @Ignore
-  public void ignoreTest() {
-    /** TODO Java 9 is not supported in WALA, feature can not be tested */
+  public void test() {
+    /** TODO [kk] Java 9 is not supported by WALA, feature can not be tested */
   }
 
   @Override
