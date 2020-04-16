@@ -81,12 +81,12 @@ public class GetInstructionConversionTest {
           assertInstanceOfSatisfying(
               stmt.getRightOp(),
               JInstanceFieldRef.class,
-              fieldRef -> {
+              JFieldRef -> {
                 assertEquiv(
                     new Local("r0", typeFactory.getClassType("alreadywalaunittests.InnerClassAA")),
-                    fieldRef.getBase());
+                    JFieldRef.getBase());
 
-                FieldSignature fieldSig = fieldRef.getFieldSignature();
+                FieldSignature fieldSig = JFieldRef.getFieldSignature();
                 assertNotNull(fieldSig);
                 assertEquals("a_x", fieldSig.getName());
                 Assert.assertEquals(PrimitiveType.getInt(), fieldSig.getType());

@@ -13,7 +13,6 @@ import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
-import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
@@ -22,6 +21,7 @@ import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -202,8 +202,8 @@ public class ViewTypeHierarchyTest {
   @Test
   public void addType() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    OverridingClassSource classSource =
-        new OverridingClassSource(
+    OverridingJavaClassSource classSource =
+        new OverridingJavaClassSource(
             analysisInputLocation,
             null,
             factory.getClassType("adummytype.Type"),
@@ -213,7 +213,8 @@ public class ViewTypeHierarchyTest {
             Collections.emptySet(),
             Collections.emptySet(),
             null,
-            EnumSet.of(Modifier.FINAL));
+            EnumSet.of(Modifier.FINAL),
+            Collections.emptyList());
     SootClass sootClass = new SootClass(classSource, SourceType.Application);
 
     typeHierarchy.addType(sootClass);

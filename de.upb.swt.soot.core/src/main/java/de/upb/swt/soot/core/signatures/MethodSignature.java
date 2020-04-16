@@ -7,7 +7,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /** Represents the fully qualified signature of a method. */
-public class MethodSignature extends AbstractClassMemberSignature {
+public class MethodSignature extends SootClassMemberSignature {
 
   public MethodSignature(
       ClassType declaringClassSignature,

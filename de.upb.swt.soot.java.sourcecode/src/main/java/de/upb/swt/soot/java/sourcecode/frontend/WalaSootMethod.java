@@ -7,13 +7,15 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.java.core.JavaSootMethod;
+import java.util.Collections;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 // TODO: [ms] is it possible to get rid of this class? necessity to hold DebuggingInformation
 // (getDebugInfo is not called)
-public class WalaSootMethod extends SootMethod {
+public class WalaSootMethod extends JavaSootMethod {
 
   @Nullable private final DebuggingInformation debugInfo;
 
@@ -31,7 +33,14 @@ public class WalaSootMethod extends SootMethod {
       @Nonnull Iterable<Modifier> modifiers,
       @Nonnull Iterable<ClassType> thrownExceptions,
       DebuggingInformation debugInfo) {
-    super(source, methodSignature, modifiers, thrownExceptions);
+
+    super(
+        source,
+        methodSignature,
+        modifiers,
+        thrownExceptions,
+        Collections.emptyList() // TODO: [ms] implement annotations
+        );
     this.debugInfo = debugInfo;
   }
 
@@ -45,7 +54,7 @@ public class WalaSootMethod extends SootMethod {
   }
 
   @Nonnull
-  public SootMethod withOverridingMethodSource(
+  public JavaSootMethod withOverridingMethodSource(
       Function<OverridingMethodSource, OverridingMethodSource> overrider) {
     return new WalaSootMethod(
         overrider.apply(new OverridingMethodSource(methodSource)),
@@ -55,19 +64,18 @@ public class WalaSootMethod extends SootMethod {
         debugInfo);
   }
 
-  // TODO: [ms] check if withers are used by javasourcecodefrontend -> otherwise superfluous
   @Nonnull
-  public SootMethod withSource(MethodSource source) {
+  public JavaSootMethod withSource(MethodSource source) {
     return new WalaSootMethod(source, getSignature(), getModifiers(), exceptions, debugInfo);
   }
 
   @Nonnull
-  public SootMethod withModifiers(Iterable<Modifier> modifiers) {
+  public JavaSootMethod withModifiers(Iterable<Modifier> modifiers) {
     return new WalaSootMethod(methodSource, getSignature(), getModifiers(), exceptions, debugInfo);
   }
 
   @Nonnull
-  public SootMethod withThrownExceptions(Iterable<ClassType> thrownExceptions) {
+  public JavaSootMethod withThrownExceptions(Iterable<ClassType> thrownExceptions) {
     return new WalaSootMethod(
         methodSource, getSignature(), getModifiers(), thrownExceptions, debugInfo);
   }

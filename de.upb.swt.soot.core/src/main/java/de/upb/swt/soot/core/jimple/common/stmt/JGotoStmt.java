@@ -32,8 +32,8 @@ import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
+import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -41,7 +41,6 @@ import javax.annotation.Nonnull;
 public final class JGotoStmt extends AbstractStmt implements Copyable {
 
   private final StmtBox targetBox;
-  private final List<StmtBox> targetBoxes;
 
   public JGotoStmt(Stmt target, StmtPositionInfo positionInfo) {
     this(Jimple.newStmtBox(target), positionInfo);
@@ -50,7 +49,6 @@ public final class JGotoStmt extends AbstractStmt implements Copyable {
   public JGotoStmt(StmtBox box, StmtPositionInfo positionInfo) {
     super(positionInfo);
     targetBox = box;
-    targetBoxes = Collections.singletonList(box);
   }
 
   @Override
@@ -86,7 +84,7 @@ public final class JGotoStmt extends AbstractStmt implements Copyable {
 
   @Override
   public List<StmtBox> getStmtBoxes() {
-    return targetBoxes;
+    return ImmutableUtils.immutableList(targetBox);
   }
 
   @Override

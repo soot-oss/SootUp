@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.frontend.MethodSource;
-import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
@@ -20,12 +19,13 @@ import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.File;
+import java.util.Collections;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -108,14 +108,14 @@ public class ModuleCompositionTest {
 
     SootClass c =
         new SootClass(
-            new OverridingClassSource(
+            new OverridingJavaClassSource(
                 new EagerInputLocation(),
                 null,
                 classSignature,
                 null,
                 null,
                 null,
-                ImmutableUtils.immutableSet(
+                Collections.singleton(
                     SootField.builder()
                         .withSignature(
                             JavaIdentifierFactory.getInstance()
@@ -127,8 +127,8 @@ public class ModuleCompositionTest {
                         .withSource(
                             new MethodSource() {
                               @Override
-                              @Nullable
                               public Body resolveBody() {
+                                /* [ms] violating @Nonnull */
                                 return null;
                               }
 
@@ -147,7 +147,8 @@ public class ModuleCompositionTest {
                         .withModifiers(Modifier.PUBLIC)
                         .build()),
                 null,
-                EnumSet.of(Modifier.PUBLIC)),
+                EnumSet.of(Modifier.PUBLIC),
+                Collections.emptyList()),
             SourceType.Application);
 
     // Print some information

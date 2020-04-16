@@ -16,10 +16,9 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 
 /*
-* Switch Statements (combining LookupSwitch/TableSwitch)
-
-* @author Markus Schmidt
-*/
+ * Switch Statements (combining LookupSwitch/TableSwitch)
+ * @author Markus Schmidt
+ */
 public final class JSwitchStmt extends AbstractStmt implements Copyable {
 
   private final StmtBox defaultTargetBox;

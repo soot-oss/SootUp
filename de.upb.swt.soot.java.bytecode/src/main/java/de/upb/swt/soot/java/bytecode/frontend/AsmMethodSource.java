@@ -191,7 +191,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   }
 
   @Override
-  @Nullable
+  @Nonnull
   public Body resolveBody() throws AsmFrontendException {
     Set<Local> bodyLocals = new HashSet<>();
     List<Trap> bodyTraps = new ArrayList<>();
@@ -285,6 +285,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       } else {
         name = "l" + idx;
       }
+      // TODO: [ms] implement annotations for Locals here as third parameter in JavaJimple.newLocal(
       l = Jimple.newLocal(name, UnknownType.getInstance());
       locals.put(i, l);
     }
@@ -436,6 +437,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   @Nonnull
   Local newStackLocal() {
     int idx = nextLocal++;
+    // TODO: [ms] implement annotations for Locals here as third parameter ->
+    // JavaJimple.newLocal(...)
     Local l = Jimple.newLocal("$stack" + idx, UnknownType.getInstance());
     locals.put(idx, l);
     return l;
@@ -1525,7 +1528,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   // return Jimple.createSymbolicMethodRef(methodSignature, isStatic);
   // }
   //
-  // private FieldRef toSootFieldRef(Handle methodHandle) {
+  // private JFieldRef toSootFieldRef(Handle methodHandle) {
   // String bsmClsName = AsmUtil.toQualifiedName(methodHandle.getOwner());
   // JavaClassType bsmCls = view.getIdentifierFactory().getClassSignature(bsmClsName);
   //

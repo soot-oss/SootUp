@@ -1,8 +1,10 @@
 package de.upb.swt.soot.core.signatures;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Suppliers;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -30,7 +32,7 @@ public abstract class AbstractClassMemberSubSignature {
    */
   @Nonnull
   public String getName() {
-    return this.name;
+    return name;
   }
 
   @Nonnull private final Type type;
@@ -42,7 +44,7 @@ public abstract class AbstractClassMemberSubSignature {
    */
   @Nonnull
   public Type getType() {
-    return this.type;
+    return type;
   }
 
   @Override
@@ -70,6 +72,15 @@ public abstract class AbstractClassMemberSubSignature {
     if (r != 0) return r;
 
     return this.getType().toString().compareTo(o.getType().toString());
+  }
+
+  private final Supplier<String> _cachedToString =
+      Suppliers.memoize(() -> String.format("%s %s", getType(), getName()));
+
+  @Override
+  @Nonnull
+  public String toString() {
+    return _cachedToString.get();
   }
 
   public abstract void toString(StmtPrinter printer);

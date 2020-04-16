@@ -100,7 +100,8 @@ public class JimpleComparator {
     if (!(o instanceof Local)) {
       return false;
     }
-    return obj.equivHashCode() == ((Local) o).equivHashCode();
+    Local local = (Local) o;
+    return obj.getName().equals(local.getName()) && obj.getType().equals(local.getType());
   }
 
   public boolean caseBreakpointStmt(JBreakpointStmt stmt, Object o) {

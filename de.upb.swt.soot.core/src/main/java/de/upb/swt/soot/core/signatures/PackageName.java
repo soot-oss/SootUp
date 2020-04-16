@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.signatures;
  */
 
 import com.google.common.base.Objects;
+import javax.annotation.Nonnull;
 
 /**
  * Represents a Java Package.
@@ -33,6 +34,8 @@ public class PackageName {
 
   /** Represents the default package. */
   public static final PackageName DEFAULT_PACKAGE = new PackageName("");
+
+  public static final String PACKAGE_INFO = "package-info";
 
   private final String packageName;
 
@@ -69,7 +72,7 @@ public class PackageName {
   }
 
   /** The name of the package. */
-  public String getPackageName() {
+  public @Nonnull String getPackageName() {
     return packageName;
   }
 }
