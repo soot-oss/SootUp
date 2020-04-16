@@ -11,6 +11,7 @@ import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Optional;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.powermock.reflect.Whitebox;
@@ -45,6 +46,7 @@ public class JavaModulePathNamespaceTest extends AnalysisInputLocationTest {
   }
 
   @Test
+  @Ignore
   public void singleDir2() {
     final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
         new JavaModulePathAnalysisInputLocation(
