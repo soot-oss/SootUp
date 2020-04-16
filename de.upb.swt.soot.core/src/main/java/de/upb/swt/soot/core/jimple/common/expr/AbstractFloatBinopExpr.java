@@ -30,7 +30,6 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
-
 import javax.annotation.Nonnull;
 
 public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {

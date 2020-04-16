@@ -26,7 +26,6 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
-import afu.org.checkerframework.checker.igj.qual.I;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
@@ -65,7 +64,6 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
     this.bootstrapMethodSignature = bootstrapMethodSignature;
     this.bootstrapMethodSignatureArgs = ValueUtils.toValueArray(bootstrapArgs);
     this.tag = tag;
-
   }
 
   /** Makes a parameterized call to JDynamicInvokeExpr method. */
@@ -178,24 +176,36 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   @Nonnull
   public JDynamicInvokeExpr withBootstrapMethodSignature(MethodSignature bootstrapMethodSignature) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, (List<? extends Immediate>) getBootstrapArgs(), getMethodSignature(), (List<? extends Immediate>) getArgs());
+        bootstrapMethodSignature,
+        (List<? extends Immediate>) getBootstrapArgs(),
+        getMethodSignature(),
+        (List<? extends Immediate>) getArgs());
   }
 
   @Nonnull
   public JDynamicInvokeExpr withBootstrapArgs(List<? extends Immediate> bootstrapArgs) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, bootstrapArgs, getMethodSignature(), (List<? extends Immediate>) getArgs());
+        bootstrapMethodSignature,
+        bootstrapArgs,
+        getMethodSignature(),
+        (List<? extends Immediate>) getArgs());
   }
 
   @Nonnull
   public JDynamicInvokeExpr withMethodSignature(MethodSignature methodSignature) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, (List<? extends Immediate>) getBootstrapArgs(), getMethodSignature(), (List<? extends Immediate>) getArgs());
+        bootstrapMethodSignature,
+        (List<? extends Immediate>) getBootstrapArgs(),
+        getMethodSignature(),
+        (List<? extends Immediate>) getArgs());
   }
 
   @Nonnull
   public JDynamicInvokeExpr withMethodArgs(List<? extends Immediate> methodArgs) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, (List<? extends Immediate>) getBootstrapArgs(), getMethodSignature(), methodArgs);
+        bootstrapMethodSignature,
+        (List<? extends Immediate>) getBootstrapArgs(),
+        getMethodSignature(),
+        methodArgs);
   }
 }

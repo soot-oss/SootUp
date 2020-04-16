@@ -47,7 +47,8 @@ public final class JNewArrayExpr implements Expr, Copyable {
   private final Value size;
   private final IdentifierFactory identifierFactory;
 
-  public JNewArrayExpr(Type baseType, @Nonnull Immediate size, IdentifierFactory identifierFactory) {
+  public JNewArrayExpr(
+      Type baseType, @Nonnull Immediate size, IdentifierFactory identifierFactory) {
     this.baseType = baseType;
     this.size = (Value) size;
     this.identifierFactory = identifierFactory;

@@ -29,10 +29,9 @@ import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractBinopExpr implements Expr {
 
@@ -42,7 +41,6 @@ public abstract class AbstractBinopExpr implements Expr {
   AbstractBinopExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     this.op1 = (Value) op1;
     this.op2 = (Value) op2;
-
   }
 
   public Value getOp1() {

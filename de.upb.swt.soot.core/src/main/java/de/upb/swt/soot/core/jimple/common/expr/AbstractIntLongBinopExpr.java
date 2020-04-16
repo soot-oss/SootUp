@@ -25,13 +25,11 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
-import com.google.common.collect.ImmutableMap;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
-
 import javax.annotation.Nonnull;
 
 public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {

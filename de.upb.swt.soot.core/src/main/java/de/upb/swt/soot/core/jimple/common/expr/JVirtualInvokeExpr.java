@@ -30,7 +30,6 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -41,7 +40,8 @@ import javax.annotation.Nonnull;
 public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
   /** Stores the values to the args array. */
-  public JVirtualInvokeExpr(@Nonnull Local base, MethodSignature method, List<? extends Immediate> args) {
+  public JVirtualInvokeExpr(
+      @Nonnull Local base, MethodSignature method, List<? extends Immediate> args) {
     super(base, method, (Immediate[]) ValueUtils.toValueArray(args));
   }
 
@@ -79,12 +79,14 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr impleme
 
   @Nonnull
   public JVirtualInvokeExpr withBase(Local base) {
-    return new JVirtualInvokeExpr(base, getMethodSignature(), (List<? extends Immediate>) getArgs());
+    return new JVirtualInvokeExpr(
+        base, getMethodSignature(), (List<? extends Immediate>) getArgs());
   }
 
   @Nonnull
   public JVirtualInvokeExpr withMethodSignature(MethodSignature methodSignature) {
-    return new JVirtualInvokeExpr((Local) getBase(), methodSignature, (List<? extends Immediate>) getArgs());
+    return new JVirtualInvokeExpr(
+        (Local) getBase(), methodSignature, (List<? extends Immediate>) getArgs());
   }
 
   @Nonnull

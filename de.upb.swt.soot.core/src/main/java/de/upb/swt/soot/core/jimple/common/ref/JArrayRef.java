@@ -44,7 +44,8 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   private final Value index;
   private final IdentifierFactory identifierFactory;
 
-  public JArrayRef(@Nonnull Local base, @Nonnull Immediate index, IdentifierFactory identifierFactory) {
+  public JArrayRef(
+      @Nonnull Local base, @Nonnull Immediate index, IdentifierFactory identifierFactory) {
     this.base = base;
     this.index = (Value) index;
     this.identifierFactory = identifierFactory;

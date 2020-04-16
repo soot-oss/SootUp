@@ -27,10 +27,9 @@ package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractUnopExpr implements Expr {
 
@@ -38,7 +37,7 @@ public abstract class AbstractUnopExpr implements Expr {
 
   AbstractUnopExpr(@Nonnull Immediate op) {
 
-      this.op = (Value) op;
+    this.op = (Value) op;
   }
 
   public Value getOp() {
