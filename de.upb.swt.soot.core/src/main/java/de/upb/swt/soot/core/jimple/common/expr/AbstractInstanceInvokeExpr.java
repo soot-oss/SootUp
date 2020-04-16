@@ -25,11 +25,14 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,23 +40,9 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
 
   private final Value base;
 
-  AbstractInstanceInvokeExpr(Value base, MethodSignature methodSig, Value[] args) {
+  AbstractInstanceInvokeExpr(@Nonnull Local base, MethodSignature methodSig, Immediate[] args) {
     super(methodSig, args);
-    if (base == null) {
-      throw new IllegalArgumentException("value may not be null");
-    }
-    if (base instanceof Local) {
-      this.base = base;
-    } else {
-      throw new RuntimeException(
-          "InstanceInvokeExpr "
-              + this
-              + " cannot contain value: "
-              + base
-              + " ("
-              + base.getClass()
-              + ")");
-    }
+    this.base = base;
   }
 
   public Value getBase() {

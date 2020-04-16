@@ -27,7 +27,9 @@
 package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Copyable;
@@ -39,8 +41,8 @@ import javax.annotation.Nonnull;
 public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
   /** methodArgs to an array args. */
-  public JInterfaceInvokeExpr(Value base, MethodSignature method, List<? extends Value> args) {
-    super(base, method, ValueUtils.toValuesArray(args));
+  public JInterfaceInvokeExpr(@Nonnull Local base, MethodSignature method, List<? extends Immediate> args) {
+    super(base, method, (Immediate[]) ValueUtils.toValueArray(args));
 
     // FIXME: [JMP] Move this into view or somewhere, where `SootClass` and its context are
     // available
@@ -94,17 +96,17 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
   // Value base, MethodSignature method, List<? extends Value> args
 
   @Nonnull
-  public JInterfaceInvokeExpr withBase(Value base) {
-    return new JInterfaceInvokeExpr(base, getMethodSignature(), getArgs());
+  public JInterfaceInvokeExpr withBase(Local base) {
+    return new JInterfaceInvokeExpr(base, getMethodSignature(), (List<? extends Immediate>) getArgs());
   }
 
   @Nonnull
   public JInterfaceInvokeExpr withMethodSignature(MethodSignature method) {
-    return new JInterfaceInvokeExpr(getBase(), method, getArgs());
+    return new JInterfaceInvokeExpr((Local) getBase(), method, (List<? extends Immediate>) getArgs());
   }
 
   @Nonnull
-  public JInterfaceInvokeExpr withArgs(List<? extends Value> args) {
-    return new JInterfaceInvokeExpr(getBase(), getMethodSignature(), args);
+  public JInterfaceInvokeExpr withArgs(List<? extends Immediate> args) {
+    return new JInterfaceInvokeExpr((Local) getBase(), getMethodSignature(), args);
   }
 }

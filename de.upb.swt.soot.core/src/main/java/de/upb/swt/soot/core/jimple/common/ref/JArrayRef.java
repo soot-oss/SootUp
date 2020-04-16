@@ -44,23 +44,9 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   private final Value index;
   private final IdentifierFactory identifierFactory;
 
-  public JArrayRef(Value base, Value index, IdentifierFactory identifierFactory) {
-
-    if (base == null || index == null) {
-      throw new IllegalArgumentException("value may not be null");
-    }
-    if (base instanceof Local) {
-      this.base = base;
-    } else {
-      throw new RuntimeException(
-          "JArrayRef " + this + " cannot contain value: " + base + " (" + base.getClass() + ")");
-    }
-    if (index instanceof Immediate) {
-      this.index = index;
-    } else {
-      throw new RuntimeException(
-          "JArrayRef " + this + " cannot contain value: " + index + " (" + index.getClass() + ")");
-    }
+  public JArrayRef(@Nonnull Local base, @Nonnull Immediate index, IdentifierFactory identifierFactory) {
+    this.base = base;
+    this.index = (Value) index;
     this.identifierFactory = identifierFactory;
   }
 
@@ -145,12 +131,12 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   }
 
   @Nonnull
-  public JArrayRef withBase(Value base) {
-    return new JArrayRef(base, getIndex(), identifierFactory);
+  public JArrayRef withBase(Local base) {
+    return new JArrayRef(base, (Immediate) getIndex(), identifierFactory);
   }
 
   @Nonnull
-  public JArrayRef withIndex(Value index) {
-    return new JArrayRef(getBase(), index, identifierFactory);
+  public JArrayRef withIndex(Immediate index) {
+    return new JArrayRef((Local) getBase(), index, identifierFactory);
   }
 }

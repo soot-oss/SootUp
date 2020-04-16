@@ -50,27 +50,9 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
    * @param type the type of the array
    * @param sizes the sizes
    */
-  public JNewMultiArrayExpr(ArrayType type, List<? extends Value> sizes) {
+  public JNewMultiArrayExpr(ArrayType type, List<? extends Immediate> sizes) {
     this.baseType = type;
-    this.sizes = new Value[sizes.size()];
-    for (int i = 0; i < sizes.size(); i++) {
-      Value value = sizes.get(i);
-      if (value == null) {
-        throw new IllegalArgumentException("value may not be null");
-      }
-      if (value instanceof Immediate) {
-        this.sizes[i] = value;
-      } else {
-        throw new RuntimeException(
-            "JNewMultiArrayExpr "
-                + this
-                + " cannot contain value: "
-                + value
-                + " ("
-                + value.getClass()
-                + ")");
-      }
-    }
+    this.sizes = ValueUtils.toValueArray(sizes);
   }
 
   @Override
@@ -134,7 +116,7 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
     return sizes.length;
   }
 
-  /** Returns a list of values. */
+  /** Returns a list of Values. */
   public List<Value> getSizes() {
     List<Value> toReturn = new ArrayList<>();
     for (Value element : sizes) {
@@ -165,11 +147,11 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
 
   @Nonnull
   public JNewMultiArrayExpr withBaseType(ArrayType baseType) {
-    return new JNewMultiArrayExpr(baseType, getSizes());
+    return new JNewMultiArrayExpr(baseType, (List<? extends Immediate>) getSizes());
   }
 
   @Nonnull
-  public JNewMultiArrayExpr withSizes(List<Value> sizes) {
+  public JNewMultiArrayExpr withSizes(List<? extends Immediate> sizes) {
     return new JNewMultiArrayExpr(baseType, sizes);
   }
 }

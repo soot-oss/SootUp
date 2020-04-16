@@ -25,14 +25,17 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
 
+import javax.annotation.Nonnull;
+
 public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
 
-  protected AbstractFloatBinopExpr(Value op1, Value op2) {
+  protected AbstractFloatBinopExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);
   }
 

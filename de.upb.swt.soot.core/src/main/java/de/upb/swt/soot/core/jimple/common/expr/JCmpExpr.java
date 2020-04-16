@@ -26,6 +26,7 @@
 package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -34,7 +35,7 @@ import javax.annotation.Nonnull;
 
 public final class JCmpExpr extends AbstractIntBinopExpr implements Copyable {
 
-  public JCmpExpr(Value op1, Value op2) {
+  public JCmpExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);
   }
 
@@ -49,12 +50,12 @@ public final class JCmpExpr extends AbstractIntBinopExpr implements Copyable {
   }
 
   @Nonnull
-  public JCmpExpr withOp1(Value op1) {
-    return new JCmpExpr(op1, getOp2());
+  public JCmpExpr withOp1(Immediate op1) {
+    return new JCmpExpr(op1, (Immediate) getOp2());
   }
 
   @Nonnull
-  public JCmpExpr withOp2(Value op2) {
-    return new JCmpExpr(getOp1(), op2);
+  public JCmpExpr withOp2(Immediate op2) {
+    return new JCmpExpr((Immediate) getOp1(), op2);
   }
 }

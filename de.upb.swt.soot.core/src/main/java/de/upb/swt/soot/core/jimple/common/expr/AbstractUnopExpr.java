@@ -27,6 +27,8 @@ package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
+
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,17 +36,9 @@ public abstract class AbstractUnopExpr implements Expr {
 
   private final Value op;
 
-  AbstractUnopExpr(Value op) {
+  AbstractUnopExpr(@Nonnull Immediate op) {
 
-    if (op == null) {
-      throw new IllegalArgumentException("value may not be null");
-    }
-    if (op instanceof Immediate) {
-      this.op = op;
-    } else {
-      throw new RuntimeException(
-          "UnopExpr " + this + " cannot contain value: " + op + " (" + op.getClass() + ")");
-    }
+      this.op = (Value) op;
   }
 
   public Value getOp() {

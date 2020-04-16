@@ -43,16 +43,8 @@ public final class JCastExpr implements Expr, Copyable {
   private final Value op;
   private final Type type;
 
-  public JCastExpr(Value op, Type type) {
-    if (op == null) {
-      throw new IllegalArgumentException("value may not be null");
-    }
-    if (op instanceof Immediate) {
-      this.op = op;
-    } else {
-      throw new RuntimeException(
-          "JCastExpr " + this + " cannot contain value: " + op + " (" + op.getClass() + ")");
-    }
+  public JCastExpr(@Nonnull Immediate op, Type type) {
+    this.op = (Value) op;
     this.type = type;
   }
 
@@ -103,12 +95,12 @@ public final class JCastExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public JCastExpr withOp(Value op) {
+  public JCastExpr withOp(Immediate op) {
     return new JCastExpr(op, type);
   }
 
   @Nonnull
   public JCastExpr withType(Type type) {
-    return new JCastExpr(getOp(), type);
+    return new JCastExpr((Immediate) getOp(), type);
   }
 }

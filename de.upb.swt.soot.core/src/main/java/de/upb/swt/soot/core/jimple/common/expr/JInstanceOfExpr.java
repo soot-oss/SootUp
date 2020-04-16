@@ -45,17 +45,9 @@ public final class JInstanceOfExpr implements Expr, Copyable {
   private final Value op;
   private final Type checkType;
 
-  public JInstanceOfExpr(Value op, Type checkType) {
+  public JInstanceOfExpr(@Nonnull Immediate op, Type checkType) {
 
-    if (op == null) {
-      throw new IllegalArgumentException("value may not be null");
-    }
-    if (op instanceof Immediate) {
-      this.op = op;
-    } else {
-      throw new RuntimeException(
-          "JInstanceOfExpr " + this + " cannot contain value: " + op + " (" + op.getClass() + ")");
-    }
+    this.op = (Value) op;
     this.checkType = checkType;
   }
 
@@ -110,12 +102,12 @@ public final class JInstanceOfExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public JInstanceOfExpr withOp(Value op) {
-    return new JInstanceOfExpr(op, checkType);
+  public JInstanceOfExpr withOp(Immediate op) {
+    return new JInstanceOfExpr(op, getCheckType());
   }
 
   @Nonnull
   public JInstanceOfExpr withCheckType(Type checkType) {
-    return new JInstanceOfExpr(getOp(), checkType);
+    return new JInstanceOfExpr((Immediate) getOp(), checkType);
   }
 }

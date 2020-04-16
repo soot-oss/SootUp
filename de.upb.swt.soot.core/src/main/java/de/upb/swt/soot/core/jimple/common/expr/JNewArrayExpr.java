@@ -47,23 +47,9 @@ public final class JNewArrayExpr implements Expr, Copyable {
   private final Value size;
   private final IdentifierFactory identifierFactory;
 
-  public JNewArrayExpr(Type baseType, Value size, IdentifierFactory identifierFactory) {
+  public JNewArrayExpr(Type baseType, @Nonnull Immediate size, IdentifierFactory identifierFactory) {
     this.baseType = baseType;
-    if (size == null) {
-      throw new IllegalArgumentException("value may not be null");
-    }
-    if (size instanceof Immediate) {
-      this.size = size;
-    } else {
-      throw new RuntimeException(
-          "JNewArrayExpr "
-              + this
-              + " cannot contain value: "
-              + size
-              + " ("
-              + size.getClass()
-              + ")");
-    }
+    this.size = (Value) size;
     this.identifierFactory = identifierFactory;
   }
 
@@ -138,11 +124,11 @@ public final class JNewArrayExpr implements Expr, Copyable {
 
   @Nonnull
   public JNewArrayExpr withBaseType(Type baseType) {
-    return new JNewArrayExpr(baseType, getSize(), identifierFactory);
+    return new JNewArrayExpr(baseType, (Immediate) getSize(), identifierFactory);
   }
 
   @Nonnull
-  public JNewArrayExpr withSize(Value size) {
+  public JNewArrayExpr withSize(Immediate size) {
     return new JNewArrayExpr(baseType, size, identifierFactory);
   }
 }

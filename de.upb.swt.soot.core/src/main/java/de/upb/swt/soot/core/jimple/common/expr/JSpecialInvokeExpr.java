@@ -27,6 +27,7 @@
 package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -39,8 +40,8 @@ import javax.annotation.Nonnull;
 /** An expression that invokes a special method (e.g. private methods). */
 public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
-  public JSpecialInvokeExpr(Local base, MethodSignature method, List<? extends Value> args) {
-    super(base, method, ValueUtils.toValuesArray(args));
+  public JSpecialInvokeExpr(@Nonnull Local base, MethodSignature method, List<? extends Immediate> args) {
+    super(base, method, (Immediate[]) ValueUtils.toValueArray(args));
   }
 
   @Override
@@ -79,16 +80,16 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr impleme
 
   @Nonnull
   public JSpecialInvokeExpr withBase(Local base) {
-    return new JSpecialInvokeExpr(base, getMethodSignature(), getArgs());
+    return new JSpecialInvokeExpr(base, getMethodSignature(), (List<? extends Immediate>) getArgs());
   }
 
   @Nonnull
   public JSpecialInvokeExpr withMethodSignature(MethodSignature methodSignature) {
-    return new JSpecialInvokeExpr((Local) getBase(), methodSignature, getArgs());
+    return new JSpecialInvokeExpr((Local) getBase(), methodSignature, (List<? extends Immediate>) getArgs());
   }
 
   @Nonnull
-  public JSpecialInvokeExpr withArgs(List<? extends Value> args) {
+  public JSpecialInvokeExpr withArgs(List<? extends Immediate> args) {
     return new JSpecialInvokeExpr((Local) getBase(), getMethodSignature(), args);
   }
 }

@@ -26,6 +26,7 @@
 package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
@@ -38,7 +39,7 @@ import javax.annotation.Nonnull;
 /** An expression that returns the length of an array. */
 public final class JLengthExpr extends AbstractUnopExpr implements Copyable {
 
-  public JLengthExpr(Value op) {
+  public JLengthExpr(@Nonnull Immediate op) {
     super(op);
   }
 
@@ -76,7 +77,7 @@ public final class JLengthExpr extends AbstractUnopExpr implements Copyable {
   }
 
   @Nonnull
-  public JLengthExpr withOp(Value op) {
+  public JLengthExpr withOp(Immediate op) {
     return new JLengthExpr(op);
   }
 }

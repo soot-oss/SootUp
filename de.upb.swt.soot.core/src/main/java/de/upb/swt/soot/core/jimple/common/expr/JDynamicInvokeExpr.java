@@ -26,6 +26,7 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
+import afu.org.checkerframework.checker.igj.qual.I;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
@@ -48,11 +49,11 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
 
   public JDynamicInvokeExpr(
       MethodSignature bootstrapMethodSignature,
-      List<? extends Value> bootstrapArgs,
+      List<? extends Immediate> bootstrapArgs,
       MethodSignature methodSignature,
       int tag,
-      List<? extends Value> methodArgs) {
-    super(methodSignature, ValueUtils.toValuesArray(methodArgs));
+      List<? extends Immediate> methodArgs) {
+    super(methodSignature, (Immediate[]) ValueUtils.toValueArray(methodArgs));
     if (!methodSignature
         .toString()
         .startsWith("<" + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + ": ")) {
@@ -62,35 +63,17 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
               + "!");
     }
     this.bootstrapMethodSignature = bootstrapMethodSignature;
-    this.bootstrapMethodSignatureArgs = new Value[bootstrapArgs.size()];
+    this.bootstrapMethodSignatureArgs = ValueUtils.toValueArray(bootstrapArgs);
     this.tag = tag;
 
-    for (int i = 0; i < bootstrapArgs.size(); i++) {
-      Value value = bootstrapArgs.get(i);
-      if (value == null) {
-        throw new IllegalArgumentException("value may not be null");
-      }
-      if (value instanceof Immediate) {
-        this.bootstrapMethodSignatureArgs[i] = value;
-      } else {
-        throw new RuntimeException(
-            "JDynamicInvokeExpr "
-                + this
-                + " cannot contain value: "
-                + value
-                + " ("
-                + value.getClass()
-                + ")");
-      }
-    }
   }
 
   /** Makes a parameterized call to JDynamicInvokeExpr method. */
   public JDynamicInvokeExpr(
       MethodSignature bootstrapMethodSignature,
-      List<? extends Value> bootstrapArgs,
+      List<? extends Immediate> bootstrapArgs,
       MethodSignature methodSignature,
-      List<? extends Value> methodArgs) {
+      List<? extends Immediate> methodArgs) {
     /*
      * Here the static-handle is chosen as default value, because this works for Java.
      */
@@ -195,24 +178,24 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   @Nonnull
   public JDynamicInvokeExpr withBootstrapMethodSignature(MethodSignature bootstrapMethodSignature) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), getArgs());
+        bootstrapMethodSignature, (List<? extends Immediate>) getBootstrapArgs(), getMethodSignature(), (List<? extends Immediate>) getArgs());
   }
 
   @Nonnull
-  public JDynamicInvokeExpr withBootstrapArgs(List<? extends Value> bootstrapArgs) {
+  public JDynamicInvokeExpr withBootstrapArgs(List<? extends Immediate> bootstrapArgs) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, bootstrapArgs, getMethodSignature(), getArgs());
+        bootstrapMethodSignature, bootstrapArgs, getMethodSignature(), (List<? extends Immediate>) getArgs());
   }
 
   @Nonnull
   public JDynamicInvokeExpr withMethodSignature(MethodSignature methodSignature) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), getArgs());
+        bootstrapMethodSignature, (List<? extends Immediate>) getBootstrapArgs(), getMethodSignature(), (List<? extends Immediate>) getArgs());
   }
 
   @Nonnull
-  public JDynamicInvokeExpr withMethodArgs(List<? extends Value> methodArgs) {
+  public JDynamicInvokeExpr withMethodArgs(List<? extends Immediate> methodArgs) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), methodArgs);
+        bootstrapMethodSignature, (List<? extends Immediate>) getBootstrapArgs(), getMethodSignature(), methodArgs);
   }
 }

@@ -26,6 +26,7 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
@@ -40,9 +41,9 @@ public abstract class AbstractInvokeExpr implements Expr {
   private final MethodSignature methodSignature;
   private final Value[] args;
 
-  protected AbstractInvokeExpr(MethodSignature method, Value[] args) {
+  protected AbstractInvokeExpr(MethodSignature method, Immediate[] args) {
     this.methodSignature = method;
-    this.args = args.length == 0 ? null : args;
+    this.args = args.length == 0 ? null : (Value[]) args;
   }
 
   public MethodSignature getMethodSignature() {
