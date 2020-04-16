@@ -17,16 +17,15 @@ public class SynchronizedBlockTest extends MinimalSourceTestSuiteBase {
         "run", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /** TODO assertTrue(isSynchronized); */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: SynchronizedBlock",
-            "$r1 = r0.<SynchronizedBlock: Sender sender>",
+            "$r1 = r0.<SynchronizedBlock: java.lang.String msg>",
             "entermonitor $r1",
-            "$r2 = r0.<SynchronizedBlock: Sender sender>",
+            "$r2 = <java.lang.System: java.io.PrintStream out>",
             "$r3 = r0.<SynchronizedBlock: java.lang.String msg>",
-            "virtualinvoke $r2.<Sender: void send(java.lang.String)>($r3)",
+            "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r3)",
             "goto label1",
             "$r4 := @caughtexception",
             "exitmonitor $r1",
