@@ -5,13 +5,16 @@ import static org.junit.Assert.assertTrue;
 import categories.Java9Test;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.inputlocation.ModuleFinder;
+import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.powermock.reflect.Whitebox;
@@ -19,45 +22,45 @@ import org.powermock.reflect.Whitebox;
 @Category(Java9Test.class)
 public class ModuleFinderTest extends AnalysisInputLocationTest {
 
-  //  @Test
-  //  public void discoverModule() {
-  //    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
-  //    Collection<String> modules = moduleFinder.discoverAllModules();
-  //    String computedModuleName = "Soot";
-  //    assertTrue(modules.contains(computedModuleName));
-  //  }
-  //
-  //  @Test
-  //  public void discoverModule2() {
-  //    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
-  //    AnalysisInputLocation inputLocation = moduleFinder.discoverModule("Soot");
-  //    assertTrue(inputLocation instanceof PathBasedAnalysisInputLocation);
-  //  }
-  //
-  //  @Test
-  //  public void discoverModule3() {
-  //    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
-  //    AnalysisInputLocation inputLocation = moduleFinder.discoverModule("java.base");
-  //    assertTrue(inputLocation instanceof JrtFileSystemAnalysisInputLocation);
-  //  }
-  //
-  //  @Test
-  //  public void automaticModuleName() throws Exception {
-  //    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
-  //    String jarName = "foo-1.2.3-SNAPSHOT.jar";
-  //    String result =
-  //        Whitebox.invokeMethod(moduleFinder, "createModuleNameForAutomaticModule", jarName);
-  //    Assert.assertEquals("foo", result);
-  //  }
-  //
-  //  @Test
-  //  public void automaticModuleName2() throws Exception {
-  //    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
-  //    String jarName = "foo-bar.jar";
-  //    String result =
-  //        Whitebox.invokeMethod(moduleFinder, "createModuleNameForAutomaticModule", jarName);
-  //    Assert.assertEquals("foo.bar", result);
-  //  }
+  @Test
+  public void discoverModule() {
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
+    Collection<String> modules = moduleFinder.discoverAllModules();
+    String computedModuleName = "MiniApp";
+    assertTrue(modules.contains(computedModuleName));
+  }
+
+  @Test
+  public void discoverModule2() {
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
+    AnalysisInputLocation inputLocation = moduleFinder.discoverModule("MiniApp");
+    assertTrue(inputLocation instanceof PathBasedAnalysisInputLocation);
+  }
+
+  @Test
+  public void discoverModule3() {
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
+    AnalysisInputLocation inputLocation = moduleFinder.discoverModule("java.base");
+    assertTrue(inputLocation instanceof JrtFileSystemAnalysisInputLocation);
+  }
+
+  @Test
+  public void automaticModuleName() throws Exception {
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
+    String jarName = "foo-1.2.3-SNAPSHOT.jar";
+    String result =
+        Whitebox.invokeMethod(moduleFinder, "createModuleNameForAutomaticModule", jarName);
+    Assert.assertEquals("foo", result);
+  }
+
+  @Test
+  public void automaticModuleName2() throws Exception {
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
+    String jarName = "foo-bar.jar";
+    String result =
+        Whitebox.invokeMethod(moduleFinder, "createModuleNameForAutomaticModule", jarName);
+    Assert.assertEquals("foo.bar", result);
+  }
 
   @Test
   public void modularJar() {

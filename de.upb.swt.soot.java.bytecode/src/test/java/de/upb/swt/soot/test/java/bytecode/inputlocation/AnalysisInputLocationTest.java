@@ -8,6 +8,8 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Optional;
 import org.junit.Assert;
@@ -37,8 +39,14 @@ import org.mockito.internal.matchers.LessOrEqual;
  * #L%
  */
 
-/** @author Manuel Benz created on 07.06.18 */
+/**
+ * @author Manuel Benz created on 07.06.18
+ * @author Kaustubh Kelkar update on 16.04.2020
+ */
 public abstract class AnalysisInputLocationTest {
+
+  final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
+  final String jarFile = jar.toString();
 
   protected static final int CLASSES_IN_JAR = 4;
   private IdentifierFactory identifierFactory;

@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.internal.matchers.GreaterOrEqual;
 
+/** @author Kaustubh Kelkar */
 @Category(Java9Test.class)
 public class JrtFileSystemNamespaceTest extends AnalysisInputLocationTest {
 
@@ -45,7 +46,6 @@ public class JrtFileSystemNamespaceTest extends AnalysisInputLocationTest {
   public void discoverModules() {
     JrtFileSystemAnalysisInputLocation ns = new JrtFileSystemAnalysisInputLocation();
     Collection<String> modules = ns.discoverModules();
-    System.out.println(modules.size());
     Assert.assertThat(modules.size(), new GreaterOrEqual<>(65));
   }
 }

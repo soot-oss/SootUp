@@ -25,22 +25,18 @@ package de.upb.swt.soot.test.java.bytecode.inputlocation;
 import categories.Java8Test;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /**
  * @author Manuel Benz created on 06.06.18
- * @author Kaustubh Kelkar update on16.04.2020
+ * @author Kaustubh Kelkar update on 16.04.2020
  */
 @Category(Java8Test.class)
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test
   public void testJar() {
-
-    final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
     System.err.println(jar.toFile().getAbsolutePath());

@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.powermock.reflect.Whitebox;
 
+/** @author Kaustubh Kelkar */
 @Category(Java9Test.class)
 public class JavaModulePathNamespaceTest extends AnalysisInputLocationTest {
 
