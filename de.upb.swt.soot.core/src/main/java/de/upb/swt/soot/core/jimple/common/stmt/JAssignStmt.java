@@ -27,112 +27,6 @@ import javax.annotation.Nonnull;
 /** Represents the assignment of one value to another */
 public final class JAssignStmt extends AbstractDefinitionStmt implements Copyable {
 
-  /** The Class LinkedVariable. */
-  private static class LinkedVariable {
-
-    Value value;
-
-    /** The other Value. */
-    Value otherValue = null;
-
-    /**
-     * Instantiates a new linked variable.
-     *
-     * @param value the value
-     */
-    private LinkedVariable(Value value) {
-      if (value == null) {
-        throw new IllegalArgumentException("value may not be null");
-      }
-      if (canContainValue(value)) {
-        this.value = value;
-      } else {
-        throw new RuntimeException(
-            "LinkedVariable "
-                + this
-                + " cannot contain value: "
-                + value
-                + " ("
-                + value.getClass()
-                + ")");
-      }
-    }
-
-    /**
-     * Sets the other value.
-     *
-     * @param otherValue the new other Value
-     */
-    public void setOtherValue(Value otherValue) {
-      this.otherValue = otherValue;
-    }
-
-    public boolean canContainValue(Value v) {
-      if (v instanceof Local || v instanceof ConcreteRef) {
-        if (otherValue == null) {
-          return true;
-        }
-        Value o = otherValue;
-        return (v instanceof Immediate) || (o instanceof Immediate);
-      }
-      return false;
-    }
-  }
-
-  /** The Class LinkedRValue. */
-  private static class LinkedRValue {
-
-    Value value;
-
-    /** The other value. */
-    Value otherValue = null;
-
-    /**
-     * Instantiates a new linked R value.
-     *
-     * @param value the value
-     */
-    private LinkedRValue(Value value) {
-
-      if (value == null) {
-        throw new IllegalArgumentException("value may not be null");
-      }
-      if (canContainValue(value)) {
-        this.value = value;
-      } else {
-        throw new RuntimeException(
-            "LinkedRValue "
-                + this
-                + " cannot contain value: "
-                + value
-                + " ("
-                + value.getClass()
-                + ")");
-      }
-    }
-
-    /**
-     * Sets the other value.
-     *
-     * @param otherValue the new other value
-     */
-    public void setOtherValue(Value otherValue) {
-      this.otherValue = otherValue;
-    }
-
-    public boolean canContainValue(Value v) {
-      if (v instanceof Immediate || v instanceof ConcreteRef || v instanceof Expr) {
-        if (otherValue == null) {
-          return true;
-        }
-
-        Value o = otherValue;
-        return (v instanceof Immediate) || (o instanceof Immediate);
-      }
-      return false;
-    }
-  }
-
   /**
    * Instantiates a new JAssignStmt.
    *
@@ -141,17 +35,44 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    */
   public JAssignStmt(Value variable, Value rValue, StmtPositionInfo positionInfo) {
     super(variable, rValue, positionInfo);
-
-    LinkedVariable linkedVariable = new LinkedVariable(variable);
-    LinkedRValue linkedRValue = new LinkedRValue(rValue);
-
-    linkedVariable.setOtherValue(getRightOp());
-    linkedRValue.setOtherValue(getLeftOp());
-
-    if (!linkedVariable.canContainValue(variable) || linkedRValue.canContainValue(rValue)) {
+    if (!canBeLinkedVariable(variable, rValue) || !canBeLinkedRValue(variable, rValue)) {
       throw new RuntimeException(
           "Illegal assignment statement.  Make sure that either left side or right hand side has a local or constant.");
     }
+  }
+
+  /**
+   * Check if variable can be on the left side of the assign statement with the fixed rvalue on the
+   * right side if so, return true, else, return false
+   *
+   * @param variable the variable on the left side of the assign statement.
+   * @param rValue the value on the right side of the assign statement.
+   */
+  private boolean canBeLinkedVariable(Value variable, Value rValue) {
+    if (variable instanceof Local || variable instanceof ConcreteRef) {
+      if (rValue == null) {
+        return true;
+      }
+      return (variable instanceof Immediate) || (rValue instanceof Immediate);
+    }
+    return false;
+  }
+
+  /**
+   * Check if rValue can be on the right side of the assign statement with the fixed variable on the
+   * left side if so, return true, else, return false
+   *
+   * @param variable the variable on the left side of the assign statement.
+   * @param rValue the value on the right side of the assign statement.
+   */
+  public boolean canBeLinkedRValue(Value variable, Value rValue) {
+    if (rValue instanceof Immediate || rValue instanceof ConcreteRef || rValue instanceof Expr) {
+      if (variable == null) {
+        return true;
+      }
+      return (rValue instanceof Immediate) || (variable instanceof Immediate);
+    }
+    return false;
   }
 
   /*
