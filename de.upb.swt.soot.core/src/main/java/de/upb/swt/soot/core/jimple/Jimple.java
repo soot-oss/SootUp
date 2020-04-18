@@ -512,7 +512,7 @@ public abstract class Jimple {
     return new JInvokeStmt(op, posInfo);
   }
 
-  /** Constructs a TableSwitchStmt(Immediate, int, int, List of Unit, Stmt) grammar chunk. */
+  /** Constructs a TableSwitchStmt(Immediate, int, int, List of Stmt, Stmt) grammar chunk. */
   public static JSwitchStmt newTableSwitchStmt(
       Immediate key,
       int lowIndex,
@@ -524,7 +524,7 @@ public abstract class Jimple {
   }
 
   /**
-   * Constructs a LookupSwitchStmt(Immediate, List of Immediate, List of Unit, Stmt) grammar chunk.
+   * Constructs a LookupSwitchStmt(Immediate, List of Immediate, List of Stmt, Stmt) grammar chunk.
    */
   public static JSwitchStmt newLookupSwitchStmt(
       Immediate key,

@@ -132,7 +132,7 @@ final class StackFrame {
             Stmt u = src.getUnit(prevOp.insn);
             AbstractDefinitionStmt as =
                 (AbstractDefinitionStmt)
-                    (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
+                    (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
             Value lvb = as.getLeftOp();
             assert lvb == prevOp.stack : "Invalid stack local!";
             // FIXME: [ms] box removal leftover:
@@ -154,7 +154,7 @@ final class StackFrame {
             Stmt u = src.getUnit(newOp.insn);
             AbstractDefinitionStmt as =
                 (AbstractDefinitionStmt)
-                    (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
+                    (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
             Value lvb = as.getLeftOp();
             assert lvb == newOp.stack : "Invalid stack local!";
             // FIXME: [ms] box removal leftover:

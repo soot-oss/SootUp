@@ -29,7 +29,7 @@ class StmtContainer extends Stmt {
    * @return the first Stmt of the container
    */
   @Nonnull
-  Stmt getFirstUnit() {
+  Stmt getFirstStmt() {
     Stmt ret = stmts[0];
     while (ret instanceof StmtContainer) {
       ret = ((StmtContainer) ret).stmts[0];
