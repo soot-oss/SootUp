@@ -25,6 +25,7 @@ package de.upb.swt.soot.test.core.jimple.common.stmt;
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
 import de.upb.swt.soot.core.jimple.common.expr.JEqExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
@@ -44,7 +45,7 @@ public class JIfStmtTest {
     Stmt target = new JNopStmt(nop);
 
     Expr condition = new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(123));
-    Stmt ifStmt = new JIfStmt(condition, target, nop);
+    Stmt ifStmt = new JIfStmt((AbstractConditionExpr) condition, target, nop);
 
     // toString
     Assert.assertEquals("if 42 == 123 goto nop", ifStmt.toString());
@@ -53,7 +54,7 @@ public class JIfStmtTest {
     Assert.assertFalse(ifStmt.equivTo(new JNopStmt(nop)));
 
     Assert.assertTrue(ifStmt.equivTo(ifStmt));
-    Assert.assertTrue(ifStmt.equivTo(new JIfStmt(condition, target, nop)));
+    Assert.assertTrue(ifStmt.equivTo(new JIfStmt((AbstractConditionExpr) condition, target, nop)));
     Assert.assertTrue(
         ifStmt.equivTo(
             new JIfStmt(

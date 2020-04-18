@@ -27,44 +27,8 @@ package de.upb.swt.soot.core.jimple;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.expr.JAddExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JAndExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JCmpExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JCmpgExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JCmplExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JDivExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JDynamicInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JEqExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JGeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JGtExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JInstanceOfExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JInterfaceInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JLeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JLengthExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JLtExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JMulExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNegExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNewArrayExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNewMultiArrayExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JOrExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JRemExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JShlExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JShrExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JSubExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JUshrExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JVirtualInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JXorExpr;
-import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
-import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
-import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
-import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
-import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
-import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
+import de.upb.swt.soot.core.jimple.common.expr.*;
+import de.upb.swt.soot.core.jimple.common.ref.*;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
@@ -482,17 +446,17 @@ public abstract class Jimple {
   }
 
   /** Constructs a ThrowStmt(Immediate) grammar chunk. */
-  public static JThrowStmt newThrowStmt(Value op, StmtPositionInfo posInfo) {
+  public static JThrowStmt newThrowStmt(Immediate op, StmtPositionInfo posInfo) {
     return new JThrowStmt(op, posInfo);
   }
 
   /** Constructs a ExitMonitorStmt(Immediate) grammar chunk. */
-  public static JExitMonitorStmt newExitMonitorStmt(Value op, StmtPositionInfo posInfo) {
+  public static JExitMonitorStmt newExitMonitorStmt(Immediate op, StmtPositionInfo posInfo) {
     return new JExitMonitorStmt(op, posInfo);
   }
 
   /** Constructs a EnterMonitorStmt(Immediate) grammar chunk. */
-  public static JEnterMonitorStmt newEnterMonitorStmt(Value op, StmtPositionInfo posInfo) {
+  public static JEnterMonitorStmt newEnterMonitorStmt(Immediate op, StmtPositionInfo posInfo) {
     return new JEnterMonitorStmt(op, posInfo);
   }
 
@@ -517,23 +481,24 @@ public abstract class Jimple {
   }
 
   /** Constructs a ReturnStmt(Immediate) grammar chunk. */
-  public static JReturnStmt newReturnStmt(Value op, StmtPositionInfo posInfo) {
+  public static JReturnStmt newReturnStmt(Immediate op, StmtPositionInfo posInfo) {
     return new JReturnStmt(op, posInfo);
   }
 
   /** Constructs a RetStmt(Local) grammar chunk. */
-  public static JRetStmt newRetStmt(Value stmtAddress, StmtPositionInfo posInfo) {
+  public static JRetStmt newRetStmt(Immediate stmtAddress, StmtPositionInfo posInfo) {
     return new JRetStmt(stmtAddress, posInfo);
   }
 
   /** Constructs a IfStmt(Condition, Stmt) grammar chunk. */
-  public static JIfStmt newIfStmt(Value condition, Stmt target, StmtPositionInfo posInfo) {
+  public static JIfStmt newIfStmt(
+      AbstractConditionExpr condition, Stmt target, StmtPositionInfo posInfo) {
     return new JIfStmt(condition, target, posInfo);
   }
 
   /** Constructs a IdentityStmt(Local, IdentityRef) grammar chunk. */
   public static JIdentityStmt newIdentityStmt(
-      Value local, Value identityRef, StmtPositionInfo posInfo) {
+      Local local, IdentityRef identityRef, StmtPositionInfo posInfo) {
     return new JIdentityStmt(local, identityRef, posInfo);
   }
 
@@ -543,11 +508,11 @@ public abstract class Jimple {
   }
 
   /** Constructs a InvokeStmt(InvokeExpr) grammar chunk. */
-  public static JInvokeStmt newInvokeStmt(Value op, StmtPositionInfo posInfo) {
+  public static JInvokeStmt newInvokeStmt(AbstractInvokeExpr op, StmtPositionInfo posInfo) {
     return new JInvokeStmt(op, posInfo);
   }
 
-  /** Constructs a TableSwitchStmt(Immediate, int, int, List of Unit, Stmt) grammar chunk. */
+  /** Constructs a TableSwitchStmt(Immediate, int, int, List of Stmt, Stmt) grammar chunk. */
   public static JSwitchStmt newTableSwitchStmt(
       Immediate key,
       int lowIndex,
@@ -559,7 +524,7 @@ public abstract class Jimple {
   }
 
   /**
-   * Constructs a LookupSwitchStmt(Immediate, List of Immediate, List of Unit, Stmt) grammar chunk.
+   * Constructs a LookupSwitchStmt(Immediate, List of Immediate, List of Stmt, Stmt) grammar chunk.
    */
   public static JSwitchStmt newLookupSwitchStmt(
       Immediate key,

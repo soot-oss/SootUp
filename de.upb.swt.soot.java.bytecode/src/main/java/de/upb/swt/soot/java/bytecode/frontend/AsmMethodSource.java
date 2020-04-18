@@ -945,7 +945,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     if (!units.containsKey(insn)) {
       Operand val = dword ? popImmediateDual() : popImmediate();
       JReturnStmt ret =
-          Jimple.newReturnStmt(val.stackOrImmediate(), StmtPositionInfo.createNoStmtPositionInfo());
+          Jimple.newReturnStmt(
+              (Immediate) val.stackOrImmediate(), StmtPositionInfo.createNoStmtPositionInfo());
       val.addBox(ret.getOp());
       frame.setIn(val);
       frame.setBoxes(ret.getOp());
@@ -1007,7 +1008,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         opr = popImmediate();
         JThrowStmt ts =
             Jimple.newThrowStmt(
-                opr.stackOrImmediate(), StmtPositionInfo.createNoStmtPositionInfo());
+                (Immediate) opr.stackOrImmediate(), StmtPositionInfo.createNoStmtPositionInfo());
         opr.addBox(ts.getOp());
         frame.setIn(opr);
         frame.setOut(opr);
@@ -1025,9 +1026,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         AbstractOpStmt ts =
             op == MONITORENTER
                 ? Jimple.newEnterMonitorStmt(
-                    opr.stackOrImmediate(), StmtPositionInfo.createNoStmtPositionInfo())
+                    (Immediate) opr.stackOrImmediate(), StmtPositionInfo.createNoStmtPositionInfo())
                 : Jimple.newExitMonitorStmt(
-                    opr.stackOrImmediate(), StmtPositionInfo.createNoStmtPositionInfo());
+                    (Immediate) opr.stackOrImmediate(),
+                    StmtPositionInfo.createNoStmtPositionInfo());
         opr.addBox(ts.getOp());
         frame.setIn(opr);
         frame.setBoxes(ts.getOp());
@@ -1422,7 +1424,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     } else if (!(returnType == VoidType.getInstance())) {
       push(opr);
     } else if (!units.containsKey(insn)) {
-      setUnit(insn, Jimple.newInvokeStmt(opr.value, StmtPositionInfo.createNoStmtPositionInfo()));
+      setUnit(
+          insn,
+          Jimple.newInvokeStmt(
+              (AbstractInvokeExpr) opr.value, StmtPositionInfo.createNoStmtPositionInfo()));
     }
     /*
      * assign all read ops in case the methodRef modifies any of the fields
@@ -1516,7 +1521,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       push(opr);
     } else if (!units.containsKey(insn)) {
       // FIXME: [JMP] Set correct position information
-      setUnit(insn, Jimple.newInvokeStmt(opr.value, StmtPositionInfo.createNoStmtPositionInfo()));
+      setUnit(
+          insn,
+          Jimple.newInvokeStmt(
+              (AbstractInvokeExpr) opr.value, StmtPositionInfo.createNoStmtPositionInfo()));
     }
     /*
      * assign all read ops in case the method modifies any of the fields
@@ -2077,7 +2085,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           for (Stmt box : boxes) {
             // FIXME [ms] maybe wrong order of params
             Stmt.$Accessor.addStmtPointingToThis(
-                box, u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
+                box, u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
           }
         }
       }
