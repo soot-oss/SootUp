@@ -2,6 +2,8 @@ package de.upb.swt.soot.core.jimple.basic;
 
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
+
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -36,25 +38,25 @@ public class AbstractTrap implements Trap {
   /** The exception being caught. */
   private final transient ClassType exception;
 
-  /** The first unit being trapped. */
+  /** The first stmt being trapped. */
   private final Stmt beginStmt;
 
-  /** The unit just before the last unit being trapped. */
+  /** The stmt just before the last stmt being trapped. */
   private final Stmt endStmt;
 
-  /** The unit to which execution flows after the caught exception is triggered. */
+  /** The stmt to which execution flows after the caught exception is triggered. */
   private final Stmt handlerStmt;
 
-  /** The list of units referred to in this Trap (begin, end and handler). */
-  private final List<Stmt> units;
+  /** The list of stmts referred to in this Trap (begin, end and handler). */
+  private final List<Stmt> stmts;
 
-  /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
-  AbstractTrap(ClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
+  /** Creates an AbstractTrap with the given exception, handler, begin and end stmts. */
+  AbstractTrap(@Nonnull ClassType exception, @Nonnull Stmt beginStmt, @Nonnull Stmt endStmt, @Nonnull Stmt handlerStmt) {
     this.exception = exception;
     this.beginStmt = beginStmt;
     this.endStmt = endStmt;
     this.handlerStmt = handlerStmt;
-    this.units = Collections.unmodifiableList(Arrays.asList(beginStmt, endStmt, handlerStmt));
+    this.stmts = Collections.unmodifiableList(Arrays.asList(beginStmt, endStmt, handlerStmt));
   }
 
   @Override
@@ -74,7 +76,7 @@ public class AbstractTrap implements Trap {
 
   @Override
   public List<Stmt> getStmts() {
-    return units;
+    return stmts;
   }
 
   @Override
