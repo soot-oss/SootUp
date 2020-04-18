@@ -32,7 +32,7 @@ public final class JInstanceFieldRef extends JFieldRef implements Copyable {
    * @param base the base value of the field
    * @param fieldSig the field sig
    */
-  public JInstanceFieldRef(@Nonnull Local base, FieldSignature fieldSig) {
+  public JInstanceFieldRef(@Nonnull Local base, @Nonnull FieldSignature fieldSig) {
     super(fieldSig);
     this.base = base;
   }
@@ -43,7 +43,7 @@ public final class JInstanceFieldRef extends JFieldRef implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     base.toString(up);
     up.literal(".");
     up.fieldSignature(getFieldSignature());
@@ -61,12 +61,12 @@ public final class JInstanceFieldRef extends JFieldRef implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     // TODO
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseInstanceFieldRef(this, o);
   }
 
@@ -77,12 +77,12 @@ public final class JInstanceFieldRef extends JFieldRef implements Copyable {
   }
 
   @Nonnull
-  public JInstanceFieldRef withBase(Local base) {
+  public JInstanceFieldRef withBase(@Nonnull Local base) {
     return new JInstanceFieldRef(base, getFieldSignature());
   }
 
   @Nonnull
-  public JInstanceFieldRef withFieldSignature(FieldSignature fieldSignature) {
+  public JInstanceFieldRef withFieldSignature(@Nonnull FieldSignature fieldSignature) {
     return new JInstanceFieldRef(getBase(), fieldSignature);
   }
 }

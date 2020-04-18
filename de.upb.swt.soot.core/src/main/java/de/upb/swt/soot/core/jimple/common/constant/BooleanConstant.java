@@ -21,15 +21,15 @@ public class BooleanConstant
 
   private final boolean value;
 
-  private BooleanConstant(boolean value) {
+  private BooleanConstant(@Nonnull boolean value) {
     this.value = value;
   }
 
-  public static BooleanConstant getInstance(boolean value) {
+  public static BooleanConstant getInstance(@Nonnull boolean value) {
     return value ? TRUE : FALSE;
   }
 
-  public static BooleanConstant getInstance(int value) {
+  public static BooleanConstant getInstance(@Nonnull int value) {
     if (value == 1) {
       return TRUE;
     } else if (value == 0) {
@@ -52,7 +52,7 @@ public class BooleanConstant
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ConstantVisitor) sw).caseBooleanConstant(this);
   }
 

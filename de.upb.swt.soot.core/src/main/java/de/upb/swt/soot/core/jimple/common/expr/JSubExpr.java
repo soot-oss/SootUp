@@ -44,17 +44,17 @@ public final class JSubExpr extends AbstractFloatBinopExpr implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseSubExpr(this);
   }
 
   @Nonnull
-  public JSubExpr withOp1(Immediate op1) {
+  public JSubExpr withOp1(@Nonnull Immediate op1) {
     return new JSubExpr(op1, (Immediate) getOp2());
   }
 
   @Nonnull
-  public JSubExpr withOp2(Immediate op2) {
+  public JSubExpr withOp2(@Nonnull Immediate op2) {
     return new JSubExpr((Immediate) getOp1(), op2);
   }
 }

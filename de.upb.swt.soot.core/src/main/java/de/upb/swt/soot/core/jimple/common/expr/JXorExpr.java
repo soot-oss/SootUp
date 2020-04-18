@@ -44,17 +44,17 @@ public final class JXorExpr extends AbstractIntLongBinopExpr implements Copyable
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseXorExpr(this);
   }
 
   @Nonnull
-  public JXorExpr withOp1(Immediate op1) {
+  public JXorExpr withOp1(@Nonnull Immediate op1) {
     return new JXorExpr(op1, (Immediate) getOp2());
   }
 
   @Nonnull
-  public JXorExpr withOp2(Immediate op2) {
+  public JXorExpr withOp2(@Nonnull Immediate op2) {
     return new JXorExpr((Immediate) getOp1(), op2);
   }
 }

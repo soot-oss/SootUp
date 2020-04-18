@@ -44,17 +44,17 @@ public final class JAndExpr extends AbstractIntLongBinopExpr implements Copyable
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseAndExpr(this);
   }
 
   @Nonnull
-  public JAndExpr withOp1(Immediate op1) {
+  public JAndExpr withOp1(@Nonnull Immediate op1) {
     return new JAndExpr(op1, (Immediate) getOp2());
   }
 
   @Nonnull
-  public JAndExpr withOp2(Immediate op2) {
+  public JAndExpr withOp2(@Nonnull Immediate op2) {
     return new JAndExpr((Immediate) getOp1(), op2);
   }
 }

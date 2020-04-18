@@ -46,7 +46,7 @@ public final class JNegExpr extends AbstractUnopExpr implements Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseNegExpr(this, o);
   }
 
@@ -62,7 +62,7 @@ public final class JNegExpr extends AbstractUnopExpr implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.NEG);
     up.literal(" ");
     getOp().toString(up);
@@ -90,12 +90,12 @@ public final class JNegExpr extends AbstractUnopExpr implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseNegExpr(this);
   }
 
   @Nonnull
-  public JNegExpr withOp(Immediate op) {
+  public JNegExpr withOp(@Nonnull Immediate op) {
     return new JNegExpr(op);
   }
 }

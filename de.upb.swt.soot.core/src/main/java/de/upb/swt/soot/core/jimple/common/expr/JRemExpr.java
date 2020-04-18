@@ -44,17 +44,17 @@ public final class JRemExpr extends AbstractFloatBinopExpr implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseRemExpr(this);
   }
 
   @Nonnull
-  public JRemExpr withOp1(Immediate op1) {
+  public JRemExpr withOp1(@Nonnull Immediate op1) {
     return new JRemExpr(op1, (Immediate) getOp2());
   }
 
   @Nonnull
-  public JRemExpr withOp2(Immediate op2) {
+  public JRemExpr withOp2(@Nonnull Immediate op2) {
     return new JRemExpr((Immediate) getOp1(), op2);
   }
 }

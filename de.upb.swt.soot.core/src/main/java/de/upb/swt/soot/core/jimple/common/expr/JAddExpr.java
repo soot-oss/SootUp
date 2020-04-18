@@ -44,17 +44,17 @@ public final class JAddExpr extends AbstractFloatBinopExpr implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseAddExpr(this);
   }
 
   @Nonnull
-  public JAddExpr withOp1(Immediate op1) {
+  public JAddExpr withOp1(@Nonnull Immediate op1) {
     return new JAddExpr(op1, (Immediate) getOp2());
   }
 
   @Nonnull
-  public JAddExpr withOp2(Immediate op2) {
+  public JAddExpr withOp2(@Nonnull Immediate op2) {
     return new JAddExpr((Immediate) getOp1(), op2);
   }
 }

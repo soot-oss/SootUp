@@ -33,17 +33,18 @@ import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public final class JCaughtExceptionRef implements IdentityRef, Copyable {
 
   private final Type type;
 
-  public JCaughtExceptionRef(Type type) {
+  public JCaughtExceptionRef(@Nonnull Type type) {
     this.type = type;
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseCaughtException(this, o);
   }
 
@@ -59,7 +60,7 @@ public final class JCaughtExceptionRef implements IdentityRef, Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.identityRef(this);
   }
 
@@ -74,7 +75,7 @@ public final class JCaughtExceptionRef implements IdentityRef, Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     // TODO
   }
 }

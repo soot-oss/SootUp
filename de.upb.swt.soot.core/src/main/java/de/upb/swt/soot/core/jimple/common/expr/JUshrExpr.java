@@ -47,7 +47,7 @@ public final class JUshrExpr extends AbstractIntLongBinopExpr implements Copyabl
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseUshrExpr(this);
   }
 
@@ -71,12 +71,12 @@ public final class JUshrExpr extends AbstractIntLongBinopExpr implements Copyabl
   }
 
   @Nonnull
-  public JUshrExpr withOp1(Immediate op1) {
+  public JUshrExpr withOp1(@Nonnull Immediate op1) {
     return new JUshrExpr(op1, (Immediate) getOp2());
   }
 
   @Nonnull
-  public JUshrExpr withOp2(Immediate op2) {
+  public JUshrExpr withOp2(@Nonnull Immediate op2) {
     return new JUshrExpr((Immediate) getOp1(), op2);
   }
 }

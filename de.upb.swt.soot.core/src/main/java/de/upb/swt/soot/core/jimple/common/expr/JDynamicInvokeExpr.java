@@ -34,6 +34,7 @@ import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Copyable;
+import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -45,11 +46,11 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   private final int tag;
 
   public JDynamicInvokeExpr(
-      MethodSignature bootstrapMethodSignature,
-      List<Immediate> bootstrapArgs,
-      MethodSignature methodSignature,
-      int tag,
-      List<Immediate> methodArgs) {
+      @Nonnull MethodSignature bootstrapMethodSignature,
+      @Nonnull List<Immediate> bootstrapArgs,
+      @Nonnull MethodSignature methodSignature,
+      @Nonnull int tag,
+      @Nonnull List<Immediate> methodArgs) {
     super(methodSignature, methodArgs);
     if (!methodSignature
         .toString()
@@ -60,16 +61,16 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
               + "!");
     }
     this.bootstrapMethodSignature = bootstrapMethodSignature;
-    this.bootstrapMethodSignatureArgs = bootstrapArgs;
+    this.bootstrapMethodSignatureArgs = ImmutableUtils.immutableListOf(bootstrapArgs);
     this.tag = tag;
   }
 
   /** Makes a parameterized call to JDynamicInvokeExpr method. */
   public JDynamicInvokeExpr(
-      MethodSignature bootstrapMethodSignature,
-      List<Immediate> bootstrapArgs,
-      MethodSignature methodSignature,
-      List<Immediate> methodArgs) {
+      @Nonnull MethodSignature bootstrapMethodSignature,
+      @Nonnull List<Immediate> bootstrapArgs,
+      @Nonnull MethodSignature methodSignature,
+      @Nonnull List<Immediate> methodArgs) {
     /*
      * Here the static-handle is chosen as default value, because this works for Java.
      */
@@ -91,12 +92,12 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   }
 
   @Nonnull
-  public Immediate getBootstrapArg(int index) {
+  public Immediate getBootstrapArg(@Nonnull int index) {
     return bootstrapMethodSignatureArgs.get(index);
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseDynamicInvokeExpr(this, o);
   }
 
@@ -135,7 +136,7 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.DYNAMICINVOKE);
     up.literal(
         " \""
@@ -160,7 +161,7 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseDynamicInvokeExpr(this);
   }
 

@@ -74,13 +74,13 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
    * @param type the type of the array
    * @param sizes the sizes
    */
-  public JNewMultiArrayExpr(ArrayType type, List<Immediate> sizes) {
+  public JNewMultiArrayExpr(@Nonnull ArrayType type, @Nonnull List<Immediate> sizes) {
     this.baseType = type;
     this.sizes = ImmutableUtils.immutableListOf(sizes);
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseNewMultiArrayExpr(this, o);
   }
 
@@ -109,7 +109,7 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     Type t = baseType.getBaseType();
 
     up.literal(Jimple.NEWMULTIARRAY);
@@ -132,7 +132,7 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
     return baseType;
   }
 
-  public Value getSize(int index) {
+  public Value getSize(@Nonnull int index) {
     return sizes.get(index);
   }
 
@@ -161,17 +161,17 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseNewMultiArrayExpr(this);
   }
 
   @Nonnull
-  public JNewMultiArrayExpr withBaseType(ArrayType baseType) {
+  public JNewMultiArrayExpr withBaseType(@Nonnull ArrayType baseType) {
     return new JNewMultiArrayExpr(baseType, getSizes());
   }
 
   @Nonnull
-  public JNewMultiArrayExpr withSizes(List<Immediate> sizes) {
+  public JNewMultiArrayExpr withSizes(@Nonnull List<Immediate> sizes) {
     return new JNewMultiArrayExpr(baseType, sizes);
   }
 }

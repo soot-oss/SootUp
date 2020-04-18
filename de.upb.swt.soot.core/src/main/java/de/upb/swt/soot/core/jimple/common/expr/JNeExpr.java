@@ -44,17 +44,17 @@ public final class JNeExpr extends AbstractConditionExpr implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseNeExpr(this);
   }
 
   @Nonnull
-  public JNeExpr withOp1(Immediate op1) {
+  public JNeExpr withOp1(@Nonnull Immediate op1) {
     return new JNeExpr(op1, (Immediate) getOp2());
   }
 
   @Nonnull
-  public JNeExpr withOp2(Immediate op2) {
+  public JNeExpr withOp2(@Nonnull Immediate op2) {
     return new JNeExpr((Immediate) getOp1(), op2);
   }
 }
