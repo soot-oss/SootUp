@@ -2,7 +2,6 @@ package de.upb.swt.soot.java.bytecode.frontend;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -19,7 +18,7 @@ final class Operand {
   @Nonnull final AbstractInsnNode insn;
   @Nonnull final Value value;
   @Nullable Local stack;
-  @Nonnull private final List<ValueBox> boxes = new ArrayList<>();
+  @Nonnull private final List<Value> boxes = new ArrayList<>();
 
   /**
    * Constructs a new stack operand.
@@ -37,7 +36,7 @@ final class Operand {
    *
    * @param vb the value box.
    */
-  void removeBox(@Nullable ValueBox vb) {
+  void removeBox(@Nullable Value vb) {
     if (vb == null) {
       return;
     }
@@ -49,15 +48,15 @@ final class Operand {
    *
    * @param vb the value box.
    */
-  void addBox(@Nonnull ValueBox vb) {
+  void addBox(@Nonnull Value vb) {
     boxes.add(vb);
   }
 
   /** Updates all value boxes registered to this operand. */
   void updateBoxes() {
-    Value val = stackOrValue();
-    for (ValueBox vb : boxes) {
-      ValueBox.$Accessor.setValue(vb, val);
+    Value val = stackOrImmediate();
+    for (Value vb : boxes) {
+      // FIXME: [ms] box removal leftover: ValueBox.$Accessor.setValue(vb, val);
     }
   }
 
@@ -73,9 +72,8 @@ final class Operand {
 
   /** @return either the stack local allocated for this operand, or its value. */
   @Nonnull
-  Value stackOrValue() {
-    Local s = stack;
-    return s == null ? value : s;
+  Value stackOrImmediate() {
+    return stack == null ? value : stack;
   }
 
   /**
@@ -88,7 +86,7 @@ final class Operand {
     if (other.value == null && value == null) {
       return true;
     }
-    return stackOrValue().equivTo(other.stackOrValue());
+    return stackOrImmediate().equivTo(other.stackOrImmediate());
   }
 
   @Override

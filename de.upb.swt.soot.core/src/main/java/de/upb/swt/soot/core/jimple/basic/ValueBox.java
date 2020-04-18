@@ -26,6 +26,7 @@
 package de.upb.swt.soot.core.jimple.basic;
 
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
+import javax.swing.*;
 
 /**
  * A box which can contain values.
@@ -63,9 +64,9 @@ public abstract class ValueBox {
   }
 
   public void toString(StmtPrinter up) {
-    up.startValueBox(this);
+    // up.startValueBox(this);
     value.toString(up);
-    up.endValueBox(this);
+    //  up.endValueBox(this);
   }
 
   @Override

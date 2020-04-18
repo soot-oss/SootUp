@@ -46,13 +46,13 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
   }
 
   @Deprecated
-  private void addStmtPointingToThis(Stmt stmt) {
-    stmtsPointingToThis.add(stmt);
+  private void addStmtPointingToThis(Stmt fromStmt) {
+    stmtsPointingToThis.add(fromStmt);
   }
 
   @Deprecated
-  private void removeStmtPointingToThis(Stmt stmt) {
-    stmtsPointingToThis.remove(stmt);
+  private void removeStmtPointingToThis(Stmt fromStmt) {
+    stmtsPointingToThis.remove(fromStmt);
   }
 
   /** Returns a list of Values, either used or defined or both in this Stmt. */

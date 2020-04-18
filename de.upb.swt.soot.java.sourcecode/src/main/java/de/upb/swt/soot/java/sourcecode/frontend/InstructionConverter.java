@@ -113,7 +113,6 @@ public class InstructionConverter {
   private final Map<JGotoStmt, Integer> targetsOfGotoStmts;
   private final Map<JSwitchStmt, List<Integer>> targetsOfLookUpSwitchStmts;
   private final Map<JSwitchStmt, Integer> defaultOfLookUpSwitchStmts;
-  protected Map<JSwitchStmt, List<Stmt>> targetStmtsOfLookUpSwitchStmts;
   private final Map<Integer, Local> locals;
   private final IdentifierFactory identifierFactory;
 
@@ -535,7 +534,7 @@ public class InstructionConverter {
     int defaultCase = inst.getDefault();
     List<IntConstant> lookupValues = new ArrayList<>();
     List<Integer> targetsList = new ArrayList<>();
-    List<? extends Stmt> targets = new ArrayList<>();
+    List<Stmt> targets = new ArrayList<>();
     for (int i = 0; i < cases.length; i++) {
       int c = cases[i];
       if (i % 2 == 0) {
@@ -645,7 +644,7 @@ public class InstructionConverter {
       Local base = getLocal(classSig, ref);
       fieldValue = Jimple.newInstanceFieldRef(base, fieldSig);
     }
-    Value value = null;
+    Immediate value;
     int val = inst.getVal();
     if (symbolTable.isConstant(val)) {
       value = getConstant(val);

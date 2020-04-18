@@ -591,7 +591,7 @@ public abstract class Jimple {
   }
 
   /** Constructs a InstanceFieldRef(Local, FieldSignature) grammar chunk. */
-  public static JInstanceFieldRef newInstanceFieldRef(Value base, FieldSignature f) {
+  public static JInstanceFieldRef newInstanceFieldRef(Local base, FieldSignature f) {
     return new JInstanceFieldRef(base, f);
   }
 
@@ -602,30 +602,6 @@ public abstract class Jimple {
 
   /** Constructs a CaughtExceptionRef() grammar chunk. */
   public abstract JCaughtExceptionRef newCaughtExceptionRef();
-
-  public static ValueBox newArgBox(Value value) {
-    return new ImmediateBox(value);
-  }
-
-  public static ValueBox newImmediateBox(Value value) {
-    return new ImmediateBox(value);
-  }
-
-  public static ValueBox newLocalBox(Value local) {
-    return new LocalBox(local);
-  }
-
-  public static ValueBox newIdentityRefBox(Value value) {
-    return new IdentityRefBox(value);
-  }
-
-  public static ValueBox newConditionExprBox(Value condition) {
-    return new ConditionExprBox(condition);
-  }
-
-  public static ValueBox newInvokeExprBox(Value value) {
-    return new InvokeExprBox(value);
-  }
 
   /** Constructs a NewExpr(RefType) grammar chunk. */
   public static JNewExpr newNewExpr(ReferenceType type) {
