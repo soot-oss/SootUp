@@ -52,10 +52,6 @@ public abstract class AbstractOpStmt extends Stmt {
     return list;
   }
 
-  protected boolean equivTo(@Nonnull AbstractOpStmt o) {
-    return op.equivTo(o.getOp());
-  }
-
   @Override
   public int equivHashCode() {
     return op.equivHashCode();
