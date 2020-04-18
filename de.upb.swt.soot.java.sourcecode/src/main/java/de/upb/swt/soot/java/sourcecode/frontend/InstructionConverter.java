@@ -55,14 +55,7 @@ import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
 import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
-import de.upb.swt.soot.core.jimple.common.expr.AbstractBinopExpr;
-import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JEqExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JInstanceOfExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNegExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
@@ -299,7 +292,7 @@ public class InstructionConverter {
 
   private Stmt convertMonitorInstruction(
       DebuggingInformation debugInfo, SSAMonitorInstruction inst) {
-    Value op = getLocal(UnknownType.getInstance(), inst.getRef());
+    Immediate op = getLocal(UnknownType.getInstance(), inst.getRef());
 
     Position[] operandPos = new Position[1];
     // FIXME: [ms] referenced object position info is missing
@@ -755,7 +748,7 @@ public class InstructionConverter {
 
   private Stmt convertInvokeInstruction(
       DebuggingInformation debugInfo, AstJavaInvokeInstruction invokeInst) {
-    Value invoke;
+    AbstractInvokeExpr invoke;
     CallSiteReference callee = invokeInst.getCallSite();
     MethodReference target = invokeInst.getDeclaredTarget();
     String declaringClassSignature =
@@ -906,7 +899,7 @@ public class InstructionConverter {
           WalaIRToJimpleConverter.convertPositionInfo(
               debugInfo.getInstructionPosition(inst.iIndex()), null));
     } else {
-      Value ret;
+      Immediate ret;
       if (symbolTable.isConstant(result)) {
         ret = getConstant(result);
       } else {

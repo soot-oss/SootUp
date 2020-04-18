@@ -57,7 +57,7 @@ public final class Body implements Copyable {
   /** The stmts for this Body. */
   private final List<Stmt> stmts;
 
-  @Nullable private final Position position;
+  @Nonnull private final Position position;
 
   /** An array containing some validators in order to validate the JimpleBody */
   @Nonnull
@@ -82,7 +82,7 @@ public final class Body implements Copyable {
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
       @Nonnull List<Stmt> stmts,
-      @Nullable Position position) {
+      @Nonnull Position position) {
     this.locals = Collections.unmodifiableSet(locals);
     this.traps = Collections.unmodifiableList(traps);
     this.stmts = Collections.unmodifiableList(stmts);
@@ -101,7 +101,7 @@ public final class Body implements Copyable {
    * @return the methodRef that owns this body.
    */
   public SootMethod getMethod() {
-    SootMethod owner = this._method;
+    SootMethod owner = _method;
 
     if (owner == null) {
       throw new IllegalStateException(
@@ -117,12 +117,12 @@ public final class Body implements Copyable {
    * @param value the methodRef that owns this body.
    */
   synchronized void setMethod(@Nullable SootMethod value) {
-    if (this._method != null) {
+    if (_method != null) {
       throw new IllegalStateException(
           "The declaring class of this SootMethod has already been set.");
     }
 
-    this._method = value;
+    _method = value;
   }
 
   /** Returns the number of locals declared in this body. */
@@ -211,6 +211,7 @@ public final class Body implements Copyable {
    *     ordered as per the parameter index.
    * @throws RuntimeException if a JParameterRef is missing
    */
+  @Nonnull
   public Collection<Local> getParameterLocals() {
     final int numParams = getMethod().getParameterCount();
     final List<Local> retVal = new ArrayList<>(numParams);
@@ -234,6 +235,7 @@ public final class Body implements Copyable {
    *
    * @return the statements in this Body
    */
+  @Nonnull
   public List<Stmt> getStmts() {
     return stmts;
   }
@@ -252,9 +254,9 @@ public final class Body implements Copyable {
     return writer.toString();
   }
 
-  @Nullable
+  @Nonnull
   public Position getPosition() {
-    return this.position;
+    return position;
   }
 
   public void validateIdentityStatements() {
@@ -316,6 +318,7 @@ public final class Body implements Copyable {
    *
    * @return A collection of all the Stmts held by this body's units.
    */
+  @Nonnull
   public Collection<Stmt> getAllStmts() {
     List<Stmt> stmtList = new ArrayList<>();
     for (Stmt item : stmts) {
@@ -329,22 +332,22 @@ public final class Body implements Copyable {
   }
 
   @Nonnull
-  public Body withLocals(Set<Local> locals) {
+  public Body withLocals(@Nonnull Set<Local> locals) {
     return new Body(locals, traps, stmts, position);
   }
 
   @Nonnull
-  public Body withTraps(List<Trap> traps) {
+  public Body withTraps(@Nonnull List<Trap> traps) {
     return new Body(locals, traps, stmts, position);
   }
 
   @Nonnull
-  public Body withStmts(List<Stmt> stmts) {
+  public Body withStmts(@Nonnull List<Stmt> stmts) {
     return new Body(locals, traps, stmts, position);
   }
 
   @Nonnull
-  public Body withPosition(Position position) {
+  public Body withPosition(@Nonnull Position position) {
     return new Body(locals, traps, stmts, position);
   }
 }

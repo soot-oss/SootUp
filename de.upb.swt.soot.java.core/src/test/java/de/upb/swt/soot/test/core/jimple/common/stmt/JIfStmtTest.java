@@ -25,7 +25,7 @@ package de.upb.swt.soot.test.core.jimple.common.stmt;
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.expr.Expr;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JEqExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
@@ -43,7 +43,8 @@ public class JIfStmtTest {
     StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
     Stmt target = new JNopStmt(nop);
 
-    Expr condition = new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(123));
+    AbstractConditionExpr condition =
+        new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(123));
     Stmt ifStmt = new JIfStmt(condition, target, nop);
 
     // toString

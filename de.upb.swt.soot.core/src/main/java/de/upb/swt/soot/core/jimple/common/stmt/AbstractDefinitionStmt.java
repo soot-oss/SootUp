@@ -34,8 +34,8 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractDefinitionStmt extends AbstractStmt {
 
-  private final Value leftOp;
-  private final Value rightOp;
+  @Nonnull private Value leftOp;
+  @Nonnull private final Value rightOp;
 
   AbstractDefinitionStmt(
       @Nonnull Value leftOp, @Nonnull Value rightOp, @Nonnull StmtPositionInfo positionInfo) {
@@ -48,16 +48,18 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
     return leftOp;
   }
 
-  public final Value getRightOp() {
+  public Value getRightOp() {
     return rightOp;
   }
 
   @Override
-  public final List<Value> getDefs() {
+  @Nonnull
+  public List<Value> getDefs() {
     return Collections.singletonList(leftOp);
   }
 
   @Override
+  @Nonnull
   public final List<Value> getUses() {
     List<Value> list = new ArrayList<>(leftOp.getUses());
     list.add(rightOp);
@@ -73,5 +75,24 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
   @Override
   public boolean branches() {
     return false;
+  }
+
+  @Deprecated
+  private void setLeftOp(Value value) {
+    leftOp = value;
+  }
+
+  @Deprecated
+  public static class $Accessor {
+    // This class deliberately starts with a $-sign to discourage usage
+    // of this Soot implementation detail.
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void setLeftOp(AbstractDefinitionStmt box, Value value) {
+      box.setLeftOp(value);
+    }
+
+    private $Accessor() {}
   }
 }
