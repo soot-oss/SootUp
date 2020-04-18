@@ -43,18 +43,22 @@ import javax.annotation.Nonnull;
 /** An expression that creates a new array of a certain type and a certain size. */
 public final class JNewArrayExpr implements Expr, Copyable {
 
-  private final Type baseType;
-  private final Value size;
-  private final IdentifierFactory identifierFactory;
+  @Nonnull private final Type baseType;
+  @Nonnull private final Immediate size;
+  @Nonnull private final IdentifierFactory identifierFactory;
 
   public JNewArrayExpr(
-      Type baseType, @Nonnull Immediate size, IdentifierFactory identifierFactory) {
+      @Nonnull Type baseType,
+      @Nonnull Immediate size,
+      @Nonnull IdentifierFactory identifierFactory) {
     this.baseType = baseType;
     this.size = size;
     this.identifierFactory = identifierFactory;
   }
 
-  private static Type simplify(Type baseType, IdentifierFactory identifierFactory) {
+  @Nonnull
+  private static Type simplify(
+      @Nonnull Type baseType, @Nonnull IdentifierFactory identifierFactory) {
     if (baseType instanceof ArrayType) {
       return identifierFactory.getArrayType(
           ((ArrayType) baseType).getBaseType(), ((ArrayType) baseType).getDimension() + 1);
@@ -64,7 +68,7 @@ public final class JNewArrayExpr implements Expr, Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseNewArrayExpr(this, o);
   }
 
@@ -76,12 +80,12 @@ public final class JNewArrayExpr implements Expr, Copyable {
 
   @Override
   public String toString() {
-    return (Jimple.NEWARRAY + " (") + getBaseTypeString() + ")" + "[" + size.toString() + "]";
+    return (Jimple.NEWARRAY + " (") + baseType.toString() + ")" + "[" + size.toString() + "]";
   }
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.NEWARRAY);
     up.literal(" ");
     up.literal("(");
@@ -92,15 +96,13 @@ public final class JNewArrayExpr implements Expr, Copyable {
     up.literal("]");
   }
 
-  private String getBaseTypeString() {
-    return baseType.toString();
-  }
-
+  @Nonnull
   public Type getBaseType() {
     return baseType;
   }
 
-  public Value getSize() {
+  @Nonnull
+  public Immediate getSize() {
     return size;
   }
 
@@ -111,6 +113,7 @@ public final class JNewArrayExpr implements Expr, Copyable {
    */
   @Override
   public final List<Value> getUses() {
+    final Immediate size = this.size;
     List<Value> uses = new ArrayList<>(size.getUses());
     uses.add(size);
     return uses;
@@ -123,17 +126,17 @@ public final class JNewArrayExpr implements Expr, Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseNewArrayExpr(this);
   }
 
   @Nonnull
-  public JNewArrayExpr withBaseType(Type baseType) {
-    return new JNewArrayExpr(baseType, (Immediate) getSize(), identifierFactory);
+  public JNewArrayExpr withBaseType(@Nonnull Type baseType) {
+    return new JNewArrayExpr(baseType, getSize(), identifierFactory);
   }
 
   @Nonnull
-  public JNewArrayExpr withSize(Immediate size) {
+  public JNewArrayExpr withSize(@Nonnull Immediate size) {
     return new JNewArrayExpr(baseType, size, identifierFactory);
   }
 }

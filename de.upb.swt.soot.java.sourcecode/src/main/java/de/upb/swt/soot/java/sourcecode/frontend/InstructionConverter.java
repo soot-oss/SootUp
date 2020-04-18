@@ -46,11 +46,7 @@ import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeReference;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.JStmtBox;
-import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
@@ -211,7 +207,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, SSAArrayStoreInstruction inst) {
     Local base = getLocal(UnknownType.getInstance(), inst.getArrayRef());
     int i = inst.getIndex();
-    Value index = null;
+    Immediate index = null;
     if (symbolTable.isConstant(i)) {
       index = getConstant(i);
     } else {
@@ -241,7 +237,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, SSAArrayLoadInstruction inst) {
     Local base = getLocal(UnknownType.getInstance(), inst.getArrayRef());
     int i = inst.getIndex();
-    Value index;
+    Immediate index;
     if (symbolTable.isConstant(i)) {
       index = getConstant(i);
     } else {
@@ -500,7 +496,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, SSACheckCastInstruction inst) {
     TypeReference[] types = inst.getDeclaredResultTypes();
     Local result = getLocal(converter.convertType(types[0]), inst.getResult());
-    Value rvalue = null;
+    Immediate rvalue = null;
     int val = inst.getVal();
     if (symbolTable.isConstant(val)) {
       rvalue = getConstant(val);
@@ -591,7 +587,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, SSAUnaryOpInstruction inst) {
     int def = inst.getDef();
     int use = inst.getUse(0);
-    Value op;
+    Immediate op;
     Type type = UnknownType.getInstance();
     if (symbolTable.isConstant(use)) {
       op = getConstant(use);
@@ -672,10 +668,10 @@ public class InstructionConverter {
     int result = inst.getDef();
     Type type = converter.convertType(inst.getNewSite().getDeclaredType());
     Value var = getLocal(type, result);
-    Value rvalue = null;
+    Value rvalue;
     if (type instanceof ArrayType) {
       int use = inst.getUse(0);
-      Value size = null;
+      Immediate size;
       if (symbolTable.isConstant(use)) {
         size = getConstant(use);
       } else {
@@ -738,7 +734,7 @@ public class InstructionConverter {
     int def = inst.getDef();
     int use = inst.getUse(0);
     Value lvalue = getLocal(toType, def);
-    Value rvalue = null;
+    Immediate rvalue;
     if (symbolTable.isConstant(use)) {
       rvalue = getConstant(use);
     } else {
@@ -768,7 +764,7 @@ public class InstructionConverter {
     String returnType = converter.convertType(target.getReturnType()).toString();
     List<String> parameters = new ArrayList<>();
     List<Type> paraTypes = new ArrayList<>();
-    List<Value> args = new ArrayList<>();
+    List<Immediate> args = new ArrayList<>();
     for (int i = 0; i < target.getNumberOfParameters(); i++) {
       Type paraType = converter.convertType(target.getParameterType(i)); // note
       // the
@@ -790,7 +786,7 @@ public class InstructionConverter {
     }
     for (; i < invokeInst.getNumberOfUses(); i++) {
       int use = invokeInst.getUse(i);
-      Value arg;
+      Immediate arg;
       if (symbolTable.isConstant(use)) {
         arg = getConstant(use);
       } else {
@@ -852,8 +848,8 @@ public class InstructionConverter {
     List<Stmt> stmts = new ArrayList<>();
     int val1 = condInst.getUse(0);
     int val2 = condInst.getUse(1);
-    Value value1 = extractValueAndAddAssignStmt(posInfo, stmts, val1);
-    Value value2 = extractValueAndAddAssignStmt(posInfo, stmts, val2);
+    Immediate value1 = extractValueAndAddAssignStmt(posInfo, stmts, val1);
+    Immediate value2 = extractValueAndAddAssignStmt(posInfo, stmts, val2);
     AbstractConditionExpr condition;
     IOperator op = condInst.getOperator();
     if (op.equals(Operator.EQ)) {
@@ -880,8 +876,9 @@ public class InstructionConverter {
     return stmts;
   }
 
-  private Value extractValueAndAddAssignStmt(StmtPositionInfo posInfo, List<Stmt> addTo, int val) {
-    Value value;
+  private Immediate extractValueAndAddAssignStmt(
+      StmtPositionInfo posInfo, List<Stmt> addTo, int val) {
+    Immediate value;
     Integer constant = null;
     if (symbolTable.isZero(val)) {
       value = IntConstant.getInstance(0);
@@ -927,9 +924,9 @@ public class InstructionConverter {
   }
 
   private List<Stmt> convertStringAddition(
-      Value op1,
-      Value op2,
-      Value result,
+      Immediate op1,
+      Immediate op2,
+      Immediate result,
       Type type,
       int iindex,
       AstMethod.DebuggingInformation debugInfo) {
@@ -1006,14 +1003,14 @@ public class InstructionConverter {
     int val1 = binOpInst.getUse(0);
     int val2 = binOpInst.getUse(1);
     Type type = UnknownType.getInstance();
-    Value op1;
+    Immediate op1;
     if (symbolTable.isConstant(val1)) {
       op1 = getConstant(val1);
     } else {
       op1 = getLocal(type, val1);
     }
     type = op1.getType();
-    Value op2 = null;
+    Immediate op2;
     if (symbolTable.isConstant(val2)) {
       op2 = getConstant(val2);
     } else {
@@ -1025,7 +1022,7 @@ public class InstructionConverter {
     if (operator.equals(IBinaryOpInstruction.Operator.ADD)) {
       if (type.toString().equals("java.lang.String")) {
         // from wala java source code frontend we get also string addition(concatenation).
-        Value result = getLocal(type, def);
+        Immediate result = getLocal(type, def);
         return convertStringAddition(op1, op2, result, type, binOpInst.iIndex(), debugInfo);
       }
       binExpr = Jimple.newAddExpr(op1, op2);

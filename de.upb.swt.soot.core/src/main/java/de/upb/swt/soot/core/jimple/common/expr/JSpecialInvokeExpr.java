@@ -84,11 +84,11 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr impleme
 
   @Nonnull
   public JSpecialInvokeExpr withMethodSignature(MethodSignature methodSignature) {
-    return new JSpecialInvokeExpr((Local) getBase(), methodSignature, getArgs());
+    return new JSpecialInvokeExpr(getBase(), methodSignature, getArgs());
   }
 
   @Nonnull
   public JSpecialInvokeExpr withArgs(List<Immediate> args) {
-    return new JSpecialInvokeExpr((Local) getBase(), getMethodSignature(), args);
+    return new JSpecialInvokeExpr(getBase(), getMethodSignature(), args);
   }
 }
