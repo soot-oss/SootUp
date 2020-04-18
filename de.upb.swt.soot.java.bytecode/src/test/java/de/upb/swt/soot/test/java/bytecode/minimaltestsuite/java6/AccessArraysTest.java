@@ -12,7 +12,6 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
 
-  //TODO: change expected BodyStmts like comments
   @Test
   public void test() {
     SootMethod method = loadMethod(getMethodSignature("intArrays"));
@@ -28,15 +27,15 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
             "l3 = l1",
             "l4 = lengthof l3",
             "l5 = 0",
-            "label1:", //Should be deleted
+            "label1:",
             "$stack9 = l5",
             "$stack8 = l4",
-            "if $stack9 >= $stack8 goto label2", //"if l5 >= l4 goto nop"
+            "if $stack9 >= $stack8 goto label2",
             "l6 = l3[l5]",
             "l2 = l6",
             "l5 = l5 + 1",
-            "goto label1", //"goto nop"
-            "label2:", //Should be deleted
+            "goto label1",
+            "label2:",
             "return"));
 
     method = loadMethod(getMethodSignature("byteArrays"));

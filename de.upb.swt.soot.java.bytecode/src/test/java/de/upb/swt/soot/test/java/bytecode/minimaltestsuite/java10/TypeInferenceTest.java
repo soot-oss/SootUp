@@ -22,7 +22,6 @@ public class TypeInferenceTest extends MinimalBytecodeTestSuiteBase {
         "printFile", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  // TODO: change the Stream with comments
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
@@ -35,16 +34,15 @@ public class TypeInferenceTest extends MinimalBytecodeTestSuiteBase {
             "$stack6 = new java.io.BufferedReader",
             "specialinvoke $stack6.<java.io.BufferedReader: void <init>(java.io.Reader)>(l3)",
             "l4 = $stack6",
-            "label1:", // should delete
+            "label1:",
             "$stack9 = l4",
             "$stack7 = virtualinvoke $stack9.<java.io.BufferedReader: java.lang.String readLine()>()",
-            // "$stack7 = virtualinvoke l4.<java.io.BufferedReader: java.lang.String readLine()>()"
             "l2 = $stack7",
-            "if $stack7 == null goto label2", // "if $stack7 == null goto nop"
+            "if $stack7 == null goto label2",
             "$stack8 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack8.<java.io.PrintStream: void println(java.lang.String)>(l2)",
-            "goto label1", // "goto nop"
-            "label2:", // should delete
+            "goto label1",
+            "label2:",
             "virtualinvoke l4.<java.io.BufferedReader: void close()>()",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
