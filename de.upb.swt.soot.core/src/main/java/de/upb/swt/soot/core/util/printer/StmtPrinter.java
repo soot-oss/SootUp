@@ -22,7 +22,6 @@
 package de.upb.swt.soot.core.util.printer;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
@@ -38,10 +37,6 @@ public interface StmtPrinter {
   void startStmt(Stmt u);
 
   void endStmt(Stmt u);
-
-  void startStmtBox(StmtBox u);
-
-  void endStmtBox(StmtBox u);
 
   void startValueBox(ValueBox u);
 

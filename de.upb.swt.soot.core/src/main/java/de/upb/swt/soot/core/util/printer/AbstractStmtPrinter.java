@@ -22,7 +22,6 @@
 package de.upb.swt.soot.core.util.printer;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
@@ -96,14 +95,6 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
 
   @Override
   public void endStmt(Stmt u) {}
-
-  @Override
-  public void startStmtBox(StmtBox ub) {
-    handleIndent();
-  }
-
-  @Override
-  public void endStmtBox(StmtBox ub) {}
 
   @Override
   public void startValueBox(ValueBox vb) {
