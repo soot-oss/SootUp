@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
 /** A method call */
 public final class JInvokeStmt extends AbstractStmt implements Copyable {
 
-  private final AbstractInvokeExpr invokeExpr;
+  @Nonnull private final AbstractInvokeExpr invokeExpr;
 
   public JInvokeStmt(
       @Nonnull AbstractInvokeExpr invokeExpr, @Nonnull StmtPositionInfo positionInfo) {
@@ -64,6 +64,7 @@ public final class JInvokeStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
+  @Nonnull
   public AbstractInvokeExpr getInvokeExpr() {
     return invokeExpr;
   }

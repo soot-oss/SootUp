@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
 /** Represents the deprecated JVM <code>ret</code> statement */
 public final class JRetStmt extends AbstractStmt implements Copyable {
 
-  private final Immediate stmtAddress;
+  @Nonnull private final Immediate stmtAddress;
 
   public JRetStmt(@Nonnull Immediate stmtAddress, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
@@ -58,13 +58,16 @@ public final class JRetStmt extends AbstractStmt implements Copyable {
     stmtAddress.toString(up);
   }
 
-  public Value getStmtAddress() {
+  @Nonnull
+  public Immediate getStmtAddress() {
     return stmtAddress;
   }
 
   @Override
+  @Nonnull
   public List<Value> getUses() {
-    List<Value> list = new ArrayList<>(stmtAddress.getUses());
+    final List<Value> uses = stmtAddress.getUses();
+    List<Value> list = new ArrayList<>(uses.size() + 1);
     list.add(stmtAddress);
     return list;
   }
@@ -101,6 +104,6 @@ public final class JRetStmt extends AbstractStmt implements Copyable {
 
   @Nonnull
   public JRetStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JRetStmt((Immediate) getStmtAddress(), positionInfo);
+    return new JRetStmt(getStmtAddress(), positionInfo);
   }
 }

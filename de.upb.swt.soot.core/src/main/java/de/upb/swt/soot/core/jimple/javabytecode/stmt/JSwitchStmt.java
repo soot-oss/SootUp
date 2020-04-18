@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 
 * @author Markus Schmidt
 */
-public final class JSwitchStmt extends AbstractStmt implements Copyable {
+public class JSwitchStmt extends AbstractStmt implements Copyable {
 
   private final Immediate key;
   private List<IntConstant> values;
@@ -94,7 +94,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
     return isTableSwitch;
   }
 
-  public final Stmt getDefaultTarget() {
+  public Stmt getDefaultTarget() {
     return defaultTarget;
   }
 
@@ -105,28 +105,30 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
     Stmt.$Accessor.addStmtPointingToThis(newDefaultTarget, this);
   }
 
-  public final Immediate getKey() {
+  public Immediate getKey() {
     return key;
   }
 
   @Override
-  public final List<Value> getUses() {
-    List<Value> list = new ArrayList<>(key.getUses());
+  @Nonnull
+  public List<Value> getUses() {
+    final List<Value> uses = key.getUses();
+    List<Value> list = new ArrayList<>(uses.size() + 1);
     list.add(key);
     return list;
   }
 
-  public final int getTargetCount() {
+  public int getTargetCount() {
     return targets.size();
   }
 
   // This method is necessary to deal with constructor-must-be-first-ism.
-  public final Stmt getTarget(@Nonnull int index) {
+  public Stmt getTarget(@Nonnull int index) {
     return targets.get(index);
   }
 
   /** Returns a list targets of type Stmt. */
-  public final List<Stmt> getTargets() {
+  public List<Stmt> getTargets() {
     return ImmutableUtils.immutableListOf(targets);
   }
 
@@ -149,17 +151,17 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
 
   @Override
   @Nonnull
-  public final List<Stmt> getStmts() {
+  public List<Stmt> getStmts() {
     return stmts;
   }
 
   @Override
-  public final boolean fallsThrough() {
+  public boolean fallsThrough() {
     return false;
   }
 
   @Override
-  public final boolean branches() {
+  public boolean branches() {
     return true;
   }
 
