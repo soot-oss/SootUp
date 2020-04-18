@@ -33,7 +33,8 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @param variable the variable on the left side of the assign statement.
    * @param rValue the value on the right side of the assign statement.
    */
-  public JAssignStmt(Value variable, Value rValue, StmtPositionInfo positionInfo) {
+  public JAssignStmt(
+      @Nonnull Value variable, @Nonnull Value rValue, @Nonnull StmtPositionInfo positionInfo) {
     super(variable, rValue, positionInfo);
     if (!canBeLinkedVariable(variable, rValue) || !canBeLinkedRValue(variable, rValue)) {
       throw new RuntimeException(
@@ -48,11 +49,8 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @param variable the variable on the left side of the assign statement.
    * @param rValue the value on the right side of the assign statement.
    */
-  private boolean canBeLinkedVariable(Value variable, Value rValue) {
+  private boolean canBeLinkedVariable(@Nonnull Value variable, @Nonnull Value rValue) {
     if (variable instanceof Local || variable instanceof ConcreteRef) {
-      if (rValue == null) {
-        return true;
-      }
       return (variable instanceof Immediate) || (rValue instanceof Immediate);
     }
     return false;
@@ -65,11 +63,8 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @param variable the variable on the left side of the assign statement.
    * @param rValue the value on the right side of the assign statement.
    */
-  public boolean canBeLinkedRValue(Value variable, Value rValue) {
+  public boolean canBeLinkedRValue(@Nonnull Value variable, @Nonnull Value rValue) {
     if (rValue instanceof Immediate || rValue instanceof ConcreteRef || rValue instanceof Expr) {
-      if (variable == null) {
-        return true;
-      }
       return (rValue instanceof Immediate) || (variable instanceof Immediate);
     }
     return false;
@@ -95,7 +90,6 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
     if (!containsInvokeExpr()) {
       throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
     }
-
     return (AbstractInvokeExpr) getRightOp();
   }
 
@@ -159,8 +153,10 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   /*
    * (non-Javadoc)
    * How can rvalue be an instance of StmtOwner(StmtBoxOwner), or StmtOwner implements Value????
-   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getUnitBoxes()
+   *
    */
+  // TODO:  How can rvalue be an instance of StmtOwner(StmtBoxOwner), or StmtOwner implements
+  // Value????
   @Override
   public List<Stmt> getStmts() {
     // handle possible PhiExpr's
@@ -188,7 +184,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @see de.upb.soot.jimple.common.stmt.Stmt#toString(de.upb.soot.StmtPrinter)
    */
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     getLeftOp().toString(up);
     up.literal(" = ");
     getRightOp().toString(up);
@@ -200,12 +196,12 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#accept(de.upb.soot.jimple.visitor.Visitor)
    */
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseAssignStmt(this);
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseAssignStmt(this, o);
   }
 
@@ -215,17 +211,17 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   }
 
   @Nonnull
-  public JAssignStmt withVariable(Value variable) {
+  public JAssignStmt withVariable(@Nonnull Value variable) {
     return new JAssignStmt(variable, getRightOp(), getPositionInfo());
   }
 
   @Nonnull
-  public JAssignStmt withRValue(Value rValue) {
+  public JAssignStmt withRValue(@Nonnull Value rValue) {
     return new JAssignStmt(getLeftOp(), rValue, getPositionInfo());
   }
 
   @Nonnull
-  public JAssignStmt withPositionInfo(StmtPositionInfo positionInfo) {
+  public JAssignStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JAssignStmt(getLeftOp(), getRightOp(), positionInfo);
   }
 }

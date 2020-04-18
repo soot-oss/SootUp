@@ -37,7 +37,7 @@ import javax.annotation.Nonnull;
 /** A statement that ends the method, returning no value. */
 public final class JReturnVoidStmt extends AbstractStmt implements Copyable {
 
-  public JReturnVoidStmt(StmtPositionInfo positionInfo) {
+  public JReturnVoidStmt(@Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
   }
 
@@ -47,12 +47,12 @@ public final class JReturnVoidStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.RETURN);
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseReturnVoidStmt(this);
   }
 
@@ -67,7 +67,7 @@ public final class JReturnVoidStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseReturnVoidStmt(this, o);
   }
 
@@ -77,7 +77,7 @@ public final class JReturnVoidStmt extends AbstractStmt implements Copyable {
   }
 
   @Nonnull
-  public JReturnVoidStmt withPositionInfo(StmtPositionInfo positionInfo) {
+  public JReturnVoidStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JReturnVoidStmt(positionInfo);
   }
 }

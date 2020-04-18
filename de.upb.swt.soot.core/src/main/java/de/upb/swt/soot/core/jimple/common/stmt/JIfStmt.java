@@ -42,30 +42,18 @@ import javax.annotation.Nonnull;
 /** If the condition is true, jumps to the target, otherwise continues to the next stmt. */
 public final class JIfStmt extends AbstractStmt implements Copyable {
 
-  @Nonnull private final Value condition;
+  @Nonnull private final AbstractConditionExpr condition;
   @Nonnull private final Stmt target;
 
   @Nonnull private final List<Stmt> targets;
 
-  public JIfStmt(Value condition, Stmt target, StmtPositionInfo positionInfo) {
+  public JIfStmt(
+      @Nonnull AbstractConditionExpr condition,
+      @Nonnull Stmt target,
+      @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
-    if (condition == null) {
-      throw new IllegalArgumentException("value may not be null");
-    }
-    if (condition instanceof AbstractConditionExpr) {
-      this.condition = condition;
-    } else {
-      throw new RuntimeException(
-          "JIfStmt "
-              + this
-              + " cannot contain value: "
-              + condition
-              + " ("
-              + condition.getClass()
-              + ")");
-    }
+    this.condition = condition;
     this.target = target;
-
     this.targets = Collections.singletonList(target);
   }
 
@@ -80,7 +68,7 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.IF);
     up.literal(" ");
     condition.toString(up);
@@ -100,7 +88,7 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
 
   /** Violates immutability. Only use this for legacy code. */
   @Deprecated
-  private void setTarget(Stmt newTarget) {
+  private void setTarget(@Nonnull Stmt newTarget) {
     Stmt.$Accessor.addStmtPointingToThis(newTarget, this);
   }
 
@@ -134,7 +122,7 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseIfStmt(this, o);
   }
 
@@ -144,18 +132,18 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
   }
 
   @Nonnull
-  public JIfStmt withCondition(@Nonnull Value condition) {
+  public JIfStmt withCondition(@Nonnull AbstractConditionExpr condition) {
     return new JIfStmt(condition, getTarget(), getPositionInfo());
   }
 
   @Nonnull
   public JIfStmt withTarget(@Nonnull Stmt target) {
-    return new JIfStmt(getCondition(), target, getPositionInfo());
+    return new JIfStmt((AbstractConditionExpr) getCondition(), target, getPositionInfo());
   }
 
   @Nonnull
   public JIfStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JIfStmt(getCondition(), getTarget(), positionInfo);
+    return new JIfStmt((AbstractConditionExpr) getCondition(), getTarget(), positionInfo);
   }
 
   /** This class is for internal use only. It will be removed in the future. */
@@ -166,7 +154,7 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void setTarget(JIfStmt stmt, Stmt target) {
+    public static void setTarget(@Nonnull JIfStmt stmt, @Nonnull Stmt target) {
       stmt.setTarget(target);
     }
 

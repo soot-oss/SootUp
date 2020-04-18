@@ -26,12 +26,13 @@
 package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractStmt extends Stmt {
 
   private final StmtPositionInfo positionInfo;
 
-  public AbstractStmt(StmtPositionInfo positionInfo) {
+  public AbstractStmt(@Nonnull StmtPositionInfo positionInfo) {
     this.positionInfo = positionInfo;
   }
 

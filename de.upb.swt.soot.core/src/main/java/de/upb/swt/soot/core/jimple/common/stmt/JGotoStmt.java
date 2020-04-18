@@ -59,7 +59,7 @@ public final class JGotoStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.GOTO);
     up.literal(" ");
     target.toString(up);
@@ -72,9 +72,7 @@ public final class JGotoStmt extends AbstractStmt implements Copyable {
   /** Violates immutability. Only use this for legacy code. */
   @Deprecated
   private void setTarget(@Nonnull Stmt newTarget) {
-    if (target != null) {
-      Stmt.$Accessor.removeStmtPointingToThis(target, this);
-    }
+    Stmt.$Accessor.removeStmtPointingToThis(target, this);
     target = newTarget;
     Stmt.$Accessor.addStmtPointingToThis(newTarget, this);
   }
@@ -101,7 +99,7 @@ public final class JGotoStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseGotoStmt(this, o);
   }
 

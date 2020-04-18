@@ -30,22 +30,15 @@ import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractOpStmt extends AbstractStmt {
 
   protected final Value op;
 
-  protected AbstractOpStmt(Value op, StmtPositionInfo positionInfo) {
+  protected AbstractOpStmt(@Nonnull Immediate op, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
-    if (op == null) {
-      throw new IllegalArgumentException("value may not be null");
-    }
-    if (op instanceof Immediate) {
-      this.op = op;
-    } else {
-      throw new RuntimeException(
-          "AbstractOpStmt " + this + " cannot contain value: " + op + " (" + op.getClass() + ")");
-    }
+    this.op = op;
   }
 
   public final Value getOp() {
@@ -59,7 +52,7 @@ public abstract class AbstractOpStmt extends AbstractStmt {
     return list;
   }
 
-  protected boolean equivTo(AbstractOpStmt o) {
+  protected boolean equivTo(@Nonnull AbstractOpStmt o) {
     return op.equivTo(o.getOp());
   }
 

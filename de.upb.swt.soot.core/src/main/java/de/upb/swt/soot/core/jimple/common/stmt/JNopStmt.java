@@ -37,7 +37,7 @@ import javax.annotation.Nonnull;
 /** A no-operation statement. */
 public final class JNopStmt extends AbstractStmt implements Copyable {
 
-  public JNopStmt(StmtPositionInfo positionInfo) {
+  public JNopStmt(@Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
   }
 
@@ -47,12 +47,12 @@ public final class JNopStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.NOP);
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseNopStmt(this);
   }
 
@@ -67,7 +67,7 @@ public final class JNopStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseNopStmt(this, o);
   }
 
@@ -77,7 +77,7 @@ public final class JNopStmt extends AbstractStmt implements Copyable {
   }
 
   @Nonnull
-  public JNopStmt withPositionInfo(StmtPositionInfo positionInfo) {
+  public JNopStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JNopStmt(positionInfo);
   }
 }

@@ -23,17 +23,17 @@ import javax.annotation.Nonnull;
 */
 public final class JSwitchStmt extends AbstractStmt implements Copyable {
 
-  @Nonnull private final Immediate key;
-  @Nonnull private List<IntConstant> values;
-  @Nonnull private List<Stmt> targets;
-  @Nonnull private Stmt defaultTarget;
+  private final Immediate key;
+  private List<IntConstant> values;
+  private List<Stmt> targets;
+  private Stmt defaultTarget;
   private final boolean isTableSwitch;
 
   // ** concatenation of targets + defaultTarget */
   @Nonnull private final List<Stmt> stmts;
 
   private JSwitchStmt(
-      boolean isTableSwitch,
+      @Nonnull boolean isTableSwitch,
       @Nonnull StmtPositionInfo positionInfo,
       @Nonnull Immediate key,
       @Nonnull Stmt defaultTarget,
@@ -52,8 +52,8 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
 
   public JSwitchStmt(
       @Nonnull Immediate key,
-      int lowIndex,
-      int highIndex,
+      @Nonnull int lowIndex,
+      @Nonnull int highIndex,
       @Nonnull List<Stmt> targets,
       @Nonnull Stmt defaultTarget,
       @Nonnull StmtPositionInfo positionInfo) {
@@ -99,10 +99,8 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   }
 
   @Deprecated
-  private void setDefaultTarget(Stmt newDefaultTarget) {
-    if (defaultTarget != null) {
-      Stmt.$Accessor.removeStmtPointingToThis(defaultTarget, this);
-    }
+  private void setDefaultTarget(@Nonnull Stmt newDefaultTarget) {
+    Stmt.$Accessor.removeStmtPointingToThis(defaultTarget, this);
     defaultTarget = newDefaultTarget;
     Stmt.$Accessor.addStmtPointingToThis(newDefaultTarget, this);
   }
@@ -123,7 +121,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   }
 
   // This method is necessary to deal with constructor-must-be-first-ism.
-  public final Stmt getTarget(int index) {
+  public final Stmt getTarget(@Nonnull int index) {
     return targets.get(index);
   }
 
@@ -166,7 +164,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseSwitchStmt(this);
   }
 
@@ -174,7 +172,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
     return values.size();
   }
 
-  public int getValue(int index) {
+  public int getValue(@Nonnull int index) {
     return values.get(index).getValue();
   }
 

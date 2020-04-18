@@ -40,25 +40,12 @@ import javax.annotation.Nonnull;
 /** A method call */
 public final class JInvokeStmt extends AbstractStmt implements Copyable {
 
-  private final Value invokeExpr;
+  private final AbstractInvokeExpr invokeExpr;
 
-  public JInvokeStmt(Value invokeExpr, StmtPositionInfo positionInfo) {
+  public JInvokeStmt(
+      @Nonnull AbstractInvokeExpr invokeExpr, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
-    if (invokeExpr == null) {
-      throw new IllegalArgumentException("value may not be null");
-    }
-    if (invokeExpr instanceof AbstractInvokeExpr) {
-      this.invokeExpr = invokeExpr;
-    } else {
-      throw new RuntimeException(
-          "JInvokeStmt "
-              + this
-              + " cannot contain value: "
-              + invokeExpr
-              + " ("
-              + invokeExpr.getClass()
-              + ")");
-    }
+    this.invokeExpr = invokeExpr;
   }
 
   @Override
@@ -72,13 +59,13 @@ public final class JInvokeStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     invokeExpr.toString(up);
   }
 
   @Override
   public AbstractInvokeExpr getInvokeExpr() {
-    return (AbstractInvokeExpr) invokeExpr;
+    return invokeExpr;
   }
 
   @Override
@@ -89,7 +76,7 @@ public final class JInvokeStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseInvokeStmt(this);
   }
 
@@ -104,7 +91,7 @@ public final class JInvokeStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseInvokeStmt(this, o);
   }
 
@@ -114,12 +101,12 @@ public final class JInvokeStmt extends AbstractStmt implements Copyable {
   }
 
   @Nonnull
-  public JInvokeStmt withInvokeExpr(Value invokeExpr) {
+  public JInvokeStmt withInvokeExpr(@Nonnull AbstractInvokeExpr invokeExpr) {
     return new JInvokeStmt(invokeExpr, getPositionInfo());
   }
 
   @Nonnull
-  public JInvokeStmt withPositionInfo(StmtPositionInfo positionInfo) {
+  public JInvokeStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JInvokeStmt(getInvokeExpr(), positionInfo);
   }
 }

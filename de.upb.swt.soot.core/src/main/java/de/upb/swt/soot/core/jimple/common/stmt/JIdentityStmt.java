@@ -36,32 +36,11 @@ import javax.annotation.Nonnull;
 
 public final class JIdentityStmt extends AbstractDefinitionStmt implements Copyable {
 
-  public JIdentityStmt(Value local, Value identityValue, StmtPositionInfo positionInfo) {
+  public JIdentityStmt(
+      @Nonnull Local local,
+      @Nonnull IdentityRef identityValue,
+      @Nonnull StmtPositionInfo positionInfo) {
     super(local, identityValue, positionInfo);
-    if (local == null || identityValue == null) {
-      throw new IllegalArgumentException("value may not be null");
-    }
-    if (!(local instanceof Local)) {
-      throw new RuntimeException(
-          "JIdentityStmt "
-              + this
-              + " cannot contain value: "
-              + local
-              + " ("
-              + local.getClass()
-              + ")");
-    }
-
-    if (!(identityValue instanceof IdentityRef)) {
-      throw new RuntimeException(
-          "JIdentityStmt "
-              + this
-              + " cannot contain value: "
-              + identityValue
-              + " ("
-              + identityValue.getClass()
-              + ")");
-    }
   }
 
   @Override
@@ -70,14 +49,14 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Copya
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     getLeftOp().toString(up);
     up.literal(" := ");
     getRightOp().toString(up);
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseIdentityStmt(this);
   }
 
@@ -86,7 +65,7 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Copya
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseIdentityStmt(this, o);
   }
 
@@ -96,17 +75,17 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Copya
   }
 
   @Nonnull
-  public JIdentityStmt withLocal(Value local) {
-    return new JIdentityStmt(local, getRightOp(), getPositionInfo());
+  public JIdentityStmt withLocal(@Nonnull Local local) {
+    return new JIdentityStmt(local, (IdentityRef) getRightOp(), getPositionInfo());
   }
 
   @Nonnull
-  public JIdentityStmt withIdentityValue(Value identityValue) {
-    return new JIdentityStmt(getLeftOp(), identityValue, getPositionInfo());
+  public JIdentityStmt withIdentityValue(@Nonnull IdentityRef identityValue) {
+    return new JIdentityStmt((Local) getLeftOp(), identityValue, getPositionInfo());
   }
 
   @Nonnull
-  public JIdentityStmt withPositionInfo(StmtPositionInfo positionInfo) {
-    return new JIdentityStmt(getLeftOp(), getRightOp(), positionInfo);
+  public JIdentityStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+    return new JIdentityStmt((Local) getLeftOp(), (IdentityRef) getRightOp(), positionInfo);
   }
 }

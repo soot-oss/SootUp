@@ -46,12 +46,12 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
   }
 
   @Deprecated
-  private void addStmtPointingToThis(Stmt fromStmt) {
+  private void addStmtPointingToThis(@Nonnull Stmt fromStmt) {
     stmtsPointingToThis.add(fromStmt);
   }
 
   @Deprecated
-  private void removeStmtPointingToThis(Stmt fromStmt) {
+  private void removeStmtPointingToThis(@Nonnull Stmt fromStmt) {
     stmtsPointingToThis.remove(fromStmt);
   }
 
@@ -87,7 +87,7 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
   public abstract void toString(StmtPrinter up);
 
   /** Used to implement the Switchable construct. */
-  public void accept(Visitor sw) {}
+  public void accept(@Nonnull Visitor sw) {}
 
   public boolean containsInvokeExpr() {
     return false;
@@ -127,13 +127,13 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void addStmtPointingToThis(Stmt targetStmt, Stmt fromStmt) {
+    public static void addStmtPointingToThis(@Nonnull Stmt targetStmt, @Nonnull Stmt fromStmt) {
       targetStmt.addStmtPointingToThis(fromStmt);
     }
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void removeStmtPointingToThis(Stmt targetStmt, Stmt fromStmt) {
+    public static void removeStmtPointingToThis(@Nonnull Stmt targetStmt, @Nonnull Stmt fromStmt) {
       targetStmt.removeStmtPointingToThis(fromStmt);
     }
 

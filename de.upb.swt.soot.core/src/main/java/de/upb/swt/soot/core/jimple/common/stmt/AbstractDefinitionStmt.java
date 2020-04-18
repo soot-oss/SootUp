@@ -30,13 +30,15 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractDefinitionStmt extends AbstractStmt {
 
   private final Value leftOp;
   private final Value rightOp;
 
-  AbstractDefinitionStmt(Value leftOp, Value rightOp, StmtPositionInfo positionInfo) {
+  AbstractDefinitionStmt(
+      @Nonnull Value leftOp, @Nonnull Value rightOp, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.leftOp = leftOp;
     this.rightOp = rightOp;

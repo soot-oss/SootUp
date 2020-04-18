@@ -39,25 +39,11 @@ import javax.annotation.Nonnull;
 /** Represents the deprecated JVM <code>ret</code> statement */
 public final class JRetStmt extends AbstractStmt implements Copyable {
 
-  private final Value stmtAddress;
+  private final Immediate stmtAddress;
 
-  public JRetStmt(Value stmtAddress, StmtPositionInfo positionInfo) {
+  public JRetStmt(@Nonnull Immediate stmtAddress, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
-    if (stmtAddress == null) {
-      throw new IllegalArgumentException("value may not be null");
-    }
-    if (stmtAddress instanceof Immediate) {
-      this.stmtAddress = stmtAddress;
-    } else {
-      throw new RuntimeException(
-          "JRetStmt "
-              + this
-              + " cannot contain value: "
-              + stmtAddress
-              + " ("
-              + stmtAddress.getClass()
-              + ")");
-    }
+    this.stmtAddress = stmtAddress;
   }
 
   @Override
@@ -66,7 +52,7 @@ public final class JRetStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.RET);
     up.literal(" ");
     stmtAddress.toString(up);
@@ -84,7 +70,7 @@ public final class JRetStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseRetStmt(this);
   }
 
@@ -99,7 +85,7 @@ public final class JRetStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseRetStmt(this, o);
   }
 
@@ -109,12 +95,12 @@ public final class JRetStmt extends AbstractStmt implements Copyable {
   }
 
   @Nonnull
-  public JRetStmt withStmtAddress(Value stmtAddress) {
+  public JRetStmt withStmtAddress(@Nonnull Immediate stmtAddress) {
     return new JRetStmt(stmtAddress, getPositionInfo());
   }
 
   @Nonnull
-  public JRetStmt withPositionInfo(StmtPositionInfo positionInfo) {
-    return new JRetStmt(getStmtAddress(), positionInfo);
+  public JRetStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+    return new JRetStmt((Immediate) getStmtAddress(), positionInfo);
   }
 }
