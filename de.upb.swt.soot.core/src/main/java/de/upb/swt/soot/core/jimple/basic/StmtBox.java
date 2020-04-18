@@ -58,7 +58,7 @@ public class StmtBox {
 
     // Add this to back pointers
     if (this.stmt != null) {
-      Stmt.$Accessor.addStmtPointingToThis(this.stmt, this.stmt);
+      // Stmt.$Accessor.addStmtPointingToThis(this.stmt, this.stmt);
     }
   }
 
