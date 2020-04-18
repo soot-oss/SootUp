@@ -20,18 +20,17 @@ public class AbstractClassInheritanceTest extends JavaTypeHierarchyBase {
   @Test
   public void method() {
     SootClass sootClass =
-        (SootClass)
-            customTestWatcher
-                .getView()
-                .getClass(
-                    customTestWatcher
-                        .getView()
-                        .getIdentifierFactory()
-                        .getClassType(customTestWatcher.getClassName()))
-                .get();
+        customTestWatcher
+            .getView()
+            .getClass(
+                customTestWatcher
+                    .getView()
+                    .getIdentifierFactory()
+                    .getClassType(customTestWatcher.getClassName()))
+            .get();
     assertTrue(sootClass.hasSuperclass());
     SootClass superClass =
-        (SootClass) customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
+        customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
     assertTrue(superClass.isAbstract());
 
     ViewTypeHierarchy typeHierarchy =

@@ -46,7 +46,7 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   protected int indent = 0;
 
   protected StringBuilder output = new StringBuilder();
-  private HashMap<String, PackageName> imports = new HashMap<>();
+  private final HashMap<String, PackageName> imports = new HashMap<>();
 
   boolean useImports = false;
 
@@ -69,9 +69,7 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
       if (packageName == null) {
         imports.put(referencedClassName, referencedPackageName);
         return true;
-      } else if (packageName.equals(referencedPackageName)) {
-        return true;
-      }
+      } else return packageName.equals(referencedPackageName);
     }
     return false;
   }
@@ -130,7 +128,7 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   public void modifier(String str) {
     handleIndent();
     output.append(str);
-  };
+  }
 
   @Override
   public void typeSignature(@Nonnull Type type) {
