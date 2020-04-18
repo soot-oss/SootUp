@@ -2040,17 +2040,15 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       emitStmts(bodyStmts, u);
 
       // If this is an exception handler, register the starting Stmt for it
-      {
+      if (insn instanceof LabelNode) {
         JIdentityStmt caughtEx = null;
         if (u instanceof JIdentityStmt) {
           caughtEx = (JIdentityStmt) u;
         } else if (u instanceof StmtContainer) {
-          caughtEx = getIdentityRefFromContrainer((StmtContainer) u);
+          caughtEx = findIdentityRefInContainer((StmtContainer) u);
         }
 
-        if (insn instanceof LabelNode
-            && caughtEx != null
-            && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
+        if (caughtEx != null && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
           // We directly place this label
           Collection<Stmt> traps = trapHandlers.get((LabelNode) insn);
           for (Stmt ub : traps) {
@@ -2112,12 +2110,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     }
   }
 
-  private @Nullable JIdentityStmt getIdentityRefFromContrainer(@Nonnull StmtContainer u) {
+  private @Nullable JIdentityStmt findIdentityRefInContainer(@Nonnull StmtContainer u) {
     for (Stmt uu : u.stmts) {
       if (uu instanceof JIdentityStmt) {
         return (JIdentityStmt) uu;
       } else if (uu instanceof StmtContainer) {
-        return getIdentityRefFromContrainer((StmtContainer) uu);
+        return findIdentityRefInContainer((StmtContainer) uu);
       }
     }
     return null;
