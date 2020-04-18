@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-public abstract class AbstractDefinitionStmt extends AbstractStmt {
+public abstract class AbstractDefinitionStmt extends Stmt {
 
   @Nonnull private Value leftOp;
   @Nonnull private final Value rightOp;

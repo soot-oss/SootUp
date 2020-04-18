@@ -38,7 +38,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /** A method call */
-public final class JInvokeStmt extends AbstractStmt implements Copyable {
+public final class JInvokeStmt extends Stmt implements Copyable {
 
   @Nonnull private final AbstractInvokeExpr invokeExpr;
 

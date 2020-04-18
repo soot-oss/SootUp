@@ -3,7 +3,6 @@ package de.upb.swt.soot.core.jimple.javabytecode.stmt;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.stmt.AbstractStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -21,7 +20,7 @@ import javax.annotation.Nonnull;
 
 * @author Markus Schmidt
 */
-public class JSwitchStmt extends AbstractStmt implements Copyable {
+public class JSwitchStmt extends Stmt implements Copyable {
 
   private final Immediate key;
   private List<IntConstant> values;

@@ -35,23 +35,26 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractBinopExpr implements Expr {
 
-  private final Immediate op1;
-  private final Immediate op2;
+  @Nonnull private final Immediate op1;
+  @Nonnull private final Immediate op2;
 
   AbstractBinopExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     this.op1 = op1;
     this.op2 = op2;
   }
 
+  @Nonnull
   public Immediate getOp1() {
     return op1;
   }
 
+  @Nonnull
   public Immediate getOp2() {
     return op2;
   }
 
   @Override
+  @Nonnull
   public final List<Value> getUses() {
     final List<Value> uses1 = op1.getUses();
     final List<Value> uses2 = op2.getUses();

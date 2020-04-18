@@ -20,6 +20,7 @@ class StmtContainer extends Stmt {
   @Nonnull final Stmt[] stmts;
 
   StmtContainer(@Nonnull Stmt... stmts) {
+    super(StmtPositionInfo.createNoStmtPositionInfo());
     this.stmts = stmts;
   }
 

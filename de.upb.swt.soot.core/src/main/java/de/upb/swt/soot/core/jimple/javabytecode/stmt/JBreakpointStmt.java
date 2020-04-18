@@ -28,14 +28,14 @@ package de.upb.swt.soot.core.jimple.javabytecode.stmt;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.common.stmt.AbstractStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
-public final class JBreakpointStmt extends AbstractStmt implements Copyable {
+public final class JBreakpointStmt extends Stmt implements Copyable {
 
   public JBreakpointStmt(@Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);

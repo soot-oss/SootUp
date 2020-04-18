@@ -35,7 +35,7 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
 /** A statement that ends the method, returning no value. */
-public final class JReturnVoidStmt extends AbstractStmt implements Copyable {
+public final class JReturnVoidStmt extends Stmt implements Copyable {
 
   public JReturnVoidStmt(@Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);

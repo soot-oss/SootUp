@@ -37,7 +37,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /** Unconditionally jumps to the target */
-public final class JGotoStmt extends AbstractStmt implements Copyable {
+public final class JGotoStmt extends Stmt implements Copyable {
 
   @Nonnull private Stmt target;
   @Nonnull private final List<Stmt> targets;

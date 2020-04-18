@@ -27,7 +27,7 @@ package de.upb.swt.soot.core.jimple.javabytecode.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
-import de.upb.swt.soot.core.jimple.common.stmt.AbstractStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -37,7 +37,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /** Represents the deprecated JVM <code>ret</code> statement */
-public final class JRetStmt extends AbstractStmt implements Copyable {
+public final class JRetStmt extends Stmt implements Copyable {
 
   @Nonnull private final Immediate stmtAddress;
 

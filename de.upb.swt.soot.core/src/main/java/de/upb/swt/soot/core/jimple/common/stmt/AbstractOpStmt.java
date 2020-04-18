@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-public abstract class AbstractOpStmt extends AbstractStmt {
+public abstract class AbstractOpStmt extends Stmt {
 
   protected final Value op;
 

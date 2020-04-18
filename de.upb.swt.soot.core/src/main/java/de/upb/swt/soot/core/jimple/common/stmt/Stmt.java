@@ -15,8 +15,13 @@ import javax.annotation.Nonnull;
 
 public abstract class Stmt implements EquivTo, Acceptor, Copyable {
 
+  protected final StmtPositionInfo positionInfo;
   /** List of Stmts pointing to this Stmt. */
   @Nonnull private List<Stmt> stmtsPointingToThis = new ArrayList<>();
+
+  public Stmt(@Nonnull StmtPositionInfo positionInfo) {
+    this.positionInfo = positionInfo;
+  }
 
   /**
    * Returns a list of Values used in this Stmt. Note that they are returned in usual evaluation
@@ -113,7 +118,9 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
   }
 
-  public abstract StmtPositionInfo getPositionInfo();
+  public StmtPositionInfo getPositionInfo() {
+    return positionInfo;
+  }
 
   public boolean isBranchTarget() {
     return !stmtsPointingToThis.isEmpty();

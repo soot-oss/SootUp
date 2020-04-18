@@ -35,7 +35,7 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
 /** A no-operation statement. */
-public final class JNopStmt extends AbstractStmt implements Copyable {
+public final class JNopStmt extends Stmt implements Copyable {
 
   public JNopStmt(@Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);

@@ -36,7 +36,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   public JAssignStmt(
       @Nonnull Value variable, @Nonnull Value rValue, @Nonnull StmtPositionInfo positionInfo) {
     super(variable, rValue, positionInfo);
-    if (!(canBeLinkedVariable(variable, rValue) && canBeLinkedRValue(variable, rValue))) {
+    if (!(checkVariable(variable, rValue) && checkValue(variable, rValue))) {
       throw new RuntimeException(
           "Illegal assignment statement.  Make sure that either left side or right hand side has a local or constant.");
     }
@@ -49,7 +49,8 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @param variable the variable on the left side of the assign statement.
    * @param rValue the value on the right side of the assign statement.
    */
-  private boolean canBeLinkedVariable(@Nonnull Value variable, @Nonnull Value rValue) {
+  // TODO: [ms] check both checks for optimiziations and semantic validity
+  private boolean checkVariable(@Nonnull Value variable, @Nonnull Value rValue) {
     if (variable instanceof Local || variable instanceof ConcreteRef) {
       return (variable instanceof Immediate) || (rValue instanceof Immediate);
     }
@@ -63,7 +64,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @param variable the variable on the left side of the assign statement.
    * @param rValue the value on the right side of the assign statement.
    */
-  public boolean canBeLinkedRValue(@Nonnull Value variable, @Nonnull Value rValue) {
+  private boolean checkValue(@Nonnull Value variable, @Nonnull Value rValue) {
     if (rValue instanceof Immediate || rValue instanceof ConcreteRef || rValue instanceof Expr) {
       return (rValue instanceof Immediate) || (variable instanceof Immediate);
     }
@@ -110,6 +111,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getArrayRef()
    */
   @Override
+  // TODO [ms]: what is with assignments like: arr[0] = arr[6]?
   public JArrayRef getArrayRef() {
     if (!containsArrayRef()) {
       throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
