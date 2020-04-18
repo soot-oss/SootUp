@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 
 public final class JInstanceFieldRef extends JFieldRef implements Copyable {
 
-  private final Value base;
+  private final Local base;
 
   /**
    * Create a reference to a class' instance field.
@@ -32,23 +32,9 @@ public final class JInstanceFieldRef extends JFieldRef implements Copyable {
    * @param base the base value of the field
    * @param fieldSig the field sig
    */
-  public JInstanceFieldRef(Value base, FieldSignature fieldSig) {
+  public JInstanceFieldRef(@Nonnull Local base, FieldSignature fieldSig) {
     super(fieldSig);
-    if (base == null) {
-      throw new IllegalArgumentException("value may not be null");
-    }
-    if (base instanceof Local) {
-      this.base = base;
-    } else {
-      throw new RuntimeException(
-          "JInstanceFieldRef "
-              + this
-              + " cannot contain value: "
-              + base
-              + " ("
-              + base.getClass()
-              + ")");
-    }
+    this.base = base;
   }
 
   @Override
@@ -63,7 +49,7 @@ public final class JInstanceFieldRef extends JFieldRef implements Copyable {
     up.fieldSignature(getFieldSignature());
   }
 
-  public Value getBase() {
+  public Local getBase() {
     return base;
   }
 
@@ -91,7 +77,7 @@ public final class JInstanceFieldRef extends JFieldRef implements Copyable {
   }
 
   @Nonnull
-  public JInstanceFieldRef withBase(Value base) {
+  public JInstanceFieldRef withBase(Local base) {
     return new JInstanceFieldRef(base, getFieldSignature());
   }
 
