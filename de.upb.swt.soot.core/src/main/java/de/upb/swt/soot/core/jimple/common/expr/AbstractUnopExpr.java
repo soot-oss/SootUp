@@ -33,22 +33,23 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractUnopExpr implements Expr {
 
-  private final Value op;
+  @Nonnull private final Immediate op;
 
   AbstractUnopExpr(@Nonnull Immediate op) {
-
     this.op = op;
   }
 
+  @Nonnull
   public Value getOp() {
     return op;
   }
 
   @Override
   public final List<Value> getUses() {
-    List<Value> list = new ArrayList<>(op.getUses());
+    final List<Value> uses = op.getUses();
+    List<Value> list = new ArrayList<>(uses.size() + 1);
+    list.addAll(uses);
     list.add(op);
-
     return list;
   }
 }
