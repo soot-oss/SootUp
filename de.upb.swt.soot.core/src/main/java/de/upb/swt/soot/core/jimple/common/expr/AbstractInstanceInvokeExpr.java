@@ -37,19 +37,21 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
 
-  private final Value base;
+  @Nonnull private final Local base;
 
-  AbstractInstanceInvokeExpr(@Nonnull Local base, MethodSignature methodSig, List<Immediate> args) {
+  AbstractInstanceInvokeExpr(
+      @Nonnull Local base, @Nonnull MethodSignature methodSig, @Nonnull List<Immediate> args) {
     super(methodSig, args);
     this.base = base;
   }
 
-  public Value getBase() {
+  @Nonnull
+  public Local getBase() {
     return base;
   }
 
   @Override
-  public java.util.List<Value> getUses() {
+  public List<Value> getUses() {
     List<Value> list = new ArrayList<>();
 
     List<? extends Value> args = getArgs();
