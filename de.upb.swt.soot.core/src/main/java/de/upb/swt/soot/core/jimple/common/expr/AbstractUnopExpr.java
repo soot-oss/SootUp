@@ -40,11 +40,12 @@ public abstract class AbstractUnopExpr implements Expr {
   }
 
   @Nonnull
-  public Value getOp() {
+  public Immediate getOp() {
     return op;
   }
 
   @Override
+  @Nonnull
   public final List<Value> getUses() {
     final List<Value> uses = op.getUses();
     List<Value> list = new ArrayList<>(uses.size() + 1);

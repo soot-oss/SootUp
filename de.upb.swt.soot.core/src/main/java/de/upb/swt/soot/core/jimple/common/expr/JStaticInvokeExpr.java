@@ -41,12 +41,12 @@ import javax.annotation.Nonnull;
 public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copyable {
 
   /** Stores the values to the args array. */
-  public JStaticInvokeExpr(MethodSignature method, List<Immediate> args) {
+  public JStaticInvokeExpr(@Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
     super(method, args);
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseStaticInvokeExpr(this, o);
   }
 
@@ -67,7 +67,7 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copya
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.STATICINVOKE);
     up.literal(" ");
     up.methodSignature(getMethodSignature());
@@ -77,17 +77,17 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copya
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseStaticInvokeExpr(this);
   }
 
   @Nonnull
-  public JStaticInvokeExpr withMethodSignature(MethodSignature methodSignature) {
+  public JStaticInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature) {
     return new JStaticInvokeExpr(methodSignature, getArgs());
   }
 
   @Nonnull
-  public JStaticInvokeExpr withArgs(List<Immediate> args) {
+  public JStaticInvokeExpr withArgs(@Nonnull List<Immediate> args) {
     return new JStaticInvokeExpr(getMethodSignature(), args);
   }
 }

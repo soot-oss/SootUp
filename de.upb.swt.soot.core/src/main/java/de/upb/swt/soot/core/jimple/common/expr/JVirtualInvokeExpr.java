@@ -40,12 +40,13 @@ import javax.annotation.Nonnull;
 public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
   /** Stores the values to the args array. */
-  public JVirtualInvokeExpr(@Nonnull Local base, MethodSignature method, List<Immediate> args) {
+  public JVirtualInvokeExpr(
+      @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
     super(base, method, args);
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseVirtualInvokeExpr(this, o);
   }
 
@@ -65,7 +66,7 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr impleme
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.VIRTUALINVOKE);
     up.literal(" ");
     getBase().toString(up);
@@ -77,17 +78,17 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr impleme
   }
 
   @Nonnull
-  public JVirtualInvokeExpr withBase(Local base) {
+  public JVirtualInvokeExpr withBase(@Nonnull Local base) {
     return new JVirtualInvokeExpr(base, getMethodSignature(), getArgs());
   }
 
   @Nonnull
-  public JVirtualInvokeExpr withMethodSignature(MethodSignature methodSignature) {
+  public JVirtualInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature) {
     return new JVirtualInvokeExpr(getBase(), methodSignature, getArgs());
   }
 
   @Nonnull
-  public JVirtualInvokeExpr withArgs(List<Immediate> args) {
+  public JVirtualInvokeExpr withArgs(@Nonnull List<Immediate> args) {
     return new JVirtualInvokeExpr(getBase(), getMethodSignature(), args);
   }
 }

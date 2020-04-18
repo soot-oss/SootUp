@@ -40,18 +40,18 @@ import javax.annotation.Nonnull;
 
 public final class JArrayRef implements ConcreteRef, Copyable {
 
-  private final Value base;
-  private final Value index;
+  private final Local base;
+  private final Immediate index;
   private final IdentifierFactory identifierFactory;
 
   public JArrayRef(
-      @Nonnull Local base, @Nonnull Immediate index, IdentifierFactory identifierFactory) {
+      @Nonnull Local base, @Nonnull Immediate index, @Nonnull IdentifierFactory identifierFactory) {
     this.base = base;
     this.index = index;
     this.identifierFactory = identifierFactory;
   }
 
-  private Type determineType(IdentifierFactory identifierFactory) {
+  private Type determineType(@Nonnull IdentifierFactory identifierFactory) {
     Type type = base.getType();
 
     if (type.equals(UnknownType.getInstance())) {
@@ -81,7 +81,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseArrayRef(this, o);
   }
 
@@ -97,22 +97,25 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     base.toString(up);
     up.literal("[");
     index.toString(up);
     up.literal("]");
   }
 
-  public Value getBase() {
+  @Nonnull
+  public Local getBase() {
     return base;
   }
 
-  public Value getIndex() {
+  @Nonnull
+  public Immediate getIndex() {
     return index;
   }
 
   @Override
+  @Nonnull
   public List<Value> getUses() {
     List<Value> list = new ArrayList<>(base.getUses());
     list.add(base);
@@ -122,22 +125,23 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   }
 
   @Override
+  @Nonnull
   public Type getType() {
     return determineType(identifierFactory);
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     // TODO
   }
 
   @Nonnull
-  public JArrayRef withBase(Local base) {
-    return new JArrayRef(base, (Immediate) getIndex(), identifierFactory);
+  public JArrayRef withBase(@Nonnull Local base) {
+    return new JArrayRef(base, getIndex(), identifierFactory);
   }
 
   @Nonnull
-  public JArrayRef withIndex(Immediate index) {
-    return new JArrayRef((Local) getBase(), index, identifierFactory);
+  public JArrayRef withIndex(@Nonnull Immediate index) {
+    return new JArrayRef(getBase(), index, identifierFactory);
   }
 }

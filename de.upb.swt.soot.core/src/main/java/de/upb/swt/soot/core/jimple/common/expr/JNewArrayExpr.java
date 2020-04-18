@@ -121,11 +121,13 @@ public final class JNewArrayExpr implements Expr, Copyable {
 
   /** Returns an instance of ArrayType(). */
   @Override
+  @Nonnull
   public Type getType() {
     return simplify(baseType, identifierFactory);
   }
 
   @Override
+  @Nonnull
   public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseNewArrayExpr(this);
   }
