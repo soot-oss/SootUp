@@ -115,6 +115,10 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
 
   public abstract StmtPositionInfo getPositionInfo();
 
+  public boolean isBranchTarget() {
+    return !stmtsPointingToThis.isEmpty();
+  }
+
   /** This class is for internal use only. It will be removed in the future. */
   @Deprecated
   public static class $Accessor {

@@ -1,7 +1,6 @@
 package de.upb.swt.soot.core.util.printer;
 
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
-import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
@@ -91,8 +90,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
     // Build labelStmts and refStmts
     for (Stmt stmt : body.getAllStmts()) {
-      // not sure
-      if (stmt instanceof JGotoStmt) {
+      if (stmt.isBranchTarget()) {
         labelStmts.add(stmt);
       } else {
         refStmts.add(stmt);
