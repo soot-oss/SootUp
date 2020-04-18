@@ -2,26 +2,16 @@ package de.upb.swt.soot.javatestsuite;
 
 import static org.junit.Assert.*;
 
-import de.upb.swt.soot.JimpleAnalysisInputLocation;
 import de.upb.swt.soot.categories.Java8Test;
-import de.upb.swt.soot.core.Project;
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.Utils;
-import de.upb.swt.soot.core.util.printer.Printer;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.JavaProject;
-import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,7 +30,7 @@ public abstract class JimpleTestSuiteBase {
   /** Helper to save Jimple files */
   @Test
   void saveFilesToJimple() {
-
+    /*
     String inputDir = "../shared-test-resources/minimaltestsuite/";
     Set<String> locationSet =
         new HashSet(
@@ -53,6 +43,7 @@ public abstract class JimpleTestSuiteBase {
         JavaProject.builder(new JavaLanguage(8))
             .addClassPath(new JimpleAnalysisInputLocation(locationSet))
             .build();
+
     view = project.createOnDemandView();
 
     //  list java minimal examples
@@ -78,6 +69,8 @@ public abstract class JimpleTestSuiteBase {
         e.printStackTrace();
       }
     }
+
+     */
   }
 
   public void listJavaSources() {
@@ -94,18 +87,20 @@ public abstract class JimpleTestSuiteBase {
 
   @Before
   public void setup() {
-    Set<String> locationSet =
-        new HashSet(
-            Arrays.asList(
-                baseDir + "java6", baseDir + "java7", baseDir + "java8"
-                // baseDir + "java9",baseDir + "java10"
-                ));
+    /*
+        Set<String> locationSet =
+            new HashSet(
+                Arrays.asList(
+                    baseDir + "java6", baseDir + "java7", baseDir + "java8"
+                    // baseDir + "java9",baseDir + "java10"
+                    ));
 
-    Project project =
-        JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(new JimpleAnalysisInputLocation(locationSet))
-            .build();
-    view = project.createOnDemandView();
+        Project project =
+            JavaProject.builder(new JavaLanguage(8))
+                .addClassPath(new JimpleAnalysisInputLocation(locationSet))
+                .build();
+        view = project.createOnDemandView();
+    */
   }
 
   /**

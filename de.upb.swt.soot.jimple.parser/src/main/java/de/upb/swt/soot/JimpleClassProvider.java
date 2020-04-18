@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import org.antlr.v4.runtime.CharStreams;
 
-public class JimpleProvider implements ClassProvider {
+public class JimpleClassProvider implements ClassProvider {
 
   @Override
   public AbstractClassSource createClassSource(
