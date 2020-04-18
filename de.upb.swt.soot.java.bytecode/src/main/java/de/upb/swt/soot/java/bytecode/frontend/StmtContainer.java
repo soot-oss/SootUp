@@ -19,9 +19,9 @@ class StmtContainer extends Stmt {
 
   @Nonnull final Stmt[] stmts;
 
-  StmtContainer(@Nonnull Stmt... stmts) {
+  StmtContainer(@Nonnull Stmt prevStmt, Stmt nextStmt) {
     super(StmtPositionInfo.createNoStmtPositionInfo());
-    this.stmts = stmts;
+    stmts = new Stmt[] {prevStmt, nextStmt};
   }
 
   /**
