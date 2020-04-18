@@ -327,6 +327,7 @@ public class Printer {
           printer.newline();
         }
 
+        // print phi node info
         if (printer.getReferences().containsKey(currentStmt)) {
           printer.stmtRef(currentStmt, false);
         }

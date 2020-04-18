@@ -42,10 +42,10 @@ import javax.annotation.Nonnull;
 /** If the condition is true, jumps to the target, otherwise continues to the next stmt. */
 public final class JIfStmt extends AbstractStmt implements Copyable {
 
-  private final Value condition;
-  private final Stmt target;
+  @Nonnull private final Value condition;
+  @Nonnull private final Stmt target;
 
-  private final List<Stmt> targets;
+  @Nonnull private final List<Stmt> targets;
 
   public JIfStmt(Value condition, Stmt target, StmtPositionInfo positionInfo) {
     super(positionInfo);
@@ -101,11 +101,11 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
   /** Violates immutability. Only use this for legacy code. */
   @Deprecated
   private void setTarget(Stmt newTarget) {
-    StmtHandler stmtHandler = new StmtHandler(target);
-    StmtHandler.$Accessor.setStmt(stmtHandler, newTarget);
+    Stmt.$Accessor.addStmtPointingToThis(newTarget, this);
   }
 
   @Override
+  @Nonnull
   public List<Value> getUses() {
     List<Value> list = new ArrayList<>(condition.getUses());
     list.add(condition);
@@ -113,12 +113,13 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
+  @Nonnull
   public final List<Stmt> getStmts() {
     return targets;
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseIfStmt(this);
   }
 
@@ -143,17 +144,17 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
   }
 
   @Nonnull
-  public JIfStmt withCondition(Value condition) {
+  public JIfStmt withCondition(@Nonnull Value condition) {
     return new JIfStmt(condition, getTarget(), getPositionInfo());
   }
 
   @Nonnull
-  public JIfStmt withTarget(Stmt target) {
+  public JIfStmt withTarget(@Nonnull Stmt target) {
     return new JIfStmt(getCondition(), target, getPositionInfo());
   }
 
   @Nonnull
-  public JIfStmt withPositionInfo(StmtPositionInfo positionInfo) {
+  public JIfStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JIfStmt(getCondition(), getTarget(), positionInfo);
   }
 

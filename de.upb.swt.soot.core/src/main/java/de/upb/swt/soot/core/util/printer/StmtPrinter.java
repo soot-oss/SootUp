@@ -22,7 +22,6 @@
 package de.upb.swt.soot.core.util.printer;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -37,10 +36,6 @@ public interface StmtPrinter {
   void startStmt(Stmt u);
 
   void endStmt(Stmt u);
-
-  void startValueBox(ValueBox u);
-
-  void endValueBox(ValueBox u);
 
   void setIndent(int offset);
 

@@ -38,7 +38,7 @@ import javax.annotation.Nullable;
  *
  * <p>Prefer to use the factory methods in {@link de.upb.swt.soot.core.jimple.Jimple}.
  */
-public abstract class StmtBox {
+public class StmtBox {
 
   @Nullable private Stmt stmt;
 
@@ -50,7 +50,7 @@ public abstract class StmtBox {
   private void setStmt(@Nullable Stmt stmt) {
     // Remove this from set of back pointers.
     if (this.stmt != null) {
-      Stmt.$Accessor.removeStmtPointingToThis(this.stmt, this.stmt);
+      // Stmt.$Accessor.removeStmtPointingToThis(this.stmt, this.stmt);
     }
 
     // Perform link

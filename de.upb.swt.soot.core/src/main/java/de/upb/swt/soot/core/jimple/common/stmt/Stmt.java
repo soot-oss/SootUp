@@ -11,55 +11,52 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 public abstract class Stmt implements EquivTo, Acceptor, Copyable {
 
-  /** List of Units pointing to this Unit. */
-  @Nullable private List<Stmt> stmtsPointingToThis = null;
+  /** List of Units pointing to this Stmt. */
+  @Nonnull private List<Stmt> stmtsPointingToThis = new ArrayList<>();
 
   /**
    * Returns a list of Values used in this Unit. Note that they are returned in usual evaluation
    * order.
    */
+  @Nonnull
   public List<Value> getUses() {
     return Collections.emptyList();
   }
 
   /** Returns a list of Values defined in this Unit. */
+  @Nonnull
   public List<Value> getDefs() {
     return Collections.emptyList();
   }
 
   /** Returns a list of Units defined in this Unit; typically branch targets. */
+  @Nonnull
   public List<Stmt> getStmts() {
     return Collections.emptyList();
   }
 
   /** Returns a list of units pointing to this Unit. */
+  @Nonnull
   public List<Stmt> getStmtsPointingToThis() {
-    if (stmtsPointingToThis == null) {
-      return Collections.emptyList();
-    }
     return Collections.unmodifiableList(stmtsPointingToThis);
   }
 
   @Deprecated
   private void addStmtPointingToThis(Stmt stmt) {
-    if (stmtsPointingToThis == null) {
-      stmtsPointingToThis = new ArrayList<>();
-    }
     stmtsPointingToThis.add(stmt);
   }
 
   @Deprecated
   private void removeStmtPointingToThis(Stmt stmt) {
-    if (stmtsPointingToThis != null) {
-      stmtsPointingToThis.remove(stmt);
-    }
+    stmtsPointingToThis.remove(stmt);
   }
 
   /** Returns a list of Values, either used or defined or both in this Unit. */
+  @Nonnull
   public List<Value> getUsesAndDefs() {
     List<Value> uses = getUses();
     List<Value> defs = getDefs();
@@ -76,8 +73,8 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
   }
 
   /**
-   * Returns true if execution after this statement may continue at the following statement.
-   * GotoStmt will return false but IfStmt will return true.
+   * Returns true if execution after this statement may continue at the following statement. (e.g.
+   * GotoStmt will return false and IfStmt will return true).
    */
   public abstract boolean fallsThrough();
 
@@ -126,14 +123,14 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void addStmtPointingToThis(Stmt stmt, Stmt newStmt) {
-      stmt.addStmtPointingToThis(newStmt);
+    public static void addStmtPointingToThis(Stmt targetStmt, Stmt fromStmt) {
+      targetStmt.addStmtPointingToThis(fromStmt);
     }
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void removeStmtPointingToThis(Stmt stmt, Stmt removedStmt) {
-      stmt.removeStmtPointingToThis(removedStmt);
+    public static void removeStmtPointingToThis(Stmt targetStmt, Stmt fromStmt) {
+      targetStmt.removeStmtPointingToThis(fromStmt);
     }
 
     private $Accessor() {}

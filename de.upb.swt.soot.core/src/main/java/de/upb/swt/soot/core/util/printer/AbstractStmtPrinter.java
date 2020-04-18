@@ -22,12 +22,8 @@
 package de.upb.swt.soot.core.util.printer;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
-import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.SootField;
-import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.ClassType;
@@ -40,7 +36,6 @@ import javax.annotation.Nonnull;
 public abstract class AbstractStmtPrinter implements StmtPrinter {
 
   protected boolean startOfLine = true;
-
   protected final char indentChar = '\u0020';
   protected final int indentStep = 4;
   protected int indent = 0;
@@ -95,14 +90,6 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   public void endStmt(Stmt u) {}
 
   @Override
-  public void startValueBox(ValueBox vb) {
-    handleIndent();
-  }
-
-  @Override
-  public void endValueBox(ValueBox vb) {}
-
-  @Override
   public void noIndent() {
     startOfLine = false;
   }
@@ -121,9 +108,6 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   public void decIndent() {
     indent -= indentStep;
   }
-
-  @Override
-  public abstract void literal(String s);
 
   public void modifier(String str) {
     handleIndent();
@@ -149,18 +133,6 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
     }
     output.append(type);
   }
-
-  @Override
-  public abstract void method(SootMethod m);
-
-  @Override
-  public abstract void field(SootField f);
-
-  @Override
-  public abstract void identityRef(IdentityRef r);
-
-  @Override
-  public abstract void stmtRef(Stmt u, boolean branchTarget);
 
   @Override
   public void newline() {

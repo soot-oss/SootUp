@@ -39,8 +39,8 @@ import javax.annotation.Nonnull;
 /** Unconditionally jumps to the target */
 public final class JGotoStmt extends AbstractStmt implements Copyable {
 
-  private final Stmt target;
-  private final List<Stmt> targets;
+  @Nonnull private Stmt target;
+  @Nonnull private final List<Stmt> targets;
 
   public JGotoStmt(Stmt target, StmtPositionInfo positionInfo) {
     super(positionInfo);
@@ -71,18 +71,22 @@ public final class JGotoStmt extends AbstractStmt implements Copyable {
 
   /** Violates immutability. Only use this for legacy code. */
   @Deprecated
-  private void setTarget(Stmt newTarget) {
-    StmtHandler stmtHandler = new StmtHandler(target);
-    StmtHandler.$Accessor.setStmt(stmtHandler, target);
+  private void setTarget(@Nonnull Stmt newTarget) {
+    if (target != null) {
+      Stmt.$Accessor.removeStmtPointingToThis(target, this);
+    }
+    target = newTarget;
+    Stmt.$Accessor.addStmtPointingToThis(newTarget, this);
   }
 
   @Override
+  @Nonnull
   public List<Stmt> getStmts() {
     return targets;
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseGotoStmt(this);
   }
 
@@ -107,12 +111,12 @@ public final class JGotoStmt extends AbstractStmt implements Copyable {
   }
 
   @Nonnull
-  public JGotoStmt withTarget(Stmt target) {
+  public JGotoStmt withTarget(@Nonnull Stmt target) {
     return new JGotoStmt(target, getPositionInfo());
   }
 
   @Nonnull
-  public JGotoStmt withPositionInfo(StmtPositionInfo positionInfo) {
+  public JGotoStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JGotoStmt(getTarget(), positionInfo);
   }
 
@@ -124,7 +128,7 @@ public final class JGotoStmt extends AbstractStmt implements Copyable {
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void setTarget(JGotoStmt stmt, Stmt target) {
+    public static void setTarget(@Nonnull JGotoStmt stmt, @Nonnull Stmt target) {
       stmt.setTarget(target);
     }
 

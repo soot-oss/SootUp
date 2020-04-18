@@ -867,7 +867,7 @@ public class InstructionConverter {
     } else {
       throw new RuntimeException("Unsupported conditional operator: " + op);
     }
-    JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
+    Stmt target = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
 
     JIfStmt ifStmt = Jimple.newIfStmt(condition, target, posInfo);
     // target equals -1 refers to the end of the method
@@ -1083,7 +1083,7 @@ public class InstructionConverter {
   }
 
   private Stmt convertGoToInstruction(DebuggingInformation debugInfo, SSAGotoInstruction gotoInst) {
-    JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
+    Stmt target = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     JGotoStmt gotoStmt =
         Jimple.newGotoStmt(
             target,
