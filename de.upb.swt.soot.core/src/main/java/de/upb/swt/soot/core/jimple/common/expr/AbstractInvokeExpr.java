@@ -30,38 +30,42 @@ import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractInvokeExpr implements Expr {
 
-  private final MethodSignature methodSignature;
-  private final Value[] args;
+  @Nonnull private final MethodSignature methodSignature;
+  @Nonnull private final List<Immediate> args;
 
-  protected AbstractInvokeExpr(MethodSignature method, Immediate[] args) {
+  protected AbstractInvokeExpr(@Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
     this.methodSignature = method;
-    this.args = args.length == 0 ? null : (Value[]) args;
+    for (Immediate arg : args) {
+      if (arg == null) {
+        throw new IllegalArgumentException("arg may not be null");
+      }
+    }
+    this.args = ImmutableUtils.immutableListOf(args);
   }
 
   public MethodSignature getMethodSignature() {
     return this.methodSignature;
   }
 
-  public Value getArg(int index) {
-    return args[index];
+  public Immediate getArg(int index) {
+    return args.get(index);
   }
 
   /** Returns a list of arguments. */
-  public List<Value> getArgs() {
-
-    return args != null ? Arrays.asList(args) : Collections.emptyList();
+  public List<Immediate> getArgs() {
+    return args;
   }
 
   public int getArgCount() {
-    return args == null ? 0 : args.length;
+    return args.size();
   }
 
   @Override
@@ -71,40 +75,32 @@ public abstract class AbstractInvokeExpr implements Expr {
 
   @Override
   public List<Value> getUses() {
-    if (args == null) {
-      return Collections.emptyList();
-    }
-    List<Value> list = new ArrayList<>();
-    Collections.addAll(list, args);
-    for (Value arg : args) {
+    List<Value> list = new ArrayList<>(args.size());
+    list.addAll(args);
+    for (Immediate arg : args) {
       list.addAll(arg.getUses());
     }
     return list;
   }
 
-  protected void argsToString(StringBuilder builder) {
-    if (args != null) {
-      final int len = args.length;
-      if (0 < len) {
-        builder.append(args[0].toString());
-        for (int i = 1; i < len; i++) {
-          builder.append(", ");
-          builder.append(args[i].toString());
-        }
+  protected void argsToString(@Nonnull StringBuilder builder) {
+    final int len = args.size();
+    if (0 < len) {
+      builder.append(args.get(0).toString());
+      for (int i = 1; i < len; i++) {
+        builder.append(", ");
+        builder.append(args.get(i).toString());
       }
     }
   }
 
-  /** not fixed */
-  protected void argsToPrinter(StmtPrinter up) {
-    if (args != null) {
-      final int len = args.length;
-      if (0 < len) {
-        args[0].toString(up);
-        for (int i = 1; i < len; i++) {
-          up.literal(", ");
-          args[i].toString(up);
-        }
+  protected void argsToPrinter(@Nonnull StmtPrinter up) {
+    final int len = args.size();
+    if (0 < len) {
+      args.get(0).toString(up);
+      for (int i = 1; i < len; i++) {
+        up.literal(", ");
+        args.get(i).toString(up);
       }
     }
   }

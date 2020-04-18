@@ -76,9 +76,7 @@ public abstract class StmtBox {
   public abstract boolean isBranchTarget();
 
   public void toString(@Nonnull StmtPrinter up) {
-    up.startStmtBox(this);
     up.stmtRef(stmt, isBranchTarget());
-    up.endStmtBox(this);
   }
 
   /** This class is for internal use only. It will be removed in the future. */

@@ -34,7 +34,7 @@ import java.util.List;
 /** Partial implementation of trap (exception catcher), used within Body classes. */
 public class AbstractTrap implements Trap {
   /** The exception being caught. */
-  private transient ClassType exception;
+  private final transient ClassType exception;
 
   /** The first unit being trapped. */
   private final Stmt beginStmt;

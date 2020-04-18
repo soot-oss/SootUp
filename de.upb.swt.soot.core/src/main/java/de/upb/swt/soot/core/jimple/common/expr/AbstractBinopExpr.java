@@ -39,8 +39,8 @@ public abstract class AbstractBinopExpr implements Expr {
   private final Value op2;
 
   AbstractBinopExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
-    this.op1 = (Value) op1;
-    this.op2 = (Value) op2;
+    this.op1 = op1;
+    this.op2 = op2;
   }
 
   public Value getOp1() {

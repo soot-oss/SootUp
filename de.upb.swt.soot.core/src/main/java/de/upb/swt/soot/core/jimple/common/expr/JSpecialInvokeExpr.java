@@ -39,9 +39,8 @@ import javax.annotation.Nonnull;
 /** An expression that invokes a special method (e.g. private methods). */
 public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
-  public JSpecialInvokeExpr(
-      @Nonnull Local base, MethodSignature method, List<? extends Immediate> args) {
-    super(base, method, (Immediate[]) ValueUtils.toValueArray(args));
+  public JSpecialInvokeExpr(@Nonnull Local base, MethodSignature method, List<Immediate> args) {
+    super(base, method, args);
   }
 
   @Override
@@ -80,18 +79,16 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr impleme
 
   @Nonnull
   public JSpecialInvokeExpr withBase(Local base) {
-    return new JSpecialInvokeExpr(
-        base, getMethodSignature(), (List<? extends Immediate>) getArgs());
+    return new JSpecialInvokeExpr(base, getMethodSignature(), getArgs());
   }
 
   @Nonnull
   public JSpecialInvokeExpr withMethodSignature(MethodSignature methodSignature) {
-    return new JSpecialInvokeExpr(
-        (Local) getBase(), methodSignature, (List<? extends Immediate>) getArgs());
+    return new JSpecialInvokeExpr((Local) getBase(), methodSignature, getArgs());
   }
 
   @Nonnull
-  public JSpecialInvokeExpr withArgs(List<? extends Immediate> args) {
+  public JSpecialInvokeExpr withArgs(List<Immediate> args) {
     return new JSpecialInvokeExpr((Local) getBase(), getMethodSignature(), args);
   }
 }

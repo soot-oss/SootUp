@@ -39,7 +39,7 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
 
   private final Value base;
 
-  AbstractInstanceInvokeExpr(@Nonnull Local base, MethodSignature methodSig, Immediate[] args) {
+  AbstractInstanceInvokeExpr(@Nonnull Local base, MethodSignature methodSig, List<Immediate> args) {
     super(methodSig, args);
     this.base = base;
   }
@@ -49,10 +49,10 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  public List<Value> getUses() {
+  public java.util.List<Value> getUses() {
     List<Value> list = new ArrayList<>();
 
-    List<Value> args = getArgs();
+    List<? extends Value> args = getArgs();
     if (args != null) {
       list.addAll(args);
       for (Value arg : args) {

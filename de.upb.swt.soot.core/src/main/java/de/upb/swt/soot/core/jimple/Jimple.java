@@ -359,7 +359,7 @@ public abstract class Jimple {
 
   /** Constructs a NewStaticInvokeExpr(ArrayType, List of Immediate) grammar chunk. */
   public static JStaticInvokeExpr newStaticInvokeExpr(
-      MethodSignature method, List<? extends Immediate> args) {
+      MethodSignature method, List<Immediate> args) {
     return new JStaticInvokeExpr(method, args);
   }
 
@@ -380,7 +380,7 @@ public abstract class Jimple {
    * chunk.
    */
   public static JSpecialInvokeExpr newSpecialInvokeExpr(
-      Local base, MethodSignature method, List<? extends Immediate> args) {
+      Local base, MethodSignature method, List<Immediate> args) {
     return new JSpecialInvokeExpr(base, method, args);
   }
 
@@ -408,9 +408,9 @@ public abstract class Jimple {
    */
   public static JDynamicInvokeExpr newDynamicInvokeExpr(
       MethodSignature bootstrapMethodRef,
-      List<? extends Immediate> bootstrapArgs,
+      List<Immediate> bootstrapArgs,
       MethodSignature methodRef,
-      List<? extends Immediate> args) {
+      List<Immediate> args) {
     return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, args);
   }
 
@@ -420,10 +420,10 @@ public abstract class Jimple {
    */
   public static JDynamicInvokeExpr newDynamicInvokeExpr(
       MethodSignature bootstrapMethodRef,
-      List<? extends Immediate> bootstrapArgs,
+      List<Immediate> bootstrapArgs,
       MethodSignature methodRef,
       int tag,
-      List<? extends Immediate> args) {
+      List<Immediate> args) {
     return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, tag, args);
   }
 
@@ -432,7 +432,7 @@ public abstract class Jimple {
    * chunk.
    */
   public static JVirtualInvokeExpr newVirtualInvokeExpr(
-      Local base, MethodSignature method, List<? extends Immediate> args) {
+      Local base, MethodSignature method, List<Immediate> args) {
     return new JVirtualInvokeExpr(base, method, args);
   }
 
@@ -459,7 +459,7 @@ public abstract class Jimple {
    * chunk.
    */
   public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
-      Local base, MethodSignature method, List<? extends Immediate> args) {
+      Local base, MethodSignature method, List<Immediate> args) {
     return new JInterfaceInvokeExpr(base, method, args);
   }
 
@@ -636,8 +636,7 @@ public abstract class Jimple {
     return new JNewExpr(type);
   }
 
-  public static JNewMultiArrayExpr newNewMultiArrayExpr(
-      ArrayType type, List<? extends Immediate> sizes) {
+  public static JNewMultiArrayExpr newNewMultiArrayExpr(ArrayType type, List<Immediate> sizes) {
     return new JNewMultiArrayExpr(type, sizes);
   }
 

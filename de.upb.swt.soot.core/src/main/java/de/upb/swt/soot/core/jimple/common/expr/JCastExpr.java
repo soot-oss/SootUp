@@ -44,7 +44,7 @@ public final class JCastExpr implements Expr, Copyable {
   private final Type type;
 
   public JCastExpr(@Nonnull Immediate op, Type type) {
-    this.op = (Value) op;
+    this.op = op;
     this.type = type;
   }
 

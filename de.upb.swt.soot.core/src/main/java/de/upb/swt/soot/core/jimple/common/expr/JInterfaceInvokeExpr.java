@@ -40,9 +40,8 @@ import javax.annotation.Nonnull;
 public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
   /** methodArgs to an array args. */
-  public JInterfaceInvokeExpr(
-      @Nonnull Local base, MethodSignature method, List<? extends Immediate> args) {
-    super(base, method, (Immediate[]) ValueUtils.toValueArray(args));
+  public JInterfaceInvokeExpr(@Nonnull Local base, MethodSignature method, List<Immediate> args) {
+    super(base, method, args);
 
     // FIXME: [JMP] Move this into view or somewhere, where `SootClass` and its context are
     // available
@@ -97,18 +96,16 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
 
   @Nonnull
   public JInterfaceInvokeExpr withBase(Local base) {
-    return new JInterfaceInvokeExpr(
-        base, getMethodSignature(), (List<? extends Immediate>) getArgs());
+    return new JInterfaceInvokeExpr(base, getMethodSignature(), getArgs());
   }
 
   @Nonnull
   public JInterfaceInvokeExpr withMethodSignature(MethodSignature method) {
-    return new JInterfaceInvokeExpr(
-        (Local) getBase(), method, (List<? extends Immediate>) getArgs());
+    return new JInterfaceInvokeExpr((Local) getBase(), method, getArgs());
   }
 
   @Nonnull
-  public JInterfaceInvokeExpr withArgs(List<? extends Immediate> args) {
+  public JInterfaceInvokeExpr withArgs(List<Immediate> args) {
     return new JInterfaceInvokeExpr((Local) getBase(), getMethodSignature(), args);
   }
 }

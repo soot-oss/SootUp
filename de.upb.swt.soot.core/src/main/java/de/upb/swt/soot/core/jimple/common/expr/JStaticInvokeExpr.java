@@ -41,8 +41,8 @@ import javax.annotation.Nonnull;
 public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copyable {
 
   /** Stores the values to the args array. */
-  public JStaticInvokeExpr(MethodSignature method, List<? extends Immediate> args) {
-    super(method, (Immediate[]) ValueUtils.toValueArray(args));
+  public JStaticInvokeExpr(MethodSignature method, List<Immediate> args) {
+    super(method, args);
   }
 
   @Override
@@ -83,11 +83,11 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copya
 
   @Nonnull
   public JStaticInvokeExpr withMethodSignature(MethodSignature methodSignature) {
-    return new JStaticInvokeExpr(methodSignature, (List<? extends Immediate>) getArgs());
+    return new JStaticInvokeExpr(methodSignature, getArgs());
   }
 
   @Nonnull
-  public JStaticInvokeExpr withArgs(List<? extends Immediate> args) {
+  public JStaticInvokeExpr withArgs(List<Immediate> args) {
     return new JStaticInvokeExpr(getMethodSignature(), args);
   }
 }

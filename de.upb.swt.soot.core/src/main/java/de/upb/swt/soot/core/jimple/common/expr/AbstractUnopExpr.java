@@ -37,7 +37,7 @@ public abstract class AbstractUnopExpr implements Expr {
 
   AbstractUnopExpr(@Nonnull Immediate op) {
 
-    this.op = (Value) op;
+    this.op = op;
   }
 
   public Value getOp() {

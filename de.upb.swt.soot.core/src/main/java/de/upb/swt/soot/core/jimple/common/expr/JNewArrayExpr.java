@@ -50,7 +50,7 @@ public final class JNewArrayExpr implements Expr, Copyable {
   public JNewArrayExpr(
       Type baseType, @Nonnull Immediate size, IdentifierFactory identifierFactory) {
     this.baseType = baseType;
-    this.size = (Value) size;
+    this.size = size;
     this.identifierFactory = identifierFactory;
   }
 
@@ -104,7 +104,11 @@ public final class JNewArrayExpr implements Expr, Copyable {
     return size;
   }
 
-  /** Returns a list of type Value, contains a list of values with size */
+  /**
+   * Returns a list of type Value, contains a list of values with size
+   *
+   * @return
+   */
   @Override
   public final List<Value> getUses() {
     List<Value> uses = new ArrayList<>(size.getUses());

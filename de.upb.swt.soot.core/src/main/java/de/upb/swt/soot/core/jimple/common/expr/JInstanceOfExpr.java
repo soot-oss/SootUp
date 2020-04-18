@@ -47,7 +47,7 @@ public final class JInstanceOfExpr implements Expr, Copyable {
 
   public JInstanceOfExpr(@Nonnull Immediate op, Type checkType) {
 
-    this.op = (Value) op;
+    this.op = op;
     this.checkType = checkType;
   }
 
