@@ -20,17 +20,18 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
         "assertStatement", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  // TODO: change comments like comments
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "l0 := @this: AssertStatement",
             "$stack1 = <AssertStatement: boolean $assertionsDisabled>",
-            "if $stack1 != 0 goto label1",
-            "if \"\" != null goto label1",
+            "if $stack1 != 0 goto label1", // "if $stack1 != 0 goto nop"
+            "if \"\" != null goto label1", // "if \"\" != null goto nop"
             "$stack2 = new java.lang.AssertionError",
             "specialinvoke $stack2.<java.lang.AssertionError: void <init>()>()",
             "throw $stack2",
-            "label1:",
+            "label1:", // should be deleted
             "return")
         .collect(Collectors.toList());
   }
