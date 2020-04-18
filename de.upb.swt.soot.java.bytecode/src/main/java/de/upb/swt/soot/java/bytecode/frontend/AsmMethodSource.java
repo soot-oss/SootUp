@@ -2066,7 +2066,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         Collection<Stmt> boxes = labels.get(ln);
         if (boxes != null) {
           final Stmt targetStmt =
-              u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u;
+              u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u;
           for (Stmt box : boxes) {
             Stmt.$Accessor.addStmtPointingToThis(box, targetStmt);
           }
