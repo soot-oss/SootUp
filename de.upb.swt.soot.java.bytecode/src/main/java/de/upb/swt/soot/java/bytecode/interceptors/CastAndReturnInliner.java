@@ -1,5 +1,6 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
@@ -72,7 +73,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
         JReturnStmt retStmt = (JReturnStmt) nextStmt;
         if (retStmt.getOp() == assign.getLeftOp()) {
           // We need to replace the GOTO with the return
-          JReturnStmt newStmt = retStmt.withOp(ce.getOp());
+          JReturnStmt newStmt = retStmt.withReturnValue((Immediate) ce.getOp());
 
           // Replaces the GOTO with the new return stmt
           bodyStmts.set(i, newStmt);

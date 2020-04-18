@@ -2,11 +2,10 @@ package de.upb.swt.soot.core.jimple.basic;
 
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
-
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /* Soot - a J*va Optimization Framework
  * Copyright (C) 1997-1999 Raja Vallee-Rai
@@ -51,7 +50,11 @@ public class AbstractTrap implements Trap {
   private final List<Stmt> stmts;
 
   /** Creates an AbstractTrap with the given exception, handler, begin and end stmts. */
-  AbstractTrap(@Nonnull ClassType exception, @Nonnull Stmt beginStmt, @Nonnull Stmt endStmt, @Nonnull Stmt handlerStmt) {
+  AbstractTrap(
+      @Nonnull ClassType exception,
+      @Nonnull Stmt beginStmt,
+      @Nonnull Stmt endStmt,
+      @Nonnull Stmt handlerStmt) {
     this.exception = exception;
     this.beginStmt = beginStmt;
     this.endStmt = endStmt;

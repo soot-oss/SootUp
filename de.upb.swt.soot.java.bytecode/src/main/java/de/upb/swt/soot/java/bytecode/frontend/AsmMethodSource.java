@@ -2021,7 +2021,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   private void emitStmts(@Nonnull List<Stmt> bodyStmts, @Nonnull Stmt u) {
     if (u instanceof StmtContainer) {
-      for (Stmt uu : ((StmtContainer) u).units) {
+      for (Stmt uu : ((StmtContainer) u).stmts) {
         emitStmts(bodyStmts, uu);
       }
     } else {
@@ -2120,7 +2120,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   }
 
   private @Nullable JIdentityStmt getIdentityRefFromContrainer(@Nonnull StmtContainer u) {
-    for (Stmt uu : u.units) {
+    for (Stmt uu : u.stmts) {
       if (uu instanceof JIdentityStmt) {
         return (JIdentityStmt) uu;
       } else if (uu instanceof StmtContainer) {

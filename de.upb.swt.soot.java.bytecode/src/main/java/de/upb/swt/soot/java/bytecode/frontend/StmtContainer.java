@@ -11,28 +11,28 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
- * A psuedo unit containing different units.
+ * A psuedo stmt containing different stmts.
  *
  * @author Aaloan Miftah
  */
 class StmtContainer extends Stmt {
 
-  @Nonnull final Stmt[] units;
+  @Nonnull final Stmt[] stmts;
 
-  StmtContainer(@Nonnull Stmt... units) {
-    this.units = units;
+  StmtContainer(@Nonnull Stmt... stmts) {
+    this.stmts = stmts;
   }
 
   /**
-   * Searches the depth of the StmtContainer until the actual first Unit represented is found.
+   * Searches the depth of the StmtContainer until the actual first Stmt represented is found.
    *
    * @return the first Stmt of the container
    */
   @Nonnull
   Stmt getFirstUnit() {
-    Stmt ret = units[0];
+    Stmt ret = stmts[0];
     while (ret instanceof StmtContainer) {
-      ret = ((StmtContainer) ret).units[0];
+      ret = ((StmtContainer) ret).stmts[0];
     }
     return ret;
   }
@@ -73,7 +73,7 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     throw new UnsupportedOperationException();
   }
 
@@ -113,12 +113,12 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public void accept(Visitor v) {
+  public void accept(@Nonnull Visitor v) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     throw new UnsupportedOperationException();
   }
 
