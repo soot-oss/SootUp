@@ -591,7 +591,7 @@ public abstract class Jimple {
   }
 
   /** Constructs a InstanceFieldRef(Local, FieldSignature) grammar chunk. */
-  public static JInstanceFieldRef newInstanceFieldRef(Value base, FieldSignature f) {
+  public static JInstanceFieldRef newInstanceFieldRef(Local base, FieldSignature f) {
     return new JInstanceFieldRef(base, f);
   }
 

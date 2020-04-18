@@ -500,7 +500,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       } else {
         Operand base = popLocal();
         ref = JavaIdentifierFactory.getInstance().getFieldSignature(insn.name, declClass, type);
-        JInstanceFieldRef ifr = Jimple.newInstanceFieldRef(base.stackOrImmediate(), ref);
+        JInstanceFieldRef ifr = Jimple.newInstanceFieldRef((Local) base.stackOrImmediate(), ref);
         val = ifr;
         base.addBox(ifr.getBase());
         frame.setIn(base);
@@ -539,7 +539,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       } else {
         Operand base = popLocal();
         ref = JavaIdentifierFactory.getInstance().getFieldSignature(insn.name, declClass, type);
-        JInstanceFieldRef ifr = Jimple.newInstanceFieldRef(base.stackOrImmediate(), ref);
+        JInstanceFieldRef ifr = Jimple.newInstanceFieldRef((Local) base.stackOrImmediate(), ref);
         val = ifr;
         base.addBox(ifr.getBase());
         frame.setIn(rvalue, base);
@@ -1269,7 +1269,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       return Jimple.newStaticFieldRef(fieldSignature);
     } else {
       Operand base = popLocal();
-      return Jimple.newInstanceFieldRef(base.stackOrImmediate(), fieldSignature);
+      return Jimple.newInstanceFieldRef((Local) base.stackOrImmediate(), fieldSignature);
     }
   }
 
