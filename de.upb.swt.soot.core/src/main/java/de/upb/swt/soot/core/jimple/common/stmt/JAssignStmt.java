@@ -36,7 +36,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   public JAssignStmt(
       @Nonnull Value variable, @Nonnull Value rValue, @Nonnull StmtPositionInfo positionInfo) {
     super(variable, rValue, positionInfo);
-    if (!canBeLinkedVariable(variable, rValue) || !canBeLinkedRValue(variable, rValue)) {
+    if (!(canBeLinkedVariable(variable, rValue) && canBeLinkedRValue(variable, rValue))) {
       throw new RuntimeException(
           "Illegal assignment statement.  Make sure that either left side or right hand side has a local or constant.");
     }
@@ -155,8 +155,6 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * How can rvalue be an instance of StmtOwner(StmtBoxOwner), or StmtOwner implements Value????
    *
    */
-  // TODO:  How can rvalue be an instance of StmtOwner(StmtBoxOwner), or StmtOwner implements
-  // Value????
   @Override
   public List<Stmt> getStmts() {
     // handle possible PhiExpr's

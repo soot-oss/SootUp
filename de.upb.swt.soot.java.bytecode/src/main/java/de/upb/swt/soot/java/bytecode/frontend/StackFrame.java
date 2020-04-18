@@ -135,7 +135,10 @@ final class StackFrame {
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
             Value lvb = as.getLeftOp();
             assert lvb == prevOp.stack : "Invalid stack local!";
-            // FIXME: [ms] box removal leftover: ValueBox.$Accessor.setValue(lvb, stack);
+            // FIXME: [ms] box removal leftover:
+            // ValueBox.$Accessor.setValue(lvb, stack);
+            AbstractDefinitionStmt.$Accessor.setLeftOp(as, stack);
+
             prevOp.stack = stack;
           }
           prevOp.updateBoxes();
@@ -154,13 +157,18 @@ final class StackFrame {
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
             Value lvb = as.getLeftOp();
             assert lvb == newOp.stack : "Invalid stack local!";
-            // FIXME: [ms] box removal leftover: ValueBox.$Accessor.setValue(lvb, stack);
+            // FIXME: [ms] box removal leftover:
+            // ValueBox.$Accessor.setValue(lvb, stack);
+            AbstractDefinitionStmt.$Accessor.setLeftOp(as, stack);
+
             newOp.stack = stack;
           }
           newOp.updateBoxes();
         }
         if (box != null) {
-          // FIXME: [ms] box removal leftover: ValueBox.$Accessor.setValue(box, stack);
+          // FIXME: [ms] box removal leftover:
+          // ValueBox.$Accessor.setValue(box, stack);
+          boxes[i] = stack;
         }
         inStackLocals[i] = stack;
       }
