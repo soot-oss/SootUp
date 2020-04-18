@@ -5,10 +5,10 @@ import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.jimple.common.stmt.StmtHandler;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
+import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,48 +23,40 @@ import javax.annotation.Nonnull;
 */
 public final class JSwitchStmt extends AbstractStmt implements Copyable {
 
-  private final Stmt defaultTarget;
-  private final Value key;
-  private final List<Stmt> stmts;
-  private final Stmt[] targets;
-  private List<IntConstant> values;
+  @Nonnull private final Immediate key;
+  @Nonnull private List<IntConstant> values;
+  @Nonnull private List<Stmt> targets;
+  @Nonnull private Stmt defaultTarget;
   private final boolean isTableSwitch;
+
+  // ** concatenation of targets + defaultTarget */
+  @Nonnull private final List<Stmt> stmts;
 
   private JSwitchStmt(
       boolean isTableSwitch,
-      StmtPositionInfo positionInfo,
-      Value key,
-      Stmt defaultTarget,
-      Stmt... targets) {
+      @Nonnull StmtPositionInfo positionInfo,
+      @Nonnull Immediate key,
+      @Nonnull Stmt defaultTarget,
+      @Nonnull List<Stmt> targets) {
     super(positionInfo);
     this.isTableSwitch = isTableSwitch;
-    if (key == null) {
-      throw new IllegalArgumentException("value may not be null");
-    }
-    if (key instanceof Immediate) {
-      this.key = key;
-    } else {
-      throw new RuntimeException(
-          "JSwitchStmt " + this + " cannot contain value: " + key + " (" + key.getClass() + ")");
-    }
-
+    this.key = key;
     this.defaultTarget = defaultTarget;
-    this.targets = targets;
+    this.targets = ImmutableUtils.immutableListOf(targets);
 
-    List<Stmt> list = new ArrayList<>();
-    stmts = Collections.unmodifiableList(list);
-
-    Collections.addAll(list, targets);
+    List<Stmt> list = new ArrayList<>(targets.size() + 1);
+    list.addAll(targets);
     list.add(defaultTarget);
+    stmts = Collections.unmodifiableList(list);
   }
 
-  private JSwitchStmt(
-      Value key,
+  public JSwitchStmt(
+      @Nonnull Immediate key,
       int lowIndex,
       int highIndex,
-      Stmt[] targets,
-      Stmt defaultTarget,
-      StmtPositionInfo positionInfo) {
+      @Nonnull List<Stmt> targets,
+      @Nonnull Stmt defaultTarget,
+      @Nonnull StmtPositionInfo positionInfo) {
     this(true, positionInfo, key, defaultTarget, targets);
 
     if (lowIndex > highIndex) {
@@ -87,32 +79,13 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
     }
   }
 
-  public JSwitchStmt(
-      Value key,
-      int lowIndex,
-      int highIndex,
-      List<? extends Stmt> targets,
-      Stmt defaultTarget,
-      StmtPositionInfo positionInfo) {
-    this(key, lowIndex, highIndex, getTargetsArray(targets), defaultTarget, positionInfo);
-  }
-
   /** Constructs a new JSwitchStmt. lookupValues should be a list of IntConst s. */
   public JSwitchStmt(
-      Value key,
-      List<IntConstant> lookupValues,
-      List<? extends Stmt> targets,
-      Stmt defaultTarget,
-      StmtPositionInfo positionInfo) {
-    this(key, lookupValues, getTargetsArray(targets), defaultTarget, positionInfo);
-  }
-
-  private JSwitchStmt(
-      Value key,
-      List<IntConstant> lookupValues,
-      Stmt[] targets,
-      Stmt defaultTarget,
-      StmtPositionInfo positionInfo) {
+      @Nonnull Immediate key,
+      @Nonnull List<IntConstant> lookupValues,
+      @Nonnull List<Stmt> targets,
+      @Nonnull Stmt defaultTarget,
+      @Nonnull StmtPositionInfo positionInfo) {
     this(false, positionInfo, key, defaultTarget, targets);
     values = Collections.unmodifiableList(new ArrayList<>(lookupValues));
   }
@@ -121,25 +94,20 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
     return isTableSwitch;
   }
 
-  private static Stmt[] getTargetsArray(List<? extends Stmt> targets) {
-    Stmt[] targetsArray = new Stmt[targets.size()];
-    for (int i = 0; i < targetsArray.length; i++) {
-      targetsArray[i] = targets.get(i);
-    }
-    return targetsArray;
-  }
-
   public final Stmt getDefaultTarget() {
     return defaultTarget;
   }
 
   @Deprecated
   private void setDefaultTarget(Stmt newDefaultTarget) {
-    StmtHandler stmtHandler = new StmtHandler(defaultTarget);
-    StmtHandler.$Accessor.setStmt(stmtHandler, newDefaultTarget);
+    if (defaultTarget != null) {
+      Stmt.$Accessor.removeStmtPointingToThis(defaultTarget, this);
+    }
+    defaultTarget = newDefaultTarget;
+    Stmt.$Accessor.addStmtPointingToThis(newDefaultTarget, this);
   }
 
-  public final Value getKey() {
+  public final Immediate getKey() {
     return key;
   }
 
@@ -151,42 +119,38 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   }
 
   public final int getTargetCount() {
-    return targets.length;
+    return targets.size();
   }
 
   // This method is necessary to deal with constructor-must-be-first-ism.
-
   public final Stmt getTarget(int index) {
-    return targets[index];
+    return targets.get(index);
   }
 
   /** Returns a list targets of type Stmt. */
   public final List<Stmt> getTargets() {
-    List<Stmt> targets = new ArrayList<>();
-
-    for (Stmt element : targets) {
-      targets.add(element);
-    }
-
-    return targets;
+    return ImmutableUtils.immutableListOf(targets);
   }
 
   /**
    * Violates immutability. Only use in legacy code. Sets the setStmt box for targetBoxes array.
    *
-   * @param targets A list of type Stmt.
+   * @param newTargets A list of type Stmt.
    */
   @Deprecated
-  private void setTargets(List<? extends Stmt> targets) {
-
-    for (int i = 0; i < targets.size(); i++) {
-      StmtHandler stmtHandler = new StmtHandler(this.targets[i]);
-      StmtHandler.$Accessor.setStmt(stmtHandler, targets.get(i));
+  private void setTargets(List<Stmt> newTargets) {
+    // cleanup old target links
+    for (Stmt target : targets) {
+      Stmt.$Accessor.removeStmtPointingToThis(target, this);
+    }
+    targets = newTargets;
+    for (Stmt newTarget : newTargets) {
+      Stmt.$Accessor.addStmtPointingToThis(newTarget, this);
     }
   }
 
-  /* Constructors with a LookupSwitch Signature */
   @Override
+  @Nonnull
   public final List<Stmt> getStmts() {
     return stmts;
   }
@@ -214,12 +178,13 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
     return values.get(index).getValue();
   }
 
+  @Nonnull
   public List<IntConstant> getValues() {
     return Collections.unmodifiableList(values);
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseSwitchStmt(this, o);
   }
 
@@ -265,7 +230,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.SWITCH);
     up.literal("(");
     getKey().toString(up);
@@ -303,22 +268,22 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   }
 
   @Nonnull
-  public JSwitchStmt withKey(Value key) {
+  public JSwitchStmt withKey(@Nonnull Immediate key) {
     return new JSwitchStmt(key, getValues(), getTargets(), getDefaultTarget(), getPositionInfo());
   }
 
   @Nonnull
-  public JSwitchStmt withTargets(List<? extends Stmt> targets) {
+  public JSwitchStmt withTargets(@Nonnull List<Stmt> targets) {
     return new JSwitchStmt(getKey(), getValues(), targets, getDefaultTarget(), getPositionInfo());
   }
 
   @Nonnull
-  public JSwitchStmt withDefaultTarget(Stmt defaultTarget) {
+  public JSwitchStmt withDefaultTarget(@Nonnull Stmt defaultTarget) {
     return new JSwitchStmt(getKey(), getValues(), getTargets(), defaultTarget, getPositionInfo());
   }
 
   @Nonnull
-  public JSwitchStmt withPositionInfo(StmtPositionInfo positionInfo) {
+  public JSwitchStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JSwitchStmt(getKey(), getValues(), getTargets(), getDefaultTarget(), positionInfo);
   }
 
@@ -331,13 +296,13 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void setTargets(JSwitchStmt stmt, List<? extends Stmt> targets) {
+    public static void setTargets(@Nonnull JSwitchStmt stmt, @Nonnull List<Stmt> targets) {
       stmt.setTargets(targets);
     }
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void setDefaultTarget(JSwitchStmt stmt, Stmt defaultTarget) {
+    public static void setDefaultTarget(@Nonnull JSwitchStmt stmt, @Nonnull Stmt defaultTarget) {
       stmt.setDefaultTarget(defaultTarget);
     }
   }
