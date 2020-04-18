@@ -611,10 +611,6 @@ public abstract class Jimple {
     return new ImmediateBox(value);
   }
 
-  public static StmtBox newStmtBox(Stmt stmt) {
-    return new JStmtBox(stmt);
-  }
-
   public static ValueBox newLocalBox(Value local) {
     return new LocalBox(local);
   }

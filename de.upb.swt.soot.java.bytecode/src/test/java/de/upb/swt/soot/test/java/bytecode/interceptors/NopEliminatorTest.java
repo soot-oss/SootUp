@@ -103,7 +103,7 @@ public class NopEliminatorTest {
       JNopStmt nop = new JNopStmt(noPositionInfo);
       stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret, nop);
       if (withTrap) {
-        Trap trap = Jimple.newTrap(null, null, new JStmtBox(nop), null);
+        Trap trap = Jimple.newTrap(null, null, nop, null);
         traps.add(trap);
       }
     } else {

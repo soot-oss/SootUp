@@ -66,14 +66,9 @@ public abstract class StmtBox {
     return stmt;
   }
 
-  /**
-   * Returns true if the StmtBox is holding a Stmt that is the target of a branch (ie a Stmt at the
-   * beginning of a CFG block). This is the default case.
-   *
-   * <p>Returns false if the StmtBox is holding a Stmt that indicates the end of a CFG block and may
-   * require specialised processing for SSA.
-   */
-  public abstract boolean isBranchTarget();
+  public boolean isBranchTarget() {
+    return true;
+  }
 
   public void toString(@Nonnull StmtPrinter up) {
     up.stmtRef(stmt, isBranchTarget());
