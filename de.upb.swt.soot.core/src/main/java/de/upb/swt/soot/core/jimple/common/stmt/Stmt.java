@@ -15,11 +15,11 @@ import javax.annotation.Nonnull;
 
 public abstract class Stmt implements EquivTo, Acceptor, Copyable {
 
-  /** List of Units pointing to this Stmt. */
+  /** List of Stmts pointing to this Stmt. */
   @Nonnull private List<Stmt> stmtsPointingToThis = new ArrayList<>();
 
   /**
-   * Returns a list of Values used in this Unit. Note that they are returned in usual evaluation
+   * Returns a list of Values used in this Stmt. Note that they are returned in usual evaluation
    * order.
    */
   @Nonnull
@@ -27,19 +27,19 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     return Collections.emptyList();
   }
 
-  /** Returns a list of Values defined in this Unit. */
+  /** Returns a list of Values defined in this Stmt. */
   @Nonnull
   public List<Value> getDefs() {
     return Collections.emptyList();
   }
 
-  /** Returns a list of Units defined in this Unit; typically branch targets. */
+  /** Returns a list of Stmts defined in this Stmt; typically branch targets. */
   @Nonnull
   public List<Stmt> getStmts() {
     return Collections.emptyList();
   }
 
-  /** Returns a list of units pointing to this Unit. */
+  /** Returns a list of Stmts pointing to this Stmt. */
   @Nonnull
   public List<Stmt> getStmtsPointingToThis() {
     return Collections.unmodifiableList(stmtsPointingToThis);
@@ -55,7 +55,7 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     stmtsPointingToThis.remove(stmt);
   }
 
-  /** Returns a list of Values, either used or defined or both in this Unit. */
+  /** Returns a list of Values, either used or defined or both in this Stmt. */
   @Nonnull
   public List<Value> getUsesAndDefs() {
     List<Value> uses = getUses();
