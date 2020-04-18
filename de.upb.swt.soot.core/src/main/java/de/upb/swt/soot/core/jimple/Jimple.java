@@ -549,10 +549,10 @@ public abstract class Jimple {
 
   /** Constructs a TableSwitchStmt(Immediate, int, int, List of Unit, Stmt) grammar chunk. */
   public static JSwitchStmt newTableSwitchStmt(
-      Value key,
+      Immediate key,
       int lowIndex,
       int highIndex,
-      List<? extends Stmt> targets,
+      List<Stmt> targets,
       Stmt defaultTarget,
       StmtPositionInfo posInfo) {
     return new JSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
@@ -562,9 +562,9 @@ public abstract class Jimple {
    * Constructs a LookupSwitchStmt(Immediate, List of Immediate, List of Unit, Stmt) grammar chunk.
    */
   public static JSwitchStmt newLookupSwitchStmt(
-      Value key,
+      Immediate key,
       List<IntConstant> lookupValues,
-      List<? extends Stmt> targets,
+      List<Stmt> targets,
       Stmt defaultTarget,
       StmtPositionInfo posInfo) {
     return new JSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
