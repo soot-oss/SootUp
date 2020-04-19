@@ -34,20 +34,23 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractOpStmt extends Stmt {
 
-  protected final Value op;
+  protected final Immediate op;
 
   protected AbstractOpStmt(@Nonnull Immediate op, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.op = op;
   }
 
-  public final Value getOp() {
+  @Nonnull
+  public Immediate getOp() {
     return op;
   }
 
   @Override
+  @Nonnull
   public final List<Value> getUses() {
-    List<Value> list = new ArrayList<>(op.getUses());
+    final List<Value> uses = op.getUses();
+    List<Value> list = new ArrayList<>(uses.size() + 1);
     list.add(op);
     return list;
   }
