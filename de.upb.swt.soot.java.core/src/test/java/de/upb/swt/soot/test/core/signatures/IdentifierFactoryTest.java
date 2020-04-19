@@ -410,17 +410,4 @@ public class IdentifierFactoryTest {
     assertEquals(((ArrayType) classSignature2).getDimension(), 1);
     assertEquals(((ArrayType) classSignature2).getBaseType(), base);
   }
-
-  @Test(expected = NullPointerException.class)
-  public void checkNullPackage() {
-    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
-    PackageName packageName = identifierFactory.getPackageName(null);
-  }
-
-  @Test(expected = NullPointerException.class)
-  public void checkNullPackage2() {
-    JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
-    ClassType classSignature = typeFactory.getClassType("A", null);
-  }
 }

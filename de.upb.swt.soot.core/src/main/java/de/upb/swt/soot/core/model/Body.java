@@ -43,11 +43,19 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Class that models the Jimple body (code attribute) of a methodRef.
+ * Class that models the Jimple body (code attribute) of a method.
  *
  * @author Linghui Luo
  */
-public final class Body implements Copyable {
+public class Body implements Copyable {
+
+  public static final Body EMPTY_BODY =
+      new Body(
+          Collections.emptySet(),
+          Collections.emptyList(),
+          Collections.emptyList(),
+          NoPositionInformation.getInstance());
+
   /** The locals for this Body. */
   private final Set<Local> locals;
 
@@ -58,6 +66,9 @@ public final class Body implements Copyable {
   private final List<Stmt> stmts;
 
   @Nonnull private final Position position;
+
+  /** The method associated with this Body. */
+  @Nullable private volatile SootMethod method;
 
   /** An array containing some validators in order to validate the JimpleBody */
   @Nonnull
@@ -74,7 +85,7 @@ public final class Body implements Copyable {
           new CheckEscapingValidator());
 
   /**
-   * Creates an body which is not associated to any methodRef.
+   * Creates an body which is not associated to any method.
    *
    * @param locals please use {@link LocalGenerator} to generate local for a body.
    */
@@ -92,37 +103,35 @@ public final class Body implements Copyable {
     checkInit();
   }
 
-  /** The methodRef associated with this Body. */
-  @Nullable private volatile SootMethod _method;
-
-  /**
-   * Returns the methodRef associated with this Body.
-   *
-   * @return the methodRef that owns this body.
-   */
-  public SootMethod getMethod() {
-    SootMethod owner = _method;
-
-    if (owner == null) {
-      throw new IllegalStateException(
-          "The owning method of this body instance has not been not set yet.");
-    }
-
-    return owner;
+  @Nonnull
+  public static Body getNoBody() {
+    return EMPTY_BODY;
   }
 
   /**
-   * Sets the methodRef associated with this Body.
+   * Returns the method associated with this Body.
    *
-   * @param value the methodRef that owns this body.
+   * @return the method that owns this body.
    */
-  synchronized void setMethod(@Nullable SootMethod value) {
-    if (_method != null) {
+  public SootMethod getMethod() {
+    if (method == null) {
+      throw new IllegalStateException(
+          "The associated method of this body instance has not been not set yet.");
+    }
+    return method;
+  }
+
+  /**
+   * Sets the method associated with this Body.
+   *
+   * @param method that should be associated with this body.
+   */
+  synchronized void setMethod(@Nullable SootMethod method) {
+    if (this.method != null) {
       throw new IllegalStateException(
           "The declaring class of this SootMethod has already been set.");
     }
-
-    _method = value;
+    this.method = method;
   }
 
   /** Returns the number of locals declared in this body. */
@@ -184,12 +193,12 @@ public final class Body implements Copyable {
     throw new RuntimeException("couldn't find this-assignment!" + " in " + getMethod());
   }
 
-  /** Return LHS of the first identity stmt assigning from \@this. * */
+  /** Return LHS of the first identity stmt assigning from \@this. */
   public Local getThisLocal() {
     return (Local) (((JIdentityStmt) getThisStmt()).getLeftOp());
   }
 
-  /** Return LHS of the first identity stmt assigning from \@parameter i. * */
+  /** Return LHS of the first identity stmt assigning from \@parameter i. */
   public Local getParameterLocal(int i) {
     for (Stmt s : getStmts()) {
       if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
@@ -314,7 +323,7 @@ public final class Body implements Copyable {
    * Stmt that is either a target of a branch or is being used as a pointer to the end of a CFG
    * block.
    *
-   * <p>This methodRef is typically used for pointer patching, e.g. when the unit chain is cloned.
+   * <p>This method is typically used for pointer patching, e.g. when the unit chain is cloned.
    *
    * @return A collection of all the Stmts held by this body's units.
    */

@@ -1,6 +1,5 @@
 package de.upb.swt.soot.java.core;
 
-import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
@@ -177,13 +176,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
    *     the default package.
    */
   @Override
-  public PackageName getPackageName(final String packageName) {
-    Preconditions.checkNotNull(packageName);
-    PackageName packageIdentifier = packages.get(packageName);
-    if (packageIdentifier == null) {
-      packageIdentifier = new PackageName(packageName);
-      packages.put(packageName, packageIdentifier);
-    }
+  public PackageName getPackageName(@Nonnull final String packageName) {
+    PackageName packageIdentifier =
+        packages.computeIfAbsent(packageName, (name) -> new PackageName(name));
     return packageIdentifier;
   }
 

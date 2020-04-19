@@ -43,15 +43,14 @@ import javax.annotation.Nonnull;
  *
  * @author Linghui Luo
  */
-public final class Local implements Immediate, Copyable {
-  // This class is final since it implements equals and hashCode
+public class Local implements Immediate, Copyable {
 
   @Nonnull private final String name;
   @Nonnull private final Type type;
 
   /** Constructs a JimpleLocal of the given name and type. */
   public Local(@Nonnull String name, @Nonnull Type type) {
-    this.name = name.intern();
+    this.name = name;
     this.type = type;
   }
 

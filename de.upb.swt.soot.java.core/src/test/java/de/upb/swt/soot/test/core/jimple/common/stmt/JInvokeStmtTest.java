@@ -23,7 +23,6 @@
 package de.upb.swt.soot.test.core.jimple.common.stmt;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.expr.JDynamicInvokeExpr;
@@ -41,6 +40,7 @@ import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import java.net.URI;
 import java.nio.file.Path;
@@ -69,8 +69,8 @@ public class JInvokeStmtTest {
     ClassType superClassSignature = dif.getClassType("java.lang.Object");
     Set<SootField> fields = new LinkedHashSet<>();
     Set<SootMethod> methods = new LinkedHashSet<>();
-    OverridingClassSource javaClassSource =
-        new OverridingClassSource(
+    OverridingJavaClassSource javaClassSource =
+        new OverridingJavaClassSource(
             new EagerInputLocation(),
             dummyPath,
             dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"),
@@ -80,7 +80,8 @@ public class JInvokeStmtTest {
             fields,
             methods,
             NoPositionInformation.getInstance(),
-            EnumSet.of(Modifier.PUBLIC));
+            EnumSet.of(Modifier.PUBLIC),
+            Collections.emptyList());
 
     SootClass sootClass = new SootClass(javaClassSource, SourceType.Application);
 

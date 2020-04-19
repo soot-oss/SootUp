@@ -161,8 +161,8 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   public List<Stmt> getStmts() {
     // handle possible PhiExpr's
     Value rvalue = getRightOp();
-    if (rvalue instanceof StmtOwner) {
-      return ((StmtOwner) rvalue).getStmts();
+    if (rvalue instanceof Stmt || rvalue instanceof Trap) {
+      return ((Stmt) rvalue).getStmts();
     }
 
     return super.getStmts();

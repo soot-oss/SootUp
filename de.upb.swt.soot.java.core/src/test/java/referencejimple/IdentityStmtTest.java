@@ -1,7 +1,6 @@
 package referencejimple;
 
 import de.upb.swt.soot.core.frontend.MethodSource;
-import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
@@ -25,6 +24,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -75,8 +75,8 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     // atExceptionThrow();
     // atExceptionThrowAndCatch();
 
-    OverridingClassSource javaClassSource =
-        new OverridingClassSource(
+    OverridingJavaClassSource javaClassSource =
+        new OverridingJavaClassSource(
             new EagerInputLocation(),
             dummyPath,
             dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"),
@@ -86,7 +86,8 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
             fields,
             methods,
             NoPositionInformation.getInstance(),
-            EnumSet.of(Modifier.PUBLIC));
+            EnumSet.of(Modifier.PUBLIC),
+            Collections.emptyList());
 
     sootClass = new SootClass(javaClassSource, SourceType.Application);
   }

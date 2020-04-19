@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /** @author: Hasitha Rajapakse */
 
@@ -25,25 +24,19 @@ import javax.annotation.Nullable;
 public class OverridingMethodSource implements MethodSource {
 
   private final MethodSource delegate;
-
-  // Since resolveBody may return null, we cannot use `null` here to indicate that `body`
-  // is not overridden.
-  private final boolean overriddenBody;
-  @Nullable private final Body body;
+  @Nonnull private final Body body;
 
   private final MethodSignature methodSignature;
 
   public OverridingMethodSource(@Nonnull MethodSource delegate) {
     this.delegate = delegate;
-    overriddenBody = false;
     body = null;
     this.methodSignature = null;
   }
 
   private OverridingMethodSource(
-      @Nonnull MethodSource delegate, boolean overriddenBody, @Nullable Body body) {
+      @Nonnull MethodSource delegate, boolean overriddenBody, @Nonnull Body body) {
     this.delegate = delegate;
-    this.overriddenBody = overriddenBody;
     this.body = body;
     this.methodSignature = null;
   }
@@ -51,25 +44,24 @@ public class OverridingMethodSource implements MethodSource {
   /** Method source where all information already available */
   public OverridingMethodSource(MethodSignature methodSignature, Body body) {
     this.delegate = null;
-    this.overriddenBody = true;
     this.body = body;
     this.methodSignature = methodSignature;
   }
 
-  @Nullable
+  @Nonnull
   @Override
   public Body resolveBody() throws ResolveException {
-    return overriddenBody ? body : delegate.resolveBody();
+    return body != null ? body : delegate.resolveBody();
   }
 
   @Nonnull
   @Override
   public MethodSignature getSignature() {
-    return overriddenBody ? methodSignature : delegate.getSignature();
+    return methodSignature != null ? methodSignature : delegate.getSignature();
   }
 
   @Nonnull
-  public OverridingMethodSource withBody(@Nullable Body body) {
+  public OverridingMethodSource withBody(@Nonnull Body body) {
     return new OverridingMethodSource(delegate, true, body);
   }
 

@@ -1,5 +1,5 @@
 package de.upb.swt.soot.core.model;
-
+/** This class represents Position Information i.e. for IDEs to locate positions in sources. */
 public class Position {
 
   private final int firstLine;

@@ -15,10 +15,9 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 
 /*
-* Switch Statements (combining LookupSwitch/TableSwitch)
-
-* @author Markus Schmidt
-*/
+ * Switch Statements (combining LookupSwitch/TableSwitch)
+ * @author Markus Schmidt
+ */
 public class JSwitchStmt extends Stmt implements Copyable {
 
   private final Immediate key;
@@ -31,7 +30,7 @@ public class JSwitchStmt extends Stmt implements Copyable {
   @Nonnull private final List<Stmt> stmts;
 
   private JSwitchStmt(
-      @Nonnull boolean isTableSwitch,
+      boolean isTableSwitch,
       @Nonnull StmtPositionInfo positionInfo,
       @Nonnull Immediate key,
       @Nonnull Stmt defaultTarget,
@@ -50,8 +49,8 @@ public class JSwitchStmt extends Stmt implements Copyable {
 
   public JSwitchStmt(
       @Nonnull Immediate key,
-      @Nonnull int lowIndex,
-      @Nonnull int highIndex,
+      int lowIndex,
+      int highIndex,
       @Nonnull List<Stmt> targets,
       @Nonnull Stmt defaultTarget,
       @Nonnull StmtPositionInfo positionInfo) {
@@ -115,7 +114,7 @@ public class JSwitchStmt extends Stmt implements Copyable {
 
   // This method is necessary to deal with constructor-must-be-first-ism.
 
-  public Stmt getTarget(@Nonnull int index) {
+  public Stmt getTarget(int index) {
     return targets.get(index);
   }
   /** Returns a list targets of type Stmt. */
@@ -182,7 +181,7 @@ public class JSwitchStmt extends Stmt implements Copyable {
     return values.size();
   }
 
-  public int getValue(@Nonnull int index) {
+  public int getValue(int index) {
     return values.get(index).getValue();
   }
 
