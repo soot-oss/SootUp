@@ -68,11 +68,11 @@ public final class JGotoStmt extends Stmt implements Copyable {
   @Deprecated
   private void setTarget(@Nonnull Stmt target) {
     if (this.target != null) {
-      Stmt.$Accessor.removeStmtPointingToThis(this, this.target);
+      Stmt.$Accessor.removeStmtPointingToTarget(this, this.target);
     }
     this.target = target;
     targets = ImmutableUtils.immutableList(target);
-    Stmt.$Accessor.addStmtPointingToThis(this, target);
+    Stmt.$Accessor.addStmtPointingToTarget(this, target);
   }
 
   public Stmt getTarget() {

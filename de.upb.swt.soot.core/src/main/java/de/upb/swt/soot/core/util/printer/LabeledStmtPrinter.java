@@ -60,10 +60,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
         output.append(label);
       }
 
-    }
-    // TODO: [ms] still necessary? (-> shimple is not supported anymore ->no phi nodes?)
-    // refs to control flow predecessors (for Shimple)
-    else {
+    } else {
       String ref = references.get(u);
 
       if (startOfLine) {

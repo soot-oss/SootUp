@@ -130,9 +130,11 @@ public class JSwitchStmt extends Stmt implements Copyable {
    */
   @Deprecated
   private void setDefaultTarget(@Nonnull Stmt newDefaultTarget) {
-    Stmt.$Accessor.removeStmtPointingToThis(defaultTarget, this);
+    if (defaultTarget != null) {
+      Stmt.$Accessor.removeStmtPointingToTarget(this, defaultTarget);
+    }
     defaultTarget = newDefaultTarget;
-    Stmt.$Accessor.addStmtPointingToThis(newDefaultTarget, this);
+    Stmt.$Accessor.addStmtPointingToTarget(this, newDefaultTarget);
   }
 
   /**
@@ -144,11 +146,14 @@ public class JSwitchStmt extends Stmt implements Copyable {
   private void setTargets(List<Stmt> newTargets) {
     // cleanup old target links
     for (Stmt target : targets) {
-      Stmt.$Accessor.removeStmtPointingToThis(target, this);
+      if (target == null) {
+        continue;
+      }
+      Stmt.$Accessor.removeStmtPointingToTarget(this, target);
     }
     targets = newTargets;
     for (Stmt newTarget : newTargets) {
-      Stmt.$Accessor.addStmtPointingToThis(newTarget, this);
+      Stmt.$Accessor.addStmtPointingToTarget(this, newTarget);
     }
   }
 

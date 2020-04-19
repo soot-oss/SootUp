@@ -2052,7 +2052,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           // We directly place this label
           Collection<Stmt> traps = trapHandlers.get((LabelNode) insn);
           for (Stmt ub : traps) {
-            Stmt.$Accessor.addStmtPointingToThis(ub, caughtEx);
+            Stmt.$Accessor.addStmtPointingToTarget(ub, caughtEx);
           }
           trapHandlers.replaceValues((LabelNode) insn, Collections.nCopies(traps.size(), caughtEx));
         }
@@ -2066,7 +2066,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           final Stmt targetStmt =
               u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u;
           for (Stmt box : boxes) {
-            Stmt.$Accessor.addStmtPointingToThis(box, targetStmt);
+            Stmt.$Accessor.addStmtPointingToTarget(box, targetStmt);
           }
           labels.replaceValues(ln, Collections.nCopies(boxes.size(), targetStmt));
         }
@@ -2081,7 +2081,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
       Collection<Stmt> traps = trapHandlers.get(ln);
       for (Stmt ub : traps) {
-        Stmt.$Accessor.addStmtPointingToThis(ub, handler);
+        Stmt.$Accessor.addStmtPointingToTarget(ub, handler);
       }
       trapHandlers.replaceValues((LabelNode) insn, Collections.nCopies(traps.size(), handler));
 
@@ -2103,7 +2103,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       Collection<Stmt> boxes = labels.get(ln);
       if (boxes != null) {
         for (Stmt box : boxes) {
-          Stmt.$Accessor.addStmtPointingToThis(box, end);
+          Stmt.$Accessor.addStmtPointingToTarget(box, end);
         }
         labels.replaceValues((LabelNode) insn, Collections.nCopies(boxes.size(), end));
       }
