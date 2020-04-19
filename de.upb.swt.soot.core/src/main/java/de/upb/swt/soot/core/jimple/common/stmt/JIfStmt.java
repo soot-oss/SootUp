@@ -39,13 +39,13 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-/** If the condition is true, jumps to the target, otherwise continues to the next stmt. */
+/** conditional jumps to a target Stmt, otherwise the flow continues to the next Stmt. */
 public final class JIfStmt extends Stmt implements Copyable {
 
   @Nonnull private final AbstractConditionExpr condition;
-  @Nonnull private final Stmt target;
+  @Nonnull private Stmt target = null;
 
-  @Nonnull private final List<Stmt> targets;
+  @Nonnull private List<Stmt> targets;
 
   public JIfStmt(
       @Nonnull AbstractConditionExpr condition,
@@ -53,8 +53,7 @@ public final class JIfStmt extends Stmt implements Copyable {
       @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.condition = condition;
-    this.target = target;
-    this.targets = Collections.singletonList(target);
+    setTarget(target);
   }
 
   @Override
@@ -75,7 +74,7 @@ public final class JIfStmt extends Stmt implements Copyable {
     up.literal(" ");
     up.literal(Jimple.GOTO);
     up.literal(" ");
-    target.toString(up);
+    up.stmtRef(target, true);
   }
 
   public Value getCondition() {
@@ -88,8 +87,13 @@ public final class JIfStmt extends Stmt implements Copyable {
 
   /** Violates immutability. Only use this for legacy code. */
   @Deprecated
-  private void setTarget(@Nonnull Stmt newTarget) {
-    Stmt.$Accessor.addStmtPointingToThis(newTarget, this);
+  private void setTarget(@Nonnull Stmt target) {
+    if (this.target != null) {
+      Stmt.$Accessor.removeStmtPointingToThis(this, this.target);
+    }
+    this.target = target;
+    this.targets = Collections.singletonList(target);
+    Stmt.$Accessor.addStmtPointingToThis(this, target);
   }
 
   @Override
@@ -154,8 +158,8 @@ public final class JIfStmt extends Stmt implements Copyable {
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void setTarget(@Nonnull JIfStmt stmt, @Nonnull Stmt target) {
-      stmt.setTarget(target);
+    public static void setTarget(@Nonnull JIfStmt fromStmt, @Nonnull Stmt targetStmt) {
+      fromStmt.setTarget(targetStmt);
     }
 
     private $Accessor() {}

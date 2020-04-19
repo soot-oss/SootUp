@@ -78,7 +78,7 @@ public abstract class AbstractDefinitionStmt extends Stmt {
   }
 
   @Deprecated
-  private void setLeftOp(Value value) {
+  private void setLeftOp(@Nonnull Value value) {
     leftOp = value;
   }
 
@@ -89,7 +89,7 @@ public abstract class AbstractDefinitionStmt extends Stmt {
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void setLeftOp(AbstractDefinitionStmt box, Value value) {
+    public static void setLeftOp(@Nonnull AbstractDefinitionStmt box, @Nonnull Value value) {
       box.setLeftOp(value);
     }
 

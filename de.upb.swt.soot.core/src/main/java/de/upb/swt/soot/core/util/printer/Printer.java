@@ -305,10 +305,11 @@ public class Printer {
         // or the previous statement does not have body statement as a successor, or if
         // body statement has a label on it
 
+        final boolean currentStmtHasLabel = printer.getLabels().containsKey(currentStmt);
         if (currentStmt != units.iterator().next()) {
           if (unitGraph.getSuccsOf(previousStmt).size() != 1
               || unitGraph.getPredsOf(currentStmt).size() != 1
-              || printer.getLabels().containsKey(currentStmt)) {
+              || currentStmtHasLabel) {
             printer.newline();
           } else {
             // Or if the previous node does not have body statement as a successor.
@@ -321,7 +322,7 @@ public class Printer {
           }
         }
 
-        if (printer.getLabels().containsKey(currentStmt)) {
+        if (currentStmtHasLabel) {
           printer.stmtRef(currentStmt, true);
           printer.literal(":");
           printer.newline();

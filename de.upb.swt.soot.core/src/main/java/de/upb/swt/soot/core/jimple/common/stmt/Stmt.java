@@ -134,13 +134,13 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void addStmtPointingToThis(@Nonnull Stmt targetStmt, @Nonnull Stmt fromStmt) {
+    public static void addStmtPointingToThis(@Nonnull Stmt fromStmt, @Nonnull Stmt targetStmt) {
       targetStmt.addStmtPointingToThis(fromStmt);
     }
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void removeStmtPointingToThis(@Nonnull Stmt targetStmt, @Nonnull Stmt fromStmt) {
+    public static void removeStmtPointingToThis(@Nonnull Stmt fromStmt, @Nonnull Stmt targetStmt) {
       targetStmt.removeStmtPointingToThis(fromStmt);
     }
 

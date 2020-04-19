@@ -31,21 +31,20 @@ import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
+import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-/** Unconditionally jumps to the target */
+/** Unconditionally jumps to a target Stmt */
 public final class JGotoStmt extends Stmt implements Copyable {
 
   @Nonnull private Stmt target;
-  @Nonnull private final List<Stmt> targets;
+  @Nonnull private List<Stmt> targets;
 
   public JGotoStmt(Stmt target, StmtPositionInfo positionInfo) {
     super(positionInfo);
-    this.target = target;
-    targets = Collections.singletonList(target);
+    setTarget(target);
   }
 
   @Override
@@ -62,19 +61,22 @@ public final class JGotoStmt extends Stmt implements Copyable {
   public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.GOTO);
     up.literal(" ");
-    target.toString(up);
-  }
-
-  public Stmt getTarget() {
-    return target;
+    up.stmtRef(getTarget(), true);
   }
 
   /** Violates immutability. Only use this for legacy code. */
   @Deprecated
-  private void setTarget(@Nonnull Stmt newTarget) {
-    Stmt.$Accessor.removeStmtPointingToThis(target, this);
-    target = newTarget;
-    Stmt.$Accessor.addStmtPointingToThis(newTarget, this);
+  private void setTarget(@Nonnull Stmt target) {
+    if (this.target != null) {
+      Stmt.$Accessor.removeStmtPointingToThis(this, this.target);
+    }
+    this.target = target;
+    targets = ImmutableUtils.immutableList(target);
+    Stmt.$Accessor.addStmtPointingToThis(this, target);
+  }
+
+  public Stmt getTarget() {
+    return target;
   }
 
   @Override

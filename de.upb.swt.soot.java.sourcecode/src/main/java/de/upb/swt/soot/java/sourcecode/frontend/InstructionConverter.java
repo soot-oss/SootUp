@@ -1209,8 +1209,7 @@ public class InstructionConverter {
     for (JSwitchStmt lookupSwitch : this.targetsOfLookUpSwitchStmts.keySet()) {
       if (this.targetsOfLookUpSwitchStmts.get(lookupSwitch).contains(iindex)) {
         List<Stmt> targets = lookupSwitch.getTargets();
-        if (targets.contains(null)) { // targets only contains
-          // placeholder
+        if (targets.contains(null)) { // targets only contains placeholder
           targets = new ArrayList<>();
         }
         targets.add(stmt);

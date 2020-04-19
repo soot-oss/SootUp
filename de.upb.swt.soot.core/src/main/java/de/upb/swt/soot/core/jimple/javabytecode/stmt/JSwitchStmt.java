@@ -7,7 +7,6 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
-import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,12 +40,12 @@ public class JSwitchStmt extends Stmt implements Copyable {
     this.isTableSwitch = isTableSwitch;
     this.key = key;
     this.defaultTarget = defaultTarget;
-    this.targets = ImmutableUtils.immutableListOf(targets);
+    this.targets = (targets); // ImmutableUtils.immutableListOf
 
     List<Stmt> list = new ArrayList<>(targets.size() + 1);
     list.addAll(targets);
     list.add(defaultTarget);
-    stmts = Collections.unmodifiableList(list);
+    stmts = (list); // Collections.unmodifiableList
   }
 
   public JSwitchStmt(
@@ -97,13 +96,6 @@ public class JSwitchStmt extends Stmt implements Copyable {
     return defaultTarget;
   }
 
-  @Deprecated
-  private void setDefaultTarget(@Nonnull Stmt newDefaultTarget) {
-    Stmt.$Accessor.removeStmtPointingToThis(defaultTarget, this);
-    defaultTarget = newDefaultTarget;
-    Stmt.$Accessor.addStmtPointingToThis(newDefaultTarget, this);
-  }
-
   public Immediate getKey() {
     return key;
   }
@@ -122,13 +114,25 @@ public class JSwitchStmt extends Stmt implements Copyable {
   }
 
   // This method is necessary to deal with constructor-must-be-first-ism.
+
   public Stmt getTarget(@Nonnull int index) {
     return targets.get(index);
   }
-
   /** Returns a list targets of type Stmt. */
   public List<Stmt> getTargets() {
-    return ImmutableUtils.immutableListOf(targets);
+    return targets;
+  }
+
+  /**
+   * Violates immutability. Only use in legacy code. Sets the setStmt box for targetBoxes array.
+   *
+   * @param newDefaultTarget Stmt.
+   */
+  @Deprecated
+  private void setDefaultTarget(@Nonnull Stmt newDefaultTarget) {
+    Stmt.$Accessor.removeStmtPointingToThis(defaultTarget, this);
+    defaultTarget = newDefaultTarget;
+    Stmt.$Accessor.addStmtPointingToThis(newDefaultTarget, this);
   }
 
   /**
@@ -248,7 +252,7 @@ public class JSwitchStmt extends Stmt implements Copyable {
       up.literal(": ");
       up.literal(Jimple.GOTO);
       up.literal(" ");
-      getTarget(i).toString(up);
+      up.stmtRef(getTarget(i), true);
       up.literal(";");
       up.newline();
     }
@@ -258,7 +262,7 @@ public class JSwitchStmt extends Stmt implements Copyable {
     up.literal(": ");
     up.literal(Jimple.GOTO);
     up.literal(" ");
-    getDefaultTarget().toString(up);
+    up.stmtRef(getDefaultTarget(), true);
     up.literal(";");
     up.decIndent();
     up.newline();
