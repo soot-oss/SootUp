@@ -1217,4 +1217,62 @@ public class InstructionConverter {
       }
     }
   }
+
+  /**
+   * @param iIndex2Stmt
+   * @return This methods returns a list of stmts with all branch stmts ({@link JIfStmt}, {@link
+   *     JGotoStmt}, {@link JSwitchStmt}) having set up their target stmts.
+   */
+  public List<Stmt> setUpTargets(Map<Integer, Stmt> iIndex2Stmt) {
+    List<Stmt> stmts = new ArrayList<>();
+    for (Stmt stmt : iIndex2Stmt.values()) {
+      Stmt newStmt = stmt;
+      if (stmt instanceof JIfStmt) {
+        JIfStmt oldStmt = (JIfStmt) stmt;
+        int iTarget = this.targetsOfIfStmts.get(stmt);
+        if (iIndex2Stmt.containsKey(iTarget)) ;
+        {
+          Stmt target = iIndex2Stmt.get(iTarget);
+          newStmt =
+              new JIfStmt(
+                  (AbstractConditionExpr) oldStmt.getCondition(),
+                  target,
+                  oldStmt.getPositionInfo());
+        }
+
+      } else if (stmt instanceof JGotoStmt) {
+        JGotoStmt oldStmt = (JGotoStmt) stmt;
+        int iTarget = this.targetsOfGotoStmts.get(stmt);
+        if (iIndex2Stmt.containsKey(iTarget)) ;
+        {
+          Stmt target = iIndex2Stmt.get(iTarget);
+          newStmt = new JGotoStmt(target, oldStmt.getPositionInfo());
+        }
+      } else if (stmt instanceof JSwitchStmt) {
+        JSwitchStmt oldStmt = (JSwitchStmt) stmt;
+        int iDefault = this.defaultOfLookUpSwitchStmts.get(stmt);
+        Stmt defaultTarget = null;
+        if (iIndex2Stmt.containsKey(iDefault)) {
+          defaultTarget = iIndex2Stmt.get(iDefault);
+        }
+        List<Integer> iTargets = this.targetsOfLookUpSwitchStmts.get(stmt);
+        List<Stmt> targets = new ArrayList<>();
+        for (Integer iTarget : iTargets) {
+          if (iIndex2Stmt.containsKey(iTarget)) {
+            Stmt target = iIndex2Stmt.get(iTarget);
+            targets.add(target);
+          }
+          newStmt =
+              new JSwitchStmt(
+                  oldStmt.getKey(),
+                  oldStmt.getValues(),
+                  targets,
+                  defaultTarget,
+                  oldStmt.getPositionInfo());
+        }
+      }
+      stmts.add(newStmt);
+    }
+    return stmts;
+  }
 }
