@@ -1174,49 +1174,6 @@ public class InstructionConverter {
     return ret;
   }
 
-  /**
-   * Test if the given stmt is the target stmt of {@link JIfStmt} or {@link JGotoStmt} and set it as
-   * the target if it is the case.
-   *
-   * @param stmt the converted jimple stmt.
-   * @param iindex the instruction index of the corresponding instruction in Wala.
-   */
-  @SuppressWarnings("deprecation")
-  protected void setTarget(Stmt stmt, int iindex) {
-    if (this.targetsOfIfStmts.containsValue(iindex)) {
-      for (JIfStmt ifStmt : this.targetsOfIfStmts.keySet()) {
-        if (this.targetsOfIfStmts.get(ifStmt).equals(iindex)) {
-          JIfStmt.$Accessor.setTarget(ifStmt, stmt);
-        }
-      }
-    }
-
-    // FIXME: [ms] targetbox of JGotoStmt is null @PositionInfoTest.java ->testSwitchInstruction()
-    if (this.targetsOfGotoStmts.containsValue(iindex)) {
-      for (JGotoStmt gotoStmt : this.targetsOfGotoStmts.keySet()) {
-        if (this.targetsOfGotoStmts.get(gotoStmt).equals(iindex)) {
-          JGotoStmt.$Accessor.setTarget(gotoStmt, stmt);
-        }
-      }
-    }
-    if (this.defaultOfLookUpSwitchStmts.containsValue(iindex)) {
-      for (JSwitchStmt lookupSwitch : this.defaultOfLookUpSwitchStmts.keySet()) {
-        if (this.defaultOfLookUpSwitchStmts.get(lookupSwitch).equals(iindex)) {
-          JSwitchStmt.$Accessor.setDefaultTarget(lookupSwitch, stmt);
-        }
-      }
-    }
-    for (JSwitchStmt lookupSwitch : this.targetsOfLookUpSwitchStmts.keySet()) {
-      if (this.targetsOfLookUpSwitchStmts.get(lookupSwitch).contains(iindex)) {
-        List<Stmt> targets = lookupSwitch.getTargets();
-        if (targets.contains(null)) { // targets only contains placeholder
-          targets = new ArrayList<>();
-        }
-        targets.add(stmt);
-        JSwitchStmt.$Accessor.setTargets(lookupSwitch, targets);
-      }
-    }
-  }
 
   /**
    * @param iIndex2Stmt
