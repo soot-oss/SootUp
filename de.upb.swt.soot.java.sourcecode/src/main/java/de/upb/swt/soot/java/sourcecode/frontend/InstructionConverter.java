@@ -1174,7 +1174,6 @@ public class InstructionConverter {
     return ret;
   }
 
-
   /**
    * @param iIndex2Stmt
    * @return This methods returns a list of stmts with all branch stmts ({@link JIfStmt}, {@link
