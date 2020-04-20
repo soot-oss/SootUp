@@ -455,7 +455,6 @@ public class WalaIRToJimpleConverter {
             ret =
                 Jimple.newReturnVoidStmt(
                     convertPositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
-            stmts.add(ret);
           } else {
             ret = stmts.get(stmts.size() - 1);
           }

@@ -1181,54 +1181,57 @@ public class InstructionConverter {
    */
   public List<Stmt> setUpTargets(Map<Integer, Stmt> iIndex2Stmt) {
     List<Stmt> stmts = new ArrayList<>();
+    Stmt lastStmt = null;
     for (Stmt stmt : iIndex2Stmt.values()) {
-      Stmt newStmt = stmt;
-      if (stmt instanceof JIfStmt) {
-        JIfStmt oldStmt = (JIfStmt) stmt;
-        int iTarget = this.targetsOfIfStmts.get(stmt);
-        if (iIndex2Stmt.containsKey(iTarget)) ;
-        {
-          Stmt target = iIndex2Stmt.get(iTarget);
-          newStmt =
-              new JIfStmt(
-                  (AbstractConditionExpr) oldStmt.getCondition(),
-                  target,
-                  oldStmt.getPositionInfo());
-        }
-
-      } else if (stmt instanceof JGotoStmt) {
-        JGotoStmt oldStmt = (JGotoStmt) stmt;
-        int iTarget = this.targetsOfGotoStmts.get(stmt);
-        if (iIndex2Stmt.containsKey(iTarget)) ;
-        {
-          Stmt target = iIndex2Stmt.get(iTarget);
-          newStmt = new JGotoStmt(target, oldStmt.getPositionInfo());
-        }
-      } else if (stmt instanceof JSwitchStmt) {
-        JSwitchStmt oldStmt = (JSwitchStmt) stmt;
-        int iDefault = this.defaultOfLookUpSwitchStmts.get(stmt);
-        Stmt defaultTarget = null;
-        if (iIndex2Stmt.containsKey(iDefault)) {
-          defaultTarget = iIndex2Stmt.get(iDefault);
-        }
-        List<Integer> iTargets = this.targetsOfLookUpSwitchStmts.get(stmt);
-        List<Stmt> targets = new ArrayList<>();
-        for (Integer iTarget : iTargets) {
+      if (iIndex2Stmt.containsKey(-1) && iIndex2Stmt.get(-1).equals(stmt)) {
+        lastStmt = stmt; // this is the return void stmt, add it at last.
+      } else {
+        Stmt newStmt = stmt;
+        if (stmt instanceof JIfStmt) {
+          JIfStmt oldStmt = (JIfStmt) stmt;
+          int iTarget = this.targetsOfIfStmts.get(stmt);
           if (iIndex2Stmt.containsKey(iTarget)) {
             Stmt target = iIndex2Stmt.get(iTarget);
-            targets.add(target);
+            newStmt =
+                new JIfStmt(
+                    (AbstractConditionExpr) oldStmt.getCondition(),
+                    target,
+                    oldStmt.getPositionInfo());
           }
-          newStmt =
-              new JSwitchStmt(
-                  oldStmt.getKey(),
-                  oldStmt.getValues(),
-                  targets,
-                  defaultTarget,
-                  oldStmt.getPositionInfo());
+        } else if (stmt instanceof JGotoStmt) {
+          JGotoStmt oldStmt = (JGotoStmt) stmt;
+          int iTarget = this.targetsOfGotoStmts.get(stmt);
+          if (iIndex2Stmt.containsKey(iTarget)) {
+            Stmt target = iIndex2Stmt.get(iTarget);
+            newStmt = new JGotoStmt(target, oldStmt.getPositionInfo());
+          }
+        } else if (stmt instanceof JSwitchStmt) {
+          JSwitchStmt oldStmt = (JSwitchStmt) stmt;
+          int iDefault = this.defaultOfLookUpSwitchStmts.get(stmt);
+          Stmt defaultTarget = null;
+          if (iIndex2Stmt.containsKey(iDefault)) {
+            defaultTarget = iIndex2Stmt.get(iDefault);
+          }
+          List<Integer> iTargets = this.targetsOfLookUpSwitchStmts.get(stmt);
+          List<Stmt> targets = new ArrayList<>();
+          for (Integer iTarget : iTargets) {
+            if (iIndex2Stmt.containsKey(iTarget)) {
+              Stmt target = iIndex2Stmt.get(iTarget);
+              targets.add(target);
+            }
+            newStmt =
+                new JSwitchStmt(
+                    oldStmt.getKey(),
+                    oldStmt.getValues(),
+                    targets,
+                    defaultTarget,
+                    oldStmt.getPositionInfo());
+          }
         }
+        stmts.add(newStmt);
       }
-      stmts.add(newStmt);
     }
+    if (lastStmt != null) stmts.add(lastStmt);
     return stmts;
   }
 }
