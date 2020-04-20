@@ -435,19 +435,14 @@ public class WalaIRToJimpleConverter {
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
         InstructionConverter instConverter =
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
-        Map<Stmt, Integer> stmt2IIndex = new HashMap<>();
+        Map<Integer, Stmt> iIndex2Stmt = new HashMap<Integer, Stmt>();
         for (SSAInstruction inst : insts) {
           List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst);
           if (!retStmts.isEmpty()) {
             for (Stmt stmt : retStmts) {
-              stmts.add(stmt);
-              stmt2IIndex.put(stmt, inst.iIndex());
+              iIndex2Stmt.put(inst.iIndex(), stmt);
             }
           }
-        }
-        // set target for goto or conditional statements
-        for (Stmt stmt : stmt2IIndex.keySet()) {
-          instConverter.setTarget(stmt, stmt2IIndex.get(stmt));
         }
 
         // add return void stmt for methods with return type being void
@@ -464,9 +459,11 @@ public class WalaIRToJimpleConverter {
           } else {
             ret = stmts.get(stmts.size() - 1);
           }
-          instConverter.setTarget(ret, -1); // -1 is the end of the method
+          iIndex2Stmt.put(-1, ret); // -1 is the end of the method
         }
-
+        // set target for all branching statements
+        List<Stmt> newStmts = instConverter.setUpTargets(iIndex2Stmt);
+        stmts.addAll(newStmts);
         return new Body(localGenerator.getLocals(), traps, stmts, convertPosition(bodyPos));
       }
     }
