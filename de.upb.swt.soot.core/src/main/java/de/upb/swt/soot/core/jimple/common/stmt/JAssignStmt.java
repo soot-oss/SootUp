@@ -36,39 +36,32 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   public JAssignStmt(
       @Nonnull Value variable, @Nonnull Value rValue, @Nonnull StmtPositionInfo positionInfo) {
     super(variable, rValue, positionInfo);
-    if (!(checkVariable(variable, rValue) && checkValue(variable, rValue))) {
+    if (!checkVariable(variable)) {
       throw new RuntimeException(
-          "Illegal assignment statement.  Make sure that either left side or right hand side has a local or constant.");
+          "Illegal Assignment statement. Make sure that left hand side has a valid operand.");
+    }
+    if (!checkValue(rValue)) {
+      throw new RuntimeException(
+          "Illegal Assignment statement. Make sure that right hand side has a valid operand.");
     }
   }
 
   /**
-   * Check if variable can be on the left side of the assign statement with the fixed rvalue on the
-   * right side if so, return true, else, return false
+   * returns true if variable can be on the left side of the assign statement
    *
    * @param variable the variable on the left side of the assign statement.
-   * @param rValue the value on the right side of the assign statement.
    */
-  // TODO: [ms] check both checks for optimiziations and semantic validity
-  private boolean checkVariable(@Nonnull Value variable, @Nonnull Value rValue) {
-    if (variable instanceof Local || variable instanceof ConcreteRef) {
-      return (variable instanceof Immediate) || (rValue instanceof Immediate);
-    }
-    return false;
+  private boolean checkVariable(@Nonnull Value variable) {
+    return variable instanceof Local || variable instanceof ConcreteRef;
   }
 
   /**
-   * Check if rValue can be on the right side of the assign statement with the fixed variable on the
-   * left side if so, return true, else, return false
+   * returns true if rValue can be on the right side of the assign statement
    *
-   * @param variable the variable on the left side of the assign statement.
    * @param rValue the value on the right side of the assign statement.
    */
-  private boolean checkValue(@Nonnull Value variable, @Nonnull Value rValue) {
-    if (rValue instanceof Immediate || rValue instanceof ConcreteRef || rValue instanceof Expr) {
-      return (rValue instanceof Immediate) || (variable instanceof Immediate);
-    }
-    return false;
+  private boolean checkValue(@Nonnull Value rValue) {
+    return rValue instanceof Immediate || rValue instanceof ConcreteRef || rValue instanceof Expr;
   }
 
   /*
