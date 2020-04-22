@@ -1,6 +1,6 @@
 package ds;
 
-public class Employee{
+public class Employee extends AbstractDataStrcture{
     private String empName;
     private int empSalary;
 

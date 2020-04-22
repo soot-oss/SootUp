@@ -7,11 +7,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Operations{
+public class Operations extends AbstractOperations{
 
-    List<Department> departmentList= new ArrayList<>();
-    List<Employee> employeeList= new ArrayList<>();
-
+    @Override
     public void addDepartment(Department department){
         departmentList.add(department);
     }
@@ -20,6 +18,7 @@ public class Operations{
         departmentList.remove(department);
     }
 
+    @Override
     public void addEmployee(Employee employee){
         employeeList.add(employee);
     }
