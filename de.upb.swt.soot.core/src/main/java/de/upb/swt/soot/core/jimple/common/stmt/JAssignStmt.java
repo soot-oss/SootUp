@@ -36,39 +36,30 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   public JAssignStmt(
       @Nonnull Value variable, @Nonnull Value rValue, @Nonnull StmtPositionInfo positionInfo) {
     super(variable, rValue, positionInfo);
-    if (!(checkVariable(variable, rValue) && checkValue(variable, rValue))) {
+    if (!checkVariableAndRValue(variable, rValue)) {
       throw new RuntimeException(
           "Illegal assignment statement.  Make sure that either left side or right hand side has a local or constant.");
     }
   }
 
   /**
-   * Check if variable can be on the left side of the assign statement with the fixed rvalue on the
-   * right side if so, return true, else, return false
+   * Check if variable fits the rvalue
    *
    * @param variable the variable on the left side of the assign statement.
    * @param rValue the value on the right side of the assign statement.
    */
   // TODO: [ms] check both checks for optimiziations and semantic validity
-  private boolean checkVariable(@Nonnull Value variable, @Nonnull Value rValue) {
-    if (variable instanceof Local || variable instanceof ConcreteRef) {
-      return (variable instanceof Immediate) || (rValue instanceof Immediate);
+  private boolean checkVariableAndRValue(@Nonnull Value variable, @Nonnull Value rValue) {
+    if (variable instanceof Local ) {
+      return canBeRValue(rValue);
+    }else if(variable instanceof ConcreteRef){
+      return rValue instanceof Immediate;
     }
     return false;
   }
 
-  /**
-   * Check if rValue can be on the right side of the assign statement with the fixed variable on the
-   * left side if so, return true, else, return false
-   *
-   * @param variable the variable on the left side of the assign statement.
-   * @param rValue the value on the right side of the assign statement.
-   */
-  private boolean checkValue(@Nonnull Value variable, @Nonnull Value rValue) {
-    if (rValue instanceof Immediate || rValue instanceof ConcreteRef || rValue instanceof Expr) {
-      return (rValue instanceof Immediate) || (variable instanceof Immediate);
-    }
-    return false;
+  private boolean canBeRValue(@Nonnull Value rValue) {
+    return (rValue instanceof Immediate || rValue instanceof ConcreteRef || rValue instanceof Expr);
   }
 
   /*
