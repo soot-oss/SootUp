@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.powermock.reflect.Whitebox;
 
+/** @author Kaustubh Kelkar update on 16.04.2020 */
 @Category(Java9Test.class)
 public class ModuleFinderTest extends AnalysisInputLocationTest {
 

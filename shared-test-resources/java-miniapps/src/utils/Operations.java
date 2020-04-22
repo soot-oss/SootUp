@@ -7,7 +7,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Operations extends AbstractOperations{
+public class Operations implements IFaceOperations{
 
     @Override
     public void addDepartment(Department department){
