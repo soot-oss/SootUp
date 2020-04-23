@@ -21,27 +21,28 @@ package de.upb.swt.soot.test.java.bytecode.inputlocation;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import categories.Java8Test;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author Manuel Benz created on 06.06.18 */
+/**
+ * @author Manuel Benz created on 06.06.18
+ * @author Kaustubh Kelkar update on 16.04.2020
+ */
 @Category(Java8Test.class)
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
-
-  final Path jar = Paths.get("../shared-test-resources/Soot-4.0-SNAPSHOT.jar");
 
   @Test
   public void testJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
     System.err.println(jar.toFile().getAbsolutePath());
-    final ClassType sig =
-        getIdentifierFactory().getClassType("PathBasedNamespace", "de.upb.soot.namespaces");
-    testClassReceival(pathBasedNamespace, sig, CLASSES_IN_JAR);
+    final ClassType class1 = getIdentifierFactory().getClassType("Employee", "ds");
+    final ClassType mainClass = getIdentifierFactory().getClassType("MiniApp");
+    testClassReceival(pathBasedNamespace, class1, CLASSES_IN_JAR);
+    testClassReceival(pathBasedNamespace, mainClass, CLASSES_IN_JAR);
   }
 }
