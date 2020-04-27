@@ -7,7 +7,6 @@ import de.upb.swt.soot.core.transform.BodyInterceptor;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -46,7 +45,7 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
             && trap2.getExceptionType().getClassName().equals("java.lang.Throwable")){
             // Both traps (t1, t2) span the same code and catch java.lang.Throwable.
             // Check if one trap jumps to a target that then jumps to the target of the other trap
-            for(Trap trap3 : originalBody.getTraps()){
+            for(Trap trap3 : traps){
               if(trap3 != trap1 && trap3 != trap2 && trap3.getExceptionType().getClassName().equals("java.lang.Throwable")){
                 if(trapCoversStmt(originalBody, trap3, trap1.getHandlerStmt()) && trap3.getHandlerStmt() == trap2.getHandlerStmt()){
                   // c -> t1 -> t3 -> t2 && x -> t2
@@ -63,6 +62,7 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
         }
       }
     }
+    System.out.println("Size of traps after transformation: " + traps.size());
     return originalBody.withTraps(traps);
   }
 
@@ -77,7 +77,7 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
    */
   private boolean trapCoversStmt(Body body, Trap trap, Stmt stmt){
     List<Stmt> bodyStmts = body.getStmts();
-    List<Stmt> sequence = bodyStmts.subList(bodyStmts.indexOf(trap.getBeginStmt()), bodyStmts.indexOf(trap.getEndStmt())-1);
+    List<Stmt> sequence = bodyStmts.subList(bodyStmts.indexOf(trap.getBeginStmt()), bodyStmts.indexOf(trap.getEndStmt()));
     for(Stmt st : sequence){
       if(st == stmt){
         return true;
