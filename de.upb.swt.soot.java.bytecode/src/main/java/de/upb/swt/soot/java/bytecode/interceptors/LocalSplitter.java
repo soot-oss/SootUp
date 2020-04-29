@@ -1,7 +1,9 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
@@ -27,40 +29,36 @@ public class LocalSplitter implements BodyInterceptor {
     // Collect all the Locals as def of a Stmt in a Hashtable:
     // key: collected Local
     // value: whether the Local has been visited, initialization is false
-    Hashtable<Local, Boolean> defLocalTable = new Hashtable<>();
+    HashMap<Local, Boolean> defLocalMap = new HashMap<>();
 
-    // Copy all original Stmts into a newStmts List
-    List<Stmt> newStmts = new ArrayList<>();
     List<Stmt> stmts = originalBody.getStmts();
 
     for (Stmt stmt : stmts) {
-      // Fixme: is stmt really copied??????
-      Stmt newStmt = stmt;
-      newStmts.add(newStmt);
       if (!stmt.getDefs().isEmpty()) {
         Value def = stmt.getDefs().get(0);
         if (def instanceof Local) {
-          if (!defLocalTable.containsKey(def)) {
-            defLocalTable.put((Local) def, false);
+          if (!defLocalMap.containsKey(def)) {
+            defLocalMap.put((Local) def, false);
           }
         }
       }
     }
     // Copy all original Locals into a newLocals set
-    Set<Local> newLocals = new HashSet<Local>();
     Set<Local> locals = originalBody.getLocals();
-    for (Local local : locals) {
-      // Fixme: the same question
-      Local newLocal = local;
-      newLocals.add(newLocal);
-    }
+    Set<Local> newLocals = new HashSet<Local>();
+    newLocals.addAll(locals);
+
+    // Copy all original Stmt into a newStmts list
+    List<Stmt> newStmts = new ArrayList<>();
+    newStmts.addAll(stmts);
+
 
     int newLocalIndex = 0;
     for (Stmt stmt : stmts) {
-      if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
+      if ((!stmt.getDefs().isEmpty()) && stmt.getDefs().get(0) instanceof Local) {
         Local oriLocal = (Local) stmt.getDefs().get(0);
         // If "oriLocal" as a def is visited, then it maybe need to split
-        if (defLocalTable.get(oriLocal)) {
+        if (defLocalMap.get(oriLocal)) {
           int startPos = stmts.indexOf(stmt);
           int position = startPos;
           boolean localBeUsed = false;
@@ -72,12 +70,12 @@ public class LocalSplitter implements BodyInterceptor {
           // If "oriLocal" has been used by these Stmt and "stmt" itself, then modify them
           while (position < stmts.size()) {
             if (position != startPos) {
-              if (!stmts.get(position).getDefs().isEmpty()
+              if ((!stmts.get(position).getDefs().isEmpty())
                   && stmts.get(position).getDefs().contains(oriLocal)) {
                 break;
               }
             }
-            if (!stmts.get(position).getUses().isEmpty()
+            if ((!stmts.get(position).getUses().isEmpty())
                 && stmts.get(position).getUses().contains(oriLocal)) {
               localBeUsed = true;
               newStmts.set(position, withNewUse(newStmts.get(position), oriLocal, newLocal));
@@ -90,7 +88,7 @@ public class LocalSplitter implements BodyInterceptor {
             newLocalIndex++;
           }
         } else { // if this originalLocal is not visited, then change its value in table to true
-          defLocalTable.replace(oriLocal, true);
+          defLocalMap.replace(oriLocal, true);
         }
       }
     }
@@ -100,9 +98,14 @@ public class LocalSplitter implements BodyInterceptor {
     return newBody;
   }
 
-  protected Stmt withNewDef(Stmt oldStmt, Local newDef) {
-    // TODO: Implements
-    return null;
+
+  @Nonnull
+  protected Stmt withNewDef(@Nonnull Stmt oldStmt, @Nonnull Local newDef) {
+    if(oldStmt instanceof JAssignStmt){
+      return Jimple.newAssignStmt(newDef, ((JAssignStmt) oldStmt).getRightOp(), oldStmt.getPositionInfo());
+    }else{
+      throw new RuntimeException("Just JAssignStmt allowed");
+    }
   }
 
   protected Stmt withNewUse(Stmt oldStmt, Local oldUse, Local newUse) {
