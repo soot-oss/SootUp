@@ -45,7 +45,8 @@ import org.mockito.internal.matchers.LessOrEqual;
  */
 public abstract class AnalysisInputLocationTest {
 
-  final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
+  //  final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
+  final Path jar = Paths.get("../shared-test-resources/java-warApp/dummyWarApp.war");
   final String jarFile = jar.toString();
 
   protected static final int CLASSES_IN_JAR = 4;

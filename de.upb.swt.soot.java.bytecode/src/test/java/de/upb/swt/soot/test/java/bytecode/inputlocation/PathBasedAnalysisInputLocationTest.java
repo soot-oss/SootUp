@@ -40,8 +40,8 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
     System.err.println(jar.toFile().getAbsolutePath());
-    final ClassType class1 = getIdentifierFactory().getClassType("Employee", "ds");
-    final ClassType mainClass = getIdentifierFactory().getClassType("MiniApp");
+    final ClassType class1 = getIdentifierFactory().getClassType("Employee", "WEB-INF/classes/ds");
+    final ClassType mainClass = getIdentifierFactory().getClassType("WEB-INF/classes/MiniApp");
     testClassReceival(pathBasedNamespace, class1, CLASSES_IN_JAR);
     testClassReceival(pathBasedNamespace, mainClass, CLASSES_IN_JAR);
   }

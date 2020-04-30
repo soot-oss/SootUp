@@ -35,7 +35,9 @@ public class ModuleCompositionTest {
   @Test
   public void apiExamples() {
 
-    String jarFile = "../shared-test-resources/java-miniapps/MiniApp.jar";
+    // String jarFile = "../shared-test-resources/java-miniapps/MiniApp.jar";
+    String jarFile = "../shared-test-resources/java-warApp/dummyWarApp.war";
+
     System.err.println(new File(jarFile).getAbsolutePath());
     Assert.assertTrue("File " + jarFile + " not found.", new File(jarFile).exists());
 
@@ -49,7 +51,8 @@ public class ModuleCompositionTest {
     JavaView view = p.createOnDemandView();
 
     // Create java class signature
-    ClassType utilsClassSignature = p.getIdentifierFactory().getClassType("Employee", "ds");
+    ClassType utilsClassSignature =
+        p.getIdentifierFactory().getClassType("Employee", "WEB-INF/classes/ds");
 
     // Resolve signature to `SootClass`
     SootClass utilsClass = view.getClass(utilsClassSignature).get();

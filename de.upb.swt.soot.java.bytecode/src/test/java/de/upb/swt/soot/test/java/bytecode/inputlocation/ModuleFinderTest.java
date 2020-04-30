@@ -34,7 +34,7 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
   @Test
   public void discoverModule2() {
     ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
-    AnalysisInputLocation inputLocation = moduleFinder.discoverModule("MiniApp");
+    AnalysisInputLocation inputLocation = moduleFinder.discoverModule("WEB-INF/classes/MiniApp");
     assertTrue(inputLocation instanceof PathBasedAnalysisInputLocation);
   }
 
