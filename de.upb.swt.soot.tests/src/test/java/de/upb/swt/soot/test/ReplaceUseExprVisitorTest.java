@@ -26,23 +26,23 @@ public class ReplaceUseExprVisitorTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   JavaClassType intType = factory.getClassType("int");
-  JavaClassType testType = factory.getClassType("TestType");
+  JavaClassType testClass = factory.getClassType("TestClass");
   JavaClassType voidType = factory.getClassType("void");
 
   Local op1 = JavaJimple.newLocal("op1", intType);
   Local op2 = JavaJimple.newLocal("op2", intType);
   Local newOp = JavaJimple.newLocal("op#", intType);
 
-  Local base = JavaJimple.newLocal("base", testType);
+  Local base = JavaJimple.newLocal("base", testClass);
   Local arg1 = JavaJimple.newLocal("arg1", intType);
   Local arg2 = JavaJimple.newLocal("arg2", intType);
   Local arg3 = JavaJimple.newLocal("arg3", intType);
   Local newArg = JavaJimple.newLocal("argn", intType);
 
   MethodSignature methodeWithOutParas =
-      new MethodSignature(testType, "invokeExpr", Collections.emptyList(), voidType);
+      new MethodSignature(testClass, "invokeExpr", Collections.emptyList(), voidType);
 
-  /** Test use replacing in case BinopExpr addExpr is as an example */
+  /** Test use replacing in case BinopExpr. JaddExpr is as an example. */
   @Test
   public void testCaseBinopExpr() {
 
@@ -74,8 +74,8 @@ public class ReplaceUseExprVisitorTest {
   }
 
   /**
-   * Test use replacing in case JStaticInvokeExpr JDynamicInvoke JNewMultiArrayExpr
-   * JStaticInvokeExpr is as an example
+   * Test use replacing in case JStaticInvokeExpr JDynamicInvoke JNewMultiArrayExpr.
+   * JStaticInvokeExpr is as an example.
    */
   @Test
   public void testCaseInvokeExpr() {
@@ -89,7 +89,7 @@ public class ReplaceUseExprVisitorTest {
     parameters.add(intType);
     parameters.add(intType);
 
-    MethodSignature method = new MethodSignature(testType, "invokeExpr", parameters, voidType);
+    MethodSignature method = new MethodSignature(testClass, "invokeExpr", parameters, voidType);
 
     ReplaceUseExprVisitor visitor = new ReplaceUseExprVisitor(arg1, newArg);
 
@@ -119,7 +119,7 @@ public class ReplaceUseExprVisitorTest {
     assertTrue(visitor.getNewExpr().equivTo(invokeExpr));
   }
 
-  /** Test use replacing in case InstanceInvokeExpr JSpecialInvokeExpr is as an example */
+  /** Test use replacing in case InstanceInvokeExpr. JSpecialInvokeExpr is as an example. */
   @Test
   public void testCaseInstanceInvokeExpr() {
 
@@ -132,7 +132,7 @@ public class ReplaceUseExprVisitorTest {
     parameters.add(intType);
     parameters.add(intType);
 
-    MethodSignature method = new MethodSignature(testType, "invokeExpr", parameters, voidType);
+    MethodSignature method = new MethodSignature(testClass, "invokeExpr", parameters, voidType);
 
     ReplaceUseExprVisitor visitor = new ReplaceUseExprVisitor(arg1, newArg);
 
@@ -175,8 +175,8 @@ public class ReplaceUseExprVisitorTest {
   }
 
   /**
-   * Test use replacing in case UnopExpr, JCastExpr, JInstanceOfExpr, JNewArrayExpr JLengthExpr is
-   * as an example
+   * Test use replacing in case UnopExpr, JCastExpr, JInstanceOfExpr, JNewArrayExpr. JLengthExpr is
+   * as an example.
    */
   @Test
   public void testUnopExpr() {

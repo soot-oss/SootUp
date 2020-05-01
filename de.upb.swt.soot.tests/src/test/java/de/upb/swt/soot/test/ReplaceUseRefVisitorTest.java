@@ -4,17 +4,14 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.ref.Ref;
 import de.upb.swt.soot.core.jimple.visitor.ReplaceUseRefVisitor;
 import de.upb.swt.soot.core.signatures.FieldSignature;
-import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -31,9 +28,6 @@ public class ReplaceUseRefVisitorTest {
   Local newUse = JavaJimple.newLocal("newUse", intType);
 
   FieldSignature fieldSignature = new FieldSignature(arrayType, "field", intType);
-  MethodSignature methodeWithOutParas =
-      new MethodSignature(arrayType, "invokeExpr", Collections.emptyList(), intType);
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
 
   /** Test use replacing in case JArrayRef. */
   @Test

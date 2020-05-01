@@ -10,7 +10,7 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
   Value newUse;
   Ref newRef;
 
-  public ReplaceUseRefVisitor(Value oldUse, Value newUse) {
+  public ReplaceUseRefVisitor(@Nonnull Value oldUse, @Nonnull Value newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
   }
@@ -62,11 +62,13 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
     defaultCase(v);
   }
 
+  @Nonnull
   @Override
-  public void defaultCase(Object obj) {
+  public void defaultCase(@Nonnull Object obj) {
     newRef = (Ref) obj;
   }
 
+  @Nonnull
   public Ref getNewRef() {
     return newRef;
   }
