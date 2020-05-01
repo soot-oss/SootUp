@@ -15,6 +15,7 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.visitor.RefVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.util.Copyable;
@@ -71,7 +72,7 @@ public final class JInstanceFieldRef extends JFieldRef implements Copyable {
 
   @Override
   public void accept(Visitor sw) {
-    // TODO
+    ((RefVisitor)sw).caseInstanceFieldRef(this);
   }
 
   @Override

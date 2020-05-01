@@ -27,6 +27,7 @@ package de.upb.swt.soot.core.jimple.common.ref;
 
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.visitor.RefVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
@@ -75,6 +76,6 @@ public final class JCaughtExceptionRef implements IdentityRef, Copyable {
 
   @Override
   public void accept(Visitor sw) {
-    // TODO
+    ((RefVisitor)sw).caseCaughtExceptionRef(this);
   }
 }
