@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.powermock.reflect.Whitebox;
 
+/** @author Kaustubh Kelkar */
 @Category(Java9Test.class)
 public class JavaModulePathNamespaceTest extends AnalysisInputLocationTest {
 
@@ -46,7 +47,7 @@ public class JavaModulePathNamespaceTest extends AnalysisInputLocationTest {
   }
 
   @Test
-  @Ignore // does not work before adapting module loading in soot
+  @Ignore
   public void singleDir2() {
     final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
         new JavaModulePathAnalysisInputLocation(

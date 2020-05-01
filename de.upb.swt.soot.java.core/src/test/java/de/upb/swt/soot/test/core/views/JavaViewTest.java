@@ -10,7 +10,6 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.views.JavaView;
-import java.io.File;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -31,13 +30,8 @@ public class JavaViewTest {
   private List<ClassType> signatures;
   private JavaView view;
 
-  public static final String jarFile =
-      "../shared-test-resources/java9-target/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
-
   @Before
   public void initialize() {
-
-    assertTrue(new File(jarFile).exists());
 
     // TODO fails due to dependency to asm - rewrite test to allow multimodule maven -> eagerLoader
     /*
