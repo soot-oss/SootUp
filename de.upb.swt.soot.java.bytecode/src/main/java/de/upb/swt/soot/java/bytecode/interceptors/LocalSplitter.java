@@ -52,7 +52,6 @@ public class LocalSplitter implements BodyInterceptor {
     List<Stmt> newStmts = new ArrayList<>();
     newStmts.addAll(stmts);
 
-
     int newLocalIndex = 0;
     for (Stmt stmt : stmts) {
       if ((!stmt.getDefs().isEmpty()) && stmt.getDefs().get(0) instanceof Local) {
@@ -98,12 +97,12 @@ public class LocalSplitter implements BodyInterceptor {
     return newBody;
   }
 
-
   @Nonnull
   protected Stmt withNewDef(@Nonnull Stmt oldStmt, @Nonnull Local newDef) {
-    if(oldStmt instanceof JAssignStmt){
-      return Jimple.newAssignStmt(newDef, ((JAssignStmt) oldStmt).getRightOp(), oldStmt.getPositionInfo());
-    }else{
+    if (oldStmt instanceof JAssignStmt) {
+      return Jimple.newAssignStmt(
+          newDef, ((JAssignStmt) oldStmt).getRightOp(), oldStmt.getPositionInfo());
+    } else {
       throw new RuntimeException("Just JAssignStmt allowed");
     }
   }
