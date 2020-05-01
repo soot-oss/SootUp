@@ -1,5 +1,7 @@
 package de.upb.swt.soot.test;
 
+import static org.junit.Assert.assertTrue;
+
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
@@ -11,91 +13,81 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
 public class ReplaceUseRefVisitorTest {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-    JavaJimple javaJimple = JavaJimple.getInstance();
-    JavaClassType intType = factory.getClassType("int");
-    JavaClassType arrayType = factory.getClassType("Array");
+  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  JavaJimple javaJimple = JavaJimple.getInstance();
+  JavaClassType intType = factory.getClassType("int");
+  JavaClassType arrayType = factory.getClassType("Array");
 
-    Local base = JavaJimple.newLocal("base", arrayType);
-    Local index = JavaJimple.newLocal("index", intType);
-    Local newUse = JavaJimple.newLocal("newUse", intType);
+  Local base = JavaJimple.newLocal("base", arrayType);
+  Local index = JavaJimple.newLocal("index", intType);
+  Local newUse = JavaJimple.newLocal("newUse", intType);
 
+  FieldSignature fieldSignature = new FieldSignature(arrayType, "field", intType);
+  MethodSignature methodeWithOutParas =
+      new MethodSignature(arrayType, "invokeExpr", Collections.emptyList(), intType);
+  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
 
+  /** Test use replacing in case JArrayRef. */
+  @Test
+  public void testCaseArrayRef() {
 
-    FieldSignature fieldSignature = new FieldSignature(arrayType, "field", intType);
-    MethodSignature methodeWithOutParas =
-            new MethodSignature(arrayType, "invokeExpr", Collections.emptyList(), intType);
-    StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    // replace base with newUse
+    ReplaceUseRefVisitor visitor = new ReplaceUseRefVisitor(base, newUse);
+    Ref ref = javaJimple.newArrayRef(base, index);
+    ref.accept(visitor);
+    Ref newRef = visitor.getNewRef();
 
-    /**
-     * Test use replacing in case JArrayRef.
-     */
-    @Test
-    public void testCaseArrayRef(){
+    List<Value> expectedUses = new ArrayList<>();
+    expectedUses.add(newUse);
+    expectedUses.add(index);
 
-        //replace base with newUse
-        ReplaceUseRefVisitor visitor = new ReplaceUseRefVisitor(base, newUse);
-        Ref ref = javaJimple.newArrayRef(base, index);
-        ref.accept(visitor);
-        Ref newRef = visitor.getNewRef();
+    assertTrue(newRef.getUses().equals(expectedUses));
 
-        List<Value> expectedUses = new ArrayList<>();
-        expectedUses.add(newUse);
-        expectedUses.add(index);
+    // replace base two times
+    ref = javaJimple.newArrayRef(base, base);
+    ref.accept(visitor);
+    newRef = visitor.getNewRef();
 
-        assertTrue(newRef.getUses().equals(expectedUses));
+    expectedUses.set(1, newUse);
+    assertTrue(newRef.getUses().equals(expectedUses));
 
-        //replace base two times
-        ref = javaJimple.newArrayRef(base, base);
-        ref.accept(visitor);
-        newRef = visitor.getNewRef();
+    // no matched use
+    ref = javaJimple.newArrayRef(index, index);
+    ref.accept(visitor);
+    newRef = visitor.getNewRef();
 
-        expectedUses.set(1, newUse);
-        assertTrue(newRef.getUses().equals(expectedUses));
+    assertTrue(newRef.equivTo(ref));
+  }
 
-        //no matched use
-        ref = javaJimple.newArrayRef(index, index);
-        ref.accept(visitor);
-        newRef = visitor.getNewRef();
+  /** Test use replacing in case JInstanceFieldRef. */
+  @Test
+  public void testCaseInstanceFieldRef() {
 
-        assertTrue(newRef.equivTo(ref));
-    }
+    ReplaceUseRefVisitor visitor = new ReplaceUseRefVisitor(base, newUse);
 
-    /**
-     * Test use replacing in case JInstanceFieldRef.
-     */
-    @Test
-    public void testCaseInstanceFieldRef(){
+    // replace base with newUse
+    Ref ref = JavaJimple.newInstanceFieldRef(base, fieldSignature);
+    ref.accept(visitor);
+    Ref newRef = visitor.getNewRef();
 
-        ReplaceUseRefVisitor visitor = new ReplaceUseRefVisitor(base, newUse);
+    List<Value> expectedUses = new ArrayList<>();
+    expectedUses.add(newUse);
 
-        //replace base with newUse
-        Ref ref = JavaJimple.newInstanceFieldRef(base, fieldSignature);
-        ref.accept(visitor);
-        Ref newRef = visitor.getNewRef();
+    assertTrue(newRef.getUses().equals(expectedUses));
 
-        List<Value> expectedUses = new ArrayList<>();
-        expectedUses.add(newUse);
+    // no matched use
+    ref = JavaJimple.newInstanceFieldRef(index, fieldSignature);
+    ref.accept(visitor);
+    newRef = visitor.getNewRef();
 
-        assertTrue(newRef.getUses().equals(expectedUses));
-
-        //no matched use
-        ref = JavaJimple.newInstanceFieldRef(index, fieldSignature);
-        ref.accept(visitor);
-        newRef = visitor.getNewRef();
-
-        assertTrue(newRef.equals(ref));
-
-    }
+    assertTrue(newRef.equals(ref));
+  }
 }
