@@ -5,6 +5,7 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.visitor.ReplaceUseStmtVisitor;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.*;
@@ -16,9 +17,21 @@ import javax.annotation.Nonnull;
  *
  * <p>For example the code:
  *
- * <p>for(int i; i < k; i++); for(int i; i < k; i++);
+ * <pre>
+ *     i0 = 0
+ *     i0 = 1
+ *     i1 = i0 + 1
+ *     i0 = 5
+ * </pre>
  *
- * <p>would be transformed into: for(int i; i < k; i++); for(int j; j < k; j++);
+ * <pre>
+ *    i0 = 0
+ *    i0#0 = 1
+ *    i1 = i0#0 + 1
+ *    i0 = 5
+ * </pre>
+ *
+ * @author Zun Wang
  */
 public class LocalSplitter implements BodyInterceptor {
 
@@ -107,8 +120,9 @@ public class LocalSplitter implements BodyInterceptor {
     }
   }
 
-  protected Stmt withNewUse(Stmt oldStmt, Local oldUse, Local newUse) {
-    // TODO: Implement
-    return null;
+  protected Stmt withNewUse(@Nonnull Stmt oldStmt, @Nonnull Local oldUse, @Nonnull Local newUse) {
+    ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(oldUse, newUse);
+    oldStmt.accept(visitor);
+    return visitor.getNewStmt();
   }
 }
