@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/**
+ * Replace old use of an expr with a new use
+ *
+ * @author Zun Wang
+ */
 public class ReplaceUseExprVisitor extends AbstractExprVisitor {
 
   Value oldUse;

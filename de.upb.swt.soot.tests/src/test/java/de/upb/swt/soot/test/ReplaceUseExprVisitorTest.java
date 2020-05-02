@@ -21,6 +21,7 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Zun Wang */
 @Category(Java8Test.class)
 public class ReplaceUseExprVisitorTest {
 

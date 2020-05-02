@@ -4,6 +4,11 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.ref.*;
 import javax.annotation.Nonnull;
 
+/**
+ * Replace old use of a Ref with a new use
+ *
+ * @author Zun Wang
+ */
 public class ReplaceUseRefVisitor extends AbstractRefVisitor {
 
   Value oldUse;
