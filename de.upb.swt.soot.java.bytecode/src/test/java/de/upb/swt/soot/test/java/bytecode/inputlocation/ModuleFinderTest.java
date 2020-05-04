@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.powermock.reflect.Whitebox;
 
+/** @author Kaustubh Kelkar update on 16.04.2020 */
 @Category(Java9Test.class)
 public class ModuleFinderTest extends AnalysisInputLocationTest {
 
@@ -26,14 +27,14 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
   public void discoverModule() {
     ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
     Collection<String> modules = moduleFinder.discoverAllModules();
-    String computedModuleName = "Soot";
+    String computedModuleName = "MiniApp";
     assertTrue(modules.contains(computedModuleName));
   }
 
   @Test
   public void discoverModule2() {
     ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
-    AnalysisInputLocation inputLocation = moduleFinder.discoverModule("Soot");
+    AnalysisInputLocation inputLocation = moduleFinder.discoverModule("MiniApp");
     assertTrue(inputLocation instanceof PathBasedAnalysisInputLocation);
   }
 

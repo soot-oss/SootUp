@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
@@ -24,11 +25,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar update on 22.04.2020 */
+@Category(Java8Test.class)
 public class MethodDispatchResolverTest {
 
   private View view;
-  public static final String jarFile = "../shared-test-resources/Soot-4.0-SNAPSHOT.jar";
+  public static final String jarFile = "../shared-test-resources/java-miniapps/MiniApp.jar";
 
   @Before
   public void setUp() {
@@ -100,12 +104,11 @@ public class MethodDispatchResolverTest {
         strToStringSig,
         MethodDispatchResolver.resolveConcreteDispatch(view, strToStringSig));
     assertEquals(
-        "AbstractNamespace.toString() should resolve to Object.toString()",
+        "AbstractDataStructure.toString() should resolve to Object.toString()",
         factory.parseMethodSignature("java.lang.Object#toString(): java.lang.String"),
         MethodDispatchResolver.resolveConcreteDispatch(
             view,
-            factory.parseMethodSignature(
-                "de.upb.soot.namespaces.AbstractNamespace#toString(): java.lang.String")));
+            factory.parseMethodSignature("ds.AbstractDataStrcture#toString(): java.lang.String")));
   }
 
   @Test
@@ -128,11 +131,10 @@ public class MethodDispatchResolverTest {
         MethodDispatchResolver.resolveSpecialDispatch(view, strInitInvoke, strToStringSig));
 
     MethodSignature privateExplode =
-        factory.parseMethodSignature(
-            "de.upb.soot.namespaces.JavaClassPathNamespace#explode(java.lang.String): java.util.stream.Stream");
+        factory.parseMethodSignature("ds.Employee#setEmpName(java.lang.String): java.lang.String");
     JSpecialInvokeExpr privateExplodeInvoke =
         new JSpecialInvokeExpr(
-            new Local("jcp", factory.getClassType("de.upb.soot.namespaces.JavaClassPathNamespace")),
+            new Local("jcp", factory.getClassType("ds.Employee")),
             privateExplode,
             ImmutableUtils.immutableList(JavaJimple.getInstance().newStringConstant("abc")));
     assertEquals(
