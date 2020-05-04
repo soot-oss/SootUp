@@ -37,7 +37,18 @@ public class DuplicateCatchAllTrapRemoverTest {
     assertArrayEquals(originalBody.getTraps().toArray(), processedBody.getTraps().toArray());
   }
 
-  /** Test the correct removal of duplicate catch all traps. */
+  /** Test the correct removal of duplicate catch all traps.
+   * The correct transformation is the following:
+   *
+   * Before:
+   *    Trap: begin: a = "str" - end: b = (java.lang.String) a - handler: goto [?= b = (java.lang.String) a]
+   *    Trap: begin: b = "str" - end: b = (java.lang.String) a - handler: return b
+   *    Trap: begin: b = "str" - end: b = (java.lang.String) a - handler: return b
+   *
+   * After:
+   *    Trap: begin: a = "str" - end: b = (java.lang.String) a - handler: goto [?= b = (java.lang.String) a]
+   *    Trap: begin: b = "str" - end: b = (java.lang.String) a - handler: return b
+   */
   @Test
   public void testRemoveDuplicate() {
     Body originalBody = createBody(true);
@@ -63,8 +74,12 @@ public class DuplicateCatchAllTrapRemoverTest {
   }
 
   /**
-   * Creates the {@link Body} for each test case. Depending on the parameter, it adds 0 or 1 Traps
-   * that should be removed
+   * Creates a basic {@link Body} for each test case. Depending on the parameter, it adds Traps that should be removed.
+   *
+   * The {@link Trap}s with the following properties are generated:
+   * Trap: begin: a = "str" - end: b = (java.lang.String) a - handler: goto [?= b = (java.lang.String) a]
+   * Trap: begin: b = "str" - end: b = (java.lang.String) a - handler: return b
+   * Trap: begin: b = "str" - end: b = (java.lang.String) a - handler: return b (only created if containsDuplicate is true)
    *
    * @param containsDuplicate determines whether the Body contains a Trap that should be removed
    * @return the created Body
