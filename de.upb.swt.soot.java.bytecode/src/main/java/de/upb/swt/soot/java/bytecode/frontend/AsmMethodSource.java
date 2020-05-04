@@ -187,9 +187,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   @Override
   @Nonnull
   public Body resolveBody() throws AsmFrontendException {
-    Set<Local> bodyLocals = new HashSet<>();
-    List<Trap> bodyTraps = new ArrayList<>();
-    List<Stmt> bodyStmts = new ArrayList<>();
     // FIXME: [AD] add real line number
     Position bodyPos = NoPositionInformation.getInstance();
 
@@ -214,9 +211,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     }
 
     /* build body (add units, locals, traps, etc.) */
-    emitLocals(bodyLocals, bodyStmts);
-    emitTraps(bodyTraps);
-    emitStmts(bodyStmts);
+    emitLocals();
+    emitTraps();
+    emitStmts();
 
     /* clean up */
     locals = null;
@@ -225,8 +222,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     stack = null;
     frames = null;
 
-    // FIXME: add bodyStmts;
-    bodyBuilder.setLocals(bodyLocals).setTraps(bodyTraps).setPosition(bodyPos);
+    bodyBuilder.setPosition(bodyPos);
     Body body = bodyBuilder.build();
 
     for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
@@ -1964,22 +1960,22 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     return false;
   }
 
-  private void emitLocals(@Nonnull Collection<Local> jbl, @Nonnull Collection<Stmt> jbu)
-      throws AsmFrontendException {
+  private void emitLocals() throws AsmFrontendException {
 
+    Set<Local> bodyLocals = new HashSet<>();
     MethodSignature methodSignature = lazyMethodSignature.get();
 
     int iloc = 0;
     if (!lazyModifiers.get().contains(Modifier.STATIC)) {
       Local l = getLocal(iloc++);
-      jbu.add(
+      bodyBuilder.addStmt(
           Jimple.newIdentityStmt(
               l, Jimple.newThisRef(declaringClass), StmtPositionInfo.createNoStmtPositionInfo()));
     }
     int nrp = 0;
     for (Type ot : methodSignature.getParameterTypes()) {
       Local l = getLocal(iloc);
-      jbu.add(
+      bodyBuilder.addStmt(
           Jimple.newIdentityStmt(
               l, Jimple.newParameterRef(ot, nrp++), StmtPositionInfo.createNoStmtPositionInfo()));
       if (AsmUtil.isDWord(ot)) {
@@ -1988,10 +1984,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         iloc++;
       }
     }
-    jbl.addAll(locals.values());
+    bodyLocals.addAll(this.locals.values());
+    bodyBuilder.setLocals(bodyLocals);
   }
 
-  private void emitTraps(@Nonnull Collection<Trap> traps) throws AsmFrontendException {
+  private void emitTraps() throws AsmFrontendException {
+    List<Trap> traps = new ArrayList<>();
+
     JavaClassType throwable =
         JavaIdentifierFactory.getInstance().getClassType("java.lang.Throwable");
 
@@ -2016,21 +2015,21 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       labels.put(tc.start, start);
       labels.put(tc.end, end);
     }
+    bodyBuilder.setTraps(traps);
   }
 
-  private void emitStmts(@Nonnull List<Stmt> bodyStmts, @Nonnull Stmt u) {
-    // TODO: [ms] analyze StmtContainer container to improve this method?
+  private void emitStmts(@Nonnull Stmt u) {
+    // TODO: [ms] rename method and analyze StmtContainer container to improve this method?
     if (u instanceof StmtContainer) {
       for (Stmt uu : ((StmtContainer) u).stmts) {
-        emitStmts(bodyStmts, uu);
+        emitStmts(uu);
       }
     } else {
-      bodyStmts.add(u);
       bodyBuilder.addStmt(u);
     }
   }
 
-  private void emitStmts(@Nonnull List<Stmt> bodyStmts) {
+  private void emitStmts() {
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> labls = new ArrayDeque<>();
 
@@ -2047,7 +2046,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         continue;
       }
 
-      emitStmts(bodyStmts, u);
+      emitStmts(u);
 
       // If this is an exception handler, register the starting Stmt for it
       if (insn instanceof LabelNode) {
@@ -2089,7 +2088,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     // Emit the inline exception handlers
     for (LabelNode ln : inlineExceptionHandlers.keySet()) {
       Stmt handler = inlineExceptionHandlers.get(ln);
-      emitStmts(bodyStmts, handler);
+      emitStmts(handler);
 
       Collection<Stmt> traps = trapHandlers.get(ln);
       for (Stmt ub : traps) {
@@ -2100,7 +2099,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       // We need to jump to the original implementation
       Stmt targetUnit = units.get(ln);
       JGotoStmt gotoImpl = Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
-      bodyStmts.add(gotoImpl);
       bodyBuilder.addStmt(gotoImpl);
     }
 
@@ -2109,7 +2107,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       return;
     }
     Stmt end = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-    bodyStmts.add(end);
     bodyBuilder.addStmt(end);
 
     while (!labls.isEmpty()) {
