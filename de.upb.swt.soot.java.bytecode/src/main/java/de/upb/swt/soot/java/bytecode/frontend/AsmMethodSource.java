@@ -1962,7 +1962,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   private void emitLocals() throws AsmFrontendException {
 
-    Set<Local> bodyLocals = new HashSet<>();
     MethodSignature methodSignature = lazyMethodSignature.get();
 
     int iloc = 0;
@@ -1984,7 +1983,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         iloc++;
       }
     }
-    bodyLocals.addAll(this.locals.values());
+
+    Set<Local> bodyLocals = new HashSet<>(locals.values());
     bodyBuilder.setLocals(bodyLocals);
   }
 
@@ -2061,9 +2061,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           // We directly place this label
           Collection<Stmt> traps = trapHandlers.get((LabelNode) insn);
           for (Stmt ub : traps) {
-            // FIXME: [ms] re-implement setting targets
-            //   Stmt.$Accessor.addStmtPointingToTarget(ub, caughtEx);
-
+            bodyBuilder.addBranch(ub, caughtEx);
           }
           trapHandlers.replaceValues((LabelNode) insn, Collections.nCopies(traps.size(), caughtEx));
         }
@@ -2100,6 +2098,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       Stmt targetUnit = units.get(ln);
       JGotoStmt gotoImpl = Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
       bodyBuilder.addStmt(gotoImpl);
+      bodyBuilder.addBranch(gotoImpl, targetUnit);
     }
 
     /* set remaining labels & boxes to last Stmt of chain */
