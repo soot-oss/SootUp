@@ -29,7 +29,7 @@ public class NopEliminatorTest {
     Set<Local> locals = Collections.emptySet();
     List<Trap> traps = Collections.emptyList();
     List<Stmt> stmts = Collections.emptyList();
-    Body testBody = new Body(locals, traps, stmts, null);
+    Body testBody = Body.getNoBody(); // FIXME [ms] = new Body(locals, traps, stmts, null);
     Body processedBody = new NopEliminator().interceptBody(testBody);
 
     assertNotNull(processedBody);
@@ -93,7 +93,7 @@ public class NopEliminatorTest {
     Stmt strToA = JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
     Stmt bToA = JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
-    Stmt jump = JavaJimple.newGotoStmt(bToA, noPositionInfo);
+    Stmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
     List<Trap> traps = new ArrayList<>();
@@ -110,6 +110,6 @@ public class NopEliminatorTest {
       stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret);
     }
 
-    return new Body(locals, traps, stmts, null);
+    return Body.getNoBody(); // FIXME [ms] new Body(locals, traps, stmts, null);
   }
 }

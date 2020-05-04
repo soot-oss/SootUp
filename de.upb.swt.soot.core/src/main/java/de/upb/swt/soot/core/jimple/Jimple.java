@@ -466,8 +466,8 @@ public abstract class Jimple {
   }
 
   /** Constructs a GotoStmt(Stmt) grammar chunk. */
-  public static JGotoStmt newGotoStmt(Stmt target, StmtPositionInfo posInfo) {
-    return new JGotoStmt(target, posInfo);
+  public static JGotoStmt newGotoStmt(StmtPositionInfo posInfo) {
+    return new JGotoStmt(posInfo);
   }
 
   /** Constructs a NopStmt() grammar chunk. */
@@ -491,9 +491,8 @@ public abstract class Jimple {
   }
 
   /** Constructs a IfStmt(Condition, Stmt) grammar chunk. */
-  public static JIfStmt newIfStmt(
-      AbstractConditionExpr condition, Stmt target, StmtPositionInfo posInfo) {
-    return new JIfStmt(condition, target, posInfo);
+  public static JIfStmt newIfStmt(AbstractConditionExpr condition, StmtPositionInfo posInfo) {
+    return new JIfStmt(condition, posInfo);
   }
 
   /** Constructs a IdentityStmt(Local, IdentityRef) grammar chunk. */
@@ -520,7 +519,7 @@ public abstract class Jimple {
       List<Stmt> targets,
       Stmt defaultTarget,
       StmtPositionInfo posInfo) {
-    return new JSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
+    return new JSwitchStmt(key, lowIndex, highIndex, posInfo);
   }
 
   /**
@@ -532,7 +531,7 @@ public abstract class Jimple {
       List<Stmt> targets,
       Stmt defaultTarget,
       StmtPositionInfo posInfo) {
-    return new JSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
+    return new JSwitchStmt(key, lookupValues, posInfo);
   }
 
   /** Constructs a Local with the given name and type. */

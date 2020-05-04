@@ -49,11 +49,6 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public List<Stmt> getStmts() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public List<Stmt> getStmtsPointingToThis() {
     throw new UnsupportedOperationException();
   }

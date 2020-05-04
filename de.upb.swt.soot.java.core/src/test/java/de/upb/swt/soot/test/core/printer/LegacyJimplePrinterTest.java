@@ -2,6 +2,8 @@ package de.upb.swt.soot.test.core.printer;
 
 import static org.junit.Assert.*;
 
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
@@ -27,13 +29,13 @@ import org.junit.Test;
 
 public class LegacyJimplePrinterTest {
 
-  SootClass buildClass(List<Stmt> stmts) {
+  SootClass buildClass(MutableGraph<Stmt> stmtGraph) {
 
     Project project =
         JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
     View view = project.createOnDemandView();
 
-    Body body = new Body(Collections.emptySet(), Collections.emptyList(), stmts, null);
+    Body body = new Body(Collections.emptySet(), Collections.emptyList(), stmtGraph, null);
 
     MethodSignature methodSignature =
         view.getIdentifierFactory()
@@ -68,15 +70,20 @@ public class LegacyJimplePrinterTest {
     lookupValues.add(IntConstant.getInstance(42));
     lookupValues.add(IntConstant.getInstance(33102));
 
-    ArrayList<Stmt> targets = new ArrayList<>();
     final JReturnVoidStmt returnstmt = new JReturnVoidStmt(noPosInfo);
     final JNopStmt jNop = new JNopStmt(noPosInfo);
-    targets.add(returnstmt);
-    targets.add(jNop);
 
-    Stmt tableSwitch = new JSwitchStmt(IntConstant.getInstance(42), 4, 5, targets, jNop, noPosInfo);
+    Stmt tableSwitch = new JSwitchStmt(IntConstant.getInstance(42), 4, 5, noPosInfo);
 
-    SootClass tableClass = buildClass(Arrays.asList(tableSwitch, jNop, returnstmt));
+    final MutableGraph<Stmt> graph = GraphBuilder.directed().build();
+    graph.addNode(tableSwitch);
+    graph.addNode(jNop);
+    graph.addNode(returnstmt);
+
+    graph.putEdge(tableSwitch, jNop);
+    graph.putEdge(tableSwitch, returnstmt);
+
+    SootClass tableClass = buildClass(graph);
 
     StringWriter sw = new StringWriter();
     new Printer(Printer.Option.LegacyMode)
@@ -95,10 +102,17 @@ public class LegacyJimplePrinterTest {
             "return"),
         Utils.filterJimple(sw.toString()));
 
-    Stmt lookupSwitch =
-        new JSwitchStmt(IntConstant.getInstance(123), lookupValues, targets, jNop, noPosInfo);
+    Stmt lookupSwitch = new JSwitchStmt(IntConstant.getInstance(123), lookupValues, noPosInfo);
 
-    SootClass lookupClass = buildClass(Arrays.asList(lookupSwitch, jNop, returnstmt));
+    final MutableGraph<Stmt> lookupGraph = GraphBuilder.directed().build();
+    graph.addNode(lookupSwitch);
+    graph.addNode(jNop);
+    graph.addNode(returnstmt);
+
+    graph.putEdge(lookupSwitch, jNop);
+    graph.putEdge(lookupSwitch, returnstmt);
+
+    SootClass lookupClass = buildClass(lookupGraph);
 
     StringWriter sw2 = new StringWriter();
     new Printer(Printer.Option.LegacyMode)
@@ -120,10 +134,8 @@ public class LegacyJimplePrinterTest {
 
   @Test(expected = RuntimeException.class)
   public void testValidOptions() {
+    final MutableGraph<Stmt> stmtGraph = GraphBuilder.directed().build();
     Printer p = new Printer(Printer.Option.UseImports, Printer.Option.LegacyMode);
-    p.printTo(
-        buildClass(
-            Collections.singletonList(new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo()))),
-        new PrintWriter(new StringWriter()));
+    p.printTo(buildClass(stmtGraph), new PrintWriter(new StringWriter()));
   }
 }

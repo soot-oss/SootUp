@@ -21,7 +21,6 @@ import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
-import java.util.List;
 import javax.annotation.Nonnull;
 
 /** Represents the assignment of one value to another */
@@ -137,28 +136,13 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
     if (!containsFieldRef()) {
       throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
     }
-
+    // TODO: [MS] what if both Op's are a FieldRef? verify it in a verifier that this does not
+    // happen and it works always via Local;
     if (getLeftOp() instanceof JFieldRef) {
       return (JFieldRef) getLeftOp();
     } else {
       return (JFieldRef) getRightOp();
     }
-  }
-
-  /*
-   * (non-Javadoc)
-   * How can rvalue be an instance of StmtOwner(StmtBoxOwner), or StmtOwner implements Value????
-   *
-   */
-  @Override
-  public List<Stmt> getStmts() {
-    // handle possible PhiExpr's
-    Value rvalue = getRightOp();
-    if (rvalue instanceof Stmt || rvalue instanceof Trap) {
-      return ((Stmt) rvalue).getStmts();
-    }
-
-    return super.getStmts();
   }
 
   /*

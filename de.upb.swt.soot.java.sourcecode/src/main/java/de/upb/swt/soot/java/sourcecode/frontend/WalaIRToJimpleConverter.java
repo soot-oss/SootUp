@@ -22,8 +22,6 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
@@ -46,7 +44,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import scala.annotation.meta.field;
 
 /**
  * Converter which converts WALA IR to jimple.
@@ -383,17 +381,18 @@ public class WalaIRToJimpleConverter {
     return modifiers;
   }
 
-  private @Nullable Body createBody(
+  @Nonnull
+  private Body createBody(
       MethodSignature methodSignature, EnumSet<Modifier> modifiers, AstMethod walaMethod) {
 
     if (walaMethod.isAbstract()) {
-      return null;
+      return Body.getNoBody();
     }
+
+    final Body.BodyBuilder builder = Body.builder();
 
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
-      List<Trap> traps = new ArrayList<>();
-      List<Stmt> stmts = new ArrayList<>();
       LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
       // convert all wala instructions to jimple statements
       SSAInstruction[] insts = (SSAInstruction[]) cfg.getInstructions();
@@ -413,21 +412,34 @@ public class WalaIRToJimpleConverter {
                   thisLocal,
                   Jimple.newThisRef(thisType),
                   convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-          stmts.add(stmt);
+          builder.addStmt(stmt);
         }
 
         // wala's first parameter is the "this" reference for non-static methods
-        for (int i = walaMethod.isStatic() ? 0 : 1; i < walaMethod.getNumberOfParameters(); i++) {
-          TypeReference t = walaMethod.getParameterType(i);
-          Type type = convertType(t);
-          Local paraLocal = localGenerator.generateParameterLocal(type, i);
+        if (walaMethod.isStatic()) {
+          for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
+            Type type = convertType(walaMethod.getParameterType(i));
+            Local paraLocal = localGenerator.generateParameterLocal(type, i);
 
-          Stmt stmt =
-              Jimple.newIdentityStmt(
-                  paraLocal,
-                  Jimple.newParameterRef(type, walaMethod.isStatic() ? i : i - 1),
-                  convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-          stmts.add(stmt);
+            Stmt stmt =
+                Jimple.newIdentityStmt(
+                    paraLocal,
+                    Jimple.newParameterRef(type, i),
+                    convertPositionInfo(debugInfo.getInstructionPosition(0), null));
+            builder.addStmt(stmt);
+          }
+        } else {
+          for (int i = 1; i < walaMethod.getNumberOfParameters(); i++) {
+            Type type = convertType(walaMethod.getParameterType(i));
+            Local paraLocal = localGenerator.generateParameterLocal(type, i);
+
+            Stmt stmt =
+                Jimple.newIdentityStmt(
+                    paraLocal,
+                    Jimple.newParameterRef(type, i - 1),
+                    convertPositionInfo(debugInfo.getInstructionPosition(0), null));
+            builder.addStmt(stmt);
+          }
         }
 
         // TODO 2. convert traps
@@ -445,6 +457,9 @@ public class WalaIRToJimpleConverter {
           }
         }
 
+        /*
+        FIXME: [ms] leftover refactoring to jgrapht
+
         // add return void stmt for methods with return type being void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
           Stmt ret;
@@ -460,10 +475,16 @@ public class WalaIRToJimpleConverter {
           }
           iIndex2Stmt.put(-1, ret); // -1 is the end of the method
         }
-        // set target for all branching statements
+        // FIXME: [ms] set target for all branching statements
         List<Stmt> newStmts = instConverter.setUpTargets(iIndex2Stmt);
         stmts.addAll(newStmts);
-        return new Body(localGenerator.getLocals(), traps, stmts, convertPosition(bodyPos));
+
+        */
+
+        return builder
+            .setLocals(localGenerator.getLocals())
+            .setPosition(convertPosition(bodyPos))
+            .build();
       }
     }
 

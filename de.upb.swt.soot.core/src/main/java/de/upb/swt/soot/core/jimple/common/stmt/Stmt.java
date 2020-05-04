@@ -38,24 +38,21 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     return Collections.emptyList();
   }
 
-  /** Returns a list of Stmts defined in this Stmt; typically branch targets. */
-  @Nonnull
-  public List<Stmt> getStmts() {
-    return Collections.emptyList();
-  }
-
   /** Returns a list of Stmts pointing to this Stmt. */
   @Nonnull
+  // TODO [ms] refactor!
   public List<Stmt> getStmtsPointingToThis() {
     return Collections.unmodifiableList(stmtsPointingToThis);
   }
 
   @Deprecated
+  // TODO [ms] refactor!
   private void addStmtPointingToThis(@Nonnull Stmt fromStmt) {
     stmtsPointingToThis.add(fromStmt);
   }
 
   @Deprecated
+  // TODO [ms] refactor!
   private void removeStmtPointingToThis(@Nonnull Stmt fromStmt) {
     stmtsPointingToThis.remove(fromStmt);
   }
@@ -79,19 +76,19 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
 
   /**
    * Returns true if execution after this statement may continue at the following statement. (e.g.
-   * GotoStmt will return false and IfStmt will return true).
+   * GotoStmt will return false and e.g. IfStmt will return true).
    */
   public abstract boolean fallsThrough();
 
   /**
    * Returns true if execution after this statement does not necessarily continue at the following
-   * statement. GotoStmt and IfStmt will both return true.
+   * statement. The {@link BranchingStmt}'s GotoStmt, JSwitchStmt and IfStmt will return true.
    */
   public abstract boolean branches();
 
   public abstract void toString(StmtPrinter up);
 
-  /** Used to implement the Switchable construct. */
+  /** Used to implement the Switchable construct via OOP */
   public void accept(@Nonnull Visitor sw) {}
 
   public boolean containsInvokeExpr() {
@@ -124,27 +121,5 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
 
   public boolean isBranchTarget() {
     return !stmtsPointingToThis.isEmpty();
-  }
-
-  /** This class is for internal use only. It will be removed in the future. */
-  @Deprecated
-  public static class $Accessor {
-    // This class deliberately starts with a $-sign to discourage usage
-    // of this Soot implementation detail.
-
-    /** Violates immutability. Only use this for legacy code. */
-    @Deprecated
-    public static void addStmtPointingToTarget(@Nonnull Stmt fromStmt, @Nonnull Stmt targetStmt) {
-      targetStmt.addStmtPointingToThis(fromStmt);
-    }
-
-    /** Violates immutability. Only use this for legacy code. */
-    @Deprecated
-    public static void removeStmtPointingToTarget(
-        @Nonnull Stmt fromStmt, @Nonnull Stmt targetStmt) {
-      targetStmt.removeStmtPointingToThis(fromStmt);
-    }
-
-    private $Accessor() {}
   }
 }

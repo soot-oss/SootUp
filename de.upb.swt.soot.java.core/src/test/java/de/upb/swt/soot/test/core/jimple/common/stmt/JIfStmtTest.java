@@ -45,7 +45,7 @@ public class JIfStmtTest {
 
     AbstractConditionExpr condition =
         new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(123));
-    Stmt ifStmt = new JIfStmt(condition, target, nop);
+    Stmt ifStmt = new JIfStmt(condition, nop);
 
     // toString
     Assert.assertEquals("if 42 == 123 goto nop", ifStmt.toString());
@@ -54,19 +54,15 @@ public class JIfStmtTest {
     Assert.assertFalse(ifStmt.equivTo(new JNopStmt(nop)));
 
     Assert.assertTrue(ifStmt.equivTo(ifStmt));
-    Assert.assertTrue(ifStmt.equivTo(new JIfStmt(condition, target, nop)));
+    Assert.assertTrue(ifStmt.equivTo(new JIfStmt(condition, nop)));
     Assert.assertTrue(
         ifStmt.equivTo(
             new JIfStmt(
-                new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(123)),
-                target,
-                nop)));
+                new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(123)), nop)));
 
     Assert.assertFalse(
         ifStmt.equivTo(
             new JIfStmt(
-                new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(666)),
-                target,
-                nop)));
+                new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(666)), nop)));
   }
 }

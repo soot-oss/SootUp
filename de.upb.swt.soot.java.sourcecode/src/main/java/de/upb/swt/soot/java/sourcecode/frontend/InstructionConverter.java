@@ -101,11 +101,15 @@ public class InstructionConverter {
   private final AstMethod walaMethod;
   private final SymbolTable symbolTable;
   private final LocalGenerator localGenerator;
-  // <ifStmt, iindex>
+
+  private final Map<Stmt, Integer> targets = new HashMap<>();
+
+  // FIXME: [ms] remove
   private final Map<JIfStmt, Integer> targetsOfIfStmts;
   private final Map<JGotoStmt, Integer> targetsOfGotoStmts;
   private final Map<JSwitchStmt, List<Integer>> targetsOfLookUpSwitchStmts;
   private final Map<JSwitchStmt, Integer> defaultOfLookUpSwitchStmts;
+
   private final Map<Integer, Local> locals;
   private final IdentifierFactory identifierFactory;
 
@@ -344,7 +348,6 @@ public class InstructionConverter {
     JIfStmt ifStmt =
         Jimple.newIfStmt(
             condition,
-            nopStmt,
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     stmts.add(ifStmt);
@@ -356,7 +359,6 @@ public class InstructionConverter {
     JIfStmt assertIfStmt =
         Jimple.newIfStmt(
             assertionExpr,
-            nopStmt,
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     stmts.add(assertIfStmt);
@@ -861,7 +863,7 @@ public class InstructionConverter {
     }
     Stmt target = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
 
-    JIfStmt ifStmt = Jimple.newIfStmt(condition, target, posInfo);
+    JIfStmt ifStmt = Jimple.newIfStmt(condition, posInfo);
     // target equals -1 refers to the end of the method
     this.targetsOfIfStmts.put(ifStmt, condInst.getTarget());
     stmts.add(ifStmt);
@@ -1078,10 +1080,9 @@ public class InstructionConverter {
     Stmt target = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     JGotoStmt gotoStmt =
         Jimple.newGotoStmt(
-            target,
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(gotoInst.iIndex()), null));
-    this.targetsOfGotoStmts.put(gotoStmt, gotoInst.getTarget());
+    targets.put(gotoStmt, gotoInst.getTarget());
     return gotoStmt;
   }
 
@@ -1194,16 +1195,14 @@ public class InstructionConverter {
             Stmt target = iIndex2Stmt.get(iTarget);
             newStmt =
                 new JIfStmt(
-                    (AbstractConditionExpr) oldStmt.getCondition(),
-                    target,
-                    oldStmt.getPositionInfo());
+                    (AbstractConditionExpr) oldStmt.getCondition(), oldStmt.getPositionInfo());
           }
         } else if (stmt instanceof JGotoStmt) {
           JGotoStmt oldStmt = (JGotoStmt) stmt;
           int iTarget = this.targetsOfGotoStmts.get(stmt);
           if (iIndex2Stmt.containsKey(iTarget)) {
             Stmt target = iIndex2Stmt.get(iTarget);
-            newStmt = new JGotoStmt(target, oldStmt.getPositionInfo());
+            newStmt = new JGotoStmt(oldStmt.getPositionInfo());
           }
         } else if (stmt instanceof JSwitchStmt) {
           JSwitchStmt oldStmt = (JSwitchStmt) stmt;
@@ -1220,12 +1219,7 @@ public class InstructionConverter {
               targets.add(target);
             }
             newStmt =
-                new JSwitchStmt(
-                    oldStmt.getKey(),
-                    oldStmt.getValues(),
-                    targets,
-                    defaultTarget,
-                    oldStmt.getPositionInfo());
+                new JSwitchStmt(oldStmt.getKey(), oldStmt.getValues(), oldStmt.getPositionInfo());
           }
         }
         stmts.add(newStmt);

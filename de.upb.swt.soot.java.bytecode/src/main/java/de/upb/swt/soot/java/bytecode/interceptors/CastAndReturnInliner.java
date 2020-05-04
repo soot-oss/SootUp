@@ -47,6 +47,8 @@ public class CastAndReturnInliner implements BodyInterceptor {
   public Body interceptBody(@Nonnull Body originalBody) {
     // In case of performance issues, these copies could be avoided
     // in cases where the content is not changed by adding logic for this.
+
+    Body.BodyBuilder bodyBuilder = Body.builder();
     List<Stmt> bodyStmts = new ArrayList<>(originalBody.getStmts());
     List<Trap> bodyTraps = new ArrayList<>(originalBody.getTraps());
 
@@ -57,10 +59,10 @@ public class CastAndReturnInliner implements BodyInterceptor {
       }
       JGotoStmt gotoStmt = (JGotoStmt) u;
 
-      if (!(gotoStmt.getTarget() instanceof JAssignStmt)) {
+      if (!(gotoStmt.getTarget(originalBody) instanceof JAssignStmt)) {
         continue;
       }
-      JAssignStmt assign = (JAssignStmt) gotoStmt.getTarget();
+      JAssignStmt assign = (JAssignStmt) gotoStmt.getTarget(originalBody);
 
       if (!(assign.getRightOp() instanceof JCastExpr)) {
         continue;
@@ -89,14 +91,15 @@ public class CastAndReturnInliner implements BodyInterceptor {
             if (i == j) continue;
 
             Stmt toFixStmt = bodyStmts.get(j);
-            Stmt fixedStmt = replaceTargetsOfStmt(toFixStmt, gotoStmt, newStmt);
+            Stmt fixedStmt = replaceTargetsOfStmt(originalBody, toFixStmt, gotoStmt, newStmt);
             bodyStmts.set(j, fixedStmt);
           }
         }
       }
     }
 
-    return originalBody.withStmts(bodyStmts).withTraps(bodyTraps);
+    // FIXME [ms] leftover: return originalBody.withStmts(bodyStmts).withTraps(bodyTraps);
+    return originalBody;
   }
 
   /**
@@ -125,20 +128,26 @@ public class CastAndReturnInliner implements BodyInterceptor {
    */
   @Nonnull
   private Stmt replaceTargetsOfStmt(
-      @Nonnull Stmt toFixStmt, @Nonnull JGotoStmt gotoStmt, @Nonnull JReturnStmt newStmt) {
+      Body originalBody,
+      @Nonnull Stmt toFixStmt,
+      @Nonnull JGotoStmt gotoStmt,
+      @Nonnull JReturnStmt newStmt) {
     if (toFixStmt instanceof JIfStmt) {
       JIfStmt toFixIfStmt = (JIfStmt) toFixStmt;
-      if (toFixIfStmt.getTarget() == gotoStmt) {
-        return toFixIfStmt.withTarget(newStmt);
+      if (toFixIfStmt.getTarget(originalBody) == gotoStmt) {
+
+        //  FIXME [ms] leftover:set up targets
+        //        return toFixIfStmt.withTarget();
       }
     } else if (toFixStmt instanceof JGotoStmt) {
       JGotoStmt toFixGotoStmt = (JGotoStmt) toFixStmt;
-      if (toFixGotoStmt.getTarget() == gotoStmt) {
-        return toFixGotoStmt.withTarget(newStmt);
+      if (toFixGotoStmt.getTarget(originalBody) == gotoStmt) {
+        //  FIXME [ms] leftover:set up targets
+        //        return toFixGotoStmt.withTarget();
       }
     } else if (toFixStmt instanceof JSwitchStmt) {
       JSwitchStmt toFixSwitchStmt = (JSwitchStmt) toFixStmt;
-      List<Stmt> targets = toFixSwitchStmt.getTargets();
+      List<Stmt> targets = originalBody.getBranchTargets(toFixSwitchStmt);
       List<Stmt> copiedTargets = null;
       for (int k = 0; k < targets.size(); k++) {
         Stmt switchTarget = targets.get(k);
@@ -150,7 +159,8 @@ public class CastAndReturnInliner implements BodyInterceptor {
         }
       }
       if (copiedTargets != null) {
-        return toFixSwitchStmt.withTargets(copiedTargets);
+        //  FIXME [ms] leftover:set up targets
+        //        return toFixSwitchStmt.withTargets(copiedTargets);
       }
     }
 

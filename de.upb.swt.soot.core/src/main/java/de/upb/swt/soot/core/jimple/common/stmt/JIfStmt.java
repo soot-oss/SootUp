@@ -32,38 +32,34 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
+import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
 /** conditional jumps to a target Stmt, otherwise the flow continues to the next Stmt. */
-public final class JIfStmt extends Stmt implements Copyable {
+public final class JIfStmt extends Stmt implements Copyable, BranchingStmt {
 
   @Nonnull private final AbstractConditionExpr condition;
-  @Nonnull private Stmt target = null;
 
-  @Nonnull private List<Stmt> targets;
-
-  public JIfStmt(
-      @Nonnull AbstractConditionExpr condition,
-      @Nonnull Stmt target,
-      @Nonnull StmtPositionInfo positionInfo) {
+  public JIfStmt(@Nonnull AbstractConditionExpr condition, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.condition = condition;
-    setTarget(target);
   }
 
   @Override
   public String toString() {
-    Stmt t = getTarget();
-    String target = "(branch)";
-    if (!t.branches()) {
-      target = t.toString();
-    }
-    return Jimple.IF + " " + getCondition().toString() + " " + Jimple.GOTO + " " + target;
+    /*  // TODO [ms] leftover  Stmt t = getTarget();
+       String target = "(branch)";
+       if (!t.branches()) {
+         target = t.toString();
+       }
+    */
+    return Jimple.IF
+        + " "
+        + getCondition().toString(); // TODO [ms] leftover + " " + Jimple.GOTO + " " + target;
   }
 
   @Override
@@ -71,29 +67,27 @@ public final class JIfStmt extends Stmt implements Copyable {
     up.literal(Jimple.IF);
     up.literal(" ");
     condition.toString(up);
+    /*
     up.literal(" ");
     up.literal(Jimple.GOTO);
     up.literal(" ");
     up.stmtRef(target, true);
+    */
   }
 
   public Value getCondition() {
     return condition;
   }
 
-  public Stmt getTarget() {
-    return target;
+  public Stmt getTarget(Body body) {
+    // TODO: [ms] validate in builder!
+    return getTargetStmts(body).get(0);
   }
 
-  /** Violates immutability. Only use this for legacy code. */
-  @Deprecated
-  private void setTarget(@Nonnull Stmt target) {
-    if (this.target != null) {
-      Stmt.$Accessor.removeStmtPointingToTarget(this, this.target);
-    }
-    this.target = target;
-    this.targets = Collections.singletonList(target);
-    Stmt.$Accessor.addStmtPointingToTarget(this, target);
+  @Override
+  @Nonnull
+  public List<Stmt> getTargetStmts(Body body) {
+    return body.getBranchTargets(this);
   }
 
   @Override
@@ -102,12 +96,6 @@ public final class JIfStmt extends Stmt implements Copyable {
     List<Value> list = new ArrayList<>(condition.getUses());
     list.add(condition);
     return list;
-  }
-
-  @Override
-  @Nonnull
-  public final List<Stmt> getStmts() {
-    return targets;
   }
 
   @Override
@@ -132,36 +120,16 @@ public final class JIfStmt extends Stmt implements Copyable {
 
   @Override
   public int equivHashCode() {
-    return condition.equivHashCode() + 31 * target.equivHashCode();
+    return condition.equivHashCode();
   }
 
   @Nonnull
   public JIfStmt withCondition(@Nonnull AbstractConditionExpr condition) {
-    return new JIfStmt(condition, getTarget(), getPositionInfo());
-  }
-
-  @Nonnull
-  public JIfStmt withTarget(@Nonnull Stmt target) {
-    return new JIfStmt((AbstractConditionExpr) getCondition(), target, getPositionInfo());
+    return new JIfStmt(condition, getPositionInfo());
   }
 
   @Nonnull
   public JIfStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JIfStmt((AbstractConditionExpr) getCondition(), getTarget(), positionInfo);
-  }
-
-  /** This class is for internal use only. It will be removed in the future. */
-  @Deprecated
-  public static class $Accessor {
-    // This class deliberately starts with a $-sign to discourage usage
-    // of this Soot implementation detail.
-
-    /** Violates immutability. Only use this for legacy code. */
-    @Deprecated
-    public static void setTarget(@Nonnull JIfStmt fromStmt, @Nonnull Stmt targetStmt) {
-      fromStmt.setTarget(targetStmt);
-    }
-
-    private $Accessor() {}
+    return new JIfStmt((AbstractConditionExpr) getCondition(), positionInfo);
   }
 }

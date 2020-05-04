@@ -2,6 +2,8 @@ package de.upb.swt.soot.test.core.printer;
 
 import static org.junit.Assert.*;
 
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
@@ -9,6 +11,7 @@ import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.PrimitiveType;
@@ -54,18 +57,21 @@ public class PrinterTest {
         JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
     View view = project.createOnDemandView();
 
+    final MutableGraph<Stmt> graph = GraphBuilder.directed().build();
+    graph.addNode(new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
+
     Body bodyOne =
         new Body(
             Collections.emptySet(),
             Collections.emptyList(),
-            Collections.singletonList(new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo())),
-            null);
+            graph,
+            NoPositionInformation.getInstance());
     Body bodyTwo =
         new Body(
             Collections.emptySet(),
             Collections.emptyList(),
-            Collections.singletonList(new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo())),
-            null);
+            graph,
+            NoPositionInformation.getInstance());
 
     String className = "some.package.SomeClass";
     MethodSignature methodSignatureOne =

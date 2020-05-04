@@ -62,6 +62,8 @@ public class NopEliminator implements BodyInterceptor {
     if (copyLastStmt) {
       newStmtList.add(lastStmt);
     }
-    return originalBody.withStmts(newStmtList);
+
+    // FIXME: [ms] return originalBody.withStmts(newStmtList)
+    return originalBody;
   }
 }

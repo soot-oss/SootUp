@@ -30,59 +30,48 @@ import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
+import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.Copyable;
-import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.List;
 import javax.annotation.Nonnull;
 
 /** Unconditionally jumps to a target Stmt */
-public final class JGotoStmt extends Stmt implements Copyable {
+public final class JGotoStmt extends Stmt implements Copyable, BranchingStmt {
 
-  @Nonnull private Stmt target;
-  @Nonnull private List<Stmt> targets;
-
-  public JGotoStmt(Stmt target, StmtPositionInfo positionInfo) {
+  public JGotoStmt(StmtPositionInfo positionInfo) {
     super(positionInfo);
-    setTarget(target);
   }
 
   @Override
   public String toString() {
-    Stmt t = getTarget();
+    /*    TODO: [ms] Stmt t = getTarget();
     String target = "(branch)";
     if (!t.branches()) {
       target = t.toString();
     }
-    return Jimple.GOTO + " [?= " + target + "]";
+    */
+    return Jimple.GOTO; // + " [?= " + target + "]";
   }
 
   @Override
   public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.GOTO);
-    up.literal(" ");
-    up.stmtRef(getTarget(), true);
+    /*  TODO: [ms]  up.literal(" ");
+       up.stmtRef(getTarget(), true);
+
+    */
   }
 
-  /** Violates immutability. Only use this for legacy code. */
-  @Deprecated
-  private void setTarget(@Nonnull Stmt target) {
-    if (this.target != null) {
-      Stmt.$Accessor.removeStmtPointingToTarget(this, this.target);
-    }
-    this.target = target;
-    targets = ImmutableUtils.immutableList(target);
-    Stmt.$Accessor.addStmtPointingToTarget(this, target);
-  }
-
-  public Stmt getTarget() {
-    return target;
+  public Stmt getTarget(Body body) {
+    // TODO: [ms] validate in builder!
+    return getTargetStmts(body).get(0);
   }
 
   @Override
   @Nonnull
-  public List<Stmt> getStmts() {
-    return targets;
+  public List<Stmt> getTargetStmts(Body body) {
+    return body.getBranchTargets(this);
   }
 
   @Override
@@ -105,23 +94,21 @@ public final class JGotoStmt extends Stmt implements Copyable {
     return comparator.caseGotoStmt(this, o);
   }
 
+  // TODO: [ms] method is now useless w/o target information!
   @Override
   public int equivHashCode() {
-    return target.equivHashCode();
-  }
-
-  @Nonnull
-  public JGotoStmt withTarget(@Nonnull Stmt target) {
-    return new JGotoStmt(target, getPositionInfo());
+    // return target.equivHashCode();
+    return -42;
   }
 
   @Nonnull
   public JGotoStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JGotoStmt(getTarget(), positionInfo);
+    return new JGotoStmt(positionInfo);
   }
 
   /** This class is for internal use only. It will be removed in the future. */
   @Deprecated
+  // FIXME: [ms] leftover
   public static class $Accessor {
     // This class deliberately starts with a $-sign to discourage usage
     // of this Soot implementation detail.
@@ -129,7 +116,8 @@ public final class JGotoStmt extends Stmt implements Copyable {
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
     public static void setTarget(@Nonnull JGotoStmt stmt, @Nonnull Stmt target) {
-      stmt.setTarget(target);
+      // stmt.setTarget(target);
+
     }
 
     private $Accessor() {}

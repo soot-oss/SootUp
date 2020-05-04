@@ -1,5 +1,6 @@
 package de.upb.swt.soot.core.graph;
 
+import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -30,7 +31,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
   /**
    * Performs the work that is required to construct any sort of {@code IStmtGraph}.
    *
-   * @param body The body of the methodRef for which to construct a control flow graph.
+   * @param body The body of the method for which to construct a control flow graph.
    */
   protected AbstractStmtGraph(Body body) {
     this.body = body;
@@ -39,7 +40,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
   }
 
   /**
-   * Utility methodRef for {@code IStmtGraph} constructors. It computes the edges corresponding to
+   * Utility method for {@code IStmtGraph} constructors. It computes the edges corresponding to
    * unexceptional control flow.
    *
    * @param stmtToSuccs A {@link Map} from {@link Stmt}s to {@link List}s of {@link Stmt}s. This is
@@ -51,6 +52,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
    *     buildUnexceptionalEdges} will add a mapping for every {@code Stmt} in the body to a list of
    *     its unexceptional predecessors.
    */
+  // TODO: [ms] refactor to use jgrapht?
   protected void buildUnexceptionalEdges(
       Map<Stmt, List<Stmt>> stmtToSuccs, Map<Stmt, List<Stmt>> stmtToPreds) {
     Iterator<Stmt> stmtIt = orderedStmts.iterator();
@@ -75,7 +77,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
       }
 
       if (currentStmt.branches()) {
-        for (Stmt target : currentStmt.getStmts()) {
+        for (Stmt target : ((BranchingStmt) currentStmt).getTargetStmts(body)) {
           // Arbitrary bytecode can branch to the same
           // target it falls through to, so we screen for duplicates:
           if (!successors.contains(target)) {
@@ -96,14 +98,14 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
   }
 
   /**
-   * Utility methodRef used in the construction of @link IStmtGraph}s, to be called only after the
+   * Utility method used in the construction of @link IStmtGraph}s, to be called only after the
    * stmtToPreds and stmtToSuccs maps have been built.
    *
    * <p><code>IStmtGraph</code> provides an implementation of <code>buildHeadsAndTails()</code>
    * which defines the graph's set of heads to include the first {@link Stmt} in the graph's body,
    * together with any other {@code Stmt} which has no predecessors. It defines the graph's set of
    * tails to include all {@code Stmt}s with no successors. Subclasses of <code>IStmtGraph</code>
-   * may override this methodRef to change the criteria for classifying a node as a head or tail.
+   * may override this method to change the criteria for classifying a node as a head or tail.
    */
   protected void buildHeadsAndTails() {
     tails = new ArrayList<>();
@@ -131,11 +133,11 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
   }
 
   /**
-   * Utility methodRef that produces a new map from the {@link Stmt}s of this graph's body to the
-   * union of the values stored in the two argument {@link Map}s, used to combine the maps of
-   * exceptional and unexceptional predecessors and successors into maps of all predecessors and
-   * successors. The values stored in both argument maps must be {@link List}s of {@link Stmt}s,
-   * which are assumed not to contain any duplicate {@code Stmt}s.
+   * Utility method that produces a new map from the {@link Stmt}s of this graph's body to the union
+   * of the values stored in the two argument {@link Map}s, used to combine the maps of exceptional
+   * and unexceptional predecessors and successors into maps of all predecessors and successors. The
+   * values stored in both argument maps must be {@link List}s of {@link Stmt}s, which are assumed
+   * not to contain any duplicate {@code Stmt}s.
    *
    * @param mapA The first map to be combined.
    * @param mapB The second map to be combined.
@@ -188,7 +190,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
   }
 
   /**
-   * Utility methodRef for adding an edge to maps representing the CFG.
+   * Utility method for adding an edge to maps representing the CFG.
    *
    * @param stmtToSuccs The {@link Map} from {@link Stmt}s to {@link List}s of their successors.
    * @param stmtToPreds The {@link Map} from {@link Stmt}s to {@link List}s of their successors.

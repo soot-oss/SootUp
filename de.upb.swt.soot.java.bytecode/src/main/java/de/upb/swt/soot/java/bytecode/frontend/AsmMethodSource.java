@@ -148,6 +148,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
 
+  @Nonnull final Body.BodyBuilder bodyBuilder = Body.builder();
+
   private final Supplier<MethodSignature> lazyMethodSignature =
       Suppliers.memoize(
           () -> {
@@ -223,7 +225,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     stack = null;
     frames = null;
 
-    Body body = new Body(bodyLocals, bodyTraps, bodyStmts, bodyPos);
+    // FIXME: add bodyStmts;
+    bodyBuilder.setLocals(bodyLocals).setTraps(bodyTraps).setPosition(bodyPos);
+    Body body = bodyBuilder.build();
+
     for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
       try {
         body = bodyInterceptor.interceptBody(body);
@@ -1094,7 +1099,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       if (!units.containsKey(insn)) {
         Stmt box = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
         labels.put(insn.label, box);
-        setUnit(insn, Jimple.newGotoStmt(box, StmtPositionInfo.createNoStmtPositionInfo()));
+        setUnit(insn, Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo()));
       }
       return;
     }
@@ -1174,7 +1179,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       }
       Stmt box = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
       labels.put(insn.label, box);
-      setUnit(insn, Jimple.newIfStmt(cond, box, StmtPositionInfo.createNoStmtPositionInfo()));
+      setUnit(insn, Jimple.newIfStmt(cond, StmtPositionInfo.createNoStmtPositionInfo()));
     } else {
       if (op >= IF_ICMPEQ && op <= IF_ACMPNE) {
         frame.mergeIn(pop(), pop());
@@ -2055,7 +2060,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           // We directly place this label
           Collection<Stmt> traps = trapHandlers.get((LabelNode) insn);
           for (Stmt ub : traps) {
-            Stmt.$Accessor.addStmtPointingToTarget(ub, caughtEx);
+            // FIXME: [ms] re-implement setting targets
+            //   Stmt.$Accessor.addStmtPointingToTarget(ub, caughtEx);
           }
           trapHandlers.replaceValues((LabelNode) insn, Collections.nCopies(traps.size(), caughtEx));
         }
@@ -2069,7 +2075,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           final Stmt targetStmt =
               u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u;
           for (Stmt box : boxes) {
-            Stmt.$Accessor.addStmtPointingToTarget(box, targetStmt);
+            // FIXME: [ms] re-implement setting targets
+            // Stmt.$Accessor.addStmtPointingToTarget(box, targetStmt);
           }
           labels.replaceValues(ln, Collections.nCopies(boxes.size(), targetStmt));
         }
@@ -2084,14 +2091,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
       Collection<Stmt> traps = trapHandlers.get(ln);
       for (Stmt ub : traps) {
-        Stmt.$Accessor.addStmtPointingToTarget(ub, handler);
+        // FIXME: [ms] re-implement setting targets
+        // Stmt.$Accessor.addStmtPointingToTarget(ub, handler);
       }
       trapHandlers.replaceValues((LabelNode) insn, Collections.nCopies(traps.size(), handler));
 
       // We need to jump to the original implementation
       Stmt targetUnit = units.get(ln);
-      JGotoStmt gotoImpl =
-          Jimple.newGotoStmt(targetUnit, StmtPositionInfo.createNoStmtPositionInfo());
+      JGotoStmt gotoImpl = Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
       bodyStmts.add(gotoImpl);
     }
 
@@ -2106,7 +2113,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       Collection<Stmt> boxes = labels.get(ln);
       if (boxes != null) {
         for (Stmt box : boxes) {
-          Stmt.$Accessor.addStmtPointingToTarget(box, end);
+          // FIXME: [ms] re-implement setting targets
+          // Stmt.$Accessor.addStmtPointingToTarget(box, end);
         }
         labels.replaceValues((LabelNode) insn, Collections.nCopies(boxes.size(), end));
       }
