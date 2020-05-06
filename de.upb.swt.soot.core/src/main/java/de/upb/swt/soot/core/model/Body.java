@@ -82,6 +82,8 @@ public class Body implements Copyable {
           new CheckVoidLocalesValidator(),
           new CheckEscapingValidator());
 
+  private Stmt firstStmt;
+
   /**
    * Creates an body which is not associated to any method.
    *
@@ -96,6 +98,9 @@ public class Body implements Copyable {
     this.traps = Collections.unmodifiableList(traps);
     this.cfg = ImmutableGraph.copyOf(stmtGraph);
     this.position = position;
+
+    // FIXME: [ms] get that info via parameter
+    this.firstStmt = stmtGraph.nodes().iterator().next();
 
     // FIXME: [JMP] Virtual method call in constructor
     checkInit();
@@ -242,6 +247,32 @@ public class Body implements Copyable {
   }
 
   /**
+   * Returns the result of iterating through all Stmts in this body. All Stmts thus found are
+   * returned. Branching Stmts and statements which use PhiExpr will have Stmts; a Stmt contains a
+   * Stmt that is either a target of a branch or is being used as a pointer to the end of a CFG
+   * block.
+   *
+   * <p>This method was typically used for pointer patching, e.g. when the unit chain is cloned.
+   *
+   * @return A collection of all the Stmts held by this body's units.
+   */
+  @Nonnull
+  public Collection<Stmt> getAllStmts() {
+    // FIXME [ms] obsolete now -> use get StmtGraph
+    List<Stmt> stmtList = new ArrayList<>();
+    for (Stmt stmt : cfg.nodes()) {
+      if (stmt.branches()) { // i.e. stmt instanceof BranchingStmt is true
+        stmtList.addAll(((BranchingStmt) stmt).getTargetStmts(this));
+      }
+    }
+
+    for (Trap item : traps) {
+      stmtList.addAll(item.getStmts());
+    }
+    return Collections.unmodifiableCollection(stmtList);
+  }
+
+  /**
    * Returns the statements that make up this body. [ms] just use for tests!
    *
    * @return the statements in this Body
@@ -278,7 +309,8 @@ public class Body implements Copyable {
   /** returns a List of Branch targets of Branching Stmts */
   // [ms] hint: guavas iterator uses insertion order -> don't implement otherwise elsewhere
   // otherwise JSwitchStmt will have a problem.
-  public List<Stmt> getBranchTargets(Stmt fromStmt) {
+  @Nonnull
+  public List<Stmt> getBranchTargets(@Nonnull Stmt fromStmt) {
     return new ArrayList<>(cfg.successors(fromStmt));
   }
 
@@ -287,6 +319,7 @@ public class Body implements Copyable {
   }
 
   /** Returns the first non-identity stmt in this body. */
+  @Nonnull
   public Stmt getFirstNonIdentityStmt() {
     Iterator<Stmt> it = getStmts().iterator();
     Stmt o = null;
@@ -331,31 +364,6 @@ public class Body implements Copyable {
     return defList;
   }
 
-  /**
-   * Returns the result of iterating through all Stmts in this body. All Stmts thus found are
-   * returned. Branching Stmts and statements which use PhiExpr will have Stmts; a Stmt contains a
-   * Stmt that is either a target of a branch or is being used as a pointer to the end of a CFG
-   * block.
-   *
-   * <p>This method is typically used for pointer patching, e.g. when the unit chain is cloned.
-   *
-   * @return A collection of all the Stmts held by this body's units.
-   */
-  @Nonnull
-  public Collection<Stmt> getAllStmts() {
-    List<Stmt> stmtList = new ArrayList<>();
-    for (Stmt stmt : cfg.nodes()) {
-      if (stmt.branches()) { // i.e. stmt instanceof BranchingStmt is true
-        stmtList.addAll(((BranchingStmt) stmt).getTargetStmts(this));
-      }
-    }
-
-    for (Trap item : traps) {
-      stmtList.addAll(item.getStmts());
-    }
-    return Collections.unmodifiableCollection(stmtList);
-  }
-
   @Nonnull
   public Body withLocals(@Nonnull Set<Local> locals) {
     return new Body(locals, getTraps(), getStmtGraph(), getPosition());
@@ -384,18 +392,21 @@ public class Body implements Copyable {
     return new BodyBuilder(body);
   }
 
-  public static class BodyBuilder<K> {
-    @Nonnull private Set<Local> locals = new HashSet();
-    @Nonnull private LocalGenerator localGen = new LocalGenerator(locals);
+  public Stmt getFirstStmt() {
+    return firstStmt;
+  }
 
-    // TODO: [ms] help with labels<->targets
-    @Nonnull HashMap<K, Stmt> jumpTableTargets = new HashMap<>();
-    @Nonnull HashMap<Stmt, K> jumpTableSources = new HashMap<>();
+  public static class BodyBuilder {
+    @Nonnull private Set<Local> locals = new HashSet<>();
+    @Nonnull private final LocalGenerator localGen = new LocalGenerator(locals);
 
     @Nonnull private List<Trap> traps = new ArrayList<>();
     @Nonnull private Position position;
 
-    @Nonnull MutableGraph<Stmt> mutableGraph;
+    @Nonnull private final MutableGraph<Stmt> mutableGraph;
+    @Nullable private Stmt lastAddedStmt = null;
+
+    @Nullable private Stmt firstStmt = null;
 
     BodyBuilder() {
       mutableGraph = GraphBuilder.directed().nodeOrder(ElementOrder.insertion()).build();
@@ -405,45 +416,63 @@ public class Body implements Copyable {
       setLocals(body.getLocals());
       setTraps(body.getTraps());
       setPosition(body.getPosition());
+      setFirstStmt(body.getFirstStmt());
       mutableGraph = GraphBuilder.from(body.getStmtGraph()).build();
     }
 
-    public BodyBuilder<K> setLocals(Set<Local> locals) {
+    public BodyBuilder setFirstStmt(@Nullable Stmt firstStmt) {
+      this.firstStmt = firstStmt;
+      return this;
+    }
+
+    public BodyBuilder setLocals(Set<Local> locals) {
       this.locals = locals;
       return this;
     }
 
-    public BodyBuilder<K> addLocal(String name, Type type) {
+    public BodyBuilder addLocal(String name, Type type) {
       this.locals.add(localGen.generateLocal(type));
       return this;
     }
 
-    public BodyBuilder<K> setTraps(List<Trap> traps) {
+    public BodyBuilder setTraps(List<Trap> traps) {
       this.traps = traps;
       return this;
     }
 
-    public BodyBuilder<K> addStmt(Stmt stmt) {
+    public BodyBuilder addStmt(Stmt stmt) {
+      return addStmt(stmt, false);
+    }
+
+    public BodyBuilder addStmt(Stmt stmt, boolean linkLastStmt) {
       mutableGraph.addNode(stmt);
+      if (lastAddedStmt != null) {
+        if (linkLastStmt) {
+          addFlow(lastAddedStmt, stmt);
+        }
+      } else {
+        firstStmt = stmt;
+      }
+      lastAddedStmt = stmt;
       return this;
     }
 
-    public BodyBuilder<K> removeStmt(Stmt stmt) {
+    public BodyBuilder removeStmt(Stmt stmt) {
       mutableGraph.removeNode(stmt);
       return this;
     }
 
-    public BodyBuilder<K> addBranch(Stmt fromStmt, Stmt toStmt) {
+    public BodyBuilder addFlow(Stmt fromStmt, Stmt toStmt) {
       mutableGraph.putEdge(fromStmt, toStmt);
       return this;
     }
 
-    public BodyBuilder<K> removeBranch(Stmt fromStmt, Stmt toStmt) {
+    public BodyBuilder removeFlow(Stmt fromStmt, Stmt toStmt) {
       mutableGraph.removeEdge(fromStmt, toStmt);
       return this;
     }
 
-    public BodyBuilder<K> setPosition(Position position) {
+    public BodyBuilder setPosition(Position position) {
       this.position = position;
       return this;
     }

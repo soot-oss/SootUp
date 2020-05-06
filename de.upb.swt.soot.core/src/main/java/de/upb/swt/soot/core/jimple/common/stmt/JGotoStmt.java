@@ -94,32 +94,13 @@ public final class JGotoStmt extends Stmt implements Copyable, BranchingStmt {
     return comparator.caseGotoStmt(this, o);
   }
 
-  // TODO: [ms] method is now useless w/o target information!
   @Override
   public int equivHashCode() {
-    // return target.equivHashCode();
-    return -42;
+    return 44;
   }
 
   @Nonnull
   public JGotoStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JGotoStmt(positionInfo);
-  }
-
-  /** This class is for internal use only. It will be removed in the future. */
-  @Deprecated
-  // FIXME: [ms] leftover
-  public static class $Accessor {
-    // This class deliberately starts with a $-sign to discourage usage
-    // of this Soot implementation detail.
-
-    /** Violates immutability. Only use this for legacy code. */
-    @Deprecated
-    public static void setTarget(@Nonnull JGotoStmt stmt, @Nonnull Stmt target) {
-      // stmt.setTarget(target);
-
-    }
-
-    private $Accessor() {}
   }
 }

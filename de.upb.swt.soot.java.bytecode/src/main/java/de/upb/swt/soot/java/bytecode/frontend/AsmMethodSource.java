@@ -148,7 +148,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
 
-  @Nonnull final Body.BodyBuilder bodyBuilder = Body.builder();
+  @Nonnull private final Body.BodyBuilder bodyBuilder = Body.builder();
 
   private final Supplier<MethodSignature> lazyMethodSignature =
       Suppliers.memoize(
@@ -189,6 +189,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   public Body resolveBody() throws AsmFrontendException {
     // FIXME: [AD] add real line number
     Position bodyPos = NoPositionInformation.getInstance();
+    bodyBuilder.setPosition(bodyPos);
 
     /* initialize */
     int nrInsn = instructions.size();
@@ -222,7 +223,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     stack = null;
     frames = null;
 
-    bodyBuilder.setPosition(bodyPos);
     Body body = bodyBuilder.build();
 
     for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
@@ -1969,14 +1969,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       Local l = getLocal(iloc++);
       bodyBuilder.addStmt(
           Jimple.newIdentityStmt(
-              l, Jimple.newThisRef(declaringClass), StmtPositionInfo.createNoStmtPositionInfo()));
+              l, Jimple.newThisRef(declaringClass), StmtPositionInfo.createNoStmtPositionInfo()),
+          true);
     }
     int nrp = 0;
     for (Type ot : methodSignature.getParameterTypes()) {
       Local l = getLocal(iloc);
       bodyBuilder.addStmt(
           Jimple.newIdentityStmt(
-              l, Jimple.newParameterRef(ot, nrp++), StmtPositionInfo.createNoStmtPositionInfo()));
+              l, Jimple.newParameterRef(ot, nrp++), StmtPositionInfo.createNoStmtPositionInfo()),
+          true);
       if (AsmUtil.isDWord(ot)) {
         iloc += 2;
       } else {
@@ -2025,7 +2027,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         emitStmts(uu);
       }
     } else {
-      bodyBuilder.addStmt(u);
+      bodyBuilder.addStmt(u, true);
     }
   }
 
@@ -2061,7 +2063,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           // We directly place this label
           Collection<Stmt> traps = trapHandlers.get((LabelNode) insn);
           for (Stmt ub : traps) {
-            bodyBuilder.addBranch(ub, caughtEx);
+            bodyBuilder.addFlow(ub, caughtEx);
           }
           trapHandlers.replaceValues((LabelNode) insn, Collections.nCopies(traps.size(), caughtEx));
         }
@@ -2075,7 +2077,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           final Stmt targetStmt =
               u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u;
           for (Stmt box : boxes) {
-            bodyBuilder.addBranch(box, targetStmt);
+            bodyBuilder.addFlow(box, targetStmt);
           }
           labels.replaceValues(ln, Collections.nCopies(boxes.size(), targetStmt));
         }
@@ -2090,15 +2092,15 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
       Collection<Stmt> traps = trapHandlers.get(ln);
       for (Stmt ub : traps) {
-        bodyBuilder.addBranch(ub, handler);
+        bodyBuilder.addFlow(ub, handler);
       }
       trapHandlers.replaceValues((LabelNode) insn, Collections.nCopies(traps.size(), handler));
 
       // We need to jump to the original implementation
       Stmt targetUnit = units.get(ln);
       JGotoStmt gotoImpl = Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
-      bodyBuilder.addStmt(gotoImpl);
-      bodyBuilder.addBranch(gotoImpl, targetUnit);
+      bodyBuilder.addStmt(gotoImpl, true);
+      bodyBuilder.addFlow(gotoImpl, targetUnit);
     }
 
     /* set remaining labels & boxes to last Stmt of chain */
@@ -2106,14 +2108,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       return;
     }
     Stmt end = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-    bodyBuilder.addStmt(end);
+    bodyBuilder.addStmt(end, true);
 
     while (!labls.isEmpty()) {
       LabelNode ln = labls.poll();
       Collection<Stmt> boxes = labels.get(ln);
       if (boxes != null) {
         for (Stmt box : boxes) {
-          bodyBuilder.addBranch(box, end);
+          bodyBuilder.addFlow(box, end);
         }
         labels.replaceValues((LabelNode) insn, Collections.nCopies(boxes.size(), end));
       }
