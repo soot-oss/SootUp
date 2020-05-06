@@ -45,8 +45,8 @@ import org.mockito.internal.matchers.LessOrEqual;
  */
 public abstract class AnalysisInputLocationTest {
 
-  //  final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
-  final Path jar = Paths.get("../shared-test-resources/java-warApp/dummyWarApp.war");
+  // final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
+  final Path jar = Paths.get("../shared-test-resources/java-warApp/dummyWarApp1.war");
   final String jarFile = jar.toString();
 
   protected static final int CLASSES_IN_JAR = 4;
@@ -74,12 +74,14 @@ public abstract class AnalysisInputLocationTest {
   protected void testClassReceival(
       AnalysisInputLocation ns, ClassType sig, int minClassesFound, int maxClassesFound) {
     final Optional<? extends AbstractClassSource> clazz = ns.getClassSource(sig);
+    System.out.println(clazz); // TODO Debug
 
     Assert.assertTrue(clazz.isPresent());
     Assert.assertEquals(sig, clazz.get().getClassType());
 
     final Collection<? extends AbstractClassSource> classSources =
         ns.getClassSources(getIdentifierFactory());
+    System.out.println("classSources in testClassReceival ->" + classSources); // TODO Debug
     Assert.assertNotNull(classSources);
     Assert.assertFalse(classSources.isEmpty());
     Assert.assertThat(classSources.size(), new GreaterOrEqual<>(minClassesFound));

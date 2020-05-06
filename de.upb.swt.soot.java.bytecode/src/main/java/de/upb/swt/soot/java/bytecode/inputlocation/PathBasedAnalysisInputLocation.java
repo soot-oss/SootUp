@@ -74,13 +74,18 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
    */
   public static @Nonnull PathBasedAnalysisInputLocation createForClassContainer(
       @Nonnull Path path) {
+    System.out.println("inside createForClassContainer"); // TODO Debug
     if (Files.isDirectory(path)) {
       return new DirectoryBasedAnalysisInputLocation(path);
     } else if (PathUtils.isArchive(path)) {
+      /* TODO create new namespace for the jar file, packed in the war and load all classes from that jar file
+       *   walkDirectory() for such all methods*/
+
+      System.out.println("this is an archive file"); // TODO Debug
       return new ArchiveBasedAnalysisInputLocation(path);
     } else {
       throw new IllegalArgumentException(
-          "Path has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, etc.");
+          "Path has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
     }
   }
 
@@ -89,6 +94,11 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       @Nonnull Path dirPath, @Nonnull IdentifierFactory factory, ClassProvider classProvider) {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
+      System.out.println(
+          "inside walkDirectory for "
+              + path
+              + " for file with type "
+              + handledFileType); // TODO Debug
 
       return Files.walk(dirPath)
           .filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
@@ -112,6 +122,10 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     if (!Files.exists(pathToClass)) {
       return Optional.empty();
     }
+    System.out.println(
+        "getClassSourceInternal "
+            + Optional.of(
+                classProvider.createClassSource(this, pathToClass, signature))); // TODO Debug
 
     return Optional.of(classProvider.createClassSource(this, pathToClass, signature));
   }
@@ -194,6 +208,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         @Nonnull ClassLoadingOptions classLoadingOptions) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path archiveRoot = fs.getPath("/");
+        System.out.println("walkDirectory called for " + archiveRoot); // TODO Debug
         return walkDirectory(
             archiveRoot, identifierFactory, buildClassProvider(classLoadingOptions));
       } catch (IOException e) {

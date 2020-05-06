@@ -80,6 +80,7 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
           explode(classPath)
               .flatMap(cp -> StreamUtils.optionalToStream(nsForPath(cp)))
               .collect(Collectors.toList());
+
     } catch (IllegalArgumentException e) {
       throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
     }
@@ -163,6 +164,17 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
       return Optional.empty();
     }
   }
+
+  /* TODO [kk] is such method needed?
+  private @Nonnull Optional<AnalysisInputLocation> loadClassesFromJar(@Nonnull Path path) {
+    if (Files.exists(path) && PathUtils.isArchive(path)) {
+      return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path));
+    } else {
+      logger.warn("Invalid/Unknown class path entry: " + path);
+      return Optional.empty();
+    }
+  }
+  */
 
   protected static final class InvalidClassPathException extends IllegalArgumentException {
 
