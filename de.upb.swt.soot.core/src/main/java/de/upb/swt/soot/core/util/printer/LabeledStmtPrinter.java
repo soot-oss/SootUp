@@ -19,9 +19,8 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
    */
   protected Map<Stmt, String> references;
 
-  public LabeledStmtPrinter() {}
-
   public LabeledStmtPrinter(Body b) {
+    super(b);
     createLabelMaps(b);
   }
 
@@ -46,7 +45,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   public abstract void identityRef(IdentityRef r);
 
   @Override
-  public void stmtRef(Stmt u, List<Stmt> branchTargets, boolean branchTarget) {
+  public void stmtRef(Stmt u, boolean branchTarget) {
 
     // FIXME: [ms] incorporate branchTarget information into stmt's i.e. jswitch, jif, jgoto
 

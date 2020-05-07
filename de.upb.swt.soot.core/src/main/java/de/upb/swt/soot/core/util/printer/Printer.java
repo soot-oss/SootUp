@@ -100,23 +100,21 @@ public class Printer {
     jimpleLnNum++;
   }
 
-  public void printTo(SootClass cl, PrintWriter out) {
-    LabeledStmtPrinter printer = determinePrinter();
-    printer.enableImports(options.contains(Option.UseImports));
-    printTo(cl, printer, out);
-  }
-
-  private LabeledStmtPrinter determinePrinter() {
+  private LabeledStmtPrinter determinePrinter(Body body) {
     if (useAbbreviations()) {
-      return new BriefStmtPrinter();
+      return new BriefStmtPrinter(body);
     } else if (options.contains(Option.LegacyMode)) {
-      return new LegacyJimplePrinter();
+      return new LegacyJimplePrinter(body);
     } else {
-      return new NormalStmtPrinter();
+      return new NormalStmtPrinter(body);
     }
   }
 
-  private void printTo(SootClass cl, LabeledStmtPrinter printer, PrintWriter out) {
+  public void printTo(SootClass cl, PrintWriter out) {
+
+    LabeledStmtPrinter printer = determinePrinter(Body.getNoBody());
+    printer.enableImports(options.contains(Option.UseImports));
+
     // add jimple line number tags
     setJimpleLnNum(1);
 
@@ -127,11 +125,14 @@ public class Printer {
       if (cl.isInterface() && Modifier.isAbstract(modifiers)) {
         modifiers.remove(Modifier.ABSTRACT);
       }
-      printer.modifier(Modifier.toString(modifiers));
-      printer.literal(modifiers.size() == 0 ? "" : " ");
+      if (modifiers.size() != 0) {
+        printer.modifier(Modifier.toString(modifiers));
+        printer.literal(" ");
+      }
+      if (!Modifier.isInterface(modifiers) && !Modifier.isAnnotation(modifiers)) {
+        printer.literal("class ");
+      }
 
-      printer.literal(
-          Modifier.isInterface(modifiers) || Modifier.isAnnotation(modifiers) ? "" : "class ");
       printer.typeSignature(cl.getType());
     }
 
@@ -247,8 +248,7 @@ public class Printer {
    * corresponding to the IR used to encode body body.
    */
   public void printTo(Body body, PrintWriter out) {
-    LabeledStmtPrinter printer = determinePrinter();
-    printer.createLabelMaps(body);
+    LabeledStmtPrinter printer = determinePrinter(body);
     printer.enableImports(options.contains(Option.UseImports));
     printTo(body, printer, out);
     out.print(printer);
@@ -328,16 +328,14 @@ public class Printer {
           }
         }
 
-        final List<Stmt> branchTargets =
-            currentStmt.branches() ? body.getBranchTargets(currentStmt) : Collections.emptyList();
         if (currentStmtHasLabel) {
-          printer.stmtRef(currentStmt, branchTargets, true);
+          printer.stmtRef(currentStmt, true);
           printer.literal(":");
           printer.newline();
         }
 
         if (printer.getReferences().containsKey(currentStmt)) {
-          printer.stmtRef(currentStmt, branchTargets, false);
+          printer.stmtRef(currentStmt, false);
         }
       }
 

@@ -24,6 +24,7 @@ package de.upb.swt.soot.core.util.printer;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.ClassType;
@@ -33,7 +34,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 /** Partial default StmtPrinter implementation. */
-public abstract class AbstractStmtPrinter implements StmtPrinter {
+public abstract class AbstractStmtPrinter extends StmtPrinter {
 
   protected boolean startOfLine = true;
   protected final char indentChar = '\u0020';
@@ -44,6 +45,10 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   private final HashMap<String, PackageName> imports = new HashMap<>();
 
   boolean useImports = false;
+
+  AbstractStmtPrinter(@Nonnull Body body) {
+    super(body);
+  }
 
   void enableImports(boolean enable) {
     useImports = enable;

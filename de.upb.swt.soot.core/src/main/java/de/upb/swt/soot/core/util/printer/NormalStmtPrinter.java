@@ -11,8 +11,6 @@ import de.upb.swt.soot.core.model.SootMethod;
 /** StmtPrinter implementation for normal (full) Jimple */
 public class NormalStmtPrinter extends LabeledStmtPrinter {
 
-  public NormalStmtPrinter() {}
-
   public NormalStmtPrinter(Body b) {
     super(b);
   }

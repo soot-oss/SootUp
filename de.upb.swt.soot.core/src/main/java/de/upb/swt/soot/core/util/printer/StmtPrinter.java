@@ -25,51 +25,62 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /** Interface for different methods of printing out a Stmt. */
-public interface StmtPrinter {
+public abstract class StmtPrinter {
+  @Nonnull final Body body;
 
-  void startStmt(Stmt u);
+  StmtPrinter(@Nonnull Body body) {
+    this.body = body;
+  }
 
-  void endStmt(Stmt u);
+  public List<Stmt> branchTarget(Stmt fromStmt) {
+    return body.getBranchTargets(fromStmt);
+  }
 
-  void setIndent(int offset);
+  public abstract void startStmt(Stmt u);
 
-  void handleIndent();
+  public abstract void endStmt(Stmt u);
 
-  void incIndent();
+  public abstract void setIndent(int offset);
 
-  void decIndent();
+  public abstract void handleIndent();
 
-  void noIndent();
+  public abstract void incIndent();
 
-  void literal(String s);
+  public abstract void decIndent();
 
-  void newline();
+  public abstract void noIndent();
 
-  void local(Local jimpleLocal);
+  public abstract void literal(String s);
 
-  void typeSignature(Type t);
+  public abstract void newline();
 
-  void methodSignature(MethodSignature sig);
+  public abstract void local(Local jimpleLocal);
 
-  void method(SootMethod m);
+  public abstract void typeSignature(Type t);
 
-  void constant(Constant c);
+  public abstract void methodSignature(MethodSignature sig);
 
-  void field(SootField f);
+  public abstract void method(SootMethod m);
 
-  void fieldSignature(FieldSignature fieldSig);
+  public abstract void constant(Constant c);
 
-  void stmtRef(Stmt u, List<Stmt> branchTargets, boolean branchTarget);
+  public abstract void field(SootField f);
 
-  void identityRef(IdentityRef r);
+  public abstract void fieldSignature(FieldSignature fieldSig);
 
-  void modifier(String toString);
+  public abstract void stmtRef(Stmt u, boolean branchTarget);
+
+  public abstract void identityRef(IdentityRef r);
+
+  public abstract void modifier(String toString);
 }
