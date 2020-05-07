@@ -169,45 +169,46 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
-    up.literal(Jimple.SWITCH);
-    up.literal("(");
-    getKey().toString(up);
-    up.literal(")");
-    up.newline();
-    up.incIndent();
-    up.handleIndent();
-    up.literal("{");
-    up.newline();
+  public void toString(@Nonnull StmtPrinter stmtPrinter) {
+    stmtPrinter.literal(Jimple.SWITCH);
+    stmtPrinter.literal("(");
+    getKey().toString(stmtPrinter);
+    stmtPrinter.literal(")");
+    stmtPrinter.newline();
+    stmtPrinter.incIndent();
+    stmtPrinter.handleIndent();
+    stmtPrinter.literal("{");
+    stmtPrinter.newline();
+
+    final List<Stmt> targets = stmtPrinter.branchTargets(this);
+
     final int size = values.size();
-    for (int i = 0; i < size; i++) {
-      up.handleIndent();
-      up.literal(Jimple.CASE);
-      up.literal(" ");
-      up.constant(values.get(i));
-      up.literal(": ");
-      /* TODO: [ms] leftover
-      up.literal(Jimple.GOTO);
-      up.literal(" ");
-      up.stmtRef(getTarget(i), true);
-      up.literal(";");
-      */
-      up.newline();
+    for (int i = 1; i < size; i++) {
+      stmtPrinter.handleIndent();
+      stmtPrinter.literal(Jimple.CASE);
+      stmtPrinter.literal(" ");
+      stmtPrinter.constant(values.get(i));
+      stmtPrinter.literal(": ");
+      stmtPrinter.literal(Jimple.GOTO);
+      stmtPrinter.literal(" ");
+      stmtPrinter.stmtRef(targets.get(i), true);
+      stmtPrinter.literal(";");
+
+      stmtPrinter.newline();
     }
 
-    /* TODO: [ms] leftover
-    up.handleIndent();
-    up.literal(Jimple.DEFAULT);
-    up.literal(": ");
-    up.literal(Jimple.GOTO);
-    up.literal(" ");
-    up.stmtRef(getDefaultTarget(), true);
-    up.literal(";");
-       */
-    up.decIndent();
-    up.newline();
-    up.handleIndent();
-    up.literal("}");
+    stmtPrinter.handleIndent();
+    stmtPrinter.literal(Jimple.DEFAULT);
+    stmtPrinter.literal(": ");
+    stmtPrinter.literal(Jimple.GOTO);
+    stmtPrinter.literal(" ");
+    stmtPrinter.stmtRef(targets.get(0), true);
+    stmtPrinter.literal(";");
+
+    stmtPrinter.decIndent();
+    stmtPrinter.newline();
+    stmtPrinter.handleIndent();
+    stmtPrinter.literal("}");
   }
 
   @Nonnull

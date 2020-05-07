@@ -55,12 +55,10 @@ public class JGotoStmt extends BranchingStmt implements Copyable {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
-    up.literal(Jimple.GOTO);
-    /*  TODO: [ms]  up.literal(" ");
-       up.stmtRef(getTarget(), true);
-
-    */
+  public void toString(@Nonnull StmtPrinter stmtPrinter) {
+    stmtPrinter.literal(Jimple.GOTO);
+    stmtPrinter.literal(" ");
+    stmtPrinter.stmtRef(stmtPrinter.branchTargets(this).get(0), true);
   }
 
   public Stmt getTarget(Body body) {

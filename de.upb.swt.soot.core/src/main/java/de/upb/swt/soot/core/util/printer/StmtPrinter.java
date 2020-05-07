@@ -42,7 +42,7 @@ public abstract class StmtPrinter {
     this.body = body;
   }
 
-  public List<Stmt> branchTarget(Stmt fromStmt) {
+  public List<Stmt> branchTargets(Stmt fromStmt) {
     return body.getBranchTargets(fromStmt);
   }
 
