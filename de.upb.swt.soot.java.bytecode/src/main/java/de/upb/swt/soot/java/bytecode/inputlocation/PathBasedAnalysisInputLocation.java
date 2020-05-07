@@ -15,15 +15,9 @@ import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -59,6 +53,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysisInputLocation {
   protected final Path path;
+  protected static List<PathBasedAnalysisInputLocation> allJars = new ArrayList<>();
 
   private PathBasedAnalysisInputLocation(@Nonnull Path path) {
     this.path = path;
@@ -75,6 +70,8 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
   public static @Nonnull PathBasedAnalysisInputLocation createForClassContainer(
       @Nonnull Path path) {
     System.out.println("inside createForClassContainer"); // TODO Debug
+    System.out.println("the file at " + path + " is " + path.getFileName()); // TODO Debug
+
     if (Files.isDirectory(path)) {
       return new DirectoryBasedAnalysisInputLocation(path);
     } else if (PathUtils.isArchive(path)) {
@@ -82,10 +79,33 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
        *   walkDirectory() for such all methods*/
 
       System.out.println("this is an archive file"); // TODO Debug
+      listAllJars(path);
+      System.out.println(allJars);// TODO Debug
       return new ArchiveBasedAnalysisInputLocation(path);
     } else {
       throw new IllegalArgumentException(
           "Path has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
+    }
+  }
+
+  /** @param path */
+  public static void listAllJars(@Nonnull Path path) {
+    String line;
+
+    try {
+      Process ps =
+          Runtime.getRuntime().exec(new String[] {"jar", "-tvf", path.getFileName().toString()});
+      // Process ps = Runtime.getRuntime().exec(new String[]{"jar", "-tvf", "dummyWarApp.war"});
+      ps.waitFor();
+      BufferedReader br = new BufferedReader(new InputStreamReader(ps.getInputStream()));
+      while ((line = br.readLine()) != null) {
+        // if (line.contains("jar")) {
+        System.out.println("listAllJars-->" + Paths.get(path.toString() + line));
+        allJars.add(new ArchiveBasedAnalysisInputLocation(Paths.get(path.toString() + line)));
+        // }
+      }
+    } catch (InterruptedException | IOException e) {
+      throw new RuntimeException("Issues in listing the contents of the war file");
     }
   }
 
@@ -124,7 +144,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
 
     System.out.println(
-        "getClassSourceInternal "
+        "getClassSourceInternal ->>"
             + Optional.of(
                 classProvider.createClassSource(this, pathToClass, signature))); // TODO Debug
 

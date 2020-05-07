@@ -48,9 +48,8 @@ public abstract class AnalysisInputLocationTest {
   final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
   final String jarFile = jar.toString();
 
-  final Path war = Paths.get("../shared-test-resources/java-warApp/dummyWarApp1.war");
+  final Path war = Paths.get("../shared-test-resources/java-warApp/dummyWarApp.war");
   final String warFile = war.toString();
-  final String innerJarFile = Paths.get(jarFile + "/WEB-INF/lib/MiniApp.jar").toString();
 
   protected static final int CLASSES_IN_JAR = 4;
   private IdentifierFactory identifierFactory;
@@ -76,14 +75,16 @@ public abstract class AnalysisInputLocationTest {
 
   protected void testClassReceival(
       AnalysisInputLocation ns, ClassType sig, int minClassesFound, int maxClassesFound) {
+
     final Optional<? extends AbstractClassSource> clazz = ns.getClassSource(sig);
-    System.out.println(clazz); // TODO Debug
+    System.out.println("ns.getClassSource(sig)-->" + clazz); // TODO Debug
 
     Assert.assertTrue(clazz.isPresent());
     Assert.assertEquals(sig, clazz.get().getClassType());
 
     final Collection<? extends AbstractClassSource> classSources =
         ns.getClassSources(getIdentifierFactory());
+
     System.out.println("classSources in testClassReceival ->" + classSources); // TODO Debug
     Assert.assertNotNull(classSources);
     Assert.assertFalse(classSources.isEmpty());
