@@ -501,7 +501,12 @@ public class Body implements Copyable {
     public Body build() {
 
       // TODO: [ms] debug
-      mutableGraph.nodes().forEach(node -> System.out.print(node + ", "));
+      for (Stmt node : mutableGraph.nodes()) {
+        System.out.println(node + "");
+        System.out.println("in " + mutableGraph.predecessors(node));
+        System.out.println("out " + mutableGraph.successors(node));
+        System.out.println("\n");
+      }
       System.out.println("\n-------\n");
 
       return new Body(locals, traps, ImmutableGraph.copyOf(mutableGraph), position);

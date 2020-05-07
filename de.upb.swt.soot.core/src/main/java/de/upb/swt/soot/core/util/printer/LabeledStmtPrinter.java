@@ -47,8 +47,6 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   @Override
   public void stmtRef(Stmt u, boolean branchTarget) {
 
-    // FIXME: [ms] incorporate branchTarget information into stmt's i.e. jswitch, jif, jgoto
-
     // normal case, ie labels
     if (branchTarget) {
 
