@@ -40,7 +40,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /** conditional jumps to a target Stmt, otherwise the flow continues to the next Stmt. */
-public final class JIfStmt extends Stmt implements Copyable, BranchingStmt {
+public class JIfStmt extends BranchingStmt implements Copyable {
 
   @Nonnull private final AbstractConditionExpr condition;
 

@@ -37,7 +37,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /** Unconditionally jumps to a target Stmt */
-public final class JGotoStmt extends Stmt implements Copyable, BranchingStmt {
+public class JGotoStmt extends BranchingStmt implements Copyable {
 
   public JGotoStmt(StmtPositionInfo positionInfo) {
     super(positionInfo);

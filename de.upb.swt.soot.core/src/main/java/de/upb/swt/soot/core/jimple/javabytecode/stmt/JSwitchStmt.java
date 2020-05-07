@@ -20,7 +20,7 @@ import javax.annotation.Nonnull;
  * Switch Statements (combining LookupSwitch/TableSwitch)
  * @author Markus Schmidt
  */
-public class JSwitchStmt extends Stmt implements Copyable, BranchingStmt {
+public class JSwitchStmt extends BranchingStmt implements Copyable {
 
   private final Immediate key;
   private List<IntConstant> values;

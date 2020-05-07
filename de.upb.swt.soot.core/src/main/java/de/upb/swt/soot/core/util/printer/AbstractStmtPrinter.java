@@ -117,6 +117,7 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   @Override
   public void typeSignature(@Nonnull Type type) {
     handleIndent();
+    // TODO: [ms] null should not be possible -> nonnnull ;)
     if (type == null) {
       output.append("<null>");
       return;

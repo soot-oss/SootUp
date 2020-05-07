@@ -14,7 +14,9 @@ import java.util.*;
 public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   /** branch targets * */
   protected Map<Stmt, String> labels;
-  /** for stmt references in Phi nodes * */
+  /**
+   * for stmt references in Phi nodes (ms: and other occurences TODO: check and improve comment) *
+   */
   protected Map<Stmt, String> references;
 
   public LabeledStmtPrinter() {}
@@ -44,7 +46,9 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   public abstract void identityRef(IdentityRef r);
 
   @Override
-  public void stmtRef(Stmt u, boolean branchTarget) {
+  public void stmtRef(Stmt u, List<Stmt> branchTargets, boolean branchTarget) {
+
+    // FIXME: [ms] incorporate branchTarget information into stmt's i.e. jswitch, jif, jgoto
 
     // normal case, ie labels
     if (branchTarget) {
@@ -54,6 +58,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       setIndent(indentStep / 2);
 
       String label = labels.get(u);
+      // TODO: [ms] maybe remove check for <unnamed>?! can be achieved with null as value in the map
       if (label == null || "<unnamed>".equals(label)) {
         output.append("[?= ").append(u).append(']');
       } else {
@@ -76,6 +81,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   }
 
   public void createLabelMaps(Body body) {
+    // FIXME: [ms] build label maps from stmtgraph
     Collection<Stmt> stmts = body.getStmts();
 
     labels = new HashMap<>(stmts.size() * 2 + 1, 0.7f);

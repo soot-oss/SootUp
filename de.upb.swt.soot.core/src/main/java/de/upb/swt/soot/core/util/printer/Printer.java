@@ -21,8 +21,8 @@
  */
 package de.upb.swt.soot.core.util.printer;
 
-import de.upb.swt.soot.core.graph.AbstractStmtGraph;
-import de.upb.swt.soot.core.graph.BriefStmtGraph;
+import com.google.common.graph.Graph;
+import com.google.common.graph.Traverser;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -275,12 +275,10 @@ public class Printer {
 
     printer.incIndent();
 
-    AbstractStmtGraph unitGraph = new BriefStmtGraph(b);
-
     if (!options.contains(Option.OmitLocalsDeclaration)) {
       printLocalsInBody(b, printer);
     }
-    printStatementsInBody(b, printer, unitGraph);
+    printStatementsInBody(b, printer);
 
     printer.decIndent();
 
@@ -291,12 +289,15 @@ public class Printer {
   }
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
-  private void printStatementsInBody(
-      Body body, LabeledStmtPrinter printer, AbstractStmtGraph unitGraph) {
-    Collection<Stmt> units = body.getStmts();
+  private void printStatementsInBody(Body body, LabeledStmtPrinter printer) {
+
+    // TODO cleanup
+    // AbstractStmtGraph unitGraph = new BriefStmtGraph(body);
+    Graph<Stmt> stmtGraph = body.getStmtGraph();
+    // Collection<Stmt> units = body.getStmts();
     Stmt previousStmt;
 
-    for (Stmt currentStmt : units) {
+    for (Stmt currentStmt : Traverser.forGraph(stmtGraph).depthFirstPreOrder(body.getFirstStmt())) {
       previousStmt = currentStmt;
 
       // Print appropriate header.
@@ -306,30 +307,37 @@ public class Printer {
         // body statement has a label on it
 
         final boolean currentStmtHasLabel = printer.getLabels().containsKey(currentStmt);
-        if (currentStmt != units.iterator().next()) {
-          if (unitGraph.getSuccsOf(previousStmt).size() != 1
-              || unitGraph.getPredsOf(currentStmt).size() != 1
+
+        // TODO: [ms] understand this strange check?!
+        if (true /*currentStmt != units.iterator().next() */) {
+          if (stmtGraph.successors(previousStmt).size() != 1
+              || stmtGraph.predecessors(currentStmt).size() != 1
               || currentStmtHasLabel) {
             printer.newline();
           } else {
             // Or if the previous node does not have body statement as a successor.
 
-            List<Stmt> succs = unitGraph.getSuccsOf(previousStmt);
-
+            /*
+            List<Stmt> succs = stmtGraph.successors(previousStmt);
+             TODO: [ms] understand what this check does
             if (succs.get(0) != currentStmt) {
               printer.newline();
             }
+            */
+
           }
         }
 
+        final List<Stmt> branchTargets =
+            currentStmt.branches() ? body.getBranchTargets(currentStmt) : Collections.emptyList();
         if (currentStmtHasLabel) {
-          printer.stmtRef(currentStmt, true);
+          printer.stmtRef(currentStmt, branchTargets, true);
           printer.literal(":");
           printer.newline();
         }
 
         if (printer.getReferences().containsKey(currentStmt)) {
-          printer.stmtRef(currentStmt, false);
+          printer.stmtRef(currentStmt, branchTargets, false);
         }
       }
 

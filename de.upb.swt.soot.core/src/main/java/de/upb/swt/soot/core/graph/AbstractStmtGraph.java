@@ -18,6 +18,7 @@ import java.util.Map;
  *
  * <p>This is an abstract class, providing the facilities used to build CFGs for specific purposes.
  */
+// FIXME: [ms] remove class - incorporate helper methods
 public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
   protected List<Stmt> heads;
   protected List<Stmt> tails;
@@ -52,7 +53,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
    *     buildUnexceptionalEdges} will add a mapping for every {@code Stmt} in the body to a list of
    *     its unexceptional predecessors.
    */
-  // TODO: [ms] refactor to use jgrapht?
+  // TODO: [ms] refactor (away) to use graph
   protected void buildUnexceptionalEdges(
       Map<Stmt, List<Stmt>> stmtToSuccs, Map<Stmt, List<Stmt>> stmtToPreds) {
     Iterator<Stmt> stmtIt = orderedStmts.iterator();

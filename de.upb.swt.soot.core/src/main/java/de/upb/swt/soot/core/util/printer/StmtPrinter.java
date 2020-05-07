@@ -30,9 +30,11 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
+import java.util.List;
 
 /** Interface for different methods of printing out a Stmt. */
 public interface StmtPrinter {
+
   void startStmt(Stmt u);
 
   void endStmt(Stmt u);
@@ -65,7 +67,7 @@ public interface StmtPrinter {
 
   void fieldSignature(FieldSignature fieldSig);
 
-  void stmtRef(Stmt u, boolean branchTarget);
+  void stmtRef(Stmt u, List<Stmt> branchTargets, boolean branchTarget);
 
   void identityRef(IdentityRef r);
 

@@ -63,6 +63,10 @@ public class Body implements Copyable {
   /** The stmts for this Body. */
   @Nonnull private final ImmutableGraph<Stmt> cfg;
 
+  /** The first Stmt in this Body. */
+  @Nonnull private final Stmt firstStmt;
+
+  /** The Position Information in the Source for this Body. */
   @Nonnull private final Position position;
 
   /** The method associated with this Body. */
@@ -82,28 +86,45 @@ public class Body implements Copyable {
           new CheckVoidLocalesValidator(),
           new CheckEscapingValidator());
 
-  private Stmt firstStmt;
-
   /**
    * Creates an body which is not associated to any method.
    *
    * @param locals please use {@link LocalGenerator} to generate local for a body.
+   * @param startingStmt
    */
   public Body(
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
       @Nonnull Graph<Stmt> stmtGraph,
+      @Nonnull Stmt startingStmt,
       @Nonnull Position position) {
     this.locals = Collections.unmodifiableSet(locals);
     this.traps = Collections.unmodifiableList(traps);
-    this.cfg = ImmutableGraph.copyOf(stmtGraph);
+    // TODO: [ms] second constructor?
+    this.cfg =
+        stmtGraph instanceof ImmutableGraph
+            ? (ImmutableGraph<Stmt>) stmtGraph
+            : ImmutableGraph.copyOf(stmtGraph);
     this.position = position;
-
-    // FIXME: [ms] get that info via parameter
-    this.firstStmt = stmtGraph.nodes().iterator().next();
+    this.firstStmt = startingStmt;
 
     // FIXME: [JMP] Virtual method call in constructor
     checkInit();
+  }
+
+  public Body(
+      @Nonnull Set<Local> locals,
+      @Nonnull List<Trap> traps,
+      @Nonnull Graph<Stmt> stmtGraph,
+      @Nonnull Position position) {
+
+    // FIXME: [ms] dirty debugging hack !!!!!!
+    this(
+        locals,
+        traps,
+        stmtGraph,
+        stmtGraph.nodes().iterator().hasNext() ? stmtGraph.nodes().iterator().next() : null,
+        position);
   }
 
   @Nonnull
@@ -388,7 +409,7 @@ public class Body implements Copyable {
     return new BodyBuilder();
   }
 
-  public static BodyBuilder Builder(Body body) {
+  public static BodyBuilder builder(Body body) {
     return new BodyBuilder(body);
   }
 
@@ -478,6 +499,11 @@ public class Body implements Copyable {
     }
 
     public Body build() {
+
+      // TODO: [ms] debug
+      mutableGraph.nodes().forEach(node -> System.out.print(node + ", "));
+      System.out.println("\n-------\n");
+
       return new Body(locals, traps, ImmutableGraph.copyOf(mutableGraph), position);
     }
   }
