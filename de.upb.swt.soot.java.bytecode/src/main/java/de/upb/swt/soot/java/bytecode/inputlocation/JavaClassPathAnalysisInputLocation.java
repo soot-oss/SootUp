@@ -33,14 +33,8 @@ import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NotDirectoryException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.nio.file.*;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
@@ -165,16 +159,27 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
     }
   }
 
-  /* TODO [kk] is such method needed?
+  /* TODO [kk] is such method needed?*/
+  /*
   private @Nonnull Optional<AnalysisInputLocation> loadClassesFromJar(@Nonnull Path path) {
     if (Files.exists(path) && PathUtils.isArchive(path)) {
+      InputStream inputStream =
+          JavaClassPathAnalysisInputLocation.class
+              .getClassLoader()
+              .getResourceAsStream(path + "/WEB-INF/lib/*.jar");
+      try {
+        assert inputStream != null;
+        inputStream.read();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
       return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
       return Optional.empty();
     }
-  }
-  */
+  }TODO*/
 
   protected static final class InvalidClassPathException extends IllegalArgumentException {
 

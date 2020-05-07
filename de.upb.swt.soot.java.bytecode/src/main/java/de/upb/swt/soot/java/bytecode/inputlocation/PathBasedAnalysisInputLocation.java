@@ -122,6 +122,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     if (!Files.exists(pathToClass)) {
       return Optional.empty();
     }
+
     System.out.println(
         "getClassSourceInternal "
             + Optional.of(
