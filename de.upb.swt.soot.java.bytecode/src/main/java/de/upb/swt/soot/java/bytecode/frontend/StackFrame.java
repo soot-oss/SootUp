@@ -92,13 +92,13 @@ final class StackFrame {
           newOp.stack = stack;
           JAssignStmt as =
               Jimple.newAssignStmt(stack, newOp.value, StmtPositionInfo.createNoStmtPositionInfo());
-          src.setUnit(newOp.insn, as);
+          src.setStmt(newOp.insn, as);
           newOp.updateBoxes();
         } else {
           JAssignStmt as =
               Jimple.newAssignStmt(
                   stack, newOp.stackOrImmediate(), StmtPositionInfo.createNoStmtPositionInfo());
-          src.mergeUnits(newOp.insn, as);
+          src.mergeStmts(newOp.insn, as);
           newOp.addBox(as.getRightOp());
         }
       } else {
@@ -127,9 +127,9 @@ final class StackFrame {
             JAssignStmt as =
                 Jimple.newAssignStmt(
                     stack, prevOp.value, StmtPositionInfo.createNoStmtPositionInfo());
-            src.setUnit(prevOp.insn, as);
+            src.setStmt(prevOp.insn, as);
           } else {
-            Stmt u = src.getUnit(prevOp.insn);
+            Stmt u = src.getStmt(prevOp.insn);
             AbstractDefinitionStmt as =
                 (AbstractDefinitionStmt)
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
@@ -149,9 +149,9 @@ final class StackFrame {
             JAssignStmt as =
                 Jimple.newAssignStmt(
                     stack, newOp.value, StmtPositionInfo.createNoStmtPositionInfo());
-            src.setUnit(newOp.insn, as);
+            src.setStmt(newOp.insn, as);
           } else {
-            Stmt u = src.getUnit(newOp.insn);
+            Stmt u = src.getStmt(newOp.insn);
             AbstractDefinitionStmt as =
                 (AbstractDefinitionStmt)
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
