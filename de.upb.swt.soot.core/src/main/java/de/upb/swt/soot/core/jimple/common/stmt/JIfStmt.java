@@ -51,7 +51,7 @@ public class JIfStmt extends BranchingStmt implements Copyable {
 
   @Override
   public String toString() {
-    /*  // TODO [ms] leftover  Stmt t = getTarget();
+    /*  // TODO [ms] leftover: Stmt t = getTarget();
        String target = "(branch)";
        if (!t.branches()) {
          target = t.toString();
@@ -59,7 +59,7 @@ public class JIfStmt extends BranchingStmt implements Copyable {
     */
     return Jimple.IF
         + " "
-        + getCondition().toString(); // TODO [ms] leftover + " " + Jimple.GOTO + " " + target;
+        + getCondition().toString(); // TODO [ms] leftover: + " " + Jimple.GOTO + " " + target;
   }
 
   @Override

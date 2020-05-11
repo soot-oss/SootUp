@@ -82,6 +82,7 @@ public abstract class AbstractDefinitionStmt extends Stmt {
     leftOp = value;
   }
 
+  // TODO: [ms] remove $Accessor (i.e. replace dependent logic!)
   @Deprecated
   public static class $Accessor {
     // This class deliberately starts with a $-sign to discourage usage

@@ -478,6 +478,19 @@ public class Body implements Copyable {
       return this;
     }
 
+    public BodyBuilder mergeStmt(Stmt oldStmt, Stmt newStmt) {
+
+      final Set<Stmt> predecessors = mutableGraph.predecessors(oldStmt);
+      final Set<Stmt> successors = mutableGraph.successors(oldStmt);
+
+      mutableGraph.addNode(newStmt);
+      predecessors.forEach(predecessor -> mutableGraph.putEdge(predecessor, newStmt));
+      successors.forEach(successor -> mutableGraph.putEdge(newStmt, successor));
+      mutableGraph.removeNode(oldStmt);
+
+      return this;
+    }
+
     public BodyBuilder removeStmt(Stmt stmt) {
       mutableGraph.removeNode(stmt);
       return this;
@@ -485,6 +498,7 @@ public class Body implements Copyable {
 
     public BodyBuilder addFlow(Stmt fromStmt, Stmt toStmt) {
       mutableGraph.putEdge(fromStmt, toStmt);
+      System.out.println(fromStmt + " => " + toStmt);
       return this;
     }
 
@@ -503,9 +517,14 @@ public class Body implements Copyable {
       // TODO: [ms] debug
       for (Stmt node : mutableGraph.nodes()) {
         System.out.println(node + "");
-        System.out.println("in " + mutableGraph.predecessors(node));
-        System.out.println("out " + mutableGraph.successors(node));
-        System.out.println("\n");
+        //        System.out.println("in " + mutableGraph.predecessors(node));
+
+        // if( mutableGraph.successors(node).size() != 1 )
+        {
+          System.out.println("out " + mutableGraph.successors(node));
+        }
+
+        System.out.println("");
       }
       System.out.println("\n-------\n");
 

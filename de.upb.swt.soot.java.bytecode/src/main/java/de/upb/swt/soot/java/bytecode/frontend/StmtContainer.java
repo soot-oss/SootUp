@@ -15,6 +15,9 @@ import javax.annotation.Nonnull;
  *
  * @author Aaloan Miftah
  */
+
+// TODO: [ms] check: this looks at first sight just like a linked list made into sth that extends
+// Stmt to fit into a Collection<Stmt>
 class StmtContainer extends Stmt {
 
   @Nonnull final Stmt[] stmts;

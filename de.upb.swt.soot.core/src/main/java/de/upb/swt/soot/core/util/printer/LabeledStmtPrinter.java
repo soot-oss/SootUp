@@ -45,7 +45,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   public abstract void identityRef(IdentityRef r);
 
   @Override
-  public void stmtRef(Stmt u, boolean branchTarget) {
+  public void stmtRef(Stmt stmt, boolean branchTarget) {
 
     // normal case, ie labels
     if (branchTarget) {
@@ -54,16 +54,17 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       handleIndent();
       setIndent(indentStep / 2);
 
-      String label = labels.get(u);
-      // TODO: [ms] maybe remove check for <unnamed>?! can be achieved with null as value in the map
+      String label = labels.get(stmt);
+      // TODO: [ms] can we remove check for <unnamed>?! this can be achieved with null as value in
+      // the map if this is really necessary
       if (label == null || "<unnamed>".equals(label)) {
-        output.append("[?= ").append(u).append(']');
+        output.append("[?= ").append(stmt).append(']');
       } else {
         output.append(label);
       }
 
     } else {
-      String ref = references.get(u);
+      String ref = references.get(stmt);
 
       if (startOfLine) {
         setIndent(-indentStep / 2);

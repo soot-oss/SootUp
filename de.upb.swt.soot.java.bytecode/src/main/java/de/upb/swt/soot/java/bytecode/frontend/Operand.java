@@ -57,6 +57,7 @@ final class Operand {
     Value val = stackOrImmediate();
     for (Value vb : boxes) {
       // FIXME: [ms] box removal leftover: ValueBox.$Accessor.setValue(vb, val);
+      throw new RuntimeException("still uses ValueBox");
     }
   }
 

@@ -135,11 +135,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   /* -state fields- */
   private int nextLocal;
   private Map<Integer, Local> locals;
-  private Multimap<LabelNode, Stmt> labelToStmt;
-  private Map<AbstractInsnNode, Stmt> stmts;
+  private Multimap<LabelNode, Stmt> stmtBranchesToTargetLabel;
+  private Map<AbstractInsnNode, Stmt> InsnToStmt;
   private ArrayList<Operand> stack;
   private Map<AbstractInsnNode, StackFrame> frames;
-  private Multimap<LabelNode, Stmt> trapHandlers;
+  private Multimap<LabelNode, Stmt> trapHandler;
   private int lastLineNumber = -1;
 
   @Nullable private JavaClassType declaringClass;
@@ -195,14 +195,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     int nrInsn = instructions.size();
     nextLocal = maxLocals;
     locals = new HashMap<>(maxLocals + (maxLocals / 2));
-    labelToStmt = ArrayListMultimap.create(4, 1);
-    stmts = new HashMap<>(nrInsn);
+    stmtBranchesToTargetLabel = ArrayListMultimap.create(4, 1);
+    InsnToStmt = new HashMap<>(nrInsn);
     frames = new HashMap<>(nrInsn);
-    trapHandlers = ArrayListMultimap.create(tryCatchBlocks.size(), 1);
+    trapHandler = ArrayListMultimap.create(tryCatchBlocks.size(), 1);
 
     /* retrieve all trap handlers */
     for (TryCatchBlockNode tc : tryCatchBlocks) {
-      trapHandlers.put(tc.handler, Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
+      trapHandler.put(tc.handler, Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
     }
     /* convert instructions */
     try {
@@ -212,14 +212,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     }
 
     /* build body (add stmts, locals, traps, etc.) */
-    emitLocals();
-    emitTraps();
-    emitStmts();
+    buildLocals();
+    buildTraps();
+    buildStmts();
 
     /* clean up */
     locals = null;
-    labelToStmt = null;
-    stmts = null;
+    stmtBranchesToTargetLabel = null;
+    InsnToStmt = null;
     stack = null;
     frames = null;
 
@@ -246,13 +246,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     return frame;
   }
 
+  @Nonnull
   private Local getLocal(int idx) {
     if (idx >= maxLocals) {
       throw new IllegalArgumentException("Invalid local index: " + idx);
     }
-    Integer i = idx;
-    Local l = locals.get(i);
-    if (l == null) {
+    Local local = locals.get(idx);
+    if (local == null) {
       String name;
       if (localVariables != null) {
         name = null;
@@ -270,10 +270,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         name = "l" + idx;
       }
       // TODO: [ms] implement annotations for Locals here as third parameter in JavaJimple.newLocal(
-      l = Jimple.newLocal(name, UnknownType.getInstance());
-      locals.put(i, l);
+      local = Jimple.newLocal(name, UnknownType.getInstance());
+      locals.put(idx, local);
     }
-    return l;
+    return local;
   }
 
   private void push(Operand opr) {
@@ -404,7 +404,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     // }
     // }
 
-    Stmt overwrittenStmt = stmts.put(insn, u);
+    Stmt overwrittenStmt = InsnToStmt.put(insn, u);
     if (overwrittenStmt != null) {
       throw new AssertionError(
           insn.getOpcode() + " already has an associated Stmt: " + overwrittenStmt);
@@ -412,10 +412,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   }
 
   void mergeStmts(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
-    Stmt prev = stmts.put(insn, stmt);
+    Stmt prev = InsnToStmt.put(insn, stmt);
     if (prev != null) {
       Stmt merged = new StmtContainer(prev, stmt);
-      stmts.put(insn, merged);
+      InsnToStmt.put(insn, merged);
     }
   }
 
@@ -431,7 +431,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   @SuppressWarnings("unchecked")
   <A extends Stmt> A getStmt(@Nonnull AbstractInsnNode insn) {
-    return (A) stmts.get(insn);
+    return (A) InsnToStmt.get(insn);
   }
 
   // TODO: [ms] purpose of this method?
@@ -492,7 +492,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         val = ifr;
         base.addBox(ifr.getBase());
         frame.setIn(base);
-        frame.setBoxes(ifr.getBase());
+        frame.setValues(ifr.getBase());
       }
       opr = new Operand(insn, val);
       frame.setOut(opr);
@@ -539,9 +539,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
               val, rvalue.stackOrImmediate(), StmtPositionInfo.createNoStmtPositionInfo());
       rvalue.addBox(as.getRightOp());
       if (notInstance) {
-        frame.setBoxes(as.getRightOp());
+        frame.setValues(as.getRightOp());
       } else {
-        frame.setBoxes(as.getRightOp(), ((JInstanceFieldRef) val).getBase());
+        frame.setValues(as.getRightOp(), ((JInstanceFieldRef) val).getBase());
       }
       setStmt(insn, as);
     } else {
@@ -575,7 +575,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private void convertIincInsn(@Nonnull IincInsnNode insn) {
     Local local = getLocal(insn.var);
     assignReadOps(local);
-    if (!stmts.containsKey(insn)) {
+    if (!InsnToStmt.containsKey(insn)) {
       JAddExpr add = Jimple.newAddExpr(local, IntConstant.getInstance(insn.incr));
       setStmt(insn, Jimple.newAssignStmt(local, add, StmtPositionInfo.createNoStmtPositionInfo()));
     }
@@ -627,7 +627,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       base.addBox(ar.getBase());
       opr = new Operand(insn, ar);
       frame.setIn(indx, base);
-      frame.setBoxes(ar.getIndex(), ar.getBase());
+      frame.setValues(ar.getIndex(), ar.getBase());
       frame.setOut(opr);
     } else {
       opr = out[0];
@@ -645,7 +645,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     int op = insn.getOpcode();
     boolean dword = op == LASTORE || op == DASTORE;
     StackFrame frame = getFrame(insn);
-    if (!stmts.containsKey(insn)) {
+    if (!InsnToStmt.containsKey(insn)) {
       Operand valu = dword ? popImmediateDual() : popImmediate();
       Operand indx = popImmediate();
       Operand base = popLocal();
@@ -660,7 +660,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
                   ar, valu.stackOrImmediate(), StmtPositionInfo.createNoStmtPositionInfo());
       valu.addBox(as.getRightOp());
       frame.setIn(valu, indx, base);
-      frame.setBoxes(as.getRightOp(), ar.getIndex(), ar.getBase());
+      frame.setValues(as.getRightOp(), ar.getIndex(), ar.getBase());
       setStmt(insn, as);
     } else {
       frame.mergeIn(dword ? popDual() : pop(), pop(), pop());
@@ -812,7 +812,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       op2.addBox(binop.getOp2());
       opr = new Operand(insn, binop);
       frame.setIn(op2, op1);
-      frame.setBoxes(binop.getOp2(), binop.getOp1());
+      frame.setValues(binop.getOp2(), binop.getOp1());
       frame.setOut(opr);
     } else {
       opr = out[0];
@@ -853,7 +853,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       op1.addBox(unop.getOp());
       opr = new Operand(insn, unop);
       frame.setIn(op1);
-      frame.setBoxes(unop.getOp());
+      frame.setValues(unop.getOp());
       frame.setOut(opr);
     } else {
       opr = out[0];
@@ -913,7 +913,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       opr = new Operand(insn, cast);
       val.addBox(cast.getOp());
       frame.setIn(val);
-      frame.setBoxes(cast.getOp());
+      frame.setValues(cast.getOp());
       frame.setOut(opr);
     } else {
       opr = out[0];
@@ -930,14 +930,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     int op = insn.getOpcode();
     boolean dword = op == LRETURN || op == DRETURN;
     StackFrame frame = getFrame(insn);
-    if (!stmts.containsKey(insn)) {
+    if (!InsnToStmt.containsKey(insn)) {
       Operand val = dword ? popImmediateDual() : popImmediate();
       JReturnStmt ret =
           Jimple.newReturnStmt(
               (Immediate) val.stackOrImmediate(), StmtPositionInfo.createNoStmtPositionInfo());
       val.addBox(ret.getOp());
       frame.setIn(val);
-      frame.setBoxes(ret.getOp());
+      frame.setValues(ret.getOp());
       setStmt(insn, ret);
     } else {
       frame.mergeIn(dword ? popDual() : pop());
@@ -950,8 +950,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       /*
        * We can ignore NOP instructions, but for completeness, we handle them
        */
-      if (!stmts.containsKey(insn)) {
-        stmts.put(insn, Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
+      if (!InsnToStmt.containsKey(insn)) {
+        InsnToStmt.put(insn, Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
       }
     } else if (op >= ACONST_NULL && op <= DCONST_1) {
       convertConstInsn(insn);
@@ -986,13 +986,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     } else if (op >= IRETURN && op <= ARETURN) {
       convertReturnInsn(insn);
     } else if (op == RETURN) {
-      if (!stmts.containsKey(insn)) {
+      if (!InsnToStmt.containsKey(insn)) {
         setStmt(insn, Jimple.newReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo()));
       }
     } else if (op == ATHROW) {
       StackFrame frame = getFrame(insn);
       Operand opr;
-      if (!stmts.containsKey(insn)) {
+      if (!InsnToStmt.containsKey(insn)) {
         opr = popImmediate();
         JThrowStmt ts =
             Jimple.newThrowStmt(
@@ -1000,7 +1000,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         opr.addBox(ts.getOp());
         frame.setIn(opr);
         frame.setOut(opr);
-        frame.setBoxes(ts.getOp());
+        frame.setValues(ts.getOp());
         setStmt(insn, ts);
       } else {
         opr = pop();
@@ -1009,7 +1009,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       push(opr);
     } else if (op == MONITORENTER || op == MONITOREXIT) {
       StackFrame frame = getFrame(insn);
-      if (!stmts.containsKey(insn)) {
+      if (!InsnToStmt.containsKey(insn)) {
         Operand opr = popStackConst();
         AbstractOpStmt ts =
             op == MONITORENTER
@@ -1020,7 +1020,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
                     StmtPositionInfo.createNoStmtPositionInfo());
         opr.addBox(ts.getOp());
         frame.setIn(opr);
-        frame.setBoxes(ts.getOp());
+        frame.setValues(ts.getOp());
         setStmt(insn, ts);
       } else {
         frame.mergeIn(pop());
@@ -1075,7 +1075,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             JavaJimple.getInstance().newNewArrayExpr(type, (Immediate) size.stackOrImmediate());
         size.addBox(anew.getSize());
         frame.setIn(size);
-        frame.setBoxes(anew.getSize());
+        frame.setValues(anew.getSize());
         v = anew;
       }
       opr = new Operand(insn, v);
@@ -1093,16 +1093,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private void convertJumpInsn(@Nonnull JumpInsnNode insn) {
     int op = insn.getOpcode();
     if (op == GOTO) {
-      if (!stmts.containsKey(insn)) {
+      if (!InsnToStmt.containsKey(insn)) {
         Stmt box = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-        labelToStmt.put(insn.label, box);
+        stmtBranchesToTargetLabel.put(insn.label, box);
         setStmt(insn, Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo()));
       }
       return;
     }
     /* must be ifX insn */
     StackFrame frame = getFrame(insn);
-    if (!stmts.containsKey(insn)) {
+    if (!InsnToStmt.containsKey(insn)) {
       Operand val = popImmediate();
       Immediate v = (Immediate) val.stackOrImmediate();
       AbstractConditionExpr cond;
@@ -1139,7 +1139,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         }
         val1.addBox(cond.getOp1());
         val.addBox(cond.getOp2());
-        frame.setBoxes(cond.getOp2(), cond.getOp1());
+        frame.setValues(cond.getOp2(), cond.getOp1());
         frame.setIn(val, val1);
       } else {
         switch (op) {
@@ -1171,11 +1171,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             throw new AssertionError("Unknown if op: " + op);
         }
         val.addBox(cond.getOp1());
-        frame.setBoxes(cond.getOp1());
+        frame.setValues(cond.getOp1());
         frame.setIn(val);
       }
       Stmt box = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-      labelToStmt.put(insn.label, box);
+      stmtBranchesToTargetLabel.put(insn.label, box);
       setStmt(insn, Jimple.newIfStmt(cond, StmtPositionInfo.createNoStmtPositionInfo()));
     } else {
       if (op >= IF_ICMPEQ && op <= IF_ACMPNE) {
@@ -1274,7 +1274,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   private void convertLookupSwitchInsn(@Nonnull LookupSwitchInsnNode insn) {
     StackFrame frame = getFrame(insn);
-    if (stmts.containsKey(insn)) {
+    if (InsnToStmt.containsKey(insn)) {
       frame.mergeIn(pop());
       return;
     }
@@ -1282,11 +1282,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     Stmt dflt = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
 
     List<Stmt> targets = new ArrayList<>(insn.labels.size());
-    labelToStmt.put(insn.dflt, dflt);
+    stmtBranchesToTargetLabel.put(insn.dflt, dflt);
     for (LabelNode ln : insn.labels) {
       Stmt box = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
       targets.add(box);
-      labelToStmt.put(ln, box);
+      stmtBranchesToTargetLabel.put(ln, box);
     }
 
     List<IntConstant> keys = new ArrayList<>(insn.keys.size());
@@ -1303,7 +1303,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             StmtPositionInfo.createNoStmtPositionInfo());
     key.addBox(lss.getKey());
     frame.setIn(key);
-    frame.setBoxes(lss.getKey());
+    frame.setValues(lss.getKey());
     setStmt(insn, lss);
   }
 
@@ -1379,7 +1379,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           boxes[i] = invoke.getArg(i);
           args[i].addBox(boxes[i]);
         }
-        frame.setBoxes(boxes);
+        frame.setValues(boxes);
         frame.setIn(args);
       }
       opr = new Operand(insn, invoke);
@@ -1411,7 +1411,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       pushDual(opr);
     } else if (!(returnType == VoidType.getInstance())) {
       push(opr);
-    } else if (!stmts.containsKey(insn)) {
+    } else if (!InsnToStmt.containsKey(insn)) {
       setStmt(
           insn,
           Jimple.newInvokeStmt(
@@ -1477,7 +1477,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         args[i].addBox(boxes[i]);
       }
 
-      frame.setBoxes(boxes);
+      frame.setValues(boxes);
       frame.setIn(args);
       opr = new Operand(insn, indy);
       frame.setOut(opr);
@@ -1507,7 +1507,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       pushDual(opr);
     } else if (!(returnType instanceof VoidType)) {
       push(opr);
-    } else if (!stmts.containsKey(insn)) {
+    } else if (!InsnToStmt.containsKey(insn)) {
       // FIXME: [JMP] Set correct position information
       setStmt(
           insn,
@@ -1566,7 +1566,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         sizes[i].addBox(vb);
         boxes[i] = vb;
       }
-      frame.setBoxes(boxes);
+      frame.setValues(boxes);
       frame.setIn(sizes);
       opr = new Operand(insn, nm);
       frame.setOut(opr);
@@ -1584,18 +1584,18 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   private void convertTableSwitchInsn(@Nonnull TableSwitchInsnNode insn) {
     StackFrame frame = getFrame(insn);
-    if (stmts.containsKey(insn)) {
+    if (InsnToStmt.containsKey(insn)) {
       frame.mergeIn(pop());
       return;
     }
     Operand key = popImmediate();
     Stmt dflt = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     List<Stmt> targets = new ArrayList<>(insn.labels.size());
-    labelToStmt.put(insn.dflt, dflt);
+    stmtBranchesToTargetLabel.put(insn.dflt, dflt);
     for (LabelNode ln : insn.labels) {
       Stmt box = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
       targets.add(box);
-      labelToStmt.put(ln, box);
+      stmtBranchesToTargetLabel.put(ln, box);
     }
     JSwitchStmt tss =
         Jimple.newTableSwitchStmt(
@@ -1607,7 +1607,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             StmtPositionInfo.createNoStmtPositionInfo());
     key.addBox(tss.getKey());
     frame.setIn(key);
-    frame.setBoxes(tss.getKey());
+    frame.setValues(tss.getKey());
     setStmt(insn, tss);
   }
 
@@ -1652,7 +1652,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         }
         op1.addBox(vb);
         frame.setIn(op1);
-        frame.setBoxes(vb);
+        frame.setValues(vb);
       }
       opr = new Operand(insn, val);
       frame.setOut(opr);
@@ -1690,12 +1690,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     StackFrame frame = getFrame(insn);
     Operand opr = dword ? popDual() : pop();
     Local local = getLocal(insn.var);
-    if (!stmts.containsKey(insn)) {
+    if (!InsnToStmt.containsKey(insn)) {
       AbstractDefinitionStmt as =
           Jimple.newAssignStmt(
               local, opr.stackOrImmediate(), StmtPositionInfo.createNoStmtPositionInfo());
       opr.addBox(as.getRightOp());
-      frame.setBoxes(as.getRightOp());
+      frame.setValues(as.getRightOp());
       frame.setIn(opr);
       setStmt(insn, as);
     } else {
@@ -1712,7 +1712,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       convertVarStoreInsn(insn);
     } else if (op == RET) {
       /* we handle it, even thought it should be removed */
-      if (!stmts.containsKey(insn)) {
+      if (!InsnToStmt.containsKey(insn)) {
         setStmt(
             insn,
             Jimple.newRetStmt(getLocal(insn.var), StmtPositionInfo.createNoStmtPositionInfo()));
@@ -1723,7 +1723,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   }
 
   private void convertLabel(@Nonnull LabelNode ln) {
-    if (!trapHandlers.containsKey(ln)) {
+    if (!trapHandler.containsKey(ln)) {
       return;
     }
 
@@ -1731,7 +1731,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     // somewhere from the real exception handler in case this is inline
     // code
     if (inlineExceptionLabels.contains(ln)) {
-      if (!stmts.containsKey(ln)) {
+      if (!InsnToStmt.containsKey(ln)) {
         JNopStmt nop = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
         setStmt(ln, nop);
       }
@@ -1829,7 +1829,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   @SuppressWarnings("StatementWithEmptyBody")
   private void convert() {
     ArrayDeque<Edge> worklist = new ArrayDeque<>();
-    for (LabelNode ln : trapHandlers.keySet()) {
+    for (LabelNode ln : trapHandler.keySet()) {
       if (checkInlineExceptionHandler(ln)) {
         handleInlineExceptionHandler(ln, worklist);
       } else {
@@ -1961,7 +1961,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     return false;
   }
 
-  private void emitLocals() throws AsmFrontendException {
+  private void buildLocals() throws AsmFrontendException {
 
     MethodSignature methodSignature = lazyMethodSignature.get();
 
@@ -1991,7 +1991,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     bodyBuilder.setLocals(bodyLocals);
   }
 
-  private void emitTraps() throws AsmFrontendException {
+  private void buildTraps() throws AsmFrontendException {
     List<Trap> traps = new ArrayList<>();
 
     JavaClassType throwable =
@@ -2003,7 +2003,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       Stmt end = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
       Iterator<Stmt> hitr = handlers.get(tc.handler);
       if (hitr == null) {
-        hitr = trapHandlers.get(tc.handler).iterator();
+        hitr = trapHandler.get(tc.handler).iterator();
         handlers.put(tc.handler, hitr);
       }
       Stmt handler = hitr.next();
@@ -2015,24 +2015,24 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       }
       Trap trap = Jimple.newTrap(cls, start, end, handler);
       traps.add(trap);
-      labelToStmt.put(tc.start, start);
-      labelToStmt.put(tc.end, end);
+      stmtBranchesToTargetLabel.put(tc.start, start);
+      stmtBranchesToTargetLabel.put(tc.end, end);
     }
     bodyBuilder.setTraps(traps);
   }
 
-  private void emitStmts(@Nonnull Stmt u) {
+  private void emitStmts(@Nonnull Stmt stmt) {
     // TODO: [ms] rename method and analyze StmtContainer container to improve this method?
-    if (u instanceof StmtContainer) {
-      for (Stmt uu : ((StmtContainer) u).stmts) {
+    if (stmt instanceof StmtContainer) {
+      for (Stmt uu : ((StmtContainer) stmt).stmts) {
         emitStmts(uu);
       }
     } else {
-      bodyBuilder.addStmt(u, true);
+      bodyBuilder.addStmt(stmt, true);
     }
   }
 
-  private void emitStmts() {
+  private void buildStmts() {
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> labls = new ArrayDeque<>();
 
@@ -2043,44 +2043,47 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       }
 
       // Get the Stmt associated with the current instruction
-      Stmt u = stmts.get(insn);
-      if (u == null) {
+      Stmt stmt = InsnToStmt.get(insn);
+      if (stmt == null) {
         insn = insn.getNext();
         continue;
       }
 
-      emitStmts(u);
+      emitStmts(stmt);
 
       // If this is an exception handler, register the starting Stmt for it
       if (insn instanceof LabelNode) {
         JIdentityStmt caughtEx = null;
-        if (u instanceof JIdentityStmt) {
-          caughtEx = (JIdentityStmt) u;
-        } else if (u instanceof StmtContainer) {
-          caughtEx = findIdentityRefInContainer((StmtContainer) u);
+
+        // TODO: [ms] integrate this if-else into findIdentityRefInContainer itself
+        if (stmt instanceof JIdentityStmt) {
+          caughtEx = (JIdentityStmt) stmt;
+        } else if (stmt instanceof StmtContainer) {
+          caughtEx = findIdentityRefInContainer((StmtContainer) stmt);
         }
 
         if (caughtEx != null && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
           // We directly place this label
-          Collection<Stmt> traps = trapHandlers.get((LabelNode) insn);
-          for (Stmt ub : traps) {
-            bodyBuilder.addFlow(ub, caughtEx);
+          Collection<Stmt> traps = trapHandler.get((LabelNode) insn);
+          for (Stmt trapStmt : traps) {
+            bodyBuilder.addFlow(trapStmt, caughtEx);
           }
-          trapHandlers.replaceValues((LabelNode) insn, Collections.nCopies(traps.size(), caughtEx));
+          trapHandler.replaceValues((LabelNode) insn, Collections.nCopies(traps.size(), caughtEx));
         }
       }
 
       // Register this Stmt for all targets of the labels ending up at it
       while (!labls.isEmpty()) {
         LabelNode ln = labls.poll();
-        Collection<Stmt> boxes = labelToStmt.get(ln);
+        Collection<Stmt> boxes = stmtBranchesToTargetLabel.get(ln);
         if (boxes != null) {
           final Stmt targetStmt =
-              u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u;
+              stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt;
           for (Stmt box : boxes) {
             bodyBuilder.addFlow(box, targetStmt);
           }
-          labelToStmt.replaceValues(ln, Collections.nCopies(boxes.size(), targetStmt));
+          stmtBranchesToTargetLabel.replaceValues(
+              ln, Collections.nCopies(boxes.size(), targetStmt));
         }
       }
       insn = insn.getNext();
@@ -2091,14 +2094,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       Stmt handler = inlineExceptionHandlers.get(ln);
       emitStmts(handler);
 
-      Collection<Stmt> traps = trapHandlers.get(ln);
+      Collection<Stmt> traps = trapHandler.get(ln);
       for (Stmt ub : traps) {
         bodyBuilder.addFlow(ub, handler);
       }
-      trapHandlers.replaceValues((LabelNode) insn, Collections.nCopies(traps.size(), handler));
+      trapHandler.replaceValues((LabelNode) insn, Collections.nCopies(traps.size(), handler));
 
       // We need to jump to the original implementation
-      Stmt targetStmt = stmts.get(ln);
+      Stmt targetStmt = InsnToStmt.get(ln);
       JGotoStmt gotoImpl = Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
       bodyBuilder.addStmt(gotoImpl, true);
       bodyBuilder.addFlow(gotoImpl, targetStmt);
@@ -2113,22 +2116,22 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
     while (!labls.isEmpty()) {
       LabelNode ln = labls.poll();
-      Collection<Stmt> boxes = labelToStmt.get(ln);
-      if (boxes != null) {
-        for (Stmt box : boxes) {
-          bodyBuilder.addFlow(box, end);
-        }
-        labelToStmt.replaceValues((LabelNode) insn, Collections.nCopies(boxes.size(), end));
+      Collection<Stmt> boxes = stmtBranchesToTargetLabel.get(ln);
+      for (Stmt box : boxes) {
+        bodyBuilder.addFlow(box, end);
       }
+      stmtBranchesToTargetLabel.replaceValues(
+          (LabelNode) insn, Collections.nCopies(boxes.size(), end));
     }
   }
 
-  private @Nullable JIdentityStmt findIdentityRefInContainer(@Nonnull StmtContainer u) {
-    for (Stmt uu : u.stmts) {
-      if (uu instanceof JIdentityStmt) {
-        return (JIdentityStmt) uu;
-      } else if (uu instanceof StmtContainer) {
-        return findIdentityRefInContainer((StmtContainer) uu);
+  private @Nullable JIdentityStmt findIdentityRefInContainer(@Nonnull StmtContainer stmtContainer) {
+    // TODO: [ms] remove recursion?
+    for (Stmt stmt : stmtContainer.stmts) {
+      if (stmt instanceof JIdentityStmt) {
+        return (JIdentityStmt) stmt;
+      } else if (stmt instanceof StmtContainer) {
+        return findIdentityRefInContainer((StmtContainer) stmt);
       }
     }
     return null;
