@@ -18,10 +18,6 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
 
   protected final StmtPositionInfo positionInfo;
 
-  // FIXME: remove - this info is now implemented in the stmt graph (see Body)
-  /** List of Stmts pointing to this Stmt. */
-  @Nonnull private List<Stmt> stmtsPointingToThis = new ArrayList<>();
-
   public Stmt(@Nonnull StmtPositionInfo positionInfo) {
     this.positionInfo = positionInfo;
   }
@@ -39,25 +35,6 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
   @Nonnull
   public List<Value> getDefs() {
     return Collections.emptyList();
-  }
-
-  /** Returns a list of Stmts pointing to this Stmt. */
-  @Nonnull
-  // TODO [ms] refactor!
-  public List<Stmt> getStmtsPointingToThis() {
-    return Collections.unmodifiableList(stmtsPointingToThis);
-  }
-
-  @Deprecated
-  // TODO [ms] refactor!
-  private void addStmtPointingToThis(@Nonnull Stmt fromStmt) {
-    stmtsPointingToThis.add(fromStmt);
-  }
-
-  @Deprecated
-  // TODO [ms] refactor!
-  private void removeStmtPointingToThis(@Nonnull Stmt fromStmt) {
-    stmtsPointingToThis.remove(fromStmt);
   }
 
   /** Returns a list of Values, either used or defined or both in this Stmt. */

@@ -391,20 +391,20 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     return popStackConst(popDual());
   }
 
-  void setStmt(@Nonnull AbstractInsnNode insn, @Nonnull Stmt u) {
+  void setStmt(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
     // FIXME: re-add linenumber keep
     // ASM LineNumberNode
     // if (Options.keep_line_number() && lastLineNumber >= 0) {
-    // Tag lineTag = u.getTag("LineNumberTag");
+    // Tag lineTag = stmt.getTag("LineNumberTag");
     // if (lineTag == null) {
     // lineTag = new LineNumberTag(lastLineNumber);
-    // u.addTag(lineTag);
+    // stmt.addTag(lineTag);
     // } else if (((LineNumberTag) lineTag).getLineNumber() != lastLineNumber) {
     // throw new RuntimeException("Line tag mismatch");
     // }
     // }
 
-    Stmt overwrittenStmt = InsnToStmt.put(insn, u);
+    Stmt overwrittenStmt = InsnToStmt.put(insn, stmt);
     if (overwrittenStmt != null) {
       throw new AssertionError(
           insn.getOpcode() + " already has an associated Stmt: " + overwrittenStmt);

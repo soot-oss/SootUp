@@ -137,7 +137,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
       throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
     }
     // TODO: [MS] what if both Op's are a FieldRef? verify it in a verifier that this does not
-    // happen and it works always via Local;
+    // happen or is it always handled via an intermediate Local?
     if (getLeftOp() instanceof JFieldRef) {
       return (JFieldRef) getLeftOp();
     } else {

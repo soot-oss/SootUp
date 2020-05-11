@@ -275,11 +275,10 @@ public class Body implements Copyable {
    *
    * <p>This method was typically used for pointer patching, e.g. when the unit chain is cloned.
    *
-   * @return A collection of all the Stmts held by this body's units.
+   * @return A collection of all the Stmts
    */
   @Nonnull
   public Collection<Stmt> getAllStmts() {
-    // FIXME [ms] obsolete now -> use get StmtGraph
     List<Stmt> stmtList = new ArrayList<>();
     for (Stmt stmt : cfg.nodes()) {
       if (stmt.branches()) { // i.e. stmt instanceof BranchingStmt is true
