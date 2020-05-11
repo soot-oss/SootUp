@@ -98,9 +98,9 @@ final class StackFrame {
         } else {
           JAssignStmt as =
               Jimple.newAssignStmt(
-                  stack, newOp.stackOrImmediate(), StmtPositionInfo.createNoStmtPositionInfo());
+                  stack, newOp.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
           src.mergeStmts(newOp.insn, as);
-          newOp.addBox(as.getRightOp());
+          newOp.addValue(as.getRightOp());
         }
       } else {
         for (int j = 0; j != nrIn; j++) {
@@ -122,7 +122,7 @@ final class StackFrame {
           if (prevOp.stack == stack) {
             continue;
           }
-          prevOp.removeBox(box);
+          prevOp.removeValue(box);
           if (prevOp.stack == null) {
             prevOp.stack = stack;
             JAssignStmt as =

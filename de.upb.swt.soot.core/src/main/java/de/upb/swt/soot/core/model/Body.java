@@ -335,6 +335,11 @@ public class Body implements Copyable {
     return new ArrayList<>(cfg.successors(fromStmt));
   }
 
+  @Nonnull
+  public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
+    return cfg.predecessors(targetStmt).size() > 1;
+  }
+
   public void validateIdentityStatements() {
     runValidation(new IdentityStatementsValidator());
   }
@@ -498,6 +503,7 @@ public class Body implements Copyable {
 
     public BodyBuilder addFlow(Stmt fromStmt, Stmt toStmt) {
       mutableGraph.putEdge(fromStmt, toStmt);
+      // TODO: remove debug
       System.out.println(fromStmt + " => " + toStmt);
       return this;
     }
@@ -515,6 +521,7 @@ public class Body implements Copyable {
     public Body build() {
 
       // TODO: [ms] debug
+      System.out.println("\n-------\n");
       for (Stmt node : mutableGraph.nodes()) {
         System.out.println(node + "");
         //        System.out.println("in " + mutableGraph.predecessors(node));

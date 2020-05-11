@@ -32,11 +32,11 @@ final class Operand {
   }
 
   /**
-   * Removes a value box from this operand.
+   * Removes a value from this operand.
    *
    * @param vb the value box.
    */
-  void removeBox(@Nullable Value vb) {
+  void removeValue(@Nullable Value vb) {
     if (vb == null) {
       return;
     }
@@ -44,20 +44,20 @@ final class Operand {
   }
 
   /**
-   * Adds a value box to this operand.
+   * Adds a value to this operand.
    *
    * @param vb the value box.
    */
-  void addBox(@Nonnull Value vb) {
+  void addValue(@Nonnull Value vb) {
     boxes.add(vb);
   }
 
   /** Updates all value boxes registered to this operand. */
+  // TODO: [ms] check if method is still necessary
   void updateBoxes() {
-    Value val = stackOrImmediate();
+    Value val = stackOrValue();
     for (Value vb : boxes) {
       // FIXME: [ms] box removal leftover: ValueBox.$Accessor.setValue(vb, val);
-      throw new RuntimeException("still uses ValueBox");
     }
   }
 
@@ -73,7 +73,9 @@ final class Operand {
 
   /** @return either the stack local allocated for this operand, or its value. */
   @Nonnull
-  Value stackOrImmediate() {
+  // TODO [ms]: check: split into to methods? removes condition check and lots of explicit casts to
+  // Immediate
+  Value stackOrValue() {
     return stack == null ? value : stack;
   }
 
@@ -87,7 +89,7 @@ final class Operand {
     if (other.value == null && value == null) {
       return true;
     }
-    return stackOrImmediate().equivTo(other.stackOrImmediate());
+    return stackOrValue().equivTo(other.stackOrValue());
   }
 
   @Override

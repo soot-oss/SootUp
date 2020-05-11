@@ -306,7 +306,7 @@ public class Printer {
         // or the previous statement does not have body statement as a successor, or if
         // body statement has a label on it
 
-        final boolean currentStmtHasLabel = printer.getLabels().containsKey(currentStmt);
+        final boolean currentStmtHasLabel = body.isStmtBranchTarget(currentStmt);
 
         // TODO: [ms] understand this strange check?!
         if (true /*currentStmt != units.iterator().next() */) {
@@ -334,8 +334,10 @@ public class Printer {
           printer.newline();
         }
 
-        if (printer.getReferences().containsKey(currentStmt)) {
-          printer.stmtRef(currentStmt, false);
+        // TODO: leftover.. where/why is it necessary? if
+        // (printer.getReferences().containsKey(currentStmt))
+        {
+          // printer.stmtRef(currentStmt, false);
         }
       }
 

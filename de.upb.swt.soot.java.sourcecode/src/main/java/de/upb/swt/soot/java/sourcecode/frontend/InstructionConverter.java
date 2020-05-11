@@ -554,8 +554,6 @@ public class InstructionConverter {
         Jimple.newLookupSwitchStmt(
             local,
             lookupValues,
-            targets,
-            defaultTarget,
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     this.targetsOfLookUpSwitchStmts.put(stmt, targetsList);

@@ -6,6 +6,7 @@ import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.visitor.Acceptor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
+import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import javax.annotation.Nonnull;
 public abstract class Stmt implements EquivTo, Acceptor, Copyable {
 
   protected final StmtPositionInfo positionInfo;
+
+  // FIXME: remove - this info is now implemented in the stmt graph (see Body)
   /** List of Stmts pointing to this Stmt. */
   @Nonnull private List<Stmt> stmtsPointingToThis = new ArrayList<>();
 
@@ -119,7 +122,7 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     return positionInfo;
   }
 
-  public boolean isBranchTarget() {
-    return !stmtsPointingToThis.isEmpty();
+  public boolean isBranchTarget(Body body) {
+    return body.isStmtBranchTarget(this);
   }
 }

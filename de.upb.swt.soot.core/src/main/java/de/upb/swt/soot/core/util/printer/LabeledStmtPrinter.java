@@ -14,6 +14,9 @@ import java.util.*;
 public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   /** branch targets * */
   protected Map<Stmt, String> labels;
+
+  protected int labelIdx = 0;
+
   /**
    * for stmt references in Phi nodes (ms: and other occurences TODO: check and improve comment) *
    */
@@ -54,16 +57,23 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       handleIndent();
       setIndent(indentStep / 2);
 
-      String label = labels.get(stmt);
+      // String label = labels.get(stmt);
       // TODO: [ms] can we remove check for <unnamed>?! this can be achieved with null as value in
       // the map if this is really necessary
-      if (label == null || "<unnamed>".equals(label)) {
+      // why should we allow unnamed label targets here?
+      /*if (label == null || "<unnamed>".equals(label)) {
         output.append("[?= ").append(stmt).append(']');
-      } else {
-        output.append(label);
+      } else
+        */
+      {
+        // graph size is big enough but calculate on actual label size would be better
+        final int maxDigits = 1 + (int) Math.log10(body.getStmtGraph().nodes().size());
+        final String formatString = "%0" + maxDigits + "d";
+        output.append("label").append(String.format(formatString, labelIdx++));
       }
 
     } else {
+      /*
       String ref = references.get(stmt);
 
       if (startOfLine) {
@@ -72,51 +82,59 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
         setIndent(indentStep / 2);
 
         output.append('(').append(ref).append(')');
-      } else {
-        output.append(ref);
+      } else
+        */
+      {
+        output.append(stmt);
       }
     }
   }
 
   public void createLabelMaps(Body body) {
-    // FIXME: [ms] build label maps from stmtgraph
-    Collection<Stmt> stmts = body.getStmts();
 
-    labels = new HashMap<>(stmts.size() * 2 + 1, 0.7f);
-    references = new HashMap<>(stmts.size() * 2 + 1, 0.7f);
+    labelIdx = 1;
+    return;
 
-    // Create statement name table
-    Set<Stmt> labelStmts = new HashSet<>();
-    Set<Stmt> refStmts = new HashSet<>();
+    /*
+       // FIXME: [ms] build label maps from stmtgraph
+       Collection<Stmt> stmts = body.getStmts();
 
-    // Build labelStmts and refStmts
-    for (Stmt stmt : body.getAllStmts()) {
-      if (stmt.isBranchTarget()) {
-        labelStmts.add(stmt);
-      } else {
-        refStmts.add(stmt);
-      }
-    }
+       labels = new HashMap<>(stmts.size() * 2 + 1, 0.7f);
+       references = new HashMap<>(stmts.size() * 2 + 1, 0.7f);
 
-    // left side zero padding for all labels
-    // this simplifies debugging the jimple code in simple editors, as it
-    // avoids the situation where a label is the prefix of another label
-    final int maxDigits = 1 + (int) Math.log10(labelStmts.size());
-    final String formatString = "label%0" + maxDigits + "d";
+       // Create statement name table
+       Set<Stmt> labelStmts = new HashSet<>();
+       Set<Stmt> refStmts = new HashSet<>();
 
-    int labelCount = 0;
-    int refCount = 0;
+       // Build labelStmts and refStmts
+       for (Stmt stmt : body.getAllStmts()) {
+         if (stmt.isBranchTarget(body)) {
+           labelStmts.add(stmt);
+         } else {
+           refStmts.add(stmt);
+         }
+       }
 
-    // Traverse the stmts and assign a label if necessary
-    for (Stmt s : stmts) {
-      if (labelStmts.contains(s)) {
-        labels.put(s, String.format(formatString, ++labelCount));
-      }
+       // left side zero padding for all labels
+       // this simplifies debugging the jimple code in simple editors, as it
+       // avoids the situation where a label is the prefix of another label
+       final int maxDigits = 1 + (int) Math.log10(labelStmts.size());
+       final String formatString = "label%0" + maxDigits + "d";
 
-      if (refStmts.contains(s)) {
-        references.put(s, Integer.toString(refCount++));
-      }
-    }
+       int labelCount = 0;
+       int refCount = 0;
+
+       // Traverse the stmts and assign a label if necessary
+       for (Stmt s : stmts) {
+         if (labelStmts.contains(s)) {
+           labels.put(s, String.format(formatString, ++labelCount));
+         }
+
+         if (refStmts.contains(s)) {
+           references.put(s, Integer.toString(refCount++));
+         }
+       }
+    */
   }
 
   @Override
