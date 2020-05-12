@@ -458,7 +458,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       int op = operand.insn.getOpcode();
 
       // FIXME: [JMP] The IF condition is always false. --> [ms]: *ALOAD are array load instructions
-      // -> include or exclude them?
+      // -> seems someone wanted to include or exclude them?
       if (local == null && op != GETFIELD && op != GETSTATIC && (op < IALOAD && op > SALOAD)) {
         continue;
       }
@@ -1303,7 +1303,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   private void convertMethodInsn(@Nonnull MethodInsnNode insn) {
     int op = insn.getOpcode();
-    boolean instance = op != INVOKESTATIC;
+    boolean isInstance = op != INVOKESTATIC;
     StackFrame frame = getFrame(insn);
     Operand[] out = frame.getOut();
     Operand opr;
@@ -1323,7 +1323,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       int nrArgs = sigTypes.size();
       final Operand[] args;
       List<Immediate> argList = Collections.emptyList();
-      if (!instance) {
+      if (!isInstance) {
         args = nrArgs == 0 ? null : new Operand[nrArgs];
         if (args != null) {
           argList = new ArrayList<>(nrArgs);
@@ -1341,12 +1341,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       if (argList.size() > 1) {
         Collections.reverse(argList);
       }
-      if (instance) {
+      if (isInstance) {
         args[args.length - 1] = popLocal();
       }
       Value[] boxes = args == null ? null : new Value[args.length];
       AbstractInvokeExpr invoke;
-      if (!instance) {
+      if (!isInstance) {
         invoke = Jimple.newStaticInvokeExpr(methodSignature, argList);
       } else {
         Local base = (Local) args[args.length - 1].stackOrValue();
@@ -1502,7 +1502,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     } else if (!(returnType instanceof VoidType)) {
       push(opr);
     } else if (!InsnToStmt.containsKey(insn)) {
-      // FIXME: [JMP] Set correct position information
       setStmt(
           insn,
           Jimple.newInvokeStmt(

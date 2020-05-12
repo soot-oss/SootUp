@@ -278,8 +278,9 @@ public class Body implements Copyable {
    * @return A collection of all the Stmts
    */
   @Nonnull
-  public Collection<Stmt> getAllStmts() {
+  public Collection<Stmt> getAssociatedStmts() {
     List<Stmt> stmtList = new ArrayList<>();
+    // TODO: [ms] what about duplicates?
     for (Stmt stmt : cfg.nodes()) {
       if (stmt.branches()) { // i.e. stmt instanceof BranchingStmt is true
         stmtList.addAll(((BranchingStmt) stmt).getTargetStmts(this));
@@ -476,6 +477,7 @@ public class Body implements Copyable {
           addFlow(lastAddedStmt, stmt);
         }
       } else {
+        // automatically set first statement
         firstStmt = stmt;
       }
       lastAddedStmt = stmt;
@@ -534,7 +536,7 @@ public class Body implements Copyable {
       }
       System.out.println("\n-------\n");
 
-      return new Body(locals, traps, ImmutableGraph.copyOf(mutableGraph), position);
+      return new Body(locals, traps, ImmutableGraph.copyOf(mutableGraph), firstStmt, position);
     }
   }
 }

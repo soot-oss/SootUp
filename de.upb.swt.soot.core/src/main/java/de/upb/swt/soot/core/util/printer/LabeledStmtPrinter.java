@@ -22,7 +22,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
   public LabeledStmtPrinter(Body b) {
     super(b);
-    createLabelMaps(b);
+    initializeMethod(b);
   }
 
   public Map<Stmt, String> getLabels() {
@@ -80,9 +80,9 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     }
   }
 
-  public void createLabelMaps(Body body) {
+  /** createLabelMaps */
+  public void initializeMethod(Body body) {
 
-    // FIXME: [ms] build label maps from stmtgraph
     Collection<Stmt> stmts = body.getStmts();
 
     labels = new HashMap<>(stmts.size() * 2 + 1, 0.7f);
@@ -93,10 +93,12 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     Set<Stmt> refStmts = new HashSet<>();
 
     // Build labelStmts and refStmts
-    for (Stmt stmt : body.getAllStmts()) {
+    // TODO: make 2 loops access body directly; maybe remove getAssociatedStmts()?
+    for (Stmt stmt : body.getAssociatedStmts()) {
       if (stmt.isBranchTarget(body)) {
         labelStmts.add(stmt);
       } else {
+        // i.e. traps?
         refStmts.add(stmt);
       }
     }

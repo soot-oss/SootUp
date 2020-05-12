@@ -224,7 +224,6 @@ public class Printer {
 
         if (method.hasBody()) {
           Body body = method.getBody();
-          printer.createLabelMaps(body);
           printTo(body, printer, out);
 
         } else {
@@ -290,6 +289,7 @@ public class Printer {
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
   private void printStatementsInBody(Body body, LabeledStmtPrinter printer) {
+    printer.initializeMethod(body);
 
     // TODO cleanup
     // AbstractStmtGraph unitGraph = new BriefStmtGraph(body);
@@ -297,19 +297,22 @@ public class Printer {
     // Collection<Stmt> units = body.getStmts();
     Stmt previousStmt;
 
-    for (Stmt currentStmt : Traverser.forGraph(stmtGraph).depthFirstPreOrder(body.getFirstStmt())) {
+    final Iterable<Stmt> stmtIterator =
+        Traverser.forGraph(stmtGraph).depthFirstPreOrder(body.getFirstStmt());
+    for (Stmt currentStmt : stmtIterator) {
       previousStmt = currentStmt;
 
       // Print appropriate header.
       {
-        // Put an empty line if the previous node was a branch node, the current node is a join node
-        // or the previous statement does not have body statement as a successor, or if
-        // body statement has a label on it
+        // Put an empty line if:
+        // a) the previous stmt was a branch node
+        // b) the current stmt is a join node
+        // c) the previous stmt does not have stmt as a successor
+        // d) if the current stmt has a label on it
 
         final boolean currentStmtHasLabel = body.isStmtBranchTarget(currentStmt);
-
-        // TODO: [ms] understand this strange check?!
-        if (true /*currentStmt != units.iterator().next() */) {
+        // TODO [ms]
+        if (true /*currentStmt != units.iterator().next()*/) {
           if (stmtGraph.successors(previousStmt).size() != 1
               || stmtGraph.predecessors(currentStmt).size() != 1
               || currentStmtHasLabel) {
@@ -317,14 +320,10 @@ public class Printer {
           } else {
             // Or if the previous node does not have body statement as a successor.
 
-            /*
-            List<Stmt> succs = stmtGraph.successors(previousStmt);
-             TODO: [ms] understand what this check does
-            if (succs.get(0) != currentStmt) {
+            final Iterator<Stmt> succIterator = stmtGraph.successors(previousStmt).iterator();
+            if (succIterator.hasNext() && succIterator.next() != currentStmt) {
               printer.newline();
             }
-            */
-
           }
         }
 
@@ -334,10 +333,8 @@ public class Printer {
           printer.newline();
         }
 
-        // TODO: leftover.. where/why is it necessary? if
-        // (printer.getReferences().containsKey(currentStmt))
-        {
-          // printer.stmtRef(currentStmt, false);
+        if (printer.getReferences().containsKey(currentStmt)) {
+          printer.stmtRef(currentStmt, false);
         }
       }
 
