@@ -53,10 +53,13 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     fullView.
 
      */
+    final ClassType warClass1 =
+        getIdentifierFactory().getClassType("SimpleWarRead", "WEB-INF/classes");
+    testClassReceival(pathBasedNamespace, warClass1, 2);
 
     final ClassType class1 = getIdentifierFactory().getClassType("Employee", "ds");
     final ClassType mainClass = getIdentifierFactory().getClassType("MiniApp");
-    testClassReceival(pathBasedNamespace, class1, CLASSES_IN_JAR);
-    testClassReceival(pathBasedNamespace, mainClass, CLASSES_IN_JAR);
+    testClassReceival(pathBasedNamespace, class1, 2);
+    testClassReceival(pathBasedNamespace, mainClass, 2);
   }
 }
