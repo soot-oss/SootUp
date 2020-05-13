@@ -94,7 +94,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
     // Build labelStmts and refStmts
     // TODO: make 2 loops access body directly; maybe remove getAssociatedStmts()?
-    for (Stmt stmt : body.getAssociatedStmts()) {
+    for (Stmt stmt : body.getTargetStmts()) {
       if (stmt.isBranchTarget(body)) {
         labelStmts.add(stmt);
       } else {

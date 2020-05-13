@@ -25,7 +25,6 @@ import com.google.common.graph.*;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
-import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.Type;
@@ -278,12 +277,11 @@ public class Body implements Copyable {
    * @return A collection of all the Stmts
    */
   @Nonnull
-  public Collection<Stmt> getAssociatedStmts() {
+  public Collection<Stmt> getTargetStmts() {
     List<Stmt> stmtList = new ArrayList<>();
-    // TODO: [ms] what about duplicates?
     for (Stmt stmt : cfg.nodes()) {
-      if (stmt.branches()) { // i.e. stmt instanceof BranchingStmt is true
-        stmtList.addAll(((BranchingStmt) stmt).getTargetStmts(this));
+      if (cfg.predecessors(stmt).size() > 1) {
+        stmtList.add(stmt);
       }
     }
 
