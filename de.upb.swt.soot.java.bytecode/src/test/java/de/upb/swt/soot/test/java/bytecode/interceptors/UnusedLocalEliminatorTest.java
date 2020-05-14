@@ -57,7 +57,7 @@ public class UnusedLocalEliminatorTest {
     Body originalBody = createBody(false);
     Body processedBody = new UnusedLocalEliminator().interceptBody(originalBody);
 
-    assertArrayEquals(processedBody.getStmts().toArray(), processedBody.getStmts().toArray());
+    assertArrayEquals(originalBody.getStmts().toArray(), processedBody.getStmts().toArray());
   }
 
   private static Body createBody(boolean unusedLocals) {
