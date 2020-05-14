@@ -63,7 +63,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       }
 
     } else {
-      /*
+
       String ref = references.get(stmt);
 
       if (startOfLine) {
@@ -72,9 +72,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
         setIndent(indentStep / 2);
 
         output.append('(').append(ref).append(')');
-      } else
-        */
-      {
+      } else {
         output.append(stmt);
       }
     }
