@@ -143,26 +143,21 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
         .append('{')
         .append(" ");
 
-    /* TODO [ms] leftover
     for (int i = 0; i < values.size(); i++) {
-      Stmt target = getTarget(i);
-      sb.append("    ")
-          .append(Jimple.CASE)
-          .append(' ')
-          .append(values.get(i))
-          .append(": ")
-          .append(Jimple.GOTO)
-          .append(' ')
-          .append(target == this ? "self" : target)
-          .append(';')
-          .append(' ');
+      // Stmt target = getTarget(i);
+      sb.append("    ").append(Jimple.CASE).append(' ').append(values.get(i)).append(": ");
+      /*          .append(Jimple.GOTO)
+               .append(' ')
+               .append(target == this ? "self" : target)
+               .append(';')
+               .append(' ');
+      */
     }
 
-    Stmt target = getDefaultTarget();
-    sb.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " ")
-        .append(target == this ? "self" : target)
-        .append(';');
-     */
+    //    Stmt target = getDefaultTarget();
+    sb.append("    ").append(Jimple.DEFAULT).append(": ");
+    //            .append(Jimple.GOTO).append(" ").append(target == this ? "self" :
+    // target).append(';');
     sb.append(' ').append('}');
 
     return sb.toString();

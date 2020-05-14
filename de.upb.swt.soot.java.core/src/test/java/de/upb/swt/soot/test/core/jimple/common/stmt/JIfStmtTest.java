@@ -48,7 +48,7 @@ public class JIfStmtTest {
     Stmt ifStmt = new JIfStmt(condition, nop);
 
     // toString
-    Assert.assertEquals("if 42 == 123 goto nop", ifStmt.toString());
+    Assert.assertEquals("if 42 == 123", ifStmt.toString());
 
     // equivTo
     Assert.assertFalse(ifStmt.equivTo(new JNopStmt(nop)));

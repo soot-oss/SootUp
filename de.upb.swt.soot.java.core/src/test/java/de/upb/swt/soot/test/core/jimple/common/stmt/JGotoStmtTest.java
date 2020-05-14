@@ -40,26 +40,21 @@ public class JGotoStmtTest {
   @Test
   public void test() {
 
-    // FIXME: [ms] leftover refactoring->jgrapht/eliminateboxes/removing jumptarget infos from stmts
-    // itself
-
     StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
     JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
 
-    Local local1 = new Local("$r0", typeFactory.getType("java.lang.Exception"));
-    Local local2 = new Local("$r0", typeFactory.getType("somepackage.dummy.Exception"));
+    Local local = new Local("$r0", typeFactory.getType("java.lang.Exception"));
 
     // Stmt
-    Stmt targetStmt = new JThrowStmt(local1, nop);
+    Stmt targetStmt = new JThrowStmt(local, nop);
     Stmt gStmt = new JGotoStmt(nop);
 
     // toString
-    Assert.assertEquals("goto [?= throw $r0]", gStmt.toString());
+    Assert.assertEquals("goto", gStmt.toString());
 
     // equivTo
     Assert.assertFalse(gStmt.equivTo(targetStmt));
 
     Assert.assertTrue(gStmt.equivTo(new JGotoStmt(nop)));
-    Assert.assertFalse(gStmt.equivTo(new JGotoStmt(nop)));
   }
 }
