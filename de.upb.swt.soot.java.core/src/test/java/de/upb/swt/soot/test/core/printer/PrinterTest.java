@@ -65,12 +65,14 @@ public class PrinterTest {
             Collections.emptySet(),
             Collections.emptyList(),
             graph,
+            null,
             NoPositionInformation.getInstance());
     Body bodyTwo =
         new Body(
             Collections.emptySet(),
             Collections.emptyList(),
             graph,
+            null,
             NoPositionInformation.getInstance());
 
     String className = "some.package.SomeClass";

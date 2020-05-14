@@ -11,7 +11,6 @@ import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyBase;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 /** @author: Hasitha Rajapakse * */
 public class AbstractClassInheritanceTest extends JavaTypeHierarchyBase {

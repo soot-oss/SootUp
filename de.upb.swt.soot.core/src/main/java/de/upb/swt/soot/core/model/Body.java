@@ -25,6 +25,7 @@ import com.google.common.graph.*;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
+import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.Type;
@@ -51,6 +52,7 @@ public class Body implements Copyable {
           Collections.emptySet(),
           Collections.emptyList(),
           ImmutableGraph.copyOf(GraphBuilder.directed().build()),
+          null,
           NoPositionInformation.getInstance());
 
   /** The locals for this Body. */
@@ -61,6 +63,9 @@ public class Body implements Copyable {
 
   /** The stmts for this Body. */
   @Nonnull private final ImmutableGraph<Stmt> cfg;
+
+  /** Record the ordered branching edges for each branching statement. */
+  private Map<Stmt, List<Stmt>> branches;
 
   /** The first Stmt in this Body. */
   @Nonnull private final Stmt firstStmt;
@@ -95,6 +100,7 @@ public class Body implements Copyable {
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
       @Nonnull Graph<Stmt> stmtGraph,
+      @Nullable Map<Stmt, List<Stmt>> branches,
       @Nonnull Stmt startingStmt,
       @Nonnull Position position) {
     this.locals = Collections.unmodifiableSet(locals);
@@ -104,6 +110,7 @@ public class Body implements Copyable {
         stmtGraph instanceof ImmutableGraph
             ? (ImmutableGraph<Stmt>) stmtGraph
             : ImmutableGraph.copyOf(stmtGraph);
+    this.branches = branches;
     this.position = position;
     this.firstStmt = startingStmt;
 
@@ -115,6 +122,7 @@ public class Body implements Copyable {
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
       @Nonnull Graph<Stmt> stmtGraph,
+      @Nullable Map<Stmt, List<Stmt>> branches,
       @Nonnull Position position) {
 
     // FIXME: [ms] dirty debugging hack !!!!!!
@@ -122,6 +130,7 @@ public class Body implements Copyable {
         locals,
         traps,
         stmtGraph,
+        branches,
         stmtGraph.nodes().iterator().hasNext() ? stmtGraph.nodes().iterator().next() : null,
         position);
   }
@@ -205,6 +214,11 @@ public class Body implements Copyable {
   /** Returns a backed view of the traps found in this Body. */
   public List<Trap> getTraps() {
     return traps;
+  }
+
+  /** @return ordered branching edges */
+  public Map<Stmt, List<Stmt>> getBranches() {
+    return branches;
   }
 
   /** Return unit containing the \@this-assignment * */
@@ -390,22 +404,22 @@ public class Body implements Copyable {
 
   @Nonnull
   public Body withLocals(@Nonnull Set<Local> locals) {
-    return new Body(locals, getTraps(), getStmtGraph(), getPosition());
+    return new Body(locals, getTraps(), getStmtGraph(), getBranches(), getPosition());
   }
 
   @Nonnull
   public Body withTraps(@Nonnull List<Trap> traps) {
-    return new Body(getLocals(), traps, getStmtGraph(), getPosition());
+    return new Body(getLocals(), traps, getStmtGraph(), getBranches(), getPosition());
   }
 
   @Nonnull
   public Body withStmts(@Nonnull Graph<Stmt> stmtGraph) {
-    return new Body(getLocals(), getTraps(), stmtGraph, getPosition());
+    return new Body(getLocals(), getTraps(), stmtGraph, getBranches(), getPosition());
   }
 
   @Nonnull
   public Body withPosition(@Nonnull Position position) {
-    return new Body(getLocals(), getTraps(), getStmtGraph(), position);
+    return new Body(getLocals(), getTraps(), getStmtGraph(), getBranches(), position);
   }
 
   public static BodyBuilder builder() {
@@ -428,6 +442,9 @@ public class Body implements Copyable {
     @Nonnull private Position position;
 
     @Nonnull private final MutableGraph<Stmt> mutableGraph;
+
+    private Map<Stmt, List<Stmt>> branches;
+
     @Nullable private Stmt lastAddedStmt = null;
 
     @Nullable private Stmt firstStmt = null;
@@ -446,6 +463,7 @@ public class Body implements Copyable {
 
     public BodyBuilder setFirstStmt(@Nullable Stmt firstStmt) {
       this.firstStmt = firstStmt;
+      ;
       return this;
     }
 
@@ -483,32 +501,39 @@ public class Body implements Copyable {
     }
 
     public BodyBuilder mergeStmt(Stmt oldStmt, Stmt newStmt) {
-
       final Set<Stmt> predecessors = mutableGraph.predecessors(oldStmt);
       final Set<Stmt> successors = mutableGraph.successors(oldStmt);
-
       mutableGraph.addNode(newStmt);
       predecessors.forEach(predecessor -> mutableGraph.putEdge(predecessor, newStmt));
       successors.forEach(successor -> mutableGraph.putEdge(newStmt, successor));
       mutableGraph.removeNode(oldStmt);
-
+      branches.remove(oldStmt);
       return this;
     }
 
     public BodyBuilder removeStmt(Stmt stmt) {
       mutableGraph.removeNode(stmt);
+      branches.remove(stmt);
       return this;
     }
 
     public BodyBuilder addFlow(Stmt fromStmt, Stmt toStmt) {
+      if (fromStmt instanceof BranchingStmt) {
+        if (branches == null) branches = new HashMap<>();
+        if (!branches.containsKey(fromStmt))
+          branches.put(fromStmt, Collections.singletonList(toStmt));
+        else {
+          List<Stmt> edges = branches.get(fromStmt);
+          edges.add(toStmt);
+        }
+      }
       mutableGraph.putEdge(fromStmt, toStmt);
-      // TODO: remove debug
-      System.out.println(fromStmt + " => " + toStmt);
       return this;
     }
 
     public BodyBuilder removeFlow(Stmt fromStmt, Stmt toStmt) {
       mutableGraph.removeEdge(fromStmt, toStmt);
+      branches.get(fromStmt).removeIf(s -> s == toStmt);
       return this;
     }
 
@@ -518,23 +543,8 @@ public class Body implements Copyable {
     }
 
     public Body build() {
-
-      // TODO: [ms] debug
-      System.out.println("\n-------\n");
-      for (Stmt node : mutableGraph.nodes()) {
-        System.out.println(node + "");
-        //        System.out.println("in " + mutableGraph.predecessors(node));
-
-        // if( mutableGraph.successors(node).size() != 1 )
-        {
-          System.out.println("out " + mutableGraph.successors(node));
-        }
-
-        System.out.println("");
-      }
-      System.out.println("\n-------\n");
-
-      return new Body(locals, traps, ImmutableGraph.copyOf(mutableGraph), firstStmt, position);
+      return new Body(
+          locals, traps, ImmutableGraph.copyOf(mutableGraph), branches, firstStmt, position);
     }
   }
 }
