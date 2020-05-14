@@ -15,9 +15,7 @@ import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -55,7 +53,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysisInputLocation {
   protected final Path path;
-  protected static List<PathBasedAnalysisInputLocation> allJars = new ArrayList<>();
+  public static List<Path> jarsFromPath = new ArrayList<>();
   protected static List<String> allClasses = new ArrayList<>();
 
   private PathBasedAnalysisInputLocation(@Nonnull Path path) {
@@ -72,18 +70,11 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
    */
   public static @Nonnull PathBasedAnalysisInputLocation createForClassContainer(
       @Nonnull Path path) {
-    System.out.println("inside createForClassContainer"); // TODO Debug
-    System.out.println("the file at " + path + " is " + path.getFileName()); // TODO Debug
 
     if (Files.isDirectory(path)) {
       return new DirectoryBasedAnalysisInputLocation(path);
     } else if (PathUtils.isArchive(path)) {
-      /* TODO create new namespace for the jar file, packed in the war and load all classes from that jar file
-       *   walkDirectory() for such all methods*/
-
-      System.out.println("this is an archive file"); // TODO Debug
       if (PathUtils.hasExtension(path, FileType.WAR)) {
-        // listAllJars(path);
         return new WarFileBasedAnalyisInputLocation(path);
       }
       return new ArchiveBasedAnalysisInputLocation(path);
@@ -93,52 +84,11 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
   }
 
-  /**
-   * Lists all jars at the given {@link path}
-   *
-   * @param path the path for the war file
-   */
-  public static void listAllJars(@Nonnull Path path) {
-    String line;
-
-    try {
-      Process ps = Runtime.getRuntime().exec(new String[] {"jar", "-tvf", path.toString()});
-      ps.waitFor();
-      BufferedReader br = new BufferedReader(new InputStreamReader(ps.getInputStream()));
-      while ((line = br.readLine()) != null) {
-        if (line.contains("jar")) {
-          String[] arr = line.split(" ");
-          System.out.println(path + arr[9]);
-          allJars.add(new ArchiveBasedAnalysisInputLocation(Paths.get(arr[9])));
-        } else if (line.contains(".class")) {
-          String[] arr = line.split(" ");
-          System.out.println(arr[9]);
-          allClasses.add(arr[9]);
-        }
-      }
-    } catch (InterruptedException | IOException e) {
-      throw new RuntimeException("Issues in listing the contents of the war file");
-    }
-    System.out.println("listAllJars() completed ");
-  }
-
   @Nonnull
   Collection<? extends AbstractClassSource> walkDirectory(
       @Nonnull Path dirPath, @Nonnull IdentifierFactory factory, ClassProvider classProvider) {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
-      System.out.println(
-          "inside walkDirectory for "
-              + dirPath
-              + " for file with type "
-              + handledFileType); // TODO Debug
-
-      System.out.println(
-          "------->"
-              + Files.walk(dirPath)
-                  .filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
-                  .collect(Collectors.toList()));
-
       return Files.walk(dirPath)
           .filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
           .flatMap(
@@ -153,16 +103,11 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
   }
 
   @Nonnull
-  Collection<Path> walkDirectoryForJars(@Nonnull Path dirPath) throws IOException {
-    System.out.println("inside walkDirectoryForJars");
+  List<Path> walkDirectoryForJars(@Nonnull Path dirPath) throws IOException {
     return Files.walk(dirPath)
-        .filter(filePath -> PathUtils.hasExtension(filePath, FileType.WAR))
+        .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
         .flatMap(p1 -> StreamUtils.optionalToStream(Optional.of(p1)))
         .collect(Collectors.toList());
-    /*return Files.walk(dirPath)
-            .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
-            .flatMap(path1 -> StreamUtils.optionalToStream(Optional.of(path1)))
-    .collect(Collectors.toList());*/
   }
 
   @Nonnull
@@ -261,7 +206,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         @Nonnull ClassLoadingOptions classLoadingOptions) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path archiveRoot = fs.getPath("/");
-        System.out.println("walkDirectory called for " + archiveRoot + " at " + path); // TODO Debug
         return walkDirectory(
             archiveRoot, identifierFactory, buildClassProvider(classLoadingOptions));
       } catch (IOException e) {
@@ -320,43 +264,26 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         @Nonnull IdentifierFactory identifierFactory,
         @Nonnull ClassLoadingOptions classLoadingOptions) {
 
-      System.out.println(
-          "inside getClassSources of WarFileBasedAnalyisInputLocation"); // TODO Debug
-      Collection<? extends AbstractClassSource> classesFromWar = null;
-      try {
-        System.out.println("walkDirectoryForJars called for \"/\" " + " at " + path); // TODO Debug
-        Collection<Path> jarsFromPath = walkDirectoryForJars(path);
-        System.out.println("Printing the paths of all jars >>" + jarsFromPath); // TODO Debug
-        if (jarsFromPath.isEmpty()) System.out.println("No jars found");
-        ;
+      Collection<? extends AbstractClassSource> classesFromWar = Collections.EMPTY_LIST;
+      try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
+        final Path archiveRoot = fs.getPath("/");
+        jarsFromPath = walkDirectoryForJars(archiveRoot);
         for (Path path : jarsFromPath) {
-
-          System.out.println("-->" + path.getFileName());
-          Collection<? extends AbstractClassSource> allClassesFromJar = null;
-          try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
-            final Path archiveRoot = fs.getPath("/");
-            System.out.println(
-                "WarFileBasedAnalyisInputLocation: walkDirectory called for "
-                    + archiveRoot); // TODO Debug
+          Collection<? extends AbstractClassSource> allClassesFromJar;
+          try (FileSystem fsJar = FileSystems.newFileSystem(path, null)) {
+            final Path archiveRootJar = fsJar.getPath("/");
             allClassesFromJar =
                 walkDirectory(
-                    archiveRoot, identifierFactory, buildClassProvider(classLoadingOptions));
-            System.out.println(allClassesFromJar);
-
+                    archiveRootJar, identifierFactory, buildClassProvider(classLoadingOptions));
+            System.out.println("Classes from " + path + " -->" + allClassesFromJar); // TODO DEBUG
           } catch (IOException e) {
             e.getMessage();
           }
         }
-
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
       return classesFromWar;
     }
-
-    public void loadJar(
-        @Nonnull IdentifierFactory identifierFactory,
-        @Nonnull ClassLoadingOptions classLoadingOptions,
-        @Nonnull ArrayList<PathBasedAnalysisInputLocation> allJars) {}
   }
 }

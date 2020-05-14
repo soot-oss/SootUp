@@ -6,6 +6,7 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import java.nio.file.Path;
@@ -84,6 +85,20 @@ public abstract class AnalysisInputLocationTest {
 
     final Collection<? extends AbstractClassSource> classSources =
         ns.getClassSources(getIdentifierFactory());
+
+    Assert.assertNotNull(PathBasedAnalysisInputLocation.jarsFromPath);
+    for (Path path1 : PathBasedAnalysisInputLocation.jarsFromPath) {
+      Path pathToJar = Paths.get(war.toString(), path1.toString());
+      System.out.println(pathToJar);
+      PathBasedAnalysisInputLocation nsJar =
+          PathBasedAnalysisInputLocation.createForClassContainer(pathToJar);
+      final Collection<? extends AbstractClassSource> classSourcesFromJar =
+          nsJar.getClassSources(getIdentifierFactory());
+      System.out.println(
+          "classSources in testClassReceival ->" + classSourcesFromJar); // TODO Debug
+      Assert.assertNotNull(classSourcesFromJar);
+      Assert.assertFalse(classSourcesFromJar.isEmpty());
+    }
 
     System.out.println("classSources in testClassReceival ->" + classSources); // TODO Debug
     Assert.assertNotNull(classSources);
