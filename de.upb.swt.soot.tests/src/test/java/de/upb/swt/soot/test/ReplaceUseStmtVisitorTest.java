@@ -102,22 +102,23 @@ public class ReplaceUseStmtVisitorTest {
     assertTrue(stmt.getUses().equals(expectedUses));
   }
 
-  /** Test use replacing in case JInvokeStmt and JIfStmt
-   * Here JInvokeStmt is as an example*/
+  /** Test use replacing in case JInvokeStmt and JIfStmt Here JInvokeStmt is as an example */
   @Test
   public void testcaseInvokeStmt() {
 
     ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(base, newOp);
 
     // invokeExpr
-    Expr invokeExpr = JavaJimple.newSpecialInvokeExpr(base, methodeWithOutParas, Collections.emptyList());
+    Expr invokeExpr =
+        JavaJimple.newSpecialInvokeExpr(base, methodeWithOutParas, Collections.emptyList());
     Stmt stmt = JavaJimple.newInvokeStmt(invokeExpr, noStmtPositionInfo);
     stmt.accept(visitor);
     Stmt newStmt = visitor.getNewStmt();
 
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newOp);
-    expectedUses.add(JavaJimple.newSpecialInvokeExpr(newOp, methodeWithOutParas, Collections.emptyList()));
+    expectedUses.add(
+        JavaJimple.newSpecialInvokeExpr(newOp, methodeWithOutParas, Collections.emptyList()));
 
     boolean isExpected = false;
     for (int i = 0; i < 2; i++) {
@@ -130,9 +131,8 @@ public class ReplaceUseStmtVisitorTest {
   }
 
   @Test
-  /** Test use replacing in other cases
-   * Here JReturnStmt is as an example*/
-  public void testCaseReturnStmt(){
+  /** Test use replacing in other cases Here JReturnStmt is as an example */
+  public void testCaseReturnStmt() {
     ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(op1, newOp);
     Stmt stmt = JavaJimple.newRetStmt(op1, noStmtPositionInfo);
     stmt.accept(visitor);
@@ -142,5 +142,4 @@ public class ReplaceUseStmtVisitorTest {
     expectedUses.add(newOp);
     assertTrue(newStmt.getUses().equals(expectedUses));
   }
-
 }
