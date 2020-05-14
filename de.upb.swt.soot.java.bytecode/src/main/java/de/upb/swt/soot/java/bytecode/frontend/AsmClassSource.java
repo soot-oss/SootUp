@@ -2,7 +2,6 @@ package de.upb.swt.soot.java.bytecode.frontend;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.ResolveException;
-import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.model.Modifier;
@@ -13,7 +12,9 @@ import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.java.core.AnnotationType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaSootClassSource;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -26,13 +27,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
 /** A ClassSource that reads from Java bytecode */
-class AsmClassSource extends SootClassSource {
+class AsmClassSource extends JavaSootClassSource {
 
   @Nonnull private final ClassNode classNode;
 
@@ -71,16 +71,13 @@ class AsmClassSource extends SootClassSource {
                 throw new AsmFrontendException(
                     String.format("Failed to create Method Signature %s", methodSource));
               }
+
               AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
               asmClassClassSourceContent.setDeclaringClass(cs);
 
               List<ClassType> exceptions = new ArrayList<>();
-              Iterable<JavaClassType> exceptionsSignatures =
-                  AsmUtil.asmIdToSignature(methodSource.exceptions);
+              exceptions.addAll(AsmUtil.asmIdToSignature(methodSource.exceptions));
 
-              for (JavaClassType exceptionSig : exceptionsSignatures) {
-                exceptions.add(exceptionSig);
-              }
               String methodName = methodSource.name;
               EnumSet<Modifier> modifiers = AsmUtil.getModifiers(methodSource.access);
               List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(methodSource.desc);
@@ -89,12 +86,8 @@ class AsmClassSource extends SootClassSource {
               MethodSignature methodSignature =
                   signatureFactory.getMethodSignature(methodName, cs, retType, sigTypes);
 
-              return SootMethod.builder()
-                  .withSource(asmClassClassSourceContent)
-                  .withSignature(methodSignature)
-                  .withModifiers(modifiers)
-                  .withThrownExceptions(exceptions)
-                  .build();
+              return new SootMethod(
+                  asmClassClassSourceContent, methodSignature, modifiers, exceptions);
             });
   }
 
@@ -135,7 +128,7 @@ class AsmClassSource extends SootClassSource {
     return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.outerClass));
   }
 
-  @NonNull
+  @Nonnull
   public Position resolvePosition() {
     return NoPositionInformation.getInstance();
   }
@@ -143,5 +136,26 @@ class AsmClassSource extends SootClassSource {
   @Override
   public String toString() {
     return getSourcePath().toString();
+  }
+
+  @Nonnull
+  @Override
+  public Iterable<AnnotationType> resolveAnnotations() {
+    // TODO [ms] implement
+    return null;
+  }
+
+  @Nonnull
+  @Override
+  public Iterable<AnnotationType> resolveMethodAnnotations() {
+    // TODO [ms] implement
+    return null;
+  }
+
+  @Nonnull
+  @Override
+  public Iterable<AnnotationType> resolveFieldAnnotations() {
+    // TODO [ms] implement
+    return null;
   }
 }

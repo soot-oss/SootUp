@@ -4,6 +4,8 @@ class SuperClass {
     int c = 3;
     private int d = 4;
 
+    public String info = "super";
+
     public void superclassMethod() { 
         a=10;
         b=20;

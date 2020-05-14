@@ -25,10 +25,9 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
-import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
@@ -41,48 +40,40 @@ import javax.annotation.Nonnull;
 /** An expression that casts a value to a certain type. */
 public final class JCastExpr implements Expr, Copyable {
 
-  private final ValueBox opBox;
-  private final Type type;
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
   private final Value op;
+  private final Type type;
 
-  public JCastExpr(Value op, Type type) {
-    this.opBox = Jimple.newImmediateBox(op);
-    this.type = type;
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
+  public JCastExpr(@Nonnull Immediate op, @Nonnull Type type) {
     this.op = op;
+    this.type = type;
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseCastExpr(this, o);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return opBox.getValue().equivHashCode() * 101 + type.hashCode() + 17;
+    return op.equivHashCode() * 101 + type.hashCode() + 17;
   }
 
   @Override
   public String toString() {
-    return "(" + type.toString() + ") " + opBox.getValue().toString();
+    return "(" + type.toString() + ") " + op.toString();
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal("(");
     up.typeSignature(type);
     up.literal(") ");
-    opBox.toString(up);
+    op.toString(up);
   }
 
   public Value getOp() {
-    return opBox.getValue();
-  }
-
-  public ValueBox getOpBox() {
-    return opBox;
+    return op;
   }
 
   @Override
@@ -99,17 +90,17 @@ public final class JCastExpr implements Expr, Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseCastExpr(this);
   }
 
   @Nonnull
-  public JCastExpr withOp(Value op) {
+  public JCastExpr withOp(@Nonnull Immediate op) {
     return new JCastExpr(op, type);
   }
 
   @Nonnull
-  public JCastExpr withType(Type type) {
-    return new JCastExpr(getOp(), type);
+  public JCastExpr withType(@Nonnull Type type) {
+    return new JCastExpr((Immediate) getOp(), type);
   }
 }

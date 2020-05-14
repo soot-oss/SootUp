@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class FieldSignature extends AbstractClassMemberSignature {
+public class FieldSignature extends SootClassMemberSignature {
 
   public FieldSignature(final ClassType declaringClass, final String name, final Type type) {
     this(declaringClass, new FieldSubSignature(name, type));

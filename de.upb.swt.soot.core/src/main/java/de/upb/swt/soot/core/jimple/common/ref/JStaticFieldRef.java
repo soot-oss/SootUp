@@ -10,9 +10,9 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-public final class JStaticFieldRef extends FieldRef implements Copyable {
+public final class JStaticFieldRef extends JFieldRef implements Copyable {
 
-  public JStaticFieldRef(FieldSignature fieldSig) {
+  public JStaticFieldRef(@Nonnull FieldSignature fieldSig) {
     super(fieldSig);
   }
 
@@ -22,7 +22,7 @@ public final class JStaticFieldRef extends FieldRef implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.fieldSignature(getFieldSignature());
   }
 
@@ -32,7 +32,7 @@ public final class JStaticFieldRef extends FieldRef implements Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseStaticFieldRef(this, o);
   }
 
@@ -42,12 +42,12 @@ public final class JStaticFieldRef extends FieldRef implements Copyable {
   }
 
   @Override
-  public void accept(Visitor v) {
+  public void accept(@Nonnull Visitor v) {
     // TODO Auto-generated methodRef stub
   }
 
   @Nonnull
-  public JStaticFieldRef withFieldSignature(FieldSignature fieldSig) {
+  public JStaticFieldRef withFieldSignature(@Nonnull FieldSignature fieldSig) {
     return new JStaticFieldRef(fieldSig);
   }
 }

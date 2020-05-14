@@ -28,11 +28,30 @@ package de.upb.swt.soot.core.jimple.common.ref;
 
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.views.View;
 import java.util.Optional;
+import javax.annotation.Nonnull;
 
-public interface JFieldRef extends ConcreteRef {
+public abstract class JFieldRef implements ConcreteRef {
 
-  Optional<SootField> getField();
+  private final FieldSignature fieldSignature;
 
-  FieldSignature getFieldSignature();
+  JFieldRef(@Nonnull FieldSignature fieldSignature) {
+    this.fieldSignature = fieldSignature;
+  }
+
+  public @Nonnull Optional<SootField> getField(@Nonnull View view) {
+    return view.getClass(fieldSignature.getDeclClassType())
+        .flatMap(it -> it.getField(fieldSignature).map(field -> (SootField) field));
+  }
+
+  public FieldSignature getFieldSignature() {
+    return fieldSignature;
+  }
+
+  @Override
+  public Type getType() {
+    return fieldSignature.getType();
+  }
 }

@@ -1,7 +1,7 @@
 package de.upb.soot.basic.fieldReference;
 
-public class FieldReference {
-  public static void fieldReference(String[] args) {
+public class JFieldReference {
+  public static void JFieldReference(String[] args) {
     A a1 = new A();
     int a = a1.i;
     String c = a1.j;

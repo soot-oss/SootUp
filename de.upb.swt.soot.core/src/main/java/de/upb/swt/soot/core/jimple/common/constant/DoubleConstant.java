@@ -36,11 +36,11 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
 
   private final double value;
 
-  private DoubleConstant(double value) {
+  private DoubleConstant(@Nonnull double value) {
     this.value = value;
   }
 
-  public static DoubleConstant getInstance(double value) {
+  public static DoubleConstant getInstance(@Nonnull double value) {
     return new DoubleConstant(value);
   }
 
@@ -174,7 +174,7 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ConstantVisitor) sw).caseDoubleConstant(this);
   }
 

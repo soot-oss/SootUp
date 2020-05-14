@@ -27,92 +27,70 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
+import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-/** If the condition is true, jumps to the target, otherwise continues to the next stmt. */
-public final class JIfStmt extends AbstractStmt implements Copyable {
+/** conditional jumps to a target Stmt, otherwise the flow continues to the next Stmt. */
+public class JIfStmt extends BranchingStmt implements Copyable {
 
-  private final ValueBox conditionBox;
-  private final StmtBox targetBox;
+  @Nonnull private final AbstractConditionExpr condition;
 
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
-  private Value condition;
-
-  private final List<StmtBox> targetBoxes;
-
-  public JIfStmt(Value condition, Stmt target, StmtPositionInfo positionInfo) {
-    this(condition, Jimple.newStmtBox(target), positionInfo);
-  }
-
-  public JIfStmt(Value condition, StmtBox target, StmtPositionInfo positionInfo) {
-    this(Jimple.newConditionExprBox(condition), target, positionInfo);
-  }
-
-  private JIfStmt(ValueBox conditionBox, StmtBox targetBox, StmtPositionInfo positionInfo) {
+  public JIfStmt(@Nonnull AbstractConditionExpr condition, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
-    this.conditionBox = conditionBox;
-    this.targetBox = targetBox;
-
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
-    this.condition = conditionBox.getValue();
-    targetBoxes = Collections.singletonList(targetBox);
+    this.condition = condition;
   }
 
   @Override
   public String toString() {
-    Stmt t = getTarget();
-    String target = "(branch)";
-    if (!t.branches()) {
-      target = t.toString();
-    }
-    return Jimple.IF + " " + getCondition().toString() + " " + Jimple.GOTO + " " + target;
+    /*  // TODO [ms] leftover: Stmt t = getTarget();
+       String target = "(branch)";
+       if (!t.branches()) {
+         target = t.toString();
+       }
+    */
+    return Jimple.IF
+        + " "
+        + getCondition().toString(); // TODO [ms] leftover: + " " + Jimple.GOTO + " " + target;
   }
 
   @Override
-  public void toString(StmtPrinter up) {
-    up.literal(Jimple.IF);
-    up.literal(" ");
-    conditionBox.toString(up);
-    up.literal(" ");
-    up.literal(Jimple.GOTO);
-    up.literal(" ");
-    targetBox.toString(up);
+  public void toString(@Nonnull StmtPrinter stmtPrinter) {
+    stmtPrinter.literal(Jimple.IF);
+    stmtPrinter.literal(" ");
+    condition.toString(stmtPrinter);
+
+    stmtPrinter.literal(" ");
+    stmtPrinter.literal(Jimple.GOTO);
+    stmtPrinter.literal(" ");
+    stmtPrinter.stmtRef(stmtPrinter.branchTargets(this).get(1), true);
   }
 
   public Value getCondition() {
-    return conditionBox.getValue();
+    return condition;
   }
 
-  public ValueBox getConditionBox() {
-    return conditionBox;
-  }
-
-  public Stmt getTarget() {
-    return targetBox.getStmt();
-  }
-
-  /** Violates immutability. Only use this for legacy code. */
-  @Deprecated
-  private void setTarget(Stmt target) {
-    StmtBox.$Accessor.setStmt(targetBox, target);
-  }
-
-  public StmtBox getTargetBox() {
-    return targetBox;
+  public Stmt getTarget(Body body) {
+    // TODO: [ms] validate in builder!
+    return getTargetStmts(body).get(0);
   }
 
   @Override
+  @Nonnull
+  public List<Stmt> getTargetStmts(Body body) {
+    return body.getBranchTargets(this);
+  }
+
+  @Override
+  @Nonnull
   public List<Value> getUses() {
     List<Value> list = new ArrayList<>(condition.getUses());
     list.add(condition);
@@ -120,12 +98,7 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public final List<StmtBox> getStmtBoxes() {
-    return targetBoxes;
-  }
-
-  @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseIfStmt(this);
   }
 
@@ -140,42 +113,22 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseIfStmt(this, o);
   }
 
   @Override
   public int equivHashCode() {
-    return conditionBox.getValue().equivHashCode() + 31 * targetBox.getStmt().equivHashCode();
+    return condition.equivHashCode();
   }
 
   @Nonnull
-  public JIfStmt withCondition(Value condition) {
-    return new JIfStmt(condition, getTarget(), getPositionInfo());
+  public JIfStmt withCondition(@Nonnull AbstractConditionExpr condition) {
+    return new JIfStmt(condition, getPositionInfo());
   }
 
   @Nonnull
-  public JIfStmt withTarget(Stmt target) {
-    return new JIfStmt(getCondition(), target, getPositionInfo());
-  }
-
-  @Nonnull
-  public JIfStmt withPositionInfo(StmtPositionInfo positionInfo) {
-    return new JIfStmt(getCondition(), getTarget(), positionInfo);
-  }
-
-  /** This class is for internal use only. It will be removed in the future. */
-  @Deprecated
-  public static class $Accessor {
-    // This class deliberately starts with a $-sign to discourage usage
-    // of this Soot implementation detail.
-
-    /** Violates immutability. Only use this for legacy code. */
-    @Deprecated
-    public static void setTarget(JIfStmt stmt, Stmt target) {
-      stmt.setTarget(target);
-    }
-
-    private $Accessor() {}
+  public JIfStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+    return new JIfStmt((AbstractConditionExpr) getCondition(), positionInfo);
   }
 }

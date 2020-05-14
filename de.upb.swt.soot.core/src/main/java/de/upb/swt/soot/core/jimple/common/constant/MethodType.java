@@ -15,7 +15,8 @@ public class MethodType implements Constant, Copyable {
   private final List<Type> parameterTypes;
   private final Type type;
 
-  public MethodType(List<Type> parameterTypes, Type returnType, Type type) {
+  public MethodType(
+      @Nonnull List<Type> parameterTypes, @Nonnull Type returnType, @Nonnull Type type) {
     this.returnType = returnType;
     this.parameterTypes = Collections.unmodifiableList(parameterTypes);
     this.type = type;
@@ -27,7 +28,7 @@ public class MethodType implements Constant, Copyable {
   }
 
   public List<Type> getParameterTypes() {
-    return parameterTypes == null ? Collections.emptyList() : parameterTypes;
+    return Collections.emptyList();
   }
 
   public Type getReturnType() {
@@ -56,15 +57,15 @@ public class MethodType implements Constant, Copyable {
   }
 
   @Override
-  public void accept(Visitor v) {}
+  public void accept(@Nonnull Visitor v) {}
 
   @Nonnull
-  public MethodType withParameterTypes(List<Type> parameterTypes) {
+  public MethodType withParameterTypes(@Nonnull List<Type> parameterTypes) {
     return new MethodType(parameterTypes, returnType, type);
   }
 
   @Nonnull
-  public MethodType withReturnType(Type returnType) {
+  public MethodType withReturnType(@Nonnull Type returnType) {
     return new MethodType(parameterTypes, returnType, type);
   }
 }

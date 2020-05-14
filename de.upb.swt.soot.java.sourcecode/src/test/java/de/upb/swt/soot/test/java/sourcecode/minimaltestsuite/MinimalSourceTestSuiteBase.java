@@ -125,7 +125,7 @@ public abstract class MinimalSourceTestSuiteBase {
   public SootClass loadClass(ClassType clazz) {
     Optional<SootClass> cs = customTestWatcher.getJavaView().getClass(clazz);
     assertTrue("no matching class signature found", cs.isPresent());
-    return (SootClass) cs.get();
+    return cs.get();
   }
 
   public SootMethod loadMethod(MethodSignature methodSignature) {

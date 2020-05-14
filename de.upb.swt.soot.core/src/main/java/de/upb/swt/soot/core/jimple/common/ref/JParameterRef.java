@@ -51,13 +51,13 @@ public final class JParameterRef implements IdentityRef, Copyable {
    * Constructs a ParameterRef object of the specified type, representing the specified parameter
    * number.
    */
-  public JParameterRef(Type paramType, int number) {
+  public JParameterRef(@Nonnull Type paramType, @Nonnull int number) {
     this.num = number;
     this.paramType = paramType;
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseParameterRef(this, o);
   }
 
@@ -73,12 +73,12 @@ public final class JParameterRef implements IdentityRef, Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.identityRef(this);
   }
 
-  /** Returns the index of this ParameterRef. */
-  public int getIndex() {
+  /** Returns the num of this ParameterRef. */
+  public int getNum() {
     return num;
   }
 
@@ -95,17 +95,17 @@ public final class JParameterRef implements IdentityRef, Copyable {
 
   /** Used with RefSwitch. */
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     // TODO
   }
 
   @Nonnull
-  public JParameterRef withParamType(Type paramType) {
+  public JParameterRef withParamType(@Nonnull Type paramType) {
     return new JParameterRef(paramType, num);
   }
 
   @Nonnull
-  public JParameterRef withNumber(int number) {
+  public JParameterRef withNumber(@Nonnull int number) {
     return new JParameterRef(paramType, number);
   }
 }

@@ -24,8 +24,8 @@ package de.upb.swt.soot.core.model;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.types.Type;
+import java.util.EnumSet;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Soot's counterpart of the source language's field concept. Soot representation of a Java field.
@@ -67,120 +67,83 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
   }
 
   @Nonnull
-  public SootField withSignature(FieldSignature signature) {
+  public SootField withSignature(@Nonnull FieldSignature signature) {
     return new SootField(signature, getModifiers());
   }
 
   @Nonnull
-  public SootField withModifiers(Iterable<Modifier> modifiers) {
+  public SootField withModifiers(@Nonnull Iterable<Modifier> modifiers) {
     return new SootField(getSignature(), modifiers);
   }
 
   /**
-   * Creates a {@link SootField} builder.
+   * Creates a {@link SootField}
    *
-   * @return A {@link SootField} builder.
+   * @return A {@link SootField}
    */
   @Nonnull
-  public static Builder.SignatureStep builder() {
+  public static SignatureStep builder() {
     return new SootFieldBuilder();
   }
 
-  /**
-   * Defines a stepwise builder for the {@link SootField} class.
-   *
-   * @see #builder()
-   * @author Jan Martin Persch
-   */
-  public interface Builder extends SootClassMember.Builder<FieldSignature, SootField> {
-    interface SignatureStep {
-      /**
-       * Sets the {@link FieldSignature}.
-       *
-       * @param value The value to set.
-       * @return This fluent builder.
-       */
-      @Nonnull
-      ModifiersStep withSignature(@Nonnull FieldSignature value);
+  public interface SignatureStep {
+    @Nonnull
+    ModifierStep withSignature(@Nonnull FieldSignature value);
+  }
+
+  public interface ModifierStep {
+    @Nonnull
+    BuildStep withModifier(@Nonnull Iterable<Modifier> modifier);
+
+    @Nonnull
+    default BuildStep withModifiers(@Nonnull Modifier first, @Nonnull Modifier... rest) {
+      return withModifier(EnumSet.of(first, rest));
     }
+  }
 
-    interface ModifiersStep extends SootClassMember.Builder.ModifiersStep<Builder> {}
-
-    /**
-     * Builds the {@link SootField}.
-     *
-     * @return The created {@link SootField}.
-     * @throws BuilderException A build error occurred.
-     */
+  public interface BuildStep {
     @Nonnull
     SootField build();
   }
 
   /**
-   * Defines a {@link SootMethod} builder that provides a fluent API.
+   * Defines a {@link SootField} builder to provide a fluent API.
    *
    * @author Jan Martin Persch
    */
-  protected static class SootFieldBuilder extends SootClassMemberBuilder<FieldSignature, SootField>
-      implements Builder.SignatureStep, Builder.ModifiersStep, Builder {
+  public static class SootFieldBuilder implements SignatureStep, ModifierStep, BuildStep {
 
-    /** Creates a new instance of the {@link SootMethod.SootMethodBuilder} class. */
-    SootFieldBuilder() {
-      super(SootField.class);
-    }
+    private FieldSignature signature;
+    private Iterable<Modifier> modifiers;
 
-    @Nullable private FieldSignature _signature;
-
-    /**
-     * Gets the field sub-signature.
-     *
-     * @return The value to get.
-     */
     @Nonnull
     protected FieldSignature getSignature() {
-      return ensureValue(this._signature, "signature");
+      return signature;
     }
 
-    /**
-     * Sets the field sub-signature.
-     *
-     * @param value The value to set.
-     */
     @Nonnull
-    public ModifiersStep withSignature(@Nonnull FieldSignature value) {
-      this._signature = value;
+    protected Iterable<Modifier> getModifiers() {
+      return modifiers;
+    }
 
+    @Override
+    @Nonnull
+    public ModifierStep withSignature(@Nonnull FieldSignature signature) {
+      this.signature = signature;
       return this;
     }
 
-    @Nullable private Iterable<Modifier> _modifiers;
-
-    /**
-     * Gets the modifiers.
-     *
-     * @return The value to get.
-     */
+    @Override
     @Nonnull
-    protected Iterable<Modifier> getModifiers() {
-      return ensureValue(this._modifiers, "modifiers");
-    }
-
-    /**
-     * Sets the modifiers.
-     *
-     * @param value The value to set.
-     */
-    @Nonnull
-    public Builder withModifiers(@Nonnull Iterable<Modifier> value) {
-      this._modifiers = value;
-
+    public BuildStep withModifier(@Nonnull Iterable<Modifier> modifiers) {
+      this.modifiers = modifiers;
       return this;
     }
 
     @Override
     @Nonnull
     public SootField build() {
-      return new SootField(this.getSignature(), this.getModifiers());
+      return new SootField(getSignature(), getModifiers());
     }
   }
 }

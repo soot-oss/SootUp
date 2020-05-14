@@ -29,12 +29,13 @@ import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.StringTools;
+import javax.annotation.Nonnull;
 
 public class ClassConstant implements Constant {
   private final String value;
   private final Type type;
 
-  public ClassConstant(String str, Type type) {
+  public ClassConstant(@Nonnull String str, @Nonnull Type type) {
     if (str.contains(".")) {
       throw new RuntimeException("ClassConstants must use class names separated by '/', not '.'!");
     }
@@ -154,7 +155,7 @@ public class ClassConstant implements Constant {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ConstantVisitor) sw).caseClassConstant(this);
   }
 

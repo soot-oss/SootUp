@@ -43,15 +43,14 @@ import javax.annotation.Nonnull;
  *
  * @author Linghui Luo
  */
-public final class Local implements Value, Immediate, Copyable {
-  // This class is final since it implements equals and hashCode
+public class Local implements Immediate, Copyable {
 
   @Nonnull private final String name;
   @Nonnull private final Type type;
 
   /** Constructs a JimpleLocal of the given name and type. */
   public Local(@Nonnull String name, @Nonnull Type type) {
-    this.name = name.intern();
+    this.name = name;
     this.type = type;
   }
 
@@ -68,7 +67,7 @@ public final class Local implements Value, Immediate, Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseLocal(this, o);
   }
 
@@ -96,7 +95,7 @@ public final class Local implements Value, Immediate, Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.local(this);
   }
 
@@ -106,17 +105,17 @@ public final class Local implements Value, Immediate, Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((JimpleValueVisitor) sw).caseLocal(this);
   }
 
   @Nonnull
-  public Local withName(String name) {
+  public Local withName(@Nonnull String name) {
     return new Local(name, type);
   }
 
   @Nonnull
-  public Local withType(Type type) {
+  public Local withType(@Nonnull Type type) {
     return new Local(name, type);
   }
 }

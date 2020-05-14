@@ -25,35 +25,32 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractUnopExpr implements Expr {
-  private final ValueBox opBox;
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
-  private Value op;
 
-  AbstractUnopExpr(ValueBox opBox) {
-    this.opBox = opBox;
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
-    this.op = opBox.getValue();
+  @Nonnull private final Immediate op;
+
+  AbstractUnopExpr(@Nonnull Immediate op) {
+    this.op = op;
   }
 
-  public Value getOp() {
-    return opBox.getValue();
-  }
-
-  public ValueBox getOpBox() {
-    return opBox;
+  @Nonnull
+  public Immediate getOp() {
+    return op;
   }
 
   @Override
+  @Nonnull
   public final List<Value> getUses() {
-    List<Value> list = new ArrayList<>(op.getUses());
+    final List<Value> uses = op.getUses();
+    List<Value> list = new ArrayList<>(uses.size() + 1);
+    list.addAll(uses);
     list.add(op);
-
     return list;
   }
 }

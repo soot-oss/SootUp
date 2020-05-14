@@ -11,8 +11,6 @@ import de.upb.swt.soot.core.model.SootMethod;
 /** StmtPrinter implementation for normal (full) Jimple */
 public class NormalStmtPrinter extends LabeledStmtPrinter {
 
-  public NormalStmtPrinter() {}
-
   public NormalStmtPrinter(Body b) {
     super(b);
   }
@@ -37,7 +35,7 @@ public class NormalStmtPrinter extends LabeledStmtPrinter {
       typeSignature(r.getType());
     } else if (r instanceof JParameterRef) {
       JParameterRef pr = (JParameterRef) r;
-      output.append("@parameter" + pr.getIndex() + ": ");
+      output.append("@parameter" + pr.getNum() + ": ");
       typeSignature(r.getType());
     } else if (r instanceof JCaughtExceptionRef) {
       output.append("@caughtexception");

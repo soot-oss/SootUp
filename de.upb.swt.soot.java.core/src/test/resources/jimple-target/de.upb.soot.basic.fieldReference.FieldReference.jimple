@@ -12,7 +12,7 @@ public class de.upb.soot.basic.fieldReference.FieldReference extends java.lang.O
         return;
     }
 
-    public static void fieldReference(java.lang.String[])
+    public static void JFieldReference(java.lang.String[])
     {
         java.lang.String[] r0;
         int i0;

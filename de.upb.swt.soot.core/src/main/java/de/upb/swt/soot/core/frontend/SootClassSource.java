@@ -51,6 +51,10 @@ public abstract class SootClassSource extends AbstractClassSource {
     super(srcNamespace, classSignature, sourcePath);
   }
 
+  protected SootClassSource(SootClassSource delegate) {
+    super(delegate.srcNamespace, delegate.getClassType(), delegate.getSourcePath());
+  }
+
   /** Reads from the source to retrieve its methods. This may be an expensive operation. */
   @Nonnull
   public abstract Collection<SootMethod> resolveMethods() throws ResolveException;
@@ -88,5 +92,6 @@ public abstract class SootClassSource extends AbstractClassSource {
    * Reads from the source to retrieve its position in the source code. This may be an expensive
    * operation.
    */
+  @Nonnull
   public abstract Position resolvePosition();
 }

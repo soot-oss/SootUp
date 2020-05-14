@@ -27,8 +27,9 @@
 package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -38,12 +39,10 @@ import javax.annotation.Nonnull;
 /** An expression that invokes an interface method. */
 public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
-  /**
-   * Assigns bootstrapArgs to bsmArgBoxes, an array of type ValueBox. And methodArgs to an array
-   * argBoxes.
-   */
-  public JInterfaceInvokeExpr(Value base, MethodSignature method, List<? extends Value> args) {
-    super(Jimple.newLocalBox(base), method, ValueBoxUtils.toValueBoxes(args));
+  /** methodArgs to an array args. */
+  public JInterfaceInvokeExpr(
+      @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
+    super(base, method, args);
 
     // FIXME: [JMP] Move this into view or somewhere, where `SootClass` and its context are
     // available
@@ -62,7 +61,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseInterfaceInvokeExpr(this, o);
   }
 
@@ -76,7 +75,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
         .append(".")
         .append(getMethodSignature())
         .append("(");
-    argBoxesToString(builder);
+    argsToString(builder);
     builder.append(")");
     return builder.toString();
   }
@@ -86,28 +85,28 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
   public void toString(StmtPrinter up) {
     up.literal(Jimple.INTERFACEINVOKE);
     up.literal(" ");
-    getBaseBox().toString(up);
+    getBase().toString(up);
     up.literal(".");
     up.methodSignature(getMethodSignature());
     up.literal("(");
-    argBoxesToPrinter(up);
+    argsToPrinter(up);
     up.literal(")");
   }
 
   // Value base, MethodSignature method, List<? extends Value> args
 
   @Nonnull
-  public JInterfaceInvokeExpr withBase(Value base) {
+  public JInterfaceInvokeExpr withBase(@Nonnull Local base) {
     return new JInterfaceInvokeExpr(base, getMethodSignature(), getArgs());
   }
 
   @Nonnull
-  public JInterfaceInvokeExpr Method(MethodSignature method) {
+  public JInterfaceInvokeExpr withMethodSignature(@Nonnull MethodSignature method) {
     return new JInterfaceInvokeExpr(getBase(), method, getArgs());
   }
 
   @Nonnull
-  public JInterfaceInvokeExpr withArgs(List<? extends Value> args) {
+  public JInterfaceInvokeExpr withArgs(@Nonnull List<Immediate> args) {
     return new JInterfaceInvokeExpr(getBase(), getMethodSignature(), args);
   }
 }

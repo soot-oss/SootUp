@@ -23,10 +23,9 @@
 package de.upb.swt.soot.test.core.jimple.common.stmt;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.jimple.basic.ConditionExprBox;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.expr.Expr;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JEqExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
@@ -44,9 +43,9 @@ public class JIfStmtTest {
     StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
     Stmt target = new JNopStmt(nop);
 
-    Expr condition = new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(123));
-    ConditionExprBox conditionBox = new ConditionExprBox(condition);
-    Stmt ifStmt = new JIfStmt(conditionBox.getValue(), target, nop);
+    AbstractConditionExpr condition =
+        new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(123));
+    Stmt ifStmt = new JIfStmt(condition, nop);
 
     // toString
     Assert.assertEquals("if 42 == 123 goto nop", ifStmt.toString());
@@ -55,19 +54,15 @@ public class JIfStmtTest {
     Assert.assertFalse(ifStmt.equivTo(new JNopStmt(nop)));
 
     Assert.assertTrue(ifStmt.equivTo(ifStmt));
-    Assert.assertTrue(ifStmt.equivTo(new JIfStmt(conditionBox.getValue(), target, nop)));
+    Assert.assertTrue(ifStmt.equivTo(new JIfStmt(condition, nop)));
     Assert.assertTrue(
         ifStmt.equivTo(
             new JIfStmt(
-                new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(123)),
-                target,
-                nop)));
+                new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(123)), nop)));
 
     Assert.assertFalse(
         ifStmt.equivTo(
             new JIfStmt(
-                new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(666)),
-                target,
-                nop)));
+                new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(666)), nop)));
   }
 }

@@ -17,14 +17,11 @@ import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
-import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
@@ -47,7 +44,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import scala.annotation.meta.field;
 
 /**
  * Converter which converts WALA IR to jimple.
@@ -78,12 +75,12 @@ public class WalaIRToJimpleConverter {
   // TODO: remove deprecated
   @Deprecated
   public SootClass convertClass(AstClass walaClass) {
-    SootClassSource classSource = convertToClassSource(walaClass);
+    JavaSootClassSource classSource = convertToClassSource(walaClass);
     // TODO: [ms] fix fixed SourceType - get it from project
-    return new SootClass(classSource, SourceType.Application);
+    return new JavaSootClass(classSource, SourceType.Application);
   }
 
-  SootClassSource convertToClassSource(AstClass walaClass) {
+  JavaSootClassSource convertToClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassType classSig = identifierFactory.getClassType(fullyQualifiedClassName);
     // get super class
@@ -153,11 +150,13 @@ public class WalaIRToJimpleConverter {
         sootFields,
         sootMethods,
         position,
-        modifiers);
+        modifiers,
+        Collections.emptyList() // TODO:[ms] implement annotations);
+        );
   }
 
   /** Create a {@link OverridingClassSource} object for the given walaClass. */
-  public OverridingClassSource createClassSource(
+  public OverridingJavaClassSource createClassSource(
       AstClass walaClass,
       JavaClassType superClass,
       Set<ClassType> interfaces,
@@ -165,12 +164,13 @@ public class WalaIRToJimpleConverter {
       Set<SootField> sootFields,
       Set<SootMethod> sootMethods,
       Position position,
-      EnumSet<Modifier> modifiers) {
+      EnumSet<Modifier> modifiers,
+      Iterable<AnnotationType> annotations) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassType classSignature = identifierFactory.getClassType(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
     Path sourcePath = Paths.get(url.getPath());
-    return new OverridingClassSource(
+    return new OverridingJavaClassSource(
         srcNamespace,
         sourcePath,
         classSignature,
@@ -180,7 +180,9 @@ public class WalaIRToJimpleConverter {
         sootFields,
         sootMethods,
         convertPosition(position),
-        modifiers);
+        modifiers,
+        Collections.emptyList() // TODO:[ms] implement annotations
+        );
   }
 
   /**
@@ -379,17 +381,18 @@ public class WalaIRToJimpleConverter {
     return modifiers;
   }
 
-  private @Nullable Body createBody(
+  @Nonnull
+  private Body createBody(
       MethodSignature methodSignature, EnumSet<Modifier> modifiers, AstMethod walaMethod) {
 
     if (walaMethod.isAbstract()) {
-      return null;
+      return Body.getNoBody();
     }
+
+    final Body.BodyBuilder builder = Body.builder();
 
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
-      List<Trap> traps = new ArrayList<>();
-      List<Stmt> stmts = new ArrayList<>();
       LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
       // convert all wala instructions to jimple statements
       SSAInstruction[] insts = (SSAInstruction[]) cfg.getInstructions();
@@ -409,21 +412,34 @@ public class WalaIRToJimpleConverter {
                   thisLocal,
                   Jimple.newThisRef(thisType),
                   convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-          stmts.add(stmt);
+          builder.addStmt(stmt);
         }
 
         // wala's first parameter is the "this" reference for non-static methods
-        for (int i = walaMethod.isStatic() ? 0 : 1; i < walaMethod.getNumberOfParameters(); i++) {
-          TypeReference t = walaMethod.getParameterType(i);
-          Type type = convertType(t);
-          Local paraLocal = localGenerator.generateParameterLocal(type, i);
+        if (walaMethod.isStatic()) {
+          for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
+            Type type = convertType(walaMethod.getParameterType(i));
+            Local paraLocal = localGenerator.generateParameterLocal(type, i);
 
-          Stmt stmt =
-              Jimple.newIdentityStmt(
-                  paraLocal,
-                  Jimple.newParameterRef(type, walaMethod.isStatic() ? i : i - 1),
-                  convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-          stmts.add(stmt);
+            Stmt stmt =
+                Jimple.newIdentityStmt(
+                    paraLocal,
+                    Jimple.newParameterRef(type, i),
+                    convertPositionInfo(debugInfo.getInstructionPosition(0), null));
+            builder.addStmt(stmt);
+          }
+        } else {
+          for (int i = 1; i < walaMethod.getNumberOfParameters(); i++) {
+            Type type = convertType(walaMethod.getParameterType(i));
+            Local paraLocal = localGenerator.generateParameterLocal(type, i);
+
+            Stmt stmt =
+                Jimple.newIdentityStmt(
+                    paraLocal,
+                    Jimple.newParameterRef(type, i - 1),
+                    convertPositionInfo(debugInfo.getInstructionPosition(0), null));
+            builder.addStmt(stmt);
+          }
         }
 
         // TODO 2. convert traps
@@ -431,20 +447,18 @@ public class WalaIRToJimpleConverter {
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
         InstructionConverter instConverter =
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
-        Map<Stmt, Integer> stmt2IIndex = new HashMap<>();
+        Map<Integer, Stmt> iIndex2Stmt = new HashMap<Integer, Stmt>();
         for (SSAInstruction inst : insts) {
           List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst);
           if (!retStmts.isEmpty()) {
             for (Stmt stmt : retStmts) {
-              stmts.add(stmt);
-              stmt2IIndex.put(stmt, inst.iIndex());
+              iIndex2Stmt.put(inst.iIndex(), stmt);
             }
           }
         }
-        // set target for goto or conditional statements
-        for (Stmt stmt : stmt2IIndex.keySet()) {
-          instConverter.setTarget(stmt, stmt2IIndex.get(stmt));
-        }
+
+        /*
+        FIXME: [ms] leftover refactoring to jgrapht
 
         // add return void stmt for methods with return type being void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
@@ -456,14 +470,21 @@ public class WalaIRToJimpleConverter {
             ret =
                 Jimple.newReturnVoidStmt(
                     convertPositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
-            stmts.add(ret);
           } else {
             ret = stmts.get(stmts.size() - 1);
           }
-          instConverter.setTarget(ret, -1); // -1 is the end of the method
+          iIndex2Stmt.put(-1, ret); // -1 is the end of the method
         }
+        // FIXME: [ms] set target for all branching statements
+        List<Stmt> newStmts = instConverter.setUpTargets(iIndex2Stmt);
+        stmts.addAll(newStmts);
 
-        return new Body(localGenerator.getLocals(), traps, stmts, convertPosition(bodyPos));
+        */
+
+        return builder
+            .setLocals(localGenerator.getLocals())
+            .setPosition(convertPosition(bodyPos))
+            .build();
       }
     }
 
@@ -494,7 +515,7 @@ public class WalaIRToJimpleConverter {
           isSpecial = true;
           break;
         }
-        sb.append(subName).append(".");
+        sb.append(subName).append('.');
       }
       if (subNames.length != 0) {
         sb.setLength(sb.length() - 1);

@@ -3,7 +3,7 @@ package de.upb.swt.soot.java.bytecode.frontend;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -12,7 +12,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Frame of stack for an instruction.
+ * Frame of stack for an instruction. (see
+ * https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.6 )
  *
  * @author Aaloan Miftah
  */
@@ -20,7 +21,7 @@ final class StackFrame {
 
   @Nullable private Operand[] out;
   @Nullable private Local[] inStackLocals;
-  @Nullable private ValueBox[] boxes;
+  @Nullable private Value[] boxes;
   @Nullable private ArrayList<Operand[]> in = new ArrayList<>(1);
   @Nonnull private final AsmMethodSource src;
 
@@ -53,11 +54,11 @@ final class StackFrame {
   }
 
   /**
-   * Sets the value boxes corresponding to the operands used by this frame.
+   * Sets the values corresponding to the operands used by this frame.
    *
    * @param boxes the boxes.
    */
-  void setBoxes(ValueBox... boxes) {
+  void setValues(Value... boxes) {
     this.boxes = boxes;
   }
 
@@ -92,14 +93,14 @@ final class StackFrame {
           newOp.stack = stack;
           JAssignStmt as =
               Jimple.newAssignStmt(stack, newOp.value, StmtPositionInfo.createNoStmtPositionInfo());
-          src.setUnit(newOp.insn, as);
+          src.setStmt(newOp.insn, as);
           newOp.updateBoxes();
         } else {
           JAssignStmt as =
               Jimple.newAssignStmt(
                   stack, newOp.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
-          src.mergeUnits(newOp.insn, as);
-          newOp.addBox(as.getRightOpBox());
+          src.mergeStmts(newOp.insn, as);
+          newOp.addValue(as.getRightOp());
         }
       } else {
         for (int j = 0; j != nrIn; j++) {
@@ -115,27 +116,31 @@ final class StackFrame {
           }
         }
         /* add assign statement for prevOp */
-        ValueBox box = boxes == null ? null : boxes[i];
+        Value box = boxes == null ? null : boxes[i];
         for (int j = 0; j != nrIn; j++) {
           Operand prevOp = in.get(j)[i];
           if (prevOp.stack == stack) {
             continue;
           }
-          prevOp.removeBox(box);
+          prevOp.removeValue(box);
           if (prevOp.stack == null) {
             prevOp.stack = stack;
             JAssignStmt as =
                 Jimple.newAssignStmt(
                     stack, prevOp.value, StmtPositionInfo.createNoStmtPositionInfo());
-            src.setUnit(prevOp.insn, as);
+            src.setStmt(prevOp.insn, as);
           } else {
-            Stmt u = src.getUnit(prevOp.insn);
+            Stmt u = src.getStmt(prevOp.insn);
             AbstractDefinitionStmt as =
                 (AbstractDefinitionStmt)
-                    (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
-            ValueBox lvb = as.getLeftOpBox();
-            assert lvb.getValue() == prevOp.stack : "Invalid stack local!";
-            ValueBox.$Accessor.setValue(lvb, stack);
+                    (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
+            Value lvb = as.getLeftOp();
+            assert lvb == prevOp.stack : "Invalid stack local!";
+            // FIXME: [ms] box removal leftover:
+            // ValueBox.$Accessor.setValue(lvb, stack);
+            AbstractDefinitionStmt.$Accessor.setLeftOp(as, stack);
+            System.out.println("$Accessor.setLeftOp(..) called");
+
             prevOp.stack = stack;
           }
           prevOp.updateBoxes();
@@ -146,21 +151,26 @@ final class StackFrame {
             JAssignStmt as =
                 Jimple.newAssignStmt(
                     stack, newOp.value, StmtPositionInfo.createNoStmtPositionInfo());
-            src.setUnit(newOp.insn, as);
+            src.setStmt(newOp.insn, as);
           } else {
-            Stmt u = src.getUnit(newOp.insn);
+            Stmt u = src.getStmt(newOp.insn);
             AbstractDefinitionStmt as =
                 (AbstractDefinitionStmt)
-                    (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
-            ValueBox lvb = as.getLeftOpBox();
-            assert lvb.getValue() == newOp.stack : "Invalid stack local!";
-            ValueBox.$Accessor.setValue(lvb, stack);
+                    (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
+            Value lvb = as.getLeftOp();
+            assert lvb == newOp.stack : "Invalid stack local!";
+            // FIXME: [ms] box removal leftover:
+            // ValueBox.$Accessor.setValue(lvb, stack);
+            AbstractDefinitionStmt.$Accessor.setLeftOp(as, stack);
+
             newOp.stack = stack;
           }
           newOp.updateBoxes();
         }
         if (box != null) {
-          ValueBox.$Accessor.setValue(box, stack);
+          // FIXME: [ms] box removal leftover:
+          // ValueBox.$Accessor.setValue(box, stack);
+          boxes[i] = stack;
         }
         inStackLocals[i] = stack;
       }

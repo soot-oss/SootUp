@@ -46,11 +46,7 @@ import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeReference;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.JStmtBox;
-import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
@@ -59,14 +55,7 @@ import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
 import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
-import de.upb.swt.soot.core.jimple.common.expr.AbstractBinopExpr;
-import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JEqExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JInstanceOfExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNegExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
@@ -112,12 +101,15 @@ public class InstructionConverter {
   private final AstMethod walaMethod;
   private final SymbolTable symbolTable;
   private final LocalGenerator localGenerator;
-  // <ifStmt, iindex>
+
+  private final Map<Stmt, Integer> targets = new HashMap<>();
+
+  // FIXME: [ms] remove
   private final Map<JIfStmt, Integer> targetsOfIfStmts;
   private final Map<JGotoStmt, Integer> targetsOfGotoStmts;
   private final Map<JSwitchStmt, List<Integer>> targetsOfLookUpSwitchStmts;
   private final Map<JSwitchStmt, Integer> defaultOfLookUpSwitchStmts;
-  protected Map<JSwitchStmt, List<Stmt>> targetStmtsOfLookUpSwitchStmts;
+
   private final Map<Integer, Local> locals;
   private final IdentifierFactory identifierFactory;
 
@@ -211,7 +203,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, SSAArrayStoreInstruction inst) {
     Local base = getLocal(UnknownType.getInstance(), inst.getArrayRef());
     int i = inst.getIndex();
-    Value index = null;
+    Immediate index = null;
     if (symbolTable.isConstant(i)) {
       index = getConstant(i);
     } else {
@@ -241,7 +233,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, SSAArrayLoadInstruction inst) {
     Local base = getLocal(UnknownType.getInstance(), inst.getArrayRef());
     int i = inst.getIndex();
-    Value index;
+    Immediate index;
     if (symbolTable.isConstant(i)) {
       index = getConstant(i);
     } else {
@@ -304,7 +296,7 @@ public class InstructionConverter {
 
   private Stmt convertMonitorInstruction(
       DebuggingInformation debugInfo, SSAMonitorInstruction inst) {
-    Value op = getLocal(UnknownType.getInstance(), inst.getRef());
+    Immediate op = getLocal(UnknownType.getInstance(), inst.getRef());
 
     Position[] operandPos = new Position[1];
     // FIXME: [ms] referenced object position info is missing
@@ -356,7 +348,6 @@ public class InstructionConverter {
     JIfStmt ifStmt =
         Jimple.newIfStmt(
             condition,
-            nopStmt,
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     stmts.add(ifStmt);
@@ -368,7 +359,6 @@ public class InstructionConverter {
     JIfStmt assertIfStmt =
         Jimple.newIfStmt(
             assertionExpr,
-            nopStmt,
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     stmts.add(assertIfStmt);
@@ -500,7 +490,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, SSACheckCastInstruction inst) {
     TypeReference[] types = inst.getDeclaredResultTypes();
     Local result = getLocal(converter.convertType(types[0]), inst.getResult());
-    Value rvalue = null;
+    Immediate rvalue = null;
     int val = inst.getVal();
     if (symbolTable.isConstant(val)) {
       rvalue = getConstant(val);
@@ -539,7 +529,7 @@ public class InstructionConverter {
     int defaultCase = inst.getDefault();
     List<IntConstant> lookupValues = new ArrayList<>();
     List<Integer> targetsList = new ArrayList<>();
-    List<? extends Stmt> targets = new ArrayList<>();
+    List<Stmt> targets = new ArrayList<>();
     for (int i = 0; i < cases.length; i++) {
       int c = cases[i];
       if (i % 2 == 0) {
@@ -564,8 +554,6 @@ public class InstructionConverter {
         Jimple.newLookupSwitchStmt(
             local,
             lookupValues,
-            targets,
-            defaultTarget,
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     this.targetsOfLookUpSwitchStmts.put(stmt, targetsList);
@@ -591,7 +579,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, SSAUnaryOpInstruction inst) {
     int def = inst.getDef();
     int use = inst.getUse(0);
-    Value op;
+    Immediate op;
     Type type = UnknownType.getInstance();
     if (symbolTable.isConstant(use)) {
       op = getConstant(use);
@@ -649,7 +637,7 @@ public class InstructionConverter {
       Local base = getLocal(classSig, ref);
       fieldValue = Jimple.newInstanceFieldRef(base, fieldSig);
     }
-    Value value = null;
+    Immediate value;
     int val = inst.getVal();
     if (symbolTable.isConstant(val)) {
       value = getConstant(val);
@@ -672,10 +660,10 @@ public class InstructionConverter {
     int result = inst.getDef();
     Type type = converter.convertType(inst.getNewSite().getDeclaredType());
     Value var = getLocal(type, result);
-    Value rvalue = null;
+    Value rvalue;
     if (type instanceof ArrayType) {
       int use = inst.getUse(0);
-      Value size = null;
+      Immediate size;
       if (symbolTable.isConstant(use)) {
         size = getConstant(use);
       } else {
@@ -738,7 +726,7 @@ public class InstructionConverter {
     int def = inst.getDef();
     int use = inst.getUse(0);
     Value lvalue = getLocal(toType, def);
-    Value rvalue = null;
+    Immediate rvalue;
     if (symbolTable.isConstant(use)) {
       rvalue = getConstant(use);
     } else {
@@ -760,7 +748,7 @@ public class InstructionConverter {
 
   private Stmt convertInvokeInstruction(
       DebuggingInformation debugInfo, AstJavaInvokeInstruction invokeInst) {
-    Value invoke;
+    AbstractInvokeExpr invoke;
     CallSiteReference callee = invokeInst.getCallSite();
     MethodReference target = invokeInst.getDeclaredTarget();
     String declaringClassSignature =
@@ -768,7 +756,7 @@ public class InstructionConverter {
     String returnType = converter.convertType(target.getReturnType()).toString();
     List<String> parameters = new ArrayList<>();
     List<Type> paraTypes = new ArrayList<>();
-    List<Value> args = new ArrayList<>();
+    List<Immediate> args = new ArrayList<>();
     for (int i = 0; i < target.getNumberOfParameters(); i++) {
       Type paraType = converter.convertType(target.getParameterType(i)); // note
       // the
@@ -790,7 +778,7 @@ public class InstructionConverter {
     }
     for (; i < invokeInst.getNumberOfUses(); i++) {
       int use = invokeInst.getUse(i);
-      Value arg;
+      Immediate arg;
       if (symbolTable.isConstant(use)) {
         arg = getConstant(use);
       } else {
@@ -852,8 +840,8 @@ public class InstructionConverter {
     List<Stmt> stmts = new ArrayList<>();
     int val1 = condInst.getUse(0);
     int val2 = condInst.getUse(1);
-    Value value1 = extractValueAndAddAssignStmt(posInfo, stmts, val1);
-    Value value2 = extractValueAndAddAssignStmt(posInfo, stmts, val2);
+    Immediate value1 = extractValueAndAddAssignStmt(posInfo, stmts, val1);
+    Immediate value2 = extractValueAndAddAssignStmt(posInfo, stmts, val2);
     AbstractConditionExpr condition;
     IOperator op = condInst.getOperator();
     if (op.equals(Operator.EQ)) {
@@ -871,17 +859,18 @@ public class InstructionConverter {
     } else {
       throw new RuntimeException("Unsupported conditional operator: " + op);
     }
-    JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
+    Stmt target = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
 
-    JIfStmt ifStmt = Jimple.newIfStmt(condition, target, posInfo);
+    JIfStmt ifStmt = Jimple.newIfStmt(condition, posInfo);
     // target equals -1 refers to the end of the method
     this.targetsOfIfStmts.put(ifStmt, condInst.getTarget());
     stmts.add(ifStmt);
     return stmts;
   }
 
-  private Value extractValueAndAddAssignStmt(StmtPositionInfo posInfo, List<Stmt> addTo, int val) {
-    Value value;
+  private Immediate extractValueAndAddAssignStmt(
+      StmtPositionInfo posInfo, List<Stmt> addTo, int val) {
+    Immediate value;
     Integer constant = null;
     if (symbolTable.isZero(val)) {
       value = IntConstant.getInstance(0);
@@ -910,7 +899,7 @@ public class InstructionConverter {
           WalaIRToJimpleConverter.convertPositionInfo(
               debugInfo.getInstructionPosition(inst.iIndex()), null));
     } else {
-      Value ret;
+      Immediate ret;
       if (symbolTable.isConstant(result)) {
         ret = getConstant(result);
       } else {
@@ -927,9 +916,9 @@ public class InstructionConverter {
   }
 
   private List<Stmt> convertStringAddition(
-      Value op1,
-      Value op2,
-      Value result,
+      Immediate op1,
+      Immediate op2,
+      Immediate result,
       Type type,
       int iindex,
       AstMethod.DebuggingInformation debugInfo) {
@@ -1006,14 +995,14 @@ public class InstructionConverter {
     int val1 = binOpInst.getUse(0);
     int val2 = binOpInst.getUse(1);
     Type type = UnknownType.getInstance();
-    Value op1;
+    Immediate op1;
     if (symbolTable.isConstant(val1)) {
       op1 = getConstant(val1);
     } else {
       op1 = getLocal(type, val1);
     }
     type = op1.getType();
-    Value op2 = null;
+    Immediate op2;
     if (symbolTable.isConstant(val2)) {
       op2 = getConstant(val2);
     } else {
@@ -1025,7 +1014,7 @@ public class InstructionConverter {
     if (operator.equals(IBinaryOpInstruction.Operator.ADD)) {
       if (type.toString().equals("java.lang.String")) {
         // from wala java source code frontend we get also string addition(concatenation).
-        Value result = getLocal(type, def);
+        Immediate result = getLocal(type, def);
         return convertStringAddition(op1, op2, result, type, binOpInst.iIndex(), debugInfo);
       }
       binExpr = Jimple.newAddExpr(op1, op2);
@@ -1086,13 +1075,12 @@ public class InstructionConverter {
   }
 
   private Stmt convertGoToInstruction(DebuggingInformation debugInfo, SSAGotoInstruction gotoInst) {
-    JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
+    Stmt target = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     JGotoStmt gotoStmt =
         Jimple.newGotoStmt(
-            target,
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(gotoInst.iIndex()), null));
-    this.targetsOfGotoStmts.put(gotoStmt, gotoInst.getTarget());
+    targets.put(gotoStmt, gotoInst.getTarget());
     return gotoStmt;
   }
 
@@ -1186,47 +1174,56 @@ public class InstructionConverter {
   }
 
   /**
-   * Test if the given stmt is the target stmt of {@link JIfStmt} or {@link JGotoStmt} and set it as
-   * the target if it is the case.
-   *
-   * @param stmt the converted jimple stmt.
-   * @param iindex the instruction index of the corresponding instruction in Wala.
+   * @param iIndex2Stmt
+   * @return This methods returns a list of stmts with all branch stmts ({@link JIfStmt}, {@link
+   *     JGotoStmt}, {@link JSwitchStmt}) having set up their target stmts.
    */
-  @SuppressWarnings("deprecation")
-  protected void setTarget(Stmt stmt, int iindex) {
-    if (this.targetsOfIfStmts.containsValue(iindex)) {
-      for (JIfStmt ifStmt : this.targetsOfIfStmts.keySet()) {
-        if (this.targetsOfIfStmts.get(ifStmt).equals(iindex)) {
-          JIfStmt.$Accessor.setTarget(ifStmt, stmt);
+  public List<Stmt> setUpTargets(Map<Integer, Stmt> iIndex2Stmt) {
+    List<Stmt> stmts = new ArrayList<>();
+    Stmt lastStmt = null;
+    for (Stmt stmt : iIndex2Stmt.values()) {
+      if (iIndex2Stmt.containsKey(-1) && iIndex2Stmt.get(-1).equals(stmt)) {
+        lastStmt = stmt; // this is the return void stmt, add it at last.
+      } else {
+        Stmt newStmt = stmt;
+        if (stmt instanceof JIfStmt) {
+          JIfStmt oldStmt = (JIfStmt) stmt;
+          int iTarget = this.targetsOfIfStmts.get(stmt);
+          if (iIndex2Stmt.containsKey(iTarget)) {
+            Stmt target = iIndex2Stmt.get(iTarget);
+            newStmt =
+                new JIfStmt(
+                    (AbstractConditionExpr) oldStmt.getCondition(), oldStmt.getPositionInfo());
+          }
+        } else if (stmt instanceof JGotoStmt) {
+          JGotoStmt oldStmt = (JGotoStmt) stmt;
+          int iTarget = this.targetsOfGotoStmts.get(stmt);
+          if (iIndex2Stmt.containsKey(iTarget)) {
+            Stmt target = iIndex2Stmt.get(iTarget);
+            newStmt = new JGotoStmt(oldStmt.getPositionInfo());
+          }
+        } else if (stmt instanceof JSwitchStmt) {
+          JSwitchStmt oldStmt = (JSwitchStmt) stmt;
+          int iDefault = this.defaultOfLookUpSwitchStmts.get(stmt);
+          Stmt defaultTarget = null;
+          if (iIndex2Stmt.containsKey(iDefault)) {
+            defaultTarget = iIndex2Stmt.get(iDefault);
+          }
+          List<Integer> iTargets = this.targetsOfLookUpSwitchStmts.get(stmt);
+          List<Stmt> targets = new ArrayList<>();
+          for (Integer iTarget : iTargets) {
+            if (iIndex2Stmt.containsKey(iTarget)) {
+              Stmt target = iIndex2Stmt.get(iTarget);
+              targets.add(target);
+            }
+            newStmt =
+                new JSwitchStmt(oldStmt.getKey(), oldStmt.getValues(), oldStmt.getPositionInfo());
+          }
         }
+        stmts.add(newStmt);
       }
     }
-
-    // FIXME: [ms] targetbox of JGotoStmt is null @PositionInfoTest.java ->testSwitchInstruction()
-    if (this.targetsOfGotoStmts.containsValue(iindex)) {
-      for (JGotoStmt gotoStmt : this.targetsOfGotoStmts.keySet()) {
-        if (this.targetsOfGotoStmts.get(gotoStmt).equals(iindex)) {
-          JGotoStmt.$Accessor.setTarget(gotoStmt, stmt);
-        }
-      }
-    }
-    if (this.defaultOfLookUpSwitchStmts.containsValue(iindex)) {
-      for (JSwitchStmt lookupSwitch : this.defaultOfLookUpSwitchStmts.keySet()) {
-        if (this.defaultOfLookUpSwitchStmts.get(lookupSwitch).equals(iindex)) {
-          JSwitchStmt.$Accessor.setDefaultTarget(lookupSwitch, stmt);
-        }
-      }
-    }
-    for (JSwitchStmt lookupSwitch : this.targetsOfLookUpSwitchStmts.keySet()) {
-      if (this.targetsOfLookUpSwitchStmts.get(lookupSwitch).contains(iindex)) {
-        List<Stmt> targets = lookupSwitch.getTargets();
-        if (targets.contains(null)) { // targets only contains
-          // placeholder
-          targets = new ArrayList<>();
-        }
-        targets.add(stmt);
-        JSwitchStmt.$Accessor.setTargets(lookupSwitch, targets);
-      }
-    }
+    if (lastStmt != null) stmts.add(lastStmt);
+    return stmts;
   }
 }

@@ -6,11 +6,13 @@ import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.jimple.common.constant.MethodHandle;
 import de.upb.swt.soot.core.jimple.common.constant.MethodType;
 import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
-import de.upb.swt.soot.core.jimple.common.ref.FieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
+import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.*;
+import de.upb.swt.soot.java.core.AnnotationType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.jimple.basic.JavaLocal;
 import java.util.List;
 
 /**
@@ -36,6 +38,11 @@ public class JavaJimple extends Jimple {
     return t instanceof PrimitiveType || t instanceof VoidType || t instanceof NullType;
   }
 
+  /** Constructs a Local with the given name and type. */
+  public static JavaLocal newLocal(String name, Type t, Iterable<AnnotationType> annotations) {
+    return new JavaLocal(name, t, annotations);
+  }
+
   public JCaughtExceptionRef newCaughtExceptionRef() {
     return new JCaughtExceptionRef(getIdentifierFactory().getType("java.lang.Throwable"));
   }
@@ -48,7 +55,7 @@ public class JavaJimple extends Jimple {
     return new StringConstant(value, getIdentifierFactory().getType("java.lang.String"));
   }
 
-  public MethodHandle newMethodHandle(FieldRef ref, int tag) {
+  public MethodHandle newMethodHandle(JFieldRef ref, int tag) {
     return new MethodHandle(
         ref, tag, getIdentifierFactory().getType("java.lang.invoke.MethodHandle"));
   }

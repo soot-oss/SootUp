@@ -31,15 +31,14 @@ public class InheritPublicDataTest extends JavaTypeHierarchyBase {
     assertTrue(typeHierarchy.isSubtype(getClassType("SuperClass"), sootClassType));
 
     SootClass sootClass =
-        (SootClass)
-            customTestWatcher
-                .getView()
-                .getClass(
-                    customTestWatcher
-                        .getView()
-                        .getIdentifierFactory()
-                        .getClassType(customTestWatcher.getClassName()))
-                .get();
+        customTestWatcher
+            .getView()
+            .getClass(
+                customTestWatcher
+                    .getView()
+                    .getIdentifierFactory()
+                    .getClassType(customTestWatcher.getClassName()))
+            .get();
     SootMethod sootMethod =
         sootClass
             .getMethod(

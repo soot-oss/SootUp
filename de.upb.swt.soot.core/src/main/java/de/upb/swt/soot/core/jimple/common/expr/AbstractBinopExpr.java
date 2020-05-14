@@ -25,66 +25,56 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractBinopExpr implements Expr {
 
-  private final ValueBox op1Box;
-  private final ValueBox op2Box;
+  @Nonnull private final Immediate op1;
+  @Nonnull private final Immediate op2;
 
-  // new attributes : later if ValueBox is deleted, then add "final" to it.
-  private Value op1;
-  private Value op2;
-
-  AbstractBinopExpr(ValueBox op1Box, ValueBox op2Box) {
-    this.op1Box = op1Box;
-    this.op2Box = op2Box;
-
-    // new attributes: later if ValueBox is deleted, then fit the constructor.
-    this.op1 = op1Box.getValue();
-    this.op2 = op2Box.getValue();
+  AbstractBinopExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+    this.op1 = op1;
+    this.op2 = op2;
   }
 
-  public Value getOp1() {
-    return op1Box.getValue();
+  @Nonnull
+  public Immediate getOp1() {
+    return op1;
   }
 
-  public Value getOp2() {
-    return op2Box.getValue();
-  }
-
-  public ValueBox getOp1Box() {
-    return op1Box;
-  }
-
-  public ValueBox getOp2Box() {
-    return op2Box;
+  @Nonnull
+  public Immediate getOp2() {
+    return op2;
   }
 
   @Override
+  @Nonnull
   public final List<Value> getUses() {
-    List<Value> list = new ArrayList<>(op1.getUses());
+    final List<Value> uses1 = op1.getUses();
+    final List<Value> uses2 = op2.getUses();
+    List<Value> list = new ArrayList<>(uses1.size() + uses2.size() + 2);
+    list.addAll(uses1);
     list.add(op1);
-    list.addAll(op2.getUses());
+    list.addAll(uses2);
     list.add(op2);
     return list;
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseAbstractBinopExpr(this, o);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return op1Box.getValue().equivHashCode() * 101 + op2Box.getValue().equivHashCode() + 17
-        ^ getSymbol().hashCode();
+    return op1.equivHashCode() * 101 + op2.equivHashCode() + 17 ^ getSymbol().hashCode();
   }
 
   /** Returns the unique symbol for an operator. */
@@ -92,17 +82,15 @@ public abstract class AbstractBinopExpr implements Expr {
 
   @Override
   public String toString() {
-    Value op1 = op1Box.getValue();
-    Value op2 = op2Box.getValue();
     String leftOp = op1.toString();
     String rightOp = op2.toString();
     return leftOp + getSymbol() + rightOp;
   }
 
   @Override
-  public void toString(StmtPrinter up) {
-    op1Box.toString(up);
+  public void toString(@Nonnull StmtPrinter up) {
+    op1.toString(up);
     up.literal(getSymbol());
-    op2Box.toString(up);
+    op2.toString(up);
   }
 }
