@@ -115,6 +115,7 @@
         <version>2.8</version>
         <executions>
           <execution>
+          	<phase>package</phase>
             <goals>
               <goal>format</goal>
             </goals>
