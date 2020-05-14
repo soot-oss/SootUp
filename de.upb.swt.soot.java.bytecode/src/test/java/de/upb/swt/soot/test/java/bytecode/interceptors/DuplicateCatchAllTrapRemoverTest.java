@@ -31,18 +31,16 @@ public class DuplicateCatchAllTrapRemoverTest {
     Set<Local> locals = Collections.emptySet();
     List<Trap> traps = Collections.emptyList();
     List<Stmt> stmts = Collections.emptyList();
-    BodyBuilder builder= Body.builder();
-    for(int i=0; i<stmts.size()-1;i++)
-    {
-    	Stmt from=stmts.get(i);
-    	Stmt to=stmts.get(i+1);
-    	if(i==0)
-    		builder.setFirstStmt(from);
-    	builder.addStmt(from);
-    	builder.addStmt(to);
-    	builder.addFlow(from, to);
+    BodyBuilder builder = Body.builder();
+    for (int i = 0; i < stmts.size() - 1; i++) {
+      Stmt from = stmts.get(i);
+      Stmt to = stmts.get(i + 1);
+      if (i == 0) builder.setFirstStmt(from);
+      builder.addStmt(from);
+      builder.addStmt(to);
+      builder.addFlow(from, to);
     }
-    Body originalBody =builder.setLocals(locals).setTraps(traps).setPosition(null).build();
+    Body originalBody = builder.setLocals(locals).setTraps(traps).setPosition(null).build();
     Body processedBody = new UnusedLocalEliminator().interceptBody(originalBody);
 
     assertNotNull(processedBody);
@@ -125,18 +123,16 @@ public class DuplicateCatchAllTrapRemoverTest {
     }
     List<Stmt> stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret);
 
-    BodyBuilder builder= Body.builder();
-    for(int i=0; i<stmts.size()-1;i++)
-    {
-    	Stmt from=stmts.get(i);
-    	Stmt to=stmts.get(i+1);
-    	if(i==0)
-    		builder.setFirstStmt(from);
-    	builder.addStmt(from);
-    	builder.addStmt(to);
-    	builder.addFlow(from, to);
+    BodyBuilder builder = Body.builder();
+    for (int i = 0; i < stmts.size() - 1; i++) {
+      Stmt from = stmts.get(i);
+      Stmt to = stmts.get(i + 1);
+      if (i == 0) builder.setFirstStmt(from);
+      builder.addStmt(from);
+      builder.addStmt(to);
+      builder.addFlow(from, to);
     }
-    Body body =builder.setLocals(locals).setTraps(traps).setPosition(null).build();
+    Body body = builder.setLocals(locals).setTraps(traps).setPosition(null).build();
     return body;
   }
 

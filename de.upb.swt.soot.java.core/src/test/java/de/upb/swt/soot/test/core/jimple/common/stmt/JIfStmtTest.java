@@ -60,6 +60,12 @@ public class JIfStmtTest {
             new JIfStmt(
                 new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(123)), nop)));
 
+    // switched Operands on Equal
+    Assert.assertFalse(
+        ifStmt.equivTo(
+            new JIfStmt(
+                new JEqExpr(IntConstant.getInstance(123), IntConstant.getInstance(42)), nop)));
+
     Assert.assertFalse(
         ifStmt.equivTo(
             new JIfStmt(
