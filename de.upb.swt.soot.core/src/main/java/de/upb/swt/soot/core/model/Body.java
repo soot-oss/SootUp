@@ -52,7 +52,7 @@ public class Body implements Copyable {
           Collections.emptySet(),
           Collections.emptyList(),
           ImmutableGraph.copyOf(GraphBuilder.directed().build()),
-          null,
+          Collections.emptyMap(),
           NoPositionInformation.getInstance());
 
   /** The locals for this Body. */
@@ -65,7 +65,7 @@ public class Body implements Copyable {
   @Nonnull private final ImmutableGraph<Stmt> cfg;
 
   /** Record the ordered branching edges for each branching statement. */
-  private Map<Stmt, List<Stmt>> branches;
+  @Nonnull private Map<Stmt, List<Stmt>> branches;
 
   /** The first Stmt in this Body. */
   @Nonnull private final Stmt firstStmt;
@@ -100,7 +100,7 @@ public class Body implements Copyable {
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
       @Nonnull Graph<Stmt> stmtGraph,
-      @Nullable Map<Stmt, List<Stmt>> branches,
+      @Nonnull Map<Stmt, List<Stmt>> branches,
       @Nonnull Stmt startingStmt,
       @Nonnull Position position) {
     this.locals = Collections.unmodifiableSet(locals);
@@ -122,7 +122,7 @@ public class Body implements Copyable {
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
       @Nonnull Graph<Stmt> stmtGraph,
-      @Nullable Map<Stmt, List<Stmt>> branches,
+      @Nonnull Map<Stmt, List<Stmt>> branches,
       @Nonnull Position position) {
 
     // FIXME: [ms] dirty debugging hack !!!!!!
@@ -217,7 +217,7 @@ public class Body implements Copyable {
   }
 
   /** @return ordered branching edges */
-  public Map<Stmt, List<Stmt>> getBranches() {
+  private Map<Stmt, List<Stmt>> getBranches() {
     return branches;
   }
 
@@ -340,11 +340,9 @@ public class Body implements Copyable {
   }
 
   /** returns a List of Branch targets of Branching Stmts */
-  // [ms] hint: guavas iterator uses insertion order -> don't implement otherwise elsewhere
-  // otherwise JSwitchStmt will have a problem.
   @Nonnull
   public List<Stmt> getBranchTargets(@Nonnull Stmt fromStmt) {
-    return new ArrayList<>(cfg.successors(fromStmt));
+    return branches.get(fromStmt);
   }
 
   @Nonnull
@@ -443,17 +441,16 @@ public class Body implements Copyable {
 
     @Nonnull private final MutableGraph<Stmt> mutableGraph;
 
-    private Map<Stmt, List<Stmt>> branches;
+    private Map<Stmt, List<Stmt>> branches = new HashMap<>();
 
     @Nullable private Stmt lastAddedStmt = null;
-
     @Nullable private Stmt firstStmt = null;
 
     BodyBuilder() {
       mutableGraph = GraphBuilder.directed().nodeOrder(ElementOrder.insertion()).build();
     }
 
-    BodyBuilder(Body body) {
+    BodyBuilder(@Nonnull Body body) {
       setLocals(body.getLocals());
       setTraps(body.getTraps());
       setPosition(body.getPosition());
@@ -461,32 +458,37 @@ public class Body implements Copyable {
       mutableGraph = GraphBuilder.from(body.getStmtGraph()).build();
     }
 
+    @Nonnull
     public BodyBuilder setFirstStmt(@Nullable Stmt firstStmt) {
       this.firstStmt = firstStmt;
-      ;
       return this;
     }
 
-    public BodyBuilder setLocals(Set<Local> locals) {
+    @Nonnull
+    public BodyBuilder setLocals(@Nonnull Set<Local> locals) {
       this.locals = locals;
       return this;
     }
 
-    public BodyBuilder addLocal(String name, Type type) {
+    @Nonnull
+    public BodyBuilder addLocal(@Nonnull String name, Type type) {
       this.locals.add(localGen.generateLocal(type));
       return this;
     }
 
-    public BodyBuilder setTraps(List<Trap> traps) {
+    @Nonnull
+    public BodyBuilder setTraps(@Nonnull List<Trap> traps) {
       this.traps = traps;
       return this;
     }
 
-    public BodyBuilder addStmt(Stmt stmt) {
+    @Nonnull
+    public BodyBuilder addStmt(@Nonnull Stmt stmt) {
       return addStmt(stmt, false);
     }
 
-    public BodyBuilder addStmt(Stmt stmt, boolean linkLastStmt) {
+    @Nonnull
+    public BodyBuilder addStmt(@Nonnull Stmt stmt, boolean linkLastStmt) {
       mutableGraph.addNode(stmt);
       if (lastAddedStmt != null) {
         if (linkLastStmt) {
@@ -500,48 +502,49 @@ public class Body implements Copyable {
       return this;
     }
 
-    public BodyBuilder mergeStmt(Stmt oldStmt, Stmt newStmt) {
+    @Nonnull
+    public BodyBuilder mergeStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
       final Set<Stmt> predecessors = mutableGraph.predecessors(oldStmt);
       final Set<Stmt> successors = mutableGraph.successors(oldStmt);
       mutableGraph.addNode(newStmt);
       predecessors.forEach(predecessor -> mutableGraph.putEdge(predecessor, newStmt));
       successors.forEach(successor -> mutableGraph.putEdge(newStmt, successor));
-      mutableGraph.removeNode(oldStmt);
-      branches.remove(oldStmt);
+      removeStmt(oldStmt);
       return this;
     }
 
-    public BodyBuilder removeStmt(Stmt stmt) {
+    @Nonnull
+    public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
       mutableGraph.removeNode(stmt);
       branches.remove(stmt);
+      branches.values().forEach(fromStmt -> fromStmt.remove(stmt));
       return this;
     }
 
-    public BodyBuilder addFlow(Stmt fromStmt, Stmt toStmt) {
+    @Nonnull
+    public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
       if (fromStmt instanceof BranchingStmt) {
-        if (branches == null) branches = new HashMap<>();
-        if (!branches.containsKey(fromStmt))
-          branches.put(fromStmt, Collections.singletonList(toStmt));
-        else {
-          List<Stmt> edges = branches.get(fromStmt);
-          edges.add(toStmt);
-        }
+        List<Stmt> edges = branches.computeIfAbsent(fromStmt, stmt -> new ArrayList());
+        edges.add(toStmt);
       }
       mutableGraph.putEdge(fromStmt, toStmt);
       return this;
     }
 
-    public BodyBuilder removeFlow(Stmt fromStmt, Stmt toStmt) {
+    @Nonnull
+    public BodyBuilder removeFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
       mutableGraph.removeEdge(fromStmt, toStmt);
-      branches.get(fromStmt).removeIf(s -> s == toStmt);
+      branches.get(fromStmt).remove(toStmt);
       return this;
     }
 
-    public BodyBuilder setPosition(Position position) {
+    @Nonnull
+    public BodyBuilder setPosition(@Nonnull Position position) {
       this.position = position;
       return this;
     }
 
+    @Nonnull
     public Body build() {
       return new Body(
           locals, traps, ImmutableGraph.copyOf(mutableGraph), branches, firstStmt, position);

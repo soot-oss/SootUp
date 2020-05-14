@@ -1756,7 +1756,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   // FIXME: [AD] is it reasonable to get rid of it?
   private final class Edge {
     /* edge endpoint */
-    final AbstractInsnNode insn;
+    @Nonnull final AbstractInsnNode insn;
     /* previous stacks at edge */
     final LinkedList<Operand[]> prevStacks;
     /* current stack at edge */
@@ -1768,7 +1768,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       this.stack = stack;
     }
 
-    Edge(AbstractInsnNode insn) {
+    Edge(@Nonnull AbstractInsnNode insn) {
       this(insn, new ArrayList<>(AsmMethodSource.this.stack));
     }
   }
