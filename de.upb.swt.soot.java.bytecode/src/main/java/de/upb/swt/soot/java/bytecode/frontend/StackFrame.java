@@ -168,7 +168,7 @@ final class StackFrame {
           newOp.updateBoxes();
         }
         if (box != null) {
-          // FIXME: [ms] box removal leftover:
+          // FIXME: [ms] box removal leftover: replace Local
           // ValueBox.$Accessor.setValue(box, stack);
           boxes[i] = stack;
         }

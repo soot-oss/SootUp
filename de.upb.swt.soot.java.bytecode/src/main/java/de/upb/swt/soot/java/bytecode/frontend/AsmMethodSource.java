@@ -1778,11 +1778,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   private void addEdges(
       @Nonnull AbstractInsnNode cur,
-      @Nonnull AbstractInsnNode tgt1,
+      @Nonnull AbstractInsnNode tgt,
       @Nullable List<LabelNode> tgts) {
     int lastIdx = tgts == null ? -1 : tgts.size() - 1;
     Operand[] stackss = (new ArrayList<>(stack)).toArray(new Operand[stack.size()]);
-    AbstractInsnNode tgt = tgt1;
     int i = 0;
     tgt_loop:
     do {

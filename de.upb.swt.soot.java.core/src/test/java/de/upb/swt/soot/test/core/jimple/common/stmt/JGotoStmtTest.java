@@ -35,6 +35,7 @@ import org.junit.experimental.categories.Category;
 
 /** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
+// TODO: [ms] incorporate Printer i.e. Body+Targets
 public class JGotoStmtTest {
 
   @Test

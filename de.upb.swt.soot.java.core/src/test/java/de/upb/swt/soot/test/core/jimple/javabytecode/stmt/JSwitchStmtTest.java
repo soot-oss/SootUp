@@ -21,6 +21,7 @@ public class JSwitchStmtTest {
 
   @Test
   public void test() {
+    // TODO: [ms] incorporate Printer i.e. Body+Targets
     testLookupSwitchStmt();
     testTableSwitchStmt();
   }

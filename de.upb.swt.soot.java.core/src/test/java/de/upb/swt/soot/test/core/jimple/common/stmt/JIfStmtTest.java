@@ -37,7 +37,7 @@ import org.junit.experimental.categories.Category;
 /** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
 public class JIfStmtTest {
-
+  // TODO: [ms] incorporate Printer i.e. Body+Targets
   @Test
   public void test() {
     StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
