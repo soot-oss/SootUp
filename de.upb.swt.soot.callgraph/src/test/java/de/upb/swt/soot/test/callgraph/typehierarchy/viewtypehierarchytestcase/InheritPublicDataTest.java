@@ -1,4 +1,4 @@
-package de.upb.swt.soot.test.callgraph.typehierarchy.testcase;
+package de.upb.swt.soot.test.callgraph.typehierarchy.viewtypehierarchytestcase;
 
 import static org.junit.Assert.*;
 
@@ -20,7 +20,7 @@ import org.junit.experimental.categories.Category;
 
 /** @author: Hasitha Rajapakse * */
 @Category(Java8Test.class)
-public class InheritDataWithPublicMethodTest extends JavaTypeHierarchyBase {
+public class InheritPublicDataTest extends JavaTypeHierarchyBase {
   @Test
   public void method() {
     ViewTypeHierarchy typeHierarchy =
@@ -50,10 +50,7 @@ public class InheritDataWithPublicMethodTest extends JavaTypeHierarchyBase {
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
     List<String> expectedStmts =
-        Stream.of(
-                "r0 := @this: InheritDataWithPublicMethod",
-                "$i0 = specialinvoke r0.<SuperClass: int getnum()>()",
-                "return")
+        Stream.of("r0 := @this: InheritPublicData", "$i0 = r0.<SuperClass: int num>", "return")
             .collect(Collectors.toList());
 
     assertEquals(expectedStmts, actualStmts);

@@ -1,4 +1,4 @@
-package de.upb.swt.soot.test.callgraph.typehierarchy.testcase;
+package de.upb.swt.soot.test.callgraph.typehierarchy.viewtypehierarchytestcase;
 
 import static org.junit.Assert.*;
 
@@ -9,14 +9,18 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.util.Utils;
 import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyBase;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author: Hasitha Rajapakse * */
 @Category(Java8Test.class)
-public class MethodOverridingTest extends JavaTypeHierarchyBase {
+public class InheritDataWithProtectedMethodTest extends JavaTypeHierarchyBase {
   @Test
   public void method() {
     ViewTypeHierarchy typeHierarchy =
@@ -44,17 +48,14 @@ public class MethodOverridingTest extends JavaTypeHierarchyBase {
     Body body = sootMethod.getBody();
     assertNotNull(body);
 
-    SootClass superClass =
-        customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
-    SootMethod superMethod =
-        superClass
-            .getMethod(
-                identifierFactory.getMethodSignature(
-                    "method", superClass.getType(), "void", Collections.emptyList()))
-            .get();
-    Body superBody = superMethod.getBody();
-    assertNotNull(superBody);
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
+    List<String> expectedStmts =
+        Stream.of(
+                "r0 := @this: InheritDataWithProtectedMethod",
+                "$i0 = specialinvoke r0.<SuperClass: int getnum()>()",
+                "return")
+            .collect(Collectors.toList());
 
-    assertNotEquals(body, superBody);
+    assertEquals(expectedStmts, actualStmts);
   }
 }
