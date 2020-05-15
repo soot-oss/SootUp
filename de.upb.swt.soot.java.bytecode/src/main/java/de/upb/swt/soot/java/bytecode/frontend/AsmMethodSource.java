@@ -1279,22 +1279,20 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     Operand key = popImmediate();
     Stmt dflt = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
 
-    // TODO: do targetBox linking of default case
-    labelsTheStmtBranchesTo.put(insn.dflt, dflt);
-    for (LabelNode ln : insn.labels) {
-      // TODO: do targetBox linking
-      Stmt box = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-      labelsTheStmtBranchesTo.put(ln, box);
-    }
-
     List<IntConstant> keys = new ArrayList<>(insn.keys.size());
     for (Integer i : insn.keys) {
       keys.add(IntConstant.getInstance(i));
     }
-
     JSwitchStmt lss =
         Jimple.newLookupSwitchStmt(
             (Immediate) key.stackOrValue(), keys, StmtPositionInfo.createNoStmtPositionInfo());
+
+    // TODO: [ms] check to uphold insertion order!
+    labelsTheStmtBranchesTo.put(insn.dflt, lss);
+    for (LabelNode ln : insn.labels) {
+      labelsTheStmtBranchesTo.put(ln, lss);
+    }
+
     key.addValue(lss.getKey());
     frame.setIn(key);
     frame.setValues(lss.getKey());
@@ -1582,20 +1580,19 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       return;
     }
     Operand key = popImmediate();
-    Stmt dflt = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-    // TODO: [ms] do targetbox linking
-    labelsTheStmtBranchesTo.put(insn.dflt, dflt);
-    for (LabelNode ln : insn.labels) {
-      Stmt box = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-      // TODO: [ms] do targetbox linking
-      labelsTheStmtBranchesTo.put(ln, box);
-    }
     JSwitchStmt tss =
         Jimple.newTableSwitchStmt(
             (Immediate) key.stackOrValue(),
             insn.min,
             insn.max,
             StmtPositionInfo.createNoStmtPositionInfo());
+
+    // TODO: [ms] check to uphold insertion order!
+    labelsTheStmtBranchesTo.put(insn.dflt, tss);
+    for (LabelNode ln : insn.labels) {
+      labelsTheStmtBranchesTo.put(ln, tss);
+    }
+
     key.addValue(tss.getKey());
     frame.setIn(key);
     frame.setValues(tss.getKey());
@@ -1780,7 +1777,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       @Nonnull AbstractInsnNode cur,
       @Nonnull AbstractInsnNode tgt,
       @Nullable List<LabelNode> tgts) {
-    int lastIdx = tgts == null ? -1 : tgts.size() - 1;
+    int lastIdx = tgts == null ? 0 : tgts.size();
     Operand[] stackss = (new ArrayList<>(stack)).toArray(new Operand[stack.size()]);
     int i = 0;
     tgt_loop:
@@ -1813,7 +1810,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       edge.stack = new ArrayList<>(stack);
       edge.prevStacks.add(stackss);
       conversionWorklist.add(edge);
-    } while (i <= lastIdx && (tgt = tgts.get(i++)) != null);
+    } while (i < lastIdx && (tgt = tgts.get(i++)) != null);
   }
 
   @SuppressWarnings("StatementWithEmptyBody")
@@ -2003,6 +2000,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       } else {
         cls = JavaIdentifierFactory.getInstance().getClassType(AsmUtil.toQualifiedName(tc.type));
       }
+      // FIXME: [ms] remove boxes from traps
       Trap trap = Jimple.newTrap(cls, start, end, handler);
       traps.add(trap);
       labelsTheStmtBranchesTo.put(tc.start, start);
