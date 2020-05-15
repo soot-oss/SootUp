@@ -86,7 +86,7 @@ public class JIfStmt extends BranchingStmt implements Copyable {
   @Override
   @Nonnull
   public List<Stmt> getTargetStmts(Body body) {
-    return body.getBranchTargets(this);
+    return body.getBranchTargetsOf(this);
   }
 
   @Override

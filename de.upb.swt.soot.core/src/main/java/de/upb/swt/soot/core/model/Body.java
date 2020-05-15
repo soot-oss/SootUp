@@ -341,7 +341,7 @@ public class Body implements Copyable {
 
   /** returns a List of Branch targets of Branching Stmts */
   @Nonnull
-  public List<Stmt> getBranchTargets(@Nonnull Stmt fromStmt) {
+  public List<Stmt> getBranchTargetsOf(@Nonnull Stmt fromStmt) {
     return branches.get(fromStmt);
   }
 

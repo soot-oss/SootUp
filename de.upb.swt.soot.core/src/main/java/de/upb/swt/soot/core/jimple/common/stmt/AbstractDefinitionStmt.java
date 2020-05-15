@@ -92,6 +92,7 @@ public abstract class AbstractDefinitionStmt extends Stmt {
     @Deprecated
     public static void setLeftOp(@Nonnull AbstractDefinitionStmt box, @Nonnull Value value) {
       box.setLeftOp(value);
+      System.out.println("immutability broken!");
     }
 
     private $Accessor() {}

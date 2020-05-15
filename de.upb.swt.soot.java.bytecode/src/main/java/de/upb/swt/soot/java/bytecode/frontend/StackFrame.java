@@ -139,7 +139,6 @@ final class StackFrame {
             // FIXME: [ms] box removal leftover:
             // ValueBox.$Accessor.setValue(lvb, stack);
             AbstractDefinitionStmt.$Accessor.setLeftOp(as, stack);
-            System.out.println("$Accessor.setLeftOp(..) called");
 
             prevOp.stack = stack;
           }
@@ -170,6 +169,7 @@ final class StackFrame {
         if (box != null) {
           // FIXME: [ms] box removal leftover: replace Local
           // ValueBox.$Accessor.setValue(box, stack);
+
           boxes[i] = stack;
         }
         inStackLocals[i] = stack;

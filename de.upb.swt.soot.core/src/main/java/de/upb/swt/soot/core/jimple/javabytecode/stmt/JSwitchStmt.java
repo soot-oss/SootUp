@@ -71,7 +71,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   }
 
   public Stmt getDefaTultTarget(Body body) {
-    return body.getBranchTargets(this).get(0);
+    return body.getBranchTargetsOf(this).get(0);
   }
 
   public Immediate getKey() {
@@ -118,7 +118,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   @Override
   @Nonnull
   public List<Stmt> getTargetStmts(Body body) {
-    return body.getBranchTargets(this);
+    return body.getBranchTargetsOf(this);
   }
 
   @Override

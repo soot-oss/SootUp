@@ -43,7 +43,7 @@ public abstract class StmtPrinter {
   }
 
   public List<Stmt> branchTargets(Stmt fromStmt) {
-    return body.getBranchTargets(fromStmt);
+    return body.getBranchTargetsOf(fromStmt);
   }
 
   public abstract void startStmt(Stmt u);

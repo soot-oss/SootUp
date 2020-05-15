@@ -147,7 +147,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
       }
     } else if (toFixStmt instanceof JSwitchStmt) {
       JSwitchStmt toFixSwitchStmt = (JSwitchStmt) toFixStmt;
-      List<Stmt> targets = originalBody.getBranchTargets(toFixSwitchStmt);
+      List<Stmt> targets = originalBody.getBranchTargetsOf(toFixSwitchStmt);
       List<Stmt> copiedTargets = null;
       for (int k = 0; k < targets.size(); k++) {
         Stmt switchTarget = targets.get(k);
