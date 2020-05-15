@@ -22,7 +22,6 @@
 package de.upb.swt.soot.core.util.printer;
 
 import com.google.common.graph.Graph;
-import com.google.common.graph.Traverser;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -297,8 +296,9 @@ public class Printer {
     // Collection<Stmt> units = body.getStmts();
     Stmt previousStmt;
 
-    final Iterable<Stmt> stmtIterator =
-        Traverser.forGraph(stmtGraph).depthFirstPreOrder(body.getFirstStmt());
+    // TODO: [ms] fix traverse strategy:
+    // Traverser.forGraph(stmtGraph).depthFirstPreOrder(body.getFirstStmt());
+    final Iterable<Stmt> stmtIterator = stmtGraph.nodes();
     for (Stmt currentStmt : stmtIterator) {
       previousStmt = currentStmt;
 
