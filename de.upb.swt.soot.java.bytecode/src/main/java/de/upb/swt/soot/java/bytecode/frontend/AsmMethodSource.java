@@ -2057,7 +2057,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           for (Stmt trapStmt : traps) {
             bodyBuilder.addFlow(trapStmt, caughtEx);
           }
-          trapHandler.replaceValues((LabelNode) insn, Collections.nCopies(traps.size(), caughtEx));
         }
       }
 
@@ -2071,8 +2070,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           for (Stmt box : boxes) {
             bodyBuilder.addFlow(box, targetStmt);
           }
-          //           labelsTheStmtBranchesTo.replaceValues(ln, Collections.nCopies(boxes.size(),
-          // targetStmt));
         }
       }
       insn = insn.getNext();
@@ -2087,8 +2084,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       for (Stmt trapStmt : traps) {
         bodyBuilder.addFlow(trapStmt, handler);
       }
-      // TODO [ms]: check insn replacement -> insn is always null!
-      trapHandler.replaceValues((LabelNode) insn, Collections.nCopies(traps.size(), handler));
 
       // We need to jump to the original implementation
       Stmt targetStmt = InsnToStmt.get(ln);
@@ -2110,9 +2105,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       for (Stmt box : boxes) {
         bodyBuilder.addFlow(box, end);
       }
-      // TODO [ms]: check insn replacement -> insn is always null!
-      labelsTheStmtBranchesTo.replaceValues(
-          (LabelNode) insn, Collections.nCopies(boxes.size(), end));
     }
   }
 
