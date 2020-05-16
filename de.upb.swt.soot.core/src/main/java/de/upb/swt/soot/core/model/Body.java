@@ -491,7 +491,7 @@ public class Body implements Copyable {
     public BodyBuilder addStmt(@Nonnull Stmt stmt, boolean linkLastStmt) {
       mutableGraph.addNode(stmt);
       if (lastAddedStmt != null) {
-        if (linkLastStmt) {
+        if (linkLastStmt && lastAddedStmt.fallsThrough()) {
           addFlow(lastAddedStmt, stmt);
         }
       } else {
