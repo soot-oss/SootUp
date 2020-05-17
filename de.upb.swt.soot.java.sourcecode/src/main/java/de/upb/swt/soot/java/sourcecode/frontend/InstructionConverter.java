@@ -1181,53 +1181,42 @@ public class InstructionConverter {
    *     JGotoStmt}, {@link JSwitchStmt}) having set up their target stmts.
    */
   public List<Stmt> setUpTargets(Map<Integer, Stmt> iIndex2Stmt, Body.BodyBuilder builder) {
-    List<Stmt> stmts = new ArrayList<>();
-    Stmt lastStmt = null;
-    for (Stmt stmt : iIndex2Stmt.values()){
-      builder.addStmt(stmt, true);
-    }
-    for (Stmt stmt : iIndex2Stmt.values()) {
-      if (iIndex2Stmt.containsKey(-1) && iIndex2Stmt.get(-1).equals(stmt)) {
-        lastStmt = stmt; // this is the return void stmt, add it at last.
-      } else {
-        Stmt newStmt = stmt;
-        if (stmt instanceof JIfStmt) {
-          JIfStmt oldStmt = (JIfStmt) stmt;
-          int iTarget = this.targetsOfIfStmts.get(stmt);
-          if (iIndex2Stmt.containsKey(iTarget)) {
-            Stmt target = iIndex2Stmt.get(iTarget);
-            builder.addFlow(oldStmt, target);
-          }
 
-        } else if (stmt instanceof JGotoStmt) {
-          JGotoStmt oldStmt = (JGotoStmt) stmt;
-          int iTarget = this.targetsOfGotoStmts.get(stmt);
+    List<Stmt> stmts = new ArrayList<>();
+
+    for (Stmt stmt : iIndex2Stmt.values()) {
+      builder.addStmt(stmt, true);
+      stmts.add(stmt);
+    }
+
+    for (Stmt stmt : iIndex2Stmt.values()) {
+      if (stmt instanceof JIfStmt) {
+        int iTarget = this.targetsOfIfStmts.get(stmt);
+        if (iIndex2Stmt.containsKey(iTarget)) {
+          Stmt target = iIndex2Stmt.get(iTarget);
+          builder.addFlow(stmt, target);
+        }
+      } else if (stmt instanceof JGotoStmt) {
+        int iTarget = this.targetsOfGotoStmts.get(stmt);
+        if (iIndex2Stmt.containsKey(iTarget)) {
+          Stmt target = iIndex2Stmt.get(iTarget);
+          builder.addFlow(stmt, target);
+        }
+      } else if (stmt instanceof JSwitchStmt) {
+        int iDefault = this.defaultOfLookUpSwitchStmts.get(stmt);
+        if (iIndex2Stmt.containsKey(iDefault)) {
+          Stmt defaultTarget = iIndex2Stmt.get(iDefault);
+          builder.addFlow(stmt, defaultTarget);
+        }
+        List<Integer> iTargets = this.targetsOfLookUpSwitchStmts.get(stmt);
+        for (Integer iTarget : iTargets) {
           if (iIndex2Stmt.containsKey(iTarget)) {
             Stmt target = iIndex2Stmt.get(iTarget);
-            builder.addFlow(oldStmt,target);
-          }
-        } else if (stmt instanceof JSwitchStmt) {
-          JSwitchStmt oldStmt = (JSwitchStmt) stmt;
-          int iDefault = this.defaultOfLookUpSwitchStmts.get(stmt);
-          Stmt defaultTarget = null;
-          if (iIndex2Stmt.containsKey(iDefault)) {
-            defaultTarget = iIndex2Stmt.get(iDefault);
-          }
-          List<Integer> iTargets = this.targetsOfLookUpSwitchStmts.get(stmt);
-          List<Stmt> targets = new ArrayList<>();
-          for (Integer iTarget : iTargets) {
-            if (iIndex2Stmt.containsKey(iTarget)) {
-              Stmt target = iIndex2Stmt.get(iTarget);
-              targets.add(target);
-            }
-            newStmt =
-                new JSwitchStmt(oldStmt.getKey(), oldStmt.getValues(), oldStmt.getPositionInfo());
+            builder.addFlow(stmt, target);
           }
         }
-        stmts.add(newStmt);
       }
     }
-    if (lastStmt != null) stmts.add(lastStmt);
     return stmts;
   }
 }
