@@ -293,8 +293,8 @@ public class Body implements Copyable {
   public Collection<Stmt> getTargetStmts() {
     List<Stmt> stmtList = new ArrayList<>();
     for (Stmt stmt : cfg.nodes()) {
-      if (cfg.predecessors(stmt).size() > 1) {
-        stmtList.add(stmt);
+      if (stmt instanceof BranchingStmt) {
+        stmtList.addAll(getBranchTargetsOf(stmt));
       }
     }
 

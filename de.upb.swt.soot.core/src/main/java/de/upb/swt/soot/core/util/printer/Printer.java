@@ -288,7 +288,7 @@ public class Printer {
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
   private void printStatementsInBody(Body body, LabeledStmtPrinter printer) {
-    printer.initializeMethod(body);
+    printer.initializeSootMethod(body);
 
     // TODO cleanup
     // AbstractStmtGraph unitGraph = new BriefStmtGraph(body);

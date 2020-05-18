@@ -22,7 +22,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
   public LabeledStmtPrinter(Body b) {
     super(b);
-    initializeMethod(b);
+    initializeSootMethod(b);
   }
 
   public Map<Stmt, String> getLabels() {
@@ -79,7 +79,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   }
 
   /** createLabelMaps */
-  public void initializeMethod(Body body) {
+  public void initializeSootMethod(Body body) {
 
     Collection<Stmt> stmts = body.getStmts();
 
