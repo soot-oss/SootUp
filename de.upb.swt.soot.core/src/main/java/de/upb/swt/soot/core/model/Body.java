@@ -290,11 +290,18 @@ public class Body implements Copyable {
    * @return A collection of all the Stmts
    */
   @Nonnull
-  public Collection<Stmt> getTargetStmts() {
+  public Collection<Stmt> getTargetStmtsOfBranches() {
     List<Stmt> stmtList = new ArrayList<>();
-    for (Stmt stmt : cfg.nodes()) {
+    for (Iterator<Stmt> iterator = cfg.nodes().iterator(); iterator.hasNext(); ) {
+      Stmt stmt = iterator.next();
+
       if (stmt instanceof BranchingStmt) {
-        stmtList.addAll(getBranchTargetsOf(stmt));
+        final List<Stmt> branchTargetsOf = getBranchTargetsOf(stmt);
+        // filter if "fallsThrough"-stmt from targets of branching stmts
+        for (int i = stmt.fallsThrough() ? 1 : 0; i < branchTargetsOf.size(); i++) {
+          Stmt target = branchTargetsOf.get(i);
+          stmtList.add(target);
+        }
       }
     }
 
@@ -346,7 +353,13 @@ public class Body implements Copyable {
 
   @Nonnull
   public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
-    return cfg.predecessors(targetStmt).size() > 1;
+    // FIXME: just because the stmt has just one ingoing flow it does not mean its not a branch
+    // target
+    return cfg.predecessors(targetStmt).size() > 1
+        || cfg.predecessors(targetStmt).stream()
+            .findAny()
+            .filter(prev -> prev instanceof BranchingStmt)
+            .isPresent();
   }
 
   public void validateIdentityStatements() {

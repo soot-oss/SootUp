@@ -310,7 +310,7 @@ public class Printer {
         // c) the previous stmt does not have stmt as a successor
         // d) if the current stmt has a label on it
 
-        final boolean currentStmtHasLabel = body.isStmtBranchTarget(currentStmt);
+        final boolean currentStmtHasLabel = printer.getLabels().get(currentStmt) != null;
         // TODO [ms]
         if (true /*currentStmt != units.iterator().next()*/) {
           if (stmtGraph.successors(previousStmt).size() != 1
