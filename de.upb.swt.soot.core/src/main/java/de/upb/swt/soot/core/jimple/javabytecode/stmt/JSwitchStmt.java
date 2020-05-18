@@ -102,8 +102,9 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     ((StmtVisitor) sw).caseSwitchStmt(this);
   }
 
+  /** Amount of labels +1 for default handler */
   public int getValueCount() {
-    return values.size();
+    return values.size() + 1;
   }
 
   public int getValue(int index) {

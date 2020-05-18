@@ -1277,7 +1277,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       return;
     }
     Operand key = popImmediate();
-    Stmt dflt = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
 
     List<IntConstant> keys = new ArrayList<>(insn.keys.size());
     for (Integer i : insn.keys) {
