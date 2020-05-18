@@ -1178,6 +1178,7 @@ public class InstructionConverter {
     }
 
     // add flows for branching stmts
+    // TODO: [ms] performance+: improve loop: iterate only over branchingstmts/merge datastructures
     for (Stmt stmt : iIndex2Stmt.values()) {
       if (stmt instanceof JIfStmt) {
         int iTarget = targetsOfIfStmts.get(stmt);

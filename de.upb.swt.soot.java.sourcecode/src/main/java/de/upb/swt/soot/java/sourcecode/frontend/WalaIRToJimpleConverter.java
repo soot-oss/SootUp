@@ -390,7 +390,6 @@ public class WalaIRToJimpleConverter {
     }
 
     final Body.BodyBuilder builder = Body.builder();
-
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
       LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
@@ -470,7 +469,8 @@ public class WalaIRToJimpleConverter {
           } else {
             ret = lastStmt;
           }
-          iIndex2Stmt.put(iIndex2Stmt.size(), ret);
+          // needed because referencing a branch to the last stmt refers to: -1
+          iIndex2Stmt.put(-1, ret);
         }
 
         instConverter.setUpStmtGraph(iIndex2Stmt, builder);
@@ -482,7 +482,7 @@ public class WalaIRToJimpleConverter {
       }
     }
 
-    return null;
+    throw new IllegalStateException("can not create Body - no CFG from WALA present.");
   }
 
   /**
