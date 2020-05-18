@@ -152,40 +152,39 @@ public class InstructionConverter {
     } else if ((inst instanceof SSAInstanceofInstruction)) {
       stmts.add(convertInstanceofInstruction(debugInfo, (SSAInstanceofInstruction) inst));
     } else if (inst instanceof SSABinaryOpInstruction) {
-      stmts.addAll(this.convertBinaryOpInstruction(debugInfo, (SSABinaryOpInstruction) inst));
+      stmts.addAll(convertBinaryOpInstruction(debugInfo, (SSABinaryOpInstruction) inst));
     } else if (inst instanceof SSAUnaryOpInstruction) {
-      stmts.add(this.convertUnaryOpInstruction(debugInfo, (SSAUnaryOpInstruction) inst));
+      stmts.add(convertUnaryOpInstruction(debugInfo, (SSAUnaryOpInstruction) inst));
     } else if (inst instanceof SSAThrowInstruction) {
-      stmts.add(this.convertThrowInstruction(debugInfo, (SSAThrowInstruction) inst));
+      stmts.add(convertThrowInstruction(debugInfo, (SSAThrowInstruction) inst));
     } else if (inst instanceof SSASwitchInstruction) {
-      stmts.add(this.convertSwitchInstruction(debugInfo, (SSASwitchInstruction) inst));
+      stmts.add(convertSwitchInstruction(debugInfo, (SSASwitchInstruction) inst));
     } else if (inst instanceof SSALoadMetadataInstruction) {
-      stmts.add(this.convertLoadMetadataInstruction(debugInfo, (SSALoadMetadataInstruction) inst));
+      stmts.add(convertLoadMetadataInstruction(debugInfo, (SSALoadMetadataInstruction) inst));
     } else if (inst instanceof EnclosingObjectReference) {
-      stmts.add(this.convertEnclosingObjectReference(debugInfo, (EnclosingObjectReference) inst));
+      stmts.add(convertEnclosingObjectReference(debugInfo, (EnclosingObjectReference) inst));
     } else if (inst instanceof AstLexicalRead) {
-      stmts = (this.convertAstLexicalRead(debugInfo, (AstLexicalRead) inst));
+      stmts = (convertAstLexicalRead(debugInfo, (AstLexicalRead) inst));
     } else if (inst instanceof AstLexicalWrite) {
-      stmts = (this.convertAstLexicalWrite(debugInfo, (AstLexicalWrite) inst));
+      stmts = (convertAstLexicalWrite(debugInfo, (AstLexicalWrite) inst));
     } else if (inst instanceof AstAssertInstruction) {
-      stmts = this.convertAssertInstruction(debugInfo, (AstAssertInstruction) inst);
+      stmts = convertAssertInstruction(debugInfo, (AstAssertInstruction) inst);
     } else if (inst instanceof SSACheckCastInstruction) {
-      stmts.add(this.convertCheckCastInstruction(debugInfo, (SSACheckCastInstruction) inst));
+      stmts.add(convertCheckCastInstruction(debugInfo, (SSACheckCastInstruction) inst));
     } else if (inst instanceof SSAMonitorInstruction) {
       stmts.add(
-          this.convertMonitorInstruction(
+          convertMonitorInstruction(
               debugInfo, (SSAMonitorInstruction) inst)); // for synchronized statement
     } else if (inst instanceof SSAGetCaughtExceptionInstruction) {
       stmts.add(
-          this.convertGetCaughtExceptionInstruction(
-              debugInfo, (SSAGetCaughtExceptionInstruction) inst));
+          convertGetCaughtExceptionInstruction(debugInfo, (SSAGetCaughtExceptionInstruction) inst));
     } else if (inst instanceof SSAArrayLengthInstruction) {
-      stmts.add(this.convertArrayLengthInstruction(debugInfo, (SSAArrayLengthInstruction) inst));
+      stmts.add(convertArrayLengthInstruction(debugInfo, (SSAArrayLengthInstruction) inst));
     } else if (inst instanceof SSAArrayReferenceInstruction) {
       if (inst instanceof SSAArrayLoadInstruction) {
-        stmts.add(this.convertArrayLoadInstruction(debugInfo, (SSAArrayLoadInstruction) inst));
+        stmts.add(convertArrayLoadInstruction(debugInfo, (SSAArrayLoadInstruction) inst));
       } else if (inst instanceof SSAArrayStoreInstruction) {
-        stmts.add(this.convertArrayStoreInstruction(debugInfo, (SSAArrayStoreInstruction) inst));
+        stmts.add(convertArrayStoreInstruction(debugInfo, (SSAArrayStoreInstruction) inst));
       } else {
         throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
       }
@@ -552,8 +551,8 @@ public class InstructionConverter {
             lookupValues,
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
-    this.targetsOfLookUpSwitchStmts.put(stmt, targetsList);
-    this.defaultOfLookUpSwitchStmts.put(stmt, defaultCase);
+    targetsOfLookUpSwitchStmts.put(stmt, targetsList);
+    defaultOfLookUpSwitchStmts.put(stmt, defaultCase);
     return stmt;
   }
 
@@ -859,7 +858,7 @@ public class InstructionConverter {
 
     JIfStmt ifStmt = Jimple.newIfStmt(condition, posInfo);
     // target equals -1 refers to the end of the method
-    this.targetsOfIfStmts.put(ifStmt, condInst.getTarget());
+    targetsOfIfStmts.put(ifStmt, condInst.getTarget());
     stmts.add(ifStmt);
     return stmts;
   }
@@ -899,7 +898,7 @@ public class InstructionConverter {
       if (symbolTable.isConstant(result)) {
         ret = getConstant(result);
       } else {
-        ret = this.getLocal(UnknownType.getInstance(), result);
+        ret = getLocal(UnknownType.getInstance(), result);
       }
 
       Position[] operandPos = new Position[1];
@@ -925,7 +924,7 @@ public class InstructionConverter {
 
     JavaClassType sbType =
         (JavaClassType) identifierFactory.getClassType("java.lang.StringBuilder");
-    Local strBuilderLocal = this.localGenerator.generateLocal(sbType);
+    Local strBuilderLocal = localGenerator.generateLocal(sbType);
 
     Stmt newStmt =
         Jimple.newAssignStmt(
@@ -957,7 +956,7 @@ public class InstructionConverter {
             sbType.getFullyQualifiedName(),
             sbType.toString(),
             Collections.singletonList(type.toString()));
-    Local strBuilderLocal2 = this.localGenerator.generateLocal(sbType);
+    Local strBuilderLocal2 = localGenerator.generateLocal(sbType);
     CAstSourcePositionMap.Position[] pos2 = new CAstSourcePositionMap.Position[2];
     pos2[0] = null;
     pos2[1] = p2;
@@ -1185,24 +1184,24 @@ public class InstructionConverter {
     // add flows for branching stmts
     for (Stmt stmt : iIndex2Stmt.values()) {
       if (stmt instanceof JIfStmt) {
-        int iTarget = this.targetsOfIfStmts.get(stmt);
+        int iTarget = targetsOfIfStmts.get(stmt);
         if (iIndex2Stmt.containsKey(iTarget)) {
           Stmt target = iIndex2Stmt.get(iTarget);
           builder.addFlow(stmt, target);
         }
       } else if (stmt instanceof JGotoStmt) {
-        int iTarget = this.targetsOfGotoStmts.get(stmt);
+        int iTarget = targetsOfGotoStmts.get(stmt);
         if (iIndex2Stmt.containsKey(iTarget)) {
           Stmt target = iIndex2Stmt.get(iTarget);
           builder.addFlow(stmt, target);
         }
       } else if (stmt instanceof JSwitchStmt) {
-        int iDefault = this.defaultOfLookUpSwitchStmts.get(stmt);
+        int iDefault = defaultOfLookUpSwitchStmts.get(stmt);
         if (iIndex2Stmt.containsKey(iDefault)) {
           Stmt defaultTarget = iIndex2Stmt.get(iDefault);
           builder.addFlow(stmt, defaultTarget);
         }
-        List<Integer> iTargets = this.targetsOfLookUpSwitchStmts.get(stmt);
+        List<Integer> iTargets = targetsOfLookUpSwitchStmts.get(stmt);
         for (Integer iTarget : iTargets) {
           if (iIndex2Stmt.containsKey(iTarget)) {
             Stmt target = iIndex2Stmt.get(iTarget);
