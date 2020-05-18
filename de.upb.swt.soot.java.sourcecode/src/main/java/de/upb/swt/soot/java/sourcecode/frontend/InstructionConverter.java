@@ -854,7 +854,6 @@ public class InstructionConverter {
     } else {
       throw new RuntimeException("Unsupported conditional operator: " + op);
     }
-    Stmt target = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
 
     JIfStmt ifStmt = Jimple.newIfStmt(condition, posInfo);
     // target equals -1 refers to the end of the method
@@ -1070,7 +1069,6 @@ public class InstructionConverter {
   }
 
   private Stmt convertGoToInstruction(DebuggingInformation debugInfo, SSAGotoInstruction gotoInst) {
-    Stmt target = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     JGotoStmt gotoStmt =
         Jimple.newGotoStmt(
             WalaIRToJimpleConverter.convertPositionInfo(
@@ -1174,7 +1172,7 @@ public class InstructionConverter {
    * @return This methods returns a list of stmts with all branch stmts ({@link JIfStmt}, {@link
    *     JGotoStmt}, {@link JSwitchStmt}) having set up their target stmts.
    */
-  public void setUpStmtGraph(LinkedHashMap<Integer, Stmt> iIndex2Stmt, Body.BodyBuilder builder) {
+  void setUpStmtGraph(LinkedHashMap<Integer, Stmt> iIndex2Stmt, Body.BodyBuilder builder) {
 
     // add stmt into stmt graph
     for (Stmt stmt : iIndex2Stmt.values()) {
