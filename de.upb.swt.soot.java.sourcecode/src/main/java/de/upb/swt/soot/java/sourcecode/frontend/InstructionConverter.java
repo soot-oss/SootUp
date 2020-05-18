@@ -68,6 +68,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
+import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.signatures.FieldSignature;
@@ -1175,55 +1176,47 @@ public class InstructionConverter {
 
   /**
    * @param iIndex2Stmt
+   * @param builder
    * @return This methods returns a list of stmts with all branch stmts ({@link JIfStmt}, {@link
    *     JGotoStmt}, {@link JSwitchStmt}) having set up their target stmts.
    */
-  public List<Stmt> setUpTargets(Map<Integer, Stmt> iIndex2Stmt) {
+  public List<Stmt> setUpTargets(Map<Integer, Stmt> iIndex2Stmt, Body.BodyBuilder builder) {
+
     List<Stmt> stmts = new ArrayList<>();
-    Stmt lastStmt = null;
+
     for (Stmt stmt : iIndex2Stmt.values()) {
-      if (iIndex2Stmt.containsKey(-1) && iIndex2Stmt.get(-1).equals(stmt)) {
-        lastStmt = stmt; // this is the return void stmt, add it at last.
-      } else {
-        Stmt newStmt = stmt;
-        if (stmt instanceof JIfStmt) {
-          JIfStmt oldStmt = (JIfStmt) stmt;
-          int iTarget = this.targetsOfIfStmts.get(stmt);
+      builder.addStmt(stmt, true);
+      stmts.add(stmt);
+    }
+
+    for (Stmt stmt : iIndex2Stmt.values()) {
+      if (stmt instanceof JIfStmt) {
+        int iTarget = this.targetsOfIfStmts.get(stmt);
+        if (iIndex2Stmt.containsKey(iTarget)) {
+          Stmt target = iIndex2Stmt.get(iTarget);
+          builder.addFlow(stmt, target);
+        }
+      } else if (stmt instanceof JGotoStmt) {
+        int iTarget = this.targetsOfGotoStmts.get(stmt);
+        if (iIndex2Stmt.containsKey(iTarget)) {
+          Stmt target = iIndex2Stmt.get(iTarget);
+          builder.addFlow(stmt, target);
+        }
+      } else if (stmt instanceof JSwitchStmt) {
+        int iDefault = this.defaultOfLookUpSwitchStmts.get(stmt);
+        if (iIndex2Stmt.containsKey(iDefault)) {
+          Stmt defaultTarget = iIndex2Stmt.get(iDefault);
+          builder.addFlow(stmt, defaultTarget);
+        }
+        List<Integer> iTargets = this.targetsOfLookUpSwitchStmts.get(stmt);
+        for (Integer iTarget : iTargets) {
           if (iIndex2Stmt.containsKey(iTarget)) {
             Stmt target = iIndex2Stmt.get(iTarget);
-            newStmt =
-                new JIfStmt(
-                    (AbstractConditionExpr) oldStmt.getCondition(), oldStmt.getPositionInfo());
-          }
-        } else if (stmt instanceof JGotoStmt) {
-          JGotoStmt oldStmt = (JGotoStmt) stmt;
-          int iTarget = this.targetsOfGotoStmts.get(stmt);
-          if (iIndex2Stmt.containsKey(iTarget)) {
-            Stmt target = iIndex2Stmt.get(iTarget);
-            newStmt = new JGotoStmt(oldStmt.getPositionInfo());
-          }
-        } else if (stmt instanceof JSwitchStmt) {
-          JSwitchStmt oldStmt = (JSwitchStmt) stmt;
-          int iDefault = this.defaultOfLookUpSwitchStmts.get(stmt);
-          Stmt defaultTarget = null;
-          if (iIndex2Stmt.containsKey(iDefault)) {
-            defaultTarget = iIndex2Stmt.get(iDefault);
-          }
-          List<Integer> iTargets = this.targetsOfLookUpSwitchStmts.get(stmt);
-          List<Stmt> targets = new ArrayList<>();
-          for (Integer iTarget : iTargets) {
-            if (iIndex2Stmt.containsKey(iTarget)) {
-              Stmt target = iIndex2Stmt.get(iTarget);
-              targets.add(target);
-            }
-            newStmt =
-                new JSwitchStmt(oldStmt.getKey(), oldStmt.getValues(), oldStmt.getPositionInfo());
+            builder.addFlow(stmt, target);
           }
         }
-        stmts.add(newStmt);
       }
     }
-    if (lastStmt != null) stmts.add(lastStmt);
     return stmts;
   }
 }

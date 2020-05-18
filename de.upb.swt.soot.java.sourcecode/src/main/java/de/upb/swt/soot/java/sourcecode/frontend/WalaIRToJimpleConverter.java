@@ -474,12 +474,13 @@ public class WalaIRToJimpleConverter {
             ret = stmts.get(stmts.size() - 1);
           }
           iIndex2Stmt.put(-1, ret); // -1 is the end of the method
-        }
-        // FIXME: [ms] set target for all branching statements
-        List<Stmt> newStmts = instConverter.setUpTargets(iIndex2Stmt);
-        stmts.addAll(newStmts);
+        }*/
 
-        */
+        // FIXME: [ms] set target for all branching statements
+        instConverter.setUpTargets(iIndex2Stmt, builder);
+
+
+
 
         return builder
             .setLocals(localGenerator.getLocals())
