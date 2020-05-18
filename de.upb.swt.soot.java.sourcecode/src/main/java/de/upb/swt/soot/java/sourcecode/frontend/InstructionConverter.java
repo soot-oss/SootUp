@@ -83,12 +83,7 @@ import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class converts wala instruction to jimple statement.
@@ -124,10 +119,10 @@ public class InstructionConverter {
     this.walaMethod = walaMethod;
     this.symbolTable = walaMethod.symbolTable();
     this.localGenerator = localGenerator;
-    this.targetsOfIfStmts = new HashMap<>();
-    this.targetsOfGotoStmts = new HashMap<>();
-    this.targetsOfLookUpSwitchStmts = new HashMap<>();
-    this.defaultOfLookUpSwitchStmts = new HashMap<>();
+    this.targetsOfIfStmts = new LinkedHashMap<>();
+    this.targetsOfGotoStmts = new LinkedHashMap<>();
+    this.targetsOfLookUpSwitchStmts = new LinkedHashMap<>();
+    this.defaultOfLookUpSwitchStmts = new LinkedHashMap<>();
     this.locals = new HashMap<>();
     this.identifierFactory = converter.identifierFactory;
   }
@@ -1180,15 +1175,14 @@ public class InstructionConverter {
    * @return This methods returns a list of stmts with all branch stmts ({@link JIfStmt}, {@link
    *     JGotoStmt}, {@link JSwitchStmt}) having set up their target stmts.
    */
-  public List<Stmt> setUpTargets(Map<Integer, Stmt> iIndex2Stmt, Body.BodyBuilder builder) {
+  public void setUpStmtGraph(LinkedHashMap<Integer, Stmt> iIndex2Stmt, Body.BodyBuilder builder) {
 
-    List<Stmt> stmts = new ArrayList<>();
-
+    // add stmt into stmt graph
     for (Stmt stmt : iIndex2Stmt.values()) {
       builder.addStmt(stmt, true);
-      stmts.add(stmt);
     }
 
+    // add flows for branching stmts
     for (Stmt stmt : iIndex2Stmt.values()) {
       if (stmt instanceof JIfStmt) {
         int iTarget = this.targetsOfIfStmts.get(stmt);
@@ -1217,6 +1211,5 @@ public class InstructionConverter {
         }
       }
     }
-    return stmts;
   }
 }
