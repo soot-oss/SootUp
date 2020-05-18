@@ -98,8 +98,6 @@ public class InstructionConverter {
   private final SymbolTable symbolTable;
   private final LocalGenerator localGenerator;
 
-  private final Map<Stmt, Integer> targets = new HashMap<>();
-
   // TODO: [ms] merge into a single insertion sorted (linkedhash)map
   private final Map<JIfStmt, Integer> targetsOfIfStmts;
   private final Map<JGotoStmt, Integer> targetsOfGotoStmts;
@@ -1073,7 +1071,7 @@ public class InstructionConverter {
         Jimple.newGotoStmt(
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(gotoInst.iIndex()), null));
-    targets.put(gotoStmt, gotoInst.getTarget());
+    targetsOfGotoStmts.put(gotoStmt, gotoInst.getTarget());
     return gotoStmt;
   }
 
