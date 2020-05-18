@@ -25,9 +25,8 @@ import com.google.common.graph.*;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
-import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.common.stmt.*;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.EscapedWriter;
@@ -491,7 +490,7 @@ public class Body implements Copyable {
     public BodyBuilder addStmt(@Nonnull Stmt stmt, boolean linkLastStmt) {
       mutableGraph.addNode(stmt);
       if (lastAddedStmt != null) {
-        if (linkLastStmt) {
+        if (linkLastStmt && lastAddedStmt.fallsThrough()) {
           addFlow(lastAddedStmt, stmt);
         }
       } else {
@@ -546,6 +545,27 @@ public class Body implements Copyable {
 
     @Nonnull
     public Body build() {
+      // validate branch stmts
+      for (Map.Entry<Stmt, List<Stmt>> branchItem : branches.entrySet()) {
+        if (branchItem.getKey() instanceof JSwitchStmt
+            && branchItem.getValue().size()
+                != ((JSwitchStmt) branchItem.getKey()).getValueCount()) {
+          throw new IllegalArgumentException(
+              "size of outgoing flows ("
+                  + branchItem.getValue().size()
+                  + ") does not match the amount of switch statements case labels ("
+                  + ((JSwitchStmt) branchItem.getKey()).getValueCount()
+                  + ").");
+        }
+        if (branchItem.getKey() instanceof JIfStmt && branchItem.getValue().size() != 2) {
+          throw new IllegalArgumentException(
+              "size of outgoing flows must be two but the size is " + branchItem.getValue().size());
+        }
+        if (branchItem.getKey() instanceof JGotoStmt && branchItem.getValue().size() != 1) {
+          throw new IllegalArgumentException("Goto has more than one outgoing flow");
+        }
+      }
+
       return new Body(
           locals, traps, ImmutableGraph.copyOf(mutableGraph), branches, firstStmt, position);
     }
