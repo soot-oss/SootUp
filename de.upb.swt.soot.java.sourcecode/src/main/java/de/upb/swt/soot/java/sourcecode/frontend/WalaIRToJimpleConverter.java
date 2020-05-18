@@ -22,6 +22,7 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
@@ -44,7 +45,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import javax.annotation.Nonnull;
-import scala.annotation.meta.field;
 
 /**
  * Converter which converts WALA IR to jimple.
@@ -447,23 +447,20 @@ public class WalaIRToJimpleConverter {
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
         InstructionConverter instConverter =
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
-        Map<Integer, Stmt> iIndex2Stmt = new HashMap<Integer, Stmt>();
+        LinkedHashMap<Integer, Stmt> iIndex2Stmt = new LinkedHashMap<Integer, Stmt>();
+        Stmt lastStmt = null;
         for (SSAInstruction inst : insts) {
           List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst);
-          if (!retStmts.isEmpty()) {
-            for (Stmt stmt : retStmts) {
-              iIndex2Stmt.put(inst.iIndex(), stmt);
-            }
+          for (Stmt stmt : retStmts) {
+            iIndex2Stmt.put(inst.iIndex(), stmt);
+            lastStmt = stmt;
           }
         }
-
-        /*
-        FIXME: [ms] leftover refactoring to jgrapht
 
         // add return void stmt for methods with return type being void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
           Stmt ret;
-          if (stmts.isEmpty() || !(stmts.get(stmts.size() - 1) instanceof JReturnVoidStmt)) {
+          if (iIndex2Stmt.isEmpty() || !(lastStmt instanceof JReturnVoidStmt)) {
             // TODO? [ms] InstructionPosition of last line in the method seems strange to me ->
             // maybe use lastLine with
             // startcol: -1 because it does not exist in the source explicitly?
@@ -471,16 +468,12 @@ public class WalaIRToJimpleConverter {
                 Jimple.newReturnVoidStmt(
                     convertPositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
           } else {
-            ret = stmts.get(stmts.size() - 1);
+            ret = lastStmt;
           }
-          iIndex2Stmt.put(-1, ret); // -1 is the end of the method
-        }*/
+          iIndex2Stmt.put(iIndex2Stmt.size(), ret);
+        }
 
-        // FIXME: [ms] set target for all branching statements
-        instConverter.setUpTargets(iIndex2Stmt, builder);
-
-
-
+        instConverter.setUpStmtGraph(iIndex2Stmt, builder);
 
         return builder
             .setLocals(localGenerator.getLocals())

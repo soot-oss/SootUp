@@ -100,7 +100,7 @@ public class InstructionConverter {
 
   private final Map<Stmt, Integer> targets = new HashMap<>();
 
-  // FIXME: [ms] remove
+  // TODO: [ms] merge into a single insertion sorted (linkedhash)map
   private final Map<JIfStmt, Integer> targetsOfIfStmts;
   private final Map<JGotoStmt, Integer> targetsOfGotoStmts;
   private final Map<JSwitchStmt, List<Integer>> targetsOfLookUpSwitchStmts;
