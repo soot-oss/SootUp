@@ -15,12 +15,14 @@ import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import javax.annotation.Nonnull;
 
 /*-
@@ -75,7 +77,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       return new DirectoryBasedAnalysisInputLocation(path);
     } else if (PathUtils.isArchive(path)) {
       if (PathUtils.hasExtension(path, FileType.WAR)) {
-        return new WarFileBasedAnalyisInputLocation(path);
+        return new DirectoryBasedAnalysisInputLocation(Paths.get(extractWarFile(path.toString())));
       }
       return new ArchiveBasedAnalysisInputLocation(path);
     } else {
@@ -102,12 +104,45 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
   }
 
-  @Nonnull
   List<Path> walkDirectoryForJars(@Nonnull Path dirPath) throws IOException {
     return Files.walk(dirPath)
         .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
         .flatMap(p1 -> StreamUtils.optionalToStream(Optional.of(p1)))
         .collect(Collectors.toList());
+  }
+
+  static @Nonnull String extractWarFile(String warFilePath) {
+
+    String destDirectory = "tempWarExtracted";
+    try {
+      File file = new File(destDirectory);
+      if (!file.exists()) {
+        file.mkdir();
+      }
+      ZipInputStream zis = new ZipInputStream(new FileInputStream(warFilePath));
+      ZipEntry zipEntry = zis.getNextEntry();
+      while (zipEntry != null) {
+        String filepath = destDirectory + File.separator + zipEntry.getName();
+        if (!zipEntry.isDirectory()) {
+          BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filepath));
+          byte[] incomingValues = new byte[1027];
+          int readFlag = 0;
+          while ((readFlag = zis.read(incomingValues)) != -1) {
+            bos.write(incomingValues, 0, readFlag);
+          }
+          bos.close();
+        } else {
+          File newDir = new File(filepath);
+          newDir.mkdir();
+        }
+        zis.close();
+        zipEntry = zis.getNextEntry();
+      }
+
+    } catch (IOException e) {
+      e.getMessage();
+    }
+    return destDirectory;
   }
 
   @Nonnull
