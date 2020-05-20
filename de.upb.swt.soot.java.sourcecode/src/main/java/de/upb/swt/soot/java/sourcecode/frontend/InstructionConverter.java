@@ -344,6 +344,8 @@ public class InstructionConverter {
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     stmts.add(ifStmt);
+    //    targetsOfIfStmts.put(ifStmt, nopStmt); TODO: [ms] we need a wala index for nop? or last
+    // stmt?
 
     // create ifStmt for the actual assertion.
     Local assertLocal = getLocal(PrimitiveType.getBoolean(), inst.getUse(0));
@@ -355,8 +357,10 @@ public class InstructionConverter {
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     stmts.add(assertIfStmt);
-    // create failed assertion code.
+    //    targetsOfIfStmts.put(assertIfStmt, nopStmt); TODO: [ms] we need a wala index for nop? or
+    // last stmt?
 
+    // create failed assertion code.
     ReferenceType assertionErrorType =
         JavaIdentifierFactory.getInstance().getClassType("java.lang.AssertionError");
     Local failureLocal = localGenerator.generateLocal(assertionErrorType);
@@ -769,12 +773,13 @@ public class InstructionConverter {
     if (!callee.isStatic()) {
       i = 1; // non-static invoke this first use is thisRef.
     }
-    for (; i < invokeInst.getNumberOfUses(); i++) {
+    while (i < invokeInst.getNumberOfUses()) {
       int use = invokeInst.getUse(i);
       Immediate arg;
       if (symbolTable.isConstant(use)) {
         arg = getConstant(use);
       } else {
+        // TODO: [ms] isnt that condition equivalent to !callee.isStatic() ? -> performance
         if (invokeInst.getNumberOfUses() > paraTypes.size()) {
           arg = getLocal(paraTypes.get(i - 1), use);
         } else {
@@ -783,6 +788,7 @@ public class InstructionConverter {
       }
       assert (arg != null);
       args.add(arg);
+      i++;
     }
 
     MethodSignature methodSig =
