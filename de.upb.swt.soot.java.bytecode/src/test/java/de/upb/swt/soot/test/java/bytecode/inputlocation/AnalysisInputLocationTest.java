@@ -48,13 +48,11 @@ import org.mockito.internal.matchers.LessOrEqual;
 public abstract class AnalysisInputLocationTest {
 
   final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
-  final String jarFile = jar.toString();
 
   final String warFileDir = "../shared-test-resources/java-warApp";
   final Path war = Paths.get(warFileDir + File.separator + "dummyWarApp.war");
   final String warFile = war.toString();
 
-  protected static final int CLASSES_IN_JAR = 4;
   private IdentifierFactory identifierFactory;
   private ClassProvider classProvider;
 
@@ -90,9 +88,8 @@ public abstract class AnalysisInputLocationTest {
 
     Assert.assertNotNull(PathBasedAnalysisInputLocation.jarsFromPath);
     for (Path jarPath : PathBasedAnalysisInputLocation.jarsFromPath) {
-      Path pathToJar = Paths.get(jarPath.toString());
       PathBasedAnalysisInputLocation nsJar =
-          PathBasedAnalysisInputLocation.createForClassContainer(pathToJar);
+          PathBasedAnalysisInputLocation.createForClassContainer(jarPath);
       final Collection<? extends AbstractClassSource> classSourcesFromJar =
           nsJar.getClassSources(getIdentifierFactory());
       Assert.assertNotNull(classSourcesFromJar);
