@@ -55,11 +55,11 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
      */
     final ClassType warClass1 =
         getIdentifierFactory().getClassType("SimpleWarRead", "WEB-INF/classes");
-    testClassReceival(pathBasedNamespace, warClass1, 2);
+    testClassReceival(pathBasedNamespace, warClass1, 0);
 
     final ClassType class1 = getIdentifierFactory().getClassType("Employee", "ds");
     final ClassType mainClass = getIdentifierFactory().getClassType("MiniApp");
-    testClassReceival(pathBasedNamespace, class1, 2);
-    testClassReceival(pathBasedNamespace, mainClass, 2);
+    testClassReceival(pathBasedNamespace, class1, 0);
+    testClassReceival(pathBasedNamespace, mainClass, 0);
   }
 }

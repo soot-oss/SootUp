@@ -57,6 +57,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
   protected final Path path;
   public static List<Path> jarsFromPath = new ArrayList<>();
   protected static List<String> allClasses = new ArrayList<>();
+  private static boolean isWarFileFlag = false;
 
   private PathBasedAnalysisInputLocation(@Nonnull Path path) {
     this.path = path;
@@ -77,7 +78,10 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       return new DirectoryBasedAnalysisInputLocation(path);
     } else if (PathUtils.isArchive(path)) {
       if (PathUtils.hasExtension(path, FileType.WAR)) {
-        return new DirectoryBasedAnalysisInputLocation(Paths.get(extractWarFile(path.toString())));
+        isWarFileFlag = true;
+        String pathToExtractedWar = extractWarFile(path.toString());
+        System.out.println(pathToExtractedWar);
+        return new DirectoryBasedAnalysisInputLocation(Paths.get(pathToExtractedWar));
       }
       return new ArchiveBasedAnalysisInputLocation(path);
     } else {
@@ -113,11 +117,11 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
 
   static @Nonnull String extractWarFile(String warFilePath) {
 
-    String destDirectory = "tempWarExtracted";
+    String destDirectory = "../shared-test-resources/java-warApp/tempWarExtracted/";
     try {
-      File file = new File(destDirectory);
-      if (!file.exists()) {
-        file.mkdir();
+      File dest = new File(destDirectory);
+      if (!dest.exists()) {
+        dest.mkdir();
       }
       ZipInputStream zis = new ZipInputStream(new FileInputStream(warFilePath));
       ZipEntry zipEntry = zis.getNextEntry();
@@ -125,7 +129,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         String filepath = destDirectory + File.separator + zipEntry.getName();
         if (!zipEntry.isDirectory()) {
           BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filepath));
-          byte[] incomingValues = new byte[1027];
+          byte[] incomingValues = new byte[4096];
           int readFlag = 0;
           while ((readFlag = zis.read(incomingValues)) != -1) {
             bos.write(incomingValues, 0, readFlag);
@@ -135,7 +139,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
           File newDir = new File(filepath);
           newDir.mkdir();
         }
-        zis.close();
+        zis.closeEntry();
         zipEntry = zis.getNextEntry();
       }
 
@@ -154,11 +158,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     if (!Files.exists(pathToClass)) {
       return Optional.empty();
     }
-
-    System.out.println(
-        "getClassSourceInternal ->>"
-            + Optional.of(
-                classProvider.createClassSource(this, pathToClass, signature))); // TODO Debug
 
     return Optional.of(classProvider.createClassSource(this, pathToClass, signature));
   }
@@ -179,6 +178,27 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
         @Nonnull IdentifierFactory identifierFactory,
         @Nonnull ClassLoadingOptions classLoadingOptions) {
+      if (isWarFileFlag) {
+        Collection<? extends AbstractClassSource> classesFromWar = Collections.EMPTY_LIST;
+
+        try {
+          jarsFromPath = walkDirectoryForJars(Paths.get(path.toString() + "/"));
+          for (Path jarPath : jarsFromPath) {
+            Collection<? extends AbstractClassSource> allClassesFromJar;
+            try (FileSystem fsJar = FileSystems.newFileSystem(jarPath, null)) {
+              final Path archiveRootJar = fsJar.getPath("/");
+              allClassesFromJar =
+                  walkDirectory(
+                      archiveRootJar, identifierFactory, buildClassProvider(classLoadingOptions));
+            } catch (IOException e) {
+              e.getMessage();
+            }
+          }
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+        return classesFromWar;
+      }
       return walkDirectory(path, identifierFactory, buildClassProvider(classLoadingOptions));
     }
 
@@ -246,79 +266,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
-    }
-  }
-
-  private static final class WarFileBasedAnalyisInputLocation
-      extends PathBasedAnalysisInputLocation {
-
-    // We cache the FileSystem instances as their creation is expensive.
-    // The Guava Cache is thread-safe (see JavaDoc of LoadingCache) hence this
-    // cache can be safely shared in a static variable.
-    private static final LoadingCache<Path, FileSystem> fileSystemCache =
-        CacheBuilder.newBuilder()
-            .removalListener(
-                (RemovalNotification<Path, FileSystem> removalNotification) -> {
-                  try {
-                    removalNotification.getValue().close();
-                  } catch (IOException e) {
-                    throw new RuntimeException(
-                        "Could not close file system of " + removalNotification.getKey(), e);
-                  }
-                })
-            .expireAfterAccess(1, TimeUnit.SECONDS)
-            .build(
-                CacheLoader.from(
-                    path -> {
-                      try {
-                        return FileSystems.newFileSystem(Objects.requireNonNull(path), null);
-                      } catch (IOException e) {
-                        throw new RuntimeException("Could not open file system of " + path, e);
-                      }
-                    }));
-
-    private WarFileBasedAnalyisInputLocation(@Nonnull Path path) {
-      super(path);
-    }
-
-    @Override
-    public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-        @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
-      try {
-        FileSystem fs = fileSystemCache.get(path);
-        final Path archiveRoot = fs.getPath("/");
-        return getClassSourceInternal(
-            (JavaClassType) type, archiveRoot, buildClassProvider(classLoadingOptions));
-      } catch (ExecutionException e) {
-        throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
-      }
-    }
-
-    @Override
-    public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
-        @Nonnull IdentifierFactory identifierFactory,
-        @Nonnull ClassLoadingOptions classLoadingOptions) {
-
-      Collection<? extends AbstractClassSource> classesFromWar = Collections.EMPTY_LIST;
-      try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
-        final Path archiveRoot = fs.getPath("/");
-        jarsFromPath = walkDirectoryForJars(archiveRoot);
-        for (Path path : jarsFromPath) {
-          Collection<? extends AbstractClassSource> allClassesFromJar;
-          try (FileSystem fsJar = FileSystems.newFileSystem(path, null)) {
-            final Path archiveRootJar = fsJar.getPath("/");
-            allClassesFromJar =
-                walkDirectory(
-                    archiveRootJar, identifierFactory, buildClassProvider(classLoadingOptions));
-            System.out.println("Classes from " + path + " -->" + allClassesFromJar); // TODO DEBUG
-          } catch (IOException e) {
-            e.getMessage();
-          }
-        }
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-      return classesFromWar;
     }
   }
 }
