@@ -310,7 +310,7 @@ public class InstructionConverter {
 
   private List<Stmt> convertAssertInstruction(
       DebuggingInformation debugInfo, AstAssertInstruction inst) {
-    List<Stmt> stmts = new ArrayList<>();
+    List<Stmt> stmts = new ArrayList<>(7);
     // create a static field for checking if assertion is disabled.
     JavaClassType cSig = (JavaClassType) methodSignature.getDeclClassType();
     FieldSignature fieldSig =
@@ -397,7 +397,7 @@ public class InstructionConverter {
   }
 
   private List<Stmt> convertAstLexicalWrite(DebuggingInformation debugInfo, AstLexicalWrite inst) {
-    List<Stmt> stmts = new ArrayList<>();
+    List<Stmt> stmts = new ArrayList<>(1);
     for (int i = 0; i < inst.getAccessCount(); i++) {
       Access access = inst.getAccess(i);
       Type type = converter.convertType(access.type);
@@ -421,7 +421,7 @@ public class InstructionConverter {
       } else {
         left = localGenerator.generateLocal(type);
       }
-      // TODO: [ms] no instruction example found to add positioninfo
+
       stmts.add(
           Jimple.newAssignStmt(
               left,
@@ -452,7 +452,6 @@ public class InstructionConverter {
         rvalue = localGenerator.generateLocal(type);
       }
 
-      // TODO: [ms] no instruction example found to add positioninfo
       stmts.add(
           Jimple.newAssignStmt(
               left,
@@ -526,7 +525,6 @@ public class InstructionConverter {
     int defaultCase = inst.getDefault();
     List<IntConstant> lookupValues = new ArrayList<>();
     List<Integer> targetsList = new ArrayList<>();
-    List<Stmt> targets = new ArrayList<>();
     for (int i = 0; i < cases.length; i++) {
       int c = cases[i];
       if (i % 2 == 0) {
@@ -534,10 +532,8 @@ public class InstructionConverter {
         lookupValues.add(cValue);
       } else {
         targetsList.add(c);
-        targets.add(null); // add null as placeholder for targets
       }
     }
-    Stmt defaultTarget = null;
 
     Position[] operandPos = new Position[2];
     // TODO: [ms] how to organize the operands
@@ -836,7 +832,7 @@ public class InstructionConverter {
     StmtPositionInfo posInfo =
         WalaIRToJimpleConverter.convertPositionInfo(
             debugInfo.getInstructionPosition(condInst.iIndex()), null);
-    List<Stmt> stmts = new ArrayList<>();
+    List<Stmt> stmts = new ArrayList<>(3);
     int val1 = condInst.getUse(0);
     int val2 = condInst.getUse(1);
     Immediate value1 = extractValueAndAddAssignStmt(posInfo, stmts, val1);
@@ -920,7 +916,7 @@ public class InstructionConverter {
       Type type,
       int iindex,
       AstMethod.DebuggingInformation debugInfo) {
-    List<Stmt> ret = new ArrayList();
+    List<Stmt> ret = new ArrayList(4);
     Position p1 = debugInfo.getOperandPosition(iindex, 0);
     Position p2 = debugInfo.getOperandPosition(iindex, 1);
     Position stmtPosition = debugInfo.getInstructionPosition(iindex);
@@ -988,7 +984,7 @@ public class InstructionConverter {
 
   private List<Stmt> convertBinaryOpInstruction(
       DebuggingInformation debugInfo, SSABinaryOpInstruction binOpInst) {
-    List<Stmt> ret = new ArrayList<>();
+
     int def = binOpInst.getDef();
     int val1 = binOpInst.getUse(0);
     int val2 = binOpInst.getUse(1);
@@ -1063,13 +1059,13 @@ public class InstructionConverter {
     Position p2 = debugInfo.getOperandPosition(binOpInst.iIndex(), 1);
     operandPos[1] = p2;
     Value result = getLocal(type, def);
-    ret.add(
+
+    return Collections.singletonList(
         Jimple.newAssignStmt(
             result,
             binExpr,
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(binOpInst.iIndex()), operandPos)));
-    return ret;
   }
 
   private Stmt convertGoToInstruction(DebuggingInformation debugInfo, SSAGotoInstruction gotoInst) {
