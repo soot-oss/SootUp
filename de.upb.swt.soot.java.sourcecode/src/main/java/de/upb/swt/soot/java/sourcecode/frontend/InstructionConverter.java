@@ -1170,12 +1170,7 @@ public class InstructionConverter {
    * @return This methods returns a list of stmts with all branch stmts ({@link JIfStmt}, {@link
    *     JGotoStmt}, {@link JSwitchStmt}) having set up their target stmts.
    */
-  void setUpStmtGraph(LinkedHashMap<Integer, Stmt> iIndex2Stmt, Body.BodyBuilder builder) {
-
-    // add stmt into stmt graph
-    for (Stmt stmt : iIndex2Stmt.values()) {
-      builder.addStmt(stmt, true);
-    }
+  void setUpStmtGraph(HashMap<Integer, Stmt> iIndex2Stmt, Body.BodyBuilder builder) {
 
     // add flows for branching stmts
     // TODO: [ms] performance+: improve loop: iterate only over branchingstmts/merge datastructures
@@ -1186,6 +1181,7 @@ public class InstructionConverter {
           Stmt target = iIndex2Stmt.get(iTarget);
           builder.addFlow(stmt, target);
         }
+
       } else if (stmt instanceof JGotoStmt) {
         int iTarget = targetsOfGotoStmts.get(stmt);
         if (iIndex2Stmt.containsKey(iTarget)) {
