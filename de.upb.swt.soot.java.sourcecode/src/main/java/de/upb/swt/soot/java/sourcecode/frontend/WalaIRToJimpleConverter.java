@@ -22,7 +22,6 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
@@ -448,41 +447,37 @@ public class WalaIRToJimpleConverter {
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
         InstructionConverter instConverter =
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
-        HashMap<Integer, Stmt>  iIndex2Stmt= new HashMap<Integer, Stmt>();
-        //HashMap<Integer, Stmt> iIndex2Stmt = new HashMap<>();
+        HashMap<Integer, Stmt> iIndex2Stmt = new HashMap<>();
         Stmt lastStmt = null;
         for (SSAInstruction inst : insts) {
           List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst);
-          if(!retStmts.isEmpty()){
-            for (Stmt stmt : retStmts) {
-              stmts.add(stmt);
-              iIndex2Stmt.put(inst.iIndex(), stmt);
-              lastStmt = stmt;
-            }
+          for (Stmt stmt : retStmts) {
+            stmts.add(stmt);
+            iIndex2Stmt.put(inst.iIndex(), stmt);
+            lastStmt = stmt;
           }
         }
 
         // add return void stmt for methods with return type being void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
-          Stmt ret;
           if (iIndex2Stmt.isEmpty() || !(lastStmt instanceof JReturnVoidStmt)) {
             // TODO? [ms] InstructionPosition of last line in the method seems strange to me ->
             // maybe use lastLine with
             // startcol: -1 because it does not exist in the source explicitly?
-            ret =
+            lastStmt =
                 Jimple.newReturnVoidStmt(
                     convertPositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
-            stmts.add(ret);
-          } else {
-            ret = lastStmt;
+            stmts.add(lastStmt);
           }
           // needed because referencing a branch to the last stmt refers to: -1
-          iIndex2Stmt.put(-1, ret);
+          iIndex2Stmt.put(-1, lastStmt);
         }
-        for(Stmt stmt : stmts){
+
+        for (Stmt stmt : stmts) {
           builder.addStmt(stmt, true);
         }
-        instConverter.setUpStmtGraph(iIndex2Stmt, builder);
+
+        instConverter.setUpTargets(iIndex2Stmt, builder);
 
         return builder
             .setLocals(localGenerator.getLocals())

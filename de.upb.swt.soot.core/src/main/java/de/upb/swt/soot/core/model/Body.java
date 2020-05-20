@@ -351,7 +351,6 @@ public class Body implements Copyable {
     return branches.get(fromStmt);
   }
 
-  @Nonnull
   public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
     // FIXME: just because the stmt has just one ingoing flow it does not mean its not a branch
     // target
@@ -453,7 +452,7 @@ public class Body implements Copyable {
 
     @Nonnull private final MutableGraph<Stmt> mutableGraph;
 
-    private Map<Stmt, List<Stmt>> branches = new HashMap<>();
+    @Nonnull private final Map<Stmt, List<Stmt>> branches = new HashMap<>();
 
     @Nullable private Stmt lastAddedStmt = null;
     @Nullable private Stmt firstStmt = null;
@@ -564,7 +563,8 @@ public class Body implements Copyable {
         final int outgoingCount = branchItem.getValue().size();
         if (stmt instanceof JSwitchStmt && outgoingCount != ((JSwitchStmt) stmt).getValueCount()) {
           throw new IllegalArgumentException(
-              "size of outgoing flows (i.e. "
+              stmt
+                  + ": size of outgoing flows (i.e. "
                   + outgoingCount
                   + ") does not match the amount of switch statements case labels (i.e. "
                   + ((JSwitchStmt) stmt).getValueCount()
@@ -572,11 +572,11 @@ public class Body implements Copyable {
         }
         if (stmt instanceof JIfStmt && outgoingCount != 2) {
           throw new IllegalArgumentException(
-              "size of outgoing flows must be 2 but the size is " + outgoingCount + ".");
+              stmt + ": size of outgoing flows must be 2 but the size is " + outgoingCount + ".");
         }
         if (stmt instanceof JGotoStmt && outgoingCount != 1) {
           throw new IllegalArgumentException(
-              "Goto has more than '1' (i.e. '" + outgoingCount + "') outgoing flows.");
+              stmt + ": GotoS has more than '1' (i.e. '" + outgoingCount + "') outgoing flows.");
         }
       }
 
