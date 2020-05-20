@@ -393,7 +393,6 @@ public class WalaIRToJimpleConverter {
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
       LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
-      List<Stmt> stmts = new ArrayList<>();
       // convert all wala instructions to jimple statements
       SSAInstruction[] insts = (SSAInstruction[]) cfg.getInstructions();
       if (insts.length > 0) {
@@ -412,7 +411,7 @@ public class WalaIRToJimpleConverter {
                   thisLocal,
                   Jimple.newThisRef(thisType),
                   convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-          stmts.add(stmt);
+          builder.addStmt(stmt);
         }
 
         // wala's first parameter is the "this" reference for non-static methods
@@ -426,7 +425,7 @@ public class WalaIRToJimpleConverter {
                     paraLocal,
                     Jimple.newParameterRef(type, i),
                     convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-            stmts.add(stmt);
+            builder.addStmt(stmt);
           }
         } else {
           for (int i = 1; i < walaMethod.getNumberOfParameters(); i++) {
@@ -438,7 +437,7 @@ public class WalaIRToJimpleConverter {
                     paraLocal,
                     Jimple.newParameterRef(type, i - 1),
                     convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-            stmts.add(stmt);
+            builder.addStmt(stmt);
           }
         }
 
@@ -452,7 +451,8 @@ public class WalaIRToJimpleConverter {
         for (SSAInstruction inst : insts) {
           List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst);
           for (Stmt stmt : retStmts) {
-            stmts.add(stmt);
+            //  stmts.add(stmt);
+            builder.addStmt(stmt, true);
             iIndex2Stmt.put(inst.iIndex(), stmt);
             lastStmt = stmt;
           }
@@ -467,14 +467,10 @@ public class WalaIRToJimpleConverter {
             lastStmt =
                 Jimple.newReturnVoidStmt(
                     convertPositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
-            stmts.add(lastStmt);
+            builder.addStmt(lastStmt, true);
           }
           // needed because referencing a branch to the last stmt refers to: -1
           iIndex2Stmt.put(-1, lastStmt);
-        }
-
-        for (Stmt stmt : stmts) {
-          builder.addStmt(stmt, true);
         }
 
         instConverter.setUpTargets(iIndex2Stmt, builder);
