@@ -80,7 +80,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       if (PathUtils.hasExtension(path, FileType.WAR)) {
         isWarFileFlag = true;
         String pathToExtractedWar = extractWarFile(path.toString());
-        System.out.println(pathToExtractedWar);
         return new DirectoryBasedAnalysisInputLocation(Paths.get(pathToExtractedWar));
       }
       return new ArchiveBasedAnalysisInputLocation(path);
