@@ -48,7 +48,7 @@ public class ModuleCompositionTest {
       if (jp1.getFileName().toString().contains("MiniApp")) jarPath = jp1;
       System.out.println(jarPath);
     }
-    jarPath = Paths.get("../shared-test-resources/java-miniApps/MiniApp.jar");
+    jarPath = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
     // Create a project
     JavaProject p =
         JavaProject.builder(new JavaLanguage(8))
