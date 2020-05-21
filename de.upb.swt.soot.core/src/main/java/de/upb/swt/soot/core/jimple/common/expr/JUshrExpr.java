@@ -25,7 +25,6 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
-import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -37,7 +36,7 @@ import javax.annotation.Nonnull;
 
 /** Similar to {@link JShrExpr}, but shifts zero into the leftmost position. */
 public final class JUshrExpr extends AbstractIntLongBinopExpr implements Copyable {
-  public JUshrExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JUshrExpr(Value op1, Value op2) {
     super(op1, op2);
   }
 
@@ -47,7 +46,7 @@ public final class JUshrExpr extends AbstractIntLongBinopExpr implements Copyabl
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
+  public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseUshrExpr(this);
   }
 
@@ -71,12 +70,12 @@ public final class JUshrExpr extends AbstractIntLongBinopExpr implements Copyabl
   }
 
   @Nonnull
-  public JUshrExpr withOp1(@Nonnull Immediate op1) {
-    return new JUshrExpr(op1, (Immediate) getOp2());
+  public JUshrExpr withOp1(Value op1) {
+    return new JUshrExpr(op1, getOp2());
   }
 
   @Nonnull
-  public JUshrExpr withOp2(@Nonnull Immediate op2) {
-    return new JUshrExpr((Immediate) getOp1(), op2);
+  public JUshrExpr withOp2(Value op2) {
+    return new JUshrExpr(getOp1(), op2);
   }
 }

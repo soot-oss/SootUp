@@ -23,38 +23,23 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.swt.soot.core.jimple.common.expr;
+package de.upb.swt.soot.core.jimple.basic;
 
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
-import de.upb.swt.soot.core.util.Copyable;
-import javax.annotation.Nonnull;
+import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 
-/** An expression that multiplies two numbers. */
-public final class JMulExpr extends AbstractFloatBinopExpr implements Copyable {
+/**
+ * Contains an {@link IdentityRef}.
+ *
+ * <p>Prefer to use the factory methods in {@link de.upb.swt.soot.core.jimple.Jimple}.
+ */
+public class IdentityRefBox extends ValueBox {
 
-  public JMulExpr(Value op1, Value op2) {
-    super(op1, op2);
+  public IdentityRefBox(Value value) {
+    super(value);
   }
 
   @Override
-  public final String getSymbol() {
-    return " * ";
-  }
-
-  @Override
-  public void accept(Visitor sw) {
-    ((ExprVisitor) sw).caseMulExpr(this);
-  }
-
-  @Nonnull
-  public JMulExpr withOp1(Value op1) {
-    return new JMulExpr(op1, getOp2());
-  }
-
-  @Nonnull
-  public JMulExpr withOp2(Value op2) {
-    return new JMulExpr(getOp1(), op2);
+  public boolean canContainValue(Value value) {
+    return value instanceof IdentityRef;
   }
 }

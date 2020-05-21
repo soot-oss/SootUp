@@ -27,9 +27,9 @@
 package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -39,13 +39,12 @@ import javax.annotation.Nonnull;
 /** An expression that invokes a special method (e.g. private methods). */
 public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
-  public JSpecialInvokeExpr(
-      @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
-    super(base, method, args);
+  public JSpecialInvokeExpr(Local base, MethodSignature method, List<? extends Value> args) {
+    super(Jimple.newLocalBox(base), method, ValueBoxUtils.toValueBoxes(args));
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseSpecialInvokeExpr(this, o);
   }
 
@@ -59,7 +58,7 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr impleme
         .append(".")
         .append(getMethodSignature())
         .append("(");
-    argsToString(builder);
+    argBoxesToString(builder);
     builder.append(")");
 
     return builder.toString();
@@ -67,29 +66,29 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr impleme
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.SPECIALINVOKE);
     up.literal(" ");
-    getBase().toString(up);
+    getBaseBox().toString(up);
     up.literal(".");
     up.methodSignature(getMethodSignature());
     up.literal("(");
-    argsToPrinter(up);
+    argBoxesToPrinter(up);
     up.literal(")");
   }
 
   @Nonnull
-  public JSpecialInvokeExpr withBase(@Nonnull Local base) {
+  public JSpecialInvokeExpr withBase(Local base) {
     return new JSpecialInvokeExpr(base, getMethodSignature(), getArgs());
   }
 
   @Nonnull
-  public JSpecialInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature) {
-    return new JSpecialInvokeExpr(getBase(), methodSignature, getArgs());
+  public JSpecialInvokeExpr withMethodSignature(MethodSignature methodSignature) {
+    return new JSpecialInvokeExpr((Local) getBase(), methodSignature, getArgs());
   }
 
   @Nonnull
-  public JSpecialInvokeExpr withArgs(@Nonnull List<Immediate> args) {
-    return new JSpecialInvokeExpr(getBase(), getMethodSignature(), args);
+  public JSpecialInvokeExpr withArgs(List<? extends Value> args) {
+    return new JSpecialInvokeExpr((Local) getBase(), getMethodSignature(), args);
   }
 }

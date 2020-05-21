@@ -29,6 +29,7 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -39,14 +40,18 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-/** conditional jumps to a target Stmt, otherwise the flow continues to the next Stmt. */
-public class JIfStmt extends BranchingStmt implements Copyable {
+/** If the condition is true, jumps to the target, otherwise continues to the next stmt. */
+public final class JIfStmt extends BranchingStmt implements Copyable {
 
-  @Nonnull private final AbstractConditionExpr condition;
+  private final ValueBox conditionBox;
 
-  public JIfStmt(@Nonnull AbstractConditionExpr condition, @Nonnull StmtPositionInfo positionInfo) {
+  public JIfStmt(Value condition, StmtPositionInfo positionInfo) {
+    this(Jimple.newConditionExprBox(condition), positionInfo);
+  }
+
+  private JIfStmt(ValueBox conditionBox, StmtPositionInfo positionInfo) {
     super(positionInfo);
-    this.condition = condition;
+    this.conditionBox = conditionBox;
   }
 
   @Override
@@ -66,7 +71,7 @@ public class JIfStmt extends BranchingStmt implements Copyable {
   public void toString(@Nonnull StmtPrinter stmtPrinter) {
     stmtPrinter.literal(Jimple.IF);
     stmtPrinter.literal(" ");
-    condition.toString(stmtPrinter);
+    conditionBox.toString(stmtPrinter);
 
     stmtPrinter.literal(" ");
     stmtPrinter.literal(Jimple.GOTO);
@@ -75,7 +80,11 @@ public class JIfStmt extends BranchingStmt implements Copyable {
   }
 
   public Value getCondition() {
-    return condition;
+    return conditionBox.getValue();
+  }
+
+  public ValueBox getConditionBox() {
+    return conditionBox;
   }
 
   public Stmt getTarget(Body body) {
@@ -92,8 +101,8 @@ public class JIfStmt extends BranchingStmt implements Copyable {
   @Override
   @Nonnull
   public List<Value> getUses() {
-    List<Value> list = new ArrayList<>(condition.getUses());
-    list.add(condition);
+    List<Value> list = new ArrayList<>(getCondition().getUses());
+    list.add(getCondition());
     return list;
   }
 
@@ -119,7 +128,7 @@ public class JIfStmt extends BranchingStmt implements Copyable {
 
   @Override
   public int equivHashCode() {
-    return condition.equivHashCode();
+    return conditionBox.getValue().equivHashCode();
   }
 
   @Nonnull

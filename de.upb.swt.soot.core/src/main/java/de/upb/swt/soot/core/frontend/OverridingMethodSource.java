@@ -7,7 +7,7 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 
-/** @author: Hasitha Rajapakse */
+/** @author Hasitha Rajapakse */
 
 /**
  * Allows for replacing specific parts of a method or, resolve methods where all information is

@@ -26,9 +26,10 @@
 package de.upb.swt.soot.core.jimple.javabytecode.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractOpStmt;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -39,20 +40,24 @@ import javax.annotation.Nonnull;
 /** A statement that exits a JVM monitor, thereby ending synchronization. */
 public final class JExitMonitorStmt extends AbstractOpStmt implements Copyable {
 
-  public JExitMonitorStmt(@Nonnull Immediate op, @Nonnull StmtPositionInfo positionInfo) {
-    super(op, positionInfo);
+  public JExitMonitorStmt(Value op, StmtPositionInfo positionInfo) {
+    this(Jimple.newImmediateBox(op), positionInfo);
+  }
+
+  private JExitMonitorStmt(ValueBox opBox, StmtPositionInfo positionInfo) {
+    super(opBox, positionInfo);
   }
 
   @Override
   public String toString() {
-    return Jimple.EXITMONITOR + " " + op.toString();
+    return Jimple.EXITMONITOR + " " + opBox.getValue().toString();
   }
 
   @Override
   public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.EXITMONITOR);
     up.literal(" ");
-    op.toString(up);
+    opBox.toString(up);
   }
 
   @Override
@@ -76,12 +81,12 @@ public final class JExitMonitorStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Nonnull
-  public JExitMonitorStmt withOp(@Nonnull Immediate op) {
+  public JExitMonitorStmt withOp(Value op) {
     return new JExitMonitorStmt(op, getPositionInfo());
   }
 
   @Nonnull
-  public JExitMonitorStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JExitMonitorStmt((Immediate) getOp(), positionInfo);
+  public JExitMonitorStmt withPositionInfo(StmtPositionInfo positionInfo) {
+    return new JExitMonitorStmt(getOp(), positionInfo);
   }
 }

@@ -40,12 +40,12 @@ public final class JThisRef implements IdentityRef, Copyable {
 
   private final ReferenceType thisType;
 
-  public JThisRef(@Nonnull ReferenceType thisType) {
+  public JThisRef(ReferenceType thisType) {
     this.thisType = thisType;
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseThisRef(this, o);
   }
 
@@ -60,7 +60,7 @@ public final class JThisRef implements IdentityRef, Copyable {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.identityRef(this);
   }
 
@@ -75,12 +75,12 @@ public final class JThisRef implements IdentityRef, Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
+  public void accept(Visitor sw) {
     // TODO
   }
 
   @Nonnull
-  public JThisRef withThisType(@Nonnull ReferenceType thisType) {
+  public JThisRef withThisType(ReferenceType thisType) {
     return new JThisRef(thisType);
   }
 }

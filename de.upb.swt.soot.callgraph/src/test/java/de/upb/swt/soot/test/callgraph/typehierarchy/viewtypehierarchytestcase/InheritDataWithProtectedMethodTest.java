@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author: Hasitha Rajapakse * */
+/** @author Hasitha Rajapakse * */
 @Category(Java8Test.class)
 public class InheritDataWithProtectedMethodTest extends JavaTypeHierarchyBase {
   @Test

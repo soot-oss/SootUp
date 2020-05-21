@@ -27,8 +27,8 @@
 package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
+import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -40,13 +40,13 @@ import javax.annotation.Nonnull;
 /** An expression that invokes a static method. */
 public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copyable {
 
-  /** Stores the values to the args array. */
-  public JStaticInvokeExpr(@Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
-    super(method, args);
+  /** Stores the values of new ImmediateBox to the argBoxes array. */
+  public JStaticInvokeExpr(MethodSignature method, List<? extends Value> args) {
+    super(method, ValueBoxUtils.toValueBoxes(args));
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseStaticInvokeExpr(this, o);
   }
 
@@ -60,34 +60,34 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copya
   public String toString() {
     StringBuilder builder = new StringBuilder();
     builder.append(Jimple.STATICINVOKE).append(" ").append(getMethodSignature()).append("(");
-    argsToString(builder);
+    argBoxesToString(builder);
     builder.append(")");
     return builder.toString();
   }
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.STATICINVOKE);
     up.literal(" ");
     up.methodSignature(getMethodSignature());
     up.literal("(");
-    argsToPrinter(up);
+    argBoxesToPrinter(up);
     up.literal(")");
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
+  public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseStaticInvokeExpr(this);
   }
 
   @Nonnull
-  public JStaticInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature) {
+  public JStaticInvokeExpr withMethodSignature(MethodSignature methodSignature) {
     return new JStaticInvokeExpr(methodSignature, getArgs());
   }
 
   @Nonnull
-  public JStaticInvokeExpr withArgs(@Nonnull List<Immediate> args) {
+  public JStaticInvokeExpr withArgs(List<? extends Value> args) {
     return new JStaticInvokeExpr(getMethodSignature(), args);
   }
 }

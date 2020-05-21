@@ -81,9 +81,9 @@ public class Body implements Copyable {
       ImmutableUtils.immutableList(
           new LocalsValidator(),
           new TrapsValidator(),
-          new StmtsValidator(),
+          new StmtBoxesValidator(),
           new UsesValidator(),
-          new ValuesValidator(),
+          new ValueBoxesValidator(),
           new CheckInitValidator(),
           new CheckTypesValidator(),
           new CheckVoidLocalesValidator(),
@@ -104,7 +104,7 @@ public class Body implements Copyable {
       @Nonnull Position position) {
     this.locals = Collections.unmodifiableSet(locals);
     this.traps = Collections.unmodifiableList(traps);
-    // TODO: [ms] second constructor?
+    // TODO: [ms] (im)mutability via second constructor?
     this.cfg =
         stmtGraph instanceof ImmutableGraph
             ? (ImmutableGraph<Stmt>) stmtGraph
@@ -117,6 +117,8 @@ public class Body implements Copyable {
     checkInit();
   }
 
+  // TODO: migrate tests to use BodyBuilder
+  @Deprecated
   public Body(
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
@@ -124,7 +126,7 @@ public class Body implements Copyable {
       @Nonnull Map<Stmt, List<Stmt>> branches,
       @Nonnull Position position) {
 
-    // FIXME: [ms] dirty debugging hack !!!!!!
+    // FIXME: [ms] remove this dirty test hack !!!!!!
     this(
         locals,
         traps,
@@ -180,9 +182,9 @@ public class Body implements Copyable {
     }
   }
 
-  /** Verifies that a Value is not used in more than one place. */
-  public void validateValues() {
-    runValidation(new ValuesValidator());
+  /** Verifies that a ValueBox is not used in more than one place. */
+  public void validateValueBoxes() {
+    runValidation(new ValueBoxesValidator());
   }
 
   /** Verifies that each Local of getUsesAndDefs() is in this body's locals Chain. */
@@ -195,9 +197,9 @@ public class Body implements Copyable {
     runValidation(new TrapsValidator());
   }
 
-  /** Verifies that the Stmts of this Body all point to a Stmt contained within this body. */
-  public void validateStmts() {
-    runValidation(new StmtsValidator());
+  /** Verifies that the StmtBoxes of this Body all point to a Stmt contained within this body. */
+  public void validateStmtBoxes() {
+    runValidation(new StmtBoxesValidator());
   }
 
   /** Verifies that each use in this Body has a def. */
@@ -242,7 +244,7 @@ public class Body implements Copyable {
       if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
         JIdentityStmt is = (JIdentityStmt) s;
         JParameterRef pr = (JParameterRef) is.getRightOp();
-        if (pr.getNum() == i) {
+        if (pr.getIndex() == i) {
           return (Local) is.getLeftOp();
         }
       }
@@ -269,7 +271,7 @@ public class Body implements Copyable {
         JIdentityStmt is = (JIdentityStmt) u;
         if (is.getRightOp() instanceof JParameterRef) {
           JParameterRef pr = (JParameterRef) is.getRightOp();
-          retVal.add(pr.getNum(), (Local) is.getLeftOp());
+          retVal.add(pr.getIndex(), (Local) is.getLeftOp());
         }
       }
     }

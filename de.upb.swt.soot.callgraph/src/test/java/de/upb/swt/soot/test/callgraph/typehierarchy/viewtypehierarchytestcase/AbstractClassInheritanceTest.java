@@ -3,6 +3,7 @@ package de.upb.swt.soot.test.callgraph.typehierarchy.viewtypehierarchytestcase;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;
@@ -11,8 +12,10 @@ import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyBase;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
-/** @author: Hasitha Rajapakse * */
+/** @author Hasitha Rajapakse * */
+@Category(Java8Test.class)
 public class AbstractClassInheritanceTest extends JavaTypeHierarchyBase {
   @Test
   public void method() {
