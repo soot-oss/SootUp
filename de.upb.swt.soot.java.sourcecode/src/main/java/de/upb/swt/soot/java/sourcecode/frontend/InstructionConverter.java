@@ -1165,42 +1165,43 @@ public class InstructionConverter {
   }
 
   /**
-   * @param iIndex2Stmt
+   * @param
    * @param builder
    * @return This methods returns a list of stmts with all branch stmts ({@link JIfStmt}, {@link
    *     JGotoStmt}, {@link JSwitchStmt}) having set up their target stmts.
    */
-  void setUpStmtGraph(HashMap<Integer, Stmt> iIndex2Stmt, Body.BodyBuilder builder) {
 
-    // add flows for branching stmts
-    // TODO: [ms] performance+: improve loop: iterate only over branchingstmts/merge datastructures
-    for (Stmt stmt : iIndex2Stmt.values()) {
-      if (stmt instanceof JIfStmt) {
-        int iTarget = targetsOfIfStmts.get(stmt);
-        if (iIndex2Stmt.containsKey(iTarget)) {
-          Stmt target = iIndex2Stmt.get(iTarget);
-          builder.addFlow(stmt, target);
-        }
+  protected void setUpTargets(Stmt target, Integer iTarget, Body.BodyBuilder builder) {
 
-      } else if (stmt instanceof JGotoStmt) {
-        int iTarget = targetsOfGotoStmts.get(stmt);
-        if (iIndex2Stmt.containsKey(iTarget)) {
-          Stmt target = iIndex2Stmt.get(iTarget);
-          builder.addFlow(stmt, target);
+    if(targetsOfIfStmts.containsValue(iTarget)){
+      for(JIfStmt ifStmt : targetsOfIfStmts.keySet()){
+        if(targetsOfIfStmts.get(ifStmt).equals(iTarget)){
+          builder.addFlow(ifStmt, target);
         }
-      } else if (stmt instanceof JSwitchStmt) {
-        int iDefault = defaultOfLookUpSwitchStmts.get(stmt);
-        if (iIndex2Stmt.containsKey(iDefault)) {
-          Stmt defaultTarget = iIndex2Stmt.get(iDefault);
-          builder.addFlow(stmt, defaultTarget);
+      }
+    }
+    /**for(Map.Entry stmt: targetsOfGotoStmts.entrySet()){
+      System.out.println(stmt);
+    }*/
+    if(targetsOfGotoStmts.containsValue(iTarget)){
+      for(JGotoStmt gotoStmt : targetsOfGotoStmts.keySet()){
+        if(targetsOfGotoStmts.get(gotoStmt).equals(iTarget)){
+          builder.addFlow(gotoStmt, target);
         }
-        List<Integer> iTargets = targetsOfLookUpSwitchStmts.get(stmt);
-        for (Integer iTarget : iTargets) {
-          if (iIndex2Stmt.containsKey(iTarget)) {
-            Stmt target = iIndex2Stmt.get(iTarget);
-            builder.addFlow(stmt, target);
-          }
+      }
+    }
+
+    if(defaultOfLookUpSwitchStmts.containsValue(iTarget)){
+      for(JSwitchStmt switchStmt : defaultOfLookUpSwitchStmts.keySet()){
+        if(defaultOfLookUpSwitchStmts.get(switchStmt).equals(iTarget)){
+          builder.addFlow(switchStmt, target);
         }
+      }
+    }
+
+    for(JSwitchStmt lookupSwitch : this.targetsOfLookUpSwitchStmts.keySet()){
+      if(targetsOfLookUpSwitchStmts.get(lookupSwitch).contains(iTarget)){
+        builder.addFlow(lookupSwitch, target);
       }
     }
   }

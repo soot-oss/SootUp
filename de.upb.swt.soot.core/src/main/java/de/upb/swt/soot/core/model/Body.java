@@ -536,8 +536,16 @@ public class Body implements Copyable {
     @Nonnull
     public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
       if (fromStmt instanceof BranchingStmt) {
-        List<Stmt> edges = branches.computeIfAbsent(fromStmt, stmt -> new ArrayList());
-        edges.add(toStmt);
+
+        if(branches.containsKey(fromStmt)){
+          branches.get(fromStmt).add(toStmt);
+        }else{
+          List<Stmt> targets = new ArrayList<>();
+          targets.add(toStmt);
+          branches.put(fromStmt, targets);
+        }
+        //List<Stmt> edges = branches.computeIfAbsent(fromStmt, stmt -> new ArrayList());
+        //edges.add(toStmt);
       }
       mutableGraph.putEdge(fromStmt, toStmt);
       return this;
