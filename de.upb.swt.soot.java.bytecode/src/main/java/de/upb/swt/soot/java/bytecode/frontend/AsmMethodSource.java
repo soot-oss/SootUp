@@ -18,10 +18,7 @@ import static org.objectweb.asm.tree.AbstractInsnNode.TYPE_INSN;
 import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
 
 import com.google.common.base.Suppliers;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Table;
+import com.google.common.collect.*;
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
@@ -75,18 +72,7 @@ import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -152,9 +138,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   /* -const fields- */
 
-  @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
+  @Nonnull private final Set<LabelNode> inlineExceptionLabels = new LinkedHashSet<>();
 
-  @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
+  @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new LinkedHashMap<>();
 
   private final Supplier<MethodSignature> lazyMethodSignature =
       Suppliers.memoize(
@@ -202,11 +188,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     /* initialize */
     int nrInsn = instructions.size();
     nextLocal = maxLocals;
-    locals = new HashMap<>(maxLocals + (maxLocals / 2));
-    labels = ArrayListMultimap.create(4, 1);
-    units = new HashMap<>(nrInsn);
-    frames = new HashMap<>(nrInsn);
-    trapHandlers = ArrayListMultimap.create(tryCatchBlocks.size(), 1);
+    locals = new LinkedHashMap<>(maxLocals + (maxLocals / 2));
+    labels = LinkedListMultimap.create(4);
+    units = new LinkedHashMap<>(nrInsn);
+    frames = new LinkedHashMap<>(nrInsn);
+    trapHandlers = LinkedListMultimap.create(tryCatchBlocks.size());
 
     /* retrieve all trap handlers */
     for (TryCatchBlockNode tc : tryCatchBlocks) {
@@ -1989,7 +1975,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     JavaClassType throwable =
         JavaIdentifierFactory.getInstance().getClassType("java.lang.Throwable");
 
-    Map<LabelNode, Iterator<StmtBox>> handlers = new HashMap<>(tryCatchBlocks.size());
+    Map<LabelNode, Iterator<StmtBox>> handlers = new LinkedHashMap<>(tryCatchBlocks.size());
     for (TryCatchBlockNode tc : tryCatchBlocks) {
       StmtBox start = Jimple.newStmtBox(null);
       StmtBox end = Jimple.newStmtBox(null);

@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -25,11 +24,6 @@ public class TryWithResourcesTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
   public void test() {
-    /** TODO [KK] Stack positions changing. Add to issue list. */
-  }
-
-  @Ignore
-  public void ignoreTest() {
     SootMethod sootMethod = loadMethod(getMethodSignature());
     assertJimpleStmts(sootMethod, expectedBodyStmts());
   }
@@ -62,21 +56,21 @@ public class TryWithResourcesTest extends MinimalBytecodeTestSuiteBase {
             "label05:",
             "goto label16",
             "label06:",
-            "$stack11 := @caughtexception",
-            "l3 = $stack11",
+            "$stack15 := @caughtexception",
+            "l3 = $stack15",
             "virtualinvoke l2.<java.lang.Throwable: void addSuppressed(java.lang.Throwable)>(l3)",
             "goto label16",
             "label07:",
             "virtualinvoke l1.<java.io.BufferedReader: void close()>()",
             "goto label16",
             "label08:",
-            "$stack12 := @caughtexception",
-            "l3 = $stack12",
+            "$stack14 := @caughtexception",
+            "l3 = $stack14",
             "l2 = l3",
             "throw l3",
             "label09:",
-            "$stack13 := @caughtexception",
-            "l4 = $stack13",
+            "$stack12 := @caughtexception",
+            "l4 = $stack12",
             "label10:",
             "if l1 == null goto label15",
             "if l2 == null goto label14",
@@ -85,17 +79,17 @@ public class TryWithResourcesTest extends MinimalBytecodeTestSuiteBase {
             "label12:",
             "goto label15",
             "label13:",
-            "$stack15 := @caughtexception",
-            "l5 = $stack15",
+            "$stack11 := @caughtexception",
+            "l5 = $stack11",
             "virtualinvoke l2.<java.lang.Throwable: void addSuppressed(java.lang.Throwable)>(l5)",
             "goto label15",
             "label14:",
             "virtualinvoke l1.<java.io.BufferedReader: void close()>()",
             "label15:",
-            "$stack14 = l4",
-            "$stack14 = $stack14",
-            "$stack14 = $stack14",
-            "throw $stack14",
+            "$stack13 = l4",
+            "$stack13 = $stack13",
+            "$stack13 = $stack13",
+            "throw $stack13",
             "label16:",
             "return",
             "catch java.lang.Throwable from label04 to label05 with label06",
