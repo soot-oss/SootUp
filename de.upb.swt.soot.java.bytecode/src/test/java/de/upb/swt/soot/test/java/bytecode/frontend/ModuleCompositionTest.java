@@ -18,6 +18,7 @@ import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
@@ -37,103 +38,107 @@ public class ModuleCompositionTest {
   @Test
   public void apiExamples() {
 
-    // String warFile = "../shared-test-resources/java-miniapps/MiniApp.jar";
     String warFile = "../shared-test-resources/java-warApp/dummyWarApp.war";
 
     Assert.assertTrue("File " + warFile + " not found.", new File(warFile).exists());
 
-    for (Path jarPath : PathBasedAnalysisInputLocation.jarsFromPath) {
+    Path jarPath = Paths.get("/");
 
-      // Create a project
-      JavaProject p =
-          JavaProject.builder(new JavaLanguage(8))
-              .addClassPath(new JavaClassPathAnalysisInputLocation(jarPath.toString()))
-              .build();
-
-      // Get the view
-      JavaView view = p.createOnDemandView();
-
-      // Create java class signature
-      ClassType utilsClassSignature = p.getIdentifierFactory().getClassType("Employee", "ds");
-
-      // Resolve signature to `SootClass`
-      SootClass utilsClass = view.getClass(utilsClassSignature).get();
-
-      // Parse sub-signature for "setEmpSalary" method
-      MethodSubSignature optionalToStreamMethodSubSignature =
-          JavaIdentifierFactory.getInstance().parseMethodSubSignature("void setEmpSalary(int)");
-
-      // Get method for sub-signature
-      SootMethod foundMethod = utilsClass.getMethod(optionalToStreamMethodSubSignature).get();
-      Assert.assertNotNull(foundMethod.getBody());
-
-      // Print method
-      Assert.assertTrue("setEmpSalary".equalsIgnoreCase(foundMethod.getName()));
-      Assert.assertEquals("void", foundMethod.getReturnTypeSignature().toString());
-      Assert.assertEquals(1, foundMethod.getParameterCount());
-      Assert.assertTrue(
-          foundMethod.getParameterTypes().stream()
-              .anyMatch(
-                  type -> {
-                    return "int".equals(type.toString());
-                  }));
-
-      // Parse sub-signature for "empName" field
-      FieldSubSignature nameFieldSubSignature =
-          JavaIdentifierFactory.getInstance().parseFieldSubSignature("java.lang.String empName");
-
-      // Create the class signature
-      ClassType classSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
-
-      // Build a soot class
-      SootClass c =
-          new SootClass(
-              new OverridingJavaClassSource(
-                  new EagerInputLocation(),
-                  null,
-                  classSignature,
-                  null,
-                  null,
-                  null,
-                  Collections.singleton(
-                      SootField.builder()
-                          .withSignature(
-                              JavaIdentifierFactory.getInstance()
-                                  .getFieldSignature(classSignature, nameFieldSubSignature))
-                          .withModifiers(Modifier.PUBLIC)
-                          .build()),
-                  ImmutableUtils.immutableSet(
-                      SootMethod.builder()
-                          .withSource(
-                              new MethodSource() {
-                                @Override
-                                public Body resolveBody() {
-                                  /* [ms] violating @Nonnull */
-                                  return null;
-                                }
-
-                                @Override
-                                @Nonnull
-                                public MethodSignature getSignature() {
-                                  return JavaIdentifierFactory.getInstance()
-                                      .getMethodSignature(
-                                          utilsClass, optionalToStreamMethodSubSignature);
-                                }
-                              })
-                          .withSignature(
-                              JavaIdentifierFactory.getInstance()
-                                  .getMethodSignature(
-                                      classSignature, optionalToStreamMethodSubSignature))
-                          .withModifiers(Modifier.PUBLIC)
-                          .build()),
-                  null,
-                  EnumSet.of(Modifier.PUBLIC),
-                  Collections.emptyList()),
-              SourceType.Application);
-
-      Assert.assertEquals(
-          "java.lang.String", c.getField(nameFieldSubSignature).get().getType().toString());
-      Assert.assertEquals("empName", c.getField(nameFieldSubSignature).get().getName());
+    for (Path jp1 : PathBasedAnalysisInputLocation.jarsFromPath) {
+      if (jp1.getFileName().toString().contains("MiniApp")) jarPath = jp1;
+      System.out.println(jarPath);
     }
+    jarPath = Paths.get("../shared-test-resources/java-miniApps/MiniApp.jar");
+    // Create a project
+    JavaProject p =
+        JavaProject.builder(new JavaLanguage(8))
+            .addClassPath(new JavaClassPathAnalysisInputLocation(jarPath.toString()))
+            .build();
+
+    // Get the view
+    JavaView view = p.createOnDemandView();
+
+    // Create java class signature
+    ClassType utilsClassSignature = p.getIdentifierFactory().getClassType("Employee", "ds");
+
+    // Resolve signature to `SootClass`
+    SootClass utilsClass = view.getClass(utilsClassSignature).get();
+
+    // Parse sub-signature for "setEmpSalary" method
+    MethodSubSignature optionalToStreamMethodSubSignature =
+        JavaIdentifierFactory.getInstance().parseMethodSubSignature("void setEmpSalary(int)");
+
+    // Get method for sub-signature
+    SootMethod foundMethod = utilsClass.getMethod(optionalToStreamMethodSubSignature).get();
+    Assert.assertNotNull(foundMethod.getBody());
+
+    // Print method
+    Assert.assertTrue("setEmpSalary".equalsIgnoreCase(foundMethod.getName()));
+    Assert.assertEquals("void", foundMethod.getReturnTypeSignature().toString());
+    Assert.assertEquals(1, foundMethod.getParameterCount());
+    Assert.assertTrue(
+        foundMethod.getParameterTypes().stream()
+            .anyMatch(
+                type -> {
+                  return "int".equals(type.toString());
+                }));
+
+    // Parse sub-signature for "empName" field
+    FieldSubSignature nameFieldSubSignature =
+        JavaIdentifierFactory.getInstance().parseFieldSubSignature("java.lang.String empName");
+
+    // Create the class signature
+    ClassType classSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
+
+    // Build a soot class
+    SootClass c =
+        new SootClass(
+            new OverridingJavaClassSource(
+                new EagerInputLocation(),
+                null,
+                classSignature,
+                null,
+                null,
+                null,
+                Collections.singleton(
+                    SootField.builder()
+                        .withSignature(
+                            JavaIdentifierFactory.getInstance()
+                                .getFieldSignature(classSignature, nameFieldSubSignature))
+                        .withModifiers(Modifier.PUBLIC)
+                        .build()),
+                ImmutableUtils.immutableSet(
+                    SootMethod.builder()
+                        .withSource(
+                            new MethodSource() {
+                              @Override
+                              public Body resolveBody() {
+                                /* [ms] violating @Nonnull */
+                                return null;
+                              }
+
+                              @Override
+                              @Nonnull
+                              public MethodSignature getSignature() {
+                                return JavaIdentifierFactory.getInstance()
+                                    .getMethodSignature(
+                                        utilsClass, optionalToStreamMethodSubSignature);
+                              }
+                            })
+                        .withSignature(
+                            JavaIdentifierFactory.getInstance()
+                                .getMethodSignature(
+                                    classSignature, optionalToStreamMethodSubSignature))
+                        .withModifiers(Modifier.PUBLIC)
+                        .build()),
+                null,
+                EnumSet.of(Modifier.PUBLIC),
+                Collections.emptyList()),
+            SourceType.Application);
+
+    Assert.assertEquals(
+        "java.lang.String", c.getField(nameFieldSubSignature).get().getType().toString());
+    Assert.assertEquals("empName", c.getField(nameFieldSubSignature).get().getName());
   }
+  // }
 }
