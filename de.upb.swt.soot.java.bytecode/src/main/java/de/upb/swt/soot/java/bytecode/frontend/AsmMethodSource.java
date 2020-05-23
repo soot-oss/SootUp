@@ -2030,7 +2030,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       }
 
       // Get the Stmt associated with the current instruction
-      // TODO: [ms] check: isnt it just the else case of insn instanceof?
+      // TODO: [ms] check: isnt it just the else case of insn instanceof above?
       Stmt stmt = InsnToStmt.get(insn);
       if (stmt == null) {
         insn = insn.getNext();

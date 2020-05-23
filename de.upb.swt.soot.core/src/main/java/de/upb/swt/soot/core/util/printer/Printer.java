@@ -298,8 +298,7 @@ public class Printer {
 
     // TODO: [ms] fix traverse strategy:
     // Traverser.forGraph(stmtGraph).depthFirstPreOrder(body.getFirstStmt());
-    final Iterable<Stmt> stmtIterator = stmtGraph.nodes();
-    for (Stmt currentStmt : stmtIterator) {
+    for (Stmt currentStmt : stmtGraph.nodes()) {
       previousStmt = currentStmt;
 
       // Print appropriate header.
