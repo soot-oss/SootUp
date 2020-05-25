@@ -452,7 +452,7 @@ public class Body implements Copyable {
     @Nonnull private List<Trap> traps = new ArrayList<>();
     @Nonnull private Position position;
 
-    @Nonnull private final MutableGraph<Stmt> mutableGraph;
+    @Nullable private MutableGraph<Stmt> cfg;
 
     @Nonnull private final Map<Stmt, List<Stmt>> branches = new HashMap<>();
 
@@ -460,15 +460,19 @@ public class Body implements Copyable {
     @Nullable private Stmt firstStmt = null;
 
     BodyBuilder() {
-      mutableGraph = GraphBuilder.directed().nodeOrder(ElementOrder.insertion()).build();
+      cfg = GraphBuilder.directed().nodeOrder(ElementOrder.insertion()).build();
     }
 
     BodyBuilder(@Nonnull Body body) {
+      this(body, GraphBuilder.from(body.getStmtGraph()).build());
+    }
+
+    BodyBuilder(@Nonnull Body body, @Nonnull MutableGraph<Stmt> graphContainer) {
       setLocals(body.getLocals());
       setTraps(body.getTraps());
       setPosition(body.getPosition());
       setFirstStmt(body.getFirstStmt());
-      mutableGraph = GraphBuilder.from(body.getStmtGraph()).build();
+      cfg = graphContainer;
     }
 
     @Nonnull
@@ -502,7 +506,8 @@ public class Body implements Copyable {
 
     @Nonnull
     public BodyBuilder addStmt(@Nonnull Stmt stmt, boolean linkLastStmt) {
-      mutableGraph.addNode(stmt);
+      System.out.println("stmt: " + stmt);
+      cfg.addNode(stmt);
       if (lastAddedStmt != null) {
         if (linkLastStmt && lastAddedStmt.fallsThrough()) {
           addFlow(lastAddedStmt, stmt);
@@ -517,18 +522,18 @@ public class Body implements Copyable {
 
     @Nonnull
     public BodyBuilder mergeStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-      final Set<Stmt> predecessors = mutableGraph.predecessors(oldStmt);
-      final Set<Stmt> successors = mutableGraph.successors(oldStmt);
-      mutableGraph.addNode(newStmt);
-      predecessors.forEach(predecessor -> mutableGraph.putEdge(predecessor, newStmt));
-      successors.forEach(successor -> mutableGraph.putEdge(newStmt, successor));
+      final Set<Stmt> predecessors = cfg.predecessors(oldStmt);
+      final Set<Stmt> successors = cfg.successors(oldStmt);
+      cfg.addNode(newStmt);
+      predecessors.forEach(predecessor -> cfg.putEdge(predecessor, newStmt));
+      successors.forEach(successor -> cfg.putEdge(newStmt, successor));
       removeStmt(oldStmt);
       return this;
     }
 
     @Nonnull
     public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
-      mutableGraph.removeNode(stmt);
+      cfg.removeNode(stmt);
       branches.remove(stmt);
       branches.values().forEach(fromStmt -> fromStmt.remove(stmt));
       return this;
@@ -540,13 +545,13 @@ public class Body implements Copyable {
         List<Stmt> edges = branches.computeIfAbsent(fromStmt, stmt -> new ArrayList());
         edges.add(toStmt);
       }
-      mutableGraph.putEdge(fromStmt, toStmt);
+      cfg.putEdge(fromStmt, toStmt);
       return this;
     }
 
     @Nonnull
     public BodyBuilder removeFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
-      mutableGraph.removeEdge(fromStmt, toStmt);
+      cfg.removeEdge(fromStmt, toStmt);
       branches.get(fromStmt).remove(toStmt);
       return this;
     }
@@ -559,6 +564,13 @@ public class Body implements Copyable {
 
     @Nonnull
     public Body build() {
+
+      // TODO
+      for (Stmt stmt : cfg.nodes()) {
+        System.out.print("\"" + stmt + "\" => ");
+        System.out.println(cfg.successors(stmt));
+      }
+
       // validate branch stmts
       for (Map.Entry<Stmt, List<Stmt>> branchItem : branches.entrySet()) {
         final Stmt stmt = branchItem.getKey();
@@ -582,8 +594,7 @@ public class Body implements Copyable {
         }
       }
 
-      return new Body(
-          locals, traps, ImmutableGraph.copyOf(mutableGraph), branches, firstStmt, position);
+      return new Body(locals, traps, ImmutableGraph.copyOf(cfg), branches, firstStmt, position);
     }
   }
 }
