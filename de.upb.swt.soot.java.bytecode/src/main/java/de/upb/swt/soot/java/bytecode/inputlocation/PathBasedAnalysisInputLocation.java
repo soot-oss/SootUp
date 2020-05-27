@@ -116,15 +116,15 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
 
   static @Nonnull String extractWarFile(String warFilePath) {
 
-    String destDirectory = "../shared-test-resources/java-warApp/tempWarExtracted/";
+    String destDirectory = System.getProperty("java.io.tmpdir");
     try {
       File dest = new File(destDirectory);
       if (!dest.exists()) {
         dest.mkdir();
       }
       ZipInputStream zis = new ZipInputStream(new FileInputStream(warFilePath));
-      ZipEntry zipEntry = zis.getNextEntry();
-      while (zipEntry != null) {
+      ZipEntry zipEntry;
+      while ((zipEntry = zis.getNextEntry()) != null) {
         String filepath = destDirectory + File.separator + zipEntry.getName();
         if (!zipEntry.isDirectory()) {
           BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filepath));
@@ -139,7 +139,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
           newDir.mkdir();
         }
         zis.closeEntry();
-        zipEntry = zis.getNextEntry();
       }
 
     } catch (IOException e) {

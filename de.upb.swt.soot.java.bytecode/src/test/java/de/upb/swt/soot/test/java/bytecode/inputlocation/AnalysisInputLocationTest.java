@@ -76,7 +76,7 @@ public abstract class AnalysisInputLocationTest {
 
   protected void testClassReceival(
       AnalysisInputLocation ns, ClassType sig, int minClassesFound, int maxClassesFound) {
-    boolean classFromJar = true;
+    boolean classFromJar = false;
 
     final Optional<? extends AbstractClassSource> clazz = ns.getClassSource(sig);
 
@@ -88,17 +88,23 @@ public abstract class AnalysisInputLocationTest {
 
     Assert.assertNotNull(PathBasedAnalysisInputLocation.jarsFromPath);
     for (Path jarPath : PathBasedAnalysisInputLocation.jarsFromPath) {
+      classFromJar = true;
       PathBasedAnalysisInputLocation nsJar =
           PathBasedAnalysisInputLocation.createForClassContainer(jarPath);
       final Collection<? extends AbstractClassSource> classSourcesFromJar =
           nsJar.getClassSources(getIdentifierFactory());
       Assert.assertNotNull(classSourcesFromJar);
       Assert.assertFalse(classSourcesFromJar.isEmpty());
+      Assert.assertThat(classSourcesFromJar.size(), new GreaterOrEqual<>(minClassesFound));
+      if (maxClassesFound != -1) {
+        Assert.assertThat(classSourcesFromJar.size(), new LessOrEqual<>(maxClassesFound));
+      }
     }
-
-    Assert.assertThat(classSources.size(), new GreaterOrEqual<>(minClassesFound));
-    if (maxClassesFound != -1) {
-      Assert.assertThat(classSources.size(), new LessOrEqual<>(maxClassesFound));
+    if (!classFromJar) {
+      Assert.assertThat(classSources.size(), new GreaterOrEqual<>(minClassesFound));
+      if (maxClassesFound != -1) {
+        Assert.assertThat(classSources.size(), new LessOrEqual<>(maxClassesFound));
+      }
     }
   }
 }
