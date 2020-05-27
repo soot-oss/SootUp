@@ -1,17 +1,24 @@
 package de.upb.swt.soot.core.graph;
 
-import com.google.common.graph.ElementOrder;
-import com.google.common.graph.EndpointPair;
-import com.google.common.graph.Graph;
+import com.google.common.graph.*;
+import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
 import javax.annotation.Nonnull;
 
+/**
+ * Graph structure which shall be optimized for iterating (vs random access of stmts/node propertys)
+ * a control flow graph
+ *
+ * @author Markus Schmidt
+ */
 public class StmtGraph implements Graph<Stmt> {
 
   @Nonnull private final HashMap<Stmt, Integer> stmtPosition;
   @Nonnull private final List<Stmt> stmtList;
   @Nonnull private final Map<Stmt, List<Stmt>> branches = new HashMap<>();
+
+  private int edgeCount = 0;
 
   public StmtGraph(int stmtCount) {
     stmtList = new ArrayList<>();
@@ -38,6 +45,7 @@ public class StmtGraph implements Graph<Stmt> {
     }
     final List<Stmt> branchSuccessors = branches.computeIfAbsent(u, key -> new ArrayList<>());
     branchSuccessors.add(v);
+    edgeCount++;
   }
 
   @Override
@@ -90,8 +98,13 @@ public class StmtGraph implements Graph<Stmt> {
 
   @Override
   public Set<EndpointPair<Stmt>> incidentEdges(Stmt node) {
-    // TODO:
-    throw new UnsupportedOperationException();
+    final Set<Stmt> predecessors = predecessors(node);
+    final Set<Stmt> successors = successors(node);
+    final HashSet<EndpointPair<Stmt>> incidents =
+        new HashSet<>(predecessors.size() + successors.size());
+    predecessors.forEach(pred -> incidents.add(EndpointPair.ordered(pred, node)));
+    successors.forEach(succ -> incidents.add(EndpointPair.ordered(node, succ)));
+    return incidents;
   }
 
   @Override
@@ -113,9 +126,11 @@ public class StmtGraph implements Graph<Stmt> {
   }
 
   @Override
+  /** expensive method; */
   public boolean hasEdgeConnecting(Stmt nodeU, Stmt nodeV) {
     // TODO: [ms] build cheaper version to find predecessor of nodeV in stmts
     return (nodeU.fallsThrough() && stmtList.get(stmtList.indexOf(nodeU) + 1) == nodeV)
-        || branches.get(nodeU).stream().anyMatch(stmt -> stmt == nodeV);
+        || (nodeU instanceof BranchingStmt
+            && branches.get(nodeU).stream().anyMatch(stmt -> stmt == nodeV));
   }
 }

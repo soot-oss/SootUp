@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.model;
  */
 
 import com.google.common.graph.*;
+import de.upb.swt.soot.core.graph.GeneralStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
@@ -460,7 +461,7 @@ public class Body implements Copyable {
     @Nullable private Stmt firstStmt = null;
 
     BodyBuilder() {
-      cfg = GraphBuilder.directed().nodeOrder(ElementOrder.insertion()).build();
+      cfg = new GeneralStmtGraph();
     }
 
     BodyBuilder(@Nonnull Body body) {
