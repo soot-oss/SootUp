@@ -3,6 +3,7 @@ package de.upb.swt.soot.test.java.bytecode.interceptors;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
+import com.google.common.graph.ImmutableGraph;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
@@ -14,7 +15,6 @@ import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.junit.Test;
@@ -26,14 +26,11 @@ public class NopEliminatorTest {
   /** Tests the correct handling of an empty {@link Body}. */
   @Test
   public void testNoInput() {
-    Set<Local> locals = Collections.emptySet();
-    List<Trap> traps = Collections.emptyList();
-    List<Stmt> stmts = Collections.emptyList();
-    Body testBody = Body.getNoBody(); // FIXME [ms] = new Body(locals, traps, stmts, null);
+    Body testBody = Body.getNoBody();
     Body processedBody = new NopEliminator().interceptBody(testBody);
 
     assertNotNull(processedBody);
-    assertArrayEquals(testBody.getStmts().toArray(), processedBody.getStmts().toArray());
+    assertEquals(testBody.getStmtGraph().nodes(), processedBody.getStmtGraph().nodes());
   }
 
   /**
@@ -44,12 +41,9 @@ public class NopEliminatorTest {
     Body testBody = createBody(true, false);
     Body processedBody = new NopEliminator().interceptBody(testBody);
 
-    List<Stmt> expectedList = testBody.getStmts();
-    List<Stmt> actualList = processedBody.getStmts();
-    assertEquals(expectedList.size() - 1, actualList.size());
-    for (int i = 0; i < testBody.getStmts().size() - 1; i++) {
-      assertSame(expectedList.get(i), actualList.get(i));
-    }
+    ImmutableGraph<Stmt> expectedGraph = testBody.getStmtGraph();
+    ImmutableGraph<Stmt> actualGraph = processedBody.getStmtGraph();
+    assertEquals(expectedGraph.nodes().size() - 1, actualGraph.nodes().size());
   }
 
   /**
@@ -61,7 +55,7 @@ public class NopEliminatorTest {
     Body testBody = createBody(true, true);
     Body processedBody = new NopEliminator().interceptBody(testBody);
 
-    assertArrayEquals(testBody.getStmts().toArray(), processedBody.getStmts().toArray());
+    assertEquals(testBody.getStmtGraph().nodes(), processedBody.getStmtGraph().nodes());
   }
 
   /** Tests the correct handling of a body without nops. */
@@ -70,7 +64,7 @@ public class NopEliminatorTest {
     Body testBody = createBody(false, false);
     Body processedBody = new NopEliminator().interceptBody(testBody);
 
-    assertArrayEquals(testBody.getStmts().toArray(), processedBody.getStmts().toArray());
+    assertEquals(testBody.getStmtGraph().nodes(), processedBody.getStmtGraph().nodes());
   }
 
   /**
