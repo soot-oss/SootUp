@@ -40,8 +40,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(war);
 
-    final ClassType warClass1 =
-        getIdentifierFactory().getClassType("SimpleWarRead", "WEB-INF/classes");
+    final ClassType warClass1 = getIdentifierFactory().getClassType("SimpleWarRead");
     testClassReceival(pathBasedNamespace, warClass1, 2);
 
     final ClassType class1 = getIdentifierFactory().getClassType("Employee", "ds");

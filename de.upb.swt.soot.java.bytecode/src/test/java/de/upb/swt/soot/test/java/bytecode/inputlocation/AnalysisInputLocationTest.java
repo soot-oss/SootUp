@@ -9,7 +9,6 @@ import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -47,10 +46,7 @@ import org.mockito.internal.matchers.LessOrEqual;
  */
 public abstract class AnalysisInputLocationTest {
 
-  final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
-
-  final String warFileDir = "../shared-test-resources/java-warApp";
-  final Path war = Paths.get(warFileDir + File.separator + "dummyWarApp.war");
+  final Path war = Paths.get("../shared-test-resources/java-warApp/dummyWarApp.war");
   final String warFile = war.toString();
 
   private IdentifierFactory identifierFactory;
@@ -79,6 +75,10 @@ public abstract class AnalysisInputLocationTest {
     boolean classFromJar = false;
 
     final Optional<? extends AbstractClassSource> clazz = ns.getClassSource(sig);
+
+    for (String s : PathBasedAnalysisInputLocation.classesInXML) {
+      if (sig.getClassName().equals(s)) System.out.println("The class from web.xml is present");
+    }
 
     clazz.ifPresent(
         abstractClassSource -> Assert.assertEquals(sig, abstractClassSource.getClassType()));
