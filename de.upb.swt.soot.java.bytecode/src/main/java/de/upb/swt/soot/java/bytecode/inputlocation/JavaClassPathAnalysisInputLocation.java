@@ -159,28 +159,6 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
     }
   }
 
-  /* TODO [kk] is such method needed?*/
-  /*
-  private @Nonnull Optional<AnalysisInputLocation> loadClassesFromJar(@Nonnull Path path) {
-    if (Files.exists(path) && PathUtils.isArchive(path)) {
-      InputStream inputStream =
-          JavaClassPathAnalysisInputLocation.class
-              .getClassLoader()
-              .getResourceAsStream(path + "/WEB-INF/lib/*.jar");
-      try {
-        assert inputStream != null;
-        inputStream.read();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-
-      return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path));
-    } else {
-      logger.warn("Invalid/Unknown class path entry: " + path);
-      return Optional.empty();
-    }
-  }TODO*/
-
   protected static final class InvalidClassPathException extends IllegalArgumentException {
 
     InvalidClassPathException(@Nullable String message) {
