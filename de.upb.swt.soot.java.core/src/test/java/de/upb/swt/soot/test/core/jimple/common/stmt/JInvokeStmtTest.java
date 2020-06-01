@@ -24,10 +24,7 @@ package de.upb.swt.soot.test.core.jimple.common.stmt;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
-import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.expr.JDynamicInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JInterfaceInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -148,8 +145,8 @@ public class JInvokeStmtTest {
             "mylambda", SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME, "void", Collections.emptyList());
     MethodSignature bootstrapMethodSig =
         dif.getMethodSignature("run", "Runnable", "void", Collections.emptyList());
-    List<? extends Value> bootstrapArgs = Collections.emptyList();
-    List<? extends Value> methodArgs = Collections.emptyList();
+    List<Immediate> bootstrapArgs = Collections.emptyList();
+    List<Immediate> methodArgs = Collections.emptyList();
 
     Stmt dynamicInvokeStmt =
         new JInvokeStmt(

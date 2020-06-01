@@ -38,7 +38,12 @@ import java.util.List;
  */
 public interface Value extends Acceptor, EquivTo {
 
-  /** Returns a List Values which are used by (ie contained within) this Value. */
+  /**
+   * Returns a List of Locals,FieldRefs,ArrayRefs which are used by (ie contained within) this
+   * Expression or Reference.
+   *
+   * @return
+   */
   List<Value> getUses();
 
   /** Returns the Soot type of this Value. */

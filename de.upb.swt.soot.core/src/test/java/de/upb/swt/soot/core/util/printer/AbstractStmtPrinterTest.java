@@ -3,6 +3,7 @@ package de.upb.swt.soot.core.util.printer;
 import static org.junit.Assert.*;
 
 import com.google.common.base.Objects;
+import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import org.junit.Test;
@@ -11,7 +12,7 @@ public class AbstractStmtPrinterTest {
 
   @Test
   public void addImportTest() {
-    NormalStmtPrinter p = new NormalStmtPrinter();
+    NormalStmtPrinter p = new NormalStmtPrinter(Body.getNoBody());
     p.enableImports(true);
 
     PackageName abc = new PackageName("a.b.c");

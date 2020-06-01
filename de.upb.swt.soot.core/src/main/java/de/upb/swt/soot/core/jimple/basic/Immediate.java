@@ -5,4 +5,4 @@ package de.upb.swt.soot.core.jimple.basic;
  *
  * @author Linghui Luo
  */
-public interface Immediate {}
+public interface Immediate extends Value {}

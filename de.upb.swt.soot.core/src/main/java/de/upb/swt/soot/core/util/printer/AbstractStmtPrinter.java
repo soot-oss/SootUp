@@ -22,13 +22,9 @@
 package de.upb.swt.soot.core.util.printer;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
-import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.SootField;
-import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.ClassType;
@@ -38,18 +34,21 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 /** Partial default StmtPrinter implementation. */
-public abstract class AbstractStmtPrinter implements StmtPrinter {
+public abstract class AbstractStmtPrinter extends StmtPrinter {
 
   protected boolean startOfLine = true;
-
   protected final char indentChar = '\u0020';
   protected final int indentStep = 4;
   protected int indent = 0;
 
   protected StringBuilder output = new StringBuilder();
-  private HashMap<String, PackageName> imports = new HashMap<>();
+  private final HashMap<String, PackageName> imports = new HashMap<>();
 
   boolean useImports = false;
+
+  AbstractStmtPrinter(@Nonnull Body body) {
+    super(body);
+  }
 
   void enableImports(boolean enable) {
     useImports = enable;
@@ -70,9 +69,7 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
       if (packageName == null) {
         imports.put(referencedClassName, referencedPackageName);
         return true;
-      } else if (packageName.equals(referencedPackageName)) {
-        return true;
-      }
+      } else return packageName.equals(referencedPackageName);
     }
     return false;
   }
@@ -98,22 +95,6 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   public void endStmt(Stmt u) {}
 
   @Override
-  public void startStmtBox(StmtBox ub) {
-    handleIndent();
-  }
-
-  @Override
-  public void endStmtBox(StmtBox ub) {}
-
-  @Override
-  public void startValueBox(ValueBox vb) {
-    handleIndent();
-  }
-
-  @Override
-  public void endValueBox(ValueBox vb) {}
-
-  @Override
   public void noIndent() {
     startOfLine = false;
   }
@@ -133,17 +114,15 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
     indent -= indentStep;
   }
 
-  @Override
-  public abstract void literal(String s);
-
   public void modifier(String str) {
     handleIndent();
     output.append(str);
-  };
+  }
 
   @Override
   public void typeSignature(@Nonnull Type type) {
     handleIndent();
+    // TODO: [ms] null should not be possible -> nonnnull ;)
     if (type == null) {
       output.append("<null>");
       return;
@@ -160,18 +139,6 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
     }
     output.append(type);
   }
-
-  @Override
-  public abstract void method(SootMethod m);
-
-  @Override
-  public abstract void field(SootField f);
-
-  @Override
-  public abstract void identityRef(IdentityRef r);
-
-  @Override
-  public abstract void stmtRef(Stmt u, boolean branchTarget);
 
   @Override
   public void newline() {

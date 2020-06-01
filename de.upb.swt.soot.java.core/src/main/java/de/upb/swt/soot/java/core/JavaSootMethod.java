@@ -1,5 +1,6 @@
 package de.upb.swt.soot.java.core;
 
+import com.google.common.graph.ImmutableGraph;
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -9,8 +10,6 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collections;
-import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 
@@ -48,8 +47,9 @@ public class JavaSootMethod extends SootMethod {
   }
 
   @Nonnull
+  @Override
   public JavaSootMethod withOverridingMethodSource(
-      Function<OverridingMethodSource, OverridingMethodSource> overrider) {
+      @Nonnull Function<OverridingMethodSource, OverridingMethodSource> overrider) {
     return new JavaSootMethod(
         overrider.apply(new OverridingMethodSource(methodSource)),
         getSignature(),
@@ -59,29 +59,33 @@ public class JavaSootMethod extends SootMethod {
   }
 
   @Nonnull
-  public JavaSootMethod withSource(MethodSource source) {
+  @Override
+  public JavaSootMethod withSource(@Nonnull MethodSource source) {
     return new JavaSootMethod(source, getSignature(), getModifiers(), exceptions, getAnnotations());
   }
 
   @Nonnull
-  public JavaSootMethod withModifiers(Iterable<Modifier> modifiers) {
+  @Override
+  public JavaSootMethod withModifiers(@Nonnull Iterable<Modifier> modifiers) {
     return new JavaSootMethod(
         methodSource, getSignature(), modifiers, getExceptionSignatures(), getAnnotations());
   }
 
   @Nonnull
-  public JavaSootMethod withThrownExceptions(Iterable<ClassType> thrownExceptions) {
+  @Override
+  public JavaSootMethod withThrownExceptions(@Nonnull Iterable<ClassType> thrownExceptions) {
     return new JavaSootMethod(
         methodSource, getSignature(), getModifiers(), thrownExceptions, getAnnotations());
   }
 
   @Nonnull
-  public JavaSootMethod withAnnotations(Iterable<AnnotationType> annotations) {
+  public JavaSootMethod withAnnotations(@Nonnull Iterable<AnnotationType> annotations) {
     return new JavaSootMethod(
         methodSource, getSignature(), getModifiers(), getExceptionSignatures(), annotations);
   }
 
   @Nonnull
+  @Override
   public JavaSootMethod withBody(@Nonnull Body body) {
     return new JavaSootMethod(
         new OverridingMethodSource(methodSource).withBody(body),
@@ -91,9 +95,11 @@ public class JavaSootMethod extends SootMethod {
         getAnnotations());
   }
 
-  /** @see OverridingMethodSource#withBodyStmts(Consumer) */
+  /** @see OverridingMethodSource#withBodyStmts(Function) */
   @Nonnull
-  public JavaSootMethod withBodyStmts(Consumer<List<Stmt>> stmtModifier) {
+  @Override
+  public JavaSootMethod withBodyStmts(
+      @Nonnull Function<ImmutableGraph<Stmt>, ImmutableGraph<Stmt>> stmtModifier) {
     return new JavaSootMethod(
         new OverridingMethodSource(methodSource).withBodyStmts(stmtModifier),
         getSignature(),
@@ -108,7 +114,7 @@ public class JavaSootMethod extends SootMethod {
   }
 
   public interface AnnotationOrSignatureStep extends MethodSourceStep {
-    BuildStep withAnnotation(Iterable<AnnotationType> annotations);
+    BuildStep withAnnotation(@Nonnull Iterable<AnnotationType> annotations);
   }
 
   /**
@@ -128,7 +134,7 @@ public class JavaSootMethod extends SootMethod {
 
     @Override
     @Nonnull
-    public BuildStep withAnnotation(Iterable<AnnotationType> annotations) {
+    public BuildStep withAnnotation(@Nonnull Iterable<AnnotationType> annotations) {
       this.annotations = annotations;
       return this;
     }

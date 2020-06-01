@@ -5,7 +5,6 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import java.util.Collections;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -15,12 +14,7 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
   public void test() {
-    // add test after fixing jimple
-  }
-
-  @Ignore
-  public void defaultTest2() {
-    SootMethod method = loadMethod(getMethodSignature("switchCaseStatementEnum"));
+    /* TODO uncomment SootMethod method = loadMethod(getMethodSignature("switchCaseStatementEnum"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
@@ -46,9 +40,13 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
             "goto label4",
             "label4:",
             "return"));
-    method = loadMethod(getMethodSignature("switchCaseStatementInt"));
+
+     */
+
+    SootMethod method2 = loadMethod(getMethodSignature("switchCaseStatementInt"));
+    // FIXME: [ms] Buggy Jimple GEneration for Stmt -> targets not set correctly
     assertJimpleStmts(
-        method,
+        method2,
         expectedBodyStmts(
             "r0 := @this: SwitchCaseStatement",
             "$i0 = 2",

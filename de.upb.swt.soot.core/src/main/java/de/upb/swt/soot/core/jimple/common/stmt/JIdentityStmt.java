@@ -25,11 +25,8 @@
 
 package de.upb.swt.soot.core.jimple.common.stmt;
 
-import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.*;
+import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
@@ -39,58 +36,56 @@ import javax.annotation.Nonnull;
 
 public final class JIdentityStmt extends AbstractDefinitionStmt implements Copyable {
 
-  public JIdentityStmt(Value local, Value identityValue, StmtPositionInfo positionInfo) {
-    this(Jimple.newLocalBox(local), Jimple.newIdentityRefBox(identityValue), positionInfo);
-  }
-
-  protected JIdentityStmt(
-      ValueBox localBox, ValueBox identityValueBox, StmtPositionInfo positionInfo) {
-    super(localBox, identityValueBox, positionInfo);
+  public JIdentityStmt(
+      @Nonnull Local local,
+      @Nonnull IdentityRef identityValue,
+      @Nonnull StmtPositionInfo positionInfo) {
+    super(local, identityValue, positionInfo);
   }
 
   @Override
   public String toString() {
-    return getLeftBox().getValue().toString() + " := " + getRightBox().getValue().toString();
+    return getLeftOp().toString() + " := " + getRightOp().toString();
   }
 
   @Override
-  public void toString(StmtPrinter up) {
-    getLeftBox().toString(up);
+  public void toString(@Nonnull StmtPrinter up) {
+    getLeftOp().toString(up);
     up.literal(" := ");
-    getRightBox().toString(up);
+    getRightOp().toString(up);
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseIdentityStmt(this);
   }
 
   public Type getType() {
-    return getLeftBox().getValue().getType();
+    return getLeftOp().getType();
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseIdentityStmt(this, o);
   }
 
   @Override
   public int equivHashCode() {
-    return getLeftBox().getValue().equivHashCode() + 31 * getRightBox().getValue().equivHashCode();
+    return getLeftOp().equivHashCode() + 31 * getRightOp().equivHashCode();
   }
 
   @Nonnull
-  public JIdentityStmt withLocal(Value local) {
-    return new JIdentityStmt(local, getRightOp(), getPositionInfo());
+  public JIdentityStmt withLocal(@Nonnull Local local) {
+    return new JIdentityStmt(local, (IdentityRef) getRightOp(), getPositionInfo());
   }
 
   @Nonnull
-  public JIdentityStmt withIdentityValue(Value identityValue) {
-    return new JIdentityStmt(getLeftOp(), identityValue, getPositionInfo());
+  public JIdentityStmt withIdentityValue(@Nonnull IdentityRef identityValue) {
+    return new JIdentityStmt((Local) getLeftOp(), identityValue, getPositionInfo());
   }
 
   @Nonnull
-  public JIdentityStmt withPositionInfo(StmtPositionInfo positionInfo) {
-    return new JIdentityStmt(getLeftOp(), getRightOp(), positionInfo);
+  public JIdentityStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+    return new JIdentityStmt((Local) getLeftOp(), (IdentityRef) getRightOp(), positionInfo);
   }
 }

@@ -24,6 +24,7 @@ public class SwitchCaseStatementWithStringTest extends MinimalBytecodeTestSuiteB
   @Override
   public List<String> expectedBodyStmts() {
     // TODO: INFO: the generated jimple contains a bug - $i1,$i1,$i3 are undefined/not set
+    // and repeatings of: "$stack7 = $stack7"
     return Stream.of(
             "l0 := @this: SwitchCaseStatementWithString",
             "l1 = \"something\"",
