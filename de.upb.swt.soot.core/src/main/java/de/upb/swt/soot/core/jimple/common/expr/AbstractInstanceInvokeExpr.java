@@ -31,24 +31,20 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
 
   @Nonnull private final Local base;
 
-  AbstractInstanceInvokeExpr(ValueBox baseBox, MethodSignature methodSig, ValueBox[] argBoxes) {
-    super(methodSig, argBoxes);
-    this.baseBox = baseBox;
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
-    this.base = baseBox.getValue();
+  AbstractInstanceInvokeExpr(
+      @Nonnull Local base, MethodSignature methodSig, @Nonnull List<Immediate> args) {
+    super(methodSig, args);
+    this.base = base;
   }
 
   public Local getBase() {
     return base;
-  }
-
-  public ValueBox getBaseBox() {
-    return baseBox;
   }
 
   @Override
