@@ -1,6 +1,5 @@
 package de.upb.swt.soot.test.java.bytecode.interceptors;
 
-
 import categories.Java8Test;
 import java.util.*;
 import org.junit.Test;

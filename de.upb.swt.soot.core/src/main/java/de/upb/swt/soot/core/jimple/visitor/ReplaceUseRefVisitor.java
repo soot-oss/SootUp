@@ -1,5 +1,6 @@
 package de.upb.swt.soot.core.jimple.visitor;
 
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.ref.*;
 import javax.annotation.Nonnull;
@@ -12,10 +13,10 @@ import javax.annotation.Nonnull;
 public class ReplaceUseRefVisitor extends AbstractRefVisitor {
 
   Value oldUse;
-  Value newUse;
+  Local newUse;
   Ref newRef;
 
-  public ReplaceUseRefVisitor(@Nonnull Value oldUse, @Nonnull Value newUse) {
+  public ReplaceUseRefVisitor(@Nonnull Value oldUse, @Nonnull Local newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
   }

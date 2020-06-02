@@ -79,7 +79,7 @@ public final class JParameterRef implements IdentityRef, Copyable {
   }
 
   /** Returns the index of this ParameterRef. */
-  public int getIndex() {
+  public int getNum() {
     return num;
   }
 

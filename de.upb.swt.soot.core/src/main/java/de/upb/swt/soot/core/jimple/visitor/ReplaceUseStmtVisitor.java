@@ -2,6 +2,8 @@ package de.upb.swt.soot.core.jimple.visitor;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
 import de.upb.swt.soot.core.jimple.common.ref.Ref;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
@@ -16,10 +18,10 @@ import javax.annotation.Nonnull;
 public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
 
   Value oldUse;
-  Value newUse;
+  Local newUse;
   Stmt newStmt;
 
-  public ReplaceUseStmtVisitor(Value oldUse, Value newUse) {
+  public ReplaceUseStmtVisitor(Value oldUse, Local newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
   }
@@ -37,7 +39,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
     ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor(oldUse, newUse);
     invokeExpr.accept(exprVisitor);
     if (!exprVisitor.getNewExpr().equivTo(invokeExpr)) {
-      newStmt = stmt.withInvokeExpr(exprVisitor.getNewExpr());
+      newStmt = stmt.withInvokeExpr((AbstractInvokeExpr) exprVisitor.getNewExpr());
     } else {
       defaultCase(stmt);
     }
@@ -54,7 +56,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
 
     } else if (rValue instanceof Ref) {
 
-      ReplaceUseRefVisitor refVisitor = new ReplaceUseRefVisitor(oldUse, newUse);
+      ReplaceUseRefVisitor refVisitor = new ReplaceUseRefVisitor(oldUse, (Local) newUse);
       rValue.accept(refVisitor);
       if (!refVisitor.getNewRef().equivTo(rValue)) {
         newRValue = refVisitor.getNewRef();
@@ -116,7 +118,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
     ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor(oldUse, newUse);
     condition.accept(exprVisitor);
     if (!exprVisitor.getNewExpr().equivTo(condition)) {
-      newStmt = stmt.withCondition(exprVisitor.getNewExpr());
+      newStmt = stmt.withCondition((AbstractConditionExpr) exprVisitor.getNewExpr());
     } else {
       defaultCase(stmt);
     }
@@ -144,7 +146,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
   public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
     Value op = stmt.getOp();
     if (op.equivTo(oldUse)) {
-      newStmt = stmt.withOp(newUse);
+      newStmt = stmt.withReturnValue(newUse);
     } else {
       defaultCase(stmt);
     }

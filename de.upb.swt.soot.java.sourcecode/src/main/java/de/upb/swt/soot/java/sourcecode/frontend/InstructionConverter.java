@@ -1170,37 +1170,34 @@ public class InstructionConverter {
    * @return This methods returns a list of stmts with all branch stmts ({@link JIfStmt}, {@link
    *     JGotoStmt}, {@link JSwitchStmt}) having set up their target stmts.
    */
-
   protected void setUpTargets(Stmt target, Integer iTarget, Body.BodyBuilder builder) {
 
-    if(targetsOfIfStmts.containsValue(iTarget)){
-      for(JIfStmt ifStmt : targetsOfIfStmts.keySet()){
-        if(targetsOfIfStmts.get(ifStmt).equals(iTarget)){
+    if (targetsOfIfStmts.containsValue(iTarget)) {
+      for (JIfStmt ifStmt : targetsOfIfStmts.keySet()) {
+        if (targetsOfIfStmts.get(ifStmt).equals(iTarget)) {
           builder.addFlow(ifStmt, target);
         }
       }
     }
-    /**for(Map.Entry stmt: targetsOfGotoStmts.entrySet()){
-      System.out.println(stmt);
-    }*/
-    if(targetsOfGotoStmts.containsValue(iTarget)){
-      for(JGotoStmt gotoStmt : targetsOfGotoStmts.keySet()){
-        if(targetsOfGotoStmts.get(gotoStmt).equals(iTarget)){
+    /** for(Map.Entry stmt: targetsOfGotoStmts.entrySet()){ System.out.println(stmt); } */
+    if (targetsOfGotoStmts.containsValue(iTarget)) {
+      for (JGotoStmt gotoStmt : targetsOfGotoStmts.keySet()) {
+        if (targetsOfGotoStmts.get(gotoStmt).equals(iTarget)) {
           builder.addFlow(gotoStmt, target);
         }
       }
     }
 
-    if(defaultOfLookUpSwitchStmts.containsValue(iTarget)){
-      for(JSwitchStmt switchStmt : defaultOfLookUpSwitchStmts.keySet()){
-        if(defaultOfLookUpSwitchStmts.get(switchStmt).equals(iTarget)){
+    if (defaultOfLookUpSwitchStmts.containsValue(iTarget)) {
+      for (JSwitchStmt switchStmt : defaultOfLookUpSwitchStmts.keySet()) {
+        if (defaultOfLookUpSwitchStmts.get(switchStmt).equals(iTarget)) {
           builder.addFlow(switchStmt, target);
         }
       }
     }
 
-    for(JSwitchStmt lookupSwitch : this.targetsOfLookUpSwitchStmts.keySet()){
-      if(targetsOfLookUpSwitchStmts.get(lookupSwitch).contains(iTarget)){
+    for (JSwitchStmt lookupSwitch : this.targetsOfLookUpSwitchStmts.keySet()) {
+      if (targetsOfLookUpSwitchStmts.get(lookupSwitch).contains(iTarget)) {
         builder.addFlow(lookupSwitch, target);
       }
     }

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
@@ -81,7 +82,7 @@ public class ReplaceUseExprVisitorTest {
   @Test
   public void testCaseInvokeExpr() {
 
-    List<Value> args = new ArrayList<Value>();
+    List<Immediate> args = new ArrayList<Immediate>();
     args.add(arg1);
     args.add(arg2);
     args.add(arg3);
@@ -124,7 +125,7 @@ public class ReplaceUseExprVisitorTest {
   @Test
   public void testCaseInstanceInvokeExpr() {
 
-    List<Value> args = new ArrayList<Value>();
+    List<Immediate> args = new ArrayList<Immediate>();
     args.add(arg1);
     args.add(arg2);
     args.add(arg3);

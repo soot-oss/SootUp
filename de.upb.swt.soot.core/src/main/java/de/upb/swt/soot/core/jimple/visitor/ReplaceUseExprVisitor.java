@@ -1,6 +1,7 @@
 package de.upb.swt.soot.core.jimple.visitor;
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.*;
@@ -16,10 +17,10 @@ import javax.annotation.Nonnull;
 public class ReplaceUseExprVisitor extends AbstractExprVisitor {
 
   Value oldUse;
-  Value newUse;
+  Immediate newUse;
   Expr newExpr;
 
-  public ReplaceUseExprVisitor(Value oldUse, Value newUse) {
+  public ReplaceUseExprVisitor(Value oldUse, Immediate newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
   }
@@ -309,7 +310,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
   // args[] is Immediate[]
   public void caseStaticInvokeExpr(@Nonnull JStaticInvokeExpr v) {
     boolean isChanged = false;
-    List<Value> newArgs = new ArrayList<Value>(v.getArgs());
+    List<Immediate> newArgs = new ArrayList<Immediate>(v.getArgs());
     int index = 0;
     if (!v.getArgs().isEmpty()) {
       for (Value arg : v.getArgs()) {
@@ -333,7 +334,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
   // args[] is Immediate[]
   public void caseSpecialInvokeExpr(@Nonnull JSpecialInvokeExpr v) {
     boolean isChanged = false;
-    List<Value> newArgs = new ArrayList<Value>(v.getArgs());
+    List<Immediate> newArgs = new ArrayList<Immediate>(v.getArgs());
     int index = 0;
     if (!v.getArgs().isEmpty()) {
       for (Value arg : v.getArgs()) {
@@ -359,7 +360,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
   @Override
   public void caseVirtualInvokeExpr(@Nonnull JVirtualInvokeExpr v) {
     boolean isChanged = false;
-    List<Value> newArgs = new ArrayList<Value>(v.getArgs());
+    List<Immediate> newArgs = new ArrayList<Immediate>(v.getArgs());
     int index = 0;
     if (!v.getArgs().isEmpty()) {
       for (Value arg : v.getArgs()) {
@@ -385,7 +386,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
   @Override
   public void caseInterfaceInvokeExpr(@Nonnull JInterfaceInvokeExpr v) {
     boolean isChanged = false;
-    List<Value> newArgs = new ArrayList<Value>(v.getArgs());
+    List<Immediate> newArgs = new ArrayList<Immediate>(v.getArgs());
     int index = 0;
     if (!v.getArgs().isEmpty()) {
       for (Value arg : v.getArgs()) {
@@ -411,7 +412,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
   @Override
   public void caseDynamicInvokeExpr(@Nonnull JDynamicInvokeExpr v) {
     boolean isChanged = false;
-    List<Value> newArgs = new ArrayList<Value>(v.getArgs());
+    List<Immediate> newArgs = new ArrayList<Immediate>(v.getArgs());
     int index = 0;
     if (!v.getArgs().isEmpty()) {
       for (Value arg : v.getArgs()) {
@@ -463,7 +464,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
   @Override
   public void caseNewMultiArrayExpr(@Nonnull JNewMultiArrayExpr v) {
     boolean isChanged = false;
-    List<Value> newSizes = new ArrayList<Value>(v.getSizes());
+    List<Immediate> newSizes = new ArrayList<Immediate>(v.getSizes());
     int index = 0;
     if (!v.getSizes().isEmpty()) {
       for (Value arg : v.getSizes()) {

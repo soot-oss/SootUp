@@ -232,7 +232,7 @@ public class LocalSplitter implements BodyInterceptor {
     }
 
     Body newBody = originalBody.withLocals(newLocals);
-    newBody = newBody.withStmts(newStmts);
+    // newBody = newBody.withStmts(newStmts);
     return newBody;
   }
 

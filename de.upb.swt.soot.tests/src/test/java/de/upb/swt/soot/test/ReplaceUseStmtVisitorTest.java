@@ -6,6 +6,7 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
 import de.upb.swt.soot.core.jimple.common.ref.Ref;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -109,7 +110,7 @@ public class ReplaceUseStmtVisitorTest {
     ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(base, newOp);
 
     // invokeExpr
-    Expr invokeExpr =
+    AbstractInvokeExpr invokeExpr =
         JavaJimple.newSpecialInvokeExpr(base, methodeWithOutParas, Collections.emptyList());
     Stmt stmt = JavaJimple.newInvokeStmt(invokeExpr, noStmtPositionInfo);
     stmt.accept(visitor);

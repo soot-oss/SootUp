@@ -22,7 +22,6 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
@@ -447,12 +446,12 @@ public class WalaIRToJimpleConverter {
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
         InstructionConverter instConverter =
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
-        //Don't exchange, different stmts could have same ids
+        // Don't exchange, different stmts could have same ids
         HashMap<Stmt, Integer> stmt2iIndex = new HashMap<>();
         Stmt lastStmt = null;
         for (SSAInstruction inst : insts) {
           List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst);
-          if(!retStmts.isEmpty()){
+          if (!retStmts.isEmpty()) {
             for (Stmt stmt : retStmts) {
               builder.addStmt(stmt, true);
               stmt2iIndex.put(stmt, inst.iIndex());
@@ -479,7 +478,7 @@ public class WalaIRToJimpleConverter {
           stmt2iIndex.put(ret, -1);
         }
 
-        for(Stmt stmt: stmt2iIndex.keySet()){
+        for (Stmt stmt : stmt2iIndex.keySet()) {
           instConverter.setUpTargets(stmt, stmt2iIndex.get(stmt), builder);
         }
 
