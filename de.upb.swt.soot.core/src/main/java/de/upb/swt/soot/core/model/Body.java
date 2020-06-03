@@ -551,7 +551,6 @@ public class Body implements Copyable {
     public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
 
       if (fromStmt instanceof BranchingStmt) {
-        //     System.out.println(fromStmt +" ====> "+ toStmt);
         List<Stmt> edges = branches.computeIfAbsent(fromStmt, stmt -> new ArrayList());
         edges.add(toStmt);
       }
@@ -586,22 +585,41 @@ public class Body implements Copyable {
       for (Map.Entry<Stmt, List<Stmt>> branchItem : branches.entrySet()) {
         final Stmt stmt = branchItem.getKey();
         final int outgoingCount = branchItem.getValue().size();
-        if (stmt instanceof JSwitchStmt && outgoingCount != ((JSwitchStmt) stmt).getValueCount()) {
-          throw new IllegalArgumentException(
-              stmt
-                  + ": size of outgoing flows (i.e. "
-                  + outgoingCount
-                  + ") does not match the amount of switch statements case labels (i.e. "
-                  + ((JSwitchStmt) stmt).getValueCount()
-                  + ").");
-        }
-        if (stmt instanceof JIfStmt && outgoingCount != 2) {
-          throw new IllegalArgumentException(
-              stmt + ": size of outgoing flows must be 2 but the size is " + outgoingCount + ".");
-        }
-        if (stmt instanceof JGotoStmt && outgoingCount != 1) {
-          throw new IllegalArgumentException(
-              stmt + ": GotoS has more than '1' (i.e. '" + outgoingCount + "') outgoing flows.");
+        if (stmt instanceof JSwitchStmt) {
+          if (outgoingCount != ((JSwitchStmt) stmt).getValueCount()) {
+            throw new IllegalArgumentException(
+                stmt
+                    + ": size of outgoing flows (i.e. "
+                    + outgoingCount
+                    + ") does not match the amount of switch statements case labels (i.e. "
+                    + ((JSwitchStmt) stmt).getValueCount()
+                    + ").");
+          }
+        } else if (stmt instanceof JIfStmt) {
+          if (outgoingCount != 2) {
+            throw new IllegalArgumentException(
+                stmt + ": size of outgoing flows must be 2 but the size is " + outgoingCount + ".");
+          } else {
+
+            // FIXME: [ms] HACKY! fix order of targets of ifstmts in frontends i.e. Asmmethodsource
+            final List<Stmt> edges = branches.get(stmt);
+            Stmt currentNextNode = edges.get(0);
+            final Iterator<Stmt> iterator = cfg.nodes().iterator();
+            while (iterator.hasNext() && iterator.next() != stmt) {}
+
+            // switch edge order if the order is wrong i.e. the first edge is not the following stmt
+            // in the node list
+            if (iterator.hasNext() && iterator.next() != currentNextNode) {
+              System.out.println("DEBUG: IF order switched!");
+              edges.set(0, edges.get(1));
+              edges.set(1, currentNextNode);
+            }
+          }
+        } else if (stmt instanceof JGotoStmt) {
+          if (outgoingCount != 1) {
+            throw new IllegalArgumentException(
+                stmt + ": GotoS has more than '1' (i.e. '" + outgoingCount + "') outgoing flows.");
+          }
         }
       }
 

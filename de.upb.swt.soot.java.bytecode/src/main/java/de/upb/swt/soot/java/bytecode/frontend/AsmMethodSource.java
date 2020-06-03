@@ -212,6 +212,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
     Body body = bodyBuilder.build();
 
+    // FIXME: remove
+    if (true) {
+      return body;
+    }
+
     for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
       try {
         body = bodyInterceptor.interceptBody(body);
@@ -220,7 +225,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             "Failed to apply " + bodyInterceptor + " to " + lazyMethodSignature.get(), e);
       }
     }
-
     return body;
   }
 
@@ -1973,8 +1977,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
     Map<LabelNode, Iterator<Stmt>> handlers = new LinkedHashMap<>(tryCatchBlocks.size());
     for (TryCatchBlockNode tc : tryCatchBlocks) {
-      Stmt start = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-      Stmt end = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
       Iterator<Stmt> hitr = handlers.get(tc.handler);
       if (hitr == null) {
         hitr = trapHandler.get(tc.handler).iterator();
@@ -1987,7 +1989,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       } else {
         cls = JavaIdentifierFactory.getInstance().getClassType(AsmUtil.toQualifiedName(tc.type));
       }
-      // FIXME: [ms] remove boxes from traps
+      // FIXME: [ms] remove boxes/nops from traps
+      Stmt start = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+      Stmt end = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+      bodyBuilder.addStmt(start);
+      bodyBuilder.addStmt(end);
+
       Trap trap = Jimple.newTrap(cls, start, end, handler);
       traps.add(trap);
       labelsTheStmtBranchesTo.put(tc.start, start);
@@ -2031,7 +2038,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       if (insn instanceof LabelNode) {
         JIdentityStmt caughtEx = null;
 
-        // TODO: [ms] integrate this if-else into findIdentityRefInContainer itself
+        // TODO: [ms] integrate this if-else into findIdentityRefInContainer itself?
         if (stmt instanceof JIdentityStmt) {
           caughtEx = (JIdentityStmt) stmt;
         } else if (stmt instanceof StmtContainer) {
@@ -2083,6 +2090,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     if (labels.isEmpty()) {
       return;
     }
+
+    // FIXME
+    System.out.println(" remaining labels: " + labels);
+    assert false;
+
     Stmt end = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     bodyBuilder.addStmt(end, true);
 
