@@ -4,14 +4,17 @@ class ThrowExceptionMethod{
     void divideByZero() throws ArithmeticException{
         int i=8/0;
     }
-    void throwCustomException() {
-        throw new CustomException();
+    void throwCustomException(){
+		try{
+        throw new CustomException("Custom Exception");}
+		catch( CustomException e){
+			System.out.println(e.getMessage());
+		}
     }
-
 }
 
 class CustomException extends Exception{
-    CustomException(){
-        System.out.println("CustomException is here");
+    public CustomException(String message){
+        super(message);
     }
 }
