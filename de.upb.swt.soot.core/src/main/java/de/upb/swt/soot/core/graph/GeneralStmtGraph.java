@@ -67,8 +67,8 @@ public class GeneralStmtGraph implements MutableGraph<Stmt> {
     if (hasEdgeConnecting(u, v)) {
       return false;
     }
-    final List<Stmt> pred = successors.computeIfAbsent(u, key -> new ArrayList<>());
-    pred.add(v);
+    final List<Stmt> pred = predecessors.computeIfAbsent(v, key -> new ArrayList<>());
+    pred.add(u);
 
     final List<Stmt> succ = successors.computeIfAbsent(u, key -> new ArrayList<>());
     succ.add(v);
@@ -110,9 +110,8 @@ public class GeneralStmtGraph implements MutableGraph<Stmt> {
           return false;
         }
         EndpointPair<?> endpointPair = (EndpointPair<?>) obj;
-        return isDirected() == endpointPair.isOrdered()
-            && nodes().contains(endpointPair.nodeU())
-            && successors((Stmt) endpointPair.nodeU()).contains(endpointPair.nodeV());
+        final Set<Stmt> successors = successors((Stmt) endpointPair.nodeU());
+        return successors != null && successors.contains(endpointPair.nodeV());
       }
     };
   }

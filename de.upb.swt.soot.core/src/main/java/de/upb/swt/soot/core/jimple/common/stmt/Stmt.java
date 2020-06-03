@@ -6,7 +6,6 @@ import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.visitor.Acceptor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
-import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
@@ -109,9 +108,5 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
 
   public StmtPositionInfo getPositionInfo() {
     return positionInfo;
-  }
-
-  public boolean isBranchTarget(Body body) {
-    return body.isStmtBranchTarget(this);
   }
 }

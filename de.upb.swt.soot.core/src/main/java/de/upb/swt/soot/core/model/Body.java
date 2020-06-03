@@ -295,15 +295,20 @@ public class Body implements Copyable {
   @Nonnull
   public Collection<Stmt> getTargetStmtsOfBranches() {
     List<Stmt> stmtList = new ArrayList<>();
-    for (Iterator<Stmt> iterator = cfg.nodes().iterator(); iterator.hasNext(); ) {
+    Iterator<Stmt> iterator = cfg.nodes().iterator();
+    while (iterator.hasNext()) {
       Stmt stmt = iterator.next();
 
       if (stmt instanceof BranchingStmt) {
         final List<Stmt> branchTargetsOf = getBranchTargetsOf(stmt);
         // filter if "fallsThrough"-stmt from targets of branching stmts
-        for (int i = stmt.fallsThrough() ? 1 : 0; i < branchTargetsOf.size(); i++) {
-          Stmt target = branchTargetsOf.get(i);
-          stmtList.add(target);
+
+        if (stmt instanceof JIfStmt) {
+          stmtList.add(branchTargetsOf.get(0));
+        } else if (stmt instanceof JGotoStmt) {
+          stmtList.add(branchTargetsOf.get(0));
+        } else if (stmt instanceof JSwitchStmt) {
+          stmtList.addAll(branchTargetsOf);
         }
       }
     }
@@ -357,11 +362,25 @@ public class Body implements Copyable {
   public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
     // FIXME: just because the stmt has just one ingoing flow it does not mean its not a branch
     // target
-    return cfg.predecessors(targetStmt).size() > 1
-        || cfg.predecessors(targetStmt).stream()
-            .findAny()
-            .filter(prev -> prev instanceof BranchingStmt)
-            .isPresent();
+    final Set<Stmt> predecessors = cfg.predecessors(targetStmt);
+    if (predecessors.size() > 1) {
+      return true;
+    }
+
+    Stmt pred = predecessors.iterator().next();
+    if (pred instanceof JIfStmt && cfg.successors(pred).stream().findFirst().get() != targetStmt) {
+      return true;
+    }
+
+    if (pred instanceof JGotoStmt) {
+      return true;
+    }
+
+    if (pred instanceof JSwitchStmt) {
+      return true;
+    }
+
+    return false;
   }
 
   public void validateIdentityStatements() {
@@ -522,17 +541,6 @@ public class Body implements Copyable {
     }
 
     @Nonnull
-    public BodyBuilder mergeStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-      final Set<Stmt> predecessors = cfg.predecessors(oldStmt);
-      final Set<Stmt> successors = cfg.successors(oldStmt);
-      cfg.addNode(newStmt);
-      predecessors.forEach(predecessor -> cfg.putEdge(predecessor, newStmt));
-      successors.forEach(successor -> cfg.putEdge(newStmt, successor));
-      removeStmt(oldStmt);
-      return this;
-    }
-
-    @Nonnull
     public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
       cfg.removeNode(stmt);
       branches.remove(stmt);
@@ -542,7 +550,9 @@ public class Body implements Copyable {
 
     @Nonnull
     public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
+
       if (fromStmt instanceof BranchingStmt) {
+        //     System.out.println(fromStmt +" ====> "+ toStmt);
         List<Stmt> edges = branches.computeIfAbsent(fromStmt, stmt -> new ArrayList());
         edges.add(toStmt);
       }
@@ -570,6 +580,7 @@ public class Body implements Copyable {
       for (Stmt stmt : cfg.nodes()) {
         System.out.print("\"" + stmt + "\" => ");
         System.out.println(cfg.successors(stmt));
+        System.out.println("in: " + cfg.predecessors(stmt) + "\n\n");
       }
 
       // validate branch stmts

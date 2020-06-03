@@ -392,7 +392,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   }
 
   void setStmt(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
-    // FIXME: re-add linenumber keep
+    // FIXME: [AD] re-add linenumber keep
     // ASM LineNumberNode
     // if (Options.keep_line_number() && lastLineNumber >= 0) {
     // Tag lineTag = stmt.getTag("LineNumberTag");
@@ -1721,6 +1721,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       if (!InsnToStmt.containsKey(ln)) {
         JNopStmt nop = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
         setStmt(ln, nop);
+        bodyBuilder.addStmt(nop, true);
       }
       return;
     }

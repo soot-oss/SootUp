@@ -92,8 +92,9 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
     // Build labelStmts and refStmts
     // TODO: make 2 loops access body directly; maybe remove getAssociatedStmts()?
-    for (Stmt stmt : body.getTargetStmtsOfBranches()) {
-      if (stmt.isBranchTarget(body)) {
+    final Collection<Stmt> targetStmtsOfBranches = body.getTargetStmtsOfBranches();
+    for (Stmt stmt : targetStmtsOfBranches) {
+      if (body.isStmtBranchTarget(stmt)) {
         labelStmts.add(stmt);
       } else {
         // i.e. traps?
@@ -111,6 +112,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     int refCount = 0;
 
     // Traverse the stmts and assign a label if necessary
+    // TODO: [ms] improve: iterate over labelStmts/refStmts
     for (Stmt s : stmts) {
       if (labelStmts.contains(s)) {
         labels.put(s, String.format(formatString, ++labelCount));
