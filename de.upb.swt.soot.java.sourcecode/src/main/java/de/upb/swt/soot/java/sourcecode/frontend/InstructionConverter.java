@@ -310,7 +310,7 @@ public class InstructionConverter {
 
   private List<Stmt> convertAssertInstruction(
       DebuggingInformation debugInfo, AstAssertInstruction inst) {
-    List<Stmt> stmts = new ArrayList<>(7);
+    List<Stmt> stmts = new ArrayList<>();
     // create a static field for checking if assertion is disabled.
     JavaClassType cSig = (JavaClassType) methodSignature.getDeclClassType();
     FieldSignature fieldSig =
@@ -344,8 +344,6 @@ public class InstructionConverter {
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     stmts.add(ifStmt);
-    //    targetsOfIfStmts.put(ifStmt, nopStmt); TODO: [ms] we need a wala index for nop? or last
-    // stmt?
 
     // create ifStmt for the actual assertion.
     Local assertLocal = getLocal(PrimitiveType.getBoolean(), inst.getUse(0));
@@ -357,10 +355,8 @@ public class InstructionConverter {
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     stmts.add(assertIfStmt);
-    //    targetsOfIfStmts.put(assertIfStmt, nopStmt); TODO: [ms] we need a wala index for nop? or
-    // last stmt?
-
     // create failed assertion code.
+
     ReferenceType assertionErrorType =
         JavaIdentifierFactory.getInstance().getClassType("java.lang.AssertionError");
     Local failureLocal = localGenerator.generateLocal(assertionErrorType);
@@ -397,7 +393,7 @@ public class InstructionConverter {
   }
 
   private List<Stmt> convertAstLexicalWrite(DebuggingInformation debugInfo, AstLexicalWrite inst) {
-    List<Stmt> stmts = new ArrayList<>(1);
+    List<Stmt> stmts = new ArrayList<>();
     for (int i = 0; i < inst.getAccessCount(); i++) {
       Access access = inst.getAccess(i);
       Type type = converter.convertType(access.type);
@@ -421,7 +417,7 @@ public class InstructionConverter {
       } else {
         left = localGenerator.generateLocal(type);
       }
-
+      // TODO: [ms] no instruction example found to add positioninfo
       stmts.add(
           Jimple.newAssignStmt(
               left,
@@ -452,6 +448,7 @@ public class InstructionConverter {
         rvalue = localGenerator.generateLocal(type);
       }
 
+      // TODO: [ms] no instruction example found to add positioninfo
       stmts.add(
           Jimple.newAssignStmt(
               left,
@@ -525,6 +522,7 @@ public class InstructionConverter {
     int defaultCase = inst.getDefault();
     List<IntConstant> lookupValues = new ArrayList<>();
     List<Integer> targetsList = new ArrayList<>();
+    List<Stmt> targets = new ArrayList<>();
     for (int i = 0; i < cases.length; i++) {
       int c = cases[i];
       if (i % 2 == 0) {
@@ -532,8 +530,10 @@ public class InstructionConverter {
         lookupValues.add(cValue);
       } else {
         targetsList.add(c);
+        targets.add(null); // add null as placeholder for targets
       }
     }
+    Stmt defaultTarget = null;
 
     Position[] operandPos = new Position[2];
     // TODO: [ms] how to organize the operands
@@ -769,13 +769,12 @@ public class InstructionConverter {
     if (!callee.isStatic()) {
       i = 1; // non-static invoke this first use is thisRef.
     }
-    while (i < invokeInst.getNumberOfUses()) {
+    for (; i < invokeInst.getNumberOfUses(); i++) {
       int use = invokeInst.getUse(i);
       Immediate arg;
       if (symbolTable.isConstant(use)) {
         arg = getConstant(use);
       } else {
-        // TODO: [ms] isnt that condition equivalent to !callee.isStatic() ? -> performance
         if (invokeInst.getNumberOfUses() > paraTypes.size()) {
           arg = getLocal(paraTypes.get(i - 1), use);
         } else {
@@ -784,7 +783,6 @@ public class InstructionConverter {
       }
       assert (arg != null);
       args.add(arg);
-      i++;
     }
 
     MethodSignature methodSig =
@@ -832,7 +830,7 @@ public class InstructionConverter {
     StmtPositionInfo posInfo =
         WalaIRToJimpleConverter.convertPositionInfo(
             debugInfo.getInstructionPosition(condInst.iIndex()), null);
-    List<Stmt> stmts = new ArrayList<>(3);
+    List<Stmt> stmts = new ArrayList<>();
     int val1 = condInst.getUse(0);
     int val2 = condInst.getUse(1);
     Immediate value1 = extractValueAndAddAssignStmt(posInfo, stmts, val1);
@@ -916,7 +914,7 @@ public class InstructionConverter {
       Type type,
       int iindex,
       AstMethod.DebuggingInformation debugInfo) {
-    List<Stmt> ret = new ArrayList(4);
+    List<Stmt> ret = new ArrayList();
     Position p1 = debugInfo.getOperandPosition(iindex, 0);
     Position p2 = debugInfo.getOperandPosition(iindex, 1);
     Position stmtPosition = debugInfo.getInstructionPosition(iindex);
@@ -984,7 +982,7 @@ public class InstructionConverter {
 
   private List<Stmt> convertBinaryOpInstruction(
       DebuggingInformation debugInfo, SSABinaryOpInstruction binOpInst) {
-
+    List<Stmt> ret = new ArrayList<>();
     int def = binOpInst.getDef();
     int val1 = binOpInst.getUse(0);
     int val2 = binOpInst.getUse(1);
@@ -1059,13 +1057,13 @@ public class InstructionConverter {
     Position p2 = debugInfo.getOperandPosition(binOpInst.iIndex(), 1);
     operandPos[1] = p2;
     Value result = getLocal(type, def);
-
-    return Collections.singletonList(
+    ret.add(
         Jimple.newAssignStmt(
             result,
             binExpr,
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(binOpInst.iIndex()), operandPos)));
+    return ret;
   }
 
   private Stmt convertGoToInstruction(DebuggingInformation debugInfo, SSAGotoInstruction gotoInst) {
@@ -1167,42 +1165,40 @@ public class InstructionConverter {
   }
 
   /**
-   * @param iIndex2Stmt
+   * @param
    * @param builder
    * @return This methods returns a list of stmts with all branch stmts ({@link JIfStmt}, {@link
    *     JGotoStmt}, {@link JSwitchStmt}) having set up their target stmts.
    */
-  void setUpTargets(HashMap<Integer, Stmt> iIndex2Stmt, Body.BodyBuilder builder) {
+  protected void setUpTargets(Stmt target, Integer iTarget, Body.BodyBuilder builder) {
 
-    // add flows for branching stmts
-    // TODO: [ms] performance+: improve loop: iterate only over branchingstmts/merge datastructures
-    for (Stmt stmt : iIndex2Stmt.values()) {
-      if (stmt instanceof JIfStmt) {
-        int iTarget = targetsOfIfStmts.get(stmt);
-        if (iIndex2Stmt.containsKey(iTarget)) {
-          Stmt target = iIndex2Stmt.get(iTarget);
-          builder.addFlow(stmt, target);
+    if (targetsOfIfStmts.containsValue(iTarget)) {
+      for (JIfStmt ifStmt : targetsOfIfStmts.keySet()) {
+        if (targetsOfIfStmts.get(ifStmt).equals(iTarget)) {
+          builder.addFlow(ifStmt, target);
         }
+      }
+    }
+    /** for(Map.Entry stmt: targetsOfGotoStmts.entrySet()){ System.out.println(stmt); } */
+    if (targetsOfGotoStmts.containsValue(iTarget)) {
+      for (JGotoStmt gotoStmt : targetsOfGotoStmts.keySet()) {
+        if (targetsOfGotoStmts.get(gotoStmt).equals(iTarget)) {
+          builder.addFlow(gotoStmt, target);
+        }
+      }
+    }
 
-      } else if (stmt instanceof JGotoStmt) {
-        int iTarget = targetsOfGotoStmts.get(stmt);
-        if (iIndex2Stmt.containsKey(iTarget)) {
-          Stmt target = iIndex2Stmt.get(iTarget);
-          builder.addFlow(stmt, target);
+    if (defaultOfLookUpSwitchStmts.containsValue(iTarget)) {
+      for (JSwitchStmt switchStmt : defaultOfLookUpSwitchStmts.keySet()) {
+        if (defaultOfLookUpSwitchStmts.get(switchStmt).equals(iTarget)) {
+          builder.addFlow(switchStmt, target);
         }
-      } else if (stmt instanceof JSwitchStmt) {
-        int iDefault = defaultOfLookUpSwitchStmts.get(stmt);
-        if (iIndex2Stmt.containsKey(iDefault)) {
-          Stmt defaultTarget = iIndex2Stmt.get(iDefault);
-          builder.addFlow(stmt, defaultTarget);
-        }
-        List<Integer> iTargets = targetsOfLookUpSwitchStmts.get(stmt);
-        for (Integer iTarget : iTargets) {
-          if (iIndex2Stmt.containsKey(iTarget)) {
-            Stmt target = iIndex2Stmt.get(iTarget);
-            builder.addFlow(stmt, target);
-          }
-        }
+      }
+    }
+
+    for (JSwitchStmt lookupSwitch : this.targetsOfLookUpSwitchStmts.keySet()) {
+      if (targetsOfLookUpSwitchStmts.get(lookupSwitch).contains(iTarget)) {
+        builder.addFlow(lookupSwitch, target);
       }
     }
   }

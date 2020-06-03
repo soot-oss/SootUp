@@ -411,7 +411,7 @@ public class WalaIRToJimpleConverter {
                   thisLocal,
                   Jimple.newThisRef(thisType),
                   convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-          builder.addStmt(stmt);
+          builder.addStmt(stmt, true);
         }
 
         // wala's first parameter is the "this" reference for non-static methods
@@ -425,7 +425,7 @@ public class WalaIRToJimpleConverter {
                     paraLocal,
                     Jimple.newParameterRef(type, i),
                     convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-            builder.addStmt(stmt);
+            builder.addStmt(stmt, true);
           }
         } else {
           for (int i = 1; i < walaMethod.getNumberOfParameters(); i++) {
@@ -437,7 +437,7 @@ public class WalaIRToJimpleConverter {
                     paraLocal,
                     Jimple.newParameterRef(type, i - 1),
                     convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-            builder.addStmt(stmt);
+            builder.addStmt(stmt, true);
           }
         }
 
@@ -446,34 +446,41 @@ public class WalaIRToJimpleConverter {
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
         InstructionConverter instConverter =
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
-        HashMap<Integer, Stmt> iIndex2Stmt = new HashMap<>();
+        // Don't exchange, different stmts could have same ids
+        HashMap<Stmt, Integer> stmt2iIndex = new HashMap<>();
         Stmt lastStmt = null;
         for (SSAInstruction inst : insts) {
           List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst);
-          for (Stmt stmt : retStmts) {
-            //  stmts.add(stmt);
-            builder.addStmt(stmt, true);
-            iIndex2Stmt.put(inst.iIndex(), stmt);
-            lastStmt = stmt;
+          if (!retStmts.isEmpty()) {
+            for (Stmt stmt : retStmts) {
+              builder.addStmt(stmt, true);
+              stmt2iIndex.put(stmt, inst.iIndex());
+              lastStmt = stmt;
+            }
           }
         }
 
         // add return void stmt for methods with return type being void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
-          if (iIndex2Stmt.isEmpty() || !(lastStmt instanceof JReturnVoidStmt)) {
+          Stmt ret;
+          if (stmt2iIndex.isEmpty() || !(lastStmt instanceof JReturnVoidStmt)) {
             // TODO? [ms] InstructionPosition of last line in the method seems strange to me ->
             // maybe use lastLine with
             // startcol: -1 because it does not exist in the source explicitly?
-            lastStmt =
+            ret =
                 Jimple.newReturnVoidStmt(
                     convertPositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
-            builder.addStmt(lastStmt, true);
+            builder.addStmt(ret, true);
+          } else {
+            ret = lastStmt;
           }
           // needed because referencing a branch to the last stmt refers to: -1
-          iIndex2Stmt.put(-1, lastStmt);
+          stmt2iIndex.put(ret, -1);
         }
 
-        instConverter.setUpTargets(iIndex2Stmt, builder);
+        for (Stmt stmt : stmt2iIndex.keySet()) {
+          instConverter.setUpTargets(stmt, stmt2iIndex.get(stmt), builder);
+        }
 
         return builder
             .setLocals(localGenerator.getLocals())
