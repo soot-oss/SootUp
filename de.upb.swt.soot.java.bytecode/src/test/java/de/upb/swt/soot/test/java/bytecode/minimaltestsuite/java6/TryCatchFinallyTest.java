@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -23,11 +22,6 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
   public void test() {
-    /** TODO [KK] Stack positions changing. Add to issue list. */
-  }
-
-  @Ignore
-  public void ignoreTest() {
     SootMethod sootMethod = loadMethod(getMethodSignature());
     assertJimpleStmts(sootMethod, expectedBodyStmts());
   }

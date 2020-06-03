@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -19,11 +18,6 @@ public class MultiTryCatchTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
   public void test() {
-    /** TODO [KK] Stack positions changing. Add to issue list. */
-  }
-
-  @Ignore
-  public void ignoreTest() {
     SootMethod sootMethod = loadMethod(getMethodSignature());
     assertJimpleStmts(sootMethod, expectedBodyStmts());
   }
@@ -65,15 +59,15 @@ public class MultiTryCatchTest extends MinimalBytecodeTestSuiteBase {
             "l2 = $stack19",
             "goto label19",
             "label06:",
-            "$stack12 := @caughtexception",
-            "l2 = $stack12",
+            "$stack18 := @caughtexception",
+            "l2 = $stack18",
             "label07:",
             "virtualinvoke l1.<java.io.BufferedReader: void close()>()",
             "label08:",
             "goto label19",
             "label09:",
-            "$stack15 := @caughtexception",
-            "l2 = $stack15",
+            "$stack17 := @caughtexception",
+            "l2 = $stack17",
             "goto label19",
             "label10:",
             "$stack16 := @caughtexception",
@@ -83,22 +77,22 @@ public class MultiTryCatchTest extends MinimalBytecodeTestSuiteBase {
             "label12:",
             "goto label19",
             "label13:",
-            "$stack13 := @caughtexception",
-            "l2 = $stack13",
+            "$stack15 := @caughtexception",
+            "l2 = $stack15",
             "goto label19",
             "label14:",
-            "$stack14 := @caughtexception",
-            "l4 = $stack14",
+            "$stack13 := @caughtexception",
+            "l4 = $stack13",
             "label15:",
             "virtualinvoke l1.<java.io.BufferedReader: void close()>()",
             "label16:",
             "goto label18",
             "label17:",
-            "$stack17 := @caughtexception",
-            "l5 = $stack17",
+            "$stack12 := @caughtexception",
+            "l5 = $stack12",
             "label18:",
-            "$stack18 = l4",
-            "throw $stack18",
+            "$stack14 = l4",
+            "throw $stack14",
             "label19:",
             "return",
             "catch java.io.IOException from label03 to label04 with label05",
