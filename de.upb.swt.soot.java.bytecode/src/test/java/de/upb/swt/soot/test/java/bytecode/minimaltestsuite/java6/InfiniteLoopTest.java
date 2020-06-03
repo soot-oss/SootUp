@@ -23,7 +23,7 @@ public class InfiniteLoopTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("r0 := @this: InfiniteLoop", "return").collect(Collectors.toList());
+    return Stream.of("l0 := @this: InfiniteLoop", "return").collect(Collectors.toList());
   }
 
   @Test

@@ -293,7 +293,7 @@ public class Body implements Copyable {
    * @return A collection of all the Stmts
    */
   @Nonnull
-  public Collection<Stmt> getTargetStmtsOfBranches() {
+  public Collection<Stmt> getTargetStmtsInBody() {
     List<Stmt> stmtList = new ArrayList<>();
     Iterator<Stmt> iterator = cfg.nodes().iterator();
     while (iterator.hasNext()) {
@@ -301,7 +301,6 @@ public class Body implements Copyable {
 
       if (stmt instanceof BranchingStmt) {
         final List<Stmt> branchTargetsOf = getBranchTargetsOf(stmt);
-        // filter if "fallsThrough"-stmt from targets of branching stmts
 
         if (stmt instanceof JIfStmt) {
           stmtList.add(branchTargetsOf.get(1));
