@@ -304,7 +304,7 @@ public class Body implements Copyable {
         // filter if "fallsThrough"-stmt from targets of branching stmts
 
         if (stmt instanceof JIfStmt) {
-          stmtList.add(branchTargetsOf.get(0));
+          stmtList.add(branchTargetsOf.get(1));
         } else if (stmt instanceof JGotoStmt) {
           stmtList.add(branchTargetsOf.get(0));
         } else if (stmt instanceof JSwitchStmt) {
@@ -368,7 +368,7 @@ public class Body implements Copyable {
     }
 
     Stmt pred = predecessors.iterator().next();
-    if (pred instanceof JIfStmt && cfg.successors(pred).stream().findFirst().get() != targetStmt) {
+    if (pred instanceof JIfStmt && ((JIfStmt) pred).getTarget(this) == targetStmt) {
       return true;
     }
 
