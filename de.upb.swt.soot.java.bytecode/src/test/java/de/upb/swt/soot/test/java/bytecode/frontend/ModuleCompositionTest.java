@@ -10,12 +10,15 @@ import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
@@ -35,14 +38,20 @@ public class ModuleCompositionTest {
   @Test
   public void apiExamples() {
 
-    String jarFile = "../shared-test-resources/java-miniapps/MiniApp.jar";
-    System.err.println(new File(jarFile).getAbsolutePath());
-    Assert.assertTrue("File " + jarFile + " not found.", new File(jarFile).exists());
+    String warFile = "../shared-test-resources/java-warApp/dummyWarApp.war";
 
+    Assert.assertTrue("File " + warFile + " not found.", new File(warFile).exists());
+
+    Path jarPath = Paths.get("/");
+
+    for (Path jp1 : PathBasedAnalysisInputLocation.jarsFromPath) {
+      if (jp1.getFileName().toString().contains("MiniApp")) jarPath = jp1;
+      else jarPath = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
+    }
     // Create a project
     JavaProject p =
         JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(new JavaClassPathAnalysisInputLocation(jarFile))
+            .addClassPath(new JavaClassPathAnalysisInputLocation(jarPath.toString()))
             .build();
 
     // Get the view
@@ -130,4 +139,5 @@ public class ModuleCompositionTest {
         "java.lang.String", c.getField(nameFieldSubSignature).get().getType().toString());
     Assert.assertEquals("empName", c.getField(nameFieldSubSignature).get().getName());
   }
+  // }
 }
