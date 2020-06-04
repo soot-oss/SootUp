@@ -138,7 +138,6 @@ public abstract class MinimalBytecodeTestSuiteBase {
   public void assertJimpleStmts(SootMethod method, List<String> expectedStmts) {
     Body body = method.getBody();
     assertNotNull(body);
-
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
     assertEquals(expectedStmts, actualStmts);
   }
