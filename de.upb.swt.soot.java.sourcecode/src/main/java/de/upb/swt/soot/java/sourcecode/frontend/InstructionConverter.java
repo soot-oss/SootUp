@@ -125,7 +125,8 @@ public class InstructionConverter {
     this.identifierFactory = converter.identifierFactory;
   }
 
-  public List<Stmt> convertInstruction(DebuggingInformation debugInfo, SSAInstruction inst) {
+  public List<Stmt> convertInstruction(
+      DebuggingInformation debugInfo, SSAInstruction inst, HashMap<Stmt, Integer> stmt2iIndex) {
     List<Stmt> stmts = new ArrayList();
     if ((inst instanceof SSAConditionalBranchInstruction)) {
       stmts.addAll(convertBranchInstruction(debugInfo, (SSAConditionalBranchInstruction) inst));
@@ -166,7 +167,7 @@ public class InstructionConverter {
     } else if (inst instanceof AstLexicalWrite) {
       stmts = (convertAstLexicalWrite(debugInfo, (AstLexicalWrite) inst));
     } else if (inst instanceof AstAssertInstruction) {
-      stmts = convertAssertInstruction(debugInfo, (AstAssertInstruction) inst);
+      stmts = convertAssertInstruction(debugInfo, (AstAssertInstruction) inst, stmt2iIndex);
     } else if (inst instanceof SSACheckCastInstruction) {
       stmts.add(convertCheckCastInstruction(debugInfo, (SSACheckCastInstruction) inst));
     } else if (inst instanceof SSAMonitorInstruction) {
@@ -309,7 +310,9 @@ public class InstructionConverter {
   }
 
   private List<Stmt> convertAssertInstruction(
-      DebuggingInformation debugInfo, AstAssertInstruction inst) {
+      DebuggingInformation debugInfo,
+      AstAssertInstruction inst,
+      HashMap<Stmt, Integer> stmt2iIndex) {
     List<Stmt> stmts = new ArrayList<>();
     // create a static field for checking if assertion is disabled.
     JavaClassType cSig = (JavaClassType) methodSignature.getDeclClassType();
@@ -338,11 +341,17 @@ public class InstructionConverter {
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
 
+    // TODO: [ms] clean way to handle multiple assertions in one body -> own nop -> own link to
+    // target
+    int stmtAfterAssertion = -42 - inst.iIndex();
+    stmt2iIndex.put(nopStmt, stmtAfterAssertion);
+
     JIfStmt ifStmt =
         Jimple.newIfStmt(
             condition,
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
+    targetsOfIfStmts.put(ifStmt, stmtAfterAssertion);
     stmts.add(ifStmt);
 
     // create ifStmt for the actual assertion.
@@ -355,6 +364,7 @@ public class InstructionConverter {
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     stmts.add(assertIfStmt);
+    targetsOfIfStmts.put(assertIfStmt, stmtAfterAssertion);
     // create failed assertion code.
 
     ReferenceType assertionErrorType =
@@ -388,7 +398,9 @@ public class InstructionConverter {
     stmts.add(throwStmt);
 
     // add nop in the end
-    stmts.add(nopStmt); // TODO. This should be removed later
+    stmts.add(
+        nopStmt); // TODO [LL] This should be removed later [ms] with the following statement after
+    // assert
     return stmts;
   }
 

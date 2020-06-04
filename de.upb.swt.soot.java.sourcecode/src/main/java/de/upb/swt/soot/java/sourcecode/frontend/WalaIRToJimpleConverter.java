@@ -450,11 +450,11 @@ public class WalaIRToJimpleConverter {
         HashMap<Stmt, Integer> stmt2iIndex = new HashMap<>();
         Stmt lastStmt = null;
         for (SSAInstruction inst : insts) {
-          List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst);
+          List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst, stmt2iIndex);
           if (!retStmts.isEmpty()) {
             for (Stmt stmt : retStmts) {
               builder.addStmt(stmt, true);
-              stmt2iIndex.put(stmt, inst.iIndex());
+              stmt2iIndex.putIfAbsent(stmt, inst.iIndex());
               lastStmt = stmt;
             }
           }
@@ -478,8 +478,9 @@ public class WalaIRToJimpleConverter {
           stmt2iIndex.put(ret, -1);
         }
 
-        for (Stmt stmt : stmt2iIndex.keySet()) {
-          instConverter.setUpTargets(stmt, stmt2iIndex.get(stmt), builder);
+        for (Map.Entry<Stmt, Integer> entry : stmt2iIndex.entrySet()) {
+          final Integer targetIndex = entry.getValue();
+          instConverter.setUpTargets(entry.getKey(), targetIndex, builder);
         }
 
         return builder
