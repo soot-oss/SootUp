@@ -242,7 +242,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     if (idx >= maxLocals) {
       throw new IllegalArgumentException("Invalid local index: " + idx);
     }
-    Local local = locals.get(idx);
+    Integer i = idx;
+    Local local = locals.get(i);
     if (local == null) {
       String name;
       if (localVariables != null) {
@@ -262,7 +263,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       }
       // TODO: [ms] implement annotations for Locals here as third parameter in JavaJimple.newLocal(
       local = Jimple.newLocal(name, UnknownType.getInstance());
-      locals.put(idx, local);
+      locals.put(i, local);
     }
     return local;
   }
@@ -930,7 +931,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       frame.setBoxes(ret.getOpBox());
       setStmt(insn, ret);
     } else {
-      frame.mergeIn(dword ? popDual() : pop());
+      final Operand operand = dword ? popDual() : pop();
+      frame.mergeIn(operand);
+      InsnToStmt.remove(insn);
+      setStmt(
+          insn,
+          Jimple.newReturnStmt(
+              (Immediate) operand.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo()));
     }
   }
 
