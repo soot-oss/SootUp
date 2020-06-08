@@ -461,12 +461,13 @@ public class Body implements Copyable {
       mutableGraph = GraphBuilder.directed().nodeOrder(ElementOrder.insertion()).build();
     }
 
-    BodyBuilder(@Nonnull Body body) {
+    public BodyBuilder(@Nonnull Body body) {
       setLocals(body.getLocals());
       setTraps(body.getTraps());
       setPosition(body.getPosition());
       setFirstStmt(body.getFirstStmt());
-      mutableGraph = GraphBuilder.from(body.getStmtGraph()).build();
+      mutableGraph =
+          GraphBuilder.from(body.getStmtGraph()).build(); // fixme: getStmtGraph() is always null
     }
 
     @Nonnull
@@ -512,7 +513,7 @@ public class Body implements Copyable {
       lastAddedStmt = stmt;
       return this;
     }
-
+    /** replace the oldStmt with newStmt in stmtGraph and branches */
     @Nonnull
     public BodyBuilder mergeStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
       final Set<Stmt> predecessors = mutableGraph.predecessors(oldStmt);
@@ -520,6 +521,16 @@ public class Body implements Copyable {
       mutableGraph.addNode(newStmt);
       predecessors.forEach(predecessor -> mutableGraph.putEdge(predecessor, newStmt));
       successors.forEach(successor -> mutableGraph.putEdge(newStmt, successor));
+      if (branches.containsKey(oldStmt)) {
+        List<Stmt> value = branches.get(oldStmt);
+        branches.remove(oldStmt);
+        branches.put(newStmt, value);
+      }
+      for (List<Stmt> value : branches.values()) {
+        if (value.remove(oldStmt)) {
+          value.add(newStmt);
+        }
+      }
       removeStmt(oldStmt);
       return this;
     }
@@ -561,6 +572,24 @@ public class Body implements Copyable {
     public BodyBuilder setPosition(@Nonnull Position position) {
       this.position = position;
       return this;
+    }
+
+    public List<Stmt> getSuccessors(@Nonnull Stmt stmt) {
+      Set<Stmt> stmtSet = this.mutableGraph.successors(stmt);
+      ArrayList<Stmt> stmts = new ArrayList<>();
+      stmts.addAll(stmtSet);
+      return stmts;
+    }
+
+    public List<Stmt> getPredecessors(@Nonnull Stmt stmt) {
+      Set<Stmt> stmtSet = this.mutableGraph.predecessors(stmt);
+      ArrayList<Stmt> stmts = new ArrayList<>();
+      stmts.addAll(stmtSet);
+      return stmts;
+    }
+
+    public Stmt getFirstStmt() {
+      return this.firstStmt;
     }
 
     @Nonnull

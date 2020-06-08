@@ -1,7 +1,6 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
-import de.upb.swt.soot.core.graph.AbstractStmtGraph;
-import de.upb.swt.soot.core.graph.BriefStmtGraph;
+import com.google.common.graph.Graph;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -9,6 +8,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.ReplaceUseStmtVisitor;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.Body.BodyBuilder;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.*;
 import javax.annotation.Nonnull;
@@ -27,27 +27,50 @@ import javax.annotation.Nonnull;
  * </pre>
  *
  * <pre>
- *    i0 = 0
- *    i0#0 = 1
- *    i1 = i0#0 + 1
- *    i0#0 = 5
+ *    i0#0 = 0
+ *    i0#1 = 1
+ *    i1 = i0#1 + 1
+ *    i0#2 = 5
  * </pre>
  *
  * @author Zun Wang
  */
 public class LocalSplitter implements BodyInterceptor {
 
-  @Nonnull
-  @Override
   public Body interceptBody(@Nonnull Body originalBody) {
 
-    // collect all Locals that must be splitted
-    // If a local as a definition apears two or more times as a definition, then this local must be
-    // splitted
-    // Store such locals into a set "toSplitLocals"
+    Graph<Stmt> oriGraph = originalBody.getStmtGraph();
+    BodyBuilder bodyBuilder = new BodyBuilder(originalBody);
+
+    // get all stmts in graph
+    List<Stmt> stmts = new ArrayList<>();
+    Deque<Stmt> stmtQueue = new ArrayDeque<>();
+    Stmt firstStmt = originalBody.getFirstStmt();
+    stmtQueue.add(firstStmt);
+    bodyBuilder.addStmt(
+        firstStmt); // Fixme: Now build the stmtGraph for bodyBuilder on hand, later use
+                    // bodyBuilder.build()
+    while (!stmtQueue.isEmpty()) {
+      Stmt stmt = stmtQueue.remove();
+      stmts.add(stmt);
+      if (!oriGraph.successors(stmt).isEmpty()) {
+        for (Stmt succ : oriGraph.successors(stmt)) {
+          bodyBuilder.addStmt(succ);
+          bodyBuilder.addFlow(stmt, succ);
+          if (!stmts.contains(succ)) {
+            stmtQueue.add(succ);
+          }
+        }
+      }
+    }
+
+    Body newBody = bodyBuilder.build();
+    // **System.out.println("Stmt Graph before first level loop: " + newBody.getStmtGraph());
+
+    // store all Locals that must be splitted
+    // If a local as a definition appears two or more times, then this local must be splitted
     Set<Local> visitedLocals = new HashSet<>();
     Set<Local> toSplitLocals = new HashSet<>();
-    List<Stmt> stmts = originalBody.getStmts();
     for (Stmt stmt : stmts) {
       if (!stmt.getDefs().isEmpty()) {
         Value def = stmt.getDefs().get(0);
@@ -60,182 +83,138 @@ public class LocalSplitter implements BodyInterceptor {
       }
     }
 
-    // Copy all original Locals into a newLocals set
-    Set<Local> locals = originalBody.getLocals();
-    Set<Local> newLocals = new HashSet<Local>();
-    newLocals.addAll(locals);
+    Set<Local> locals = newBody.getLocals();
+    Set<Local> newLocals = new HashSet<>(locals);
+    newLocals.removeAll(toSplitLocals);
 
-    // Copy all original Stmts into a newStmts list
-    List<Stmt> newStmts = new ArrayList<>();
-    newStmts.addAll(stmts);
+    int localIndex = 0;
+    Deque<Stmt> visitedQueue = new ArrayDeque<>();
+    visitedQueue.add(newBody.getFirstStmt());
 
-    // establish a graph for the originalBody
-    AbstractStmtGraph graph = new BriefStmtGraph(originalBody);
+    // store the visited modified stmts in graph, avoid visiting a stmt twice
+    List<Stmt> visitedList = new ArrayList<>();
 
-    int newLocalIndex = 0;
-    for (Stmt stmt : stmts) {
-      if ((!stmt.getDefs().isEmpty()) && stmt.getDefs().get(0) instanceof Local) {
-        Local oriLocal = (Local) stmt.getDefs().get(0);
+    while (!visitedQueue.isEmpty()) {
+
+      Stmt visitedStmt = visitedQueue.remove();
+      // **System.out.println("\tFirst level loop: " + visitedStmt);
+
+      if ((!visitedStmt.getDefs().isEmpty()) && visitedStmt.getDefs().get(0) instanceof Local) {
+        Local oriLocal = (Local) visitedStmt.getDefs().get(0);
         // If the local as def in the set toSplitLocals
         if (toSplitLocals.contains(oriLocal)) {
-          Local newLocal = oriLocal.withName(oriLocal.getName() + "#" + newLocalIndex);
-          newLocalIndex++;
-          // replace the def in the stmt with newLocal
-          newStmts.set(
-              stmts.indexOf(stmt), withNewDef(newStmts.get(stmts.indexOf(stmt)), newLocal));
+          Local newLocal = oriLocal.withName(oriLocal.getName() + "#" + localIndex);
           newLocals.add(newLocal);
+          localIndex++;
 
-          Deque<Stmt> forwardsQueue = new ArrayDeque<>();
-          if (!graph.getSuccsOf(stmt).isEmpty()) {
-            forwardsQueue.addAll(graph.getSuccsOf(stmt));
+          // replace the oriLocal with newLocal
+          Stmt newVisitedStmt = withNewDef(visitedStmt, newLocal);
+          // **System.out.println("\t\tSecond level loop: " + newVisitedStmt);
+
+          if (visitedStmt.equivTo(bodyBuilder.getFirstStmt())) {
+            bodyBuilder.setFirstStmt(newVisitedStmt);
           }
-          Stmt head = null;
+          bodyBuilder.mergeStmt(visitedStmt, newVisitedStmt);
+
+          // build the forwardsQueue
+          Deque<Stmt> forwardsQueue = new ArrayDeque<>();
+          forwardsQueue.addAll(bodyBuilder.getSuccessors(newVisitedStmt));
+          visitedStmt = newVisitedStmt;
+
           while (!forwardsQueue.isEmpty()) {
-            head = forwardsQueue.remove();
-            Stmt headInNewList = newStmts.get(stmts.indexOf(head));
-            // 1.case: oriLocal is defined again.
-            if ((!head.getDefs().isEmpty())
-                && head.getDefs().get(0) instanceof Local
-                && head.getDefs().get(0).equivTo(oriLocal)) {
+            // **System.out.println("\t\tforwardsQueue: " + forwardsQueue);
+            Stmt head = forwardsQueue.remove();
+            // 1.case: if uselist of head contains oriLocal, then modify this oriLocal to newLocal
+            if (head.getUses().contains(oriLocal)) {
+              Stmt newHead = withNewUse(head, oriLocal, newLocal);
+              bodyBuilder.mergeStmt(head, newHead);
+              if ((!newHead.getDefs().isEmpty() && !newHead.getDefs().get(0).equivTo(oriLocal))
+                  || newHead.getDefs().isEmpty()) {
+                forwardsQueue.addAll(bodyBuilder.getSuccessors(newHead));
+              }
+            }
 
-              // 1.1 case: headInNewList uses the oriLocal, then modified this use with newLocal
-              if (headInNewList.getUses().contains(oriLocal)) {
-                newStmts.set(stmts.indexOf(head), withNewUse(headInNewList, oriLocal, newLocal));
-                // 1.2 case: headInNewList uses the modified oriLocal, and modified name isn't equal
-                // to newLocal's name
-              } else if (hasRenamedUse(headInNewList, oriLocal)) {
-                Local renamedLocal = getRenamedUse(headInNewList, oriLocal);
-                if (!renamedLocal.getName().equals(newLocal.getName())) {
-                  Deque<Stmt> backwardQueue = new ArrayDeque<>();
-                  backwardQueue.addAll(graph.getSuccsOf(head));
-                  int numOfRL =
-                      Integer.parseInt(
-                          renamedLocal.getName().substring(renamedLocal.getName().length() - 1));
-                  Local smallerLocal = null;
-                  Local biggerLocal = null;
-                  if (numOfRL < newLocalIndex) {
-                    smallerLocal = renamedLocal;
-                    biggerLocal = newLocal;
-                  } else {
-                    smallerLocal = newLocal;
-                    biggerLocal = renamedLocal;
-                  }
-                  while (!backwardQueue.isEmpty()) {
-                    Stmt backStmt = backwardQueue.remove();
-                    Stmt backStmtInNewList = newStmts.get(stmts.indexOf(backStmt));
-                    // if backStmtInNewList def is the bigger local, then modify it with smaller
-                    // local
-                    if (!backStmtInNewList.getDefs().isEmpty()
-                        && backStmtInNewList.getDefs().get(0) instanceof Local
-                        && backStmtInNewList.getDefs().get(0).equivTo(biggerLocal)) {
-                      newStmts.set(
-                          stmts.indexOf(backStmt), withNewDef(backStmtInNewList, smallerLocal));
-                      // if backStmtInNewList def is the smaller local, continue(do nothing)
-                      // Fixme: Is there another case?
-                    } else if (!backStmtInNewList.getDefs().isEmpty()
-                        && backStmtInNewList.getDefs().get(0) instanceof Local) {
-                      if (backStmtInNewList.getDefs().get(0).equivTo(smallerLocal)
-                          || backStmtInNewList.getDefs().get(0).equivTo(oriLocal)) continue;
-
-                      // if don't find bigger Local or smaller local as def, but we find a stmt uses
-                      // smaller local or oriLocal, then continue
-                    } else if (backStmtInNewList.getUses().contains(smallerLocal)
-                        || backStmtInNewList.getUses().contains(oriLocal)) {
-                      continue;
-                    } else {
-                      if (!backStmtInNewList.getUses().contains(biggerLocal)) {
-                        newStmts.set(
-                            stmts.indexOf(backStmt),
-                            withNewUse(backStmtInNewList, biggerLocal, smallerLocal));
-                      } else {
-                        if (!graph.getPredsOf(backStmt).isEmpty()) {
-                          backwardQueue.addAll(graph.getPredsOf(backStmt));
-                        }
-                      }
+            // 2.case: if uselist of head contains the modified orilocal
+            else if (hasModifiedUse(head, oriLocal)) {
+              Local modifiedLocal = getModifiedUse(head, oriLocal);
+              // if modifed name is not same as the newLocal's name then, trace backwards
+              // **System.out.println("\t\t\tThird level loop: " + head);
+              if (!modifiedLocal.getName().equals(newLocal.getName())) {
+                Deque<Stmt> backwardsQueue = new ArrayDeque<>();
+                backwardsQueue.addAll(bodyBuilder.getPredecessors(head));
+                while (!backwardsQueue.isEmpty()) {
+                  // **System.out.println("\t\t\tbackwardsQueue: " + backwardsQueue);
+                  Stmt backStmt = backwardsQueue.remove();
+                  // 2.1 case: if backstmt's def is modified oriLocal
+                  if (hasModifiedDef(backStmt, oriLocal)) {
+                    if (isBiggerName((Local) backStmt.getDefs().get(0), modifiedLocal)) {
+                      Stmt newBackStmt = withNewDef(backStmt, modifiedLocal);
+                      bodyBuilder.mergeStmt(backStmt, newBackStmt);
+                      visitedStmt = newBackStmt;
+                      newLocals.remove(newLocal);
                     }
+                  }
+                  // 2.2 case: if backstmt's uselist contains the modified oriLocal
+                  else if (hasModifiedUse(backStmt, oriLocal)) {
+                    Local modifiedUse = getModifiedUse(backStmt, oriLocal);
+                    if (isBiggerName(modifiedUse, modifiedLocal)) {
+                      Stmt newBackStmt = withNewUse(backStmt, modifiedUse, modifiedLocal);
+                      bodyBuilder.mergeStmt(backStmt, newBackStmt);
+                      backwardsQueue.addAll(bodyBuilder.getPredecessors(newBackStmt));
+                      backStmt = newBackStmt;
+                    }
+                    backwardsQueue.addAll(bodyBuilder.getPredecessors(backStmt));
+                  }
+                  // 2.3 case: else, trace backwards on
+                  else {
+                    backwardsQueue.addAll(bodyBuilder.getPredecessors(backStmt));
                   }
                 }
               }
-              // 1.3 case: head doesn't use the oriLocal, do nothing
-
-              // 2.case: oriLocal is not defined again yet.
-            } else {
-              // 2.1 case: headInNewList uses oriLocal directly, then modify it directly
-              if (headInNewList.getUses().contains(oriLocal)) {
-                newStmts.set(stmts.indexOf(head), withNewUse(headInNewList, oriLocal, newLocal));
-
-                // 2.2 case: oriLocal is not in the usesList of headInNewList
-              } else {
-                // 2.2.1 case: headInNewList uses the renamed oriLocal, and renamedLocal'name is not
-                // equal the newLocal'name
-                if (hasRenamedUse(headInNewList, oriLocal)) {
-                  Local renamedLocal = getRenamedUse(headInNewList, oriLocal);
-                  if (!renamedLocal.getName().equals(newLocal.getName())) {
-                    Deque<Stmt> backwardQueue = new ArrayDeque<>();
-                    backwardQueue.addAll(graph.getSuccsOf(head));
-                    int numOfRL =
-                        Integer.parseInt(
-                            renamedLocal.getName().substring(renamedLocal.getName().length() - 1));
-                    Local smallerLocal = null;
-                    Local biggerLocal = null;
-                    if (numOfRL < newLocalIndex) {
-                      smallerLocal = renamedLocal;
-                      biggerLocal = newLocal;
-                    } else {
-                      smallerLocal = newLocal;
-                      biggerLocal = renamedLocal;
-                    }
-                    while (!backwardQueue.isEmpty()) {
-                      Stmt backStmt = backwardQueue.remove();
-                      Stmt backStmtInNewList = newStmts.get(stmts.indexOf(backStmt));
-                      // if backStmtInNewList def is the bigger local, then modify it with smaller
-                      // local
-                      if (!backStmtInNewList.getDefs().isEmpty()
-                          && backStmtInNewList.getDefs().get(0) instanceof Local
-                          && backStmtInNewList.getDefs().get(0).equivTo(biggerLocal)) {
-                        newStmts.set(
-                            stmts.indexOf(backStmt), withNewDef(backStmtInNewList, smallerLocal));
-                        // if backStmtInNewList def is the smaller local, continue(do nothing)
-                      } else if (!backStmtInNewList.getDefs().isEmpty()
-                          && backStmtInNewList.getDefs().get(0) instanceof Local) {
-                        if (backStmtInNewList.getDefs().get(0).equivTo(smallerLocal)
-                            || backStmtInNewList.getDefs().get(0).equivTo(oriLocal)) continue;
-
-                        // if don't find bigger Local or smaller local as def, but we find a stmt
-                        // uses smaller local or oriLocal, then continue
-                      } else if (backStmtInNewList.getUses().contains(smallerLocal)
-                          || backStmtInNewList.getUses().contains(oriLocal)) {
-                        continue;
-                      } else {
-                        if (!backStmtInNewList.getUses().contains(biggerLocal)) {
-                          newStmts.set(
-                              stmts.indexOf(backStmt),
-                              withNewUse(backStmtInNewList, biggerLocal, smallerLocal));
-                        } else {
-                          if (!graph.getPredsOf(backStmt).isEmpty()) {
-                            backwardQueue.addAll(graph.getPredsOf(backStmt));
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-                // 2.2.2 case: oriLocal is not renamed in the useList of head, then do nothing
-              }
-              if (!graph.getSuccsOf(head).isEmpty()) {
-                forwardsQueue.addAll(graph.getSuccsOf(head));
+            }
+            // 3.case:
+            else {
+              if ((!head.getDefs().isEmpty() && !head.getDefs().get(0).equivTo(oriLocal)
+                  || head.getDefs().isEmpty())) {
+                forwardsQueue.addAll(bodyBuilder.getSuccessors(head));
               }
             }
           }
         }
       }
+      visitedList.add(visitedStmt);
+      if (!bodyBuilder.getSuccessors(visitedStmt).isEmpty()) {
+        for (Stmt stmt : bodyBuilder.getSuccessors(visitedStmt)) {
+          if (!visitedList.contains(stmt)) {
+            visitedQueue.add(stmt);
+          }
+        }
+      }
+      // **System.out.println("\tvisitedQueue" + ": " + visitedQueue);
+      // **System.out.println("\tvisitedList" + ": " + visitedList);
+
+      // **newBody = bodyBuilder.build();
+      // **System.out.println("Stmt Graph after first level loop: " + newBody.getStmtGraph());
+      // **System.out.println();
     }
 
-    Body newBody = originalBody.withLocals(newLocals);
-    // newBody = newBody.withStmts(newStmts);
+    bodyBuilder.setLocals(newLocals);
+    newBody = bodyBuilder.build();
+    // **System.out.println("Stmt Graph after first level loop: " + newBody.getStmtGraph());
+    // **System.out.println("The first stmt is: " + newBody.getFirstStmt());
+    // **System.out.println("The locals: " + newBody.getLocals());
     return newBody;
   }
 
+  // ******************assist_functions*************************
+
+  /**
+   * Use newDef to replace the def in oldStmt.
+   *
+   * @param oldStmt a Stmt whose def is to be replaced.
+   * @param newDef a Local is to replace def of oldStmt
+   * @return a new Stmt with newDef
+   */
   @Nonnull
   protected Stmt withNewDef(@Nonnull Stmt oldStmt, @Nonnull Local newDef) {
     if (oldStmt instanceof JAssignStmt) {
@@ -246,6 +225,14 @@ public class LocalSplitter implements BodyInterceptor {
     }
   }
 
+  /**
+   * Use newUse to replace the oldUse in oldStmt
+   *
+   * @param oldStmt a Stmt that has oldUse
+   * @param oldUse a Local in the useList of oldStmt
+   * @param newUse a Local is to replace oldUse
+   * @return a new Stmt with newUse
+   */
   @Nonnull
   protected Stmt withNewUse(@Nonnull Stmt oldStmt, @Nonnull Local oldUse, @Nonnull Local newUse) {
     ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(oldUse, newUse);
@@ -254,26 +241,30 @@ public class LocalSplitter implements BodyInterceptor {
   }
 
   /**
-   * Check whether stmt's useList contains the given modified oriLocal
+   * Check whether a Stmt's useList contains the given modified oriLocal
    *
-   * @param stmt: a stmt
-   * @param oriLocal: a local
+   * @param stmt: a stmt is to be checked
+   * @param oriLocal: a local is to be checked
    * @return if so, return true, else return false
    */
   @Nonnull
-  protected boolean hasRenamedUse(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
-    boolean isRenamed = false;
+  protected boolean hasModifiedUse(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
+    boolean isModified = false;
     if (!stmt.getUses().isEmpty()) {
       for (Value use : stmt.getUses()) {
         if (use instanceof Local) {
           String name = ((Local) use).getName();
-          if (name.substring(0, name.length() - 2).equals(oriLocal.getName())) {
-            isRenamed = true;
+          if (name.contains("#")) {
+            int i = name.indexOf('#');
+            if (name.substring(0, i).equals(oriLocal.getName())) {
+              isModified = true;
+              break;
+            }
           }
         }
       }
     }
-    return isRenamed;
+    return isModified;
   }
 
   /**
@@ -283,19 +274,68 @@ public class LocalSplitter implements BodyInterceptor {
    * @param oriLocal: a local
    * @return if so, return this modified local, else return null
    */
-  protected Local getRenamedUse(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
-    Local renamedLocal = null;
-    if (!stmt.getUses().isEmpty()) {
-      for (Value use : stmt.getUses()) {
-        if (use instanceof Local) {
-          String name = ((Local) use).getName();
-          if (name.substring(0, name.length() - 2).equals(oriLocal.getName())) {
-            renamedLocal = (Local) use;
-            break;
+  protected Local getModifiedUse(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
+    Local modifiedLocal = null;
+    if (hasModifiedUse(stmt, oriLocal)) {
+      if (!stmt.getUses().isEmpty()) {
+        for (Value use : stmt.getUses()) {
+          if (use instanceof Local) {
+            String name = ((Local) use).getName();
+            if (name.contains("#")) {
+              int i = name.indexOf('#');
+              if (name.substring(0, i).equals(oriLocal.getName())) {
+                modifiedLocal = (Local) use;
+                break;
+              }
+            }
           }
         }
       }
     }
-    return renamedLocal;
+    return modifiedLocal;
+  }
+
+  /**
+   * Check whether a Stmt's def is the modified oriLocal
+   *
+   * @param stmt: a stmt is to be checked
+   * @param oriLocal: a local is to be checked
+   * @return if so, return true, else return false
+   */
+  @Nonnull
+  protected boolean hasModifiedDef(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
+    boolean isModified = false;
+    if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
+      String name = ((Local) stmt.getDefs().get(0)).getName();
+      if (name.contains("#")) {
+        int i = name.indexOf('#');
+        if (name.substring(0, i).equals(oriLocal.getName())) {
+          isModified = true;
+        }
+      }
+    }
+    return isModified;
+  }
+
+  /**
+   * Check whether leftLocal's name has bigger index than rightLocal's.
+   *
+   * @param leftLocal: a local in form oriLocal#num1
+   * @param rigthLocal: a local in form oriLocal#num2
+   * @return if so return true, else return false
+   */
+  @Nonnull
+  protected boolean isBiggerName(@Nonnull Local leftLocal, @Nonnull Local rigthLocal) {
+    boolean isBigger = false;
+    String leftName = leftLocal.getName();
+    String rightName = rigthLocal.getName();
+    int i = leftName.indexOf('#');
+    int j = rightName.indexOf('#');
+    int leftNum = Integer.parseInt(leftName.substring(i + 1));
+    int rightNum = Integer.parseInt(rightName.substring(j + 1));
+    if (leftNum > rightNum) {
+      isBigger = true;
+    }
+    return isBigger;
   }
 }
