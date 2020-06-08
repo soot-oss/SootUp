@@ -198,7 +198,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     final List<Stmt> targets = stmtPrinter.branchTargets(this);
 
     final int size = values.size();
-    for (int i = 1; i < size; i++) {
+    for (int i = 0; i < size; i++) {
       stmtPrinter.handleIndent();
       stmtPrinter.literal(Jimple.CASE);
       stmtPrinter.literal(" ");

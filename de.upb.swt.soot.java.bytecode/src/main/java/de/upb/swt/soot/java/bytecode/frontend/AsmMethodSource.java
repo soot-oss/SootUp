@@ -933,6 +933,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     } else {
       final Operand operand = dword ? popDual() : pop();
       frame.mergeIn(operand);
+      // TODO: [ms] hack: please investigate this change further - somewhere there is an underlying
+      // bug likely associated with Value/ValueBox
       InsnToStmt.remove(insn);
       setStmt(
           insn,
@@ -1816,7 +1818,21 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     ArrayDeque<Edge> worklist = new ArrayDeque<>();
     for (LabelNode ln : trapHandler.keySet()) {
       if (checkInlineExceptionHandler(ln)) {
-        handleInlineExceptionHandler(ln, worklist);
+        // Catch the exception
+        JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
+        Local local = newStackLocal();
+        AbstractDefinitionStmt as =
+            Jimple.newIdentityStmt(local, ref, StmtPositionInfo.createNoStmtPositionInfo());
+
+        Operand opr = new Operand(ln, ref);
+        opr.stack = local;
+
+        ArrayList<Operand> stack = new ArrayList<>();
+        stack.add(opr);
+        worklist.add(new Edge(ln, stack));
+
+        // Save the statements
+        inlineExceptionHandlers.put(ln, as);
       } else {
         worklist.add(new Edge(ln, new ArrayList<>()));
       }
@@ -1899,24 +1915,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     } while (!worklist.isEmpty());
     conversionWorklist = null;
     edges = null;
-  }
-
-  private void handleInlineExceptionHandler(LabelNode ln, ArrayDeque<Edge> worklist) {
-    // Catch the exception
-    JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
-    Local local = newStackLocal();
-    AbstractDefinitionStmt as =
-        Jimple.newIdentityStmt(local, ref, StmtPositionInfo.createNoStmtPositionInfo());
-
-    Operand opr = new Operand(ln, ref);
-    opr.stack = local;
-
-    ArrayList<Operand> stack = new ArrayList<>();
-    stack.add(opr);
-    worklist.add(new Edge(ln, stack));
-
-    // Save the statements
-    inlineExceptionHandlers.put(ln, as);
   }
 
   private boolean checkInlineExceptionHandler(@Nonnull LabelNode ln) {
