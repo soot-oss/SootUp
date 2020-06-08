@@ -121,7 +121,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   /* -state fields- */
   private int nextLocal;
   private Map<Integer, Local> locals;
-  private Multimap<LabelNode, Stmt> labelsTheStmtBranchesTo;
+  private Multimap<LabelNode, Stmt> stmtsThatBranchToLabel;
   private Map<AbstractInsnNode, Stmt> InsnToStmt;
   private ArrayList<Operand> stack;
   private Map<AbstractInsnNode, StackFrame> frames;
@@ -134,6 +134,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
 
+  @Nonnull private final Map<LabelNode, Trap> labelToTrap = new LinkedHashMap<>();
   @Nonnull private final Body.BodyBuilder bodyBuilder = Body.builder();
 
   private final Supplier<MethodSignature> lazyMethodSignature =
@@ -181,7 +182,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     int nrInsn = instructions.size();
     nextLocal = maxLocals;
     locals = new LinkedHashMap<>(maxLocals + (maxLocals / 2));
-    labelsTheStmtBranchesTo = LinkedListMultimap.create(4);
+    stmtsThatBranchToLabel = LinkedListMultimap.create(4);
     InsnToStmt = new LinkedHashMap<>(nrInsn);
     frames = new LinkedHashMap<>(nrInsn);
     trapHandler = LinkedListMultimap.create(tryCatchBlocks.size());
@@ -205,7 +206,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
     /* clean up */
     locals = null;
-    labelsTheStmtBranchesTo = null;
+    stmtsThatBranchToLabel = null;
     InsnToStmt = null;
     stack = null;
     frames = null;
@@ -1093,7 +1094,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     if (op == GOTO) {
       if (!InsnToStmt.containsKey(insn)) {
         Stmt gotoStmt = Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
-        labelsTheStmtBranchesTo.put(insn.label, gotoStmt);
+        stmtsThatBranchToLabel.put(insn.label, gotoStmt);
         setStmt(insn, gotoStmt);
       }
       return;
@@ -1173,7 +1174,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         frame.setIn(val);
       }
       Stmt ifStmt = Jimple.newIfStmt(cond, StmtPositionInfo.createNoStmtPositionInfo());
-      labelsTheStmtBranchesTo.put(insn.label, ifStmt);
+      stmtsThatBranchToLabel.put(insn.label, ifStmt);
       setStmt(insn, ifStmt);
     } else {
       if (op >= IF_ICMPEQ && op <= IF_ACMPNE) {
@@ -1287,9 +1288,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             (Immediate) key.stackOrValue(), keys, StmtPositionInfo.createNoStmtPositionInfo());
 
     // TODO: [ms] check to uphold insertion order!
-    labelsTheStmtBranchesTo.put(insn.dflt, lss);
+    stmtsThatBranchToLabel.put(insn.dflt, lss);
     for (LabelNode ln : insn.labels) {
-      labelsTheStmtBranchesTo.put(ln, lss);
+      stmtsThatBranchToLabel.put(ln, lss);
     }
 
     key.addBox(lss.getKeyBox());
@@ -1587,9 +1588,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             StmtPositionInfo.createNoStmtPositionInfo());
 
     // TODO: [ms] check to uphold insertion order!
-    labelsTheStmtBranchesTo.put(insn.dflt, tss);
+    stmtsThatBranchToLabel.put(insn.dflt, tss);
     for (LabelNode ln : insn.labels) {
-      labelsTheStmtBranchesTo.put(ln, tss);
+      stmtsThatBranchToLabel.put(ln, tss);
     }
 
     key.addBox(tss.getKeyBox());
@@ -1827,9 +1828,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         Operand opr = new Operand(ln, ref);
         opr.stack = local;
 
-        ArrayList<Operand> stack = new ArrayList<>();
-        stack.add(opr);
-        worklist.add(new Edge(ln, stack));
+        ArrayList<Operand> operandStack = new ArrayList<>();
+        operandStack.add(opr);
+        worklist.add(new Edge(ln, operandStack));
 
         // Save the statements
         inlineExceptionHandlers.put(ln, as);
@@ -1977,33 +1978,27 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private void buildTraps() throws AsmFrontendException {
     List<Trap> traps = new ArrayList<>();
 
-    JavaClassType throwable =
-        JavaIdentifierFactory.getInstance().getClassType("java.lang.Throwable");
-
     Map<LabelNode, Iterator<Stmt>> handlers = new LinkedHashMap<>(tryCatchBlocks.size());
-    for (TryCatchBlockNode tc : tryCatchBlocks) {
-      Iterator<Stmt> hitr = handlers.get(tc.handler);
-      if (hitr == null) {
-        hitr = trapHandler.get(tc.handler).iterator();
-        handlers.put(tc.handler, hitr);
+    for (TryCatchBlockNode trycatch : tryCatchBlocks) {
+      Iterator<Stmt> handlerIterator = handlers.get(trycatch.handler);
+      if (handlerIterator == null) {
+        handlerIterator = trapHandler.get(trycatch.handler).iterator();
+        handlers.put(trycatch.handler, handlerIterator);
       }
-      Stmt handler = hitr.next();
-      JavaClassType cls;
-      if (tc.type == null) {
-        cls = throwable;
-      } else {
-        cls = JavaIdentifierFactory.getInstance().getClassType(AsmUtil.toQualifiedName(tc.type));
-      }
-      // FIXME: [ms] remove boxes/nops from traps
-      Stmt start = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-      Stmt end = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-      bodyBuilder.addStmt(start);
-      bodyBuilder.addStmt(end);
+      Stmt handler = handlerIterator.next();
 
-      Trap trap = Jimple.newTrap(cls, start, end, handler);
+      final String exceptionName =
+          (trycatch.type != null) ? AsmUtil.toQualifiedName(trycatch.type) : "java.lang.Throwable";
+      JavaClassType exceptionType = JavaIdentifierFactory.getInstance().getClassType(exceptionName);
+
+      // FIXME start,end,handler
+      Trap trap = Jimple.newTrap(exceptionType, handler, handler, handler);
       traps.add(trap);
-      labelsTheStmtBranchesTo.put(tc.start, start);
-      labelsTheStmtBranchesTo.put(tc.end, end);
+      labelToTrap.put(trycatch.start, trap);
+      labelToTrap.put(trycatch.end, trap);
+
+      // TODO: [ms] graph: link from trap to handlerstmt
+
     }
     bodyBuilder.setTraps(traps);
   }
@@ -2022,19 +2017,30 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private void buildStmts() {
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> labels = new ArrayDeque<>();
+    ArrayDeque<Stmt> target = new ArrayDeque<>();
+    LabelNode danglingLabel = null;
 
     while (insn != null) {
+      Stmt stmt;
       // Save the label to assign it to the next real Stmt
       if (insn instanceof LabelNode) {
-        labels.add((LabelNode) insn);
+        danglingLabel = ((LabelNode) insn);
+        stmt = null;
+      } else {
+        // Get the Stmt associated with the current instruction. see
+        // https://asm.ow2.io/javadoc/org/objectweb/asm/Label.html
+        stmt = InsnToStmt.get(insn);
       }
 
-      // Get the Stmt associated with the current instruction
-      // TODO: [ms] check: isnt it just the else case of insn instanceof above?
-      Stmt stmt = InsnToStmt.get(insn);
       if (stmt == null) {
         insn = insn.getNext();
         continue;
+      }
+
+      if (danglingLabel != null) {
+        labels.add(danglingLabel);
+        target.add(stmt);
+        danglingLabel = null;
       }
 
       emitStmts(stmt);
@@ -2059,18 +2065,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         }
       }
 
-      // Register this Stmt for all targets of the labels ending up at it
-      while (!labels.isEmpty()) {
-        LabelNode ln = labels.poll();
-        Collection<Stmt> boxes = labelsTheStmtBranchesTo.get(ln);
-        if (boxes != null) {
-          final Stmt targetStmt =
-              stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt;
-          for (Stmt box : boxes) {
-            bodyBuilder.addFlow(box, targetStmt);
-          }
-        }
-      }
       insn = insn.getNext();
     }
 
@@ -2091,23 +2085,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       bodyBuilder.addFlow(gotoImpl, targetStmt);
     }
 
-    /* set remaining labels & boxes to last Stmt of chain */
-    if (labels.isEmpty()) {
-      return;
-    }
-
-    // FIXME
-    System.out.println(" remaining labels: " + labels);
-    assert false;
-
-    Stmt end = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-    bodyBuilder.addStmt(end, true);
-
+    // Register this Stmt for all targets of the labels ending up at it
     while (!labels.isEmpty()) {
       LabelNode ln = labels.poll();
-      Collection<Stmt> boxes = labelsTheStmtBranchesTo.get(ln);
-      for (Stmt box : boxes) {
-        bodyBuilder.addFlow(box, end);
+      Stmt stmt = target.poll();
+      Collection<Stmt> boxes = stmtsThatBranchToLabel.get(ln);
+
+      if (boxes != null) {
+        final Stmt targetStmt =
+            stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt;
+        boxes.forEach(box -> bodyBuilder.addFlow(box, targetStmt));
       }
     }
   }
