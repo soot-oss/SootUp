@@ -427,7 +427,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     return (A) InsnToStmt.get(insn);
   }
 
-  // TODO: [ms] purpose of this method?
   private void assignReadOps(@Nullable Local local) {
     for (Operand operand : stack) {
       if (operand == DWORD_DUMMY
@@ -437,14 +436,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       }
       if (local != null && !operand.value.equivTo(local)) {
         List<Value> uses = operand.value.getUses();
-        boolean noref = true;
+        boolean noRef = true;
         for (Value use : uses) {
           if (use.equivTo(local)) {
-            noref = false;
+            noRef = false;
             break;
           }
         }
-        if (noref) {
+        if (noRef) {
           continue;
         }
       }
@@ -457,10 +456,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       }
       Local stack = newStackLocal();
       operand.stack = stack;
-      JAssignStmt as =
+      JAssignStmt asssignStmt =
           Jimple.newAssignStmt(stack, operand.value, StmtPositionInfo.createNoStmtPositionInfo());
       operand.updateBoxes();
-      setStmt(operand.insn, as);
+      setStmt(operand.insn, asssignStmt);
     }
   }
 
@@ -2022,13 +2021,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
     while (insn != null) {
       Stmt stmt;
-      // Save the label to assign it to the next real Stmt
+
+      // Get the Stmt associated with the current instruction. see
+      // https://asm.ow2.io/javadoc/org/objectweb/asm/Label.html
       if (insn instanceof LabelNode) {
+        // Save the label to assign it to the next real Stmt
         danglingLabel = ((LabelNode) insn);
         stmt = null;
       } else {
-        // Get the Stmt associated with the current instruction. see
-        // https://asm.ow2.io/javadoc/org/objectweb/asm/Label.html
         stmt = InsnToStmt.get(insn);
       }
 
@@ -2037,6 +2037,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         continue;
       }
 
+      // associate label with following stmt
       if (danglingLabel != null) {
         labels.add(danglingLabel);
         target.add(stmt);
@@ -2046,6 +2047,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       emitStmts(stmt);
 
       // If this is an exception handler, register the starting Stmt for it
+      // TODO: [ms] was/is it possible that this code is ever reached?
       if (insn instanceof LabelNode) {
         JIdentityStmt caughtEx = null;
 
