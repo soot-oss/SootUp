@@ -121,7 +121,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   /* -state fields- */
   private int nextLocal;
   private Map<Integer, Local> locals;
-  private Multimap<LabelNode, Stmt> stmtsThatBranchToLabel;
+  private Multimap<Stmt, LabelNode> stmtsThatBranchToLabel;
   private Map<AbstractInsnNode, Stmt> InsnToStmt;
   private ArrayList<Operand> stack;
   private Map<AbstractInsnNode, StackFrame> frames;
@@ -182,7 +182,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     int nrInsn = instructions.size();
     nextLocal = maxLocals;
     locals = new LinkedHashMap<>(maxLocals + (maxLocals / 2));
-    stmtsThatBranchToLabel = LinkedListMultimap.create(4);
+    stmtsThatBranchToLabel = LinkedListMultimap.create();
     InsnToStmt = new LinkedHashMap<>(nrInsn);
     frames = new LinkedHashMap<>(nrInsn);
     trapHandler = LinkedListMultimap.create(tryCatchBlocks.size());
@@ -1093,7 +1093,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     if (op == GOTO) {
       if (!InsnToStmt.containsKey(insn)) {
         Stmt gotoStmt = Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
-        stmtsThatBranchToLabel.put(insn.label, gotoStmt);
+        stmtsThatBranchToLabel.put(gotoStmt, insn.label);
         setStmt(insn, gotoStmt);
       }
       return;
@@ -1173,7 +1173,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         frame.setIn(val);
       }
       Stmt ifStmt = Jimple.newIfStmt(cond, StmtPositionInfo.createNoStmtPositionInfo());
-      stmtsThatBranchToLabel.put(insn.label, ifStmt);
+      stmtsThatBranchToLabel.put(ifStmt, insn.label);
       setStmt(insn, ifStmt);
     } else {
       if (op >= IF_ICMPEQ && op <= IF_ACMPNE) {
@@ -1282,20 +1282,20 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     for (Integer i : insn.keys) {
       keys.add(IntConstant.getInstance(i));
     }
-    JSwitchStmt lss =
+    JSwitchStmt lookupSwitchStmt =
         Jimple.newLookupSwitchStmt(
             (Immediate) key.stackOrValue(), keys, StmtPositionInfo.createNoStmtPositionInfo());
 
     // TODO: [ms] check to uphold insertion order!
-    stmtsThatBranchToLabel.put(insn.dflt, lss);
-    for (LabelNode ln : insn.labels) {
-      stmtsThatBranchToLabel.put(ln, lss);
+    stmtsThatBranchToLabel.put(lookupSwitchStmt, insn.dflt);
+    for (LabelNode labelNode : insn.labels) {
+      stmtsThatBranchToLabel.put(lookupSwitchStmt, labelNode);
     }
 
-    key.addBox(lss.getKeyBox());
+    key.addBox(lookupSwitchStmt.getKeyBox());
     frame.setIn(key);
-    frame.setBoxes(lss.getKeyBox());
-    setStmt(insn, lss);
+    frame.setBoxes(lookupSwitchStmt.getKeyBox());
+    setStmt(insn, lookupSwitchStmt);
   }
 
   private void convertMethodInsn(@Nonnull MethodInsnNode insn) {
@@ -1579,7 +1579,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       return;
     }
     Operand key = popImmediate();
-    JSwitchStmt tss =
+    JSwitchStmt tableSwitchStmt =
         Jimple.newTableSwitchStmt(
             (Immediate) key.stackOrValue(),
             insn.min,
@@ -1587,15 +1587,15 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             StmtPositionInfo.createNoStmtPositionInfo());
 
     // TODO: [ms] check to uphold insertion order!
-    stmtsThatBranchToLabel.put(insn.dflt, tss);
-    for (LabelNode ln : insn.labels) {
-      stmtsThatBranchToLabel.put(ln, tss);
+    stmtsThatBranchToLabel.put(tableSwitchStmt, insn.dflt);
+    for (LabelNode labelNode : insn.labels) {
+      stmtsThatBranchToLabel.put(tableSwitchStmt, labelNode);
     }
 
-    key.addBox(tss.getKeyBox());
+    key.addBox(tableSwitchStmt.getKeyBox());
     frame.setIn(key);
-    frame.setBoxes(tss.getKeyBox());
-    setStmt(insn, tss);
+    frame.setBoxes(tableSwitchStmt.getKeyBox());
+    setStmt(insn, tableSwitchStmt);
   }
 
   private void convertTypeInsn(@Nonnull TypeInsnNode insn) {
@@ -2015,8 +2015,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   private void buildStmts() {
     AbstractInsnNode insn = instructions.getFirst();
-    ArrayDeque<LabelNode> labels = new ArrayDeque<>();
-    ArrayDeque<Stmt> target = new ArrayDeque<>();
+    Map<LabelNode, Stmt> labels = new HashMap<>();
     LabelNode danglingLabel = null;
 
     while (insn != null) {
@@ -2039,8 +2038,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
       // associate label with following stmt
       if (danglingLabel != null) {
-        labels.add(danglingLabel);
-        target.add(stmt);
+        labels.put(danglingLabel, stmt);
         danglingLabel = null;
       }
 
@@ -2080,24 +2078,20 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         bodyBuilder.addFlow(trapStmt, handler);
       }
 
-      // We need to jump to the original implementation
+      // jump to the original implementation
       Stmt targetStmt = InsnToStmt.get(ln);
       JGotoStmt gotoImpl = Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
       bodyBuilder.addStmt(gotoImpl, true);
       bodyBuilder.addFlow(gotoImpl, targetStmt);
     }
 
-    // Register this Stmt for all targets of the labels ending up at it
-    while (!labels.isEmpty()) {
-      LabelNode ln = labels.poll();
-      Stmt stmt = target.poll();
-      Collection<Stmt> boxes = stmtsThatBranchToLabel.get(ln);
-
-      if (boxes != null) {
-        final Stmt targetStmt =
-            stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt;
-        boxes.forEach(box -> bodyBuilder.addFlow(box, targetStmt));
-      }
+    // link branching stmts with its targets
+    for (Map.Entry<Stmt, LabelNode> entry : stmtsThatBranchToLabel.entries()) {
+      Stmt fromStmt = entry.getKey();
+      Stmt stmt = labels.get(entry.getValue());
+      final Stmt targetStmt =
+          stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt;
+      bodyBuilder.addFlow(fromStmt, targetStmt);
     }
   }
 

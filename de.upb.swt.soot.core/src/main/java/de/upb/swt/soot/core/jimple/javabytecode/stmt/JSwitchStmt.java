@@ -206,7 +206,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
       stmtPrinter.literal(": ");
       stmtPrinter.literal(Jimple.GOTO);
       stmtPrinter.literal(" ");
-      stmtPrinter.stmtRef(targets.get(i), true);
+      stmtPrinter.stmtRef(targets.get(i + 1), true);
       stmtPrinter.literal(";");
 
       stmtPrinter.newline();
