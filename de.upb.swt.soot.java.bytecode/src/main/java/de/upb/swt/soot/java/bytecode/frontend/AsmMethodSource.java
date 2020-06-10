@@ -2009,7 +2009,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
       // assign Stmt associated with the current instruction. see
       // https://asm.ow2.io/javadoc/org/objectweb/asm/Label.html
-      if (insn instanceof LabelNode) {
+      final boolean isLabelNode = insn instanceof LabelNode;
+      if (isLabelNode) {
         // Save the label to assign it to the next real Stmt
         danglingLabel = ((LabelNode) insn);
       }
@@ -2029,9 +2030,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       emitStmts(stmt);
 
       // If this is an exception handler, register the starting Stmt for it
-      if (insn instanceof LabelNode) {
+      if (isLabelNode) {
         JIdentityStmt caughtEx = findIdentityRefInContainer(stmt);
-
         if (caughtEx != null && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
           // We directly place this label
           trapHandler.put((LabelNode) insn, caughtEx);
