@@ -212,11 +212,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
     Body body = bodyBuilder.build();
 
-    // FIXME: remove
-    if (true) {
-      return body;
-    }
-
     for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
       try {
         body = bodyInterceptor.interceptBody(body);

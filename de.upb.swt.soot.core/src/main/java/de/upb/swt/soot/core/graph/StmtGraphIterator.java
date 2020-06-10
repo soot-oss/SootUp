@@ -10,20 +10,20 @@ import javax.annotation.Nonnull;
  *
  * @author Markus Schmidt
  */
-public class GeneralStmtGraphIterator implements Iterator<EndpointPair<Stmt>> {
+public class StmtGraphIterator implements Iterator<EndpointPair<Stmt>> {
 
   private final StmtGraph stmtGraph;
   private final Iterator<Stmt> nodeIterator;
   private Iterator<Stmt> edgeIterator;
   private Stmt currentNode = null;
 
-  public GeneralStmtGraphIterator(@Nonnull StmtGraph stmtGraph) {
+  public StmtGraphIterator(@Nonnull StmtGraph stmtGraph) {
     this.stmtGraph = stmtGraph;
     this.nodeIterator = stmtGraph.stmtList.iterator();
   }
 
-  public static GeneralStmtGraphIterator of(@Nonnull StmtGraph stmtGraph) {
-    return new GeneralStmtGraphIterator(stmtGraph);
+  public static StmtGraphIterator of(@Nonnull StmtGraph stmtGraph) {
+    return new StmtGraphIterator(stmtGraph);
   }
 
   @Override
