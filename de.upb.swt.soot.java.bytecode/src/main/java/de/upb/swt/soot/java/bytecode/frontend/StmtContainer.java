@@ -20,7 +20,7 @@ class StmtContainer extends Stmt {
 
   @Nonnull private final List<Stmt> stmts = new LinkedList<>();
 
-  private StmtContainer(@Nonnull Stmt prevStmt, Stmt nextStmt) {
+  private StmtContainer() {
     super(StmtPositionInfo.createNoStmtPositionInfo());
   }
 
@@ -29,7 +29,7 @@ class StmtContainer extends Stmt {
     if (prevStmt instanceof StmtContainer) {
       container = (StmtContainer) prevStmt;
     } else {
-      container = new StmtContainer(prevStmt, nextStmt);
+      container = new StmtContainer();
       container.stmts.add(prevStmt);
     }
     container.stmts.add(nextStmt);
