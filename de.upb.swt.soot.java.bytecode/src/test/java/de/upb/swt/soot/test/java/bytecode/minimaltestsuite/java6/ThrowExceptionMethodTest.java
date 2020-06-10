@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
@@ -25,18 +25,7 @@ public class ThrowExceptionMethodTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of(
-            "l0 := @this: ThrowExceptionMethod",
-            "label1:",
-            "l1 = 8 / 0",
-            "label2:",
-            "goto label4",
-            "label3:",
-            "$stack2 := @caughtexception",
-            "l1 = $stack2",
-            "label4:",
-            "return",
-            "catch java.lang.ArithmeticException from label1 to label2 with label3")
+    return Stream.of("l0 := @this: ThrowExceptionMethod", "l1 = 8 / 0", "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
@@ -47,29 +36,20 @@ public class ThrowExceptionMethodTest extends MinimalBytecodeTestSuiteBase {
 
   public List<String> expectedBodyStmts1() {
     return Stream.of(
-            "r0 := @this: ThrowExceptionMethod",
-            "$r1 = new CustomException",
-            "specialinvoke $r1.<CustomException: void <init>()>()",
-            "throw $r1",
-            "return")
+            "l0 := @this: ThrowExceptionMethod",
+            "$stack1 = new CustomException",
+            "specialinvoke $stack1.<CustomException: void <init>(java.lang.String)>(\"Custom Exception\")",
+            "throw $stack1")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  @org.junit.Test
+  @Test
   public void test() {
-    SootMethod method1 = loadMethod(getMethodSignature());
-    assertJimpleStmts(method1, expectedBodyStmts());
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
-    /*assertTrue(
-    method.getExceptionSignatures().stream()
-            .anyMatch(classType -> classType.getClassName().equals("ArithmeticException")));*/
-
-  }
-
-  @Ignore
-  public void IgnoreTEst() {
-    SootMethod method = loadMethod(getMethodSignature());
+    assertTrue(
+        method.getExceptionSignatures().stream()
+            .anyMatch(classType -> classType.getClassName().equals("ArithmeticException")));
     method = loadMethod(getMethodSignature1());
     assertJimpleStmts(method, expectedBodyStmts1());
     assertTrue(

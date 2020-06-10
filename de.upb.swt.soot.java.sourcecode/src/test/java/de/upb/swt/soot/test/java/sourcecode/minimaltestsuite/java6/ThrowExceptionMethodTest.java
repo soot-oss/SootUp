@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
+import org.junit.Test;
 
 /** @author Kaustubh Kelkar */
 public class ThrowExceptionMethodTest extends MinimalSourceTestSuiteBase {
@@ -23,27 +23,6 @@ public class ThrowExceptionMethodTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getThrowCustomExceptionSignature() {
     return identifierFactory.getMethodSignature(
         "throwCustomException", getDeclaredClassSignature(), "void", Collections.emptyList());
-  }
-
-  @org.junit.Test
-  public void test() {
-    SootMethod method1 = loadMethod(getMethodSignature());
-    assertJimpleStmts(method1, expectedBodyStmts());
-    SootMethod method = loadMethod(getMethodSignature());
-    assertJimpleStmts(method, expectedBodyStmts());
-    assertTrue(
-        method.getExceptionSignatures().stream()
-            .anyMatch(classType -> classType.getClassName().equals("ArithmeticException")));
-    /** TODO can not detect the custom exception a */
-  }
-
-  @Ignore
-  public void ignoreTest() {
-    SootMethod method = loadMethod(getThrowCustomExceptionSignature());
-    assertJimpleStmts(method, expectedBodyStmts1());
-    assertTrue(
-        method.getExceptionSignatures().stream()
-            .anyMatch(classType -> classType.getClassName().equals("CustomException")));
   }
 
   @Override
@@ -65,5 +44,19 @@ public class ThrowExceptionMethodTest extends MinimalSourceTestSuiteBase {
             "throw $r1",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
+  }
+
+  @Test
+  public void test() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
+    assertTrue(
+        method.getExceptionSignatures().stream()
+            .anyMatch(classType -> classType.getClassName().equals("ArithmeticException")));
+    method = loadMethod(getMethodSignature1());
+    assertJimpleStmts(method, expectedBodyStmts1());
+    assertTrue(
+        method.getExceptionSignatures().stream()
+            .anyMatch(classType -> classType.getClassName().equals("CustomException")));
   }
 }
