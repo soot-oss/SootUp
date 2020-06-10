@@ -57,11 +57,11 @@ public abstract class SootClassSource extends AbstractClassSource {
 
   /** Reads from the source to retrieve its methods. This may be an expensive operation. */
   @Nonnull
-  public abstract Collection<SootMethod> resolveMethods() throws ResolveException;
+  public abstract Collection<? extends SootMethod> resolveMethods() throws ResolveException;
 
   /** Reads from the source to retrieve its fields. This may be an expensive operation. */
   @Nonnull
-  public abstract Collection<SootField> resolveFields() throws ResolveException;
+  public abstract Collection<? extends SootField> resolveFields() throws ResolveException;
 
   /** Reads from the source to retrieve its modifiers. This may be an expensive operation. */
   @Nonnull
