@@ -66,8 +66,7 @@ public class OnwardStmtGraph implements Graph<Stmt> {
 
   @Override
   public boolean allowsSelfLoops() {
-    // is this really possible?! possible optimization to turn it off
-    return true;
+    return false;
   }
 
   @Override
@@ -91,7 +90,6 @@ public class OnwardStmtGraph implements Graph<Stmt> {
 
   @Override
   public Set<Stmt> successors(Stmt node) {
-
     // TODO:
     throw new UnsupportedOperationException();
   }

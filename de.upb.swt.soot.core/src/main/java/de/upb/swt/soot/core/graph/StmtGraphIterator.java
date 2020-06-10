@@ -35,10 +35,11 @@ public class StmtGraphIterator implements Iterator<EndpointPair<Stmt>> {
   public EndpointPair<Stmt> next() {
     // TODO: [ms] check!
 
-    if (currentNode == null && nodeIterator.hasNext()) {
+    if (currentNode == null || nodeIterator.hasNext()) {
       currentNode = nodeIterator.next();
       edgeIterator = stmtGraph.successors(currentNode).iterator();
     }
+
     if (currentNode != null) {
       if (edgeIterator.hasNext()) {
         return EndpointPair.ordered(currentNode, edgeIterator.next());
@@ -47,6 +48,6 @@ public class StmtGraphIterator implements Iterator<EndpointPair<Stmt>> {
       }
     }
 
-    throw new IndexOutOfBoundsException("No more element to iterate.");
+    throw new IndexOutOfBoundsException("No more elements to iterate.");
   }
 }
