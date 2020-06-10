@@ -7,6 +7,7 @@ import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
+import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -20,7 +21,7 @@ import javax.annotation.Nonnull;
 // Stmt to fit into a Collection<Stmt>
 class StmtContainer extends Stmt {
 
-  @Nonnull final Stmt[] stmts;
+  @Nonnull private final Stmt[] stmts;
 
   StmtContainer(@Nonnull Stmt prevStmt, Stmt nextStmt) {
     super(StmtPositionInfo.createNoStmtPositionInfo());
@@ -39,6 +40,11 @@ class StmtContainer extends Stmt {
       ret = ((StmtContainer) ret).stmts[0];
     }
     return ret;
+  }
+
+  @Nonnull
+  public Stmt[] getStmts() {
+    return stmts;
   }
 
   @Override
@@ -114,6 +120,11 @@ class StmtContainer extends Stmt {
   @Override
   public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public String toString() {
+    return "StmtContainer" + Arrays.toString(stmts);
   }
 
   @Override

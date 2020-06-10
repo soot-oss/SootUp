@@ -401,6 +401,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   void mergeStmts(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
     Stmt prev = InsnToStmt.put(insn, stmt);
     if (prev != null) {
+      // FIXME: remove debug
+      System.out.println("merge:" + prev + " # " + stmt);
       Stmt merged = new StmtContainer(prev, stmt);
       InsnToStmt.put(insn, merged);
     }
@@ -1992,7 +1994,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private void emitStmts(@Nonnull Stmt stmt) {
     // TODO: [ms] rename method and analyze StmtContainer container to improve this method?
     if (stmt instanceof StmtContainer) {
-      for (Stmt u : ((StmtContainer) stmt).stmts) {
+      for (Stmt u : ((StmtContainer) stmt).getStmts()) {
         emitStmts(u);
       }
     } else {
@@ -2071,7 +2073,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     } else if (stmt instanceof StmtContainer) {
       findIdentityRefInContainer:
       while (true) {
-        for (Stmt stmtEntry : ((StmtContainer) stmt).stmts) {
+        for (Stmt stmtEntry : ((StmtContainer) stmt).getStmts()) {
           if (stmtEntry instanceof JIdentityStmt) {
             return (JIdentityStmt) stmtEntry;
           } else if (stmtEntry instanceof StmtContainer) {
