@@ -35,7 +35,7 @@ import javax.annotation.Nonnull;
 /** Partial implementation of trap (exception catcher), used within Body classes. */
 public class AbstractTrap implements Trap {
   /** The exception being caught. */
-  private final transient ClassType exception;
+  private final ClassType exception;
 
   /** The first stmt being trapped. */
   private final Stmt beginStmt;
