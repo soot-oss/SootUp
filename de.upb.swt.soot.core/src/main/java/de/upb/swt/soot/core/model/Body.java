@@ -366,17 +366,20 @@ public class Body implements Copyable {
       return true;
     }
 
-    Stmt pred = predecessors.iterator().next();
-    if (pred instanceof JIfStmt && ((JIfStmt) pred).getTarget(this) == targetStmt) {
-      return true;
-    }
+    final Iterator<Stmt> iterator = predecessors.iterator();
+    if (iterator.hasNext()) {
+      Stmt pred = iterator.next();
+      if (pred instanceof JIfStmt && ((JIfStmt) pred).getTarget(this) == targetStmt) {
+        return true;
+      }
 
-    if (pred instanceof JGotoStmt) {
-      return true;
-    }
+      if (pred instanceof JGotoStmt) {
+        return true;
+      }
 
-    if (pred instanceof JSwitchStmt) {
-      return true;
+      if (pred instanceof JSwitchStmt) {
+        return true;
+      }
     }
 
     return false;

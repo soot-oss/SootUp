@@ -1976,11 +1976,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private void buildTraps() throws AsmFrontendException {
     List<Trap> traps = new ArrayList<>();
 
-    // TODO: [ms] simplify using trapHandler directly?
-    Map<LabelNode, Stmt> handlers = new LinkedHashMap<>(tryCatchBlocks.size());
     for (TryCatchBlockNode trycatch : tryCatchBlocks) {
-      Stmt handler =
-          handlers.computeIfAbsent(trycatch.handler, key -> trapHandler.get(trycatch.handler));
+      Stmt handler = trapHandler.get(trycatch.handler);
 
       final String exceptionName =
           (trycatch.type != null) ? AsmUtil.toQualifiedName(trycatch.type) : "java.lang.Throwable";
