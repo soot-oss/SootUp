@@ -125,7 +125,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private Map<AbstractInsnNode, Stmt> InsnToStmt;
   private ArrayList<Operand> stack;
   private Map<AbstractInsnNode, StackFrame> frames;
-  private Multimap<LabelNode, Stmt> trapHandler;
+  private Map<LabelNode, Stmt> trapHandler;
   private int lastLineNumber = -1;
 
   @Nullable private JavaClassType declaringClass;
@@ -185,11 +185,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     stmtsThatBranchToLabel = LinkedListMultimap.create();
     InsnToStmt = new LinkedHashMap<>(nrInsn);
     frames = new LinkedHashMap<>(nrInsn);
-    trapHandler = LinkedListMultimap.create(tryCatchBlocks.size());
+    trapHandler = new LinkedHashMap(tryCatchBlocks.size());
 
     /* retrieve all trap handlers */
     for (TryCatchBlockNode tc : tryCatchBlocks) {
-      // FIXME [ms] link late when targets are known
       trapHandler.put(tc.handler, Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
     }
     /* convert instructions */
@@ -934,7 +933,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       final Operand operand = dword ? popDual() : pop();
       frame.mergeIn(operand);
       // TODO: [ms] hack: please investigate this change further - somewhere there is an underlying
-      // bug likely associated with Value/ValueBox
+      // bug likely associated with Value/ValueBox which is solved via remove(insn)/setStmt(..)
       InsnToStmt.remove(insn);
       setStmt(
           insn,
@@ -1977,12 +1976,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private void buildTraps() throws AsmFrontendException {
     List<Trap> traps = new ArrayList<>();
 
-    Map<LabelNode, Iterator<Stmt>> handlers = new LinkedHashMap<>(tryCatchBlocks.size());
+    // TODO: [ms] simplify using trapHandler directly?
+    Map<LabelNode, Stmt> handlers = new LinkedHashMap<>(tryCatchBlocks.size());
     for (TryCatchBlockNode trycatch : tryCatchBlocks) {
-      Iterator<Stmt> handlerIterator =
-          handlers.computeIfAbsent(
-              trycatch.handler, key -> trapHandler.get(trycatch.handler).iterator());
-      Stmt handler = handlerIterator.next();
+      Stmt handler =
+          handlers.computeIfAbsent(trycatch.handler, key -> trapHandler.get(trycatch.handler));
 
       final String exceptionName =
           (trycatch.type != null) ? AsmUtil.toQualifiedName(trycatch.type) : "java.lang.Throwable";
@@ -2042,7 +2040,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       emitStmts(stmt);
 
       // If this is an exception handler, register the starting Stmt for it
-      // TODO: [ms] was/is it possible that this code is ever reached?
       if (insn instanceof LabelNode) {
         JIdentityStmt caughtEx = null;
 
@@ -2055,10 +2052,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
         if (caughtEx != null && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
           // We directly place this label
-          Collection<Stmt> traps = trapHandler.get((LabelNode) insn);
-          for (Stmt trapStmt : traps) {
-            bodyBuilder.addFlow(trapStmt, caughtEx);
-          }
+          trapHandler.put((LabelNode) insn, caughtEx);
         }
       }
 
@@ -2070,10 +2064,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       Stmt handler = inlineExceptionHandlers.get(ln);
       emitStmts(handler);
 
-      Collection<Stmt> traps = trapHandler.get(ln);
-      for (Stmt trapStmt : traps) {
-        bodyBuilder.addFlow(trapStmt, handler);
-      }
+      trapHandler.put(ln, handler);
 
       // jump to the original implementation
       Stmt targetStmt = InsnToStmt.get(ln);
