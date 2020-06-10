@@ -12,18 +12,18 @@ import javax.annotation.Nonnull;
  */
 public class GeneralStmtGraphIterator implements Iterator<EndpointPair<Stmt>> {
 
-  private final GeneralStmtGraph generalStmtGraph;
+  private final StmtGraph stmtGraph;
   private final Iterator<Stmt> nodeIterator;
   private Iterator<Stmt> edgeIterator;
   private Stmt currentNode = null;
 
-  public GeneralStmtGraphIterator(@Nonnull GeneralStmtGraph generalStmtGraph) {
-    this.generalStmtGraph = generalStmtGraph;
-    this.nodeIterator = generalStmtGraph.stmtList.iterator();
+  public GeneralStmtGraphIterator(@Nonnull StmtGraph stmtGraph) {
+    this.stmtGraph = stmtGraph;
+    this.nodeIterator = stmtGraph.stmtList.iterator();
   }
 
-  public static GeneralStmtGraphIterator of(@Nonnull GeneralStmtGraph generalStmtGraph) {
-    return new GeneralStmtGraphIterator(generalStmtGraph);
+  public static GeneralStmtGraphIterator of(@Nonnull StmtGraph stmtGraph) {
+    return new GeneralStmtGraphIterator(stmtGraph);
   }
 
   @Override
@@ -37,7 +37,7 @@ public class GeneralStmtGraphIterator implements Iterator<EndpointPair<Stmt>> {
 
     if (currentNode == null && nodeIterator.hasNext()) {
       currentNode = nodeIterator.next();
-      edgeIterator = generalStmtGraph.successors(currentNode).iterator();
+      edgeIterator = stmtGraph.successors(currentNode).iterator();
     }
     if (currentNode != null) {
       if (edgeIterator.hasNext()) {
