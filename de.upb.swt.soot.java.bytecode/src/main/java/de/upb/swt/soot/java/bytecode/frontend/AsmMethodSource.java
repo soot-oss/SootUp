@@ -134,7 +134,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
 
-  @Nonnull private final Map<LabelNode, Trap> labelToTrap = new LinkedHashMap<>();
+  private Map<LabelNode, Stmt> labelsToStmt;
   @Nonnull private final Body.BodyBuilder bodyBuilder = Body.builder();
 
   private final Supplier<MethodSignature> lazyMethodSignature =
@@ -201,8 +201,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
     /* build body (add stmts, locals, traps, etc.) */
     buildLocals();
-    buildTraps();
     buildStmts();
+    buildTraps();
 
     /* clean up */
     locals = null;
@@ -817,7 +817,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         frame.mergeIn(pop(), pop());
       }
     }
-    if (dword && (op < LCMP || op > DCMPG)) {
+    if (dword && op < LCMP) {
       pushDual(opr);
     } else {
       push(opr);
@@ -1979,25 +1979,22 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
     Map<LabelNode, Iterator<Stmt>> handlers = new LinkedHashMap<>(tryCatchBlocks.size());
     for (TryCatchBlockNode trycatch : tryCatchBlocks) {
-      Iterator<Stmt> handlerIterator = handlers.get(trycatch.handler);
-      if (handlerIterator == null) {
-        handlerIterator = trapHandler.get(trycatch.handler).iterator();
-        handlers.put(trycatch.handler, handlerIterator);
-      }
+      Iterator<Stmt> handlerIterator =
+          handlers.computeIfAbsent(
+              trycatch.handler, key -> trapHandler.get(trycatch.handler).iterator());
       Stmt handler = handlerIterator.next();
 
       final String exceptionName =
           (trycatch.type != null) ? AsmUtil.toQualifiedName(trycatch.type) : "java.lang.Throwable";
       JavaClassType exceptionType = JavaIdentifierFactory.getInstance().getClassType(exceptionName);
 
-      // FIXME start,end,handler
-      Trap trap = Jimple.newTrap(exceptionType, handler, handler, handler);
+      Trap trap =
+          Jimple.newTrap(
+              exceptionType,
+              labelsToStmt.get(trycatch.start),
+              labelsToStmt.get(trycatch.end),
+              handler);
       traps.add(trap);
-      labelToTrap.put(trycatch.start, trap);
-      labelToTrap.put(trycatch.end, trap);
-
-      // TODO: [ms] graph: link from trap to handlerstmt
-
     }
     bodyBuilder.setTraps(traps);
   }
@@ -2015,13 +2012,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   private void buildStmts() {
     AbstractInsnNode insn = instructions.getFirst();
-    Map<LabelNode, Stmt> labels = new HashMap<>();
+    labelsToStmt = new HashMap<>();
     LabelNode danglingLabel = null;
 
     while (insn != null) {
       Stmt stmt;
 
-      // Get the Stmt associated with the current instruction. see
+      // assign Stmt associated with the current instruction. see
       // https://asm.ow2.io/javadoc/org/objectweb/asm/Label.html
       if (insn instanceof LabelNode) {
         // Save the label to assign it to the next real Stmt
@@ -2038,7 +2035,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
       // associate label with following stmt
       if (danglingLabel != null) {
-        labels.put(danglingLabel, stmt);
+        labelsToStmt.put(danglingLabel, stmt);
         danglingLabel = null;
       }
 
@@ -2088,7 +2085,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     // link branching stmts with its targets
     for (Map.Entry<Stmt, LabelNode> entry : stmtsThatBranchToLabel.entries()) {
       Stmt fromStmt = entry.getKey();
-      Stmt stmt = labels.get(entry.getValue());
+      Stmt stmt = labelsToStmt.get(entry.getValue());
       final Stmt targetStmt =
           stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt;
       bodyBuilder.addFlow(fromStmt, targetStmt);
