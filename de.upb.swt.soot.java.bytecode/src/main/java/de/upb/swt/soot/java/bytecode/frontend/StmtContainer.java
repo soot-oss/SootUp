@@ -15,6 +15,7 @@ import javax.annotation.Nonnull;
  * A psuedo stmt containing different stmts.
  *
  * @author Aaloan Miftah
+ * @author Markus Schmidt
  */
 class StmtContainer extends Stmt {
 

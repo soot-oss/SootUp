@@ -2023,7 +2023,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
       // associate label with following stmt
       if (danglingLabel != null) {
-        labelsToStmt.put(danglingLabel, stmt);
+        labelsToStmt.put(
+            danglingLabel,
+            stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt);
         danglingLabel = null;
       }
 
@@ -2058,9 +2060,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     // link branching stmts with its targets
     for (Map.Entry<Stmt, LabelNode> entry : stmtsThatBranchToLabel.entries()) {
       Stmt fromStmt = entry.getKey();
-      Stmt stmt = labelsToStmt.get(entry.getValue());
-      final Stmt targetStmt =
-          stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt;
+      final Stmt targetStmt = labelsToStmt.get(entry.getValue());
       bodyBuilder.addFlow(fromStmt, targetStmt);
     }
   }
