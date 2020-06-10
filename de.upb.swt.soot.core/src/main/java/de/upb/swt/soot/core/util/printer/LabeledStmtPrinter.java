@@ -121,7 +121,6 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     int refCount = 0;
 
     // Traverse the stmts and assign a label if necessary
-    // TODO: [ms] improve: iterate over labelStmts/refStmts
     for (Stmt s : stmts) {
       if (labelStmts.contains(s)) {
         labels.put(s, String.format(formatString, ++labelCount));

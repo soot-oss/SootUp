@@ -528,7 +528,6 @@ public class Body implements Copyable {
 
     @Nonnull
     public BodyBuilder addStmt(@Nonnull Stmt stmt, boolean linkLastStmt) {
-      System.out.println("stmt: " + stmt);
       cfg.addNode(stmt);
       if (lastAddedStmt != null) {
         if (linkLastStmt && lastAddedStmt.fallsThrough()) {
@@ -576,13 +575,6 @@ public class Body implements Copyable {
 
     @Nonnull
     public Body build() {
-
-      // TODO
-      for (Stmt stmt : cfg.nodes()) {
-        System.out.print("\"" + stmt + "\" => ");
-        System.out.println(cfg.successors(stmt));
-        System.out.println("in: " + cfg.predecessors(stmt) + "\n\n");
-      }
 
       // validate branch stmts
       for (Map.Entry<Stmt, List<Stmt>> branchItem : branches.entrySet()) {
