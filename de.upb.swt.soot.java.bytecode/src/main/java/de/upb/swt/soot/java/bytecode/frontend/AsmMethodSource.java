@@ -1280,7 +1280,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         Jimple.newLookupSwitchStmt(
             (Immediate) key.stackOrValue(), keys, StmtPositionInfo.createNoStmtPositionInfo());
 
-    // TODO: [ms] check to uphold insertion order!
+    // uphold insertion order!
     stmtsThatBranchToLabel.put(lookupSwitchStmt, insn.dflt);
     for (LabelNode labelNode : insn.labels) {
       stmtsThatBranchToLabel.put(lookupSwitchStmt, labelNode);
@@ -1580,7 +1580,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             insn.max,
             StmtPositionInfo.createNoStmtPositionInfo());
 
-    // TODO: [ms] check to uphold insertion order!
+    // uphold insertion order!
     stmtsThatBranchToLabel.put(tableSwitchStmt, insn.dflt);
     for (LabelNode labelNode : insn.labels) {
       stmtsThatBranchToLabel.put(tableSwitchStmt, labelNode);
@@ -2030,14 +2030,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
       // If this is an exception handler, register the starting Stmt for it
       if (insn instanceof LabelNode) {
-        JIdentityStmt caughtEx = null;
-
-        // TODO: [ms] integrate this if-else into findIdentityRefInContainer itself?
-        if (stmt instanceof JIdentityStmt) {
-          caughtEx = (JIdentityStmt) stmt;
-        } else if (stmt instanceof StmtContainer) {
-          caughtEx = findIdentityRefInContainer((StmtContainer) stmt);
-        }
+        JIdentityStmt caughtEx = findIdentityRefInContainer(stmt);
 
         if (caughtEx != null && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
           // We directly place this label
@@ -2072,13 +2065,20 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     }
   }
 
-  private @Nullable JIdentityStmt findIdentityRefInContainer(@Nonnull StmtContainer stmtContainer) {
-    // TODO: [ms] replace recursion?
-    for (Stmt stmt : stmtContainer.stmts) {
-      if (stmt instanceof JIdentityStmt) {
-        return (JIdentityStmt) stmt;
-      } else if (stmt instanceof StmtContainer) {
-        return findIdentityRefInContainer((StmtContainer) stmt);
+  private @Nullable JIdentityStmt findIdentityRefInContainer(@Nonnull Stmt stmt) {
+    if (stmt instanceof JIdentityStmt) {
+      return (JIdentityStmt) stmt;
+    } else if (stmt instanceof StmtContainer) {
+      findIdentityRefInContainer:
+      while (true) {
+        for (Stmt stmtEntry : ((StmtContainer) stmt).stmts) {
+          if (stmtEntry instanceof JIdentityStmt) {
+            return (JIdentityStmt) stmtEntry;
+          } else if (stmtEntry instanceof StmtContainer) {
+            stmt = stmtEntry;
+            continue findIdentityRefInContainer;
+          }
+        }
       }
     }
     return null;

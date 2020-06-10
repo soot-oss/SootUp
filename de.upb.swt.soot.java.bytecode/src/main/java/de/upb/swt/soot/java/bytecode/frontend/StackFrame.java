@@ -22,7 +22,7 @@ final class StackFrame {
   @Nullable private Operand[] out;
   @Nullable private Local[] inStackLocals;
   @Nullable private ValueBox[] boxes;
-  @Nullable private ArrayList<Operand[]> in = new ArrayList<>(1);
+  @Nonnull private final ArrayList<Operand[]> in = new ArrayList<>(1);
   @Nonnull private final AsmMethodSource src;
 
   /**
@@ -35,7 +35,7 @@ final class StackFrame {
   }
 
   /** @return operands produced by this frame. */
-  @Nullable
+  @Nonnull
   Operand[] getOut() {
     return out;
   }
@@ -47,8 +47,6 @@ final class StackFrame {
    */
   void setIn(@Nonnull Operand... oprs) {
     in.clear();
-    // TODO: [ms] check if its ever called multiple times
-    // -> is .clear() / the ArrayList necessary?
     in.add(oprs);
     inStackLocals = new Local[oprs.length];
   }
@@ -58,7 +56,7 @@ final class StackFrame {
    *
    * @param boxes the boxes.
    */
-  void setBoxes(ValueBox... boxes) {
+  void setBoxes(@Nonnull ValueBox... boxes) {
     this.boxes = boxes;
   }
 
@@ -67,7 +65,7 @@ final class StackFrame {
    *
    * @param oprs the operands.
    */
-  void setOut(Operand... oprs) {
+  void setOut(@Nonnull Operand... oprs) {
     out = oprs;
   }
 
