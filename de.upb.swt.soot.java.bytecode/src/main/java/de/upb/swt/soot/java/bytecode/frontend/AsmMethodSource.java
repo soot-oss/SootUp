@@ -2014,18 +2014,15 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     LabelNode danglingLabel = null;
 
     while (insn != null) {
-      Stmt stmt;
 
       // assign Stmt associated with the current instruction. see
       // https://asm.ow2.io/javadoc/org/objectweb/asm/Label.html
       if (insn instanceof LabelNode) {
         // Save the label to assign it to the next real Stmt
         danglingLabel = ((LabelNode) insn);
-        stmt = null;
-      } else {
-        stmt = InsnToStmt.get(insn);
       }
 
+      Stmt stmt = InsnToStmt.get(insn);
       if (stmt == null) {
         insn = insn.getNext();
         continue;
