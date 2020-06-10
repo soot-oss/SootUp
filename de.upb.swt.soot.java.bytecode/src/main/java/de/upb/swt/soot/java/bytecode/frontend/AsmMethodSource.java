@@ -401,9 +401,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   void mergeStmts(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
     Stmt prev = InsnToStmt.put(insn, stmt);
     if (prev != null) {
-      // FIXME: remove debug
-      System.out.println("merge:" + prev + " # " + stmt);
-      Stmt merged = new StmtContainer(prev, stmt);
+      Stmt merged = StmtContainer.create(prev, stmt);
       InsnToStmt.put(insn, merged);
     }
   }
@@ -1995,7 +1993,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     // TODO: [ms] rename method and analyze StmtContainer container to improve this method?
     if (stmt instanceof StmtContainer) {
       for (Stmt u : ((StmtContainer) stmt).getStmts()) {
-        emitStmts(u);
+        bodyBuilder.addStmt(u, true);
       }
     } else {
       bodyBuilder.addStmt(stmt, true);
@@ -2067,19 +2065,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     }
   }
 
-  private @Nullable JIdentityStmt findIdentityRefInContainer(@Nonnull Stmt stmt) {
+  @Nullable
+  private JIdentityStmt findIdentityRefInContainer(@Nonnull Stmt stmt) {
     if (stmt instanceof JIdentityStmt) {
       return (JIdentityStmt) stmt;
     } else if (stmt instanceof StmtContainer) {
-      findIdentityRefInContainer:
-      while (true) {
-        for (Stmt stmtEntry : ((StmtContainer) stmt).getStmts()) {
-          if (stmtEntry instanceof JIdentityStmt) {
-            return (JIdentityStmt) stmtEntry;
-          } else if (stmtEntry instanceof StmtContainer) {
-            stmt = stmtEntry;
-            continue findIdentityRefInContainer;
-          }
+      for (Stmt stmtEntry : ((StmtContainer) stmt).getStmts()) {
+        if (stmtEntry instanceof JIdentityStmt) {
+          return (JIdentityStmt) stmtEntry;
         }
       }
     }

@@ -7,7 +7,7 @@ import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
-import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -16,16 +16,24 @@ import javax.annotation.Nonnull;
  *
  * @author Aaloan Miftah
  */
-
-// TODO: [ms] check: this looks at first sight just like a linked list made into sth that extends
-// Stmt to fit into a Collection<Stmt>
 class StmtContainer extends Stmt {
 
-  @Nonnull private final Stmt[] stmts;
+  @Nonnull private final List<Stmt> stmts = new LinkedList<>();
 
-  StmtContainer(@Nonnull Stmt prevStmt, Stmt nextStmt) {
+  private StmtContainer(@Nonnull Stmt prevStmt, Stmt nextStmt) {
     super(StmtPositionInfo.createNoStmtPositionInfo());
-    stmts = new Stmt[] {prevStmt, nextStmt};
+  }
+
+  static Stmt create(Stmt prevStmt, Stmt nextStmt) {
+    StmtContainer container;
+    if (prevStmt instanceof StmtContainer) {
+      container = (StmtContainer) prevStmt;
+    } else {
+      container = new StmtContainer(prevStmt, nextStmt);
+      container.stmts.add(prevStmt);
+    }
+    container.stmts.add(nextStmt);
+    return container;
   }
 
   /**
@@ -35,15 +43,11 @@ class StmtContainer extends Stmt {
    */
   @Nonnull
   Stmt getFirstStmt() {
-    Stmt ret = stmts[0];
-    while (ret instanceof StmtContainer) {
-      ret = ((StmtContainer) ret).stmts[0];
-    }
-    return ret;
+    return stmts.get(0);
   }
 
   @Nonnull
-  public Stmt[] getStmts() {
+  Iterable<Stmt> getStmts() {
     return stmts;
   }
 
@@ -124,7 +128,7 @@ class StmtContainer extends Stmt {
 
   @Override
   public String toString() {
-    return "StmtContainer" + Arrays.toString(stmts);
+    return "StmtContainer" + (stmts);
   }
 
   @Override
