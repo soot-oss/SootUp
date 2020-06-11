@@ -78,7 +78,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
    *
    * @param path The path to search in
    * @return A {@link PathBasedAnalysisInputLocation} implementation dependent on the given {@link
-   *     Path}'s {@link FileSystem}
+   *     Path}'s FileSystem
    */
   public static @Nonnull PathBasedAnalysisInputLocation createForClassContainer(
       @Nonnull Path path) {
@@ -131,7 +131,12 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
    */
   static @Nonnull String extractWarFile(String warFilePath) {
 
-    String destDirectory = System.getProperty("java.io.tmpdir");
+    String destDirectory =
+        System.getProperty("java.io.tmpdir")
+            + File.separator
+            + "sootOutput"
+            + File.separator
+            + "war";
     try {
       File dest = new File(destDirectory);
       if (!dest.exists()) {
