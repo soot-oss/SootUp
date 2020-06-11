@@ -136,9 +136,13 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
             + File.separator
             + "sootOutput"
             + File.separator
-            + "war";
+            + "war"
+            + File.separator
+            + warFilePath.hashCode();
+
     try {
       File dest = new File(destDirectory);
+      dest.deleteOnExit();
       if (!dest.exists()) {
         dest.mkdir();
       }

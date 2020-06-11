@@ -596,7 +596,7 @@ public class Body implements Copyable {
                 stmt + ": size of outgoing flows must be 2 but the size is " + outgoingCount + ".");
           } else {
 
-            // FIXME: [ms] HACKY! fix order of targets of ifstmts in frontends i.e. Asmmethodsource
+            // TODO: [ms] please fix order of targets of ifstmts in frontends i.e. Asmmethodsource
             final List<Stmt> edges = branches.get(stmt);
             Stmt currentNextNode = edges.get(0);
             final Iterator<Stmt> iterator = cfg.nodes().iterator();
@@ -605,7 +605,6 @@ public class Body implements Copyable {
             // switch edge order if the order is wrong i.e. the first edge is not the following stmt
             // in the node list
             if (iterator.hasNext() && iterator.next() != currentNextNode) {
-              System.out.println("DEBUG: IF order switched!");
               edges.set(0, edges.get(1));
               edges.set(1, currentNextNode);
             }
