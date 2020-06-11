@@ -1985,7 +1985,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   }
 
   private void emitStmts(@Nonnull Stmt stmt) {
-    // TODO: [ms] rename method and analyze StmtContainer container to improve this method?
     if (stmt instanceof StmtContainer) {
       for (Stmt u : ((StmtContainer) stmt).getStmts()) {
         bodyBuilder.addStmt(u, true);
@@ -2020,19 +2019,19 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         labelsToStmt.put(
             danglingLabel,
             stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt);
+
+        // If this is an exception handler, register the starting Stmt for it
+        if (isLabelNode) {
+          JIdentityStmt caughtEx = findIdentityRefInContainer(stmt);
+          if (caughtEx != null && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
+            // We directly place this label
+            trapHandler.put(danglingLabel, caughtEx);
+          }
+        }
         danglingLabel = null;
       }
 
       emitStmts(stmt);
-
-      // If this is an exception handler, register the starting Stmt for it
-      if (isLabelNode) {
-        JIdentityStmt caughtEx = findIdentityRefInContainer(stmt);
-        if (caughtEx != null && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
-          // We directly place this label
-          trapHandler.put((LabelNode) insn, caughtEx);
-        }
-      }
 
     } while ((insn = insn.getNext()) != null);
 
@@ -2052,7 +2051,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
     // link branching stmts with its targets
     for (Map.Entry<Stmt, LabelNode> entry : stmtsThatBranchToLabel.entries()) {
-      Stmt fromStmt = entry.getKey();
+      final Stmt fromStmt = entry.getKey();
       final Stmt targetStmt = labelsToStmt.get(entry.getValue());
       bodyBuilder.addFlow(fromStmt, targetStmt);
     }
