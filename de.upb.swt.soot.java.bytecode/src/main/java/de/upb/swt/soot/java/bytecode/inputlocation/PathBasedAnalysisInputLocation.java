@@ -153,7 +153,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         if (!zipEntry.isDirectory()) {
           BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filepath));
           byte[] incomingValues = new byte[4096];
-          int readFlag = 0;
+          int readFlag;
           while ((readFlag = zis.read(incomingValues)) != -1) {
             bos.write(incomingValues, 0, readFlag);
           }

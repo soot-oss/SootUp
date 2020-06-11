@@ -35,7 +35,7 @@ final class StackFrame {
   }
 
   /** @return operands produced by this frame. */
-  @Nonnull
+  @Nullable
   Operand[] getOut() {
     return out;
   }
@@ -80,7 +80,7 @@ final class StackFrame {
     if (in.get(0).length != oprs.length) {
       throw new IllegalArgumentException("Invalid in operands length!");
     }
-    int nrIn = in.size();
+    final int nrIn = in.size();
     for (int i = 0; i < oprs.length; i++) {
       Operand newOp = oprs[i];
 

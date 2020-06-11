@@ -1081,7 +1081,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     push(opr);
   }
 
-  @SuppressWarnings("ConstantConditions")
   private void convertJumpInsn(@Nonnull JumpInsnNode insn) {
     int op = insn.getOpcode();
     if (op == GOTO) {
@@ -1103,9 +1102,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         Immediate v1 = (Immediate) val1.stackOrValue();
         switch (op) {
           case IF_ICMPEQ:
+          case IF_ACMPEQ:
             cond = Jimple.newEqExpr(v1, v);
             break;
           case IF_ICMPNE:
+          case IF_ACMPNE:
             cond = Jimple.newNeExpr(v1, v);
             break;
           case IF_ICMPLT:
@@ -1119,12 +1120,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             break;
           case IF_ICMPLE:
             cond = Jimple.newLeExpr(v1, v);
-            break;
-          case IF_ACMPEQ:
-            cond = Jimple.newEqExpr(v1, v);
-            break;
-          case IF_ACMPNE:
-            cond = Jimple.newNeExpr(v1, v);
             break;
           default:
             throw new AssertionError("Unknown if op: " + op);
@@ -1388,7 +1383,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           oprs[oprs.length - 1] = pop();
         }
         frame.mergeIn(oprs);
-        nrArgs = types.size();
       }
       returnType = expr.getMethodSignature().getType();
     }
@@ -1472,7 +1466,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       List<Type> types = expr.getMethodSignature().getParameterTypes();
       Operand[] oprs;
       int nrArgs = types.size();
-      if (expr instanceof JStaticInvokeExpr) {
+      final boolean isStaticInvokeExpr = expr instanceof JStaticInvokeExpr;
+      if (isStaticInvokeExpr) {
         oprs = (nrArgs == 0) ? null : new Operand[nrArgs];
       } else {
         oprs = new Operand[nrArgs + 1];
@@ -1481,7 +1476,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         while (nrArgs-- >= 0) {
           oprs[nrArgs] = pop(types.get(nrArgs));
         }
-        if (!(expr instanceof JStaticInvokeExpr)) {
+        if (!isStaticInvokeExpr) {
           oprs[oprs.length - 1] = pop();
         }
         frame.mergeIn(oprs);
