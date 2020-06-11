@@ -130,7 +130,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
    * @return A {@link String} location where the war file is extracted
    */
   static @Nonnull String extractWarFile(String warFilePath) {
-
+    // FIXME: [ms] protect against archive bombs
     String destDirectory =
         System.getProperty("java.io.tmpdir")
             + File.separator
@@ -188,7 +188,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       NodeList nList = document.getElementsByTagName("servlet");
       for (int temp = 0; temp < nList.getLength(); temp++) {
         Node node = nList.item(temp);
-        System.out.println(""); // Just a separator
         if (node.getNodeType() == Node.ELEMENT_NODE) {
           Element eElement = (Element) node;
           classesInXML.add(eElement.getElementsByTagName("servlet-class").item(0).getTextContent());
