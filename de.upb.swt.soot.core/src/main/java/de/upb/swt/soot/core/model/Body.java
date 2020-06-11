@@ -579,7 +579,15 @@ public class Body implements Copyable {
       // validate branch stmts
       for (Map.Entry<Stmt, List<Stmt>> branchItem : branches.entrySet()) {
         final Stmt stmt = branchItem.getKey();
-        final int outgoingCount = branchItem.getValue().size();
+        final List<Stmt> targets = branchItem.getValue();
+        final int outgoingCount = targets.size();
+
+        for (Stmt target : targets) {
+          if (target == stmt) {
+            throw new IllegalArgumentException("a Stmt cannot branch to itself.");
+          }
+        }
+
         if (stmt instanceof JSwitchStmt) {
           if (outgoingCount != ((JSwitchStmt) stmt).getValueCount()) {
             throw new IllegalArgumentException(
