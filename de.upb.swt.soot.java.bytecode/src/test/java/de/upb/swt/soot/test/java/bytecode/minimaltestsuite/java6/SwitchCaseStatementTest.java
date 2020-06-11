@@ -5,64 +5,67 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import java.util.Collections;
-import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
 
-  @Ignore
-  public void test() {
+  @Test
+  public void testEnum() {
     SootMethod method = loadMethod(getMethodSignature("switchCaseStatementEnum"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: SwitchCaseStatement",
-            "$r1 = \"RED\"",
-            "$r2 = \"\"",
-            "$r3 = staticinvoke <SwitchCaseStatement$Color: SwitchCaseStatement$Color valueOf(java.lang.String)>($r1)",
-            "$r4 = <SwitchCaseStatement$Color: SwitchCaseStatement$Color RED>",
-            "if $r3 == $r4 goto label1",
-            "$r5 = <SwitchCaseStatement$Color: SwitchCaseStatement$Color GREEN>",
-            "if $r3 == $r5 goto label2",
-            "goto label3",
+            "l0 := @this: SwitchCaseStatement",
+            "l1 = \"RED\"",
+            "l2 = \"\"",
+            "$stack3 = <SwitchCaseStatement$1: int[] $SwitchMap$SwitchCaseStatement$Color>",
+            "$stack4 = staticinvoke <SwitchCaseStatement$Color: SwitchCaseStatement$Color valueOf(java.lang.String)>(l1)",
+            "$stack5 = virtualinvoke $stack4.<SwitchCaseStatement$Color: int ordinal()>()",
+            "$stack6 = $stack3[$stack5]",
+            "switch($stack6)",
+            "case 1: goto label1",
+            "case 2: goto label2",
+            "default: goto label3",
             "label1:",
-            "$r6 = <SwitchCaseStatement$Color: SwitchCaseStatement$Color RED>",
-            "$r2 = \"color red detected\"",
+            "l2 = \"color red detected\"",
             "goto label4",
             "label2:",
-            "$r7 = <SwitchCaseStatement$Color: SwitchCaseStatement$Color GREEN>",
-            "$r2 = \"color green detected\"",
+            "l2 = \"color green detected\"",
             "goto label4",
             "label3:",
-            "$r2 = \"invalid color\"",
-            "goto label4",
+            "l2 = \"invalid color\"",
             "label4:",
             "return"));
+  }
 
-    SootMethod method2 = loadMethod(getMethodSignature("switchCaseStatementInt"));
-    // FIXME: [ms] Buggy Jimple GEneration for Stmt -> targets not set correctly
+  @Test
+  public void testSwitchInt() {
+    SootMethod method = loadMethod(getMethodSignature("switchCaseStatementInt"));
     assertJimpleStmts(
-        method2,
+        method,
         expectedBodyStmts(
-            "r0 := @this: SwitchCaseStatement",
-            "$i0 = 2",
-            "$r1 = null",
-            "switch($i0)",
-            "case 1: goto label2",
-            "case 2: goto [?= null]",
-            "case 3: goto [?= null]",
-            "default: goto label1",
+            "l0 := @this: SwitchCaseStatement",
+            "l1 = 2",
+            "switch(l1)",
+            "case 1: goto label1",
+            "case 2: goto label2",
+            "case 3: goto label3",
+            "default: goto label4",
             "label1:",
-            "$r1 = \"number 1 detected\"",
-            "goto label3",
-            "$r1 = \"number 2 detected\"",
+            "l2 = \"number 1 detected\"",
+            "goto label5",
             "label2:",
-            "goto label3",
-            "$r1 = \"number 3 detected\"",
-            "goto label3",
+            "l2 = \"number 2 detected\"",
+            "goto label5",
             "label3:",
+            "l2 = \"number 3 detected\"",
+            "goto label5",
+            "label4:",
+            "l2 = \"invalid number\"",
+            "label5:",
             "return"));
   }
 
