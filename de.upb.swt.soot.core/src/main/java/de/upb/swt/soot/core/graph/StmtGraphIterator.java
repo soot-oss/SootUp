@@ -33,7 +33,6 @@ public class StmtGraphIterator implements Iterator<EndpointPair<Stmt>> {
 
   @Override
   public EndpointPair<Stmt> next() {
-    // TODO: [ms] check!
 
     if (currentNode == null || nodeIterator.hasNext()) {
       currentNode = nodeIterator.next();
