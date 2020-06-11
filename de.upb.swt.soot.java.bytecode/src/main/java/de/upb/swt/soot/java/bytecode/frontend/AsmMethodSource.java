@@ -2005,7 +2005,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     labelsToStmt = new HashMap<>();
     LabelNode danglingLabel = null;
 
-    while (insn != null) {
+    do {
 
       // assign Stmt associated with the current instruction. see
       // https://asm.ow2.io/javadoc/org/objectweb/asm/Label.html
@@ -2017,7 +2017,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
       Stmt stmt = InsnToStmt.get(insn);
       if (stmt == null) {
-        insn = insn.getNext();
         continue;
       }
 
@@ -2040,8 +2039,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         }
       }
 
-      insn = insn.getNext();
-    }
+    } while ((insn = insn.getNext()) != null);
 
     // Emit the inline exception handlers
     for (LabelNode ln : inlineExceptionHandlers.keySet()) {
