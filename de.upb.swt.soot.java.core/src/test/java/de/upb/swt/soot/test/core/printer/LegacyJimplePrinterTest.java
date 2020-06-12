@@ -35,7 +35,14 @@ public class LegacyJimplePrinterTest {
         JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
     View view = project.createOnDemandView();
 
-    Body body = new Body(Collections.emptySet(), Collections.emptyList(), stmtGraph, null, null);
+    Body body =
+        new Body(
+            Collections.emptySet(),
+            Collections.emptyList(),
+            stmtGraph,
+            null,
+            stmtGraph.nodes().iterator().hasNext() ? stmtGraph.nodes().iterator().next() : null,
+            null);
 
     MethodSignature methodSignature =
         view.getIdentifierFactory()

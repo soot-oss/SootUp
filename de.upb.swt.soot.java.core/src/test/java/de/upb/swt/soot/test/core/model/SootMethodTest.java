@@ -55,7 +55,14 @@ public class SootMethodTest {
             Jimple.newNewExpr(type),
             StmtPositionInfo.createNoStmtPositionInfo()));
 
-    Body body = new Body(generator.getLocals(), Collections.emptyList(), graph, null, null);
+    Body body =
+        new Body(
+            generator.getLocals(),
+            Collections.emptyList(),
+            graph,
+            null,
+            graph.nodes().iterator().hasNext() ? graph.nodes().iterator().next() : null,
+            null);
 
     assertEquals(2, body.getLocalCount());
 

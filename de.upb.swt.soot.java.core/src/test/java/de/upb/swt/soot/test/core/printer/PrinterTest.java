@@ -66,13 +66,16 @@ public class PrinterTest {
             Collections.emptyList(),
             graph,
             null,
+            graph.nodes().iterator().hasNext() ? graph.nodes().iterator().next() : null,
             NoPositionInformation.getInstance());
+
     Body bodyTwo =
         new Body(
             Collections.emptySet(),
             Collections.emptyList(),
             graph,
             null,
+            graph.nodes().iterator().hasNext() ? graph.nodes().iterator().next() : null,
             NoPositionInformation.getInstance());
 
     String className = "some.package.SomeClass";
