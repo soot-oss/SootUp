@@ -40,7 +40,7 @@ public class ThrowExceptionMethodTest extends MinimalSourceTestSuiteBase {
     return Stream.of(
             "r0 := @this: ThrowExceptionMethod",
             "$r1 = new CustomException",
-            "specialinvoke $r1.<CustomException: void <init>()>()",
+            "specialinvoke $r1.<CustomException: void <init>(java.lang.String)>(\"Custom Exception\")",
             "throw $r1",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
