@@ -486,7 +486,7 @@ public class Body implements Copyable {
     }
 
     BodyBuilder(@Nonnull Body body) {
-      this(body, GraphBuilder.from(body.getStmtGraph()).build());
+      this(body, Graphs.copyOf(body.getStmtGraph()));
     }
 
     BodyBuilder(@Nonnull Body body, @Nonnull MutableGraph<Stmt> graphContainer) {
