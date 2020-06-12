@@ -53,6 +53,7 @@ public class Body implements Copyable {
           Collections.emptyList(),
           ImmutableGraph.copyOf(GraphBuilder.directed().build()),
           Collections.emptyMap(),
+          null,
           NoPositionInformation.getInstance());
 
   /** The locals for this Body. */
@@ -116,25 +117,6 @@ public class Body implements Copyable {
 
     // FIXME: [JMP] Virtual method call in constructor
     checkInit();
-  }
-
-  // TODO: migrate tests to use BodyBuilder
-  @Deprecated
-  public Body(
-      @Nonnull Set<Local> locals,
-      @Nonnull List<Trap> traps,
-      @Nonnull Graph<Stmt> stmtGraph,
-      @Nonnull Map<Stmt, List<Stmt>> branches,
-      @Nonnull Position position) {
-
-    // FIXME: [ms] remove this dirty test hack !!!!!!
-    this(
-        locals,
-        traps,
-        stmtGraph,
-        branches,
-        stmtGraph.nodes().iterator().hasNext() ? stmtGraph.nodes().iterator().next() : null,
-        position);
   }
 
   @Nonnull
@@ -437,22 +419,27 @@ public class Body implements Copyable {
 
   @Nonnull
   public Body withLocals(@Nonnull Set<Local> locals) {
-    return new Body(locals, getTraps(), getStmtGraph(), getBranches(), getPosition());
+    return new Body(locals, getTraps(), getStmtGraph(), getBranches(), getFirstStmt(), getPosition());
   }
 
   @Nonnull
   public Body withTraps(@Nonnull List<Trap> traps) {
-    return new Body(getLocals(), traps, getStmtGraph(), getBranches(), getPosition());
+    return new Body(getLocals(), traps, getStmtGraph(), getBranches(), getFirstStmt(), getPosition());
   }
 
   @Nonnull
   public Body withStmts(@Nonnull Graph<Stmt> stmtGraph) {
-    return new Body(getLocals(), getTraps(), stmtGraph, getBranches(), getPosition());
+    return new Body(getLocals(), getTraps(), stmtGraph, getBranches(), getFirstStmt(), getPosition());
+  }
+
+  @Nonnull
+  public Body withFirstStmt(@Nonnull Stmt firstStmt) {
+    return new Body(getLocals(), getTraps(), getStmtGraph(), getBranches(), firstStmt, getPosition());
   }
 
   @Nonnull
   public Body withPosition(@Nonnull Position position) {
-    return new Body(getLocals(), getTraps(), getStmtGraph(), getBranches(), position);
+    return new Body(getLocals(), getTraps(), getStmtGraph(), getBranches(), getFirstStmt(), position);
   }
 
   public static BodyBuilder builder() {
