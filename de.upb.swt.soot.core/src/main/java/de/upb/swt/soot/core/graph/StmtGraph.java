@@ -15,17 +15,18 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public class StmtGraph implements MutableGraph<Stmt> {
 
-  protected final HashMap<Stmt, List<Stmt>> predecessors = new HashMap<>();
+  protected final Map<Stmt, List<Stmt>> predecessors = new HashMap<>();
   protected final Map<Stmt, List<Stmt>> successors = new HashMap<>();
   protected final List<Stmt> stmtList = new ArrayList<>();
 
   public StmtGraph() {}
 
   public boolean addNode(@Nonnull Stmt node) {
+    // [ms] contains is expensive!
     boolean modify = !stmtList.contains(node);
-    // if(modify) {
-    stmtList.add(node);
-    // }
+    if (modify) {
+      stmtList.add(node);
+    }
     return modify;
   }
 

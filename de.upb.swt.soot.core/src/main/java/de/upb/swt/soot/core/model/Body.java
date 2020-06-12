@@ -511,7 +511,13 @@ public class Body implements Copyable {
 
     @Nonnull
     public BodyBuilder addLocal(@Nonnull String name, Type type) {
-      this.locals.add(localGen.generateLocal(type));
+      locals.add(localGen.generateLocal(type));
+      return this;
+    }
+
+    @Nonnull
+    public BodyBuilder addLocal(@Nonnull Local local) {
+      locals.add(local);
       return this;
     }
 
@@ -584,7 +590,7 @@ public class Body implements Copyable {
 
         for (Stmt target : targets) {
           if (target == stmt) {
-            throw new IllegalArgumentException("a Stmt cannot branch to itself.");
+            throw new IllegalArgumentException("a Stmt (" + stmt + ") cannot branch to itself.");
           }
         }
 
