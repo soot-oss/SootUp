@@ -33,86 +33,45 @@ public class LocalSplitterTest {
   JavaClassType booleanType = factory.getClassType("boolean");
 
   // build locals
-  Local i0 = JavaJimple.newLocal("$i0", intType);
-  Local i1 = JavaJimple.newLocal("$i1", intType);
-  Local i2 = JavaJimple.newLocal("$i2", intType);
-  Local i3 = JavaJimple.newLocal("$i3", intType);
-  Local z0 = JavaJimple.newLocal("$z0", booleanType);
-  Local i0hash0 = JavaJimple.newLocal("$i0#0", intType);
-  Local i0hash1 = JavaJimple.newLocal("$i0#1", intType);
-
-  // build Stmts
-  Stmt stmt1 = JavaJimple.newAssignStmt(i0, IntConstant.getInstance(0), noStmtPositionInfo);
-  Stmt stmt2 =
-      JavaJimple.newAssignStmt(
-          z0, JavaJimple.newLtExpr(i0, IntConstant.getInstance(10)), noStmtPositionInfo);
-  Stmt stmt3 =
-      JavaJimple.newIfStmt(
-          JavaJimple.newEqExpr(z0, IntConstant.getInstance(0)), noStmtPositionInfo); // goto stmt10
-  Stmt stmt4 =
-      JavaJimple.newAssignStmt(
-          i1, JavaJimple.newAddExpr(i0, IntConstant.getInstance(1)), noStmtPositionInfo);
-  Stmt stmt5 = JavaJimple.newAssignStmt(i0, i1, noStmtPositionInfo);
-  Stmt stmt6 = JavaJimple.newAssignStmt(i2, i0, noStmtPositionInfo);
-  Stmt stmt7 =
-      JavaJimple.newAssignStmt(
-          i3, JavaJimple.newAddExpr(i0, IntConstant.getInstance(1)), noStmtPositionInfo);
-  Stmt stmt8 = JavaJimple.newAssignStmt(i0, i3, noStmtPositionInfo);
-  Stmt stmt9 = JavaJimple.newGotoStmt(noStmtPositionInfo); // goto stmt2
-  Stmt stmt10 = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
-
-  Stmt stmt1_m = JavaJimple.newAssignStmt(i0hash0, IntConstant.getInstance(0), noStmtPositionInfo);
-  Stmt stmt2_m =
-      JavaJimple.newAssignStmt(
-          z0, JavaJimple.newLtExpr(i0hash0, IntConstant.getInstance(10)), noStmtPositionInfo);
-  Stmt stmt4_m =
-      JavaJimple.newAssignStmt(
-          i1, JavaJimple.newAddExpr(i0hash0, IntConstant.getInstance(1)), noStmtPositionInfo);
-  Stmt stmt5_m = JavaJimple.newAssignStmt(i0hash1, i1, noStmtPositionInfo);
-  Stmt stmt6_m = JavaJimple.newAssignStmt(i2, i0hash1, noStmtPositionInfo);
-  Stmt stmt7_m =
-      JavaJimple.newAssignStmt(
-          i3, JavaJimple.newAddExpr(i0hash1, IntConstant.getInstance(1)), noStmtPositionInfo);
-  Stmt stmt8_m = JavaJimple.newAssignStmt(i0hash0, i3, noStmtPositionInfo);
+  Local l0 = JavaJimple.newLocal("l0", intType);
+  Local l1 = JavaJimple.newLocal("l1", intType);
+  Local l2 = JavaJimple.newLocal("l2", intType);
+  Local l3 = JavaJimple.newLocal("l3", intType);
+  Local l4 = JavaJimple.newLocal("l4", booleanType);
+  Local l0hash1 = JavaJimple.newLocal("l0#1", intType);
+  Local l0hash2 = JavaJimple.newLocal("l0#2", intType);
+  Local l0hash3 = JavaJimple.newLocal("l0#3", intType);
+  Local l1hash2 = JavaJimple.newLocal("l1#2", intType);
+  Local l1hash4 = JavaJimple.newLocal("l1#4", intType);
 
   /**
-   * for(int i = 0; i < 10; i++){ i = i + 1 } transform:
+   * int a = 0; int b = 0; a = a + 1; b = b + 1;
    *
    * <pre>
-   * 1. $i0 = 0
-   * 2. $z0 = $i0 < 10
-   * 3. if $z0 == 0 goto return
-   * 4. $i1 = $i0 + 1
-   * 5. $i0 = $i1
-   * 6. $i2 = $i0
-   * 7. $i3 = $i0 + 1
-   * 8. $i0 = $i3
-   * 9. goto [?= $z0 = $i0 < 10]
-   * 10. return
+   * 1. l0 = 0
+   * 2. l1 = 1
+   * 3. l0 = l0 + 1
+   * 4. l1 = l1 + 1
+   * 5. return
    * </pre>
    *
    * to:
    *
    * <pre>
-   * $i0#0 = 0
-   * $z0 = $i0#0 < 10
-   * if $z0 == 0 goto return
-   * $i1 = $i0#0 + 1
-   * $i0#1 = $i1
-   * $i2 = $i0#1
-   * $i3 = $i0#1 + 1
-   * $i0#0 = $i3
-   * goto [?= $z0 = $i0#0 < 10]
-   * return
+   * 1. l0#1 = 0
+   * 2. l1#2 = 1
+   * 3. l0#3 = l0#1 + 1
+   * 4. l1#4 = l1#2 + 1
+   * 5. return
    * </pre>
    */
   @Test
-  public void testLocalSplitter1() {
+  public void testLocalSplitterForMultilocals() {
 
-    Body body = createBody1();
+    Body body = createMultilocalsBody();
     LocalSplitter localSplitter = new LocalSplitter();
     Body newBody = localSplitter.interceptBody(body);
-    Body expectedBody = createExpectedBody1();
+    Body expectedBody = createExpectedMuiltilocalsBody();
 
     // check newBody's locals
     assertLocalsEquiv(expectedBody.getLocals(), newBody.getLocals());
@@ -124,19 +83,192 @@ public class LocalSplitterTest {
     assertStmtGraphEquiv(expectedBody.getStmtGraph(), newBody.getStmtGraph());
   }
 
-  /** bodycreater 1 */
-  private Body createBody1() {
+  /**
+   * for(int i = 0; i < 10; i++){ i = i + 1 } transform:
+   *
+   * <pre>
+   * 1. l0 = 0
+   * 2. l4 = l0 < 10
+   * 3. if l4 == 0 goto return
+   * 4. l1 = l0 + 1
+   * 5. l0 = l1
+   * 6. l2 = l0
+   * 7. l3 = l0 + 1
+   * 8. l0 = l3
+   * 9. goto [?= l4 = l0 < 10]
+   * 10. return
+   * </pre>
+   *
+   * to:
+   *
+   * <pre>
+   * 1. l0#1 = 0
+   * 2. l4 = l0#1 < 10
+   * 3. if l4 == 0 goto return
+   * 4. l1 = l0#1 + 1
+   * 5. l0#2 = l1
+   * 6. l2 = l0#2
+   * 7. l3 = l0#2 + 1
+   * 8. l0#1 = l3
+   * 9. goto [?= l4 = l0#1 < 10]
+   * 10. return
+   * </pre>
+   */
+  @Test
+  public void testLocalSplitterForLoop() {
+
+    Body body = createLoopBody();
+    LocalSplitter localSplitter = new LocalSplitter();
+    Body newBody = localSplitter.interceptBody(body);
+    Body expectedBody = createExpectedLoopBody();
+
+    // check newBody's locals
+    assertLocalsEquiv(expectedBody.getLocals(), newBody.getLocals());
+
+    // check newBody's first stmt
+    assertTrue(expectedBody.getFirstStmt().equivTo(newBody.getFirstStmt()));
+
+    // check newBody's stmtGraph
+    assertStmtGraphEquiv(expectedBody.getStmtGraph(), newBody.getStmtGraph());
+  }
+
+  /** bodycreater for multilocals */
+  private Body createMultilocalsBody() {
 
     // build set locals
     Set<Local> locals = new HashSet<>();
-    locals.add(i0);
-    locals.add(i1);
-    locals.add(i2);
-    locals.add(i3);
-    locals.add(z0);
+    locals.add(l0);
+    locals.add(l1);
 
     // build traps (an empty list)
     List<Trap> traps = Collections.emptyList();
+
+    Stmt stmt1 = JavaJimple.newAssignStmt(l0, IntConstant.getInstance(0), noStmtPositionInfo);
+    Stmt stmt2 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noStmtPositionInfo);
+    Stmt stmt3 =
+        JavaJimple.newAssignStmt(
+            l0, JavaJimple.newAddExpr(l0, IntConstant.getInstance(1)), noStmtPositionInfo);
+    Stmt stmt4 =
+        JavaJimple.newAssignStmt(
+            l1, JavaJimple.newAddExpr(l1, IntConstant.getInstance(1)), noStmtPositionInfo);
+    Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
+
+    // build stmtGraph
+    MutableGraph<Stmt> stmtGraph =
+        GraphBuilder.directed().nodeOrder(ElementOrder.insertion()).build();
+    // set nodes
+    stmtGraph.addNode(stmt1);
+    stmtGraph.addNode(stmt2);
+    stmtGraph.addNode(stmt3);
+    stmtGraph.addNode(stmt4);
+    stmtGraph.addNode(ret);
+
+    // set edges
+    stmtGraph.putEdge(stmt1, stmt2);
+    stmtGraph.putEdge(stmt2, stmt3);
+    stmtGraph.putEdge(stmt3, stmt4);
+    stmtGraph.putEdge(stmt4, ret);
+
+    // build the map branches
+    Map<Stmt, List<Stmt>> branches = new HashMap<>();
+
+    // build startingStmt
+    Stmt startingStmt = stmt1;
+
+    // build position
+    Position position = NoPositionInformation.getInstance();
+
+    return new Body(locals, traps, stmtGraph, branches, startingStmt, position);
+  }
+
+  private Body createExpectedMuiltilocalsBody() {
+    // build set locals
+    Set<Local> locals = new HashSet<>();
+    locals.add(l0);
+    locals.add(l1);
+    locals.add(l0hash1);
+    locals.add(l1hash2);
+    locals.add(l0hash3);
+    locals.add(l1hash4);
+
+    // build traps (an empty list)
+    List<Trap> traps = Collections.emptyList();
+
+    Stmt stmt1 = JavaJimple.newAssignStmt(l0hash1, IntConstant.getInstance(0), noStmtPositionInfo);
+    Stmt stmt2 = JavaJimple.newAssignStmt(l1hash2, IntConstant.getInstance(1), noStmtPositionInfo);
+    Stmt stmt3 =
+        JavaJimple.newAssignStmt(
+            l0hash3,
+            JavaJimple.newAddExpr(l0hash1, IntConstant.getInstance(1)),
+            noStmtPositionInfo);
+    Stmt stmt4 =
+        JavaJimple.newAssignStmt(
+            l1hash4,
+            JavaJimple.newAddExpr(l1hash2, IntConstant.getInstance(1)),
+            noStmtPositionInfo);
+    Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
+
+    // build stmtGraph
+    MutableGraph<Stmt> stmtGraph =
+        GraphBuilder.directed().nodeOrder(ElementOrder.insertion()).build();
+    // set nodes
+    stmtGraph.addNode(stmt1);
+    stmtGraph.addNode(stmt2);
+    stmtGraph.addNode(stmt3);
+    stmtGraph.addNode(stmt4);
+    stmtGraph.addNode(ret);
+
+    // set edges
+    stmtGraph.putEdge(stmt1, stmt2);
+    stmtGraph.putEdge(stmt2, stmt3);
+    stmtGraph.putEdge(stmt3, stmt4);
+    stmtGraph.putEdge(stmt4, ret);
+
+    // build the map branches
+    Map<Stmt, List<Stmt>> branches = new HashMap<>();
+
+    // build startingStmt
+    Stmt startingStmt = stmt1;
+
+    // build position
+    Position position = NoPositionInformation.getInstance();
+
+    return new Body(locals, traps, stmtGraph, branches, startingStmt, position);
+  }
+
+  /** bodycreater for Loop */
+  private Body createLoopBody() {
+
+    // build set locals
+    Set<Local> locals = new HashSet<>();
+    locals.add(l0);
+    locals.add(l1);
+    locals.add(l2);
+    locals.add(l3);
+    locals.add(l4);
+
+    // build traps (an empty list)
+    List<Trap> traps = Collections.emptyList();
+
+    Stmt stmt1 = JavaJimple.newAssignStmt(l0, IntConstant.getInstance(0), noStmtPositionInfo);
+    Stmt stmt2 =
+        JavaJimple.newAssignStmt(
+            l4, JavaJimple.newLtExpr(l0, IntConstant.getInstance(10)), noStmtPositionInfo);
+    Stmt stmt3 =
+        JavaJimple.newIfStmt(
+            JavaJimple.newEqExpr(l4, IntConstant.getInstance(0)),
+            noStmtPositionInfo); // goto stmt10_loop
+    Stmt stmt4 =
+        JavaJimple.newAssignStmt(
+            l1, JavaJimple.newAddExpr(l0, IntConstant.getInstance(1)), noStmtPositionInfo);
+    Stmt stmt5 = JavaJimple.newAssignStmt(l0, l1, noStmtPositionInfo);
+    Stmt stmt6 = JavaJimple.newAssignStmt(l2, l0, noStmtPositionInfo);
+    Stmt stmt7 =
+        JavaJimple.newAssignStmt(
+            l3, JavaJimple.newAddExpr(l0, IntConstant.getInstance(1)), noStmtPositionInfo);
+    Stmt stmt8 = JavaJimple.newAssignStmt(l0, l3, noStmtPositionInfo);
+    Stmt stmt9 = JavaJimple.newGotoStmt(noStmtPositionInfo); // goto stmt2
+    Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
     // build stmtGraph
     MutableGraph<Stmt> stmtGraph =
@@ -151,12 +283,12 @@ public class LocalSplitterTest {
     stmtGraph.addNode(stmt7);
     stmtGraph.addNode(stmt8);
     stmtGraph.addNode(stmt9);
-    stmtGraph.addNode(stmt10);
+    stmtGraph.addNode(ret);
     // set edges
     stmtGraph.putEdge(stmt1, stmt2);
     stmtGraph.putEdge(stmt2, stmt3);
     stmtGraph.putEdge(stmt3, stmt4);
-    stmtGraph.putEdge(stmt3, stmt10);
+    stmtGraph.putEdge(stmt3, ret);
     stmtGraph.putEdge(stmt4, stmt5);
     stmtGraph.putEdge(stmt5, stmt6);
     stmtGraph.putEdge(stmt6, stmt7);
@@ -167,7 +299,7 @@ public class LocalSplitterTest {
     // build the map branches
     Map<Stmt, List<Stmt>> branches = new HashMap<>();
     List<Stmt> branches1 = new ArrayList<>();
-    branches1.add(stmt10);
+    branches1.add(ret);
     branches1.add(stmt4);
     List<Stmt> branches2 = new ArrayList<>();
     branches2.add(stmt2);
@@ -183,55 +315,77 @@ public class LocalSplitterTest {
     return new Body(locals, traps, stmtGraph, branches, startingStmt, position);
   }
 
-  private Body createExpectedBody1() {
+  private Body createExpectedLoopBody() {
     // build expected set locals
     Set<Local> expectedLocals = new HashSet<>();
-    expectedLocals.add(i1);
-    expectedLocals.add(i2);
-    expectedLocals.add(i3);
-    expectedLocals.add(z0);
-    expectedLocals.add(i0hash0);
-    expectedLocals.add(i0hash1);
+    expectedLocals.add(l0);
+    expectedLocals.add(l1);
+    expectedLocals.add(l2);
+    expectedLocals.add(l3);
+    expectedLocals.add(l4);
+    expectedLocals.add(l0hash1);
+    expectedLocals.add(l0hash2);
 
     // build expected traps (an empty list)
     List<Trap> expectedTraps = Collections.emptyList();
 
+    // build Stmts
+    Stmt stmt1 = JavaJimple.newAssignStmt(l0hash1, IntConstant.getInstance(0), noStmtPositionInfo);
+    Stmt stmt2 =
+        JavaJimple.newAssignStmt(
+            l4, JavaJimple.newLtExpr(l0hash1, IntConstant.getInstance(10)), noStmtPositionInfo);
+    Stmt stmt3 =
+        JavaJimple.newIfStmt(
+            JavaJimple.newEqExpr(l4, IntConstant.getInstance(0)),
+            noStmtPositionInfo); // goto stmt4 and ret
+    Stmt stmt4 =
+        JavaJimple.newAssignStmt(
+            l1, JavaJimple.newAddExpr(l0hash1, IntConstant.getInstance(1)), noStmtPositionInfo);
+    Stmt stmt5 = JavaJimple.newAssignStmt(l0hash2, l1, noStmtPositionInfo);
+    Stmt stmt6 = JavaJimple.newAssignStmt(l2, l0hash2, noStmtPositionInfo);
+    Stmt stmt7 =
+        JavaJimple.newAssignStmt(
+            l3, JavaJimple.newAddExpr(l0hash2, IntConstant.getInstance(1)), noStmtPositionInfo);
+    Stmt stmt8 = JavaJimple.newAssignStmt(l0hash1, l3, noStmtPositionInfo);
+    Stmt stmt9 = JavaJimple.newGotoStmt(noStmtPositionInfo); // goto stmt2
+    Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
+
     // build expected stmtGraph
     MutableGraph<Stmt> expectedStmtGraph =
         GraphBuilder.directed().nodeOrder(ElementOrder.insertion()).build();
-    expectedStmtGraph.addNode(stmt1_m);
-    expectedStmtGraph.addNode(stmt2_m);
+    expectedStmtGraph.addNode(stmt1);
+    expectedStmtGraph.addNode(stmt2);
     expectedStmtGraph.addNode(stmt3);
-    expectedStmtGraph.addNode(stmt4_m);
-    expectedStmtGraph.addNode(stmt5_m);
-    expectedStmtGraph.addNode(stmt6_m);
-    expectedStmtGraph.addNode(stmt7_m);
-    expectedStmtGraph.addNode(stmt8_m);
+    expectedStmtGraph.addNode(stmt4);
+    expectedStmtGraph.addNode(stmt5);
+    expectedStmtGraph.addNode(stmt6);
+    expectedStmtGraph.addNode(stmt7);
+    expectedStmtGraph.addNode(stmt8);
     expectedStmtGraph.addNode(stmt9);
-    expectedStmtGraph.addNode(stmt10);
-    expectedStmtGraph.putEdge(stmt1_m, stmt2_m);
-    expectedStmtGraph.putEdge(stmt2_m, stmt3);
-    expectedStmtGraph.putEdge(stmt3, stmt4_m);
-    expectedStmtGraph.putEdge(stmt3, stmt10);
-    expectedStmtGraph.putEdge(stmt4_m, stmt5_m);
-    expectedStmtGraph.putEdge(stmt5_m, stmt6_m);
-    expectedStmtGraph.putEdge(stmt6_m, stmt7_m);
-    expectedStmtGraph.putEdge(stmt7_m, stmt8_m);
-    expectedStmtGraph.putEdge(stmt8_m, stmt9);
-    expectedStmtGraph.putEdge(stmt9, stmt2_m);
+    expectedStmtGraph.addNode(ret);
+    expectedStmtGraph.putEdge(stmt1, stmt2);
+    expectedStmtGraph.putEdge(stmt2, stmt3);
+    expectedStmtGraph.putEdge(stmt3, stmt4);
+    expectedStmtGraph.putEdge(stmt3, ret);
+    expectedStmtGraph.putEdge(stmt4, stmt5);
+    expectedStmtGraph.putEdge(stmt5, stmt6);
+    expectedStmtGraph.putEdge(stmt6, stmt7);
+    expectedStmtGraph.putEdge(stmt7, stmt8);
+    expectedStmtGraph.putEdge(stmt8, stmt9);
+    expectedStmtGraph.putEdge(stmt9, stmt2);
 
     // build the expected map branches
     Map<Stmt, List<Stmt>> expectedBranches = new HashMap<>();
     List<Stmt> branches1 = new ArrayList<>();
-    branches1.add(stmt10);
-    branches1.add(stmt4_m);
+    branches1.add(ret);
+    branches1.add(stmt4);
     List<Stmt> branches2 = new ArrayList<>();
-    branches2.add(stmt2_m);
+    branches2.add(stmt2);
     expectedBranches.put(stmt3, branches1);
     expectedBranches.put(stmt9, branches2);
 
     // build the expected firstStmt
-    Stmt expectedFirstStmt = stmt1_m;
+    Stmt expectedFirstStmt = stmt1;
     // build position
     Position position = NoPositionInformation.getInstance();
 

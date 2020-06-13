@@ -49,7 +49,7 @@ public class LocalSplitter implements BodyInterceptor {
     stmtQueue.add(firstStmt);
     bodyBuilder.addStmt(
         firstStmt); // Fixme: Now build the stmtGraph for bodyBuilder on hand, later use
-                    // bodyBuilder.build()
+    // bodyBuilder.build()
     while (!stmtQueue.isEmpty()) {
       Stmt stmt = stmtQueue.remove();
       stmts.add(stmt);
@@ -85,9 +85,8 @@ public class LocalSplitter implements BodyInterceptor {
 
     Set<Local> locals = newBody.getLocals();
     Set<Local> newLocals = new HashSet<>(locals);
-    newLocals.removeAll(toSplitLocals);
 
-    int localIndex = 0;
+    int localIndex = 1;
     Deque<Stmt> visitedQueue = new ArrayDeque<>();
     visitedQueue.add(newBody.getFirstStmt());
 
