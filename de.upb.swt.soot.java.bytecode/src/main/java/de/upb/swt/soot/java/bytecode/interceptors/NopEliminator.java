@@ -23,7 +23,7 @@ public class NopEliminator implements BodyInterceptor {
   @Nonnull
   @Override
   public Body interceptBody(@Nonnull Body originalBody) {
-    MutableGraph mutableGraph = Graphs.copyOf(originalBody.getStmtGraph());
+    MutableGraph<Stmt> mutableGraph = Graphs.copyOf(originalBody.getStmtGraph());
     Set<Stmt> stmtSet = mutableGraph.nodes();
 
     for (Stmt stmt : stmtSet) {
@@ -37,8 +37,9 @@ public class NopEliminator implements BodyInterceptor {
           }
         }
         if (!keepNop) {
-          for (Object predecessor : mutableGraph.predecessors(stmt)) {
-            for (Object successor : mutableGraph.successors(stmt)) {
+          // TODO: [ms] this looks strange
+          for (Stmt predecessor : mutableGraph.predecessors(stmt)) {
+            for (Stmt successor : mutableGraph.successors(stmt)) {
               mutableGraph.putEdge(predecessor, successor);
               mutableGraph.removeEdge(predecessor, stmt);
               mutableGraph.removeEdge(stmt, successor);
