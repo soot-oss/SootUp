@@ -27,10 +27,10 @@ import javax.annotation.Nonnull;
  * </pre>
  *
  * <pre>
- *    i0#0 = 0
- *    i0#1 = 1
- *    i1 = i0#1 + 1
- *    i0#2 = 5
+ *    i0#1 = 0
+ *    i0#2 = 1
+ *    i1 = i0#2 + 1
+ *    i0#3 = 5
  * </pre>
  *
  * @author Zun Wang
