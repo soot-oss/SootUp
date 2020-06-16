@@ -27,21 +27,21 @@ public class BinaryLiterals {
     if ((instruction & 0b11100000) == 0b00000000) {
       final int register = instruction & 0b00001111;
       switch (instruction & 0b11110000) {
-        case 0b00000000:
+        case 0b00000000:    // 0
           return state.nop();
-        case 0b00010000:
+        case 0b00010000:    // 16
           return state.copyAccumTo(register);
-        case 0b00100000:
+        case 0b00100000:    // 32
           return state.addToAccum(register);
-        case 0b00110000:
+        case 0b00110000:    // 48
           return state.subFromAccum(register);
-        case 0b01000000:
+        case 0b01000000:    // 64
           return state.multiplyAccumBy(register);
-        case 0b01010000:
+        case 0b01010000:    // 80
           return state.divideAccumBy(register);
-        case 0b01100000:
+        case 0b01100000:    // 96
           return state.setAccumFrom(register);
-        case 0b01110000:
+        case 0b01110000:    // 112
           return state.returnFromCall();
         default:
           throw new IllegalArgumentException();
@@ -49,17 +49,17 @@ public class BinaryLiterals {
     } else {
       final int address = instruction & 0b00011111;
       switch (instruction & 0b11100000) {
-        case 0b00100000:
+        case 0b00100000:  // 32
           return state.jumpTo(address);
-        case 0b01000100:
+        case 0b01000100:  // 68
           return state.jumpIfAccumZeroTo(address);
-        case 0b01001000:
+        case 0b01001000:  // 72
           return state.jumpIfAccumNonzeroTo(address);
-        case 0b01100000:
+        case 0b01100000:  // 96
           return state.setAccumFromMemory(address);
-        case 0b10100000:
+        case 0b10100000:  // 160
           return state.writeAccumToMemory(address);
-        case 0b11000000:
+        case 0b11000000:  // 192
           return state.callTo(address);
         default:
           throw new IllegalArgumentException();

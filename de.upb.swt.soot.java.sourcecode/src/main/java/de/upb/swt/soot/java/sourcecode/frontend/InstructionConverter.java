@@ -102,7 +102,6 @@ public class InstructionConverter {
   private final Map<JIfStmt, Integer> targetsOfIfStmts;
   private final Map<JGotoStmt, Integer> targetsOfGotoStmts;
   private final Map<JSwitchStmt, List<Integer>> targetsOfLookUpSwitchStmts;
-  private final Map<JSwitchStmt, Integer> defaultOfLookUpSwitchStmts;
 
   private final Map<Integer, Local> locals;
   private final IdentifierFactory identifierFactory;
@@ -120,7 +119,6 @@ public class InstructionConverter {
     this.targetsOfIfStmts = new LinkedHashMap<>();
     this.targetsOfGotoStmts = new LinkedHashMap<>();
     this.targetsOfLookUpSwitchStmts = new LinkedHashMap<>();
-    this.defaultOfLookUpSwitchStmts = new LinkedHashMap<>();
     this.locals = new HashMap<>();
     this.identifierFactory = converter.identifierFactory;
   }
@@ -534,7 +532,7 @@ public class InstructionConverter {
     int defaultCase = inst.getDefault();
     List<IntConstant> lookupValues = new ArrayList<>();
     List<Integer> targetsList = new ArrayList<>();
-    List<Stmt> targets = new ArrayList<>();
+    targetsList.add(defaultCase);
     for (int i = 0; i < cases.length; i++) {
       int c = cases[i];
       if (i % 2 == 0) {
@@ -542,10 +540,8 @@ public class InstructionConverter {
         lookupValues.add(cValue);
       } else {
         targetsList.add(c);
-        targets.add(null); // add null as placeholder for targets
       }
     }
-    Stmt defaultTarget = null;
 
     Position[] operandPos = new Position[2];
     // TODO: [ms] how to organize the operands
@@ -562,7 +558,6 @@ public class InstructionConverter {
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     targetsOfLookUpSwitchStmts.put(stmt, targetsList);
-    defaultOfLookUpSwitchStmts.put(stmt, defaultCase);
     return stmt;
   }
 
@@ -1200,17 +1195,11 @@ public class InstructionConverter {
       }
     }
 
-    if (defaultOfLookUpSwitchStmts.containsValue(iTarget)) {
-      for (JSwitchStmt switchStmt : defaultOfLookUpSwitchStmts.keySet()) {
-        if (defaultOfLookUpSwitchStmts.get(switchStmt).equals(iTarget)) {
-          builder.addFlow(switchStmt, target);
+    if (targetsOfLookUpSwitchStmts.containsValue(iTarget)) {
+      for (JSwitchStmt lookupSwitch : targetsOfLookUpSwitchStmts.keySet()) {
+        if (targetsOfLookUpSwitchStmts.get(lookupSwitch).contains(iTarget)) {
+          builder.addFlow(lookupSwitch, target);
         }
-      }
-    }
-
-    for (JSwitchStmt lookupSwitch : this.targetsOfLookUpSwitchStmts.keySet()) {
-      if (targetsOfLookUpSwitchStmts.get(lookupSwitch).contains(iTarget)) {
-        builder.addFlow(lookupSwitch, target);
       }
     }
   }

@@ -594,17 +594,6 @@ public class Body implements Copyable {
           }
         } else if (stmt instanceof JIfStmt) {
           if (outgoingCount != 2) {
-            System.out.println(methodSig);
-            System.out.println("bad stmt:" + stmt + " => " + targets);
-            System.out.println();
-
-            for (Stmt stmt1 : cfg.nodes()) {
-              System.out.print(stmt1);
-              final Set<Stmt> successors = cfg.successors(stmt1);
-              System.out.print(" => " + successors);
-              System.out.println();
-            }
-
             throw new IllegalStateException(
                 stmt + ": must have '2' outgoing flow but has '" + outgoingCount + "'.");
           } else {
@@ -642,6 +631,20 @@ public class Body implements Copyable {
 
       if (methodSig == null) {
         throw new IllegalArgumentException("There is no MethodSignature set.");
+      }
+
+      // TODO: temporary DEBUG check
+      for (Stmt stmt : cfg.nodes()) {
+        if (stmt instanceof BranchingStmt) {
+
+          int i = 0;
+          for (Stmt target : cfg.successors(stmt)) {
+            if (branches.get(stmt).get(i++) != target) {
+              throw new IllegalArgumentException(
+                  "Wrong order between iterator and branches array!");
+            }
+          }
+        }
       }
 
       return new Body(
