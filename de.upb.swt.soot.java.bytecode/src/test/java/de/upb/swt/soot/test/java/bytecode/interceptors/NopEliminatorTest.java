@@ -120,6 +120,7 @@ public class NopEliminatorTest {
       stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret);
     }
     stmts.forEach(stmt -> builder.addStmt(stmt, true));
+    builder.addFlow(jump, ret);
 
     builder.setLocals(locals);
     builder.setTraps(traps);

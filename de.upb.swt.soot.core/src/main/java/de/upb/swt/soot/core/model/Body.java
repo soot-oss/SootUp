@@ -571,6 +571,7 @@ public class Body implements Copyable {
     public Body build() {
 
       // validate branch stmts
+      // FIXME [ms] do it over all stmts in the body not only on the ones already marked branching
       for (Map.Entry<Stmt, List<Stmt>> branchItem : branches.entrySet()) {
         final Stmt stmt = branchItem.getKey();
         final List<Stmt> targets = branchItem.getValue();
@@ -638,12 +639,16 @@ public class Body implements Copyable {
         if (stmt instanceof BranchingStmt) {
 
           int i = 0;
-          for (Stmt target : cfg.successors(stmt)) {
-            if (branches.get(stmt).get(i++) != target) {
+          final List<Stmt> branchesOfStmt = branches.get(stmt);
+          final Set<Stmt> successors = cfg.successors(stmt);
+          for (Stmt target : successors) {
+            if (branchesOfStmt.get(i++) != target) {
               throw new IllegalArgumentException(
                   "Wrong order between iterator and branches array!");
             }
           }
+          System.out.println(stmt);
+          assert (i == branchesOfStmt.size());
         }
       }
 
