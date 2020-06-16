@@ -25,46 +25,38 @@
 
 package de.upb.swt.soot.core.jimple.common.stmt;
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public abstract class AbstractOpStmt extends AbstractStmt {
+public abstract class AbstractOpStmt extends Stmt {
 
-  protected final ValueBox opBox;
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
-  protected Value op;
+  protected final Immediate op;
 
-  protected AbstractOpStmt(ValueBox opBox, StmtPositionInfo positionInfo) {
+  protected AbstractOpStmt(@Nonnull Immediate op, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
-    this.opBox = opBox;
-    // new attribute: later if ValueBox is deleted, then fit the constructor
-    this.op = opBox.getValue();
+    this.op = op;
   }
 
-  public final Value getOp() {
-    return opBox.getValue();
-  }
-
-  public final ValueBox getOpBox() {
-    return opBox;
+  @Nonnull
+  public Immediate getOp() {
+    return op;
   }
 
   @Override
+  @Nonnull
   public final List<Value> getUses() {
-    List<Value> list = new ArrayList<>(op.getUses());
+    final List<Value> uses = op.getUses();
+    List<Value> list = new ArrayList<>(uses.size() + 1);
     list.add(op);
     return list;
   }
 
-  protected boolean equivTo(AbstractOpStmt o) {
-    return opBox.getValue().equivTo(o.getOp());
-  }
-
   @Override
   public int equivHashCode() {
-    return opBox.getValue().equivHashCode();
+    return op.equivHashCode();
   }
 }

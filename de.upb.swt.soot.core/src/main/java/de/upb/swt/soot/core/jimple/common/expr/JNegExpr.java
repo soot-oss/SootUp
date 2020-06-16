@@ -26,6 +26,7 @@
 package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
@@ -40,12 +41,12 @@ import javax.annotation.Nonnull;
 /** An expression that negates its operand (-). */
 public final class JNegExpr extends AbstractUnopExpr implements Copyable {
 
-  public JNegExpr(Value op) {
-    super(Jimple.newImmediateBox(op));
+  public JNegExpr(@Nonnull Immediate op) {
+    super(op);
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseNegExpr(this, o);
   }
 
@@ -61,10 +62,10 @@ public final class JNegExpr extends AbstractUnopExpr implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.NEG);
     up.literal(" ");
-    getOpBox().toString(up);
+    getOp().toString(up);
   }
 
   @Override
@@ -89,12 +90,12 @@ public final class JNegExpr extends AbstractUnopExpr implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseNegExpr(this);
   }
 
   @Nonnull
-  public JNegExpr withOp(Value op) {
+  public JNegExpr withOp(@Nonnull Immediate op) {
     return new JNegExpr(op);
   }
 }

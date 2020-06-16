@@ -26,8 +26,6 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class IfInstructionConversionTest {
 
-  // TODO: Failed tests
-
   private WalaJavaClassProvider loader;
 
   private JavaIdentifierFactory typeFactory;

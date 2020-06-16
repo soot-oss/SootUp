@@ -1,11 +1,10 @@
 package de.upb.swt.soot.core.frontend;
 
+import com.google.common.graph.ImmutableGraph;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 
 /** @author: Hasitha Rajapakse */
@@ -70,15 +69,14 @@ public class OverridingMethodSource implements MethodSource {
    * If the body is resolved as null, this method throws {@link IllegalStateException}.
    */
   @Nonnull
-  public OverridingMethodSource withBodyStmts(@Nonnull Consumer<List<Stmt>> stmtModifier) {
+  public OverridingMethodSource withBodyStmts(
+      @Nonnull Function<ImmutableGraph<Stmt>, ImmutableGraph<Stmt>> stmtModifier) {
     Body body = resolveBody();
-    if (body == null) {
+    if (body == Body.getNoBody()) {
       throw new IllegalStateException(
           "Cannot replace statements in method " + delegate.getSignature() + ", body is null");
     }
 
-    List<Stmt> newStmts = new ArrayList<>(body.getStmts());
-    stmtModifier.accept(newStmts);
-    return withBody(body.withStmts(newStmts));
+    return withBody(body.withStmts(stmtModifier.apply(body.getStmtGraph())));
   }
 }

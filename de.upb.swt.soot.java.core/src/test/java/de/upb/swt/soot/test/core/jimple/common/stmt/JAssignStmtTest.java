@@ -25,9 +25,9 @@ package de.upb.swt.soot.test.core.jimple.common.stmt;
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.IgnoreLocalNameComparator;
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JAddExpr;
@@ -64,8 +64,8 @@ public class JAssignStmtTest {
   public void test() {
 
     StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
-    Value numConst1 = IntConstant.getInstance(42);
-    Value numConst2 = IntConstant.getInstance(33102);
+    Immediate numConst1 = IntConstant.getInstance(42);
+    Immediate numConst2 = IntConstant.getInstance(33102);
 
     Local local = new Local("$i0", PrimitiveType.getInt());
     Local field = new Local("i2", PrimitiveType.getInt());

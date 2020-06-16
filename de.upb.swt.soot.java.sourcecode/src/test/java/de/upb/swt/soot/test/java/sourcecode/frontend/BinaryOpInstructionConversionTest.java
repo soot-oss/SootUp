@@ -1304,7 +1304,7 @@ public class BinaryOpInstructionConversionTest {
               new JEqExpr(new Local("$z0", PrimitiveType.getBoolean()), IntConstant.getInstance(0)),
               stmt.getCondition());
           assertInstanceOfSatisfying(
-              stmt.getTarget(),
+              stmt.getTarget(body),
               JAssignStmt.class,
               target -> {
                 assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getLeftOp());
@@ -1325,7 +1325,7 @@ public class BinaryOpInstructionConversionTest {
         JGotoStmt.class,
         stmt ->
             assertInstanceOfSatisfying(
-                stmt.getTarget(),
+                stmt.getTarget(body),
                 JReturnStmt.class,
                 target ->
                     assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getOp())));
@@ -1396,7 +1396,7 @@ public class BinaryOpInstructionConversionTest {
               new JEqExpr(new Local("$z0", PrimitiveType.getBoolean()), IntConstant.getInstance(0)),
               stmt.getCondition());
           assertInstanceOfSatisfying(
-              stmt.getTarget(),
+              stmt.getTarget(body),
               JAssignStmt.class,
               target -> {
                 assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getLeftOp());
@@ -1417,7 +1417,7 @@ public class BinaryOpInstructionConversionTest {
         JGotoStmt.class,
         stmt ->
             assertInstanceOfSatisfying(
-                stmt.getTarget(),
+                stmt.getTarget(body),
                 JReturnStmt.class,
                 target ->
                     assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getOp())));
@@ -1968,7 +1968,7 @@ public class BinaryOpInstructionConversionTest {
                 "getString2",
                 declareClassSig,
                 "java.lang.String",
-                Arrays.asList("java.lang.String")));
+                Collections.singletonList("java.lang.String")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 

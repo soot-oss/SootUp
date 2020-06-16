@@ -32,7 +32,7 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
 
-public interface Constant extends Value, Immediate {
+public interface Constant extends Immediate {
 
   @Override
   default List<Value> getUses() {

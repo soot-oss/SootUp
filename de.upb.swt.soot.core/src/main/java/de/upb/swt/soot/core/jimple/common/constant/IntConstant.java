@@ -36,11 +36,11 @@ public class IntConstant implements ShiftableConstant<IntConstant> {
 
   private final int value;
 
-  protected IntConstant(int value) {
+  protected IntConstant(@Nonnull int value) {
     this.value = value;
   }
 
-  public static IntConstant getInstance(int value) {
+  public static IntConstant getInstance(@Nonnull int value) {
     return new IntConstant(value);
   }
 
@@ -174,7 +174,7 @@ public class IntConstant implements ShiftableConstant<IntConstant> {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ConstantVisitor) sw).caseIntConstant(this);
   }
 

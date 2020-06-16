@@ -36,11 +36,11 @@ public class FloatConstant implements RealConstant<FloatConstant> {
 
   private final float value;
 
-  private FloatConstant(float value) {
+  private FloatConstant(@Nonnull float value) {
     this.value = value;
   }
 
-  public static FloatConstant getInstance(float value) {
+  public static FloatConstant getInstance(@Nonnull float value) {
     return new FloatConstant(value);
   }
 
@@ -173,7 +173,7 @@ public class FloatConstant implements RealConstant<FloatConstant> {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ConstantVisitor) sw).caseFloatConstant(this);
   }
 

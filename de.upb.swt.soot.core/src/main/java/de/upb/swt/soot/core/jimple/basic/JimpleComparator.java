@@ -146,7 +146,7 @@ public class JimpleComparator {
   }
 
   public boolean caseGotoStmt(JGotoStmt stmt, Object o) {
-    return (o instanceof JGotoStmt) && stmt.getTarget().equivTo(((JGotoStmt) o).getTarget(), this);
+    return (o instanceof JGotoStmt);
   }
 
   public boolean caseIfStmt(JIfStmt stmt, Object o) {
@@ -154,42 +154,30 @@ public class JimpleComparator {
       return false;
     }
     JIfStmt ifStmt = (JIfStmt) o;
-    return stmt.getCondition().equivTo(ifStmt.getCondition(), this)
-        && stmt.getTarget().equivTo(ifStmt.getTarget(), this);
+    return stmt.getCondition().equivTo(ifStmt.getCondition(), this);
   }
 
+  /**
+   * assumes that different sequence of (otherwise equivalent) cases means values are not considered
+   * equivalent
+   */
   public boolean caseSwitchStmt(JSwitchStmt stmt, Object o) {
     if (!(o instanceof JSwitchStmt)) {
       return false;
     }
     JSwitchStmt otherSwitchStmt = (JSwitchStmt) o;
 
-    if (stmt.getKey() != otherSwitchStmt.getKey()
-        || stmt.getDefaultTarget() != otherSwitchStmt.getDefaultTarget()) {
+    if (stmt.getKey() != otherSwitchStmt.getKey()) {
       return false;
     }
 
     if (stmt.getValueCount() != otherSwitchStmt.getValueCount()) {
       return false;
     }
-    // TODO: [MS] maybe obsolete - is the following case possible? stmt.getValueCount() !=
-    // stmt.getTargetCount()
-    if (stmt.getTargetCount() != otherSwitchStmt.getTargetCount()) {
-      return false;
-    }
 
-    // [MS] assumes that different sequence of (otherwise equivalent) cases means it is not
-    // equivalent
     Iterator<IntConstant> valueIterator = stmt.getValues().iterator();
     for (IntConstant valuesOther : otherSwitchStmt.getValues()) {
       if (!valuesOther.equivTo(valueIterator.next(), this)) {
-        return false;
-      }
-    }
-
-    Iterator<Stmt> targetIterator = stmt.getTargets().iterator();
-    for (Stmt targetOther : otherSwitchStmt.getTargets()) {
-      if (!targetOther.equivTo(targetIterator.next(), this)) {
         return false;
       }
     }
@@ -400,7 +388,7 @@ public class JimpleComparator {
     if (!(o instanceof JParameterRef)) {
       return false;
     }
-    return obj.getIndex() == ((JParameterRef) o).getIndex()
+    return obj.getNum() == ((JParameterRef) o).getNum()
         && obj.getType().equals(((JParameterRef) o).getType());
   }
 

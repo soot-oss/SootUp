@@ -26,8 +26,8 @@
 package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.PrimitiveType;
@@ -38,12 +38,12 @@ import javax.annotation.Nonnull;
 /** An expression that returns the length of an array. */
 public final class JLengthExpr extends AbstractUnopExpr implements Copyable {
 
-  public JLengthExpr(Value op) {
-    super(Jimple.newImmediateBox(op));
+  public JLengthExpr(@Nonnull Immediate op) {
+    super(op);
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseLengthExpr(this, o);
   }
 
@@ -59,10 +59,10 @@ public final class JLengthExpr extends AbstractUnopExpr implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.LENGTHOF);
     up.literal(" ");
-    getOpBox().toString(up);
+    getOp().toString(up);
   }
 
   @Override
@@ -71,12 +71,12 @@ public final class JLengthExpr extends AbstractUnopExpr implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseLengthExpr(this);
   }
 
   @Nonnull
-  public JLengthExpr withOp(Value op) {
+  public JLengthExpr withOp(@Nonnull Immediate op) {
     return new JLengthExpr(op);
   }
 }

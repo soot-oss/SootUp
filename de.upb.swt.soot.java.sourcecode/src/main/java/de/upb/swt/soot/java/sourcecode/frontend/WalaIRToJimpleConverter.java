@@ -22,7 +22,6 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
@@ -46,7 +45,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Converter which converts WALA IR to jimple.
@@ -383,17 +381,17 @@ public class WalaIRToJimpleConverter {
     return modifiers;
   }
 
-  private @Nullable Body createBody(
+  @Nonnull
+  private Body createBody(
       MethodSignature methodSignature, EnumSet<Modifier> modifiers, AstMethod walaMethod) {
 
     if (walaMethod.isAbstract()) {
-      return null;
+      return Body.getNoBody();
     }
 
+    final Body.BodyBuilder builder = Body.builder();
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
-      List<Trap> traps = new ArrayList<>();
-      List<Stmt> stmts = new ArrayList<>();
       LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
       // convert all wala instructions to jimple statements
       SSAInstruction[] insts = (SSAInstruction[]) cfg.getInstructions();
@@ -413,21 +411,34 @@ public class WalaIRToJimpleConverter {
                   thisLocal,
                   Jimple.newThisRef(thisType),
                   convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-          stmts.add(stmt);
+          builder.addStmt(stmt, true);
         }
 
         // wala's first parameter is the "this" reference for non-static methods
-        for (int i = walaMethod.isStatic() ? 0 : 1; i < walaMethod.getNumberOfParameters(); i++) {
-          TypeReference t = walaMethod.getParameterType(i);
-          Type type = convertType(t);
-          Local paraLocal = localGenerator.generateParameterLocal(type, i);
+        if (walaMethod.isStatic()) {
+          for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
+            Type type = convertType(walaMethod.getParameterType(i));
+            Local paraLocal = localGenerator.generateParameterLocal(type, i);
 
-          Stmt stmt =
-              Jimple.newIdentityStmt(
-                  paraLocal,
-                  Jimple.newParameterRef(type, walaMethod.isStatic() ? i : i - 1),
-                  convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-          stmts.add(stmt);
+            Stmt stmt =
+                Jimple.newIdentityStmt(
+                    paraLocal,
+                    Jimple.newParameterRef(type, i),
+                    convertPositionInfo(debugInfo.getInstructionPosition(0), null));
+            builder.addStmt(stmt, true);
+          }
+        } else {
+          for (int i = 1; i < walaMethod.getNumberOfParameters(); i++) {
+            Type type = convertType(walaMethod.getParameterType(i));
+            Local paraLocal = localGenerator.generateParameterLocal(type, i);
+
+            Stmt stmt =
+                Jimple.newIdentityStmt(
+                    paraLocal,
+                    Jimple.newParameterRef(type, i - 1),
+                    convertPositionInfo(debugInfo.getInstructionPosition(0), null));
+            builder.addStmt(stmt, true);
+          }
         }
 
         // TODO 2. convert traps
@@ -435,43 +446,50 @@ public class WalaIRToJimpleConverter {
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
         InstructionConverter instConverter =
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
-        Map<Stmt, Integer> stmt2IIndex = new HashMap<>();
+        // Don't exchange, different stmts could have same ids
+        HashMap<Stmt, Integer> stmt2iIndex = new HashMap<>();
+        Stmt lastStmt = null;
         for (SSAInstruction inst : insts) {
           List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst);
           if (!retStmts.isEmpty()) {
             for (Stmt stmt : retStmts) {
-              stmts.add(stmt);
-              stmt2IIndex.put(stmt, inst.iIndex());
+              builder.addStmt(stmt, true);
+              stmt2iIndex.put(stmt, inst.iIndex());
+              lastStmt = stmt;
             }
           }
-        }
-        // set target for goto or conditional statements
-        for (Stmt stmt : stmt2IIndex.keySet()) {
-          instConverter.setTarget(stmt, stmt2IIndex.get(stmt));
         }
 
         // add return void stmt for methods with return type being void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
           Stmt ret;
-          if (stmts.isEmpty() || !(stmts.get(stmts.size() - 1) instanceof JReturnVoidStmt)) {
+          if (stmt2iIndex.isEmpty() || !(lastStmt instanceof JReturnVoidStmt)) {
             // TODO? [ms] InstructionPosition of last line in the method seems strange to me ->
             // maybe use lastLine with
             // startcol: -1 because it does not exist in the source explicitly?
             ret =
                 Jimple.newReturnVoidStmt(
                     convertPositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
-            stmts.add(ret);
+            builder.addStmt(ret, true);
           } else {
-            ret = stmts.get(stmts.size() - 1);
+            ret = lastStmt;
           }
-          instConverter.setTarget(ret, -1); // -1 is the end of the method
+          // needed because referencing a branch to the last stmt refers to: -1
+          stmt2iIndex.put(ret, -1);
         }
 
-        return new Body(localGenerator.getLocals(), traps, stmts, convertPosition(bodyPos));
+        for (Stmt stmt : stmt2iIndex.keySet()) {
+          instConverter.setUpTargets(stmt, stmt2iIndex.get(stmt), builder);
+        }
+
+        return builder
+            .setLocals(localGenerator.getLocals())
+            .setPosition(convertPosition(bodyPos))
+            .build();
       }
     }
 
-    return null;
+    throw new IllegalStateException("can not create Body - no CFG from WALA present.");
   }
 
   /**

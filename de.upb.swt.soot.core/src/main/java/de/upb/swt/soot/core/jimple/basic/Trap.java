@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface Trap {
 
-  List<StmtBox> getStmtBoxes();
+  List<Stmt> getStmts();
 
   ClassType getExceptionType();
 

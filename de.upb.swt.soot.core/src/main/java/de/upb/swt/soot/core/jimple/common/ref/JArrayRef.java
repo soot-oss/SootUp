@@ -26,10 +26,11 @@
 package de.upb.swt.soot.core.jimple.common.ref;
 
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.visitor.RefVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.NullType;
@@ -43,29 +44,18 @@ import javax.annotation.Nonnull;
 
 public final class JArrayRef implements ConcreteRef, Copyable {
 
-  private final ValueBox baseBox;
-  private final ValueBox indexBox;
+  private final Local base;
+  private final Immediate index;
   private final IdentifierFactory identifierFactory;
 
-  // new attributes : later if ValueBox is deleted, then add "final" to it.
-  private Value base;
-  private Value index;
-
-  public JArrayRef(Value base, Value index, IdentifierFactory identifierFactory) {
-    this(Jimple.newLocalBox(base), Jimple.newImmediateBox(index), identifierFactory);
-  }
-
-  private JArrayRef(ValueBox baseBox, ValueBox indexBox, IdentifierFactory identifierFactory) {
-    this.baseBox = baseBox;
-    this.indexBox = indexBox;
+  public JArrayRef(
+      @Nonnull Local base, @Nonnull Immediate index, @Nonnull IdentifierFactory identifierFactory) {
+    this.base = base;
+    this.index = index;
     this.identifierFactory = identifierFactory;
-    // new attributes: later if ValueBox is deleted, then fit the constructor.
-    this.base = baseBox.getValue();
-    this.index = indexBox.getValue();
   }
 
-  private Type determineType(IdentifierFactory identifierFactory) {
-    Value base = baseBox.getValue();
+  private Type determineType(@Nonnull IdentifierFactory identifierFactory) {
     Type type = base.getType();
 
     if (type.equals(UnknownType.getInstance())) {
@@ -95,7 +85,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseArrayRef(this, o);
   }
 
@@ -107,33 +97,28 @@ public final class JArrayRef implements ConcreteRef, Copyable {
 
   @Override
   public String toString() {
-    return baseBox.getValue().toString() + "[" + indexBox.getValue().toString() + "]";
+    return base.toString() + "[" + index.toString() + "]";
   }
 
   @Override
-  public void toString(StmtPrinter up) {
-    baseBox.toString(up);
+  public void toString(@Nonnull StmtPrinter up) {
+    base.toString(up);
     up.literal("[");
-    indexBox.toString(up);
+    index.toString(up);
     up.literal("]");
   }
 
-  public Value getBase() {
-    return baseBox.getValue();
+  @Nonnull
+  public Local getBase() {
+    return base;
   }
 
-  public ValueBox getBaseBox() {
-    return baseBox;
+  @Nonnull
+  public Immediate getIndex() {
+    return index;
   }
 
-  public Value getIndex() {
-    return indexBox.getValue();
-  }
-
-  public ValueBox getIndexBox() {
-    return indexBox;
-  }
-
+  @Nonnull
   @Override
   public List<Value> getUses() {
     List<Value> list = new ArrayList<>(base.getUses());
@@ -150,16 +135,16 @@ public final class JArrayRef implements ConcreteRef, Copyable {
 
   @Override
   public void accept(Visitor sw) {
-    // TODO
+    ((RefVisitor) sw).caseArrayRef(this);
   }
 
   @Nonnull
-  public JArrayRef withBase(Value base) {
+  public JArrayRef withBase(@Nonnull Local base) {
     return new JArrayRef(base, getIndex(), identifierFactory);
   }
 
   @Nonnull
-  public JArrayRef withIndex(Value index) {
+  public JArrayRef withIndex(@Nonnull Immediate index) {
     return new JArrayRef(getBase(), index, identifierFactory);
   }
 }

@@ -11,28 +11,32 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
- * A psuedo unit containing different units.
+ * A psuedo stmt containing different stmts.
  *
  * @author Aaloan Miftah
  */
+
+// TODO: [ms] check: this looks at first sight just like a linked list made into sth that extends
+// Stmt to fit into a Collection<Stmt>
 class StmtContainer extends Stmt {
 
-  @Nonnull final Stmt[] units;
+  @Nonnull final Stmt[] stmts;
 
-  StmtContainer(@Nonnull Stmt... units) {
-    this.units = units;
+  StmtContainer(@Nonnull Stmt prevStmt, Stmt nextStmt) {
+    super(StmtPositionInfo.createNoStmtPositionInfo());
+    stmts = new Stmt[] {prevStmt, nextStmt};
   }
 
   /**
-   * Searches the depth of the StmtContainer until the actual first Unit represented is found.
+   * Searches the depth of the StmtContainer until the actual first Stmt represented is found.
    *
    * @return the first Stmt of the container
    */
   @Nonnull
-  Stmt getFirstUnit() {
-    Stmt ret = units[0];
+  Stmt getFirstStmt() {
+    Stmt ret = stmts[0];
     while (ret instanceof StmtContainer) {
-      ret = ((StmtContainer) ret).units[0];
+      ret = ((StmtContainer) ret).stmts[0];
     }
     return ret;
   }
@@ -44,16 +48,6 @@ class StmtContainer extends Stmt {
 
   @Override
   public List<Value> getDefs() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public List<StmtBox> getStmtBoxes() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public List<StmtBox> getBoxesPointingToThis() {
     throw new UnsupportedOperationException();
   }
 
@@ -73,7 +67,7 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     throw new UnsupportedOperationException();
   }
 
@@ -88,22 +82,12 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public ValueBox getInvokeExprBox() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public boolean containsArrayRef() {
     throw new UnsupportedOperationException();
   }
 
   @Override
   public JArrayRef getArrayRef() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public ValueBox getArrayRefBox() {
     throw new UnsupportedOperationException();
   }
 
@@ -118,22 +102,17 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public ValueBox getFieldRefBox() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public int equivHashCode() {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void accept(Visitor v) {
+  public void accept(@Nonnull Visitor v) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     throw new UnsupportedOperationException();
   }
 

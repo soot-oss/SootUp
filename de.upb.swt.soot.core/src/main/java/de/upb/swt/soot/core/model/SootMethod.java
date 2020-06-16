@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.model;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
+import com.google.common.graph.ImmutableGraph;
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
@@ -38,7 +39,6 @@ import java.util.*;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -244,9 +244,10 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
         exceptions);
   }
 
-  /** @see OverridingMethodSource#withBodyStmts(Consumer) */
+  /** @see OverridingMethodSource#withBodyStmts(Function) */
   @Nonnull
-  public SootMethod withBodyStmts(Consumer<List<Stmt>> stmtModifier) {
+  public SootMethod withBodyStmts(
+      @Nonnull Function<ImmutableGraph<Stmt>, ImmutableGraph<Stmt>> stmtModifier) {
 
     return new SootMethod(
         new OverridingMethodSource(methodSource).withBodyStmts(stmtModifier),
