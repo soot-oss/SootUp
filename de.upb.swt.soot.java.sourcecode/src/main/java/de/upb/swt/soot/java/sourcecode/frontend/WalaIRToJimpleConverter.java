@@ -45,6 +45,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import javax.annotation.Nonnull;
+import scala.annotation.meta.field;
 
 /**
  * Converter which converts WALA IR to jimple.
@@ -454,10 +455,18 @@ public class WalaIRToJimpleConverter {
         for (SSAInstruction inst : insts) {
           List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst, stmt2iIndex);
           if (!retStmts.isEmpty()) {
-            for (Stmt stmt : retStmts) {
+            final int retStmtsSize = retStmts.size();
+            if (retStmtsSize > 0) {
+              Stmt stmt = retStmts.get(0);
               builder.addStmt(stmt, true);
               stmt2iIndex.putIfAbsent(stmt, inst.iIndex());
               lastStmt = stmt;
+
+              for (int i = 1; i < retStmtsSize; i++) {
+                stmt = retStmts.get(i);
+                builder.addStmt(stmt, true);
+                lastStmt = stmt;
+              }
             }
           }
         }

@@ -562,6 +562,11 @@ public class Body implements Copyable {
       return this;
     }
 
+    public BodyBuilder setMethodSignature(MethodSignature methodSig) {
+      this.methodSig = methodSig;
+      return this;
+    }
+
     @Nonnull
     public Body build() {
 
@@ -589,7 +594,18 @@ public class Body implements Copyable {
           }
         } else if (stmt instanceof JIfStmt) {
           if (outgoingCount != 2) {
-            throw new IllegalArgumentException(
+            System.out.println(methodSig);
+            System.out.println("bad stmt:" + stmt + " => " + targets);
+            System.out.println();
+
+            for (Stmt stmt1 : cfg.nodes()) {
+              System.out.print(stmt1);
+              final Set<Stmt> successors = cfg.successors(stmt1);
+              System.out.print(" => " + successors);
+              System.out.println();
+            }
+
+            throw new IllegalStateException(
                 stmt + ": must have '2' outgoing flow but has '" + outgoingCount + "'.");
           } else {
 
@@ -630,11 +646,6 @@ public class Body implements Copyable {
 
       return new Body(
           methodSig, locals, traps, ImmutableGraph.copyOf(cfg), branches, firstStmt, position);
-    }
-
-    public BodyBuilder setMethodSignature(MethodSignature methodSig) {
-      this.methodSig = methodSig;
-      return this;
     }
   }
 }

@@ -1191,7 +1191,7 @@ public class InstructionConverter {
         }
       }
     }
-    /** for(Map.Entry stmt: targetsOfGotoStmts.entrySet()){ System.out.println(stmt); } */
+
     if (targetsOfGotoStmts.containsValue(iTarget)) {
       for (JGotoStmt gotoStmt : targetsOfGotoStmts.keySet()) {
         if (targetsOfGotoStmts.get(gotoStmt).equals(iTarget)) {
