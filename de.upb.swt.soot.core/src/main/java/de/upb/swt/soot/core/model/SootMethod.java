@@ -85,10 +85,6 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     Body body;
     try {
       body = this.methodSource.resolveBody();
-
-      if (body != null) {
-        body.setMethod(this);
-      }
     } catch (ResolveException e) {
       body = null;
 

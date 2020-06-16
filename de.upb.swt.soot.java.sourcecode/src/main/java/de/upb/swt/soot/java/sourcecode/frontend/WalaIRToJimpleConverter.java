@@ -390,6 +390,8 @@ public class WalaIRToJimpleConverter {
     }
 
     final Body.BodyBuilder builder = Body.builder();
+    builder.setMethodSignature(methodSignature);
+
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
       LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());

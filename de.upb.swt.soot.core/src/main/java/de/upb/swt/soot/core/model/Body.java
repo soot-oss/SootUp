@@ -28,6 +28,7 @@ import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.EscapedWriter;
@@ -74,7 +75,7 @@ public class Body implements Copyable {
   @Nonnull private final Position position;
 
   /** The method associated with this Body. */
-  @Nullable private volatile SootMethod method;
+  @Nonnull private MethodSignature methodSignature;
 
   /** An array containing some validators in order to validate the JimpleBody */
   @Nonnull
@@ -97,12 +98,14 @@ public class Body implements Copyable {
    * @param startingStmt
    */
   public Body(
+      @Nonnull MethodSignature methodSignature,
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
       @Nonnull Graph<Stmt> stmtGraph,
       @Nonnull Map<Stmt, List<Stmt>> branches,
       @Nonnull Stmt startingStmt,
       @Nonnull Position position) {
+    this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
     this.traps = Collections.unmodifiableList(traps);
     // TODO: [ms] (im)mutability via second constructor?
@@ -129,6 +132,7 @@ public class Body implements Copyable {
 
     // FIXME: [ms] remove this dirty test hack !!!!!!
     this(
+        null, // will be removed anyways
         locals,
         traps,
         stmtGraph,
@@ -143,31 +147,12 @@ public class Body implements Copyable {
   }
 
   /**
-   * Returns the method associated with this Body.
+   * Returns the MethodSignature associated with this Body.
    *
    * @return the method that owns this body.
    */
-  // FIXME: [ms] refactor to MethodSignature
-  public SootMethod getMethod() {
-    if (method == null) {
-      throw new IllegalStateException(
-          "The associated method of this body instance has not been not set yet.");
-    }
-    return method;
-  }
-
-  /**
-   * Sets the method associated with this Body.
-   *
-   * @param method that should be associated with this body.
-   */
-  // FIXME: [ms] refactor to MethodSignature
-  synchronized void setMethod(@Nullable SootMethod method) {
-    if (this.method != null) {
-      throw new IllegalStateException(
-          "The declaring class of this SootMethod has already been set.");
-    }
-    this.method = method;
+  public MethodSignature getMethodSignature() {
+    return methodSignature;
   }
 
   /** Returns the number of locals declared in this body. */
@@ -231,7 +216,7 @@ public class Body implements Copyable {
       }
     }
 
-    throw new RuntimeException("couldn't find this-assignment!" + " in " + getMethod());
+    throw new RuntimeException("couldn't find this-assignment!" + " in " + getMethodSignature());
   }
 
   /** Return LHS of the first identity stmt assigning from \@this. */
@@ -251,7 +236,7 @@ public class Body implements Copyable {
       }
     }
 
-    throw new RuntimeException("couldn't find JParameterRef" + i + "! in " + getMethod());
+    throw new RuntimeException("couldn't find JParameterRef" + i + "! in " + getMethodSignature());
   }
 
   /**
@@ -263,8 +248,7 @@ public class Body implements Copyable {
    */
   @Nonnull
   public Collection<Local> getParameterLocals() {
-    final int numParams = getMethod().getParameterCount();
-    final List<Local> retVal = new ArrayList<>(numParams);
+    final List<Local> retVal = new ArrayList<>();
     // TODO: [ms] performance: don't iterate over all stmt -> lazy vs freedom/error tolerance -> use
     // fixed index positions at the beginning?
     for (Stmt u : cfg.nodes()) {
@@ -275,9 +259,6 @@ public class Body implements Copyable {
           retVal.add(pr.getIndex(), (Local) is.getLeftOp());
         }
       }
-    }
-    if (retVal.size() != numParams) {
-      throw new RuntimeException("couldn't find JParameterRef! in " + getMethod());
     }
     return Collections.unmodifiableCollection(retVal);
   }
@@ -480,6 +461,7 @@ public class Body implements Copyable {
 
     @Nullable private Stmt lastAddedStmt = null;
     @Nullable private Stmt firstStmt = null;
+    @Nullable private MethodSignature methodSig = null;
 
     BodyBuilder() {
       cfg = new StmtGraph();
@@ -490,6 +472,7 @@ public class Body implements Copyable {
     }
 
     BodyBuilder(@Nonnull Body body, @Nonnull MutableGraph<Stmt> graphContainer) {
+      setMethodSignature(body.getMethodSignature());
       setLocals(body.getLocals());
       setTraps(body.getTraps());
       setPosition(body.getPosition());
@@ -607,7 +590,7 @@ public class Body implements Copyable {
         } else if (stmt instanceof JIfStmt) {
           if (outgoingCount != 2) {
             throw new IllegalArgumentException(
-                stmt + ": size of outgoing flows must be 2 but the size is " + outgoingCount + ".");
+                stmt + ": must have '2' outgoing flow but has '" + outgoingCount + "'.");
           } else {
 
             // TODO: [ms] please fix order of targets of ifstmts in frontends i.e. Asmmethodsource
@@ -626,12 +609,32 @@ public class Body implements Copyable {
         } else if (stmt instanceof JGotoStmt) {
           if (outgoingCount != 1) {
             throw new IllegalArgumentException(
-                stmt + ": GotoS has more than '1' (i.e. '" + outgoingCount + "') outgoing flows.");
+                stmt + ": Goto must have '1' outgoing flow but has '\" + outgoingCount + \"'.");
+          }
+        } else if (stmt instanceof JReturnStmt || stmt instanceof JReturnVoidStmt) {
+          if (outgoingCount != 0) {
+            throw new IllegalArgumentException(
+                stmt + ": must have '1' outgoing flow but has '\" + outgoingCount + \"'.");
+          }
+        } else {
+          if (outgoingCount != 1) {
+            throw new IllegalArgumentException(
+                stmt + ": must have '1' outgoing flow but has '\" + outgoingCount + \"'.");
           }
         }
       }
 
-      return new Body(locals, traps, ImmutableGraph.copyOf(cfg), branches, firstStmt, position);
+      if (methodSig == null) {
+        throw new IllegalArgumentException("There is no MethodSignature set.");
+      }
+
+      return new Body(
+          methodSig, locals, traps, ImmutableGraph.copyOf(cfg), branches, firstStmt, position);
+    }
+
+    public BodyBuilder setMethodSignature(MethodSignature methodSig) {
+      this.methodSig = methodSig;
+      return this;
     }
   }
 }

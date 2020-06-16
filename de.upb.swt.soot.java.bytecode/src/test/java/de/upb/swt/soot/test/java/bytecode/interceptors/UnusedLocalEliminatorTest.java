@@ -12,6 +12,7 @@ import de.upb.swt.soot.java.bytecode.interceptors.UnusedLocalEliminator;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import java.util.Collections;
 import java.util.Set;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -21,7 +22,12 @@ public class UnusedLocalEliminatorTest {
 
   @Test
   public void testNoInput() {
-    Body testBody = Body.builder().build();
+    Body testBody =
+        Body.builder()
+            .setMethodSignature(
+                JavaIdentifierFactory.getInstance()
+                    .getMethodSignature("test", "a.b.c", "void", Collections.emptyList()))
+            .build();
     Body processedBody = new UnusedLocalEliminator().interceptBody(testBody);
 
     assertNotNull(processedBody);
@@ -84,6 +90,9 @@ public class UnusedLocalEliminatorTest {
     builder.addStmt(ret);
     builder.addFlow(jump, strToA);
 
+    builder.setMethodSignature(
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature("test", "a.b.c", "void", Collections.emptyList()));
     return builder.build();
   }
 }

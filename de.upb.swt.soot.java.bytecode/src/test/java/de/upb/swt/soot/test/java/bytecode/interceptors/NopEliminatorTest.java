@@ -43,6 +43,11 @@ public class NopEliminatorTest {
 
     ImmutableGraph<Stmt> expectedGraph = testBody.getStmtGraph();
     ImmutableGraph<Stmt> actualGraph = processedBody.getStmtGraph();
+
+    System.out.println(testBody);
+
+    System.out.println(processedBody);
+
     assertEquals(expectedGraph.nodes().size() - 1, actualGraph.nodes().size());
   }
 
