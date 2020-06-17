@@ -570,62 +570,74 @@ public class Body implements Copyable {
     @Nonnull
     public Body build() {
 
-      // validate branch stmts
-      // FIXME [ms] do it over all stmts in the body not only on the ones already marked branching
-      for (Map.Entry<Stmt, List<Stmt>> branchItem : branches.entrySet()) {
-        final Stmt stmt = branchItem.getKey();
-        final List<Stmt> targets = branchItem.getValue();
-        final int outgoingCount = targets.size();
+      // validate statements
+      for (Stmt stmt : cfg.nodes()) {
 
-        for (Stmt target : targets) {
-          if (target == stmt) {
-            throw new IllegalArgumentException("a Stmt (" + stmt + ") cannot branch to itself.");
-          }
-        }
+        final int successorCount = cfg.successors(stmt).size();
+        if (stmt instanceof BranchingStmt) {
+          // validate branch stmts
+          final List<Stmt> targets = branches.get(stmt);
 
-        if (stmt instanceof JSwitchStmt) {
-          if (outgoingCount != ((JSwitchStmt) stmt).getValueCount()) {
+          if (targets.size() != successorCount) {
             throw new IllegalArgumentException(
-                stmt
-                    + ": size of outgoing flows (i.e. "
-                    + outgoingCount
-                    + ") does not match the amount of switch statements case labels (i.e. "
-                    + ((JSwitchStmt) stmt).getValueCount()
-                    + ").");
+                "cfg.successoers.size does not match branches[stmt].size");
           }
-        } else if (stmt instanceof JIfStmt) {
-          if (outgoingCount != 2) {
-            throw new IllegalStateException(
-                stmt + ": must have '2' outgoing flow but has '" + outgoingCount + "'.");
-          } else {
 
-            // TODO: [ms] please fix order of targets of ifstmts in frontends i.e. Asmmethodsource
-            final List<Stmt> edges = branches.get(stmt);
-            Stmt currentNextNode = edges.get(0);
-            final Iterator<Stmt> iterator = cfg.nodes().iterator();
-            while (iterator.hasNext() && iterator.next() != stmt) {}
-
-            // switch edge order if the order is wrong i.e. the first edge is not the following stmt
-            // in the node list
-            if (iterator.hasNext() && iterator.next() != currentNextNode) {
-              edges.set(0, edges.get(1));
-              edges.set(1, currentNextNode);
+          for (Stmt target : targets) {
+            if (target == stmt) {
+              throw new IllegalArgumentException("a Stmt (" + stmt + ") cannot branch to itself.");
             }
           }
-        } else if (stmt instanceof JGotoStmt) {
-          if (outgoingCount != 1) {
-            throw new IllegalArgumentException(
-                stmt + ": Goto must have '1' outgoing flow but has '\" + outgoingCount + \"'.");
+
+          if (stmt instanceof JSwitchStmt) {
+            if (successorCount != ((JSwitchStmt) stmt).getValueCount()) {
+              throw new IllegalArgumentException(
+                  stmt
+                      + ": size of outgoing flows (i.e. "
+                      + successorCount
+                      + ") does not match the amount of switch statements case labels (i.e. "
+                      + ((JSwitchStmt) stmt).getValueCount()
+                      + ").");
+            }
+          } else if (stmt instanceof JIfStmt) {
+            if (successorCount != 2) {
+              throw new IllegalStateException(
+                  stmt + ": must have '2' outgoing flow but has '" + successorCount + "'.");
+            } else {
+
+              // TODO: [ms] please fix order of targets of ifstmts in frontends i.e. Asmmethodsource
+              final List<Stmt> edges = branches.get(stmt);
+              Stmt currentNextNode = edges.get(0);
+              final Iterator<Stmt> iterator = cfg.nodes().iterator();
+              //noinspection StatementWithEmptyBody
+              while (iterator.hasNext() && iterator.next() != stmt) {}
+
+              // switch edge order if the order is wrong i.e. the first edge is not the following
+              // stmt
+              // in the node list
+              if (iterator.hasNext() && iterator.next() != currentNextNode) {
+                edges.set(0, edges.get(1));
+                edges.set(1, currentNextNode);
+              }
+            }
+          } else if (stmt instanceof JGotoStmt) {
+            if (successorCount != 1) {
+              throw new IllegalArgumentException(
+                  stmt + ": Goto must have '1' outgoing flow but has '" + successorCount + "'.");
+            }
           }
-        } else if (stmt instanceof JReturnStmt || stmt instanceof JReturnVoidStmt) {
-          if (outgoingCount != 0) {
+
+        } else if (stmt instanceof JReturnStmt
+            || stmt instanceof JReturnVoidStmt
+            || stmt instanceof JThrowStmt) {
+          if (successorCount != 0) {
             throw new IllegalArgumentException(
-                stmt + ": must have '1' outgoing flow but has '\" + outgoingCount + \"'.");
+                stmt + ": must have '0' outgoing flow but has '" + successorCount + "'.");
           }
         } else {
-          if (outgoingCount != 1) {
+          if (successorCount != 1) {
             throw new IllegalArgumentException(
-                stmt + ": must have '1' outgoing flow but has '\" + outgoingCount + \"'.");
+                stmt + ": must have '1' outgoing flow but has '" + successorCount + "'.");
           }
         }
       }
@@ -647,7 +659,6 @@ public class Body implements Copyable {
                   "Wrong order between iterator and branches array!");
             }
           }
-          System.out.println(stmt);
           assert (i == branchesOfStmt.size());
         }
       }
