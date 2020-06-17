@@ -490,10 +490,7 @@ public class WalaIRToJimpleConverter {
           stmt2iIndex.put(ret, -1);
         }
 
-        for (Map.Entry<Stmt, Integer> entry : stmt2iIndex.entrySet()) {
-          final Integer targetIndex = entry.getValue();
-          instConverter.setUpTargets(entry.getKey(), targetIndex, builder);
-        }
+        instConverter.setUpTargets(stmt2iIndex, builder);
 
         return builder
             .setLocals(localGenerator.getLocals())
