@@ -1203,4 +1203,15 @@ public class InstructionConverter {
       }
     }
   }
+
+  public boolean hasJumpTarget(int i) {
+    if (targetsOfIfStmts.containsValue(i)) return true;
+    if (targetsOfGotoStmts.containsValue(i)) return true;
+    for (List<Integer> list : targetsOfLookUpSwitchStmts.values()) {
+      if (list.contains(-1)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
