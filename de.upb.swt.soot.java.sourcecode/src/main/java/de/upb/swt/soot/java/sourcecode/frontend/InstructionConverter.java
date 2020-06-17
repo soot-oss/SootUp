@@ -1204,11 +1204,15 @@ public class InstructionConverter {
     }
   }
 
-  public boolean hasJumpTarget(int i) {
+  /**
+   * determines wheter a given wala index is a target of a Branching Instruction. e.g. used for
+   * detection of implicit return statements in void methods.
+   */
+  public boolean hasJumpTarget(Integer i) {
     if (targetsOfIfStmts.containsValue(i)) return true;
     if (targetsOfGotoStmts.containsValue(i)) return true;
     for (List<Integer> list : targetsOfLookUpSwitchStmts.values()) {
-      if (list.contains(-1)) {
+      if (list.contains(i)) {
         return true;
       }
     }
