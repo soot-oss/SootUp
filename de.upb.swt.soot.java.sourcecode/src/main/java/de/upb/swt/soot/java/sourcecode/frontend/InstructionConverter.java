@@ -1212,21 +1212,23 @@ public class InstructionConverter {
     }
 
     for (Map.Entry<JSwitchStmt, List<Integer>> item : targetsOfLookUpSwitchStmts.entrySet()) {
-      final JSwitchStmt key = item.getKey();
+      final JSwitchStmt switchStmt = item.getKey();
       final List<Integer> targetIdxList = item.getValue();
 
-      boolean found = false;
-      for (Map.Entry<Stmt, Integer> entry : stmt2iIndex.entrySet()) {
-        final Stmt target = entry.getKey();
-        final Integer idxTarget = entry.getValue();
+      // assign target for every idx in targetIdxList of switchStmt
+      for (Integer targetIdx : targetIdxList) {
+        // search for matching index/stmt
+        for (Map.Entry<Stmt, Integer> jumptableEntry : stmt2iIndex.entrySet()) {
+          final Stmt stmt = jumptableEntry.getKey();
+          final Integer idx = jumptableEntry.getValue();
 
-        if (targetIdxList.contains(idxTarget)) {
-          builder.addFlow(key, target);
-          found = true;
-          break;
+          if (targetIdx.equals(idx)) {
+            System.out.println("added: " + stmt);
+            builder.addFlow(switchStmt, stmt);
+            break;
+          }
         }
       }
-      assert (found);
     }
   }
 
