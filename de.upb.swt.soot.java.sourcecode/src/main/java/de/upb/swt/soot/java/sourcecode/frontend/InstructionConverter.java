@@ -211,7 +211,7 @@ public class InstructionConverter {
     }
 
     Position[] operandPos = new Position[1];
-    // FIXME: written arrayindex position info is missing
+    // TODO: written arrayindex position info is missing
     // operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
 
     return Jimple.newAssignStmt(
@@ -237,7 +237,7 @@ public class InstructionConverter {
     left = getLocal(base.getType(), def);
 
     Position[] operandPos = new Position[1];
-    // FIXME: loaded arrayindex position info is missing
+    // TODO: loaded arrayindex position info is missing
     // operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
 
     return Jimple.newAssignStmt(
@@ -258,7 +258,7 @@ public class InstructionConverter {
     Position[] operandPos = new Position[1];
     Position p1 = debugInfo.getOperandPosition(inst.iIndex(), 0);
     operandPos[0] = p1;
-    // FIXME: [ms] stmt position ends at variablename of the array
+    // TODO: [ms] stmt position ends at variablename of the array
     return Jimple.newAssignStmt(
         left,
         right,
@@ -276,7 +276,7 @@ public class InstructionConverter {
     JCaughtExceptionRef caught = JavaJimple.getInstance().newCaughtExceptionRef();
 
     Position[] operandPos = new Position[1];
-    // FIXME: [ms] position info of parameter, target is missing
+    // TODO: [ms] position info of parameter, target is missing
     // operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
 
     return Jimple.newIdentityStmt(
@@ -291,7 +291,7 @@ public class InstructionConverter {
     Immediate op = getLocal(UnknownType.getInstance(), inst.getRef());
 
     Position[] operandPos = new Position[1];
-    // FIXME: [ms] referenced object position info is missing
+    // TODO: [ms] referenced object position info is missing
     // operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
 
     if (inst.isMonitorEnter()) {
@@ -543,11 +543,9 @@ public class InstructionConverter {
       }
     }
 
-    System.out.println(targetList);
-
     Position[] operandPos = new Position[2];
     // TODO: [ms] how to organize the operands
-    // FIXME: has no operand positions yet for
+    // TODO: has no operand positions yet for
     // operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), ); // key
     // operandPos[1] = debugInfo.getOperandPosition(inst.iIndex(), ); // default
     // operandPos[i] = debugInfo.getOperandPosition(inst.iIndex(), ); // lookups
@@ -568,7 +566,7 @@ public class InstructionConverter {
     Local local = getLocal(UnknownType.getInstance(), exception);
 
     Position[] operandPos = new Position[1];
-    // FIXME: has no operand position yet for throwable
+    // TODO: has no operand position yet for throwable
     operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), 0);
 
     return Jimple.newThrowStmt(
@@ -600,7 +598,7 @@ public class InstructionConverter {
     Local left = getLocal(type, def);
 
     Position[] operandPos = new Position[2];
-    // FIXME: has no operand positions yet for right side or assigned variable
+    // TODO: has no operand positions yet for right side or assigned variable
     // operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), 0);
     // operandPos[1] = debugInfo.getOperandPosition(inst.iIndex(), 1);
 
@@ -648,7 +646,7 @@ public class InstructionConverter {
     }
 
     Position[] operandPos = new Position[2];
-    // FIXME: has no operand positions yet for value, rvalue
+    // TODO: has no operand positions yet for value, rvalue
     // operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), 0);
     // operandPos[1] = debugInfo.getOperandPosition(inst.iIndex(), 1);
     return Jimple.newAssignStmt(
@@ -680,7 +678,7 @@ public class InstructionConverter {
     }
 
     Position[] operandPos = new Position[2];
-    // FIXME: has no operand positions yet for type, size
+    // TODO: has no operand positions yet for type, size
     // operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), 0);
     // operandPos[1] = debugInfo.getOperandPosition(inst.iIndex(), 1);
 
@@ -710,7 +708,7 @@ public class InstructionConverter {
     Value left = getLocal(PrimitiveType.getBoolean(), result);
 
     Position[] operandPos = new Position[2];
-    // FIXME: has no operand positions yet for checked and expected side
+    // TODO: has no operand positions yet for checked and expected side
     // operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), 0);
     // operandPos[1] = debugInfo.getOperandPosition(inst.iIndex(), 1);
 
@@ -737,7 +735,7 @@ public class InstructionConverter {
     JCastExpr cast = Jimple.newCastExpr(rvalue, toType);
 
     Position[] operandPos = new Position[2];
-    // FIXME: has no positions for lvalue, rvalue yet
+    // TODO: has no positions for lvalue, rvalue yet
     // operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), 0);
     // operandPos[1] = debugInfo.getOperandPosition(inst.iIndex(), 1);
 
@@ -1223,7 +1221,6 @@ public class InstructionConverter {
           final Integer idx = jumptableEntry.getValue();
 
           if (targetIdx.equals(idx)) {
-            System.out.println("added: " + stmt);
             builder.addFlow(switchStmt, stmt);
             break;
           }
