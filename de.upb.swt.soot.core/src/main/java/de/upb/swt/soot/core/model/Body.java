@@ -336,12 +336,10 @@ public class Body implements Copyable {
   /** returns a List of Branch targets of Branching Stmts */
   @Nonnull
   public List<Stmt> getBranchTargetsOf(@Nonnull Stmt fromStmt) {
-    return branches.get(fromStmt);
+    return branches.getOrDefault(fromStmt, Collections.emptyList());
   }
 
   public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
-    // FIXME: just because the stmt has just one ingoing flow it does not mean its not a branch
-    // target
     final Set<Stmt> predecessors = cfg.predecessors(targetStmt);
     if (predecessors.size() > 1) {
       return true;
@@ -585,7 +583,7 @@ public class Body implements Copyable {
           if (targets.size() != successorCount) {
             throw new IllegalArgumentException(
                 stmt
-                    + ": cfg.successoers.size "
+                    + ": cfg.successors.size "
                     + targets.size()
                     + " does not match branches[stmt].size "
                     + successorCount);
@@ -654,7 +652,7 @@ public class Body implements Copyable {
         throw new IllegalArgumentException("There is no MethodSignature set.");
       }
 
-      // TODO: temporary DEBUG check as long as the branches array is still existing
+      // TODO: temporary DEBUG check as long as the branches array still exists
       for (Stmt stmt : cfg.nodes()) {
         if (stmt instanceof BranchingStmt) {
 
@@ -664,15 +662,38 @@ public class Body implements Copyable {
           for (Stmt target : successors) {
             if (branchesOfStmt.get(i++) != target) {
               throw new IllegalArgumentException(
-                  stmt + "Wrong order between iterator and branches array!");
+                  stmt + ": Wrong order between iterator and branches array!");
             }
           }
           assert (i == branchesOfStmt.size());
         }
       }
 
-      return new Body(
-          methodSig, locals, traps, ImmutableGraph.copyOf(cfg), branches, firstStmt, position);
+      final Body body =
+          new Body(
+              methodSig, locals, traps, ImmutableGraph.copyOf(cfg), branches, firstStmt, position);
+
+      /* FIXME: [ms] order after immutablestmtgraph is applied is different!
+      final ImmutableGraph<Stmt> stmtImmutableGraph = body.getStmtGraph();
+      // TODO: temporary DEBUG check as long as the branches array still exists
+      for (Stmt stmt : stmtImmutableGraph.nodes()) {
+        if (stmt instanceof BranchingStmt) {
+
+          int i = 0;
+          final List<Stmt> branchesOfStmt = branches.get(stmt);
+          final Set<Stmt> successors = stmtImmutableGraph.successors(stmt);
+          for (Stmt target : successors) {
+            if (branchesOfStmt.get(i++) != target) {
+              throw new IllegalArgumentException(
+                      stmt + ": Wrong order between iterator and branches array!");
+            }
+          }
+          assert (i == branchesOfStmt.size());
+        }
+      }
+      */
+
+      return body;
     }
   }
 }
