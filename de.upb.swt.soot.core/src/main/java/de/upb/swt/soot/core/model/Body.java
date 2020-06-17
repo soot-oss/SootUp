@@ -578,14 +578,22 @@ public class Body implements Copyable {
           // validate branch stmts
           final List<Stmt> targets = branches.get(stmt);
 
+          if (targets == null) {
+            throw new IllegalArgumentException(stmt + ": targets is null - no flows set");
+          }
+
           if (targets.size() != successorCount) {
             throw new IllegalArgumentException(
-                "cfg.successoers.size does not match branches[stmt].size");
+                stmt
+                    + ": cfg.successoers.size "
+                    + targets.size()
+                    + " does not match branches[stmt].size "
+                    + successorCount);
           }
 
           for (Stmt target : targets) {
             if (target == stmt) {
-              throw new IllegalArgumentException("a Stmt (" + stmt + ") cannot branch to itself.");
+              throw new IllegalArgumentException(stmt + ": a Stmt cannot branch to itself.");
             }
           }
 
@@ -656,7 +664,7 @@ public class Body implements Copyable {
           for (Stmt target : successors) {
             if (branchesOfStmt.get(i++) != target) {
               throw new IllegalArgumentException(
-                  "Wrong order between iterator and branches array!");
+                  stmt + "Wrong order between iterator and branches array!");
             }
           }
           assert (i == branchesOfStmt.size());
