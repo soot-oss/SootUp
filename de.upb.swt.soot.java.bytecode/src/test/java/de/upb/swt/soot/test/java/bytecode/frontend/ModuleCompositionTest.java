@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
 
 /**
@@ -35,7 +35,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class ModuleCompositionTest {
 
-  @Test
+  @Ignore
   public void apiExamples() {
 
     String warFile = "../shared-test-resources/java-warApp/dummyWarApp.war";
