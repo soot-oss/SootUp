@@ -1179,31 +1179,26 @@ public class InstructionConverter {
    */
   protected void setUpTargets(Map<Stmt, Integer> stmt2iIndex, Body.BodyBuilder builder) {
 
+    // TODO: [ms] optimize this method - seems currently more expensive than necessary
     for (Map.Entry<Stmt, Integer> entry : stmt2iIndex.entrySet()) {
       Stmt target = entry.getKey();
       Integer iTarget = entry.getValue();
 
-      if (targetsOfIfStmts.containsValue(iTarget)) {
-        for (JIfStmt ifStmt : targetsOfIfStmts.keySet()) {
-          if (targetsOfIfStmts.get(ifStmt).equals(iTarget)) {
-            builder.addFlow(ifStmt, target);
-          }
+      for (JIfStmt ifStmt : targetsOfIfStmts.keySet()) {
+        if (targetsOfIfStmts.get(ifStmt).equals(iTarget)) {
+          builder.addFlow(ifStmt, target);
         }
       }
 
-      if (targetsOfGotoStmts.containsValue(iTarget)) {
-        for (JGotoStmt gotoStmt : targetsOfGotoStmts.keySet()) {
-          if (targetsOfGotoStmts.get(gotoStmt).equals(iTarget)) {
-            builder.addFlow(gotoStmt, target);
-          }
+      for (JGotoStmt gotoStmt : targetsOfGotoStmts.keySet()) {
+        if (targetsOfGotoStmts.get(gotoStmt).equals(iTarget)) {
+          builder.addFlow(gotoStmt, target);
         }
       }
 
-      if (targetsOfLookUpSwitchStmts.containsValue(iTarget)) {
-        for (JSwitchStmt lookupSwitch : targetsOfLookUpSwitchStmts.keySet()) {
-          if (targetsOfLookUpSwitchStmts.get(lookupSwitch).contains(iTarget)) {
-            builder.addFlow(lookupSwitch, target);
-          }
+      for (Map.Entry<JSwitchStmt, List<Integer>> item : targetsOfLookUpSwitchStmts.entrySet()) {
+        if (item.getValue().contains(iTarget)) {
+          builder.addFlow(item.getKey(), target);
         }
       }
     }
