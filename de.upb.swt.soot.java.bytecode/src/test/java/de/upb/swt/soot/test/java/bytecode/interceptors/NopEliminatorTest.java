@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -38,7 +39,7 @@ public class NopEliminatorTest {
   /**
    * Tests the correct handling of a nop statement at the end of the stmtList. It should be deleted.
    */
-  @Test
+  @Ignore
   public void testJNopEnd() {
     Body testBody = createBody(true, false);
     Body processedBody = new NopEliminator().interceptBody(testBody);
