@@ -1138,8 +1138,9 @@ public class InstructionConverter {
   }
 
   private Local getLocal(Type type, int valueNumber) {
-    if (locals.containsKey(valueNumber)) {
-      return locals.get(valueNumber);
+    final Local cachedLocal = locals.get(valueNumber);
+    if (cachedLocal != null) {
+      return cachedLocal;
     }
     if (valueNumber == 1) {
       // in wala symbol numbers start at 1 ... the "this" parameter will be symbol
@@ -1156,15 +1157,12 @@ public class InstructionConverter {
         return para;
       }
     }
-    if (!locals.containsKey(valueNumber)) {
-      Local local = localGenerator.generateLocal(type);
-      locals.put(valueNumber, local);
-    }
-    Local ret = locals.get(valueNumber);
+
+    Local ret = locals.computeIfAbsent(valueNumber, key -> localGenerator.generateLocal(type));
 
     if (!ret.getType().equals(type)) {
       // ret.setType(ret.getType().merge(type));
-      // TODO. re-implement merge. Don't forget type can also be UnknownType.
+      // TODO: re-implement merge. [CB] Don't forget type can also be UnknownType.
       // throw new RuntimeException("Different types for same local
       // variable: "+ret.getType()+"<->"+type);
     }

@@ -45,7 +45,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import javax.annotation.Nonnull;
-import scala.annotation.meta.field;
 
 /**
  * Converter which converts WALA IR to jimple.
@@ -511,16 +510,16 @@ public class WalaIRToJimpleConverter {
    */
   public String convertClassNameFromWala(String className) {
     String cl = className.intern();
-    if (walaToSootNameTable.containsKey(cl)) {
-      return walaToSootNameTable.get(cl);
+    final String sootName = walaToSootNameTable.get(cl);
+    if (sootName != null) {
+      return sootName;
     }
     StringBuilder sb = new StringBuilder();
     if (className.startsWith("L")) {
       className = className.substring(1);
       String[] subNames = className.split("/");
       boolean isSpecial = false;
-      for (int i = 0; i < subNames.length; i++) {
-        String subName = subNames[i];
+      for (String subName : subNames) {
         if (subName.contains("(") || subName.contains("<")) {
           // handle anonymous or inner classes
           isSpecial = true;
@@ -540,11 +539,14 @@ public class WalaIRToJimpleConverter {
           if (!name.contains("$")) {
             // This is an inner class
             String outClass = sb.toString();
-            int count = 1;
-            if (this.clsWithInnerCls.containsKey(outClass)) {
-              count = this.clsWithInnerCls.get(outClass) + 1;
+            int count;
+            final Integer innerClassCount = clsWithInnerCls.get(outClass);
+            if (innerClassCount != null) {
+              count = innerClassCount + 1;
+            } else {
+              count = 1;
             }
-            this.clsWithInnerCls.put(outClass, count);
+            clsWithInnerCls.put(outClass, count);
             sb.append(count).append("$");
           }
           sb.append(name);

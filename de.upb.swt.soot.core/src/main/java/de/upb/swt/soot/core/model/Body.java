@@ -646,7 +646,7 @@ public class Body implements Copyable {
         throw new IllegalArgumentException("There is no MethodSignature set.");
       }
 
-      // TODO: temporary DEBUG check
+      // TODO: temporary DEBUG check as long as the branches array is still existing
       for (Stmt stmt : cfg.nodes()) {
         if (stmt instanceof BranchingStmt) {
 
