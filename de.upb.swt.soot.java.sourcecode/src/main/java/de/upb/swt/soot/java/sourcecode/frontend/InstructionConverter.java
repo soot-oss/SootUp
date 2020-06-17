@@ -1184,15 +1184,15 @@ public class InstructionConverter {
       Stmt target = entry.getKey();
       Integer iTarget = entry.getValue();
 
-      for (JIfStmt ifStmt : targetsOfIfStmts.keySet()) {
-        if (targetsOfIfStmts.get(ifStmt).equals(iTarget)) {
-          builder.addFlow(ifStmt, target);
+      for (Map.Entry<JIfStmt, Integer> ifStmt : targetsOfIfStmts.entrySet()) {
+        if (ifStmt.getValue().equals(iTarget)) {
+          builder.addFlow(ifStmt.getKey(), target);
         }
       }
 
-      for (JGotoStmt gotoStmt : targetsOfGotoStmts.keySet()) {
-        if (targetsOfGotoStmts.get(gotoStmt).equals(iTarget)) {
-          builder.addFlow(gotoStmt, target);
+      for (Map.Entry<JGotoStmt, Integer> gotoStmt : targetsOfGotoStmts.entrySet()) {
+        if (gotoStmt.getValue().equals(iTarget)) {
+          builder.addFlow(gotoStmt.getKey(), target);
         }
       }
 
