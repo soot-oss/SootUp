@@ -531,17 +531,19 @@ public class InstructionConverter {
     int[] cases = inst.getCasesAndLabels();
     int defaultCase = inst.getDefault();
     List<IntConstant> lookupValues = new ArrayList<>();
-    List<Integer> targetsList = new ArrayList<>();
-    targetsList.add(defaultCase);
+    List<Integer> targetList = new ArrayList<>();
+    targetList.add(defaultCase);
     for (int i = 0; i < cases.length; i++) {
       int c = cases[i];
       if (i % 2 == 0) {
         IntConstant cValue = IntConstant.getInstance(c);
         lookupValues.add(cValue);
       } else {
-        targetsList.add(c);
+        targetList.add(c);
       }
     }
+
+    System.out.println(targetList);
 
     Position[] operandPos = new Position[2];
     // TODO: [ms] how to organize the operands
@@ -557,7 +559,7 @@ public class InstructionConverter {
             lookupValues,
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
-    targetsOfLookUpSwitchStmts.put(stmt, targetsList);
+    targetsOfLookUpSwitchStmts.put(stmt, targetList);
     return stmt;
   }
 
@@ -1179,28 +1181,52 @@ public class InstructionConverter {
    */
   protected void setUpTargets(Map<Stmt, Integer> stmt2iIndex, Body.BodyBuilder builder) {
 
-    // TODO: [ms] optimize this method - seems currently more expensive than necessary
-    for (Map.Entry<Stmt, Integer> entry : stmt2iIndex.entrySet()) {
-      Stmt target = entry.getKey();
-      Integer iTarget = entry.getValue();
+    for (Map.Entry<JIfStmt, Integer> ifStmt : targetsOfIfStmts.entrySet()) {
+      final JIfStmt key = ifStmt.getKey();
+      final Integer value = ifStmt.getValue();
 
-      for (Map.Entry<JIfStmt, Integer> ifStmt : targetsOfIfStmts.entrySet()) {
-        if (ifStmt.getValue().equals(iTarget)) {
-          builder.addFlow(ifStmt.getKey(), target);
+      for (Map.Entry<Stmt, Integer> entry : stmt2iIndex.entrySet()) {
+        final Stmt target = entry.getKey();
+        final Integer iTarget = entry.getValue();
+
+        if (value.equals(iTarget)) {
+          builder.addFlow(key, target);
+          break;
         }
       }
+    }
 
-      for (Map.Entry<JGotoStmt, Integer> gotoStmt : targetsOfGotoStmts.entrySet()) {
-        if (gotoStmt.getValue().equals(iTarget)) {
-          builder.addFlow(gotoStmt.getKey(), target);
+    for (Map.Entry<JGotoStmt, Integer> gotoStmt : targetsOfGotoStmts.entrySet()) {
+      final JGotoStmt key = gotoStmt.getKey();
+      final Integer value = gotoStmt.getValue();
+
+      for (Map.Entry<Stmt, Integer> entry : stmt2iIndex.entrySet()) {
+        final Stmt target = entry.getKey();
+        final Integer iTarget = entry.getValue();
+
+        if (value.equals(iTarget)) {
+          builder.addFlow(key, target);
+          break;
         }
       }
+    }
 
-      for (Map.Entry<JSwitchStmt, List<Integer>> item : targetsOfLookUpSwitchStmts.entrySet()) {
-        if (item.getValue().contains(iTarget)) {
-          builder.addFlow(item.getKey(), target);
+    for (Map.Entry<JSwitchStmt, List<Integer>> item : targetsOfLookUpSwitchStmts.entrySet()) {
+      final JSwitchStmt key = item.getKey();
+      final List<Integer> targetIdxList = item.getValue();
+
+      boolean found = false;
+      for (Map.Entry<Stmt, Integer> entry : stmt2iIndex.entrySet()) {
+        final Stmt target = entry.getKey();
+        final Integer idxTarget = entry.getValue();
+
+        if (targetIdxList.contains(idxTarget)) {
+          builder.addFlow(key, target);
+          found = true;
+          break;
         }
       }
+      assert (found);
     }
   }
 
