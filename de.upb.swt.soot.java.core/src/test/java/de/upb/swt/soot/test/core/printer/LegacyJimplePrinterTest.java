@@ -2,6 +2,7 @@ package de.upb.swt.soot.test.core.printer;
 
 import static org.junit.Assert.*;
 
+import com.google.common.graph.ImmutableGraph;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
@@ -42,6 +43,15 @@ public class LegacyJimplePrinterTest {
             .setMethodSignature(methodSignature)
             .setPosition(NoPositionInformation.getInstance())
             .build();
+
+    StringBuilder debug = new StringBuilder(body.getMethodSignature() + "\n");
+    final ImmutableGraph<Stmt> stmtGraph = body.getStmtGraph();
+    for (Stmt stmt : stmtGraph.nodes()) {
+      debug.append(stmt).append(" => ").append(stmtGraph.successors(stmt)).append(" \n");
+      debug.append(" => ").append(body.getBranchTargetsOf(stmt)).append(" \n");
+    }
+    System.out.println(debug);
+
     SootMethod dummyMainMethod =
         new SootMethod(
             new OverridingMethodSource(methodSignature, body),
@@ -74,16 +84,19 @@ public class LegacyJimplePrinterTest {
 
     final JReturnVoidStmt returnstmt = new JReturnVoidStmt(noPosInfo);
     final JNopStmt jNop = new JNopStmt(noPosInfo);
+    final JNopStmt jNop2 = new JNopStmt(noPosInfo);
 
     Stmt tableSwitch = new JSwitchStmt(IntConstant.getInstance(42), 4, 5, noPosInfo);
 
     {
       Body.BodyBuilder builder = Body.builder();
-      builder.addStmt(tableSwitch, true);
-      builder.addStmt(jNop, true);
+      builder.addStmt(tableSwitch);
+      builder.addStmt(jNop);
+      builder.addStmt(jNop2, true);
       builder.addStmt(returnstmt, true);
 
       builder.addFlow(tableSwitch, jNop);
+      builder.addFlow(tableSwitch, jNop2);
       builder.addFlow(tableSwitch, returnstmt);
 
       SootClass tableClass = buildClass(builder);
@@ -96,44 +109,48 @@ public class LegacyJimplePrinterTest {
           Arrays.asList(
               "public static void main()",
               "tableswitch(42)",
-              "case 4: goto label2",
+              "case 4: goto label3",
               "case 5: goto label1",
+              "default: goto label2",
+              "label1:",
+              "nop",
+              "label2:",
+              "nop",
+              "label3:",
+              "return"),
+          Utils.filterJimple(sw.toString()));
+    }
+
+    {
+      Stmt lookupSwitch = new JSwitchStmt(IntConstant.getInstance(123), lookupValues, noPosInfo);
+
+      Body.BodyBuilder builder = Body.builder();
+      builder.addStmt(lookupSwitch, true);
+      builder.addStmt(jNop, true);
+      builder.addStmt(returnstmt, true);
+
+      builder.addFlow(lookupSwitch, jNop);
+      builder.addFlow(lookupSwitch, returnstmt);
+
+      SootClass lookupClass = buildClass(builder);
+
+      StringWriter sw2 = new StringWriter();
+      new Printer(Printer.Option.LegacyMode)
+          .printTo(lookupClass, new PrintWriter(new EscapedWriter(sw2)));
+
+      assertEquals(
+          Arrays.asList(
+              "public static void main()",
+              "lookupswitch(123)",
+              "case 42: goto label2",
+              "case 33102: goto label1",
               "default: goto label1",
               "label1:",
               "nop",
               "label2:",
               "return"),
-          Utils.filterJimple(sw.toString()));
+          Utils.filterJimple(sw2.toString()));
     }
-
-    Stmt lookupSwitch = new JSwitchStmt(IntConstant.getInstance(123), lookupValues, noPosInfo);
-
-    Body.BodyBuilder builder = Body.builder();
-    builder.addStmt(lookupSwitch, true);
-    builder.addStmt(jNop, true);
-    builder.addStmt(returnstmt, true);
-
-    builder.addFlow(lookupSwitch, jNop);
-    builder.addFlow(lookupSwitch, returnstmt);
-
-    SootClass lookupClass = buildClass(builder);
-
-    StringWriter sw2 = new StringWriter();
-    new Printer(Printer.Option.LegacyMode)
-        .printTo(lookupClass, new PrintWriter(new EscapedWriter(sw2)));
-
-    assertEquals(
-        Arrays.asList(
-            "public static void main()",
-            "lookupswitch(123)",
-            "case 42: goto label2",
-            "case 33102: goto label1",
-            "default: goto label1",
-            "label1:",
-            "nop",
-            "label2:",
-            "return"),
-        Utils.filterJimple(sw2.toString()));
   }
 
   @Test(expected = RuntimeException.class)
