@@ -135,9 +135,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         System.getProperty("java.io.tmpdir")
             + File.separator
             + "sootOutput"
-            + File.separator
-            + "war"
-            + File.separator
+            + "-war-"
             + warFilePath.hashCode();
 
     try {
