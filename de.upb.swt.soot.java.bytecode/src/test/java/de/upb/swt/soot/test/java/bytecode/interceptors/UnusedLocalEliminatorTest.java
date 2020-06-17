@@ -84,10 +84,10 @@ public class UnusedLocalEliminatorTest {
 
     final Body.BodyBuilder builder = Body.builder();
     locals.forEach(builder::addLocal);
-    builder.addStmt(strToA);
-    builder.addStmt(jump);
-    builder.addStmt(bToA);
-    builder.addStmt(ret);
+    builder.addStmt(strToA, true);
+    builder.addStmt(jump, true);
+    builder.addStmt(bToA, true);
+    builder.addStmt(ret, true);
     builder.addFlow(jump, strToA);
 
     builder.setMethodSignature(

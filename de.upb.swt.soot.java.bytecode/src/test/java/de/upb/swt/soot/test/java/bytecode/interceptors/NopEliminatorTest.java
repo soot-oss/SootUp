@@ -116,10 +116,12 @@ public class NopEliminatorTest {
         Trap trap = Jimple.newTrap(throwable, strToA, nop, handler);
         traps.add(trap);
       }
+      builder.addFlow(nop, ret); // [ms] wuite artificial flow
+
     } else {
       stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret);
+      stmts.forEach(stmt -> builder.addStmt(stmt, true));
     }
-    stmts.forEach(stmt -> builder.addStmt(stmt, true));
     builder.addFlow(jump, ret);
 
     builder.setLocals(locals);
