@@ -28,6 +28,7 @@ public class StmtGraphIterator implements Iterator<EndpointPair<Stmt>> {
 
   @Override
   public boolean hasNext() {
+    // FIXME: [ms] bug!
     return edgeIterator.hasNext() || nodeIterator.hasNext();
   }
 

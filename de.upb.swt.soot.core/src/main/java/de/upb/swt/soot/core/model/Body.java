@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.model;
  */
 
 import com.google.common.graph.*;
+import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
@@ -52,7 +53,7 @@ public class Body implements Copyable {
       new Body(
           Collections.emptySet(),
           Collections.emptyList(),
-          ImmutableGraph.copyOf(GraphBuilder.directed().build()),
+          new StmtGraph(),
           Collections.emptyMap(),
           NoPositionInformation.getInstance());
 
@@ -63,7 +64,7 @@ public class Body implements Copyable {
   private final List<Trap> traps;
 
   /** The stmts for this Body. */
-  @Nonnull private final ImmutableGraph<Stmt> cfg;
+  @Nonnull private final ImmutableStmtGraph cfg;
 
   /** Record the ordered branching edges for each branching statement. */
   @Nonnull private Map<Stmt, List<Stmt>> branches;
@@ -101,18 +102,14 @@ public class Body implements Copyable {
       @Nonnull MethodSignature methodSignature,
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
-      @Nonnull Graph<Stmt> stmtGraph,
+      @Nonnull StmtGraph stmtGraph,
       @Nonnull Map<Stmt, List<Stmt>> branches,
       @Nonnull Stmt startingStmt,
       @Nonnull Position position) {
     this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
     this.traps = Collections.unmodifiableList(traps);
-    // TODO: [ms] (im)mutability via second constructor?
-    this.cfg =
-        stmtGraph instanceof ImmutableGraph
-            ? (ImmutableGraph<Stmt>) stmtGraph
-            : ImmutableGraph.copyOf(stmtGraph);
+    this.cfg = ImmutableStmtGraph.copyOf(stmtGraph);
     this.branches = branches;
     this.position = position;
     this.firstStmt = startingStmt;
@@ -126,7 +123,7 @@ public class Body implements Copyable {
   public Body(
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
-      @Nonnull Graph<Stmt> stmtGraph,
+      @Nonnull StmtGraph stmtGraph,
       @Nonnull Map<Stmt, List<Stmt>> branches,
       @Nonnull Position position) {
 
@@ -310,7 +307,7 @@ public class Body implements Copyable {
     return new ArrayList<>(getStmtGraph().nodes());
   }
 
-  public ImmutableGraph<Stmt> getStmtGraph() {
+  public ImmutableStmtGraph getStmtGraph() {
     return cfg;
   }
 
@@ -425,7 +422,7 @@ public class Body implements Copyable {
   }
 
   @Nonnull
-  public Body withStmts(@Nonnull Graph<Stmt> stmtGraph) {
+  public Body withStmts(@Nonnull StmtGraph stmtGraph) {
     return new Body(getLocals(), getTraps(), stmtGraph, getBranches(), getPosition());
   }
 
@@ -438,9 +435,10 @@ public class Body implements Copyable {
     return new BodyBuilder();
   }
 
-  public static BodyBuilder builder(Body body) {
-    return new BodyBuilder(body);
-  }
+  /* TODO: [ms] implement  public static BodyBuilder builder(Body body) {
+      return new BodyBuilder(body);
+    }
+  */
 
   public Stmt getFirstStmt() {
     return firstStmt;
@@ -453,7 +451,7 @@ public class Body implements Copyable {
     @Nonnull private List<Trap> traps = new ArrayList<>();
     @Nonnull private Position position;
 
-    @Nullable private MutableGraph<Stmt> cfg;
+    @Nullable private StmtGraph cfg;
 
     @Nonnull private final Map<Stmt, List<Stmt>> branches = new HashMap<>();
 
@@ -466,10 +464,10 @@ public class Body implements Copyable {
     }
 
     BodyBuilder(@Nonnull Body body) {
-      this(body, Graphs.copyOf(body.getStmtGraph()));
+      this(body, body.getStmtGraph());
     }
 
-    BodyBuilder(@Nonnull Body body, @Nonnull MutableGraph<Stmt> graphContainer) {
+    BodyBuilder(@Nonnull Body body, @Nonnull StmtGraph graphContainer) {
       setMethodSignature(body.getMethodSignature());
       setLocals(body.getLocals());
       setTraps(body.getTraps());
@@ -568,6 +566,11 @@ public class Body implements Copyable {
     @Nonnull
     public Body build() {
 
+      StringBuilder debug = new StringBuilder(methodSig + "\n");
+      for (Stmt stmt : cfg.nodes()) {
+        debug.append(stmt).append(" => ").append(cfg.successors(stmt)).append(" \n");
+      }
+
       // validate statements
       for (Stmt stmt : cfg.nodes()) {
 
@@ -577,10 +580,15 @@ public class Body implements Copyable {
           final List<Stmt> targets = branches.get(stmt);
 
           if (targets == null) {
+            System.out.println(debug);
+
             throw new IllegalArgumentException(stmt + ": targets is null - no flows set");
           }
 
           if (targets.size() != successorCount) {
+
+            System.out.println(debug);
+
             throw new IllegalArgumentException(
                 stmt
                     + ": cfg.successors.size "
@@ -597,6 +605,7 @@ public class Body implements Copyable {
 
           if (stmt instanceof JSwitchStmt) {
             if (successorCount != ((JSwitchStmt) stmt).getValueCount()) {
+              System.out.println(debug);
               throw new IllegalArgumentException(
                   stmt
                       + ": size of outgoing flows (i.e. "
@@ -662,19 +671,16 @@ public class Body implements Copyable {
           for (Stmt target : successors) {
             if (branchesOfStmt.get(i++) != target) {
               throw new IllegalArgumentException(
-                  stmt + ": Wrong order between iterator and branches array!");
+                  stmt + ": wrong order between iterator and branches array!");
             }
           }
           assert (i == branchesOfStmt.size());
         }
       }
 
-      final Body body =
-          new Body(
-              methodSig, locals, traps, ImmutableGraph.copyOf(cfg), branches, firstStmt, position);
+      final Body body = new Body(methodSig, locals, traps, cfg, branches, firstStmt, position);
 
-      /* FIXME: [ms] order after immutablestmtgraph is applied is different!
-      final ImmutableGraph<Stmt> stmtImmutableGraph = body.getStmtGraph();
+      final ImmutableStmtGraph stmtImmutableGraph = body.getStmtGraph();
       // TODO: temporary DEBUG check as long as the branches array still exists
       for (Stmt stmt : stmtImmutableGraph.nodes()) {
         if (stmt instanceof BranchingStmt) {
@@ -685,13 +691,12 @@ public class Body implements Copyable {
           for (Stmt target : successors) {
             if (branchesOfStmt.get(i++) != target) {
               throw new IllegalArgumentException(
-                      stmt + ": Wrong order between iterator and branches array!");
+                  stmt + ": Wrong order between iterator and branches array!");
             }
           }
           assert (i == branchesOfStmt.size());
         }
       }
-      */
 
       return body;
     }

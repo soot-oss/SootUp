@@ -2,24 +2,33 @@ package de.upb.swt.soot.core.graph;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.graph.*;
-import com.google.common.primitives.Ints;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
 import javax.annotation.Nonnull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * trivial Graph structure which keeps edge order
+ * trivial Graph structure which keeps node and edge insertion order
  *
  * @author Markus Schmidt
  */
-public class StmtGraph implements MutableGraph<Stmt> {
+public class StmtGraph {
 
   protected final Map<Stmt, List<Stmt>> predecessors = new HashMap<>();
   protected final Map<Stmt, List<Stmt>> successors = new HashMap<>();
   protected final List<Stmt> stmtList = new ArrayList<>();
 
   public StmtGraph() {}
+
+  public static StmtGraph copyOf(StmtGraph stmtGraph) {
+    final StmtGraph graph = new StmtGraph();
+
+    for (Stmt node : stmtGraph.nodes()) {
+      graph.addNode(node);
+      stmtGraph.successors(node).forEach(target -> graph.putEdge(node, target));
+    }
+
+    return graph;
+  }
 
   public boolean addNode(@Nonnull Stmt node) {
     // [ms] contains is expensive!
@@ -30,7 +39,6 @@ public class StmtGraph implements MutableGraph<Stmt> {
     return modify;
   }
 
-  @Override
   public boolean removeNode(Stmt node) {
     stmtList.remove(node);
     predecessors.remove(node);
@@ -38,7 +46,6 @@ public class StmtGraph implements MutableGraph<Stmt> {
     return true;
   }
 
-  @Override
   public boolean removeEdge(Stmt nodeU, Stmt nodeV) {
     final List<Stmt> pred = predecessors.get(nodeV);
     boolean modified = false;
@@ -54,21 +61,7 @@ public class StmtGraph implements MutableGraph<Stmt> {
     return modified;
   }
 
-  @Override
-  public boolean removeEdge(EndpointPair<Stmt> endpointPair) {
-    return removeEdge(endpointPair.nodeU(), endpointPair.nodeV());
-  }
-
   public boolean putEdge(@Nonnull Stmt u, @Nonnull Stmt v) {
-    /*if (!stmtList.contains(u)) {
-      throw new IllegalArgumentException(
-          "first parameter node " + u + " is not in the list of nodes.");
-    }
-    if (!stmtList.contains(v)) {
-      throw new IllegalArgumentException(
-          "second parameter node " + v + " is not in the list of nodes.");
-    }
-    */
     // maintain set property
     if (hasEdgeConnecting(u, v)) {
       return false;
@@ -82,73 +75,20 @@ public class StmtGraph implements MutableGraph<Stmt> {
     return true;
   }
 
-  @Override
-  public boolean putEdge(EndpointPair<Stmt> endpointPair) {
-    return putEdge(endpointPair.nodeU(), endpointPair.nodeV());
-  }
-
-  @Override
   @Nonnull
   public Set<Stmt> nodes() {
     return ImmutableSet.copyOf(stmtList);
   }
 
-  @Override
-  public Set<EndpointPair<Stmt>> edges() {
-    return new AbstractSet<EndpointPair<Stmt>>() {
-      @Override
-      public Iterator<EndpointPair<Stmt>> iterator() {
-        return StmtGraphIterator.of(StmtGraph.this);
-      }
-
-      @Override
-      public int size() {
-        return Ints.saturatedCast(stmtList.size());
-      }
-
-      @Override
-      public boolean remove(Object o) {
-        throw new UnsupportedOperationException();
-      }
-
-      // Mostly safe: We check contains(u) before calling successors(u), so we perform unsafe
-      // operations only in weird cases like checking for an EndpointPair<ArrayList> in a
-      // Graph<LinkedList>.
-      @SuppressWarnings("unchecked")
-      @Override
-      public boolean contains(@Nullable Object obj) {
-        if (!(obj instanceof EndpointPair)) {
-          return false;
-        }
-        EndpointPair<?> endpointPair = (EndpointPair<?>) obj;
-        final Set<Stmt> successors = successors((Stmt) endpointPair.nodeU());
-        return successors != null && successors.contains(endpointPair.nodeV());
-      }
-    };
-  }
-
-  @Override
   public boolean isDirected() {
     return true;
   }
 
-  @Override
   public boolean allowsSelfLoops() {
-    // is this really possible?! possible optimization to turn it off
-    return true;
+    return false;
   }
 
-  @Override
-  public ElementOrder<Stmt> nodeOrder() {
-    return ElementOrder.insertion();
-  }
-
-  @Override
-  public ElementOrder<Stmt> incidentEdgeOrder() {
-    return ElementOrder.stable();
-  }
-
-  @Override
+  @Nonnull
   public Set<Stmt> adjacentNodes(@Nonnull Stmt node) {
     final HashSet<Stmt> set = new HashSet<>();
     set.addAll(predecessors(node));
@@ -156,9 +96,8 @@ public class StmtGraph implements MutableGraph<Stmt> {
     return set;
   }
 
-  @Override
+  @Nonnull
   public Set<Stmt> predecessors(@Nonnull Stmt node) {
-    // TODO set property is already maintained -> more performant datastructure
     final List<Stmt> set = predecessors.get(node);
     if (set == null) {
       return Collections.emptySet();
@@ -166,9 +105,8 @@ public class StmtGraph implements MutableGraph<Stmt> {
     return new LinkedHashSet<>(set);
   }
 
-  @Override
+  @Nonnull
   public Set<Stmt> successors(@Nonnull Stmt node) {
-    // TODO set property is already maintained -> more performant datastructure
     final List<Stmt> set = successors.get(node);
     if (set == null) {
       return Collections.emptySet();
@@ -176,44 +114,20 @@ public class StmtGraph implements MutableGraph<Stmt> {
     return new LinkedHashSet<>(set);
   }
 
-  @Override
-  @Nonnull
-  public Set<EndpointPair<Stmt>> incidentEdges(@Nonnull Stmt node) {
-    final Set<Stmt> predecessors = predecessors(node);
-    final Set<Stmt> successors = successors(node);
-    final Set<Stmt> adjacentNodes = adjacentNodes(node);
-
-    final LinkedHashSet<EndpointPair<Stmt>> incidents =
-        new LinkedHashSet<>(predecessors.size() + successors.size());
-    predecessors.forEach(pred -> incidents.add(EndpointPair.ordered(pred, node)));
-    successors.forEach(succ -> incidents.add(EndpointPair.ordered(node, succ)));
-    adjacentNodes.forEach(adj -> incidents.add(EndpointPair.ordered(node, adj)));
-    return incidents;
-  }
-
-  @Override
   public int degree(@Nonnull Stmt node) {
     return inDegree(node) + outDegree(node);
   }
 
-  @Override
   public int inDegree(@Nonnull Stmt node) {
     return predecessors.get(node).size();
   }
 
-  @Override
   public int outDegree(@Nonnull Stmt node) {
     return successors.get(node).size();
   }
 
-  @Override
   public boolean hasEdgeConnecting(@Nonnull Stmt nodeU, @Nonnull Stmt nodeV) {
     final List<Stmt> stmts = successors.get(nodeU);
     return stmts != null && stmts.contains(nodeV);
-  }
-
-  @Override
-  public boolean hasEdgeConnecting(EndpointPair<Stmt> endpointPair) {
-    return hasEdgeConnecting(endpointPair.nodeU(), endpointPair.nodeV());
   }
 }

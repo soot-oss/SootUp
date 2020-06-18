@@ -23,11 +23,10 @@ package de.upb.swt.soot.core.model;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
-import com.google.common.graph.ImmutableGraph;
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
@@ -243,7 +242,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   /** @see OverridingMethodSource#withBodyStmts(Function) */
   @Nonnull
   public SootMethod withBodyStmts(
-      @Nonnull Function<ImmutableGraph<Stmt>, ImmutableGraph<Stmt>> stmtModifier) {
+      @Nonnull Function<ImmutableStmtGraph, ImmutableStmtGraph> stmtModifier) {
 
     return new SootMethod(
         new OverridingMethodSource(methodSource).withBodyStmts(stmtModifier),

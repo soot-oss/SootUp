@@ -1,7 +1,6 @@
 package de.upb.swt.soot.core.frontend;
 
-import com.google.common.graph.ImmutableGraph;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import java.util.function.Function;
@@ -71,7 +70,7 @@ public class OverridingMethodSource implements MethodSource {
    */
   @Nonnull
   public OverridingMethodSource withBodyStmts(
-      @Nonnull Function<ImmutableGraph<Stmt>, ImmutableGraph<Stmt>> stmtModifier) {
+      @Nonnull Function<ImmutableStmtGraph, ImmutableStmtGraph> stmtModifier) {
     Body body = resolveBody();
     if (body == Body.getNoBody()) {
       throw new IllegalStateException(

@@ -1,7 +1,6 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
-import com.google.common.graph.Graphs;
-import com.google.common.graph.MutableGraph;
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -23,7 +22,7 @@ public class NopEliminator implements BodyInterceptor {
   @Nonnull
   @Override
   public Body interceptBody(@Nonnull Body originalBody) {
-    MutableGraph<Stmt> mutableGraph = Graphs.copyOf(originalBody.getStmtGraph());
+    StmtGraph mutableGraph = StmtGraph.copyOf(originalBody.getStmtGraph());
     Set<Stmt> stmtSet = mutableGraph.nodes();
 
     for (Stmt stmt : stmtSet) {

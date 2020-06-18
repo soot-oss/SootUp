@@ -2,10 +2,10 @@ package de.upb.swt.soot.test.core.printer;
 
 import static org.junit.Assert.*;
 
-import com.google.common.graph.ImmutableGraph;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
@@ -45,7 +45,7 @@ public class LegacyJimplePrinterTest {
             .build();
 
     StringBuilder debug = new StringBuilder(body.getMethodSignature() + "\n");
-    final ImmutableGraph<Stmt> stmtGraph = body.getStmtGraph();
+    final StmtGraph stmtGraph = body.getStmtGraph();
     for (Stmt stmt : stmtGraph.nodes()) {
       debug.append(stmt).append(" => ").append(stmtGraph.successors(stmt)).append(" \n");
       debug.append(" => ").append(body.getBranchTargetsOf(stmt)).append(" \n");

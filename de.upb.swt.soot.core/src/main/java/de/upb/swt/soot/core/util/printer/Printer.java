@@ -21,7 +21,7 @@
  */
 package de.upb.swt.soot.core.util.printer;
 
-import com.google.common.graph.Graph;
+import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -295,7 +295,7 @@ public class Printer {
 
     // TODO cleanup
     // AbstractStmtGraph unitGraph = new BriefStmtGraph(body);
-    Graph<Stmt> stmtGraph = body.getStmtGraph();
+    ImmutableStmtGraph stmtGraph = body.getStmtGraph();
     // Collection<Stmt> units = body.getStmts();
     Stmt previousStmt;
 
