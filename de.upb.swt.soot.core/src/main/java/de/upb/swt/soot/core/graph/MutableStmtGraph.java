@@ -39,10 +39,14 @@ public class MutableStmtGraph implements StmtGraph {
   }
 
   public boolean removeNode(Stmt node) {
-    stmtList.remove(node);
-    predecessors.remove(node);
-    successors.remove(node);
-    return true;
+    final int indexOf = stmtList.indexOf(node);
+    if (indexOf > -1) {
+      stmtList.remove(indexOf);
+      predecessors.remove(node);
+      successors.remove(node);
+      return true;
+    }
+    return false;
   }
 
   public boolean removeEdge(Stmt nodeU, Stmt nodeV) {
@@ -74,19 +78,13 @@ public class MutableStmtGraph implements StmtGraph {
     return true;
   }
 
+  @Override
   @Nonnull
   public Set<Stmt> nodes() {
     return ImmutableSet.copyOf(stmtList);
   }
 
-  public boolean isDirected() {
-    return true;
-  }
-
-  public boolean allowsSelfLoops() {
-    return false;
-  }
-
+  @Override
   @Nonnull
   public Set<Stmt> adjacentNodes(@Nonnull Stmt node) {
     final HashSet<Stmt> set = new HashSet<>();
@@ -95,6 +93,7 @@ public class MutableStmtGraph implements StmtGraph {
     return set;
   }
 
+  @Override
   @Nonnull
   public Set<Stmt> predecessors(@Nonnull Stmt node) {
     final List<Stmt> set = predecessors.get(node);
@@ -104,6 +103,7 @@ public class MutableStmtGraph implements StmtGraph {
     return new LinkedHashSet<>(set);
   }
 
+  @Override
   @Nonnull
   public Set<Stmt> successors(@Nonnull Stmt node) {
     final List<Stmt> set = successors.get(node);
@@ -113,18 +113,22 @@ public class MutableStmtGraph implements StmtGraph {
     return new LinkedHashSet<>(set);
   }
 
+  @Override
   public int degree(@Nonnull Stmt node) {
     return inDegree(node) + outDegree(node);
   }
 
+  @Override
   public int inDegree(@Nonnull Stmt node) {
     return predecessors.get(node).size();
   }
 
+  @Override
   public int outDegree(@Nonnull Stmt node) {
     return successors.get(node).size();
   }
 
+  @Override
   public boolean hasEdgeConnecting(@Nonnull Stmt nodeU, @Nonnull Stmt nodeV) {
     final List<Stmt> stmts = successors.get(nodeU);
     return stmts != null && stmts.contains(nodeV);
