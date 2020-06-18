@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
  *
  * @author Markus Schmidt
  */
-public class MutableStmtGraph implements StmtGraph {
+public class MutableStmtGraph extends StmtGraph {
 
   protected final Map<Stmt, List<Stmt>> predecessors = new HashMap<>();
   protected final Map<Stmt, List<Stmt>> successors = new HashMap<>();

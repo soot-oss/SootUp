@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
  *
  * @author Markus Schmidt
  */
-public final class ImmutableStmtGraph implements StmtGraph {
+public final class ImmutableStmtGraph extends StmtGraph {
 
   private MutableStmtGraph backingGraph;
 
@@ -31,16 +31,6 @@ public final class ImmutableStmtGraph implements StmtGraph {
   @Override
   public Set<Stmt> nodes() {
     return backingGraph.nodes();
-  }
-
-  @Override
-  public boolean isDirected() {
-    return backingGraph.isDirected();
-  }
-
-  @Override
-  public boolean allowsSelfLoops() {
-    return backingGraph.allowsSelfLoops();
   }
 
   @Override

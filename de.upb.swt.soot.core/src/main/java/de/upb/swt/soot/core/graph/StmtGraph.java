@@ -9,28 +9,33 @@ import javax.annotation.Nonnull;
  *
  * @author Markus Schmidt
  */
-public interface StmtGraph {
-  @Nonnull
-  Set<Stmt> nodes();
+public abstract class StmtGraph {
 
-  boolean isDirected();
+  public final boolean isDirected() {
+    return true;
+  }
 
-  boolean allowsSelfLoops();
-
-  @Nonnull
-  Set<Stmt> adjacentNodes(@Nonnull Stmt node);
-
-  @Nonnull
-  Set<Stmt> predecessors(@Nonnull Stmt node);
+  public final boolean allowsSelfLoops() {
+    return false;
+  }
 
   @Nonnull
-  Set<Stmt> successors(@Nonnull Stmt node);
+  public abstract Set<Stmt> nodes();
 
-  int degree(@Nonnull Stmt node);
+  @Nonnull
+  public abstract Set<Stmt> adjacentNodes(@Nonnull Stmt node);
 
-  int inDegree(@Nonnull Stmt node);
+  @Nonnull
+  public abstract Set<Stmt> predecessors(@Nonnull Stmt node);
 
-  int outDegree(@Nonnull Stmt node);
+  @Nonnull
+  public abstract Set<Stmt> successors(@Nonnull Stmt node);
 
-  boolean hasEdgeConnecting(@Nonnull Stmt nodeU, @Nonnull Stmt nodeV);
+  public abstract int degree(@Nonnull Stmt node);
+
+  public abstract int inDegree(@Nonnull Stmt node);
+
+  public abstract int outDegree(@Nonnull Stmt node);
+
+  public abstract boolean hasEdgeConnecting(@Nonnull Stmt nodeU, @Nonnull Stmt nodeV);
 }
