@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
- * Immutable (forwarding) Implementation for the StmtGraph
+ * Immutable implementation for a StmtGraph. It encapsulates a StmtGraph so its not modifiable.
  *
  * @author Markus Schmidt
  */

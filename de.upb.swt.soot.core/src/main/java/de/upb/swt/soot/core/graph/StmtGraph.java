@@ -4,6 +4,11 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
 import javax.annotation.Nonnull;
 
+/**
+ * Interface for control flow graphs on Jimple Stmts
+ *
+ * @author Markus Schmidt
+ */
 public interface StmtGraph {
   @Nonnull
   Set<Stmt> nodes();
