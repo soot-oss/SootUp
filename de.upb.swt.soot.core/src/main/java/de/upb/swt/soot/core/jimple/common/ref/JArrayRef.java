@@ -30,6 +30,7 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.visitor.RefVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.NullType;
@@ -150,7 +151,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
 
   @Override
   public void accept(Visitor sw) {
-    // TODO
+    ((RefVisitor)sw).caseArrayRef(this);
   }
 
   @Nonnull
