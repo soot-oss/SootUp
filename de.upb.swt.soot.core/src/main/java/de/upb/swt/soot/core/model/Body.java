@@ -281,7 +281,7 @@ public class Body implements Copyable {
       Stmt stmt = iterator.next();
 
       if (stmt instanceof BranchingStmt) {
-        final List<Stmt> branchTargetsOf = getBranchTargetsOf(stmt);
+        final List<Stmt> branchTargetsOf = getBranchTargetsOf((BranchingStmt) stmt);
 
         if (stmt instanceof JIfStmt) {
           stmtList.add(branchTargetsOf.get(1));
@@ -335,7 +335,7 @@ public class Body implements Copyable {
 
   /** returns a List of Branch targets of Branching Stmts */
   @Nonnull
-  public List<Stmt> getBranchTargetsOf(@Nonnull Stmt fromStmt) {
+  public List<Stmt> getBranchTargetsOf(@Nonnull BranchingStmt fromStmt) {
     return branches.getOrDefault(fromStmt, Collections.emptyList());
   }
 
