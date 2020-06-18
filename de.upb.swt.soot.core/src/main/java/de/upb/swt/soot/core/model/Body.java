@@ -583,22 +583,10 @@ public class Body implements Copyable {
         final Set<Stmt> successors = cfg.successors(stmt);
         final int successorCount = successors.size();
         if (stmt instanceof BranchingStmt) {
-          // validate branch stmts
-
-          if (successors.size() != successorCount) {
-
-            System.out.println(debug);
-
-            throw new IllegalArgumentException(
-                stmt
-                    + ": cfg.successors.size "
-                    + successors.size()
-                    + " does not match branches[stmt].size "
-                    + successorCount);
-          }
 
           for (Stmt target : successors) {
             if (target == stmt) {
+              System.out.println(debug);
               throw new IllegalArgumentException(stmt + ": a Stmt cannot branch to itself.");
             }
           }
@@ -616,6 +604,7 @@ public class Body implements Copyable {
             }
           } else if (stmt instanceof JIfStmt) {
             if (successorCount != 2) {
+              System.out.println(debug);
               throw new IllegalStateException(
                   stmt + ": must have '2' outgoing flow but has '" + successorCount + "'.");
             } else {
@@ -636,6 +625,7 @@ public class Body implements Copyable {
             }
           } else if (stmt instanceof JGotoStmt) {
             if (successorCount != 1) {
+              System.out.println(debug);
               throw new IllegalArgumentException(
                   stmt + ": Goto must have '1' outgoing flow but has '" + successorCount + "'.");
             }
@@ -645,11 +635,13 @@ public class Body implements Copyable {
             || stmt instanceof JReturnVoidStmt
             || stmt instanceof JThrowStmt) {
           if (successorCount != 0) {
+            System.out.println(debug);
             throw new IllegalArgumentException(
                 stmt + ": must have '0' outgoing flow but has '" + successorCount + "'.");
           }
         } else {
           if (successorCount != 1) {
+            System.out.println(debug);
             throw new IllegalArgumentException(
                 stmt + ": must have '1' outgoing flow but has '" + successorCount + "'.");
           }
