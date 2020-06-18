@@ -6,6 +6,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 
@@ -29,7 +30,7 @@ public class NopEliminator implements BodyInterceptor {
     for (Stmt stmt : stmtSet) {
       if (stmt instanceof JNopStmt) {
         boolean keepNop = false;
-        final Set<Stmt> successors = originalGraph.successors(stmt);
+        final List<Stmt> successors = originalGraph.successors(stmt);
         final int successorSize = successors.size();
         if (successorSize == 0) {
           for (Trap trap : originalBody.getTraps()) {
