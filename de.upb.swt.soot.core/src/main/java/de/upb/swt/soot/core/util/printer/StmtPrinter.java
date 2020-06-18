@@ -24,6 +24,7 @@ package de.upb.swt.soot.core.util.printer;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
+import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
@@ -42,7 +43,7 @@ public abstract class StmtPrinter {
     this.body = body;
   }
 
-  public List<Stmt> branchTargets(Stmt fromStmt) {
+  public List<Stmt> branchTargets(BranchingStmt fromStmt) {
     return body.getBranchTargetsOf(fromStmt);
   }
 
