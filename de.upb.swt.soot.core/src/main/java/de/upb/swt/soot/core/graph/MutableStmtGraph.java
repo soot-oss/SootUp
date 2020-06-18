@@ -86,8 +86,8 @@ public class MutableStmtGraph extends StmtGraph {
 
   @Override
   @Nonnull
-  public Set<Stmt> adjacentNodes(@Nonnull Stmt node) {
-    final HashSet<Stmt> set = new HashSet<>();
+  public List<Stmt> adjacentNodes(@Nonnull Stmt node) {
+    final ArrayList<Stmt> set = new ArrayList<>();
     set.addAll(predecessors(node));
     set.addAll(successors(node));
     return set;
@@ -95,22 +95,22 @@ public class MutableStmtGraph extends StmtGraph {
 
   @Override
   @Nonnull
-  public Set<Stmt> predecessors(@Nonnull Stmt node) {
-    final List<Stmt> set = predecessors.get(node);
-    if (set == null) {
-      return Collections.emptySet();
+  public List<Stmt> predecessors(@Nonnull Stmt node) {
+    final List<Stmt> stmts = predecessors.get(node);
+    if (stmts == null) {
+      return Collections.emptyList();
     }
-    return new LinkedHashSet<>(set);
+    return stmts;
   }
 
   @Override
   @Nonnull
-  public Set<Stmt> successors(@Nonnull Stmt node) {
-    final List<Stmt> set = successors.get(node);
-    if (set == null) {
-      return Collections.emptySet();
+  public List<Stmt> successors(@Nonnull Stmt node) {
+    final List<Stmt> stmts = successors.get(node);
+    if (stmts == null) {
+      return Collections.emptyList();
     }
-    return new LinkedHashSet<>(set);
+    return stmts;
   }
 
   @Override

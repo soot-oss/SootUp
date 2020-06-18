@@ -10,7 +10,6 @@ import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -49,9 +48,6 @@ public class LegacyJimplePrinterTest {
     final StmtGraph stmtGraph = body.getStmtGraph();
     for (Stmt stmt : stmtGraph.nodes()) {
       debug.append(stmt).append(" => ").append(stmtGraph.successors(stmt)).append(" \n");
-      if (stmt instanceof BranchingStmt) {
-        debug.append(" => ").append(body.getBranchTargetsOf((BranchingStmt) stmt)).append(" \n");
-      }
     }
     System.out.println(debug);
 

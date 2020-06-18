@@ -1,6 +1,7 @@
 package de.upb.swt.soot.core.graph;
 
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 
@@ -35,19 +36,19 @@ public final class ImmutableStmtGraph extends StmtGraph {
 
   @Override
   @Nonnull
-  public Set<Stmt> adjacentNodes(Stmt stmt) {
+  public List<Stmt> adjacentNodes(Stmt stmt) {
     return backingGraph.adjacentNodes(stmt);
   }
 
   @Override
   @Nonnull
-  public Set<Stmt> predecessors(Stmt stmt) {
+  public List<Stmt> predecessors(Stmt stmt) {
     return backingGraph.predecessors(stmt);
   }
 
   @Override
   @Nonnull
-  public Set<Stmt> successors(Stmt stmt) {
+  public List<Stmt> successors(Stmt stmt) {
     return backingGraph.successors(stmt);
   }
 

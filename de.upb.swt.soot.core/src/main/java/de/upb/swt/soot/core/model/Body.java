@@ -350,7 +350,7 @@ public class Body implements Copyable {
   }
 
   public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
-    final Set<Stmt> predecessors = cfg.predecessors(targetStmt);
+    final List<Stmt> predecessors = cfg.predecessors(targetStmt);
     if (predecessors.size() > 1) {
       return true;
     }
@@ -580,7 +580,7 @@ public class Body implements Copyable {
       // validate statements
       for (Stmt stmt : cfg.nodes()) {
 
-        final Set<Stmt> successors = cfg.successors(stmt);
+        final List<Stmt> successors = cfg.successors(stmt);
         final int successorCount = successors.size();
         if (stmt instanceof BranchingStmt) {
 

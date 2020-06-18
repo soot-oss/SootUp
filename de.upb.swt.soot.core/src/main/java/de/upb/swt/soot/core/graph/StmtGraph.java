@@ -23,13 +23,13 @@ public abstract class StmtGraph {
   public abstract Set<Stmt> nodes();
 
   @Nonnull
-  public abstract Set<Stmt> adjacentNodes(@Nonnull Stmt node);
+  public abstract List<Stmt> adjacentNodes(@Nonnull Stmt node);
 
   @Nonnull
-  public abstract Set<Stmt> predecessors(@Nonnull Stmt node);
+  public abstract List<Stmt> predecessors(@Nonnull Stmt node);
 
   @Nonnull
-  public abstract Set<Stmt> successors(@Nonnull Stmt node);
+  public abstract List<Stmt> successors(@Nonnull Stmt node);
 
   public abstract int degree(@Nonnull Stmt node);
 
