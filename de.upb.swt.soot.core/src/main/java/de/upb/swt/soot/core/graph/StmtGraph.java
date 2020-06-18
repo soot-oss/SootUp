@@ -145,7 +145,7 @@ public class StmtGraph implements MutableGraph<Stmt> {
 
   @Override
   public ElementOrder<Stmt> incidentEdgeOrder() {
-    return ElementOrder.insertion();
+    return ElementOrder.stable();
   }
 
   @Override
@@ -181,10 +181,13 @@ public class StmtGraph implements MutableGraph<Stmt> {
   public Set<EndpointPair<Stmt>> incidentEdges(@Nonnull Stmt node) {
     final Set<Stmt> predecessors = predecessors(node);
     final Set<Stmt> successors = successors(node);
-    final HashSet<EndpointPair<Stmt>> incidents =
-        new HashSet<>(predecessors.size() + successors.size());
+    final Set<Stmt> adjacentNodes = adjacentNodes(node);
+
+    final LinkedHashSet<EndpointPair<Stmt>> incidents =
+        new LinkedHashSet<>(predecessors.size() + successors.size());
     predecessors.forEach(pred -> incidents.add(EndpointPair.ordered(pred, node)));
     successors.forEach(succ -> incidents.add(EndpointPair.ordered(node, succ)));
+    adjacentNodes.forEach(adj -> incidents.add(EndpointPair.ordered(node, adj)));
     return incidents;
   }
 

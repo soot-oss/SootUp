@@ -76,7 +76,7 @@ public class OnwardStmtGraph implements Graph<Stmt> {
 
   @Override
   public ElementOrder<Stmt> incidentEdgeOrder() {
-    return ElementOrder.insertion();
+    return ElementOrder.stable();
   }
 
   @Override
