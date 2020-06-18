@@ -141,7 +141,11 @@ public abstract class MinimalSourceTestSuiteBase {
     assertNotNull(body);
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-    assertEquals(expectedStmts, actualStmts);
+
+    if (!expectedStmts.equals(actualStmts)) {
+      System.out.println(Utils.printJimpleStmtsForTest(Utils.filterJimple(actualStmts.stream())));
+      assertEquals(expectedStmts, actualStmts);
+    }
   }
 
   public List<String> expectedBodyStmts(String... jimpleLines) {
