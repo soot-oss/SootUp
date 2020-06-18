@@ -40,7 +40,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /** A method call */
-public final class JInvokeStmt extends AbstractStmt implements Copyable {
+public final class JInvokeStmt extends Stmt implements Copyable {
 
   private final ValueBox invokeExprBox;
   // new attributes: later if ValueBox is deleted, then add "final" to it.

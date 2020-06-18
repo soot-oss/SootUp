@@ -33,7 +33,7 @@ final class Operand {
   }
 
   /**
-   * Removes a value box from this operand.
+   * Removes a value from this operand.
    *
    * @param vb the value box.
    */
@@ -74,8 +74,7 @@ final class Operand {
   /** @return either the stack local allocated for this operand, or its value. */
   @Nonnull
   Value stackOrValue() {
-    Local s = stack;
-    return s == null ? value : s;
+    return stack == null ? value : stack;
   }
 
   /**

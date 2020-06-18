@@ -1,6 +1,5 @@
 package de.upb.swt.soot.core.util.printer;
 
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
@@ -15,13 +14,15 @@ import java.util.*;
 public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   /** branch targets * */
   protected Map<Stmt, String> labels;
-  /** for stmt references in Phi nodes * */
+
+  /**
+   * for stmt references in Phi nodes (ms: and other occurences TODO: check and improve comment) *
+   */
   protected Map<Stmt, String> references;
 
-  public LabeledStmtPrinter() {}
-
   public LabeledStmtPrinter(Body b) {
-    createLabelMaps(b);
+    super(b);
+    initializeSootMethod(b);
   }
 
   public Map<Stmt, String> getLabels() {
@@ -45,7 +46,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   public abstract void identityRef(IdentityRef r);
 
   @Override
-  public void stmtRef(Stmt u, boolean branchTarget) {
+  public void stmtRef(Stmt stmt, boolean branchTarget) {
 
     // normal case, ie labels
     if (branchTarget) {
@@ -54,18 +55,16 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       handleIndent();
       setIndent(indentStep / 2);
 
-      String label = labels.get(u);
-      if (label == null || "<unnamed>".equals(label)) {
-        output.append("[?= ").append(u).append(']');
+      String label = labels.get(stmt);
+      if (label == null) {
+        output.append("[?= ").append(stmt).append(']');
       } else {
         output.append(label);
       }
 
-    }
-    // TODO: [ms] still necessary? (-> shimple is not supported anymore)
-    // refs to control flow predecessors (for Shimple)
-    else {
-      String ref = references.get(u);
+    } else {
+
+      String ref = references.get(stmt);
 
       if (startOfLine) {
         setIndent(-indentStep / 2);
@@ -74,12 +73,14 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
         output.append('(').append(ref).append(')');
       } else {
-        output.append(ref);
+        output.append(stmt);
       }
     }
   }
 
-  public void createLabelMaps(Body body) {
+  /** createLabelMaps */
+  public void initializeSootMethod(Body body) {
+
     Collection<Stmt> stmts = body.getStmts();
 
     labels = new HashMap<>(stmts.size() * 2 + 1, 0.7f);
@@ -89,13 +90,23 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     Set<Stmt> labelStmts = new HashSet<>();
     Set<Stmt> refStmts = new HashSet<>();
 
-    // Build labelStmts and refStmts
-    for (StmtBox box : body.getAllStmtBoxes()) {
-      Stmt stmt = box.getStmt();
+    Set<Stmt> trapStmts = new HashSet<>();
+    body.getTraps()
+        .forEach(
+            trap -> {
+              trapStmts.add(trap.getHandlerStmt());
+              trapStmts.add(trap.getBeginStmt());
+              trapStmts.add(trap.getEndStmt());
+            });
 
-      if (box.isBranchTarget()) {
+    // Build labelStmts and refStmts
+    // TODO: make 2 loops access body directly; maybe remove getAssociatedStmts()?
+    final Collection<Stmt> targetStmtsOfBranches = body.getTargetStmtsInBody();
+    for (Stmt stmt : targetStmtsOfBranches) {
+      if (body.isStmtBranchTarget(stmt) || trapStmts.contains(stmt)) {
         labelStmts.add(stmt);
       } else {
+        // i.e. traps?
         refStmts.add(stmt);
       }
     }

@@ -30,6 +30,7 @@ import java.util.List;
  *
  * @param <N> node type
  */
+// TODO [ms] remove it
 public interface DirectedGraph<N> extends Iterable<N> {
   /** Returns a list of entry points for this graph. */
   List<N> getHeads();

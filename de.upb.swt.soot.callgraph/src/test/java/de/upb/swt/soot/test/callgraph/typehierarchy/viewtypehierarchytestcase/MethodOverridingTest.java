@@ -14,7 +14,7 @@ import java.util.Collections;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author: Hasitha Rajapakse * */
+/** @author Hasitha Rajapakse * */
 @Category(Java8Test.class)
 public class MethodOverridingTest extends JavaTypeHierarchyBase {
   @Test
@@ -27,15 +27,14 @@ public class MethodOverridingTest extends JavaTypeHierarchyBase {
     assertTrue(typeHierarchy.isSubtype(getClassType("SuperClass"), sootClassType));
 
     SootClass sootClass =
-        (SootClass)
-            customTestWatcher
-                .getView()
-                .getClass(
-                    customTestWatcher
-                        .getView()
-                        .getIdentifierFactory()
-                        .getClassType(customTestWatcher.getClassName()))
-                .get();
+        customTestWatcher
+            .getView()
+            .getClass(
+                customTestWatcher
+                    .getView()
+                    .getIdentifierFactory()
+                    .getClassType(customTestWatcher.getClassName()))
+            .get();
     SootMethod sootMethod =
         sootClass
             .getMethod(
@@ -46,7 +45,7 @@ public class MethodOverridingTest extends JavaTypeHierarchyBase {
     assertNotNull(body);
 
     SootClass superClass =
-        (SootClass) customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
+        customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
     SootMethod superMethod =
         superClass
             .getMethod(

@@ -31,7 +31,7 @@ import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractOpStmt extends AbstractStmt {
+public abstract class AbstractOpStmt extends Stmt {
 
   protected final ValueBox opBox;
   // new attribute: later if ValueBox is deleted, then add "final" to it.

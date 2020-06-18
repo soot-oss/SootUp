@@ -25,6 +25,7 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -44,17 +45,17 @@ public final class JGeExpr extends AbstractConditionExpr implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseGeExpr(this);
   }
 
   @Nonnull
-  public JGeExpr withOp1(Value op1) {
-    return new JGeExpr(op1, getOp2());
+  public JGeExpr withOp1(@Nonnull Immediate op1) {
+    return new JGeExpr(op1, (Immediate) getOp2());
   }
 
   @Nonnull
-  public JGeExpr withOp2(Value op2) {
-    return new JGeExpr(getOp1(), op2);
+  public JGeExpr withOp2(@Nonnull Immediate op2) {
+    return new JGeExpr((Immediate) getOp1(), op2);
   }
 }

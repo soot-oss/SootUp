@@ -7,34 +7,49 @@ import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
+import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
- * A psuedo unit containing different units.
+ * A psuedo stmt containing different stmts.
  *
  * @author Aaloan Miftah
+ * @author Markus Schmidt
  */
 class StmtContainer extends Stmt {
 
-  @Nonnull final Stmt[] units;
+  @Nonnull private final List<Stmt> stmts = new LinkedList<>();
 
-  StmtContainer(@Nonnull Stmt... units) {
-    this.units = units;
+  private StmtContainer() {
+    super(StmtPositionInfo.createNoStmtPositionInfo());
+  }
+
+  static Stmt create(Stmt prevStmt, Stmt nextStmt) {
+    StmtContainer container;
+    if (prevStmt instanceof StmtContainer) {
+      container = (StmtContainer) prevStmt;
+    } else {
+      container = new StmtContainer();
+      container.stmts.add(prevStmt);
+    }
+    container.stmts.add(nextStmt);
+    return container;
   }
 
   /**
-   * Searches the depth of the StmtContainer until the actual first Unit represented is found.
+   * Searches the depth of the StmtContainer until the actual first Stmt represented is found.
    *
    * @return the first Stmt of the container
    */
   @Nonnull
-  Stmt getFirstUnit() {
-    Stmt ret = units[0];
-    while (ret instanceof StmtContainer) {
-      ret = ((StmtContainer) ret).units[0];
-    }
-    return ret;
+  Stmt getFirstStmt() {
+    return stmts.get(0);
+  }
+
+  @Nonnull
+  Iterable<Stmt> getStmts() {
+    return stmts;
   }
 
   @Override
@@ -44,16 +59,6 @@ class StmtContainer extends Stmt {
 
   @Override
   public List<Value> getDefs() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public List<StmtBox> getStmtBoxes() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public List<StmtBox> getBoxesPointingToThis() {
     throw new UnsupportedOperationException();
   }
 
@@ -73,7 +78,7 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     throw new UnsupportedOperationException();
   }
 
@@ -88,22 +93,12 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public ValueBox getInvokeExprBox() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public boolean containsArrayRef() {
     throw new UnsupportedOperationException();
   }
 
   @Override
   public JArrayRef getArrayRef() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public ValueBox getArrayRefBox() {
     throw new UnsupportedOperationException();
   }
 
@@ -118,23 +113,23 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public ValueBox getFieldRefBox() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public int equivHashCode() {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void accept(Visitor v) {
+  public void accept(@Nonnull Visitor v) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public String toString() {
+    return "StmtContainer" + (stmts);
   }
 
   @Override

@@ -78,7 +78,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
    *
    * @param path The path to search in
    * @return A {@link PathBasedAnalysisInputLocation} implementation dependent on the given {@link
-   *     Path}'s {@link FileSystem}
+   *     Path}'s FileSystem
    */
   public static @Nonnull PathBasedAnalysisInputLocation createForClassContainer(
       @Nonnull Path path) {
@@ -130,10 +130,17 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
    * @return A {@link String} location where the war file is extracted
    */
   static @Nonnull String extractWarFile(String warFilePath) {
+    // FIXME: [ms] protect against archive bombs
+    String destDirectory =
+        System.getProperty("java.io.tmpdir")
+            + File.separator
+            + "sootOutput"
+            + "-war-"
+            + warFilePath.hashCode();
 
-    String destDirectory = System.getProperty("java.io.tmpdir");
     try {
       File dest = new File(destDirectory);
+      dest.deleteOnExit();
       if (!dest.exists()) {
         dest.mkdir();
       }
@@ -144,7 +151,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         if (!zipEntry.isDirectory()) {
           BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filepath));
           byte[] incomingValues = new byte[4096];
-          int readFlag = 0;
+          int readFlag;
           while ((readFlag = zis.read(incomingValues)) != -1) {
             bos.write(incomingValues, 0, readFlag);
           }
@@ -179,7 +186,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       NodeList nList = document.getElementsByTagName("servlet");
       for (int temp = 0; temp < nList.getLength(); temp++) {
         Node node = nList.item(temp);
-        System.out.println(""); // Just a separator
         if (node.getNodeType() == Node.ELEMENT_NODE) {
           Element eElement = (Element) node;
           classesInXML.add(eElement.getElementsByTagName("servlet-class").item(0).getTextContent());

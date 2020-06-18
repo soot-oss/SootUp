@@ -21,8 +21,7 @@
  */
 package de.upb.swt.soot.core.util.printer;
 
-import de.upb.swt.soot.core.graph.AbstractStmtGraph;
-import de.upb.swt.soot.core.graph.BriefStmtGraph;
+import com.google.common.graph.Graph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -33,6 +32,8 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
@@ -100,23 +101,21 @@ public class Printer {
     jimpleLnNum++;
   }
 
-  public void printTo(SootClass cl, PrintWriter out) {
-    LabeledStmtPrinter printer = determinePrinter();
-    printer.enableImports(options.contains(Option.UseImports));
-    printTo(cl, printer, out);
-  }
-
-  private LabeledStmtPrinter determinePrinter() {
+  private LabeledStmtPrinter determinePrinter(Body body) {
     if (useAbbreviations()) {
-      return new BriefStmtPrinter();
+      return new BriefStmtPrinter(body);
     } else if (options.contains(Option.LegacyMode)) {
-      return new LegacyJimplePrinter();
+      return new LegacyJimplePrinter(body);
     } else {
-      return new NormalStmtPrinter();
+      return new NormalStmtPrinter(body);
     }
   }
 
-  private void printTo(SootClass cl, LabeledStmtPrinter printer, PrintWriter out) {
+  public void printTo(SootClass cl, PrintWriter out) {
+
+    LabeledStmtPrinter printer = determinePrinter(Body.getNoBody());
+    printer.enableImports(options.contains(Option.UseImports));
+
     // add jimple line number tags
     setJimpleLnNum(1);
 
@@ -127,11 +126,14 @@ public class Printer {
       if (cl.isInterface() && Modifier.isAbstract(modifiers)) {
         modifiers.remove(Modifier.ABSTRACT);
       }
-      printer.modifier(Modifier.toString(modifiers));
-      printer.literal(modifiers.size() == 0 ? "" : " ");
+      if (modifiers.size() != 0) {
+        printer.modifier(Modifier.toString(modifiers));
+        printer.literal(" ");
+      }
+      if (!Modifier.isInterface(modifiers) && !Modifier.isAnnotation(modifiers)) {
+        printer.literal("class ");
+      }
 
-      printer.literal(
-          Modifier.isInterface(modifiers) || Modifier.isAnnotation(modifiers) ? "" : "class ");
       printer.typeSignature(cl.getType());
     }
 
@@ -181,7 +183,7 @@ public class Printer {
           printer.literal(";");
           printer.newline();
           if (addJimpleLn()) {
-            setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f));
+            setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f.getSignature()));
           }
         }
 
@@ -223,7 +225,9 @@ public class Printer {
 
         if (method.hasBody()) {
           Body body = method.getBody();
-          printer.createLabelMaps(body);
+          // print method's full signature information
+          method.toString(printer);
+
           printTo(body, printer, out);
 
         } else {
@@ -247,8 +251,7 @@ public class Printer {
    * corresponding to the IR used to encode body body.
    */
   public void printTo(Body body, PrintWriter out) {
-    LabeledStmtPrinter printer = determinePrinter();
-    printer.createLabelMaps(body);
+    LabeledStmtPrinter printer = determinePrinter(body);
     printer.enableImports(options.contains(Option.UseImports));
     printTo(body, printer, out);
     out.print(printer);
@@ -262,10 +265,8 @@ public class Printer {
    */
   private void printTo(Body b, LabeledStmtPrinter printer, PrintWriter out) {
 
-    b.getMethod().toString(printer);
-
     if (addJimpleLn()) {
-      setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), b.getMethod()));
+      setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), b.getMethodSignature()));
     }
 
     printer.handleIndent();
@@ -275,12 +276,10 @@ public class Printer {
 
     printer.incIndent();
 
-    AbstractStmtGraph unitGraph = new BriefStmtGraph(b);
-
     if (!options.contains(Option.OmitLocalsDeclaration)) {
       printLocalsInBody(b, printer);
     }
-    printStatementsInBody(b, printer, unitGraph);
+    printStatementsInBody(b, printer);
 
     printer.decIndent();
 
@@ -291,37 +290,46 @@ public class Printer {
   }
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
-  private void printStatementsInBody(
-      Body body, LabeledStmtPrinter printer, AbstractStmtGraph unitGraph) {
-    Collection<Stmt> units = body.getStmts();
+  private void printStatementsInBody(Body body, LabeledStmtPrinter printer) {
+    printer.initializeSootMethod(body);
+
+    // TODO cleanup
+    // AbstractStmtGraph unitGraph = new BriefStmtGraph(body);
+    Graph<Stmt> stmtGraph = body.getStmtGraph();
+    // Collection<Stmt> units = body.getStmts();
     Stmt previousStmt;
 
-    for (Stmt currentStmt : units) {
+    // TODO: [ms] fix traverse strategy:
+    // Traverser.forGraph(stmtGraph).depthFirstPreOrder(body.getFirstStmt());
+    for (Stmt currentStmt : stmtGraph.nodes()) {
       previousStmt = currentStmt;
 
       // Print appropriate header.
       {
-        // Put an empty line if the previous node was a branch node, the current node is a join node
-        // or the previous statement does not have body statement as a successor, or if
-        // body statement has a label on it
+        // Put an empty line if:
+        // a) the previous stmt was a branch node
+        // b) the current stmt is a join node
+        // c) the previous stmt does not have stmt as a successor
+        // d) if the current stmt has a label on it
 
-        if (currentStmt != units.iterator().next()) {
-          if (unitGraph.getSuccsOf(previousStmt).size() != 1
-              || unitGraph.getPredsOf(currentStmt).size() != 1
-              || printer.getLabels().containsKey(currentStmt)) {
+        final boolean currentStmtHasLabel = printer.getLabels().get(currentStmt) != null;
+        // TODO [ms]
+        if (true /*currentStmt != units.iterator().next()*/) {
+          if (stmtGraph.successors(previousStmt).size() != 1
+              || stmtGraph.predecessors(currentStmt).size() != 1
+              || currentStmtHasLabel) {
             printer.newline();
           } else {
             // Or if the previous node does not have body statement as a successor.
 
-            List<Stmt> succs = unitGraph.getSuccsOf(previousStmt);
-
-            if (succs.get(0) != currentStmt) {
+            final Iterator<Stmt> succIterator = stmtGraph.successors(previousStmt).iterator();
+            if (succIterator.hasNext() && succIterator.next() != currentStmt) {
               printer.newline();
             }
           }
         }
 
-        if (printer.getLabels().containsKey(currentStmt)) {
+        if (currentStmtHasLabel) {
           printer.stmtRef(currentStmt, true);
           printer.literal(":");
           printer.newline();
@@ -363,12 +371,12 @@ public class Printer {
     }
   }
 
-  private int addJimpleLnTags(int lnNum, SootMethod meth) {
+  private int addJimpleLnTags(int lnNum, MethodSignature meth) {
     lnNum++;
     return lnNum;
   }
 
-  private int addJimpleLnTags(int lnNum, SootField f) {
+  private int addJimpleLnTags(int lnNum, FieldSignature f) {
     lnNum++;
     return lnNum;
   }

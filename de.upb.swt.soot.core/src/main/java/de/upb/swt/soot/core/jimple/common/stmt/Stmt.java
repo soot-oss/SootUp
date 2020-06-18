@@ -11,58 +11,33 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 public abstract class Stmt implements EquivTo, Acceptor, Copyable {
 
-  /** List of UnitBoxes pointing to this Unit. */
-  @Nullable private List<StmtBox> boxesPointingToThis = null;
+  protected final StmtPositionInfo positionInfo;
+
+  public Stmt(@Nonnull StmtPositionInfo positionInfo) {
+    this.positionInfo = positionInfo;
+  }
 
   /**
-   * Returns a list of Values used in this Unit. Note that they are returned in usual evaluation
+   * Returns a list of Values used in this Stmt. Note that they are returned in usual evaluation
    * order.
    */
+  @Nonnull
   public List<Value> getUses() {
     return Collections.emptyList();
   }
 
-  /** Returns a list of Values defined in this Unit. */
+  /** Returns a list of Values defined in this Stmt. */
+  @Nonnull
   public List<Value> getDefs() {
     return Collections.emptyList();
   }
 
-  /**
-   * Returns a list of Boxes containing Units defined in this Unit; typically branch targets. The
-   * list of boxes is dynamically updated as the structure changes.
-   */
-  public List<StmtBox> getStmtBoxes() {
-    return Collections.emptyList();
-  }
-
-  /** Returns a list of Boxes pointing to this Unit. */
-  public List<StmtBox> getBoxesPointingToThis() {
-    if (boxesPointingToThis == null) {
-      return Collections.emptyList();
-    }
-    return Collections.unmodifiableList(boxesPointingToThis);
-  }
-
-  @Deprecated
-  private void addBoxPointingToThis(StmtBox b) {
-    if (boxesPointingToThis == null) {
-      boxesPointingToThis = new ArrayList<>();
-    }
-    boxesPointingToThis.add(b);
-  }
-
-  @Deprecated
-  private void removeBoxPointingToThis(StmtBox b) {
-    if (boxesPointingToThis != null) {
-      boxesPointingToThis.remove(b);
-    }
-  }
-
-  /** Returns a list of Values, either used or defined or both in this Unit. */
+  /** Returns a list of Values, either used or defined or both in this Stmt. */
+  @Nonnull
   public List<Value> getUsesAndDefs() {
     List<Value> uses = getUses();
     List<Value> defs = getDefs();
@@ -79,21 +54,21 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
   }
 
   /**
-   * Returns true if execution after this statement may continue at the following statement.
-   * GotoStmt will return false but IfStmt will return true.
+   * Returns true if execution after this statement may continue at the following statement. (e.g.
+   * GotoStmt will return false and e.g. IfStmt will return true).
    */
   public abstract boolean fallsThrough();
 
   /**
    * Returns true if execution after this statement does not necessarily continue at the following
-   * statement. GotoStmt and IfStmt will both return true.
+   * statement. The {@link BranchingStmt}'s GotoStmt, JSwitchStmt and IfStmt will return true.
    */
   public abstract boolean branches();
 
   public abstract void toString(StmtPrinter up);
 
-  /** Used to implement the Switchable construct. */
-  public void accept(Visitor sw) {}
+  /** Used to implement the Switchable construct via OOP */
+  public void accept(@Nonnull Visitor sw) {}
 
   public boolean containsInvokeExpr() {
     return false;
@@ -131,26 +106,7 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     throw new RuntimeException("getFieldRefBox() called with no JFieldRef present!");
   }
 
-  public abstract StmtPositionInfo getPositionInfo();
-
-  /** This class is for internal use only. It will be removed in the future. */
-  @Deprecated
-  public static class $Accessor {
-    // This class deliberately starts with a $-sign to discourage usage
-    // of this Soot implementation detail.
-
-    /** Violates immutability. Only use this for legacy code. */
-    @Deprecated
-    public static void addBoxPointingToThis(Stmt stmt, StmtBox box) {
-      stmt.addBoxPointingToThis(box);
-    }
-
-    /** Violates immutability. Only use this for legacy code. */
-    @Deprecated
-    public static void removeBoxPointingToThis(Stmt stmt, StmtBox box) {
-      stmt.removeBoxPointingToThis(box);
-    }
-
-    private $Accessor() {}
+  public StmtPositionInfo getPositionInfo() {
+    return positionInfo;
   }
 }

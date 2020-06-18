@@ -16,22 +16,16 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 - Fully-Parallelized/Distributed Architecture
 
 ## What is done and what needs to be done
-https://github.com/secure-software-engineering/soot-reloaded/wiki/TODOs
+- Big todo list: https://github.com/secure-software-engineering/soot-reloaded/wiki/TODOs
+- Project Management: We use Zenhub to manage the project. Issues are created according to the big todo list.
 
 ## Contribution Guidelines 
 
-[Coding guidelines and contributors notice!](../../wiki/contribution-to-soot-reloaded)
+- Coding guidelines and contributors notice!](../../wiki/contribution-to-soot-reloaded)
+- Read [this](https://github.com/secure-software-engineering/soot-reloaded/issues/98) before submitting pull request. 
 
-## Contributors (alphabetized by surname)
+## [Contributors](https://github.com/secure-software-engineering/soot-reloaded/graphs/contributors) 
 
-- Manuel Benz mbenz@uni-paderborn.de
-- Christian Brüggemann cbruegg@mail.upb.de
-- Andreas Dann andreas.dann@uni-paderborn.de
-- Julian Dolby dolby@us.ibm.com 
-- Ben Hermann ben.hermann@uni-paderborn.de
-- Kaustubh Kelkar kskelkar@mail.upb.de 
-- Linghui Luo linghui.luo@uni-paderborn.de
-- Jan Martin Persch jmpersch@hni.upb.de
-- Hasitha Rajapakse herajapakse@gmail.com
-- Markus Schmidt smarkus@mail.upb.de
+
+
 

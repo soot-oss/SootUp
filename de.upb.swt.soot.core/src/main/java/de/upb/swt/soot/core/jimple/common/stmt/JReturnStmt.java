@@ -26,10 +26,7 @@
 package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -53,14 +50,14 @@ public final class JReturnStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.RETURN);
     up.literal(" ");
-    opBox.toString(up);
+    op.toString(up);
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseReturnStmt(this);
   }
 
@@ -75,7 +72,7 @@ public final class JReturnStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseReturnStmt(this, o);
   }
 
@@ -84,12 +81,12 @@ public final class JReturnStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Nonnull
-  public JReturnStmt withReturnValue(Value returnValue) {
+  public JReturnStmt withReturnValue(@Nonnull Immediate returnValue) {
     return new JReturnStmt(returnValue, getPositionInfo());
   }
 
   @Nonnull
-  public JReturnStmt withPositionInfo(StmtPositionInfo positionInfo) {
+  public JReturnStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JReturnStmt(getOp(), positionInfo);
   }
 }

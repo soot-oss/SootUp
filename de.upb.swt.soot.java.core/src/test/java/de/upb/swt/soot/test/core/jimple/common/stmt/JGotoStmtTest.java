@@ -23,9 +23,7 @@
 package de.upb.swt.soot.test.core.jimple.common.stmt;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.jimple.basic.JStmtBox;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
@@ -37,33 +35,27 @@ import org.junit.experimental.categories.Category;
 
 /** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
+// TODO: [ms] incorporate Printer i.e. Body+Targets
 public class JGotoStmtTest {
 
   @Test
   public void test() {
+
     StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
     JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
 
-    Local local1 = new Local("$r0", typeFactory.getType("java.lang.Exception"));
-    Local local2 = new Local("$r0", typeFactory.getType("somepackage.dummy.Exception"));
+    Local local = new Local("$r0", typeFactory.getType("java.lang.Exception"));
 
     // Stmt
-    Stmt targetStmt = new JThrowStmt(local1, nop);
-    Stmt gStmt = new JGotoStmt(targetStmt, nop);
-
-    // StmtBox
-    StmtBox targetStmtBox = new JStmtBox(targetStmt);
-    Stmt gStmtBox = new JGotoStmt(targetStmtBox, nop);
+    Stmt targetStmt = new JThrowStmt(local, nop);
+    Stmt gStmt = new JGotoStmt(nop);
 
     // toString
-    Assert.assertEquals("goto [?= throw $r0]", gStmt.toString());
-    Assert.assertEquals("goto [?= throw $r0]", gStmtBox.toString());
+    Assert.assertEquals("goto", gStmt.toString());
 
     // equivTo
-    Assert.assertTrue(gStmt.equivTo(gStmtBox));
     Assert.assertFalse(gStmt.equivTo(targetStmt));
 
-    Assert.assertTrue(gStmt.equivTo(new JGotoStmt(new JThrowStmt(local1, nop), nop)));
-    Assert.assertFalse(gStmt.equivTo(new JGotoStmt(new JThrowStmt(local2, nop), nop)));
+    Assert.assertTrue(gStmt.equivTo(new JGotoStmt(nop)));
   }
 }

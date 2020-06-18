@@ -12,7 +12,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Frame of stack for an instruction.
+ * Frame of stack for an instruction. (see
+ * https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.6 )
  *
  * @author Aaloan Miftah
  */
@@ -21,7 +22,7 @@ final class StackFrame {
   @Nullable private Operand[] out;
   @Nullable private Local[] inStackLocals;
   @Nullable private ValueBox[] boxes;
-  @Nullable private ArrayList<Operand[]> in = new ArrayList<>(1);
+  @Nonnull private final ArrayList<Operand[]> in = new ArrayList<>(1);
   @Nonnull private final AsmMethodSource src;
 
   /**
@@ -46,8 +47,6 @@ final class StackFrame {
    */
   void setIn(@Nonnull Operand... oprs) {
     in.clear();
-    // TODO: [ms] check if its ever called multiple times
-    // -> is .clear() / the ArrayList necessary?
     in.add(oprs);
     inStackLocals = new Local[oprs.length];
   }
@@ -57,7 +56,7 @@ final class StackFrame {
    *
    * @param boxes the boxes.
    */
-  void setBoxes(ValueBox... boxes) {
+  void setBoxes(@Nonnull ValueBox... boxes) {
     this.boxes = boxes;
   }
 
@@ -66,7 +65,7 @@ final class StackFrame {
    *
    * @param oprs the operands.
    */
-  void setOut(Operand... oprs) {
+  void setOut(@Nonnull Operand... oprs) {
     out = oprs;
   }
 
@@ -81,7 +80,7 @@ final class StackFrame {
     if (in.get(0).length != oprs.length) {
       throw new IllegalArgumentException("Invalid in operands length!");
     }
-    int nrIn = in.size();
+    final int nrIn = in.size();
     for (int i = 0; i < oprs.length; i++) {
       Operand newOp = oprs[i];
 
@@ -92,13 +91,13 @@ final class StackFrame {
           newOp.stack = stack;
           JAssignStmt as =
               Jimple.newAssignStmt(stack, newOp.value, StmtPositionInfo.createNoStmtPositionInfo());
-          src.setUnit(newOp.insn, as);
+          src.setStmt(newOp.insn, as);
           newOp.updateBoxes();
         } else {
           JAssignStmt as =
               Jimple.newAssignStmt(
                   stack, newOp.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
-          src.mergeUnits(newOp.insn, as);
+          src.mergeStmts(newOp.insn, as);
           newOp.addBox(as.getRightOpBox());
         }
       } else {
@@ -127,12 +126,12 @@ final class StackFrame {
             JAssignStmt as =
                 Jimple.newAssignStmt(
                     stack, prevOp.value, StmtPositionInfo.createNoStmtPositionInfo());
-            src.setUnit(prevOp.insn, as);
+            src.setStmt(prevOp.insn, as);
           } else {
-            Stmt u = src.getUnit(prevOp.insn);
+            Stmt u = src.getStmt(prevOp.insn);
             AbstractDefinitionStmt as =
                 (AbstractDefinitionStmt)
-                    (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
+                    (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
             ValueBox lvb = as.getLeftOpBox();
             assert lvb.getValue() == prevOp.stack : "Invalid stack local!";
             ValueBox.$Accessor.setValue(lvb, stack);
@@ -146,12 +145,12 @@ final class StackFrame {
             JAssignStmt as =
                 Jimple.newAssignStmt(
                     stack, newOp.value, StmtPositionInfo.createNoStmtPositionInfo());
-            src.setUnit(newOp.insn, as);
+            src.setStmt(newOp.insn, as);
           } else {
-            Stmt u = src.getUnit(newOp.insn);
+            Stmt u = src.getStmt(newOp.insn);
             AbstractDefinitionStmt as =
                 (AbstractDefinitionStmt)
-                    (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
+                    (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
             ValueBox lvb = as.getLeftOpBox();
             assert lvb.getValue() == newOp.stack : "Invalid stack local!";
             ValueBox.$Accessor.setValue(lvb, stack);

@@ -5,6 +5,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /* Soot - a J*va Optimization Framework
  * Copyright (C) 1997-1999 Raja Vallee-Rai
@@ -34,61 +35,51 @@ import java.util.List;
 /** Partial implementation of trap (exception catcher), used within Body classes. */
 public class AbstractTrap implements Trap {
   /** The exception being caught. */
-  private transient ClassType exception;
+  private final ClassType exception;
 
-  /** The first unit being trapped. */
-  private final StmtBox beginStmtBox;
+  /** The first stmt being trapped. */
+  private final Stmt beginStmt;
 
-  /** The unit just before the last unit being trapped. */
-  private final StmtBox endStmtBox;
+  /** The stmt just before the last stmt being trapped. */
+  private final Stmt endStmt;
 
-  /** The unit to which execution flows after the caught exception is triggered. */
-  private final StmtBox handlerStmtBox;
+  /** The stmt to which execution flows after the caught exception is triggered. */
+  private final Stmt handlerStmt;
 
-  /** The list of unitBoxes referred to in this Trap (begin, end and handler. */
-  private final List<StmtBox> unitBoxes;
+  /** The list of stmts referred to in this Trap (begin, end and handler). */
+  private final List<Stmt> stmts;
 
-  /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
+  /** Creates an AbstractTrap with the given exception, handler, begin and end stmts. */
   AbstractTrap(
-      ClassType exception, StmtBox beginStmtBox, StmtBox endStmtBox, StmtBox handlerStmtBox) {
+      @Nonnull ClassType exception,
+      @Nonnull Stmt beginStmt,
+      @Nonnull Stmt endStmt,
+      @Nonnull Stmt handlerStmt) {
     this.exception = exception;
-    this.beginStmtBox = beginStmtBox;
-    this.endStmtBox = endStmtBox;
-    this.handlerStmtBox = handlerStmtBox;
-    this.unitBoxes =
-        Collections.unmodifiableList(Arrays.asList(beginStmtBox, endStmtBox, handlerStmtBox));
+    this.beginStmt = beginStmt;
+    this.endStmt = endStmt;
+    this.handlerStmt = handlerStmt;
+    this.stmts = Collections.unmodifiableList(Arrays.asList(beginStmt, endStmt, handlerStmt));
   }
 
   @Override
   public Stmt getBeginStmt() {
-    return beginStmtBox.getStmt();
+    return beginStmt;
   }
 
   @Override
   public Stmt getEndStmt() {
-    return endStmtBox.getStmt();
+    return endStmt;
   }
 
   @Override
   public Stmt getHandlerStmt() {
-    return handlerStmtBox.getStmt();
-  }
-
-  public StmtBox getHandlerStmtBox() {
-    return handlerStmtBox;
-  }
-
-  public StmtBox getBeginStmtBox() {
-    return beginStmtBox;
-  }
-
-  public StmtBox getEndStmtBox() {
-    return endStmtBox;
+    return handlerStmt;
   }
 
   @Override
-  public List<StmtBox> getStmtBoxes() {
-    return unitBoxes;
+  public List<Stmt> getStmts() {
+    return stmts;
   }
 
   @Override

@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
@@ -22,11 +24,9 @@ import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.List;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -41,20 +41,21 @@ public class SootMethodTest {
     View view = project.createOnDemandView();
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
-    List<Stmt> stmts = new ArrayList<>();
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
-    stmts.add(
+    final MutableGraph<Stmt> graph = GraphBuilder.directed().build();
+
+    graph.addNode(
         Jimple.newIdentityStmt(
             generator.generateLocal(type),
             Jimple.newParameterRef(type, 0),
             StmtPositionInfo.createNoStmtPositionInfo()));
-    stmts.add(
+    graph.addNode(
         Jimple.newAssignStmt(
             generator.generateLocal(type),
             Jimple.newNewExpr(type),
             StmtPositionInfo.createNoStmtPositionInfo()));
 
-    Body body = new Body(generator.getLocals(), Collections.emptyList(), stmts, null);
+    Body body = new Body(generator.getLocals(), Collections.emptyList(), graph, null, null);
 
     assertEquals(2, body.getLocalCount());
 

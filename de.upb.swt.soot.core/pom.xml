@@ -12,4 +12,21 @@
     <version>4.0.0-SNAPSHOT</version>
   </parent>
 
+  <dependencies>
+      <dependency>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+          <version>29.0-jre</version>
+      </dependency>
+  </dependencies>
+
+    <repositories>
+        <repository>
+            <id>mvnrepository</id>
+            <name>Central Repository</name>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+    </repositories>
+
+
 </project>

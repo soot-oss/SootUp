@@ -3,12 +3,10 @@ package de.upb.swt.soot.test.java.bytecode.interceptors;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.jimple.basic.JTrap;
-import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.Body.BodyBuilder;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
@@ -30,7 +28,25 @@ public class DuplicateCatchAllTrapRemoverTest {
     Set<Local> locals = Collections.emptySet();
     List<Trap> traps = Collections.emptyList();
     List<Stmt> stmts = Collections.emptyList();
-    Body originalBody = new Body(locals, traps, stmts, null);
+    BodyBuilder builder = Body.builder();
+    for (int i = 0; i < stmts.size() - 1; i++) {
+      Stmt from = stmts.get(i);
+      Stmt to = stmts.get(i + 1);
+      if (i == 0) builder.setFirstStmt(from);
+      builder.addStmt(from);
+      builder.addStmt(to);
+      builder.addFlow(from, to);
+    }
+
+    builder.setMethodSignature(
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature("test", "a.b.c", "void", Collections.emptyList()));
+    Body originalBody =
+        builder
+            .setLocals(locals)
+            .setTraps(traps)
+            .setPosition(NoPositionInformation.getInstance())
+            .build();
     Body processedBody = new UnusedLocalEliminator().interceptBody(originalBody);
 
     assertNotNull(processedBody);
@@ -99,7 +115,7 @@ public class DuplicateCatchAllTrapRemoverTest {
     Stmt strToA = JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
     Stmt bToA = JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
-    Stmt jump = JavaJimple.newGotoStmt(bToA, noPositionInfo);
+    Stmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
     List<Trap> traps = new ArrayList<>();
     ExceptionType exceptionType = new ExceptionType();
@@ -113,7 +129,25 @@ public class DuplicateCatchAllTrapRemoverTest {
     }
     List<Stmt> stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret);
 
-    return new Body(locals, traps, stmts, null);
+    BodyBuilder builder = Body.builder();
+    for (int i = 0; i < stmts.size() - 1; i++) {
+      Stmt from = stmts.get(i);
+      Stmt to = stmts.get(i + 1);
+      if (i == 0) builder.setFirstStmt(from);
+      builder.addStmt(from);
+      builder.addStmt(to);
+      builder.addFlow(from, to);
+    }
+    builder.setMethodSignature(
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature("test", "a.b.c", "void", Collections.emptyList()));
+    Body body =
+        builder
+            .setLocals(locals)
+            .setTraps(traps)
+            .setPosition(NoPositionInformation.getInstance())
+            .build();
+    return body;
   }
 
   private static class ExceptionType extends ClassType {

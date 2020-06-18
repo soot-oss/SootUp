@@ -107,13 +107,13 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
 
   @Nonnull
   @Override
-  public Collection<SootMethod> resolveMethods() throws ResolveException {
+  public Collection<? extends SootMethod> resolveMethods() throws ResolveException {
     return overriddenSootMethods != null ? overriddenSootMethods : delegate.resolveMethods();
   }
 
   @Nonnull
   @Override
-  public Collection<SootField> resolveFields() throws ResolveException {
+  public Collection<? extends SootField> resolveFields() throws ResolveException {
     return overriddenSootFields != null ? overriddenSootFields : delegate.resolveFields();
   }
 

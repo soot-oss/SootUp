@@ -66,6 +66,5 @@ public class WalaIRToJimpleConverterTest {
   public void testConvertClassName7() {
     String sootName = "javaonepointfive.AnonGeneNullarySimple$Ops";
     String name = converter.convertClassNameFromSoot(sootName);
-    System.out.println(name);
   }
 }

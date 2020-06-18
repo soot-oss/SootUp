@@ -19,7 +19,6 @@ import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
-import java.util.List;
 import javax.annotation.Nonnull;
 
 /** Represents the assignment of one value to another */
@@ -265,25 +264,6 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
     } else {
       return getRightBox();
     }
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getUnitBoxes()
-   */
-  @Override
-  public List<StmtBox> getStmtBoxes() {
-    // handle possible PhiExpr's
-    Value rvalue = getRightBox().getValue();
-    if (rvalue instanceof Stmt
-        || rvalue
-            instanceof
-            Trap) { // PERFORMANCE: [ms] check whether Trap is a necessary/possible condition that
-      // can occur <- check was from StmtBoxOwner
-      return ((Stmt) rvalue).getStmtBoxes();
-    }
-    return super.getStmtBoxes();
   }
 
   /*
