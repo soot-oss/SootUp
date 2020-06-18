@@ -106,7 +106,6 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       if (body.isStmtBranchTarget(stmt) || trapStmts.contains(stmt)) {
         labelStmts.add(stmt);
       } else {
-        // i.e. traps?
         refStmts.add(stmt);
       }
     }

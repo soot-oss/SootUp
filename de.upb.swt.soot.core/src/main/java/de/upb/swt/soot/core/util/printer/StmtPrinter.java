@@ -24,7 +24,6 @@ package de.upb.swt.soot.core.util.printer;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
-import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
@@ -32,7 +31,6 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
-import java.util.List;
 import javax.annotation.Nonnull;
 
 /** Interface for different methods of printing out a Stmt. */
@@ -43,8 +41,9 @@ public abstract class StmtPrinter {
     this.body = body;
   }
 
-  public List<Stmt> branchTargets(BranchingStmt fromStmt) {
-    return body.getBranchTargetsOf(fromStmt);
+  @Nonnull
+  public Body getBody() {
+    return body;
   }
 
   public abstract void startStmt(Stmt u);

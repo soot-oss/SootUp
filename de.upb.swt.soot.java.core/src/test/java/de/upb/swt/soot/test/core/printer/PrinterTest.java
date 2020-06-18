@@ -58,8 +58,12 @@ public class PrinterTest {
     final StmtGraph graph = new StmtGraph();
     graph.addNode(new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
 
+    final MethodSignature methodSig =
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature("test", "foo", "int", Collections.emptyList());
     Body bodyOne =
         new Body(
+            methodSig,
             Collections.emptySet(),
             Collections.emptyList(),
             graph,
@@ -67,6 +71,7 @@ public class PrinterTest {
             NoPositionInformation.getInstance());
     Body bodyTwo =
         new Body(
+            methodSig,
             Collections.emptySet(),
             Collections.emptyList(),
             graph,

@@ -10,10 +10,7 @@ import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import javax.annotation.Nonnull;
 
 /*
@@ -86,7 +83,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   }
 
   public Stmt getDefaTultTarget(Body body) {
-    return body.getBranchTargetsOf(this).get(0);
+    return body.getBranchTargetsOf(this).iterator().next();
   }
 
   public Value getKey() {
@@ -137,7 +134,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
 
   @Override
   @Nonnull
-  public List<Stmt> getTargetStmts(Body body) {
+  public Iterable<Stmt> getTargetStmts(Body body) {
     return body.getBranchTargetsOf(this);
   }
 
@@ -195,7 +192,9 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     stmtPrinter.literal("{");
     stmtPrinter.newline();
 
-    final List<Stmt> targets = stmtPrinter.branchTargets(this);
+    final Iterable<Stmt> targets = stmtPrinter.getBody().getBranchTargetsOf(this);
+    Iterator<Stmt> targetIt = targets.iterator();
+    Stmt defaultTarget = targetIt.next();
 
     final int size = values.size();
     for (int i = 0; i < size; i++) {
@@ -206,7 +205,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
       stmtPrinter.literal(": ");
       stmtPrinter.literal(Jimple.GOTO);
       stmtPrinter.literal(" ");
-      stmtPrinter.stmtRef(targets.get(i + 1), true);
+      stmtPrinter.stmtRef(targetIt.next(), true);
       stmtPrinter.literal(";");
 
       stmtPrinter.newline();
@@ -217,7 +216,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     stmtPrinter.literal(": ");
     stmtPrinter.literal(Jimple.GOTO);
     stmtPrinter.literal(" ");
-    stmtPrinter.stmtRef(targets.get(0), true);
+    stmtPrinter.stmtRef(defaultTarget, true);
     stmtPrinter.literal(";");
 
     stmtPrinter.decIndent();

@@ -2,7 +2,6 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.model.Body;
-import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
@@ -14,5 +13,5 @@ public abstract class BranchingStmt extends Stmt {
     super(positionInfo);
   }
 
-  public abstract List<Stmt> getTargetStmts(Body body);
+  public abstract Iterable<Stmt> getTargetStmts(Body body);
 }

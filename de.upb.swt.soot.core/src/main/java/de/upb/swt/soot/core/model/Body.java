@@ -30,7 +30,11 @@ import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.signatures.MethodSubSignature;
+import de.upb.swt.soot.core.signatures.PackageName;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.EscapedWriter;
 import de.upb.swt.soot.core.util.ImmutableUtils;
@@ -51,10 +55,33 @@ public class Body implements Copyable {
 
   public static final Body EMPTY_BODY =
       new Body(
+          new MethodSignature(
+              new ClassType() {
+                @Override
+                public boolean isBuiltInClass() {
+                  return false;
+                }
+
+                @Override
+                public String getFullyQualifiedName() {
+                  return "No.Body";
+                }
+
+                @Override
+                public String getClassName() {
+                  return "Body";
+                }
+
+                @Override
+                public PackageName getPackageName() {
+                  return new PackageName("No");
+                }
+              },
+              new MethodSubSignature("body", Collections.emptyList(), VoidType.getInstance())),
           Collections.emptySet(),
           Collections.emptyList(),
           new StmtGraph(),
-          Collections.emptyMap(),
+          null,
           NoPositionInformation.getInstance());
 
   /** The locals for this Body. */
@@ -65,9 +92,6 @@ public class Body implements Copyable {
 
   /** The stmts for this Body. */
   @Nonnull private final ImmutableStmtGraph cfg;
-
-  /** Record the ordered branching edges for each branching statement. */
-  @Nonnull private Map<Stmt, List<Stmt>> branches;
 
   /** The first Stmt in this Body. */
   @Nonnull private final Stmt firstStmt;
@@ -103,14 +127,12 @@ public class Body implements Copyable {
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
       @Nonnull StmtGraph stmtGraph,
-      @Nonnull Map<Stmt, List<Stmt>> branches,
       @Nonnull Stmt startingStmt,
       @Nonnull Position position) {
     this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
     this.traps = Collections.unmodifiableList(traps);
     this.cfg = ImmutableStmtGraph.copyOf(stmtGraph);
-    this.branches = branches;
     this.position = position;
     this.firstStmt = startingStmt;
 
@@ -124,16 +146,14 @@ public class Body implements Copyable {
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
       @Nonnull StmtGraph stmtGraph,
-      @Nonnull Map<Stmt, List<Stmt>> branches,
       @Nonnull Position position) {
 
     // FIXME: [ms] remove this dirty test hack !!!!!!
     this(
-        null, // will be removed anyways
+        null, // will be removed anyways when this constructor is removed
         locals,
         traps,
         stmtGraph,
-        branches,
         stmtGraph.nodes().iterator().hasNext() ? stmtGraph.nodes().iterator().next() : null,
         position);
   }
@@ -198,11 +218,6 @@ public class Body implements Copyable {
   /** Returns a backed view of the traps found in this Body. */
   public List<Trap> getTraps() {
     return traps;
-  }
-
-  /** @return ordered branching edges */
-  private Map<Stmt, List<Stmt>> getBranches() {
-    return branches;
   }
 
   /** Return unit containing the \@this-assignment * */
@@ -278,14 +293,12 @@ public class Body implements Copyable {
       Stmt stmt = iterator.next();
 
       if (stmt instanceof BranchingStmt) {
-        final List<Stmt> branchTargetsOf = getBranchTargetsOf((BranchingStmt) stmt);
-
         if (stmt instanceof JIfStmt) {
-          stmtList.add(branchTargetsOf.get(1));
+          stmtList.add(((JIfStmt) stmt).getTarget(this));
         } else if (stmt instanceof JGotoStmt) {
-          stmtList.add(branchTargetsOf.get(0));
+          stmtList.add(((JGotoStmt) stmt).getTarget(this));
         } else if (stmt instanceof JSwitchStmt) {
-          stmtList.addAll(branchTargetsOf);
+          getBranchTargetsOf((BranchingStmt) stmt).forEach(stmtList::add);
         }
       }
     }
@@ -332,8 +345,8 @@ public class Body implements Copyable {
 
   /** returns a List of Branch targets of Branching Stmts */
   @Nonnull
-  public List<Stmt> getBranchTargetsOf(@Nonnull BranchingStmt fromStmt) {
-    return branches.getOrDefault(fromStmt, Collections.emptyList());
+  public Iterable<Stmt> getBranchTargetsOf(@Nonnull BranchingStmt fromStmt) {
+    return cfg.successors(fromStmt);
   }
 
   public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
@@ -413,32 +426,35 @@ public class Body implements Copyable {
 
   @Nonnull
   public Body withLocals(@Nonnull Set<Local> locals) {
-    return new Body(locals, getTraps(), getStmtGraph(), getBranches(), getPosition());
+    return new Body(
+        getMethodSignature(), locals, getTraps(), getStmtGraph(), getFirstStmt(), getPosition());
   }
 
   @Nonnull
   public Body withTraps(@Nonnull List<Trap> traps) {
-    return new Body(getLocals(), traps, getStmtGraph(), getBranches(), getPosition());
+    return new Body(
+        getMethodSignature(), getLocals(), traps, getStmtGraph(), getFirstStmt(), getPosition());
   }
 
   @Nonnull
-  public Body withStmts(@Nonnull StmtGraph stmtGraph) {
-    return new Body(getLocals(), getTraps(), stmtGraph, getBranches(), getPosition());
+  public Body withStmts(@Nonnull StmtGraph stmtGraph, @Nonnull Stmt firstStmt) {
+    return new Body(
+        getMethodSignature(), getLocals(), getTraps(), stmtGraph, firstStmt, getPosition());
   }
 
   @Nonnull
   public Body withPosition(@Nonnull Position position) {
-    return new Body(getLocals(), getTraps(), getStmtGraph(), getBranches(), position);
+    return new Body(
+        getMethodSignature(), getLocals(), getTraps(), getStmtGraph(), getFirstStmt(), position);
   }
 
   public static BodyBuilder builder() {
     return new BodyBuilder();
   }
 
-  /* TODO: [ms] implement  public static BodyBuilder builder(Body body) {
-      return new BodyBuilder(body);
-    }
-  */
+  public static BodyBuilder builder(Body body) {
+    return new BodyBuilder(body);
+  }
 
   public Stmt getFirstStmt() {
     return firstStmt;
@@ -453,8 +469,6 @@ public class Body implements Copyable {
 
     @Nullable private StmtGraph cfg;
 
-    @Nonnull private final Map<Stmt, List<Stmt>> branches = new HashMap<>();
-
     @Nullable private Stmt lastAddedStmt = null;
     @Nullable private Stmt firstStmt = null;
     @Nullable private MethodSignature methodSig = null;
@@ -464,7 +478,7 @@ public class Body implements Copyable {
     }
 
     BodyBuilder(@Nonnull Body body) {
-      this(body, body.getStmtGraph());
+      this(body, StmtGraph.copyOf(body.getStmtGraph()));
     }
 
     BodyBuilder(@Nonnull Body body, @Nonnull StmtGraph graphContainer) {
@@ -529,18 +543,11 @@ public class Body implements Copyable {
     @Nonnull
     public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
       cfg.removeNode(stmt);
-      branches.remove(stmt);
-      branches.values().forEach(fromStmt -> fromStmt.remove(stmt));
       return this;
     }
 
     @Nonnull
     public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
-
-      if (fromStmt instanceof BranchingStmt) {
-        List<Stmt> edges = branches.computeIfAbsent(fromStmt, stmt -> new ArrayList());
-        edges.add(toStmt);
-      }
       cfg.putEdge(fromStmt, toStmt);
       return this;
     }
@@ -548,7 +555,6 @@ public class Body implements Copyable {
     @Nonnull
     public BodyBuilder removeFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
       cfg.removeEdge(fromStmt, toStmt);
-      branches.get(fromStmt).remove(toStmt);
       return this;
     }
 
@@ -574,30 +580,24 @@ public class Body implements Copyable {
       // validate statements
       for (Stmt stmt : cfg.nodes()) {
 
-        final int successorCount = cfg.successors(stmt).size();
+        final Set<Stmt> successors = cfg.successors(stmt);
+        final int successorCount = successors.size();
         if (stmt instanceof BranchingStmt) {
           // validate branch stmts
-          final List<Stmt> targets = branches.get(stmt);
 
-          if (targets == null) {
-            System.out.println(debug);
-
-            throw new IllegalArgumentException(stmt + ": targets is null - no flows set");
-          }
-
-          if (targets.size() != successorCount) {
+          if (successors.size() != successorCount) {
 
             System.out.println(debug);
 
             throw new IllegalArgumentException(
                 stmt
                     + ": cfg.successors.size "
-                    + targets.size()
+                    + successors.size()
                     + " does not match branches[stmt].size "
                     + successorCount);
           }
 
-          for (Stmt target : targets) {
+          for (Stmt target : successors) {
             if (target == stmt) {
               throw new IllegalArgumentException(stmt + ": a Stmt cannot branch to itself.");
             }
@@ -621,15 +621,14 @@ public class Body implements Copyable {
             } else {
 
               // TODO: [ms] please fix order of targets of ifstmts in frontends i.e. Asmmethodsource
-              final List<Stmt> edges = branches.get(stmt);
+              final List<Stmt> edges = new ArrayList<>(cfg.successors(stmt));
               Stmt currentNextNode = edges.get(0);
               final Iterator<Stmt> iterator = cfg.nodes().iterator();
               //noinspection StatementWithEmptyBody
               while (iterator.hasNext() && iterator.next() != stmt) {}
 
               // switch edge order if the order is wrong i.e. the first edge is not the following
-              // stmt
-              // in the node list
+              // stmt in the node list
               if (iterator.hasNext() && iterator.next() != currentNextNode) {
                 edges.set(0, edges.get(1));
                 edges.set(1, currentNextNode);
@@ -661,44 +660,7 @@ public class Body implements Copyable {
         throw new IllegalArgumentException("There is no MethodSignature set.");
       }
 
-      // TODO: temporary DEBUG check as long as the branches array still exists
-      for (Stmt stmt : cfg.nodes()) {
-        if (stmt instanceof BranchingStmt) {
-
-          int i = 0;
-          final List<Stmt> branchesOfStmt = branches.get(stmt);
-          final Set<Stmt> successors = cfg.successors(stmt);
-          for (Stmt target : successors) {
-            if (branchesOfStmt.get(i++) != target) {
-              throw new IllegalArgumentException(
-                  stmt + ": wrong order between iterator and branches array!");
-            }
-          }
-          assert (i == branchesOfStmt.size());
-        }
-      }
-
-      final Body body = new Body(methodSig, locals, traps, cfg, branches, firstStmt, position);
-
-      final ImmutableStmtGraph stmtImmutableGraph = body.getStmtGraph();
-      // TODO: temporary DEBUG check as long as the branches array still exists
-      for (Stmt stmt : stmtImmutableGraph.nodes()) {
-        if (stmt instanceof BranchingStmt) {
-
-          int i = 0;
-          final List<Stmt> branchesOfStmt = branches.get(stmt);
-          final Set<Stmt> successors = stmtImmutableGraph.successors(stmt);
-          for (Stmt target : successors) {
-            if (branchesOfStmt.get(i++) != target) {
-              throw new IllegalArgumentException(
-                  stmt + ": Wrong order between iterator and branches array!");
-            }
-          }
-          assert (i == branchesOfStmt.size());
-        }
-      }
-
-      return body;
+      return new Body(methodSig, locals, traps, cfg, firstStmt, position);
     }
   }
 }

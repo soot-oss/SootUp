@@ -2,7 +2,6 @@ package de.upb.swt.soot.java.core;
 
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
-import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -88,19 +87,6 @@ public class JavaSootMethod extends SootMethod {
   public JavaSootMethod withBody(@Nonnull Body body) {
     return new JavaSootMethod(
         new OverridingMethodSource(methodSource).withBody(body),
-        getSignature(),
-        getModifiers(),
-        exceptions,
-        getAnnotations());
-  }
-
-  /** @see OverridingMethodSource#withBodyStmts(Function) */
-  @Nonnull
-  @Override
-  public JavaSootMethod withBodyStmts(
-      @Nonnull Function<ImmutableStmtGraph, ImmutableStmtGraph> stmtModifier) {
-    return new JavaSootMethod(
-        new OverridingMethodSource(methodSource).withBodyStmts(stmtModifier),
         getSignature(),
         getModifiers(),
         exceptions,

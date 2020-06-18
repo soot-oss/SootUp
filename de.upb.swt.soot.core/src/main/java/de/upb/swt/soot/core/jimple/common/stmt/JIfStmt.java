@@ -37,6 +37,7 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -76,7 +77,7 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
     stmtPrinter.literal(" ");
     stmtPrinter.literal(Jimple.GOTO);
     stmtPrinter.literal(" ");
-    stmtPrinter.stmtRef(stmtPrinter.branchTargets(this).get(1), true);
+    stmtPrinter.stmtRef(getTarget(stmtPrinter.getBody()), true);
   }
 
   public Value getCondition() {
@@ -88,13 +89,14 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
   }
 
   public Stmt getTarget(Body body) {
-    // TODO: [ms] validate in builder!
-    return getTargetStmts(body).get(1);
+    final Iterator<Stmt> iterator = getTargetStmts(body).iterator();
+    iterator.next(); // skip
+    return iterator.next();
   }
 
   @Override
   @Nonnull
-  public List<Stmt> getTargetStmts(Body body) {
+  public Iterable<Stmt> getTargetStmts(Body body) {
     return body.getBranchTargetsOf(this);
   }
 
