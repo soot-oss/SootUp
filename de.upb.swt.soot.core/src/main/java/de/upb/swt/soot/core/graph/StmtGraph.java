@@ -54,6 +54,11 @@ public class StmtGraph implements MutableGraph<Stmt> {
     return modified;
   }
 
+  @Override
+  public boolean removeEdge(EndpointPair<Stmt> endpointPair) {
+    return removeEdge(endpointPair.nodeU(), endpointPair.nodeV());
+  }
+
   public boolean putEdge(@Nonnull Stmt u, @Nonnull Stmt v) {
     /*if (!stmtList.contains(u)) {
       throw new IllegalArgumentException(
@@ -75,6 +80,11 @@ public class StmtGraph implements MutableGraph<Stmt> {
     succ.add(v);
 
     return true;
+  }
+
+  @Override
+  public boolean putEdge(EndpointPair<Stmt> endpointPair) {
+    return putEdge(endpointPair.nodeU(), endpointPair.nodeV());
   }
 
   @Override
@@ -130,6 +140,11 @@ public class StmtGraph implements MutableGraph<Stmt> {
 
   @Override
   public ElementOrder<Stmt> nodeOrder() {
+    return ElementOrder.insertion();
+  }
+
+  @Override
+  public ElementOrder<Stmt> incidentEdgeOrder() {
     return ElementOrder.insertion();
   }
 
@@ -192,5 +207,10 @@ public class StmtGraph implements MutableGraph<Stmt> {
   public boolean hasEdgeConnecting(@Nonnull Stmt nodeU, @Nonnull Stmt nodeV) {
     final List<Stmt> stmts = successors.get(nodeU);
     return stmts != null && stmts.contains(nodeV);
+  }
+
+  @Override
+  public boolean hasEdgeConnecting(EndpointPair<Stmt> endpointPair) {
+    return hasEdgeConnecting(endpointPair.nodeU(), endpointPair.nodeV());
   }
 }
