@@ -9,11 +9,11 @@ import javax.annotation.Nonnull;
  *
  * @author Markus Schmidt
  */
-public final class ImmutableStmtGraph extends StmtGraph {
+public final class ImmutableStmtGraph implements StmtGraph {
 
-  private StmtGraph backingGraph;
+  private MutableStmtGraph backingGraph;
 
-  public ImmutableStmtGraph(StmtGraph backingGraph) {
+  public ImmutableStmtGraph(MutableStmtGraph backingGraph) {
     this.backingGraph = backingGraph;
   }
 
@@ -23,7 +23,7 @@ public final class ImmutableStmtGraph extends StmtGraph {
       return (ImmutableStmtGraph) stmtGraph;
     }
 
-    StmtGraph graph = StmtGraph.copyOf(stmtGraph);
+    MutableStmtGraph graph = MutableStmtGraph.copyOf(stmtGraph);
 
     return new ImmutableStmtGraph(graph);
   }

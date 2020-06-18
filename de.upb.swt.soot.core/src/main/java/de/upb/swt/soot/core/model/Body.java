@@ -21,8 +21,8 @@ package de.upb.swt.soot.core.model;
  * #L%
  */
 
-import com.google.common.graph.*;
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
+import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
@@ -80,7 +80,7 @@ public class Body implements Copyable {
               new MethodSubSignature("body", Collections.emptyList(), VoidType.getInstance())),
           Collections.emptySet(),
           Collections.emptyList(),
-          new StmtGraph(),
+          new MutableStmtGraph(),
           null,
           NoPositionInformation.getInstance());
 
@@ -467,21 +467,21 @@ public class Body implements Copyable {
     @Nonnull private List<Trap> traps = new ArrayList<>();
     @Nonnull private Position position;
 
-    @Nullable private StmtGraph cfg;
+    @Nullable private MutableStmtGraph cfg;
 
     @Nullable private Stmt lastAddedStmt = null;
     @Nullable private Stmt firstStmt = null;
     @Nullable private MethodSignature methodSig = null;
 
     BodyBuilder() {
-      cfg = new StmtGraph();
+      cfg = new MutableStmtGraph();
     }
 
     BodyBuilder(@Nonnull Body body) {
-      this(body, StmtGraph.copyOf(body.getStmtGraph()));
+      this(body, MutableStmtGraph.copyOf(body.getStmtGraph()));
     }
 
-    BodyBuilder(@Nonnull Body body, @Nonnull StmtGraph graphContainer) {
+    BodyBuilder(@Nonnull Body body, @Nonnull MutableStmtGraph graphContainer) {
       setMethodSignature(body.getMethodSignature());
       setLocals(body.getLocals());
       setTraps(body.getTraps());

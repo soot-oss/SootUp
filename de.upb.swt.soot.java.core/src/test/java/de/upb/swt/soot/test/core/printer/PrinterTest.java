@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
-import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
@@ -55,7 +55,7 @@ public class PrinterTest {
         JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
     View view = project.createOnDemandView();
 
-    final StmtGraph graph = new StmtGraph();
+    final MutableStmtGraph graph = new MutableStmtGraph();
     graph.addNode(new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
 
     final MethodSignature methodSig =
