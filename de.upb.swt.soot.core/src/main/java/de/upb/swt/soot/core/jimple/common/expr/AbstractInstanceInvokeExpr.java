@@ -72,11 +72,6 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
     return list;
   }
 
-  @Override
-  public void accept(Visitor sw) {
-    ((ExprVisitor) sw).caseInstanceInvokeExpr(this);
-  }
-
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {

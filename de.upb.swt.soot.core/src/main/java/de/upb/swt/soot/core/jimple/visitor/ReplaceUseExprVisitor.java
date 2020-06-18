@@ -31,9 +31,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newAddExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newAddExpr(newUse, v.getOp2());
+      newExpr = Jimple.newAddExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newAddExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newAddExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -45,9 +45,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newAndExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newAndExpr(newUse, v.getOp2());
+      newExpr = Jimple.newAndExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newAndExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newAndExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -59,9 +59,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newCmpExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newCmpExpr(newUse, v.getOp2());
+      newExpr = Jimple.newCmpExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newCmpExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newCmpExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -73,9 +73,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newCmpgExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newCmpgExpr(newUse, v.getOp2());
+      newExpr = Jimple.newCmpgExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newCmpgExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newCmpgExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -87,9 +87,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newCmplExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newCmplExpr(newUse, v.getOp2());
+      newExpr = Jimple.newCmplExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newCmplExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newCmplExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -101,9 +101,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newDivExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newDivExpr(newUse, v.getOp2());
+      newExpr = Jimple.newDivExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newDivExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newDivExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -115,9 +115,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newEqExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newEqExpr(newUse, v.getOp2());
+      newExpr = Jimple.newEqExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newEqExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newEqExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -129,9 +129,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newNeExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newNeExpr(newUse, v.getOp2());
+      newExpr = Jimple.newNeExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newNeExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newNeExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -143,9 +143,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newGeExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newGeExpr(newUse, v.getOp2());
+      newExpr = Jimple.newGeExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newGeExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newGeExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -157,9 +157,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newGtExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newGtExpr(newUse, v.getOp2());
+      newExpr = Jimple.newGtExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newGtExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newGtExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -171,9 +171,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newLeExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newLeExpr(newUse, v.getOp2());
+      newExpr = Jimple.newLeExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newLeExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newLeExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -185,9 +185,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newLtExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newLtExpr(newUse, v.getOp2());
+      newExpr = Jimple.newLtExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newLtExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newLtExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -199,9 +199,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newMulExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newMulExpr(newUse, v.getOp2());
+      newExpr = Jimple.newMulExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newMulExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newMulExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -213,9 +213,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newOrExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newOrExpr(newUse, v.getOp2());
+      newExpr = Jimple.newOrExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newOrExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newOrExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -227,9 +227,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newRemExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newRemExpr(newUse, v.getOp2());
+      newExpr = Jimple.newRemExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newRemExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newRemExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -241,9 +241,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newShlExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newShlExpr(newUse, v.getOp2());
+      newExpr = Jimple.newShlExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newShlExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newShlExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -255,9 +255,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newShrExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newShrExpr(newUse, v.getOp2());
+      newExpr = Jimple.newShrExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newShrExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newShrExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -269,9 +269,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newUshrExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newUshrExpr(newUse, v.getOp2());
+      newExpr = Jimple.newUshrExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newUshrExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newUshrExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -283,9 +283,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newSubExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newSubExpr(newUse, v.getOp2());
+      newExpr = Jimple.newSubExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newSubExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newSubExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -297,9 +297,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
       newExpr = Jimple.newXorExpr(newUse, newUse);
     } else if (v.getOp1().equivTo(oldUse)) {
-      newExpr = Jimple.newXorExpr(newUse, v.getOp2());
+      newExpr = Jimple.newXorExpr(newUse, (Immediate) v.getOp2());
     } else if (v.getOp2().equivTo(oldUse)) {
-      newExpr = Jimple.newXorExpr(v.getOp1(), newUse);
+      newExpr = Jimple.newXorExpr((Immediate) v.getOp1(), newUse);
     } else {
       defaultCase(v);
     }
@@ -310,7 +310,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
   // args[] is Immediate[]
   public void caseStaticInvokeExpr(@Nonnull JStaticInvokeExpr v) {
     boolean isChanged = false;
-    List<Immediate> newArgs = new ArrayList<Immediate>(v.getArgs());
+    List<Value> newArgs = new ArrayList<Value>(v.getArgs());
     int index = 0;
     if (!v.getArgs().isEmpty()) {
       for (Value arg : v.getArgs()) {
@@ -322,7 +322,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
       }
     }
     if (isChanged) {
-      newExpr = Jimple.newStaticInvokeExpr(v.getMethodSignature(), newArgs);
+      newExpr = v.withArgs(newArgs);
     } else {
       defaultCase(v);
     }
@@ -334,7 +334,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
   // args[] is Immediate[]
   public void caseSpecialInvokeExpr(@Nonnull JSpecialInvokeExpr v) {
     boolean isChanged = false;
-    List<Immediate> newArgs = new ArrayList<Immediate>(v.getArgs());
+    List<Value> newArgs = new ArrayList<Value>(v.getArgs());
     int index = 0;
     if (!v.getArgs().isEmpty()) {
       for (Value arg : v.getArgs()) {
@@ -346,11 +346,12 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
       }
     }
     if (isChanged && v.getBase().equivTo(oldUse)) {
-      newExpr = Jimple.newSpecialInvokeExpr((Local) newUse, v.getMethodSignature(), newArgs);
+      v = v.withBase((Local) newUse);
+      newExpr = v.withArgs(newArgs);
     } else if ((!isChanged) && v.getBase().equivTo(oldUse)) {
-      newExpr = Jimple.newSpecialInvokeExpr((Local) newUse, v.getMethodSignature(), v.getArgs());
+      newExpr = v.withBase((Local) newUse);
     } else if (isChanged && (!v.getBase().equivTo(oldUse))) {
-      newExpr = Jimple.newSpecialInvokeExpr((Local) v.getBase(), v.getMethodSignature(), newArgs);
+      newExpr = v.withArgs(newArgs);
     } else {
       defaultCase(v);
     }
@@ -360,7 +361,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
   @Override
   public void caseVirtualInvokeExpr(@Nonnull JVirtualInvokeExpr v) {
     boolean isChanged = false;
-    List<Immediate> newArgs = new ArrayList<Immediate>(v.getArgs());
+    List<Value> newArgs = new ArrayList<Value>(v.getArgs());
     int index = 0;
     if (!v.getArgs().isEmpty()) {
       for (Value arg : v.getArgs()) {
@@ -372,11 +373,12 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
       }
     }
     if (isChanged && v.getBase().equivTo(oldUse)) {
-      newExpr = Jimple.newVirtualInvokeExpr((Local) newUse, v.getMethodSignature(), newArgs);
+      v = v.withBase(newUse);
+      newExpr = v.withArgs(newArgs);
     } else if ((!isChanged) && v.getBase().equivTo(oldUse)) {
-      newExpr = Jimple.newVirtualInvokeExpr((Local) newUse, v.getMethodSignature(), v.getArgs());
+      newExpr = v.withBase(newUse);
     } else if (isChanged && (!v.getBase().equivTo(oldUse))) {
-      newExpr = Jimple.newVirtualInvokeExpr((Local) v.getBase(), v.getMethodSignature(), newArgs);
+      newExpr = v.withArgs(newArgs);
     } else {
       defaultCase(v);
     }
@@ -386,7 +388,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
   @Override
   public void caseInterfaceInvokeExpr(@Nonnull JInterfaceInvokeExpr v) {
     boolean isChanged = false;
-    List<Immediate> newArgs = new ArrayList<Immediate>(v.getArgs());
+    List<Value> newArgs = new ArrayList<Value>(v.getArgs());
     int index = 0;
     if (!v.getArgs().isEmpty()) {
       for (Value arg : v.getArgs()) {
@@ -398,11 +400,12 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
       }
     }
     if (isChanged && v.getBase().equivTo(oldUse)) {
-      newExpr = Jimple.newInterfaceInvokeExpr((Local) newUse, v.getMethodSignature(), newArgs);
+      v = v.withBase(newUse);
+      newExpr = v.withArgs(newArgs);
     } else if ((!isChanged) && v.getBase().equivTo(oldUse)) {
-      newExpr = Jimple.newInterfaceInvokeExpr((Local) newUse, v.getMethodSignature(), v.getArgs());
+      newExpr = v.withBase(newUse);
     } else if (isChanged && (!v.getBase().equivTo(oldUse))) {
-      newExpr = Jimple.newInterfaceInvokeExpr((Local) v.getBase(), v.getMethodSignature(), newArgs);
+      newExpr = v.withArgs(newArgs);
     } else {
       defaultCase(v);
     }
@@ -412,7 +415,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
   @Override
   public void caseDynamicInvokeExpr(@Nonnull JDynamicInvokeExpr v) {
     boolean isChanged = false;
-    List<Immediate> newArgs = new ArrayList<Immediate>(v.getArgs());
+    List<Value> newArgs = new ArrayList<Value>(v.getArgs());
     int index = 0;
     if (!v.getArgs().isEmpty()) {
       for (Value arg : v.getArgs()) {
@@ -464,7 +467,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
   @Override
   public void caseNewMultiArrayExpr(@Nonnull JNewMultiArrayExpr v) {
     boolean isChanged = false;
-    List<Immediate> newSizes = new ArrayList<Immediate>(v.getSizes());
+    List<Value> newSizes = new ArrayList<Value>(v.getSizes());
     int index = 0;
     if (!v.getSizes().isEmpty()) {
       for (Value arg : v.getSizes()) {
