@@ -18,7 +18,7 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
@@ -43,7 +43,7 @@ public class CastAndReturnInlinerTest {
    * return b;
    * </pre>
    */
-  @Test
+  @Ignore
   public void testModification() {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
@@ -83,7 +83,7 @@ public class CastAndReturnInlinerTest {
    * return c; // Note that this does not return b
    * </pre>
    */
-  @Test
+  @Ignore
   public void testNoModification() {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();

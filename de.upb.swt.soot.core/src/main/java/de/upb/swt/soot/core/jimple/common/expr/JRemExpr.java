@@ -25,7 +25,7 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
-import de.upb.swt.soot.core.jimple.basic.Immediate;
+import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -34,7 +34,7 @@ import javax.annotation.Nonnull;
 /** An expression that computes a % b. */
 public final class JRemExpr extends AbstractFloatBinopExpr implements Copyable {
 
-  public JRemExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JRemExpr(Value op1, Value op2) {
     super(op1, op2);
   }
 
@@ -44,17 +44,17 @@ public final class JRemExpr extends AbstractFloatBinopExpr implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
+  public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseRemExpr(this);
   }
 
   @Nonnull
-  public JRemExpr withOp1(@Nonnull Immediate op1) {
-    return new JRemExpr(op1, (Immediate) getOp2());
+  public JRemExpr withOp1(Value op1) {
+    return new JRemExpr(op1, getOp2());
   }
 
   @Nonnull
-  public JRemExpr withOp2(@Nonnull Immediate op2) {
-    return new JRemExpr((Immediate) getOp1(), op2);
+  public JRemExpr withOp2(Value op2) {
+    return new JRemExpr(getOp1(), op2);
   }
 }

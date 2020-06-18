@@ -6,7 +6,6 @@ import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.visitor.Acceptor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
-import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
@@ -79,12 +78,20 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
   }
 
+  public ValueBox getInvokeExprBox() {
+    throw new RuntimeException("getInvokeExprBox() called with no invokeExpr present!");
+  }
+
   public boolean containsArrayRef() {
     return false;
   }
 
   public JArrayRef getArrayRef() {
     throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
+  }
+
+  public ValueBox getArrayRefBox() {
+    throw new RuntimeException("getArrayRefBox() called with no ArrayRef present!");
   }
 
   public boolean containsFieldRef() {
@@ -95,11 +102,11 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
   }
 
-  public StmtPositionInfo getPositionInfo() {
-    return positionInfo;
+  public ValueBox getFieldRefBox() {
+    throw new RuntimeException("getFieldRefBox() called with no JFieldRef present!");
   }
 
-  public boolean isBranchTarget(Body body) {
-    return body.isStmtBranchTarget(this);
+  public StmtPositionInfo getPositionInfo() {
+    return positionInfo;
   }
 }

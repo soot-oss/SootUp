@@ -6,8 +6,9 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-/** @author: Hasitha Rajapakse */
+/** @author Hasitha Rajapakse */
 
 /**
  * Allows for replacing specific parts of a method or, resolve methods where all information is
@@ -22,8 +23,8 @@ import javax.annotation.Nonnull;
  */
 public class OverridingMethodSource implements MethodSource {
 
-  private final MethodSource delegate;
-  @Nonnull private final Body body;
+  @Nullable private final MethodSource delegate;
+  @Nullable private final Body body;
 
   private final MethodSignature methodSignature;
 
@@ -41,7 +42,7 @@ public class OverridingMethodSource implements MethodSource {
   }
 
   /** Method source where all information already available */
-  public OverridingMethodSource(MethodSignature methodSignature, Body body) {
+  public OverridingMethodSource(@Nonnull MethodSignature methodSignature, @Nonnull Body body) {
     this.delegate = null;
     this.body = body;
     this.methodSignature = methodSignature;

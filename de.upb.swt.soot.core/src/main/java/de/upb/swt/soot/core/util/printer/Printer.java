@@ -32,6 +32,8 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
@@ -181,7 +183,7 @@ public class Printer {
           printer.literal(";");
           printer.newline();
           if (addJimpleLn()) {
-            setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f));
+            setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f.getSignature()));
           }
         }
 
@@ -223,6 +225,9 @@ public class Printer {
 
         if (method.hasBody()) {
           Body body = method.getBody();
+          // print method's full signature information
+          method.toString(printer);
+
           printTo(body, printer, out);
 
         } else {
@@ -260,10 +265,8 @@ public class Printer {
    */
   private void printTo(Body b, LabeledStmtPrinter printer, PrintWriter out) {
 
-    b.getMethod().toString(printer);
-
     if (addJimpleLn()) {
-      setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), b.getMethod()));
+      setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), b.getMethodSignature()));
     }
 
     printer.handleIndent();
@@ -298,8 +301,7 @@ public class Printer {
 
     // TODO: [ms] fix traverse strategy:
     // Traverser.forGraph(stmtGraph).depthFirstPreOrder(body.getFirstStmt());
-    final Iterable<Stmt> stmtIterator = stmtGraph.nodes();
-    for (Stmt currentStmt : stmtIterator) {
+    for (Stmt currentStmt : stmtGraph.nodes()) {
       previousStmt = currentStmt;
 
       // Print appropriate header.
@@ -369,12 +371,12 @@ public class Printer {
     }
   }
 
-  private int addJimpleLnTags(int lnNum, SootMethod meth) {
+  private int addJimpleLnTags(int lnNum, MethodSignature meth) {
     lnNum++;
     return lnNum;
   }
 
-  private int addJimpleLnTags(int lnNum, SootField f) {
+  private int addJimpleLnTags(int lnNum, FieldSignature f) {
     lnNum++;
     return lnNum;
   }

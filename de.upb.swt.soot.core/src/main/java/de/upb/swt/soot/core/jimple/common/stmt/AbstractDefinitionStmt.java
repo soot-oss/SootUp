@@ -27,39 +27,52 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
 
 public abstract class AbstractDefinitionStmt extends Stmt {
 
-  @Nonnull private Value leftOp;
-  @Nonnull private final Value rightOp;
+  private final ValueBox leftBox;
+  private final ValueBox rightBox;
 
-  AbstractDefinitionStmt(
-      @Nonnull Value leftOp, @Nonnull Value rightOp, @Nonnull StmtPositionInfo positionInfo) {
+  // new attributes: later if ValueBox is deleted, then add "final" to it.
+  private Value leftOp;
+  private Value rightOp;
+
+  AbstractDefinitionStmt(ValueBox leftBox, ValueBox rightBox, StmtPositionInfo positionInfo) {
     super(positionInfo);
-    this.leftOp = leftOp;
-    this.rightOp = rightOp;
+    this.leftBox = leftBox;
+    this.rightBox = rightBox;
+
+    // new attribute: later if ValueBox is deleted, then fit the constructor.
+    this.leftOp = leftBox.getValue();
+    this.rightOp = rightBox.getValue();
   }
 
   public final Value getLeftOp() {
-    return leftOp;
+    return leftBox.getValue();
   }
 
-  public Value getRightOp() {
-    return rightOp;
+  public final Value getRightOp() {
+    return rightBox.getValue();
+  }
+
+  public final ValueBox getLeftOpBox() {
+    return leftBox;
+  }
+
+  public final ValueBox getRightOpBox() {
+    return rightBox;
   }
 
   @Override
-  @Nonnull
-  public List<Value> getDefs() {
+  public final List<Value> getDefs() {
     return Collections.singletonList(leftOp);
   }
 
   @Override
-  @Nonnull
   public final List<Value> getUses() {
     List<Value> list = new ArrayList<>(leftOp.getUses());
     list.add(rightOp);
@@ -77,24 +90,11 @@ public abstract class AbstractDefinitionStmt extends Stmt {
     return false;
   }
 
-  @Deprecated
-  private void setLeftOp(@Nonnull Value value) {
-    leftOp = value;
+  public ValueBox getLeftBox() {
+    return leftBox;
   }
 
-  // TODO: [ms] remove $Accessor (i.e. replace dependent logic!)
-  @Deprecated
-  public static class $Accessor {
-    // This class deliberately starts with a $-sign to discourage usage
-    // of this Soot implementation detail.
-
-    /** Violates immutability. Only use this for legacy code. */
-    @Deprecated
-    public static void setLeftOp(@Nonnull AbstractDefinitionStmt box, @Nonnull Value value) {
-      box.setLeftOp(value);
-      System.out.println("immutability broken!");
-    }
-
-    private $Accessor() {}
+  public ValueBox getRightBox() {
+    return rightBox;
   }
 }

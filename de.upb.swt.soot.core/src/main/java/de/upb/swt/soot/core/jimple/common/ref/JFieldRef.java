@@ -37,7 +37,7 @@ public abstract class JFieldRef implements ConcreteRef {
 
   private final FieldSignature fieldSignature;
 
-  JFieldRef(@Nonnull FieldSignature fieldSignature) {
+  JFieldRef(FieldSignature fieldSignature) {
     this.fieldSignature = fieldSignature;
   }
 

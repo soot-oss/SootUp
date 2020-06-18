@@ -90,10 +90,20 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     Set<Stmt> labelStmts = new HashSet<>();
     Set<Stmt> refStmts = new HashSet<>();
 
+    Set<Stmt> trapStmts = new HashSet<>();
+    body.getTraps()
+        .forEach(
+            trap -> {
+              trapStmts.add(trap.getHandlerStmt());
+              trapStmts.add(trap.getBeginStmt());
+              trapStmts.add(trap.getEndStmt());
+            });
+
     // Build labelStmts and refStmts
     // TODO: make 2 loops access body directly; maybe remove getAssociatedStmts()?
-    for (Stmt stmt : body.getTargetStmtsOfBranches()) {
-      if (stmt.isBranchTarget(body)) {
+    final Collection<Stmt> targetStmtsOfBranches = body.getTargetStmtsInBody();
+    for (Stmt stmt : targetStmtsOfBranches) {
+      if (body.isStmtBranchTarget(stmt) || trapStmts.contains(stmt)) {
         labelStmts.add(stmt);
       } else {
         // i.e. traps?

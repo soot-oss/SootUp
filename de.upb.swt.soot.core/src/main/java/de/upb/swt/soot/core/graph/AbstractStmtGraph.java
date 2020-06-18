@@ -3,9 +3,7 @@ package de.upb.swt.soot.core.graph;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.SootMethod;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,16 +16,14 @@ import java.util.Map;
  *
  * <p>This is an abstract class, providing the facilities used to build CFGs for specific purposes.
  */
-// FIXME: [ms] remove class - incorporate helper methods
 public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
   protected List<Stmt> heads;
   protected List<Stmt> tails;
 
   protected Map<Stmt, List<Stmt>> stmtToSuccs;
   protected Map<Stmt, List<Stmt>> stmtToPreds;
-  protected SootMethod method;
   protected Body body;
-  protected Collection<Stmt> orderedStmts;
+  protected List<Stmt> orderedStmts;
 
   /**
    * Performs the work that is required to construct any sort of {@code IStmtGraph}.
@@ -37,7 +33,6 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
   protected AbstractStmtGraph(Body body) {
     this.body = body;
     orderedStmts = body.getStmts();
-    method = body.getMethod();
   }
 
   /**
@@ -295,22 +290,12 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
 
   @Override
   public List<Stmt> getPredsOf(Stmt u) {
-    List<Stmt> l = stmtToPreds.get(u);
-    if (l == null) {
-      return Collections.emptyList();
-    }
-
-    return l;
+    return stmtToPreds.getOrDefault(u, Collections.emptyList());
   }
 
   @Override
   public List<Stmt> getSuccsOf(Stmt u) {
-    List<Stmt> l = stmtToSuccs.get(u);
-    if (l == null) {
-      return Collections.emptyList();
-    }
-
-    return l;
+    return stmtToSuccs.getOrDefault(u, Collections.emptyList());
   }
 
   @Override

@@ -27,11 +27,8 @@
 package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
+import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -42,13 +39,12 @@ import javax.annotation.Nonnull;
 public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
   /** Stores the values of new ImmediateBox to the argBoxes array. */
-  public JVirtualInvokeExpr(
-      @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
-    super(base, method, args);
+  public JVirtualInvokeExpr(Value base, MethodSignature method, List<? extends Value> args) {
+    super(Jimple.newLocalBox(base), method, ValueBoxUtils.toValueBoxes(args));
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseVirtualInvokeExpr(this, o);
   }
 
@@ -61,41 +57,36 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr impleme
         .append(".")
         .append(getMethodSignature())
         .append("(");
-    argsToString(builder);
+    argBoxesToString(builder);
     builder.append(")");
     return builder.toString();
   }
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.VIRTUALINVOKE);
     up.literal(" ");
-    getBase().toString(up);
+    getBaseBox().toString(up);
     up.literal(".");
     up.methodSignature(getMethodSignature());
     up.literal("(");
-    argsToPrinter(up);
+    argBoxesToPrinter(up);
     up.literal(")");
   }
 
-  @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseVirtualInvokeExpr(this);
-  }
-
   @Nonnull
-  public JVirtualInvokeExpr withBase(@Nonnull Local base) {
+  public JVirtualInvokeExpr withBase(Value base) {
     return new JVirtualInvokeExpr(base, getMethodSignature(), getArgs());
   }
 
   @Nonnull
-  public JVirtualInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature) {
+  public JVirtualInvokeExpr withMethodSignature(MethodSignature methodSignature) {
     return new JVirtualInvokeExpr(getBase(), methodSignature, getArgs());
   }
 
   @Nonnull
-  public JVirtualInvokeExpr withArgs(@Nonnull List<Immediate> args) {
+  public JVirtualInvokeExpr withArgs(List<? extends Value> args) {
     return new JVirtualInvokeExpr(getBase(), getMethodSignature(), args);
   }
 }

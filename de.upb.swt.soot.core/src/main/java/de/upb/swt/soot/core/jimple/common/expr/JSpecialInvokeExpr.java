@@ -27,11 +27,9 @@
 package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
+import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -41,8 +39,8 @@ import javax.annotation.Nonnull;
 /** An expression that invokes a special method (e.g. private methods). */
 public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
-  public JSpecialInvokeExpr(Local base, MethodSignature method, List<Immediate> args) {
-    super(base, method, args);
+  public JSpecialInvokeExpr(Local base, MethodSignature method, List<? extends Value> args) {
+    super(Jimple.newLocalBox(base), method, ValueBoxUtils.toValueBoxes(args));
   }
 
   @Override
@@ -60,7 +58,7 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr impleme
         .append(".")
         .append(getMethodSignature())
         .append("(");
-    argsToString(builder);
+    argBoxesToString(builder);
     builder.append(")");
 
     return builder.toString();
@@ -71,17 +69,12 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr impleme
   public void toString(StmtPrinter up) {
     up.literal(Jimple.SPECIALINVOKE);
     up.literal(" ");
-    getBase().toString(up);
+    getBaseBox().toString(up);
     up.literal(".");
     up.methodSignature(getMethodSignature());
     up.literal("(");
-    argsToPrinter(up);
+    argBoxesToPrinter(up);
     up.literal(")");
-  }
-
-  @Override
-  public void accept(Visitor sw) {
-    ((ExprVisitor) sw).caseSpecialInvokeExpr(this);
   }
 
   @Nonnull
@@ -91,11 +84,11 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr impleme
 
   @Nonnull
   public JSpecialInvokeExpr withMethodSignature(MethodSignature methodSignature) {
-    return new JSpecialInvokeExpr(getBase(), methodSignature, getArgs());
+    return new JSpecialInvokeExpr((Local) getBase(), methodSignature, getArgs());
   }
 
   @Nonnull
-  public JSpecialInvokeExpr withArgs(List<Immediate> args) {
-    return new JSpecialInvokeExpr(getBase(), getMethodSignature(), args);
+  public JSpecialInvokeExpr withArgs(List<? extends Value> args) {
+    return new JSpecialInvokeExpr((Local) getBase(), getMethodSignature(), args);
   }
 }

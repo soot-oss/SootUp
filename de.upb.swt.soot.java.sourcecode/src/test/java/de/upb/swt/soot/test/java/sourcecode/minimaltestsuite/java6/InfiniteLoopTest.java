@@ -14,6 +14,7 @@ import org.junit.experimental.categories.Category;
 
 /** @author Markus Schmidt */
 @Category(Java8Test.class)
+// FIXME: [ms] rename test (and in bytecodefrontend too)
 public class InfiniteLoopTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
@@ -23,12 +24,11 @@ public class InfiniteLoopTest extends MinimalSourceTestSuiteBase {
 
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("r0 := @this: InfiniteLoop", "label1:", "goto label1", "return")
+    return Stream.of("r0 := @this: InfiniteLoop", "goto label1", "label1:", "return")
         .collect(Collectors.toList());
   }
 
   @Test
-  // FIXME: [ms] label is not assigned to the correct stmt
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     Utils.printJimpleForTest(method);

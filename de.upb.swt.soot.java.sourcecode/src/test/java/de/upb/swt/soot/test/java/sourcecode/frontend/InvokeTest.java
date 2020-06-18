@@ -238,6 +238,7 @@ public class InvokeTest {
                 "label2:",
                 "$z2 = 5.0 < 3.0",
                 "if $z2 == 0 goto label3",
+                "return",
                 "label3:",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));

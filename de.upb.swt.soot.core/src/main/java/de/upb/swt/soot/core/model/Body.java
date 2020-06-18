@@ -22,11 +22,13 @@ package de.upb.swt.soot.core.model;
  */
 
 import com.google.common.graph.*;
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.EscapedWriter;
@@ -73,7 +75,7 @@ public class Body implements Copyable {
   @Nonnull private final Position position;
 
   /** The method associated with this Body. */
-  @Nullable private volatile SootMethod method;
+  @Nonnull private MethodSignature methodSignature;
 
   /** An array containing some validators in order to validate the JimpleBody */
   @Nonnull
@@ -81,9 +83,9 @@ public class Body implements Copyable {
       ImmutableUtils.immutableList(
           new LocalsValidator(),
           new TrapsValidator(),
-          new StmtsValidator(),
+          new StmtBoxesValidator(),
           new UsesValidator(),
-          new ValuesValidator(),
+          new ValueBoxesValidator(),
           new CheckInitValidator(),
           new CheckTypesValidator(),
           new CheckVoidLocalesValidator(),
@@ -96,15 +98,17 @@ public class Body implements Copyable {
    * @param startingStmt
    */
   public Body(
+      @Nonnull MethodSignature methodSignature,
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
       @Nonnull Graph<Stmt> stmtGraph,
       @Nonnull Map<Stmt, List<Stmt>> branches,
       @Nonnull Stmt startingStmt,
       @Nonnull Position position) {
+    this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
     this.traps = Collections.unmodifiableList(traps);
-    // TODO: [ms] second constructor?
+    // TODO: [ms] (im)mutability via second constructor?
     this.cfg =
         stmtGraph instanceof ImmutableGraph
             ? (ImmutableGraph<Stmt>) stmtGraph
@@ -117,6 +121,8 @@ public class Body implements Copyable {
     checkInit();
   }
 
+  // TODO: migrate tests to use BodyBuilder
+  @Deprecated
   public Body(
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
@@ -124,8 +130,9 @@ public class Body implements Copyable {
       @Nonnull Map<Stmt, List<Stmt>> branches,
       @Nonnull Position position) {
 
-    // FIXME: [ms] dirty debugging hack !!!!!!
+    // FIXME: [ms] remove this dirty test hack !!!!!!
     this(
+        null, // will be removed anyways
         locals,
         traps,
         stmtGraph,
@@ -140,31 +147,12 @@ public class Body implements Copyable {
   }
 
   /**
-   * Returns the method associated with this Body.
+   * Returns the MethodSignature associated with this Body.
    *
    * @return the method that owns this body.
    */
-  // FIXME: [ms] refactor to MethodSignature
-  public SootMethod getMethod() {
-    if (method == null) {
-      throw new IllegalStateException(
-          "The associated method of this body instance has not been not set yet.");
-    }
-    return method;
-  }
-
-  /**
-   * Sets the method associated with this Body.
-   *
-   * @param method that should be associated with this body.
-   */
-  // FIXME: [ms] refactor to MethodSignature
-  synchronized void setMethod(@Nullable SootMethod method) {
-    if (this.method != null) {
-      throw new IllegalStateException(
-          "The declaring class of this SootMethod has already been set.");
-    }
-    this.method = method;
+  public MethodSignature getMethodSignature() {
+    return methodSignature;
   }
 
   /** Returns the number of locals declared in this body. */
@@ -180,9 +168,9 @@ public class Body implements Copyable {
     }
   }
 
-  /** Verifies that a Value is not used in more than one place. */
-  public void validateValues() {
-    runValidation(new ValuesValidator());
+  /** Verifies that a ValueBox is not used in more than one place. */
+  public void validateValueBoxes() {
+    runValidation(new ValueBoxesValidator());
   }
 
   /** Verifies that each Local of getUsesAndDefs() is in this body's locals Chain. */
@@ -195,9 +183,9 @@ public class Body implements Copyable {
     runValidation(new TrapsValidator());
   }
 
-  /** Verifies that the Stmts of this Body all point to a Stmt contained within this body. */
-  public void validateStmts() {
-    runValidation(new StmtsValidator());
+  /** Verifies that the StmtBoxes of this Body all point to a Stmt contained within this body. */
+  public void validateStmtBoxes() {
+    runValidation(new StmtBoxesValidator());
   }
 
   /** Verifies that each use in this Body has a def. */
@@ -228,7 +216,7 @@ public class Body implements Copyable {
       }
     }
 
-    throw new RuntimeException("couldn't find this-assignment!" + " in " + getMethod());
+    throw new RuntimeException("couldn't find this-assignment!" + " in " + getMethodSignature());
   }
 
   /** Return LHS of the first identity stmt assigning from \@this. */
@@ -242,13 +230,13 @@ public class Body implements Copyable {
       if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
         JIdentityStmt is = (JIdentityStmt) s;
         JParameterRef pr = (JParameterRef) is.getRightOp();
-        if (pr.getNum() == i) {
+        if (pr.getIndex() == i) {
           return (Local) is.getLeftOp();
         }
       }
     }
 
-    throw new RuntimeException("couldn't find JParameterRef" + i + "! in " + getMethod());
+    throw new RuntimeException("couldn't find JParameterRef" + i + "! in " + getMethodSignature());
   }
 
   /**
@@ -260,8 +248,7 @@ public class Body implements Copyable {
    */
   @Nonnull
   public Collection<Local> getParameterLocals() {
-    final int numParams = getMethod().getParameterCount();
-    final List<Local> retVal = new ArrayList<>(numParams);
+    final List<Local> retVal = new ArrayList<>();
     // TODO: [ms] performance: don't iterate over all stmt -> lazy vs freedom/error tolerance -> use
     // fixed index positions at the beginning?
     for (Stmt u : cfg.nodes()) {
@@ -269,12 +256,9 @@ public class Body implements Copyable {
         JIdentityStmt is = (JIdentityStmt) u;
         if (is.getRightOp() instanceof JParameterRef) {
           JParameterRef pr = (JParameterRef) is.getRightOp();
-          retVal.add(pr.getNum(), (Local) is.getLeftOp());
+          retVal.add(pr.getIndex(), (Local) is.getLeftOp());
         }
       }
-    }
-    if (retVal.size() != numParams) {
-      throw new RuntimeException("couldn't find JParameterRef! in " + getMethod());
     }
     return Collections.unmodifiableCollection(retVal);
   }
@@ -290,17 +274,21 @@ public class Body implements Copyable {
    * @return A collection of all the Stmts
    */
   @Nonnull
-  public Collection<Stmt> getTargetStmtsOfBranches() {
+  public Collection<Stmt> getTargetStmtsInBody() {
     List<Stmt> stmtList = new ArrayList<>();
-    for (Iterator<Stmt> iterator = cfg.nodes().iterator(); iterator.hasNext(); ) {
+    Iterator<Stmt> iterator = cfg.nodes().iterator();
+    while (iterator.hasNext()) {
       Stmt stmt = iterator.next();
 
       if (stmt instanceof BranchingStmt) {
         final List<Stmt> branchTargetsOf = getBranchTargetsOf(stmt);
-        // filter if "fallsThrough"-stmt from targets of branching stmts
-        for (int i = stmt.fallsThrough() ? 1 : 0; i < branchTargetsOf.size(); i++) {
-          Stmt target = branchTargetsOf.get(i);
-          stmtList.add(target);
+
+        if (stmt instanceof JIfStmt) {
+          stmtList.add(branchTargetsOf.get(1));
+        } else if (stmt instanceof JGotoStmt) {
+          stmtList.add(branchTargetsOf.get(0));
+        } else if (stmt instanceof JSwitchStmt) {
+          stmtList.addAll(branchTargetsOf);
         }
       }
     }
@@ -348,17 +336,32 @@ public class Body implements Copyable {
   /** returns a List of Branch targets of Branching Stmts */
   @Nonnull
   public List<Stmt> getBranchTargetsOf(@Nonnull Stmt fromStmt) {
-    return branches.get(fromStmt);
+    return branches.getOrDefault(fromStmt, Collections.emptyList());
   }
 
   public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
-    // FIXME: just because the stmt has just one ingoing flow it does not mean its not a branch
-    // target
-    return cfg.predecessors(targetStmt).size() > 1
-        || cfg.predecessors(targetStmt).stream()
-            .findAny()
-            .filter(prev -> prev instanceof BranchingStmt)
-            .isPresent();
+    final Set<Stmt> predecessors = cfg.predecessors(targetStmt);
+    if (predecessors.size() > 1) {
+      return true;
+    }
+
+    final Iterator<Stmt> iterator = predecessors.iterator();
+    if (iterator.hasNext()) {
+      Stmt pred = iterator.next();
+      if (pred instanceof JIfStmt && ((JIfStmt) pred).getTarget(this) == targetStmt) {
+        return true;
+      }
+
+      if (pred instanceof JGotoStmt) {
+        return true;
+      }
+
+      if (pred instanceof JSwitchStmt) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public void validateIdentityStatements() {
@@ -450,24 +453,29 @@ public class Body implements Copyable {
     @Nonnull private List<Trap> traps = new ArrayList<>();
     @Nonnull private Position position;
 
-    @Nonnull private final MutableGraph<Stmt> mutableGraph;
+    @Nullable private MutableGraph<Stmt> cfg;
 
     @Nonnull private final Map<Stmt, List<Stmt>> branches = new HashMap<>();
 
     @Nullable private Stmt lastAddedStmt = null;
     @Nullable private Stmt firstStmt = null;
+    @Nullable private MethodSignature methodSig = null;
 
     BodyBuilder() {
-      mutableGraph = GraphBuilder.directed().nodeOrder(ElementOrder.insertion()).build();
+      cfg = new StmtGraph();
     }
 
-    public BodyBuilder(@Nonnull Body body) {
+    BodyBuilder(@Nonnull Body body) {
+      this(body, Graphs.copyOf(body.getStmtGraph()));
+    }
+
+    BodyBuilder(@Nonnull Body body, @Nonnull MutableGraph<Stmt> graphContainer) {
+      setMethodSignature(body.getMethodSignature());
       setLocals(body.getLocals());
       setTraps(body.getTraps());
       setPosition(body.getPosition());
       setFirstStmt(body.getFirstStmt());
-      mutableGraph =
-          GraphBuilder.from(body.getStmtGraph()).build(); // fixme: getStmtGraph() is always null
+      cfg = graphContainer;
     }
 
     @Nonnull
@@ -484,7 +492,13 @@ public class Body implements Copyable {
 
     @Nonnull
     public BodyBuilder addLocal(@Nonnull String name, Type type) {
-      this.locals.add(localGen.generateLocal(type));
+      locals.add(localGen.generateLocal(type));
+      return this;
+    }
+
+    @Nonnull
+    public BodyBuilder addLocal(@Nonnull Local local) {
+      locals.add(local);
       return this;
     }
 
@@ -501,7 +515,7 @@ public class Body implements Copyable {
 
     @Nonnull
     public BodyBuilder addStmt(@Nonnull Stmt stmt, boolean linkLastStmt) {
-      mutableGraph.addNode(stmt);
+      cfg.addNode(stmt);
       if (lastAddedStmt != null) {
         if (linkLastStmt && lastAddedStmt.fallsThrough()) {
           addFlow(lastAddedStmt, stmt);
@@ -513,31 +527,10 @@ public class Body implements Copyable {
       lastAddedStmt = stmt;
       return this;
     }
-    /** replace the oldStmt with newStmt in stmtGraph and branches */
-    @Nonnull
-    public BodyBuilder mergeStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-      final Set<Stmt> predecessors = mutableGraph.predecessors(oldStmt);
-      final Set<Stmt> successors = mutableGraph.successors(oldStmt);
-      mutableGraph.addNode(newStmt);
-      predecessors.forEach(predecessor -> mutableGraph.putEdge(predecessor, newStmt));
-      successors.forEach(successor -> mutableGraph.putEdge(newStmt, successor));
-      if (branches.containsKey(oldStmt)) {
-        List<Stmt> value = branches.get(oldStmt);
-        branches.remove(oldStmt);
-        branches.put(newStmt, value);
-      }
-      for (List<Stmt> value : branches.values()) {
-        if (value.remove(oldStmt)) {
-          value.add(newStmt);
-        }
-      }
-      removeStmt(oldStmt);
-      return this;
-    }
 
     @Nonnull
     public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
-      mutableGraph.removeNode(stmt);
+      cfg.removeNode(stmt);
       branches.remove(stmt);
       branches.values().forEach(fromStmt -> fromStmt.remove(stmt));
       return this;
@@ -545,25 +538,18 @@ public class Body implements Copyable {
 
     @Nonnull
     public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
-      if (fromStmt instanceof BranchingStmt) {
 
-        if (branches.containsKey(fromStmt)) {
-          branches.get(fromStmt).add(toStmt);
-        } else {
-          List<Stmt> targets = new ArrayList<>();
-          targets.add(toStmt);
-          branches.put(fromStmt, targets);
-        }
-        // List<Stmt> edges = branches.computeIfAbsent(fromStmt, stmt -> new ArrayList());
-        // edges.add(toStmt);
+      if (fromStmt instanceof BranchingStmt) {
+        List<Stmt> edges = branches.computeIfAbsent(fromStmt, stmt -> new ArrayList());
+        edges.add(toStmt);
       }
-      mutableGraph.putEdge(fromStmt, toStmt);
+      cfg.putEdge(fromStmt, toStmt);
       return this;
     }
 
     @Nonnull
     public BodyBuilder removeFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
-      mutableGraph.removeEdge(fromStmt, toStmt);
+      cfg.removeEdge(fromStmt, toStmt);
       branches.get(fromStmt).remove(toStmt);
       return this;
     }
@@ -574,51 +560,140 @@ public class Body implements Copyable {
       return this;
     }
 
-    public List<Stmt> getSuccessors(@Nonnull Stmt stmt) {
-      Set<Stmt> stmtSet = this.mutableGraph.successors(stmt);
-      ArrayList<Stmt> stmts = new ArrayList<>();
-      stmts.addAll(stmtSet);
-      return stmts;
-    }
-
-    public List<Stmt> getPredecessors(@Nonnull Stmt stmt) {
-      Set<Stmt> stmtSet = this.mutableGraph.predecessors(stmt);
-      ArrayList<Stmt> stmts = new ArrayList<>();
-      stmts.addAll(stmtSet);
-      return stmts;
-    }
-
-    public Stmt getFirstStmt() {
-      return this.firstStmt;
+    public BodyBuilder setMethodSignature(MethodSignature methodSig) {
+      this.methodSig = methodSig;
+      return this;
     }
 
     @Nonnull
     public Body build() {
-      // validate branch stmts
-      for (Map.Entry<Stmt, List<Stmt>> branchItem : branches.entrySet()) {
-        final Stmt stmt = branchItem.getKey();
-        final int outgoingCount = branchItem.getValue().size();
-        if (stmt instanceof JSwitchStmt && outgoingCount != ((JSwitchStmt) stmt).getValueCount()) {
-          throw new IllegalArgumentException(
-              stmt
-                  + ": size of outgoing flows (i.e. "
-                  + outgoingCount
-                  + ") does not match the amount of switch statements case labels (i.e. "
-                  + ((JSwitchStmt) stmt).getValueCount()
-                  + ").");
-        }
-        if (stmt instanceof JIfStmt && outgoingCount != 2) {
-          throw new IllegalArgumentException(
-              stmt + ": size of outgoing flows must be 2 but the size is " + outgoingCount + ".");
-        }
-        if (stmt instanceof JGotoStmt && outgoingCount != 1) {
-          throw new IllegalArgumentException(
-              stmt + ": GotoS has more than '1' (i.e. '" + outgoingCount + "') outgoing flows.");
+
+      // validate statements
+      for (Stmt stmt : cfg.nodes()) {
+
+        final int successorCount = cfg.successors(stmt).size();
+        if (stmt instanceof BranchingStmt) {
+          // validate branch stmts
+          final List<Stmt> targets = branches.get(stmt);
+
+          if (targets == null) {
+            throw new IllegalArgumentException(stmt + ": targets is null - no flows set");
+          }
+
+          if (targets.size() != successorCount) {
+            throw new IllegalArgumentException(
+                stmt
+                    + ": cfg.successors.size "
+                    + targets.size()
+                    + " does not match branches[stmt].size "
+                    + successorCount);
+          }
+
+          for (Stmt target : targets) {
+            if (target == stmt) {
+              throw new IllegalArgumentException(stmt + ": a Stmt cannot branch to itself.");
+            }
+          }
+
+          if (stmt instanceof JSwitchStmt) {
+            if (successorCount != ((JSwitchStmt) stmt).getValueCount()) {
+              throw new IllegalArgumentException(
+                  stmt
+                      + ": size of outgoing flows (i.e. "
+                      + successorCount
+                      + ") does not match the amount of switch statements case labels (i.e. "
+                      + ((JSwitchStmt) stmt).getValueCount()
+                      + ").");
+            }
+          } else if (stmt instanceof JIfStmt) {
+            if (successorCount != 2) {
+              throw new IllegalStateException(
+                  stmt + ": must have '2' outgoing flow but has '" + successorCount + "'.");
+            } else {
+
+              // TODO: [ms] please fix order of targets of ifstmts in frontends i.e. Asmmethodsource
+              final List<Stmt> edges = branches.get(stmt);
+              Stmt currentNextNode = edges.get(0);
+              final Iterator<Stmt> iterator = cfg.nodes().iterator();
+              //noinspection StatementWithEmptyBody
+              while (iterator.hasNext() && iterator.next() != stmt) {}
+
+              // switch edge order if the order is wrong i.e. the first edge is not the following
+              // stmt
+              // in the node list
+              if (iterator.hasNext() && iterator.next() != currentNextNode) {
+                edges.set(0, edges.get(1));
+                edges.set(1, currentNextNode);
+              }
+            }
+          } else if (stmt instanceof JGotoStmt) {
+            if (successorCount != 1) {
+              throw new IllegalArgumentException(
+                  stmt + ": Goto must have '1' outgoing flow but has '" + successorCount + "'.");
+            }
+          }
+
+        } else if (stmt instanceof JReturnStmt
+            || stmt instanceof JReturnVoidStmt
+            || stmt instanceof JThrowStmt) {
+          if (successorCount != 0) {
+            throw new IllegalArgumentException(
+                stmt + ": must have '0' outgoing flow but has '" + successorCount + "'.");
+          }
+        } else {
+          if (successorCount != 1) {
+            throw new IllegalArgumentException(
+                stmt + ": must have '1' outgoing flow but has '" + successorCount + "'.");
+          }
         }
       }
 
-      return new Body(
-          locals, traps, ImmutableGraph.copyOf(mutableGraph), branches, firstStmt, position);
+      if (methodSig == null) {
+        throw new IllegalArgumentException("There is no MethodSignature set.");
+      }
+
+      // TODO: temporary DEBUG check as long as the branches array still exists
+      for (Stmt stmt : cfg.nodes()) {
+        if (stmt instanceof BranchingStmt) {
+
+          int i = 0;
+          final List<Stmt> branchesOfStmt = branches.get(stmt);
+          final Set<Stmt> successors = cfg.successors(stmt);
+          for (Stmt target : successors) {
+            if (branchesOfStmt.get(i++) != target) {
+              throw new IllegalArgumentException(
+                  stmt + ": Wrong order between iterator and branches array!");
+            }
+          }
+          assert (i == branchesOfStmt.size());
+        }
+      }
+
+      final Body body =
+          new Body(
+              methodSig, locals, traps, ImmutableGraph.copyOf(cfg), branches, firstStmt, position);
+
+      /* FIXME: [ms] order after immutablestmtgraph is applied is different!
+      final ImmutableGraph<Stmt> stmtImmutableGraph = body.getStmtGraph();
+      // TODO: temporary DEBUG check as long as the branches array still exists
+      for (Stmt stmt : stmtImmutableGraph.nodes()) {
+        if (stmt instanceof BranchingStmt) {
+
+          int i = 0;
+          final List<Stmt> branchesOfStmt = branches.get(stmt);
+          final Set<Stmt> successors = stmtImmutableGraph.successors(stmt);
+          for (Stmt target : successors) {
+            if (branchesOfStmt.get(i++) != target) {
+              throw new IllegalArgumentException(
+                      stmt + ": Wrong order between iterator and branches array!");
+            }
+          }
+          assert (i == branchesOfStmt.size());
+        }
+      }
+      */
+
+      return body;
     }
   }
 }

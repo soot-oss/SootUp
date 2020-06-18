@@ -12,18 +12,10 @@ import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.java.core.AnnotationType;
-import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.JavaSootClassSource;
+import de.upb.swt.soot.java.core.*;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -45,9 +37,8 @@ class AsmClassSource extends JavaSootClassSource {
     this.classNode = classNode;
   }
 
-  private static Set<SootField> resolveFields(
+  private static Set<JavaSootField> resolveFields(
       List<FieldNode> fieldNodes, IdentifierFactory signatureFactory, ClassType classSignature) {
-    // FIXME: add support for annotation
     return fieldNodes.stream()
         .map(
             fieldNode -> {
@@ -57,12 +48,13 @@ class AsmClassSource extends JavaSootClassSource {
                   signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
               EnumSet<Modifier> modifiers = AsmUtil.getModifiers(fieldNode.access);
 
-              return new SootField(fieldSignature, modifiers);
+              // FIXME: implement support for annotation
+              return new JavaSootField(fieldSignature, modifiers, Collections.emptyList());
             })
         .collect(Collectors.toSet());
   }
 
-  private static Stream<SootMethod> resolveMethods(
+  private static Stream<JavaSootMethod> resolveMethods(
       List<MethodNode> methodNodes, IdentifierFactory signatureFactory, ClassType cs) {
     return methodNodes.stream()
         .map(
@@ -86,8 +78,13 @@ class AsmClassSource extends JavaSootClassSource {
               MethodSignature methodSignature =
                   signatureFactory.getMethodSignature(methodName, cs, retType, sigTypes);
 
-              return new SootMethod(
-                  asmClassClassSourceContent, methodSignature, modifiers, exceptions);
+              // FIXME: implement support for annotation
+              return new JavaSootMethod(
+                  asmClassClassSourceContent,
+                  methodSignature,
+                  modifiers,
+                  exceptions,
+                  Collections.emptyList());
             });
   }
 
@@ -98,8 +95,9 @@ class AsmClassSource extends JavaSootClassSource {
         .collect(Collectors.toSet());
   }
 
+  @Override
   @Nonnull
-  public Collection<SootField> resolveFields() throws ResolveException {
+  public Collection<? extends SootField> resolveFields() throws ResolveException {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveFields(classNode.fields, identifierFactory, classSignature);
   }

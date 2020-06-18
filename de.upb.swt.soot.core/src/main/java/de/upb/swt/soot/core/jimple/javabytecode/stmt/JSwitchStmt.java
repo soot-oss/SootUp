@@ -22,20 +22,28 @@ import javax.annotation.Nonnull;
  */
 public class JSwitchStmt extends BranchingStmt implements Copyable {
 
-  private final Immediate key;
+  private final ValueBox keyBox;
   private List<IntConstant> values;
   private final boolean isTableSwitch;
 
   private JSwitchStmt(
-      boolean isTableSwitch, @Nonnull StmtPositionInfo positionInfo, @Nonnull Immediate key) {
+      boolean isTableSwitch, @Nonnull StmtPositionInfo positionInfo, @Nonnull ValueBox keyBox) {
     super(positionInfo);
     this.isTableSwitch = isTableSwitch;
-    this.key = key;
+    this.keyBox = keyBox;
   }
 
   public JSwitchStmt(
-      @Nonnull Immediate key, int lowIndex, int highIndex, @Nonnull StmtPositionInfo positionInfo) {
-    this(true, positionInfo, key);
+      @Nonnull Value key, int lowIndex, int highIndex, @Nonnull StmtPositionInfo positionInfo) {
+    this(Jimple.newImmediateBox(key), lowIndex, highIndex, positionInfo);
+  }
+
+  public JSwitchStmt(
+      @Nonnull ValueBox keyBox,
+      int lowIndex,
+      int highIndex,
+      @Nonnull StmtPositionInfo positionInfo) {
+    this(true, positionInfo, keyBox);
 
     if (lowIndex > highIndex) {
       throw new RuntimeException(
@@ -59,11 +67,18 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
 
   /** Constructs a new JSwitchStmt. lookupValues should be a list of IntConst s. */
   public JSwitchStmt(
-      @Nonnull Immediate key,
+      @Nonnull ValueBox keyBox,
       @Nonnull List<IntConstant> lookupValues,
       @Nonnull StmtPositionInfo positionInfo) {
-    this(false, positionInfo, key);
+    this(false, positionInfo, keyBox);
     values = Collections.unmodifiableList(new ArrayList<>(lookupValues));
+  }
+
+  public JSwitchStmt(
+      @Nonnull Value key,
+      @Nonnull List<IntConstant> lookupValues,
+      @Nonnull StmtPositionInfo positionInfo) {
+    this(Jimple.newImmediateBox(key), lookupValues, positionInfo);
   }
 
   public boolean isTableSwitch() {
@@ -74,16 +89,20 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     return body.getBranchTargetsOf(this).get(0);
   }
 
-  public Immediate getKey() {
-    return key;
+  public Value getKey() {
+    return keyBox.getValue();
+  }
+
+  public final ValueBox getKeyBox() {
+    return keyBox;
   }
 
   @Override
   @Nonnull
   public List<Value> getUses() {
-    final List<Value> uses = key.getUses();
+    final List<Value> uses = getKey().getUses();
     List<Value> list = new ArrayList<>(uses.size() + 1);
-    list.add(key);
+    list.add(getKey());
     return list;
   }
 
@@ -179,7 +198,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     final List<Stmt> targets = stmtPrinter.branchTargets(this);
 
     final int size = values.size();
-    for (int i = 1; i < size; i++) {
+    for (int i = 0; i < size; i++) {
       stmtPrinter.handleIndent();
       stmtPrinter.literal(Jimple.CASE);
       stmtPrinter.literal(" ");
@@ -187,7 +206,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
       stmtPrinter.literal(": ");
       stmtPrinter.literal(Jimple.GOTO);
       stmtPrinter.literal(" ");
-      stmtPrinter.stmtRef(targets.get(i), true);
+      stmtPrinter.stmtRef(targets.get(i + 1), true);
       stmtPrinter.literal(";");
 
       stmtPrinter.newline();

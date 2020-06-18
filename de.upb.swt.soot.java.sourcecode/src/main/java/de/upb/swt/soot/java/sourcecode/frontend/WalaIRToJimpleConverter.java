@@ -390,6 +390,8 @@ public class WalaIRToJimpleConverter {
     }
 
     final Body.BodyBuilder builder = Body.builder();
+    builder.setMethodSignature(methodSignature);
+
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
       LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
@@ -450,11 +452,17 @@ public class WalaIRToJimpleConverter {
         HashMap<Stmt, Integer> stmt2iIndex = new HashMap<>();
         Stmt lastStmt = null;
         for (SSAInstruction inst : insts) {
-          List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst);
+          List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst, stmt2iIndex);
           if (!retStmts.isEmpty()) {
-            for (Stmt stmt : retStmts) {
+            final int retStmtsSize = retStmts.size();
+            Stmt stmt = retStmts.get(0);
+            builder.addStmt(stmt, true);
+            stmt2iIndex.putIfAbsent(stmt, inst.iIndex());
+            lastStmt = stmt;
+
+            for (int i = 1; i < retStmtsSize; i++) {
+              stmt = retStmts.get(i);
               builder.addStmt(stmt, true);
-              stmt2iIndex.put(stmt, inst.iIndex());
               lastStmt = stmt;
             }
           }
@@ -463,7 +471,10 @@ public class WalaIRToJimpleConverter {
         // add return void stmt for methods with return type being void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
           Stmt ret;
-          if (stmt2iIndex.isEmpty() || !(lastStmt instanceof JReturnVoidStmt)) {
+          boolean isImplicitLastStmtTargetOfBranchStmt = instConverter.hasJumpTarget(-1);
+          if (stmt2iIndex.isEmpty()
+              || !(lastStmt instanceof JReturnVoidStmt)
+              || isImplicitLastStmtTargetOfBranchStmt) {
             // TODO? [ms] InstructionPosition of last line in the method seems strange to me ->
             // maybe use lastLine with
             // startcol: -1 because it does not exist in the source explicitly?
@@ -478,9 +489,7 @@ public class WalaIRToJimpleConverter {
           stmt2iIndex.put(ret, -1);
         }
 
-        for (Stmt stmt : stmt2iIndex.keySet()) {
-          instConverter.setUpTargets(stmt, stmt2iIndex.get(stmt), builder);
-        }
+        instConverter.setUpTargets(stmt2iIndex, builder);
 
         return builder
             .setLocals(localGenerator.getLocals())
@@ -501,16 +510,16 @@ public class WalaIRToJimpleConverter {
    */
   public String convertClassNameFromWala(String className) {
     String cl = className.intern();
-    if (walaToSootNameTable.containsKey(cl)) {
-      return walaToSootNameTable.get(cl);
+    final String sootName = walaToSootNameTable.get(cl);
+    if (sootName != null) {
+      return sootName;
     }
     StringBuilder sb = new StringBuilder();
     if (className.startsWith("L")) {
       className = className.substring(1);
       String[] subNames = className.split("/");
       boolean isSpecial = false;
-      for (int i = 0; i < subNames.length; i++) {
-        String subName = subNames[i];
+      for (String subName : subNames) {
         if (subName.contains("(") || subName.contains("<")) {
           // handle anonymous or inner classes
           isSpecial = true;
@@ -530,11 +539,14 @@ public class WalaIRToJimpleConverter {
           if (!name.contains("$")) {
             // This is an inner class
             String outClass = sb.toString();
-            int count = 1;
-            if (this.clsWithInnerCls.containsKey(outClass)) {
-              count = this.clsWithInnerCls.get(outClass) + 1;
+            int count;
+            final Integer innerClassCount = clsWithInnerCls.get(outClass);
+            if (innerClassCount != null) {
+              count = innerClassCount + 1;
+            } else {
+              count = 1;
             }
-            this.clsWithInnerCls.put(outClass, count);
+            clsWithInnerCls.put(outClass, count);
             sb.append(count).append("$");
           }
           sb.append(name);
