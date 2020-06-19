@@ -33,6 +33,7 @@ import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
+import java.util.List;
 import javax.annotation.Nonnull;
 
 /** Unconditionally jumps to a target Stmt */
@@ -44,13 +45,7 @@ public class JGotoStmt extends BranchingStmt implements Copyable {
 
   @Override
   public String toString() {
-    /*    TODO: [ms] Stmt t = getTarget();
-    String target = "(branch)";
-    if (!t.branches()) {
-      target = t.toString();
-    }
-    */
-    return Jimple.GOTO; // + " [?= " + target + "]";
+    return Jimple.GOTO;
   }
 
   @Override
@@ -61,12 +56,13 @@ public class JGotoStmt extends BranchingStmt implements Copyable {
   }
 
   public Stmt getTarget(Body body) {
-    return getTargetStmts(body).iterator().next();
+    // [ms] bounds are validated in Body
+    return getTargetStmts(body).get(0);
   }
 
   @Override
   @Nonnull
-  public Iterable<Stmt> getTargetStmts(Body body) {
+  public List<Stmt> getTargetStmts(Body body) {
     return body.getBranchTargetsOf(this);
   }
 

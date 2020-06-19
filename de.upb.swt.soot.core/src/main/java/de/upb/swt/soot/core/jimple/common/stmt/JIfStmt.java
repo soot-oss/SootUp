@@ -37,7 +37,6 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -89,14 +88,13 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
   }
 
   public Stmt getTarget(Body body) {
-    final Iterator<Stmt> iterator = getTargetStmts(body).iterator();
-    iterator.next(); // skip
-    return iterator.next();
+    // [ms] bounds are validated in Body
+    return getTargetStmts(body).get(1);
   }
 
   @Override
   @Nonnull
-  public Iterable<Stmt> getTargetStmts(Body body) {
+  public List<Stmt> getTargetStmts(Body body) {
     return body.getBranchTargetsOf(this);
   }
 

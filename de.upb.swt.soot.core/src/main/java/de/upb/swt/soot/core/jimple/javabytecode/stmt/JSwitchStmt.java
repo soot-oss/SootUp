@@ -82,8 +82,9 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     return isTableSwitch;
   }
 
-  public Stmt getDefaTultTarget(Body body) {
-    return body.getBranchTargetsOf(this).iterator().next();
+  @Nonnull
+  public Optional<Stmt> getDefaultTarget(Body body) {
+    return Optional.ofNullable(body.getBranchTargetsOf(this).get(0));
   }
 
   public Value getKey() {
@@ -160,21 +161,11 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
         .append('{')
         .append(" ");
 
-    for (int i = 0; i < values.size(); i++) {
-      // Stmt target = getTarget(i);
-      sb.append("    ").append(Jimple.CASE).append(' ').append(values.get(i)).append(": ");
-      /*          .append(Jimple.GOTO)
-               .append(' ')
-               .append(target == this ? "self" : target)
-               .append(';')
-               .append(' ');
-      */
+    for (IntConstant value : values) {
+      sb.append("    ").append(Jimple.CASE).append(' ').append(value).append(": ");
     }
 
-    //    Stmt target = getDefaultTarget();
     sb.append("    ").append(Jimple.DEFAULT).append(": ");
-    //            .append(Jimple.GOTO).append(" ").append(target == this ? "self" :
-    // target).append(';');
     sb.append(' ').append('}');
 
     return sb.toString();
@@ -196,12 +187,11 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     Iterator<Stmt> targetIt = targets.iterator();
     Stmt defaultTarget = targetIt.next();
 
-    final int size = values.size();
-    for (int i = 0; i < size; i++) {
+    for (IntConstant value : values) {
       stmtPrinter.handleIndent();
       stmtPrinter.literal(Jimple.CASE);
       stmtPrinter.literal(" ");
-      stmtPrinter.constant(values.get(i));
+      stmtPrinter.constant(value);
       stmtPrinter.literal(": ");
       stmtPrinter.literal(Jimple.GOTO);
       stmtPrinter.literal(" ");
