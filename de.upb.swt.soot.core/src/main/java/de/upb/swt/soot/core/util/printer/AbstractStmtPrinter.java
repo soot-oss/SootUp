@@ -24,7 +24,6 @@ package de.upb.swt.soot.core.util.printer;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.ClassType;
@@ -45,10 +44,6 @@ public abstract class AbstractStmtPrinter extends StmtPrinter {
   private final HashMap<String, PackageName> imports = new HashMap<>();
 
   boolean useImports = false;
-
-  AbstractStmtPrinter(@Nonnull Body body) {
-    super(body);
-  }
 
   void enableImports(boolean enable) {
     useImports = enable;

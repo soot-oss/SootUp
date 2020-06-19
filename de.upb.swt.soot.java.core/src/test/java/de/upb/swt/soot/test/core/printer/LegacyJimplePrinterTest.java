@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
-import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
@@ -44,12 +43,7 @@ public class LegacyJimplePrinterTest {
             .setPosition(NoPositionInformation.getInstance())
             .build();
 
-    StringBuilder debug = new StringBuilder(body.getMethodSignature() + "\n");
-    final StmtGraph stmtGraph = body.getStmtGraph();
-    for (Stmt stmt : stmtGraph.nodes()) {
-      debug.append(stmt).append(" => ").append(stmtGraph.successors(stmt)).append(" \n");
-    }
-    System.out.println(debug);
+    System.out.println(Utils.filterJimple(Utils.bodyStmtsAsStrings(body).stream()));
 
     SootMethod dummyMainMethod =
         new SootMethod(
@@ -108,9 +102,9 @@ public class LegacyJimplePrinterTest {
           Arrays.asList(
               "public static void main()",
               "tableswitch(42)",
-              "case 4: goto label3",
-              "case 5: goto label1",
-              "default: goto label2",
+              "case 4: goto label2",
+              "case 5: goto label3",
+              "default: goto label1",
               "label1:",
               "nop",
               "label2:",
@@ -126,9 +120,11 @@ public class LegacyJimplePrinterTest {
       Body.BodyBuilder builder = Body.builder();
       builder.addStmt(lookupSwitch, true);
       builder.addStmt(jNop, true);
+      builder.addStmt(jNop2, true);
       builder.addStmt(returnstmt, true);
 
       builder.addFlow(lookupSwitch, jNop);
+      builder.addFlow(lookupSwitch, jNop2);
       builder.addFlow(lookupSwitch, returnstmt);
 
       SootClass lookupClass = buildClass(builder);
@@ -142,11 +138,13 @@ public class LegacyJimplePrinterTest {
               "public static void main()",
               "lookupswitch(123)",
               "case 42: goto label2",
-              "case 33102: goto label1",
+              "case 33102: goto label3",
               "default: goto label1",
               "label1:",
               "nop",
               "label2:",
+              "nop",
+              "label3:",
               "return"),
           Utils.filterJimple(sw2.toString()));
     }

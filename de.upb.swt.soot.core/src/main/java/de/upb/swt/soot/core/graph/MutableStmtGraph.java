@@ -108,16 +108,21 @@ public class MutableStmtGraph extends StmtGraph {
     return false;
   }
 
-  public boolean removeEdge(@Nonnull Stmt nodeU, @Nonnull Stmt nodeV) {
-    final List<Stmt> pred = predecessors.get(nodeV);
+  public boolean removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
+
+    if (!stmtList.contains(from) || !stmtList.contains(to)) {
+      return false;
+    }
+
+    final List<Stmt> pred = predecessors.get(to);
     boolean modified = false;
     if (pred != null) {
-      pred.remove(nodeU);
+      pred.remove(from);
       modified = true;
     }
-    final List<Stmt> succ = successors.get(nodeU);
+    final List<Stmt> succ = successors.get(from);
     if (succ != null) {
-      succ.remove(nodeV);
+      succ.remove(to);
       modified = true;
     }
     return modified;
