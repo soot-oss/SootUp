@@ -11,9 +11,9 @@ import javax.annotation.Nonnull;
  */
 public class MutableStmtGraph extends StmtGraph {
 
-  protected final Map<Stmt, List<Stmt>> predecessors = new HashMap<>();
-  protected final Map<Stmt, List<Stmt>> successors = new HashMap<>();
-  protected final Set<Stmt> stmtList = new LinkedHashSet<>();
+  @Nonnull protected final Map<Stmt, List<Stmt>> predecessors = new HashMap<>();
+  @Nonnull protected final Map<Stmt, List<Stmt>> successors = new HashMap<>();
+  @Nonnull protected final Set<Stmt> stmtList = new LinkedHashSet<>();
 
   public MutableStmtGraph() {}
 
@@ -32,6 +32,11 @@ public class MutableStmtGraph extends StmtGraph {
   public StmtGraph asUnmodifiableStmtGraph() {
     StmtGraph ref = this;
     return new StmtGraph() {
+      @Override
+      public Stmt getEntryPoint() {
+        return ref.getEntryPoint();
+      }
+
       @Nonnull
       @Override
       public Set<Stmt> nodes() {
@@ -76,6 +81,14 @@ public class MutableStmtGraph extends StmtGraph {
         return ref.hasEdgeConnecting(nodeU, nodeV);
       }
     };
+  }
+
+  public void setEntryPoint(@Nonnull Stmt firstStmt) {
+    this.entrypoint = firstStmt;
+  }
+
+  public Stmt getEntryPoint() {
+    return entrypoint;
   }
 
   public boolean addNode(@Nonnull Stmt node) {
