@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
  */
 public final class ImmutableStmtGraph extends StmtGraph {
 
-  private MutableStmtGraph backingGraph;
+  private final MutableStmtGraph backingGraph;
 
   public ImmutableStmtGraph(MutableStmtGraph backingGraph) {
     this.backingGraph = backingGraph;
@@ -36,39 +36,39 @@ public final class ImmutableStmtGraph extends StmtGraph {
 
   @Override
   @Nonnull
-  public List<Stmt> adjacentNodes(Stmt stmt) {
+  public List<Stmt> adjacentNodes(@Nonnull Stmt stmt) {
     return backingGraph.adjacentNodes(stmt);
   }
 
   @Override
   @Nonnull
-  public List<Stmt> predecessors(Stmt stmt) {
+  public List<Stmt> predecessors(@Nonnull Stmt stmt) {
     return backingGraph.predecessors(stmt);
   }
 
   @Override
   @Nonnull
-  public List<Stmt> successors(Stmt stmt) {
+  public List<Stmt> successors(@Nonnull Stmt stmt) {
     return backingGraph.successors(stmt);
   }
 
   @Override
-  public int degree(Stmt stmt) {
+  public int degree(@Nonnull Stmt stmt) {
     return backingGraph.degree(stmt);
   }
 
   @Override
-  public int inDegree(Stmt stmt) {
+  public int inDegree(@Nonnull Stmt stmt) {
     return backingGraph.inDegree(stmt);
   }
 
   @Override
-  public int outDegree(Stmt stmt) {
+  public int outDegree(@Nonnull Stmt stmt) {
     return backingGraph.outDegree(stmt);
   }
 
   @Override
-  public boolean hasEdgeConnecting(Stmt stmt, Stmt n1) {
-    return backingGraph.hasEdgeConnecting(stmt, n1);
+  public boolean hasEdgeConnecting(@Nonnull Stmt from, @Nonnull Stmt to) {
+    return backingGraph.hasEdgeConnecting(from, to);
   }
 }

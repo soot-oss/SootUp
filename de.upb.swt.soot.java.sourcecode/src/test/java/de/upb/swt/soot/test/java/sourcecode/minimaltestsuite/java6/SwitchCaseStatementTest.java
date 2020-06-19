@@ -7,13 +7,12 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.*;
 import org.junit.Ignore;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
 public class SwitchCaseStatementTest extends MinimalSourceTestSuiteBase {
 
-  @Test
+  @Ignore
   public void test() {
     SootMethod method = loadMethod(getMethodSignature("switchCaseStatementEnum"));
     assertJimpleStmts(

@@ -1,5 +1,6 @@
 package de.upb.swt.soot.core.graph;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
@@ -100,7 +101,7 @@ public class MutableStmtGraph extends StmtGraph {
     if (stmts == null) {
       return Collections.emptyList();
     }
-    return stmts;
+    return ImmutableList.copyOf(stmts);
   }
 
   @Override
@@ -110,7 +111,7 @@ public class MutableStmtGraph extends StmtGraph {
     if (stmts == null) {
       return Collections.emptyList();
     }
-    return stmts;
+    return ImmutableList.copyOf(stmts);
   }
 
   @Override
@@ -120,12 +121,14 @@ public class MutableStmtGraph extends StmtGraph {
 
   @Override
   public int inDegree(@Nonnull Stmt node) {
-    return predecessors.get(node).size();
+    final List<Stmt> stmts = predecessors.get(node);
+    return stmts == null ? 0 : stmts.size();
   }
 
   @Override
   public int outDegree(@Nonnull Stmt node) {
-    return successors.get(node).size();
+    final List<Stmt> stmts = successors.get(node);
+    return stmts == null ? 0 : stmts.size();
   }
 
   @Override
