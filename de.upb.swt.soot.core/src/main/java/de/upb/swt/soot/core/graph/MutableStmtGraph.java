@@ -1,7 +1,5 @@
 package de.upb.swt.soot.core.graph;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
 import javax.annotation.Nonnull;
@@ -15,11 +13,11 @@ public class MutableStmtGraph extends StmtGraph {
 
   protected final Map<Stmt, List<Stmt>> predecessors = new HashMap<>();
   protected final Map<Stmt, List<Stmt>> successors = new HashMap<>();
-  protected final List<Stmt> stmtList = new ArrayList<>();
+  protected final Set<Stmt> stmtList = new LinkedHashSet<>();
 
   public MutableStmtGraph() {}
 
-  public static MutableStmtGraph copyOf(StmtGraph stmtGraph) {
+  public static MutableStmtGraph copyOf(@Nonnull StmtGraph stmtGraph) {
     final MutableStmtGraph graph = new MutableStmtGraph();
 
     for (Stmt node : stmtGraph.nodes()) {
@@ -31,7 +29,6 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public boolean addNode(@Nonnull Stmt node) {
-    // [ms] contains is expensive!
     boolean modify = !stmtList.contains(node);
     if (modify) {
       stmtList.add(node);
@@ -39,10 +36,8 @@ public class MutableStmtGraph extends StmtGraph {
     return modify;
   }
 
-  public boolean removeNode(Stmt node) {
-    final int indexOf = stmtList.indexOf(node);
-    if (indexOf > -1) {
-      stmtList.remove(indexOf);
+  public boolean removeNode(@Nonnull Stmt node) {
+    if (stmtList.remove(node)) {
       predecessors.remove(node);
       successors.remove(node);
       return true;
@@ -50,7 +45,7 @@ public class MutableStmtGraph extends StmtGraph {
     return false;
   }
 
-  public boolean removeEdge(Stmt nodeU, Stmt nodeV) {
+  public boolean removeEdge(@Nonnull Stmt nodeU, @Nonnull Stmt nodeV) {
     final List<Stmt> pred = predecessors.get(nodeV);
     boolean modified = false;
     if (pred != null) {
@@ -79,7 +74,7 @@ public class MutableStmtGraph extends StmtGraph {
   @Override
   @Nonnull
   public Set<Stmt> nodes() {
-    return ImmutableSet.copyOf(stmtList);
+    return Collections.unmodifiableSet(stmtList);
   }
 
   @Override
@@ -103,7 +98,7 @@ public class MutableStmtGraph extends StmtGraph {
     if (stmts == null) {
       return Collections.emptyList();
     }
-    return ImmutableList.copyOf(stmts);
+    return Collections.unmodifiableList(stmts);
   }
 
   @Override
@@ -113,7 +108,7 @@ public class MutableStmtGraph extends StmtGraph {
     if (stmts == null) {
       return Collections.emptyList();
     }
-    return ImmutableList.copyOf(stmts);
+    return Collections.unmodifiableList(stmts);
   }
 
   @Override
@@ -134,8 +129,8 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   @Override
-  public boolean hasEdgeConnecting(@Nonnull Stmt nodeU, @Nonnull Stmt nodeV) {
-    final List<Stmt> stmts = successors.get(nodeU);
-    return stmts != null && stmts.contains(nodeV);
+  public boolean hasEdgeConnecting(@Nonnull Stmt from, @Nonnull Stmt to) {
+    final List<Stmt> stmts = successors.get(from);
+    return stmts != null && stmts.contains(to);
   }
 }
