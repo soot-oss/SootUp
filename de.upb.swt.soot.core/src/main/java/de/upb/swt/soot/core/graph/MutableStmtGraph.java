@@ -130,14 +130,12 @@ public class MutableStmtGraph extends StmtGraph {
   @Override
   @Nonnull
   public List<Stmt> adjacentNodes(@Nonnull Stmt node) {
-    final List<Stmt> predecessors = predecessors(node);
-    final List<Stmt> successors = successors(node);
+    final List<Stmt> pred = predecessors.get(node);
+    final List<Stmt> succ = successors.get(node);
     final ArrayList<Stmt> set =
-        new ArrayList<>(
-            (predecessors == null ? 0 : predecessors.size())
-                + (successors == null ? 0 : successors.size()));
-    set.addAll(predecessors);
-    set.addAll(successors);
+        new ArrayList<>((pred == null ? 0 : pred.size()) + (succ == null ? 0 : succ.size()));
+    set.addAll(pred);
+    set.addAll(succ);
     return set;
   }
 
