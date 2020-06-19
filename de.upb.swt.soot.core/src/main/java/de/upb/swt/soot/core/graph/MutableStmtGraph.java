@@ -19,6 +19,7 @@ public class MutableStmtGraph extends StmtGraph {
 
   public static MutableStmtGraph copyOf(@Nonnull StmtGraph stmtGraph) {
     final MutableStmtGraph graph = new MutableStmtGraph();
+    graph.setEntryPoint(stmtGraph.getEntryPoint());
 
     for (Stmt node : stmtGraph.nodes()) {
       graph.addNode(node);
@@ -26,6 +27,55 @@ public class MutableStmtGraph extends StmtGraph {
     }
 
     return graph;
+  }
+
+  public StmtGraph asUnmodifiableStmtGraph() {
+    StmtGraph ref = this;
+    return new StmtGraph() {
+      @Nonnull
+      @Override
+      public Set<Stmt> nodes() {
+        return ref.nodes();
+      }
+
+      @Nonnull
+      @Override
+      public List<Stmt> adjacentNodes(@Nonnull Stmt node) {
+        return ref.adjacentNodes(node);
+      }
+
+      @Nonnull
+      @Override
+      public List<Stmt> predecessors(@Nonnull Stmt node) {
+        return ref.predecessors(node);
+      }
+
+      @Nonnull
+      @Override
+      public List<Stmt> successors(@Nonnull Stmt node) {
+        return ref.successors(node);
+      }
+
+      @Override
+      public int degree(@Nonnull Stmt node) {
+        return ref.degree(node);
+      }
+
+      @Override
+      public int inDegree(@Nonnull Stmt node) {
+        return ref.inDegree(node);
+      }
+
+      @Override
+      public int outDegree(@Nonnull Stmt node) {
+        return ref.outDegree(node);
+      }
+
+      @Override
+      public boolean hasEdgeConnecting(@Nonnull Stmt nodeU, @Nonnull Stmt nodeV) {
+        return ref.hasEdgeConnecting(nodeU, nodeV);
+      }
+    };
   }
 
   public boolean addNode(@Nonnull Stmt node) {

@@ -11,6 +11,16 @@ import javax.annotation.Nonnull;
  */
 public abstract class StmtGraph {
 
+  private Stmt firstStmt;
+
+  public void setEntryPoint(@Nonnull Stmt firstStmt) {
+    this.firstStmt = firstStmt;
+  }
+
+  public Stmt getEntryPoint() {
+    return firstStmt;
+  }
+
   public final boolean isDirected() {
     return true;
   }

@@ -11,6 +11,7 @@ import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -42,18 +43,21 @@ public class SootMethodTest {
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
     final MutableStmtGraph graph = new MutableStmtGraph();
 
-    graph.addNode(
+    final JIdentityStmt node =
         Jimple.newIdentityStmt(
             generator.generateLocal(type),
             Jimple.newParameterRef(type, 0),
-            StmtPositionInfo.createNoStmtPositionInfo()));
+            StmtPositionInfo.createNoStmtPositionInfo());
+
+    graph.setEntryPoint(node);
+    graph.addNode(node);
     graph.addNode(
         Jimple.newAssignStmt(
             generator.generateLocal(type),
             Jimple.newNewExpr(type),
             StmtPositionInfo.createNoStmtPositionInfo()));
 
-    Body body = new Body(null, generator.getLocals(), Collections.emptyList(), graph, null, null);
+    Body body = new Body(null, generator.getLocals(), Collections.emptyList(), graph, null);
 
     assertEquals(2, body.getLocalCount());
 

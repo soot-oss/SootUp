@@ -81,7 +81,6 @@ public class Body implements Copyable {
           Collections.emptySet(),
           Collections.emptyList(),
           new MutableStmtGraph(),
-          null,
           NoPositionInformation.getInstance());
 
   /** The locals for this Body. */
@@ -92,9 +91,6 @@ public class Body implements Copyable {
 
   /** The stmts for this Body. */
   @Nonnull private final ImmutableStmtGraph cfg;
-
-  /** The first Stmt in this Body. */
-  @Nonnull private final Stmt firstStmt;
 
   /** The Position Information in the Source for this Body. */
   @Nonnull private final Position position;
@@ -120,21 +116,18 @@ public class Body implements Copyable {
    * Creates an body which is not associated to any method.
    *
    * @param locals please use {@link LocalGenerator} to generate local for a body.
-   * @param startingStmt
    */
   public Body(
       @Nonnull MethodSignature methodSignature,
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
       @Nonnull StmtGraph stmtGraph,
-      @Nonnull Stmt startingStmt,
       @Nonnull Position position) {
     this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
     this.traps = Collections.unmodifiableList(traps);
     this.cfg = ImmutableStmtGraph.copyOf(stmtGraph);
     this.position = position;
-    this.firstStmt = startingStmt;
 
     // FIXME: [JMP] Virtual method call in constructor
     checkInit();
@@ -408,26 +401,22 @@ public class Body implements Copyable {
 
   @Nonnull
   public Body withLocals(@Nonnull Set<Local> locals) {
-    return new Body(
-        getMethodSignature(), locals, getTraps(), getStmtGraph(), getFirstStmt(), getPosition());
+    return new Body(getMethodSignature(), locals, getTraps(), getStmtGraph(), getPosition());
   }
 
   @Nonnull
   public Body withTraps(@Nonnull List<Trap> traps) {
-    return new Body(
-        getMethodSignature(), getLocals(), traps, getStmtGraph(), getFirstStmt(), getPosition());
+    return new Body(getMethodSignature(), getLocals(), traps, getStmtGraph(), getPosition());
   }
 
   @Nonnull
-  public Body withStmts(@Nonnull StmtGraph stmtGraph, @Nonnull Stmt firstStmt) {
-    return new Body(
-        getMethodSignature(), getLocals(), getTraps(), stmtGraph, firstStmt, getPosition());
+  public Body withStmts(@Nonnull StmtGraph stmtGraph) {
+    return new Body(getMethodSignature(), getLocals(), getTraps(), stmtGraph, getPosition());
   }
 
   @Nonnull
   public Body withPosition(@Nonnull Position position) {
-    return new Body(
-        getMethodSignature(), getLocals(), getTraps(), getStmtGraph(), getFirstStmt(), position);
+    return new Body(getMethodSignature(), getLocals(), getTraps(), getStmtGraph(), position);
   }
 
   public static BodyBuilder builder() {
@@ -436,10 +425,6 @@ public class Body implements Copyable {
 
   public static BodyBuilder builder(Body body) {
     return new BodyBuilder(body);
-  }
-
-  public Stmt getFirstStmt() {
-    return firstStmt;
   }
 
   public static class BodyBuilder {
@@ -452,7 +437,6 @@ public class Body implements Copyable {
     @Nullable private MutableStmtGraph cfg;
 
     @Nullable private Stmt lastAddedStmt = null;
-    @Nullable private Stmt firstStmt = null;
     @Nullable private MethodSignature methodSig = null;
 
     BodyBuilder() {
@@ -468,13 +452,12 @@ public class Body implements Copyable {
       setLocals(body.getLocals());
       setTraps(body.getTraps());
       setPosition(body.getPosition());
-      setFirstStmt(body.getFirstStmt());
       cfg = graphContainer;
     }
 
     @Nonnull
     public BodyBuilder setFirstStmt(@Nullable Stmt firstStmt) {
-      this.firstStmt = firstStmt;
+      this.cfg.setEntryPoint(firstStmt);
       return this;
     }
 
@@ -516,7 +499,7 @@ public class Body implements Copyable {
         }
       } else {
         // automatically set first statement
-        firstStmt = stmt;
+        cfg.setEntryPoint(stmt);
       }
       lastAddedStmt = stmt;
       return this;
@@ -634,7 +617,7 @@ public class Body implements Copyable {
         throw new IllegalArgumentException("There is no MethodSignature set.");
       }
 
-      return new Body(methodSig, locals, traps, cfg, firstStmt, position);
+      return new Body(methodSig, locals, traps, cfg, position);
     }
   }
 }
