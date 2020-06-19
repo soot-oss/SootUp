@@ -31,8 +31,7 @@ public class OverridingMethodSource implements MethodSource {
     this.methodSignature = null;
   }
 
-  private OverridingMethodSource(
-      @Nonnull MethodSource delegate, boolean overriddenBody, @Nonnull Body body) {
+  private OverridingMethodSource(@Nonnull MethodSource delegate, @Nonnull Body body) {
     this.delegate = delegate;
     this.body = body;
     this.methodSignature = null;
@@ -59,6 +58,6 @@ public class OverridingMethodSource implements MethodSource {
 
   @Nonnull
   public OverridingMethodSource withBody(@Nonnull Body body) {
-    return new OverridingMethodSource(delegate, true, body);
+    return new OverridingMethodSource(delegate, body);
   }
 }
