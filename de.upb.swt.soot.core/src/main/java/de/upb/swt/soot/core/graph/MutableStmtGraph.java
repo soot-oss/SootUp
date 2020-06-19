@@ -66,10 +66,7 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public boolean putEdge(@Nonnull Stmt u, @Nonnull Stmt v) {
-    // maintain set property
-    if (hasEdgeConnecting(u, v)) {
-      return false;
-    }
+
     final List<Stmt> pred = predecessors.computeIfAbsent(v, key -> new ArrayList<>());
     pred.add(u);
 
