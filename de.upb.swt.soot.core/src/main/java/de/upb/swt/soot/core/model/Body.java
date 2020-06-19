@@ -140,24 +140,6 @@ public class Body implements Copyable {
     checkInit();
   }
 
-  // TODO: migrate tests to use BodyBuilder
-  @Deprecated
-  public Body(
-      @Nonnull Set<Local> locals,
-      @Nonnull List<Trap> traps,
-      @Nonnull StmtGraph stmtGraph,
-      @Nonnull Position position) {
-
-    // FIXME: [ms] remove this dirty test hack !!!!!!
-    this(
-        null, // will be removed anyways when this constructor is removed
-        locals,
-        traps,
-        stmtGraph,
-        stmtGraph.nodes().iterator().hasNext() ? stmtGraph.nodes().iterator().next() : null,
-        position);
-  }
-
   @Nonnull
   public static Body getNoBody() {
     return EMPTY_BODY;
