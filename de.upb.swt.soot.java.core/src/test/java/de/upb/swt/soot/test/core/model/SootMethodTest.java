@@ -10,6 +10,7 @@ import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.model.Body;
@@ -57,7 +58,13 @@ public class SootMethodTest {
             Jimple.newNewExpr(type),
             StmtPositionInfo.createNoStmtPositionInfo()));
 
-    Body body = new Body(null, generator.getLocals(), Collections.emptyList(), graph, null);
+    Body body =
+        new Body(
+            null,
+            generator.getLocals(),
+            Collections.emptyList(),
+            graph,
+            NoPositionInformation.getInstance());
 
     assertEquals(2, body.getLocalCount());
 
@@ -82,7 +89,7 @@ public class SootMethodTest {
                 null,
                 Collections.emptySet(),
                 Collections.singleton(dummyMainMethod),
-                null,
+                NoPositionInformation.getInstance(),
                 EnumSet.of(Modifier.PUBLIC),
                 Collections.emptyList()),
             SourceType.Application);
