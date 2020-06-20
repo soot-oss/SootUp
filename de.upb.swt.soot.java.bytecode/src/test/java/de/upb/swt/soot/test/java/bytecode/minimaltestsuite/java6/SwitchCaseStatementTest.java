@@ -69,7 +69,7 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
   }
 
   @Test
-  public void testswitchCaseWithoutDefault() {
+  public void testSwitchCaseWithoutDefault() {
     SootMethod method = loadMethod(getMethodSignature("switchCaseWithoutDefault"));
     assertJimpleStmts(
         method,
@@ -94,7 +94,7 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
   }
 
   @Test
-  public void testswitchCaseGroupedTargets() {
+  public void testSwitchCaseGroupedTargets() {
     SootMethod method = loadMethod(getMethodSignature("switchCaseGroupedTargets"));
     assertJimpleStmts(
         method,
@@ -116,7 +116,7 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
   }
 
   @Test
-  public void testSwitch() {
+  public void testSwitchCaseGroupedTargetsDefault() {
     SootMethod method = loadMethod(getMethodSignature("switchCaseGroupedTargetsDefault"));
     assertJimpleStmts(
         method,
