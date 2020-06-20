@@ -135,7 +135,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
 
   @Override
   @Nonnull
-  public Iterable<Stmt> getTargetStmts(Body body) {
+  public List<Stmt> getTargetStmts(Body body) {
     return body.getBranchTargetsOf(this);
   }
 
