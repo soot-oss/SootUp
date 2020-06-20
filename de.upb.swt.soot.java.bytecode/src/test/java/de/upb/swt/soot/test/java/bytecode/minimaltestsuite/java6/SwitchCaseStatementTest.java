@@ -68,6 +68,78 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
             "return"));
   }
 
+  @Test
+  public void testswitchCaseWithoutDefault() {
+    SootMethod method = loadMethod(getMethodSignature("switchCaseWithoutDefault"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
+            "l0 := @this: SwitchCaseStatement",
+            "l1 = 6",
+            "switch(l1)",
+            "case 1: goto label1",
+            "case 2: goto label2",
+            "case 3: goto label3",
+            "default: goto label4",
+            "label1:",
+            "l2 = \"one\"",
+            "goto label4",
+            "label2:",
+            "l2 = \"two\"",
+            "goto label4",
+            "label3:",
+            "l2 = \"three\"",
+            "label4:",
+            "return"));
+  }
+
+  @Test
+  public void testswitchCaseGroupedTargets() {
+    SootMethod method = loadMethod(getMethodSignature("switchCaseGroupedTargets"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
+            "l0 := @this: SwitchCaseStatement",
+            "l1 = 7",
+            "switch(l1)",
+            "case 1: goto label1",
+            "case 2: goto label1",
+            "case 3: goto label2",
+            "default: goto label3",
+            "label1:",
+            "l2 = \"first\"",
+            "goto label3",
+            "label2:",
+            "l2 = \"second\"",
+            "label3:",
+            "return"));
+  }
+
+  @Test
+  public void testSwitch() {
+    SootMethod method = loadMethod(getMethodSignature("switchCaseGroupedTargetsDefault"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
+            "l0 := @this: SwitchCaseStatement",
+            "l1 = 8",
+            "switch(l1)",
+            "case 1: goto label1",
+            "case 2: goto label1",
+            "case 3: goto label2",
+            "default: goto label3",
+            "label1:",
+            "l2 = \"first\"",
+            "goto label4",
+            "label2:",
+            "l2 = \"second\"",
+            "goto label4",
+            "label3:",
+            "l2 = \"other\"",
+            "label4:",
+            "return"));
+  }
+
   public MethodSignature getMethodSignature(String methodName) {
     return identifierFactory.getMethodSignature(
         methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
