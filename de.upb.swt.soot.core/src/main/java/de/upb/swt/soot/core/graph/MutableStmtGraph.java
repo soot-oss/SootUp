@@ -108,7 +108,9 @@ public class MutableStmtGraph extends StmtGraph {
 
   public boolean removeNode(@Nonnull Stmt node) {
     if (stmtList.remove(node)) {
+      predecessors.get(node).forEach(pred -> successors.get(pred).remove(node));
       predecessors.remove(node);
+      successors.get(node).forEach(succ -> predecessors.get(succ).remove(node));
       successors.remove(node);
       return true;
     }
