@@ -135,8 +135,18 @@ public class MutableStmtGraph extends StmtGraph {
     final List<Stmt> pred = predecessors.computeIfAbsent(v, key -> new ArrayList<>());
     pred.add(u);
 
-    if (u instanceof JSwitchStmt || u instanceof JIfStmt) {
-      final List<Stmt> succ = successors.computeIfAbsent(u, key -> new ArrayList<>());
+    final int predictedSuccessorSize;
+    if (u instanceof JSwitchStmt) {
+      predictedSuccessorSize = ((JSwitchStmt) u).getValueCount();
+    } else if (u instanceof JIfStmt) {
+      predictedSuccessorSize = 2;
+    } else {
+      predictedSuccessorSize = 1;
+    }
+
+    if (predictedSuccessorSize != 1) {
+      final List<Stmt> succ =
+          successors.computeIfAbsent(u, key -> new ArrayList<>(predictedSuccessorSize));
       succ.add(v);
     } else {
       successors.put(u, Collections.singletonList(v));
