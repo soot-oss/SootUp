@@ -1,6 +1,8 @@
 package de.upb.swt.soot.core.graph;
 
+import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import java.util.*;
 import javax.annotation.Nonnull;
 
@@ -133,8 +135,12 @@ public class MutableStmtGraph extends StmtGraph {
     final List<Stmt> pred = predecessors.computeIfAbsent(v, key -> new ArrayList<>());
     pred.add(u);
 
-    final List<Stmt> succ = successors.computeIfAbsent(u, key -> new ArrayList<>());
-    succ.add(v);
+    if (u instanceof JSwitchStmt || u instanceof JIfStmt) {
+      final List<Stmt> succ = successors.computeIfAbsent(u, key -> new ArrayList<>());
+      succ.add(v);
+    } else {
+      successors.put(u, Collections.singletonList(v));
+    }
 
     return true;
   }
