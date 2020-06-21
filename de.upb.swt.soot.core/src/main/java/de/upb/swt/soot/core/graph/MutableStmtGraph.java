@@ -132,7 +132,7 @@ public class MutableStmtGraph extends StmtGraph {
 
   public boolean putEdge(@Nonnull Stmt u, @Nonnull Stmt v) {
 
-    final List<Stmt> pred = predecessors.computeIfAbsent(v, key -> new ArrayList<>());
+    final List<Stmt> pred = predecessors.computeIfAbsent(v, key -> new ArrayList<>(1));
     pred.add(u);
 
     final int predictedSuccessorSize;
