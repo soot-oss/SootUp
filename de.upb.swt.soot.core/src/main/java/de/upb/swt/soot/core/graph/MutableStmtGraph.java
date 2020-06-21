@@ -25,7 +25,12 @@ public class MutableStmtGraph extends StmtGraph {
 
     for (Stmt node : stmtGraph.nodes()) {
       graph.addNode(node);
-      stmtGraph.successors(node).forEach(target -> graph.putEdge(node, target));
+
+      final List<Stmt> pred = stmtGraph.predecessors(node);
+      graph.predecessors.put(node, new ArrayList(pred));
+
+      final List<Stmt> succ = stmtGraph.successors(node);
+      graph.successors.put(node, new ArrayList<>(succ));
     }
 
     return graph;
