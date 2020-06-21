@@ -137,15 +137,19 @@ public class MutableStmtGraph extends StmtGraph {
     return modified;
   }
 
-  public boolean putEdge(@Nonnull Stmt u, @Nonnull Stmt v) {
+  public boolean putEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
 
-    final List<Stmt> pred = predecessors.computeIfAbsent(v, key -> new ArrayList<>(1));
-    pred.add(u);
+    if (!stmtList.contains(from) || !stmtList.contains(to)) {
+      return false;
+    }
+
+    final List<Stmt> pred = predecessors.computeIfAbsent(to, key -> new ArrayList<>(1));
+    pred.add(from);
 
     final int predictedSuccessorSize;
-    if (u instanceof JSwitchStmt) {
-      predictedSuccessorSize = ((JSwitchStmt) u).getValueCount();
-    } else if (u instanceof JIfStmt) {
+    if (from instanceof JSwitchStmt) {
+      predictedSuccessorSize = ((JSwitchStmt) from).getValueCount();
+    } else if (from instanceof JIfStmt) {
       predictedSuccessorSize = 2;
     } else {
       predictedSuccessorSize = 1;
@@ -153,10 +157,10 @@ public class MutableStmtGraph extends StmtGraph {
 
     if (predictedSuccessorSize != 1) {
       final List<Stmt> succ =
-          successors.computeIfAbsent(u, key -> new ArrayList<>(predictedSuccessorSize));
-      succ.add(v);
+          successors.computeIfAbsent(from, key -> new ArrayList<>(predictedSuccessorSize));
+      succ.add(to);
     } else {
-      successors.put(u, Collections.singletonList(v));
+      successors.put(from, Collections.singletonList(to));
     }
 
     return true;
