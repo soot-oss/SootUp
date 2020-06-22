@@ -1181,30 +1181,36 @@ public class InstructionConverter {
       final JIfStmt key = ifStmt.getKey();
       final Integer value = ifStmt.getValue();
 
+      boolean found = false;
       for (Map.Entry<Stmt, Integer> entry : stmt2iIndex.entrySet()) {
         final Stmt target = entry.getKey();
         final Integer iTarget = entry.getValue();
 
         if (value.equals(iTarget)) {
           builder.addFlow(key, target);
+          found = true;
           break;
         }
       }
+      assert (found);
     }
 
     for (Map.Entry<JGotoStmt, Integer> gotoStmt : targetsOfGotoStmts.entrySet()) {
       final JGotoStmt key = gotoStmt.getKey();
       final Integer value = gotoStmt.getValue();
 
+      boolean found = false;
       for (Map.Entry<Stmt, Integer> entry : stmt2iIndex.entrySet()) {
         final Stmt target = entry.getKey();
         final Integer iTarget = entry.getValue();
 
         if (value.equals(iTarget)) {
           builder.addFlow(key, target);
+          found = true;
           break;
         }
       }
+      assert (found);
     }
 
     for (Map.Entry<JSwitchStmt, List<Integer>> item : targetsOfLookUpSwitchStmts.entrySet()) {
