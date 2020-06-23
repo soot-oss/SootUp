@@ -53,7 +53,7 @@ import javax.annotation.Nullable;
  */
 public class Body implements Copyable {
 
-	//TODO. add javadoc why we need this empty body.
+  // TODO. add javadoc why we need this empty body.
   public static final Body EMPTY_BODY =
       new Body(
           new MethodSignature(
@@ -114,11 +114,10 @@ public class Body implements Copyable {
           new CheckEscapingValidator());
 
   /**
-   * 
    * Creates an body which is not associated to any method.
    *
    * @param locals please use {@link LocalGenerator} to generate local for a body.
-   */ 
+   */
   public Body(
       @Nonnull MethodSignature methodSignature,
       @Nonnull Set<Local> locals,
@@ -130,7 +129,7 @@ public class Body implements Copyable {
     this.traps = Collections.unmodifiableList(traps);
     this.cfg = ImmutableStmtGraph.copyOf(stmtGraph);
     this.position = position;
-    // TODO: Make this method private. 
+    // TODO: Make this method private.
     // FIXME: [JMP] Virtual method call in constructor
     checkInit();
   }
@@ -487,8 +486,15 @@ public class Body implements Copyable {
       return this;
     }
 
-    public void addStmts(Collection<Stmt> stmts) {
-      for (Stmt s : stmts) this.addStmt(s);
+    public BodyBuilder addStmts(Collection<Stmt> stmts) {
+      addStmts(stmts, false);
+      return this;
+    }
+
+    @Nonnull
+    public BodyBuilder addStmts(@Nonnull Collection<Stmt> stmts, boolean autoLinkStmts) {
+      for (Stmt s : stmts) addStmt(s, autoLinkStmts);
+      return this;
     }
 
     @Nonnull
@@ -542,11 +548,6 @@ public class Body implements Copyable {
 
     @Nonnull
     public Body build() {
-
-      StringBuilder debug = new StringBuilder(methodSig + "\n");
-      for (Stmt stmt : cfg.nodes()) {
-        debug.append(stmt).append(" => ").append(cfg.successors(stmt)).append(" \n");
-      }
 
       // validate statements
       for (Stmt stmt : cfg.nodes()) {
