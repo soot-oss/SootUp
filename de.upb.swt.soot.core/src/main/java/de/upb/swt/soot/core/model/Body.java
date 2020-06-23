@@ -53,6 +53,7 @@ import javax.annotation.Nullable;
  */
 public class Body implements Copyable {
 
+	//TODO. add javadoc why we need this empty body.
   public static final Body EMPTY_BODY =
       new Body(
           new MethodSignature(
@@ -113,10 +114,11 @@ public class Body implements Copyable {
           new CheckEscapingValidator());
 
   /**
+   * 
    * Creates an body which is not associated to any method.
    *
    * @param locals please use {@link LocalGenerator} to generate local for a body.
-   */
+   */ 
   public Body(
       @Nonnull MethodSignature methodSignature,
       @Nonnull Set<Local> locals,
@@ -128,7 +130,7 @@ public class Body implements Copyable {
     this.traps = Collections.unmodifiableList(traps);
     this.cfg = ImmutableStmtGraph.copyOf(stmtGraph);
     this.position = position;
-
+    // TODO: Make this method private. 
     // FIXME: [JMP] Virtual method call in constructor
     checkInit();
   }
