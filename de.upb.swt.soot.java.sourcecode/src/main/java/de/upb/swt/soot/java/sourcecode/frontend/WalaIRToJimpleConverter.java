@@ -386,7 +386,7 @@ public class WalaIRToJimpleConverter {
       MethodSignature methodSignature, EnumSet<Modifier> modifiers, AstMethod walaMethod) {
 
     if (walaMethod.isAbstract()) {
-      return Body.getNoBody();
+      return Body.getEmptyBody();
     }
 
     final Body.BodyBuilder builder = Body.builder();

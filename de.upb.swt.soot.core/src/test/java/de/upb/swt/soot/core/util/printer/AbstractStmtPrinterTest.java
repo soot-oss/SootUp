@@ -12,7 +12,7 @@ public class AbstractStmtPrinterTest {
 
   @Test
   public void addImportTest() {
-    NormalStmtPrinter p = new NormalStmtPrinter(Body.getNoBody());
+    NormalStmtPrinter p = new NormalStmtPrinter(Body.getEmptyBody());
     p.enableImports(true);
 
     PackageName abc = new PackageName("a.b.c");
