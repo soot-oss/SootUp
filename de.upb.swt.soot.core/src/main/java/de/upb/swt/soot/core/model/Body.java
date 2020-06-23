@@ -491,6 +491,7 @@ public class Body implements Copyable {
       return this;
     }
 
+    /** @param autoLinkStmts if this is true, a flow is added from the previously inserted stmt */
     @Nonnull
     public BodyBuilder addStmts(@Nonnull Collection<Stmt> stmts, boolean autoLinkStmts) {
       for (Stmt s : stmts) addStmt(s, autoLinkStmts);
@@ -502,6 +503,10 @@ public class Body implements Copyable {
       return addStmt(stmt, false);
     }
 
+    /**
+     * @param linkLastStmt if this is true, a flow is added if the previously inserted Stmt falls
+     *     through i.e. does not branch, return or throw
+     */
     @Nonnull
     public BodyBuilder addStmt(@Nonnull Stmt stmt, boolean linkLastStmt) {
       cfg.addNode(stmt);

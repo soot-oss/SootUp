@@ -20,8 +20,12 @@ public class MutableStmtGraphTest {
     graph.addNode(stmt1);
     graph.addNode(stmt2);
     graph.putEdge(stmt1, stmt2);
+    graph.setEntryPoint(stmt1);
 
     final StmtGraph graph2 = MutableStmtGraph.copyOf(graph);
+
+    assertEquals(graph.getEntryPoint(), graph2.getEntryPoint());
+    assertEquals(graph.nodes().size(), graph2.nodes().size());
     assertEquals(
         Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(stmt1, stmt2))),
         graph2.nodes());
