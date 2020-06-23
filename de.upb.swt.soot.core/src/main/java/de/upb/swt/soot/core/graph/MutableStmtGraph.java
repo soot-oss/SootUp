@@ -108,9 +108,13 @@ public class MutableStmtGraph extends StmtGraph {
 
   public boolean removeNode(@Nonnull Stmt node) {
     if (stmtList.remove(node)) {
-      predecessors.get(node).forEach(pred -> successors.get(pred).remove(node));
+      predecessors
+          .getOrDefault(node, Collections.emptyList())
+          .forEach(pred -> successors.get(pred).remove(node));
       predecessors.remove(node);
-      successors.get(node).forEach(succ -> predecessors.get(succ).remove(node));
+      successors
+          .getOrDefault(node, Collections.emptyList())
+          .forEach(succ -> predecessors.get(succ).remove(node));
       successors.remove(node);
       return true;
     }
@@ -173,6 +177,7 @@ public class MutableStmtGraph extends StmtGraph {
   @Override
   @Nonnull
   public List<Stmt> adjacentNodes(@Nonnull Stmt node) {
+    existsNodeOrThrow(node);
     final List<Stmt> pred = predecessors.get(node);
     final List<Stmt> succ = successors.get(node);
     final int predSize = (pred == null ? 0 : pred.size());
@@ -195,6 +200,7 @@ public class MutableStmtGraph extends StmtGraph {
   @Override
   @Nonnull
   public List<Stmt> predecessors(@Nonnull Stmt node) {
+    existsNodeOrThrow(node);
     final List<Stmt> stmts = predecessors.get(node);
     if (stmts == null) {
       return Collections.emptyList();
@@ -205,6 +211,7 @@ public class MutableStmtGraph extends StmtGraph {
   @Override
   @Nonnull
   public List<Stmt> successors(@Nonnull Stmt node) {
+    existsNodeOrThrow(node);
     final List<Stmt> stmts = successors.get(node);
     if (stmts == null) {
       return Collections.emptyList();

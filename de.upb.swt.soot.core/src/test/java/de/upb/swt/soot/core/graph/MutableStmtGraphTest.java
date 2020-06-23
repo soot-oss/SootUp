@@ -12,7 +12,9 @@ import org.junit.Test;
 public class MutableStmtGraphTest {
 
   @Test
-  public void copyOf() {}
+  public void copyOf() {
+    // TODO
+  }
 
   @Test
   public void addNode() {
@@ -24,13 +26,73 @@ public class MutableStmtGraphTest {
   }
 
   @Test
-  public void removeNode() {
-    // 1. without connection
+  public void removeNodeWOEdges() {
+    Stmt stmt = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    MutableStmtGraph graph = new MutableStmtGraph();
+    graph.addNode(stmt);
+    assertTrue(graph.nodes().contains(stmt));
+    graph.removeNode(stmt);
+    assertFalse(graph.nodes().contains(stmt));
+  }
 
-    // 2. with predecessor(s)
+  @Test
+  public void removeNodeWOPredecessors() {
+    Stmt stmt1 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    Stmt stmt2 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    MutableStmtGraph graph = new MutableStmtGraph();
+    graph.addNode(stmt1);
+    graph.addNode(stmt2);
+    graph.putEdge(stmt1, stmt2);
 
-    // 3. with successors
+    assertTrue(graph.nodes().contains(stmt1));
+    assertEquals(Collections.singletonList(stmt2), graph.successors(stmt1));
+    assertEquals(Collections.singletonList(stmt1), graph.predecessors(stmt2));
 
+    graph.removeNode(stmt1);
+    assertFalse(graph.nodes().contains(stmt1));
+    try {
+      graph.predecessors(stmt2);
+      fail();
+    } catch (Exception ignored) {
+
+    }
+    try {
+      graph.successors(stmt1);
+      fail();
+    } catch (Exception ignored) {
+
+    }
+    assertEquals(Collections.emptyList(), graph.predecessors(stmt2));
+  }
+
+  @Test
+  public void removeNodeWOSuccessors() {
+    Stmt stmt1 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    Stmt stmt2 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    MutableStmtGraph graph = new MutableStmtGraph();
+    graph.addNode(stmt1);
+    graph.addNode(stmt2);
+    graph.putEdge(stmt1, stmt2);
+
+    assertTrue(graph.nodes().contains(stmt2));
+    assertEquals(Collections.singletonList(stmt2), graph.successors(stmt1));
+    assertEquals(Collections.singletonList(stmt1), graph.predecessors(stmt2));
+
+    graph.removeNode(stmt2);
+    assertFalse(graph.nodes().contains(stmt2));
+    try {
+      graph.predecessors(stmt2);
+      fail();
+    } catch (Exception ignored) {
+
+    }
+    try {
+      graph.successors(stmt2);
+      fail();
+    } catch (Exception ignored) {
+
+    }
+    assertEquals(Collections.emptyList(), graph.successors(stmt1));
   }
 
   @Test
