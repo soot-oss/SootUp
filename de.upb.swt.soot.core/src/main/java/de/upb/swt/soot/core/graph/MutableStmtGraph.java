@@ -99,7 +99,7 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public boolean addNode(@Nonnull Stmt node) {
-    boolean modify = !stmtList.contains(node);
+    boolean modify = !containsNode(node);
     if (modify) {
       stmtList.add(node);
     }
@@ -122,10 +122,13 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   private void existsNodeOrThrow(@Nonnull Stmt node) {
-    if (!stmtList.contains(node)) {
-      throw new RuntimeException(
-          node + " is currently not a Node in this StmtGraph. Please add it at first.");
+    if (!containsNode(node)) {
+      throw new RuntimeException(node + " is currently not a Node in this StmtGraph.");
     }
+  }
+
+  public boolean containsNode(@Nonnull Stmt node) {
+    return stmtList.contains(node);
   }
 
   public boolean removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
