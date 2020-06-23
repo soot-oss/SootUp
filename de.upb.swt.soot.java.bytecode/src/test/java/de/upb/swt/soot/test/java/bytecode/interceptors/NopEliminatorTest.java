@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -29,7 +28,7 @@ public class NopEliminatorTest {
   /** Tests the correct handling of an empty {@link Body}. */
   @Test
   public void testNoInput() {
-    Body testBody = Body.getNoBody();
+    Body testBody = Body.getEmptyBody();
     Body processedBody = new NopEliminator().interceptBody(testBody);
 
     assertNotNull(processedBody);
@@ -39,16 +38,13 @@ public class NopEliminatorTest {
   /**
    * Tests the correct handling of a nop statement at the end of the stmtList. It should be deleted.
    */
-  @Ignore
+  @Test
   public void testJNopEnd() {
     Body testBody = createBody(true, false);
     Body processedBody = new NopEliminator().interceptBody(testBody);
 
     ImmutableStmtGraph expectedGraph = testBody.getStmtGraph();
     ImmutableStmtGraph actualGraph = processedBody.getStmtGraph();
-
-    System.out.println(testBody);
-    System.out.println(processedBody);
 
     assertEquals(expectedGraph.nodes().size() - 1, actualGraph.nodes().size());
   }
@@ -116,14 +112,13 @@ public class NopEliminatorTest {
         Trap trap = Jimple.newTrap(throwable, strToA, nop, handler);
         traps.add(trap);
       }
-      builder.addFlow(nop, ret); // [ms] wuite artificial flow
-
+      builder.addStmts(stmts);
+      builder.addFlow(nop, ret);
     } else {
       stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret);
       stmts.forEach(stmt -> builder.addStmt(stmt, true));
     }
     builder.addFlow(jump, ret);
-
     builder.setLocals(locals);
     builder.setTraps(traps);
     builder.setPosition(NoPositionInformation.getInstance());

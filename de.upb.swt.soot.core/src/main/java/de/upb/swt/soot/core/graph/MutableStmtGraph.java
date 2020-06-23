@@ -27,7 +27,7 @@ public class MutableStmtGraph extends StmtGraph {
       graph.addNode(node);
 
       final List<Stmt> pred = stmtGraph.predecessors(node);
-      graph.predecessors.put(node, new ArrayList(pred));
+      graph.predecessors.put(node, new ArrayList<>(pred));
 
       final List<Stmt> succ = stmtGraph.successors(node);
       graph.successors.put(node, new ArrayList<>(succ));
@@ -118,9 +118,13 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public boolean removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
-
-    if (!stmtList.contains(from) || !stmtList.contains(to)) {
-      return false;
+    if (!stmtList.contains(from)) {
+      throw new RuntimeException(
+          from + " has not be added to the graph yet. Please add it at first.");
+    }
+    if (!stmtList.contains(to)) {
+      throw new RuntimeException(
+          to + " has not be added to the graph yet. Please add it at first.");
     }
 
     final List<Stmt> pred = predecessors.get(to);
@@ -138,9 +142,13 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public boolean putEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
-
-    if (!stmtList.contains(from) || !stmtList.contains(to)) {
-      return false;
+    if (!stmtList.contains(from)) {
+      throw new RuntimeException(
+          from + " has not be added to the graph yet. Please add it at first.");
+    }
+    if (!stmtList.contains(to)) {
+      throw new RuntimeException(
+          to + " has not be added to the graph yet. Please add it at first.");
     }
 
     final List<Stmt> pred = predecessors.computeIfAbsent(to, key -> new ArrayList<>(1));

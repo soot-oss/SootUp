@@ -113,7 +113,7 @@ public class Printer {
 
   public void printTo(SootClass cl, PrintWriter out) {
 
-    LabeledStmtPrinter printer = determinePrinter(Body.getNoBody());
+    LabeledStmtPrinter printer = determinePrinter(Body.getEmptyBody());
     printer.enableImports(options.contains(Option.UseImports));
 
     // add jimple line number tags

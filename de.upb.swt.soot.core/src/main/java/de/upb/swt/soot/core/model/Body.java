@@ -64,17 +64,17 @@ public class Body implements Copyable {
 
                 @Override
                 public String getFullyQualifiedName() {
-                  return "No.Body";
+                  return "Empty Body";
                 }
 
                 @Override
                 public String getClassName() {
-                  return "Body";
+                  return "Not Defined";
                 }
 
                 @Override
                 public PackageName getPackageName() {
-                  return new PackageName("No");
+                  return new PackageName("Not Defined");
                 }
               },
               new MethodSubSignature("body", Collections.emptyList(), VoidType.getInstance())),
@@ -134,7 +134,7 @@ public class Body implements Copyable {
   }
 
   @Nonnull
-  public static Body getNoBody() {
+  public static Body getEmptyBody() {
     return EMPTY_BODY;
   }
 
@@ -485,6 +485,10 @@ public class Body implements Copyable {
       return this;
     }
 
+    public void addStmts(Collection<Stmt> stmts) {
+      for (Stmt s : stmts) this.addStmt(s);
+    }
+
     @Nonnull
     public BodyBuilder addStmt(@Nonnull Stmt stmt) {
       return addStmt(stmt, false);
@@ -551,15 +555,13 @@ public class Body implements Copyable {
 
           for (Stmt target : successors) {
             if (target == stmt) {
-              System.out.println(debug);
-              throw new IllegalArgumentException(stmt + ": a Stmt cannot branch to itself.");
+              throw new RuntimeException(stmt + ": a Stmt cannot branch to itself.");
             }
           }
 
           if (stmt instanceof JSwitchStmt) {
             if (successorCount != ((JSwitchStmt) stmt).getValueCount()) {
-              System.out.println(debug);
-              throw new IllegalArgumentException(
+              throw new RuntimeException(
                   stmt
                       + ": size of outgoing flows (i.e. "
                       + successorCount
@@ -569,7 +571,6 @@ public class Body implements Copyable {
             }
           } else if (stmt instanceof JIfStmt) {
             if (successorCount != 2) {
-              System.out.println(debug);
               throw new IllegalStateException(
                   stmt + ": must have '2' outgoing flow but has '" + successorCount + "'.");
             } else {
@@ -590,8 +591,7 @@ public class Body implements Copyable {
             }
           } else if (stmt instanceof JGotoStmt) {
             if (successorCount != 1) {
-              System.out.println(debug);
-              throw new IllegalArgumentException(
+              throw new RuntimeException(
                   stmt + ": Goto must have '1' outgoing flow but has '" + successorCount + "'.");
             }
           }
@@ -600,21 +600,19 @@ public class Body implements Copyable {
             || stmt instanceof JReturnVoidStmt
             || stmt instanceof JThrowStmt) {
           if (successorCount != 0) {
-            System.out.println(debug);
-            throw new IllegalArgumentException(
+            throw new RuntimeException(
                 stmt + ": must have '0' outgoing flow but has '" + successorCount + "'.");
           }
         } else {
           if (successorCount != 1) {
-            System.out.println(debug);
-            throw new IllegalArgumentException(
+            throw new RuntimeException(
                 stmt + ": must have '1' outgoing flow but has '" + successorCount + "'.");
           }
         }
       }
 
       if (methodSig == null) {
-        throw new IllegalArgumentException("There is no MethodSignature set.");
+        throw new RuntimeException("There is no MethodSignature set.");
       }
 
       return new Body(methodSig, locals, traps, cfg, position);
