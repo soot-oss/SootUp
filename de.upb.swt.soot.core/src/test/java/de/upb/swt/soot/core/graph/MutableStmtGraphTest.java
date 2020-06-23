@@ -7,13 +7,30 @@ import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import org.junit.Test;
 
 public class MutableStmtGraphTest {
 
   @Test
   public void copyOf() {
-    // TODO
+    Stmt stmt1 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    Stmt stmt2 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    MutableStmtGraph graph = new MutableStmtGraph();
+    graph.addNode(stmt1);
+    graph.addNode(stmt2);
+    graph.putEdge(stmt1, stmt2);
+
+    final StmtGraph graph2 = MutableStmtGraph.copyOf(graph);
+    assertEquals(
+        Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(stmt1, stmt2))),
+        graph2.nodes());
+
+    assertEquals(graph.nodes().size(), graph2.nodes().size());
+    for (Stmt node : graph.nodes()) {
+      assertEquals(graph.predecessors(node), graph2.predecessors(node));
+      assertEquals(graph.successors(node), graph2.successors(node));
+    }
   }
 
   @Test
