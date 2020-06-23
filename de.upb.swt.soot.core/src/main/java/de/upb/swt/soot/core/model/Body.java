@@ -428,6 +428,22 @@ public class Body implements Copyable {
     return new BodyBuilder(body);
   }
 
+  /**
+   * helps to create a Body in a fluent way.
+   *
+   * <pre>
+   * <code>
+   * Stmt stmt1 = ... ;
+   * Stmt stmt2 = ... ;
+   * Body.BodyBuilder builder = Body.builder();
+   * builder.addStmt(stmt1).addStmt(stmt2);
+   * builder.addFlow(stmt1,stmt2);
+   * ...
+   * Body body = builder.build();
+   *
+   * </code>
+   * </pre>
+   */
   public static class BodyBuilder {
     @Nonnull private Set<Local> locals = new HashSet<>();
     @Nonnull private final LocalGenerator localGen = new LocalGenerator(locals);
