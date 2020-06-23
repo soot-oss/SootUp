@@ -117,15 +117,16 @@ public class MutableStmtGraph extends StmtGraph {
     return false;
   }
 
+  private void existsNodeOrThrow(@Nonnull Stmt node) {
+    if (!stmtList.contains(node)) {
+      throw new RuntimeException(
+          node + " is currently not a Node in this StmtGraph. Please add it at first.");
+    }
+  }
+
   public boolean removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
-    if (!stmtList.contains(from)) {
-      throw new RuntimeException(
-          from + " has not be added to the graph yet. Please add it at first.");
-    }
-    if (!stmtList.contains(to)) {
-      throw new RuntimeException(
-          to + " has not be added to the graph yet. Please add it at first.");
-    }
+    existsNodeOrThrow(from);
+    existsNodeOrThrow(to);
 
     final List<Stmt> pred = predecessors.get(to);
     boolean modified = false;
@@ -142,14 +143,8 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public boolean putEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
-    if (!stmtList.contains(from)) {
-      throw new RuntimeException(
-          from + " has not be added to the graph yet. Please add it at first.");
-    }
-    if (!stmtList.contains(to)) {
-      throw new RuntimeException(
-          to + " has not be added to the graph yet. Please add it at first.");
-    }
+    existsNodeOrThrow(from);
+    existsNodeOrThrow(to);
 
     final List<Stmt> pred = predecessors.computeIfAbsent(to, key -> new ArrayList<>(1));
     pred.add(from);
@@ -163,14 +158,9 @@ public class MutableStmtGraph extends StmtGraph {
       predictedSuccessorSize = 1;
     }
 
-    if (predictedSuccessorSize != 1) {
-      final List<Stmt> succ =
-          successors.computeIfAbsent(from, key -> new ArrayList<>(predictedSuccessorSize));
-      succ.add(to);
-    } else {
-      successors.put(from, Collections.singletonList(to));
-    }
-
+    final List<Stmt> succ =
+        successors.computeIfAbsent(from, key -> new ArrayList<>(predictedSuccessorSize));
+    succ.add(to);
     return true;
   }
 
@@ -185,11 +175,21 @@ public class MutableStmtGraph extends StmtGraph {
   public List<Stmt> adjacentNodes(@Nonnull Stmt node) {
     final List<Stmt> pred = predecessors.get(node);
     final List<Stmt> succ = successors.get(node);
-    final int degree = (pred == null ? 0 : pred.size()) + (succ == null ? 0 : succ.size());
-    final ArrayList<Stmt> set = new ArrayList<>(degree);
-    set.addAll(pred);
-    set.addAll(succ);
-    return set;
+    final int predSize = (pred == null ? 0 : pred.size());
+    final int succSize = (succ == null ? 0 : succ.size());
+    final int degree = predSize + succSize;
+    if (degree > 0) {
+      final List<Stmt> list = new ArrayList<>(degree);
+      if (predSize > 0) {
+        list.addAll(pred);
+      }
+      if (succSize > 0) {
+        list.addAll(succ);
+      }
+      return list;
+    } else {
+      return Collections.emptyList();
+    }
   }
 
   @Override
@@ -219,12 +219,14 @@ public class MutableStmtGraph extends StmtGraph {
 
   @Override
   public int inDegree(@Nonnull Stmt node) {
+    existsNodeOrThrow(node);
     final List<Stmt> stmts = predecessors.get(node);
     return stmts == null ? 0 : stmts.size();
   }
 
   @Override
   public int outDegree(@Nonnull Stmt node) {
+    existsNodeOrThrow(node);
     final List<Stmt> stmts = successors.get(node);
     return stmts == null ? 0 : stmts.size();
   }
