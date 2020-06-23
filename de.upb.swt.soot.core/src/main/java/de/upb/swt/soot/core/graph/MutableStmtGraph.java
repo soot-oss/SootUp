@@ -149,6 +149,21 @@ public class MutableStmtGraph extends StmtGraph {
     return modified;
   }
 
+  public boolean setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets) {
+    targets.forEach(this::existsNodeOrThrow);
+
+    // cleanup existing edges before replacing it with the new list with successors
+    successors(from).forEach(succ -> predecessors.get(succ).remove(from));
+
+    for (Stmt target : targets) {
+      final List<Stmt> pred = predecessors.computeIfAbsent(target, key -> new ArrayList<>(1));
+      pred.add(from);
+    }
+
+    successors.put(from, targets);
+    return true;
+  }
+
   public boolean putEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
     existsNodeOrThrow(from);
     existsNodeOrThrow(to);
