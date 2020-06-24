@@ -19,73 +19,74 @@ public class MutableStmtGraph extends StmtGraph {
 
   public MutableStmtGraph() {}
 
-  public static MutableStmtGraph copyOf(@Nonnull StmtGraph stmtGraph) {
-    final MutableStmtGraph graph = new MutableStmtGraph();
-    graph.setEntryPoint(stmtGraph.getEntryPoint());
+  public static MutableStmtGraph copyOf(@Nonnull StmtGraph originalStmtGraph) {
+    final MutableStmtGraph copiedGraph = new MutableStmtGraph();
+    copiedGraph.setEntryPoint(originalStmtGraph.getEntryPoint());
 
-    for (Stmt node : stmtGraph.nodes()) {
-      graph.addNode(node);
+    for (Stmt node : originalStmtGraph.nodes()) {
+      copiedGraph.addNode(node);
 
-      final List<Stmt> pred = stmtGraph.predecessors(node);
-      graph.predecessors.put(node, new ArrayList<>(pred));
+      final List<Stmt> pred = originalStmtGraph.predecessors(node);
+      copiedGraph.predecessors.put(node, new ArrayList<>(pred));
 
-      final List<Stmt> succ = stmtGraph.successors(node);
-      graph.successors.put(node, new ArrayList<>(succ));
+      final List<Stmt> succ = originalStmtGraph.successors(node);
+      copiedGraph.successors.put(node, new ArrayList<>(succ));
     }
 
-    return graph;
+    return copiedGraph;
   }
 
   public StmtGraph asUnmodifiableStmtGraph() {
-    StmtGraph ref = this;
+    StmtGraph graphRef = this;
     return new StmtGraph() {
+      @Nonnull
       @Override
       public Stmt getEntryPoint() {
-        return ref.getEntryPoint();
+        return graphRef.getEntryPoint();
       }
 
       @Nonnull
       @Override
       public Set<Stmt> nodes() {
-        return ref.nodes();
+        return graphRef.nodes();
       }
 
       @Nonnull
       @Override
       public List<Stmt> adjacentNodes(@Nonnull Stmt node) {
-        return ref.adjacentNodes(node);
+        return graphRef.adjacentNodes(node);
       }
 
       @Nonnull
       @Override
       public List<Stmt> predecessors(@Nonnull Stmt node) {
-        return ref.predecessors(node);
+        return graphRef.predecessors(node);
       }
 
       @Nonnull
       @Override
       public List<Stmt> successors(@Nonnull Stmt node) {
-        return ref.successors(node);
+        return graphRef.successors(node);
       }
 
       @Override
       public int degree(@Nonnull Stmt node) {
-        return ref.degree(node);
+        return graphRef.degree(node);
       }
 
       @Override
       public int inDegree(@Nonnull Stmt node) {
-        return ref.inDegree(node);
+        return graphRef.inDegree(node);
       }
 
       @Override
       public int outDegree(@Nonnull Stmt node) {
-        return ref.outDegree(node);
+        return graphRef.outDegree(node);
       }
 
       @Override
       public boolean hasEdgeConnecting(@Nonnull Stmt nodeU, @Nonnull Stmt nodeV) {
-        return ref.hasEdgeConnecting(nodeU, nodeV);
+        return graphRef.hasEdgeConnecting(nodeU, nodeV);
       }
     };
   }
@@ -94,6 +95,7 @@ public class MutableStmtGraph extends StmtGraph {
     this.entrypoint = firstStmt;
   }
 
+  @Nonnull
   public Stmt getEntryPoint() {
     return entrypoint;
   }

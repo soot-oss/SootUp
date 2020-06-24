@@ -63,6 +63,10 @@ public class MutableStmtGraphTest {
 
     assertTrue(graph.predecessors(stmt3).contains(stmt1));
     assertTrue(graph.successors(stmt1).contains(stmt3));
+
+    // order of stmts
+    assertEquals(stmt2, graph.successors(stmt1).get(0));
+    assertEquals(stmt3, graph.successors(stmt1).get(1));
   }
 
   @Test

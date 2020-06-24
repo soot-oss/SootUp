@@ -6,7 +6,8 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
- * Immutable implementation for a StmtGraph. It encapsulates a StmtGraph so its not modifiable.
+ * Immutable implementation for a StmtGraph. It copies and encapsulates a StmtGraph so its not
+ * modifiable.
  *
  * @author Markus Schmidt
  */
@@ -29,6 +30,7 @@ public final class ImmutableStmtGraph extends StmtGraph {
     return new ImmutableStmtGraph(graph);
   }
 
+  @Nonnull
   @Override
   public Set<Stmt> nodes() {
     return backingGraph.nodes();

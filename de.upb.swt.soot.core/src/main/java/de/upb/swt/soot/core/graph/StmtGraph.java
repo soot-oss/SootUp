@@ -3,6 +3,7 @@ package de.upb.swt.soot.core.graph;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Interface for control flow graphs on Jimple Stmts
@@ -11,18 +12,11 @@ import javax.annotation.Nonnull;
  */
 public abstract class StmtGraph {
 
-  protected Stmt entrypoint;
+  @Nullable protected Stmt entrypoint;
 
+  @Nullable
   public Stmt getEntryPoint() {
     return entrypoint;
-  }
-
-  public final boolean isDirected() {
-    return true;
-  }
-
-  public final boolean allowsSelfLoops() {
-    return false;
   }
 
   @Nonnull
