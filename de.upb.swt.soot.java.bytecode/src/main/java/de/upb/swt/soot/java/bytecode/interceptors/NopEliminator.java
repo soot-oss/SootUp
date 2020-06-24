@@ -1,7 +1,6 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
 import de.upb.swt.soot.core.graph.StmtGraph;
-import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
@@ -29,25 +28,14 @@ public class NopEliminator implements BodyInterceptor {
 
     for (Stmt stmt : stmtSet) {
       if (stmt instanceof JNopStmt) {
-        boolean keepNop = false;
         final List<Stmt> successors = originalGraph.successors(stmt);
-        final int successorSize = successors.size();
-        if (successorSize == 0) {
-          for (Trap trap : originalBody.getTraps()) {
-            if (trap.getEndStmt() == stmt) {
-              keepNop = true;
-            }
-          }
+        // relink predecessors to successor of nop
+        if (successors.size() > 0) {
+          final Stmt successorOfNop = successors.iterator().next();
+          originalGraph.predecessors(stmt).forEach(pred -> builder.addFlow(pred, successorOfNop));
         }
-        if (!keepNop) {
-          // relink predecessors to successor of nop
-          if (successorSize > 0) {
-            final Stmt successorOfNop = successors.iterator().next();
-            originalGraph.predecessors(stmt).forEach(pred -> builder.addFlow(pred, successorOfNop));
-          }
-          // remove node,edges
-          builder.removeStmt(stmt);
-        }
+        // remove node,edges
+        builder.removeStmt(stmt);
       }
     }
 
