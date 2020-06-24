@@ -21,7 +21,7 @@
  */
 package de.upb.swt.soot.core.util.printer;
 
-import com.google.common.graph.Graph;
+import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -113,7 +113,7 @@ public class Printer {
 
   public void printTo(SootClass cl, PrintWriter out) {
 
-    LabeledStmtPrinter printer = determinePrinter(Body.getNoBody());
+    LabeledStmtPrinter printer = determinePrinter(Body.getEmptyBody());
     printer.enableImports(options.contains(Option.UseImports));
 
     // add jimple line number tags
@@ -228,7 +228,7 @@ public class Printer {
           // print method's full signature information
           method.toString(printer);
 
-          printTo(body, printer, out);
+          printTo(body, printer);
 
         } else {
           printer.handleIndent();
@@ -253,7 +253,7 @@ public class Printer {
   public void printTo(Body body, PrintWriter out) {
     LabeledStmtPrinter printer = determinePrinter(body);
     printer.enableImports(options.contains(Option.UseImports));
-    printTo(body, printer, out);
+    printTo(body, printer);
     out.print(printer);
   }
 
@@ -263,7 +263,7 @@ public class Printer {
    *
    * @param printer the StmtPrinter that determines how to print the statements
    */
-  private void printTo(Body b, LabeledStmtPrinter printer, PrintWriter out) {
+  private void printTo(Body b, LabeledStmtPrinter printer) {
 
     if (addJimpleLn()) {
       setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), b.getMethodSignature()));
@@ -293,14 +293,9 @@ public class Printer {
   private void printStatementsInBody(Body body, LabeledStmtPrinter printer) {
     printer.initializeSootMethod(body);
 
-    // TODO cleanup
-    // AbstractStmtGraph unitGraph = new BriefStmtGraph(body);
-    Graph<Stmt> stmtGraph = body.getStmtGraph();
-    // Collection<Stmt> units = body.getStmts();
+    ImmutableStmtGraph stmtGraph = body.getStmtGraph();
     Stmt previousStmt;
 
-    // TODO: [ms] fix traverse strategy:
-    // Traverser.forGraph(stmtGraph).depthFirstPreOrder(body.getFirstStmt());
     for (Stmt currentStmt : stmtGraph.nodes()) {
       previousStmt = currentStmt;
 
@@ -321,7 +316,6 @@ public class Printer {
             printer.newline();
           } else {
             // Or if the previous node does not have body statement as a successor.
-
             final Iterator<Stmt> succIterator = stmtGraph.successors(previousStmt).iterator();
             if (succIterator.hasNext() && succIterator.next() != currentStmt) {
               printer.newline();

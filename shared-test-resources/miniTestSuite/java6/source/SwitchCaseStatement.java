@@ -8,33 +8,77 @@ public class SwitchCaseStatement {
     }
 
     public void switchCaseStatementEnum() {
-        String color = "RED";
+        Color color = Color.RED;
         String str = "";
-        switch (Color.valueOf(color)){
+        switch (color){
             case RED:
-                str = "color red detected";
+                str = "red";
                 break;
             case GREEN:
-                str = "color green detected";
+                str = "green";
                 break;
             default:
-                str = "invalid color";
+                str = "invalid";
                 break;
         }
     }
 
     public void switchCaseStatementInt() {
-        int num = 2;
+        int num = 5;
         String str;
         switch (num) {
-            case 1:  str = "number 1 detected";
+            case 1:  str = "one";
                 break;
-            case 2:  str = "number 2 detected";
+            case 2:  str = "two";
                 break;
-            case 3:  str = "number 3 detected";
+            case 3:  str = "three";
                 break;
-            default: str = "invalid number";
+            default: str = "invalid";
                 break;
         }
     }
+
+    public void switchCaseWithoutDefault() {
+        int num = 6;
+        String str;
+        switch (num) {
+            case 1:  str = "one";
+                break;
+            case 2:  str = "two";
+                break;
+            case 3:  str = "three";
+                break;
+        }
+    }
+
+    public void switchCaseGroupedTargets() {
+        int num = 7;
+        String str;
+        switch (num) {
+            case 1:
+            case 2:
+                str = "first";
+                break;
+            case 3:
+                str = "second";
+                break;
+        }
+    }
+
+    public void switchCaseGroupedTargetsDefault() {
+        int num = 8;
+        String str;
+        switch (num) {
+            case 1:
+            case 2:
+                str = "first";
+                break;
+            case 3:
+                str = "second";
+                break;
+            default:
+                str = "other";
+        }
+    }
+
 }

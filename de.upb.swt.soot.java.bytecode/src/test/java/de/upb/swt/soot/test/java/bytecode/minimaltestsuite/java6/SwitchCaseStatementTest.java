@@ -19,24 +19,23 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
         method,
         expectedBodyStmts(
             "l0 := @this: SwitchCaseStatement",
-            "l1 = \"RED\"",
+            "l1 = <SwitchCaseStatement$Color: SwitchCaseStatement$Color RED>",
             "l2 = \"\"",
             "$stack3 = <SwitchCaseStatement$1: int[] $SwitchMap$SwitchCaseStatement$Color>",
-            "$stack4 = staticinvoke <SwitchCaseStatement$Color: SwitchCaseStatement$Color valueOf(java.lang.String)>(l1)",
-            "$stack5 = virtualinvoke $stack4.<SwitchCaseStatement$Color: int ordinal()>()",
-            "$stack6 = $stack3[$stack5]",
-            "switch($stack6)",
+            "$stack4 = virtualinvoke l1.<SwitchCaseStatement$Color: int ordinal()>()",
+            "$stack5 = $stack3[$stack4]",
+            "switch($stack5)",
             "case 1: goto label1",
             "case 2: goto label2",
             "default: goto label3",
             "label1:",
-            "l2 = \"color red detected\"",
+            "l2 = \"red\"",
             "goto label4",
             "label2:",
-            "l2 = \"color green detected\"",
+            "l2 = \"green\"",
             "goto label4",
             "label3:",
-            "l2 = \"invalid color\"",
+            "l2 = \"invalid\"",
             "label4:",
             "return"));
   }
@@ -48,24 +47,96 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
         method,
         expectedBodyStmts(
             "l0 := @this: SwitchCaseStatement",
-            "l1 = 2",
+            "l1 = 5",
             "switch(l1)",
             "case 1: goto label1",
             "case 2: goto label2",
             "case 3: goto label3",
             "default: goto label4",
             "label1:",
-            "l2 = \"number 1 detected\"",
+            "l2 = \"one\"",
             "goto label5",
             "label2:",
-            "l2 = \"number 2 detected\"",
+            "l2 = \"two\"",
             "goto label5",
             "label3:",
-            "l2 = \"number 3 detected\"",
+            "l2 = \"three\"",
             "goto label5",
             "label4:",
-            "l2 = \"invalid number\"",
+            "l2 = \"invalid\"",
             "label5:",
+            "return"));
+  }
+
+  @Test
+  public void testSwitchCaseWithoutDefault() {
+    SootMethod method = loadMethod(getMethodSignature("switchCaseWithoutDefault"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
+            "l0 := @this: SwitchCaseStatement",
+            "l1 = 6",
+            "switch(l1)",
+            "case 1: goto label1",
+            "case 2: goto label2",
+            "case 3: goto label3",
+            "default: goto label4",
+            "label1:",
+            "l2 = \"one\"",
+            "goto label4",
+            "label2:",
+            "l2 = \"two\"",
+            "goto label4",
+            "label3:",
+            "l2 = \"three\"",
+            "label4:",
+            "return"));
+  }
+
+  @Test
+  public void testSwitchCaseGroupedTargets() {
+    SootMethod method = loadMethod(getMethodSignature("switchCaseGroupedTargets"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
+            "l0 := @this: SwitchCaseStatement",
+            "l1 = 7",
+            "switch(l1)",
+            "case 1: goto label1",
+            "case 2: goto label1",
+            "case 3: goto label2",
+            "default: goto label3",
+            "label1:",
+            "l2 = \"first\"",
+            "goto label3",
+            "label2:",
+            "l2 = \"second\"",
+            "label3:",
+            "return"));
+  }
+
+  @Test
+  public void testSwitchCaseGroupedTargetsDefault() {
+    SootMethod method = loadMethod(getMethodSignature("switchCaseGroupedTargetsDefault"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
+            "l0 := @this: SwitchCaseStatement",
+            "l1 = 8",
+            "switch(l1)",
+            "case 1: goto label1",
+            "case 2: goto label1",
+            "case 3: goto label2",
+            "default: goto label3",
+            "label1:",
+            "l2 = \"first\"",
+            "goto label4",
+            "label2:",
+            "l2 = \"second\"",
+            "goto label4",
+            "label3:",
+            "l2 = \"other\"",
+            "label4:",
             "return"));
   }
 
