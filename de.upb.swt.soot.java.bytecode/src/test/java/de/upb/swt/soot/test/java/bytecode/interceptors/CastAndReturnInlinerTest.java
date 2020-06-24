@@ -63,8 +63,10 @@ public class CastAndReturnInlinerTest {
     List<Trap> traps = Collections.emptyList();
     List<Stmt> stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret);
     Body testBody = Body.getNoBody(); // FIXME: = new Body(locals, traps, stmts, null);
+    Body.BodyBuilder bodyBuilder = new Body.BodyBuilder();
+    bodyBuilder.setLocals(locals).setTraps(traps);
 
-    Body processedBody = new CastAndReturnInliner().interceptBody(testBody);
+    Body processedBody = new CastAndReturnInliner().interceptBody(bodyBuilder.build());
 
     assertStmtsEquiv(
         ImmutableUtils.immutableList(

@@ -60,23 +60,12 @@ public class PrinterTest {
     final MutableGraph<Stmt> graph = GraphBuilder.directed().build();
     graph.addNode(new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
 
-    Body bodyOne =
-        new Body(
-            Collections.emptySet(),
-            Collections.emptyList(),
-            graph,
-            null,
-            graph.nodes().iterator().hasNext() ? graph.nodes().iterator().next() : null,
-            NoPositionInformation.getInstance());
+    Body.BodyBuilder bodyBuilder = new Body.BodyBuilder(graph);
+    bodyBuilder.setPosition(NoPositionInformation.getInstance());
 
-    Body bodyTwo =
-        new Body(
-            Collections.emptySet(),
-            Collections.emptyList(),
-            graph,
-            null,
-            graph.nodes().iterator().hasNext() ? graph.nodes().iterator().next() : null,
-            NoPositionInformation.getInstance());
+    Body bodyOne = bodyBuilder.build();
+
+    Body bodyTwo = bodyBuilder.build();
 
     String className = "some.package.SomeClass";
     MethodSignature methodSignatureOne =

@@ -419,27 +419,32 @@ public class Body implements Copyable {
 
   @Nonnull
   public Body withLocals(@Nonnull Set<Local> locals) {
-    return new Body(locals, getTraps(), getStmtGraph(), getBranches(), getFirstStmt(), getPosition());
+    return new Body(
+        locals, getTraps(), getStmtGraph(), getBranches(), getFirstStmt(), getPosition());
   }
 
   @Nonnull
   public Body withTraps(@Nonnull List<Trap> traps) {
-    return new Body(getLocals(), traps, getStmtGraph(), getBranches(), getFirstStmt(), getPosition());
+    return new Body(
+        getLocals(), traps, getStmtGraph(), getBranches(), getFirstStmt(), getPosition());
   }
 
   @Nonnull
   public Body withStmts(@Nonnull Graph<Stmt> stmtGraph) {
-    return new Body(getLocals(), getTraps(), stmtGraph, getBranches(), getFirstStmt(), getPosition());
+    return new Body(
+        getLocals(), getTraps(), stmtGraph, getBranches(), getFirstStmt(), getPosition());
   }
 
   @Nonnull
   public Body withFirstStmt(@Nonnull Stmt firstStmt) {
-    return new Body(getLocals(), getTraps(), getStmtGraph(), getBranches(), firstStmt, getPosition());
+    return new Body(
+        getLocals(), getTraps(), getStmtGraph(), getBranches(), firstStmt, getPosition());
   }
 
   @Nonnull
   public Body withPosition(@Nonnull Position position) {
-    return new Body(getLocals(), getTraps(), getStmtGraph(), getBranches(), getFirstStmt(), position);
+    return new Body(
+        getLocals(), getTraps(), getStmtGraph(), getBranches(), getFirstStmt(), position);
   }
 
   public static BodyBuilder builder() {
@@ -468,15 +473,19 @@ public class Body implements Copyable {
     @Nullable private Stmt lastAddedStmt = null;
     @Nullable private Stmt firstStmt = null;
 
-    BodyBuilder() {
+    public BodyBuilder() {
       cfg = new StmtGraph();
     }
 
-    BodyBuilder(@Nonnull Body body) {
+    public BodyBuilder(MutableGraph<Stmt> graphContainer) {
+      cfg = graphContainer;
+    }
+
+    public BodyBuilder(@Nonnull Body body) {
       this(body, GraphBuilder.from(body.getStmtGraph()).build());
     }
 
-    BodyBuilder(@Nonnull Body body, @Nonnull MutableGraph<Stmt> graphContainer) {
+    public BodyBuilder(@Nonnull Body body, @Nonnull MutableGraph<Stmt> graphContainer) {
       setLocals(body.getLocals());
       setTraps(body.getTraps());
       setPosition(body.getPosition());
