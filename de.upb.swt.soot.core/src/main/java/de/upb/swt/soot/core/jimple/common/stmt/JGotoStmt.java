@@ -45,24 +45,18 @@ public class JGotoStmt extends BranchingStmt implements Copyable {
 
   @Override
   public String toString() {
-    /*    TODO: [ms] Stmt t = getTarget();
-    String target = "(branch)";
-    if (!t.branches()) {
-      target = t.toString();
-    }
-    */
-    return Jimple.GOTO; // + " [?= " + target + "]";
+    return Jimple.GOTO;
   }
 
   @Override
   public void toString(@Nonnull StmtPrinter stmtPrinter) {
     stmtPrinter.literal(Jimple.GOTO);
     stmtPrinter.literal(" ");
-    stmtPrinter.stmtRef(stmtPrinter.branchTargets(this).get(0), true);
+    stmtPrinter.stmtRef(getTarget(stmtPrinter.getBody()), true);
   }
 
   public Stmt getTarget(Body body) {
-    // TODO: [ms] validate in builder!
+    // [ms] bounds are validated in Body
     return getTargetStmts(body).get(0);
   }
 

@@ -2,16 +2,14 @@ package de.upb.swt.soot.test.core.printer;
 
 import static org.junit.Assert.*;
 
-import com.google.common.graph.GraphBuilder;
-import com.google.common.graph.MutableGraph;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
+import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.PrimitiveType;
@@ -57,22 +55,25 @@ public class PrinterTest {
         JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
     View view = project.createOnDemandView();
 
-    final MutableGraph<Stmt> graph = GraphBuilder.directed().build();
+    final MutableStmtGraph graph = new MutableStmtGraph();
     graph.addNode(new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
 
+    final MethodSignature methodSig =
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature("test", "foo", "int", Collections.emptyList());
     Body bodyOne =
         new Body(
+            methodSig,
             Collections.emptySet(),
             Collections.emptyList(),
             graph,
-            null,
             NoPositionInformation.getInstance());
     Body bodyTwo =
         new Body(
+            methodSig,
             Collections.emptySet(),
             Collections.emptyList(),
             graph,
-            null,
             NoPositionInformation.getInstance());
 
     String className = "some.package.SomeClass";

@@ -3,13 +3,11 @@ package de.upb.swt.soot.test.java.bytecode.interceptors;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import com.google.common.graph.ImmutableGraph;
-import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.bytecode.interceptors.NopEliminator;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
@@ -19,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -29,7 +26,7 @@ public class NopEliminatorTest {
   /** Tests the correct handling of an empty {@link Body}. */
   @Test
   public void testNoInput() {
-    Body testBody = Body.getNoBody();
+    Body testBody = Body.getEmptyBody();
     Body processedBody = new NopEliminator().interceptBody(testBody);
 
     assertNotNull(processedBody);
@@ -38,38 +35,35 @@ public class NopEliminatorTest {
 
   /**
    * Tests the correct handling of a nop statement at the end of the stmtList. It should be deleted.
+   * Transforms from
+   *
+   * <p>a = "str"; goto label1; b = (java.lang.String) a; label1: return b; nop;
+   *
+   * <p>to
+   *
+   * <p>a = "str"; goto label1; b = (java.lang.String) a; label1: return b;
    */
-  @Ignore
+  @Test
   public void testJNopEnd() {
-    Body testBody = createBody(true, false);
+    Body testBody = createBody(true);
     Body processedBody = new NopEliminator().interceptBody(testBody);
 
-    ImmutableGraph<Stmt> expectedGraph = testBody.getStmtGraph();
-    ImmutableGraph<Stmt> actualGraph = processedBody.getStmtGraph();
-
-    System.out.println(testBody);
-
-    System.out.println(processedBody);
+    ImmutableStmtGraph expectedGraph = testBody.getStmtGraph();
+    ImmutableStmtGraph actualGraph = processedBody.getStmtGraph();
 
     assertEquals(expectedGraph.nodes().size() - 1, actualGraph.nodes().size());
   }
 
   /**
-   * Tests the correct handling of a nop statement at the end of the stmtList, which also is a Trap.
-   * It should not be deleted.
+   * Tests the correct handling of a body without nops. Considers the following:
+   *
+   * <p>a = "str"; goto label1; b = (java.lang.String) a; label1: return b;
+   *
+   * <p>Does not change anything.
    */
   @Test
-  public void testJNopEndTrap() {
-    Body testBody = createBody(true, true);
-    Body processedBody = new NopEliminator().interceptBody(testBody);
-
-    assertEquals(testBody.getStmtGraph().nodes(), processedBody.getStmtGraph().nodes());
-  }
-
-  /** Tests the correct handling of a body without nops. */
-  @Test
   public void testNoJNops() {
-    Body testBody = createBody(false, false);
+    Body testBody = createBody(false);
     Body processedBody = new NopEliminator().interceptBody(testBody);
 
     assertEquals(testBody.getStmtGraph().nodes(), processedBody.getStmtGraph().nodes());
@@ -79,10 +73,9 @@ public class NopEliminatorTest {
    * Generates the correct test {@link Body} for the corresponding test case.
    *
    * @param withNop indicates, whether a nop is included
-   * @param withTrap indicates, whether a trap is included
    * @return the generated {@link Body}
    */
-  private static Body createBody(boolean withNop, boolean withTrap) {
+  private static Body createBody(boolean withNop) {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
@@ -98,8 +91,6 @@ public class NopEliminatorTest {
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
     Stmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
-    Stmt handler = JavaJimple.newReturnStmt(b, noPositionInfo);
-
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
     List<Trap> traps = new ArrayList<>();
     List<Stmt> stmts;
@@ -112,19 +103,13 @@ public class NopEliminatorTest {
     if (withNop) {
       JNopStmt nop = new JNopStmt(noPositionInfo);
       stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret, nop);
-      if (withTrap) {
-        ClassType throwable = factory.getClassType("java.lang.Throwable");
-        Trap trap = Jimple.newTrap(throwable, strToA, nop, handler);
-        traps.add(trap);
-      }
-      builder.addFlow(nop, ret); // [ms] wuite artificial flow
-
+      builder.addStmts(stmts, true);
+      builder.addFlow(nop, ret);
     } else {
       stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret);
-      stmts.forEach(stmt -> builder.addStmt(stmt, true));
+      builder.addStmts(stmts, true);
     }
     builder.addFlow(jump, ret);
-
     builder.setLocals(locals);
     builder.setTraps(traps);
     builder.setPosition(NoPositionInformation.getInstance());

@@ -4,15 +4,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import com.google.common.graph.GraphBuilder;
-import com.google.common.graph.MutableGraph;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
+import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -42,20 +42,29 @@ public class SootMethodTest {
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
-    final MutableGraph<Stmt> graph = GraphBuilder.directed().build();
+    final MutableStmtGraph graph = new MutableStmtGraph();
 
-    graph.addNode(
+    final JIdentityStmt node =
         Jimple.newIdentityStmt(
             generator.generateLocal(type),
             Jimple.newParameterRef(type, 0),
-            StmtPositionInfo.createNoStmtPositionInfo()));
+            StmtPositionInfo.createNoStmtPositionInfo());
+
+    graph.setEntryPoint(node);
+    graph.addNode(node);
     graph.addNode(
         Jimple.newAssignStmt(
             generator.generateLocal(type),
             Jimple.newNewExpr(type),
             StmtPositionInfo.createNoStmtPositionInfo()));
 
-    Body body = new Body(generator.getLocals(), Collections.emptyList(), graph, null, null);
+    Body body =
+        new Body(
+            null,
+            generator.getLocals(),
+            Collections.emptyList(),
+            graph,
+            NoPositionInformation.getInstance());
 
     assertEquals(2, body.getLocalCount());
 
@@ -80,7 +89,7 @@ public class SootMethodTest {
                 null,
                 Collections.emptySet(),
                 Collections.singleton(dummyMainMethod),
-                null,
+                NoPositionInformation.getInstance(),
                 EnumSet.of(Modifier.PUBLIC),
                 Collections.emptyList()),
             SourceType.Application);
