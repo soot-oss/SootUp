@@ -53,12 +53,6 @@ public class MutableStmtGraph extends StmtGraph {
 
       @Nonnull
       @Override
-      public List<Stmt> adjacentNodes(@Nonnull Stmt node) {
-        return graphRef.adjacentNodes(node);
-      }
-
-      @Nonnull
-      @Override
       public List<Stmt> predecessors(@Nonnull Stmt node) {
         return graphRef.predecessors(node);
       }
@@ -194,7 +188,6 @@ public class MutableStmtGraph extends StmtGraph {
     return Collections.unmodifiableSet(stmtList);
   }
 
-  @Override
   @Nonnull
   public List<Stmt> adjacentNodes(@Nonnull Stmt node) {
     existsNodeOrThrow(node);

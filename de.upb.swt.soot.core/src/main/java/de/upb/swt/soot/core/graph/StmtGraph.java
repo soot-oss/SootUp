@@ -23,9 +23,6 @@ public abstract class StmtGraph {
   public abstract Set<Stmt> nodes();
 
   @Nonnull
-  public abstract List<Stmt> adjacentNodes(@Nonnull Stmt node);
-
-  @Nonnull
   public abstract List<Stmt> predecessors(@Nonnull Stmt node);
 
   @Nonnull

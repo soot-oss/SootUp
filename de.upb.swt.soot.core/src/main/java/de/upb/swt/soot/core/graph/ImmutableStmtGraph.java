@@ -38,12 +38,6 @@ public final class ImmutableStmtGraph extends StmtGraph {
 
   @Override
   @Nonnull
-  public List<Stmt> adjacentNodes(@Nonnull Stmt stmt) {
-    return backingGraph.adjacentNodes(stmt);
-  }
-
-  @Override
-  @Nonnull
   public List<Stmt> predecessors(@Nonnull Stmt stmt) {
     return backingGraph.predecessors(stmt);
   }
