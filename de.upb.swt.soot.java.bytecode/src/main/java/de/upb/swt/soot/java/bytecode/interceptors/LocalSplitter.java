@@ -40,23 +40,23 @@ public class LocalSplitter implements BodyInterceptor {
   public Body interceptBody(@Nonnull Body originalBody) {
 
     Graph<Stmt> oriGraph = originalBody.getStmtGraph();
-    BodyBuilder bodyBuilder = new BodyBuilder(originalBody);
+    BodyBuilder bodyBuilder = Body.builder(originalBody);
+    System.out.println(originalBody.getStmtGraph());
+    System.out.println(originalBody.branches);
 
     // get all stmts in graph
     List<Stmt> stmts = new ArrayList<>();
     Deque<Stmt> stmtQueue = new ArrayDeque<>();
     Stmt firstStmt = originalBody.getFirstStmt();
     stmtQueue.add(firstStmt);
-    bodyBuilder.addStmt(
-        firstStmt); // Fixme: Now build the stmtGraph for bodyBuilder on hand, later use
-    // bodyBuilder.build()
+    //bodyBuilder.addStmt(firstStmt); // Fixme: Now build the stmtGraph for bodyBuilder on hand because of branches, later use
     while (!stmtQueue.isEmpty()) {
       Stmt stmt = stmtQueue.remove();
       stmts.add(stmt);
       if (!oriGraph.successors(stmt).isEmpty()) {
         for (Stmt succ : oriGraph.successors(stmt)) {
-          bodyBuilder.addStmt(succ);
-          bodyBuilder.addFlow(stmt, succ);
+          //bodyBuilder.addStmt(succ);
+          //bodyBuilder.addFlow(stmt, succ);
           if (!stmts.contains(succ)) {
             stmtQueue.add(succ);
           }
@@ -65,6 +65,9 @@ public class LocalSplitter implements BodyInterceptor {
     }
 
     Body newBody = bodyBuilder.build();
+    System.out.println(newBody.getStmtGraph());
+    System.out.println(newBody.branches);
+
     // **System.out.println("Stmt Graph before first level loop: " + newBody.getStmtGraph());
 
     // store all Locals that must be splitted
@@ -110,7 +113,7 @@ public class LocalSplitter implements BodyInterceptor {
           Stmt newVisitedStmt = withNewDef(visitedStmt, newLocal);
           // **System.out.println("\t\tSecond level loop: " + newVisitedStmt);
 
-          if (visitedStmt.equivTo(bodyBuilder.getFirstStmt())) {
+          if (visitedStmt.equivTo(originalBody.getFirstStmt())) {
             bodyBuilder.setFirstStmt(newVisitedStmt);
           }
           bodyBuilder.mergeStmt(visitedStmt, newVisitedStmt);

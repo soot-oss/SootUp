@@ -66,7 +66,7 @@ public class Body implements Copyable {
   @Nonnull private final ImmutableGraph<Stmt> cfg;
 
   /** Record the ordered branching edges for each branching statement. */
-  @Nonnull private Map<Stmt, List<Stmt>> branches;
+  @Nonnull public Map<Stmt, List<Stmt>> branches; //fixme
 
   /** The first Stmt in this Body. */
   @Nonnull private final Stmt firstStmt;
@@ -455,7 +455,7 @@ public class Body implements Copyable {
 
     @Nullable private MutableGraph<Stmt> cfg;
 
-    @Nonnull private final Map<Stmt, List<Stmt>> branches = new HashMap<>();
+    @Nonnull private Map<Stmt, List<Stmt>> branches = new HashMap<>();
 
     @Nullable private Stmt lastAddedStmt = null;
     @Nullable private Stmt firstStmt = null;
@@ -475,6 +475,7 @@ public class Body implements Copyable {
       setTraps(body.getTraps());
       setPosition(body.getPosition());
       setFirstStmt(body.getFirstStmt());
+      branches = body.getBranches();
       cfg = graphContainer;
     }
 
@@ -552,6 +553,42 @@ public class Body implements Copyable {
       cfg.removeEdge(fromStmt, toStmt);
       branches.get(fromStmt).remove(toStmt);
       return this;
+    }
+
+    /** replace the oldStmt with newStmt in stmtGraph and branches */
+    @Nonnull
+    public BodyBuilder mergeStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+      final Set<Stmt> predecessors = cfg.predecessors(oldStmt);
+      final Set<Stmt> successors = cfg.successors(oldStmt);
+      cfg.addNode(newStmt);
+      predecessors.forEach(predecessor -> cfg.putEdge(predecessor, newStmt));
+      successors.forEach(successor -> cfg.putEdge(newStmt, successor));
+      if (branches.containsKey(oldStmt)) {
+        List<Stmt> value = branches.get(oldStmt);
+        branches.remove(oldStmt);
+        branches.put(newStmt, value);
+      }
+      for (List<Stmt> value : branches.values()) {
+        if (value.remove(oldStmt)) {
+          value.add(newStmt);
+        }
+      }
+      removeStmt(oldStmt);
+      return this;
+    }
+
+    public List<Stmt> getSuccessors(@Nonnull Stmt stmt) {
+      Set<Stmt> stmtSet = this.cfg.successors(stmt);
+      ArrayList<Stmt> stmts = new ArrayList<>();
+      stmts.addAll(stmtSet);
+      return stmts;
+    }
+
+    public List<Stmt> getPredecessors(@Nonnull Stmt stmt) {
+      Set<Stmt> stmtSet = this.cfg.predecessors(stmt);
+      ArrayList<Stmt> stmts = new ArrayList<>();
+      stmts.addAll(stmtSet);
+      return stmts;
     }
 
     @Nonnull
