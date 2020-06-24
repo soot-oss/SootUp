@@ -1,6 +1,7 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
 import com.google.common.graph.Graph;
+import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -39,11 +40,12 @@ public class LocalSplitter implements BodyInterceptor {
 
   public Body interceptBody(@Nonnull Body originalBody) {
 
-    Graph<Stmt> oriGraph = originalBody.getStmtGraph();
+    ImmutableStmtGraph oriGraph = originalBody.getStmtGraph();
     BodyBuilder bodyBuilder = Body.builder(originalBody);
-    System.out.println(originalBody.getStmtGraph());
-    System.out.println(originalBody.branches);
+    Body newBody = bodyBuilder.build();
 
+
+    /**
     // get all stmts in graph
     List<Stmt> stmts = new ArrayList<>();
     Deque<Stmt> stmtQueue = new ArrayDeque<>();
@@ -205,7 +207,8 @@ public class LocalSplitter implements BodyInterceptor {
     // **System.out.println("Stmt Graph after first level loop: " + newBody.getStmtGraph());
     // **System.out.println("The first stmt is: " + newBody.getFirstStmt());
     // **System.out.println("The locals: " + newBody.getLocals());
-    return newBody;
+    return newBody;*/
+    return originalBody;
   }
 
   // ******************assist_functions*************************
