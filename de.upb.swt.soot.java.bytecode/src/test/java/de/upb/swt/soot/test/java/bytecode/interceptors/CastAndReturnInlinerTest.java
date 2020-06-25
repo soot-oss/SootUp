@@ -62,7 +62,14 @@ public class CastAndReturnInlinerTest {
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
     List<Trap> traps = Collections.emptyList();
     List<Stmt> stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret);
-    Body testBody = Body.getEmptyBody(); // FIXME: = new Body(locals, traps, stmts, null);
+
+    // FIXME: = new Body(locals, traps, stmts, null);
+    Body testBody =
+        Body.builder()
+            .setMethodSignature(
+                JavaIdentifierFactory.getInstance()
+                    .getMethodSignature("A", "B", "int", Collections.emptyList()))
+            .build();
 
     Body processedBody = new CastAndReturnInliner().interceptBody(testBody);
 
@@ -105,7 +112,12 @@ public class CastAndReturnInlinerTest {
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
     List<Trap> traps = Collections.emptyList();
     List<Stmt> stmts = ImmutableUtils.immutableList(strToA, strToC, jump, bToA, ret);
-    Body testBody = Body.getEmptyBody(); // FIXME [ms] = new Body(locals, traps, stmts, null);
+    Body testBody =
+        Body.builder()
+            .setMethodSignature(
+                JavaIdentifierFactory.getInstance()
+                    .getMethodSignature("A", "B", "int", Collections.emptyList()))
+            .build(); // FIXME [ms] = new Body(locals, traps, stmts, null);
 
     Body processedBody = new CastAndReturnInliner().interceptBody(testBody);
 

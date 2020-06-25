@@ -385,12 +385,12 @@ public class WalaIRToJimpleConverter {
   private Body createBody(
       MethodSignature methodSignature, EnumSet<Modifier> modifiers, AstMethod walaMethod) {
 
-    if (walaMethod.isAbstract()) {
-      return Body.getEmptyBody();
-    }
-
     final Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
+
+    if (walaMethod.isAbstract()) {
+      return builder.build();
+    }
 
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {

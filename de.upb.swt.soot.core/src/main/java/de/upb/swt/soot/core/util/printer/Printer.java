@@ -113,7 +113,7 @@ public class Printer {
 
   public void printTo(SootClass cl, PrintWriter out) {
 
-    LabeledStmtPrinter printer = determinePrinter(Body.getEmptyBody());
+    LabeledStmtPrinter printer = determinePrinter(null);
     printer.enableImports(options.contains(Option.UseImports));
 
     // add jimple line number tags
@@ -228,7 +228,7 @@ public class Printer {
           // print method's full signature information
           method.toString(printer);
 
-          printTo(body, printer);
+          printBody(body, printer);
 
         } else {
           printer.handleIndent();
@@ -253,7 +253,7 @@ public class Printer {
   public void printTo(Body body, PrintWriter out) {
     LabeledStmtPrinter printer = determinePrinter(body);
     printer.enableImports(options.contains(Option.UseImports));
-    printTo(body, printer);
+    printBody(body, printer);
     out.print(printer);
   }
 
@@ -263,7 +263,7 @@ public class Printer {
    *
    * @param printer the StmtPrinter that determines how to print the statements
    */
-  private void printTo(Body b, LabeledStmtPrinter printer) {
+  private void printBody(Body b, LabeledStmtPrinter printer) {
 
     if (addJimpleLn()) {
       setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), b.getMethodSignature()));

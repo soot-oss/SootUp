@@ -30,11 +30,7 @@ import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.signatures.MethodSubSignature;
-import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.EscapedWriter;
 import de.upb.swt.soot.core.util.ImmutableUtils;
@@ -52,37 +48,6 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  */
 public class Body implements Copyable {
-
-  // TODO. add javadoc why we need this empty body. -> [ms] remove
-  public static final Body EMPTY_BODY =
-      new Body(
-          new MethodSignature(
-              new ClassType() {
-                @Override
-                public boolean isBuiltInClass() {
-                  return false;
-                }
-
-                @Override
-                public String getFullyQualifiedName() {
-                  return "Empty Body";
-                }
-
-                @Override
-                public String getClassName() {
-                  return "Not Defined";
-                }
-
-                @Override
-                public PackageName getPackageName() {
-                  return new PackageName("Not Defined");
-                }
-              },
-              new MethodSubSignature("body", Collections.emptyList(), VoidType.getInstance())),
-          Collections.emptySet(),
-          Collections.emptyList(),
-          new MutableStmtGraph(),
-          NoPositionInformation.getInstance());
 
   /** The locals for this Body. */
   private final Set<Local> locals;
@@ -133,12 +98,6 @@ public class Body implements Copyable {
     // TODO: Make this method private.
     // FIXME: [JMP] Virtual method call in constructor
     checkInit();
-  }
-
-  // FIXME: remove
-  @Nonnull
-  public static Body getEmptyBody() {
-    return EMPTY_BODY;
   }
 
   /**
@@ -513,7 +472,7 @@ public class Body implements Copyable {
       return this;
     }
 
-    // TODO: remove addStmt
+    // TODO: remove addStmt -> use addFlow
     @Nonnull
     public BodyBuilder addStmt(@Nonnull Stmt stmt) {
       return addStmt(stmt, false);

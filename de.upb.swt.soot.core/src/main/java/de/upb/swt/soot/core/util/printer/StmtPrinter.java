@@ -35,7 +35,7 @@ import javax.annotation.Nonnull;
 
 /** Interface for different methods of printing out a Stmt. */
 public abstract class StmtPrinter {
-  @Nonnull protected Body body = Body.getEmptyBody();
+  protected Body body = null;
 
   @Nonnull
   public Body getBody() {

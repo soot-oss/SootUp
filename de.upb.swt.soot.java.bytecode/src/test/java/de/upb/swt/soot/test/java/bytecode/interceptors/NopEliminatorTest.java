@@ -26,7 +26,7 @@ public class NopEliminatorTest {
   /** Tests the correct handling of an empty {@link Body}. */
   @Test
   public void testNoInput() {
-    Body testBody = Body.getEmptyBody();
+    Body testBody = Body.builder().build();
     Body processedBody = new NopEliminator().interceptBody(testBody);
 
     assertNotNull(processedBody);
