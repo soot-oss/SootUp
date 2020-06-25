@@ -1,5 +1,6 @@
 package de.upb.swt.soot.core.util.printer;
 
+import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
@@ -82,26 +83,26 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     this.body = body;
 
     Collection<Stmt> stmts = body.getStmts();
+    final Collection<Stmt> targetStmtsOfBranches = body.getTargetStmtsInBody();
+    final List<Trap> traps = body.getTraps();
 
-    labels = new HashMap<>(stmts.size() * 2 + 1, 0.7f);
-    references = new HashMap<>(stmts.size() * 2 + 1, 0.7f);
+    final int maxEstimatedSize = targetStmtsOfBranches.size() + traps.size() * 3;
+    labels = new HashMap<>(maxEstimatedSize, 1);
+    references = new HashMap<>(maxEstimatedSize, 1);
 
     // Create statement name table
     Set<Stmt> labelStmts = new HashSet<>();
     Set<Stmt> refStmts = new HashSet<>();
 
     Set<Stmt> trapStmts = new HashSet<>();
-    body.getTraps()
-        .forEach(
-            trap -> {
-              trapStmts.add(trap.getHandlerStmt());
-              trapStmts.add(trap.getBeginStmt());
-              trapStmts.add(trap.getEndStmt());
-            });
+    traps.forEach(
+        trap -> {
+          trapStmts.add(trap.getHandlerStmt());
+          trapStmts.add(trap.getBeginStmt());
+          trapStmts.add(trap.getEndStmt());
+        });
 
     // Build labelStmts and refStmts
-    // TODO: make 2 loops access body directly; maybe remove getAssociatedStmts()?
-    final Collection<Stmt> targetStmtsOfBranches = body.getTargetStmtsInBody();
     for (Stmt stmt : targetStmtsOfBranches) {
       if (body.isStmtBranchTarget(stmt) || trapStmts.contains(stmt)) {
         labelStmts.add(stmt);
