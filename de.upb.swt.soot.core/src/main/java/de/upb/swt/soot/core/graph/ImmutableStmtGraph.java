@@ -25,7 +25,7 @@ public final class ImmutableStmtGraph extends StmtGraph {
       return (ImmutableStmtGraph) stmtGraph;
     }
     if (stmtGraph.getStartingStmt() == null) {
-      throw new RuntimeException("Starting Stmt can not be null.");
+      throw new RuntimeException("The starting Stmt must be set.");
     }
 
     MutableStmtGraph graph = MutableStmtGraph.copyOf(stmtGraph);
