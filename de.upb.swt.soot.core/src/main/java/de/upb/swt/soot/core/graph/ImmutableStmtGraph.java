@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
  */
 public final class ImmutableStmtGraph extends StmtGraph {
 
-  private final MutableStmtGraph backingGraph;
+  @Nonnull private final MutableStmtGraph backingGraph;
 
   public ImmutableStmtGraph(MutableStmtGraph backingGraph) {
     this.backingGraph = backingGraph;
@@ -24,6 +24,9 @@ public final class ImmutableStmtGraph extends StmtGraph {
     if (stmtGraph instanceof ImmutableStmtGraph) {
       return (ImmutableStmtGraph) stmtGraph;
     }
+    if (stmtGraph.getStartingStmt() == null) {
+      throw new RuntimeException("Starting Stmt can not be null.");
+    }
 
     MutableStmtGraph graph = MutableStmtGraph.copyOf(stmtGraph);
 
@@ -31,6 +34,11 @@ public final class ImmutableStmtGraph extends StmtGraph {
   }
 
   @Nonnull
+  @Override
+  public Stmt getStartingStmt() {
+    return backingGraph.getStartingStmt();
+  }
+
   @Override
   public Set<Stmt> nodes() {
     return backingGraph.nodes();
