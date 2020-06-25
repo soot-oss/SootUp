@@ -9,19 +9,23 @@ import javax.annotation.Nonnull;
 /**
  * trivial Graph structure which keeps node and edge insertion order
  *
+ * <p>TODO: where and how its used
+ *
  * @author Markus Schmidt
  */
 public class MutableStmtGraph extends StmtGraph {
 
+  // TODO: why LIST -> order -> JSWITCH
   @Nonnull protected final Map<Stmt, List<Stmt>> predecessors = new HashMap<>();
   @Nonnull protected final Map<Stmt, List<Stmt>> successors = new HashMap<>();
   @Nonnull protected final Set<Stmt> stmtList = new LinkedHashSet<>();
 
   public MutableStmtGraph() {}
 
+  // TODO: [ms] copyOf
   public static MutableStmtGraph copyOf(@Nonnull StmtGraph originalStmtGraph) {
     final MutableStmtGraph copiedGraph = new MutableStmtGraph();
-    copiedGraph.setEntryPoint(originalStmtGraph.getEntryPoint());
+    copiedGraph.setEntryPoint(originalStmtGraph.getStartingStmt());
 
     for (Stmt node : originalStmtGraph.nodes()) {
       copiedGraph.addNode(node);
@@ -41,8 +45,8 @@ public class MutableStmtGraph extends StmtGraph {
     return new StmtGraph() {
       @Nonnull
       @Override
-      public Stmt getEntryPoint() {
-        return graphRef.getEntryPoint();
+      public Stmt getStartingStmt() {
+        return graphRef.getStartingStmt();
       }
 
       @Nonnull
@@ -86,12 +90,12 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public void setEntryPoint(@Nonnull Stmt firstStmt) {
-    this.entrypoint = firstStmt;
+    this.firstStmt = firstStmt;
   }
 
   @Nonnull
-  public Stmt getEntryPoint() {
-    return entrypoint;
+  public Stmt getStartingStmt() {
+    return firstStmt;
   }
 
   public boolean addNode(@Nonnull Stmt node) {

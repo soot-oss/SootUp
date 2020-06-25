@@ -6,17 +6,19 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Interface for control flow graphs on Jimple Stmts
+ * Interface for control flow graphs on Jimple Stmts. Its a CFG
  *
  * @author Markus Schmidt
  */
+
+// TODO: javadoc
 public abstract class StmtGraph {
 
-  @Nullable protected Stmt entrypoint;
+  @Nullable protected Stmt firstStmt;
 
   @Nullable
-  public Stmt getEntryPoint() {
-    return entrypoint;
+  public Stmt getStartingStmt() {
+    return firstStmt;
   }
 
   @Nonnull

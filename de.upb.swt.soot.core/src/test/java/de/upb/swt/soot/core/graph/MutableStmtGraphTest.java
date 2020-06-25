@@ -24,7 +24,7 @@ public class MutableStmtGraphTest {
 
     final StmtGraph graph2 = MutableStmtGraph.copyOf(graph);
 
-    assertEquals(graph.getEntryPoint(), graph2.getEntryPoint());
+    assertEquals(graph.getStartingStmt(), graph2.getStartingStmt());
     assertEquals(graph.nodes().size(), graph2.nodes().size());
     assertEquals(
         Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(stmt1, stmt2))),

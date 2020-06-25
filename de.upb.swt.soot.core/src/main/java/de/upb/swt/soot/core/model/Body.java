@@ -53,7 +53,7 @@ import javax.annotation.Nullable;
  */
 public class Body implements Copyable {
 
-  // TODO. add javadoc why we need this empty body.
+  // TODO. add javadoc why we need this empty body. -> [ms] remove
   public static final Body EMPTY_BODY =
       new Body(
           new MethodSignature(
@@ -118,6 +118,7 @@ public class Body implements Copyable {
    *
    * @param locals please use {@link LocalGenerator} to generate local for a body.
    */
+  // FIXME: make private
   public Body(
       @Nonnull MethodSignature methodSignature,
       @Nonnull Set<Local> locals,
@@ -134,6 +135,7 @@ public class Body implements Copyable {
     checkInit();
   }
 
+  // FIXME: remove
   @Nonnull
   public static Body getEmptyBody() {
     return EMPTY_BODY;
@@ -424,6 +426,7 @@ public class Body implements Copyable {
     return new BodyBuilder();
   }
 
+  // FIMXE: rename this additional builder
   public static BodyBuilder builder(Body body) {
     return new BodyBuilder(body);
   }
@@ -456,6 +459,7 @@ public class Body implements Copyable {
     @Nullable private Stmt lastAddedStmt = null;
     @Nullable private MethodSignature methodSig = null;
 
+    // TODO: unify constructors
     BodyBuilder() {
       cfg = new MutableStmtGraph();
     }
@@ -514,6 +518,7 @@ public class Body implements Copyable {
       return this;
     }
 
+    // TODO: remove addStmt
     @Nonnull
     public BodyBuilder addStmt(@Nonnull Stmt stmt) {
       return addStmt(stmt, false);
@@ -523,6 +528,7 @@ public class Body implements Copyable {
      * @param linkLastStmt if this is true, a flow is added if the previously inserted Stmt falls
      *     through i.e. does not branch, return or throw
      */
+    // FIXME: integrate this into frontends
     @Nonnull
     public BodyBuilder addStmt(@Nonnull Stmt stmt, boolean linkLastStmt) {
       cfg.addNode(stmt);
@@ -570,6 +576,7 @@ public class Body implements Copyable {
     @Nonnull
     public Body build() {
 
+      // FIXME: move to StmtGraph
       // validate statements
       for (Stmt stmt : cfg.nodes()) {
 
