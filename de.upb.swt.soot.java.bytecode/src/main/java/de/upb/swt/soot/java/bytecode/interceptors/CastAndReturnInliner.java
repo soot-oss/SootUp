@@ -147,21 +147,22 @@ public class CastAndReturnInliner implements BodyInterceptor {
       }
     } else if (toFixStmt instanceof JSwitchStmt) {
       JSwitchStmt toFixSwitchStmt = (JSwitchStmt) toFixStmt;
-      List<Stmt> targets = originalBody.getBranchTargetsOf(toFixSwitchStmt);
-      List<Stmt> copiedTargets = null;
-      for (int k = 0; k < targets.size(); k++) {
-        Stmt switchTarget = targets.get(k);
-        if (switchTarget == gotoStmt) {
-          if (copiedTargets == null) {
-            copiedTargets = new ArrayList<>(targets);
-          }
-          copiedTargets.set(k, newStmt);
-        }
-      }
+      /* List<Stmt> targets = originalBody.getBranchTargetsOf(toFixSwitchStmt);
+       List<Stmt> copiedTargets = null;
+       for (int k = 0; k < targets.size(); k++) {
+         Stmt switchTarget = targets.get(k);
+         if (switchTarget == gotoStmt) {
+           if (copiedTargets == null) {
+             copiedTargets = new ArrayList<>(targets);
+           }
+           copiedTargets.set(k, newStmt);
+         }
+       }
       if (copiedTargets != null) {
-        //  FIXME [ms] leftover:set up targets
-        //        return toFixSwitchStmt.withTargets(copiedTargets);
-      }
+         //  FIXME [ms] leftover:set up targets
+         //        return toFixSwitchStmt.withTargets(copiedTargets);
+       }
+       */
     }
 
     return toFixStmt;

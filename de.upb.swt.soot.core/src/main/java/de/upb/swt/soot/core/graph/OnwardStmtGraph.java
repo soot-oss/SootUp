@@ -75,6 +75,11 @@ public class OnwardStmtGraph implements Graph<Stmt> {
   }
 
   @Override
+  public ElementOrder<Stmt> incidentEdgeOrder() {
+    return ElementOrder.stable();
+  }
+
+  @Override
   public Set<Stmt> adjacentNodes(Stmt node) {
     final HashSet<Stmt> set = new HashSet<>();
     set.addAll(predecessors(node));
@@ -130,5 +135,10 @@ public class OnwardStmtGraph implements Graph<Stmt> {
     return (nodeU.fallsThrough() && stmtList.get(stmtList.indexOf(nodeU) + 1) == nodeV)
         || (nodeU instanceof BranchingStmt
             && branches.get(nodeU).stream().anyMatch(stmt -> stmt == nodeV));
+  }
+
+  @Override
+  public boolean hasEdgeConnecting(EndpointPair<Stmt> endpointPair) {
+    return hasEdgeConnecting(endpointPair.nodeU(), endpointPair.nodeV());
   }
 }

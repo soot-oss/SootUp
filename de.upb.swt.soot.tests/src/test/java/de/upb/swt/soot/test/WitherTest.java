@@ -18,7 +18,7 @@ import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.util.Arrays;
 import java.util.Optional;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
@@ -36,7 +36,7 @@ public class WitherTest {
     declareClassSig = identifierFactory.getClassType("BinaryOperations");
   }
 
-  @Test
+  @Ignore
   public void testWithers() {
 
     Optional<SootClassSource> classSource = loader.getClassSource(declareClassSig);

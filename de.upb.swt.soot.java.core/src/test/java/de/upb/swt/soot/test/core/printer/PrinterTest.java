@@ -63,14 +63,11 @@ public class PrinterTest {
     Body.BodyBuilder bodyBuilder = new Body.BodyBuilder(graph);
     bodyBuilder.setPosition(NoPositionInformation.getInstance());
 
-    Body bodyOne = bodyBuilder.build();
-
-    Body bodyTwo = bodyBuilder.build();
-
     String className = "some.package.SomeClass";
     MethodSignature methodSignatureOne =
         view.getIdentifierFactory()
             .getMethodSignature("main", className, "void", Collections.emptyList());
+    Body bodyOne = bodyBuilder.setMethodSignature(methodSignatureOne).build();
     SootMethod dummyMainMethod =
         new SootMethod(
             new OverridingMethodSource(methodSignatureOne, bodyOne),
@@ -81,6 +78,8 @@ public class PrinterTest {
     MethodSignature methodSignatureTwo =
         view.getIdentifierFactory()
             .getMethodSignature("otherMethod", className, "int", Collections.emptyList());
+    Body bodyTwo = bodyBuilder.setMethodSignature(methodSignatureTwo).build();
+
     SootMethod anotherMethod =
         new SootMethod(
             new OverridingMethodSource(methodSignatureOne, bodyTwo),

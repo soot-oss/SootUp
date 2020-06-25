@@ -3,10 +3,7 @@ package de.upb.swt.soot.test.java.bytecode.interceptors;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.jimple.basic.JTrap;
-import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Body.BodyBuilder;
@@ -40,7 +37,16 @@ public class DuplicateCatchAllTrapRemoverTest {
       builder.addStmt(to);
       builder.addFlow(from, to);
     }
-    Body originalBody = builder.setLocals(locals).setTraps(traps).setPosition(null).build();
+
+    builder.setMethodSignature(
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature("test", "a.b.c", "void", Collections.emptyList()));
+    Body originalBody =
+        builder
+            .setLocals(locals)
+            .setTraps(traps)
+            .setPosition(NoPositionInformation.getInstance())
+            .build();
     Body processedBody = new UnusedLocalEliminator().interceptBody(originalBody);
 
     assertNotNull(processedBody);
@@ -132,7 +138,15 @@ public class DuplicateCatchAllTrapRemoverTest {
       builder.addStmt(to);
       builder.addFlow(from, to);
     }
-    Body body = builder.setLocals(locals).setTraps(traps).setPosition(null).build();
+    builder.setMethodSignature(
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature("test", "a.b.c", "void", Collections.emptyList()));
+    Body body =
+        builder
+            .setLocals(locals)
+            .setTraps(traps)
+            .setPosition(NoPositionInformation.getInstance())
+            .build();
     return body;
   }
 

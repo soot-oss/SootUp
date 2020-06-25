@@ -23,13 +23,15 @@ public class NopEliminator implements BodyInterceptor {
   @Nonnull
   @Override
   public Body interceptBody(@Nonnull Body originalBody) {
-    MutableGraph mutableGraph = Graphs.copyOf(originalBody.getStmtGraph());
+    MutableGraph<Stmt> mutableGraph = Graphs.copyOf(originalBody.getStmtGraph());
     Set<Stmt> stmtSet = mutableGraph.nodes();
 
     for (Stmt stmt : stmtSet) {
       if (stmt instanceof JNopStmt) {
         boolean keepNop = false;
-        if (mutableGraph.successors(stmt).size() == 0) {
+        final Set<Stmt> successors = mutableGraph.successors(stmt);
+        final int successorSize = successors.size();
+        if (successorSize == 0) {
           for (Trap trap : originalBody.getTraps()) {
             if (trap.getEndStmt() == stmt) {
               keepNop = true;
@@ -37,12 +39,11 @@ public class NopEliminator implements BodyInterceptor {
           }
         }
         if (!keepNop) {
-          for (Object predecessor : mutableGraph.predecessors(stmt)) {
-            for (Object successor : mutableGraph.successors(stmt)) {
-              mutableGraph.putEdge(predecessor, successor);
-              mutableGraph.removeEdge(predecessor, stmt);
-              mutableGraph.removeEdge(stmt, successor);
-            }
+          if (successorSize > 0) {
+            final Stmt successorOfNop = successors.iterator().next();
+            mutableGraph
+                .predecessors(stmt)
+                .forEach(pred -> mutableGraph.putEdge(pred, successorOfNop));
           }
           mutableGraph.removeNode(stmt);
         }

@@ -55,8 +55,12 @@ public class SootMethodTest {
             Jimple.newNewExpr(type),
             StmtPositionInfo.createNoStmtPositionInfo()));
 
+    MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
     Body.BodyBuilder bodyBuilder = new Body.BodyBuilder(graph);
     bodyBuilder
+            .setMethodSignature(methodSignature)
         .setLocals(generator.getLocals())
         .setTraps(Collections.emptyList())
         .setFirstStmt(null)
@@ -64,9 +68,6 @@ public class SootMethodTest {
     Body body = bodyBuilder.build();
     assertEquals(2, body.getLocalCount());
 
-    MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
     SootMethod dummyMainMethod =
         new SootMethod(
             new OverridingMethodSource(methodSignature, body),

@@ -24,7 +24,7 @@ public class LocalsValidator implements BodyValidator {
       if (!body.getLocals().contains(value)) {
         exception.add(
             new ValidationException(
-                value, "Local not in chain : " + value + " in " + body.getMethod()));
+                value, "Local not in chain : " + value + " in " + body.getMethodSignature()));
       }
     }
   }

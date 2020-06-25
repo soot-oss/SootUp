@@ -15,17 +15,18 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public class StmtGraph implements MutableGraph<Stmt> {
 
-  protected final HashMap<Stmt, List<Stmt>> predecessors = new HashMap<>();
+  protected final Map<Stmt, List<Stmt>> predecessors = new HashMap<>();
   protected final Map<Stmt, List<Stmt>> successors = new HashMap<>();
   protected final List<Stmt> stmtList = new ArrayList<>();
 
   public StmtGraph() {}
 
   public boolean addNode(@Nonnull Stmt node) {
+    // [ms] contains is expensive!
     boolean modify = !stmtList.contains(node);
-    // if(modify) {
-    stmtList.add(node);
-    // }
+    if (modify) {
+      stmtList.add(node);
+    }
     return modify;
   }
 
@@ -53,6 +54,11 @@ public class StmtGraph implements MutableGraph<Stmt> {
     return modified;
   }
 
+  @Override
+  public boolean removeEdge(EndpointPair<Stmt> endpointPair) {
+    return removeEdge(endpointPair.nodeU(), endpointPair.nodeV());
+  }
+
   public boolean putEdge(@Nonnull Stmt u, @Nonnull Stmt v) {
     /*if (!stmtList.contains(u)) {
       throw new IllegalArgumentException(
@@ -74,6 +80,11 @@ public class StmtGraph implements MutableGraph<Stmt> {
     succ.add(v);
 
     return true;
+  }
+
+  @Override
+  public boolean putEdge(EndpointPair<Stmt> endpointPair) {
+    return putEdge(endpointPair.nodeU(), endpointPair.nodeV());
   }
 
   @Override
@@ -133,6 +144,11 @@ public class StmtGraph implements MutableGraph<Stmt> {
   }
 
   @Override
+  public ElementOrder<Stmt> incidentEdgeOrder() {
+    return ElementOrder.stable();
+  }
+
+  @Override
   public Set<Stmt> adjacentNodes(@Nonnull Stmt node) {
     final HashSet<Stmt> set = new HashSet<>();
     set.addAll(predecessors(node));
@@ -165,10 +181,13 @@ public class StmtGraph implements MutableGraph<Stmt> {
   public Set<EndpointPair<Stmt>> incidentEdges(@Nonnull Stmt node) {
     final Set<Stmt> predecessors = predecessors(node);
     final Set<Stmt> successors = successors(node);
-    final HashSet<EndpointPair<Stmt>> incidents =
-        new HashSet<>(predecessors.size() + successors.size());
+    final Set<Stmt> adjacentNodes = adjacentNodes(node);
+
+    final LinkedHashSet<EndpointPair<Stmt>> incidents =
+        new LinkedHashSet<>(predecessors.size() + successors.size());
     predecessors.forEach(pred -> incidents.add(EndpointPair.ordered(pred, node)));
     successors.forEach(succ -> incidents.add(EndpointPair.ordered(node, succ)));
+    adjacentNodes.forEach(adj -> incidents.add(EndpointPair.ordered(node, adj)));
     return incidents;
   }
 
@@ -191,5 +210,10 @@ public class StmtGraph implements MutableGraph<Stmt> {
   public boolean hasEdgeConnecting(@Nonnull Stmt nodeU, @Nonnull Stmt nodeV) {
     final List<Stmt> stmts = successors.get(nodeU);
     return stmts != null && stmts.contains(nodeV);
+  }
+
+  @Override
+  public boolean hasEdgeConnecting(EndpointPair<Stmt> endpointPair) {
+    return hasEdgeConnecting(endpointPair.nodeU(), endpointPair.nodeV());
   }
 }

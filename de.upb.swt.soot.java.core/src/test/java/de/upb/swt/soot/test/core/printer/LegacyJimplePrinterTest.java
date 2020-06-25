@@ -2,12 +2,12 @@ package de.upb.swt.soot.test.core.printer;
 
 import static org.junit.Assert.*;
 
-import com.google.common.graph.GraphBuilder;
-import com.google.common.graph.MutableGraph;
+import com.google.common.graph.ImmutableGraph;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
@@ -29,24 +29,29 @@ import org.junit.Test;
 
 public class LegacyJimplePrinterTest {
 
-  SootClass buildClass(MutableGraph<Stmt> stmtGraph) {
+  SootClass buildClass(Body.BodyBuilder builder) {
 
     Project project =
         JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
     View view = project.createOnDemandView();
 
-    Body body =
-        new Body(
-            Collections.emptySet(),
-            Collections.emptyList(),
-            stmtGraph,
-            null,
-            stmtGraph.nodes().iterator().hasNext() ? stmtGraph.nodes().iterator().next() : null,
-            null);
-
     MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
+    Body body =
+        builder
+            .setMethodSignature(methodSignature)
+            .setPosition(NoPositionInformation.getInstance())
+            .build();
+
+    StringBuilder debug = new StringBuilder(body.getMethodSignature() + "\n");
+    final ImmutableGraph<Stmt> stmtGraph = body.getStmtGraph();
+    for (Stmt stmt : stmtGraph.nodes()) {
+      debug.append(stmt).append(" => ").append(stmtGraph.successors(stmt)).append(" \n");
+      debug.append(" => ").append(body.getBranchTargetsOf(stmt)).append(" \n");
+    }
+    System.out.println(debug);
+
     SootMethod dummyMainMethod =
         new SootMethod(
             new OverridingMethodSource(methodSignature, body),
@@ -79,70 +84,78 @@ public class LegacyJimplePrinterTest {
 
     final JReturnVoidStmt returnstmt = new JReturnVoidStmt(noPosInfo);
     final JNopStmt jNop = new JNopStmt(noPosInfo);
+    final JNopStmt jNop2 = new JNopStmt(noPosInfo);
 
     Stmt tableSwitch = new JSwitchStmt(IntConstant.getInstance(42), 4, 5, noPosInfo);
 
-    final MutableGraph<Stmt> graph = GraphBuilder.directed().build();
-    graph.addNode(tableSwitch);
-    graph.addNode(jNop);
-    graph.addNode(returnstmt);
+    {
+      Body.BodyBuilder builder = Body.builder();
+      builder.addStmt(tableSwitch);
+      builder.addStmt(jNop);
+      builder.addStmt(jNop2, true);
+      builder.addStmt(returnstmt, true);
 
-    graph.putEdge(tableSwitch, jNop);
-    graph.putEdge(tableSwitch, returnstmt);
+      builder.addFlow(tableSwitch, jNop);
+      builder.addFlow(tableSwitch, jNop2);
+      builder.addFlow(tableSwitch, returnstmt);
 
-    SootClass tableClass = buildClass(graph);
+      SootClass tableClass = buildClass(builder);
 
-    StringWriter sw = new StringWriter();
-    new Printer(Printer.Option.LegacyMode)
-        .printTo(tableClass, new PrintWriter(new EscapedWriter(sw)));
+      StringWriter sw = new StringWriter();
+      new Printer(Printer.Option.LegacyMode)
+          .printTo(tableClass, new PrintWriter(new EscapedWriter(sw)));
 
-    assertEquals(
-        Arrays.asList(
-            "public static void main()",
-            "tableswitch(42)",
-            "case 4: goto label2",
-            "case 5: goto label1",
-            "default: goto label1",
-            "label1:",
-            "nop",
-            "label2:",
-            "return"),
-        Utils.filterJimple(sw.toString()));
+      assertEquals(
+          Arrays.asList(
+              "public static void main()",
+              "tableswitch(42)",
+              "case 4: goto label3",
+              "case 5: goto label1",
+              "default: goto label2",
+              "label1:",
+              "nop",
+              "label2:",
+              "nop",
+              "label3:",
+              "return"),
+          Utils.filterJimple(sw.toString()));
+    }
 
-    Stmt lookupSwitch = new JSwitchStmt(IntConstant.getInstance(123), lookupValues, noPosInfo);
+    {
+      Stmt lookupSwitch = new JSwitchStmt(IntConstant.getInstance(123), lookupValues, noPosInfo);
 
-    final MutableGraph<Stmt> lookupGraph = GraphBuilder.directed().build();
-    graph.addNode(lookupSwitch);
-    graph.addNode(jNop);
-    graph.addNode(returnstmt);
+      Body.BodyBuilder builder = Body.builder();
+      builder.addStmt(lookupSwitch, true);
+      builder.addStmt(jNop, true);
+      builder.addStmt(returnstmt, true);
 
-    graph.putEdge(lookupSwitch, jNop);
-    graph.putEdge(lookupSwitch, returnstmt);
+      builder.addFlow(lookupSwitch, jNop);
+      builder.addFlow(lookupSwitch, returnstmt);
 
-    SootClass lookupClass = buildClass(lookupGraph);
+      SootClass lookupClass = buildClass(builder);
 
-    StringWriter sw2 = new StringWriter();
-    new Printer(Printer.Option.LegacyMode)
-        .printTo(lookupClass, new PrintWriter(new EscapedWriter(sw2)));
+      StringWriter sw2 = new StringWriter();
+      new Printer(Printer.Option.LegacyMode)
+          .printTo(lookupClass, new PrintWriter(new EscapedWriter(sw2)));
 
-    assertEquals(
-        Arrays.asList(
-            "public static void main()",
-            "lookupswitch(123)",
-            "case 42: goto label2",
-            "case 33102: goto label1",
-            "default: goto label1",
-            "label1:",
-            "nop",
-            "label2:",
-            "return"),
-        Utils.filterJimple(sw2.toString()));
+      assertEquals(
+          Arrays.asList(
+              "public static void main()",
+              "lookupswitch(123)",
+              "case 42: goto label2",
+              "case 33102: goto label1",
+              "default: goto label1",
+              "label1:",
+              "nop",
+              "label2:",
+              "return"),
+          Utils.filterJimple(sw2.toString()));
+    }
   }
 
   @Test(expected = RuntimeException.class)
   public void testValidOptions() {
-    final MutableGraph<Stmt> stmtGraph = GraphBuilder.directed().build();
     Printer p = new Printer(Printer.Option.UseImports, Printer.Option.LegacyMode);
-    p.printTo(buildClass(stmtGraph), new PrintWriter(new StringWriter()));
+    p.printTo(buildClass(Body.builder()), new PrintWriter(new StringWriter()));
   }
 }
