@@ -459,26 +459,21 @@ public class Body implements Copyable {
     @Nullable private Stmt lastAddedStmt = null;
     @Nullable private MethodSignature methodSig = null;
 
-    // TODO: unify constructors
     BodyBuilder() {
       cfg = new MutableStmtGraph();
     }
 
     BodyBuilder(@Nonnull Body body) {
-      this(body, MutableStmtGraph.copyOf(body.getStmtGraph()));
-    }
-
-    BodyBuilder(@Nonnull Body body, @Nonnull MutableStmtGraph graphContainer) {
       setMethodSignature(body.getMethodSignature());
       setLocals(body.getLocals());
       setTraps(body.getTraps());
       setPosition(body.getPosition());
-      cfg = graphContainer;
+      cfg = MutableStmtGraph.copyOf(body.getStmtGraph());
     }
 
     @Nonnull
-    public BodyBuilder setFirstStmt(@Nullable Stmt firstStmt) {
-      this.cfg.setEntryPoint(firstStmt);
+    public BodyBuilder setFirstStmt(@Nonnull Stmt firstStmt) {
+      cfg.setEntryPoint(firstStmt);
       return this;
     }
 
