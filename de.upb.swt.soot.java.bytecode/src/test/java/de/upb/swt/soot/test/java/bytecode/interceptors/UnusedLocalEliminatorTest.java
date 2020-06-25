@@ -21,20 +21,6 @@ import org.junit.experimental.categories.Category;
 public class UnusedLocalEliminatorTest {
 
   @Test
-  public void testNoInput() {
-    Body testBody =
-        Body.builder()
-            .setMethodSignature(
-                JavaIdentifierFactory.getInstance()
-                    .getMethodSignature("test", "a.b.c", "void", Collections.emptyList()))
-            .build();
-    Body processedBody = new UnusedLocalEliminator().interceptBody(testBody);
-
-    assertNotNull(processedBody);
-    assertArrayEquals(testBody.getStmts().toArray(), processedBody.getStmts().toArray());
-  }
-
-  @Test
   public void testRemoveUnusedDefsAndUses() {
     Body originalBody = createBody(true);
     Body processedBody = new UnusedLocalEliminator().interceptBody(originalBody);

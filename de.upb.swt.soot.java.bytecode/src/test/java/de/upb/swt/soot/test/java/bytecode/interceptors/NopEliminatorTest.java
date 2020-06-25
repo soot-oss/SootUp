@@ -23,16 +23,6 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class NopEliminatorTest {
 
-  /** Tests the correct handling of an empty {@link Body}. */
-  @Test
-  public void testNoInput() {
-    Body testBody = Body.builder().build();
-    Body processedBody = new NopEliminator().interceptBody(testBody);
-
-    assertNotNull(processedBody);
-    assertEquals(testBody.getStmtGraph().nodes(), processedBody.getStmtGraph().nodes());
-  }
-
   /**
    * Tests the correct handling of a nop statement at the end of the stmtList. It should be deleted.
    * Transforms from
