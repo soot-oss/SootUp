@@ -1,6 +1,5 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
-import com.google.common.graph.Graph;
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -42,38 +41,44 @@ public class LocalSplitter implements BodyInterceptor {
 
     ImmutableStmtGraph oriGraph = originalBody.getStmtGraph();
     BodyBuilder bodyBuilder = Body.builder(originalBody);
+
+    //Fixme: Find the entryPoint manually
+    Stmt firstStmt = null;
+    for(Stmt node : oriGraph.nodes()){
+      if(oriGraph.predecessors(node).isEmpty()){
+        firstStmt = node;
+        break;
+      }
+    }
+    bodyBuilder.setFirstStmt(firstStmt);
     Body newBody = bodyBuilder.build();
+    //System.out.println(newBody.getStmtGraph().getEntryPoint());
+
+    // get all stmts in graph
 
 
     /**
-    // get all stmts in graph
-    List<Stmt> stmts = new ArrayList<>();
     Deque<Stmt> stmtQueue = new ArrayDeque<>();
-    Stmt firstStmt = originalBody.getFirstStmt();
     stmtQueue.add(firstStmt);
-    //bodyBuilder.addStmt(firstStmt); // Fixme: Now build the stmtGraph for bodyBuilder on hand because of branches, later use
     while (!stmtQueue.isEmpty()) {
       Stmt stmt = stmtQueue.remove();
       stmts.add(stmt);
       if (!oriGraph.successors(stmt).isEmpty()) {
         for (Stmt succ : oriGraph.successors(stmt)) {
-          //bodyBuilder.addStmt(succ);
-          //bodyBuilder.addFlow(stmt, succ);
           if (!stmts.contains(succ)) {
             stmtQueue.add(succ);
           }
         }
       }
-    }
+    }*/
 
-    Body newBody = bodyBuilder.build();
-    System.out.println(newBody.getStmtGraph());
-    System.out.println(newBody.branches);
+    //newBody = bodyBuilder.build();
 
     // **System.out.println("Stmt Graph before first level loop: " + newBody.getStmtGraph());
 
-    // store all Locals that must be splitted
-    // If a local as a definition appears two or more times, then this local must be splitted
+    // Find all Locals that must be split
+    // If a local as a definition appears two or more times, then this local must be split
+    Set<Stmt> stmts = oriGraph.nodes();
     Set<Local> visitedLocals = new HashSet<>();
     Set<Local> toSplitLocals = new HashSet<>();
     for (Stmt stmt : stmts) {
@@ -93,8 +98,16 @@ public class LocalSplitter implements BodyInterceptor {
 
     int localIndex = 1;
     Deque<Stmt> visitedQueue = new ArrayDeque<>();
-    visitedQueue.add(newBody.getFirstStmt());
-
+    //Fixme find the entryPoint manually
+    //visitedQueue.add(newBody.getStmtGraph().getEntryPoint());
+    Stmt entryPoint = null;
+    for(Stmt node : newBody.getStmtGraph().nodes()){
+      if(newBody.getStmtGraph().predecessors(node).isEmpty()){
+        entryPoint = node;
+        break;
+      }
+    }
+    visitedQueue.add(entryPoint);
     // store the visited modified stmts in graph, avoid visiting a stmt twice
     List<Stmt> visitedList = new ArrayList<>();
 
@@ -115,7 +128,7 @@ public class LocalSplitter implements BodyInterceptor {
           Stmt newVisitedStmt = withNewDef(visitedStmt, newLocal);
           // **System.out.println("\t\tSecond level loop: " + newVisitedStmt);
 
-          if (visitedStmt.equivTo(originalBody.getFirstStmt())) {
+          if (visitedStmt.equivTo(firstStmt)){
             bodyBuilder.setFirstStmt(newVisitedStmt);
           }
           bodyBuilder.mergeStmt(visitedStmt, newVisitedStmt);
@@ -207,8 +220,7 @@ public class LocalSplitter implements BodyInterceptor {
     // **System.out.println("Stmt Graph after first level loop: " + newBody.getStmtGraph());
     // **System.out.println("The first stmt is: " + newBody.getFirstStmt());
     // **System.out.println("The locals: " + newBody.getLocals());
-    return newBody;*/
-    return originalBody;
+    return newBody;
   }
 
   // ******************assist_functions*************************
