@@ -11,11 +11,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class StmtGraph {
 
-  protected Stmt entrypoint;
-
-  public Stmt getEntryPoint() {
-    return entrypoint;
-  }
+  public abstract Stmt getEntryPoint();
 
   public final boolean isDirected() {
     return true;

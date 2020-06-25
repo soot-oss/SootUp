@@ -5,6 +5,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * trivial Graph structure which keeps node and edge insertion order
@@ -16,6 +17,8 @@ public class MutableStmtGraph extends StmtGraph {
   @Nonnull protected final Map<Stmt, List<Stmt>> predecessors = new HashMap<>();
   @Nonnull protected final Map<Stmt, List<Stmt>> successors = new HashMap<>();
   @Nonnull protected final Set<Stmt> stmtList = new LinkedHashSet<>();
+
+  @Nullable protected Stmt entrypoint;
 
   public MutableStmtGraph() {}
 
