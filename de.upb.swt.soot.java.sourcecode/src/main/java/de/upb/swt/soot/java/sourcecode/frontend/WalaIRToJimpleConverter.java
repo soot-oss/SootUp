@@ -402,6 +402,10 @@ public class WalaIRToJimpleConverter {
   private Body createBody(
       MethodSignature methodSignature, EnumSet<Modifier> modifiers, AstMethod walaMethod) {
 
+    // reset linking information
+    rememberedStmt = null;
+    isFirstStmtSet = false;
+
     final Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
 
