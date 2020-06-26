@@ -59,8 +59,8 @@ public class WalaIRToJimpleConverter {
   private final HashMap<String, String> walaToSootNameTable;
   private Set<SootField> sootFields;
 
-  private Stmt rememberedStmt = null;
-  private boolean isFirstStmtSet = false;
+  private Stmt rememberedStmt;
+  private boolean isFirstStmtSet;
 
   public WalaIRToJimpleConverter(@Nonnull Set<String> sourceDirPath) {
     srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath);
