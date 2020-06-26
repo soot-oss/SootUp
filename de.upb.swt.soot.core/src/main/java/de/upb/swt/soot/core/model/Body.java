@@ -490,7 +490,8 @@ public class Body implements Copyable {
       }
 
       final Stmt startingStmt = cfg.getStartingStmt();
-      if (!cfg.nodes().contains(startingStmt)) {
+      final Set<Stmt> nodes = cfg.nodes();
+      if (nodes.size() > 0 && !nodes.contains(startingStmt)) {
         throw new RuntimeException(
             methodSig
                 + ": The given startingStmt '"

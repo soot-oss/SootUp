@@ -24,15 +24,20 @@ public final class ImmutableStmtGraph extends StmtGraph {
     if (stmtGraph instanceof ImmutableStmtGraph) {
       return (ImmutableStmtGraph) stmtGraph;
     }
-    if (stmtGraph.getStartingStmt() == null) {
-      throw new RuntimeException("The starting Stmt must exist.");
-    }
 
-    MutableStmtGraph graph = MutableStmtGraph.copyOf(stmtGraph);
-    return new ImmutableStmtGraph(graph);
+    MutableStmtGraph newBackingGraph;
+
+    if (stmtGraph.nodes().size() > 0) {
+      if (stmtGraph.getStartingStmt() == null) {
+        throw new RuntimeException("The starting Stmt must exist.");
+      }
+      newBackingGraph = MutableStmtGraph.copyOf(stmtGraph);
+    } else {
+      newBackingGraph = new MutableStmtGraph();
+    }
+    return new ImmutableStmtGraph(newBackingGraph);
   }
 
-  @Nonnull
   @Override
   public Stmt getStartingStmt() {
     return backingGraph.getStartingStmt();
