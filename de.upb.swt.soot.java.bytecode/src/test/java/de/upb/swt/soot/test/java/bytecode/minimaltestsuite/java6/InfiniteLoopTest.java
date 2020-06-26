@@ -3,7 +3,6 @@ package de.upb.swt.soot.test.java.bytecode.minimaltestsuite.java6;
 import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.util.Utils;
 import de.upb.swt.soot.test.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +28,6 @@ public class InfiniteLoopTest extends MinimalBytecodeTestSuiteBase {
   @Test
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
-    Utils.printJimpleForTest(method);
     assertJimpleStmts(method, expectedBodyStmts());
   }
 }
