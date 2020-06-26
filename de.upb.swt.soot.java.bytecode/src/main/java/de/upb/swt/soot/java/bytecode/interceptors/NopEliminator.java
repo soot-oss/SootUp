@@ -30,12 +30,14 @@ public class NopEliminator implements BodyInterceptor {
       if (stmt instanceof JNopStmt) {
         final List<Stmt> successors = originalGraph.successors(stmt);
         // relink predecessors to successor of nop
-        if (successors.size() > 0) {
-          final Stmt successorOfNop = successors.iterator().next();
-          originalGraph.predecessors(stmt).forEach(pred -> builder.addFlow(pred, successorOfNop));
+        // [ms] in a valid Body there is always a successor of nop -> last stmt (no successor) is a
+        // return|throw stmt
+        final Stmt successorOfNop = successors.iterator().next();
+        builder.removeFlow(stmt, successorOfNop);
+        for (Stmt pred : originalGraph.predecessors(stmt)) {
+          builder.removeFlow(pred, stmt);
+          builder.addFlow(pred, successorOfNop);
         }
-        // remove node,edges
-        builder.removeStmt(stmt);
       }
     }
 

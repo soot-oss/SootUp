@@ -385,21 +385,22 @@ public class Body implements Copyable {
     return new BodyBuilder();
   }
 
-  // FIMXE: rename this additional builder
   public static BodyBuilder builder(Body body) {
     return new BodyBuilder(body);
   }
 
   /**
-   * helps to create a Body in a fluent way.
+   * The BodyBuilder helps to create a new Body in a fluent way (see Builder Pattern)
    *
    * <pre>
    * <code>
-   * Stmt stmt1 = ... ;
-   * Stmt stmt2 = ... ;
+   * Stmt stmt1, stmt2, stmt3;
+   * ...
    * Body.BodyBuilder builder = Body.builder();
-   * builder.addStmt(stmt1).addStmt(stmt2);
+   * builder.setMethodSignature( ... );
+   * builder.setStartingStmt(stmt1);
    * builder.addFlow(stmt1,stmt2);
+   * builder.addFlow(stmt2,stmt3);
    * ...
    * Body body = builder.build();
    *
@@ -458,13 +459,6 @@ public class Body implements Copyable {
       return this;
     }
 
-    // FIXME: in consequence: remove "removeStmt", too
-    @Nonnull
-    public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
-      cfg.removeNode(stmt);
-      return this;
-    }
-
     @Nonnull
     public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
       cfg.putEdge(fromStmt, toStmt);
@@ -491,14 +485,17 @@ public class Body implements Copyable {
     @Nonnull
     public Body build() {
 
+      if (methodSig == null) {
+        throw new RuntimeException("There is no MethodSignature set.");
+      }
+
       final Stmt startingStmt = cfg.getStartingStmt();
       if (!cfg.nodes().contains(startingStmt)) {
         throw new RuntimeException(
-            "The given first Stmt '" + startingStmt + "' does not exist in the graph.");
-      }
-
-      if (methodSig == null) {
-        throw new RuntimeException("There is no MethodSignature set.");
+            methodSig
+                + ": The given startingStmt '"
+                + startingStmt
+                + "' does not exist in the StmtGraph.");
       }
 
       // validate statements

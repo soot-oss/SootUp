@@ -12,7 +12,8 @@ import javax.annotation.Nullable;
  * graph structure which keeps node and edge insertion order to store information about successive
  * stmts in edges. Ordered edges are needed because, this stores the target information of {@link
  * BranchingStmt}s so that in conditional branches (e.g. JSwicthStmt or JIfStmt ) we can associate
- * the i-th item with the i-th branch case.
+ * the i-th item with the i-th branch case. In a StmtGraph it is not allowed to have unconnected
+ * Nodes.
  *
  * <p>TODO: where and how its used
  *
@@ -34,7 +35,7 @@ public class MutableStmtGraph extends StmtGraph {
   @Nonnull protected final Map<Stmt, List<Stmt>> successors = new HashMap<>();
   @Nonnull protected final Set<Stmt> stmtList = new LinkedHashSet<>();
 
-  @Nullable protected Stmt firstStmt;
+  @Nullable protected Stmt startingStmt;
 
   public MutableStmtGraph() {}
 
@@ -105,11 +106,11 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public void setStartingStmt(@Nonnull Stmt firstStmt) {
-    this.firstStmt = firstStmt;
+    this.startingStmt = firstStmt;
   }
 
   public Stmt getStartingStmt() {
-    return firstStmt;
+    return startingStmt;
   }
 
   public void addNode(@Nonnull Stmt node) {
@@ -147,10 +148,16 @@ public class MutableStmtGraph extends StmtGraph {
     final List<Stmt> pred = predecessors.get(to);
     if (pred != null) {
       pred.remove(from);
+      if (degree(to) == 0) {
+        stmtList.remove(to);
+      }
     }
     final List<Stmt> succ = successors.get(from);
     if (succ != null) {
       succ.remove(to);
+      if (degree(from) == 0) {
+        stmtList.remove(from);
+      }
     }
   }
 
