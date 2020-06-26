@@ -458,18 +458,7 @@ public class Body implements Copyable {
       return this;
     }
 
-    /**
-     * @param linkLastStmt if this is true, a flow is added if the previously inserted Stmt falls
-     *     through i.e. does not branch, return or throw
-     */
-    // FIXME: integrate this into frontends
-    @Nonnull
-    @Deprecated
-    public BodyBuilder addStmt(@Nonnull Stmt stmt, boolean linkLastStmt) {
-      cfg.addNode(stmt);
-      return this;
-    }
-
+    // FIXME: in consequence: remove "removeStmt", too
     @Nonnull
     public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
       cfg.removeNode(stmt);

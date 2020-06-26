@@ -59,6 +59,9 @@ public class WalaIRToJimpleConverter {
   private final HashMap<String, String> walaToSootNameTable;
   private Set<SootField> sootFields;
 
+  private Stmt rememberedStmt = null;
+  private boolean isFirstStmtSet = false;
+
   public WalaIRToJimpleConverter(@Nonnull Set<String> sourceDirPath) {
     srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath);
     // TODO: [ms] get identifierFactory from view - view can hold a different implementation
@@ -381,6 +384,20 @@ public class WalaIRToJimpleConverter {
     return modifiers;
   }
 
+  private void emitStmt(@Nonnull Body.BodyBuilder bodyBuilder, @Nonnull Stmt stmt) {
+    if (rememberedStmt != null) {
+      if (rememberedStmt.fallsThrough()) {
+        // determine whether successive emitted Stmts have a flow between them
+        bodyBuilder.addFlow(rememberedStmt, stmt);
+      }
+    } else if (!isFirstStmtSet) {
+      // determine first stmt to execute
+      bodyBuilder.setStartingStmt(stmt);
+      isFirstStmtSet = true;
+    }
+    rememberedStmt = stmt;
+  }
+
   @Nonnull
   private Body createBody(
       MethodSignature methodSignature, EnumSet<Modifier> modifiers, AstMethod walaMethod) {
@@ -413,7 +430,7 @@ public class WalaIRToJimpleConverter {
                   thisLocal,
                   Jimple.newThisRef(thisType),
                   convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-          builder.addStmt(stmt, true);
+          emitStmt(builder, stmt);
         }
 
         // wala's first parameter is the "this" reference for non-static methods
@@ -427,7 +444,7 @@ public class WalaIRToJimpleConverter {
                     paraLocal,
                     Jimple.newParameterRef(type, i),
                     convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-            builder.addStmt(stmt, true);
+            emitStmt(builder, stmt);
           }
         } else {
           for (int i = 1; i < walaMethod.getNumberOfParameters(); i++) {
@@ -439,7 +456,7 @@ public class WalaIRToJimpleConverter {
                     paraLocal,
                     Jimple.newParameterRef(type, i - 1),
                     convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-            builder.addStmt(stmt, true);
+            emitStmt(builder, stmt);
           }
         }
 
@@ -456,13 +473,13 @@ public class WalaIRToJimpleConverter {
           if (!retStmts.isEmpty()) {
             final int retStmtsSize = retStmts.size();
             Stmt stmt = retStmts.get(0);
-            builder.addStmt(stmt, true);
+            emitStmt(builder, stmt);
             stmt2iIndex.putIfAbsent(stmt, inst.iIndex());
             lastStmt = stmt;
 
             for (int i = 1; i < retStmtsSize; i++) {
               stmt = retStmts.get(i);
-              builder.addStmt(stmt, true);
+              emitStmt(builder, stmt);
               lastStmt = stmt;
             }
           }
@@ -481,7 +498,7 @@ public class WalaIRToJimpleConverter {
             ret =
                 Jimple.newReturnVoidStmt(
                     convertPositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
-            builder.addStmt(ret, true);
+            emitStmt(builder, ret);
           } else {
             ret = lastStmt;
           }
