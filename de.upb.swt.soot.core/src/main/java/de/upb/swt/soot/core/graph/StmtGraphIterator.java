@@ -22,10 +22,12 @@ public abstract class StmtGraphIterator implements Iterator<Stmt> {
     alreadyInsertedNodes.add(firstStmt);
   }
 
+  /** creates a Breadth First Search Iterator */
   public static BreadthFirstIterator bfs(@Nonnull StmtGraph stmtGraph) {
     return new BreadthFirstIterator(stmtGraph);
   }
 
+  /** creates a Depth First Search Iterator */
   public static DepthFirstIterator dfs(@Nonnull StmtGraph stmtGraph) {
     return new DepthFirstIterator(stmtGraph);
   }
@@ -35,8 +37,10 @@ public abstract class StmtGraphIterator implements Iterator<Stmt> {
     return graph;
   }
 
+  /** inserts stmt into a container to remember that it needs to be iterated */
   protected abstract void addToContainer(@Nonnull Stmt stmt);
 
+  /** removes stmt from the remembering container */
   protected abstract Stmt removeFromContainer();
 
   @Override

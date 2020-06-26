@@ -94,7 +94,6 @@ public class MutableStmtGraph extends StmtGraph {
     this.firstStmt = firstStmt;
   }
 
-  @Nonnull
   public Stmt getStartingStmt() {
     return firstStmt;
   }
