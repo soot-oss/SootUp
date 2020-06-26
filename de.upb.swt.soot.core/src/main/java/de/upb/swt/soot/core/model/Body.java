@@ -413,7 +413,7 @@ public class Body implements Copyable {
     @Nonnull private List<Trap> traps = new ArrayList<>();
     @Nonnull private Position position;
 
-    @Nullable private MutableStmtGraph cfg;
+    @Nonnull private MutableStmtGraph cfg;
 
     @Nullable private Stmt lastAddedStmt = null;
     @Nullable private MethodSignature methodSig = null;
@@ -431,8 +431,8 @@ public class Body implements Copyable {
     }
 
     @Nonnull
-    public BodyBuilder setFirstStmt(@Nonnull Stmt firstStmt) {
-      cfg.setEntryPoint(firstStmt);
+    public BodyBuilder setStartingStmt(@Nonnull Stmt startingStmt) {
+      cfg.setStartingStmt(startingStmt);
       return this;
     }
 
@@ -460,20 +460,9 @@ public class Body implements Copyable {
       return this;
     }
 
-    public BodyBuilder addStmts(Collection<Stmt> stmts) {
-      addStmts(stmts, false);
-      return this;
-    }
-
-    /** @param autoLinkStmts if this is true, a flow is added from the previously inserted stmt */
+    // FIXME: remove addStmt -> use addFlow
     @Nonnull
-    public BodyBuilder addStmts(@Nonnull Collection<Stmt> stmts, boolean autoLinkStmts) {
-      for (Stmt s : stmts) addStmt(s, autoLinkStmts);
-      return this;
-    }
-
-    // TODO: remove addStmt -> use addFlow
-    @Nonnull
+    @Deprecated
     public BodyBuilder addStmt(@Nonnull Stmt stmt) {
       return addStmt(stmt, false);
     }
@@ -484,15 +473,13 @@ public class Body implements Copyable {
      */
     // FIXME: integrate this into frontends
     @Nonnull
+    @Deprecated
     public BodyBuilder addStmt(@Nonnull Stmt stmt, boolean linkLastStmt) {
       cfg.addNode(stmt);
       if (lastAddedStmt != null) {
         if (linkLastStmt && lastAddedStmt.fallsThrough()) {
           addFlow(lastAddedStmt, stmt);
         }
-      } else {
-        // automatically set first statement
-        cfg.setEntryPoint(stmt);
       }
       lastAddedStmt = stmt;
       return this;
@@ -530,12 +517,18 @@ public class Body implements Copyable {
     @Nonnull
     public Body build() {
 
-      // validate statements
-      cfg.validateStmtConnectionsInGraph();
+      final Stmt startingStmt = cfg.getStartingStmt();
+      if (!cfg.nodes().contains(startingStmt)) {
+        throw new RuntimeException(
+            "The given first Stmt '" + startingStmt + "' is not yet added as a node in the graph.");
+      }
 
       if (methodSig == null) {
         throw new RuntimeException("There is no MethodSignature set.");
       }
+
+      // validate statements
+      cfg.validateStmtConnectionsInGraph();
 
       return new Body(methodSig, locals, traps, cfg, position);
     }

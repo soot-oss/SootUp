@@ -21,9 +21,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
    */
   protected Map<Stmt, String> references;
 
-  public LabeledStmtPrinter(Body b) {
-    initializeSootMethod(b);
-  }
+  public LabeledStmtPrinter() {}
 
   public Map<Stmt, String> getLabels() {
     return labels;

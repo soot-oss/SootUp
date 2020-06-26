@@ -90,14 +90,13 @@ public class NopEliminatorTest {
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
+    builder.addFlow(strToA, jump);
+    builder.addFlow(jump, bToA);
+    builder.addFlow(bToA, ret);
     if (withNop) {
+      // strToA, jump, bToA, ret, nop;
       JNopStmt nop = new JNopStmt(noPositionInfo);
-      stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret, nop);
-      builder.addStmts(stmts, true);
       builder.addFlow(nop, ret);
-    } else {
-      stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret);
-      builder.addStmts(stmts, true);
     }
     builder.addFlow(jump, ret);
     builder.setLocals(locals);

@@ -40,7 +40,7 @@ public class MutableStmtGraph extends StmtGraph {
 
   public static MutableStmtGraph copyOf(@Nonnull StmtGraph originalStmtGraph) {
     final MutableStmtGraph copiedGraph = new MutableStmtGraph();
-    copiedGraph.setEntryPoint(originalStmtGraph.getStartingStmt());
+    copiedGraph.setStartingStmt(originalStmtGraph.getStartingStmt());
 
     for (Stmt node : originalStmtGraph.nodes()) {
       copiedGraph.addNode(node);
@@ -104,7 +104,7 @@ public class MutableStmtGraph extends StmtGraph {
     };
   }
 
-  public void setEntryPoint(@Nonnull Stmt firstStmt) {
+  public void setStartingStmt(@Nonnull Stmt firstStmt) {
     this.firstStmt = firstStmt;
   }
 
@@ -131,7 +131,8 @@ public class MutableStmtGraph extends StmtGraph {
 
   private void existsNodeOrThrow(@Nonnull Stmt node) {
     if (!containsNode(node)) {
-      throw new RuntimeException(node + " is currently not a Node in this StmtGraph.");
+      addNode(node);
+      throw new RuntimeException("'" + node + "' is currently not a Node in this StmtGraph.");
     }
   }
 
@@ -154,7 +155,15 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets) {
-    targets.forEach(this::existsNodeOrThrow);
+    targets.forEach(
+        node -> {
+          if (!containsNode(node)) {
+            if (from == node) {
+              throw new RuntimeException("A Stmt can't flow to itself.");
+            }
+            addNode(node);
+          }
+        });
 
     // cleanup existing edges before replacing it with the new list with successors
     successors(from).forEach(succ -> predecessors.get(succ).remove(from));
@@ -168,8 +177,15 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public void putEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
-    existsNodeOrThrow(from);
-    existsNodeOrThrow(to);
+    if (from == to) {
+      throw new RuntimeException("A Stmt can't flow to itself.");
+    }
+    if (!containsNode(from)) {
+      addNode(from);
+    }
+    if (!containsNode(to)) {
+      addNode(to);
+    }
 
     final List<Stmt> pred = predecessors.computeIfAbsent(to, key -> new ArrayList<>(1));
     pred.add(from);

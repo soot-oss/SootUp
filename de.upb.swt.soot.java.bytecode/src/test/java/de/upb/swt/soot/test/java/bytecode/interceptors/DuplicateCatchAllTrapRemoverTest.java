@@ -101,21 +101,17 @@ public class DuplicateCatchAllTrapRemoverTest {
     for (int i = 0; i < stmts.size() - 1; i++) {
       Stmt from = stmts.get(i);
       Stmt to = stmts.get(i + 1);
-      if (i == 0) builder.setFirstStmt(from);
-      builder.addStmt(from);
-      builder.addStmt(to);
+      if (i == 0) builder.setStartingStmt(from);
       builder.addFlow(from, to);
     }
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "a.b.c", "void", Collections.emptyList()));
-    Body body =
-        builder
-            .setLocals(locals)
-            .setTraps(traps)
-            .setPosition(NoPositionInformation.getInstance())
-            .build();
-    return body;
+    return builder
+        .setLocals(locals)
+        .setTraps(traps)
+        .setPosition(NoPositionInformation.getInstance())
+        .build();
   }
 
   private static class ExceptionType extends ClassType {

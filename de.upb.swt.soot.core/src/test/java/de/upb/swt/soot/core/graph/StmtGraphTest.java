@@ -20,7 +20,7 @@ public class StmtGraphTest {
     graph.addNode(stmt1);
     graph.addNode(stmt2);
     graph.putEdge(stmt1, stmt2);
-    graph.setEntryPoint(stmt1);
+    graph.setStartingStmt(stmt1);
 
     final ImmutableStmtGraph immutableGraph = ImmutableStmtGraph.copyOf(graph);
 
@@ -63,7 +63,7 @@ public class StmtGraphTest {
     graph.addNode(stmt1);
     graph.addNode(stmt2);
     graph.putEdge(stmt1, stmt2);
-    graph.setEntryPoint(stmt1);
+    graph.setStartingStmt(stmt1);
 
     final StmtGraph graph2 = MutableStmtGraph.copyOf(graph);
 
