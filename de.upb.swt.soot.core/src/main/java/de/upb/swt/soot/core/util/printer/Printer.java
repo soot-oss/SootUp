@@ -22,6 +22,7 @@
 package de.upb.swt.soot.core.util.printer;
 
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
+import de.upb.swt.soot.core.graph.StmtGraphIterator;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -296,6 +297,7 @@ public class Printer {
     ImmutableStmtGraph stmtGraph = body.getStmtGraph();
     Stmt previousStmt;
 
+    final Map<Stmt, String> labels = printer.getLabels();
     for (Stmt currentStmt : stmtGraph.nodes()) {
       previousStmt = currentStmt;
 
@@ -307,19 +309,16 @@ public class Printer {
         // c) the previous stmt does not have stmt as a successor
         // d) if the current stmt has a label on it
 
-        final boolean currentStmtHasLabel = printer.getLabels().get(currentStmt) != null;
-        // TODO [ms]
-        if (true /*currentStmt != units.iterator().next()*/) {
-          if (stmtGraph.successors(previousStmt).size() != 1
-              || stmtGraph.predecessors(currentStmt).size() != 1
-              || currentStmtHasLabel) {
+        final boolean currentStmtHasLabel = labels.get(currentStmt) != null;
+        if (stmtGraph.successors(previousStmt).size() != 1
+            || stmtGraph.predecessors(currentStmt).size() != 1
+            || currentStmtHasLabel) {
+          printer.newline();
+        } else {
+          // Or if the previous node does not have statement as a successor.
+          final Iterator<Stmt> succIterator = stmtGraph.successors(previousStmt).iterator();
+          if (succIterator.hasNext() && succIterator.next() != currentStmt) {
             printer.newline();
-          } else {
-            // Or if the previous node does not have body statement as a successor.
-            final Iterator<Stmt> succIterator = stmtGraph.successors(previousStmt).iterator();
-            if (succIterator.hasNext() && succIterator.next() != currentStmt) {
-              printer.newline();
-            }
           }
         }
 
@@ -335,6 +334,7 @@ public class Printer {
       }
 
       printer.stmt(currentStmt);
+      incJimpleLnNum();
     }
 
     // Print out exceptions
@@ -353,11 +353,11 @@ public class Printer {
         printer.literal(" catch ");
         printer.typeSignature(trap.getExceptionType());
         printer.literal(" from ");
-        printer.literal(printer.getLabels().get(trap.getBeginStmt()));
+        printer.literal(labels.get(trap.getBeginStmt()));
         printer.literal(" to ");
-        printer.literal(printer.getLabels().get(trap.getEndStmt()));
+        printer.literal(labels.get(trap.getEndStmt()));
         printer.literal(" with ");
-        printer.literal(printer.getLabels().get(trap.getHandlerStmt()));
+        printer.literal(labels.get(trap.getHandlerStmt()));
         printer.literal(";");
         printer.newline();
         incJimpleLnNum();

@@ -30,10 +30,6 @@ public abstract class StmtGraphIterator implements Iterator<Stmt> {
     return new DepthFirstIterator(stmtGraph);
   }
 
-  public static DepthFirstPostOrderIterator dfsPostOrder(@Nonnull StmtGraph stmtGraph) {
-    return new DepthFirstPostOrderIterator(stmtGraph);
-  }
-
   @Nonnull
   protected StmtGraph getGraph() {
     return graph;

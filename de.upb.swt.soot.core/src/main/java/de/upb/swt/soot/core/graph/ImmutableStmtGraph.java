@@ -15,7 +15,7 @@ public final class ImmutableStmtGraph extends StmtGraph {
 
   @Nonnull private final MutableStmtGraph backingGraph;
 
-  public ImmutableStmtGraph(MutableStmtGraph backingGraph) {
+  public ImmutableStmtGraph(@Nonnull MutableStmtGraph backingGraph) {
     this.backingGraph = backingGraph;
   }
 
@@ -25,11 +25,10 @@ public final class ImmutableStmtGraph extends StmtGraph {
       return (ImmutableStmtGraph) stmtGraph;
     }
     if (stmtGraph.getStartingStmt() == null) {
-      throw new RuntimeException("The starting Stmt must be set.");
+      throw new RuntimeException("The starting Stmt must exist.");
     }
 
     MutableStmtGraph graph = MutableStmtGraph.copyOf(stmtGraph);
-
     return new ImmutableStmtGraph(graph);
   }
 
