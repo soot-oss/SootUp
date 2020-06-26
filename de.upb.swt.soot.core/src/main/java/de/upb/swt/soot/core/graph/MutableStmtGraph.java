@@ -1,5 +1,6 @@
 package de.upb.swt.soot.core.graph;
 
+import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
@@ -8,9 +9,22 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * trivial Graph structure which keeps node and edge insertion order
+ * graph structure which keeps node and edge insertion order to store information about successive
+ * stmts in edges. Ordered edges are needed because, this stores the target information of {@link
+ * BranchingStmt}s so that in conditional branches (e.g. JSwicthStmt or JIfStmt ) we can associate
+ * the i-th item with the i-th branch case.
  *
  * <p>TODO: where and how its used
+ *
+ * <pre>
+ *  Stmt stmt1, stmt2;
+ *  ...
+ *  MutableStmtGraph graph = new MutableStmtGraph();
+ *  graph.setEntryPoint(stmt1);
+ *  graph.addNode(stmt1);
+ *  graph.addNode(stmt2);
+ *  graph.putEdge(stmt1, stmt2);
+ * </pre>
  *
  * @author Markus Schmidt
  */
