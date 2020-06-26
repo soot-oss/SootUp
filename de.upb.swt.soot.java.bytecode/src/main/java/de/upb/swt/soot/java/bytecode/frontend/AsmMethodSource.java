@@ -137,6 +137,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private Map<LabelNode, Stmt> labelsToStmt;
   @Nonnull private final Body.BodyBuilder bodyBuilder = Body.builder();
 
+  Stmt rememberedStmt = null;
+  boolean isFirstStmtSet = false;
+
   private final Supplier<MethodSignature> lazyMethodSignature =
       Suppliers.memoize(
           () -> {
@@ -1710,7 +1713,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       if (!InsnToStmt.containsKey(ln)) {
         JNopStmt nop = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
         setStmt(ln, nop);
-        bodyBuilder.addStmt(nop, true);
+        emitStmt(nop);
       }
       return;
     }
@@ -1940,18 +1943,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     int iloc = 0;
     if (!lazyModifiers.get().contains(Modifier.STATIC)) {
       Local l = getLocal(iloc++);
-      bodyBuilder.addStmt(
+      emitStmt(
           Jimple.newIdentityStmt(
-              l, Jimple.newThisRef(declaringClass), StmtPositionInfo.createNoStmtPositionInfo()),
-          true);
+              l, Jimple.newThisRef(declaringClass), StmtPositionInfo.createNoStmtPositionInfo()));
     }
     int nrp = 0;
     for (Type ot : methodSignature.getParameterTypes()) {
       Local l = getLocal(iloc);
-      bodyBuilder.addStmt(
+      emitStmt(
           Jimple.newIdentityStmt(
-              l, Jimple.newParameterRef(ot, nrp++), StmtPositionInfo.createNoStmtPositionInfo()),
-          true);
+              l, Jimple.newParameterRef(ot, nrp++), StmtPositionInfo.createNoStmtPositionInfo()));
       if (AsmUtil.isDWord(ot)) {
         iloc += 2;
       } else {
@@ -1984,13 +1985,27 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     bodyBuilder.setTraps(traps);
   }
 
+  private void emitStmt(@Nonnull Stmt stmt) {
+    if (rememberedStmt != null) {
+      if (rememberedStmt.fallsThrough()) {
+        // determine whether successive emitted Stmts have a flow between them
+        bodyBuilder.addFlow(rememberedStmt, stmt);
+      }
+    } else if (!isFirstStmtSet) {
+      // determine first stmt to execute
+      bodyBuilder.setStartingStmt(stmt);
+      isFirstStmtSet = true;
+    }
+    rememberedStmt = stmt;
+  }
+
   private void emitStmts(@Nonnull Stmt stmt) {
     if (stmt instanceof StmtContainer) {
       for (Stmt u : ((StmtContainer) stmt).getStmts()) {
-        bodyBuilder.addStmt(u, true);
+        emitStmt(u);
       }
     } else {
-      bodyBuilder.addStmt(stmt, true);
+      emitStmt(stmt);
     }
   }
 
@@ -2045,7 +2060,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       // jump to the original implementation
       Stmt targetStmt = InsnToStmt.get(ln);
       JGotoStmt gotoImpl = Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
-      bodyBuilder.addStmt(gotoImpl, true);
+      emitStmt(gotoImpl);
       bodyBuilder.addFlow(gotoImpl, targetStmt);
     }
 

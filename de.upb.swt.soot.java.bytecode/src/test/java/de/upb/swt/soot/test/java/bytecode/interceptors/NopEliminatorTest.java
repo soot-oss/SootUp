@@ -83,15 +83,14 @@ public class NopEliminatorTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
     List<Trap> traps = new ArrayList<>();
-    List<Stmt> stmts;
 
     Body.BodyBuilder builder = Body.builder();
+    builder.setStartingStmt(strToA);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
     builder.addFlow(strToA, jump);
-    builder.addFlow(jump, bToA);
     builder.addFlow(bToA, ret);
     if (withNop) {
       // strToA, jump, bToA, ret, nop;

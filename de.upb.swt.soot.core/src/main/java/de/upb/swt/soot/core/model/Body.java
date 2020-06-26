@@ -414,8 +414,6 @@ public class Body implements Copyable {
     @Nonnull private Position position;
 
     @Nonnull private MutableStmtGraph cfg;
-
-    @Nullable private Stmt lastAddedStmt = null;
     @Nullable private MethodSignature methodSig = null;
 
     BodyBuilder() {
@@ -460,13 +458,6 @@ public class Body implements Copyable {
       return this;
     }
 
-    // FIXME: remove addStmt -> use addFlow
-    @Nonnull
-    @Deprecated
-    public BodyBuilder addStmt(@Nonnull Stmt stmt) {
-      return addStmt(stmt, false);
-    }
-
     /**
      * @param linkLastStmt if this is true, a flow is added if the previously inserted Stmt falls
      *     through i.e. does not branch, return or throw
@@ -476,12 +467,6 @@ public class Body implements Copyable {
     @Deprecated
     public BodyBuilder addStmt(@Nonnull Stmt stmt, boolean linkLastStmt) {
       cfg.addNode(stmt);
-      if (lastAddedStmt != null) {
-        if (linkLastStmt && lastAddedStmt.fallsThrough()) {
-          addFlow(lastAddedStmt, stmt);
-        }
-      }
-      lastAddedStmt = stmt;
       return this;
     }
 
@@ -520,7 +505,7 @@ public class Body implements Copyable {
       final Stmt startingStmt = cfg.getStartingStmt();
       if (!cfg.nodes().contains(startingStmt)) {
         throw new RuntimeException(
-            "The given first Stmt '" + startingStmt + "' is not yet added as a node in the graph.");
+            "The given first Stmt '" + startingStmt + "' does not exist in the graph.");
       }
 
       if (methodSig == null) {
