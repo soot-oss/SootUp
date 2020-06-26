@@ -39,6 +39,7 @@ public final class ImmutableStmtGraph extends StmtGraph {
     return backingGraph.getStartingStmt();
   }
 
+  @Nonnull
   @Override
   public Set<Stmt> nodes() {
     return backingGraph.nodes();

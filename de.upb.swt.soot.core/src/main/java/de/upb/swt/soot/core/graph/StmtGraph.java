@@ -6,33 +6,42 @@ import java.util.*;
 import javax.annotation.Nonnull;
 
 /**
- * Interface for control flow graphs on Jimple Stmts. Its a CFG
+ * Interface for control flow graphs on Jimple Stmts. A StmtGraph is directed and connected. Its
+ * edges represent flows between Stmts. If the edge starts in a branching Stmt there is a flow for
+ * each flow to the target Stmt. This can include duplicate flows to the same target e.g. for
+ * JSwitchStmt, so that every label has its own flow to a target.
  *
  * @author Markus Schmidt
  */
-
-// TODO: javadoc
 public abstract class StmtGraph {
 
   public abstract Stmt getStartingStmt();
 
+  /** returns the nodes in this graph. */
   @Nonnull
   public abstract Set<Stmt> nodes();
 
+  /** returns the ingoing flows to node as an ordered List. */
   @Nonnull
   public abstract List<Stmt> predecessors(@Nonnull Stmt node);
 
+  /** returns the outgoing flows of node as ordered List. The List can have duplicate entries! */
   @Nonnull
   public abstract List<Stmt> successors(@Nonnull Stmt node);
 
+  /** returns the amount of edges with node as source or target. */
   public abstract int degree(@Nonnull Stmt node);
 
+  /** returns the amount of ingoing edges into node */
   public abstract int inDegree(@Nonnull Stmt node);
 
+  /** returns the amount of edges that start from node */
   public abstract int outDegree(@Nonnull Stmt node);
 
-  public abstract boolean hasEdgeConnecting(@Nonnull Stmt nodeU, @Nonnull Stmt nodeV);
+  /** returns true if there is a flow between source and target */
+  public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
 
+  /** validates whether the each Stmt has the correct amount of outgoing edges. */
   public void validateStmtConnectionsInGraph() {
     for (Stmt stmt : nodes()) {
 
