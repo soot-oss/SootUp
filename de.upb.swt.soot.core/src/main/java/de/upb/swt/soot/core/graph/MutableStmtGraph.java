@@ -16,7 +16,6 @@ import javax.annotation.Nullable;
  */
 public class MutableStmtGraph extends StmtGraph {
 
-  // TODO: why LIST -> order -> JSWITCH
   @Nonnull protected final Map<Stmt, List<Stmt>> predecessors = new HashMap<>();
   @Nonnull protected final Map<Stmt, List<Stmt>> successors = new HashMap<>();
   @Nonnull protected final Set<Stmt> stmtList = new LinkedHashSet<>();
@@ -25,7 +24,6 @@ public class MutableStmtGraph extends StmtGraph {
 
   public MutableStmtGraph() {}
 
-  // TODO: [ms] test copyOf
   public static MutableStmtGraph copyOf(@Nonnull StmtGraph originalStmtGraph) {
     final MutableStmtGraph copiedGraph = new MutableStmtGraph();
     copiedGraph.setEntryPoint(originalStmtGraph.getStartingStmt());
@@ -101,15 +99,11 @@ public class MutableStmtGraph extends StmtGraph {
     return firstStmt;
   }
 
-  public boolean addNode(@Nonnull Stmt node) {
-    boolean modify = !containsNode(node);
-    if (modify) {
-      stmtList.add(node);
-    }
-    return modify;
+  public void addNode(@Nonnull Stmt node) {
+    stmtList.add(node);
   }
 
-  public boolean removeNode(@Nonnull Stmt node) {
+  public void removeNode(@Nonnull Stmt node) {
     if (stmtList.remove(node)) {
       predecessors
           .getOrDefault(node, Collections.emptyList())
@@ -119,9 +113,7 @@ public class MutableStmtGraph extends StmtGraph {
           .getOrDefault(node, Collections.emptyList())
           .forEach(succ -> predecessors.get(succ).remove(node));
       successors.remove(node);
-      return true;
     }
-    return false;
   }
 
   private void existsNodeOrThrow(@Nonnull Stmt node) {
@@ -134,25 +126,21 @@ public class MutableStmtGraph extends StmtGraph {
     return stmtList.contains(node);
   }
 
-  public boolean removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
+  public void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
     existsNodeOrThrow(from);
     existsNodeOrThrow(to);
 
     final List<Stmt> pred = predecessors.get(to);
-    boolean modified = false;
     if (pred != null) {
       pred.remove(from);
-      modified = true;
     }
     final List<Stmt> succ = successors.get(from);
     if (succ != null) {
       succ.remove(to);
-      modified = true;
     }
-    return modified;
   }
 
-  public boolean setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets) {
+  public void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets) {
     targets.forEach(this::existsNodeOrThrow);
 
     // cleanup existing edges before replacing it with the new list with successors
@@ -164,10 +152,9 @@ public class MutableStmtGraph extends StmtGraph {
     }
 
     successors.put(from, targets);
-    return true;
   }
 
-  public boolean putEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
+  public void putEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
     existsNodeOrThrow(from);
     existsNodeOrThrow(to);
 
@@ -186,7 +173,6 @@ public class MutableStmtGraph extends StmtGraph {
     final List<Stmt> succ =
         successors.computeIfAbsent(from, key -> new ArrayList<>(predictedSuccessorSize));
     succ.add(to);
-    return true;
   }
 
   @Override

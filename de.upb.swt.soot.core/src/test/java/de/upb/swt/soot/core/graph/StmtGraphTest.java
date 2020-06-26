@@ -10,7 +10,50 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import org.junit.Test;
 
-public class MutableStmtGraphTest {
+public class StmtGraphTest {
+
+  @Test
+  public void copyOfImmutable() {
+    Stmt stmt1 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    Stmt stmt2 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    MutableStmtGraph graph = new MutableStmtGraph();
+    graph.addNode(stmt1);
+    graph.addNode(stmt2);
+    graph.putEdge(stmt1, stmt2);
+    graph.setEntryPoint(stmt1);
+
+    final ImmutableStmtGraph immutableGraph = ImmutableStmtGraph.copyOf(graph);
+
+    assertEquals(graph.getStartingStmt(), immutableGraph.getStartingStmt());
+    assertEquals(graph.nodes().size(), immutableGraph.nodes().size());
+    assertEquals(
+        Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(stmt1, stmt2))),
+        immutableGraph.nodes());
+
+    assertEquals(graph.nodes().size(), immutableGraph.nodes().size());
+    for (Stmt node : graph.nodes()) {
+      assertEquals(graph.predecessors(node), immutableGraph.predecessors(node));
+      assertEquals(graph.successors(node), immutableGraph.successors(node));
+    }
+
+    try {
+      immutableGraph.nodes().add(stmt1);
+      assertTrue(false);
+    } catch (Exception ignore) {
+    }
+
+    try {
+      immutableGraph.predecessors(stmt1).add(stmt2);
+      assertTrue(false);
+    } catch (Exception ignore) {
+    }
+
+    try {
+      immutableGraph.successors(stmt1).add(stmt2);
+      assertTrue(false);
+    } catch (Exception ignore) {
+    }
+  }
 
   @Test
   public void copyOf() {

@@ -29,19 +29,19 @@ public abstract class StmtGraph {
   @Nonnull
   public abstract List<Stmt> successors(@Nonnull Stmt node);
 
-  /** returns the amount of edges with node as source or target. */
+  /** returns the amount of flows with node as source or target. */
   public abstract int degree(@Nonnull Stmt node);
 
-  /** returns the amount of ingoing edges into node */
+  /** returns the amount of ingoing flows into node */
   public abstract int inDegree(@Nonnull Stmt node);
 
-  /** returns the amount of edges that start from node */
+  /** returns the amount of flows that start from node */
   public abstract int outDegree(@Nonnull Stmt node);
 
   /** returns true if there is a flow between source and target */
   public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
 
-  /** validates whether the each Stmt has the correct amount of outgoing edges. */
+  /** validates whether the each Stmt has the correct amount of outgoing flows. */
   public void validateStmtConnectionsInGraph() {
     for (Stmt stmt : nodes()) {
 
