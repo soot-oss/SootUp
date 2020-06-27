@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
  *
  * @author Markus Schmidt
  */
-public class CFGIterator implements Iterator<Stmt> {
+public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
   @Nonnull private final StmtGraph graph;
   @Nonnull protected final Set<Stmt> alreadyInsertedNodes;
@@ -20,11 +20,11 @@ public class CFGIterator implements Iterator<Stmt> {
   @Nonnull private final ArrayDeque<Stmt> workQueue = new ArrayDeque<>();
   @Nonnull private final ArrayDeque<Trap> traps;
 
-  public CFGIterator(@Nonnull StmtGraph graph, List<Trap> traps) {
+  public StmtGraphBlockIterator(@Nonnull StmtGraph graph, List<Trap> traps) {
     this(graph, graph.getStartingStmt(), traps);
   }
 
-  public CFGIterator(StmtGraph graph, Stmt startingStmt, List<Trap> traps) {
+  public StmtGraphBlockIterator(StmtGraph graph, Stmt startingStmt, List<Trap> traps) {
     this.graph = graph;
     alreadyInsertedNodes = new LinkedHashSet<>(graph.nodes().size(), 1);
 

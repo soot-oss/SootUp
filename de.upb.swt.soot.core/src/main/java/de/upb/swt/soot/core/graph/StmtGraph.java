@@ -6,10 +6,11 @@ import java.util.*;
 import javax.annotation.Nonnull;
 
 /**
- * Interface for control flow graphs on Jimple Stmts. A StmtGraph is directed and connected. Its
- * edges represent flows between Stmts. If the edge starts in a branching Stmt there is a flow for
- * each flow to the target Stmt. This can include duplicate flows to the same target e.g. for
- * JSwitchStmt, so that every label has its own flow to a target.
+ * Interface for control flow graphs on Jimple Stmts. A StmtGraph is directed and connected (except
+ * for traphandlers - those are not connected to the unexceptional flow). Its edges represent flows
+ * between Stmts. If the edge starts in a branching Stmt there is a flow for each flow to the target
+ * Stmt. This can include duplicate flows to the same target e.g. for JSwitchStmt, so that every
+ * label has its own flow to a target.
  *
  * @author Markus Schmidt
  */

@@ -1,6 +1,6 @@
 package de.upb.swt.soot.core.util.printer;
 
-import de.upb.swt.soot.core.graph.CFGIterator;
+import de.upb.swt.soot.core.graph.StmtGraphBlockIterator;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -120,7 +120,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     int refCount = 0;
 
     // Traverse the stmts and assign a label if necessary
-    for (Iterator<Stmt> it = new CFGIterator(body.getStmtGraph(), body.getTraps());
+    for (Iterator<Stmt> it = new StmtGraphBlockIterator(body.getStmtGraph(), body.getTraps());
         it.hasNext(); ) {
       Stmt s = it.next();
       if (labelStmts.contains(s)) {
