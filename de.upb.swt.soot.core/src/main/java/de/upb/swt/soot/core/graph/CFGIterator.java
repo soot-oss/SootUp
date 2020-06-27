@@ -15,7 +15,8 @@ public class CFGIterator implements Iterator<Stmt> {
   @Nonnull private final StmtGraph graph;
   @Nonnull protected final Set<Stmt> alreadyInsertedNodes;
 
-  @Nonnull private final ArrayDeque<Stmt> stack = new ArrayDeque<>();
+  @Nonnull private final ArrayDeque<Stmt> currentBlockQueue = new ArrayDeque<>();
+  @Nonnull private final ArrayDeque<Stmt> workQueue = new ArrayDeque<>();
 
   public CFGIterator(@Nonnull StmtGraph graph) {
     this(graph, graph.getStartingStmt());
@@ -25,27 +26,47 @@ public class CFGIterator implements Iterator<Stmt> {
     this.graph = graph;
     alreadyInsertedNodes = new LinkedHashSet<>(graph.nodes().size(), 1);
 
-    stack.add(startingStmt);
+    currentBlockQueue.add(startingStmt);
     alreadyInsertedNodes.add(startingStmt);
   }
 
   @Override
   public Stmt next() {
 
-    Stmt stmt = stack.pollFirst();
+    Stmt stmt;
+    if (currentBlockQueue.isEmpty()) {
+      stmt = workQueue.pollFirst();
+    } else {
+      stmt = currentBlockQueue.pollFirst();
+    }
+
     alreadyInsertedNodes.add(stmt);
 
     final List<Stmt> successors = graph.successors(stmt);
-    for (int i = successors.size() - 1; i >= 0; i--) {
+    for (int i = 0; i < successors.size(); i++) {
       Stmt succ = successors.get(i);
-      stack.addFirst(succ);
+      if (i == 0 && stmt.fallsThrough()) {
+        currentBlockQueue.addFirst(succ);
+      } else {
+        if (stmt.fallsThrough()) {
+          workQueue.addFirst(succ);
+        } else {
+          workQueue.addLast(succ);
+        }
+      }
     }
 
     // skip already visited nodes
-    Stmt skipAlreadyVisited = stack.peekFirst();
-    while (alreadyInsertedNodes.contains(skipAlreadyVisited) && !stack.isEmpty()) {
-      stack.pollFirst();
-      skipAlreadyVisited = stack.peekFirst();
+    Stmt skipAlreadyVisited;
+    while (!currentBlockQueue.isEmpty()
+        && (skipAlreadyVisited = currentBlockQueue.peekFirst()) != null
+        && alreadyInsertedNodes.contains(skipAlreadyVisited)) {
+      currentBlockQueue.pollFirst();
+    }
+    while (!workQueue.isEmpty()
+        && (skipAlreadyVisited = workQueue.peekFirst()) != null
+        && alreadyInsertedNodes.contains(skipAlreadyVisited)) {
+      workQueue.pollFirst();
     }
 
     return stmt;
@@ -53,6 +74,6 @@ public class CFGIterator implements Iterator<Stmt> {
 
   @Override
   public boolean hasNext() {
-    return !stack.isEmpty();
+    return !(currentBlockQueue.isEmpty() && workQueue.isEmpty());
   }
 }
