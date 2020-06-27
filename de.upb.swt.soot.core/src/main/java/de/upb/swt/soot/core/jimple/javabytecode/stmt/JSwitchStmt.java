@@ -84,7 +84,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
 
   @Nonnull
   public Optional<Stmt> getDefaultTarget(Body body) {
-    return Optional.ofNullable(body.getBranchTargetsOf(this).get(0));
+    return Optional.ofNullable(body.getBranchTargetsOf(this).get( values.size() ));
   }
 
   public Value getKey() {
@@ -185,8 +185,6 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
 
     final Iterable<Stmt> targets = stmtPrinter.getBody().getBranchTargetsOf(this);
     Iterator<Stmt> targetIt = targets.iterator();
-    Stmt defaultTarget = targetIt.next();
-
     for (IntConstant value : values) {
       stmtPrinter.handleIndent();
       stmtPrinter.literal(Jimple.CASE);
@@ -200,7 +198,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
 
       stmtPrinter.newline();
     }
-
+    Stmt defaultTarget = targetIt.next();
     stmtPrinter.handleIndent();
     stmtPrinter.literal(Jimple.DEFAULT);
     stmtPrinter.literal(": ");

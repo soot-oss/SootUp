@@ -121,7 +121,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   /* -state fields- */
   private int nextLocal;
   private Map<Integer, Local> locals;
-  private Multimap<Stmt, LabelNode> stmtsThatBranchToLabel;
+  private LinkedListMultimap<Stmt, LabelNode> stmtsThatBranchToLabel;
   private Map<AbstractInsnNode, Stmt> InsnToStmt;
   private ArrayList<Operand> stack;
   private Map<AbstractInsnNode, StackFrame> frames;
@@ -1279,10 +1279,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             (Immediate) key.stackOrValue(), keys, StmtPositionInfo.createNoStmtPositionInfo());
 
     // uphold insertion order!
+    stmtsThatBranchToLabel.putAll(lookupSwitchStmt, insn.labels);
     stmtsThatBranchToLabel.put(lookupSwitchStmt, insn.dflt);
-    for (LabelNode labelNode : insn.labels) {
-      stmtsThatBranchToLabel.put(lookupSwitchStmt, labelNode);
-    }
 
     key.addBox(lookupSwitchStmt.getKeyBox());
     frame.setIn(key);
@@ -1579,10 +1577,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             StmtPositionInfo.createNoStmtPositionInfo());
 
     // uphold insertion order!
+    stmtsThatBranchToLabel.putAll(tableSwitchStmt, insn.labels);
     stmtsThatBranchToLabel.put(tableSwitchStmt, insn.dflt);
-    for (LabelNode labelNode : insn.labels) {
-      stmtsThatBranchToLabel.put(tableSwitchStmt, labelNode);
-    }
+
 
     key.addBox(tableSwitchStmt.getKeyBox());
     frame.setIn(key);
@@ -2066,8 +2063,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
     // link branching stmts with its targets
     for (Map.Entry<Stmt, LabelNode> entry : stmtsThatBranchToLabel.entries()) {
-      final Stmt fromStmt = entry.getKey();
-      final Stmt targetStmt = labelsToStmt.get(entry.getValue());
+       final Stmt fromStmt = entry.getKey();
+       final Stmt targetStmt = labelsToStmt.get(entry.getValue());
       bodyBuilder.addFlow(fromStmt, targetStmt);
     }
   }

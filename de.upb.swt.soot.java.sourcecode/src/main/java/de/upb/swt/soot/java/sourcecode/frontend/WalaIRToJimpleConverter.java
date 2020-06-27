@@ -23,6 +23,7 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
@@ -471,20 +472,18 @@ public class WalaIRToJimpleConverter {
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
         // Don't exchange, different stmts could have same ids
         HashMap<Stmt, Integer> stmt2iIndex = new HashMap<>();
-        Stmt lastStmt = null;
+        Stmt stmt = null;
         for (SSAInstruction inst : insts) {
           List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst, stmt2iIndex);
           if (!retStmts.isEmpty()) {
             final int retStmtsSize = retStmts.size();
-            Stmt stmt = retStmts.get(0);
+            stmt = retStmts.get(0);
             emitStmt(builder, stmt);
             stmt2iIndex.putIfAbsent(stmt, inst.iIndex());
-            lastStmt = stmt;
 
             for (int i = 1; i < retStmtsSize; i++) {
               stmt = retStmts.get(i);
               emitStmt(builder, stmt);
-              lastStmt = stmt;
             }
           }
         }
@@ -492,9 +491,10 @@ public class WalaIRToJimpleConverter {
         // add return void stmt for methods with return type being void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
           Stmt ret;
-          boolean isImplicitLastStmtTargetOfBranchStmt = instConverter.hasJumpTarget(-1);
+          final boolean isImplicitLastStmtTargetOfBranchStmt = instConverter.hasJumpTarget(-1);
+          final boolean validMethodLeaving = !(stmt instanceof JReturnVoidStmt || stmt instanceof JThrowStmt);
           if (stmt2iIndex.isEmpty()
-              || !(lastStmt instanceof JReturnVoidStmt)
+              || validMethodLeaving
               || isImplicitLastStmtTargetOfBranchStmt) {
             // TODO? [ms] InstructionPosition of last line in the method seems strange to me ->
             // maybe use lastLine with
@@ -504,7 +504,7 @@ public class WalaIRToJimpleConverter {
                     convertPositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
             emitStmt(builder, ret);
           } else {
-            ret = lastStmt;
+            ret = stmt;
           }
           // needed because referencing a branch to the last stmt refers to: -1
           stmt2iIndex.put(ret, -1);
