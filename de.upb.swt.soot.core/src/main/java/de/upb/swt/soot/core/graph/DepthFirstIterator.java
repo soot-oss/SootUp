@@ -15,11 +15,13 @@ public class DepthFirstIterator extends StmtGraphIterator {
   @Nonnull private final Stack<Stmt> stack = new Stack<>();
 
   DepthFirstIterator(@Nonnull StmtGraph graph) {
-    super(graph, graph.getStartingStmt());
+    this(graph, graph.getStartingStmt());
   }
 
   public DepthFirstIterator(StmtGraph graph, Stmt startingStmt) {
-    super(graph, startingStmt);
+    super(graph);
+    addToContainer(startingStmt);
+    alreadyInsertedNodes.add(startingStmt);
   }
 
   @Override

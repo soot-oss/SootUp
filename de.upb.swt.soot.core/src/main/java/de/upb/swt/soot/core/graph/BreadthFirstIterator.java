@@ -15,11 +15,13 @@ public class BreadthFirstIterator extends StmtGraphIterator {
   @Nonnull private final Queue<Stmt> q = new ArrayDeque<>();
 
   BreadthFirstIterator(@Nonnull StmtGraph graph) {
-    super(graph, graph.getStartingStmt());
+    this(graph, graph.getStartingStmt());
   }
 
   BreadthFirstIterator(@Nonnull StmtGraph graph, @Nonnull Stmt startingStmt) {
-    super(graph, startingStmt);
+    super(graph);
+    addToContainer(startingStmt);
+    alreadyInsertedNodes.add(startingStmt);
   }
 
   @Override

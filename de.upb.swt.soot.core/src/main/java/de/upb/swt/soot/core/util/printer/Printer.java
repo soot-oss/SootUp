@@ -21,6 +21,7 @@
  */
 package de.upb.swt.soot.core.util.printer;
 
+import de.upb.swt.soot.core.graph.CFGIterator;
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
@@ -297,7 +298,8 @@ public class Printer {
     Stmt previousStmt;
 
     final Map<Stmt, String> labels = printer.getLabels();
-    for (Stmt currentStmt : stmtGraph.nodes()) {
+    for (Iterator<Stmt> it = new CFGIterator(body.getStmtGraph()); it.hasNext(); ) {
+      Stmt currentStmt = it.next();
       previousStmt = currentStmt;
 
       // Print appropriate header.

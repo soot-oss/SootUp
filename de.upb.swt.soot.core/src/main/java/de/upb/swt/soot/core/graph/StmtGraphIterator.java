@@ -14,12 +14,9 @@ public abstract class StmtGraphIterator implements Iterator<Stmt> {
   @Nonnull private final StmtGraph graph;
   @Nonnull protected final Set<Stmt> alreadyInsertedNodes;
 
-  StmtGraphIterator(@Nonnull StmtGraph graph, @Nonnull Stmt firstStmt) {
+  protected StmtGraphIterator(@Nonnull StmtGraph graph) {
     this.graph = graph;
     alreadyInsertedNodes = new HashSet<>(graph.nodes().size(), 1);
-
-    addToContainer(firstStmt);
-    alreadyInsertedNodes.add(firstStmt);
   }
 
   /** creates a Breadth First Search Iterator */
