@@ -298,7 +298,8 @@ public class Printer {
     Stmt previousStmt;
 
     final Map<Stmt, String> labels = printer.getLabels();
-    for (Iterator<Stmt> it = new CFGIterator(body.getStmtGraph()); it.hasNext(); ) {
+    for (Iterator<Stmt> it = new CFGIterator(body.getStmtGraph(), body.getTraps());
+        it.hasNext(); ) {
       Stmt currentStmt = it.next();
       previousStmt = currentStmt;
 

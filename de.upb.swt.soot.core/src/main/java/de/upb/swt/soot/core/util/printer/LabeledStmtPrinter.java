@@ -120,7 +120,8 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     int refCount = 0;
 
     // Traverse the stmts and assign a label if necessary
-    for (Iterator<Stmt> it = new CFGIterator(body.getStmtGraph()); it.hasNext(); ) {
+    for (Iterator<Stmt> it = new CFGIterator(body.getStmtGraph(), body.getTraps());
+        it.hasNext(); ) {
       Stmt s = it.next();
       if (labelStmts.contains(s)) {
         labels.put(s, String.format(formatString, ++labelCount));

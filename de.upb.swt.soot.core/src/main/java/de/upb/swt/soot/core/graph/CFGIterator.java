@@ -1,12 +1,14 @@
 package de.upb.swt.soot.core.graph;
 
+import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
- * Iterates over a given StmtGraph (which is connected, so all Stmt nodes are reached) in Depth
- * First Order.
+ * Iterates over a given StmtGraph (which is connected, so all Stmt nodes are reached - except
+ * traphandler)
  *
  * @author Markus Schmidt
  */
@@ -17,27 +19,31 @@ public class CFGIterator implements Iterator<Stmt> {
 
   @Nonnull private final ArrayDeque<Stmt> currentBlockQueue = new ArrayDeque<>();
   @Nonnull private final ArrayDeque<Stmt> workQueue = new ArrayDeque<>();
+  @Nonnull private final List<Stmt> trapHandler;
 
-  public CFGIterator(@Nonnull StmtGraph graph) {
-    this(graph, graph.getStartingStmt());
+  public CFGIterator(@Nonnull StmtGraph graph, List<Trap> traps) {
+    this(graph, graph.getStartingStmt(), traps);
   }
 
-  public CFGIterator(StmtGraph graph, Stmt startingStmt) {
+  public CFGIterator(StmtGraph graph, Stmt startingStmt, List<Trap> traps) {
     this.graph = graph;
     alreadyInsertedNodes = new LinkedHashSet<>(graph.nodes().size(), 1);
 
     currentBlockQueue.add(startingStmt);
     alreadyInsertedNodes.add(startingStmt);
+    trapHandler = traps.stream().map(Trap::getHandlerStmt).collect(Collectors.toList());
   }
 
   @Override
   public Stmt next() {
 
     Stmt stmt;
-    if (currentBlockQueue.isEmpty()) {
+    if (!workQueue.isEmpty()) {
       stmt = workQueue.pollFirst();
-    } else {
+    } else if (!currentBlockQueue.isEmpty()) {
       stmt = currentBlockQueue.pollFirst();
+    } else {
+      stmt = trapHandler.remove(trapHandler.size() - 1);
     }
 
     alreadyInsertedNodes.add(stmt);
@@ -74,6 +80,6 @@ public class CFGIterator implements Iterator<Stmt> {
 
   @Override
   public boolean hasNext() {
-    return !(currentBlockQueue.isEmpty() && workQueue.isEmpty());
+    return !(currentBlockQueue.isEmpty() && workQueue.isEmpty() && trapHandler.isEmpty());
   }
 }

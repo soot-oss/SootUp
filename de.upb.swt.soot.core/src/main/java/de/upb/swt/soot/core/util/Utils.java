@@ -122,7 +122,12 @@ public class Utils {
   public static String printJimpleStmtsForTest(List<String> stmts) {
     StringBuilder sb = new StringBuilder();
     stmts.forEach(
-        item -> sb.append('"').append(StringEscapeUtils.escapeJava(item)).append('"').append(','));
+        item ->
+            sb.append('"')
+                .append(StringEscapeUtils.escapeJava(item))
+                .append('"')
+                .append(',')
+                .append("\n"));
     if (stmts.size() > 0) {
       sb.setLength(sb.length() - 1);
     }
