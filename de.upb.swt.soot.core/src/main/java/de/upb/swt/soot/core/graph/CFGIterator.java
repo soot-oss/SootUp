@@ -3,7 +3,6 @@ package de.upb.swt.soot.core.graph;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -19,7 +18,7 @@ public class CFGIterator implements Iterator<Stmt> {
 
   @Nonnull private final ArrayDeque<Stmt> currentBlockQueue = new ArrayDeque<>();
   @Nonnull private final ArrayDeque<Stmt> workQueue = new ArrayDeque<>();
-  @Nonnull private final List<Stmt> trapHandler;
+  @Nonnull private final ArrayDeque<Trap> traps;
 
   public CFGIterator(@Nonnull StmtGraph graph, List<Trap> traps) {
     this(graph, graph.getStartingStmt(), traps);
@@ -31,7 +30,7 @@ public class CFGIterator implements Iterator<Stmt> {
 
     currentBlockQueue.add(startingStmt);
     alreadyInsertedNodes.add(startingStmt);
-    trapHandler = traps.stream().map(Trap::getHandlerStmt).collect(Collectors.toList());
+    this.traps = new ArrayDeque<>(traps);
   }
 
   @Override
@@ -43,7 +42,7 @@ public class CFGIterator implements Iterator<Stmt> {
     } else if (!currentBlockQueue.isEmpty()) {
       stmt = currentBlockQueue.pollFirst();
     } else {
-      stmt = trapHandler.remove(trapHandler.size() - 1);
+      throw new IndexOutOfBoundsException("No more elements to iterate over!");
     }
 
     alreadyInsertedNodes.add(stmt);
@@ -60,6 +59,11 @@ public class CFGIterator implements Iterator<Stmt> {
           workQueue.addLast(succ);
         }
       }
+    }
+
+    while (!traps.isEmpty() && stmt == traps.peekFirst().getEndStmt()) {
+      final Trap removedTrap = traps.removeFirst();
+      currentBlockQueue.addLast(removedTrap.getHandlerStmt());
     }
 
     // skip already visited nodes
@@ -80,6 +84,6 @@ public class CFGIterator implements Iterator<Stmt> {
 
   @Override
   public boolean hasNext() {
-    return !(currentBlockQueue.isEmpty() && workQueue.isEmpty() && trapHandler.isEmpty());
+    return !(currentBlockQueue.isEmpty() && workQueue.isEmpty());
   }
 }
