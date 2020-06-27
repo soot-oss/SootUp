@@ -492,10 +492,9 @@ public class WalaIRToJimpleConverter {
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
           Stmt ret;
           final boolean isImplicitLastStmtTargetOfBranchStmt = instConverter.hasJumpTarget(-1);
-          final boolean validMethodLeaving = !(stmt instanceof JReturnVoidStmt || stmt instanceof JThrowStmt);
-          if (stmt2iIndex.isEmpty()
-              || validMethodLeaving
-              || isImplicitLastStmtTargetOfBranchStmt) {
+          final boolean validMethodLeaving =
+              !(stmt instanceof JReturnVoidStmt || stmt instanceof JThrowStmt);
+          if (stmt2iIndex.isEmpty() || validMethodLeaving || isImplicitLastStmtTargetOfBranchStmt) {
             // TODO? [ms] InstructionPosition of last line in the method seems strange to me ->
             // maybe use lastLine with
             // startcol: -1 because it does not exist in the source explicitly?

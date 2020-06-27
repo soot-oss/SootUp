@@ -1580,7 +1580,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     stmtsThatBranchToLabel.putAll(tableSwitchStmt, insn.labels);
     stmtsThatBranchToLabel.put(tableSwitchStmt, insn.dflt);
 
-
     key.addBox(tableSwitchStmt.getKeyBox());
     frame.setIn(key);
     frame.setBoxes(tableSwitchStmt.getKeyBox());
@@ -2063,8 +2062,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
     // link branching stmts with its targets
     for (Map.Entry<Stmt, LabelNode> entry : stmtsThatBranchToLabel.entries()) {
-       final Stmt fromStmt = entry.getKey();
-       final Stmt targetStmt = labelsToStmt.get(entry.getValue());
+      final Stmt fromStmt = entry.getKey();
+      final Stmt targetStmt = labelsToStmt.get(entry.getValue());
       bodyBuilder.addFlow(fromStmt, targetStmt);
     }
   }

@@ -84,7 +84,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
 
   @Nonnull
   public Optional<Stmt> getDefaultTarget(Body body) {
-    return Optional.ofNullable(body.getBranchTargetsOf(this).get( values.size() ));
+    return Optional.ofNullable(body.getBranchTargetsOf(this).get(values.size()));
   }
 
   public Value getKey() {
