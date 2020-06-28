@@ -37,15 +37,20 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   public Stmt next() {
 
     Stmt stmt;
-    if (!workQueue.isEmpty()) {
-      stmt = workQueue.pollFirst();
-    } else if (!currentBlockQueue.isEmpty()) {
+    if (!currentBlockQueue.isEmpty()) {
       stmt = currentBlockQueue.pollFirst();
+    } else if (!workQueue.isEmpty()) {
+      stmt = workQueue.pollFirst();
     } else {
       throw new IndexOutOfBoundsException("No more elements to iterate over!");
     }
 
     alreadyInsertedNodes.add(stmt);
+
+    while (!traps.isEmpty() && stmt == traps.peekFirst().getEndStmt()) {
+      final Trap removedTrap = traps.removeFirst();
+      currentBlockQueue.addLast(removedTrap.getHandlerStmt());
+    }
 
     final List<Stmt> successors = graph.successors(stmt);
     for (int i = 0; i < successors.size(); i++) {
@@ -59,11 +64,6 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
           workQueue.addLast(succ);
         }
       }
-    }
-
-    while (!traps.isEmpty() && stmt == traps.peekFirst().getEndStmt()) {
-      final Trap removedTrap = traps.removeFirst();
-      currentBlockQueue.addLast(removedTrap.getHandlerStmt());
     }
 
     // skip already visited nodes
