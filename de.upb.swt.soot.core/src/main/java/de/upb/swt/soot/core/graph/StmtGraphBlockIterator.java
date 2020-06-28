@@ -17,7 +17,8 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   @Nonnull protected final Set<Stmt> alreadyInsertedNodes;
 
   @Nonnull private final ArrayDeque<Stmt> currentBlockQueue = new ArrayDeque<>();
-  @Nonnull private final ArrayDeque<Stmt> workQueue = new ArrayDeque<>();
+
+  @Nonnull private final ArrayDeque<Stmt> branchTargetQueue = new ArrayDeque<>();
   @Nonnull private final ArrayDeque<Trap> traps;
 
   public StmtGraphBlockIterator(@Nonnull StmtGraph graph, List<Trap> traps) {
@@ -39,44 +40,37 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
     Stmt stmt;
     if (!currentBlockQueue.isEmpty()) {
       stmt = currentBlockQueue.pollFirst();
-    } else if (!workQueue.isEmpty()) {
-      stmt = workQueue.pollFirst();
+    } else if (!branchTargetQueue.isEmpty()) {
+      stmt = branchTargetQueue.pollFirst();
     } else {
       throw new IndexOutOfBoundsException("No more elements to iterate over!");
     }
 
-    alreadyInsertedNodes.add(stmt);
-
-    while (!traps.isEmpty() && stmt == traps.peekFirst().getEndStmt()) {
-      final Trap removedTrap = traps.removeFirst();
-      currentBlockQueue.addLast(removedTrap.getHandlerStmt());
+    boolean found = false;
+    for (Iterator<Trap> iterator = traps.iterator(); iterator.hasNext(); ) {
+      Trap trap = iterator.next();
+      if (stmt == trap.getEndStmt()) {
+        iterator.remove();
+        branchTargetQueue.addLast(trap.getHandlerStmt());
+      }
     }
+    alreadyInsertedNodes.add(stmt);
 
     final List<Stmt> successors = graph.successors(stmt);
     for (int i = 0; i < successors.size(); i++) {
       Stmt succ = successors.get(i);
-      if (i == 0 && stmt.fallsThrough()) {
-        currentBlockQueue.addFirst(succ);
-      } else {
-        if (stmt.fallsThrough()) {
-          workQueue.addFirst(succ);
+      if (!alreadyInsertedNodes.contains(succ)) {
+        if (i == 0 && stmt.fallsThrough()) {
+          currentBlockQueue.addFirst(succ);
         } else {
-          workQueue.addLast(succ);
+          if (stmt.fallsThrough()) {
+            branchTargetQueue.addFirst(succ);
+          } else {
+            branchTargetQueue.addLast(succ);
+          }
         }
+        alreadyInsertedNodes.add(succ);
       }
-    }
-
-    // skip already visited nodes
-    Stmt skipAlreadyVisited;
-    while (!currentBlockQueue.isEmpty()
-        && (skipAlreadyVisited = currentBlockQueue.peekFirst()) != null
-        && alreadyInsertedNodes.contains(skipAlreadyVisited)) {
-      currentBlockQueue.pollFirst();
-    }
-    while (!workQueue.isEmpty()
-        && (skipAlreadyVisited = workQueue.peekFirst()) != null
-        && alreadyInsertedNodes.contains(skipAlreadyVisited)) {
-      workQueue.pollFirst();
     }
 
     return stmt;
@@ -84,6 +78,6 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
   @Override
   public boolean hasNext() {
-    return !(currentBlockQueue.isEmpty() && workQueue.isEmpty());
+    return !(currentBlockQueue.isEmpty() && branchTargetQueue.isEmpty());
   }
 }
