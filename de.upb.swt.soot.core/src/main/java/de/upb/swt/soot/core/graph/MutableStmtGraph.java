@@ -1,13 +1,31 @@
 package de.upb.swt.soot.core.graph;
 
+import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
- * trivial Graph structure which keeps node and edge insertion order
+ * graph structure which keeps node and edge insertion order to store information about successive
+ * stmts in edges. Ordered edges are needed because, this stores the target information of {@link
+ * BranchingStmt}s so that in conditional branches (e.g. JSwicthStmt or JIfStmt ) we can associate
+ * the i-th item with the i-th branch case. In a StmtGraph it is not allowed to have unconnected
+ * Nodes.
+ *
+ * <p>TODO: where and how its used
+ *
+ * <pre>
+ *  Stmt stmt1, stmt2;
+ *  ...
+ *  MutableStmtGraph graph = new MutableStmtGraph();
+ *  graph.setEntryPoint(stmt1);
+ *  graph.addNode(stmt1);
+ *  graph.addNode(stmt2);
+ *  graph.putEdge(stmt1, stmt2);
+ * </pre>
  *
  * @author Markus Schmidt
  */
@@ -17,96 +35,89 @@ public class MutableStmtGraph extends StmtGraph {
   @Nonnull protected final Map<Stmt, List<Stmt>> successors = new HashMap<>();
   @Nonnull protected final Set<Stmt> stmtList = new LinkedHashSet<>();
 
+  @Nullable protected Stmt startingStmt;
+
   public MutableStmtGraph() {}
 
-  public static MutableStmtGraph copyOf(@Nonnull StmtGraph stmtGraph) {
-    final MutableStmtGraph graph = new MutableStmtGraph();
-    graph.setEntryPoint(stmtGraph.getEntryPoint());
+  public static MutableStmtGraph copyOf(@Nonnull StmtGraph originalStmtGraph) {
+    final MutableStmtGraph copiedGraph = new MutableStmtGraph();
+    copiedGraph.setStartingStmt(originalStmtGraph.getStartingStmt());
 
-    for (Stmt node : stmtGraph.nodes()) {
-      graph.addNode(node);
+    for (Stmt node : originalStmtGraph.nodes()) {
+      copiedGraph.addNode(node);
 
-      final List<Stmt> pred = stmtGraph.predecessors(node);
-      graph.predecessors.put(node, new ArrayList<>(pred));
+      final List<Stmt> pred = originalStmtGraph.predecessors(node);
+      copiedGraph.predecessors.put(node, new ArrayList<>(pred));
 
-      final List<Stmt> succ = stmtGraph.successors(node);
-      graph.successors.put(node, new ArrayList<>(succ));
+      final List<Stmt> succ = originalStmtGraph.successors(node);
+      copiedGraph.successors.put(node, new ArrayList<>(succ));
     }
 
-    return graph;
+    return copiedGraph;
   }
 
   public StmtGraph asUnmodifiableStmtGraph() {
-    StmtGraph ref = this;
+    StmtGraph graphRef = this;
     return new StmtGraph() {
+      @Nonnull
       @Override
-      public Stmt getEntryPoint() {
-        return ref.getEntryPoint();
+      public Stmt getStartingStmt() {
+        return graphRef.getStartingStmt();
       }
 
       @Nonnull
       @Override
       public Set<Stmt> nodes() {
-        return ref.nodes();
-      }
-
-      @Nonnull
-      @Override
-      public List<Stmt> adjacentNodes(@Nonnull Stmt node) {
-        return ref.adjacentNodes(node);
+        return graphRef.nodes();
       }
 
       @Nonnull
       @Override
       public List<Stmt> predecessors(@Nonnull Stmt node) {
-        return ref.predecessors(node);
+        return graphRef.predecessors(node);
       }
 
       @Nonnull
       @Override
       public List<Stmt> successors(@Nonnull Stmt node) {
-        return ref.successors(node);
+        return graphRef.successors(node);
       }
 
       @Override
       public int degree(@Nonnull Stmt node) {
-        return ref.degree(node);
+        return graphRef.degree(node);
       }
 
       @Override
       public int inDegree(@Nonnull Stmt node) {
-        return ref.inDegree(node);
+        return graphRef.inDegree(node);
       }
 
       @Override
       public int outDegree(@Nonnull Stmt node) {
-        return ref.outDegree(node);
+        return graphRef.outDegree(node);
       }
 
       @Override
       public boolean hasEdgeConnecting(@Nonnull Stmt nodeU, @Nonnull Stmt nodeV) {
-        return ref.hasEdgeConnecting(nodeU, nodeV);
+        return graphRef.hasEdgeConnecting(nodeU, nodeV);
       }
     };
   }
 
-  public void setEntryPoint(@Nonnull Stmt firstStmt) {
-    this.entrypoint = firstStmt;
+  public void setStartingStmt(@Nonnull Stmt firstStmt) {
+    this.startingStmt = firstStmt;
   }
 
-  public Stmt getEntryPoint() {
-    return entrypoint;
+  public Stmt getStartingStmt() {
+    return startingStmt;
   }
 
-  public boolean addNode(@Nonnull Stmt node) {
-    boolean modify = !containsNode(node);
-    if (modify) {
-      stmtList.add(node);
-    }
-    return modify;
+  public void addNode(@Nonnull Stmt node) {
+    stmtList.add(node);
   }
 
-  public boolean removeNode(@Nonnull Stmt node) {
+  public void removeNode(@Nonnull Stmt node) {
     if (stmtList.remove(node)) {
       predecessors
           .getOrDefault(node, Collections.emptyList())
@@ -116,14 +127,13 @@ public class MutableStmtGraph extends StmtGraph {
           .getOrDefault(node, Collections.emptyList())
           .forEach(succ -> predecessors.get(succ).remove(node));
       successors.remove(node);
-      return true;
     }
-    return false;
   }
 
   private void existsNodeOrThrow(@Nonnull Stmt node) {
     if (!containsNode(node)) {
-      throw new RuntimeException(node + " is currently not a Node in this StmtGraph.");
+      addNode(node);
+      throw new RuntimeException("'" + node + "' is currently not a Node in this StmtGraph.");
     }
   }
 
@@ -131,26 +141,36 @@ public class MutableStmtGraph extends StmtGraph {
     return stmtList.contains(node);
   }
 
-  public boolean removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
+  public void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
     existsNodeOrThrow(from);
     existsNodeOrThrow(to);
 
     final List<Stmt> pred = predecessors.get(to);
-    boolean modified = false;
     if (pred != null) {
       pred.remove(from);
-      modified = true;
+      if (degree(to) == 0) {
+        stmtList.remove(to);
+      }
     }
     final List<Stmt> succ = successors.get(from);
     if (succ != null) {
       succ.remove(to);
-      modified = true;
+      if (degree(from) == 0) {
+        stmtList.remove(from);
+      }
     }
-    return modified;
   }
 
-  public boolean setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets) {
-    targets.forEach(this::existsNodeOrThrow);
+  public void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets) {
+    targets.forEach(
+        node -> {
+          if (!containsNode(node)) {
+            if (from == node) {
+              throw new RuntimeException("A Stmt can't flow to itself.");
+            }
+            addNode(node);
+          }
+        });
 
     // cleanup existing edges before replacing it with the new list with successors
     successors(from).forEach(succ -> predecessors.get(succ).remove(from));
@@ -161,12 +181,18 @@ public class MutableStmtGraph extends StmtGraph {
     }
 
     successors.put(from, targets);
-    return true;
   }
 
-  public boolean putEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
-    existsNodeOrThrow(from);
-    existsNodeOrThrow(to);
+  public void putEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
+    if (from == to) {
+      throw new RuntimeException("A Stmt can't flow to itself.");
+    }
+    if (!containsNode(from)) {
+      addNode(from);
+    }
+    if (!containsNode(to)) {
+      addNode(to);
+    }
 
     final List<Stmt> pred = predecessors.computeIfAbsent(to, key -> new ArrayList<>(1));
     pred.add(from);
@@ -183,7 +209,6 @@ public class MutableStmtGraph extends StmtGraph {
     final List<Stmt> succ =
         successors.computeIfAbsent(from, key -> new ArrayList<>(predictedSuccessorSize));
     succ.add(to);
-    return true;
   }
 
   @Override
@@ -192,7 +217,6 @@ public class MutableStmtGraph extends StmtGraph {
     return Collections.unmodifiableSet(stmtList);
   }
 
-  @Override
   @Nonnull
   public List<Stmt> adjacentNodes(@Nonnull Stmt node) {
     existsNodeOrThrow(node);

@@ -6,15 +6,16 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
- * Immutable implementation for a StmtGraph. It encapsulates a StmtGraph so its not modifiable.
+ * Immutable implementation for a StmtGraph. It copies and encapsulates a StmtGraph so its not
+ * modifiable.
  *
  * @author Markus Schmidt
  */
 public final class ImmutableStmtGraph extends StmtGraph {
 
-  private final MutableStmtGraph backingGraph;
+  @Nonnull private final MutableStmtGraph backingGraph;
 
-  public ImmutableStmtGraph(MutableStmtGraph backingGraph) {
+  public ImmutableStmtGraph(@Nonnull MutableStmtGraph backingGraph) {
     this.backingGraph = backingGraph;
   }
 
@@ -24,20 +25,28 @@ public final class ImmutableStmtGraph extends StmtGraph {
       return (ImmutableStmtGraph) stmtGraph;
     }
 
-    MutableStmtGraph graph = MutableStmtGraph.copyOf(stmtGraph);
+    MutableStmtGraph newBackingGraph;
 
-    return new ImmutableStmtGraph(graph);
+    if (stmtGraph.nodes().size() > 0) {
+      if (stmtGraph.getStartingStmt() == null) {
+        throw new RuntimeException("The starting Stmt must exist.");
+      }
+      newBackingGraph = MutableStmtGraph.copyOf(stmtGraph);
+    } else {
+      newBackingGraph = new MutableStmtGraph();
+    }
+    return new ImmutableStmtGraph(newBackingGraph);
   }
 
+  @Override
+  public Stmt getStartingStmt() {
+    return backingGraph.getStartingStmt();
+  }
+
+  @Nonnull
   @Override
   public Set<Stmt> nodes() {
     return backingGraph.nodes();
-  }
-
-  @Override
-  @Nonnull
-  public List<Stmt> adjacentNodes(@Nonnull Stmt stmt) {
-    return backingGraph.adjacentNodes(stmt);
   }
 
   @Override

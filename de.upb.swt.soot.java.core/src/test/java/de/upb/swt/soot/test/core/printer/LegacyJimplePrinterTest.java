@@ -83,14 +83,14 @@ public class LegacyJimplePrinterTest {
 
     {
       Body.BodyBuilder builder = Body.builder();
-      builder.addStmt(tableSwitch);
-      builder.addStmt(jNop);
-      builder.addStmt(jNop2, true);
-      builder.addStmt(returnstmt, true);
+      builder.setStartingStmt(tableSwitch);
 
       builder.addFlow(tableSwitch, jNop);
       builder.addFlow(tableSwitch, jNop2);
       builder.addFlow(tableSwitch, returnstmt);
+
+      builder.addFlow(jNop, jNop2);
+      builder.addFlow(jNop2, returnstmt);
 
       SootClass tableClass = buildClass(builder);
 
@@ -118,14 +118,14 @@ public class LegacyJimplePrinterTest {
       Stmt lookupSwitch = new JSwitchStmt(IntConstant.getInstance(123), lookupValues, noPosInfo);
 
       Body.BodyBuilder builder = Body.builder();
-      builder.addStmt(lookupSwitch, true);
-      builder.addStmt(jNop, true);
-      builder.addStmt(jNop2, true);
-      builder.addStmt(returnstmt, true);
+      builder.setStartingStmt(lookupSwitch);
 
       builder.addFlow(lookupSwitch, jNop);
       builder.addFlow(lookupSwitch, jNop2);
       builder.addFlow(lookupSwitch, returnstmt);
+
+      builder.addFlow(jNop, jNop2);
+      builder.addFlow(jNop2, returnstmt);
 
       SootClass lookupClass = buildClass(builder);
 

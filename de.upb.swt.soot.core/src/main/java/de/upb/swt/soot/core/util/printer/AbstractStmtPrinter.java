@@ -117,22 +117,17 @@ public abstract class AbstractStmtPrinter extends StmtPrinter {
   @Override
   public void typeSignature(@Nonnull Type type) {
     handleIndent();
-    // TODO: [ms] null should not be possible -> nonnnull ;)
-    if (type == null) {
-      output.append("<null>");
-      return;
-    } else if (useImports) {
+    if (useImports) {
       if (type instanceof ClassType) {
         if (addImport(type)) {
           output.append(((ClassType) type).getClassName());
-          return;
         }
       } else if (type instanceof ArrayType) {
         ((ArrayType) type).toString(this);
-        return;
       }
+    } else {
+      output.append(type);
     }
-    output.append(type);
   }
 
   @Override

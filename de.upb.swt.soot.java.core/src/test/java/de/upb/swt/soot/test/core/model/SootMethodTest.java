@@ -50,7 +50,7 @@ public class SootMethodTest {
             Jimple.newParameterRef(type, 0),
             StmtPositionInfo.createNoStmtPositionInfo());
 
-    graph.setEntryPoint(node);
+    graph.setStartingStmt(node);
     graph.addNode(node);
     graph.addNode(
         Jimple.newAssignStmt(

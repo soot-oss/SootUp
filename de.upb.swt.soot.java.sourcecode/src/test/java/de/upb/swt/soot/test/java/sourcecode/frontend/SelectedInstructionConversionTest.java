@@ -230,8 +230,7 @@ public class SelectedInstructionConversionTest {
                 "r0 := @this: FooEx1",
                 "$r1 = new BadLanguageExceptionEx1",
                 "specialinvoke $r1.<BadLanguageExceptionEx1: void <init>()>()",
-                "throw $r1",
-                "return")
+                "throw $r1")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);

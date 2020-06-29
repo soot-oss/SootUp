@@ -23,6 +23,7 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
@@ -58,6 +59,9 @@ public class WalaIRToJimpleConverter {
   private final HashMap<String, Integer> clsWithInnerCls;
   private final HashMap<String, String> walaToSootNameTable;
   private Set<SootField> sootFields;
+
+  private Stmt rememberedStmt;
+  private boolean isFirstStmtSet;
 
   public WalaIRToJimpleConverter(@Nonnull Set<String> sourceDirPath) {
     srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath);
@@ -381,16 +385,34 @@ public class WalaIRToJimpleConverter {
     return modifiers;
   }
 
+  private void emitStmt(@Nonnull Body.BodyBuilder bodyBuilder, @Nonnull Stmt stmt) {
+    if (rememberedStmt != null) {
+      if (rememberedStmt.fallsThrough()) {
+        // determine whether successive emitted Stmts have a flow between them
+        bodyBuilder.addFlow(rememberedStmt, stmt);
+      }
+    } else if (!isFirstStmtSet) {
+      // determine first stmt to execute
+      bodyBuilder.setStartingStmt(stmt);
+      isFirstStmtSet = true;
+    }
+    rememberedStmt = stmt;
+  }
+
   @Nonnull
   private Body createBody(
       MethodSignature methodSignature, EnumSet<Modifier> modifiers, AstMethod walaMethod) {
 
-    if (walaMethod.isAbstract()) {
-      return Body.getEmptyBody();
-    }
+    // reset linking information
+    rememberedStmt = null;
+    isFirstStmtSet = false;
 
     final Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
+
+    if (walaMethod.isAbstract()) {
+      return builder.build();
+    }
 
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
@@ -413,7 +435,7 @@ public class WalaIRToJimpleConverter {
                   thisLocal,
                   Jimple.newThisRef(thisType),
                   convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-          builder.addStmt(stmt, true);
+          emitStmt(builder, stmt);
         }
 
         // wala's first parameter is the "this" reference for non-static methods
@@ -427,7 +449,7 @@ public class WalaIRToJimpleConverter {
                     paraLocal,
                     Jimple.newParameterRef(type, i),
                     convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-            builder.addStmt(stmt, true);
+            emitStmt(builder, stmt);
           }
         } else {
           for (int i = 1; i < walaMethod.getNumberOfParameters(); i++) {
@@ -439,7 +461,7 @@ public class WalaIRToJimpleConverter {
                     paraLocal,
                     Jimple.newParameterRef(type, i - 1),
                     convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-            builder.addStmt(stmt, true);
+            emitStmt(builder, stmt);
           }
         }
 
@@ -450,20 +472,18 @@ public class WalaIRToJimpleConverter {
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
         // Don't exchange, different stmts could have same ids
         HashMap<Stmt, Integer> stmt2iIndex = new HashMap<>();
-        Stmt lastStmt = null;
+        Stmt stmt = null;
         for (SSAInstruction inst : insts) {
           List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst, stmt2iIndex);
           if (!retStmts.isEmpty()) {
             final int retStmtsSize = retStmts.size();
-            Stmt stmt = retStmts.get(0);
-            builder.addStmt(stmt, true);
+            stmt = retStmts.get(0);
+            emitStmt(builder, stmt);
             stmt2iIndex.putIfAbsent(stmt, inst.iIndex());
-            lastStmt = stmt;
 
             for (int i = 1; i < retStmtsSize; i++) {
               stmt = retStmts.get(i);
-              builder.addStmt(stmt, true);
-              lastStmt = stmt;
+              emitStmt(builder, stmt);
             }
           }
         }
@@ -471,19 +491,19 @@ public class WalaIRToJimpleConverter {
         // add return void stmt for methods with return type being void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
           Stmt ret;
-          boolean isImplicitLastStmtTargetOfBranchStmt = instConverter.hasJumpTarget(-1);
-          if (stmt2iIndex.isEmpty()
-              || !(lastStmt instanceof JReturnVoidStmt)
-              || isImplicitLastStmtTargetOfBranchStmt) {
+          final boolean isImplicitLastStmtTargetOfBranchStmt = instConverter.hasJumpTarget(-1);
+          final boolean validMethodLeaving =
+              !(stmt instanceof JReturnVoidStmt || stmt instanceof JThrowStmt);
+          if (stmt2iIndex.isEmpty() || validMethodLeaving || isImplicitLastStmtTargetOfBranchStmt) {
             // TODO? [ms] InstructionPosition of last line in the method seems strange to me ->
             // maybe use lastLine with
             // startcol: -1 because it does not exist in the source explicitly?
             ret =
                 Jimple.newReturnVoidStmt(
                     convertPositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
-            builder.addStmt(ret, true);
+            emitStmt(builder, ret);
           } else {
-            ret = lastStmt;
+            ret = stmt;
           }
           // needed because referencing a branch to the last stmt refers to: -1
           stmt2iIndex.put(ret, -1);

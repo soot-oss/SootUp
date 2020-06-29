@@ -23,16 +23,6 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class NopEliminatorTest {
 
-  /** Tests the correct handling of an empty {@link Body}. */
-  @Test
-  public void testNoInput() {
-    Body testBody = Body.getEmptyBody();
-    Body processedBody = new NopEliminator().interceptBody(testBody);
-
-    assertNotNull(processedBody);
-    assertEquals(testBody.getStmtGraph().nodes(), processedBody.getStmtGraph().nodes());
-  }
-
   /**
    * Tests the correct handling of a nop statement at the end of the stmtList. It should be deleted.
    * Transforms from
@@ -93,21 +83,19 @@ public class NopEliminatorTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
     List<Trap> traps = new ArrayList<>();
-    List<Stmt> stmts;
 
     Body.BodyBuilder builder = Body.builder();
+    builder.setStartingStmt(strToA);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
+    builder.addFlow(strToA, jump);
+    builder.addFlow(bToA, ret);
     if (withNop) {
+      // strToA, jump, bToA, ret, nop;
       JNopStmt nop = new JNopStmt(noPositionInfo);
-      stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret, nop);
-      builder.addStmts(stmts, true);
       builder.addFlow(nop, ret);
-    } else {
-      stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret);
-      builder.addStmts(stmts, true);
     }
     builder.addFlow(jump, ret);
     builder.setLocals(locals);

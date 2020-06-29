@@ -532,7 +532,7 @@ public class InstructionConverter {
     int defaultCase = inst.getDefault();
     List<IntConstant> lookupValues = new ArrayList<>();
     List<Integer> targetList = new ArrayList<>();
-    targetList.add(defaultCase);
+
     for (int i = 0; i < cases.length; i++) {
       int c = cases[i];
       if (i % 2 == 0) {
@@ -542,6 +542,7 @@ public class InstructionConverter {
         targetList.add(c);
       }
     }
+    targetList.add(defaultCase);
 
     Position[] operandPos = new Position[2];
     // TODO: [ms] how to organize the operands
