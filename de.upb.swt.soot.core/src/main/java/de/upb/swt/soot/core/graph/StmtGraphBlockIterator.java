@@ -93,11 +93,6 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
         currentBlock = moreBlockBranches.pollFirst();
         // already empty ;) currentBlockBranches = new ArrayDeque<>();
         stmt = currentBlock.pollFirst();
-
-        if (stmt == null) {
-          System.out.println("baad");
-        }
-        System.out.println("<----- moreBranchBlocks");
       } else {
         return null;
       }
@@ -108,8 +103,10 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
     // push layer
     if (stmt instanceof JIfStmt) {
-      moreBlockBranches.addFirst(currentBlockBranches);
-      currentBlockBranches = new ArrayDeque<>();
+      if (!currentBlockBranches.isEmpty()) {
+        moreBlockBranches.addFirst(currentBlockBranches);
+        currentBlockBranches = new ArrayDeque<>();
+      }
       System.out.println("#new layer");
     }
 
