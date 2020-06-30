@@ -58,13 +58,14 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
       Stmt succ = successors.get(i);
       // if (!alreadyInsertedNodes.contains(succ))
       {
+        // i.e. is not a BranchingStmt or is the first successor of JIfStmt
         if (i == 0 && stmt.fallsThrough()) {
           // remember non-branching successors
           currentBlock.addFirst(succ);
         } else {
           // remember branching successors
           currentBlockBranches.addLast(succ);
-          System.out.print("-> " + succ + " ");
+          System.out.print("----> " + succ + " ");
         }
         //         alreadyInsertedNodes.add(succ);
       }
@@ -106,8 +107,8 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
       if (!currentBlockBranches.isEmpty()) {
         moreBlockBranches.addFirst(currentBlockBranches);
         currentBlockBranches = new ArrayDeque<>();
+        System.out.println("#new layer: " + moreBlockBranches.size());
       }
-      System.out.println("#new layer");
     }
 
     System.out.print(stmt + " ");
