@@ -81,4 +81,25 @@ public class SwitchCaseStatement {
         }
     }
 
+    public void switchCaseStatementCaseIncludingIf() {
+        int num = 2;
+        int str;
+        switch (num) {
+            case 1:
+                str = 1;
+                if( num == 666){
+                    str = 11;
+                }else{
+                    str = 12;
+                }
+                break;
+            case 2:  str = 2;
+                break;
+            case 3:  str = 3;
+                break;
+            default: str = -1;
+                break;
+        }
+    }
+
 }

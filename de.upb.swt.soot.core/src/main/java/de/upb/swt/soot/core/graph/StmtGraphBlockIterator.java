@@ -102,7 +102,8 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
     } while (finishedNodes.contains(stmt));
     finishedNodes.add(stmt);
 
-    // push layer
+    // push layer: if inside of a block (i.e. labels of a switchStmt or the unbranched block of
+    // JIfStmt)
     if (stmt instanceof JIfStmt) {
       if (!currentBlockBranches.isEmpty()) {
         moreBlockBranches.addFirst(currentBlockBranches);
