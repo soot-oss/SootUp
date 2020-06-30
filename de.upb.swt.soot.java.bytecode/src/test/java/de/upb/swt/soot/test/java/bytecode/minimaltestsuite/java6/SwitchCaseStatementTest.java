@@ -13,7 +13,7 @@ import org.junit.experimental.categories.Category;
 public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
-  public void testEnum() {
+  public void switchCaseStatementEnum() {
     SootMethod method = loadMethod(getMethodSignature("switchCaseStatementEnum"));
     assertJimpleStmts(
         method,

@@ -7,13 +7,14 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.*;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
 public class SwitchCaseStatementTest extends MinimalSourceTestSuiteBase {
 
-  @Ignore
-  public void test() {
+  @Test
+  public void switchCaseStatementEnumKey() {
     SootMethod method = loadMethod(getMethodSignature("switchCaseStatementEnum"));
     assertJimpleStmts(
         method,
@@ -154,6 +155,90 @@ public class SwitchCaseStatementTest extends MinimalSourceTestSuiteBase {
             "label3:",
             "$u0 = \"other\"",
             "label4:",
+            "return"));
+  }
+
+  @Ignore
+  // FIXME:[ms] buggy jimple from sourcecodefrontend
+  public void switchCaseStatementCaseIncludingIf() {
+    SootMethod method = loadMethod(getMethodSignature("switchCaseStatementCaseIncludingIf"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
+            "r0 := @this: SwitchCaseStatement",
+            "$i0 = 2",
+            "$i1 = 0",
+            "switch($i0)",
+            "case 1: goto label4",
+            "case 2: goto [?= null]",
+            "case 3: goto [?= null]",
+            "default: goto label1",
+            "label1:",
+            "$i1 = 1",
+            "$z0 = $i0 == 666",
+            "if $z0 == 0 goto label2",
+            "$i1 = 11",
+            "goto label3",
+            "label2:",
+            "$i1 = 12",
+            "label3:",
+            "goto label5",
+            "$i1 = 2",
+            "goto label5",
+            "$i1 = 3",
+            "label4:",
+            "goto label5",
+            "label5:",
+            "return"));
+  }
+
+  @Ignore
+  // FIXME:[ms] buggy jimple from sourcecodefrontend
+  public void switchCaseStatementCaseIncludingSwitch() {
+    SootMethod method = loadMethod(getMethodSignature("switchWithSwitch"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
+            "r0 := @this: SwitchCaseStatement",
+            "$i0 = 2",
+            "$i1 = 0",
+            "switch($i0)",
+            "case 1: goto label2",
+            "case 2: goto [?= null]",
+            "case 3: goto [?= null]",
+            "default: goto label1",
+            "label1:",
+            "switch($i0)",
+            "case 10: goto label4",
+            "case 20: goto [?= null]",
+            "default: goto label3",
+            "label2:",
+            "$i1 = 11",
+            "label3:",
+            "goto label4",
+            "$i1 = 12",
+            "goto label4",
+            "label4:",
+            "goto label8",
+            "$i1 = 2",
+            "switch($i0)",
+            "case 20: goto label6",
+            "case 30: goto [?= null]",
+            "case 40: goto [?= null]",
+            "default: goto label5",
+            "$i1 = 220",
+            "goto label7",
+            "label5:",
+            "$i1 = 230",
+            "goto label7",
+            "$i1 = 240",
+            "label6:",
+            "goto label7",
+            "label7:",
+            "goto label8",
+            "$i1 = 3",
+            "goto label8",
+            "label8:",
             "return"));
   }
 
