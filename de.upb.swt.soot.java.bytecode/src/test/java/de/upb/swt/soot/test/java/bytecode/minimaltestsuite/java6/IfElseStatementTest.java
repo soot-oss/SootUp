@@ -5,9 +5,6 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -15,37 +12,173 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
 
-  @Override
-  public MethodSignature getMethodSignature() {
-    return identifierFactory.getMethodSignature(
-        "ifElseStatement", getDeclaredClassSignature(), "void", Collections.emptyList());
-  }
-
-  @Override
-  public List<String> expectedBodyStmts() {
-    return Stream.of(
+  @Test
+  public void ifStatement() {
+    SootMethod method = loadMethod(getMethodSignature("ifStatement"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
             "l0 := @this: IfElseStatement",
-            "l1 = 10",
-            "l2 = 20",
-            "l3 = 30",
-            "l4 = 0",
-            "if l1 >= l2 goto label1",
-            "l4 = 1",
-            "goto label3",
+            "l1 := @parameter0: int",
+            "l2 = 0",
+            "if l1 >= 42 goto label1",
+            "l2 = 1",
             "label1:",
-            "if l2 >= l3 goto label2",
-            "l4 = 2",
-            "goto label3",
-            "label2:",
-            "l4 = 3",
-            "label3:",
-            "return")
-        .collect(Collectors.toList());
+            "$stack3 = l2",
+            "return $stack3"));
   }
 
   @Test
-  public void test() {
-    SootMethod method = loadMethod(getMethodSignature());
-    assertJimpleStmts(method, expectedBodyStmts());
+  public void ifElseStatement() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseStatement"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
+            "l0 := @this: IfElseStatement",
+            "l1 := @parameter0: int",
+            "l2 = 0",
+            "if l1 >= 42 goto label1",
+            "l2 = 1",
+            "goto label2",
+            "label1:",
+            "l2 = 2",
+            "label2:",
+            "$stack3 = l2",
+            "return $stack3"));
+  }
+
+  @Test
+  public void ifElseIfStatement() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseIfStatement"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
+            "l0 := @this: IfElseStatement",
+            "l1 := @parameter0: int",
+            "l2 = 0",
+            "if l1 >= 42 goto label1",
+            "l2 = 1",
+            "goto label3",
+            "label1:",
+            "if l1 <= 123 goto label2",
+            "l2 = 2",
+            "goto label3",
+            "label2:",
+            "l2 = 3",
+            "label3:",
+            "$stack3 = l2",
+            "$stack3 = $stack3",
+            "return $stack3"));
+  }
+
+  @Test
+  public void ifElseCascadingStatement() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingStatement"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
+            "l0 := @this: IfElseStatement",
+            "l1 := @parameter0: int",
+            "l2 = 0",
+            "if l1 >= 42 goto label2",
+            "if l1 >= 42 goto label1",
+            "l2 = 11",
+            "goto label3",
+            "label1:",
+            "l2 = 12",
+            "goto label3",
+            "label2:",
+            "l2 = 3",
+            "label3:",
+            "$stack3 = l2",
+            "$stack3 = $stack3",
+            "return $stack3"));
+  }
+
+  @Test
+  public void ifElseCascadingInElseStatement() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingInElseStatement"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
+            "l0 := @this: IfElseStatement",
+            "l1 := @parameter0: int",
+            "l2 = 0",
+            "if l1 >= 42 goto label1",
+            "l2 = 1",
+            "goto label3",
+            "label1:",
+            "if l1 >= 42 goto label2",
+            "l2 = 21",
+            "goto label3",
+            "label2:",
+            "l2 = 22",
+            "label3:",
+            "$stack3 = l2",
+            "$stack3 = $stack3",
+            "return $stack3"));
+  }
+
+  @Test
+  public void ifElseCascadingElseIfStatement() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingElseIfStatement"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
+            "l0 := @this: IfElseStatement",
+            "l1 := @parameter0: int",
+            "l2 = 0",
+            "if l1 >= 42 goto label3",
+            "if l1 >= 42 goto label1",
+            "l2 = 11",
+            "goto label4",
+            "label1:",
+            "if l1 <= 123 goto label2",
+            "l2 = 12",
+            "goto label4",
+            "label2:",
+            "l2 = 13",
+            "goto label4",
+            "label3:",
+            "l2 = 2",
+            "label4:",
+            "$stack3 = l2",
+            "$stack3 = $stack3",
+            "$stack3 = $stack3",
+            "return $stack3"));
+  }
+
+  @Test
+  public void ifElseCascadingElseIfInElseStatement() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingElseIfInElseStatement"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
+            "l0 := @this: IfElseStatement",
+            "l1 := @parameter0: int",
+            "l2 = 0",
+            "if l1 >= 42 goto label1",
+            "l2 = 1",
+            "goto label4",
+            "label1:",
+            "if l1 >= 42 goto label2",
+            "l2 = 21",
+            "goto label4",
+            "label2:",
+            "if l1 <= 123 goto label3",
+            "l2 = 22",
+            "goto label4",
+            "label3:",
+            "l2 = 23",
+            "label4:",
+            "$stack3 = l2",
+            "$stack3 = $stack3",
+            "$stack3 = $stack3",
+            "return $stack3"));
+  }
+
+  public MethodSignature getMethodSignature(String methodName) {
+    return identifierFactory.getMethodSignature(
+        methodName, getDeclaredClassSignature(), "int", Collections.singletonList("int"));
   }
 }
