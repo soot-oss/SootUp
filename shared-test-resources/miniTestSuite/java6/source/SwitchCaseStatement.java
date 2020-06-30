@@ -102,4 +102,40 @@ public class SwitchCaseStatement {
         }
     }
 
+    public void switchWithSwitch() {
+        int num = 2;
+        int str;
+        switch (num) {
+            case 1:
+                switch (num) {
+                    case 10:
+                        str = 11;
+                        break;
+                    case 20:
+                        str = 12;
+                        break;
+                }
+                break;
+            case 2:  str = 2;
+                switch (num) {
+                    case 20:
+                        str = 220;
+                        break;
+                    case 30:
+                        str = 230;
+                        break;
+                    case 40:
+                        str = 240;
+                        break;
+                }
+                break;
+            case 3:  str = 3;
+                break;
+            default: str = -1;
+                break;
+        }
+    }
+
+
+
 }
