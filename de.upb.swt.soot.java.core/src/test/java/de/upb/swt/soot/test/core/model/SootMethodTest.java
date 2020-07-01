@@ -6,13 +6,14 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
-import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -20,6 +21,7 @@ import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.OverridingJavaClassSource;
@@ -42,7 +44,7 @@ public class SootMethodTest {
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
-    final MutableStmtGraph graph = new MutableStmtGraph();
+    final Body.BodyBuilder builder = Body.builder();
 
     final JIdentityStmt node =
         Jimple.newIdentityStmt(
@@ -50,21 +52,22 @@ public class SootMethodTest {
             Jimple.newParameterRef(type, 0),
             StmtPositionInfo.createNoStmtPositionInfo());
 
-    graph.setStartingStmt(node);
-    graph.addNode(node);
-    graph.addNode(
+    builder.setStartingStmt(node);
+    final JAssignStmt assignStmt =
         Jimple.newAssignStmt(
             generator.generateLocal(type),
             Jimple.newNewExpr(type),
-            StmtPositionInfo.createNoStmtPositionInfo()));
+            StmtPositionInfo.createNoStmtPositionInfo());
+    builder.addFlow(node, assignStmt);
 
-    Body body =
-        new Body(
-            null,
-            generator.getLocals(),
-            Collections.emptyList(),
-            graph,
-            NoPositionInformation.getInstance());
+    Stmt ret = Jimple.newReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    builder.addFlow(assignStmt, ret);
+
+    final MethodSignature methodSig =
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature("test", "foo", "int", Collections.emptyList());
+
+    Body body = builder.setMethodSignature(methodSig).setLocals(generator.getLocals()).build();
 
     assertEquals(2, body.getLocalCount());
 

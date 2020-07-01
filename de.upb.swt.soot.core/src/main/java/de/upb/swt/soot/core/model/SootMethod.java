@@ -182,7 +182,8 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     }
 
     // print returnType + name + ( parameterList )
-    getSubSignature().toString(printer);
+    final MethodSubSignature subSignature = getSubSignature();
+    subSignature.toString(printer);
 
     // Print exceptions
     Iterator<ClassType> exceptionIt = getExceptionSignatures().iterator();

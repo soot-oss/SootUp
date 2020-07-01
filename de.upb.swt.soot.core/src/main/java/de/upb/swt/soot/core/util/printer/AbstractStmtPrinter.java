@@ -124,6 +124,8 @@ public abstract class AbstractStmtPrinter extends StmtPrinter {
         }
       } else if (type instanceof ArrayType) {
         ((ArrayType) type).toString(this);
+      } else {
+        output.append(type);
       }
     } else {
       output.append(type);
