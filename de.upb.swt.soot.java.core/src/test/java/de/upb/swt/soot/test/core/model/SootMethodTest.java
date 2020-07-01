@@ -12,6 +12,7 @@ import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
@@ -32,6 +33,7 @@ import org.junit.experimental.categories.Category;
 
 /** @author Linghui Luo */
 @Category(Java8Test.class)
+//TODO : merge with the fix/graphImplementation
 public class SootMethodTest {
 
   @Test
@@ -42,28 +44,27 @@ public class SootMethodTest {
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
-    final MutableGraph<Stmt> graph = GraphBuilder.directed().build();
-
-    graph.addNode(
-        Jimple.newIdentityStmt(
-            generator.generateLocal(type),
-            Jimple.newParameterRef(type, 0),
-            StmtPositionInfo.createNoStmtPositionInfo()));
-    graph.addNode(
-        Jimple.newAssignStmt(
-            generator.generateLocal(type),
-            Jimple.newNewExpr(type),
-            StmtPositionInfo.createNoStmtPositionInfo()));
 
     MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
-    Body.BodyBuilder bodyBuilder = new Body.BodyBuilder(graph);
+    Body.BodyBuilder bodyBuilder = Body.builder();
+    JIdentityStmt firstStmt = Jimple.newIdentityStmt(
+            generator.generateLocal(type),
+            Jimple.newParameterRef(type, 0),
+            StmtPositionInfo.createNoStmtPositionInfo());
+    bodyBuilder.addStmt(
+            firstStmt);
+        bodyBuilder.addStmt(
+            Jimple.newAssignStmt(
+                    generator.generateLocal(type),
+                    Jimple.newNewExpr(type),
+                    StmtPositionInfo.createNoStmtPositionInfo()));
     bodyBuilder
-            .setMethodSignature(methodSignature)
+        .setMethodSignature(methodSignature)
         .setLocals(generator.getLocals())
         .setTraps(Collections.emptyList())
-        .setFirstStmt(null)
+        .setFirstStmt(firstStmt)
         .setPosition(null);
     Body body = bodyBuilder.build();
     assertEquals(2, body.getLocalCount());
