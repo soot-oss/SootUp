@@ -155,7 +155,7 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
   @Test
   public void ifElseCascadingElseIfInElseStatement() {
     // TODO: (same) unnecessary variable self assignment - multiple times - in jimple
-    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingElsefInElseStatement"));
+    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingElseIfInElseStatement"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(

@@ -1,7 +1,7 @@
 package de.upb.swt.soot.core.graph;
 
 import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
 import javax.annotation.Nonnull;
@@ -18,8 +18,8 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   @Nonnull protected final Set<Stmt> finishedNodes;
 
   @Nonnull private ArrayDeque<Stmt> currentBlock = new ArrayDeque<>();
-  @Nonnull private ArrayDeque<Stmt> currentBlockBranches = new ArrayDeque<>();
-  @Nonnull private final ArrayDeque<ArrayDeque<Stmt>> moreBlockBranches = new ArrayDeque<>();
+  @Nonnull private final ArrayDeque<Stmt> nestedBlocks = new ArrayDeque<>();
+  @Nonnull private final ArrayDeque<Stmt> otherBlocks = new ArrayDeque<>();
 
   @Nonnull private final ArrayDeque<Trap> traps;
 
@@ -54,7 +54,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
     }*/
 
     final List<Stmt> successors = graph.successors(stmt);
-    for (int i = 0; i < successors.size(); i++) {
+    for (int i = successors.size() - 1; i >= 0; i--) {
       Stmt succ = successors.get(i);
       // if (!alreadyInsertedNodes.contains(succ))
       {
@@ -64,7 +64,12 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
           currentBlock.addFirst(succ);
         } else {
           // remember branching successors
-          currentBlockBranches.addLast(succ);
+          if (stmt instanceof JGotoStmt) {
+            otherBlocks.addFirst(succ);
+          } else {
+            // JSwitchStmt, JIfStmt
+            nestedBlocks.addFirst(succ);
+          }
           System.out.print("----> " + succ + " ");
         }
         //         alreadyInsertedNodes.add(succ);
@@ -82,18 +87,10 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
       if (!currentBlock.isEmpty()) {
         stmt = currentBlock.pollFirst();
-      } else if (!currentBlockBranches.isEmpty()) {
-        // already empty ;) currentBlock = new ArrayDeque<>();
-
-        System.out.println("#remove laver");
-        currentBlock = currentBlockBranches;
-        currentBlockBranches = new ArrayDeque<>();
-
-        stmt = currentBlock.pollFirst();
-      } else if (!moreBlockBranches.isEmpty()) {
-        currentBlock = moreBlockBranches.pollFirst();
-        // already empty ;) currentBlockBranches = new ArrayDeque<>();
-        stmt = currentBlock.pollFirst();
+      } else if (!nestedBlocks.isEmpty()) {
+        stmt = nestedBlocks.pollFirst();
+      } else if (!otherBlocks.isEmpty()) {
+        stmt = otherBlocks.pollFirst();
       } else {
         return null;
       }
@@ -101,16 +98,6 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
       // skip retreived stmt if its already finished
     } while (finishedNodes.contains(stmt));
     finishedNodes.add(stmt);
-
-    // push layer: if inside of a block (i.e. labels of a switchStmt or the unbranched block of
-    // JIfStmt)
-    if (stmt instanceof JIfStmt) {
-      if (!currentBlockBranches.isEmpty()) {
-        moreBlockBranches.addFirst(currentBlockBranches);
-        currentBlockBranches = new ArrayDeque<>();
-        System.out.println("#new layer: " + moreBlockBranches.size());
-      }
-    }
 
     System.out.print(stmt + " ");
     return stmt;
