@@ -31,9 +31,8 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
     this.graph = graph;
     finishedNodes = new LinkedHashSet<>(graph.nodes().size(), 1);
 
-    currentBlock.add(startingStmt);
     this.traps = new ArrayDeque<>(traps);
-    cachedStmt = retrieveNextStmt();
+    cachedStmt = startingStmt;
   }
 
   // cache it for the next call to skip already retrieved nodes easily + simple hasNext()
