@@ -59,7 +59,6 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
     } while (returnedNodes.contains(stmt));
     returnedNodes.add(stmt);
 
-    System.out.print(stmt + " ");
     return stmt;
   }
 
@@ -67,6 +66,9 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   public Stmt next() {
 
     Stmt stmt = cachedNextStmt;
+    if (stmt == null) {
+      throw new NoSuchElementException("Iterator has no more Stmt's");
+    }
 
     // integrate trap handler blocks
     for (Iterator<Trap> iterator = traps.iterator(); iterator.hasNext(); ) {
@@ -80,7 +82,6 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
     final List<Stmt> successors = graph.successors(stmt);
     for (int i = successors.size() - 1; i >= 0; i--) {
       Stmt succ = successors.get(i);
-      // if (!alreadyInsertedNodes.contains(succ))
       {
         // i.e. is not a BranchingStmt or is the first successor of JIfStmt
         if (i == 0 && stmt.fallsThrough()) {
@@ -94,12 +95,9 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
             // JSwitchStmt, JIfStmt
             nestedBlocks.addFirst(succ);
           }
-          System.out.print("----> " + succ + " ");
         }
-        //         alreadyInsertedNodes.add(succ);
       }
     }
-    System.out.println();
 
     cachedNextStmt = retrieveNextStmt();
     return stmt;
