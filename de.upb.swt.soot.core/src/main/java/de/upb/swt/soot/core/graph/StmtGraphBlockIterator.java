@@ -65,7 +65,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
           // remember branching successors
           if (stmt instanceof JGotoStmt) {
             otherBlocks.addFirst(succ);
-          } else {
+          } else if (!nestedBlocks.contains(succ)) {
             // JSwitchStmt, JIfStmt
             nestedBlocks.addFirst(succ);
           }
