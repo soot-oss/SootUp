@@ -1,6 +1,6 @@
 package de.upb.swt.soot.core.util.printer;
 
-import de.upb.swt.soot.core.graph.StmtGraphBlockIterator;
+import de.upb.swt.soot.core.graph.iterator.StmtGraphBlockIterator;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;

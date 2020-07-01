@@ -1,5 +1,6 @@
-package de.upb.swt.soot.core.graph;
+package de.upb.swt.soot.core.graph.iterator;
 
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
 import javax.annotation.Nonnull;
