@@ -18,10 +18,10 @@ import javax.annotation.Nullable;
 public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
   @Nonnull private final StmtGraph graph;
-  @Nonnull protected final Set<Stmt> returnedNodes;
+  @Nonnull private final Set<Stmt> returnedNodes;
   @Nonnull private final ArrayDeque<Trap> traps;
 
-  @Nonnull private ArrayDeque<Stmt> currentBlock = new ArrayDeque<>();
+  @Nonnull private final ArrayDeque<Stmt> currentBlock = new ArrayDeque<>();
   @Nonnull private final ArrayDeque<Stmt> nestedBlocks = new ArrayDeque<>();
   @Nonnull private final ArrayDeque<Stmt> otherBlocks = new ArrayDeque<>();
 
@@ -32,13 +32,14 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
     this(graph, graph.getStartingStmt(), traps);
   }
 
-  public StmtGraphBlockIterator(
+  private StmtGraphBlockIterator(
       @Nonnull StmtGraph graph, @Nonnull Stmt startingStmt, @Nonnull List<Trap> traps) {
     this.graph = graph;
     returnedNodes = new HashSet<>(graph.nodes().size(), 1);
 
     this.traps = new ArrayDeque<>(traps);
     cachedNextStmt = startingStmt;
+    returnedNodes.add(startingStmt);
   }
 
   @Nullable
@@ -64,11 +65,12 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   }
 
   @Override
+  @Nonnull
   public Stmt next() {
 
     Stmt stmt = cachedNextStmt;
     if (stmt == null) {
-      throw new NoSuchElementException("Iterator has no more Stmt's");
+      throw new NoSuchElementException("Iterator has no more Stmt's.");
     }
 
     // integrate trap handler blocks
