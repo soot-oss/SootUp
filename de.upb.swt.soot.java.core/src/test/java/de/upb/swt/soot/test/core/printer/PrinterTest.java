@@ -2,16 +2,16 @@ package de.upb.swt.soot.test.core.printer;
 
 import static org.junit.Assert.*;
 
-import com.google.common.graph.GraphBuilder;
-import com.google.common.graph.MutableGraph;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
+import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.PrimitiveType;
@@ -57,17 +57,31 @@ public class PrinterTest {
         JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
     View view = project.createOnDemandView();
 
-    final MutableGraph<Stmt> graph = GraphBuilder.directed().build();
+    final MutableStmtGraph graph = new MutableStmtGraph();
     graph.addNode(new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
 
-    Body.BodyBuilder bodyBuilder = new Body.BodyBuilder(graph);
-    bodyBuilder.setPosition(NoPositionInformation.getInstance());
+    final MethodSignature methodSig =
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature("test", "foo", "int", Collections.emptyList());
 
     String className = "some.package.SomeClass";
     MethodSignature methodSignatureOne =
         view.getIdentifierFactory()
             .getMethodSignature("main", className, "void", Collections.emptyList());
-    Body bodyOne = bodyBuilder.setMethodSignature(methodSignatureOne).build();
+
+      Body.BodyBuilder bodyBuilder = Body.builder();
+
+      JNopStmt firstStmt = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+      bodyBuilder.addStmt(
+              firstStmt);
+      bodyBuilder
+              .setMethodSignature(methodSignatureOne)
+              .setLocals(Collections.emptySet())
+              .setTraps(Collections.emptyList())
+              .setFirstStmt(firstStmt)
+              .setPosition(null);
+    Body bodyOne = bodyBuilder.build();
+
     SootMethod dummyMainMethod =
         new SootMethod(
             new OverridingMethodSource(methodSignatureOne, bodyOne),
@@ -78,7 +92,13 @@ public class PrinterTest {
     MethodSignature methodSignatureTwo =
         view.getIdentifierFactory()
             .getMethodSignature("otherMethod", className, "int", Collections.emptyList());
-    Body bodyTwo = bodyBuilder.setMethodSignature(methodSignatureTwo).build();
+      bodyBuilder
+              .setMethodSignature(methodSignatureTwo)
+              .setLocals(Collections.emptySet())
+              .setTraps(Collections.emptyList())
+              .setFirstStmt(firstStmt)
+              .setPosition(null);
+    Body bodyTwo = bodyBuilder.build();
 
     SootMethod anotherMethod =
         new SootMethod(

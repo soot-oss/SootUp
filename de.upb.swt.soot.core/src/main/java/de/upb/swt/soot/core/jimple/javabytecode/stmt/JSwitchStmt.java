@@ -10,10 +10,7 @@ import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import javax.annotation.Nonnull;
 
 /*
@@ -85,8 +82,9 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     return isTableSwitch;
   }
 
-  public Stmt getDefaTultTarget(Body body) {
-    return body.getBranchTargetsOf(this).get(0);
+  @Nonnull
+  public Optional<Stmt> getDefaultTarget(Body body) {
+    return Optional.ofNullable(body.getBranchTargetsOf(this).get(0));
   }
 
   public Value getKey() {
@@ -163,21 +161,11 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
         .append('{')
         .append(" ");
 
-    for (int i = 0; i < values.size(); i++) {
-      // Stmt target = getTarget(i);
-      sb.append("    ").append(Jimple.CASE).append(' ').append(values.get(i)).append(": ");
-      /*          .append(Jimple.GOTO)
-               .append(' ')
-               .append(target == this ? "self" : target)
-               .append(';')
-               .append(' ');
-      */
+    for (IntConstant value : values) {
+      sb.append("    ").append(Jimple.CASE).append(' ').append(value).append(": ");
     }
 
-    //    Stmt target = getDefaultTarget();
     sb.append("    ").append(Jimple.DEFAULT).append(": ");
-    //            .append(Jimple.GOTO).append(" ").append(target == this ? "self" :
-    // target).append(';');
     sb.append(' ').append('}');
 
     return sb.toString();
@@ -195,18 +183,19 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     stmtPrinter.literal("{");
     stmtPrinter.newline();
 
-    final List<Stmt> targets = stmtPrinter.branchTargets(this);
+    final Iterable<Stmt> targets = stmtPrinter.getBody().getBranchTargetsOf(this);
+    Iterator<Stmt> targetIt = targets.iterator();
+    Stmt defaultTarget = targetIt.next();
 
-    final int size = values.size();
-    for (int i = 0; i < size; i++) {
+    for (IntConstant value : values) {
       stmtPrinter.handleIndent();
       stmtPrinter.literal(Jimple.CASE);
       stmtPrinter.literal(" ");
-      stmtPrinter.constant(values.get(i));
+      stmtPrinter.constant(value);
       stmtPrinter.literal(": ");
       stmtPrinter.literal(Jimple.GOTO);
       stmtPrinter.literal(" ");
-      stmtPrinter.stmtRef(targets.get(i + 1), true);
+      stmtPrinter.stmtRef(targetIt.next(), true);
       stmtPrinter.literal(";");
 
       stmtPrinter.newline();
@@ -217,7 +206,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     stmtPrinter.literal(": ");
     stmtPrinter.literal(Jimple.GOTO);
     stmtPrinter.literal(" ");
-    stmtPrinter.stmtRef(targets.get(0), true);
+    stmtPrinter.stmtRef(defaultTarget, true);
     stmtPrinter.literal(";");
 
     stmtPrinter.decIndent();

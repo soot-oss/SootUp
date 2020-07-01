@@ -21,7 +21,6 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   protected Map<Stmt, String> references;
 
   public LabeledStmtPrinter(Body b) {
-    super(b);
     initializeSootMethod(b);
   }
 
@@ -80,6 +79,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
   /** createLabelMaps */
   public void initializeSootMethod(Body body) {
+    this.body = body;
 
     Collection<Stmt> stmts = body.getStmts();
 
@@ -106,7 +106,6 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       if (body.isStmtBranchTarget(stmt) || trapStmts.contains(stmt)) {
         labelStmts.add(stmt);
       } else {
-        // i.e. traps?
         refStmts.add(stmt);
       }
     }

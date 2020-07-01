@@ -31,19 +31,15 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
-import java.util.List;
 import javax.annotation.Nonnull;
 
 /** Interface for different methods of printing out a Stmt. */
 public abstract class StmtPrinter {
-  @Nonnull final Body body;
+  @Nonnull protected Body body = Body.getEmptyBody();
 
-  StmtPrinter(@Nonnull Body body) {
-    this.body = body;
-  }
-
-  public List<Stmt> branchTargets(Stmt fromStmt) {
-    return body.getBranchTargetsOf(fromStmt);
+  @Nonnull
+  public Body getBody() {
+    return body;
   }
 
   public abstract void startStmt(Stmt u);
