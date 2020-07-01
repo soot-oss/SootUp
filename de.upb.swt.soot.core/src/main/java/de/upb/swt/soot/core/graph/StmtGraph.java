@@ -3,6 +3,7 @@ package de.upb.swt.soot.core.graph;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -41,6 +42,73 @@ public abstract class StmtGraph {
 
   /** returns true if there is a flow between source and target */
   public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
+
+  public Collection<Stmt> getTails() {
+    return nodes().stream().filter(stmt -> outDegree(stmt) == 0).collect(Collectors.toList());
+  }
+
+  /**
+   * Look for a path in graph, from def to use. This path has to lie inside an extended basic block
+   * (and this property implies uniqueness.). The path returned includes from and to.
+   *
+   * @param from start point for the path.
+   * @param to end point for the path.
+   * @return null if there is no such path.
+   */
+  public List<Stmt> getExtendedBasicBlockPathBetween(Stmt from, Stmt to) {
+
+    // if this holds, we're doomed to failure!!!
+    if (inDegree(to) > 1) {
+      return null;
+    }
+
+    // pathStack := list of succs lists
+    // pathStackIndex := last visited index in pathStack
+    List<Stmt> pathStack = new ArrayList<>();
+    List<Integer> pathStackIndex = new ArrayList<>();
+
+    pathStack.add(from);
+    pathStackIndex.add(0);
+
+    int psiMax = (outDegree(pathStack.get(0)));
+    int level = 0;
+    while (pathStackIndex.get(0) != psiMax) {
+      int p = pathStackIndex.get(level);
+
+      List<Stmt> succs = successors((pathStack.get(level)));
+      if (p >= succs.size()) {
+        // no more succs - backtrack to previous level.
+
+        pathStack.remove(level);
+        pathStackIndex.remove(level);
+
+        level--;
+        int q = pathStackIndex.get(level);
+        pathStackIndex.set(level, q + 1);
+        continue;
+      }
+
+      Stmt betweenStmt = (succs.get(p));
+
+      // we win!
+      if (betweenStmt == to) {
+        pathStack.add(to);
+        return pathStack;
+      }
+
+      // check preds of betweenStmt to see if we should visit its kids.
+      if (inDegree(betweenStmt) > 1) {
+        pathStackIndex.set(level, p + 1);
+        continue;
+      }
+
+      // visit kids of betweenStmt.
+      level++;
+      pathStackIndex.add(0);
+      pathStack.add(betweenStmt);
+    }
+    return null;
+  }
 
   /** validates whether the each Stmt has the correct amount of outgoing flows. */
   public void validateStmtConnectionsInGraph() {
