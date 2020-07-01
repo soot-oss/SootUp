@@ -5,52 +5,77 @@ import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Iterates over a given StmtGraph (which is connected, so all Stmt nodes are reached - except
- * traphandler)
+ * traphandler) so the returned Jimple Stmts are returned as valid, linearized code blocks that are
+ * intuitive to navigate.
  *
  * @author Markus Schmidt
  */
 public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
   @Nonnull private final StmtGraph graph;
-  @Nonnull protected final Set<Stmt> finishedNodes;
+  @Nonnull protected final Set<Stmt> returnedNodes;
+  @Nonnull private final ArrayDeque<Trap> traps;
 
   @Nonnull private ArrayDeque<Stmt> currentBlock = new ArrayDeque<>();
   @Nonnull private final ArrayDeque<Stmt> nestedBlocks = new ArrayDeque<>();
   @Nonnull private final ArrayDeque<Stmt> otherBlocks = new ArrayDeque<>();
 
-  @Nonnull private final ArrayDeque<Trap> traps;
+  // caching the next Stmt to implement a simple hasNext() and skipping already returned Stmts
+  @Nullable private Stmt cachedNextStmt;
 
   public StmtGraphBlockIterator(@Nonnull StmtGraph graph, List<Trap> traps) {
     this(graph, graph.getStartingStmt(), traps);
   }
 
-  public StmtGraphBlockIterator(StmtGraph graph, Stmt startingStmt, List<Trap> traps) {
+  public StmtGraphBlockIterator(
+      @Nonnull StmtGraph graph, @Nonnull Stmt startingStmt, @Nonnull List<Trap> traps) {
     this.graph = graph;
-    finishedNodes = new LinkedHashSet<>(graph.nodes().size(), 1);
+    returnedNodes = new HashSet<>(graph.nodes().size(), 1);
 
     this.traps = new ArrayDeque<>(traps);
-    cachedStmt = startingStmt;
+    cachedNextStmt = startingStmt;
   }
 
-  // cache it for the next call to skip already retrieved nodes easily + simple hasNext()
-  Stmt cachedStmt;
+  @Nullable
+  private Stmt retrieveNextStmt() {
+    Stmt stmt;
+    do {
+
+      if (!currentBlock.isEmpty()) {
+        stmt = currentBlock.pollFirst();
+      } else if (!nestedBlocks.isEmpty()) {
+        stmt = nestedBlocks.pollFirst();
+      } else if (!otherBlocks.isEmpty()) {
+        stmt = otherBlocks.pollFirst();
+      } else {
+        return null;
+      }
+
+      // skip retrieved stmt if its already returned
+    } while (returnedNodes.contains(stmt));
+    returnedNodes.add(stmt);
+
+    System.out.print(stmt + " ");
+    return stmt;
+  }
 
   @Override
   public Stmt next() {
 
-    Stmt stmt = cachedStmt;
+    Stmt stmt = cachedNextStmt;
 
-    /*
+    // integrate trap handler blocks
     for (Iterator<Trap> iterator = traps.iterator(); iterator.hasNext(); ) {
       Trap trap = iterator.next();
       if (stmt == trap.getEndStmt()) {
         iterator.remove();
-        workQueue.addLast(trap.getHandlerStmt());
+        currentBlock.addLast(trap.getHandlerStmt());
       }
-    }*/
+    }
 
     final List<Stmt> successors = graph.successors(stmt);
     for (int i = successors.size() - 1; i >= 0; i--) {
@@ -76,34 +101,12 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
     }
     System.out.println();
 
-    cachedStmt = retrieveNextStmt();
-    return stmt;
-  }
-
-  private Stmt retrieveNextStmt() {
-    Stmt stmt;
-    do {
-
-      if (!currentBlock.isEmpty()) {
-        stmt = currentBlock.pollFirst();
-      } else if (!nestedBlocks.isEmpty()) {
-        stmt = nestedBlocks.pollFirst();
-      } else if (!otherBlocks.isEmpty()) {
-        stmt = otherBlocks.pollFirst();
-      } else {
-        return null;
-      }
-
-      // skip retreived stmt if its already finished
-    } while (finishedNodes.contains(stmt));
-    finishedNodes.add(stmt);
-
-    System.out.print(stmt + " ");
+    cachedNextStmt = retrieveNextStmt();
     return stmt;
   }
 
   @Override
   public boolean hasNext() {
-    return cachedStmt != null;
+    return cachedNextStmt != null;
   }
 }
