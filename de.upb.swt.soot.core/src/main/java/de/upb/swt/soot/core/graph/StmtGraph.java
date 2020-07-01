@@ -43,6 +43,11 @@ public abstract class StmtGraph {
   /** returns true if there is a flow between source and target */
   public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
 
+  /**
+   * returns a Colecction of Stmts that leave the body (i.e. JReturnVoidStmt, JReturnStmt and
+   * JThrowStmt)
+   */
+  @Nonnull
   public Collection<Stmt> getTails() {
     return nodes().stream().filter(stmt -> outDegree(stmt) == 0).collect(Collectors.toList());
   }
@@ -55,7 +60,7 @@ public abstract class StmtGraph {
    * @param to end point for the path.
    * @return null if there is no such path.
    */
-  public List<Stmt> getExtendedBasicBlockPathBetween(Stmt from, Stmt to) {
+  public List<Stmt> getExtendedBasicBlockPathBetween(@Nonnull Stmt from, @Nonnull Stmt to) {
 
     // if this holds, we're doomed to failure!!!
     if (inDegree(to) > 1) {

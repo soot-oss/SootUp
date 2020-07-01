@@ -36,10 +36,9 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
       @Nonnull StmtGraph graph, @Nonnull Stmt startingStmt, @Nonnull List<Trap> traps) {
     this.graph = graph;
     returnedNodes = new HashSet<>(graph.nodes().size(), 1);
-
-    this.traps = new ArrayDeque<>(traps);
-    cachedNextStmt = startingStmt;
     returnedNodes.add(startingStmt);
+    cachedNextStmt = startingStmt;
+    this.traps = new ArrayDeque<>(traps);
   }
 
   @Nullable
