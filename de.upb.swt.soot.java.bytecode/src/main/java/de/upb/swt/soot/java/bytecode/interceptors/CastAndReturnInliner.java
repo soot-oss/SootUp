@@ -1,5 +1,6 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
+import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Trap;
@@ -14,6 +15,7 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
@@ -39,6 +41,7 @@ import javax.annotation.Nonnull;
  *
  * @author Steven Arzt
  * @author Christian Brüggemann
+ * @author Marcus Nachtigall
  */
 public class CastAndReturnInliner implements BodyInterceptor {
 
@@ -48,16 +51,16 @@ public class CastAndReturnInliner implements BodyInterceptor {
     // In case of performance issues, these copies could be avoided
     // in cases where the content is not changed by adding logic for this.
 
-    Body.BodyBuilder bodyBuilder = Body.builder();
-    List<Stmt> bodyStmts = new ArrayList<>(originalBody.getStmts());
+    Body.BodyBuilder bodyBuilder = Body.builder(originalBody);
+    Set<Stmt> bodyStmts = originalBody.getStmtGraph().nodes();
     List<Trap> bodyTraps = new ArrayList<>(originalBody.getTraps());
+    ImmutableStmtGraph originalGraph = originalBody.getStmtGraph();
 
-    for (int i = 0; i < bodyStmts.size(); i++) {
-      Stmt u = bodyStmts.get(i);
-      if (!(u instanceof JGotoStmt)) {
+    for (Stmt stmt : bodyStmts) {
+      if (!(stmt instanceof JGotoStmt)) {
         continue;
       }
-      JGotoStmt gotoStmt = (JGotoStmt) u;
+      JGotoStmt gotoStmt = (JGotoStmt) stmt;
 
       if (!(gotoStmt.getTarget(originalBody) instanceof JAssignStmt)) {
         continue;
@@ -69,16 +72,21 @@ public class CastAndReturnInliner implements BodyInterceptor {
       }
       JCastExpr ce = (JCastExpr) assign.getRightOp();
 
-      int nextStmtIndex = bodyStmts.indexOf(assign) + 1;
-      Stmt nextStmt = bodyStmts.get(nextStmtIndex);
+      Stmt nextStmt = originalGraph.successors(assign).get(0);
+
       if (nextStmt instanceof JReturnStmt) {
         JReturnStmt retStmt = (JReturnStmt) nextStmt;
         if (retStmt.getOp() == assign.getLeftOp()) {
           // We need to replace the GOTO with the return
           JReturnStmt newStmt = retStmt.withReturnValue((Immediate) ce.getOp());
 
-          // Replaces the GOTO with the new return stmt
-          bodyStmts.set(i, newStmt);
+          // Redirect all flows coming into the GOTO to the return
+          List<Stmt> predecessors = originalGraph.predecessors(gotoStmt);
+          for(Stmt preds : predecessors){
+            bodyBuilder.removeFlow(preds, gotoStmt);
+            bodyBuilder.addFlow(preds, newStmt);
+            bodyBuilder.removeFlow(gotoStmt, gotoStmt.getTargetStmts(originalBody).get(0));
+          }
 
           for (int j = 0; j < bodyTraps.size(); j++) {
             Trap originalTrap = bodyTraps.get(j);
@@ -87,19 +95,16 @@ public class CastAndReturnInliner implements BodyInterceptor {
           }
 
           // Fix targets of other statements: Switch, If, Goto
-          for (int j = 0; j < bodyStmts.size(); j++) {
-            if (i == j) continue;
+          for (Stmt toFixStmt : bodyStmts) {
+            if (stmt == toFixStmt) continue;
 
-            Stmt toFixStmt = bodyStmts.get(j);
-            Stmt fixedStmt = replaceTargetsOfStmt(originalBody, toFixStmt, gotoStmt, newStmt);
-            bodyStmts.set(j, fixedStmt);
+            replaceTargetsOfStmt(originalBody, bodyBuilder, toFixStmt, gotoStmt, newStmt);
           }
         }
       }
     }
 
-    // FIXME [ms] leftover: return originalBody.withStmts(bodyStmts).withTraps(bodyTraps);
-    return originalBody;
+    return bodyBuilder.build();
   }
 
   /**
@@ -126,45 +131,33 @@ public class CastAndReturnInliner implements BodyInterceptor {
    * Checks if <code>toFixStmt</code> contains <code>gotoStmt</code> as a jump target and returns a
    * copy of <code>toFixStmt</code> where the target has been replaced with <code>newStmt</code>.
    */
-  @Nonnull
-  private Stmt replaceTargetsOfStmt(
+  private void replaceTargetsOfStmt(
       Body originalBody,
+      Body.BodyBuilder builder,
       @Nonnull Stmt toFixStmt,
       @Nonnull JGotoStmt gotoStmt,
       @Nonnull JReturnStmt newStmt) {
     if (toFixStmt instanceof JIfStmt) {
       JIfStmt toFixIfStmt = (JIfStmt) toFixStmt;
       if (toFixIfStmt.getTarget(originalBody) == gotoStmt) {
-
-        //  FIXME [ms] leftover:set up targets
-        //        return toFixIfStmt.withTarget();
+        builder.removeFlow(toFixIfStmt, gotoStmt);
+        builder.addFlow(toFixIfStmt, newStmt);
       }
     } else if (toFixStmt instanceof JGotoStmt) {
       JGotoStmt toFixGotoStmt = (JGotoStmt) toFixStmt;
       if (toFixGotoStmt.getTarget(originalBody) == gotoStmt) {
-        //  FIXME [ms] leftover:set up targets
-        //        return toFixGotoStmt.withTarget();
+        builder.removeFlow(toFixGotoStmt, gotoStmt);
+        builder.addFlow(toFixGotoStmt, newStmt);
       }
     } else if (toFixStmt instanceof JSwitchStmt) {
       JSwitchStmt toFixSwitchStmt = (JSwitchStmt) toFixStmt;
-      /* List<Stmt> targets = originalBody.getBranchTargetsOf(toFixSwitchStmt);
-       List<Stmt> copiedTargets = null;
-       for (int k = 0; k < targets.size(); k++) {
-         Stmt switchTarget = targets.get(k);
-         if (switchTarget == gotoStmt) {
-           if (copiedTargets == null) {
-             copiedTargets = new ArrayList<>(targets);
-           }
-           copiedTargets.set(k, newStmt);
-         }
-       }
-      if (copiedTargets != null) {
-         //  FIXME [ms] leftover:set up targets
-         //        return toFixSwitchStmt.withTargets(copiedTargets);
-       }
-       */
+      List<Stmt> targets = originalBody.getStmtGraph().successors(toFixSwitchStmt);
+      for(Stmt switchTarget : targets){
+        if(switchTarget == gotoStmt){
+          builder.removeFlow(switchTarget, gotoStmt);
+          builder.addFlow(switchTarget, newStmt);
+        }
+      }
     }
-
-    return toFixStmt;
   }
 }
