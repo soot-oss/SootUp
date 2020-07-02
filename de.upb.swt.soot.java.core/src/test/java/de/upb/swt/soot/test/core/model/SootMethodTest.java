@@ -12,6 +12,7 @@ import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -31,7 +32,6 @@ import org.junit.experimental.categories.Category;
 
 /** @author Linghui Luo */
 @Category(Java8Test.class)
-//TODO : merge with the fix/graphImplementation
 public class SootMethodTest {
 
   @Test
@@ -47,26 +47,26 @@ public class SootMethodTest {
         view.getIdentifierFactory()
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
     Body.BodyBuilder bodyBuilder = Body.builder();
-    JIdentityStmt firstStmt = Jimple.newIdentityStmt(
+
+    final JIdentityStmt firstStmt =
+        Jimple.newIdentityStmt(
             generator.generateLocal(type),
             Jimple.newParameterRef(type, 0),
             StmtPositionInfo.createNoStmtPositionInfo());
-    bodyBuilder.addStmt(
-            firstStmt);
-        bodyBuilder.addStmt(
-            Jimple.newAssignStmt(
-                    generator.generateLocal(type),
-                    Jimple.newNewExpr(type),
-                    StmtPositionInfo.createNoStmtPositionInfo()));
-    bodyBuilder
-        .setMethodSignature(methodSignature)
-        .setLocals(generator.getLocals())
-        .setTraps(Collections.emptyList())
-        .setFirstStmt(firstStmt)
-        .setPosition(null);
-    Body body = bodyBuilder.build();
+    final JReturnVoidStmt returnVoidStmt =
+        new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
 
-    assertEquals(2, body.getLocalCount());
+    bodyBuilder.addStmt(firstStmt, false);
+    bodyBuilder.addStmt(returnVoidStmt);
+    bodyBuilder.addFlow(firstStmt, returnVoidStmt);
+    Body body =
+        bodyBuilder
+            .setMethodSignature(methodSignature)
+            .setLocals(generator.getLocals())
+            .setTraps(Collections.emptyList())
+            .build();
+
+    assertEquals(1, body.getLocalCount());
 
     SootMethod dummyMainMethod =
         new SootMethod(
@@ -92,6 +92,7 @@ public class SootMethodTest {
             SourceType.Application);
 
     assertEquals(mainClass.getMethods().size(), 1);
+
     assertTrue(
         mainClass
             .getMethod(methodSignature)
