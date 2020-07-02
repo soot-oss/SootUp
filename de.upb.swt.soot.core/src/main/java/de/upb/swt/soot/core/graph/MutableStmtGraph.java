@@ -33,7 +33,7 @@ public class MutableStmtGraph extends StmtGraph {
 
   @Nonnull protected final Map<Stmt, List<Stmt>> predecessors = new HashMap<>();
   @Nonnull protected final Map<Stmt, List<Stmt>> successors = new HashMap<>();
-  @Nonnull protected final Set<Stmt> stmtList = new LinkedHashSet<>();
+  @Nonnull protected final Set<Stmt> stmtList = new HashSet<>();
 
   @Nullable protected Stmt startingStmt;
 
