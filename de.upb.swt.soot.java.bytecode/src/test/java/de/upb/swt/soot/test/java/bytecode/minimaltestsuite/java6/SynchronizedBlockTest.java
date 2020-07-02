@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
@@ -21,7 +21,8 @@ public class SynchronizedBlockTest extends MinimalBytecodeTestSuiteBase {
         "run", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Test
+  @Ignore
+  // FIXME: Issue #296
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
