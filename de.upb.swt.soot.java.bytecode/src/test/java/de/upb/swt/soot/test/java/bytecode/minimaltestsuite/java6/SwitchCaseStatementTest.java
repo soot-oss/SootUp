@@ -13,7 +13,7 @@ import org.junit.experimental.categories.Category;
 public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
-  public void testEnum() {
+  public void switchCaseStatementEnum() {
     SootMethod method = loadMethod(getMethodSignature("switchCaseStatementEnum"));
     assertJimpleStmts(
         method,
@@ -137,6 +137,90 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
             "label3:",
             "l2 = \"other\"",
             "label4:",
+            "return"));
+  }
+
+  @Test
+  public void switchCaseStatementCaseIncludingIf() {
+    SootMethod method = loadMethod(getMethodSignature("switchCaseStatementCaseIncludingIf"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
+            "l0 := @this: SwitchCaseStatement",
+            "l1 = 2",
+            "switch(l1)",
+            "case 1: goto label1",
+            "case 2: goto label3",
+            "case 3: goto label4",
+            "default: goto label5",
+            "label1:",
+            "l2 = 1",
+            "if l1 != 666 goto label2",
+            "l2 = 11",
+            "goto label6",
+            "label2:",
+            "l2 = 12",
+            "goto label6",
+            "label3:",
+            "l2 = 2",
+            "goto label6",
+            "label4:",
+            "l2 = 3",
+            "goto label6",
+            "label5:",
+            "l2 = -1",
+            "label6:",
+            "return"));
+  }
+
+  @Test
+  public void switchCaseStatementCaseIncludingSwitch() {
+    SootMethod method = loadMethod(getMethodSignature("switchWithSwitch"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
+            "l0 := @this: SwitchCaseStatement",
+            "l1 = 2",
+            "switch(l1)",
+            "case 1: goto label01",
+            "case 2: goto label05",
+            "case 3: goto label10",
+            "default: goto label11",
+            "label01:",
+            "switch(l1)",
+            "case 10: goto label02",
+            "case 20: goto label03",
+            "default: goto label04",
+            "label02:",
+            "l2 = 11",
+            "goto label04",
+            "label03:",
+            "l2 = 12",
+            "label04:",
+            "goto label12",
+            "label05:",
+            "l2 = 2",
+            "switch(l1)",
+            "case 20: goto label06",
+            "case 30: goto label07",
+            "case 40: goto label08",
+            "default: goto label09",
+            "label06:",
+            "l2 = 220",
+            "goto label09",
+            "label07:",
+            "l2 = 230",
+            "goto label09",
+            "label08:",
+            "l2 = 240",
+            "label09:",
+            "goto label12",
+            "label10:",
+            "l2 = 3",
+            "goto label12",
+            "label11:",
+            "l2 = -1",
+            "label12:",
             "return"));
   }
 

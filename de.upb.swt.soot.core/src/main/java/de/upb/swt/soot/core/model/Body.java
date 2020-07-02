@@ -61,8 +61,8 @@ public class Body implements Copyable {
   /** The Position Information in the Source for this Body. */
   @Nonnull private final Position position;
 
-  /** The method associated with this Body. */
-  @Nonnull private MethodSignature methodSignature;
+  /** The MethodSignature associated with this Body. */
+  @Nonnull private final MethodSignature methodSignature;
 
   /** An array containing some validators in order to validate the JimpleBody */
   @Nonnull
@@ -83,8 +83,7 @@ public class Body implements Copyable {
    *
    * @param locals please use {@link LocalGenerator} to generate local for a body.
    */
-  // FIXME: make private
-  public Body(
+  private Body(
       @Nonnull MethodSignature methodSignature,
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
@@ -95,7 +94,6 @@ public class Body implements Copyable {
     this.traps = Collections.unmodifiableList(traps);
     this.cfg = ImmutableStmtGraph.copyOf(stmtGraph);
     this.position = position;
-    // TODO: Make this method private.
     // FIXME: [JMP] Virtual method call in constructor
     checkInit();
   }
@@ -225,17 +223,14 @@ public class Body implements Copyable {
   @Nonnull
   public Collection<Stmt> getTargetStmtsInBody() {
     List<Stmt> stmtList = new ArrayList<>();
-    Iterator<Stmt> iterator = cfg.nodes().iterator();
-    while (iterator.hasNext()) {
-      Stmt stmt = iterator.next();
-
+    for (Stmt stmt : cfg.nodes()) {
       if (stmt instanceof BranchingStmt) {
         if (stmt instanceof JIfStmt) {
           stmtList.add(((JIfStmt) stmt).getTarget(this));
         } else if (stmt instanceof JGotoStmt) {
           stmtList.add(((JGotoStmt) stmt).getTarget(this));
         } else if (stmt instanceof JSwitchStmt) {
-          getBranchTargetsOf((BranchingStmt) stmt).forEach(stmtList::add);
+          stmtList.addAll(getBranchTargetsOf((BranchingStmt) stmt));
         }
       }
     }

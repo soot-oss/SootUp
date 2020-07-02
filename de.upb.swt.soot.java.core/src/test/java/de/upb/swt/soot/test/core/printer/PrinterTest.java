@@ -5,11 +5,11 @@ import static org.junit.Assert.*;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
-import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.PrimitiveType;
@@ -44,8 +44,10 @@ public class PrinterTest {
             "private int counter",
             "public static void main()",
             "nop",
+            "return",
             "private int otherMethod() throws FileNotFoundException",
-            "nop"),
+            "nop",
+            "return"),
         Utils.filterJimple(writer.toString()));
   }
 
@@ -55,31 +57,22 @@ public class PrinterTest {
         JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
     View view = project.createOnDemandView();
 
-    final MutableStmtGraph graph = new MutableStmtGraph();
-    graph.addNode(new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
-
-    final MethodSignature methodSig =
-        JavaIdentifierFactory.getInstance()
-            .getMethodSignature("test", "foo", "int", Collections.emptyList());
-    Body bodyOne =
-        new Body(
-            methodSig,
-            Collections.emptySet(),
-            Collections.emptyList(),
-            graph,
-            NoPositionInformation.getInstance());
-    Body bodyTwo =
-        new Body(
-            methodSig,
-            Collections.emptySet(),
-            Collections.emptyList(),
-            graph,
-            NoPositionInformation.getInstance());
-
     String className = "some.package.SomeClass";
     MethodSignature methodSignatureOne =
         view.getIdentifierFactory()
             .getMethodSignature("main", className, "void", Collections.emptyList());
+
+    final StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    final Body.BodyBuilder builder = Body.builder();
+    final JNopStmt fromStmt = new JNopStmt(noStmtPositionInfo);
+    builder.setStartingStmt(fromStmt);
+    Body bodyOne =
+        builder
+            .setMethodSignature(methodSignatureOne)
+            .addFlow(fromStmt, new JReturnVoidStmt(noStmtPositionInfo))
+            .build();
+    Body bodyTwo = builder.build();
+
     SootMethod dummyMainMethod =
         new SootMethod(
             new OverridingMethodSource(methodSignatureOne, bodyOne),
@@ -116,7 +109,7 @@ public class PrinterTest {
                             JavaIdentifierFactory.getInstance().getClassType(className),
                             PrimitiveType.getInt()),
                     EnumSet.of(Modifier.PRIVATE))),
-            new HashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)),
+            new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)),
             NoPositionInformation.getInstance(),
             EnumSet.of(Modifier.PUBLIC)),
         SourceType.Application);
