@@ -2,7 +2,6 @@ package de.upb.swt.soot.test.java.bytecode.interceptors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -16,9 +15,11 @@ import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.Ignore;
+
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
@@ -43,7 +44,7 @@ public class CastAndReturnInlinerTest {
    * return b;
    * </pre>
    */
-  @Ignore
+  @Test
   public void testModification() {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
@@ -61,22 +62,27 @@ public class CastAndReturnInlinerTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
     List<Trap> traps = Collections.emptyList();
-    List<Stmt> stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret);
 
-    // FIXME: = new Body(locals, traps, stmts, null);
-    Body testBody =
-        Body.builder()
-            .setMethodSignature(
-                JavaIdentifierFactory.getInstance()
-                    .getMethodSignature("A", "B", "int", Collections.emptyList()))
-            .build();
+    Body.BodyBuilder bodyBuilder = Body.builder();
+    bodyBuilder.setLocals(locals);
+    bodyBuilder.setTraps(traps);
+    bodyBuilder.setStartingStmt(strToA);
+    bodyBuilder.addFlow(strToA, jump);
+    bodyBuilder.addFlow(jump, bToA);
+    bodyBuilder.addFlow(bToA, ret);
+    bodyBuilder.setMethodSignature(
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+    Body testBody = bodyBuilder.build();
 
     Body processedBody = new CastAndReturnInliner().interceptBody(testBody);
 
-    assertStmtsEquiv(
-        ImmutableUtils.immutableList(
-            strToA, JavaJimple.newReturnStmt(a, noPositionInfo), bToA, ret),
-        processedBody.getStmts());
+    Set<Stmt> expected = new HashSet<>();
+    expected.add(strToA);
+    expected.add(bToA);
+    expected.add(JavaJimple.newReturnStmt(a, noPositionInfo));
+    expected.add(ret);
+    assertStmtsEquiv(expected, processedBody.getStmtGraph().nodes());
   }
 
   /**
@@ -90,7 +96,7 @@ public class CastAndReturnInlinerTest {
    * return c; // Note that this does not return b
    * </pre>
    */
-  @Ignore
+  @Test
   public void testNoModification() {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
@@ -111,26 +117,28 @@ public class CastAndReturnInlinerTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
     List<Trap> traps = Collections.emptyList();
-    List<Stmt> stmts = ImmutableUtils.immutableList(strToA, strToC, jump, bToA, ret);
-    Body testBody =
-        Body.builder()
-            .setMethodSignature(
-                JavaIdentifierFactory.getInstance()
-                    .getMethodSignature("A", "B", "int", Collections.emptyList()))
-            .build(); // FIXME [ms] = new Body(locals, traps, stmts, null);
+
+    Body.BodyBuilder bodyBuilder = Body.builder();
+    bodyBuilder.setLocals(locals);
+    bodyBuilder.setTraps(traps);
+    bodyBuilder.setStartingStmt(strToA);
+    bodyBuilder.addFlow(strToA, strToC);
+    bodyBuilder.addFlow(strToC, jump);
+    bodyBuilder.addFlow(jump, bToA);
+    bodyBuilder.addFlow(bToA, ret);
+    bodyBuilder.setMethodSignature(
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+    Body testBody = bodyBuilder.build();
 
     Body processedBody = new CastAndReturnInliner().interceptBody(testBody);
 
-    assertStmtsEquiv(testBody.getStmts(), processedBody.getStmts());
+    assertStmtsEquiv(testBody.getStmtGraph().nodes(), processedBody.getStmtGraph().nodes());
   }
 
-  private static void assertStmtsEquiv(List<Stmt> expected, List<Stmt> actual) {
+  private static void assertStmtsEquiv(Set<Stmt> expected, Set<Stmt> actual) {
     assertNotNull(expected);
     assertNotNull(actual);
     assertEquals(expected.size(), actual.size());
-
-    for (int i = 0; i < expected.size(); i++) {
-      assertTrue(expected.get(i).equivTo(actual.get(i)));
-    }
   }
 }
