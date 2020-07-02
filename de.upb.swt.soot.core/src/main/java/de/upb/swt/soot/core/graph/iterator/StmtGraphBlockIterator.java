@@ -69,7 +69,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
     Stmt stmt = cachedNextStmt;
     if (stmt == null) {
-      throw new NoSuchElementException("Iterator has no more Stmt's.");
+      throw new NoSuchElementException("Iterator has no more Stmts.");
     }
 
     // integrate trap handler blocks
