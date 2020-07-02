@@ -16,9 +16,11 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   @Nonnull private final StmtGraph graph;
   @Nonnull protected final Set<Stmt> alreadyInsertedNodes;
 
-  @Nonnull private final ArrayDeque<Stmt> currentBlockQueue = new ArrayDeque<>();
-  @Nonnull private final ArrayDeque<Stmt> workQueue = new ArrayDeque<>();
+  //@Nonnull private final ArrayDeque<Stmt> currentBlockQueue = new ArrayDeque<>();
+  //@Nonnull private final ArrayDeque<Stmt> workQueue = new ArrayDeque<>();
   @Nonnull private final ArrayDeque<Trap> traps;
+
+  @Nonnull private final ArrayDeque<Stmt> stack = new ArrayDeque<>();
 
   public StmtGraphBlockIterator(@Nonnull StmtGraph graph, List<Trap> traps) {
     this(graph, graph.getStartingStmt(), traps);
@@ -28,14 +30,36 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
     this.graph = graph;
     alreadyInsertedNodes = new LinkedHashSet<>(graph.nodes().size(), 1);
 
-    currentBlockQueue.add(startingStmt);
-    alreadyInsertedNodes.add(startingStmt);
+    //currentBlockQueue.add(startingStmt);
+    //alreadyInsertedNodes.add(startingStmt);
+    stack.addFirst(startingStmt);
     this.traps = new ArrayDeque<>(traps);
   }
 
   @Override
   public Stmt next() {
 
+    //Fixme: trap part is not clear
+    Stmt stmt;
+    if(!stack.isEmpty()){
+      stmt =  stack.pollFirst();
+    }else{
+      throw new IndexOutOfBoundsException("No more elements to iterate over!");
+    }
+
+    alreadyInsertedNodes.add(stmt);
+
+    final List<Stmt> successors = graph.successors(stmt);
+    //add
+    for(int i=successors.size()-1; i>=0; i--){
+      Stmt succ = successors.get(i);
+      if (!stack.contains(succ) && !alreadyInsertedNodes.contains(succ)){
+        stack.addFirst(succ);
+      }
+    }
+    return stmt;
+
+    /**
     Stmt stmt;
     if (!workQueue.isEmpty()) {
       stmt = workQueue.pollFirst();
@@ -79,11 +103,12 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
       workQueue.pollFirst();
     }
 
-    return stmt;
+    return stmt;*/
   }
 
   @Override
   public boolean hasNext() {
-    return !(currentBlockQueue.isEmpty() && workQueue.isEmpty());
+    //return !(currentBlockQueue.isEmpty() && workQueue.isEmpty());
+    return !(stack.isEmpty());
   }
 }
