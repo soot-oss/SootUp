@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.eclipse.jdt.core.dom.Javadoc;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -20,6 +22,28 @@ public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
         "tryCatchFinally", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+//TODO automate like following for all tests.
+  /**
+  <pre>
+  <code>
+  public class TryCatchFinally {
+    public void tryCatchFinally() {
+        String str = "";
+        try {
+            str = "this is try block";
+            int i = 0;
+            i++;
+            System.out.println(i);
+        } catch (Exception e) {
+            str = "this is catch block";
+        } finally {
+            str = "this is finally block";
+        }
+    }
+  }
+  <code>
+  </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
