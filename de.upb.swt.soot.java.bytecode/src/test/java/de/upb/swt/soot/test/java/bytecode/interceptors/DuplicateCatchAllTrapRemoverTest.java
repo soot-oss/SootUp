@@ -15,6 +15,7 @@ import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -33,7 +34,8 @@ public class DuplicateCatchAllTrapRemoverTest {
    * (java.lang.String) a] Trap: begin: b = "str" - end: b = (java.lang.String) a - handler: return
    * b
    */
-  @Test
+  @Ignore
+  // FIXME: [ms] Issue #281
   public void testRemoveDuplicate() {
     Body originalBody = createBody(true);
     Body processedBody = new DuplicateCatchAllTrapRemover().interceptBody(originalBody);
