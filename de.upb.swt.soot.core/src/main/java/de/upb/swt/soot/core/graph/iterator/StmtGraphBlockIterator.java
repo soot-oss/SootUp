@@ -101,6 +101,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
       }
     }
 
+    // prefetch next Stmt
     cachedNextStmt = retrieveNextStmt();
     return stmt;
   }

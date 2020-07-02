@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
+import org.junit.Ignore;
 
 /** @author Kaustubh Kelkar */
 public class TryWithResourcesTest extends MinimalSourceTestSuiteBase {
@@ -47,7 +47,8 @@ public class TryWithResourcesTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  @Test
+  @Ignore
+  // FIXME: Issue #296
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());

@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
@@ -22,7 +22,8 @@ public class TryWithResourcesTest extends MinimalBytecodeTestSuiteBase {
         "printFile", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Test
+  @Ignore
+  // FIXME: Issue #296
   public void test() {
     SootMethod sootMethod = loadMethod(getMethodSignature());
     assertJimpleStmts(sootMethod, expectedBodyStmts());
