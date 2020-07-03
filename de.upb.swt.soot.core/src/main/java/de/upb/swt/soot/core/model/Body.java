@@ -24,6 +24,7 @@ package de.upb.swt.soot.core.model;
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.graph.iterator.StmtGraphBlockIterator;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
@@ -242,14 +243,18 @@ public class Body implements Copyable {
   }
 
   /**
-   * Returns the statements that make up this body. [ms] just use for tests!
+   * Returns the statements that make up this body.
    *
    * @return the statements in this Body
    */
   @Nonnull
-  @Deprecated
   public List<Stmt> getStmts() {
-    return new ArrayList<>(getStmtGraph().nodes());
+    final ArrayList<Stmt> stmts = new ArrayList<>(cfg.nodes().size());
+    final StmtGraphBlockIterator it = new StmtGraphBlockIterator(cfg, traps);
+    while (it.hasNext()) {
+      stmts.add(it.next());
+    }
+    return stmts;
   }
 
   public ImmutableStmtGraph getStmtGraph() {
