@@ -124,7 +124,7 @@ public class InstructionConverter {
   }
 
   public List<Stmt> convertInstruction(
-          DebuggingInformation debugInfo, SSAInstruction inst, HashMap<Integer, Stmt> stmt2iIndex) {
+      DebuggingInformation debugInfo, SSAInstruction inst, HashMap<Integer, Stmt> stmt2iIndex) {
     List<Stmt> stmts = new ArrayList();
     if (inst instanceof SSAConditionalBranchInstruction) {
       stmts.addAll(convertBranchInstruction(debugInfo, (SSAConditionalBranchInstruction) inst));
@@ -308,9 +308,9 @@ public class InstructionConverter {
   }
 
   private List<Stmt> convertAssertInstruction(
-          DebuggingInformation debugInfo,
-          AstAssertInstruction inst,
-          HashMap<Integer, Stmt> stmt2iIndex) {
+      DebuggingInformation debugInfo,
+      AstAssertInstruction inst,
+      HashMap<Integer, Stmt> stmt2iIndex) {
     List<Stmt> stmts = new ArrayList<>();
     // create a static field for checking if assertion is disabled.
     JavaClassType cSig = (JavaClassType) methodSignature.getDeclClassType();
@@ -1182,7 +1182,7 @@ public class InstructionConverter {
     for (Map.Entry<JIfStmt, Integer> ifStmt : targetsOfIfStmts.entrySet()) {
       final JIfStmt key = ifStmt.getKey();
       final Integer value = ifStmt.getValue();
-      builder.addFlow(key,  stmt2iIndex.get(value) );
+      builder.addFlow(key, stmt2iIndex.get(value));
     }
 
     for (Map.Entry<JGotoStmt, Integer> gotoStmt : targetsOfGotoStmts.entrySet()) {
@@ -1198,7 +1198,7 @@ public class InstructionConverter {
       // assign target for every idx in targetIdxList of switchStmt
       for (Integer targetIdx : targetIdxList) {
         // search for matching index/stmt
-            builder.addFlow(switchStmt, stmt2iIndex.get(targetIdx));
+        builder.addFlow(switchStmt, stmt2iIndex.get(targetIdx));
       }
     }
   }

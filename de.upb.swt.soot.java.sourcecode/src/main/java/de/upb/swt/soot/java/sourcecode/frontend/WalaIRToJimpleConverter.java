@@ -42,8 +42,6 @@ import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.*;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
-import scala.annotation.meta.field;
-
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -474,7 +472,7 @@ public class WalaIRToJimpleConverter {
         InstructionConverter instConverter =
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
         // Don't exchange, different stmts could have same ids
-        HashMap<Integer,Stmt> stmt2iIndex = new HashMap<>();
+        HashMap<Integer, Stmt> stmt2iIndex = new HashMap<>();
         Stmt stmt = null;
         for (SSAInstruction inst : insts) {
           List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst, stmt2iIndex);

@@ -524,7 +524,6 @@ public class StmtPositionInfoTest {
     }
   }
 
-
   @Ignore // TODO: implement traps - Issue #299
   public void testThrowInstruction() {
     loadCurrentMethod("exceptionMethod", declareClassSig, "void", Collections.emptyList());
@@ -549,7 +548,6 @@ public class StmtPositionInfoTest {
     */
 
   }
-
 
   @Ignore // TODO: implement traps - Issue #299
   public void testSwitchInstruction() {
