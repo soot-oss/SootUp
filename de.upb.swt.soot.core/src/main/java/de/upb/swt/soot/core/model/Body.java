@@ -407,9 +407,9 @@ public class Body implements Copyable {
     @Nonnull private final LocalGenerator localGen = new LocalGenerator(locals);
 
     @Nonnull private List<Trap> traps = new ArrayList<>();
-    @Nonnull private Position position;
+    @Nullable private Position position = null;
 
-    @Nonnull private MutableStmtGraph cfg;
+    @Nonnull private final MutableStmtGraph cfg;
     @Nullable private MethodSignature methodSig = null;
 
     BodyBuilder() {
@@ -482,6 +482,10 @@ public class Body implements Copyable {
 
       if (methodSig == null) {
         throw new RuntimeException("There is no MethodSignature set.");
+      }
+
+      if (position == null) {
+        setPosition(NoPositionInformation.getInstance());
       }
 
       final Stmt startingStmt = cfg.getStartingStmt();
