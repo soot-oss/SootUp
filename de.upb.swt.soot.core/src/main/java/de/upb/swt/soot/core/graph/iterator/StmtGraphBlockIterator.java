@@ -50,6 +50,8 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
         stmt = currentBlock.pollFirst();
       } else if (!nestedBlocks.isEmpty()) {
         stmt = nestedBlocks.pollFirst();
+      } else if (!traps.isEmpty()) {
+        stmt = traps.pollFirst().getHandlerStmt();
       } else if (!otherBlocks.isEmpty()) {
         stmt = otherBlocks.pollFirst();
       } else {
@@ -72,15 +74,16 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
       throw new NoSuchElementException("Iterator has no more Stmts.");
     }
 
-    // integrate trap handler blocks
-    for (Iterator<Trap> iterator = traps.iterator(); iterator.hasNext(); ) {
-      Trap trap = iterator.next();
-      if (stmt == trap.getEndStmt()) {
-        iterator.remove();
-        currentBlock.addLast(trap.getHandlerStmt());
-      }
-    }
-
+    /*
+        // integrate trap handler blocks
+        for (Iterator<Trap> iterator = traps.iterator(); iterator.hasNext(); ) {
+          Trap trap = iterator.next();
+          if (stmt == trap.getEndStmt()) {
+            iterator.remove();
+            currentBlock.addLast(trap.getHandlerStmt());
+          }
+        }
+    */
     final List<Stmt> successors = graph.successors(stmt);
     for (int i = successors.size() - 1; i >= 0; i--) {
       Stmt succ = successors.get(i);
