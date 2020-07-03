@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
+import org.junit.Test;
 
 public class MultiTryCatchTest extends MinimalSourceTestSuiteBase {
 
@@ -52,8 +52,7 @@ public class MultiTryCatchTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  @Ignore
-  // FIXME: Issue #296
+  @Test
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
