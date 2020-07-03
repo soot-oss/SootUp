@@ -74,16 +74,12 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
       throw new NoSuchElementException("Iterator has no more Stmts.");
     }
 
-    /*
-        // integrate trap handler blocks
-        for (Iterator<Trap> iterator = traps.iterator(); iterator.hasNext(); ) {
-          Trap trap = iterator.next();
-          if (stmt == trap.getEndStmt()) {
-            iterator.remove();
-            currentBlock.addLast(trap.getHandlerStmt());
-          }
-        }
-    */
+    final Trap nextTrap = traps.peekFirst();
+    if (nextTrap != null && stmt == nextTrap.getEndStmt()) {
+      currentBlock.addFirst(nextTrap.getHandlerStmt());
+      traps.removeFirst();
+    }
+
     final List<Stmt> successors = graph.successors(stmt);
     for (int i = successors.size() - 1; i >= 0; i--) {
       Stmt succ = successors.get(i);
