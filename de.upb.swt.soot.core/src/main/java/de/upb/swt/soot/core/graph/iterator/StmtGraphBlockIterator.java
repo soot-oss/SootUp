@@ -50,6 +50,8 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
         stmt = currentBlock.pollFirst();
       } else if (!nestedBlocks.isEmpty()) {
         stmt = nestedBlocks.pollFirst();
+      } else if (!traps.isEmpty()) {
+        stmt = traps.pollFirst().getHandlerStmt();
       } else if (!otherBlocks.isEmpty()) {
         stmt = otherBlocks.pollFirst();
       } else {
@@ -69,16 +71,13 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
     Stmt stmt = cachedNextStmt;
     if (stmt == null) {
-      throw new NoSuchElementException("Iterator has no more Stmt's.");
+      throw new NoSuchElementException("Iterator has no more Stmts.");
     }
 
-    // integrate trap handler blocks
-    for (Iterator<Trap> iterator = traps.iterator(); iterator.hasNext(); ) {
-      Trap trap = iterator.next();
-      if (stmt == trap.getEndStmt()) {
-        iterator.remove();
-        currentBlock.addLast(trap.getHandlerStmt());
-      }
+    final Trap nextTrap = traps.peekFirst();
+    if (nextTrap != null && stmt == nextTrap.getEndStmt()) {
+      currentBlock.addFirst(nextTrap.getHandlerStmt());
+      traps.removeFirst();
     }
 
     final List<Stmt> successors = graph.successors(stmt);
@@ -108,6 +107,11 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
   @Override
   public boolean hasNext() {
-    return cachedNextStmt != null;
+    final boolean hasIteratorMoreElements = cachedNextStmt != null;
+    if (!hasIteratorMoreElements && returnedNodes.size() != graph.nodes().size()) {
+      throw new RuntimeException(
+          "There are stmts that are not iterated! StmtGraph is not connected from startingStmt!");
+    }
+    return hasIteratorMoreElements;
   }
 }

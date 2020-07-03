@@ -81,7 +81,6 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   public void initializeSootMethod(Body body) {
     this.body = body;
 
-    Collection<Stmt> stmts = body.getStmts();
     final Collection<Stmt> targetStmtsOfBranches = body.getTargetStmtsInBody();
     final List<Trap> traps = body.getTraps();
 

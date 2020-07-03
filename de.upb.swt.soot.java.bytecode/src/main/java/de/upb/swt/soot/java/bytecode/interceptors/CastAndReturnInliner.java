@@ -82,7 +82,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
 
           // Redirect all flows coming into the GOTO to the return
           List<Stmt> predecessors = originalGraph.predecessors(gotoStmt);
-          for(Stmt preds : predecessors){
+          for (Stmt preds : predecessors) {
             bodyBuilder.removeFlow(preds, gotoStmt);
             bodyBuilder.addFlow(preds, newStmt);
             bodyBuilder.removeFlow(gotoStmt, gotoStmt.getTargetStmts(originalBody).get(0));
@@ -152,8 +152,8 @@ public class CastAndReturnInliner implements BodyInterceptor {
     } else if (toFixStmt instanceof JSwitchStmt) {
       JSwitchStmt toFixSwitchStmt = (JSwitchStmt) toFixStmt;
       List<Stmt> targets = originalBody.getStmtGraph().successors(toFixSwitchStmt);
-      for(Stmt switchTarget : targets){
-        if(switchTarget == gotoStmt){
+      for (Stmt switchTarget : targets) {
+        if (switchTarget == gotoStmt) {
           builder.removeFlow(switchTarget, gotoStmt);
           builder.addFlow(switchTarget, newStmt);
         }

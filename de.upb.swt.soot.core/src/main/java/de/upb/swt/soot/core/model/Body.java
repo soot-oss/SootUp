@@ -24,6 +24,7 @@ package de.upb.swt.soot.core.model;
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.graph.iterator.StmtGraphBlockIterator;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
@@ -242,14 +243,19 @@ public class Body implements Copyable {
   }
 
   /**
-   * Returns the statements that make up this body. [ms] just use for tests!
+   * Convenience method to linearize the control flow graph that represents this body into a linear
+   * List of statements.
    *
    * @return the statements in this Body
    */
   @Nonnull
-  @Deprecated
   public List<Stmt> getStmts() {
-    return new ArrayList<>(getStmtGraph().nodes());
+    final ArrayList<Stmt> stmts = new ArrayList<>(cfg.nodes().size());
+    final Iterator<Stmt> it = new StmtGraphBlockIterator(cfg, traps);
+    while (it.hasNext()) {
+      stmts.add(it.next());
+    }
+    return stmts;
   }
 
   public ImmutableStmtGraph getStmtGraph() {
@@ -407,9 +413,9 @@ public class Body implements Copyable {
     @Nonnull private final LocalGenerator localGen = new LocalGenerator(locals);
 
     @Nonnull private List<Trap> traps = new ArrayList<>();
-    @Nonnull private Position position;
+    @Nullable private Position position = null;
 
-    @Nonnull private MutableStmtGraph cfg;
+    @Nonnull private final MutableStmtGraph cfg;
     @Nullable private MethodSignature methodSig = null;
 
     BodyBuilder() {
@@ -482,6 +488,10 @@ public class Body implements Copyable {
 
       if (methodSig == null) {
         throw new RuntimeException("There is no MethodSignature set.");
+      }
+
+      if (position == null) {
+        setPosition(NoPositionInformation.getInstance());
       }
 
       final Stmt startingStmt = cfg.getStartingStmt();

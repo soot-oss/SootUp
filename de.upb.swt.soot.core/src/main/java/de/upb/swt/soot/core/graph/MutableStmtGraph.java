@@ -15,8 +15,6 @@ import javax.annotation.Nullable;
  * the i-th item with the i-th branch case. In a StmtGraph it is not allowed to have unconnected
  * Nodes.
  *
- * <p>TODO: where and how its used
- *
  * <pre>
  *  Stmt stmt1, stmt2;
  *  ...

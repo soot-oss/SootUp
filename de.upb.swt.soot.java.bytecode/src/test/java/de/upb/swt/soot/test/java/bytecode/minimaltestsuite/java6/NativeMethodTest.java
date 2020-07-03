@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -24,18 +23,8 @@ public class NativeMethodTest extends MinimalBytecodeTestSuiteBase {
   }
 
   @Test
-  public void test() {
-    /**
-     * Can not pass assertJimpleStmts() as body for native method is empty and current check does nt
-     * allow that
-     */
-  }
-
-  @Ignore
-  public void ignoreTest() {
-    /** Can not check Native code feature */
+  public void nativeMethod() {
     SootMethod sootMethod = loadMethod(getMethodSignature());
-    assertJimpleStmts(sootMethod, expectedBodyStmts());
     assertTrue(sootMethod.isNative());
   }
 

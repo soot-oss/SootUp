@@ -14,13 +14,13 @@ import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Collections;
 import java.util.Set;
-import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
 public class UnusedLocalEliminatorTest {
 
-  @Test
+  @Ignore
   public void testRemoveUnusedDefsAndUses() {
     Body originalBody = createBody(true);
     Body processedBody = new UnusedLocalEliminator().interceptBody(originalBody);
@@ -37,7 +37,7 @@ public class UnusedLocalEliminatorTest {
     assertTrue(processedLocals.contains(new Local("b", stringType)));
   }
 
-  @Test
+  @Ignore
   public void testRemoveNothing() {
     Body originalBody = createBody(false);
     Body processedBody = new UnusedLocalEliminator().interceptBody(originalBody);
