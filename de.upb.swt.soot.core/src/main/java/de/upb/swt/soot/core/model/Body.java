@@ -243,14 +243,15 @@ public class Body implements Copyable {
   }
 
   /**
-   * Returns the statements that make up this body.
+   * Convenience method to linearize the control flow graph that represents this body into a linear
+   * List of statements.
    *
    * @return the statements in this Body
    */
   @Nonnull
   public List<Stmt> getStmts() {
     final ArrayList<Stmt> stmts = new ArrayList<>(cfg.nodes().size());
-    final StmtGraphBlockIterator it = new StmtGraphBlockIterator(cfg, traps);
+    final Iterator<Stmt> it = new StmtGraphBlockIterator(cfg, traps);
     while (it.hasNext()) {
       stmts.add(it.next());
     }
