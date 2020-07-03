@@ -466,9 +466,6 @@ public class WalaIRToJimpleConverter {
           }
         }
 
-        // TODO 2. convert traps
-        // get exceptions which are not caught
-        FixedSizeBitVector blocks = cfg.getExceptionalToExit();
         InstructionConverter instConverter =
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
         // Don't exchange, different stmts could have same ids
@@ -508,6 +505,17 @@ public class WalaIRToJimpleConverter {
           }
           // needed because referencing a branch to the last stmt refers to: -1
           stmt2iIndex.put(-1, ret);
+        }
+
+        // TODO 2. convert traps
+        // get exceptions which are caught
+        FixedSizeBitVector blocks = cfg.getExceptionalToExit();
+        final BitVector catchBlocks = cfg.getCatchBlocks();
+
+        for (int i = 0; i < catchBlocks.length(); i++) {
+          if (catchBlocks.get(i)) {
+            // System.out.println(insts[i]);
+          }
         }
 
         instConverter.setUpTargets(stmt2iIndex, builder);
