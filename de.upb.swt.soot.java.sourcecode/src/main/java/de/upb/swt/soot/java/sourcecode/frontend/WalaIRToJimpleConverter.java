@@ -14,6 +14,7 @@ import com.ibm.wala.shrikeCT.InvalidClassFileException;
 import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
+import com.ibm.wala.util.intset.BitVector;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
@@ -41,6 +42,8 @@ import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.*;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
+import scala.annotation.meta.field;
+
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -471,7 +474,7 @@ public class WalaIRToJimpleConverter {
         InstructionConverter instConverter =
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
         // Don't exchange, different stmts could have same ids
-        HashMap<Stmt, Integer> stmt2iIndex = new HashMap<>();
+        HashMap<Integer,Stmt> stmt2iIndex = new HashMap<>();
         Stmt stmt = null;
         for (SSAInstruction inst : insts) {
           List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst, stmt2iIndex);
@@ -479,7 +482,7 @@ public class WalaIRToJimpleConverter {
             final int retStmtsSize = retStmts.size();
             stmt = retStmts.get(0);
             emitStmt(builder, stmt);
-            stmt2iIndex.putIfAbsent(stmt, inst.iIndex());
+            stmt2iIndex.put(inst.iIndex(), stmt);
 
             for (int i = 1; i < retStmtsSize; i++) {
               stmt = retStmts.get(i);
@@ -506,7 +509,7 @@ public class WalaIRToJimpleConverter {
             ret = stmt;
           }
           // needed because referencing a branch to the last stmt refers to: -1
-          stmt2iIndex.put(ret, -1);
+          stmt2iIndex.put(-1, ret);
         }
 
         instConverter.setUpTargets(stmt2iIndex, builder);
