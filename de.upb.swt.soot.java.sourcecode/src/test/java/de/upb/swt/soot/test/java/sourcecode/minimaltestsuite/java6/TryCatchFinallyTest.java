@@ -6,14 +6,15 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.Collections;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
+@Ignore
+// FIXME: [ms] sourcecodefrontend does not add Traps yet to connect unexceptional flows with
+// traphandlers! Issue #299
 public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
-
-  // FIXME: [ms] sourcecodefrontend does not add Traps yet to connect unexceptional flows with
-  // traphandlers!
 
   @Test
   public void tryCatch() {

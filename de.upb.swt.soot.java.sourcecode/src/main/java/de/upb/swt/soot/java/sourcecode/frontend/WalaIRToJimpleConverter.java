@@ -14,6 +14,7 @@ import com.ibm.wala.shrikeCT.InvalidClassFileException;
 import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
+import com.ibm.wala.util.intset.BitVector;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
@@ -465,13 +466,10 @@ public class WalaIRToJimpleConverter {
           }
         }
 
-        // TODO 2. convert traps
-        // get exceptions which are not caught
-        FixedSizeBitVector blocks = cfg.getExceptionalToExit();
         InstructionConverter instConverter =
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
         // Don't exchange, different stmts could have same ids
-        HashMap<Stmt, Integer> stmt2iIndex = new HashMap<>();
+        HashMap<Integer, Stmt> stmt2iIndex = new HashMap<>();
         Stmt stmt = null;
         for (SSAInstruction inst : insts) {
           List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst, stmt2iIndex);
@@ -479,7 +477,7 @@ public class WalaIRToJimpleConverter {
             final int retStmtsSize = retStmts.size();
             stmt = retStmts.get(0);
             emitStmt(builder, stmt);
-            stmt2iIndex.putIfAbsent(stmt, inst.iIndex());
+            stmt2iIndex.put(inst.iIndex(), stmt);
 
             for (int i = 1; i < retStmtsSize; i++) {
               stmt = retStmts.get(i);
@@ -506,7 +504,18 @@ public class WalaIRToJimpleConverter {
             ret = stmt;
           }
           // needed because referencing a branch to the last stmt refers to: -1
-          stmt2iIndex.put(ret, -1);
+          stmt2iIndex.put(-1, ret);
+        }
+
+        // TODO 2. convert traps
+        // get exceptions which are caught
+        FixedSizeBitVector blocks = cfg.getExceptionalToExit();
+        final BitVector catchBlocks = cfg.getCatchBlocks();
+
+        for (int i = 0; i < catchBlocks.length(); i++) {
+          if (catchBlocks.get(i)) {
+            // System.out.println(insts[i]);
+          }
         }
 
         instConverter.setUpTargets(stmt2iIndex, builder);

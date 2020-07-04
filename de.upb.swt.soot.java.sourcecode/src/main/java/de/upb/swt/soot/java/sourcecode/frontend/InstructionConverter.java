@@ -124,29 +124,29 @@ public class InstructionConverter {
   }
 
   public List<Stmt> convertInstruction(
-      DebuggingInformation debugInfo, SSAInstruction inst, HashMap<Stmt, Integer> stmt2iIndex) {
+      DebuggingInformation debugInfo, SSAInstruction inst, HashMap<Integer, Stmt> stmt2iIndex) {
     List<Stmt> stmts = new ArrayList();
-    if ((inst instanceof SSAConditionalBranchInstruction)) {
+    if (inst instanceof SSAConditionalBranchInstruction) {
       stmts.addAll(convertBranchInstruction(debugInfo, (SSAConditionalBranchInstruction) inst));
-    } else if ((inst instanceof SSAGotoInstruction)) {
+    } else if (inst instanceof SSAGotoInstruction) {
       stmts.add(convertGoToInstruction(debugInfo, (SSAGotoInstruction) inst));
-    } else if ((inst instanceof SSAReturnInstruction)) {
+    } else if (inst instanceof SSAReturnInstruction) {
       stmts.add(convertReturnInstruction(debugInfo, (SSAReturnInstruction) inst));
-    } else if ((inst instanceof AstJavaInvokeInstruction)) {
+    } else if (inst instanceof AstJavaInvokeInstruction) {
       stmts.add(convertInvokeInstruction(debugInfo, (AstJavaInvokeInstruction) inst));
-    } else if ((inst instanceof SSAFieldAccessInstruction)) {
-      if ((inst instanceof SSAGetInstruction)) {
+    } else if (inst instanceof SSAFieldAccessInstruction) {
+      if (inst instanceof SSAGetInstruction) {
         stmts.add(convertGetInstruction(debugInfo, (SSAGetInstruction) inst));
-      } else if ((inst instanceof SSAPutInstruction)) {
+      } else if (inst instanceof SSAPutInstruction) {
         stmts.add(convertPutInstruction(debugInfo, (SSAPutInstruction) inst));
       } else {
         throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
       }
-    } else if ((inst instanceof SSANewInstruction)) {
+    } else if (inst instanceof SSANewInstruction) {
       stmts.add(convertNewInstruction(debugInfo, (SSANewInstruction) inst));
-    } else if ((inst instanceof SSAConversionInstruction)) {
+    } else if (inst instanceof SSAConversionInstruction) {
       stmts.add(convertConversionInstruction(debugInfo, (SSAConversionInstruction) inst));
-    } else if ((inst instanceof SSAInstanceofInstruction)) {
+    } else if (inst instanceof SSAInstanceofInstruction) {
       stmts.add(convertInstanceofInstruction(debugInfo, (SSAInstanceofInstruction) inst));
     } else if (inst instanceof SSABinaryOpInstruction) {
       stmts.addAll(convertBinaryOpInstruction(debugInfo, (SSABinaryOpInstruction) inst));
@@ -310,7 +310,7 @@ public class InstructionConverter {
   private List<Stmt> convertAssertInstruction(
       DebuggingInformation debugInfo,
       AstAssertInstruction inst,
-      HashMap<Stmt, Integer> stmt2iIndex) {
+      HashMap<Integer, Stmt> stmt2iIndex) {
     List<Stmt> stmts = new ArrayList<>();
     // create a static field for checking if assertion is disabled.
     JavaClassType cSig = (JavaClassType) methodSignature.getDeclClassType();
@@ -342,7 +342,7 @@ public class InstructionConverter {
     // TODO: [ms] clean way to handle multiple assertions in one body -> own nop -> own link to
     // target
     int stmtAfterAssertion = -42 - inst.iIndex();
-    stmt2iIndex.put(nopStmt, stmtAfterAssertion);
+    stmt2iIndex.put(stmtAfterAssertion, nopStmt);
 
     JIfStmt ifStmt =
         Jimple.newIfStmt(
@@ -1172,46 +1172,23 @@ public class InstructionConverter {
 
   /**
    * @param
+   * @param stmt2iIndex
    * @param builder
    * @return This methods returns a list of stmts with all branch stmts ({@link JIfStmt}, {@link
    *     JGotoStmt}, {@link JSwitchStmt}) having set up their target stmts.
    */
-  protected void setUpTargets(Map<Stmt, Integer> stmt2iIndex, Body.BodyBuilder builder) {
+  protected void setUpTargets(HashMap<Integer, Stmt> stmt2iIndex, Body.BodyBuilder builder) {
 
     for (Map.Entry<JIfStmt, Integer> ifStmt : targetsOfIfStmts.entrySet()) {
       final JIfStmt key = ifStmt.getKey();
       final Integer value = ifStmt.getValue();
-
-      boolean found = false;
-      for (Map.Entry<Stmt, Integer> entry : stmt2iIndex.entrySet()) {
-        final Stmt target = entry.getKey();
-        final Integer iTarget = entry.getValue();
-
-        if (value.equals(iTarget)) {
-          builder.addFlow(key, target);
-          found = true;
-          break;
-        }
-      }
-      assert (found);
+      builder.addFlow(key, stmt2iIndex.get(value));
     }
 
     for (Map.Entry<JGotoStmt, Integer> gotoStmt : targetsOfGotoStmts.entrySet()) {
       final JGotoStmt key = gotoStmt.getKey();
       final Integer value = gotoStmt.getValue();
-
-      boolean found = false;
-      for (Map.Entry<Stmt, Integer> entry : stmt2iIndex.entrySet()) {
-        final Stmt target = entry.getKey();
-        final Integer iTarget = entry.getValue();
-
-        if (value.equals(iTarget)) {
-          builder.addFlow(key, target);
-          found = true;
-          break;
-        }
-      }
-      assert (found);
+      builder.addFlow(key, stmt2iIndex.get(value));
     }
 
     for (Map.Entry<JSwitchStmt, List<Integer>> item : targetsOfLookUpSwitchStmts.entrySet()) {
@@ -1221,15 +1198,7 @@ public class InstructionConverter {
       // assign target for every idx in targetIdxList of switchStmt
       for (Integer targetIdx : targetIdxList) {
         // search for matching index/stmt
-        for (Map.Entry<Stmt, Integer> jumptableEntry : stmt2iIndex.entrySet()) {
-          final Stmt stmt = jumptableEntry.getKey();
-          final Integer idx = jumptableEntry.getValue();
-
-          if (targetIdx.equals(idx)) {
-            builder.addFlow(switchStmt, stmt);
-            break;
-          }
-        }
+        builder.addFlow(switchStmt, stmt2iIndex.get(targetIdx));
       }
     }
   }
