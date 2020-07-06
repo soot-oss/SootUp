@@ -98,11 +98,11 @@ public class InstructionConverter {
   private final SymbolTable symbolTable;
   private final LocalGenerator localGenerator;
 
-  // TODO: [ms] merge into a single insertion sorted (linkedhash)map
-  private final Map<JIfStmt, Integer> targetsOfIfStmts;
-  private final Map<JGotoStmt, Integer> targetsOfGotoStmts;
-  private final Map<JSwitchStmt, List<Integer>> targetsOfLookUpSwitchStmts;
+  private final Map<JGotoStmt, Integer> branchingTargetsOfGotoStmts;
+  private final Map<JIfStmt, Integer> branchingTargetsOfIfStmts;
+  private final Map<JSwitchStmt, List<Integer>> branchingTargetsOfLookUpSwitchStmts;
 
+  List<Trap> traps = new ArrayList<>();
   private final Map<Integer, Local> locals;
   private final IdentifierFactory identifierFactory;
 
@@ -116,9 +116,9 @@ public class InstructionConverter {
     this.walaMethod = walaMethod;
     this.symbolTable = walaMethod.symbolTable();
     this.localGenerator = localGenerator;
-    this.targetsOfIfStmts = new LinkedHashMap<>();
-    this.targetsOfGotoStmts = new LinkedHashMap<>();
-    this.targetsOfLookUpSwitchStmts = new LinkedHashMap<>();
+    this.branchingTargetsOfIfStmts = new LinkedHashMap<>();
+    this.branchingTargetsOfGotoStmts = new LinkedHashMap<>();
+    this.branchingTargetsOfLookUpSwitchStmts = new LinkedHashMap<>();
     this.locals = new HashMap<>();
     this.identifierFactory = converter.identifierFactory;
   }
@@ -126,6 +126,7 @@ public class InstructionConverter {
   public List<Stmt> convertInstruction(
       DebuggingInformation debugInfo, SSAInstruction inst, HashMap<Integer, Stmt> stmt2iIndex) {
     List<Stmt> stmts = new ArrayList();
+
     if (inst instanceof SSAConditionalBranchInstruction) {
       stmts.addAll(convertBranchInstruction(debugInfo, (SSAConditionalBranchInstruction) inst));
     } else if (inst instanceof SSAGotoInstruction) {
@@ -269,10 +270,13 @@ public class InstructionConverter {
   private Stmt convertGetCaughtExceptionInstruction(
       DebuggingInformation debugInfo, SSAGetCaughtExceptionInstruction inst) {
     int exceptionValue = inst.getException();
-    Local local =
-        getLocal(
-            JavaIdentifierFactory.getInstance().getClassType("java.lang.Throwable"),
-            exceptionValue);
+
+    JavaClassType exceptionClassType = null;
+
+    if (exceptionClassType == null) {
+      exceptionClassType = JavaIdentifierFactory.getInstance().getClassType("java.lang.Throwable");
+    }
+    Local local = getLocal(exceptionClassType, exceptionValue);
     JCaughtExceptionRef caught = JavaJimple.getInstance().newCaughtExceptionRef();
 
     Position[] operandPos = new Position[1];
@@ -339,8 +343,7 @@ public class InstructionConverter {
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
 
-    // TODO: [ms] clean way to handle multiple assertions in one body -> own nop -> own link to
-    // target
+    // [ms] handling multiple assertions in one body -> each has an own nop -> own link to target
     int stmtAfterAssertion = -42 - inst.iIndex();
     stmt2iIndex.put(stmtAfterAssertion, nopStmt);
 
@@ -349,7 +352,7 @@ public class InstructionConverter {
             condition,
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
-    targetsOfIfStmts.put(ifStmt, stmtAfterAssertion);
+    branchingTargetsOfIfStmts.put(ifStmt, stmtAfterAssertion);
     stmts.add(ifStmt);
 
     // create ifStmt for the actual assertion.
@@ -362,7 +365,7 @@ public class InstructionConverter {
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     stmts.add(assertIfStmt);
-    targetsOfIfStmts.put(assertIfStmt, stmtAfterAssertion);
+    branchingTargetsOfIfStmts.put(assertIfStmt, stmtAfterAssertion);
     // create failed assertion code.
 
     ReferenceType assertionErrorType =
@@ -558,7 +561,7 @@ public class InstructionConverter {
             lookupValues,
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
-    targetsOfLookUpSwitchStmts.put(stmt, targetList);
+    branchingTargetsOfLookUpSwitchStmts.put(stmt, targetList);
     return stmt;
   }
 
@@ -863,7 +866,7 @@ public class InstructionConverter {
 
     JIfStmt ifStmt = Jimple.newIfStmt(condition, posInfo);
     // target equals -1 refers to the end of the method
-    targetsOfIfStmts.put(ifStmt, condInst.getTarget());
+    branchingTargetsOfIfStmts.put(ifStmt, condInst.getTarget());
     stmts.add(ifStmt);
     return stmts;
   }
@@ -1079,7 +1082,7 @@ public class InstructionConverter {
         Jimple.newGotoStmt(
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(gotoInst.iIndex()), null));
-    targetsOfGotoStmts.put(gotoStmt, gotoInst.getTarget());
+    branchingTargetsOfGotoStmts.put(gotoStmt, gotoInst.getTarget());
     return gotoStmt;
   }
 
@@ -1179,19 +1182,20 @@ public class InstructionConverter {
    */
   protected void setUpTargets(HashMap<Integer, Stmt> stmt2iIndex, Body.BodyBuilder builder) {
 
-    for (Map.Entry<JIfStmt, Integer> ifStmt : targetsOfIfStmts.entrySet()) {
+    for (Map.Entry<JIfStmt, Integer> ifStmt : branchingTargetsOfIfStmts.entrySet()) {
       final JIfStmt key = ifStmt.getKey();
       final Integer value = ifStmt.getValue();
       builder.addFlow(key, stmt2iIndex.get(value));
     }
 
-    for (Map.Entry<JGotoStmt, Integer> gotoStmt : targetsOfGotoStmts.entrySet()) {
+    for (Map.Entry<JGotoStmt, Integer> gotoStmt : branchingTargetsOfGotoStmts.entrySet()) {
       final JGotoStmt key = gotoStmt.getKey();
       final Integer value = gotoStmt.getValue();
       builder.addFlow(key, stmt2iIndex.get(value));
     }
 
-    for (Map.Entry<JSwitchStmt, List<Integer>> item : targetsOfLookUpSwitchStmts.entrySet()) {
+    for (Map.Entry<JSwitchStmt, List<Integer>> item :
+        branchingTargetsOfLookUpSwitchStmts.entrySet()) {
       final JSwitchStmt switchStmt = item.getKey();
       final List<Integer> targetIdxList = item.getValue();
 
@@ -1208,9 +1212,9 @@ public class InstructionConverter {
    * detection of implicit return statements in void methods.
    */
   public boolean hasJumpTarget(Integer i) {
-    if (targetsOfIfStmts.containsValue(i)) return true;
-    if (targetsOfGotoStmts.containsValue(i)) return true;
-    for (List<Integer> list : targetsOfLookUpSwitchStmts.values()) {
+    if (branchingTargetsOfIfStmts.containsValue(i)) return true;
+    if (branchingTargetsOfGotoStmts.containsValue(i)) return true;
+    for (List<Integer> list : branchingTargetsOfLookUpSwitchStmts.values()) {
       if (list.contains(i)) {
         return true;
       }
