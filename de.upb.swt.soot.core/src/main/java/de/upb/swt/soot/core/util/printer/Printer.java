@@ -22,7 +22,6 @@
 package de.upb.swt.soot.core.util.printer;
 
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
-import de.upb.swt.soot.core.graph.iterator.StmtGraphBlockIterator;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -298,9 +297,7 @@ public class Printer {
     Stmt previousStmt;
 
     final Map<Stmt, String> labels = printer.getLabels();
-    for (Iterator<Stmt> it = new StmtGraphBlockIterator(body.getStmtGraph(), body.getTraps());
-        it.hasNext(); ) {
-      Stmt currentStmt = it.next();
+    for (Stmt currentStmt : body.getStmtGraph()) {
       previousStmt = currentStmt;
 
       // Print appropriate header.

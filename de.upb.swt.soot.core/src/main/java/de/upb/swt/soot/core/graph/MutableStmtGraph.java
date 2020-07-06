@@ -1,5 +1,6 @@
 package de.upb.swt.soot.core.graph;
 
+import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -34,8 +35,7 @@ public class MutableStmtGraph extends StmtGraph {
   @Nonnull protected final Set<Stmt> stmtList = new HashSet<>();
 
   @Nullable protected Stmt startingStmt;
-
-  public MutableStmtGraph() {}
+  @Nonnull protected List<Trap> traps = Collections.emptyList();
 
   public static MutableStmtGraph copyOf(@Nonnull StmtGraph originalStmtGraph) {
     final MutableStmtGraph copiedGraph = new MutableStmtGraph();
@@ -57,6 +57,12 @@ public class MutableStmtGraph extends StmtGraph {
   public StmtGraph asUnmodifiableStmtGraph() {
     StmtGraph graphRef = this;
     return new StmtGraph() {
+      @Override
+      @Nonnull
+      public List<Trap> getTraps() {
+        return graphRef.getTraps();
+      }
+
       @Nonnull
       @Override
       public Stmt getStartingStmt() {
@@ -105,6 +111,16 @@ public class MutableStmtGraph extends StmtGraph {
 
   public void setStartingStmt(@Nonnull Stmt firstStmt) {
     this.startingStmt = firstStmt;
+  }
+
+  public void setTraps(@Nonnull List<Trap> traps) {
+    this.traps = traps;
+  }
+
+  @Override
+  @Nonnull
+  public List<Trap> getTraps() {
+    return traps;
   }
 
   public Stmt getStartingStmt() {
