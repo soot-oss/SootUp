@@ -7,6 +7,9 @@ import java.util.*;
 import javax.annotation.Nonnull;
 
 /** @author Markus Schmidt */
+// [ms] possible performance improvement: on instantiation assign: Collection.singleTonList()
+// directly and not on demand -> change type of sucessors/predecessors to List<Stmt> this removes
+// additional checks in successor()/predecessor()
 public class ImmutableStmtGraph extends StmtGraph {
   @Nonnull private final Object[] successors;
   @Nonnull private final Object[] predecessors;
@@ -119,18 +122,13 @@ public class ImmutableStmtGraph extends StmtGraph {
   }
 
   @Override
-  public int degree(@Nonnull Stmt node) {
-    return inDegree(node) + outDegree(node);
-  }
-
-  @Override
   public int inDegree(@Nonnull Stmt node) {
     return predecessors(node).size();
   }
 
   @Override
   public int outDegree(@Nonnull Stmt node) {
-    // TODO: [ms]: check which is faster: successors( node ).size();
+    // TODO: [ms]: check if this is faster: successors( node ).size();
     return successorsOfANode(node);
   }
 

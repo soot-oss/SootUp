@@ -39,7 +39,9 @@ public abstract class StmtGraph implements Iterable<Stmt> {
   public abstract List<Stmt> successors(@Nonnull Stmt node);
 
   /** returns the amount of flows with node as source or target. */
-  public abstract int degree(@Nonnull Stmt node);
+  public int degree(@Nonnull Stmt node) {
+    return inDegree(node) + outDegree(node);
+  }
 
   /** returns the amount of ingoing flows into node */
   public abstract int inDegree(@Nonnull Stmt node);

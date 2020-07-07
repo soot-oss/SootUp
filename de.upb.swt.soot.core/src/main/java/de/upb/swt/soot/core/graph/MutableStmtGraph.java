@@ -91,6 +91,7 @@ public class MutableStmtGraph extends StmtGraph {
     final int idx = stmtToIdx.size();
     stmtToIdx.put(node, idx);
 
+    predecessors.ensureCapacity(idx);
     predecessors.add(
         idx, new ArrayList<>(1)); // [ms] wastes an entry if its the TrapHandler or firststmt
 
@@ -103,6 +104,7 @@ public class MutableStmtGraph extends StmtGraph {
       calculatedSuccessorSize = 1;
     }
 
+    successors.ensureCapacity(idx);
     successors.add(idx, new ArrayList<>(calculatedSuccessorSize));
 
     return idx;
@@ -175,6 +177,7 @@ public class MutableStmtGraph extends StmtGraph {
       predecessors.get(existsNodeOrThrow(target)).add(from);
     }
 
+    successors.ensureCapacity(fromIdx);
     successors.add(fromIdx, targets);
   }
 
@@ -245,11 +248,6 @@ public class MutableStmtGraph extends StmtGraph {
       return Collections.emptyList();
     }
     return Collections.unmodifiableList(stmts);
-  }
-
-  @Override
-  public int degree(@Nonnull Stmt node) {
-    return inDegree(node) + outDegree(node);
   }
 
   @Override
