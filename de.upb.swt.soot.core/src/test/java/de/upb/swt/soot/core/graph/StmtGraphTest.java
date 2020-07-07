@@ -65,7 +65,7 @@ public class StmtGraphTest {
     graph.putEdge(stmt1, stmt2);
     graph.setStartingStmt(stmt1);
 
-    final StmtGraph graph2 = MutableStmtGraph.copyOf(graph);
+    final StmtGraph graph2 = new MutableStmtGraph(graph);
 
     assertEquals(graph.getStartingStmt(), graph2.getStartingStmt());
     assertEquals(graph.nodes().size(), graph2.nodes().size());

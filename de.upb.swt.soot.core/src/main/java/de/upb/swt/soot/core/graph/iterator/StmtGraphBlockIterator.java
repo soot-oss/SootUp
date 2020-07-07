@@ -2,8 +2,7 @@ package de.upb.swt.soot.core.graph.iterator;
 
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.common.stmt.*;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -84,9 +83,8 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
     for (int i = successors.size() - 1; i >= 0; i--) {
       Stmt succ = successors.get(i);
       {
-        // i.e. is not a BranchingStmt or is the first successor of JIfStmt
         if (i == 0 && stmt.fallsThrough()) {
-          // remember non-branching successors
+          // non-branching successors i.e. not a BranchingStmt or is the first successor of JIfStmt
           currentBlock.addFirst(succ);
         } else {
           // remember branching successors

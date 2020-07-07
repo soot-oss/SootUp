@@ -21,9 +21,14 @@ public abstract class StmtGraph implements Iterable<Stmt> {
 
   public abstract Stmt getStartingStmt();
 
-  /** returns the nodes in this graph. */
+  /**
+   * returns the nodes in this graph in no deterministic order (->Set) to get a linearized flow use
+   * iterator().
+   */
   @Nonnull
   public abstract Set<Stmt> nodes();
+
+  public abstract boolean containsNode(@Nonnull Stmt node);
 
   /** returns the ingoing flows to node as an ordered List. */
   @Nonnull
@@ -45,6 +50,7 @@ public abstract class StmtGraph implements Iterable<Stmt> {
   /** returns true if there is a flow between source and target */
   public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
 
+  /** returns a list of associated traps */
   @Nonnull
   public abstract List<Trap> getTraps();
 
@@ -191,6 +197,8 @@ public abstract class StmtGraph implements Iterable<Stmt> {
     }
   }
 
+  @Override
+  @Nonnull
   public Iterator<Stmt> iterator() {
     return new StmtGraphBlockIterator(this, getTraps());
   }

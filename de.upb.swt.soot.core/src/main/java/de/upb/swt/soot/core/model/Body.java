@@ -238,8 +238,7 @@ public class Body implements Copyable {
   }
 
   /**
-   * Convenience method to linearize the control flow graph that represents this body into a linear
-   * List of statements.
+   * returns the control flow graph that represents this body into a linear List of statements.
    *
    * @return the statements in this Body
    */
@@ -404,8 +403,12 @@ public class Body implements Copyable {
       setMethodSignature(body.getMethodSignature());
       setLocals(body.getLocals());
       setPosition(body.getPosition());
-      cfg = MutableStmtGraph.copyOf(body.getStmtGraph());
+      cfg = new MutableStmtGraph(body.getStmtGraph());
       setTraps(body.getTraps());
+    }
+
+    public StmtGraph getStmtGraph() {
+      return cfg.asUnmodifiableStmtGraph();
     }
 
     @Nonnull
