@@ -146,9 +146,13 @@ public abstract class StmtGraph implements Iterable<Stmt> {
       final int successorCount = successors.size();
 
       if (predecessors(stmt).size() == 0) {
-        // TODO: assert(stmt == getStartStmt() ||
-        // traps.stream().map(Trap::getHandlerStmt).anyMatch(handler -> handler == stmt) );
-        // [ms] integrate traps from Body into StmtGraph?
+        if (!(stmt == getStartingStmt()
+            || getTraps().stream()
+                .map(Trap::getHandlerStmt)
+                .anyMatch(handler -> handler == stmt))) {
+          throw new RuntimeException(
+              "A Stmt which is not the StartingStmt or a TrapHandler is missing a predecessor!");
+        }
       }
 
       if (stmt instanceof BranchingStmt) {

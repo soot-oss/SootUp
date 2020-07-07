@@ -15,6 +15,7 @@ public class ImmutableStmtGraph extends StmtGraph {
   @Nonnull private final Stmt startingStmt;
   @Nonnull private final List<Trap> traps;
 
+  /** creates an immutable copy of the given stmtGraph. */
   private ImmutableStmtGraph(StmtGraph originalStmtGraph) {
     final Set<Stmt> nodes = originalStmtGraph.nodes();
     final int nodeSize = nodes.size();
@@ -56,6 +57,9 @@ public class ImmutableStmtGraph extends StmtGraph {
     }
   }
 
+  /**
+   * creates an immutable copy of the given stmtGraph if necessary and validates the starting Stmt
+   */
   public static ImmutableStmtGraph copyOf(StmtGraph stmtGraph) {
     if (stmtGraph instanceof ImmutableStmtGraph) {
       return (ImmutableStmtGraph) stmtGraph;
@@ -126,7 +130,7 @@ public class ImmutableStmtGraph extends StmtGraph {
 
   @Override
   public int outDegree(@Nonnull Stmt node) {
-    // TODO: [ms]: check which is faster: predecessors( node ).size();
+    // TODO: [ms]: check which is faster: successors( node ).size();
     return successorsOfANode(node);
   }
 
