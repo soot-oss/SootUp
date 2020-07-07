@@ -2,7 +2,6 @@ package de.upb.swt.soot.core.graph;
 
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -15,9 +14,9 @@ import javax.annotation.Nonnull;
  */
 public final class ImmutableStmtGraph extends StmtGraph {
 
-  @Nonnull private final MutableStmtGraph backingGraph;
+  @Nonnull private final StmtGraph backingGraph;
 
-  private ImmutableStmtGraph(@Nonnull MutableStmtGraph backingGraph) {
+  private ImmutableStmtGraph(@Nonnull StmtGraph backingGraph) {
     this.backingGraph = backingGraph;
   }
 
@@ -27,14 +26,13 @@ public final class ImmutableStmtGraph extends StmtGraph {
       return (ImmutableStmtGraph) stmtGraph;
     }
 
-    MutableStmtGraph newBackingGraph;
+    StmtGraph newBackingGraph;
 
     if (stmtGraph.nodes().size() > 0) {
       if (stmtGraph.getStartingStmt() == null) {
         throw new RuntimeException("The starting Stmt must exist.");
       }
-      newBackingGraph = MutableStmtGraph.copyOf(stmtGraph);
-      newBackingGraph.traps = new ArrayList<>(stmtGraph.getTraps());
+      newBackingGraph = MemorySavingImmutableStmtGraph.copyOf(stmtGraph);
     } else {
       newBackingGraph = new MutableStmtGraph();
     }
