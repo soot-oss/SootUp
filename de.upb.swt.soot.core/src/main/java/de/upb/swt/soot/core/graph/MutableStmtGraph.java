@@ -92,7 +92,7 @@ public class MutableStmtGraph extends StmtGraph {
     stmtToIdx.put(node, idx);
 
     predecessors.ensureCapacity(idx);
-    predecessors.add(
+    predecessors.set(
         idx, new ArrayList<>(1)); // [ms] wastes an entry if its the TrapHandler or firststmt
 
     final int calculatedSuccessorSize;
@@ -105,7 +105,7 @@ public class MutableStmtGraph extends StmtGraph {
     }
 
     successors.ensureCapacity(idx);
-    successors.add(idx, new ArrayList<>(calculatedSuccessorSize));
+    successors.set(idx, new ArrayList<>(calculatedSuccessorSize));
 
     return idx;
   }
@@ -178,7 +178,7 @@ public class MutableStmtGraph extends StmtGraph {
     }
 
     successors.ensureCapacity(fromIdx);
-    successors.add(fromIdx, targets);
+    successors.set(fromIdx, targets);
   }
 
   public void putEdge(@Nonnull Stmt from, @Nonnull Stmt to) {

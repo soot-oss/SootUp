@@ -20,7 +20,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   @Nonnull private final Set<Stmt> returnedNodes;
   @Nonnull private final ArrayDeque<Trap> traps;
 
-  @Nonnull private final ArrayDeque<Stmt> currentBlock = new ArrayDeque<>();
+  @Nonnull private final ArrayDeque<Stmt> currentUnbranchedBlock = new ArrayDeque<>();
   @Nonnull private final ArrayDeque<Stmt> nestedBlocks = new ArrayDeque<>();
   @Nonnull private final ArrayDeque<Stmt> otherBlocks = new ArrayDeque<>();
 
@@ -45,8 +45,8 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
     Stmt stmt;
     do {
 
-      if (!currentBlock.isEmpty()) {
-        stmt = currentBlock.pollFirst();
+      if (!currentUnbranchedBlock.isEmpty()) {
+        stmt = currentUnbranchedBlock.pollFirst();
       } else if (!nestedBlocks.isEmpty()) {
         stmt = nestedBlocks.pollFirst();
       } else if (!traps.isEmpty()) {
@@ -75,7 +75,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
     final Trap nextTrap = traps.peekFirst();
     if (nextTrap != null && stmt == nextTrap.getEndStmt()) {
-      currentBlock.addFirst(nextTrap.getHandlerStmt());
+      currentUnbranchedBlock.addFirst(nextTrap.getHandlerStmt());
       traps.removeFirst();
     }
 
@@ -85,7 +85,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
       {
         if (i == 0 && stmt.fallsThrough()) {
           // non-branching successors i.e. not a BranchingStmt or is the first successor of JIfStmt
-          currentBlock.addFirst(succ);
+          currentUnbranchedBlock.addFirst(succ);
         } else {
           // remember branching successors
           if (stmt instanceof JGotoStmt) {
@@ -100,6 +100,14 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
     // prefetch next Stmt
     cachedNextStmt = retrieveNextStmt();
+
+    /* [ms] handle
+    if( stmt.fallsThrough() && successors.get(0) != cachedNextStmt ){
+      otherBlocks.addLast(cachedNextStmt);
+      cachedNextStmt = retrieveNextStmt();
+    }
+    */
+
     return stmt;
   }
 
