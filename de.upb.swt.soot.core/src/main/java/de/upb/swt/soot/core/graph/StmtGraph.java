@@ -1,5 +1,7 @@
 package de.upb.swt.soot.core.graph;
 
+import de.upb.swt.soot.core.graph.iterator.StmtGraphBlockIterator;
+import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import java.util.*;
@@ -8,14 +10,14 @@ import javax.annotation.Nonnull;
 
 /**
  * Interface for control flow graphs on Jimple Stmts. A StmtGraph is directed and connected (except
- * for traphandlers - those are not connected to the unexceptional flow). Its edges represent flows
- * between Stmts. If the edge starts in a branching Stmt there is a flow for each flow to the target
- * Stmt. This can include duplicate flows to the same target e.g. for JSwitchStmt, so that every
- * label has its own flow to a target.
+ * for traphandlers - those are not connected to the unexceptional flow via StmtGraph). Its directed
+ * edges represent flows between Stmts. If the edge starts in a branching Stmt there is an edge for
+ * each flow to the target Stmt. This can include duplicate flows to the same target e.g. for
+ * JSwitchStmt, so that every label has its own flow to a target.
  *
  * @author Markus Schmidt
  */
-public abstract class StmtGraph {
+public abstract class StmtGraph implements Iterable<Stmt> {
 
   public abstract Stmt getStartingStmt();
 
@@ -43,13 +45,28 @@ public abstract class StmtGraph {
   /** returns true if there is a flow between source and target */
   public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
 
+  @Nonnull
+  public abstract List<Trap> getTraps();
+
   /**
-   * returns a Colecction of Stmts that leave the body (i.e. JReturnVoidStmt, JReturnStmt and
+   * returns a Collection of Stmts that leave the body (i.e. JReturnVoidStmt, JReturnStmt and
    * JThrowStmt)
    */
   @Nonnull
   public Collection<Stmt> getTails() {
     return nodes().stream().filter(stmt -> outDegree(stmt) == 0).collect(Collectors.toList());
+  }
+
+  /**
+   * returns a Collection of all stmts in the graph that don't have an unexceptional ingoing flow or
+   * are the starting Stmt.
+   */
+  @Nonnull
+  public Collection<Stmt> getEntrypoints() {
+    final ArrayList<Stmt> stmts = new ArrayList<>();
+    stmts.add(getStartingStmt());
+    getTraps().stream().map(Trap::getHandlerStmt).forEach(stmts::add);
+    return stmts;
   }
 
   /**
@@ -121,6 +138,13 @@ public abstract class StmtGraph {
 
       final List<Stmt> successors = successors(stmt);
       final int successorCount = successors.size();
+
+      if (predecessors(stmt).size() == 0) {
+        // TODO: assert(stmt == getStartStmt() ||
+        // traps.stream().map(Trap::getHandlerStmt).anyMatch(handler -> handler == stmt) );
+        // [ms] integrate traps from Body into StmtGraph?
+      }
+
       if (stmt instanceof BranchingStmt) {
 
         for (Stmt target : successors) {
@@ -165,5 +189,9 @@ public abstract class StmtGraph {
         }
       }
     }
+  }
+
+  public Iterator<Stmt> iterator() {
+    return new StmtGraphBlockIterator(this, getTraps());
   }
 }

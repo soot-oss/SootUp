@@ -24,7 +24,6 @@ package de.upb.swt.soot.core.model;
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
-import de.upb.swt.soot.core.graph.iterator.StmtGraphBlockIterator;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
@@ -52,9 +51,6 @@ public class Body implements Copyable {
 
   /** The locals for this Body. */
   private final Set<Local> locals;
-
-  /** The traps for this Body. */
-  private final List<Trap> traps;
 
   /** The stmts for this Body. */
   @Nonnull private final ImmutableStmtGraph cfg;
@@ -87,12 +83,10 @@ public class Body implements Copyable {
   private Body(
       @Nonnull MethodSignature methodSignature,
       @Nonnull Set<Local> locals,
-      @Nonnull List<Trap> traps,
       @Nonnull StmtGraph stmtGraph,
       @Nonnull Position position) {
     this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
-    this.traps = Collections.unmodifiableList(traps);
     this.cfg = ImmutableStmtGraph.copyOf(stmtGraph);
     this.position = position;
     // FIXME: [JMP] Virtual method call in constructor
@@ -152,8 +146,9 @@ public class Body implements Copyable {
   }
 
   /** Returns a backed view of the traps found in this Body. */
+  @Nonnull
   public List<Trap> getTraps() {
-    return traps;
+    return cfg.getTraps();
   }
 
   /** Return unit containing the \@this-assignment * */
@@ -236,7 +231,7 @@ public class Body implements Copyable {
       }
     }
 
-    for (Trap item : traps) {
+    for (Trap item : getTraps()) {
       stmtList.addAll(item.getStmts());
     }
     return Collections.unmodifiableCollection(stmtList);
@@ -251,9 +246,8 @@ public class Body implements Copyable {
   @Nonnull
   public List<Stmt> getStmts() {
     final ArrayList<Stmt> stmts = new ArrayList<>(cfg.nodes().size());
-    final Iterator<Stmt> it = new StmtGraphBlockIterator(cfg, traps);
-    while (it.hasNext()) {
-      stmts.add(it.next());
+    for (Stmt stmt : cfg) {
+      stmts.add(stmt);
     }
     return stmts;
   }
@@ -364,22 +358,7 @@ public class Body implements Copyable {
 
   @Nonnull
   public Body withLocals(@Nonnull Set<Local> locals) {
-    return new Body(getMethodSignature(), locals, getTraps(), getStmtGraph(), getPosition());
-  }
-
-  @Nonnull
-  public Body withTraps(@Nonnull List<Trap> traps) {
-    return new Body(getMethodSignature(), getLocals(), traps, getStmtGraph(), getPosition());
-  }
-
-  @Nonnull
-  public Body withStmts(@Nonnull StmtGraph stmtGraph) {
-    return new Body(getMethodSignature(), getLocals(), getTraps(), stmtGraph, getPosition());
-  }
-
-  @Nonnull
-  public Body withPosition(@Nonnull Position position) {
-    return new Body(getMethodSignature(), getLocals(), getTraps(), getStmtGraph(), position);
+    return new Body(getMethodSignature(), locals, getStmtGraph(), getPosition());
   }
 
   public static BodyBuilder builder() {
@@ -412,7 +391,6 @@ public class Body implements Copyable {
     @Nonnull private Set<Local> locals = new HashSet<>();
     @Nonnull private final LocalGenerator localGen = new LocalGenerator(locals);
 
-    @Nonnull private List<Trap> traps = new ArrayList<>();
     @Nullable private Position position = null;
 
     @Nonnull private final MutableStmtGraph cfg;
@@ -425,9 +403,9 @@ public class Body implements Copyable {
     BodyBuilder(@Nonnull Body body) {
       setMethodSignature(body.getMethodSignature());
       setLocals(body.getLocals());
-      setTraps(body.getTraps());
       setPosition(body.getPosition());
       cfg = MutableStmtGraph.copyOf(body.getStmtGraph());
+      setTraps(body.getTraps());
     }
 
     @Nonnull
@@ -456,7 +434,7 @@ public class Body implements Copyable {
 
     @Nonnull
     public BodyBuilder setTraps(@Nonnull List<Trap> traps) {
-      this.traps = traps;
+      cfg.setTraps(traps);
       return this;
     }
 
@@ -507,7 +485,7 @@ public class Body implements Copyable {
       // validate statements
       cfg.validateStmtConnectionsInGraph();
 
-      return new Body(methodSig, locals, traps, cfg, position);
+      return new Body(methodSig, locals, cfg, position);
     }
   }
 }
