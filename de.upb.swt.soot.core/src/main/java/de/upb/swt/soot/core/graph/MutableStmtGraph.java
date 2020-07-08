@@ -33,6 +33,7 @@ public class MutableStmtGraph extends StmtGraph {
   @Nonnull protected final ArrayList<List<Stmt>> predecessors;
   @Nonnull protected final ArrayList<List<Stmt>> successors;
   @Nonnull protected final Map<Stmt, Integer> stmtToIdx;
+  private int nextFreeId = 0;
 
   @Nullable protected Stmt startingStmt;
   @Nonnull protected List<Trap> traps = Collections.emptyList();
@@ -88,12 +89,10 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public int addNode(@Nonnull Stmt node) {
-    final int idx = stmtToIdx.size();
+    final int idx = nextFreeId++;
     stmtToIdx.put(node, idx);
-
-    predecessors.ensureCapacity(idx);
-    predecessors.set(
-        idx, new ArrayList<>(1)); // [ms] wastes an entry if its the TrapHandler or firststmt
+    predecessors.add(
+        new ArrayList<>(1)); // [ms] hint: wastes an entry if its the TrapHandler or firststmt
 
     final int calculatedSuccessorSize;
     if (node instanceof JSwitchStmt) {
@@ -104,25 +103,23 @@ public class MutableStmtGraph extends StmtGraph {
       calculatedSuccessorSize = 1;
     }
 
-    successors.ensureCapacity(idx);
-    successors.set(idx, new ArrayList<>(calculatedSuccessorSize));
-
+    // sets successors at successors[idx]
+    successors.add(new ArrayList<>(calculatedSuccessorSize));
     return idx;
   }
 
   public void removeNode(@Nonnull Stmt node) {
     int nodeIdx = existsNodeOrThrow(node);
+    stmtToIdx.remove(node);
+
+    // cleanup edges
     final List<Stmt> preds = predecessors.get(nodeIdx);
-    if (preds != null) {
-      preds.forEach(pred -> successors.get(existsNodeOrThrow(pred)).remove(node));
-      predecessors.remove(nodeIdx);
-    }
+    preds.forEach(pred -> successors.get(existsNodeOrThrow(pred)).remove(node));
+    predecessors.set(nodeIdx, null); // invalidate entry
+
     final List<Stmt> succs = successors.get(nodeIdx);
-    if (succs != null) {
-      succs.forEach(succ -> predecessors.get(existsNodeOrThrow(succ)).remove(node));
-      successors.remove(nodeIdx);
-    }
-    stmtToIdx.remove(nodeIdx);
+    succs.forEach(succ -> predecessors.get(existsNodeOrThrow(succ)).remove(node));
+    successors.set(nodeIdx, null); // invalidate entry
   }
 
   private int existsNodeOrThrow(@Nonnull Stmt node) {
@@ -159,7 +156,11 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets) {
-    int fromIdx = existsNodeOrThrow(from);
+    Integer fromIdx = stmtToIdx.get(from);
+    if (fromIdx == null) {
+      fromIdx = addNode(from);
+    }
+
     targets.forEach(
         node -> {
           if (!containsNode(node)) {
@@ -176,8 +177,6 @@ public class MutableStmtGraph extends StmtGraph {
     for (Stmt target : targets) {
       predecessors.get(existsNodeOrThrow(target)).add(from);
     }
-
-    successors.ensureCapacity(fromIdx);
     successors.set(fromIdx, targets);
   }
 

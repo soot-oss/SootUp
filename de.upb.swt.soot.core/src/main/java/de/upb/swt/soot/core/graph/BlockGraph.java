@@ -62,6 +62,10 @@ public class BlockGraph {
 
   public BlockGraph(StmtGraph stmtGraph) {
 
+    if (stmtGraph.nodes().isEmpty()) {
+      throw new RuntimeException("The Graph is emtpy");
+    }
+
     final Stmt startingStmt = stmtGraph.getStartingStmt();
     Set<Stmt> queuedStmts = new HashSet<>(stmtGraph.nodes().size());
     ArrayDeque<Stmt> q = new ArrayDeque<>();
@@ -116,7 +120,7 @@ public class BlockGraph {
     }
 
     if (cutQ.isEmpty()) {
-      throw new RuntimeException("no blocks to cut.");
+      throw new RuntimeException("There are no Blocks to cut.");
     }
 
     // initialize container sizes

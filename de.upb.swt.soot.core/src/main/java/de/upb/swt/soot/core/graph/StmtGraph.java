@@ -30,7 +30,10 @@ public abstract class StmtGraph implements Iterable<Stmt> {
 
   public abstract boolean containsNode(@Nonnull Stmt node);
 
-  /** returns the ingoing flows to node as an ordered List. */
+  /**
+   * returns the ingoing flows to node as an List with no reliable/specific order and possibly
+   * duplicate entries (like successors(Stmt).
+   */
   @Nonnull
   public abstract List<Stmt> predecessors(@Nonnull Stmt node);
 
