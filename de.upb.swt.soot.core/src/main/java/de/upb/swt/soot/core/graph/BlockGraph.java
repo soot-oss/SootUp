@@ -61,6 +61,7 @@ public class BlockGraph {
   @Nonnull private final Map<Block, Integer> blockToIdx;
   @Nonnull private final ArrayList<List<Block>> predecessors;
   @Nonnull private final ArrayList<List<Block>> successors;
+  @Nonnull private final Block startingBlock;
 
   public BlockGraph(StmtGraph stmtGraph) {
 
@@ -181,6 +182,32 @@ public class BlockGraph {
       }
       successors.set(i, blockSuccessors);
     }
+
+    startingBlock = blockArray[0];
+  }
+
+  Iterator<Stmt> stmtIterator() {
+    BlockGraph graph = this;
+
+    return new Iterator<Stmt>() {
+      private Block currentBlock = getStartingBlock();
+      int currentBlockIdx = 0;
+
+      private final ArrayDeque<Block> blockQ = new ArrayDeque<>();
+
+      @Override
+      public boolean hasNext() {
+        if (!blockQ.isEmpty()) {
+          return true;
+        }
+        return false;
+      }
+
+      @Override
+      public Stmt next() {
+        return null;
+      }
+    };
   }
 
   @Override
@@ -195,6 +222,11 @@ public class BlockGraph {
     }
 
     return sb.toString();
+  }
+
+  @Nonnull
+  Block getStartingBlock() {
+    return startingBlock;
   }
 
   @Nonnull
