@@ -628,7 +628,6 @@ public class Body implements Copyable {
                 stmt + ": must have '0' outgoing flow but has '" + successorCount + "'.");
           }
         } else {
-          System.out.println(stmt.getClass());
           if (successorCount != 1) {
             throw new RuntimeException(
                 stmt + ": must have '1' outgoing flow but has '" + successorCount + "'.");
