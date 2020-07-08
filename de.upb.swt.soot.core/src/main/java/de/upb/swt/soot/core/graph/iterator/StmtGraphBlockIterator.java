@@ -100,14 +100,6 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
     // prefetch next Stmt
     cachedNextStmt = retrieveNextStmt();
-
-    /* [ms] handle
-    if( stmt.fallsThrough() && successors.get(0) != cachedNextStmt ){
-      otherBlocks.addLast(cachedNextStmt);
-      cachedNextStmt = retrieveNextStmt();
-    }
-    */
-
     return stmt;
   }
 

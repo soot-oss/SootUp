@@ -7,15 +7,17 @@ import java.util.*;
 import javax.annotation.Nonnull;
 
 class Block {
-  private final List<Stmt> blockStmts;
+  @Nonnull private List<Stmt> blockStmts;
 
-  Block(List<Stmt> stmts) {
+  Block(@Nonnull List<Stmt> stmts) {
     assert (stmts.size() > 0);
     blockStmts = stmts;
   }
 
   public List<Stmt> getBlockStmts() {
-    return Collections.unmodifiableList(blockStmts);
+    final List<Stmt> stmts = Collections.unmodifiableList(blockStmts);
+    blockStmts = stmts;
+    return stmts;
   }
 
   @Nonnull
