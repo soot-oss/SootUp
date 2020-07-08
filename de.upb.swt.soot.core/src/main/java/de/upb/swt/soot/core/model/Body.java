@@ -408,7 +408,7 @@ public class Body implements Copyable {
     }
 
     public StmtGraph getStmtGraph() {
-      return cfg.asUnmodifiableStmtGraph();
+      return cfg.unmodifiableStmtGraph();
     }
 
     @Nonnull

@@ -156,7 +156,9 @@ public abstract class StmtGraph implements Iterable<Stmt> {
                 .map(Trap::getHandlerStmt)
                 .anyMatch(handler -> handler == stmt))) {
           throw new RuntimeException(
-              "A Stmt which is not the StartingStmt or a TrapHandler is missing a predecessor!");
+              "Stmt '"
+                  + stmt
+                  + "' which is not the StartingStmt or a TrapHandler is missing a predecessor!");
         }
       }
 

@@ -66,7 +66,7 @@ public class MutableStmtGraph extends StmtGraph {
     }
   }
 
-  public StmtGraph asUnmodifiableStmtGraph() {
+  public StmtGraph unmodifiableStmtGraph() {
     return new ForwardingStmtGraph(this);
   }
 
@@ -109,7 +109,7 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public void removeNode(@Nonnull Stmt node) {
-    int nodeIdx = existsNodeOrThrow(node);
+    final int nodeIdx = existsNodeOrThrow(node);
     stmtToIdx.remove(node);
 
     // cleanup edges
