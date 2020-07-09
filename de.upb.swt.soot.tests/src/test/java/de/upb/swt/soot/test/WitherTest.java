@@ -4,12 +4,11 @@ import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.frontend.SootClassSource;
-import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
+import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.model.Body;
@@ -57,7 +56,7 @@ public class WitherTest {
 
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature(
-            "addByte", declareClassSig, "byte", Arrays.asList("byte", "byte"));
+            "addDouble", declareClassSig, "double", Arrays.asList("double", "float"));
     Optional<SootMethod> m = sootClass.getMethod(methodSignature);
     assertTrue(m.isPresent());
     SootMethod method = m.get();
@@ -71,7 +70,7 @@ public class WitherTest {
     bodyBuilder.addStmt(firstStmt, false);
     final JReturnStmt jReturnStmt =
         Jimple.newReturnStmt(
-            IntConstant.getInstance(56), StmtPositionInfo.createNoStmtPositionInfo());
+            DoubleConstant.getInstance(12.34), StmtPositionInfo.createNoStmtPositionInfo());
     bodyBuilder.addStmt(jReturnStmt);
     bodyBuilder.addFlow(firstStmt, jReturnStmt);
 
@@ -83,9 +82,6 @@ public class WitherTest {
             .build();
     assertNotNull(body);
 
-    ImmutableStmtGraph immutableGraph =
-        body.getStmtGraph(); // TODO [kk] How do we make use of immutable graph here?
-    JIdentityStmt jIdentityStmt = (JIdentityStmt) immutableGraph.getEntryPoint();
     Local local = (Local) firstStmt.getLeftOp();
     Local newLocal = local.withName("newName");
     final JIdentityStmt firstStmtNew = firstStmt.withLocal(newLocal);
@@ -96,7 +92,6 @@ public class WitherTest {
     assertTrue(newMethod.isPresent());
     Body newBody = newMethod.get().getBody();
     assertNotNull(newBody);
-    ImmutableStmtGraph immutableGraphNew = newBody.getStmtGraph();
     assertEquals("newName", ((Local) firstStmtNew.getLeftOp()).getName());
     assertNotEquals("newName1", ((Local) firstStmtNew.getLeftOp()).getName());
   }
