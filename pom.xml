@@ -176,6 +176,16 @@
               <destFile>${project.build.directory}/coverage-reports/aggregate.exec</destFile>
             </configuration>
           </execution>
+          <execution>
+            <id>merge-results-report</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <configuration>
+              <dataFile>${project.build.directory}/coverage-reports/aggregate.exec</dataFile>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
