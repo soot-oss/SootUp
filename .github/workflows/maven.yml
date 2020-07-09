@@ -13,7 +13,7 @@ jobs:
   JDK8:
 
     runs-on: ubuntu-latest
-
+    
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 1.8
@@ -26,7 +26,19 @@ jobs:
       run: mvn clean compile -Dfmt.skip
     - name: Test (JDK8)
       run: mvn verify -Dfmt.skip -PJava8
-
+    - name: Coverage     
+      env: 
+        SUBMODULES: java.core, java.bytecode, java.sourcecode, java.callgraph
+      run: |
+           sudo mkdir target/coverage-reports
+           for item in $SUBMODULES
+           do 
+             sudo mv de.upb.swt.soot.${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports/jacoco-ut-${item}-jdk8.exec
+             sudo rm -f de.upb.swt.soot.${item}/target/coverage-reports/aggregate.exec
+           done
+           mvn validate
+           ls -R .
+     
   JDK9:
 
     runs-on: ubuntu-latest
@@ -41,3 +53,6 @@ jobs:
       run: mvn clean compile -Dfmt.skip
     - name: Test (JDK9)
       run: mvn verify -Dfmt.skip -PJava8
+   
+ 
+      
