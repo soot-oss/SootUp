@@ -75,6 +75,7 @@ jobs:
         path: target/coverage-reports-jdk9  
    
   Coverage:
+    needs: [JDK8, JDK9]
     runs-on: ubuntu-latest
 
     steps:
