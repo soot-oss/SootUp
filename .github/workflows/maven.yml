@@ -104,7 +104,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: coverage-reports-merged
-        path: de.upb.swt.soot.tests/target/site/    
+        path: de.upb.swt.soot.tests/target/site    
            
      
 
