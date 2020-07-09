@@ -49,7 +49,9 @@ public class ModuleCompositionTest {
     PathBasedAnalysisInputLocation pathBasedAnalysisInputLocation =
         PathBasedAnalysisInputLocation.createForClassContainer(jarPath);
 
-    List<Path> jarsFromPath = pathBasedAnalysisInputLocation.getJarsFromPath();
+    List<Path> jarsFromPath =
+        pathBasedAnalysisInputLocation
+            .getJarsFromPath(); // TODO handle this part in JavaClassPathAnalysisInputLocation
     for (Path path : jarsFromPath) {
       if (path.getFileName().toString().contains("MiniApp")) {
         jarPath = path;
