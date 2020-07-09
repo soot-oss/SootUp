@@ -29,7 +29,7 @@ import org.junit.experimental.categories.Category;
  * Defines tests for module composition.
  *
  * @author Jan Martin Persch
- * @author Kaustubh Kelkar
+ * @author Kaustubh Kelkar updated on 09.07.2020
  */
 @Category(Java8Test.class)
 public class ModuleCompositionTest {

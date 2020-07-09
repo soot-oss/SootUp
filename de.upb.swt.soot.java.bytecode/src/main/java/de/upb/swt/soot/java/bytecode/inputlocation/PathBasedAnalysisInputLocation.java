@@ -60,6 +60,7 @@ import org.xml.sax.SAXException;
  * object.
  *
  * @author Manuel Benz created on 22.05.18
+ * @author Kaustubh Kelkar updated on 09.07.2020
  */
 public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysisInputLocation {
   protected final Path path;

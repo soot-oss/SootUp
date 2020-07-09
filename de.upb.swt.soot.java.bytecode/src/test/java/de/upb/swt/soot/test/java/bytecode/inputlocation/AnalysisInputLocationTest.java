@@ -42,7 +42,7 @@ import org.mockito.internal.matchers.LessOrEqual;
 
 /**
  * @author Manuel Benz created on 07.06.18
- * @author Kaustubh Kelkar update on 16.04.2020
+ * @author Kaustubh Kelkar updated on 16.04.2020
  */
 public abstract class AnalysisInputLocationTest {
 
