@@ -101,6 +101,10 @@ jobs:
            mvn validate
            mvn verify -DskipTests
            ls -R .
+    - uses: actions/upload-artifact@v2
+      with:
+        name: coverage-reports-merged
+        path: target/site     
            
      
 
