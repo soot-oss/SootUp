@@ -175,7 +175,7 @@
               </fileSets>
               <destFile>${project.build.directory}/coverage-reports/aggregate.exec</destFile>
             </configuration>
-          </execution>
+          </execution>       
         </executions>
       </plugin>
       <plugin>
