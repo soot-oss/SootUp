@@ -26,7 +26,7 @@ jobs:
       run: mvn clean compile -Dfmt.skip
     - name: Test (JDK8)
       run: mvn verify -Dfmt.skip -PJava8
-    - name: Package Coverage Files      
+    - name: Prepare Coverage Reports        
       env: 
         SUBMODULES: java.core java.bytecode java.sourcecode callgraph
       run: |
@@ -35,6 +35,8 @@ jobs:
            for item in $SUBMODULES
            do 
              sudo mv de.upb.swt.soot.${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports-jdk8/jacoco-ut-${item}-jdk8.exec
+             sudo mkdir target/coverage-reports-jdk8/${item}-site
+             sudo mv -R de.upb.swt.soot.${item}/target/site/* target/coverage-reports-jdk8/${item}-site
            done
      
     - uses: actions/upload-artifact@v2
@@ -58,7 +60,7 @@ jobs:
       run: mvn clean compile -Dfmt.skip
     - name: Test (JDK9)
       run: mvn verify -Dfmt.skip -PJava9
-    - name: Prepare Coverage Files      
+    - name: Prepare Coverage Reports      
       env: 
         SUBMODULES: java.core java.bytecode java.sourcecode callgraph
       run: |
@@ -67,46 +69,14 @@ jobs:
            for item in $SUBMODULES
            do 
              sudo mv de.upb.swt.soot.${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports-jdk9/jacoco-ut-${item}-jdk9.exec
+             sudo mkdir target/coverage-reports-jdk9/${item}-site
+             sudo mv -R de.upb.swt.soot.${item}/target/site/* target/coverage-reports-jdk9/${item}-site
            done
-     
     - uses: actions/upload-artifact@v2
       with:
         name: coverage-reports-jdk9
         path: target/coverage-reports-jdk9  
    
-  Coverage:
-    needs: [JDK8, JDK9]
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 1.9
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.9
-    - uses: actions/checkout@v2
-    - uses: actions/download-artifact@v2
-      with:
-        name: coverage-reports-jdk8
-        path: download
-    - uses: actions/download-artifact@v2
-      with:
-        name: coverage-reports-jdk9
-        path: download
-    - run: |
-           sudo mkdir target
-           sudo mkdir target/coverage-reports
-           sudo chmod -R 777 target
-           sudo cp -v download/* target/coverage-reports/
-           mvn validate
-           mvn verify -DskipTests
-           ls -R .
-    - uses: actions/upload-artifact@v2
-      with:
-        name: coverage-reports-merged
-        path: de.upb.swt.soot.tests/target/site    
-           
-     
 
    
       
