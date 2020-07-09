@@ -32,13 +32,14 @@ jobs:
       run: |
            ls -R .
            sudo mkdir target/coverage-reports
+           sudo chmod -R +x target 
            for item in $SUBMODULES
            do 
              sudo mv de.upb.swt.soot.${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports/jacoco-ut-${item}-jdk8.exec
              sudo rm -f de.upb.swt.soot.${item}/target/coverage-reports/aggregate.exec
            done
            mvn validate
-           ls -R .
+           ls -R target
      
   JDK9:
 
@@ -53,7 +54,7 @@ jobs:
     - name: Build (JDK9)
       run: mvn clean compile -Dfmt.skip
     - name: Test (JDK9)
-      run: mvn verify -Dfmt.skip -PJava8
+      run: mvn verify -Dfmt.skip -PJava9
    
  
       
