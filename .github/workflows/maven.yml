@@ -97,7 +97,7 @@ jobs:
            sudo mkdir target
            sudo mkdir target/coverage-reports
            sudo chmod -R 777 target
-           sudo cp download/. target/coverage-reports/
+           sudo cp -v download/* target/coverage-reports/
            mvn validate
            ls -R target 
            
