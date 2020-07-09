@@ -19,11 +19,10 @@ import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.EnumSet;
+import java.util.*;
 import javax.annotation.Nonnull;
 import org.junit.Assert;
-import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /**
@@ -35,19 +34,28 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class ModuleCompositionTest {
 
-  @Ignore
+  @Test
   public void apiExamples() {
 
     String warFile = "../shared-test-resources/java-warApp/dummyWarApp.war";
 
     Assert.assertTrue("File " + warFile + " not found.", new File(warFile).exists());
-
-    Path jarPath = Paths.get("/");
-
-    for (Path jp1 : PathBasedAnalysisInputLocation.jarsFromPath) {
-      if (jp1.getFileName().toString().contains("MiniApp")) jarPath = jp1;
-      else jarPath = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
+    Path jarPath;
+    if (!new File(warFile).exists()) {
+      jarPath = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
+    } else {
+      jarPath = Paths.get("../shared-test-resources/java-warApp/dummyWarApp.war");
     }
+    PathBasedAnalysisInputLocation pathBasedAnalysisInputLocation =
+        PathBasedAnalysisInputLocation.createForClassContainer(jarPath);
+
+    List<Path> jarsFromPath = pathBasedAnalysisInputLocation.getJarsFromPath();
+    for (Path path : jarsFromPath) {
+      if (path.getFileName().toString().contains("MiniApp")) {
+        jarPath = path;
+      }
+    }
+
     // Create a project
     JavaProject p =
         JavaProject.builder(new JavaLanguage(8))

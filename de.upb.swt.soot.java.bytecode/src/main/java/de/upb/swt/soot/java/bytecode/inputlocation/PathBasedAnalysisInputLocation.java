@@ -214,6 +214,19 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     return new AsmJavaClassProvider(bodyInterceptors);
   }
 
+  public @Nonnull List<Path> getJarsFromPath() {
+    if (isWarFileFlag) {
+      Collection<? extends AbstractClassSource> classesFromWar = Collections.EMPTY_LIST;
+
+      try {
+        jarsFromPath = walkDirectoryForJars(Paths.get(path.toString() + "/"));
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    return jarsFromPath;
+  }
+
   private static final class DirectoryBasedAnalysisInputLocation
       extends PathBasedAnalysisInputLocation {
 
@@ -231,7 +244,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         try {
           jarsFromPath = walkDirectoryForJars(Paths.get(path.toString() + "/"));
           for (Path jarPath : jarsFromPath) {
-            Collection<? extends AbstractClassSource> allClassesFromJar;
             try (FileSystem fsJar = FileSystems.newFileSystem(jarPath, null)) {
               final Path archiveRootJar = fsJar.getPath("/");
               walkDirectory(
