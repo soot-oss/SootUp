@@ -28,7 +28,7 @@ jobs:
       run: mvn verify -Dfmt.skip -PJava8
     - name: Coverage     
       env: 
-        SUBMODULES: java.core java.bytecode java.sourcecode java.callgraph
+        SUBMODULES: java.core java.bytecode java.sourcecode callgraph
       run: |
            ls -R .
            sudo mkdir target/coverage-reports
