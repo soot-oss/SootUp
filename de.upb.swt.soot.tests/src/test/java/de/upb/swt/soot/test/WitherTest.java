@@ -9,7 +9,9 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.model.SourceType;
@@ -27,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar updated on 09.07.2020 */
 @Category(Java8Test.class)
 public class WitherTest {
 
@@ -65,6 +68,12 @@ public class WitherTest {
             generator.generateLocal(declareClassSig),
             Jimple.newParameterRef(declareClassSig, 0),
             StmtPositionInfo.createNoStmtPositionInfo());
+    bodyBuilder.addStmt(firstStmt, false);
+    final JReturnStmt jReturnStmt =
+        Jimple.newReturnStmt(
+            IntConstant.getInstance(56), StmtPositionInfo.createNoStmtPositionInfo());
+    bodyBuilder.addStmt(jReturnStmt);
+    bodyBuilder.addFlow(firstStmt, jReturnStmt);
 
     Body body =
         bodyBuilder
@@ -74,9 +83,8 @@ public class WitherTest {
             .build();
     assertNotNull(body);
 
-    ImmutableStmtGraph immutableGraph = body.getStmtGraph();
-
-    // Let's change a name of a variable deep down in the body of a method of a class
+    ImmutableStmtGraph immutableGraph =
+        body.getStmtGraph(); // TODO [kk] How do we make use of immutable graph here?
     JIdentityStmt jIdentityStmt = (JIdentityStmt) immutableGraph.getEntryPoint();
     Local local = (Local) firstStmt.getLeftOp();
     Local newLocal = local.withName("newName");

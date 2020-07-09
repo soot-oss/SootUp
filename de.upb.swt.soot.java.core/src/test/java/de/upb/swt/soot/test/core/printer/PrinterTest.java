@@ -24,7 +24,10 @@ import java.io.StringWriter;
 import java.util.*;
 import org.junit.Test;
 
-/** @author Markus Schmidt */
+/**
+ * @author Markus Schmidt
+ * @author Kaustubh Kelkar updated on 02.07.2020
+ */
 public class PrinterTest {
   // import collisions are already tested in AbstractStmtPrinterTest covered in
   // AbstractStmtPrinterTest

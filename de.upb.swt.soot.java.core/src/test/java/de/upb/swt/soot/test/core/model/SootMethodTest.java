@@ -30,7 +30,10 @@ import java.util.HashSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author Linghui Luo */
+/**
+ * @author Linghui Luo
+ * @author Kaustubh Kelkar updated on 02.07.2020
+ */
 @Category(Java8Test.class)
 public class SootMethodTest {
 
