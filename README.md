@@ -1,5 +1,4 @@
-# Future Soot core library [![Build Status](https://soot-build.cs.uni-paderborn.de/jenkins/job/soot-reloaded/job/branches/job/develop/badge/icon)](https://soot-build.cs.uni-paderborn.de/jenkins/job/soot-reloaded/job/branches/job/develop/) [![Jacoco Coverage](https://soot-build.cs.uni-paderborn.de/public/futureSoot/origin/develop/soot-reloaded/soot-reloaded-develop/build/jacoco.svg)](https://soot-build.cs.uni-paderborn.de/jenkins/job/soot-reloaded/job/soot-reloaded-develop/lastBuild/jacoco/)
-
+# Future Soot core library ![Java CI with Maven](https://github.com/secure-software-engineering/soot-reloaded/workflows/Java%20CI%20with%20Maven/badge.svg?branch=develop)
 
 ![Logo](logo.png)
 
