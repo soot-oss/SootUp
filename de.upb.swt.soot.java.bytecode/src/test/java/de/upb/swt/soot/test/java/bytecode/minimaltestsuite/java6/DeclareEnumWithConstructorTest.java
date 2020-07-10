@@ -1,13 +1,12 @@
 package de.upb.swt.soot.test.java.bytecode.minimaltestsuite.java6;
 
+import static org.junit.Assert.assertTrue;
+
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Set;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -15,24 +14,12 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase {
 
-  public MethodSignature getInitMethodSignature() {
-    return identifierFactory.getMethodSignature(
-        "<init>", getDeclaredClassSignature(), "void", Collections.emptyList());
-  }
-
   @Test
   public void test() {
-    SootMethod sootMethod = loadMethod(getInitMethodSignature());
-    assertJimpleStmts(sootMethod, expectedBodyStmts());
-    /** TODO sootClass.isEnum() return false as it checks for if the DeclareEnumConstructor class */
-  }
+    SootClass sc = loadClass(getDeclaredClassSignature());
+    assertTrue(sc.isEnum());
 
-  @Override
-  public List<String> expectedBodyStmts() {
-    return Stream.of(
-            "l0 := @this: DeclareEnumWithConstructor",
-            "specialinvoke l0.<java.lang.Object: void <init>()>()",
-            "return")
-        .collect(Collectors.toList());
+    final Set<SootMethod> methods = sc.getMethods();
+    assertTrue(methods.stream().anyMatch(m -> m.getSignature().getName().equals("getValue")));
   }
 }
