@@ -88,7 +88,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
           currentUnbranchedBlock.addFirst(succ);
         } else {
 
-          // find root of fallsThrough and add that
+          // find leader of unbranching/fallsThrough Block and add that
           Stmt leaderStmt = succ;
           while (true) {
             boolean flag = true;
@@ -105,18 +105,20 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
             }
           }
 
+          // find a return Stmt inside the target Block
           boolean isReturnBlock = false;
-          Stmt itReturnStmt = succ;
-          while (true) {
-            if (itReturnStmt.fallsThrough()) {
-              itReturnStmt = graph.successors(itReturnStmt).get(0);
-            } else if (!itReturnStmt.branches()
-                && (itReturnStmt instanceof JReturnVoidStmt
-                    || itReturnStmt instanceof JReturnStmt)) {
-              isReturnBlock = true;
-              break;
-            } else {
-              break;
+          {
+            Stmt itReturnStmt = succ;
+            while (true) {
+              if (itReturnStmt.fallsThrough()) {
+                itReturnStmt = graph.successors(itReturnStmt).get(0);
+              } else {
+                if (itReturnStmt instanceof JReturnVoidStmt
+                    || itReturnStmt instanceof JReturnStmt) {
+                  isReturnBlock = true;
+                }
+                break;
+              }
             }
           }
 
