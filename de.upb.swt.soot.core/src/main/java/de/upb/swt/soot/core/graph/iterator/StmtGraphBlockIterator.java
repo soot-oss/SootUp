@@ -89,14 +89,13 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
         } else {
 
           // find root of fallsThrough and add that
-          Stmt itStmt = succ;
+          Stmt leaderStmt = succ;
           while (true) {
             boolean flag = true;
-            final List<Stmt> itPreds = graph.predecessors(itStmt);
+            final List<Stmt> itPreds = graph.predecessors(leaderStmt);
             for (Stmt pred : itPreds) {
-              if (pred.fallsThrough() && graph.successors(pred).get(0) == itStmt) {
-                itStmt = pred;
-                System.out.println(itStmt);
+              if (pred.fallsThrough() && graph.successors(pred).get(0) == leaderStmt) {
+                leaderStmt = pred;
                 flag = false;
                 break;
               }
@@ -106,12 +105,35 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
             }
           }
 
+          boolean isReturnBlock = false;
+          Stmt itReturnStmt = succ;
+          while (true) {
+            if (itReturnStmt.fallsThrough()) {
+              itReturnStmt = graph.successors(itReturnStmt).get(0);
+            } else if (!itReturnStmt.branches()
+                && (itReturnStmt instanceof JReturnVoidStmt
+                    || itReturnStmt instanceof JReturnStmt)) {
+              isReturnBlock = true;
+              break;
+            } else {
+              break;
+            }
+          }
+
           // remember branching successors
           if (stmt instanceof JGotoStmt) {
-            otherBlocks.addFirst(itStmt);
-          } else if (!nestedBlocks.contains(succ)) {
+            if (isReturnBlock) {
+              otherBlocks.addLast(leaderStmt);
+            } else {
+              otherBlocks.addFirst(leaderStmt);
+            }
+          } else if (!nestedBlocks.contains(leaderStmt)) {
             // JSwitchStmt, JIfStmt
-            nestedBlocks.addFirst(itStmt);
+            if (isReturnBlock) {
+              nestedBlocks.addLast(leaderStmt);
+            } else {
+              nestedBlocks.addFirst(leaderStmt);
+            }
           }
         }
       }
