@@ -123,6 +123,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
           // remember branching successors
           if (stmt instanceof JGotoStmt) {
             if (isReturnBlock) {
+              nestedBlocks.removeFirstOccurrence(leaderStmt);
               otherBlocks.addLast(leaderStmt);
             } else {
               otherBlocks.addFirst(leaderStmt);
