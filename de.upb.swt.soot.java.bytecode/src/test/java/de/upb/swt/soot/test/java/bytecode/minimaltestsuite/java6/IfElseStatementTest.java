@@ -68,7 +68,6 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 3",
             "label3:",
             "$stack3 = l2",
-            "$stack3 = $stack3",
             "return $stack3"));
   }
 
@@ -93,7 +92,6 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 3",
             "label3:",
             "$stack3 = l2",
-            "$stack3 = $stack3",
             "return $stack3"));
   }
 
@@ -118,7 +116,6 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 22",
             "label3:",
             "$stack3 = l2",
-            "$stack3 = $stack3",
             "return $stack3"));
   }
 
@@ -147,8 +144,6 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 2",
             "label4:",
             "$stack3 = l2",
-            "$stack3 = $stack3",
-            "$stack3 = $stack3",
             "return $stack3"));
   }
 
@@ -177,8 +172,6 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 23",
             "label4:",
             "$stack3 = l2",
-            "$stack3 = $stack3",
-            "$stack3 = $stack3",
             "return $stack3"));
   }
 

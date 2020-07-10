@@ -407,6 +407,7 @@ public class Body implements Copyable {
       setTraps(body.getTraps());
     }
 
+    @Nonnull
     public StmtGraph getStmtGraph() {
       return cfg.unmodifiableStmtGraph();
     }
