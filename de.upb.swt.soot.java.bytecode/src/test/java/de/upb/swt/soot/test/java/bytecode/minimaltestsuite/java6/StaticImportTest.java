@@ -1,6 +1,5 @@
 package de.upb.swt.soot.test.java.bytecode.minimaltestsuite.java6;
 
-
 import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;

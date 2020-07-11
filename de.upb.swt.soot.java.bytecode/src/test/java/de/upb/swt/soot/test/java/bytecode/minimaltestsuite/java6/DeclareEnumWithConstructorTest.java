@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.test.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import java.util.Set;
 import org.junit.Test;
@@ -16,7 +17,10 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
 
   @Test
   public void test() {
-    SootClass sc = loadClass(getDeclaredClassSignature());
+    SootClass sc =
+        loadClass(
+            JavaIdentifierFactory.getInstance()
+                .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$Number"));
     assertTrue(sc.isEnum());
 
     final Set<SootMethod> methods = sc.getMethods();

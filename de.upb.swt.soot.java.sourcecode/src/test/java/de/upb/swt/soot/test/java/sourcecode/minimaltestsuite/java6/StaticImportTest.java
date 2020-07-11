@@ -1,6 +1,5 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
-
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
