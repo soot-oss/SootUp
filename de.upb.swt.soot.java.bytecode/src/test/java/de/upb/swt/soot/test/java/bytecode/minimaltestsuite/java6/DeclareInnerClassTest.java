@@ -1,7 +1,6 @@
 package de.upb.swt.soot.test.java.bytecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
@@ -14,35 +13,34 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 /** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class DeclareInnerClassTest extends MinimalBytecodeTestSuiteBase {
 
-  final JavaClassType innerClassType = JavaIdentifierFactory.getInstance().getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$InnerClass");
+  final JavaClassType innerClassType =
+      JavaIdentifierFactory.getInstance()
+          .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$InnerClass");
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-            "methodDisplayOuter", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "methodDisplayOuter", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public MethodSignature getInnerMethodSignature() {
     return identifierFactory.getMethodSignature(
-            "methodDisplayInner", innerClassType, "void", Collections.emptyList());
+        "methodDisplayInner", innerClassType, "void", Collections.emptyList());
   }
 
   @Test
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
-//    SootClass sootClass = loadClass(getDeclaredClassSignature());
+    //    SootClass sootClass = loadClass(getDeclaredClassSignature());
 
     SootMethod sootMethod = loadMethod(getMethodSignature());
     assertJimpleStmts(sootMethod, expectedBodyStmts());
 
-//    SootClass innerClass = loadClass(innerClassType);
+    //    SootClass innerClass = loadClass(innerClassType);
     SootMethod innerMethod = loadMethod(getInnerMethodSignature());
     assertJimpleStmts(innerMethod, expectedInnerClassBodyStmts());
   }
