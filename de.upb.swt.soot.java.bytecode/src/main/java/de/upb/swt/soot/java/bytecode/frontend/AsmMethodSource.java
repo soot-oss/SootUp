@@ -1766,7 +1766,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       @Nonnull AbstractInsnNode tgt,
       @Nullable List<LabelNode> tgts) {
     int lastIdx = tgts == null ? 0 : tgts.size();
-    Operand[] stackss = (new ArrayList<>(stack)).toArray(new Operand[stack.size()]);
+    Operand[] stackss = stack.toArray(new Operand[stack.size()]);
     int i = 0;
     tgt_loop:
     do {
