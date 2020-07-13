@@ -36,7 +36,7 @@ jobs:
            do 
              sudo mv de.upb.swt.soot.${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports-jdk8/jacoco-ut-${item}-jdk8.exec
              sudo mkdir target/coverage-reports-jdk8/${item}-site
-             sudo mv de.upb.swt.soot.${item}/target/site/* target/coverage-reports-jdk8/${item}-site
+             sudo mv de.upb.swt.soot.${item}/target/site/jacoco-ut/* target/coverage-reports-jdk8/${item}-site
            done
      
     - uses: actions/upload-artifact@v2
@@ -70,7 +70,7 @@ jobs:
            do 
              sudo mv de.upb.swt.soot.${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports-jdk9/jacoco-ut-${item}-jdk9.exec
              sudo mkdir target/coverage-reports-jdk9/${item}-site
-             sudo mv de.upb.swt.soot.${item}/target/site/* target/coverage-reports-jdk9/${item}-site
+             sudo mv de.upb.swt.soot.${item}/target/site/jacoco-ut/* target/coverage-reports-jdk9/${item}-site
            done
     - uses: actions/upload-artifact@v2
       with:
