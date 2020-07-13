@@ -31,7 +31,7 @@ public class NopEliminatorTest {
    *
    * <p>to
    *
-   * <p>a = "str"; goto label1; label1: b = (java.lang.String) a;  return b;
+   * <p>a = "str"; goto label1; label1: b = (java.lang.String) a; return b;
    */
   @Test
   public void testJNopEnd() {
