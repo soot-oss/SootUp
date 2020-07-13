@@ -7,10 +7,8 @@ import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.ArrayList;
@@ -80,25 +78,18 @@ public class CastAndReturnInliner implements BodyInterceptor {
           // We need to replace the GOTO with the return
           JReturnStmt newStmt = retStmt.withReturnValue((Immediate) ce.getOp());
 
-          // Redirect all flows coming into the GOTO to the return
+          // Redirect all flows coming into the GOTO to the new return
           List<Stmt> predecessors = originalGraph.predecessors(gotoStmt);
-          for (Stmt preds : predecessors) {
-            bodyBuilder.removeFlow(preds, gotoStmt);
-            bodyBuilder.addFlow(preds, newStmt);
-            bodyBuilder.removeFlow(gotoStmt, gotoStmt.getTargetStmts(originalBody).get(0));
+          for (Stmt pred : predecessors) {
+            bodyBuilder.removeFlow(pred, gotoStmt);
+            bodyBuilder.addFlow(pred, newStmt);
           }
+          bodyBuilder.removeFlow(gotoStmt, gotoStmt.getTargetStmts(originalBody).get(0));
 
           for (int j = 0; j < bodyTraps.size(); j++) {
             Trap originalTrap = bodyTraps.get(j);
             JTrap fixedTrap = replaceStmtsOfTrap((JTrap) originalTrap, gotoStmt, newStmt);
             bodyTraps.set(j, fixedTrap);
-          }
-
-          // Fix targets of other statements: Switch, If, Goto
-          for (Stmt toFixStmt : bodyStmts) {
-            if (stmt == toFixStmt) continue;
-
-            replaceTargetsOfStmt(originalBody, bodyBuilder, toFixStmt, gotoStmt, newStmt);
           }
         }
       }
@@ -115,6 +106,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
   @Nonnull
   private JTrap replaceStmtsOfTrap(
       @Nonnull JTrap trap, @Nonnull JGotoStmt gotoStmt, @Nonnull JReturnStmt newStmt) {
+    // TODO: [ms] wastes performance on copying
     if (trap.getBeginStmt() == gotoStmt) {
       trap = trap.withBeginStmt(newStmt);
     }
@@ -125,39 +117,5 @@ public class CastAndReturnInliner implements BodyInterceptor {
       trap = trap.withHandlerStmt(newStmt);
     }
     return trap;
-  }
-
-  /**
-   * Checks if <code>toFixStmt</code> contains <code>gotoStmt</code> as a jump target and returns a
-   * copy of <code>toFixStmt</code> where the target has been replaced with <code>newStmt</code>.
-   */
-  private void replaceTargetsOfStmt(
-      Body originalBody,
-      Body.BodyBuilder builder,
-      @Nonnull Stmt toFixStmt,
-      @Nonnull JGotoStmt gotoStmt,
-      @Nonnull JReturnStmt newStmt) {
-    if (toFixStmt instanceof JIfStmt) {
-      JIfStmt toFixIfStmt = (JIfStmt) toFixStmt;
-      if (toFixIfStmt.getTarget(originalBody) == gotoStmt) {
-        builder.removeFlow(toFixIfStmt, gotoStmt);
-        builder.addFlow(toFixIfStmt, newStmt);
-      }
-    } else if (toFixStmt instanceof JGotoStmt) {
-      JGotoStmt toFixGotoStmt = (JGotoStmt) toFixStmt;
-      if (toFixGotoStmt.getTarget(originalBody) == gotoStmt) {
-        builder.removeFlow(toFixGotoStmt, gotoStmt);
-        builder.addFlow(toFixGotoStmt, newStmt);
-      }
-    } else if (toFixStmt instanceof JSwitchStmt) {
-      JSwitchStmt toFixSwitchStmt = (JSwitchStmt) toFixStmt;
-      List<Stmt> targets = originalBody.getStmtGraph().successors(toFixSwitchStmt);
-      for (Stmt switchTarget : targets) {
-        if (switchTarget == gotoStmt) {
-          builder.removeFlow(switchTarget, gotoStmt);
-          builder.addFlow(switchTarget, newStmt);
-        }
-      }
-    }
   }
 }
