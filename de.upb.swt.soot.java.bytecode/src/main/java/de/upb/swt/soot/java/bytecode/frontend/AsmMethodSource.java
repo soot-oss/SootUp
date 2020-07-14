@@ -78,24 +78,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.IincInsnNode;
-import org.objectweb.asm.tree.InsnNode;
-import org.objectweb.asm.tree.IntInsnNode;
-import org.objectweb.asm.tree.InvokeDynamicInsnNode;
-import org.objectweb.asm.tree.JumpInsnNode;
-import org.objectweb.asm.tree.LabelNode;
-import org.objectweb.asm.tree.LdcInsnNode;
-import org.objectweb.asm.tree.LineNumberNode;
-import org.objectweb.asm.tree.LocalVariableNode;
-import org.objectweb.asm.tree.LookupSwitchInsnNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MultiANewArrayInsnNode;
-import org.objectweb.asm.tree.TableSwitchInsnNode;
-import org.objectweb.asm.tree.TryCatchBlockNode;
-import org.objectweb.asm.tree.TypeInsnNode;
-import org.objectweb.asm.tree.VarInsnNode;
+import org.objectweb.asm.tree.*;
 
 /**
  * A {@link MethodSource} that can read Java bytecode
@@ -1920,12 +1903,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
               l, Jimple.newThisRef(declaringClass), StmtPositionInfo.createNoStmtPositionInfo()));
     }
     int nrp = 0;
-    for (Type ot : methodSignature.getParameterTypes()) {
-      Local l = getLocal(iloc);
+    for (Type parameterType : methodSignature.getParameterTypes()) {
+      Local local = getLocal(iloc);
       emitStmt(
           Jimple.newIdentityStmt(
-              l, Jimple.newParameterRef(ot, nrp++), StmtPositionInfo.createNoStmtPositionInfo()));
-      if (AsmUtil.isDWord(ot)) {
+              local,
+              Jimple.newParameterRef(parameterType, nrp++),
+              StmtPositionInfo.createNoStmtPositionInfo()));
+      if (AsmUtil.isDWord(parameterType)) {
         iloc += 2;
       } else {
         iloc++;
