@@ -145,7 +145,7 @@ public class Body implements Copyable {
     return locals;
   }
 
-  /** Returns a backed view of the traps found in this Body. */
+  /** Returns an unmodifiable view of the traps found in this Body. */
   @Nonnull
   public List<Trap> getTraps() {
     return cfg.getTraps();
