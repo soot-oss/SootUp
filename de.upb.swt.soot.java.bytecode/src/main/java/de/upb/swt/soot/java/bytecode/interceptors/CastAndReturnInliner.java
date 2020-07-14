@@ -13,7 +13,6 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
@@ -21,8 +20,9 @@ import javax.annotation.Nonnull;
  *
  * <pre>
  * a = ...;
- * goto l0;
- * l0: b = (B) a;
+ * goto label0;
+ * label0:
+ * b = (B) a;
  * return b;
  * </pre>
  *
@@ -49,10 +49,9 @@ public class CastAndReturnInliner implements BodyInterceptor {
   public Body interceptBody(@Nonnull Body originalBody) {
 
     Body.BodyBuilder bodyBuilder = null;
-    Set<Stmt> bodyStmts = originalBody.getStmtGraph().nodes();
     ImmutableStmtGraph originalGraph = originalBody.getStmtGraph();
 
-    for (Stmt stmt : bodyStmts) {
+    for (Stmt stmt : originalGraph.nodes()) {
       if (!(stmt instanceof JGotoStmt)) {
         continue;
       }
@@ -89,17 +88,18 @@ public class CastAndReturnInliner implements BodyInterceptor {
       // Redirect all flows coming into the GOTO to the new return
       List<Stmt> predecessors = originalGraph.predecessors(gotoStmt);
       for (Stmt pred : predecessors) {
-        bodyBuilder.removeFlow(pred, gotoStmt);
         bodyBuilder.addFlow(pred, newStmt);
+        bodyBuilder.removeFlow(pred, gotoStmt);
       }
+      // cleanup now obsolete cast and return statements
       bodyBuilder.removeFlow(gotoStmt, assign);
-      bodyBuilder.removeFlow(assign, nextStmt);
+      bodyBuilder.removeFlow(assign, retStmt);
 
       List<Trap> traps = originalBody.getTraps();
       boolean trapListUnmodifiable = true;
       // if used in a Trap replace occurences of goto by inlined return
-      for (int j = 0; j < traps.size(); j++) {
-        JTrap trap = (JTrap) traps.get(j);
+      for (int i = 0; i < traps.size(); i++) {
+        JTrap trap = (JTrap) traps.get(i);
         boolean modified = false;
         if (trap.getBeginStmt() == gotoStmt) {
           trap = trap.withBeginStmt(newStmt);
@@ -121,7 +121,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
             bodyBuilder.setTraps(traps);
           }
 
-          traps.set(j, trap);
+          traps.set(i, trap);
         }
       }
     }
