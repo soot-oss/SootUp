@@ -84,7 +84,8 @@ public class CastAndReturnInliner implements BodyInterceptor {
             bodyBuilder.removeFlow(pred, gotoStmt);
             bodyBuilder.addFlow(pred, newStmt);
           }
-          bodyBuilder.removeFlow(gotoStmt, gotoStmt.getTargetStmts(originalBody).get(0));
+          bodyBuilder.removeFlow(gotoStmt, assign);
+          bodyBuilder.removeFlow(assign, nextStmt);
 
           for (int j = 0; j < bodyTraps.size(); j++) {
             Trap originalTrap = bodyTraps.get(j);
@@ -106,7 +107,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
   @Nonnull
   private JTrap replaceStmtsOfTrap(
       @Nonnull JTrap trap, @Nonnull JGotoStmt gotoStmt, @Nonnull JReturnStmt newStmt) {
-    // TODO: [ms] wastes performance on copying
+
     if (trap.getBeginStmt() == gotoStmt) {
       trap = trap.withBeginStmt(newStmt);
     }
