@@ -3,6 +3,7 @@ package de.upb.swt.soot.java.bytecode.frontend;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
@@ -94,11 +95,14 @@ final class StackFrame {
           src.setStmt(newOp.insn, as);
           newOp.updateBoxes();
         } else {
-          JAssignStmt as =
-              Jimple.newAssignStmt(
-                  stack, newOp.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
-          src.mergeStmts(newOp.insn, as);
-          newOp.addBox(as.getRightOpBox());
+          final Value rvalue = newOp.stackOrValue();
+          // check for self/identity assignments
+          if (stack != rvalue) {
+            JAssignStmt as =
+                Jimple.newAssignStmt(stack, rvalue, StmtPositionInfo.createNoStmtPositionInfo());
+            src.mergeStmts(newOp.insn, as);
+            newOp.addBox(as.getRightOpBox());
+          }
         }
       } else {
         for (int j = 0; j != nrIn; j++) {

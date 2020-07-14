@@ -39,6 +39,6 @@ public class UnusedLocalEliminator implements BodyInterceptor {
       }
     }
 
-    return originalBody.withLocals(locals);
+    return Body.builder(originalBody).setLocals(locals).build();
   }
 }

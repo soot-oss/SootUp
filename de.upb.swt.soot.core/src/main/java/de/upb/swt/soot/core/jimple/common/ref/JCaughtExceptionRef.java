@@ -76,5 +76,6 @@ public final class JCaughtExceptionRef implements IdentityRef, Copyable {
 
   @Override
   public void accept(Visitor sw) {
-    ((RefVisitor)sw).caseCaughtExceptionRef(this);  }
+    ((RefVisitor) sw).caseCaughtExceptionRef(this);
+  }
 }

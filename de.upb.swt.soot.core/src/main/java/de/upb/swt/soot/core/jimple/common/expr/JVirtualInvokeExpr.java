@@ -81,6 +81,7 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr impleme
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseVirtualInvokeExpr(this);
   }
+
   @Nonnull
   public JVirtualInvokeExpr withBase(Value base) {
     return new JVirtualInvokeExpr(base, getMethodSignature(), getArgs());
