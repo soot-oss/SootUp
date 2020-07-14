@@ -118,6 +118,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
           if (trapListUnmodifiable) {
             traps = new ArrayList<>(traps);
             trapListUnmodifiable = false;
+            bodyBuilder.setTraps(traps);
           }
 
           traps.set(j, trap);
