@@ -36,10 +36,7 @@ public class CastAndReturnInlinerTest {
    *
    * <pre>
    * a = "str";
-   * return a; // This has changed
-   * label0:
-   * b = (String) a;
-   * return b;
+   * return a;
    * </pre>
    */
   @Test
@@ -78,10 +75,6 @@ public class CastAndReturnInlinerTest {
     List<Stmt> expected = new ArrayList<>();
     expected.add(strToA);
     expected.add(JavaJimple.newReturnStmt(a, noPositionInfo));
-
-    // TODO: [ms] is the test description really what/how we want it?
-    //    expected.add(bToA);
-    //    expected.add(ret);
     assertStmtsEquiv(expected, processedBody.getStmts());
   }
 

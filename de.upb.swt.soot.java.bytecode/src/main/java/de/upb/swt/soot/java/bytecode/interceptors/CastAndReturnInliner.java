@@ -68,55 +68,52 @@ public class CastAndReturnInliner implements BodyInterceptor {
       if (!(assign.getRightOp() instanceof JCastExpr)) {
         continue;
       }
-      JCastExpr ce = (JCastExpr) assign.getRightOp();
-
       Stmt nextStmt = originalGraph.successors(assign).get(0);
 
-      if (nextStmt instanceof JReturnStmt) {
-        JReturnStmt retStmt = (JReturnStmt) nextStmt;
-        if (retStmt.getOp() == assign.getLeftOp()) {
-          // We need to replace the GOTO with the return
-          JReturnStmt newStmt = retStmt.withReturnValue((Immediate) ce.getOp());
+      if (!(nextStmt instanceof JReturnStmt)) {
+        continue;
+      }
+      JReturnStmt retStmt = (JReturnStmt) nextStmt;
 
-          // Redirect all flows coming into the GOTO to the new return
-          List<Stmt> predecessors = originalGraph.predecessors(gotoStmt);
-          for (Stmt pred : predecessors) {
-            bodyBuilder.removeFlow(pred, gotoStmt);
-            bodyBuilder.addFlow(pred, newStmt);
-          }
-          bodyBuilder.removeFlow(gotoStmt, assign);
-          bodyBuilder.removeFlow(assign, nextStmt);
+      if (retStmt.getOp() != assign.getLeftOp()) {
+        continue;
+      }
 
-          for (int j = 0; j < bodyTraps.size(); j++) {
-            Trap originalTrap = bodyTraps.get(j);
-            JTrap fixedTrap = replaceStmtsOfTrap((JTrap) originalTrap, gotoStmt, newStmt);
-            bodyTraps.set(j, fixedTrap);
-          }
+      // We need to replace the GOTO with the return
+      JCastExpr ce = (JCastExpr) assign.getRightOp();
+      JReturnStmt newStmt = retStmt.withReturnValue((Immediate) ce.getOp());
+
+      // Redirect all flows coming into the GOTO to the new return
+      List<Stmt> predecessors = originalGraph.predecessors(gotoStmt);
+      for (Stmt pred : predecessors) {
+        bodyBuilder.removeFlow(pred, gotoStmt);
+        bodyBuilder.addFlow(pred, newStmt);
+      }
+      bodyBuilder.removeFlow(gotoStmt, assign);
+      bodyBuilder.removeFlow(assign, nextStmt);
+
+      // if used in a Trap replace occurences of goto by inlined return
+      for (int j = 0; j < bodyTraps.size(); j++) {
+        JTrap trap = (JTrap) bodyTraps.get(j);
+        boolean modified = false;
+        if (trap.getBeginStmt() == gotoStmt) {
+          trap = trap.withBeginStmt(newStmt);
+          modified = true;
+        }
+        if (trap.getEndStmt() == gotoStmt) {
+          trap = trap.withEndStmt(newStmt);
+          modified = true;
+        }
+        if (trap.getHandlerStmt() == gotoStmt) {
+          trap = trap.withHandlerStmt(newStmt);
+          modified = true;
+        }
+        if (modified) {
+          bodyTraps.set(j, trap);
         }
       }
     }
 
     return bodyBuilder.build();
-  }
-
-  /**
-   * Checks if <code>trap</code> contains <code>gotoStmt</code> as begin stmt, end stmt or handler
-   * and returns a copy of <code>toFixStmt</code> where this has been replaced with <code>
-   * newStmt</code>.
-   */
-  @Nonnull
-  private JTrap replaceStmtsOfTrap(
-      @Nonnull JTrap trap, @Nonnull JGotoStmt gotoStmt, @Nonnull JReturnStmt newStmt) {
-
-    if (trap.getBeginStmt() == gotoStmt) {
-      trap = trap.withBeginStmt(newStmt);
-    }
-    if (trap.getEndStmt() == gotoStmt) {
-      trap = trap.withEndStmt(newStmt);
-    }
-    if (trap.getHandlerStmt() == gotoStmt) {
-      trap = trap.withHandlerStmt(newStmt);
-    }
-    return trap;
   }
 }
