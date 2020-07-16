@@ -59,11 +59,6 @@ class AsmClassSource extends JavaSootClassSource {
     return methodNodes.stream()
         .map(
             methodSource -> {
-              if (!(methodSource instanceof AsmMethodSource)) {
-                throw new AsmFrontendException(
-                    String.format("Failed to create Method Signature %s", methodSource));
-              }
-
               AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
               asmClassClassSourceContent.setDeclaringClass(cs);
 

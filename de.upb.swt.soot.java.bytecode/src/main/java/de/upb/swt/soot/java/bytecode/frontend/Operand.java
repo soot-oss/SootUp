@@ -84,9 +84,6 @@ final class Operand {
    * @return {@code true} if this operand is equal to another operand, {@code false} otherwise.
    */
   boolean equivTo(@Nonnull Operand other) {
-    if (other.value == null && value == null) {
-      return true;
-    }
     return stackOrValue().equivTo(other.stackOrValue());
   }
 

@@ -3,11 +3,8 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java7;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /** @author Kaustubh Kelkar */
@@ -19,9 +16,13 @@ public class TryWithResourcesTest extends MinimalSourceTestSuiteBase {
         "printFile", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Override
-  public List<String> expectedBodyStmts() {
-    return Stream.of(
+  @Ignore // TODO: Issue #299
+  @Test
+  public void test() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts(
             "r0 := @this: TryWithResources",
             "$r1 = new java.io.BufferedReader",
             "$r2 = new java.io.FileReader",
@@ -43,13 +44,6 @@ public class TryWithResourcesTest extends MinimalSourceTestSuiteBase {
             "goto label1",
             "label3:",
             "virtualinvoke $r1.<java.io.BufferedReader: void close()>()",
-            "return")
-        .collect(Collectors.toCollection(ArrayList::new));
-  }
-
-  @Test
-  public void test() {
-    SootMethod method = loadMethod(getMethodSignature());
-    assertJimpleStmts(method, expectedBodyStmts());
+            "return"));
   }
 }

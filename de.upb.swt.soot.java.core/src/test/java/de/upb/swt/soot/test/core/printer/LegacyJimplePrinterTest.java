@@ -2,7 +2,6 @@ package de.upb.swt.soot.test.core.printer;
 
 import static org.junit.Assert.*;
 
-import com.google.common.graph.ImmutableGraph;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
@@ -44,13 +43,7 @@ public class LegacyJimplePrinterTest {
             .setPosition(NoPositionInformation.getInstance())
             .build();
 
-    StringBuilder debug = new StringBuilder(body.getMethodSignature() + "\n");
-    final ImmutableGraph<Stmt> stmtGraph = body.getStmtGraph();
-    for (Stmt stmt : stmtGraph.nodes()) {
-      debug.append(stmt).append(" => ").append(stmtGraph.successors(stmt)).append(" \n");
-      debug.append(" => ").append(body.getBranchTargetsOf(stmt)).append(" \n");
-    }
-    System.out.println(debug);
+    System.out.println(Utils.filterJimple(Utils.bodyStmtsAsStrings(body).stream()));
 
     SootMethod dummyMainMethod =
         new SootMethod(
@@ -90,14 +83,14 @@ public class LegacyJimplePrinterTest {
 
     {
       Body.BodyBuilder builder = Body.builder();
-      builder.addStmt(tableSwitch);
-      builder.addStmt(jNop);
-      builder.addStmt(jNop2, true);
-      builder.addStmt(returnstmt, true);
+      builder.setStartingStmt(tableSwitch);
 
       builder.addFlow(tableSwitch, jNop);
       builder.addFlow(tableSwitch, jNop2);
       builder.addFlow(tableSwitch, returnstmt);
+
+      builder.addFlow(jNop, jNop2);
+      builder.addFlow(jNop2, returnstmt);
 
       SootClass tableClass = buildClass(builder);
 
@@ -109,9 +102,9 @@ public class LegacyJimplePrinterTest {
           Arrays.asList(
               "public static void main()",
               "tableswitch(42)",
-              "case 4: goto label3",
-              "case 5: goto label1",
-              "default: goto label2",
+              "case 4: goto label2",
+              "case 5: goto label3",
+              "default: goto label1",
               "label1:",
               "nop",
               "label2:",
@@ -125,12 +118,14 @@ public class LegacyJimplePrinterTest {
       Stmt lookupSwitch = new JSwitchStmt(IntConstant.getInstance(123), lookupValues, noPosInfo);
 
       Body.BodyBuilder builder = Body.builder();
-      builder.addStmt(lookupSwitch, true);
-      builder.addStmt(jNop, true);
-      builder.addStmt(returnstmt, true);
+      builder.setStartingStmt(lookupSwitch);
 
       builder.addFlow(lookupSwitch, jNop);
+      builder.addFlow(lookupSwitch, jNop2);
       builder.addFlow(lookupSwitch, returnstmt);
+
+      builder.addFlow(jNop, jNop2);
+      builder.addFlow(jNop2, returnstmt);
 
       SootClass lookupClass = buildClass(builder);
 
@@ -143,11 +138,13 @@ public class LegacyJimplePrinterTest {
               "public static void main()",
               "lookupswitch(123)",
               "case 42: goto label2",
-              "case 33102: goto label1",
+              "case 33102: goto label3",
               "default: goto label1",
               "label1:",
               "nop",
               "label2:",
+              "nop",
+              "label3:",
               "return"),
           Utils.filterJimple(sw2.toString()));
     }
