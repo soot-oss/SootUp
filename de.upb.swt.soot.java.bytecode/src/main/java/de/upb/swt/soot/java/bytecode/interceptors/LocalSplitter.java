@@ -3,6 +3,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -41,40 +42,7 @@ public class LocalSplitter implements BodyInterceptor {
 
     ImmutableStmtGraph oriGraph = originalBody.getStmtGraph();
     BodyBuilder bodyBuilder = Body.builder(originalBody);
-
-    //Fixme: Find the entryPoint manually
-    Stmt firstStmt = null;
-    for(Stmt node : oriGraph.nodes()){
-      if(oriGraph.predecessors(node).isEmpty()){
-        firstStmt = node;
-        break;
-      }
-    }
-    bodyBuilder.setFirstStmt(firstStmt);
     Body newBody = bodyBuilder.build();
-    //System.out.println(newBody.getStmtGraph().getEntryPoint());
-
-    // get all stmts in graph
-
-
-    /**
-    Deque<Stmt> stmtQueue = new ArrayDeque<>();
-    stmtQueue.add(firstStmt);
-    while (!stmtQueue.isEmpty()) {
-      Stmt stmt = stmtQueue.remove();
-      stmts.add(stmt);
-      if (!oriGraph.successors(stmt).isEmpty()) {
-        for (Stmt succ : oriGraph.successors(stmt)) {
-          if (!stmts.contains(succ)) {
-            stmtQueue.add(succ);
-          }
-        }
-      }
-    }*/
-
-    //newBody = bodyBuilder.build();
-
-    // **System.out.println("Stmt Graph before first level loop: " + newBody.getStmtGraph());
 
     // Find all Locals that must be split
     // If a local as a definition appears two or more times, then this local must be split
@@ -93,28 +61,23 @@ public class LocalSplitter implements BodyInterceptor {
       }
     }
 
-    Set<Local> locals = newBody.getLocals();
-    Set<Local> newLocals = new HashSet<>(locals);
+    Set<Local> newLocals = new HashSet<>(newBody.getLocals());
 
     int localIndex = 1;
     Deque<Stmt> visitedQueue = new ArrayDeque<>();
-    //Fixme find the entryPoint manually
-    //visitedQueue.add(newBody.getStmtGraph().getEntryPoint());
-    Stmt entryPoint = null;
-    for(Stmt node : newBody.getStmtGraph().nodes()){
-      if(newBody.getStmtGraph().predecessors(node).isEmpty()){
-        entryPoint = node;
-        break;
+    visitedQueue.add(newBody.getStmtGraph().getStartingStmt());
+    for (Trap trap : newBody.getTraps()) {
+      if (!visitedQueue.contains(trap.getHandlerStmt())) {
+        visitedQueue.add(trap.getHandlerStmt());
       }
     }
-    visitedQueue.add(entryPoint);
+
     // store the visited modified stmts in graph, avoid visiting a stmt twice
     List<Stmt> visitedList = new ArrayList<>();
 
     while (!visitedQueue.isEmpty()) {
 
       Stmt visitedStmt = visitedQueue.remove();
-      // **System.out.println("\tFirst level loop: " + visitedStmt);
 
       if ((!visitedStmt.getDefs().isEmpty()) && visitedStmt.getDefs().get(0) instanceof Local) {
         Local oriLocal = (Local) visitedStmt.getDefs().get(0);
@@ -126,20 +89,15 @@ public class LocalSplitter implements BodyInterceptor {
 
           // replace the oriLocal with newLocal
           Stmt newVisitedStmt = withNewDef(visitedStmt, newLocal);
-          // **System.out.println("\t\tSecond level loop: " + newVisitedStmt);
 
-          if (visitedStmt.equivTo(firstStmt)){
-            bodyBuilder.setFirstStmt(newVisitedStmt);
-          }
           bodyBuilder.mergeStmt(visitedStmt, newVisitedStmt);
 
           // build the forwardsQueue
           Deque<Stmt> forwardsQueue = new ArrayDeque<>();
-          forwardsQueue.addAll(bodyBuilder.getSuccessors(newVisitedStmt));
+          forwardsQueue.addAll(bodyBuilder.getStmtGraph().successors(newVisitedStmt));
           visitedStmt = newVisitedStmt;
 
           while (!forwardsQueue.isEmpty()) {
-            // **System.out.println("\t\tforwardsQueue: " + forwardsQueue);
             Stmt head = forwardsQueue.remove();
             // 1.case: if uselist of head contains oriLocal, then modify this oriLocal to newLocal
             if (head.getUses().contains(oriLocal)) {
@@ -147,7 +105,7 @@ public class LocalSplitter implements BodyInterceptor {
               bodyBuilder.mergeStmt(head, newHead);
               if ((!newHead.getDefs().isEmpty() && !newHead.getDefs().get(0).equivTo(oriLocal))
                   || newHead.getDefs().isEmpty()) {
-                forwardsQueue.addAll(bodyBuilder.getSuccessors(newHead));
+                forwardsQueue.addAll(bodyBuilder.getStmtGraph().successors(newHead));
               }
             }
 
@@ -155,12 +113,10 @@ public class LocalSplitter implements BodyInterceptor {
             else if (hasModifiedUse(head, oriLocal)) {
               Local modifiedLocal = getModifiedUse(head, oriLocal);
               // if modifed name is not same as the newLocal's name then, trace backwards
-              // **System.out.println("\t\t\tThird level loop: " + head);
               if (!modifiedLocal.getName().equals(newLocal.getName())) {
                 Deque<Stmt> backwardsQueue = new ArrayDeque<>();
-                backwardsQueue.addAll(bodyBuilder.getPredecessors(head));
+                backwardsQueue.addAll(bodyBuilder.getStmtGraph().predecessors(head));
                 while (!backwardsQueue.isEmpty()) {
-                  // **System.out.println("\t\t\tbackwardsQueue: " + backwardsQueue);
                   Stmt backStmt = backwardsQueue.remove();
                   // 2.1 case: if backstmt's def is modified oriLocal
                   if (hasModifiedDef(backStmt, oriLocal)) {
@@ -177,14 +133,14 @@ public class LocalSplitter implements BodyInterceptor {
                     if (isBiggerName(modifiedUse, modifiedLocal)) {
                       Stmt newBackStmt = withNewUse(backStmt, modifiedUse, modifiedLocal);
                       bodyBuilder.mergeStmt(backStmt, newBackStmt);
-                      backwardsQueue.addAll(bodyBuilder.getPredecessors(newBackStmt));
+                      backwardsQueue.addAll(bodyBuilder.getStmtGraph().predecessors(newBackStmt));
                       backStmt = newBackStmt;
                     }
-                    backwardsQueue.addAll(bodyBuilder.getPredecessors(backStmt));
+                    backwardsQueue.addAll(bodyBuilder.getStmtGraph().predecessors(backStmt));
                   }
                   // 2.3 case: else, trace backwards on
                   else {
-                    backwardsQueue.addAll(bodyBuilder.getPredecessors(backStmt));
+                    backwardsQueue.addAll(bodyBuilder.getStmtGraph().predecessors(backStmt));
                   }
                 }
               }
@@ -193,33 +149,25 @@ public class LocalSplitter implements BodyInterceptor {
             else {
               if ((!head.getDefs().isEmpty() && !head.getDefs().get(0).equivTo(oriLocal)
                   || head.getDefs().isEmpty())) {
-                forwardsQueue.addAll(bodyBuilder.getSuccessors(head));
+                forwardsQueue.addAll(bodyBuilder.getStmtGraph().successors(head));
               }
             }
           }
         }
       }
       visitedList.add(visitedStmt);
-      if (!bodyBuilder.getSuccessors(visitedStmt).isEmpty()) {
-        for (Stmt stmt : bodyBuilder.getSuccessors(visitedStmt)) {
+      if (!bodyBuilder.getStmtGraph().successors(visitedStmt).isEmpty()) {
+        for (Stmt stmt : bodyBuilder.getStmtGraph().successors(visitedStmt)) {
           if (!visitedList.contains(stmt)) {
             visitedQueue.add(stmt);
           }
         }
       }
-      // **System.out.println("\tvisitedQueue" + ": " + visitedQueue);
-      // **System.out.println("\tvisitedList" + ": " + visitedList);
-
-      // **newBody = bodyBuilder.build();
-      // **System.out.println("Stmt Graph after first level loop: " + newBody.getStmtGraph());
-      // **System.out.println();
     }
 
     bodyBuilder.setLocals(newLocals);
     newBody = bodyBuilder.build();
-    // **System.out.println("Stmt Graph after first level loop: " + newBody.getStmtGraph());
-    // **System.out.println("The first stmt is: " + newBody.getFirstStmt());
-    // **System.out.println("The locals: " + newBody.getLocals());
+
     return newBody;
   }
 
