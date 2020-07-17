@@ -179,9 +179,6 @@ public class LocalSplitterTest {
     LocalSplitter localSplitter = new LocalSplitter();
     Body newBody = localSplitter.interceptBody(body);
     Body expectedBody = createExpectedLoopBody();
-    System.out.println(body);
-    System.out.println(newBody);
-    System.out.println(expectedBody);
 
     // check newBody's locals
     assertLocalsEquiv(expectedBody.getLocals(), newBody.getLocals());
