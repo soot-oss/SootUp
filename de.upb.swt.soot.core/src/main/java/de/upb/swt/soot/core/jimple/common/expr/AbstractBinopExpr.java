@@ -68,10 +68,10 @@ public abstract class AbstractBinopExpr implements Expr {
 
   @Override
   public final List<Value> getUses() {
-    List<Value> list = new ArrayList<>(op1.getUses());
-    list.add(op1);
-    list.addAll(op2.getUses());
-    list.add(op2);
+    List<Value> list = new ArrayList<>(op1Box.getValue().getUses());
+    list.add(op1Box.getValue());
+    list.addAll(op2Box.getValue().getUses());
+    list.add(op2Box.getValue());
     return list;
   }
 
