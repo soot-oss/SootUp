@@ -21,17 +21,23 @@ import javax.annotation.Nonnull;
  * <p>For example the code:
  *
  * <pre>
- *     i0 = 0
- *     i0 = 1
- *     i1 = i0 + 1
- *     i0 = 5
+ *    l0 := @this Test
+ *    l1 = 0
+ *    l2 = 1
+ *    l1 = l1 + 1
+ *    l2 = l2 + 1
+ *    return
  * </pre>
  *
+ * to:
+ *
  * <pre>
- *    i0#1 = 0
- *    i0#2 = 1
- *    i1 = i0#2 + 1
- *    i0#3 = 5
+ *    l0 := @this Test
+ *    l1#1 = 0
+ *    l2#2 = 1
+ *    l1#3 = l1#1 + 1
+ *    l2#4 = l2#2 + 1
+ *    return
  * </pre>
  *
  * @author Zun Wang
@@ -43,6 +49,12 @@ public class LocalSplitter implements BodyInterceptor {
     ImmutableStmtGraph oriGraph = originalBody.getStmtGraph();
     BodyBuilder bodyBuilder = Body.builder(originalBody);
     Body newBody = bodyBuilder.build();
+    //debug
+    for(Stmt node : newBody.getStmtGraph().nodes()){
+      //System.out.println(node);
+      //System.out.println("\tDef: " + node.getDefs());
+      //System.out.println("\tUse: " + node.getUses());
+    }
 
     // Find all Locals that must be split
     // If a local as a definition appears two or more times, then this local must be split
@@ -73,7 +85,7 @@ public class LocalSplitter implements BodyInterceptor {
     }
 
     // store the visited modified stmts in graph, avoid visiting a stmt twice
-    List<Stmt> visitedList = new ArrayList<>();
+    Set<Stmt> visited = new HashSet<>();
 
     while (!visitedQueue.isEmpty()) {
 
@@ -89,35 +101,47 @@ public class LocalSplitter implements BodyInterceptor {
 
           // replace the oriLocal with newLocal
           Stmt newVisitedStmt = withNewDef(visitedStmt, newLocal);
-
+          // replace visitedStmt with newVisitedStmt
           bodyBuilder.mergeStmt(visitedStmt, newVisitedStmt);
 
           // build the forwardsQueue
           Deque<Stmt> forwardsQueue = new ArrayDeque<>();
           forwardsQueue.addAll(bodyBuilder.getStmtGraph().successors(newVisitedStmt));
+          Set<Stmt> visitedInner = new HashSet<>();
           visitedStmt = newVisitedStmt;
 
           while (!forwardsQueue.isEmpty()) {
             Stmt head = forwardsQueue.remove();
+            visitedInner.add(head);
+
             // 1.case: if uselist of head contains oriLocal, then modify this oriLocal to newLocal
             if (head.getUses().contains(oriLocal)) {
+
               Stmt newHead = withNewUse(head, oriLocal, newLocal);
+
               bodyBuilder.mergeStmt(head, newHead);
               if ((!newHead.getDefs().isEmpty() && !newHead.getDefs().get(0).equivTo(oriLocal))
                   || newHead.getDefs().isEmpty()) {
-                forwardsQueue.addAll(bodyBuilder.getStmtGraph().successors(newHead));
+                for(Stmt succ : bodyBuilder.getStmtGraph().successors(newHead)){
+                  if(!visitedInner.contains(succ) && !forwardsQueue.contains(succ)){
+                    forwardsQueue.addLast(succ);
+                  }
+                }
               }
             }
 
             // 2.case: if uselist of head contains the modified orilocal
             else if (hasModifiedUse(head, oriLocal)) {
+
               Local modifiedLocal = getModifiedUse(head, oriLocal);
               // if modifed name is not same as the newLocal's name then, trace backwards
               if (!modifiedLocal.getName().equals(newLocal.getName())) {
+                localIndex--;
                 Deque<Stmt> backwardsQueue = new ArrayDeque<>();
                 backwardsQueue.addAll(bodyBuilder.getStmtGraph().predecessors(head));
                 while (!backwardsQueue.isEmpty()) {
                   Stmt backStmt = backwardsQueue.remove();
+
                   // 2.1 case: if backstmt's def is modified oriLocal
                   if (hasModifiedDef(backStmt, oriLocal)) {
                     if (isBiggerName((Local) backStmt.getDefs().get(0), modifiedLocal)) {
@@ -134,9 +158,7 @@ public class LocalSplitter implements BodyInterceptor {
                       Stmt newBackStmt = withNewUse(backStmt, modifiedUse, modifiedLocal);
                       bodyBuilder.mergeStmt(backStmt, newBackStmt);
                       backwardsQueue.addAll(bodyBuilder.getStmtGraph().predecessors(newBackStmt));
-                      backStmt = newBackStmt;
                     }
-                    backwardsQueue.addAll(bodyBuilder.getStmtGraph().predecessors(backStmt));
                   }
                   // 2.3 case: else, trace backwards on
                   else {
@@ -149,18 +171,20 @@ public class LocalSplitter implements BodyInterceptor {
             else {
               if ((!head.getDefs().isEmpty() && !head.getDefs().get(0).equivTo(oriLocal)
                   || head.getDefs().isEmpty())) {
-                forwardsQueue.addAll(bodyBuilder.getStmtGraph().successors(head));
+                for(Stmt succ : bodyBuilder.getStmtGraph().successors(head)){
+                  if(!visitedInner.contains(succ) && !forwardsQueue.contains(succ)){
+                    forwardsQueue.addLast(succ);
+                  }
+                }
               }
             }
           }
         }
       }
-      visitedList.add(visitedStmt);
-      if (!bodyBuilder.getStmtGraph().successors(visitedStmt).isEmpty()) {
-        for (Stmt stmt : bodyBuilder.getStmtGraph().successors(visitedStmt)) {
-          if (!visitedList.contains(stmt)) {
-            visitedQueue.add(stmt);
-          }
+      visited.add(visitedStmt);
+      for (Stmt stmt : bodyBuilder.getStmtGraph().successors(visitedStmt)) {
+        if (!visited.contains(stmt) && !visitedQueue.contains(stmt)) {
+          visitedQueue.add(stmt);
         }
       }
     }
