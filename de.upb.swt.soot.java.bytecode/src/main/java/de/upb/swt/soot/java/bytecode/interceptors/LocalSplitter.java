@@ -49,11 +49,11 @@ public class LocalSplitter implements BodyInterceptor {
     ImmutableStmtGraph oriGraph = originalBody.getStmtGraph();
     BodyBuilder bodyBuilder = Body.builder(originalBody);
     Body newBody = bodyBuilder.build();
-    //debug
-    for(Stmt node : newBody.getStmtGraph().nodes()){
-      //System.out.println(node);
-      //System.out.println("\tDef: " + node.getDefs());
-      //System.out.println("\tUse: " + node.getUses());
+    // debug
+    for (Stmt node : newBody.getStmtGraph().nodes()) {
+      // System.out.println(node);
+      // System.out.println("\tDef: " + node.getDefs());
+      // System.out.println("\tUse: " + node.getUses());
     }
 
     // Find all Locals that must be split
@@ -122,8 +122,8 @@ public class LocalSplitter implements BodyInterceptor {
               bodyBuilder.mergeStmt(head, newHead);
               if ((!newHead.getDefs().isEmpty() && !newHead.getDefs().get(0).equivTo(oriLocal))
                   || newHead.getDefs().isEmpty()) {
-                for(Stmt succ : bodyBuilder.getStmtGraph().successors(newHead)){
-                  if(!visitedInner.contains(succ) && !forwardsQueue.contains(succ)){
+                for (Stmt succ : bodyBuilder.getStmtGraph().successors(newHead)) {
+                  if (!visitedInner.contains(succ) && !forwardsQueue.contains(succ)) {
                     forwardsQueue.addLast(succ);
                   }
                 }
@@ -171,8 +171,8 @@ public class LocalSplitter implements BodyInterceptor {
             else {
               if ((!head.getDefs().isEmpty() && !head.getDefs().get(0).equivTo(oriLocal)
                   || head.getDefs().isEmpty())) {
-                for(Stmt succ : bodyBuilder.getStmtGraph().successors(head)){
-                  if(!visitedInner.contains(succ) && !forwardsQueue.contains(succ)){
+                for (Stmt succ : bodyBuilder.getStmtGraph().successors(head)) {
+                  if (!visitedInner.contains(succ) && !forwardsQueue.contains(succ)) {
                     forwardsQueue.addLast(succ);
                   }
                 }
