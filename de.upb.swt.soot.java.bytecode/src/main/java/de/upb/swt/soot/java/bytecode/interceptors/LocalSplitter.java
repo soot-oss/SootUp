@@ -6,6 +6,7 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.ReplaceUseStmtVisitor;
 import de.upb.swt.soot.core.model.Body;
@@ -209,8 +210,10 @@ public class LocalSplitter implements BodyInterceptor {
     if (oldStmt instanceof JAssignStmt) {
       return Jimple.newAssignStmt(
           newDef, ((JAssignStmt) oldStmt).getRightOp(), oldStmt.getPositionInfo());
+    } else if (oldStmt instanceof JIdentityStmt) {
+      return ((JIdentityStmt) oldStmt).withLocal(newDef);
     } else {
-      throw new RuntimeException("Just JAssignStmt allowed");
+      throw new RuntimeException("Just JAssignStmt and JIdentityStmt allowed");
     }
   }
 
