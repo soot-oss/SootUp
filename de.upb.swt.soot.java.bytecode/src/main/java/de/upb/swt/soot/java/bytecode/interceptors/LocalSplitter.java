@@ -51,11 +51,18 @@ public class LocalSplitter implements BodyInterceptor {
     BodyBuilder bodyBuilder = Body.builder(originalBody);
     Body newBody = bodyBuilder.build();
     // debug
+    /**
     for (Stmt node : newBody.getStmtGraph().nodes()) {
-      // System.out.println(node);
-      // System.out.println("\tDef: " + node.getDefs());
-      // System.out.println("\tUse: " + node.getUses());
+      System.out.println("\t" + newBody.getStmtGraph().predecessors(node));
+      System.out.println(node);
+      System.out.println("\t" + newBody.getStmtGraph().successors(node));
+      System.out.println("---------------------------------------------------");
+       //System.out.println("\tDef: " + node.getDefs());
+       //System.out.println("\tUse: " + node.getUses());
     }
+    for(Trap trap : newBody.getTraps()){
+      System.out.println(trap);
+    }*/
 
     // Find all Locals that must be split
     // If a local as a definition appears two or more times, then this local must be split
@@ -79,16 +86,22 @@ public class LocalSplitter implements BodyInterceptor {
     int localIndex = 1;
     Deque<Stmt> visitedQueue = new ArrayDeque<>();
     visitedQueue.add(newBody.getStmtGraph().getStartingStmt());
+    Deque<Stmt> trapSources = new ArrayDeque<>();
     for (Trap trap : newBody.getTraps()) {
-      if (!visitedQueue.contains(trap.getHandlerStmt())) {
-        visitedQueue.add(trap.getHandlerStmt());
+      if (!trapSources.contains(trap.getHandlerStmt())) {
+        trapSources.add(trap.getHandlerStmt());
       }
     }
 
     // store the visited modified stmts in graph, avoid visiting a stmt twice
     Set<Stmt> visited = new HashSet<>();
 
-    while (!visitedQueue.isEmpty()) {
+    while (!visitedQueue.isEmpty() || !trapSources.isEmpty()) {
+
+      if(visitedQueue.isEmpty()){
+        Stmt trapSource = trapSources.remove();
+        visitedQueue.add(trapSource);
+      }
 
       Stmt visitedStmt = visitedQueue.remove();
 
@@ -104,6 +117,7 @@ public class LocalSplitter implements BodyInterceptor {
           Stmt newVisitedStmt = withNewDef(visitedStmt, newLocal);
           // replace visitedStmt with newVisitedStmt
           bodyBuilder.mergeStmt(visitedStmt, newVisitedStmt);
+          fitNewTrap(bodyBuilder, visitedStmt, newVisitedStmt);
 
           // build the forwardsQueue
           Deque<Stmt> forwardsQueue = new ArrayDeque<>();
@@ -119,8 +133,9 @@ public class LocalSplitter implements BodyInterceptor {
             if (head.getUses().contains(oriLocal)) {
 
               Stmt newHead = withNewUse(head, oriLocal, newLocal);
-
               bodyBuilder.mergeStmt(head, newHead);
+              fitNewTrap(bodyBuilder, head, newHead);
+
               if ((!newHead.getDefs().isEmpty() && !newHead.getDefs().get(0).equivTo(oriLocal))
                   || newHead.getDefs().isEmpty()) {
                 for (Stmt succ : bodyBuilder.getStmtGraph().successors(newHead)) {
@@ -148,6 +163,7 @@ public class LocalSplitter implements BodyInterceptor {
                     if (isBiggerName((Local) backStmt.getDefs().get(0), modifiedLocal)) {
                       Stmt newBackStmt = withNewDef(backStmt, modifiedLocal);
                       bodyBuilder.mergeStmt(backStmt, newBackStmt);
+                      fitNewTrap(bodyBuilder, backStmt, newBackStmt);
                       visitedStmt = newBackStmt;
                       newLocals.remove(newLocal);
                     }
@@ -158,6 +174,7 @@ public class LocalSplitter implements BodyInterceptor {
                     if (isBiggerName(modifiedUse, modifiedLocal)) {
                       Stmt newBackStmt = withNewUse(backStmt, modifiedUse, modifiedLocal);
                       bodyBuilder.mergeStmt(backStmt, newBackStmt);
+                      fitNewTrap(bodyBuilder, backStmt, newBackStmt);
                       backwardsQueue.addAll(bodyBuilder.getStmtGraph().predecessors(newBackStmt));
                     }
                   }
@@ -197,6 +214,27 @@ public class LocalSplitter implements BodyInterceptor {
   }
 
   // ******************assist_functions*************************
+  /**
+   * fit the modified stmt in trap
+   *
+   * @param builder a bodybuilder, use it to modify trap
+   * @param oldStmt a Stmt which maybe a beginStmt or endStmt
+   * @param newStmt a modified stmt
+   */
+  protected void fitNewTrap(@Nonnull BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt){
+    List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
+    for(Trap trap : traps){
+      int index = traps.indexOf(trap);
+      if(oldStmt.equivTo(trap.getBeginStmt())){
+        Trap newTrap = Jimple.newTrap(trap.getExceptionType(), newStmt, trap.getEndStmt(), trap.getHandlerStmt());
+        traps.set(index, newTrap);
+      }else if(oldStmt.equivTo(trap.getEndStmt())){
+        Trap newTrap = Jimple.newTrap(trap.getExceptionType(), trap.getBeginStmt(), newStmt, trap.getHandlerStmt());
+        traps.set(index, newTrap);
+      }
+    }
+    builder.setTraps(traps);
+  }
 
   /**
    * Use newDef to replace the def in oldStmt.
