@@ -52,17 +52,13 @@ public class LocalSplitter implements BodyInterceptor {
     Body newBody = bodyBuilder.build();
     // debug
     /**
-    for (Stmt node : newBody.getStmtGraph().nodes()) {
-      System.out.println("\t" + newBody.getStmtGraph().predecessors(node));
-      System.out.println(node);
-      System.out.println("\t" + newBody.getStmtGraph().successors(node));
-      System.out.println("---------------------------------------------------");
-       //System.out.println("\tDef: " + node.getDefs());
-       //System.out.println("\tUse: " + node.getUses());
-    }
-    for(Trap trap : newBody.getTraps()){
-      System.out.println(trap);
-    }*/
+     * for (Stmt node : newBody.getStmtGraph().nodes()) { System.out.println("\t" +
+     * newBody.getStmtGraph().predecessors(node)); System.out.println(node); System.out.println("\t"
+     * + newBody.getStmtGraph().successors(node));
+     * System.out.println("---------------------------------------------------");
+     * //System.out.println("\tDef: " + node.getDefs()); //System.out.println("\tUse: " +
+     * node.getUses()); } for(Trap trap : newBody.getTraps()){ System.out.println(trap); }
+     */
 
     // Find all Locals that must be split
     // If a local as a definition appears two or more times, then this local must be split
@@ -98,7 +94,7 @@ public class LocalSplitter implements BodyInterceptor {
 
     while (!visitedQueue.isEmpty() || !trapSources.isEmpty()) {
 
-      if(visitedQueue.isEmpty()){
+      if (visitedQueue.isEmpty()) {
         Stmt trapSource = trapSources.remove();
         visitedQueue.add(trapSource);
       }
@@ -221,15 +217,20 @@ public class LocalSplitter implements BodyInterceptor {
    * @param oldStmt a Stmt which maybe a beginStmt or endStmt
    * @param newStmt a modified stmt
    */
-  protected void fitNewTrap(@Nonnull BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt){
+  protected void fitNewTrap(
+      @Nonnull BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
     List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
-    for(Trap trap : traps){
+    for (Trap trap : traps) {
       int index = traps.indexOf(trap);
-      if(oldStmt.equivTo(trap.getBeginStmt())){
-        Trap newTrap = Jimple.newTrap(trap.getExceptionType(), newStmt, trap.getEndStmt(), trap.getHandlerStmt());
+      if (oldStmt.equivTo(trap.getBeginStmt())) {
+        Trap newTrap =
+            Jimple.newTrap(
+                trap.getExceptionType(), newStmt, trap.getEndStmt(), trap.getHandlerStmt());
         traps.set(index, newTrap);
-      }else if(oldStmt.equivTo(trap.getEndStmt())){
-        Trap newTrap = Jimple.newTrap(trap.getExceptionType(), trap.getBeginStmt(), newStmt, trap.getHandlerStmt());
+      } else if (oldStmt.equivTo(trap.getEndStmt())) {
+        Trap newTrap =
+            Jimple.newTrap(
+                trap.getExceptionType(), trap.getBeginStmt(), newStmt, trap.getHandlerStmt());
         traps.set(index, newTrap);
       }
     }
