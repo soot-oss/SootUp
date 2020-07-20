@@ -68,9 +68,11 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
   public static List<String> classesInXML = new ArrayList<>();
   protected static List<String> allClasses = new ArrayList<>();
   private static boolean isWarFileFlag = false;
+  FileHandling fileHandling;
 
   private PathBasedAnalysisInputLocation(@Nonnull Path path) {
     this.path = path;
+    fileHandling = new FileHandling(path.toString());
   }
 
   /**
@@ -89,7 +91,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     } else if (PathUtils.isArchive(path)) {
       if (PathUtils.hasExtension(path, FileType.WAR)) {
         isWarFileFlag = true;
-        String pathToExtractedWar = extractWarFile(path.toString());
+        String pathToExtractedWar = FileHandling.extractWarFile(path.toString());
         return new DirectoryBasedAnalysisInputLocation(Paths.get(pathToExtractedWar));
       }
       return new ArchiveBasedAnalysisInputLocation(path);
@@ -115,13 +117,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }
-  }
-
-  List<Path> walkDirectoryForJars(@Nonnull Path dirPath) throws IOException {
-    return Files.walk(dirPath)
-        .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
-        .flatMap(p1 -> StreamUtils.optionalToStream(Optional.of(p1)))
-        .collect(Collectors.toList());
   }
 
   /**
@@ -220,7 +215,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       Collection<? extends AbstractClassSource> classesFromWar = Collections.EMPTY_LIST;
 
       try {
-        jarsFromPath = walkDirectoryForJars(Paths.get(path.toString() + "/"));
+        jarsFromPath = fileHandling.walkDirectoryForJars(Paths.get(path.toString() + "/"));
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -243,7 +238,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         Collection<? extends AbstractClassSource> classesFromWar = Collections.EMPTY_LIST;
 
         try {
-          jarsFromPath = walkDirectoryForJars(Paths.get(path.toString() + "/"));
+          jarsFromPath = fileHandling.walkDirectoryForJars(Paths.get(path.toString() + "/"));
           for (Path jarPath : jarsFromPath) {
             try (FileSystem fsJar = FileSystems.newFileSystem(jarPath, null)) {
               final Path archiveRootJar = fsJar.getPath("/");

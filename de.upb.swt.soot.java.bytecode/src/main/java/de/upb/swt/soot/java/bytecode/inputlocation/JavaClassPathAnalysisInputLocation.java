@@ -39,8 +39,6 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
@@ -62,6 +60,7 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
   @Nonnull private Collection<AnalysisInputLocation> cpEntries;
   public static List<Path> jarsFromPath = new ArrayList<>();
   private String classPath = "";
+  FileHandling fileHandling;
 
   /**
    * Creates a {@link JavaClassPathAnalysisInputLocation} which locates classes in the given class
@@ -75,33 +74,16 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
     }
 
     this.classPath = classPath;
+    fileHandling = new FileHandling(this.classPath);
+
     if (PathUtils.hasExtension(Paths.get(classPath), FileType.WAR)) {
-      jarsFromPath = getJarsFromPath();
+      jarsFromPath = fileHandling.getJarsFromPath();
       for (Path path : jarsFromPath) {
         String jarPath = path.toString();
-        try {
-          cpEntries =
-              explode(jarPath)
-                  .flatMap(cp -> StreamUtils.optionalToStream(nsForPath(cp)))
-                  .collect(Collectors.toList());
-
-        } catch (IllegalArgumentException e) {
-          throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
-        }
-        if (cpEntries.isEmpty()) {
-          throw new InvalidClassPathException("Empty class path given");
-        }
+        explodeClassPath(jarPath);
       }
     } else {
-      try {
-        cpEntries =
-            explode(classPath)
-                .flatMap(cp -> StreamUtils.optionalToStream(nsForPath(cp)))
-                .collect(Collectors.toList());
-
-      } catch (IllegalArgumentException e) {
-        throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
-      }
+      explodeClassPath(classPath);
     }
     if (cpEntries.isEmpty()) {
       throw new InvalidClassPathException("Empty class path given");
@@ -183,16 +165,6 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
     }
   }
 
-  public @Nonnull List<Path> getJarsFromPath() {
-
-    try {
-      jarsFromPath = this.walkDirectoryForJars(Paths.get(extractWarFile(classPath)));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    return jarsFromPath;
-  }
-
   public List<Path> walkDirectoryForJars(@Nonnull Path dirPath) throws IOException {
     return Files.walk(dirPath)
         .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
@@ -200,45 +172,24 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
         .collect(Collectors.toList());
   }
 
-  static @Nonnull String extractWarFile(String warFilePath) {
-    // FIXME: [ms] protect against archive bombs
-    String destDirectory =
-        System.getProperty("java.io.tmpdir")
-            + File.separator
-            + "sootOutput"
-            + "-war-"
-            + warFilePath.hashCode();
-
+  /**
+   * extract the classes from the classpath
+   *
+   * @param jarPath The jar path for which the classes need to be listed
+   */
+  public void explodeClassPath(@Nonnull String jarPath) {
     try {
-      File dest = new File(destDirectory);
-      dest.deleteOnExit();
-      if (!dest.exists()) {
-        dest.mkdir();
-      }
-      ZipInputStream zis = new ZipInputStream(new FileInputStream(warFilePath));
-      ZipEntry zipEntry;
-      while ((zipEntry = zis.getNextEntry()) != null) {
-        String filepath = destDirectory + File.separator + zipEntry.getName();
-        if (!zipEntry.isDirectory()) {
-          BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filepath));
-          byte[] incomingValues = new byte[4096];
-          int readFlag;
-          while ((readFlag = zis.read(incomingValues)) != -1) {
-            bos.write(incomingValues, 0, readFlag);
-          }
-          bos.close();
-        } else {
-          File newDir = new File(filepath);
-          newDir.mkdir();
-        }
-        zis.closeEntry();
-      }
+      cpEntries =
+          explode(jarPath)
+              .flatMap(cp -> StreamUtils.optionalToStream(nsForPath(cp)))
+              .collect(Collectors.toList());
 
-    } catch (IOException e) {
-      e.getMessage();
+    } catch (IllegalArgumentException e) {
+      throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
     }
-    // parseWebxml(destDirectory);
-    return destDirectory;
+    if (cpEntries.isEmpty()) {
+      throw new InvalidClassPathException("Empty class path given");
+    }
   }
 
   protected static final class InvalidClassPathException extends IllegalArgumentException {
