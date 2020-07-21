@@ -35,7 +35,7 @@ public class ModuleCompositionTest {
   public void apiExamples() {
 
     String warFile = "../shared-test-resources/java-warApp/dummyWarApp.war";
-    
+
     Assert.assertTrue("File " + warFile + " not found.", new File(warFile).exists());
 
     // Create a project
