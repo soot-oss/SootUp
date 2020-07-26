@@ -1,6 +1,7 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
+import de.upb.swt.soot.core.graph.iterator.StmtGraphBlockIterator;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
@@ -14,6 +15,7 @@ import de.upb.swt.soot.core.model.Body.BodyBuilder;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A BodyInterceptor that attempts to identify and separate uses of a local variable that are
@@ -50,15 +52,6 @@ public class LocalSplitter implements BodyInterceptor {
     ImmutableStmtGraph oriGraph = originalBody.getStmtGraph();
     BodyBuilder bodyBuilder = Body.builder(originalBody);
     Body newBody = bodyBuilder.build();
-    // debug
-    /**
-     * for (Stmt node : newBody.getStmtGraph().nodes()) { System.out.println("\t" +
-     * newBody.getStmtGraph().predecessors(node)); System.out.println(node); System.out.println("\t"
-     * + newBody.getStmtGraph().successors(node));
-     * System.out.println("---------------------------------------------------");
-     * //System.out.println("\tDef: " + node.getDefs()); //System.out.println("\tUse: " +
-     * node.getUses()); } for(Trap trap : newBody.getTraps()){ System.out.println(trap); }
-     */
 
     // Find all Locals that must be split
     // If a local as a definition appears two or more times, then this local must be split
@@ -80,26 +73,21 @@ public class LocalSplitter implements BodyInterceptor {
     Set<Local> newLocals = new HashSet<>(newBody.getLocals());
 
     int localIndex = 1;
-    Deque<Stmt> visitedQueue = new ArrayDeque<>();
-    visitedQueue.add(newBody.getStmtGraph().getStartingStmt());
-    Deque<Stmt> trapSources = new ArrayDeque<>();
-    for (Trap trap : newBody.getTraps()) {
-      if (!trapSources.contains(trap.getHandlerStmt())) {
-        trapSources.add(trap.getHandlerStmt());
-      }
+    StmtGraphBlockIterator graphIterator = new StmtGraphBlockIterator(bodyBuilder.getStmtGraph(), newBody.getTraps());
+    Map<Stmt, List<Stmt>> trapPositionsMap = new HashMap<>();
+    while(graphIterator.hasNext()){
+
     }
 
-    // store the visited modified stmts in graph, avoid visiting a stmt twice
-    Set<Stmt> visited = new HashSet<>();
+    List<Stmt> visitList = new ArrayList<>();
+    while(graphIterator.hasNext()){
+      visitList.add(graphIterator.next());
+    }
 
-    while (!visitedQueue.isEmpty() || !trapSources.isEmpty()) {
+    while (!visitList.isEmpty()) {
 
-      if (visitedQueue.isEmpty()) {
-        Stmt trapSource = trapSources.remove();
-        visitedQueue.add(trapSource);
-      }
-
-      Stmt visitedStmt = visitedQueue.remove();
+      Stmt visitedStmt = visitList.get(0);
+      visitList.remove(0);
 
       if ((!visitedStmt.getDefs().isEmpty()) && visitedStmt.getDefs().get(0) instanceof Local) {
         Local oriLocal = (Local) visitedStmt.getDefs().get(0);
@@ -114,6 +102,7 @@ public class LocalSplitter implements BodyInterceptor {
           // replace visitedStmt with newVisitedStmt
           bodyBuilder.mergeStmt(visitedStmt, newVisitedStmt);
           fitNewTrap(bodyBuilder, visitedStmt, newVisitedStmt);
+          fitVisitList(visitList, visitedStmt, newVisitedStmt);
 
           // build the forwardsQueue
           Deque<Stmt> forwardsQueue = new ArrayDeque<>();
@@ -131,6 +120,7 @@ public class LocalSplitter implements BodyInterceptor {
               Stmt newHead = withNewUse(head, oriLocal, newLocal);
               bodyBuilder.mergeStmt(head, newHead);
               fitNewTrap(bodyBuilder, head, newHead);
+              fitVisitList(visitList, head, newHead);
 
               if ((!newHead.getDefs().isEmpty() && !newHead.getDefs().get(0).equivTo(oriLocal))
                   || newHead.getDefs().isEmpty()) {
@@ -160,7 +150,7 @@ public class LocalSplitter implements BodyInterceptor {
                       Stmt newBackStmt = withNewDef(backStmt, modifiedLocal);
                       bodyBuilder.mergeStmt(backStmt, newBackStmt);
                       fitNewTrap(bodyBuilder, backStmt, newBackStmt);
-                      visitedStmt = newBackStmt;
+                      fitVisitList(visitList, backStmt, newBackStmt);
                       newLocals.remove(newLocal);
                     }
                   }
@@ -171,6 +161,7 @@ public class LocalSplitter implements BodyInterceptor {
                       Stmt newBackStmt = withNewUse(backStmt, modifiedUse, modifiedLocal);
                       bodyBuilder.mergeStmt(backStmt, newBackStmt);
                       fitNewTrap(bodyBuilder, backStmt, newBackStmt);
+                      fitVisitList(visitList, backStmt, newBackStmt);
                       backwardsQueue.addAll(bodyBuilder.getStmtGraph().predecessors(newBackStmt));
                     }
                   }
@@ -194,11 +185,20 @@ public class LocalSplitter implements BodyInterceptor {
             }
           }
         }
-      }
-      visited.add(visitedStmt);
-      for (Stmt stmt : bodyBuilder.getStmtGraph().successors(visitedStmt)) {
-        if (!visited.contains(stmt) && !visitedQueue.contains(stmt)) {
-          visitedQueue.add(stmt);
+      }else{
+        for(Local oriL : toSplitLocals){
+          if(visitedStmt.getUses().contains(oriL)){
+            Local lastChange =  oriL.withName(oriL.getName() + "#" + 0);
+            for(Local local : newLocals){
+              if(hasSameOriLocal(local, oriL) && isBiggerName(local, lastChange)){
+                lastChange = local;
+              }
+            }
+            Stmt newVisitedStmt = withNewUse(visitedStmt, oriL, lastChange);
+            bodyBuilder.mergeStmt(visitedStmt, newVisitedStmt);
+            fitNewTrap(bodyBuilder, visitedStmt, newVisitedStmt);
+            fitVisitList(visitList, visitedStmt, newVisitedStmt);
+          }
         }
       }
     }
@@ -236,6 +236,22 @@ public class LocalSplitter implements BodyInterceptor {
     }
     builder.setTraps(traps);
   }
+
+  /**
+   * fit the modified stmt in visitedList
+   *
+   * @param visitList a list storing all stmts whichh are not yet visited
+   * @param oldStmt a stmt which is modified
+   * @param newStmt a modified stmt
+   */
+  protected void fitVisitList(
+          @Nonnull List<Stmt> visitList, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+    if(visitList.contains(oldStmt)){
+      int index = visitList.indexOf(oldStmt);
+      visitList.set(index, newStmt);
+    }
+  }
+
 
   /**
    * Use newDef to replace the def in oldStmt.
@@ -368,5 +384,26 @@ public class LocalSplitter implements BodyInterceptor {
       isBigger = true;
     }
     return isBigger;
+  }
+
+  /**
+   * Check whether local has the same original name.
+   *
+   * @param oriLocal: a local in form oriLocal
+   * @param local: a local must be in form oriLocal#num
+   * @return if so return true, else return false
+   */
+  @Nonnull
+  protected boolean hasSameOriLocal(@Nonnull Local local, @Nonnull Local oriLocal) {
+    boolean isSame = false;
+    String localName = local.getName();
+    int i = localName.indexOf('#');
+    if(i>0){
+      String oriName = localName.substring(0, i);
+      if (oriName.equals(oriLocal.getName())) {
+        isSame = true;
+      }
+    }
+    return isSame;
   }
 }
