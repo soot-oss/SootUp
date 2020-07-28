@@ -1,5 +1,6 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.graph.iterator.StmtGraphBlockIterator;
 import de.upb.swt.soot.core.jimple.Jimple;
@@ -7,6 +8,7 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.ReplaceUseStmtVisitor;
@@ -71,14 +73,11 @@ public class LocalSplitter implements BodyInterceptor {
     }
 
     Set<Local> newLocals = new HashSet<>(newBody.getLocals());
-
     int localIndex = 1;
-    StmtGraphBlockIterator graphIterator = new StmtGraphBlockIterator(bodyBuilder.getStmtGraph(), newBody.getTraps());
-    Map<Stmt, List<Stmt>> trapPositionsMap = new HashMap<>();
-    while(graphIterator.hasNext()){
+    Map<Stmt, Stmt> insertPositions = findTrapPositions(bodyBuilder);
 
-    }
 
+    StmtGraphBlockIterator graphIterator = new StmtGraphBlockIterator(bodyBuilder.getStmtGraph(), bodyBuilder.getStmtGraph().getTraps());
     List<Stmt> visitList = new ArrayList<>();
     while(graphIterator.hasNext()){
       visitList.add(graphIterator.next());
@@ -116,7 +115,6 @@ public class LocalSplitter implements BodyInterceptor {
 
             // 1.case: if uselist of head contains oriLocal, then modify this oriLocal to newLocal
             if (head.getUses().contains(oriLocal)) {
-
               Stmt newHead = withNewUse(head, oriLocal, newLocal);
               bodyBuilder.mergeStmt(head, newHead);
               fitNewTrap(bodyBuilder, head, newHead);
@@ -188,10 +186,51 @@ public class LocalSplitter implements BodyInterceptor {
       }else{
         for(Local oriL : toSplitLocals){
           if(visitedStmt.getUses().contains(oriL)){
-            Local lastChange =  oriL.withName(oriL.getName() + "#" + 0);
-            for(Local local : newLocals){
-              if(hasSameOriLocal(local, oriL) && isBiggerName(local, lastChange)){
-                lastChange = local;
+            Local lastChange = null;
+            Deque<Stmt> queue = new ArrayDeque<>();
+            queue.add(visitedStmt);
+            Set<Stmt> visited = new HashSet<>();
+            List<Stmt> checkPoints = new ArrayList<>();
+            while(!queue.isEmpty()){
+              Stmt stmt = queue.removeFirst();
+              visited.add(stmt);
+              if(insertPositions.keySet().contains(stmt)){
+                checkPoints.add(insertPositions.get(stmt));
+                queue.clear();
+                queue.add(insertPositions.get(stmt));
+              }else{
+                for(Stmt pred: bodyBuilder.getStmtGraph().predecessors(stmt)){
+                  if(!visited.contains(pred)){
+                    queue.add(pred);
+                  }
+                }
+              }
+            }
+            visited.clear();
+            boolean isFound = false;
+            for(Stmt checkPoint : checkPoints){
+              queue.add(checkPoint);
+              while(!queue.isEmpty()){
+                Stmt stmt = queue.removeFirst();
+                visited.add(stmt);
+                if(hasModifiedDef(stmt, oriL)){
+                  lastChange = (Local) stmt.getDefs().get(0);
+                  isFound = true;
+                  break;
+                }else if(hasModifiedUse(stmt, oriL)){
+                  lastChange = getModifiedUse(stmt, oriL);
+                  isFound = true;
+                  break;
+                }else{
+                  for(Stmt pred: bodyBuilder.getStmtGraph().predecessors(stmt)){
+                    if(!visited.contains(pred)){
+                      queue.add(pred);
+                    }
+                  }
+                }
+              }
+              if(isFound){
+                break;
               }
             }
             Stmt newVisitedStmt = withNewUse(visitedStmt, oriL, lastChange);
@@ -405,5 +444,81 @@ public class LocalSplitter implements BodyInterceptor {
       }
     }
     return isSame;
+  }
+
+  /**
+   * find all insert positions of trapblocks
+   *
+   * @param bodyBuilder:
+   * @return a HashMap with
+   *          key: a stmt after that a trapblock should be inserted
+   *          value: a stmt list which stores the handlerStmts
+   */
+  protected Map<Stmt, Stmt> findTrapPositions(@Nonnull BodyBuilder bodyBuilder ){
+    Map<Stmt, Stmt> insertPositions = new HashMap<>();
+    if(bodyBuilder.getStmtGraph().getTraps().isEmpty()){
+      return insertPositions;
+    }else{
+      Map<Stmt, List<Stmt>> trapBlocks = new HashMap<>();
+      for(Trap trap : bodyBuilder.getStmtGraph().getTraps()){
+        Stmt trapSource = trap.getHandlerStmt();
+        Deque<Stmt> queue = new ArrayDeque<>();
+        queue.add(trapSource);
+        List<Stmt> trapStmts = new ArrayList<>();
+        while(!queue.isEmpty()){
+          Stmt stmt = queue.removeFirst();
+          trapStmts.add(stmt);
+          if(stmt instanceof JGotoStmt && queue.isEmpty()){
+            continue;
+          }
+          List<Stmt> succs = bodyBuilder.getStmtGraph().successors(stmt);
+          for(Stmt succ : succs){
+            if(!trapStmts.contains(succ)){
+              queue.addLast(succ);
+            }
+          }
+        }
+        trapBlocks.put(trap.getHandlerStmt(), trapStmts);
+      }
+
+      StmtGraphBlockIterator graphIterator = new StmtGraphBlockIterator(bodyBuilder.getStmtGraph(), bodyBuilder.getStmtGraph().getTraps());
+      List<Stmt> visitList = new ArrayList<>();
+      while(graphIterator.hasNext()){
+        visitList.add(graphIterator.next());
+      }
+      for(Stmt handlerStmt : trapBlocks.keySet()){
+        List<Stmt> trapStmts = new ArrayList<>(trapBlocks.get(handlerStmt));
+        trapStmts.remove(0);
+        int index = visitList.indexOf(handlerStmt)+1;
+        Stmt stmt = visitList.get(index);
+        Stmt nextStmt = visitList.get(index+1);
+        while(!trapStmts.isEmpty()){
+          trapStmts.remove(stmt);
+          if((!trapBlocks.keySet().contains(nextStmt) || trapStmts.isEmpty()) &&  trapBlocks.get(handlerStmt).contains(stmt)){
+            visitList.remove(stmt);
+          }
+          stmt = nextStmt;
+          index = visitList.indexOf(stmt);
+          if(index != visitList.size()-1){
+            nextStmt = visitList.get(index+1);
+          }else{
+            nextStmt = null;
+          }
+        }
+      }
+      int i = 0;
+      while( i < visitList.size()){
+        Stmt stmt = visitList.get(i);
+        if(trapBlocks.keySet().contains(stmt)){
+          int index = visitList.indexOf(stmt);
+          Stmt insertPosition = visitList.get(index-1);
+          visitList.remove(stmt);
+          i--;
+          insertPositions.put(stmt, insertPosition);
+        }
+        i++;
+      }
+      return insertPositions;
+    }
   }
 }
