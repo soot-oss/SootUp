@@ -48,7 +48,7 @@ public class ConditionalBranchFolderTest {
    * Tests the correct handling of an if-statement with inconstant condition. Considers the
    * following code, but does not change anything:
    *
-   * <p>a = "str"; b = a; if(a == b) return a; else return b;
+   * <p>a = "str"; b = "different string"; if(a == b) return a; else return b;
    */
   @Test
   public void testConditionalBranching() {
