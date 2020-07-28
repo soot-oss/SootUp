@@ -145,7 +145,7 @@ public class Body implements Copyable {
     return locals;
   }
 
-  /** Returns a backed view of the traps found in this Body. */
+  /** Returns an unmodifiable view of the traps found in this Body. */
   @Nonnull
   public List<Trap> getTraps() {
     return cfg.getTraps();
@@ -238,8 +238,7 @@ public class Body implements Copyable {
   }
 
   /**
-   * Convenience method to linearize the control flow graph that represents this body into a linear
-   * List of statements.
+   * returns the control flow graph that represents this body into a linear List of statements.
    *
    * @return the statements in this Body
    */
@@ -290,15 +289,10 @@ public class Body implements Copyable {
     final Iterator<Stmt> iterator = predecessors.iterator();
     if (iterator.hasNext()) {
       Stmt pred = iterator.next();
-      if (pred instanceof JIfStmt && ((JIfStmt) pred).getTarget(this) == targetStmt) {
-        return true;
-      }
-
-      if (pred instanceof JGotoStmt) {
-        return true;
-      }
-
-      if (pred instanceof JSwitchStmt) {
+      if (pred.branches()) {
+        if (pred instanceof JIfStmt) {
+          return ((JIfStmt) pred).getTarget(this) == targetStmt;
+        }
         return true;
       }
     }
@@ -404,8 +398,13 @@ public class Body implements Copyable {
       setMethodSignature(body.getMethodSignature());
       setLocals(body.getLocals());
       setPosition(body.getPosition());
-      cfg = MutableStmtGraph.copyOf(body.getStmtGraph());
+      cfg = new MutableStmtGraph(body.getStmtGraph());
       setTraps(body.getTraps());
+    }
+
+    @Nonnull
+    public StmtGraph getStmtGraph() {
+      return cfg.unmodifiableStmtGraph();
     }
 
     @Nonnull

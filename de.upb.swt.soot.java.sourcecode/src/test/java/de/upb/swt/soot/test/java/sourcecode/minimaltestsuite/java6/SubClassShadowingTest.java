@@ -3,8 +3,6 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 import static org.junit.Assert.assertEquals;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.graph.AbstractStmtGraph;
-import de.upb.swt.soot.core.graph.BriefStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
@@ -56,26 +54,6 @@ public class SubClassShadowingTest extends MinimalSourceTestSuiteBase {
       }
     }
     assertEquals(2, classTypes.size());
-  }
-
-  @Test
-  public void testLocalSplitter() {
-    SootMethod sootMethod = loadMethod(getMethodSig());
-    Body methodBody = sootMethod.getBody();
-    AbstractStmtGraph graph = new BriefStmtGraph(methodBody);
-    int i = 0;
-    for (Stmt stmt : methodBody.getStmts()) {
-      if (i == 3) {
-        List<Stmt> succes = graph.getSuccsOf(stmt);
-        System.out.println(succes);
-      }
-      i++;
-    }
-  }
-
-  public MethodSignature getMethodSig() {
-    return identifierFactory.getMethodSignature(
-        "testls", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Override

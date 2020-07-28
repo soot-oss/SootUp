@@ -49,7 +49,6 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
   public void ifElseIfStatement() {
-    // TODO: unnecessary variable self assignment in jimple
     SootMethod method = loadMethod(getMethodSignature("ifElseIfStatement"));
     assertJimpleStmts(
         method,
@@ -68,13 +67,11 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 3",
             "label3:",
             "$stack3 = l2",
-            "$stack3 = $stack3",
             "return $stack3"));
   }
 
   @Test
   public void ifElseCascadingStatement() {
-    // TODO: (same) unnecessary variable self assignment in jimple
     SootMethod method = loadMethod(getMethodSignature("ifElseCascadingStatement"));
     assertJimpleStmts(
         method,
@@ -93,13 +90,11 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 3",
             "label3:",
             "$stack3 = l2",
-            "$stack3 = $stack3",
             "return $stack3"));
   }
 
   @Test
   public void ifElseCascadingInElseStatement() {
-    // TODO: (same) unnecessary variable self assignment in jimple
     SootMethod method = loadMethod(getMethodSignature("ifElseCascadingInElseStatement"));
     assertJimpleStmts(
         method,
@@ -118,13 +113,11 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 22",
             "label3:",
             "$stack3 = l2",
-            "$stack3 = $stack3",
             "return $stack3"));
   }
 
   @Test
   public void ifElseCascadingElseIfStatement() {
-    // TODO: (same?) unnecessary variable self assignment - multiple times - in jimple
     SootMethod method = loadMethod(getMethodSignature("ifElseCascadingElseIfStatement"));
     assertJimpleStmts(
         method,
@@ -147,14 +140,11 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 2",
             "label4:",
             "$stack3 = l2",
-            "$stack3 = $stack3",
-            "$stack3 = $stack3",
             "return $stack3"));
   }
 
   @Test
   public void ifElseCascadingElseIfInElseStatement() {
-    // TODO: (same) unnecessary variable self assignment - multiple times - in jimple
     SootMethod method = loadMethod(getMethodSignature("ifElseCascadingElseIfInElseStatement"));
     assertJimpleStmts(
         method,
@@ -177,8 +167,6 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 23",
             "label4:",
             "$stack3 = l2",
-            "$stack3 = $stack3",
-            "$stack3 = $stack3",
             "return $stack3"));
   }
 

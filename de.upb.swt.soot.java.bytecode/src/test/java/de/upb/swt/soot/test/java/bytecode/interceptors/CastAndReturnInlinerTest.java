@@ -1,7 +1,6 @@
 package de.upb.swt.soot.test.java.bytecode.interceptors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -14,10 +13,7 @@ import de.upb.swt.soot.java.bytecode.interceptors.CastAndReturnInliner;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -29,8 +25,10 @@ public class CastAndReturnInlinerTest {
    *
    * <pre>
    * a = "str";
-   * goto l0;
-   * l0: b = (String) a;
+   * goto label0;
+   * ...
+   * label0:
+   * b = (String) a;
    * return b;
    * </pre>
    *
@@ -38,9 +36,7 @@ public class CastAndReturnInlinerTest {
    *
    * <pre>
    * a = "str";
-   * return a; // This has changed
-   * l0: b = (String) a;
-   * return b;
+   * return a;
    * </pre>
    */
   @Test
@@ -76,12 +72,10 @@ public class CastAndReturnInlinerTest {
 
     Body processedBody = new CastAndReturnInliner().interceptBody(testBody);
 
-    Set<Stmt> expected = new HashSet<>();
+    List<Stmt> expected = new ArrayList<>();
     expected.add(strToA);
-    expected.add(bToA);
     expected.add(JavaJimple.newReturnStmt(a, noPositionInfo));
-    expected.add(ret);
-    assertStmtsEquiv(expected, processedBody.getStmtGraph().nodes());
+    assertStmtsEquiv(expected, processedBody.getStmts());
   }
 
   /**
@@ -132,12 +126,13 @@ public class CastAndReturnInlinerTest {
 
     Body processedBody = new CastAndReturnInliner().interceptBody(testBody);
 
-    assertStmtsEquiv(testBody.getStmtGraph().nodes(), processedBody.getStmtGraph().nodes());
+    assertStmtsEquiv(testBody.getStmts(), processedBody.getStmts());
   }
 
-  private static void assertStmtsEquiv(Set<Stmt> expected, Set<Stmt> actual) {
-    assertNotNull(expected);
-    assertNotNull(actual);
+  private static void assertStmtsEquiv(List<Stmt> expected, List<Stmt> actual) {
     assertEquals(expected.size(), actual.size());
+    for (int i = 0; i < expected.size(); i++) {
+      assertTrue(expected.get(i).equivTo(actual.get(i)));
+    }
   }
 }

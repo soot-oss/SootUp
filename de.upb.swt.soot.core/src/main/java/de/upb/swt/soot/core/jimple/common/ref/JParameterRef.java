@@ -97,7 +97,7 @@ public final class JParameterRef implements IdentityRef, Copyable {
   /** Used with RefSwitch. */
   @Override
   public void accept(Visitor sw) {
-    ((RefVisitor)sw).caseParameterRef(this);
+    ((RefVisitor) sw).caseParameterRef(this);
   }
 
   @Nonnull

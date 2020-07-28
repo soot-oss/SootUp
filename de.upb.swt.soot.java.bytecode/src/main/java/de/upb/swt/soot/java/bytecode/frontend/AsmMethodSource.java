@@ -78,24 +78,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.IincInsnNode;
-import org.objectweb.asm.tree.InsnNode;
-import org.objectweb.asm.tree.IntInsnNode;
-import org.objectweb.asm.tree.InvokeDynamicInsnNode;
-import org.objectweb.asm.tree.JumpInsnNode;
-import org.objectweb.asm.tree.LabelNode;
-import org.objectweb.asm.tree.LdcInsnNode;
-import org.objectweb.asm.tree.LineNumberNode;
-import org.objectweb.asm.tree.LocalVariableNode;
-import org.objectweb.asm.tree.LookupSwitchInsnNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MultiANewArrayInsnNode;
-import org.objectweb.asm.tree.TableSwitchInsnNode;
-import org.objectweb.asm.tree.TryCatchBlockNode;
-import org.objectweb.asm.tree.TypeInsnNode;
-import org.objectweb.asm.tree.VarInsnNode;
+import org.objectweb.asm.tree.*;
 
 /**
  * A {@link MethodSource} that can read Java bytecode
@@ -123,7 +106,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private Map<Integer, Local> locals;
   private LinkedListMultimap<Stmt, LabelNode> stmtsThatBranchToLabel;
   private Map<AbstractInsnNode, Stmt> InsnToStmt;
-  private ArrayList<Operand> stack;
+
+  private List<Operand> stack;
   private Map<AbstractInsnNode, StackFrame> frames;
   private Map<LabelNode, Stmt> trapHandler;
   private int lastLineNumber = -1;
@@ -487,7 +471,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       frame.setOut(opr);
     } else {
       opr = out[0];
-      type = opr.<JFieldRef>value().getFieldSignature().getType();
+      type = ((JFieldRef) opr.value).getFieldSignature().getType();
       if (insn.getOpcode() == GETFIELD) {
         frame.mergeIn(pop());
       }
@@ -535,7 +519,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       setStmt(insn, as);
     } else {
       opr = out[0];
-      type = opr.<JFieldRef>value().getFieldSignature().getType();
+      type = ((JFieldRef) opr.value).getFieldSignature().getType();
       rvalue = pop(type);
       if (notInstance) {
         /* PUTSTATIC only needs one operand on the stack, the rvalue */
@@ -1738,48 +1722,27 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   /* Conversion */
 
-  // FIXME: [AD] is it reasonable to get rid of it?
-  private final class Edge {
-    /* edge endpoint */
-    @Nonnull final AbstractInsnNode insn;
-    /* previous stacks at edge */
-    final LinkedList<Operand[]> prevStacks;
-    /* current stack at edge */
-    ArrayList<Operand> stack;
-
-    Edge(AbstractInsnNode insn, ArrayList<Operand> stack) {
-      this.insn = insn;
-      this.prevStacks = new LinkedList<>();
-      this.stack = stack;
-    }
-
-    Edge(@Nonnull AbstractInsnNode insn) {
-      this(insn, new ArrayList<>(AsmMethodSource.this.stack));
-    }
-  }
-
-  private Table<AbstractInsnNode, AbstractInsnNode, Edge> edges;
-  private ArrayDeque<Edge> conversionWorklist;
-
   private void addEdges(
+      @Nonnull Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges,
+      @Nonnull ArrayDeque<BranchedInsnInfo> conversionWorklist,
       @Nonnull AbstractInsnNode cur,
       @Nonnull AbstractInsnNode tgt,
       @Nullable List<LabelNode> tgts) {
     int lastIdx = tgts == null ? 0 : tgts.size();
-    Operand[] stackss = (new ArrayList<>(stack)).toArray(new Operand[stack.size()]);
+    Operand[] stackss = stack.toArray(new Operand[0]);
     int i = 0;
     tgt_loop:
     do {
-      Edge edge = edges.get(cur, tgt);
+      BranchedInsnInfo edge = edges.get(cur, tgt);
       if (edge == null) {
-        edge = new Edge(tgt);
-        edge.prevStacks.add(stackss);
+        edge = new BranchedInsnInfo(tgt, stack);
+        edge.addToPrevStack(stackss);
         edges.put(cur, tgt, edge);
         conversionWorklist.add(edge);
         continue;
       }
-      if (edge.stack != null) {
-        ArrayList<Operand> stackTemp = edge.stack;
+      if (edge.getStack() != null) {
+        List<Operand> stackTemp = edge.getStack();
         if (stackTemp.size() != stackss.length) {
           throw new AssertionError("Multiple un-equal stacks!");
         }
@@ -1790,20 +1753,20 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         }
         continue;
       }
-      for (Operand[] ps : edge.prevStacks) {
+      final LinkedList<Operand[]> prevStacks = edge.getPrevStacks();
+      for (Operand[] ps : prevStacks) {
         if (Arrays.equals(ps, stackss)) {
           continue tgt_loop;
         }
       }
-      edge.stack = new ArrayList<>(stack);
-      edge.prevStacks.add(stackss);
+      edge.replaceStack(stack);
+      prevStacks.add(stackss);
       conversionWorklist.add(edge);
     } while (i < lastIdx && (tgt = tgts.get(i++)) != null);
   }
 
-  @SuppressWarnings("StatementWithEmptyBody")
   private void convert() {
-    ArrayDeque<Edge> worklist = new ArrayDeque<>();
+    ArrayDeque<BranchedInsnInfo> worklist = new ArrayDeque<>();
     for (LabelNode ln : trapHandler.keySet()) {
       if (checkInlineExceptionHandler(ln)) {
         // Catch the exception
@@ -1815,25 +1778,21 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         Operand opr = new Operand(ln, ref);
         opr.stack = local;
 
-        ArrayList<Operand> operandStack = new ArrayList<>();
-        operandStack.add(opr);
-        worklist.add(new Edge(ln, operandStack));
+        worklist.add(new BranchedInsnInfo(ln, Collections.singletonList(opr)));
 
         // Save the statements
         inlineExceptionHandlers.put(ln, as);
       } else {
-        worklist.add(new Edge(ln, new ArrayList<>()));
+        worklist.add(new BranchedInsnInfo(ln));
       }
     }
-    worklist.add(new Edge(instructions.getFirst(), new ArrayList<>()));
-    conversionWorklist = worklist;
-    edges = HashBasedTable.create(1, 1);
+    worklist.add(new BranchedInsnInfo(instructions.getFirst()));
+    Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges = HashBasedTable.create(1, 1);
 
     do {
-      Edge edge = worklist.pollLast();
-      AbstractInsnNode insn = edge.insn;
-      stack = edge.stack;
-      edge.stack = null;
+      BranchedInsnInfo edge = worklist.pollLast();
+      AbstractInsnNode insn = edge.getInsn();
+      stack = edge.getStack();
       do {
         int type = insn.getType();
         if (type == FIELD_INSN) {
@@ -1860,16 +1819,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           if (op != GOTO) {
             /* ifX opcode, i.e. two successors */
             AbstractInsnNode next = insn.getNext();
-            addEdges(insn, next, Collections.singletonList(jmp.label));
+            addEdges(edges, worklist, insn, next, Collections.singletonList(jmp.label));
           } else {
-            addEdges(insn, jmp.label, null);
+            addEdges(edges, worklist, insn, jmp.label, null);
           }
           break;
         } else if (type == LOOKUPSWITCH_INSN) {
           LookupSwitchInsnNode swtch = (LookupSwitchInsnNode) insn;
           convertLookupSwitchInsn(swtch);
           LabelNode dflt = swtch.dflt;
-          addEdges(insn, dflt, swtch.labels);
+          addEdges(edges, worklist, insn, dflt, swtch.labels);
           break;
         } else if (type == METHOD_INSN) {
           convertMethodInsn((MethodInsnNode) insn);
@@ -1881,7 +1840,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           TableSwitchInsnNode swtch = (TableSwitchInsnNode) insn;
           convertTableSwitchInsn(swtch);
           LabelNode dflt = swtch.dflt;
-          addEdges(insn, dflt, swtch.labels);
+          addEdges(edges, worklist, insn, dflt, swtch.labels);
           break;
         } else if (type == TYPE_INSN) {
           convertTypeInsn((TypeInsnNode) insn);
@@ -1894,15 +1853,15 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           convertLabel((LabelNode) insn);
         } else if (type == LINE) {
           convertLine((LineNumberNode) insn);
-        } else if (type == FRAME) {
+        } else
+        //noinspection StatementWithEmptyBody
+        if (type == FRAME) {
           // we can ignore it
         } else {
           throw new RuntimeException("Unknown instruction type: " + type);
         }
       } while ((insn = insn.getNext()) != null);
     } while (!worklist.isEmpty());
-    conversionWorklist = null;
-    edges = null;
   }
 
   private boolean checkInlineExceptionHandler(@Nonnull LabelNode ln) {
@@ -1944,12 +1903,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
               l, Jimple.newThisRef(declaringClass), StmtPositionInfo.createNoStmtPositionInfo()));
     }
     int nrp = 0;
-    for (Type ot : methodSignature.getParameterTypes()) {
-      Local l = getLocal(iloc);
+    for (Type parameterType : methodSignature.getParameterTypes()) {
+      Local local = getLocal(iloc);
       emitStmt(
           Jimple.newIdentityStmt(
-              l, Jimple.newParameterRef(ot, nrp++), StmtPositionInfo.createNoStmtPositionInfo()));
-      if (AsmUtil.isDWord(ot)) {
+              local,
+              Jimple.newParameterRef(parameterType, nrp++),
+              StmtPositionInfo.createNoStmtPositionInfo()));
+      if (AsmUtil.isDWord(parameterType)) {
         iloc += 2;
       } else {
         iloc++;

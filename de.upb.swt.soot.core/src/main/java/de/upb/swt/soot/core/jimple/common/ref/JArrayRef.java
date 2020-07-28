@@ -151,7 +151,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
 
   @Override
   public void accept(Visitor sw) {
-    ((RefVisitor)sw).caseArrayRef(this);
+    ((RefVisitor) sw).caseArrayRef(this);
   }
 
   @Nonnull

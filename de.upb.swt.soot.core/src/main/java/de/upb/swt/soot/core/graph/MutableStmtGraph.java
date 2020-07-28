@@ -30,83 +30,44 @@ import javax.annotation.Nullable;
  */
 public class MutableStmtGraph extends StmtGraph {
 
-  @Nonnull protected final Map<Stmt, List<Stmt>> predecessors = new HashMap<>();
-  @Nonnull protected final Map<Stmt, List<Stmt>> successors = new HashMap<>();
-  @Nonnull protected final Set<Stmt> stmtList = new HashSet<>();
+  @Nonnull protected final ArrayList<List<Stmt>> predecessors;
+  @Nonnull protected final ArrayList<List<Stmt>> successors;
+  @Nonnull protected final Map<Stmt, Integer> stmtToIdx;
+  private int nextFreeId = 0;
 
   @Nullable protected Stmt startingStmt;
   @Nonnull protected List<Trap> traps = Collections.emptyList();
 
-  public static MutableStmtGraph copyOf(@Nonnull StmtGraph originalStmtGraph) {
-    final MutableStmtGraph copiedGraph = new MutableStmtGraph();
-    copiedGraph.setStartingStmt(originalStmtGraph.getStartingStmt());
-
-    for (Stmt node : originalStmtGraph.nodes()) {
-      copiedGraph.addNode(node);
-
-      final List<Stmt> pred = originalStmtGraph.predecessors(node);
-      copiedGraph.predecessors.put(node, new ArrayList<>(pred));
-
-      final List<Stmt> succ = originalStmtGraph.successors(node);
-      copiedGraph.successors.put(node, new ArrayList<>(succ));
-    }
-
-    return copiedGraph;
+  /** creates an empty instance of MutableStmtGraph */
+  public MutableStmtGraph() {
+    predecessors = new ArrayList<>();
+    successors = new ArrayList<>();
+    stmtToIdx = new HashMap<>();
   }
 
-  public StmtGraph asUnmodifiableStmtGraph() {
-    StmtGraph graphRef = this;
-    return new StmtGraph() {
-      @Override
-      @Nonnull
-      public List<Trap> getTraps() {
-        return graphRef.getTraps();
-      }
+  /** creates a mutable copy(!) of originalStmtGraph */
+  public MutableStmtGraph(@Nonnull StmtGraph originalStmtGraph) {
+    setStartingStmt(originalStmtGraph.getStartingStmt());
 
-      @Nonnull
-      @Override
-      public Stmt getStartingStmt() {
-        return graphRef.getStartingStmt();
-      }
+    final Set<Stmt> nodes = originalStmtGraph.nodes();
+    final int nodeSize = nodes.size();
+    predecessors = new ArrayList<>(nodeSize);
+    successors = new ArrayList<>(nodeSize);
+    stmtToIdx = new HashMap<>(nodeSize);
 
-      @Nonnull
-      @Override
-      public Set<Stmt> nodes() {
-        return graphRef.nodes();
-      }
+    for (Stmt node : nodes) {
+      int idx = addNode(node);
 
-      @Nonnull
-      @Override
-      public List<Stmt> predecessors(@Nonnull Stmt node) {
-        return graphRef.predecessors(node);
-      }
+      final List<Stmt> pred = originalStmtGraph.predecessors(node);
+      predecessors.set(idx, new ArrayList<>(pred));
 
-      @Nonnull
-      @Override
-      public List<Stmt> successors(@Nonnull Stmt node) {
-        return graphRef.successors(node);
-      }
+      final List<Stmt> succ = originalStmtGraph.successors(node);
+      successors.set(idx, new ArrayList<>(succ));
+    }
+  }
 
-      @Override
-      public int degree(@Nonnull Stmt node) {
-        return graphRef.degree(node);
-      }
-
-      @Override
-      public int inDegree(@Nonnull Stmt node) {
-        return graphRef.inDegree(node);
-      }
-
-      @Override
-      public int outDegree(@Nonnull Stmt node) {
-        return graphRef.outDegree(node);
-      }
-
-      @Override
-      public boolean hasEdgeConnecting(@Nonnull Stmt nodeU, @Nonnull Stmt nodeV) {
-        return graphRef.hasEdgeConnecting(nodeU, nodeV);
-      }
-    };
+  public StmtGraph unmodifiableStmtGraph() {
+    return new ForwardingStmtGraph(this);
   }
 
   public void setStartingStmt(@Nonnull Stmt firstStmt) {
@@ -127,55 +88,79 @@ public class MutableStmtGraph extends StmtGraph {
     return startingStmt;
   }
 
-  public void addNode(@Nonnull Stmt node) {
-    stmtList.add(node);
+  public int addNode(@Nonnull Stmt node) {
+    final int idx = nextFreeId++;
+    stmtToIdx.put(node, idx);
+    predecessors.add(
+        new ArrayList<>(1)); // [ms] hint: wastes an entry if its the TrapHandler or firststmt
+
+    final int calculatedSuccessorSize;
+    if (node instanceof JSwitchStmt) {
+      calculatedSuccessorSize = ((JSwitchStmt) node).getValueCount();
+    } else if (node instanceof JIfStmt) {
+      calculatedSuccessorSize = 2;
+    } else {
+      calculatedSuccessorSize = 1;
+    }
+
+    // sets successors at successors[idx]
+    successors.add(new ArrayList<>(calculatedSuccessorSize));
+    return idx;
   }
 
   public void removeNode(@Nonnull Stmt node) {
-    if (stmtList.remove(node)) {
-      predecessors
-          .getOrDefault(node, Collections.emptyList())
-          .forEach(pred -> successors.get(pred).remove(node));
-      predecessors.remove(node);
-      successors
-          .getOrDefault(node, Collections.emptyList())
-          .forEach(succ -> predecessors.get(succ).remove(node));
-      successors.remove(node);
-    }
+    final int nodeIdx = existsNodeOrThrow(node);
+    stmtToIdx.remove(node);
+
+    // cleanup edges
+    final List<Stmt> preds = predecessors.get(nodeIdx);
+    preds.forEach(pred -> successors.get(existsNodeOrThrow(pred)).remove(node));
+    predecessors.set(nodeIdx, null); // invalidate entry
+
+    final List<Stmt> succs = successors.get(nodeIdx);
+    succs.forEach(succ -> predecessors.get(existsNodeOrThrow(succ)).remove(node));
+    successors.set(nodeIdx, null); // invalidate entry
   }
 
-  private void existsNodeOrThrow(@Nonnull Stmt node) {
-    if (!containsNode(node)) {
+  private int existsNodeOrThrow(@Nonnull Stmt node) {
+    final Integer idx = stmtToIdx.get(node);
+    if (idx == null) {
       addNode(node);
       throw new RuntimeException("'" + node + "' is currently not a Node in this StmtGraph.");
     }
+    return idx;
   }
 
   public boolean containsNode(@Nonnull Stmt node) {
-    return stmtList.contains(node);
+    return stmtToIdx.containsKey(node);
   }
 
   public void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
-    existsNodeOrThrow(from);
-    existsNodeOrThrow(to);
+    int fromIdx = existsNodeOrThrow(from);
+    int toIdx = existsNodeOrThrow(to);
 
-    final List<Stmt> pred = predecessors.get(to);
+    final List<Stmt> pred = predecessors.get(toIdx);
     if (pred != null) {
       pred.remove(from);
       if (degree(to) == 0) {
-        stmtList.remove(to);
+        stmtToIdx.remove(to);
       }
     }
-    final List<Stmt> succ = successors.get(from);
+    final List<Stmt> succ = successors.get(fromIdx);
     if (succ != null) {
       succ.remove(to);
       if (degree(from) == 0) {
-        stmtList.remove(from);
+        stmtToIdx.remove(from);
       }
     }
   }
 
   public void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets) {
+    Integer fromIdx = stmtToIdx.get(from);
+    if (fromIdx == null) {
+      fromIdx = addNode(from);
+    }
+
     targets.forEach(
         node -> {
           if (!containsNode(node)) {
@@ -187,55 +172,44 @@ public class MutableStmtGraph extends StmtGraph {
         });
 
     // cleanup existing edges before replacing it with the new list with successors
-    successors(from).forEach(succ -> predecessors.get(succ).remove(from));
+    successors(from).forEach(succ -> predecessors.get(existsNodeOrThrow(succ)).remove(from));
 
     for (Stmt target : targets) {
-      final List<Stmt> pred = predecessors.computeIfAbsent(target, key -> new ArrayList<>(1));
-      pred.add(from);
+      predecessors.get(existsNodeOrThrow(target)).add(from);
     }
-
-    successors.put(from, targets);
+    successors.set(fromIdx, targets);
   }
 
   public void putEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
     if (from == to) {
       throw new RuntimeException("A Stmt can't flow to itself.");
     }
-    if (!containsNode(from)) {
-      addNode(from);
-    }
-    if (!containsNode(to)) {
-      addNode(to);
-    }
 
-    final List<Stmt> pred = predecessors.computeIfAbsent(to, key -> new ArrayList<>(1));
-    pred.add(from);
-
-    final int predictedSuccessorSize;
-    if (from instanceof JSwitchStmt) {
-      predictedSuccessorSize = ((JSwitchStmt) from).getValueCount();
-    } else if (from instanceof JIfStmt) {
-      predictedSuccessorSize = 2;
-    } else {
-      predictedSuccessorSize = 1;
+    Integer fromIdx = stmtToIdx.get(from);
+    if (fromIdx == null) {
+      fromIdx = addNode(from);
     }
 
-    final List<Stmt> succ =
-        successors.computeIfAbsent(from, key -> new ArrayList<>(predictedSuccessorSize));
-    succ.add(to);
+    Integer toIdx = stmtToIdx.get(to);
+    if (toIdx == null) {
+      toIdx = addNode(to);
+    }
+
+    predecessors.get(toIdx).add(from);
+    successors.get(fromIdx).add(to);
   }
 
   @Override
   @Nonnull
   public Set<Stmt> nodes() {
-    return Collections.unmodifiableSet(stmtList);
+    return Collections.unmodifiableSet(stmtToIdx.keySet());
   }
 
   @Nonnull
   public List<Stmt> adjacentNodes(@Nonnull Stmt node) {
-    existsNodeOrThrow(node);
-    final List<Stmt> pred = predecessors.get(node);
-    final List<Stmt> succ = successors.get(node);
+    int nodeIdx = existsNodeOrThrow(node);
+    final List<Stmt> pred = predecessors.get(nodeIdx);
+    final List<Stmt> succ = successors.get(nodeIdx);
     final int predSize = (pred == null ? 0 : pred.size());
     final int succSize = (succ == null ? 0 : succ.size());
     final int degree = predSize + succSize;
@@ -256,8 +230,8 @@ public class MutableStmtGraph extends StmtGraph {
   @Override
   @Nonnull
   public List<Stmt> predecessors(@Nonnull Stmt node) {
-    existsNodeOrThrow(node);
-    final List<Stmt> stmts = predecessors.get(node);
+    int nodeIdx = existsNodeOrThrow(node);
+    final List<Stmt> stmts = predecessors.get(nodeIdx);
     if (stmts == null) {
       return Collections.emptyList();
     }
@@ -267,8 +241,8 @@ public class MutableStmtGraph extends StmtGraph {
   @Override
   @Nonnull
   public List<Stmt> successors(@Nonnull Stmt node) {
-    existsNodeOrThrow(node);
-    final List<Stmt> stmts = successors.get(node);
+    int nodeIdx = existsNodeOrThrow(node);
+    final List<Stmt> stmts = successors.get(nodeIdx);
     if (stmts == null) {
       return Collections.emptyList();
     }
@@ -276,27 +250,23 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   @Override
-  public int degree(@Nonnull Stmt node) {
-    return inDegree(node) + outDegree(node);
-  }
-
-  @Override
   public int inDegree(@Nonnull Stmt node) {
-    existsNodeOrThrow(node);
-    final List<Stmt> stmts = predecessors.get(node);
+    int nodeIdx = existsNodeOrThrow(node);
+    final List<Stmt> stmts = predecessors.get(nodeIdx);
     return stmts == null ? 0 : stmts.size();
   }
 
   @Override
   public int outDegree(@Nonnull Stmt node) {
-    existsNodeOrThrow(node);
-    final List<Stmt> stmts = successors.get(node);
+    int nodeIdx = existsNodeOrThrow(node);
+    final List<Stmt> stmts = successors.get(nodeIdx);
     return stmts == null ? 0 : stmts.size();
   }
 
   @Override
   public boolean hasEdgeConnecting(@Nonnull Stmt from, @Nonnull Stmt to) {
-    final List<Stmt> stmts = successors.get(from);
+    int fromIdx = existsNodeOrThrow(from);
+    final List<Stmt> stmts = successors.get(fromIdx);
     return stmts != null && stmts.contains(to);
   }
 }

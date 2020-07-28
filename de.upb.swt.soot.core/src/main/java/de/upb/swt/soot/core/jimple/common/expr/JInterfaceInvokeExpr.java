@@ -95,6 +95,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
     argBoxesToPrinter(up);
     up.literal(")");
   }
+
   @Override
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseInterfaceInvokeExpr(this);

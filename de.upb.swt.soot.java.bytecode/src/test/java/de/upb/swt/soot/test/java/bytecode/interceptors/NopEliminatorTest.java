@@ -27,11 +27,11 @@ public class NopEliminatorTest {
    * Tests the correct handling of a nop statement at the end of the stmtList. It should be deleted.
    * Transforms from
    *
-   * <p>a = "str"; goto label1; b = (java.lang.String) a; label1: return b; nop;
+   * <p>a = "str"; goto label1; label1: b = (java.lang.String) a; nop; return b;
    *
    * <p>to
    *
-   * <p>a = "str"; goto label1; b = (java.lang.String) a; label1: return b;
+   * <p>a = "str"; goto label1; label1: b = (java.lang.String) a; return b;
    */
   @Test
   public void testJNopEnd() {
@@ -91,13 +91,15 @@ public class NopEliminatorTest {
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
     builder.addFlow(strToA, jump);
+    builder.addFlow(jump, bToA);
     builder.addFlow(bToA, ret);
     if (withNop) {
       // strToA, jump, bToA, ret, nop;
       JNopStmt nop = new JNopStmt(noPositionInfo);
+      builder.removeFlow(bToA, ret);
+      builder.addFlow(bToA, nop);
       builder.addFlow(nop, ret);
     }
-    builder.addFlow(jump, ret);
     builder.setLocals(locals);
     builder.setTraps(traps);
     builder.setPosition(NoPositionInformation.getInstance());

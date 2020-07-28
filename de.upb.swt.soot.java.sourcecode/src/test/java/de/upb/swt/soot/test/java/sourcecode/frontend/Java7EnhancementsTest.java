@@ -38,7 +38,7 @@ public class Java7EnhancementsTest {
     Utils.outputJimple(klass, false);
   }
 
-  @Test
+  @Ignore
   public void testCatchMultipleExceptionTypes() {
     declareClassSig = typeFactory.getClassType("CatchMultipleExceptionTypes");
     Optional<SootClass> c = loader.getSootClass(declareClassSig);

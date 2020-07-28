@@ -21,11 +21,19 @@ public abstract class StmtGraph implements Iterable<Stmt> {
 
   public abstract Stmt getStartingStmt();
 
-  /** returns the nodes in this graph. */
+  /**
+   * returns the nodes in this graph in no deterministic order (->Set) to get a linearized flow use
+   * iterator().
+   */
   @Nonnull
   public abstract Set<Stmt> nodes();
 
-  /** returns the ingoing flows to node as an ordered List. */
+  public abstract boolean containsNode(@Nonnull Stmt node);
+
+  /**
+   * returns the ingoing flows to node as an List with no reliable/specific order and possibly
+   * duplicate entries (like successors(Stmt).
+   */
   @Nonnull
   public abstract List<Stmt> predecessors(@Nonnull Stmt node);
 
@@ -34,7 +42,9 @@ public abstract class StmtGraph implements Iterable<Stmt> {
   public abstract List<Stmt> successors(@Nonnull Stmt node);
 
   /** returns the amount of flows with node as source or target. */
-  public abstract int degree(@Nonnull Stmt node);
+  public int degree(@Nonnull Stmt node) {
+    return inDegree(node) + outDegree(node);
+  }
 
   /** returns the amount of ingoing flows into node */
   public abstract int inDegree(@Nonnull Stmt node);
@@ -45,6 +55,7 @@ public abstract class StmtGraph implements Iterable<Stmt> {
   /** returns true if there is a flow between source and target */
   public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
 
+  /** returns a list of associated traps */
   @Nonnull
   public abstract List<Trap> getTraps();
 
@@ -140,9 +151,15 @@ public abstract class StmtGraph implements Iterable<Stmt> {
       final int successorCount = successors.size();
 
       if (predecessors(stmt).size() == 0) {
-        // TODO: assert(stmt == getStartStmt() ||
-        // traps.stream().map(Trap::getHandlerStmt).anyMatch(handler -> handler == stmt) );
-        // [ms] integrate traps from Body into StmtGraph?
+        if (!(stmt == getStartingStmt()
+            || getTraps().stream()
+                .map(Trap::getHandlerStmt)
+                .anyMatch(handler -> handler == stmt))) {
+          throw new RuntimeException(
+              "Stmt '"
+                  + stmt
+                  + "' which is not the StartingStmt or a TrapHandler is missing a predecessor!");
+        }
       }
 
       if (stmt instanceof BranchingStmt) {
@@ -191,6 +208,8 @@ public abstract class StmtGraph implements Iterable<Stmt> {
     }
   }
 
+  @Override
+  @Nonnull
   public Iterator<Stmt> iterator() {
     return new StmtGraphBlockIterator(this, getTraps());
   }

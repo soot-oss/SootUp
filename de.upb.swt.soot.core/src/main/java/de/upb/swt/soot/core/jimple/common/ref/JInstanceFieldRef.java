@@ -72,7 +72,7 @@ public final class JInstanceFieldRef extends JFieldRef implements Copyable {
 
   @Override
   public void accept(Visitor sw) {
-    ((RefVisitor)sw).caseInstanceFieldRef(this);
+    ((RefVisitor) sw).caseInstanceFieldRef(this);
   }
 
   @Override

@@ -216,14 +216,9 @@ public class WalaIRToJimpleConverter {
     List<Type> paraTypes = new ArrayList<>();
     List<String> sigs = new ArrayList<>();
     if (walaMethod.symbolTable() != null) {
-      for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
+
+      for (int i = walaMethod.isStatic() ? 0 : 1; i < walaMethod.getNumberOfParameters(); i++) {
         TypeReference type = walaMethod.getParameterType(i);
-        if (i == 0) {
-          if (!walaMethod.isStatic()) {
-            // ignore this pointer
-            continue;
-          }
-        }
         Type paraType = convertType(type);
         paraTypes.add(identifierFactory.getType(paraType.toString()));
         sigs.add(paraType.toString());

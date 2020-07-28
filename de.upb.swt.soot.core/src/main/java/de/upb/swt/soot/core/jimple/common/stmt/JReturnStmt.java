@@ -76,10 +76,6 @@ public final class JReturnStmt extends AbstractOpStmt implements Copyable {
     return comparator.caseReturnStmt(this, o);
   }
 
-  public JReturnStmt withOp(Value op) {
-    return new JReturnStmt(op, getPositionInfo());
-  }
-
   @Nonnull
   public JReturnStmt withReturnValue(@Nonnull Immediate returnValue) {
     return new JReturnStmt(returnValue, getPositionInfo());
