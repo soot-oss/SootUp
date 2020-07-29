@@ -70,9 +70,9 @@ public class PrinterTest {
     final JNopStmt jNop = new JNopStmt(noPosInfo);
     Body.BodyBuilder bodyBuilder = Body.builder();
 
-    // bodyBuilder.addStmt(jNop);
-    // bodyBuilder.addStmt(returnVoidStmt, true);
     bodyBuilder
+        .setStartingStmt(jNop)
+        .addFlow(jNop, returnVoidStmt)
         .setMethodSignature(methodSignatureOne)
         .setPosition(NoPositionInformation.getInstance());
     Body bodyOne = bodyBuilder.build();

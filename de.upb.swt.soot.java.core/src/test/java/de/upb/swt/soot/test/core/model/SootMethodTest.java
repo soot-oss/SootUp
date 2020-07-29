@@ -58,9 +58,10 @@ public class SootMethodTest {
     final JReturnVoidStmt returnVoidStmt =
         new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
 
-    bodyBuilder.addFlow(firstStmt, returnVoidStmt);
     Body body =
         bodyBuilder
+            .setStartingStmt(firstStmt)
+            .addFlow(firstStmt, returnVoidStmt)
             .setMethodSignature(methodSignature)
             .setLocals(generator.getLocals())
             .setTraps(Collections.emptyList())
