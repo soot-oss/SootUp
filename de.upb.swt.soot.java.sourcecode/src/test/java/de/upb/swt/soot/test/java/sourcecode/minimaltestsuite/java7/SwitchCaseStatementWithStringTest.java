@@ -9,7 +9,8 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.*;
-import org.junit.Ignore;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -22,15 +23,11 @@ public class SwitchCaseStatementWithStringTest extends MinimalSourceTestSuiteBas
         "switchCaseStatementString", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Ignore
-  @Test
-  public void test() {
-    // FIXME: [ms] the generated jimple is not correct: $i1,$i1,$i3 are undefined/not assigned to
+  @Override
+  public List<String> expectedBodyStmts() {
+    // TODO: [ms] the generated jimple is not correct: $i1,$i1,$i3 are undefined/not assigned to
     // anything
-    SootMethod method = loadMethod(getMethodSignature());
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+    return Stream.of(
             "r0 := @this: SwitchCaseStatementWithString",
             "$r1 = \"something\"",
             "$i0 = 0",
@@ -51,6 +48,13 @@ public class SwitchCaseStatementWithStringTest extends MinimalSourceTestSuiteBas
             "$i4 = 0 - 1",
             "$i0 = $i4",
             "label5:",
-            "return"));
+            "return")
+        .collect(Collectors.toList());
+  }
+
+  @Test
+  public void test() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
   }
 }
