@@ -65,14 +65,23 @@ import org.xml.sax.SAXException;
 public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysisInputLocation {
   protected final Path path;
   public static List<Path> jarsFromPath = new ArrayList<>();
-  public static List<String> classesInXML = new ArrayList<>();
-  protected static List<String> allClasses = new ArrayList<>();
   private static boolean isWarFileFlag = false;
-  FileHandling fileHandling;
 
   private PathBasedAnalysisInputLocation(@Nonnull Path path) {
     this.path = path;
-    fileHandling = new FileHandling(path.toString());
+  }
+
+  /**
+   * Return the list of the JAR files at the directory
+   *
+   * @param dirPath is the path for the extracted directory for the WAR file
+   */
+  @Nonnull
+  public static List<Path> walkDirectoryForJars(@Nonnull Path dirPath) throws IOException {
+    return Files.walk(dirPath)
+        .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
+        .flatMap(p1 -> StreamUtils.optionalToStream(Optional.of(p1)))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -91,8 +100,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     } else if (PathUtils.isArchive(path)) {
       if (PathUtils.hasExtension(path, FileType.WAR)) {
         isWarFileFlag = true;
-        String pathToExtractedWar = FileHandling.extractWarFile(path.toString());
-        return new DirectoryBasedAnalysisInputLocation(Paths.get(pathToExtractedWar));
+        return new DirectoryBasedAnalysisInputLocation(path);
       }
       return new ArchiveBasedAnalysisInputLocation(path);
     } else {
@@ -184,7 +192,8 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         Node node = nList.item(temp);
         if (node.getNodeType() == Node.ELEMENT_NODE) {
           Element eElement = (Element) node;
-          classesInXML.add(eElement.getElementsByTagName("servlet-class").item(0).getTextContent());
+          jarsFromPath.add(
+              Paths.get(eElement.getElementsByTagName("servlet-class").item(0).getTextContent()));
         }
       }
     } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -210,19 +219,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     return new AsmJavaClassProvider(bodyInterceptors);
   }
 
-  public @Nonnull List<Path> getJarsFromPath() {
-    if (isWarFileFlag) {
-      Collection<? extends AbstractClassSource> classesFromWar = Collections.EMPTY_LIST;
-
-      try {
-        jarsFromPath = fileHandling.walkDirectoryForJars(Paths.get(path.toString() + "/"));
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-    return jarsFromPath;
-  }
-
   private static final class DirectoryBasedAnalysisInputLocation
       extends PathBasedAnalysisInputLocation {
 
@@ -238,7 +234,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         Collection<? extends AbstractClassSource> classesFromWar = Collections.EMPTY_LIST;
 
         try {
-          jarsFromPath = fileHandling.walkDirectoryForJars(Paths.get(path.toString() + "/"));
+          jarsFromPath = walkDirectoryForJars(Paths.get(path.toString() + "/"));
           for (Path jarPath : jarsFromPath) {
             try (FileSystem fsJar = FileSystems.newFileSystem(jarPath, null)) {
               final Path archiveRootJar = fsJar.getPath("/");

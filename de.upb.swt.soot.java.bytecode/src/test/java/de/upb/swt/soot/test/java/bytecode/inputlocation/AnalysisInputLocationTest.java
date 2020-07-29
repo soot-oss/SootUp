@@ -1,5 +1,7 @@
 package de.upb.swt.soot.test.java.bytecode.inputlocation;
 
+import static org.junit.Assert.*;
+
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
@@ -13,7 +15,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Optional;
-import org.junit.Assert;
 import org.junit.Before;
 import org.mockito.internal.matchers.GreaterOrEqual;
 import org.mockito.internal.matchers.LessOrEqual;
@@ -71,39 +72,43 @@ public abstract class AnalysisInputLocationTest {
   }
 
   protected void testClassReceival(
-      AnalysisInputLocation ns, ClassType sig, int minClassesFound, int maxClassesFound) {
+      AnalysisInputLocation inputLocation,
+      ClassType sig,
+      int minClassesFound,
+      int maxClassesFound) {
     boolean classFromJar = false;
 
-    final Optional<? extends AbstractClassSource> clazz = ns.getClassSource(sig);
+    final Optional<? extends AbstractClassSource> clazz = inputLocation.getClassSource(sig);
 
-    for (String s : PathBasedAnalysisInputLocation.classesInXML) {
-      if (sig.getClassName().equals(s)) System.out.println("The class from web.xml is present");
-    }
+    // FIXME [ms] assertion?
+    /*    for (String s : PathBasedAnalysisInputLocation.classesInXML) {
+         if (sig.getClassName().equals(s)) System.out.println("The class from web.xml is present");
+       }
+    */
 
-    clazz.ifPresent(
-        abstractClassSource -> Assert.assertEquals(sig, abstractClassSource.getClassType()));
+    clazz.ifPresent(abstractClassSource -> assertEquals(sig, abstractClassSource.getClassType()));
 
     final Collection<? extends AbstractClassSource> classSources =
-        ns.getClassSources(getIdentifierFactory());
+        inputLocation.getClassSources(getIdentifierFactory());
 
-    Assert.assertNotNull(PathBasedAnalysisInputLocation.jarsFromPath);
+    assertNotNull(PathBasedAnalysisInputLocation.jarsFromPath);
     for (Path jarPath : PathBasedAnalysisInputLocation.jarsFromPath) {
       classFromJar = true;
       PathBasedAnalysisInputLocation nsJar =
           PathBasedAnalysisInputLocation.createForClassContainer(jarPath);
       final Collection<? extends AbstractClassSource> classSourcesFromJar =
           nsJar.getClassSources(getIdentifierFactory());
-      Assert.assertNotNull(classSourcesFromJar);
-      Assert.assertFalse(classSourcesFromJar.isEmpty());
-      Assert.assertThat(classSourcesFromJar.size(), new GreaterOrEqual<>(minClassesFound));
+      assertNotNull(classSourcesFromJar);
+      assertFalse(classSourcesFromJar.isEmpty());
+      assertThat(classSourcesFromJar.size(), new GreaterOrEqual<>(minClassesFound));
       if (maxClassesFound != -1) {
-        Assert.assertThat(classSourcesFromJar.size(), new LessOrEqual<>(maxClassesFound));
+        assertThat(classSourcesFromJar.size(), new LessOrEqual<>(maxClassesFound));
       }
     }
     if (!classFromJar) {
-      Assert.assertThat(classSources.size(), new GreaterOrEqual<>(minClassesFound));
+      assertThat(classSources.size(), new GreaterOrEqual<>(minClassesFound));
       if (maxClassesFound != -1) {
-        Assert.assertThat(classSources.size(), new LessOrEqual<>(maxClassesFound));
+        assertThat(classSources.size(), new LessOrEqual<>(maxClassesFound));
       }
     }
   }

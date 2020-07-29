@@ -57,10 +57,8 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
       LoggerFactory.getLogger(JavaClassPathAnalysisInputLocation.class);
   private static final @Nonnull String WILDCARD_CHAR = "*";
 
-  @Nonnull private Collection<AnalysisInputLocation> cpEntries;
-  @Nonnull private List<Path> jarsFromPath = new ArrayList<>();
-  @Nonnull private String classPath = "";
-  FileHandling fileHandling;
+  @Nonnull private Collection<AnalysisInputLocation> cpEntries = new ArrayList<>();
+  @Nonnull private final String classPath;
 
   /**
    * Creates a {@link JavaClassPathAnalysisInputLocation} which locates classes in the given class
@@ -74,22 +72,27 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
     }
 
     this.classPath = classPath;
-    fileHandling = new FileHandling(this.classPath);
 
     if (PathUtils.hasExtension(Paths.get(classPath), FileType.WAR)) {
-      jarsFromPath = fileHandling.getJarsFromPath();
+      List<Path> jarsFromPath;
+      try {
+        Path extractWarFilePath =
+            Paths.get(PathBasedAnalysisInputLocation.extractWarFile(classPath) + "/");
+        jarsFromPath = PathBasedAnalysisInputLocation.walkDirectoryForJars(extractWarFilePath);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
       for (Path path : jarsFromPath) {
         String jarPath = path.toString();
-        explodeClassPath(jarPath);
+        cpEntries.addAll(explodeClassPath(jarPath));
       }
     } else {
-      explodeClassPath(classPath);
-    }
-    if (cpEntries.isEmpty()) {
-      throw new InvalidClassPathException("Empty class path given");
+      cpEntries = explodeClassPath(classPath);
     }
 
-    logger.trace("{} class path entries registered", cpEntries.size());
+    if (cpEntries.isEmpty()) {
+      throw new InvalidClassPathException("Empty class path is given.");
+    }
   }
 
   /**
@@ -133,7 +136,7 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
   @Override
   public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
-      @Nullable ClassLoadingOptions classLoadingOptions) {
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
     // By using a set here, already added classes won't be overwritten and the class which is found
     // first will be kept
     Set<AbstractClassSource> found = new HashSet<>();
@@ -158,6 +161,9 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
 
   private @Nonnull Optional<AnalysisInputLocation> nsForPath(@Nonnull Path path) {
     if (Files.exists(path) && (Files.isDirectory(path) || PathUtils.isArchive(path))) {
+      if (PathUtils.hasExtension(path, FileType.WAR)) {
+        path = Paths.get(PathBasedAnalysisInputLocation.extractWarFile(path.toString()));
+      }
       return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
@@ -165,30 +171,20 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
     }
   }
 
-  public List<Path> walkDirectoryForJars(@Nonnull Path dirPath) throws IOException {
-    return Files.walk(dirPath)
-        .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
-        .flatMap(p1 -> StreamUtils.optionalToStream(Optional.of(p1)))
-        .collect(Collectors.toList());
-  }
-
   /**
    * extract the classes from the classpath
    *
    * @param jarPath The jar path for which the classes need to be listed
+   * @return list of classpath entries
    */
-  public void explodeClassPath(@Nonnull String jarPath) {
+  private List<AnalysisInputLocation> explodeClassPath(@Nonnull String jarPath) {
     try {
-      cpEntries =
-          explode(jarPath)
-              .flatMap(cp -> StreamUtils.optionalToStream(nsForPath(cp)))
-              .collect(Collectors.toList());
+      return explode(jarPath)
+          .flatMap(cp -> StreamUtils.optionalToStream(nsForPath(cp)))
+          .collect(Collectors.toList());
 
     } catch (IllegalArgumentException e) {
       throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
-    }
-    if (cpEntries.isEmpty()) {
-      throw new InvalidClassPathException("Empty class path given");
     }
   }
 
