@@ -67,17 +67,16 @@ public class WitherTest {
             generator.generateLocal(declareClassSig),
             Jimple.newParameterRef(declareClassSig, 0),
             StmtPositionInfo.createNoStmtPositionInfo());
-    bodyBuilder.addStmt(firstStmt, false);
     final JReturnStmt jReturnStmt =
         Jimple.newReturnStmt(
             DoubleConstant.getInstance(12.34), StmtPositionInfo.createNoStmtPositionInfo());
-    bodyBuilder.addStmt(jReturnStmt);
-    bodyBuilder.addFlow(firstStmt, jReturnStmt);
+    // bodyBuilder.addFlow(firstStmt, jReturnStmt);
 
     Body body =
         bodyBuilder
             .setMethodSignature(methodSignature)
-            .setFirstStmt(firstStmt)
+            .addFlow(firstStmt, jReturnStmt)
+            .setStartingStmt(firstStmt)
             .setLocals(generator.getLocals())
             .build();
     assertNotNull(body);
