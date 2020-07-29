@@ -21,13 +21,7 @@ public class DeclareInnerClassTest extends MinimalSourceTestSuiteBase {
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
-    //        loadMethod(expectedBodyStmts1(), getStaticMethodSignature());
-    //        SootMethod staticMethod = loadMethod(expectedBodyStmts1(),
-    // getStaticMethodSignature());
     SootClass sootClass = loadClass(getDeclaredClassSignature());
-    /** TODO check for inner class inside method body */
-    // assertTrue(sootClass.getFields().stream().anyMatch(sootField -> {return
-    // sootField.getModifiers().equals()}));
   }
 
   @Override

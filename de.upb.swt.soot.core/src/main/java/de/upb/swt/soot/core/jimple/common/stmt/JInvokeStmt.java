@@ -116,7 +116,7 @@ public final class JInvokeStmt extends Stmt implements Copyable {
 
   @Nonnull
   public JInvokeStmt withInvokeExpr(Value invokeExpr) {
-    return new JInvokeStmt(invokeExprBox, getPositionInfo());
+    return new JInvokeStmt(invokeExpr, getPositionInfo());
   }
 
   @Nonnull

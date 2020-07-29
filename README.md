@@ -20,7 +20,7 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 
 ## Contribution Guidelines 
 
-- Coding guidelines and contributors notice!](../../wiki/contribution-to-soot-reloaded)
+- [Coding guidelines and contributors notice!](../../wiki/contribution-to-soot-reloaded)
 - Read [this](https://github.com/secure-software-engineering/soot-reloaded/issues/98) before submitting pull request. 
 
 ## [Contributors](https://github.com/secure-software-engineering/soot-reloaded/graphs/contributors) 

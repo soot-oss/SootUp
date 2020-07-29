@@ -1,7 +1,5 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertTrue;
-
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -24,13 +22,6 @@ public class StaticImportTest extends MinimalSourceTestSuiteBase {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
     SootClass sootClass = loadClass(getDeclaredClassSignature());
-    /** TODO check for static import of methods */
-    assertTrue(
-        sootClass.getMethods().stream()
-            .anyMatch(
-                sootMethod -> {
-                  return sootMethod.isStatic();
-                }));
   }
 
   @Override

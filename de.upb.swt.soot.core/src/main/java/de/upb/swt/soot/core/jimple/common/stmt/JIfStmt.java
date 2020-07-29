@@ -40,7 +40,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-/** If the condition is true, jumps to the target, otherwise continues to the next stmt. */
+/**
+ * If the condition is true, jumps to the target, otherwise continues to the next stmt. The first
+ * successor (index=0) is the fallsthrough Stmt and the second successor (index=1) is the rbanching
+ * one.
+ */
 public final class JIfStmt extends BranchingStmt implements Copyable {
 
   private final ValueBox conditionBox;
@@ -76,7 +80,7 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
     stmtPrinter.literal(" ");
     stmtPrinter.literal(Jimple.GOTO);
     stmtPrinter.literal(" ");
-    stmtPrinter.stmtRef(stmtPrinter.branchTargets(this).get(1), true);
+    stmtPrinter.stmtRef(getTarget(stmtPrinter.getBody()), true);
   }
 
   public Value getCondition() {
@@ -88,7 +92,7 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
   }
 
   public Stmt getTarget(Body body) {
-    // TODO: [ms] validate in builder!
+    // [ms] bounds are validated in Body
     return getTargetStmts(body).get(1);
   }
 

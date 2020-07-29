@@ -13,7 +13,7 @@ import org.junit.experimental.categories.Category;
 public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
-  public void test() {
+  public void testRelOpEq() {
 
     SootMethod method = loadMethod(getMethodSignature("relationalOpEqual"));
     assertJimpleStmts(
@@ -30,8 +30,11 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
             "goto label2",
             "label2:",
             "return"));
+  }
 
-    method = loadMethod(getMethodSignature("relationalOpNotEqual"));
+  @Test
+  public void testrelOpNotEq() {
+    SootMethod method = loadMethod(getMethodSignature("relationalOpNotEqual"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
@@ -40,9 +43,7 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
             "l2 = \"\"",
             "label1:",
             "$stack4 = l1",
-            "$stack4 = $stack4",
             "$stack3 = 10",
-            "$stack3 = $stack3",
             "if $stack4 >= $stack3 goto label2",
             "l1 = l1 + 1",
             "if l1 == 5 goto label1",
@@ -50,8 +51,11 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
             "goto label1",
             "label2:",
             "return"));
+  }
 
-    method = loadMethod(getMethodSignature("complementOp"));
+  @Test
+  public void testComplementOP() {
+    SootMethod method = loadMethod(getMethodSignature("complementOp"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
@@ -67,8 +71,11 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
             "l1 = $stack2",
             "label3:",
             "return"));
+  }
 
-    method = loadMethod(getMethodSignature("logicalOpAnd"));
+  @Test
+  public void testLogicalAnd() {
+    SootMethod method = loadMethod(getMethodSignature("logicalOpAnd"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
@@ -101,8 +108,11 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
             "l5 = \"D\"",
             "label4:",
             "return"));
+  }
 
-    method = loadMethod(getMethodSignature("logicalOpOr"));
+  @Test
+  public void testLogicalOr() {
+    SootMethod method = loadMethod(getMethodSignature("logicalOpOr"));
 
     assertJimpleStmts(
         method,
@@ -136,8 +146,11 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
             "l5 = \"D\"",
             "label4:",
             "return"));
+  }
 
-    method = loadMethod(getMethodSignature("logicalOpXor"));
+  @Test
+  public void testLocgicalOpXor() {
+    SootMethod method = loadMethod(getMethodSignature("logicalOpXor"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
@@ -170,8 +183,11 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
             "l5 = \"D\"",
             "label4:",
             "return"));
+  }
 
-    method = loadMethod(getMethodSignature("ConditionalOpAnd"));
+  @Test
+  public void testCondOpAnd() {
+    SootMethod method = loadMethod(getMethodSignature("ConditionalOpAnd"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
@@ -186,25 +202,26 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
             "l5 = \"A\"",
             "label1:",
             "$stack8 = l3",
-            "$stack8 = $stack8",
             "if $stack8 == 0 goto label2",
             "if l4 == 0 goto label2",
             "l5 = \"B\"",
             "label2:",
             "$stack7 = l1",
-            "$stack7 = $stack7",
             "if $stack7 == 0 goto label3",
             "if l3 == 0 goto label3",
             "l5 = \"C\"",
             "label3:",
             "$stack6 = l4",
-            "$stack6 = $stack6",
             "if $stack6 == 0 goto label4",
             "if l2 == 0 goto label4",
             "l5 = \"D\"",
             "label4:",
             "return"));
-    method = loadMethod(getMethodSignature("conditionalOpOr"));
+  }
+
+  @Test
+  public void testCondOpOr() {
+    SootMethod method = loadMethod(getMethodSignature("conditionalOpOr"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
@@ -221,7 +238,6 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
             "l5 = $stack12",
             "label2:",
             "$stack11 = l3",
-            "$stack11 = $stack11",
             "if $stack11 != 0 goto label3",
             "if l4 == 0 goto label4",
             "label3:",
@@ -229,7 +245,6 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
             "l5 = $stack10",
             "label4:",
             "$stack9 = l1",
-            "$stack9 = $stack9",
             "if $stack9 != 0 goto label5",
             "if l3 == 0 goto label6",
             "label5:",
@@ -237,7 +252,6 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
             "l5 = $stack8",
             "label6:",
             "$stack7 = l4",
-            "$stack7 = $stack7",
             "if $stack7 != 0 goto label7",
             "if l2 == 0 goto label8",
             "label7:",
@@ -245,7 +259,11 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
             "l5 = $stack6",
             "label8:",
             "return"));
-    method = loadMethod(getMethodSignature("conditionalOp"));
+  }
+
+  @Test
+  public void testCondOp() {
+    SootMethod method = loadMethod(getMethodSignature("conditionalOp"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(

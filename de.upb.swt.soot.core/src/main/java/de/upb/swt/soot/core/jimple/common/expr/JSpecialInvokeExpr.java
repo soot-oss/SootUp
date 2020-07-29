@@ -30,6 +30,8 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
+import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -75,6 +77,11 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr impleme
     up.literal("(");
     argBoxesToPrinter(up);
     up.literal(")");
+  }
+
+  @Override
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseSpecialInvokeExpr(this);
   }
 
   @Nonnull
