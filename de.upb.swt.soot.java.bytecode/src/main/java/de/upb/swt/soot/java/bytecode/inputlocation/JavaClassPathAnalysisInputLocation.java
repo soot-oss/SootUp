@@ -58,8 +58,8 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
   private static final @Nonnull String WILDCARD_CHAR = "*";
 
   @Nonnull private Collection<AnalysisInputLocation> cpEntries;
-  public static List<Path> jarsFromPath = new ArrayList<>();
-  private String classPath = "";
+  @Nonnull private List<Path> jarsFromPath = new ArrayList<>();
+  @Nonnull private String classPath = "";
   FileHandling fileHandling;
 
   /**
