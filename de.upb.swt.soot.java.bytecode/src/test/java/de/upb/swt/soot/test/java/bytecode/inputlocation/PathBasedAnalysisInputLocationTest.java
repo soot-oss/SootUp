@@ -64,14 +64,13 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     testClassReceival(pathBasedNamespace, mainClass, 4);
   }
 
-    @Test
-    public void testWar() {
-        PathBasedAnalysisInputLocation pathBasedNamespace =
-                PathBasedAnalysisInputLocation.createForClassContainer(war);
-        final ClassType warClass1 = getIdentifierFactory().getClassType("SimpleWarRead");
-        testClassReceival(pathBasedNamespace, warClass1, 2);
-
-    }
+  @Test
+  public void testWar() {
+    PathBasedAnalysisInputLocation pathBasedNamespace =
+        PathBasedAnalysisInputLocation.createForClassContainer(war);
+    final ClassType warClass1 = getIdentifierFactory().getClassType("SimpleWarRead");
+    testClassReceival(pathBasedNamespace, warClass1, 2);
+  }
 
   @Test
   public void testClassInWar() {

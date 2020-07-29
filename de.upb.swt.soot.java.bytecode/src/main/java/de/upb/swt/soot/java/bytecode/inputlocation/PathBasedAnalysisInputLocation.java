@@ -101,7 +101,8 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     } else if (PathUtils.isArchive(path)) {
       if (PathUtils.hasExtension(path, FileType.WAR)) {
         isWarFileFlag = true;
-        return new DirectoryBasedAnalysisInputLocation(path);
+        String pathToExtractedWar = PathBasedAnalysisInputLocation.extractWarFile(path.toString());
+        return new DirectoryBasedAnalysisInputLocation(Paths.get(pathToExtractedWar));
       }
       return new ArchiveBasedAnalysisInputLocation(path);
     } else {
@@ -193,8 +194,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         Node node = nList.item(temp);
         if (node.getNodeType() == Node.ELEMENT_NODE) {
           Element eElement = (Element) node;
-          classesInXML.add(
-              eElement.getElementsByTagName("servlet-class").item(0).getTextContent());
+          classesInXML.add(eElement.getElementsByTagName("servlet-class").item(0).getTextContent());
         }
       }
     } catch (ParserConfigurationException | SAXException | IOException e) {
