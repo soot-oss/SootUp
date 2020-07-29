@@ -70,8 +70,8 @@ public class PrinterTest {
     final JNopStmt jNop = new JNopStmt(noPosInfo);
     Body.BodyBuilder bodyBuilder = Body.builder();
 
-    bodyBuilder.addStmt(jNop);
-    bodyBuilder.addStmt(returnVoidStmt, true);
+    // bodyBuilder.addStmt(jNop);
+    // bodyBuilder.addStmt(returnVoidStmt, true);
     bodyBuilder
         .setMethodSignature(methodSignatureOne)
         .setPosition(NoPositionInformation.getInstance());
@@ -118,7 +118,7 @@ public class PrinterTest {
                             JavaIdentifierFactory.getInstance().getClassType(className),
                             PrimitiveType.getInt()),
                     EnumSet.of(Modifier.PRIVATE))),
-            new HashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)),
+            new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)),
             NoPositionInformation.getInstance(),
             EnumSet.of(Modifier.PUBLIC)),
         SourceType.Application);

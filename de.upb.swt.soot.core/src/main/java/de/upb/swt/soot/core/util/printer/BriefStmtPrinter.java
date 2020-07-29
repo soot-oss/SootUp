@@ -13,7 +13,7 @@ import de.upb.swt.soot.core.model.SootMethod;
 public class BriefStmtPrinter extends LabeledStmtPrinter {
 
   public BriefStmtPrinter(Body body) {
-    super(body);
+    super();
   }
 
   @Override

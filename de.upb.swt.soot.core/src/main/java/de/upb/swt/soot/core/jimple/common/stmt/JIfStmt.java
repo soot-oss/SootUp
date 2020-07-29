@@ -40,7 +40,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-/** If the condition is true, jumps to the target, otherwise continues to the next stmt. */
+/**
+ * If the condition is true, jumps to the target, otherwise continues to the next stmt. The first
+ * successor (index=0) is the fallsthrough Stmt and the second successor (index=1) is the rbanching
+ * one.
+ */
 public final class JIfStmt extends BranchingStmt implements Copyable {
 
   private final ValueBox conditionBox;

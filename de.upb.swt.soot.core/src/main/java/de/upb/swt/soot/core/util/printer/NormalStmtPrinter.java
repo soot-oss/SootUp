@@ -12,7 +12,7 @@ import de.upb.swt.soot.core.model.SootMethod;
 public class NormalStmtPrinter extends LabeledStmtPrinter {
 
   public NormalStmtPrinter(Body b) {
-    super(b);
+    super();
   }
 
   @Override

@@ -45,7 +45,6 @@ public class SootMethodTest {
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
-
     MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
@@ -59,8 +58,6 @@ public class SootMethodTest {
     final JReturnVoidStmt returnVoidStmt =
         new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
 
-    bodyBuilder.addStmt(firstStmt, false);
-    bodyBuilder.addStmt(returnVoidStmt);
     bodyBuilder.addFlow(firstStmt, returnVoidStmt);
     Body body =
         bodyBuilder
@@ -68,7 +65,6 @@ public class SootMethodTest {
             .setLocals(generator.getLocals())
             .setTraps(Collections.emptyList())
             .build();
-
     assertEquals(1, body.getLocalCount());
 
     SootMethod dummyMainMethod =

@@ -68,7 +68,7 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
         }
       }
     }
-    return originalBody.withTraps(traps);
+    return Body.builder(originalBody).setTraps(traps).build();
   }
 
   /**

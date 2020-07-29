@@ -25,36 +25,7 @@
 
 package de.upb.swt.soot.core.jimple.visitor;
 
-import de.upb.swt.soot.core.jimple.common.expr.AbstractInstanceInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JAddExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JAndExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JCmpExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JCmpgExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JCmplExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JDivExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JDynamicInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JEqExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JGeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JGtExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JInstanceOfExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JLeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JLengthExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JLtExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JMulExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNegExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNewArrayExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNewMultiArrayExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JOrExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JRemExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JShlExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JShrExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JSubExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JUshrExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JXorExpr;
+import de.upb.swt.soot.core.jimple.common.expr.*;
 
 public interface ExprVisitor extends Visitor {
   void caseAddExpr(JAddExpr v);
@@ -97,7 +68,11 @@ public interface ExprVisitor extends Visitor {
 
   void caseXorExpr(JXorExpr v);
 
-  void caseInstanceInvokeExpr(AbstractInstanceInvokeExpr v);
+  void caseSpecialInvokeExpr(JSpecialInvokeExpr v);
+
+  void caseVirtualInvokeExpr(JVirtualInvokeExpr v);
+
+  void caseInterfaceInvokeExpr(JInterfaceInvokeExpr v);
 
   void caseStaticInvokeExpr(JStaticInvokeExpr v);
 

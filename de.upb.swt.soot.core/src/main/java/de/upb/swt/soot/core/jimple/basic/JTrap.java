@@ -40,8 +40,8 @@ public final class JTrap extends AbstractTrap implements Copyable {
 
   public JTrap(
       @Nonnull ClassType exception,
-      @Nonnull Stmt beginStmt,
-      @Nonnull Stmt endStmt,
+      @Nonnull Stmt beginStmt, // inclusive
+      @Nonnull Stmt endStmt, // exclusive!
       @Nonnull Stmt handlerStmt) {
     super(exception, beginStmt, endStmt, handlerStmt);
   }

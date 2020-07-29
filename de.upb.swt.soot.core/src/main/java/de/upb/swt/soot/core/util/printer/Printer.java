@@ -113,7 +113,7 @@ public class Printer {
 
   public void printTo(SootClass cl, PrintWriter out) {
 
-    LabeledStmtPrinter printer = determinePrinter(Body.getEmptyBody());
+    LabeledStmtPrinter printer = determinePrinter(null);
     printer.enableImports(options.contains(Option.UseImports));
 
     // add jimple line number tags
@@ -228,7 +228,7 @@ public class Printer {
           // print method's full signature information
           method.toString(printer);
 
-          printTo(body, printer);
+          printBody(body, printer);
 
         } else {
           printer.handleIndent();
@@ -253,7 +253,7 @@ public class Printer {
   public void printTo(Body body, PrintWriter out) {
     LabeledStmtPrinter printer = determinePrinter(body);
     printer.enableImports(options.contains(Option.UseImports));
-    printTo(body, printer);
+    printBody(body, printer);
     out.print(printer);
   }
 
@@ -263,7 +263,7 @@ public class Printer {
    *
    * @param printer the StmtPrinter that determines how to print the statements
    */
-  private void printTo(Body b, LabeledStmtPrinter printer) {
+  private void printBody(Body b, LabeledStmtPrinter printer) {
 
     if (addJimpleLn()) {
       setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), b.getMethodSignature()));
@@ -296,7 +296,8 @@ public class Printer {
     ImmutableStmtGraph stmtGraph = body.getStmtGraph();
     Stmt previousStmt;
 
-    for (Stmt currentStmt : stmtGraph.nodes()) {
+    final Map<Stmt, String> labels = printer.getLabels();
+    for (Stmt currentStmt : body.getStmtGraph()) {
       previousStmt = currentStmt;
 
       // Print appropriate header.
@@ -307,19 +308,16 @@ public class Printer {
         // c) the previous stmt does not have stmt as a successor
         // d) if the current stmt has a label on it
 
-        final boolean currentStmtHasLabel = printer.getLabels().get(currentStmt) != null;
-        // TODO [ms]
-        if (true /*currentStmt != units.iterator().next()*/) {
-          if (stmtGraph.successors(previousStmt).size() != 1
-              || stmtGraph.predecessors(currentStmt).size() != 1
-              || currentStmtHasLabel) {
+        final boolean currentStmtHasLabel = labels.get(currentStmt) != null;
+        if (stmtGraph.successors(previousStmt).size() != 1
+            || stmtGraph.predecessors(currentStmt).size() != 1
+            || currentStmtHasLabel) {
+          printer.newline();
+        } else {
+          // Or if the previous node does not have statement as a successor.
+          final Iterator<Stmt> succIterator = stmtGraph.successors(previousStmt).iterator();
+          if (succIterator.hasNext() && succIterator.next() != currentStmt) {
             printer.newline();
-          } else {
-            // Or if the previous node does not have body statement as a successor.
-            final Iterator<Stmt> succIterator = stmtGraph.successors(previousStmt).iterator();
-            if (succIterator.hasNext() && succIterator.next() != currentStmt) {
-              printer.newline();
-            }
           }
         }
 
@@ -335,6 +333,7 @@ public class Printer {
       }
 
       printer.stmt(currentStmt);
+      incJimpleLnNum();
     }
 
     // Print out exceptions
@@ -353,11 +352,11 @@ public class Printer {
         printer.literal(" catch ");
         printer.typeSignature(trap.getExceptionType());
         printer.literal(" from ");
-        printer.literal(printer.getLabels().get(trap.getBeginStmt()));
+        printer.literal(labels.get(trap.getBeginStmt()));
         printer.literal(" to ");
-        printer.literal(printer.getLabels().get(trap.getEndStmt()));
+        printer.literal(labels.get(trap.getEndStmt()));
         printer.literal(" with ");
-        printer.literal(printer.getLabels().get(trap.getHandlerStmt()));
+        printer.literal(labels.get(trap.getHandlerStmt()));
         printer.literal(";");
         printer.newline();
         incJimpleLnNum();
