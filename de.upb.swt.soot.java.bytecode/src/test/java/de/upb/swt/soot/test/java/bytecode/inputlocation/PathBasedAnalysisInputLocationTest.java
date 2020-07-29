@@ -56,10 +56,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.createForClassContainer(war);
-
-    final ClassType warClass1 = getIdentifierFactory().getClassType("SimpleWarRead");
-    testClassReceival(pathBasedNamespace, warClass1, 2);
+        PathBasedAnalysisInputLocation.createForClassContainer(jar);
 
     final ClassType class1 = getIdentifierFactory().getClassType("Employee", "ds");
     final ClassType mainClass = getIdentifierFactory().getClassType("MiniApp");
@@ -67,8 +64,17 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     testClassReceival(pathBasedNamespace, mainClass, 4);
   }
 
+    @Test
+    public void testWar() {
+        PathBasedAnalysisInputLocation pathBasedNamespace =
+                PathBasedAnalysisInputLocation.createForClassContainer(war);
+        final ClassType warClass1 = getIdentifierFactory().getClassType("SimpleWarRead");
+        testClassReceival(pathBasedNamespace, warClass1, 2);
+
+    }
+
   @Test
-  public void testWar() {
+  public void testClassInWar() {
 
     String warFile = "../shared-test-resources/java-warApp/dummyWarApp.war";
 

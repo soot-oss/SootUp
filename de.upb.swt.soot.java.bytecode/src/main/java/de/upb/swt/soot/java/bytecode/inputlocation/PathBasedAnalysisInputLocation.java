@@ -66,6 +66,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
   protected final Path path;
   public static List<Path> jarsFromPath = new ArrayList<>();
   private static boolean isWarFileFlag = false;
+  public static List<String> classesInXML = new ArrayList<>();
 
   private PathBasedAnalysisInputLocation(@Nonnull Path path) {
     this.path = path;
@@ -192,8 +193,8 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         Node node = nList.item(temp);
         if (node.getNodeType() == Node.ELEMENT_NODE) {
           Element eElement = (Element) node;
-          jarsFromPath.add(
-              Paths.get(eElement.getElementsByTagName("servlet-class").item(0).getTextContent()));
+          classesInXML.add(
+              eElement.getElementsByTagName("servlet-class").item(0).getTextContent());
         }
       }
     } catch (ParserConfigurationException | SAXException | IOException e) {
