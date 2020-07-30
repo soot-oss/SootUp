@@ -224,6 +224,7 @@
 					<fixMethodComment>false</fixMethodComment>
 				</configuration>
 			</plugin>
+			<!-- check headers -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
