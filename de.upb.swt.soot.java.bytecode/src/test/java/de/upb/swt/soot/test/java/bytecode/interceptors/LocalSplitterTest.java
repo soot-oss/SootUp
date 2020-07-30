@@ -535,14 +535,4 @@ public class LocalSplitterTest {
     }
     return isEqual;
   }
-
-  private void printGraph(Body body) {
-    System.out.println("Body: ");
-    for (Stmt node : body.getStmtGraph().nodes()) {
-      System.out.println("predecessor: " + body.getStmtGraph().predecessors(node));
-      System.out.println(node);
-      System.out.println("successor: " + body.getStmtGraph().successors(node));
-      System.out.println("_______________________________________________________");
-    }
-  }
 }

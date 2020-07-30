@@ -7,7 +7,6 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.ReplaceUseStmtVisitor;
@@ -456,6 +455,28 @@ public class LocalSplitter implements BodyInterceptor {
     if (bodyBuilder.getStmtGraph().getTraps().isEmpty()) {
       return insertPositions;
     } else {
+      StmtGraphBlockIterator graphIterator =
+          new StmtGraphBlockIterator(
+              bodyBuilder.getStmtGraph(), bodyBuilder.getStmtGraph().getTraps());
+      List<Stmt> visitList = new ArrayList<>();
+      while (graphIterator.hasNext()) {
+        visitList.add(graphIterator.next());
+      }
+
+      List<Stmt> tempList = new ArrayList<>(visitList);
+      System.out.println(tempList);
+      Deque<Stmt> deque = new ArrayDeque<>();
+      deque.add(bodyBuilder.getStmtGraph().getStartingStmt());
+      while (!deque.isEmpty()) {
+        Stmt head = deque.removeFirst();
+        tempList.remove(head);
+        for (Stmt succ : bodyBuilder.getStmtGraph().successors(head)) {
+          if (tempList.contains(succ)) {
+            deque.add(succ);
+          }
+        }
+      }
+
       Map<Stmt, List<Stmt>> trapBlocks = new HashMap<>();
       for (Trap trap : bodyBuilder.getStmtGraph().getTraps()) {
         Stmt trapSource = trap.getHandlerStmt();
@@ -465,12 +486,10 @@ public class LocalSplitter implements BodyInterceptor {
         while (!queue.isEmpty()) {
           Stmt stmt = queue.removeFirst();
           trapStmts.add(stmt);
-          if (stmt instanceof JGotoStmt && queue.isEmpty()) {
-            continue;
-          }
+          tempList.remove(stmt);
           List<Stmt> succs = bodyBuilder.getStmtGraph().successors(stmt);
           for (Stmt succ : succs) {
-            if (!trapStmts.contains(succ)) {
+            if (!trapStmts.contains(succ) && tempList.contains(succ)) {
               queue.addLast(succ);
             }
           }
@@ -478,13 +497,6 @@ public class LocalSplitter implements BodyInterceptor {
         trapBlocks.put(trap.getHandlerStmt(), trapStmts);
       }
 
-      StmtGraphBlockIterator graphIterator =
-          new StmtGraphBlockIterator(
-              bodyBuilder.getStmtGraph(), bodyBuilder.getStmtGraph().getTraps());
-      List<Stmt> visitList = new ArrayList<>();
-      while (graphIterator.hasNext()) {
-        visitList.add(graphIterator.next());
-      }
       for (Stmt handlerStmt : trapBlocks.keySet()) {
         List<Stmt> trapStmts = new ArrayList<>(trapBlocks.get(handlerStmt));
         trapStmts.remove(0);
