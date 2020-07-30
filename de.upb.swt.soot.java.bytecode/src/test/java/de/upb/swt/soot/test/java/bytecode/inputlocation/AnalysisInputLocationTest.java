@@ -83,13 +83,6 @@ public abstract class AnalysisInputLocationTest {
 
     final Optional<? extends AbstractClassSource> clazz = inputLocation.getClassSource(sig);
 
-    // FIXME [ms] assertion?
-    //  [kk] The class need not be part of web.xml. Assertion can be false despite class being part
-    // of war file
-    for (String s : PathBasedAnalysisInputLocation.classesInXML) {
-      if (sig.getClassName().equals(s)) System.out.println("The class from web.xml is present");
-    }
-
     clazz.ifPresent(abstractClassSource -> assertEquals(sig, abstractClassSource.getClassType()));
 
     final Collection<? extends AbstractClassSource> classSources =
