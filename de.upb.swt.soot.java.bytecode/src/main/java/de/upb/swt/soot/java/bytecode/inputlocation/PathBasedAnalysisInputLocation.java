@@ -60,13 +60,12 @@ import org.xml.sax.SAXException;
  * object.
  *
  * @author Manuel Benz created on 22.05.18
- * @author Kaustubh Kelkar updated on 09.07.2020
+ * @author Kaustubh Kelkar updated on 30.07.2020
  */
 public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysisInputLocation {
   protected final Path path;
   public static List<Path> jarsFromPath = new ArrayList<>();
   private static boolean isWarFileFlag = false;
-  public static List<String> classesInXML = new ArrayList<>();
 
   private PathBasedAnalysisInputLocation(@Nonnull Path path) {
     this.path = path;
@@ -101,7 +100,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     } else if (PathUtils.isArchive(path)) {
       if (PathUtils.hasExtension(path, FileType.WAR)) {
         isWarFileFlag = true;
-        String pathToExtractedWar = PathBasedAnalysisInputLocation.extractWarFile(path.toString());
+        String pathToExtractedWar = extractWarFile(path.toString());
         return new DirectoryBasedAnalysisInputLocation(Paths.get(pathToExtractedWar));
       }
       return new ArchiveBasedAnalysisInputLocation(path);
@@ -135,7 +134,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
    * @param warFilePath The path to war file to be extracted
    * @return A {@link String} location where the war file is extracted
    */
-  static @Nonnull String extractWarFile(String warFilePath) {
+  public @Nonnull static String extractWarFile(String warFilePath) {
     // FIXME: [ms] protect against archive bombs
     String destDirectory =
         System.getProperty("java.io.tmpdir")
@@ -184,6 +183,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
    *     servlet-class in a {@link ArrayList} of {@link String}
    */
   public static void parseWebxml(String extractedWARPath) {
+    List<String> classesInXML = new ArrayList<>();
     try {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       DocumentBuilder builder = factory.newDocumentBuilder();
