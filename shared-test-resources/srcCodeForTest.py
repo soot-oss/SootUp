@@ -2,6 +2,7 @@ import re
 import os
 import fnmatch
 from re import search
+import pdb
 
 srcMatches = []
 srcTestMatches = []
@@ -15,6 +16,7 @@ for root, dirnames, filenames in os.walk('..\\de.upb.swt.soot.java.sourcecode\\s
         srcTestMatches.append(os.path.join(root, filename))
 
 
+
 for filename1 in srcMatches:
 	str ="/**\n  <pre>\n  <code>\n"
 	srcData= open(filename1, 'r', encoding="utf8").read()
@@ -26,24 +28,28 @@ for filename1 in srcMatches:
 			
 	for filename in srcTestMatches:
 		if srcFileName in filename:
+			
 			str2=""
+			#newstr2=""
 			var1=""
 			strSrcTest=""
 			srcTestFile=filename
 			str2= open(srcTestFile, 'r', encoding="utf8").read()
-			found= re.search(r'  @Override(\s*)public List<String> expectedBodyStmts((.+\s)*)}(\s*)((.+\s)*)}(\s*)',str2,re.DOTALL);
-			
+			#TODO work on removing duplicate <pre> code tags
+			#srcCommentcode= re.search(r'(.+\s*)<pre>(\s*)<code>((.+\s*)*)(\s)((.+\s*)*)<pre>(\s*)<code>(.+\s*)',str2,re.DOTALL);
+			#newstr2= re.sub(r"(.+\s*)<pre>(\s*)<code>((.+\s*)*)(\s)((.+\s*)*)<pre>(\s*)<code>(.+\s*)", "\n" ,str2);
 			for line in open(srcTestFile, 'r'):
-				if re.search(r'((.+\W))@author((.+\W)*)', line) : 
+				if re.search(r'((.+\W)@author(.+\W)*)', line) : 
 					var1+="  \n"
 				else: 
 					var1+=line
-					l_strip=line.strip()
+				l_strip=line.strip()
 				if	"<String> expectedBodyStmts()" in l_strip:
 					break
 
 			# Code for removing duplicate source code entries
 			'''srcCommentcode= re.search(r'(.+\s*)<pre>(\s*)<code>((.+\s*)*)(\s)((.+\s*)*)<pre>(\s*)<code>(.+\s*)',str2,re.DOTALL);'''
+			found= re.search(r'  @Override(\s*)public List<String> expectedBodyStmts((.+\s)*)}(\s*)((.+\s)*)}(\s*)',str2,re.DOTALL);
 			
 			if found != None:
 				strSrcTest= var1.rsplit("\n",3)[0]+str
