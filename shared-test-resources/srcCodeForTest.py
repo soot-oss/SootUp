@@ -20,7 +20,7 @@ for filename1 in srcMatches:
 	srcData= open(filename1, 'r', encoding="utf8").read()
 	str+=srcData
 	str+="\n  <pre>\n  <code>*/\n"
-	var1=""; var2=""
+	var1=""
 	srcFileName = (filename1.rsplit('\\',1)[1]).split('.')[0]
 		
 			
@@ -30,16 +30,21 @@ for filename1 in srcMatches:
 			var1=""
 			strSrcTest=""
 			srcTestFile=filename
-			word_list=[]
+			str2= open(srcTestFile, 'r', encoding="utf8").read()
+			found= re.search(r'  @Override(\s*)public List<String> expectedBodyStmts((.+\s)*)}(\s*)((.+\s)*)}(\s*)',str2,re.DOTALL);
+			
 			for line in open(srcTestFile, 'r'):
-				var1+=line
-				l_strip=line.strip()
+				if re.search(r'((.+\W))@author((.+\W)*)', line) : 
+					var1+="  \n"
+				else: 
+					var1+=line
+					l_strip=line.strip()
 				if	"<String> expectedBodyStmts()" in l_strip:
 					break
 
-			str2= open(srcTestFile, 'r', encoding="utf8").read()
+			# Code for removing duplicate source code entries
+			'''srcCommentcode= re.search(r'(.+\s*)<pre>(\s*)<code>((.+\s*)*)(\s)((.+\s*)*)<pre>(\s*)<code>(.+\s*)',str2,re.DOTALL);'''
 			
-			found= re.search(r'  @Override(\s*)public List<String> expectedBodyStmts((.+\s)*)}(\s*)((.+\s)*)}(\s*)',str2,re.DOTALL);
 			if found != None:
 				strSrcTest= var1.rsplit("\n",3)[0]+str
 				strSrcTest+=found.group()
@@ -47,4 +52,4 @@ for filename1 in srcMatches:
 					filew.writelines(strSrcTest)
 					print("File write for file "+srcTestFile)
 			else :
-				print("No match for "+srcTestFile)				
+				print("No match for "+srcTestFile)
