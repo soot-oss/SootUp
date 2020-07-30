@@ -24,9 +24,12 @@ import java.io.StringWriter;
 import java.util.*;
 import org.junit.Test;
 
-/** @author Markus Schmidt */
+/**
+ * @author Markus Schmidt
+ * @author Kaustubh Kelkar updated on 02.07.2020
+ */
 public class PrinterTest {
-  // import collisions are already testet in AbstractStmtPrinterTest covered in
+  // import collisions are already tested in AbstractStmtPrinterTest covered in
   // AbstractStmtPrinterTest
 
   @Test
@@ -62,16 +65,17 @@ public class PrinterTest {
         view.getIdentifierFactory()
             .getMethodSignature("main", className, "void", Collections.emptyList());
 
-    final StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
-    final Body.BodyBuilder builder = Body.builder();
-    final JNopStmt fromStmt = new JNopStmt(noStmtPositionInfo);
-    builder.setStartingStmt(fromStmt);
-    Body bodyOne =
-        builder
-            .setMethodSignature(methodSignatureOne)
-            .addFlow(fromStmt, new JReturnVoidStmt(noStmtPositionInfo))
-            .build();
-    Body bodyTwo = builder.build();
+    StmtPositionInfo noPosInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    final JReturnVoidStmt returnVoidStmt = new JReturnVoidStmt(noPosInfo);
+    final JNopStmt jNop = new JNopStmt(noPosInfo);
+    Body.BodyBuilder bodyBuilder = Body.builder();
+
+    bodyBuilder
+        .setStartingStmt(jNop)
+        .addFlow(jNop, returnVoidStmt)
+        .setMethodSignature(methodSignatureOne)
+        .setPosition(NoPositionInformation.getInstance());
+    Body bodyOne = bodyBuilder.build();
 
     SootMethod dummyMainMethod =
         new SootMethod(
@@ -83,6 +87,11 @@ public class PrinterTest {
     MethodSignature methodSignatureTwo =
         view.getIdentifierFactory()
             .getMethodSignature("otherMethod", className, "int", Collections.emptyList());
+    bodyBuilder
+        .setMethodSignature(methodSignatureTwo)
+        .setPosition(NoPositionInformation.getInstance());
+    Body bodyTwo = bodyBuilder.build();
+
     SootMethod anotherMethod =
         new SootMethod(
             new OverridingMethodSource(methodSignatureOne, bodyTwo),
