@@ -57,7 +57,6 @@ public class CastAndReturnInlinerTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
     List<Trap> traps = Collections.emptyList();
-
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
     bodyBuilder.setTraps(traps);
@@ -70,7 +69,7 @@ public class CastAndReturnInlinerTest {
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
     Body testBody = bodyBuilder.build();
 
-    Body processedBody = new CastAndReturnInliner().interceptBody(testBody);
+    Body processedBody = new CastAndReturnInliner().interceptBody(bodyBuilder.build());
 
     List<Stmt> expected = new ArrayList<>();
     expected.add(strToA);
