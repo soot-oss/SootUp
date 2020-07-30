@@ -12,6 +12,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuiteBase {
 
+  // TODO split into multiple test cases
   @Test
   public void test() {
     SootMethod method = loadMethod(getMethodSignature("intArrays"));

@@ -18,6 +18,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
 
+  // TODO split into multiple test cases
   @Test
   public void test() {
 
