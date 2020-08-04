@@ -50,7 +50,6 @@ public class LocalSplitter implements BodyInterceptor {
 
     ImmutableStmtGraph oriGraph = originalBody.getStmtGraph();
     BodyBuilder bodyBuilder = Body.builder(originalBody);
-    Body newBody = bodyBuilder.build();
 
     // Find all Locals that must be split
     // If a local as a definition appears two or more times, then this local must be split
@@ -69,7 +68,7 @@ public class LocalSplitter implements BodyInterceptor {
       }
     }
 
-    Set<Local> newLocals = new HashSet<>(newBody.getLocals());
+    Set<Local> newLocals = new HashSet<>(originalBody.getLocals());
     int localIndex = 1;
     Map<Stmt, Stmt> insertPositions = findTrapPositions(bodyBuilder);
 
@@ -96,6 +95,7 @@ public class LocalSplitter implements BodyInterceptor {
 
           // replace the oriLocal with newLocal
           Stmt newVisitedStmt = withNewDef(visitedStmt, newLocal);
+
           // replace visitedStmt with newVisitedStmt
           bodyBuilder.mergeStmt(visitedStmt, newVisitedStmt);
           fitNewTrap(bodyBuilder, visitedStmt, newVisitedStmt);
@@ -105,7 +105,6 @@ public class LocalSplitter implements BodyInterceptor {
           Deque<Stmt> forwardsQueue = new ArrayDeque<>();
           forwardsQueue.addAll(bodyBuilder.getStmtGraph().successors(newVisitedStmt));
           Set<Stmt> visitedInner = new HashSet<>();
-          visitedStmt = newVisitedStmt;
 
           while (!forwardsQueue.isEmpty()) {
             Stmt head = forwardsQueue.remove();
@@ -117,7 +116,7 @@ public class LocalSplitter implements BodyInterceptor {
               bodyBuilder.mergeStmt(head, newHead);
               fitNewTrap(bodyBuilder, head, newHead);
               fitVisitList(visitList, head, newHead);
-
+              // if deflist of modified stmt contains no orilocal, then trace forwards on.
               if ((!newHead.getDefs().isEmpty() && !newHead.getDefs().get(0).equivTo(oriLocal))
                   || newHead.getDefs().isEmpty()) {
                 for (Stmt succ : bodyBuilder.getStmtGraph().successors(newHead)) {
@@ -168,8 +167,9 @@ public class LocalSplitter implements BodyInterceptor {
                 }
               }
             }
-            // 3.case:
+            // 3.case: if uselist of head contains neither orilocal nor the modified orilocal, do nothing
             else {
+              // if deflist of head contains no orilocal, then trace forwards on.
               if ((!head.getDefs().isEmpty() && !head.getDefs().get(0).equivTo(oriLocal)
                   || head.getDefs().isEmpty())) {
                 for (Stmt succ : bodyBuilder.getStmtGraph().successors(head)) {
@@ -241,12 +241,12 @@ public class LocalSplitter implements BodyInterceptor {
     }
 
     bodyBuilder.setLocals(newLocals);
-    newBody = bodyBuilder.build();
+    return bodyBuilder.build();
 
-    return newBody;
   }
 
   // ******************assist_functions*************************
+
   /**
    * fit the modified stmt in trap
    *
@@ -464,7 +464,6 @@ public class LocalSplitter implements BodyInterceptor {
       }
 
       List<Stmt> tempList = new ArrayList<>(visitList);
-      System.out.println(tempList);
       Deque<Stmt> deque = new ArrayDeque<>();
       deque.add(bodyBuilder.getStmtGraph().getStartingStmt());
       while (!deque.isEmpty()) {

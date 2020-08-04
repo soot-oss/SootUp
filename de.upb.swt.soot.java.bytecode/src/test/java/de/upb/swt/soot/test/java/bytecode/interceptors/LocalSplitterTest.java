@@ -3,7 +3,6 @@ package de.upb.swt.soot.test.java.bytecode.interceptors;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import com.google.common.graph.*;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
@@ -25,12 +24,12 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Zun Wang */
+
 @Category(Java8Test.class)
 public class LocalSplitterTest {
 
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  // JavaJimple javaJimple = JavaJimple.getInstance();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
 
   JavaClassType intType = factory.getClassType("int");
@@ -229,8 +228,7 @@ public class LocalSplitterTest {
     Position position = NoPositionInformation.getInstance();
     builder.setPosition(position);
 
-    Body body = builder.build();
-    return body;
+    return builder.build();
   }
 
   private Body createExpectedBBBody() {
@@ -281,8 +279,7 @@ public class LocalSplitterTest {
     Position position = NoPositionInformation.getInstance();
     builder.setPosition(position);
 
-    Body body = builder.build();
-    return body;
+    return builder.build();
   }
 
   /** bodycreater for multilocals */
@@ -319,8 +316,7 @@ public class LocalSplitterTest {
     Position position = NoPositionInformation.getInstance();
     builder.setPosition(position);
 
-    Body body = builder.build();
-    return body;
+    return builder.build();
   }
 
   private Body createExpectedMuiltilocalsBody() {
@@ -355,14 +351,13 @@ public class LocalSplitterTest {
 
     // set first stmt
     builder.setStartingStmt(startingStmt);
-    ;
 
     // build position
     Position position = NoPositionInformation.getInstance();
     builder.setPosition(position);
 
-    Body body = builder.build();
-    return body;
+    return builder.build();
+
   }
 
   /** bodycreater for Loop */
@@ -412,8 +407,7 @@ public class LocalSplitterTest {
     Position position = NoPositionInformation.getInstance();
     builder.setPosition(position);
 
-    Body body = builder.build();
-    return body;
+    return builder.build();
   }
 
   private Body createExpectedLoopBody() {
@@ -464,8 +458,7 @@ public class LocalSplitterTest {
     Position position = NoPositionInformation.getInstance();
     builder.setPosition(position);
 
-    Body body = builder.build();
-    return body;
+    return builder.build();
   }
 
   private static void assertLocalsEquiv(Set<Local> expected, Set<Local> actual) {
