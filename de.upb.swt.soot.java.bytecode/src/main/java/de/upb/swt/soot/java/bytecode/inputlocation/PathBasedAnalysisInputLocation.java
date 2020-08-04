@@ -227,8 +227,9 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
           System.getProperty("java.io.tmpdir")
               + File.separator
               + "sootOutput"
-              + "-war-"
-              + path.hashCode();
+              + "-war"
+              + path.hashCode()
+              + "/";
 
       return new WarArchiveAnalysisInputLocation(path, Paths.get(destDirectory));
     }
@@ -271,12 +272,16 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       int extractedSize = 0;
       try {
         File dest = new File(destDirectory);
-        dest.deleteOnExit();
-        if (!dest.exists()) {
+        if (dest.exists()) {
+          //  throw new RuntimeException("can not extract .WAR file - the directory " +
+          // destDirectory+" exists already.");
+        } else {
           if (!dest.mkdir()) {
             throw new RuntimeException("Could not create the directory: " + destDirectory);
           }
+          dest.deleteOnExit();
         }
+
         ZipInputStream zis = new ZipInputStream(new FileInputStream(warFilePath.toString()));
         ZipEntry zipEntry;
         while ((zipEntry = zis.getNextEntry()) != null) {
@@ -317,12 +322,12 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
      * @param extractedWARPath The path where the war file is extracted Adds the classes associated
      *     to servlet-class in a {@link ArrayList} of {@link String}
      */
-    public void parseWebxml(String extractedWARPath) {
+    public List<String> parseWebxml(String extractedWARPath) {
       List<String> classesInXML = new ArrayList<>();
       try {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(new File(extractedWARPath + "WEB-INF/web.xml"));
+        Document document = builder.parse(new File(extractedWARPath + "/WEB-INF/web.xml"));
         document.getDocumentElement().normalize();
         NodeList nList = document.getElementsByTagName("servlet");
         for (int temp = 0; temp < nList.getLength(); temp++) {
@@ -336,6 +341,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       } catch (ParserConfigurationException | SAXException | IOException e) {
         throw new RuntimeException(e);
       }
+      return classesInXML;
     }
   }
 }
