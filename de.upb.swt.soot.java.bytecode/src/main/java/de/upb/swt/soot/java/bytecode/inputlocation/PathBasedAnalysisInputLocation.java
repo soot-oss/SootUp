@@ -70,19 +70,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
   }
 
   /**
-   * Return the list of the JAR files at the directory
-   *
-   * @param dirPath is the path for the extracted directory for the WAR file
-   */
-  @Nonnull
-  public static List<Path> walkDirectoryForJars(@Nonnull Path dirPath) throws IOException {
-    return Files.walk(dirPath)
-        .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
-        .flatMap(p1 -> StreamUtils.optionalToStream(Optional.of(p1)))
-        .collect(Collectors.toList());
-  }
-
-  /**
    * Creates a {@link PathBasedAnalysisInputLocation} depending on the given {@link Path}, e.g.,
    * differs between directories, archives (and possibly network path's in the future).
    *
@@ -222,14 +209,16 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
   }
 
   // TODO: [ms] war is java specific -> move to soot.java module
-  // TODO: [ms] dont extractWarfile and extends ArchiveBasedAnalysisInputLocation?
+  // TODO: [ms] dont extractWarfile and extend ArchiveBasedAnalysisInputLocation?
   private static final class WarArchiveAnalysisInputLocation
       extends DirectoryBasedAnalysisInputLocation {
     public List<Path> jarsFromPath = new ArrayList<>();
+    public static int maxExtractedSize =
+        1024 * 1024 * 500; // limit of extracted file size to protect against archive bombs
 
-    private WarArchiveAnalysisInputLocation(@Nonnull Path extractedPath) {
+    private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nonnull Path extractedPath) {
       super(extractedPath);
-      extractWarFile(extractedPath);
+      extractWarFile(warPath);
     }
 
     public static WarArchiveAnalysisInputLocation createWarArchiveAnalysisInputLocation(
@@ -241,7 +230,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
               + "-war-"
               + path.hashCode();
 
-      return new WarArchiveAnalysisInputLocation(Paths.get(destDirectory));
+      return new WarArchiveAnalysisInputLocation(path, Paths.get(destDirectory));
     }
 
     @Override
@@ -251,7 +240,11 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       List<? extends AbstractClassSource> classesFromWar = Collections.emptyList();
 
       try {
-        jarsFromPath = walkDirectoryForJars(Paths.get(path.toString() + "/"));
+        jarsFromPath =
+            Files.walk(Paths.get(path.toString() + "/"))
+                .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
+                .flatMap(p1 -> StreamUtils.optionalToStream(Optional.of(p1)))
+                .collect(Collectors.toList());
         for (Path jarPath : jarsFromPath) {
           try (FileSystem fsJar = FileSystems.newFileSystem(jarPath, null)) {
             final Path archiveRootJar = fsJar.getPath("/");
@@ -271,18 +264,20 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
      * Extracts the war file at the temporary location to analyze underlying class and jar files
      *
      * @param warFilePath The path to war file to be extracted
-     * @return A {@link String} location where the war file is extracted
      */
-    public @Nonnull String extractWarFile(Path warFilePath) {
-      // FIXME: [ms] protect against archive bombs
-      final String destDirectory = warFilePath.toString();
+    @Nonnull
+    public void extractWarFile(Path warFilePath) {
+      final String destDirectory = path.toString();
+      int extractedSize = 0;
       try {
         File dest = new File(destDirectory);
         dest.deleteOnExit();
         if (!dest.exists()) {
-          dest.mkdir();
+          if (!dest.mkdir()) {
+            throw new RuntimeException("Could not create the directory: " + destDirectory);
+          }
         }
-        ZipInputStream zis = new ZipInputStream(new FileInputStream(warFilePath.toFile()));
+        ZipInputStream zis = new ZipInputStream(new FileInputStream(warFilePath.toString()));
         ZipEntry zipEntry;
         while ((zipEntry = zis.getNextEntry()) != null) {
           String filepath = destDirectory + File.separator + zipEntry.getName();
@@ -291,7 +286,14 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
             byte[] incomingValues = new byte[4096];
             int readFlag;
             while ((readFlag = zis.read(incomingValues)) != -1) {
+              if (extractedSize > maxExtractedSize) {
+                throw new RuntimeException(
+                    "The extracted warfile exceeds the size of "
+                        + maxExtractedSize
+                        + " byte. Either the file is a big archive or maybe it contains an archive bomb.");
+              }
               bos.write(incomingValues, 0, readFlag);
+              extractedSize += readFlag;
             }
             bos.close();
           } else {
@@ -302,9 +304,10 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         }
 
       } catch (IOException e) {
-        e.getMessage();
+        throw new RuntimeException(e);
       }
-      return parseWebxml(destDirectory);
+
+      parseWebxml(destDirectory);
     }
 
     /**
@@ -314,7 +317,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
      * @param extractedWARPath The path where the war file is extracted Adds the classes associated
      *     to servlet-class in a {@link ArrayList} of {@link String}
      */
-    public String parseWebxml(String extractedWARPath) {
+    public void parseWebxml(String extractedWARPath) {
       List<String> classesInXML = new ArrayList<>();
       try {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -331,9 +334,8 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
           }
         }
       } catch (ParserConfigurationException | SAXException | IOException e) {
-        e.getMessage();
+        throw new RuntimeException(e);
       }
-      return extractedWARPath;
     }
   }
 }
