@@ -8,7 +8,6 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
-import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import java.nio.file.Path;
@@ -88,6 +87,7 @@ public abstract class AnalysisInputLocationTest {
     final Collection<? extends AbstractClassSource> classSources =
         inputLocation.getClassSources(getIdentifierFactory());
 
+    /*  TODO: [ms] make a specific test for war
     assertNotNull(PathBasedAnalysisInputLocation.jarsFromPath);
     for (Path jarPath : PathBasedAnalysisInputLocation.jarsFromPath) {
       classFromJar = true;
@@ -102,6 +102,7 @@ public abstract class AnalysisInputLocationTest {
         assertThat(classSourcesFromJar.size(), new LessOrEqual<>(maxClassesFound));
       }
     }
+    */
     if (!classFromJar) {
       assertThat(classSources.size(), new GreaterOrEqual<>(minClassesFound));
       if (maxClassesFound != -1) {

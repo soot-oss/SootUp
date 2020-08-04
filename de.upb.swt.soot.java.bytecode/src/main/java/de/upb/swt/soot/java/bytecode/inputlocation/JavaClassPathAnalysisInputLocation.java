@@ -28,7 +28,6 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
@@ -72,23 +71,7 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
     }
 
     this.classPath = classPath;
-
-    if (PathUtils.hasExtension(Paths.get(classPath), FileType.WAR)) {
-      List<Path> jarsFromPath;
-      try {
-        Path extractWarFilePath =
-            Paths.get(PathBasedAnalysisInputLocation.extractWarFile(classPath) + "/");
-        jarsFromPath = PathBasedAnalysisInputLocation.walkDirectoryForJars(extractWarFilePath);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-      for (Path path : jarsFromPath) {
-        String jarPath = path.toString();
-        cpEntries.addAll(explodeClassPath(jarPath));
-      }
-    } else {
-      cpEntries = explodeClassPath(classPath);
-    }
+    cpEntries = explodeClassPath(classPath);
 
     if (cpEntries.isEmpty()) {
       throw new InvalidClassPathException("Empty class path is given.");
@@ -161,9 +144,6 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
 
   private @Nonnull Optional<AnalysisInputLocation> nsForPath(@Nonnull Path path) {
     if (Files.exists(path) && (Files.isDirectory(path) || PathUtils.isArchive(path))) {
-      if (PathUtils.hasExtension(path, FileType.WAR)) {
-        path = Paths.get(PathBasedAnalysisInputLocation.extractWarFile(path.toString()));
-      }
       return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);

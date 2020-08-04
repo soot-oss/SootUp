@@ -64,8 +64,6 @@ import org.xml.sax.SAXException;
  */
 public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysisInputLocation {
   protected final Path path;
-  public static List<Path> jarsFromPath = new ArrayList<>();
-  private static boolean isWarFileFlag = false;
 
   private PathBasedAnalysisInputLocation(@Nonnull Path path) {
     this.path = path;
@@ -99,9 +97,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       return new DirectoryBasedAnalysisInputLocation(path);
     } else if (PathUtils.isArchive(path)) {
       if (PathUtils.hasExtension(path, FileType.WAR)) {
-        isWarFileFlag = true;
-        String pathToExtractedWar = extractWarFile(path.toString());
-        return new DirectoryBasedAnalysisInputLocation(Paths.get(pathToExtractedWar));
+        return WarArchiveAnalysisInputLocation.createWarArchiveAnalysisInputLocation(path);
       }
       return new ArchiveBasedAnalysisInputLocation(path);
     } else {
@@ -128,80 +124,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
   }
 
-  /**
-   * Extracts the war file at the temporary location to analyze underlying class and jar files
-   *
-   * @param warFilePath The path to war file to be extracted
-   * @return A {@link String} location where the war file is extracted
-   */
-  public @Nonnull static String extractWarFile(String warFilePath) {
-    // FIXME: [ms] protect against archive bombs
-    String destDirectory =
-        System.getProperty("java.io.tmpdir")
-            + File.separator
-            + "sootOutput"
-            + "-war-"
-            + warFilePath.hashCode();
-
-    try {
-      File dest = new File(destDirectory);
-      dest.deleteOnExit();
-      if (!dest.exists()) {
-        dest.mkdir();
-      }
-      ZipInputStream zis = new ZipInputStream(new FileInputStream(warFilePath));
-      ZipEntry zipEntry;
-      while ((zipEntry = zis.getNextEntry()) != null) {
-        String filepath = destDirectory + File.separator + zipEntry.getName();
-        if (!zipEntry.isDirectory()) {
-          BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filepath));
-          byte[] incomingValues = new byte[4096];
-          int readFlag;
-          while ((readFlag = zis.read(incomingValues)) != -1) {
-            bos.write(incomingValues, 0, readFlag);
-          }
-          bos.close();
-        } else {
-          File newDir = new File(filepath);
-          newDir.mkdir();
-        }
-        zis.closeEntry();
-      }
-
-    } catch (IOException e) {
-      e.getMessage();
-    }
-    parseWebxml(destDirectory);
-    return destDirectory;
-  }
-
-  /**
-   * Parses the web.xml file to search for the servlet-class classes in the extracted directory
-   * after the war file is extracted
-   *
-   * @param extractedWARPath The path where the war file is extracted Adds the classes associated to
-   *     servlet-class in a {@link ArrayList} of {@link String}
-   */
-  public static void parseWebxml(String extractedWARPath) {
-    List<String> classesInXML = new ArrayList<>();
-    try {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder builder = factory.newDocumentBuilder();
-      Document document = builder.parse(new File(extractedWARPath + "WEB-INF/web.xml"));
-      document.getDocumentElement().normalize();
-      NodeList nList = document.getElementsByTagName("servlet");
-      for (int temp = 0; temp < nList.getLength(); temp++) {
-        Node node = nList.item(temp);
-        if (node.getNodeType() == Node.ELEMENT_NODE) {
-          Element eElement = (Element) node;
-          classesInXML.add(eElement.getElementsByTagName("servlet-class").item(0).getTextContent());
-        }
-      }
-    } catch (ParserConfigurationException | SAXException | IOException e) {
-      e.getMessage();
-    }
-  }
-
   @Nonnull
   Optional<? extends AbstractClassSource> getClassSourceInternal(
       @Nonnull JavaClassType signature, @Nonnull Path path, @Nonnull ClassProvider classProvider) {
@@ -220,8 +142,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     return new AsmJavaClassProvider(bodyInterceptors);
   }
 
-  private static final class DirectoryBasedAnalysisInputLocation
-      extends PathBasedAnalysisInputLocation {
+  private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
     private DirectoryBasedAnalysisInputLocation(@Nonnull Path path) {
       super(path);
@@ -231,25 +152,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
         @Nonnull IdentifierFactory identifierFactory,
         @Nonnull ClassLoadingOptions classLoadingOptions) {
-      if (isWarFileFlag) {
-        Collection<? extends AbstractClassSource> classesFromWar = Collections.EMPTY_LIST;
-
-        try {
-          jarsFromPath = walkDirectoryForJars(Paths.get(path.toString() + "/"));
-          for (Path jarPath : jarsFromPath) {
-            try (FileSystem fsJar = FileSystems.newFileSystem(jarPath, null)) {
-              final Path archiveRootJar = fsJar.getPath("/");
-              walkDirectory(
-                  archiveRootJar, identifierFactory, buildClassProvider(classLoadingOptions));
-            } catch (IOException e) {
-              e.getMessage();
-            }
-          }
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-        return classesFromWar;
-      }
       return walkDirectory(path, identifierFactory, buildClassProvider(classLoadingOptions));
     }
 
@@ -261,8 +163,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
   }
 
-  private static final class ArchiveBasedAnalysisInputLocation
-      extends PathBasedAnalysisInputLocation {
+  private static class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
     // We cache the FileSystem instances as their creation is expensive.
     // The Guava Cache is thread-safe (see JavaDoc of LoadingCache) hence this
@@ -317,6 +218,122 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
+    }
+  }
+
+  // TODO: [ms] war is java specific -> move to soot.java module
+  // TODO: [ms] dont extractWarfile and extends ArchiveBasedAnalysisInputLocation?
+  private static final class WarArchiveAnalysisInputLocation
+      extends DirectoryBasedAnalysisInputLocation {
+    public List<Path> jarsFromPath = new ArrayList<>();
+
+    private WarArchiveAnalysisInputLocation(@Nonnull Path extractedPath) {
+      super(extractedPath);
+      extractWarFile(extractedPath);
+    }
+
+    public static WarArchiveAnalysisInputLocation createWarArchiveAnalysisInputLocation(
+        @Nonnull Path path) {
+      String destDirectory =
+          System.getProperty("java.io.tmpdir")
+              + File.separator
+              + "sootOutput"
+              + "-war-"
+              + path.hashCode();
+
+      return new WarArchiveAnalysisInputLocation(Paths.get(destDirectory));
+    }
+
+    @Override
+    public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
+        @Nonnull IdentifierFactory identifierFactory,
+        @Nonnull ClassLoadingOptions classLoadingOptions) {
+      List<? extends AbstractClassSource> classesFromWar = Collections.emptyList();
+
+      try {
+        jarsFromPath = walkDirectoryForJars(Paths.get(path.toString() + "/"));
+        for (Path jarPath : jarsFromPath) {
+          try (FileSystem fsJar = FileSystems.newFileSystem(jarPath, null)) {
+            final Path archiveRootJar = fsJar.getPath("/");
+            return walkDirectory(
+                archiveRootJar, identifierFactory, buildClassProvider(classLoadingOptions));
+          } catch (IOException e) {
+            e.getMessage();
+          }
+        }
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+      return classesFromWar;
+    }
+
+    /**
+     * Extracts the war file at the temporary location to analyze underlying class and jar files
+     *
+     * @param warFilePath The path to war file to be extracted
+     * @return A {@link String} location where the war file is extracted
+     */
+    public @Nonnull String extractWarFile(Path warFilePath) {
+      // FIXME: [ms] protect against archive bombs
+      final String destDirectory = warFilePath.toString();
+      try {
+        File dest = new File(destDirectory);
+        dest.deleteOnExit();
+        if (!dest.exists()) {
+          dest.mkdir();
+        }
+        ZipInputStream zis = new ZipInputStream(new FileInputStream(warFilePath.toFile()));
+        ZipEntry zipEntry;
+        while ((zipEntry = zis.getNextEntry()) != null) {
+          String filepath = destDirectory + File.separator + zipEntry.getName();
+          if (!zipEntry.isDirectory()) {
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filepath));
+            byte[] incomingValues = new byte[4096];
+            int readFlag;
+            while ((readFlag = zis.read(incomingValues)) != -1) {
+              bos.write(incomingValues, 0, readFlag);
+            }
+            bos.close();
+          } else {
+            File newDir = new File(filepath);
+            newDir.mkdir();
+          }
+          zis.closeEntry();
+        }
+
+      } catch (IOException e) {
+        e.getMessage();
+      }
+      return parseWebxml(destDirectory);
+    }
+
+    /**
+     * Parses the web.xml file to search for the servlet-class classes in the extracted directory
+     * after the war file is extracted
+     *
+     * @param extractedWARPath The path where the war file is extracted Adds the classes associated
+     *     to servlet-class in a {@link ArrayList} of {@link String}
+     */
+    public String parseWebxml(String extractedWARPath) {
+      List<String> classesInXML = new ArrayList<>();
+      try {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(new File(extractedWARPath + "WEB-INF/web.xml"));
+        document.getDocumentElement().normalize();
+        NodeList nList = document.getElementsByTagName("servlet");
+        for (int temp = 0; temp < nList.getLength(); temp++) {
+          Node node = nList.item(temp);
+          if (node.getNodeType() == Node.ELEMENT_NODE) {
+            Element eElement = (Element) node;
+            classesInXML.add(
+                eElement.getElementsByTagName("servlet-class").item(0).getTextContent());
+          }
+        }
+      } catch (ParserConfigurationException | SAXException | IOException e) {
+        e.getMessage();
+      }
+      return extractedWARPath;
     }
   }
 }
