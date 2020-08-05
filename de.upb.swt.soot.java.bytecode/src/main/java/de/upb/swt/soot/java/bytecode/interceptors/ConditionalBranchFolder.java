@@ -1,11 +1,13 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
+import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 
@@ -23,6 +25,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
   public Body interceptBody(@Nonnull Body originalBody) {
     Body.BodyBuilder builder = Body.builder(originalBody);
     Set<Stmt> nodes = originalBody.getStmtGraph().nodes();
+    final ImmutableStmtGraph stmtGraph = originalBody.getStmtGraph();
 
     for (Stmt stmt : nodes) {
       if (stmt instanceof JIfStmt) {
@@ -33,15 +36,21 @@ public class ConditionalBranchFolder implements BodyInterceptor {
           condition = Evaluator.getConstantValueOf(condition);
 
           if (((IntConstant) condition).getValue() == 1) {
-            // if condition always true, redirect all predecessors to the successor of the
-            // if-statements
-            Stmt nextStmt = ifStmt.getTarget(originalBody);
-            for (Stmt predecessor : originalBody.getStmtGraph().predecessors(ifStmt)) {
-              builder.addFlow(predecessor, nextStmt);
+            // if condition is always true: redirect all predecessors to the successor of the
+            // if-statement
+            final List<Stmt> successors = stmtGraph.successors(ifStmt);
+            Stmt nextStmt = successors.get(0);
+            builder.removeFlow(ifStmt, nextStmt);
+
+            // FIXME: [ms] remove unbranched part of if-block, too i.e. iterate/remove flow until a
+            // Stmt has another predecessor
+
+            // link previous stmt with branch target of if-Stmt
+            Stmt branchTarget = successors.get(1);
+            final List<Stmt> predecessors = stmtGraph.predecessors(ifStmt);
+            for (Stmt predecessor : predecessors) {
+              builder.addFlow(predecessor, branchTarget);
               builder.removeFlow(predecessor, ifStmt);
-            }
-            for (Stmt successor : originalBody.getStmtGraph().successors(ifStmt)) {
-              builder.removeFlow(ifStmt, successor);
             }
           }
         }
