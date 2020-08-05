@@ -37,7 +37,7 @@ import org.xml.sax.SAXException;
  * #%L
  * Soot
  * %%
- * Copyright (C) 22.05.2018 Manuel Benz
+ * Copyright (C) 2018 Manuel Benz
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
