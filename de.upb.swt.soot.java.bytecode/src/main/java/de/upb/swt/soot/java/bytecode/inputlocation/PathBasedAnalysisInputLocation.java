@@ -228,8 +228,34 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       extractWarFile(warPath);
     }
 
-    @Nonnull
     @Override
+    @Nonnull
+    public Collection<? extends AbstractClassSource> getClassSources(
+        @Nonnull IdentifierFactory identifierFactory,
+        @Nonnull ClassLoadingOptions classLoadingOptions) {
+      List<AbstractClassSource> classesFromWar = new ArrayList<>();
+
+      try {
+        jarsFromPath =
+            Files.walk(Paths.get(path.toString()))
+                .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
+                .flatMap(p1 -> StreamUtils.optionalToStream(Optional.of(p1)))
+                .collect(Collectors.toList());
+        for (Path jarPath : jarsFromPath) {
+          final ArchiveBasedAnalysisInputLocation archiveBasedAnalysisInputLocation =
+              new ArchiveBasedAnalysisInputLocation(jarPath);
+          classesFromWar.addAll(
+              archiveBasedAnalysisInputLocation.getClassSources(
+                  identifierFactory, classLoadingOptions));
+        }
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+      return classesFromWar;
+    }
+
+    @Override
+    @Nonnull
     public Optional<? extends AbstractClassSource> getClassSource(
         @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
 
@@ -255,37 +281,11 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       return Optional.empty();
     }
 
-    @Override
-    public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
-        @Nonnull IdentifierFactory identifierFactory,
-        @Nonnull ClassLoadingOptions classLoadingOptions) {
-      List<AbstractClassSource> classesFromWar = new ArrayList<>();
-
-      try {
-        jarsFromPath =
-            Files.walk(Paths.get(path.toString()))
-                .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
-                .flatMap(p1 -> StreamUtils.optionalToStream(Optional.of(p1)))
-                .collect(Collectors.toList());
-        for (Path jarPath : jarsFromPath) {
-          final ArchiveBasedAnalysisInputLocation archiveBasedAnalysisInputLocation =
-              new ArchiveBasedAnalysisInputLocation(jarPath);
-          classesFromWar.addAll(
-              archiveBasedAnalysisInputLocation.getClassSources(
-                  identifierFactory, classLoadingOptions));
-        }
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-      return classesFromWar;
-    }
-
     /**
      * Extracts the war file at the temporary location to analyze underlying class and jar files
      *
      * @param warFilePath The path to war file to be extracted
      */
-    @Nonnull
     public void extractWarFile(Path warFilePath) {
       final String destDirectory = path.toString();
       int extractedSize = 0;
@@ -306,15 +306,14 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
 
           file.deleteOnExit();
           if (zipEntry.isDirectory()) {
-            if (file.exists()) {
-              continue;
+            if (!file.exists()) {
+              file.mkdir();
             }
-            file.mkdir();
           } else {
             byte[] incomingValues = new byte[4096];
             int readBytesZip;
             if (file.exists()) {
-              // compare contents -> contains the already the extracted war
+              // compare contents -> does it contain the extracted war already?
               int readBytesExistingFile;
               final BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
               byte[] bisBuf = new byte[4096];
@@ -363,9 +362,12 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
      * Parses the web.xml file to search for the servlet-class classes in the extracted directory
      * after the war file is extracted
      *
+     * <p>[ms] helps to set entrypoints for analyses automatically (later)
+     *
      * @param extractedWARPath The path where the war file is extracted Adds the classes associated
      *     to servlet-class in a {@link ArrayList} of {@link String}
      */
+    @Nonnull
     public List<String> retrieveServletClasses(String extractedWARPath) {
       List<String> classesInXML = new ArrayList<>();
       try {
