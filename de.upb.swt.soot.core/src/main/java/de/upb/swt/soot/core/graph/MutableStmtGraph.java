@@ -84,11 +84,12 @@ public class MutableStmtGraph extends StmtGraph {
     return traps;
   }
 
+  @Nullable
   public Stmt getStartingStmt() {
     return startingStmt;
   }
 
-  public int addNode(@Nonnull Stmt node) {
+  private int addNode(@Nonnull Stmt node) {
     final int idx = nextFreeId++;
     stmtToIdx.put(node, idx);
     predecessors.add(
@@ -108,7 +109,7 @@ public class MutableStmtGraph extends StmtGraph {
     return idx;
   }
 
-  public void removeNode(@Nonnull Stmt node) {
+  private void removeNode(@Nonnull Stmt node) {
     final int nodeIdx = existsNodeOrThrow(node);
     stmtToIdx.remove(node);
 

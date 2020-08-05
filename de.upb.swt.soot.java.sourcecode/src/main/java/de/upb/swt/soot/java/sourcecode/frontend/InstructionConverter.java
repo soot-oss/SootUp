@@ -103,6 +103,8 @@ public class InstructionConverter {
   private final Map<JSwitchStmt, List<Integer>> branchingTargetsOfLookUpSwitchStmts;
 
   List<Trap> traps = new ArrayList<>();
+  private SSAInstruction danglingExceptionInstr = null;
+
   private final Map<Integer, Local> locals;
   private final IdentifierFactory identifierFactory;
 
@@ -271,10 +273,14 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, SSAGetCaughtExceptionInstruction inst) {
     int exceptionValue = inst.getException();
 
-    JavaClassType exceptionClassType = null;
+    // FIXME [ms] make exception type more specific
+    System.out.println(symbolTable.getValue(exceptionValue));
 
+    JavaClassType exceptionClassType = null;
     if (exceptionClassType == null) {
       exceptionClassType = JavaIdentifierFactory.getInstance().getClassType("java.lang.Throwable");
+    } else {
+
     }
     Local local = getLocal(exceptionClassType, exceptionValue);
     JCaughtExceptionRef caught = JavaJimple.getInstance().newCaughtExceptionRef();
@@ -567,6 +573,7 @@ public class InstructionConverter {
 
   private Stmt convertThrowInstruction(DebuggingInformation debugInfo, SSAThrowInstruction inst) {
     int exception = inst.getException();
+    // FIXME [ms] make exception type more specific
     Local local = getLocal(UnknownType.getInstance(), exception);
 
     Position[] operandPos = new Position[1];

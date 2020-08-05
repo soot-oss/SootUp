@@ -12,9 +12,6 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
 
-  // FIXME: [ms] sourcecodefrontend does not add Traps yet to connect unexceptional flows with
-  // traphandlers!
-
   @Test
   public void tryCatch() {
     SootMethod sootMethod = loadMethod(getMethodSignature("tryCatch"));
