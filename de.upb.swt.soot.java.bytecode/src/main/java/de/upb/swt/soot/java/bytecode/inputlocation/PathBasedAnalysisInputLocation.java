@@ -208,7 +208,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
   }
 
-  // TODO: [ms] war is java specific -> move to soot.java module
+  // TODO: [ms] war is quite java specific -> move to soot.java module?
   // TODO: [ms] dont extractWarfile and extend ArchiveBasedAnalysisInputLocation?
   private static final class WarArchiveAnalysisInputLocation
       extends DirectoryBasedAnalysisInputLocation {
@@ -296,6 +296,11 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
             throw new RuntimeException("Could not create the directory: " + destDirectory);
           }
           dest.deleteOnExit();
+        } else {
+          throw new RuntimeException(
+              "Directory \""
+                  + destDirectory
+                  + "\" exists already. Please remove this directory from the path.");
         }
 
         ZipInputStream zis = new ZipInputStream(new FileInputStream(warFilePath.toString()));
