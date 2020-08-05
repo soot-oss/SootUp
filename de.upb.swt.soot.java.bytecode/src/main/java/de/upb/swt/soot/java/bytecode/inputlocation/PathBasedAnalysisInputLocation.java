@@ -296,11 +296,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
             throw new RuntimeException("Could not create the directory: " + destDirectory);
           }
           dest.deleteOnExit();
-        } else {
-          throw new RuntimeException(
-              "Directory \""
-                  + destDirectory
-                  + "\" exists already. Please remove this directory from the path.");
         }
 
         ZipInputStream zis = new ZipInputStream(new FileInputStream(warFilePath.toString()));
@@ -308,24 +303,53 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         while ((zipEntry = zis.getNextEntry()) != null) {
           String filepath = destDirectory + File.separator + zipEntry.getName();
           final File file = new File(filepath);
+
           file.deleteOnExit();
           if (zipEntry.isDirectory()) {
+            if (file.exists()) {
+              continue;
+            }
             file.mkdir();
           } else {
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
             byte[] incomingValues = new byte[4096];
-            int readFlag;
-            while ((readFlag = zis.read(incomingValues)) != -1) {
-              if (extractedSize > maxExtractedSize) {
-                throw new RuntimeException(
-                    "The extracted warfile exceeds the size of "
-                        + maxExtractedSize
-                        + " byte. Either the file is a big archive or maybe it contains an archive bomb.");
+            int readBytesZip;
+            if (file.exists()) {
+              // compare contents -> contains the already the extracted war
+              int readBytesExistingFile;
+              final BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+              byte[] bisBuf = new byte[4096];
+              while ((readBytesZip = zis.read(incomingValues)) != -1) {
+                if (extractedSize > maxExtractedSize) {
+                  throw new RuntimeException(
+                      "The extracted warfile exceeds the size of "
+                          + maxExtractedSize
+                          + " byte. Either the file is a big archive or maybe it contains an archive bomb.");
+                }
+                readBytesExistingFile = bis.read(bisBuf, 0, readBytesZip);
+                if (readBytesExistingFile != readBytesZip) {
+                  throw new RuntimeException(
+                      "File \"" + file + "\" exists already and has differing content length.");
+                } else if (!Arrays.equals(bisBuf, incomingValues)) {
+                  throw new RuntimeException(
+                      "File \"" + file + "\" exists already and has differing contents.");
+                }
+                extractedSize += readBytesZip;
               }
-              bos.write(incomingValues, 0, readFlag);
-              extractedSize += readFlag;
+
+            } else {
+              BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+              while ((readBytesZip = zis.read(incomingValues)) != -1) {
+                if (extractedSize > maxExtractedSize) {
+                  throw new RuntimeException(
+                      "The extracted warfile exceeds the size of "
+                          + maxExtractedSize
+                          + " byte. Either the file is a big archive or maybe it contains an archive bomb.");
+                }
+                bos.write(incomingValues, 0, readBytesZip);
+                extractedSize += readBytesZip;
+              }
+              bos.close();
             }
-            bos.close();
           }
           zis.closeEntry();
         }
