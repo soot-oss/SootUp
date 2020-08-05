@@ -291,10 +291,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       int extractedSize = 0;
       try {
         File dest = new File(destDirectory);
-        if (dest.exists()) {
-          //  throw new RuntimeException("can not extract .WAR file - the directory " +
-          // destDirectory+" exists already.");
-        } else {
+        if (!dest.exists()) {
           if (!dest.mkdir()) {
             throw new RuntimeException("Could not create the directory: " + destDirectory);
           }
@@ -305,8 +302,12 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         ZipEntry zipEntry;
         while ((zipEntry = zis.getNextEntry()) != null) {
           String filepath = destDirectory + File.separator + zipEntry.getName();
-          if (!zipEntry.isDirectory()) {
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filepath));
+          final File file = new File(filepath);
+          file.deleteOnExit();
+          if (zipEntry.isDirectory()) {
+            file.mkdir();
+          } else {
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
             byte[] incomingValues = new byte[4096];
             int readFlag;
             while ((readFlag = zis.read(incomingValues)) != -1) {
@@ -320,9 +321,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
               extractedSize += readFlag;
             }
             bos.close();
-          } else {
-            File newDir = new File(filepath);
-            newDir.mkdir();
           }
           zis.closeEntry();
         }
@@ -330,8 +328,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
-
-      parseWebxml(destDirectory);
     }
 
     /**
@@ -341,7 +337,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
      * @param extractedWARPath The path where the war file is extracted Adds the classes associated
      *     to servlet-class in a {@link ArrayList} of {@link String}
      */
-    public List<String> parseWebxml(String extractedWARPath) {
+    public List<String> retrieveServletClasses(String extractedWARPath) {
       List<String> classesInXML = new ArrayList<>();
       try {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
