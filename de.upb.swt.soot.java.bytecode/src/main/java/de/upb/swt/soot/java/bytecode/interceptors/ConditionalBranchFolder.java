@@ -39,9 +39,8 @@ public class ConditionalBranchFolder implements BodyInterceptor {
 
           if (((IntConstant) condition).getValue() == 1) {
             // the evaluated if condition is always true: redirect all predecessors to the successor
-            // of this
-            // if-statement and prune the "true"-block stmt tree until another branch flows to a
-            // Stmt
+            // of this if-statement and prune the "true"-block stmt tree until another branch flows
+            // to a Stmt
             Deque<Stmt> stack = new ArrayDeque<>();
             stack.addFirst(ifStmt);
 
@@ -53,6 +52,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
               builder.addFlow(predecessor, branchTarget);
             }
 
+            // remove all now unreachable stmts from "true"-block
             while (!stack.isEmpty()) {
               Stmt itStmt = stack.pollFirst();
               if (builderStmtGraph.containsNode(itStmt)
