@@ -17,7 +17,7 @@ public class Evaluator {
    * @param op The value to be evaluated
    * @return True, if op is constant. Otherwise, false.
    */
-  public static boolean isValueConstantValued(Value op) {
+  public static boolean isValueConstantValue(Value op) {
     if (op instanceof Constant) {
       return true;
     } else if (op instanceof AbstractUnopExpr) {
@@ -25,15 +25,15 @@ public class Evaluator {
       if (innerOp == NullConstant.getInstance()) {
         return false;
       }
-      return isValueConstantValued(innerOp);
+      return isValueConstantValue(innerOp);
     } else if (op instanceof AbstractBinopExpr) {
       final AbstractBinopExpr binExpr = (AbstractBinopExpr) op;
       final Value op1 = binExpr.getOp1();
       final Value op2 = binExpr.getOp2();
 
       // Only evaluate these checks once and then use the result multiple times
-      final boolean isOp1Constant = isValueConstantValued(op1);
-      final boolean isOp2Constant = isValueConstantValued(op2);
+      final boolean isOp1Constant = isValueConstantValue(op1);
+      final boolean isOp2Constant = isValueConstantValue(op2);
 
       // Handle weird cases
       if (op instanceof JDivExpr || op instanceof JRemExpr) {
@@ -61,7 +61,7 @@ public class Evaluator {
    * @return The resulting constant or null
    */
   public static Value getConstantValueOf(Value op) {
-    if (!isValueConstantValued(op)) {
+    if (!isValueConstantValue(op)) {
       return null;
     }
 

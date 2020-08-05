@@ -29,7 +29,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         JIfStmt ifStmt = (JIfStmt) stmt;
         // check for constant-valued conditions
         Value condition = ifStmt.getCondition();
-        if (Evaluator.isValueConstantValued(condition)) {
+        if (Evaluator.isValueConstantValue(condition)) {
           condition = Evaluator.getConstantValueOf(condition);
 
           if (((IntConstant) condition).getValue() == 1) {
