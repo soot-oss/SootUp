@@ -41,15 +41,14 @@ public abstract class MinimalBytecodeTestSuiteBase {
   public static class CustomTestWatcher extends TestWatcher {
     private String classPath = MinimalBytecodeTestSuiteBase.class.getSimpleName();
     private JavaView javaView;
-    private JavaProject project;
 
     /** Load View once for each test directory */
     @Override
     protected void starting(Description description) {
       String prevClassDirName = getTestDirectoryName(getClassPath());
-      setClassPath(description.getClassName());
+      classPath = description.getClassName();
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
-        project =
+        JavaProject project =
             JavaProject.builder(new JavaLanguage(8))
                 .addClassPath(
                     new JavaClassPathAnalysisInputLocation(
@@ -61,20 +60,11 @@ public abstract class MinimalBytecodeTestSuiteBase {
                             + File.separator))
                 .build();
         javaView = project.createOnDemandView();
-        setJavaView(javaView);
       }
     }
 
     public String getClassPath() {
       return classPath;
-    }
-
-    private void setClassPath(String classPath) {
-      this.classPath = classPath;
-    }
-
-    private void setJavaView(JavaView javaView) {
-      this.javaView = javaView;
     }
 
     public JavaView getJavaView() {
@@ -93,7 +83,7 @@ public abstract class MinimalBytecodeTestSuiteBase {
   }
 
   /**
-   * @returns the name of the parent directory - assuming the directory structure is only one level
+   * @return the name of the parent directory - assuming the directory structure is only one level
    *     deep
    */
   public static String getTestDirectoryName(String classPath) {
@@ -106,15 +96,13 @@ public abstract class MinimalBytecodeTestSuiteBase {
   }
 
   /**
-   * @returns the name of the class - assuming the testname unit has "Test" appended to the
+   * @return the name of the class - assuming the testname unit has "Test" appended to the
    *     respective name of the class
    */
   public String getClassName(String classPath) {
     String[] classPathArray = classPath.split("\\.");
-    String className =
-        classPathArray[classPathArray.length - 1].substring(
-            0, classPathArray[classPathArray.length - 1].length() - 4);
-    return className;
+    return classPathArray[classPathArray.length - 1].substring(
+        0, classPathArray[classPathArray.length - 1].length() - 4);
   }
 
   protected JavaClassType getDeclaredClassSignature() {
@@ -131,8 +119,7 @@ public abstract class MinimalBytecodeTestSuiteBase {
     SootClass clazz = loadClass(methodSignature.getDeclClassType());
     Optional<SootMethod> m = clazz.getMethod(methodSignature);
     assertTrue("No matching method signature found", m.isPresent());
-    SootMethod method = m.get();
-    return method;
+    return m.get();
   }
 
   public void assertJimpleStmts(SootMethod method, List<String> expectedStmts) {
