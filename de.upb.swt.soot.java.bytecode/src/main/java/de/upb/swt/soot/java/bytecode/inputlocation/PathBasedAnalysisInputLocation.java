@@ -328,7 +328,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
                 readBytesExistingFile = bis.read(bisBuf, 0, readBytesZip);
                 if (readBytesExistingFile != readBytesZip) {
                   throw new RuntimeException(
-                      "File \"" + file + "\" exists already and has differing content length.");
+                      "File \"" + file + "\" exists already and has differing size.");
                 } else if (!Arrays.equals(bisBuf, incomingValues)) {
                   throw new RuntimeException(
                       "File \"" + file + "\" exists already and has differing contents.");
