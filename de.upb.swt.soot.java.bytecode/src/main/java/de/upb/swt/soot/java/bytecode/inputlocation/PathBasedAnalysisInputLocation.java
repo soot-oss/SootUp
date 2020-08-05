@@ -112,7 +112,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
   }
 
   @Nonnull
-  Optional<? extends AbstractClassSource> getClassSourceInternal(
+  protected Optional<? extends AbstractClassSource> getClassSourceInternal(
       @Nonnull JavaClassType signature, @Nonnull Path path, @Nonnull ClassProvider classProvider) {
     Path pathToClass =
         path.resolve(signature.toPath(classProvider.getHandledFileType(), path.getFileSystem()));
@@ -228,11 +228,10 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       extractWarFile(warPath);
     }
 
+    @Nonnull
     @Override
-    public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
-        @Nonnull IdentifierFactory identifierFactory,
-        @Nonnull ClassLoadingOptions classLoadingOptions) {
-      List<? extends AbstractClassSource> classesFromWar = Collections.emptyList();
+    public Optional<? extends AbstractClassSource> getClassSource(
+        @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
 
       try {
         jarsFromPath =
@@ -241,13 +240,39 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
                 .flatMap(p1 -> StreamUtils.optionalToStream(Optional.of(p1)))
                 .collect(Collectors.toList());
         for (Path jarPath : jarsFromPath) {
-          try (FileSystem fsJar = FileSystems.newFileSystem(jarPath, null)) {
-            final Path archiveRootJar = fsJar.getPath("/");
-            return walkDirectory(
-                archiveRootJar, identifierFactory, buildClassProvider(classLoadingOptions));
-          } catch (IOException e) {
-            e.getMessage();
+          final ArchiveBasedAnalysisInputLocation archiveBasedAnalysisInputLocation =
+              new ArchiveBasedAnalysisInputLocation(jarPath);
+          final Optional<? extends AbstractClassSource> classSource =
+              archiveBasedAnalysisInputLocation.getClassSource(type, classLoadingOptions);
+          if (classSource.isPresent()) {
+            return classSource;
           }
+        }
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+
+      return Optional.empty();
+    }
+
+    @Override
+    public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
+        @Nonnull IdentifierFactory identifierFactory,
+        @Nonnull ClassLoadingOptions classLoadingOptions) {
+      List<AbstractClassSource> classesFromWar = new ArrayList<>();
+
+      try {
+        jarsFromPath =
+            Files.walk(Paths.get(path.toString()))
+                .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
+                .flatMap(p1 -> StreamUtils.optionalToStream(Optional.of(p1)))
+                .collect(Collectors.toList());
+        for (Path jarPath : jarsFromPath) {
+          final ArchiveBasedAnalysisInputLocation archiveBasedAnalysisInputLocation =
+              new ArchiveBasedAnalysisInputLocation(jarPath);
+          classesFromWar.addAll(
+              archiveBasedAnalysisInputLocation.getClassSources(
+                  identifierFactory, classLoadingOptions));
         }
       } catch (IOException e) {
         throw new RuntimeException(e);
