@@ -22,6 +22,8 @@ package de.upb.swt.soot.test.java.bytecode.inputlocation;
  * #L%
  */
 
+import static org.junit.Assert.*;
+
 import categories.Java8Test;
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
@@ -42,7 +44,6 @@ import java.io.File;
 import java.util.Collections;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -77,7 +78,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     String warFile = "../shared-test-resources/java-warApp/dummyWarApp.war";
 
-    Assert.assertTrue("File " + warFile + " not found.", new File(warFile).exists());
+    assertTrue("File " + warFile + " not found.", new File(warFile).exists());
 
     // Create a project
     JavaProject p =
@@ -100,13 +101,13 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     // Get method for sub-signature
     SootMethod foundMethod = utilsClass.getMethod(optionalToStreamMethodSubSignature).get();
-    Assert.assertNotNull(foundMethod.getBody());
+    assertNotNull(foundMethod.getBody());
 
     // Print method
-    Assert.assertTrue("setEmpSalary".equalsIgnoreCase(foundMethod.getName()));
-    Assert.assertEquals("void", foundMethod.getReturnTypeSignature().toString());
-    Assert.assertEquals(1, foundMethod.getParameterCount());
-    Assert.assertTrue(
+    assertTrue("setEmpSalary".equalsIgnoreCase(foundMethod.getName()));
+    assertEquals("void", foundMethod.getReturnTypeSignature().toString());
+    assertEquals(1, foundMethod.getParameterCount());
+    assertTrue(
         foundMethod.getParameterTypes().stream()
             .anyMatch(
                 type -> {
@@ -166,8 +167,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                 Collections.emptyList()),
             SourceType.Application);
 
-    Assert.assertEquals(
-        "java.lang.String", c.getField(nameFieldSubSignature).get().getType().toString());
-    Assert.assertEquals("empName", c.getField(nameFieldSubSignature).get().getName());
+    assertEquals("java.lang.String", c.getField(nameFieldSubSignature).get().getType().toString());
+    assertEquals("empName", c.getField(nameFieldSubSignature).get().getName());
   }
 }

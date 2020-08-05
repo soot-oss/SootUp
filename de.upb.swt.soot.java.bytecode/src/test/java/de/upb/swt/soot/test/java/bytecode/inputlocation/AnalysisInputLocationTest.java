@@ -87,22 +87,6 @@ public abstract class AnalysisInputLocationTest {
     final Collection<? extends AbstractClassSource> classSources =
         inputLocation.getClassSources(getIdentifierFactory());
 
-    /*  TODO: [ms] make a specific test for war
-    assertNotNull(PathBasedAnalysisInputLocation.jarsFromPath);
-    for (Path jarPath : PathBasedAnalysisInputLocation.jarsFromPath) {
-      classFromJar = true;
-      PathBasedAnalysisInputLocation nsJar =
-          PathBasedAnalysisInputLocation.createForClassContainer(jarPath);
-      final Collection<? extends AbstractClassSource> classSourcesFromJar =
-          nsJar.getClassSources(getIdentifierFactory());
-      assertNotNull(classSourcesFromJar);
-      assertFalse(classSourcesFromJar.isEmpty());
-      assertThat(classSourcesFromJar.size(), new GreaterOrEqual<>(minClassesFound));
-      if (maxClassesFound != -1) {
-        assertThat(classSourcesFromJar.size(), new LessOrEqual<>(maxClassesFound));
-      }
-    }
-    */
     if (!classFromJar) {
       assertThat(classSources.size(), new GreaterOrEqual<>(minClassesFound));
       if (maxClassesFound != -1) {
