@@ -3,10 +3,12 @@ package de.upb.swt.soot.test.java.bytecode.minimaltestsuite;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.Utils;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
@@ -16,10 +18,12 @@ import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TestWatcher;
@@ -59,7 +63,16 @@ public abstract class MinimalBytecodeTestSuiteBase {
                             + "binary"
                             + File.separator))
                 .build();
-        javaView = project.createOnDemandView();
+        javaView =
+            project.createOnDemandView(
+                analysisInputLocation ->
+                    new ClassLoadingOptions() {
+                      @Nonnull
+                      @Override
+                      public List<BodyInterceptor> getBodyInterceptors() {
+                        return Collections.emptyList();
+                      }
+                    });
       }
     }
 
