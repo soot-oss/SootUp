@@ -78,20 +78,16 @@ public abstract class AnalysisInputLocationTest {
       ClassType sig,
       int minClassesFound,
       int maxClassesFound) {
-    boolean classFromJar = false;
 
     final Optional<? extends AbstractClassSource> clazz = inputLocation.getClassSource(sig);
-
     clazz.ifPresent(abstractClassSource -> assertEquals(sig, abstractClassSource.getClassType()));
 
     final Collection<? extends AbstractClassSource> classSources =
         inputLocation.getClassSources(getIdentifierFactory());
 
-    if (!classFromJar) {
-      assertThat(classSources.size(), new GreaterOrEqual<>(minClassesFound));
-      if (maxClassesFound != -1) {
-        assertThat(classSources.size(), new LessOrEqual<>(maxClassesFound));
-      }
+    assertThat(classSources.size(), new GreaterOrEqual<>(minClassesFound));
+    if (maxClassesFound != -1) {
+      assertThat(classSources.size(), new LessOrEqual<>(maxClassesFound));
     }
   }
 }
