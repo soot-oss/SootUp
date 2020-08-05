@@ -69,15 +69,6 @@ public class ConditionalBranchFolder implements BodyInterceptor {
       }
     }
 
-    for (Stmt p : builder.getStmtGraph().nodes()) {
-      System.out.println(
-          p
-              + " => "
-              + builder.getStmtGraph().successors(p)
-              + "\n <= "
-              + builder.getStmtGraph().predecessors(p));
-    }
-
     return builder.build();
   }
 }
