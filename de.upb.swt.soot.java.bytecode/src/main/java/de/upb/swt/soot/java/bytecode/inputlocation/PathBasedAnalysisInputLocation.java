@@ -84,7 +84,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       return new DirectoryBasedAnalysisInputLocation(path);
     } else if (PathUtils.isArchive(path)) {
       if (PathUtils.hasExtension(path, FileType.WAR)) {
-        return WarArchiveAnalysisInputLocation.createWarArchiveAnalysisInputLocation(path);
+        return new WarArchiveAnalysisInputLocation(path);
       }
       return new ArchiveBasedAnalysisInputLocation(path);
     } else {
@@ -216,22 +216,16 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     public static int maxExtractedSize =
         1024 * 1024 * 500; // limit of extracted file size to protect against archive bombs
 
-    private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nonnull Path extractedPath) {
-      super(extractedPath);
+    private WarArchiveAnalysisInputLocation(@Nonnull Path warPath) {
+      super(
+          Paths.get(
+              System.getProperty("java.io.tmpdir")
+                  + File.separator
+                  + "sootOutput"
+                  + "-war"
+                  + warPath.hashCode()
+                  + "/"));
       extractWarFile(warPath);
-    }
-
-    public static WarArchiveAnalysisInputLocation createWarArchiveAnalysisInputLocation(
-        @Nonnull Path path) {
-      String destDirectory =
-          System.getProperty("java.io.tmpdir")
-              + File.separator
-              + "sootOutput"
-              + "-war"
-              + path.hashCode()
-              + "/";
-
-      return new WarArchiveAnalysisInputLocation(path, Paths.get(destDirectory));
     }
 
     @Override
@@ -242,7 +236,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
 
       try {
         jarsFromPath =
-            Files.walk(Paths.get(path.toString() + "/"))
+            Files.walk(Paths.get(path.toString()))
                 .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
                 .flatMap(p1 -> StreamUtils.optionalToStream(Optional.of(p1)))
                 .collect(Collectors.toList());
