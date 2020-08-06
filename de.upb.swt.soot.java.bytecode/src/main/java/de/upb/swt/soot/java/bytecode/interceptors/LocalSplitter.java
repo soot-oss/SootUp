@@ -1,7 +1,7 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
-import de.upb.swt.soot.core.graph.iterator.StmtGraphBlockIterator;
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
@@ -72,9 +72,7 @@ public class LocalSplitter implements BodyInterceptor {
     int localIndex = 1;
     Map<Stmt, Stmt> insertPositions = findTrapPositions(bodyBuilder);
 
-    StmtGraphBlockIterator graphIterator =
-        new StmtGraphBlockIterator(
-            bodyBuilder.getStmtGraph(), bodyBuilder.getStmtGraph().getTraps());
+    Iterator<Stmt> graphIterator = bodyBuilder.getStmtGraph().iterator();
     List<Stmt> visitList = new ArrayList<>();
     while (graphIterator.hasNext()) {
       visitList.add(graphIterator.next());
@@ -167,7 +165,8 @@ public class LocalSplitter implements BodyInterceptor {
                 }
               }
             }
-            // 3.case: if uselist of head contains neither orilocal nor the modified orilocal, do nothing
+            // 3.case: if uselist of head contains neither orilocal nor the modified orilocal, do
+            // nothing
             else {
               // if deflist of head contains no orilocal, then trace forwards on.
               if ((!head.getDefs().isEmpty() && !head.getDefs().get(0).equivTo(oriLocal)
@@ -181,6 +180,9 @@ public class LocalSplitter implements BodyInterceptor {
             }
           }
         }
+        // if the uselist of stmt contains a orilocal without pre-definition. (This case can just
+        // occur in trap stmtblock)
+        // then find the proper definition in main-stmt-graph
       } else {
         for (Local oriL : toSplitLocals) {
           if (visitedStmt.getUses().contains(oriL)) {
@@ -242,7 +244,6 @@ public class LocalSplitter implements BodyInterceptor {
 
     bodyBuilder.setLocals(newLocals);
     return bodyBuilder.build();
-
   }
 
   // ******************assist_functions*************************
@@ -283,8 +284,8 @@ public class LocalSplitter implements BodyInterceptor {
    */
   protected void fitVisitList(
       @Nonnull List<Stmt> visitList, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-    if (visitList.contains(oldStmt)) {
-      int index = visitList.indexOf(oldStmt);
+    final int index = visitList.indexOf(oldStmt);
+    if (index > -1) {
       visitList.set(index, newStmt);
     }
   }
@@ -337,9 +338,9 @@ public class LocalSplitter implements BodyInterceptor {
       for (Value use : stmt.getUses()) {
         if (use instanceof Local) {
           String name = ((Local) use).getName();
-          if (name.contains("#")) {
-            int i = name.indexOf('#');
-            if (name.substring(0, i).equals(oriLocal.getName())) {
+          final int searchPos = name.indexOf('#');
+          if (searchPos > -1) {
+            if (name.substring(0, searchPos).equals(oriLocal.getName())) {
               isModified = true;
               break;
             }
@@ -357,6 +358,7 @@ public class LocalSplitter implements BodyInterceptor {
    * @param oriLocal: a local
    * @return if so, return this modified local, else return null
    */
+  @Nonnull
   protected Local getModifiedUse(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
     Local modifiedLocal = null;
     if (hasModifiedUse(stmt, oriLocal)) {
@@ -364,9 +366,9 @@ public class LocalSplitter implements BodyInterceptor {
         for (Value use : stmt.getUses()) {
           if (use instanceof Local) {
             String name = ((Local) use).getName();
-            if (name.contains("#")) {
-              int i = name.indexOf('#');
-              if (name.substring(0, i).equals(oriLocal.getName())) {
+            final int searchPos = name.indexOf('#');
+            if (searchPos > -1) {
+              if (name.substring(0, searchPos).equals(oriLocal.getName())) {
                 modifiedLocal = (Local) use;
                 break;
               }
@@ -390,9 +392,9 @@ public class LocalSplitter implements BodyInterceptor {
     boolean isModified = false;
     if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
       String name = ((Local) stmt.getDefs().get(0)).getName();
-      if (name.contains("#")) {
-        int i = name.indexOf('#');
-        if (name.substring(0, i).equals(oriLocal.getName())) {
+      final int searchPos = name.indexOf('#');
+      if (searchPos > -1) {
+        if (name.substring(0, searchPos).equals(oriLocal.getName())) {
           isModified = true;
         }
       }
@@ -423,61 +425,43 @@ public class LocalSplitter implements BodyInterceptor {
   }
 
   /**
-   * Check whether local has the same original name.
-   *
-   * @param oriLocal: a local in form oriLocal
-   * @param local: a local must be in form oriLocal#num
-   * @return if so return true, else return false
-   */
-  @Nonnull
-  protected boolean hasSameOriLocal(@Nonnull Local local, @Nonnull Local oriLocal) {
-    boolean isSame = false;
-    String localName = local.getName();
-    int i = localName.indexOf('#');
-    if (i > 0) {
-      String oriName = localName.substring(0, i);
-      if (oriName.equals(oriLocal.getName())) {
-        isSame = true;
-      }
-    }
-    return isSame;
-  }
-
-  /**
    * find all insert positions of trapblocks
    *
    * @param bodyBuilder:
    * @return a HashMap with key: a stmt after that a trapblock should be inserted value: a stmt list
    *     which stores the handlerStmts
    */
+  @Nonnull
   protected Map<Stmt, Stmt> findTrapPositions(@Nonnull BodyBuilder bodyBuilder) {
     Map<Stmt, Stmt> insertPositions = new HashMap<>();
-    if (bodyBuilder.getStmtGraph().getTraps().isEmpty()) {
+    StmtGraph graph = bodyBuilder.getStmtGraph();
+    if (graph.getTraps().isEmpty()) {
       return insertPositions;
     } else {
-      StmtGraphBlockIterator graphIterator =
-          new StmtGraphBlockIterator(
-              bodyBuilder.getStmtGraph(), bodyBuilder.getStmtGraph().getTraps());
+      Iterator<Stmt> graphIterator = graph.iterator();
       List<Stmt> visitList = new ArrayList<>();
       while (graphIterator.hasNext()) {
         visitList.add(graphIterator.next());
       }
 
+      // build templist, remove all stmts which are not trapstmt
       List<Stmt> tempList = new ArrayList<>(visitList);
       Deque<Stmt> deque = new ArrayDeque<>();
-      deque.add(bodyBuilder.getStmtGraph().getStartingStmt());
+      deque.add(graph.getStartingStmt());
       while (!deque.isEmpty()) {
         Stmt head = deque.removeFirst();
         tempList.remove(head);
-        for (Stmt succ : bodyBuilder.getStmtGraph().successors(head)) {
+        for (Stmt succ : graph.successors(head)) {
           if (tempList.contains(succ)) {
             deque.add(succ);
           }
         }
       }
 
+      // build the map trapBlocks, key: trap's handlerStmt, value: all the stmts which are in the
+      // corresponding trapblock
       Map<Stmt, List<Stmt>> trapBlocks = new HashMap<>();
-      for (Trap trap : bodyBuilder.getStmtGraph().getTraps()) {
+      for (Trap trap : graph.getTraps()) {
         Stmt trapSource = trap.getHandlerStmt();
         Deque<Stmt> queue = new ArrayDeque<>();
         queue.add(trapSource);
@@ -486,7 +470,7 @@ public class LocalSplitter implements BodyInterceptor {
           Stmt stmt = queue.removeFirst();
           trapStmts.add(stmt);
           tempList.remove(stmt);
-          List<Stmt> succs = bodyBuilder.getStmtGraph().successors(stmt);
+          List<Stmt> succs = graph.successors(stmt);
           for (Stmt succ : succs) {
             if (!trapStmts.contains(succ) && tempList.contains(succ)) {
               queue.addLast(succ);
@@ -496,15 +480,17 @@ public class LocalSplitter implements BodyInterceptor {
         trapBlocks.put(trap.getHandlerStmt(), trapStmts);
       }
 
+      // delete all stmts in trapblocks, except for handlerStmt and the insertposition
       for (Stmt handlerStmt : trapBlocks.keySet()) {
         List<Stmt> trapStmts = new ArrayList<>(trapBlocks.get(handlerStmt));
         trapStmts.remove(0);
         int index = visitList.indexOf(handlerStmt) + 1;
         Stmt stmt = visitList.get(index);
         Stmt nextStmt = visitList.get(index + 1);
+        Set<Stmt> trapHandlerStmts = trapBlocks.keySet();
         while (!trapStmts.isEmpty()) {
           trapStmts.remove(stmt);
-          if ((!trapBlocks.keySet().contains(nextStmt) || trapStmts.isEmpty())
+          if ((!trapHandlerStmts.contains(nextStmt) || trapStmts.isEmpty())
               && trapBlocks.get(handlerStmt).contains(stmt)) {
             visitList.remove(stmt);
           }
@@ -517,10 +503,13 @@ public class LocalSplitter implements BodyInterceptor {
           }
         }
       }
+
+      // build a map with key: handlerStmt of trap, value: insert-position of trap
       int i = 0;
+      Set<Stmt> trapHandlerStmts = trapBlocks.keySet();
       while (i < visitList.size()) {
         Stmt stmt = visitList.get(i);
-        if (trapBlocks.keySet().contains(stmt)) {
+        if (trapHandlerStmts.contains(stmt)) {
           int index = visitList.indexOf(stmt);
           Stmt insertPosition = visitList.get(index - 1);
           visitList.remove(stmt);
