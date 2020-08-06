@@ -56,7 +56,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
       String label = labels.get(stmt);
       if (label == null) {
-        output.append("[?= ").append(Jimple.escape(stmt.toString();)).append(']');
+        output.append("[?= ").append(Jimple.escape(stmt.toString())).append(']');
       } else {
         output.append(Jimple.escape(label));
       }

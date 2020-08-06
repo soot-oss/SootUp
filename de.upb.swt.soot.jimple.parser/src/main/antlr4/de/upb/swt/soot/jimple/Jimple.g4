@@ -144,7 +144,7 @@ grammar Jimple;
 
   method_body:
     /*empty*/    SEMICOLON |
-    /*full*/     L_BRACE declaration* statement* catch_clause* R_BRACE;
+    /*full*/     L_BRACE declaration* statement* trap_clause* R_BRACE;
 
   declaration:
                  (unknown='unknown' | nonvoid_type=name) name_list SEMICOLON;
@@ -183,7 +183,7 @@ grammar Jimple;
   goto_stmt:
     GOTO label_name=name;
 
-  catch_clause:
+  trap_clause:
     CATCH exceptiontype=name FROM from=name TO to=name WITH with=name SEMICOLON;
 
   expression:
