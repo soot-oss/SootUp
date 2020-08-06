@@ -62,24 +62,28 @@ public class ConditionalBranchFolder implements BodyInterceptor {
             // the evaluated if condition is always true: redirect all predecessors to the successor
             // of this if-statement and prune the "true"-block stmt tree until another branch flows
             // to a Stmt
-            Deque<Stmt> stack = new ArrayDeque<>();
-            stack.addFirst(ifStmt);
 
             // link previous stmt with branch target of if-Stmt
-            Stmt branchTarget = stmtGraph.successors(ifStmt).get(1);
-            final List<Stmt> predecessors = stmtGraph.predecessors(ifStmt);
-            for (Stmt predecessor : predecessors) {
+            final List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt);
+            final Stmt fallsThroughStmt = ifSuccessors.get(0);
+            Stmt branchTarget = ifSuccessors.get(1);
+
+            builder.removeFlow(ifStmt, fallsThroughStmt);
+            builder.removeFlow(ifStmt, branchTarget);
+
+            for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
               builder.removeFlow(predecessor, ifStmt);
               builder.addFlow(predecessor, branchTarget);
             }
 
+            Deque<Stmt> stack = new ArrayDeque<>();
+            stack.addFirst(fallsThroughStmt);
             // remove all now unreachable stmts from "true"-block
             while (!stack.isEmpty()) {
               Stmt itStmt = stack.pollFirst();
               if (builderStmtGraph.containsNode(itStmt)
                   && builderStmtGraph.predecessors(itStmt).size() < 1) {
-                final List<Stmt> itSuccessors = stmtGraph.successors(itStmt);
-                for (final Stmt succ : itSuccessors) {
+                for (Stmt succ : stmtGraph.successors(itStmt)) {
                   builder.removeFlow(itStmt, succ);
                   stack.add(succ);
                 }
