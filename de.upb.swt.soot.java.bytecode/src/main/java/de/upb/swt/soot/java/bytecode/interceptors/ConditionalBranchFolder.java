@@ -20,18 +20,81 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
+import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
+import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
+import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
 import javax.annotation.Nonnull;
 
-// https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/scalar/ConditionalBranchFolder.java
-
+/**
+ * Statically evaluates the conditional expression of Jimple if statements. If the condition is
+ * identically true or false, the Folder replaces the conditional branch statement with an
+ * unconditional goto statement
+ *
+ * @author Marcus Nachtigall
+ * @author Markus Schmidt
+ */
 public class ConditionalBranchFolder implements BodyInterceptor {
 
   @Nonnull
   @Override
   public Body interceptBody(@Nonnull Body originalBody) {
-    // TODO Implement
-    return originalBody;
+    final Body.BodyBuilder builder = Body.builder(originalBody);
+    final StmtGraph builderStmtGraph = builder.getStmtGraph();
+    final ImmutableStmtGraph stmtGraph = originalBody.getStmtGraph();
+
+    for (Stmt stmt : originalBody.getStmtGraph().nodes()) {
+      if (stmt instanceof JIfStmt) {
+        JIfStmt ifStmt = (JIfStmt) stmt;
+        // check for constant-valued conditions
+        Value condition = ifStmt.getCondition();
+        if (Evaluator.isValueConstantValue(condition)) {
+          condition = Evaluator.getConstantValueOf(condition);
+
+          if (((IntConstant) condition).getValue() == 1) {
+            // the evaluated if condition is always true: redirect all predecessors to the successor
+            // of this if-statement and prune the "true"-block stmt tree until another branch flows
+            // to a Stmt
+
+            // link previous stmt with branch target of if-Stmt
+            final List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt);
+            final Stmt fallsThroughStmt = ifSuccessors.get(0);
+            Stmt branchTarget = ifSuccessors.get(1);
+
+            builder.removeFlow(ifStmt, fallsThroughStmt);
+            builder.removeFlow(ifStmt, branchTarget);
+
+            for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
+              builder.removeFlow(predecessor, ifStmt);
+              builder.addFlow(predecessor, branchTarget);
+            }
+
+            Deque<Stmt> stack = new ArrayDeque<>();
+            stack.addFirst(fallsThroughStmt);
+            // remove all now unreachable stmts from "true"-block
+            while (!stack.isEmpty()) {
+              Stmt itStmt = stack.pollFirst();
+              if (builderStmtGraph.containsNode(itStmt)
+                  && builderStmtGraph.predecessors(itStmt).size() < 1) {
+                for (Stmt succ : stmtGraph.successors(itStmt)) {
+                  builder.removeFlow(itStmt, succ);
+                  stack.add(succ);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return builder.build();
   }
 }
