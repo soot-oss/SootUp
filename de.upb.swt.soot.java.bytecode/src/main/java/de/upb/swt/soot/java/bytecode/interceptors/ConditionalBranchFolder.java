@@ -40,6 +40,7 @@ import javax.annotation.Nonnull;
  * unconditional goto statement
  *
  * @author Marcus Nachtigall
+ * @author Markus Schmidt
  */
 public class ConditionalBranchFolder implements BodyInterceptor {
 

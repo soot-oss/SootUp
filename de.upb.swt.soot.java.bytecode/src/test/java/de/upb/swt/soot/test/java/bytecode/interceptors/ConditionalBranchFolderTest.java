@@ -22,6 +22,9 @@ import java.util.Set;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/**
+ * @author Marcus Nachtigall
+ */
 @Category(Java8Test.class)
 public class ConditionalBranchFolderTest {
 
