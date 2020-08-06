@@ -56,7 +56,7 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
       LoggerFactory.getLogger(JavaClassPathAnalysisInputLocation.class);
   private static final @Nonnull String WILDCARD_CHAR = "*";
 
-  @Nonnull private Collection<AnalysisInputLocation> cpEntries = new ArrayList<>();
+  @Nonnull private final Collection<AnalysisInputLocation> cpEntries;
 
   /**
    * Creates a {@link JavaClassPathAnalysisInputLocation} which locates classes in the given class
