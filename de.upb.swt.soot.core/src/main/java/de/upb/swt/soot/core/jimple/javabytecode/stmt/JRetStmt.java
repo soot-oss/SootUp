@@ -26,11 +26,8 @@
 package de.upb.swt.soot.core.jimple.javabytecode.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
-import de.upb.swt.soot.core.jimple.common.stmt.AbstractStmt;
+import de.upb.swt.soot.core.jimple.basic.*;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -40,12 +37,9 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /** Represents the deprecated JVM <code>ret</code> statement */
-public final class JRetStmt extends AbstractStmt implements Copyable {
+public final class JRetStmt extends Stmt implements Copyable {
 
   private final ValueBox stmtAddressBox;
-  // new attributes: later if ValueBox is deleted, then add "final" to it.
-  private Value stmtAddress;
-  // List useBoxes;
 
   public JRetStmt(Value stmtAddress, StmtPositionInfo positionInfo) {
     this(Jimple.newImmediateBox(stmtAddress), positionInfo);
@@ -54,9 +48,6 @@ public final class JRetStmt extends AbstractStmt implements Copyable {
   private JRetStmt(ValueBox stmtAddressBox, StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.stmtAddressBox = stmtAddressBox;
-
-    // new attributes: later if ValueBox is deleted, then fit the constructor.
-    this.stmtAddress = stmtAddressBox.getValue();
   }
 
   @Override
@@ -65,7 +56,7 @@ public final class JRetStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.RET);
     up.literal(" ");
     stmtAddressBox.toString(up);
@@ -80,14 +71,16 @@ public final class JRetStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
+  @Nonnull
   public List<Value> getUses() {
-    List<Value> list = new ArrayList<>(stmtAddress.getUses());
-    list.add(stmtAddress);
+    final List<Value> uses = stmtAddressBox.getValue().getUses();
+    List<Value> list = new ArrayList<>(uses.size() + 1);
+    list.add(stmtAddressBox.getValue());
     return list;
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseRetStmt(this);
   }
 
@@ -102,7 +95,7 @@ public final class JRetStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseRetStmt(this, o);
   }
 
@@ -112,12 +105,12 @@ public final class JRetStmt extends AbstractStmt implements Copyable {
   }
 
   @Nonnull
-  public JRetStmt withStmtAddress(Value stmtAddress) {
+  public JRetStmt withStmtAddress(@Nonnull Immediate stmtAddress) {
     return new JRetStmt(stmtAddress, getPositionInfo());
   }
 
   @Nonnull
-  public JRetStmt withPositionInfo(StmtPositionInfo positionInfo) {
+  public JRetStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JRetStmt(getStmtAddress(), positionInfo);
   }
 }

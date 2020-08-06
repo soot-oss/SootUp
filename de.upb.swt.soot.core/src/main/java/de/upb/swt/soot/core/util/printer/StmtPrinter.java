@@ -22,62 +22,61 @@
 package de.upb.swt.soot.core.util.printer;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
+import javax.annotation.Nonnull;
 
 /** Interface for different methods of printing out a Stmt. */
-public interface StmtPrinter {
-  void startStmt(Stmt u);
+public abstract class StmtPrinter {
+  protected Body body = null;
 
-  void endStmt(Stmt u);
+  @Nonnull
+  public Body getBody() {
+    return body;
+  }
 
-  void startStmtBox(StmtBox u);
+  public abstract void startStmt(Stmt u);
 
-  void endStmtBox(StmtBox u);
+  public abstract void endStmt(Stmt u);
 
-  void startValueBox(ValueBox u);
+  public abstract void setIndent(int offset);
 
-  void endValueBox(ValueBox u);
+  public abstract void handleIndent();
 
-  void setIndent(int offset);
+  public abstract void incIndent();
 
-  void handleIndent();
+  public abstract void decIndent();
 
-  void incIndent();
+  public abstract void noIndent();
 
-  void decIndent();
+  public abstract void literal(String s);
 
-  void noIndent();
+  public abstract void newline();
 
-  void literal(String s);
+  public abstract void local(Local jimpleLocal);
 
-  void newline();
+  public abstract void typeSignature(Type t);
 
-  void local(Local jimpleLocal);
+  public abstract void methodSignature(MethodSignature sig);
 
-  void typeSignature(Type t);
+  public abstract void method(SootMethod m);
 
-  void methodSignature(MethodSignature sig);
+  public abstract void constant(Constant c);
 
-  void method(SootMethod m);
+  public abstract void field(SootField f);
 
-  void constant(Constant c);
+  public abstract void fieldSignature(FieldSignature fieldSig);
 
-  void field(SootField f);
+  public abstract void stmtRef(Stmt u, boolean branchTarget);
 
-  void fieldSignature(FieldSignature fieldSig);
+  public abstract void identityRef(IdentityRef r);
 
-  void stmtRef(Stmt u, boolean branchTarget);
-
-  void identityRef(IdentityRef r);
-
-  void modifier(String toString);
+  public abstract void modifier(String toString);
 }

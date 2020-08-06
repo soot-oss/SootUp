@@ -1,6 +1,6 @@
 package de.upb.soot.concrete.fieldReference;
 
-public class FieldReference {
+public class JFieldReference {
   private final int f = 2;
   protected String b = "foo";
   private int a = 1;

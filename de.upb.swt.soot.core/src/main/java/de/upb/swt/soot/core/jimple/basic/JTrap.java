@@ -38,15 +38,11 @@ import javax.annotation.Nonnull;
  */
 public final class JTrap extends AbstractTrap implements Copyable {
 
-  public JTrap(ClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
-    super(
-        exception,
-        Jimple.newStmtBox(beginStmt),
-        Jimple.newStmtBox(endStmt),
-        Jimple.newStmtBox(handlerStmt));
-  }
-
-  public JTrap(ClassType exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt) {
+  public JTrap(
+      @Nonnull ClassType exception,
+      @Nonnull Stmt beginStmt, // inclusive
+      @Nonnull Stmt endStmt, // exclusive!
+      @Nonnull Stmt handlerStmt) {
     super(exception, beginStmt, endStmt, handlerStmt);
   }
 
@@ -63,22 +59,22 @@ public final class JTrap extends AbstractTrap implements Copyable {
   }
 
   @Nonnull
-  public JTrap withException(ClassType exception) {
+  public JTrap withException(@Nonnull ClassType exception) {
     return new JTrap(exception, getBeginStmt(), getEndStmt(), getHandlerStmt());
   }
 
   @Nonnull
-  public JTrap withBeginStmt(Stmt beginStmt) {
+  public JTrap withBeginStmt(@Nonnull Stmt beginStmt) {
     return new JTrap(getExceptionType(), beginStmt, getEndStmt(), getHandlerStmt());
   }
 
   @Nonnull
-  public JTrap withHandlerStmt(Stmt handlerStmt) {
+  public JTrap withHandlerStmt(@Nonnull Stmt handlerStmt) {
     return new JTrap(getExceptionType(), getBeginStmt(), getEndStmt(), handlerStmt);
   }
 
   @Nonnull
-  public JTrap withEndStmt(Stmt endStmt) {
+  public JTrap withEndStmt(@Nonnull Stmt endStmt) {
     return new JTrap(getExceptionType(), getBeginStmt(), endStmt, getHandlerStmt());
   }
 }

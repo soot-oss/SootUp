@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class AbstractDefinitionStmt extends AbstractStmt {
+public abstract class AbstractDefinitionStmt extends Stmt {
 
   private final ValueBox leftBox;
   private final ValueBox rightBox;

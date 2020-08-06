@@ -54,14 +54,14 @@ public final class JExitMonitorStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.EXITMONITOR);
     up.literal(" ");
     opBox.toString(up);
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseExitMonitorStmt(this);
   }
 
@@ -76,7 +76,7 @@ public final class JExitMonitorStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseExitMonitorStmt(this, o);
   }
 

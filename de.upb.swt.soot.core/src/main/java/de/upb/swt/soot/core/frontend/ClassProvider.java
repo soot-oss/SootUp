@@ -6,7 +6,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import java.nio.file.Path;
 
 /**
- * Responsible for creating {@link SootClassSource}es based on the handled file type (.class,
+ * Responsible for creating {@link AbstractClassSource}es based on the handled file type (.class,
  * .jimple, .java, .dex, etc).
  *
  * @author Manuel Benz

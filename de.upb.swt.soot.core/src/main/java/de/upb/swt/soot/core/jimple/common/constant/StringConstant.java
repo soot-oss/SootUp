@@ -29,13 +29,14 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
+import javax.annotation.Nonnull;
 
 public class StringConstant implements Constant {
 
   private final String value;
   private final Type type;
 
-  public StringConstant(String str, Type type) {
+  public StringConstant(@Nonnull String str, @Nonnull Type type) {
     this.type = type;
     this.value = str;
   }
@@ -58,7 +59,7 @@ public class StringConstant implements Constant {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ConstantVisitor) sw).caseStringConstant(this);
   }
 

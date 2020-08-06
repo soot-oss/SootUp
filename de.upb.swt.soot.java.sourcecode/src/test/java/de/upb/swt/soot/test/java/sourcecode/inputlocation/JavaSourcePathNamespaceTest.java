@@ -16,6 +16,7 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.util.Collection;
 import java.util.Optional;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -45,7 +46,7 @@ public class JavaSourcePathNamespaceTest {
     assertEquals(0, ((SootClassSource) content).resolveFields().size());
   }
 
-  @Test
+  @Ignore
   public void testGetClassSources() {
     String srcDir = "../shared-test-resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";

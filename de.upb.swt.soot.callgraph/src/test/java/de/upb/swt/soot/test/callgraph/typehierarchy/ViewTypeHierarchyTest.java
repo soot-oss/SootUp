@@ -13,7 +13,6 @@ import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
-import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
@@ -22,6 +21,7 @@ import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -37,6 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar update on 22.04.2020 */
 @Category(Java8Test.class)
 public class ViewTypeHierarchyTest {
 
@@ -69,16 +70,10 @@ public class ViewTypeHierarchyTest {
   @Test
   public void implementersOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    ClassType iNamespace = factory.getClassType("INamespace", "de.upb.soot.namespaces");
+    ClassType iNamespace = factory.getClassType("IFaceOperations", "utils");
     Set<ClassType> implementers = typeHierarchy.implementersOf(iNamespace);
     ImmutableSet<ClassType> expectedImplementers =
-        immutableSet(
-            factory.getClassType("de.upb.soot.namespaces.PathBasedNamespace$ArchiveBasedNamespace"),
-            factory.getClassType("de.upb.soot.namespaces.PathBasedNamespace"),
-            factory.getClassType("de.upb.soot.namespaces.AbstractNamespace"),
-            factory.getClassType("de.upb.soot.namespaces.JavaClassPathNamespace"),
-            factory.getClassType(
-                "de.upb.soot.namespaces.PathBasedNamespace$DirectoryBasedNamespace"));
+        immutableSet(factory.getClassType("utils.Operations"));
     assertEquals(expectedImplementers, implementers);
 
     expectedImplementers.forEach(
@@ -89,16 +84,10 @@ public class ViewTypeHierarchyTest {
   @Test
   public void subclassesOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    ClassType abstractNamespace =
-        factory.getClassType("AbstractNamespace", "de.upb.soot.namespaces");
+    ClassType abstractNamespace = factory.getClassType("AbstractDataStrcture", "ds");
     Set<ClassType> subclasses = typeHierarchy.subclassesOf(abstractNamespace);
     ImmutableSet<ClassType> expectedSubclasses =
-        immutableSet(
-            factory.getClassType("de.upb.soot.namespaces.PathBasedNamespace$ArchiveBasedNamespace"),
-            factory.getClassType("de.upb.soot.namespaces.PathBasedNamespace"),
-            factory.getClassType("de.upb.soot.namespaces.JavaClassPathNamespace"),
-            factory.getClassType(
-                "de.upb.soot.namespaces.PathBasedNamespace$DirectoryBasedNamespace"));
+        immutableSet(factory.getClassType("ds.Employee"), factory.getClassType("ds.Department"));
     assertEquals(expectedSubclasses, subclasses);
     assertFalse(
         "A class should not be a subclass of itself", subclasses.contains(abstractNamespace));
@@ -110,9 +99,8 @@ public class ViewTypeHierarchyTest {
   @Test
   public void implementedInterfacesOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    ClassType javaClassPathNamespace =
-        factory.getClassType("JavaClassPathNamespace", "de.upb.soot.namespaces");
-    ClassType iNamespace = factory.getClassType("de.upb.soot.namespaces.INamespace");
+    ClassType javaClassPathNamespace = factory.getClassType("Operations", "utils");
+    ClassType iNamespace = factory.getClassType("utils.IFaceOperations");
     Set<ClassType> implementedInterfaces =
         typeHierarchy.implementedInterfacesOf(javaClassPathNamespace);
     assertEquals(immutableSet(iNamespace), implementedInterfaces);
@@ -137,10 +125,9 @@ public class ViewTypeHierarchyTest {
   @Test
   public void superClassOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    ClassType javaClassPathNamespace =
-        factory.getClassType("JavaClassPathNamespace", "de.upb.soot.namespaces");
+    ClassType javaClassPathNamespace = factory.getClassType("Employee", "ds");
     ClassType superClass = typeHierarchy.superClassOf(javaClassPathNamespace);
-    assertEquals(factory.getClassType("de.upb.soot.namespaces.AbstractNamespace"), superClass);
+    assertEquals(factory.getClassType("ds.AbstractDataStrcture"), superClass);
     assertNull(
         "java.lang.Object should not have a superclass",
         typeHierarchy.superClassOf(factory.getClassType("java.lang.Object")));
@@ -153,12 +140,11 @@ public class ViewTypeHierarchyTest {
   @Test
   public void superClassesOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    ClassType javaClassPathNamespace =
-        factory.getClassType("JavaClassPathNamespace", "de.upb.soot.namespaces");
+    ClassType javaClassPathNamespace = factory.getClassType("Employee", "ds");
     List<ClassType> superClasses = typeHierarchy.superClassesOf(javaClassPathNamespace);
     ImmutableList<ClassType> expectedSuperClasses =
         immutableList(
-            factory.getClassType("de.upb.soot.namespaces.AbstractNamespace"),
+            factory.getClassType("ds.AbstractDataStrcture"),
             factory.getClassType("java.lang.Object"));
 
     assertEquals(expectedSuperClasses, superClasses);
@@ -202,18 +188,19 @@ public class ViewTypeHierarchyTest {
   @Test
   public void addType() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    OverridingClassSource classSource =
-        new OverridingClassSource(
+    OverridingJavaClassSource classSource =
+        new OverridingJavaClassSource(
             analysisInputLocation,
             null,
             factory.getClassType("adummytype.Type"),
-            factory.getClassType("de.upb.soot.namespaces.JavaClassPathNamespace"),
+            factory.getClassType("ds.Employee"),
             Collections.emptySet(),
             null,
             Collections.emptySet(),
             Collections.emptySet(),
             null,
-            EnumSet.of(Modifier.FINAL));
+            EnumSet.of(Modifier.FINAL),
+            Collections.emptyList());
     SootClass sootClass = new SootClass(classSource, SourceType.Application);
 
     typeHierarchy.addType(sootClass);
@@ -221,7 +208,7 @@ public class ViewTypeHierarchyTest {
     assertTrue(
         "Newly added type must be detected as a subtype",
         typeHierarchy
-            .subclassesOf(factory.getClassType("de.upb.soot.namespaces.AbstractNamespace"))
+            .subclassesOf(factory.getClassType("ds.AbstractDataStrcture"))
             .contains(sootClass.getType()));
   }
 

@@ -1,8 +1,28 @@
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 1997 Raja Vallée-Rai and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package de.upb.swt.soot.java.bytecode.frontend;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.ResolveException;
-import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.model.Modifier;
@@ -13,16 +33,10 @@ import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.*;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -31,7 +45,7 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
 /** A ClassSource that reads from Java bytecode */
-class AsmClassSource extends SootClassSource {
+class AsmClassSource extends JavaSootClassSource {
 
   @Nonnull private final ClassNode classNode;
 
@@ -44,9 +58,8 @@ class AsmClassSource extends SootClassSource {
     this.classNode = classNode;
   }
 
-  private static Set<SootField> resolveFields(
+  private static Set<JavaSootField> resolveFields(
       List<FieldNode> fieldNodes, IdentifierFactory signatureFactory, ClassType classSignature) {
-    // FIXME: add support for annotation
     return fieldNodes.stream()
         .map(
             fieldNode -> {
@@ -56,30 +69,23 @@ class AsmClassSource extends SootClassSource {
                   signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
               EnumSet<Modifier> modifiers = AsmUtil.getModifiers(fieldNode.access);
 
-              return new SootField(fieldSignature, modifiers);
+              // FIXME: implement support for annotation
+              return new JavaSootField(fieldSignature, modifiers, Collections.emptyList());
             })
         .collect(Collectors.toSet());
   }
 
-  private static Stream<SootMethod> resolveMethods(
+  private static Stream<JavaSootMethod> resolveMethods(
       List<MethodNode> methodNodes, IdentifierFactory signatureFactory, ClassType cs) {
     return methodNodes.stream()
         .map(
             methodSource -> {
-              if (!(methodSource instanceof AsmMethodSource)) {
-                throw new AsmFrontendException(
-                    String.format("Failed to create Method Signature %s", methodSource));
-              }
               AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
               asmClassClassSourceContent.setDeclaringClass(cs);
 
               List<ClassType> exceptions = new ArrayList<>();
-              Iterable<JavaClassType> exceptionsSignatures =
-                  AsmUtil.asmIdToSignature(methodSource.exceptions);
+              exceptions.addAll(AsmUtil.asmIdToSignature(methodSource.exceptions));
 
-              for (JavaClassType exceptionSig : exceptionsSignatures) {
-                exceptions.add(exceptionSig);
-              }
               String methodName = methodSource.name;
               EnumSet<Modifier> modifiers = AsmUtil.getModifiers(methodSource.access);
               List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(methodSource.desc);
@@ -88,12 +94,13 @@ class AsmClassSource extends SootClassSource {
               MethodSignature methodSignature =
                   signatureFactory.getMethodSignature(methodName, cs, retType, sigTypes);
 
-              return SootMethod.builder()
-                  .withSource(asmClassClassSourceContent)
-                  .withSignature(methodSignature)
-                  .withModifiers(modifiers)
-                  .withThrownExceptions(exceptions)
-                  .build();
+              // FIXME: implement support for annotation
+              return new JavaSootMethod(
+                  asmClassClassSourceContent,
+                  methodSignature,
+                  modifiers,
+                  exceptions,
+                  Collections.emptyList());
             });
   }
 
@@ -104,8 +111,9 @@ class AsmClassSource extends SootClassSource {
         .collect(Collectors.toSet());
   }
 
+  @Override
   @Nonnull
-  public Collection<SootField> resolveFields() throws ResolveException {
+  public Collection<? extends SootField> resolveFields() throws ResolveException {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveFields(classNode.fields, identifierFactory, classSignature);
   }
@@ -142,5 +150,26 @@ class AsmClassSource extends SootClassSource {
   @Override
   public String toString() {
     return getSourcePath().toString();
+  }
+
+  @Nonnull
+  @Override
+  public Iterable<AnnotationType> resolveAnnotations() {
+    // TODO [ms] implement
+    return null;
+  }
+
+  @Nonnull
+  @Override
+  public Iterable<AnnotationType> resolveMethodAnnotations() {
+    // TODO [ms] implement
+    return null;
+  }
+
+  @Nonnull
+  @Override
+  public Iterable<AnnotationType> resolveFieldAnnotations() {
+    // TODO [ms] implement
+    return null;
   }
 }

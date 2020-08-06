@@ -12,10 +12,8 @@ import de.upb.swt.soot.core.model.SootMethod;
 /** StmtPrinter implementation for normal Jimple */
 public class BriefStmtPrinter extends LabeledStmtPrinter {
 
-  public BriefStmtPrinter() {}
-
   public BriefStmtPrinter(Body body) {
-    super(body);
+    super();
   }
 
   @Override

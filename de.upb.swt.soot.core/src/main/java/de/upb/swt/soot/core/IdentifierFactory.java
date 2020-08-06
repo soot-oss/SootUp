@@ -1,23 +1,4 @@
-/*
- * @author Linghui Luo
- */
 package de.upb.swt.soot.core;
-
-import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.signatures.FieldSignature;
-import de.upb.swt.soot.core.signatures.FieldSubSignature;
-import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.signatures.MethodSubSignature;
-import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.core.types.ArrayType;
-import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.core.types.Type;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
-import javax.annotation.Nonnull;
-
 /*-
  * #%L
  * Soot
@@ -39,6 +20,20 @@ import javax.annotation.Nonnull;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.signatures.FieldSubSignature;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.signatures.MethodSubSignature;
+import de.upb.swt.soot.core.signatures.PackageName;
+import de.upb.swt.soot.core.types.ArrayType;
+import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.types.PrimitiveType;
+import de.upb.swt.soot.core.types.Type;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nonnull;
 
 /**
  * A factory used for creating language-specific objects representing entities of the language, for

@@ -4,7 +4,7 @@ package de.upb.swt.soot.core.inputlocation;
  * #%L
  * Soot
  * %%
- * Copyright (C) 07.06.2018 Manuel Benz
+ * Copyright (C) 2018 Manuel Benz
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -36,9 +36,10 @@ public enum FileType {
   APK("apk"),
   CLASS("class"),
   JAVA("java"),
+  WAR("war"),
   JIMPLE("jimple");
 
-  public static final @Nonnull EnumSet<FileType> ARCHIVE_TYPES = EnumSet.of(JAR, ZIP, APK);
+  public static final @Nonnull EnumSet<FileType> ARCHIVE_TYPES = EnumSet.of(JAR, ZIP, APK, WAR);
 
   private final @Nonnull String extension;
 

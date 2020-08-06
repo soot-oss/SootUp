@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -25,11 +24,6 @@ public class TryWithResourcesConciseTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
   public void test() {
-    /** TODO [KK] Stack positions changing. Add to issue list. */
-  }
-
-  @Ignore
-  public void ignoreTest() {
     SootMethod sootMethod = loadMethod(getMethodSignature());
     assertJimpleStmts(sootMethod, expectedBodyStmts());
   }
@@ -72,7 +66,6 @@ public class TryWithResourcesConciseTest extends MinimalBytecodeTestSuiteBase {
             "virtualinvoke l3.<java.lang.Throwable: void addSuppressed(java.lang.Throwable)>(l4)",
             "label8:",
             "$stack12 = l3",
-            "$stack12 = $stack12",
             "throw $stack12",
             "label9:",
             "return",

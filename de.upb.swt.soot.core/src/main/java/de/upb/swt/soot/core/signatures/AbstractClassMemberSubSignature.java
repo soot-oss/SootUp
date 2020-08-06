@@ -33,7 +33,7 @@ public abstract class AbstractClassMemberSubSignature {
    */
   @Nonnull
   public String getName() {
-    return this.name;
+    return name;
   }
 
   @Nonnull private final Type type;
@@ -45,7 +45,7 @@ public abstract class AbstractClassMemberSubSignature {
    */
   @Nonnull
   public Type getType() {
-    return this.type;
+    return type;
   }
 
   @Override

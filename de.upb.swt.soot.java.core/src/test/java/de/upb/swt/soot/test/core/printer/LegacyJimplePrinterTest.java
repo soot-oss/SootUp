@@ -6,6 +6,7 @@ import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
@@ -27,17 +28,23 @@ import org.junit.Test;
 
 public class LegacyJimplePrinterTest {
 
-  SootClass buildClass(List<Stmt> stmts) {
+  SootClass buildClass(Body.BodyBuilder builder) {
 
     Project project =
         JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
     View view = project.createOnDemandView();
 
-    Body body = new Body(Collections.emptySet(), Collections.emptyList(), stmts, null);
-
     MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
+    Body body =
+        builder
+            .setMethodSignature(methodSignature)
+            .setPosition(NoPositionInformation.getInstance())
+            .build();
+
+    System.out.println(Utils.filterJimple(Utils.bodyStmtsAsStrings(body).stream()));
+
     SootMethod dummyMainMethod =
         new SootMethod(
             new OverridingMethodSource(methodSignature, body),
@@ -68,62 +75,84 @@ public class LegacyJimplePrinterTest {
     lookupValues.add(IntConstant.getInstance(42));
     lookupValues.add(IntConstant.getInstance(33102));
 
-    ArrayList<Stmt> targets = new ArrayList<>();
     final JReturnVoidStmt returnstmt = new JReturnVoidStmt(noPosInfo);
     final JNopStmt jNop = new JNopStmt(noPosInfo);
-    targets.add(returnstmt);
-    targets.add(jNop);
+    final JNopStmt jNop2 = new JNopStmt(noPosInfo);
 
-    Stmt tableSwitch = new JSwitchStmt(IntConstant.getInstance(42), 4, 5, targets, jNop, noPosInfo);
+    Stmt tableSwitch = new JSwitchStmt(IntConstant.getInstance(42), 4, 5, noPosInfo);
 
-    SootClass tableClass = buildClass(Arrays.asList(tableSwitch, jNop, returnstmt));
+    {
+      Body.BodyBuilder builder = Body.builder();
+      builder.setStartingStmt(tableSwitch);
 
-    StringWriter sw = new StringWriter();
-    new Printer(Printer.Option.LegacyMode)
-        .printTo(tableClass, new PrintWriter(new EscapedWriter(sw)));
+      builder.addFlow(tableSwitch, jNop);
+      builder.addFlow(tableSwitch, jNop2);
+      builder.addFlow(tableSwitch, returnstmt);
 
-    assertEquals(
-        Arrays.asList(
-            "public static void main()",
-            "tableswitch(42)",
-            "case 4: goto label2",
-            "case 5: goto label1",
-            "default: goto label1",
-            "label1:",
-            "nop",
-            "label2:",
-            "return"),
-        Utils.filterJimple(sw.toString()));
+      builder.addFlow(jNop, jNop2);
+      builder.addFlow(jNop2, returnstmt);
 
-    Stmt lookupSwitch =
-        new JSwitchStmt(IntConstant.getInstance(123), lookupValues, targets, jNop, noPosInfo);
+      SootClass tableClass = buildClass(builder);
 
-    SootClass lookupClass = buildClass(Arrays.asList(lookupSwitch, jNop, returnstmt));
+      StringWriter sw = new StringWriter();
+      new Printer(Printer.Option.LegacyMode)
+          .printTo(tableClass, new PrintWriter(new EscapedWriter(sw)));
 
-    StringWriter sw2 = new StringWriter();
-    new Printer(Printer.Option.LegacyMode)
-        .printTo(lookupClass, new PrintWriter(new EscapedWriter(sw2)));
+      assertEquals(
+          Arrays.asList(
+              "public static void main()",
+              "tableswitch(42)",
+              "case 4: goto label1",
+              "case 5: goto label2",
+              "default: goto label3",
+              "label1:",
+              "nop",
+              "label2:",
+              "nop",
+              "label3:",
+              "return"),
+          Utils.filterJimple(sw.toString()));
+    }
 
-    assertEquals(
-        Arrays.asList(
-            "public static void main()",
-            "lookupswitch(123)",
-            "case 42: goto label2",
-            "case 33102: goto label1",
-            "default: goto label1",
-            "label1:",
-            "nop",
-            "label2:",
-            "return"),
-        Utils.filterJimple(sw2.toString()));
+    {
+      Stmt lookupSwitch = new JSwitchStmt(IntConstant.getInstance(123), lookupValues, noPosInfo);
+
+      Body.BodyBuilder builder = Body.builder();
+      builder.setStartingStmt(lookupSwitch);
+
+      builder.addFlow(lookupSwitch, jNop);
+      builder.addFlow(lookupSwitch, jNop2);
+      builder.addFlow(lookupSwitch, returnstmt);
+
+      builder.addFlow(jNop, jNop2);
+      builder.addFlow(jNop2, returnstmt);
+
+      SootClass lookupClass = buildClass(builder);
+
+      StringWriter sw2 = new StringWriter();
+      new Printer(Printer.Option.LegacyMode)
+          .printTo(lookupClass, new PrintWriter(new EscapedWriter(sw2)));
+
+      assertEquals(
+          Arrays.asList(
+              "public static void main()",
+              "lookupswitch(123)",
+              "case 42: goto label1",
+              "case 33102: goto label2",
+              "default: goto label3",
+              "label1:",
+              "nop",
+              "label2:",
+              "nop",
+              "label3:",
+              "return"),
+          Utils.filterJimple(sw2.toString()));
+    }
   }
 
   @Test(expected = RuntimeException.class)
   public void testValidOptions() {
     Printer p = new Printer(Printer.Option.UseImports, Printer.Option.LegacyMode);
-    p.printTo(
-        buildClass(
-            Collections.singletonList(new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo()))),
-        new PrintWriter(new StringWriter()));
+    p.printTo(buildClass(Body.builder()), new PrintWriter(new StringWriter()));
   }
 }

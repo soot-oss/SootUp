@@ -19,34 +19,35 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.powermock.reflect.Whitebox;
 
+/** @author Kaustubh Kelkar update on 16.04.2020 */
 @Category(Java9Test.class)
 public class ModuleFinderTest extends AnalysisInputLocationTest {
 
   @Test
   public void discoverModule() {
-    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), warFile);
     Collection<String> modules = moduleFinder.discoverAllModules();
-    String computedModuleName = "Soot";
+    String computedModuleName = "dummyWarApp";
     assertTrue(modules.contains(computedModuleName));
   }
 
   @Test
   public void discoverModule2() {
-    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
-    AnalysisInputLocation inputLocation = moduleFinder.discoverModule("Soot");
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), warFile);
+    AnalysisInputLocation inputLocation = moduleFinder.discoverModule("dummyWarApp");
     assertTrue(inputLocation instanceof PathBasedAnalysisInputLocation);
   }
 
   @Test
   public void discoverModule3() {
-    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), warFile);
     AnalysisInputLocation inputLocation = moduleFinder.discoverModule("java.base");
     assertTrue(inputLocation instanceof JrtFileSystemAnalysisInputLocation);
   }
 
   @Test
   public void automaticModuleName() throws Exception {
-    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), warFile);
     String jarName = "foo-1.2.3-SNAPSHOT.jar";
     String result =
         Whitebox.invokeMethod(moduleFinder, "createModuleNameForAutomaticModule", jarName);
@@ -55,7 +56,7 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
 
   @Test
   public void automaticModuleName2() throws Exception {
-    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), warFile);
     String jarName = "foo-bar.jar";
     String result =
         Whitebox.invokeMethod(moduleFinder, "createModuleNameForAutomaticModule", jarName);

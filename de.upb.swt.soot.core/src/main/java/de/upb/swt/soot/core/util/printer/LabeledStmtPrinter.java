@@ -1,7 +1,7 @@
 package de.upb.swt.soot.core.util.printer;
 
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
+import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
@@ -16,14 +16,13 @@ import java.util.*;
 public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   /** branch targets * */
   protected Map<Stmt, String> labels;
-  /** for stmt references in Phi nodes * */
+
+  /**
+   * for stmt references in Phi nodes (ms: and other occurences TODO: check and improve comment) *
+   */
   protected Map<Stmt, String> references;
 
   public LabeledStmtPrinter() {}
-
-  public LabeledStmtPrinter(Body b) {
-    createLabelMaps(b);
-  }
 
   public Map<Stmt, String> getLabels() {
     return labels;
@@ -46,7 +45,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   public abstract void identityRef(IdentityRef r);
 
   @Override
-  public void stmtRef(Stmt u, boolean branchTarget) {
+  public void stmtRef(Stmt stmt, boolean branchTarget) {
 
     // normal case, ie labels
     if (branchTarget) {
@@ -55,46 +54,55 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       handleIndent();
       setIndent(indentStep / 2);
 
-      String label = labels.get(u);
-      if (label == null || "<unnamed>".equals(label)) {
-        output.append("[?= ").append(Jimple.escape(u.toString())).append(']');
+      String label = labels.get(stmt);
+      if (label == null) {
+        output.append("[?= ").append(Jimple.escape(stmt.toString();)).append(']');
       } else {
         output.append(Jimple.escape(label));
       }
 
-    }
-    // TODO: [ms] still necessary? (-> shimple is not supported anymore)
-    // refs to control flow predecessors (for Shimple)
-    else {
-      String ref = references.get(u);
+    } else {
+
+      String ref = references.get(stmt);
 
       if (startOfLine) {
         setIndent(-indentStep / 2);
         handleIndent();
         setIndent(indentStep / 2);
 
-        output.append('(').append(ref).append(')');
+        output.append('(').append(Jimple.escape(ref)).append(')');
       } else {
         output.append(Jimple.escape(ref));
       }
     }
   }
 
-  public void createLabelMaps(Body body) {
-    Collection<Stmt> stmts = body.getStmts();
+  /** createLabelMaps */
+  public void initializeSootMethod(Body body) {
+    this.body = body;
 
-    labels = new HashMap<>(stmts.size() * 2 + 1, 0.7f);
-    references = new HashMap<>(stmts.size() * 2 + 1, 0.7f);
+    final Collection<Stmt> targetStmtsOfBranches = body.getTargetStmtsInBody();
+    final List<Trap> traps = body.getTraps();
+
+    final int maxEstimatedSize = targetStmtsOfBranches.size() + traps.size() * 3;
+    labels = new HashMap<>(maxEstimatedSize, 1);
+    references = new HashMap<>(maxEstimatedSize, 1);
 
     // Create statement name table
     Set<Stmt> labelStmts = new HashSet<>();
     Set<Stmt> refStmts = new HashSet<>();
 
-    // Build labelStmts and refStmts
-    for (StmtBox box : body.getAllStmtBoxes()) {
-      Stmt stmt = box.getStmt();
+    Set<Stmt> trapStmts = new HashSet<>();
+    traps.forEach(
+        trap -> {
+          trapStmts.add(trap.getHandlerStmt());
+          trapStmts.add(trap.getBeginStmt());
+          trapStmts.add(trap.getEndStmt());
+        });
 
-      if (box.isBranchTarget()) {
+    // Build labelStmts and refStmts
+    for (Stmt stmt : targetStmtsOfBranches) {
+      if (body.isStmtBranchTarget(stmt) || trapStmts.contains(stmt)) {
         labelStmts.add(stmt);
       } else {
         refStmts.add(stmt);
@@ -111,7 +119,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     int refCount = 0;
 
     // Traverse the stmts and assign a label if necessary
-    for (Stmt s : stmts) {
+    for (Stmt s : body.getStmtGraph()) {
       if (labelStmts.contains(s)) {
         labels.put(s, String.format(formatString, ++labelCount));
       }

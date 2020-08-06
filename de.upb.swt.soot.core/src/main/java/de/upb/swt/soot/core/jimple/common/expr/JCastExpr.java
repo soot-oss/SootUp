@@ -54,7 +54,7 @@ public final class JCastExpr implements Expr, Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseCastExpr(this, o);
   }
 
@@ -70,7 +70,7 @@ public final class JCastExpr implements Expr, Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal("(");
     up.typeSignature(type);
     up.literal(") ");
@@ -99,17 +99,17 @@ public final class JCastExpr implements Expr, Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseCastExpr(this);
   }
 
   @Nonnull
-  public JCastExpr withOp(Value op) {
+  public JCastExpr withOp(@Nonnull Value op) {
     return new JCastExpr(op, type);
   }
 
   @Nonnull
-  public JCastExpr withType(Type type) {
+  public JCastExpr withType(@Nonnull Type type) {
     return new JCastExpr(getOp(), type);
   }
 }

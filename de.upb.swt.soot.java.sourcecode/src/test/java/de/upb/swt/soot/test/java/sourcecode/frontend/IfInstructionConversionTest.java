@@ -26,8 +26,6 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class IfInstructionConversionTest {
 
-  // TODO: Failed tests
-
   private WalaJavaClassProvider loader;
 
   private JavaIdentifierFactory typeFactory;
@@ -244,7 +242,7 @@ public class IfInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             typeFactory.getMethodSignature(
-                "simpleIfTrue", declareClassSig, "void", Collections.emptyList()));
+                "simpleIfTrue", declareClassSig, "int", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     // TODO. replace the next line with assertions.
@@ -257,7 +255,7 @@ public class IfInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             typeFactory.getMethodSignature(
-                "simpleIfIntExpr", declareClassSig, "void", Collections.emptyList()));
+                "simpleIfIntExpr", declareClassSig, "int", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     // TODO. replace the next line with assertions.

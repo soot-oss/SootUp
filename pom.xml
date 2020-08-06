@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
 		 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <packaging>pom</packaging>
-
-  <name>Soot</name>
-  <groupId>de.upb.swt</groupId>
-  <artifactId>soot</artifactId>
-  <version>4.0.0-SNAPSHOT</version>
+	<modelVersion>4.0.0</modelVersion>
+	<packaging>pom</packaging>
+	<name>Soot</name>
+	<groupId>de.upb.swt</groupId>
+	<artifactId>soot</artifactId>
+	<version>4.0.0-SNAPSHOT</version>
+	<licenses>
+		<license>
+			<name>GNU LESSER GENERAL PUBLIC LICENSE 2.1</name>
+			<url>https://www.gnu.org/licenses/lgpl-2.1.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
   <modules>
-    <!-- !!! When adding a module here, it's important to also add it to the sootmodules of the Jenkinsfile !!! -->
     <module>de.upb.swt.soot.core</module>
     <module>de.upb.swt.soot.java.core</module>
     <module>de.upb.swt.soot.java.bytecode</module>
@@ -22,282 +27,288 @@
     <module>de.upb.swt.soot.jimple.parser</module>
   </modules>
 
-  <!-- Shared Configuration -->
-  <properties>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.version>3.8.0</maven.compiler.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-    <jacoco-maven-plugin.version>0.8.4</jacoco-maven-plugin.version>
-    <jacoco-badge-maven-plugin.version>0.1.3</jacoco-badge-maven-plugin.version>
-    <jacoco-badge-phase>verify</jacoco-badge-phase>
-    <slf4j.version>1.7.25</slf4j.version>
-    <slf4j-simple.version>1.7.25</slf4j-simple.version>
-    <guava.version>25.1-jre</guava.version>
-    <apache-commons.version>3.5</apache-commons.version>
-    <apache-commons-io.version>2.6</apache-commons-io.version>
-    <junit.version>4.12</junit.version>
-    <powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
-    <powermock-api-mockito.version>1.7.3</powermock-api-mockito.version>
-    <!-- not used?!        <test.sourceDir>${project.basedir}/src/test/java</test.sourceDir>
-            <test.outDir>${project.build.directory}/test-classes-java</test.outDir>-->
-    <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
-    <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
-  </properties>
-  <profiles>
-    <profile>
-      <id>Java8</id>
-      <properties>
-        <testcase.groups>categories.Java8Test</testcase.groups>
-      </properties>
-      <!-- Activates if jdk is <1.9 which means it has a rt.jar -->
-      <activation>
-        <jdk>(, 1.9)</jdk>
-      </activation>
-    </profile>
-    <profile>
-      <id>Java9</id>
-      <properties>
-        <testcase.groups>categories.Java9Test</testcase.groups>
-      </properties>
-      <!-- Activates if jdk is >=1.9 which means it has a jrt Provider -->
-      <activation>
-        <jdk>[1.9, )</jdk>
-      </activation>
-    </profile>
-    <profile>
-      <id>skipTestProfile</id>
-      <activation>
-        <property>
-          <name>skipTests</name>
-          <value>!false</value>
-        </property>
-      </activation>
-      <properties>
-        <jacoco-badge-phase>none</jacoco-badge-phase>
-      </properties>
-    </profile>
-  </profiles>
+	<!-- Shared Configuration -->
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.version>3.8.0</maven.compiler.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+		<jacoco-maven-plugin.version>0.8.4</jacoco-maven-plugin.version>
+		<jacoco-badge-maven-plugin.version>0.1.3</jacoco-badge-maven-plugin.version>
+		<jacoco-badge-phase>verify</jacoco-badge-phase>
+		<slf4j.version>1.7.25</slf4j.version>
+		<slf4j-simple.version>1.7.25</slf4j-simple.version>
+		<guava.version>25.1-jre</guava.version>
+		<apache-commons.version>3.5</apache-commons.version>
+		<apache-commons-io.version>2.6</apache-commons-io.version>
+		<junit.version>4.12</junit.version>
+		<powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
+		<powermock-api-mockito.version>1.7.3</powermock-api-mockito.version>
+		<checkstyle.failOnViolation>true</checkstyle.failOnViolation>
+		<licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
+	</properties>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>2.3</version>
-        <configuration>
-          <filters>
-            <filter>
-              <artifact>*:*</artifact>
-              <excludes>
-                <exclude>META-INF/*.SF</exclude>
-                <exclude>META-INF/*.DSA</exclude>
-                <exclude>META-INF/*.RSA</exclude>
-              </excludes>
-            </filter>
-          </filters>
-          <!-- Additional configuration. -->
-        </configuration>
-        <executions>
-          <!-- Run shade goal on package phase -->
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>com.coveo</groupId>
-        <artifactId>fmt-maven-plugin</artifactId>
-        <version>2.8</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>format</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>${jacoco-maven-plugin.version}</version>
-        <executions>
-          <!--Prepares the property pointing to the JaCoCo runtime agent which is passed as VM argument
-          when Maven the Surefire plugin is executed. -->
-          <execution>
-            <id>pre-unit-test</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-            <configuration>
-              <!-- Sets the path to the file which contains the execution data. -->
-              <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
-              <!-- Sets the name of the property containing the settings for JaCoCo runtime agent. -->
-              <propertyName>surefireArgLine</propertyName>
-            </configuration>
+	<profiles>
+		<profile>
+			<id>Java8</id>
+			<properties>
+				<testcase.groups>categories.Java8Test</testcase.groups>
+			</properties>
+			<!-- Activates if jdk is <1.9 which means it has a rt.jar -->
+			<activation>
+				<jdk>(, 1.9)</jdk>
+			</activation>
+		</profile>
+		<profile>
+			<id>Java9</id>
+			<properties>
+				<testcase.groups>categories.Java9Test</testcase.groups>
+			</properties>
+			<!-- Activates if jdk is >=1.9 which means it has a jrt Provider -->
+			<activation>
+				<jdk>[1.9, )</jdk>
+			</activation>
+		</profile>
+		<profile>
+			<id>skipTestProfile</id>
+			<activation>
+				<property>
+					<name>skipTests</name>
+					<value>!false</value>
+				</property>
+			</activation>
+			<properties>
+				<jacoco-badge-phase>none</jacoco-badge-phase>
+			</properties>
+		</profile>
+	</profiles>
 
-          </execution>
-          <!-- Ensures that the code coverage report for unit tests is
-          created after unit tests have been run. -->
-          <execution>
-            <id>post-unit-test</id>
-            <phase>test</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-            <configuration>
-              <!-- Sets the path to the file which contains the execution data. -->
-              <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
-              <!-- Sets the output directory for the code coverage report. -->
-              <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-            </configuration>
-          </execution>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<filters>
+						<filter>
+							<artifact>*:*</artifact>
+							<excludes>
+								<exclude>META-INF/*.SF</exclude>
+								<exclude>META-INF/*.DSA</exclude>
+								<exclude>META-INF/*.RSA</exclude>
+							</excludes>
+						</filter>
+					</filters>
+					<!-- Additional configuration. -->
+				</configuration>
+				<executions>
+					<!-- Run shade goal on package phase -->
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.coveo</groupId>
+				<artifactId>fmt-maven-plugin</artifactId>
+				<version>2.8</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco-maven-plugin.version}</version>
+				<executions>
+					<!--Prepares the property pointing to the JaCoCo runtime agent which
+						is passed as VM argument when Maven the Surefire plugin is executed. -->
+					<execution>
+						<id>pre-unit-test</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+							<destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
+							<!-- Sets the name of the property containing the settings for JaCoCo
+								runtime agent. -->
+							<propertyName>surefireArgLine</propertyName>
+						</configuration>
 
-          <execution>
-            <id>merge-results</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>merge</goal>
-            </goals>
-            <configuration>
-              <fileSets>
-                <fileSet>
-                  <directory>${project.build.directory}/coverage-reports</directory>
-                  <includes>
-                    <include>*.exec</include>
-                  </includes>
-                </fileSet>
-              </fileSets>
-              <destFile>${project.build.directory}/coverage-reports/aggregate.exec</destFile>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>com.sigpwned</groupId>
-        <artifactId>jacoco-badge-maven-plugin</artifactId>
-        <version>${jacoco-badge-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>generate-jacoco-badge</id>
-            <phase>${jacoco-badge-phase}</phase>
-            <goals>
-              <goal>badge</goal>
-            </goals>
-            <configuration>
-              <reportFile>${project.reporting.outputDirectory}/jacoco-ut/jacoco.csv</reportFile>
-              <!-- <passing>70</passing> Legal values: instruction, branch, line, method.
-              Optional, default instruction. -->
-              <metric>method</metric>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven-surefire-plugin.version}</version>
-        <configuration>
-          <!-- Sets the VM argument line used when unit tests are run. -->
-          <argLine>${surefireArgLine}</argLine>
-          <groups>${testcase.groups}</groups>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <groupId>org.apache.maven.plugins</groupId>
-        <version>3.1.1</version>
-        <configuration>
-          <additionalOptions>-html5</additionalOptions>
-          <fixTags>author</fixTags>
-          <force>true</force>
-          <fixFieldComment>false</fixFieldComment>
-          <fixMethodComment>false</fixMethodComment>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  <dependencies>
+					</execution>
+					<!-- Ensures that the code coverage report for unit tests is created
+						after unit tests have been run. -->
+					<execution>
+						<id>post-unit-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+							<dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
+							<!-- Sets the output directory for the code coverage report. -->
+							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>merge-results</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>merge</goal>
+						</goals>
+						<configuration>
+							<fileSets>
+								<fileSet>
+									<directory>${project.build.directory}/coverage-reports</directory>
+									<includes>
+										<include>*.exec</include>
+									</includes>
+								</fileSet>
+							</fileSets>
+							<destFile>${project.build.directory}/coverage-reports/aggregate.exec</destFile>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.sigpwned</groupId>
+				<artifactId>jacoco-badge-maven-plugin</artifactId>
+				<version>${jacoco-badge-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>generate-jacoco-badge</id>
+						<phase>${jacoco-badge-phase}</phase>
+						<goals>
+							<goal>badge</goal>
+						</goals>
+						<configuration>
+							<reportFile>${project.reporting.outputDirectory}/jacoco-ut/jacoco.csv</reportFile>
+							<!-- <passing>70</passing> Legal values: instruction, branch, line,
+								method. Optional, default instruction. -->
+							<metric>method</metric>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven-surefire-plugin.version}</version>
+				<configuration>
+					<!-- Sets the VM argument line used when unit tests are run. -->
+					<argLine>${surefireArgLine}</argLine>
+					<groups>${testcase.groups}</groups>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<version>3.1.1</version>
+				<configuration>
+					<additionalOptions>-html5</additionalOptions>
+					<fixTags>author</fixTags>
+					<force>true</force>
+					<fixFieldComment>false</fixFieldComment>
+					<fixMethodComment>false</fixMethodComment>
+				</configuration>
+			</plugin>
+			<!-- check headers -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>1.16</version>
+				<configuration>
+					<failOnMissingHeader>${licence-check.failOnMissingHeader}</failOnMissingHeader>
+					<failOnNotUptodateHeader>${licence-check.failOnMissingHeader}</failOnNotUptodateHeader>
+					<inceptionYear>1997</inceptionYear>
+					<addJavaLicenseAfterPackage>true</addJavaLicenseAfterPackage>
+					<licenseName>lgpl_v2_1</licenseName>
+					<organizationName>Raja Vallée-Rai and others</organizationName>
+					<roots>
+						<root>de.upb.swt.soot.callgraph/src/main/java</root>
+						<root>de.upb.swt.soot.java.bytecode/src/main/java</root>
+						<root>de.upb.swt.soot.java.sourcecode/src/main/java</root>
+					</roots>
+				</configuration>
+				<executions>
+					<execution>
+						<id>license-check</id>
+						<goals>
+							<goal>check-file-header</goal>
+						</goals>
+						<phase>verify</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
 
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>${slf4j-simple.version}</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>${apache-commons.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>${apache-commons-io.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>${guava.version}</version>
-    </dependency>
-    <!-- testing -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <version>${powermock-module-junit4.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito -->
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-      <version>${powermock-api-mockito.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- https://mvnrepository.com/artifact/com.typesafe.akka/akka-actor -->
-    <dependency>
-      <groupId>com.typesafe.akka</groupId>
-      <artifactId>akka-actor_2.12</artifactId>
-      <version>2.5.14</version>
-    </dependency>
-    <!-- adds `@Nullable` and `@Nonnull` annotations -->
-    <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>jsr305</artifactId>
-      <version>3.0.2</version>
-    </dependency>
-
-  </dependencies>
-  <repositories>
-    <!-- include old soot repo & wala repo -->
-    <repository>
-      <id>wala</id>
-      <name>wala snapshots</name>
-      <url>https://soot-build.cs.uni-paderborn.de/nexus/repository/wala/</url>
-    </repository>
-    <repository>
-      <id>soot-snapshot</id>
-      <name>soot snapshots</name>
-      <url>https://soot-build.cs.uni-paderborn.de/nexus/repository/soot-snapshot/</url>
-    </repository>
-  </repositories>
-
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${slf4j-simple.version}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${apache-commons.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${apache-commons-io.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+		</dependency>
+		<!-- testing -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>${powermock-module-junit4.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito -->
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>${powermock-api-mockito.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- adds `@Nullable` and `@Nonnull` annotations -->
+		<dependency>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>jsr305</artifactId>
+			<version>3.0.2</version>
+		</dependency>
+	</dependencies>
 </project>

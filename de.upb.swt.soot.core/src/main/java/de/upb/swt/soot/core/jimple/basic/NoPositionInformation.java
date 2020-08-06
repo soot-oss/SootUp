@@ -3,7 +3,7 @@ package de.upb.swt.soot.core.jimple.basic;
 import de.upb.swt.soot.core.model.Position;
 
 /**
- * This class represents the case when there is no position.
+ * This convenience class represents the case when there is no position information available.
  *
  * @author Linghui Luo
  */

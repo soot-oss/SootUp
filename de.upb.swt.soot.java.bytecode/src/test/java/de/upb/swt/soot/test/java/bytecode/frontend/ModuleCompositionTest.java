@@ -1,121 +1,105 @@
 package de.upb.swt.soot.test.java.bytecode.frontend;
 
-import static org.junit.Assert.assertTrue;
-
 import categories.Java8Test;
 import de.upb.swt.soot.core.frontend.MethodSource;
-import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
-import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SootField;
-import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.model.SourceType;
+import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
 
 /**
  * Defines tests for module composition.
  *
  * @author Jan Martin Persch
+ * @author Kaustubh Kelkar
  */
 @Category(Java8Test.class)
 public class ModuleCompositionTest {
 
-  @Test
+  @Ignore
   public void apiExamples() {
-    // TODO. add assertions
-    // System.out.println("--- EXAMPLE 1: On-Demand Loading ---");
-    // System.out.println();
 
-    String jarFile = "../shared-test-resources/Soot-4.0-SNAPSHOT.jar";
-    System.err.println(new File(jarFile).getAbsolutePath());
-    assertTrue("File " + jarFile + " not found.", new File(jarFile).exists());
+    String warFile = "../shared-test-resources/java-warApp/dummyWarApp.war";
 
+    Assert.assertTrue("File " + warFile + " not found.", new File(warFile).exists());
+
+    Path jarPath = Paths.get("/");
+
+    for (Path jp1 : PathBasedAnalysisInputLocation.jarsFromPath) {
+      if (jp1.getFileName().toString().contains("MiniApp")) jarPath = jp1;
+      else jarPath = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
+    }
     // Create a project
     JavaProject p =
         JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(new JavaClassPathAnalysisInputLocation(jarFile))
+            .addClassPath(new JavaClassPathAnalysisInputLocation(jarPath.toString()))
             .build();
 
     // Get the view
     JavaView view = p.createOnDemandView();
 
     // Create java class signature
-    ClassType utilsClassSignature = p.getIdentifierFactory().getClassType("de.upb.soot.Utils");
+    ClassType utilsClassSignature = p.getIdentifierFactory().getClassType("Employee", "ds");
 
     // Resolve signature to `SootClass`
     SootClass utilsClass = view.getClass(utilsClassSignature).get();
 
-    // Print all methods that are loaded on-demand
-    // System.out.println("Methods of " + utilsClassSignature + " class:");
-    // utilsClass.getMethods().stream().map(it -> " - " + it).forEach(System.out::println);
-
-    // System.out.println();
-
-    // Parse sub-signature for "optionalToStream" method
+    // Parse sub-signature for "setEmpSalary" method
     MethodSubSignature optionalToStreamMethodSubSignature =
-        JavaIdentifierFactory.getInstance()
-            .parseMethodSubSignature(
-                "java.util.stream.Stream optionalToStream(java.util.Optional)");
-
-    // Print sub-signature
-    // System.out.println("Method to find: " + optionalToStreamMethodSubSignature);
+        JavaIdentifierFactory.getInstance().parseMethodSubSignature("void setEmpSalary(int)");
 
     // Get method for sub-signature
-    SootMethod foundMethod =
-        utilsClass
-            .getMethod(optionalToStreamMethodSubSignature)
-            .orElseThrow(IllegalStateException::new);
+    SootMethod foundMethod = utilsClass.getMethod(optionalToStreamMethodSubSignature).get();
     Assert.assertNotNull(foundMethod.getBody());
 
     // Print method
-    // System.out.println("Found method:   " + foundMethod);
-    // System.out.println();
+    Assert.assertTrue("setEmpSalary".equalsIgnoreCase(foundMethod.getName()));
+    Assert.assertEquals("void", foundMethod.getReturnTypeSignature().toString());
+    Assert.assertEquals(1, foundMethod.getParameterCount());
+    Assert.assertTrue(
+        foundMethod.getParameterTypes().stream()
+            .anyMatch(
+                type -> {
+                  return "int".equals(type.toString());
+                }));
 
-    // Print method content
-    // System.out.println("Method body:    ---Yay, InvokeDynamic is loading, now!---");
-    // System.out.println(foundMethod.getBody());
-
-    // System.out.println();
-    // System.out.println("--- EXAMPLE 2: Using Builders ---");
-    // System.out.println();
-
-    // Parse sub-signature for "name" field
+    // Parse sub-signature for "empName" field
     FieldSubSignature nameFieldSubSignature =
-        JavaIdentifierFactory.getInstance().parseFieldSubSignature("java.lang.String name");
+        JavaIdentifierFactory.getInstance().parseFieldSubSignature("java.lang.String empName");
 
     // Create the class signature
-    ClassType classSignature = view.getIdentifierFactory().getClassType("x.y.z.foo.Bar");
+    ClassType classSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
 
     // Build a soot class
-
     SootClass c =
         new SootClass(
-            new OverridingClassSource(
+            new OverridingJavaClassSource(
                 new EagerInputLocation(),
                 null,
                 classSignature,
                 null,
                 null,
                 null,
-                ImmutableUtils.immutableSet(
+                Collections.singleton(
                     SootField.builder()
                         .withSignature(
                             JavaIdentifierFactory.getInstance()
@@ -127,8 +111,8 @@ public class ModuleCompositionTest {
                         .withSource(
                             new MethodSource() {
                               @Override
-                              @Nullable
                               public Body resolveBody() {
+                                /* [ms] violating @Nonnull */
                                 return null;
                               }
 
@@ -147,15 +131,13 @@ public class ModuleCompositionTest {
                         .withModifiers(Modifier.PUBLIC)
                         .build()),
                 null,
-                EnumSet.of(Modifier.PUBLIC)),
+                EnumSet.of(Modifier.PUBLIC),
+                Collections.emptyList()),
             SourceType.Application);
 
-    // Print some information
-    // System.out.println("Field sub-signature: " + nameFieldSubSignature);
-    // System.out.println("Class signature:     " + c);
-    // System.out.println();
-    // System.out.println("Field:         " + c.getField(nameFieldSubSignature));
-    // System.out.println("Field by name: " + c.getField(nameFieldSubSignature.getName()));
-    // System.out.println("Method:        " + c.getMethod(optionalToStreamMethodSubSignature));
+    Assert.assertEquals(
+        "java.lang.String", c.getField(nameFieldSubSignature).get().getType().toString());
+    Assert.assertEquals("empName", c.getField(nameFieldSubSignature).get().getName());
   }
+  // }
 }

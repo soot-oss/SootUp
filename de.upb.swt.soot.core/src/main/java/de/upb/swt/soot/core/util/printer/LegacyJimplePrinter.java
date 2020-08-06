@@ -18,8 +18,6 @@ public class LegacyJimplePrinter extends NormalStmtPrinter {
     super(b);
   }
 
-  public LegacyJimplePrinter() {}
-
   @Override
   void enableImports(boolean enable) {
     if (enable) {

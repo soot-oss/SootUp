@@ -1,5 +1,25 @@
 package de.upb.swt.soot.java.bytecode.frontend;
-
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2018 Andreas Dann
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
@@ -59,17 +79,17 @@ public final class AsmUtil {
   }
 
   /**
-   * Converts an internal class name to a fully qualified name.
+   * Converts an str class name to a fully qualified name.
    *
-   * @param internal internal name.
+   * @param str str name.
    * @return fully qualified name.
    */
-  public static String toQualifiedName(@Nonnull String internal) {
-    final int endpos = internal.length() - 1;
-    if (endpos > 2 && internal.charAt(endpos) == ';' && internal.charAt(0) == 'L') {
-      internal = internal.substring(1, endpos);
+  public static String toQualifiedName(@Nonnull String str) {
+    final int endpos = str.length() - 1;
+    if (endpos > 2 && str.charAt(endpos) == ';' && str.charAt(0) == 'L') {
+      str = str.substring(1, endpos);
     }
-    return internal.replace('/', '.');
+    return str.replace('/', '.');
   }
 
   public static EnumSet<Modifier> getModifiers(int access) {
@@ -156,8 +176,8 @@ public final class AsmUtil {
 
   @Nonnull
   public static List<Type> toJimpleSignatureDesc(@Nonnull String desc) {
-    // TODO: [ms] check to improve/simplify this method
-    List<Type> types = new ArrayList<>(2);
+    // [ms] more types are needed for method type which is ( arg-type* ) ret-type
+    List<Type> types = new ArrayList<>(1);
     int len = desc.length();
     int idx = 0;
     all:
@@ -203,12 +223,7 @@ public final class AsmUtil {
             break this_type;
           case 'L':
             int begin = idx;
-
-            // noinspection StatementWithEmptyBody
-            while (desc.charAt(++idx) != ';') {
-              // Empty while body: Just find the index of the semicolon.
-            }
-
+            idx = desc.indexOf(';', begin);
             String cls = desc.substring(begin, idx++);
             baseType = JavaIdentifierFactory.getInstance().getType(toQualifiedName(cls));
             break this_type;
@@ -219,7 +234,6 @@ public final class AsmUtil {
 
       if (baseType != null && nrDims > 0) {
         types.add(JavaIdentifierFactory.getInstance().getArrayType(baseType, nrDims));
-
       } else {
         types.add(baseType);
       }
@@ -235,7 +249,7 @@ public final class AsmUtil {
     }
 
     return StreamSupport.stream(asmClassNames.spliterator(), false)
-        .map(p -> asmIDToSignature(p))
+        .map(AsmUtil::asmIDToSignature)
         .collect(Collectors.toList());
   }
 

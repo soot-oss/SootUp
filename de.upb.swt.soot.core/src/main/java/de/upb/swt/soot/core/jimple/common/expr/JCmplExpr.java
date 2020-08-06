@@ -44,7 +44,7 @@ public final class JCmplExpr extends AbstractIntBinopExpr implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseCmplExpr(this);
   }
 
