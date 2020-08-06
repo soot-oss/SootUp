@@ -57,7 +57,6 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
   private static final @Nonnull String WILDCARD_CHAR = "*";
 
   @Nonnull private Collection<AnalysisInputLocation> cpEntries = new ArrayList<>();
-  @Nonnull private final String classPath;
 
   /**
    * Creates a {@link JavaClassPathAnalysisInputLocation} which locates classes in the given class
@@ -70,7 +69,6 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
       throw new InvalidClassPathException("Empty class path given");
     }
 
-    this.classPath = classPath;
     cpEntries = explodeClassPath(classPath);
 
     if (cpEntries.isEmpty()) {
@@ -164,7 +162,7 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
           .collect(Collectors.toList());
 
     } catch (IllegalArgumentException e) {
-      throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
+      throw new InvalidClassPathException("Malformed class path given: " + jarPath, e);
     }
   }
 
