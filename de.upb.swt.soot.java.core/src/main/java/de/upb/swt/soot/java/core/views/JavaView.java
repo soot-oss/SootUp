@@ -184,13 +184,15 @@ public class JavaView extends AbstractView {
             .map(Optional::get)
             .collect(Collectors.toList());
 
-    if (foundClassSources.size() > 1) {
+    if (foundClassSources.size() < 1) {
+      throw new ResolveException("No class candidates for \"" + type + "\" found.");
+    } else if (foundClassSources.size() > 1) {
       throw new ResolveException(
-          "Class candidates for \""
+          "Multiple class candidates for \""
               + type
-              + "\" found in multiple AnalysisInputLocations. Soot can't decide which AnalysisInputLocation it should refer to for this Type.");
+              + "\" found in the given AnalysisInputLocations. Soot can't decide which AnalysisInputLocation it should refer to for this Type.");
     }
-    return foundClassSources.stream().findAny().map(this::buildClassFrom).get();
+    return buildClassFrom(foundClassSources.get(0));
   }
 
   @Nonnull
