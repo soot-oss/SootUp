@@ -31,8 +31,7 @@ import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -50,6 +49,7 @@ import org.slf4j.LoggerFactory;
  * documentation: https://docs.oracle.com/javase/8/docs/technotes/tools/windows/classpath.html
  *
  * @author Manuel Benz created on 22.05.18
+ * @author Kaustubh Kelkar updated on 20.07.2020
  */
 public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInputLocation {
   private static final @Nonnull Logger logger =
@@ -69,21 +69,11 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
       throw new InvalidClassPathException("Empty class path given");
     }
 
-    try {
-      cpEntries =
-          explode(classPath)
-              .flatMap(cp -> StreamUtils.optionalToStream(nsForPath(cp)))
-              .collect(Collectors.toList());
-
-    } catch (IllegalArgumentException e) {
-      throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
-    }
+    cpEntries = explodeClassPath(classPath);
 
     if (cpEntries.isEmpty()) {
-      throw new InvalidClassPathException("Empty class path given");
+      throw new InvalidClassPathException("Empty class path is given.");
     }
-
-    logger.trace("{} class path entries registered", cpEntries.size());
   }
 
   /**
@@ -127,7 +117,7 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
   @Override
   public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
-      @Nullable ClassLoadingOptions classLoadingOptions) {
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
     // By using a set here, already added classes won't be overwritten and the class which is found
     // first will be kept
     Set<AbstractClassSource> found = new HashSet<>();
@@ -156,6 +146,23 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
       return Optional.empty();
+    }
+  }
+
+  /**
+   * extract the classes from the classpath
+   *
+   * @param jarPath The jar path for which the classes need to be listed
+   * @return list of classpath entries
+   */
+  private List<AnalysisInputLocation> explodeClassPath(@Nonnull String jarPath) {
+    try {
+      return explode(jarPath)
+          .flatMap(cp -> StreamUtils.optionalToStream(nsForPath(cp)))
+          .collect(Collectors.toList());
+
+    } catch (IllegalArgumentException e) {
+      throw new InvalidClassPathException("Malformed class path given: " + jarPath, e);
     }
   }
 
