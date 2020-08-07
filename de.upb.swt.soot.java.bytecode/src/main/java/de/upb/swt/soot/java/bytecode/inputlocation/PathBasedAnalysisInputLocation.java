@@ -208,7 +208,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
   }
 
-  // TODO: [ms] war is quite java specific -> move to soot.java module?
   // TODO: [ms] dont extractWarfile and extend ArchiveBasedAnalysisInputLocation?
   private static final class WarArchiveAnalysisInputLocation
       extends DirectoryBasedAnalysisInputLocation {
