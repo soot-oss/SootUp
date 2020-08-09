@@ -50,15 +50,15 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
 
   /** Assigns values returned by newImmediateBox to an array bsmArgBoxes of type ValueBox. */
   public JDynamicInvokeExpr(
-      MethodSignature bootstrapMethodSignature,
-      List<? extends Value> bootstrapArgs,
-      MethodSignature methodSignature,
+      @Nonnull MethodSignature bootstrapMethodSignature,
+      @Nonnull List<? extends Value> bootstrapArgs,
+      @Nonnull MethodSignature methodSignature,
       int tag,
-      List<? extends Value> methodArgs) {
+      @Nonnull List<? extends Value> methodArgs) {
     super(methodSignature, ValueBoxUtils.toValueBoxes(methodArgs));
     if (!methodSignature
         .getDeclClassType()
-        .getClassName()
+        .getFullyQualifiedName()
         .equals(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME)) {
       throw new IllegalArgumentException(
           "Receiver type of JDynamicInvokeExpr must be "
@@ -76,10 +76,10 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
 
   /** Makes a parameterized call to JDynamicInvokeExpr method. */
   public JDynamicInvokeExpr(
-      MethodSignature bootstrapMethodSignature,
-      List<? extends Value> bootstrapArgs,
-      MethodSignature methodSignature,
-      List<? extends Value> methodArgs) {
+      @Nonnull MethodSignature bootstrapMethodSignature,
+      @Nonnull List<? extends Value> bootstrapArgs,
+      @Nonnull MethodSignature methodSignature,
+      @Nonnull List<? extends Value> methodArgs) {
     /*
      * Here the static-handle is chosen as default value, because this works for Java.
      */
