@@ -29,7 +29,6 @@ package de.upb.swt.soot.core.jimple.common.ref;
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.types.Type;
