@@ -1,4 +1,5 @@
 package de.upb.swt.soot.core.model;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework

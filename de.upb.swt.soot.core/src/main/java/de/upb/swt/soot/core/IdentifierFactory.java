@@ -1,4 +1,5 @@
 package de.upb.swt.soot.core;
+
 /*-
  * #%L
  * Soot
@@ -20,6 +21,7 @@ package de.upb.swt.soot.core;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
