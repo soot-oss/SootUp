@@ -1,3 +1,5 @@
+package de.upb.swt.soot.core.jimple.basic;
+
 /*-
  * #%L
  * Soot
@@ -19,8 +21,6 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-
-package de.upb.swt.soot.core.jimple.basic;
 
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
