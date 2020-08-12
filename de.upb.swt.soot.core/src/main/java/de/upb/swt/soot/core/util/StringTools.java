@@ -30,36 +30,54 @@ public class StringTools {
 
   /** Returns fromString, but with non-isalpha() characters printed as <code>'\\unnnn'</code>. */
   public static java.lang.String getEscapedStringOf(String fromString) {
-    // TODO: 1. [ms] copy String only on demand
-    // TODO: 3. [ms] maybe(!) work on .charAt(..) instead of .toCharArray)(..)
+    // TODO: [ms] possible performance+ maybe(!) work on .charAt(..) instead of .toCharArray)(..)
+    char[] fromStringArray = fromString.toCharArray();
 
-    char[] fromStringArray;
-    int cr;
-    int lf;
-    StringBuilder whole = new StringBuilder();
-    fromStringArray = fromString.toCharArray();
+    // TODO: [ms] this makes the exported jimple platform dependent? improve!
+    char cr = lineSeparator.charAt(0);
+    char lf = lineSeparator.length() == 2 ? lineSeparator.charAt(1) : cr;
 
-    cr = lineSeparator.charAt(0);
-    lf = -1;
-
-    if (lineSeparator.length() == 2) {
-      lf = lineSeparator.charAt(1);
-    }
-
-    for (final char ch : fromStringArray) {
-      if (((ch >= 32 && ch <= 126) || ch == cr || ch == lf) && ch != '\\') {
-        whole.append(ch);
-      } else {
-        final String hexVal = Integer.toHexString(ch);
-        whole.append("\\u");
-        for (int i = hexVal.length(); i < 4; i++) {
-          whole.append('0');
-        }
-        whole.append(hexVal);
+    // find if there is (find the first) a need to escape
+    int firstNonAlphaPos = -1;
+    for (int j = 0, fromStringArrayLength = fromStringArray.length;
+        j < fromStringArrayLength;
+        j++) {
+      char ch = fromStringArray[j];
+      if (!(((ch >= 32 && ch <= 126) || ch == cr || ch == lf) && ch != '\\')) {
+        firstNonAlphaPos = j;
+        break;
       }
     }
 
-    return whole.toString();
+    // no need to escape?
+    if (firstNonAlphaPos == -1) {
+      return fromString;
+    }
+
+    StringBuilder sb = new StringBuilder();
+    // copy chars until first non alpha char to bypass the condition checking again
+    for (int i = 0; i < firstNonAlphaPos; i++) {
+      sb.append(fromStringArray[i]);
+    }
+
+    // copy and escape the rest
+    for (int j = firstNonAlphaPos, fromStringArrayLength = fromStringArray.length;
+        j < fromStringArrayLength;
+        j++) {
+      char ch = fromStringArray[j];
+      if (((ch >= 32 && ch <= 126) || ch == cr || ch == lf) && ch != '\\') {
+        sb.append(ch);
+      } else {
+        final String hexVal = Integer.toHexString(ch);
+        sb.append("\\u");
+        for (int i = hexVal.length(); i < 4; i++) {
+          sb.append('0');
+        }
+        sb.append(hexVal);
+      }
+    }
+
+    return sb.toString();
   }
 
   /** Convenience field storing the system line separator. */
