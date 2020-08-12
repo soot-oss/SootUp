@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Hasitha Rajapakse */
 @Category(Java8Test.class)
 public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
   @Override
@@ -40,8 +40,7 @@ public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
    * }
    * </pre>
    */
-  @Override
-  public List<String> expectedBodyStmts() {
+  public List<String> expectedBodyStmtsTryCatchFinally() {
     return Stream.of(
             "r0 := @this: TryCatchFinally",
             "$r1 = \"\"",
@@ -65,6 +64,6 @@ public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
   @Test
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
-    assertJimpleStmts(method, expectedBodyStmts());
+    assertJimpleStmts(method, expectedBodyStmtsTryCatchFinally());
   }
 }
