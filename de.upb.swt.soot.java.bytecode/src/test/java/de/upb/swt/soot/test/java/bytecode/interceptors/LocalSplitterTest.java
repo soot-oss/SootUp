@@ -3,6 +3,7 @@ package de.upb.swt.soot.test.java.bytecode.interceptors;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
+import com.google.common.collect.Lists;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
@@ -476,6 +477,14 @@ public class LocalSplitterTest {
   private void assertStmtGraphEquiv(StmtGraph expected, StmtGraph actual) {
     assertNotNull(expected);
     assertNotNull(actual);
-    assertTrue(expected.equivTo(actual));
+    final boolean condition = expected.equivTo(actual);
+    if (!condition) {
+      System.out.println("expected:");
+      System.out.println(Lists.newArrayList(expected.iterator()));
+      System.out.println("actual:");
+      System.out.println(Lists.newArrayList(actual.iterator()));
+    }
+    assertEquals(Lists.newArrayList(expected.iterator()), Lists.newArrayList(actual.iterator()));
+    assertTrue(condition);
   }
 }
