@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
@@ -30,7 +30,7 @@ public class αρετηTest extends MinimalBytecodeTestSuiteBase {
         .collect(Collectors.toList());
   }
 
-  @Ignore
+  @Test
   // test only works on a filesystem that supports unicode
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
