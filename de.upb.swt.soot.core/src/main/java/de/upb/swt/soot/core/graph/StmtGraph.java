@@ -154,6 +154,10 @@ public abstract class StmtGraph implements Iterable<Stmt> {
     }
     StmtGraph otherGraph = (StmtGraph) o;
 
+    if (getStartingStmt() != otherGraph.getStartingStmt()) {
+      return false;
+    }
+
     Set<Stmt> nodes = nodes();
     final Set<Stmt> otherNodes = otherGraph.nodes();
     if (nodes.size() != otherNodes.size()) {
