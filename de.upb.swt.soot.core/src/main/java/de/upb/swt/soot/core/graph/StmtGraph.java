@@ -143,6 +143,41 @@ public abstract class StmtGraph implements Iterable<Stmt> {
     return null;
   }
 
+  public boolean equivTo(Object o) {
+    if (o == this) {
+      return true;
+    }
+
+    if (!(o instanceof StmtGraph)) {
+      return false;
+    }
+    StmtGraph otherGraph = (StmtGraph) o;
+
+    Set<Stmt> nodes = nodes();
+    final Set<Stmt> otherNodes = otherGraph.nodes();
+    if (nodes.size() != otherNodes.size()) {
+      return false;
+    }
+
+    if (getTraps().size() != otherGraph.getTraps().size()) {
+      return false;
+    }
+
+    final Iterator<Stmt> iterator = iterator();
+    final Iterator<Stmt> otherIterator = otherGraph.iterator();
+
+    while (iterator.hasNext()) {
+      if (otherIterator.hasNext()) {
+        return false;
+      }
+      if (!iterator.next().equivTo(otherIterator.next())) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (o == this) {

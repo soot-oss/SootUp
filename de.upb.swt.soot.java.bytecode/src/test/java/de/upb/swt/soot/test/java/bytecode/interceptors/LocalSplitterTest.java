@@ -476,7 +476,6 @@ public class LocalSplitterTest {
   private void assertStmtGraphEquiv(StmtGraph expected, StmtGraph actual) {
     assertNotNull(expected);
     assertNotNull(actual);
-
-    assertEquals(expected, actual);
+    assertTrue(expected.equivTo(actual));
   }
 }
