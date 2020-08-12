@@ -39,9 +39,8 @@ public class StringTools {
 
     // find if there is (find the first) a need to escape
     int firstNonAlphaPos = -1;
-    for (int j = 0, fromStringArrayLength = fromStringArray.length;
-        j < fromStringArrayLength;
-        j++) {
+    final int size = fromStringArray.length;
+    for (int j = 0; j < size; j++) {
       char ch = fromStringArray[j];
       if (!(((ch >= 32 && ch <= 126) || ch == cr || ch == lf) && ch != '\\')) {
         firstNonAlphaPos = j;
@@ -54,7 +53,7 @@ public class StringTools {
       return fromString;
     }
 
-    StringBuilder sb = new StringBuilder();
+    StringBuilder sb = new StringBuilder(fromString.length() + 5); // [ms] lower bound - maybe more.
     // copy chars until first non alpha char to bypass the condition checking again
     for (int i = 0; i < firstNonAlphaPos; i++) {
       sb.append(fromStringArray[i]);
@@ -68,8 +67,8 @@ public class StringTools {
       if (((ch >= 32 && ch <= 126) || ch == cr || ch == lf) && ch != '\\') {
         sb.append(ch);
       } else {
-        final String hexVal = Integer.toHexString(ch);
         sb.append("\\u");
+        final String hexVal = Integer.toHexString(ch);
         for (int i = hexVal.length(); i < 4; i++) {
           sb.append('0');
         }
