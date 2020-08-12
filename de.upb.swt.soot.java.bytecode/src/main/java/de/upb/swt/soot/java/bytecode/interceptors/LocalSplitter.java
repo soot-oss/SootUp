@@ -3,6 +3,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -141,7 +142,7 @@ public class LocalSplitter implements BodyInterceptor {
 
                   // 2.1 case: if backstmt's def is modified oriLocal
                   if (hasModifiedDef(backStmt, oriLocal)) {
-                    if (isBiggerName((Local) backStmt.getDefs().get(0), modifiedLocal)) {
+                    if (hasLeftLocalHigherName((Local) backStmt.getDefs().get(0), modifiedLocal)) {
                       Stmt newBackStmt = withNewDef(backStmt, modifiedLocal);
                       bodyBuilder.mergeStmt(backStmt, newBackStmt);
                       adaptTraps(bodyBuilder, backStmt, newBackStmt);
@@ -152,7 +153,7 @@ public class LocalSplitter implements BodyInterceptor {
                   // 2.2 case: if backstmt's uselist contains the modified oriLocal
                   else if (hasModifiedUse(backStmt, oriLocal)) {
                     Local modifiedUse = getModifiedUse(backStmt, oriLocal);
-                    if (isBiggerName(modifiedUse, modifiedLocal)) {
+                    if (hasLeftLocalHigherName(modifiedUse, modifiedLocal)) {
                       Stmt newBackStmt = withNewUse(backStmt, modifiedUse, modifiedLocal);
                       bodyBuilder.mergeStmt(backStmt, newBackStmt);
                       adaptTraps(bodyBuilder, backStmt, newBackStmt);
@@ -260,18 +261,15 @@ public class LocalSplitter implements BodyInterceptor {
   protected void adaptTraps(
       @Nonnull BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
     List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
-    for (Trap trap : traps) {
-      int index = traps.indexOf(trap);
+    for (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) {
+      Trap trap = iterator.next();
+      JTrap jtrap = (JTrap) trap;
       if (oldStmt.equivTo(trap.getBeginStmt())) {
-        Trap newTrap =
-            Jimple.newTrap(
-                trap.getExceptionType(), newStmt, trap.getEndStmt(), trap.getHandlerStmt());
-        traps.set(index, newTrap);
+        Trap newTrap = jtrap.withBeginStmt(newStmt);
+        iterator.set(newTrap);
       } else if (oldStmt.equivTo(trap.getEndStmt())) {
-        Trap newTrap =
-            Jimple.newTrap(
-                trap.getExceptionType(), trap.getBeginStmt(), newStmt, trap.getHandlerStmt());
-        traps.set(index, newTrap);
+        Trap newTrap = jtrap.withEndStmt(newStmt);
+        iterator.set(newTrap);
       }
     }
     builder.setTraps(traps);
@@ -393,21 +391,17 @@ public class LocalSplitter implements BodyInterceptor {
    * Check whether leftLocal's name has bigger index than rightLocal's.
    *
    * @param leftLocal: a local in form oriLocal#num1
-   * @param rigthLocal: a local in form oriLocal#num2
+   * @param rightLocal: a local in form oriLocal#num2
    * @return if so return true, else return false
    */
-  protected boolean isBiggerName(@Nonnull Local leftLocal, @Nonnull Local rigthLocal) {
-    boolean isBigger = false;
+  protected boolean hasLeftLocalHigherName(@Nonnull Local leftLocal, @Nonnull Local rightLocal) {
     String leftName = leftLocal.getName();
-    String rightName = rigthLocal.getName();
-    int i = leftName.indexOf('#');
-    int j = rightName.indexOf('#');
+    String rightName = rightLocal.getName();
+    int i = leftName.lastIndexOf('#');
+    int j = rightName.lastIndexOf('#');
     int leftNum = Integer.parseInt(leftName.substring(i + 1));
     int rightNum = Integer.parseInt(rightName.substring(j + 1));
-    if (leftNum > rightNum) {
-      isBigger = true;
-    }
-    return isBigger;
+    return leftNum > rightNum;
   }
 
   /**
