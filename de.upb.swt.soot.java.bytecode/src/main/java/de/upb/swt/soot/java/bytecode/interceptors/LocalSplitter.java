@@ -24,7 +24,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
@@ -125,8 +124,8 @@ public class LocalSplitter implements BodyInterceptor {
           adaptVisitList(visitList, visitedStmt, newVisitedStmt);
 
           // build the forwardsQueue
-          Deque<Stmt> forwardsQueue = new ArrayDeque<>();
-          forwardsQueue.addAll(bodyBuilder.getStmtGraph().successors(newVisitedStmt));
+          Deque<Stmt> forwardsQueue =
+              new ArrayDeque<>(bodyBuilder.getStmtGraph().successors(newVisitedStmt));
           Set<Stmt> visitedInner = new HashSet<>();
 
           while (!forwardsQueue.isEmpty()) {
@@ -157,8 +156,8 @@ public class LocalSplitter implements BodyInterceptor {
               // if modifed name is not same as the newLocal's name then, trace backwards
               if (!modifiedLocal.getName().equals(newLocal.getName())) {
                 localIndex--;
-                Deque<Stmt> backwardsQueue = new ArrayDeque<>();
-                backwardsQueue.addAll(bodyBuilder.getStmtGraph().predecessors(head));
+                Deque<Stmt> backwardsQueue =
+                    new ArrayDeque<>(bodyBuilder.getStmtGraph().predecessors(head));
                 while (!backwardsQueue.isEmpty()) {
                   Stmt backStmt = backwardsQueue.remove();
 
@@ -219,7 +218,7 @@ public class LocalSplitter implements BodyInterceptor {
             while (!queue.isEmpty()) {
               Stmt stmt = queue.removeFirst();
               visited.add(stmt);
-              if (insertPositions.keySet().contains(stmt)) {
+              if (insertPositions.containsKey(stmt)) {
                 checkPoints.add(insertPositions.get(stmt));
                 queue.clear();
                 queue.add(insertPositions.get(stmt));
@@ -322,13 +321,11 @@ public class LocalSplitter implements BodyInterceptor {
   @Nonnull
   protected Stmt withNewDef(@Nonnull Stmt oldStmt, @Nonnull Local newDef) {
     if (oldStmt instanceof JAssignStmt) {
-      return Jimple.newAssignStmt(
-          newDef, ((JAssignStmt) oldStmt).getRightOp(), oldStmt.getPositionInfo());
+      return ((JAssignStmt) oldStmt).withVariable(newDef);
     } else if (oldStmt instanceof JIdentityStmt) {
       return ((JIdentityStmt) oldStmt).withLocal(newDef);
-    } else {
-      throw new RuntimeException("Just JAssignStmt and JIdentityStmt allowed");
     }
+    throw new RuntimeException("Just JAssignStmt and JIdentityStmt allowed");
   }
 
   /**
@@ -482,14 +479,14 @@ public class LocalSplitter implements BodyInterceptor {
         trapBlocks.put(trap.getHandlerStmt(), trapStmts);
       }
 
+      Set<Stmt> trapHandlerStmts = trapBlocks.keySet();
       // delete all stmts in trapblocks, except for handlerStmt and the insertposition
-      for (Stmt handlerStmt : trapBlocks.keySet()) {
+      for (Stmt handlerStmt : trapHandlerStmts) {
         List<Stmt> trapStmts = new ArrayList<>(trapBlocks.get(handlerStmt));
         trapStmts.remove(0);
         int index = visitList.indexOf(handlerStmt) + 1;
         Stmt stmt = visitList.get(index);
         Stmt nextStmt = visitList.get(index + 1);
-        Set<Stmt> trapHandlerStmts = trapBlocks.keySet();
         while (!trapStmts.isEmpty()) {
           trapStmts.remove(stmt);
           if ((!trapHandlerStmts.contains(nextStmt) || trapStmts.isEmpty())
@@ -508,7 +505,6 @@ public class LocalSplitter implements BodyInterceptor {
 
       // build a map with key: handlerStmt of trap, value: insert-position of trap
       int i = 0;
-      Set<Stmt> trapHandlerStmts = trapBlocks.keySet();
       while (i < visitList.size()) {
         Stmt stmt = visitList.get(i);
         if (trapHandlerStmts.contains(stmt)) {
