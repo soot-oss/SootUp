@@ -30,13 +30,13 @@ public class StringTools {
 
   /** Returns fromString, but with non-isalpha() characters printed as <code>'\\unnnn'</code>. */
   public static java.lang.String getEscapedStringOf(String fromString) {
+    // TODO: 1. [ms] copy String only on demand
+    // TODO: 3. [ms] maybe(!) work on .charAt(..) instead of .toCharArray)(..)
+
     char[] fromStringArray;
     int cr;
     int lf;
-    int ch;
     StringBuilder whole = new StringBuilder();
-    StringBuilder mini = new StringBuilder();
-
     fromStringArray = fromString.toCharArray();
 
     cr = lineSeparator.charAt(0);
@@ -46,23 +46,17 @@ public class StringTools {
       lf = lineSeparator.charAt(1);
     }
 
-    for (char element : fromStringArray) {
-      ch = element;
+    for (final char ch : fromStringArray) {
       if (((ch >= 32 && ch <= 126) || ch == cr || ch == lf) && ch != '\\') {
-        whole.append((char) ch);
-
-        continue;
+        whole.append(ch);
+      } else {
+        final String hexVal = Integer.toHexString(ch);
+        whole.append("\\u");
+        for (int i = hexVal.length(); i < 4; i++) {
+          whole.append('0');
+        }
+        whole.append(hexVal);
       }
-
-      mini.setLength(0);
-      mini.append(Integer.toHexString(ch));
-
-      while (mini.length() < 4) {
-        mini.insert(0, "0");
-      }
-
-      mini.insert(0, "\\u");
-      whole.append(mini.toString());
     }
 
     return whole.toString();
