@@ -15,6 +15,7 @@ import de.upb.swt.soot.core.model.Body.BodyBuilder;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A BodyInterceptor that attempts to identify and separate uses of a local variable that are
@@ -46,6 +47,7 @@ import javax.annotation.Nonnull;
  */
 public class LocalSplitter implements BodyInterceptor {
 
+  @Nonnull
   public Body interceptBody(@Nonnull Body originalBody) {
 
     ImmutableStmtGraph oriGraph = originalBody.getStmtGraph();
@@ -96,8 +98,8 @@ public class LocalSplitter implements BodyInterceptor {
 
           // replace visitedStmt with newVisitedStmt
           bodyBuilder.mergeStmt(visitedStmt, newVisitedStmt);
-          fitNewTrap(bodyBuilder, visitedStmt, newVisitedStmt);
-          fitVisitList(visitList, visitedStmt, newVisitedStmt);
+          adaptTraps(bodyBuilder, visitedStmt, newVisitedStmt);
+          adaptVisitList(visitList, visitedStmt, newVisitedStmt);
 
           // build the forwardsQueue
           Deque<Stmt> forwardsQueue = new ArrayDeque<>();
@@ -112,8 +114,8 @@ public class LocalSplitter implements BodyInterceptor {
             if (head.getUses().contains(oriLocal)) {
               Stmt newHead = withNewUse(head, oriLocal, newLocal);
               bodyBuilder.mergeStmt(head, newHead);
-              fitNewTrap(bodyBuilder, head, newHead);
-              fitVisitList(visitList, head, newHead);
+              adaptTraps(bodyBuilder, head, newHead);
+              adaptVisitList(visitList, head, newHead);
               // if deflist of modified stmt contains no orilocal, then trace forwards on.
               if ((!newHead.getDefs().isEmpty() && !newHead.getDefs().get(0).equivTo(oriLocal))
                   || newHead.getDefs().isEmpty()) {
@@ -142,8 +144,8 @@ public class LocalSplitter implements BodyInterceptor {
                     if (isBiggerName((Local) backStmt.getDefs().get(0), modifiedLocal)) {
                       Stmt newBackStmt = withNewDef(backStmt, modifiedLocal);
                       bodyBuilder.mergeStmt(backStmt, newBackStmt);
-                      fitNewTrap(bodyBuilder, backStmt, newBackStmt);
-                      fitVisitList(visitList, backStmt, newBackStmt);
+                      adaptTraps(bodyBuilder, backStmt, newBackStmt);
+                      adaptVisitList(visitList, backStmt, newBackStmt);
                       newLocals.remove(newLocal);
                     }
                   }
@@ -153,8 +155,8 @@ public class LocalSplitter implements BodyInterceptor {
                     if (isBiggerName(modifiedUse, modifiedLocal)) {
                       Stmt newBackStmt = withNewUse(backStmt, modifiedUse, modifiedLocal);
                       bodyBuilder.mergeStmt(backStmt, newBackStmt);
-                      fitNewTrap(bodyBuilder, backStmt, newBackStmt);
-                      fitVisitList(visitList, backStmt, newBackStmt);
+                      adaptTraps(bodyBuilder, backStmt, newBackStmt);
+                      adaptVisitList(visitList, backStmt, newBackStmt);
                       backwardsQueue.addAll(bodyBuilder.getStmtGraph().predecessors(newBackStmt));
                     }
                   }
@@ -235,8 +237,8 @@ public class LocalSplitter implements BodyInterceptor {
             }
             Stmt newVisitedStmt = withNewUse(visitedStmt, oriL, lastChange);
             bodyBuilder.mergeStmt(visitedStmt, newVisitedStmt);
-            fitNewTrap(bodyBuilder, visitedStmt, newVisitedStmt);
-            fitVisitList(visitList, visitedStmt, newVisitedStmt);
+            adaptTraps(bodyBuilder, visitedStmt, newVisitedStmt);
+            adaptVisitList(visitList, visitedStmt, newVisitedStmt);
           }
         }
       }
@@ -255,7 +257,7 @@ public class LocalSplitter implements BodyInterceptor {
    * @param oldStmt a Stmt which maybe a beginStmt or endStmt
    * @param newStmt a modified stmt
    */
-  protected void fitNewTrap(
+  protected void adaptTraps(
       @Nonnull BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
     List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
     for (Trap trap : traps) {
@@ -282,7 +284,7 @@ public class LocalSplitter implements BodyInterceptor {
    * @param oldStmt a stmt which is modified
    * @param newStmt a modified stmt
    */
-  protected void fitVisitList(
+  protected void adaptVisitList(
       @Nonnull List<Stmt> visitList, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
     final int index = visitList.indexOf(oldStmt);
     if (index > -1) {
@@ -331,24 +333,13 @@ public class LocalSplitter implements BodyInterceptor {
    * @param oriLocal: a local is to be checked
    * @return if so, return true, else return false
    */
-  @Nonnull
   protected boolean hasModifiedUse(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
-    boolean isModified = false;
     if (!stmt.getUses().isEmpty()) {
       for (Value use : stmt.getUses()) {
-        if (use instanceof Local) {
-          String name = ((Local) use).getName();
-          final int searchPos = name.indexOf('#');
-          if (searchPos > -1) {
-            if (name.substring(0, searchPos).equals(oriLocal.getName())) {
-              isModified = true;
-              break;
-            }
-          }
-        }
+        return isLocalFromSameOrigin(oriLocal, use);
       }
     }
-    return isModified;
+    return false;
   }
 
   /**
@@ -358,26 +349,29 @@ public class LocalSplitter implements BodyInterceptor {
    * @param oriLocal: a local
    * @return if so, return this modified local, else return null
    */
-  @Nonnull
+  @Nullable
   protected Local getModifiedUse(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
-    Local modifiedLocal = null;
     if (hasModifiedUse(stmt, oriLocal)) {
       if (!stmt.getUses().isEmpty()) {
         for (Value use : stmt.getUses()) {
-          if (use instanceof Local) {
-            String name = ((Local) use).getName();
-            final int searchPos = name.indexOf('#');
-            if (searchPos > -1) {
-              if (name.substring(0, searchPos).equals(oriLocal.getName())) {
-                modifiedLocal = (Local) use;
-                break;
-              }
-            }
+          if (isLocalFromSameOrigin(oriLocal, use)) {
+            return (Local) use;
           }
         }
       }
     }
-    return modifiedLocal;
+    return null;
+  }
+
+  private boolean isLocalFromSameOrigin(@Nonnull Local oriLocal, Value use) {
+    if (use instanceof Local) {
+      String name = ((Local) use).getName();
+      final int searchPos = name.indexOf('#');
+      if (searchPos > -1) {
+        return name.substring(0, searchPos).equals(oriLocal.getName());
+      }
+    }
+    return false;
   }
 
   /**
@@ -387,19 +381,11 @@ public class LocalSplitter implements BodyInterceptor {
    * @param oriLocal: a local is to be checked
    * @return if so, return true, else return false
    */
-  @Nonnull
   protected boolean hasModifiedDef(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
-    boolean isModified = false;
     if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
-      String name = ((Local) stmt.getDefs().get(0)).getName();
-      final int searchPos = name.indexOf('#');
-      if (searchPos > -1) {
-        if (name.substring(0, searchPos).equals(oriLocal.getName())) {
-          isModified = true;
-        }
-      }
+      return isLocalFromSameOrigin(oriLocal, stmt.getDefs().get(0));
     }
-    return isModified;
+    return false;
   }
 
   /**
@@ -409,7 +395,6 @@ public class LocalSplitter implements BodyInterceptor {
    * @param rigthLocal: a local in form oriLocal#num2
    * @return if so return true, else return false
    */
-  @Nonnull
   protected boolean isBiggerName(@Nonnull Local leftLocal, @Nonnull Local rigthLocal) {
     boolean isBigger = false;
     String leftName = leftLocal.getName();
