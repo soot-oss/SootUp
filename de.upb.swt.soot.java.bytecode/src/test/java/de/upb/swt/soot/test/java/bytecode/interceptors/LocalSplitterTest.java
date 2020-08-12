@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Zun Wang */
-
 @Category(Java8Test.class)
 public class LocalSplitterTest {
 
@@ -357,7 +356,6 @@ public class LocalSplitterTest {
     builder.setPosition(position);
 
     return builder.build();
-
   }
 
   /** bodycreater for Loop */

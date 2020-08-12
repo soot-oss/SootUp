@@ -365,11 +365,12 @@ public class LocalSplitter implements BodyInterceptor {
 
   private boolean isLocalFromSameOrigin(@Nonnull Local oriLocal, Value use) {
     if (use instanceof Local) {
-      String name = ((Local) use).getName();
-      final int searchPos = name.indexOf('#');
-      if (searchPos > -1) {
-        return name.substring(0, searchPos).equals(oriLocal.getName());
-      }
+      final String name = ((Local) use).getName();
+      final String origName = oriLocal.getName();
+      final int origLength = origName.length();
+      return name.startsWith(origName)
+          && name.length() > origLength
+          && name.charAt(origLength) == '#';
     }
     return false;
   }
