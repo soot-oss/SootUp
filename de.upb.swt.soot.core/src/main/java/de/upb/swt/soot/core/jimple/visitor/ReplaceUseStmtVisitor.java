@@ -3,12 +3,12 @@ package de.upb.swt.soot.core.jimple.visitor;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
-import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
 import de.upb.swt.soot.core.jimple.common.ref.Ref;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Replace old use of a Stmt with a new use
@@ -17,11 +17,11 @@ import javax.annotation.Nonnull;
  */
 public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
 
-  Value oldUse;
-  Local newUse;
-  Stmt newStmt;
+  @Nonnull private final Value oldUse;
+  @Nonnull private final Local newUse;
+  @Nullable private Stmt newStmt = null;
 
-  public ReplaceUseStmtVisitor(Value oldUse, Local newUse) {
+  public ReplaceUseStmtVisitor(@Nonnull Value oldUse, @Nonnull Local newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
   }
@@ -39,7 +39,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
     ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor(oldUse, newUse);
     invokeExpr.accept(exprVisitor);
     if (!exprVisitor.getNewExpr().equivTo(invokeExpr)) {
-      newStmt = stmt.withInvokeExpr((AbstractInvokeExpr) exprVisitor.getNewExpr());
+      newStmt = stmt.withInvokeExpr(exprVisitor.getNewExpr());
     } else {
       defaultCase(stmt);
     }
@@ -186,7 +186,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
     newStmt = (Stmt) obj;
   }
 
-  @Nonnull
+  @Nullable
   public Stmt getNewStmt() {
     return newStmt;
   }
