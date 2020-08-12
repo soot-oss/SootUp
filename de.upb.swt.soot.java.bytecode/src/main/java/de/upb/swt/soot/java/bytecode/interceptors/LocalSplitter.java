@@ -339,7 +339,7 @@ public class LocalSplitter implements BodyInterceptor {
   protected Stmt withNewUse(@Nonnull Stmt oldStmt, @Nonnull Local oldUse, @Nonnull Local newUse) {
     ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(oldUse, newUse);
     oldStmt.accept(visitor);
-    return visitor.getNewStmt();
+    return Objects.requireNonNull(visitor.getNewStmt());
   }
 
   /**

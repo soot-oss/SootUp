@@ -143,6 +143,36 @@ public abstract class StmtGraph implements Iterable<Stmt> {
     return null;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+
+    if (!(o instanceof StmtGraph)) {
+      return false;
+    }
+    StmtGraph otherGraph = (StmtGraph) o;
+
+    Set<Stmt> nodes = nodes();
+    final Set<Stmt> otherNodes = otherGraph.nodes();
+    if (nodes.size() != otherNodes.size()) {
+      return false;
+    }
+
+    if (!getTraps().equals(otherGraph.getTraps())) {
+      return false;
+    }
+
+    for (Stmt node : nodes) {
+      if (!otherNodes.contains(node) || !successors(node).equals(otherGraph.successors(node))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   /** validates whether the each Stmt has the correct amount of outgoing flows. */
   public void validateStmtConnectionsInGraph() {
     for (Stmt stmt : nodes()) {

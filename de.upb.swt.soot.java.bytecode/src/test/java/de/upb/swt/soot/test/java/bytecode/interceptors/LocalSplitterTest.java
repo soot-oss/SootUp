@@ -477,53 +477,6 @@ public class LocalSplitterTest {
     assertNotNull(expected);
     assertNotNull(actual);
 
-    Set<Stmt> actualStmts = actual.nodes();
-    Set<Stmt> expectedStmts = expected.nodes();
-    assertEquals(expectedStmts.size(), actualStmts.size());
-
-    boolean isEqual = true;
-    boolean isInclusiv = false;
-    for (Stmt stmt : actualStmts) {
-      for (Stmt expectedStmt : expectedStmts) {
-        if (stmt.equivTo(expectedStmt)) {
-          List<Stmt> actualPreds = actual.predecessors(stmt);
-          List<Stmt> expectedPreds = expected.predecessors(expectedStmt);
-          List<Stmt> actualSuccs = actual.successors(stmt);
-          List<Stmt> expectedSuccs = expected.successors(expectedStmt);
-          if (areEqualLists(actualPreds, expectedPreds)
-              && areEqualLists(actualSuccs, expectedSuccs)) {
-            isInclusiv = true;
-          }
-        }
-      }
-      if (!isInclusiv) {
-        isEqual = false;
-        break;
-      }
-      isInclusiv = false;
-    }
-    assertTrue(isEqual);
-  }
-
-  private boolean areEqualLists(List<Stmt> list1, List<Stmt> list2) {
-    boolean isEqual = true;
-    boolean isInclusive = false;
-    if (list1.size() != list2.size()) {
-      isEqual = false;
-    } else {
-      for (Stmt stmt1 : list1) {
-        for (Stmt stmt2 : list2) {
-          if (stmt1.equivTo(stmt2)) {
-            isInclusive = true;
-          }
-        }
-        if (!isInclusive) {
-          isEqual = false;
-          break;
-        }
-        isInclusive = false;
-      }
-    }
-    return isEqual;
+    assertEquals(expected, actual);
   }
 }
