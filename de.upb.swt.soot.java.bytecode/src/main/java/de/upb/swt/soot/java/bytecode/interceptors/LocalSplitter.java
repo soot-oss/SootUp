@@ -193,8 +193,7 @@ public class LocalSplitter implements BodyInterceptor {
             // nothing
             else {
               // if deflist of head contains no orilocal, then trace forwards on.
-              if ((!head.getDefs().isEmpty() && !head.getDefs().get(0).equivTo(oriLocal)
-                  || head.getDefs().isEmpty())) {
+              if (head.getDefs().isEmpty() || !head.getDefs().get(0).equivTo(oriLocal)) {
                 for (Stmt succ : bodyBuilder.getStmtGraph().successors(head)) {
                   if (!visitedInner.contains(succ) && !forwardsQueue.contains(succ)) {
                     forwardsQueue.addLast(succ);
