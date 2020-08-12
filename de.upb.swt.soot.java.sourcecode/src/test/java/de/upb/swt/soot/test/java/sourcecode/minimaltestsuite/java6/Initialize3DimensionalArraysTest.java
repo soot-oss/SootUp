@@ -14,7 +14,7 @@ import org.junit.experimental.categories.Category;
 /** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase {
-  // TODO split into multiple test cases
+
   @Test
   public void test() {
 
