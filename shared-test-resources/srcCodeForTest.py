@@ -18,10 +18,31 @@ for root, dirnames, filenames in os.walk('..\\de.upb.swt.soot.java.sourcecode\\s
 
 
 for filename1 in srcMatches:
-	str ="/**\n  <pre>\n  <code>\n"
-	srcData= open(filename1, 'r', encoding="utf8").read()
+	ocb=0,ccb=0
+	str ="/**\n  <pre>"
+	listData=[]
+	data=""
+	#srcData= open(filename1, 'r', encoding="utf8").read()
+	f= open(filename1, 'r', encoding="utf8")
+	#regexMethod =re.compile("([(]([a-zA-Z])*(\s*)([a-zA-Z])*[)](\s*)[{])")
+	regexMethod =re.search("([(]([a-zA-Z])*(\s*)([a-zA-Z])*[)](\s*)[{])")
+	for line in f.readlines()
+		if '{' in line :
+			ocb++
+		if '}' in line:
+			ocb--
+		#if regexMethod != None
+			data=line
+
+		#data+=regexMethod.search(line).group()
+	
+		if '}' in line and ocb==1:
+			listData.append(data)
+			
+	
+			
 	str+=srcData
-	str+="\n  <pre>\n  <code>*/\n"
+	str+="\n  <pre>*/\n"
 	var1=""
 	srcFileName = (filename1.rsplit('\\',1)[1]).split('.')[0]
 		
@@ -35,21 +56,17 @@ for filename1 in srcMatches:
 			srcTestFile=filename
 			str2= open(srcTestFile, 'r', encoding="utf8").read()
 			for line in open(srcTestFile, 'r'):
-				if re.search(r'((.+\W)@author(.+\W)*)', line) : 
-					var1+="  \n"
-				else: 
-					var1+=line
 				l_strip=line.strip()
 				if	"<String> expectedBodyStmts()" in l_strip:
 					break
 
-			found= re.search(r'  @Override(\s*)public List<String> expectedBodyStmts((.+\s)*)}(\s*)((.+\s)*)}(\s*)',str2,re.DOTALL);
+			found= re.search(r'  public List<String> expectedBodyStmts((.+\s)*)}(\s*)((.+\s)*)}(\s*)',str2,re.DOTALL)
 			
 			if found != None:
 				strSrcTest= var1.rsplit("\n",3)[0]+str
 				strSrcTest+=found.group()
 				with open(srcTestFile, 'w', encoding="utf8") as filew:
 					filew.writelines(strSrcTest)
-					print("File write for file "+srcTestFile)
-			else :
-				print("No match for "+srcTestFile)
+					#print("File write for file "+srcTestFile)
+			#else :
+				#print("No match for "+srcTestFile)
