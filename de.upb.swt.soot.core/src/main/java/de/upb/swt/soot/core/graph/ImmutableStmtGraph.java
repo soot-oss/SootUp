@@ -101,6 +101,9 @@ public class ImmutableStmtGraph extends StmtGraph {
   @Override
   public List<Stmt> predecessors(@Nonnull Stmt node) {
     final Integer idx = nodeToIndex.get(node);
+    if (idx == null) {
+      throw new RuntimeException("the given parameter is not a Stmt in this graph.");
+    }
     if (predecessors[idx] instanceof Stmt) {
       final List<Stmt> stmts = Collections.singletonList((Stmt) predecessors[idx]);
       predecessors[idx] = stmts;
@@ -113,6 +116,9 @@ public class ImmutableStmtGraph extends StmtGraph {
   @Override
   public List<Stmt> successors(@Nonnull Stmt node) {
     final Integer idx = nodeToIndex.get(node);
+    if (idx == null) {
+      throw new RuntimeException("the given parameter is not a Stmt in this graph.");
+    }
     if (successors[idx] instanceof Stmt) {
       final List<Stmt> stmts = Collections.singletonList((Stmt) successors[idx]);
       successors[idx] = stmts;
