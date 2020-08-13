@@ -482,7 +482,15 @@ public class LocalSplitterTest {
       System.out.println("expected:");
       System.out.println(Lists.newArrayList(expected.iterator()));
       System.out.println("actual:");
-      System.out.println(Lists.newArrayList(actual.iterator()));
+      System.out.println(Lists.newArrayList(actual.iterator()) + "\n");
+
+      for (Stmt s : expected) {
+        System.out.println(s + " => " + expected.successors(s));
+      }
+      System.out.println();
+      for (Stmt s : actual) {
+        System.out.println(s + " => " + actual.successors(s));
+      }
     }
     assertEquals(Lists.newArrayList(expected.iterator()), Lists.newArrayList(actual.iterator()));
     assertTrue(condition);
