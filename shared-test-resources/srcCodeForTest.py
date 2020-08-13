@@ -18,21 +18,22 @@ for root, dirnames, filenames in os.walk('..\\de.upb.swt.soot.java.sourcecode\\s
 
 
 for filename1 in srcMatches:
-	ocb=0,ccb=0
+	ocb=0,ccb=0,flagRegex=0
 	str ="/**\n  <pre>"
 	listData=[]
 	data=""
 	#srcData= open(filename1, 'r', encoding="utf8").read()
 	f= open(filename1, 'r', encoding="utf8")
 	#regexMethod =re.compile("([(]([a-zA-Z])*(\s*)([a-zA-Z])*[)](\s*)[{])")
-	regexMethod =re.search("([(]([a-zA-Z])*(\s*)([a-zA-Z])*[)](\s*)[{])")
 	for line in f.readlines()
 		if '{' in line :
 			ocb++
 		if '}' in line:
-			ocb--
-		#if regexMethod != None
-			data=line
+			ccb+
+		regexMethod =re.search("([(]([a-zA-Z])*(\s*)([a-zA-Z])*[)](\s*)[{])")
+		if regexMethod != None
+			flagRegex=1
+			data+=line
 
 		#data+=regexMethod.search(line).group()
 	
