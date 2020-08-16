@@ -194,8 +194,7 @@ public abstract class Jimple {
 
   /** Escapes reserved Jimple keywords e.g. used in (Stmt)Printer, necessary in the JimpleParser */
   public static String escape(String str) {
-    str = jimpleKeywordList().contains(str) ? '"' + str + '"' : str;
-    return StringTools.getEscapedStringOf(str);
+    return jimpleKeywordList().contains(str) ? StringTools.getQuotedStringOf(str) : str;
   }
 
   public abstract IdentifierFactory getIdentifierFactory();
