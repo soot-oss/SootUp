@@ -22,7 +22,6 @@ package de.upb.swt.soot.core.jimple.common.constant;
  * #L%
  */
 
-
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;

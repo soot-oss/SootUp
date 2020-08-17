@@ -22,7 +22,6 @@ package de.upb.swt.soot.core.jimple.common.constant;
  * #L%
  */
 
-
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.NullType;

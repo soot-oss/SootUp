@@ -22,7 +22,6 @@ package de.upb.swt.soot.core.jimple.common.constant;
  * #L%
  */
 
-
 import javax.annotation.Nonnull;
 
 public interface ComparableConstant<C extends ComparableConstant<C>> extends Constant {

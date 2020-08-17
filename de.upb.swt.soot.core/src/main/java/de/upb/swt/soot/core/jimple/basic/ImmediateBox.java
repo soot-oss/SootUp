@@ -22,7 +22,6 @@ package de.upb.swt.soot.core.jimple.basic;
  * #L%
  */
 
-
 /**
  * Contains an {@link Immediate}.
  *

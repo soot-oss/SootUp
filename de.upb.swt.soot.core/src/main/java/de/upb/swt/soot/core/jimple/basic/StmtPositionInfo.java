@@ -22,7 +22,6 @@ package de.upb.swt.soot.core.jimple.basic;
  * #L%
  */
 
-
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
