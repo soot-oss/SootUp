@@ -4,7 +4,7 @@ package de.upb.swt.soot.core.jimple.common.constant;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-1999 Raja Vallee-Rai
+ * Copyright (C) 1997-2020 Raja Vallee-Rai, Linghui Luo, Christian Brüggemann
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -20,12 +20,6 @@ package de.upb.swt.soot.core.jimple.common.constant;
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
- */
-
-/*
- * Modified by the Sable Research Group and others 1997-1999.
- * See the 'credits' file distributed with Soot for the complete list of
- * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
 import javax.annotation.Nonnull;

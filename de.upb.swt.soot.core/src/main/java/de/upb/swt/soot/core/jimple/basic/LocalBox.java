@@ -4,7 +4,7 @@ package de.upb.swt.soot.core.jimple.basic;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1999 Patrick Lam
+ * Copyright (C) 1999-2020 Patrick Lam, Linghui Luo
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -20,12 +20,6 @@ package de.upb.swt.soot.core.jimple.basic;
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
- */
-
-/*
- * Modified by the Sable Research Group and others 1997-1999.
- * See the 'credits' file distributed with Soot for the complete list of
- * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
 /**

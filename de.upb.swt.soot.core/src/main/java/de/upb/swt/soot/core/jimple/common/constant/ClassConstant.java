@@ -4,7 +4,7 @@ package de.upb.swt.soot.core.jimple.common.constant;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2005 Jennifer Lhotak
+ * Copyright (C) 2005-2020 Jennifer Lhotak, Linghui Luo and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,11 +22,6 @@ package de.upb.swt.soot.core.jimple.common.constant;
  * #L%
  */
 
-/*
- * Modified by the Sable Research Group and others 1997-1999.
- * See the 'credits' file distributed with Soot for the complete list of
- * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
- */
 
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
