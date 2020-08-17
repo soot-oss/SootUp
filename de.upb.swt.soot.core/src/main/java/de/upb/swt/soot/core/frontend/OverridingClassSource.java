@@ -3,7 +3,7 @@ package de.upb.swt.soot.core.frontend;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019 Christian Brüggemann, Hasitha Rajapakse
+ * Copyright (C) 2019 - 2020 Christian Brüggemann, Hasitha Rajapakse, Markus Schmidt
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
