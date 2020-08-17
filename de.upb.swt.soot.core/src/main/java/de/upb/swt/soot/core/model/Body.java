@@ -439,12 +439,12 @@ public class Body implements Copyable {
 
     /** replace the oldStmt with newStmt in stmtGraph and branches */
     @Nonnull
-    public BodyBuilder mergeStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+    public BodyBuilder replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
       final List<Stmt> predecessors = cfg.predecessors(oldStmt);
       final List<Stmt> successors = cfg.successors(oldStmt);
       cfg.removeNode(oldStmt);
-      predecessors.forEach(predecessor -> addFlow(predecessor, newStmt));
       successors.forEach(successor -> addFlow(newStmt, successor));
+      predecessors.forEach(predecessor -> addFlow(predecessor, newStmt));
       return this;
     }
 

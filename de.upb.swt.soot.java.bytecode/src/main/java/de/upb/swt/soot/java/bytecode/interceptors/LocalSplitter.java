@@ -119,7 +119,7 @@ public class LocalSplitter implements BodyInterceptor {
           Stmt newVisitedStmt = withNewDef(visitedStmt, newLocal);
 
           // replace visitedStmt with newVisitedStmt
-          bodyBuilder.mergeStmt(visitedStmt, newVisitedStmt);
+          bodyBuilder.replaceStmt(visitedStmt, newVisitedStmt);
           adaptTraps(bodyBuilder, visitedStmt, newVisitedStmt);
           adaptVisitList(visitList, visitedStmt, newVisitedStmt);
 
@@ -135,11 +135,11 @@ public class LocalSplitter implements BodyInterceptor {
             // 1.case: if uselist of head contains oriLocal, then modify this oriLocal to newLocal
             if (head.getUses().contains(oriLocal)) {
               Stmt newHead = withNewUse(head, oriLocal, newLocal);
-              bodyBuilder.mergeStmt(head, newHead);
+              bodyBuilder.replaceStmt(head, newHead);
               adaptTraps(bodyBuilder, head, newHead);
               adaptVisitList(visitList, head, newHead);
               // if deflist of modified stmt contains no orilocal, then trace forwards on.
-              if ((!newHead.getDefs().isEmpty() && !newHead.getDefs().get(0).equivTo(oriLocal))
+              if (!newHead.getDefs().isEmpty() && !newHead.getDefs().get(0).equivTo(oriLocal) //Todo:
                   || newHead.getDefs().isEmpty()) {
                 for (Stmt succ : bodyBuilder.getStmtGraph().successors(newHead)) {
                   if (!visitedInner.contains(succ) && !forwardsQueue.contains(succ)) {
@@ -165,7 +165,7 @@ public class LocalSplitter implements BodyInterceptor {
                   if (hasModifiedDef(backStmt, oriLocal)) {
                     if (hasLeftLocalHigherName((Local) backStmt.getDefs().get(0), modifiedLocal)) {
                       Stmt newBackStmt = withNewDef(backStmt, modifiedLocal);
-                      bodyBuilder.mergeStmt(backStmt, newBackStmt);
+                      bodyBuilder.replaceStmt(backStmt, newBackStmt);
                       adaptTraps(bodyBuilder, backStmt, newBackStmt);
                       adaptVisitList(visitList, backStmt, newBackStmt);
                       newLocals.remove(newLocal);
@@ -176,7 +176,7 @@ public class LocalSplitter implements BodyInterceptor {
                     Local modifiedUse = getModifiedUse(backStmt, oriLocal);
                     if (hasLeftLocalHigherName(modifiedUse, modifiedLocal)) {
                       Stmt newBackStmt = withNewUse(backStmt, modifiedUse, modifiedLocal);
-                      bodyBuilder.mergeStmt(backStmt, newBackStmt);
+                      bodyBuilder.replaceStmt(backStmt, newBackStmt);
                       adaptTraps(bodyBuilder, backStmt, newBackStmt);
                       adaptVisitList(visitList, backStmt, newBackStmt);
                       backwardsQueue.addAll(bodyBuilder.getStmtGraph().predecessors(newBackStmt));
@@ -257,7 +257,7 @@ public class LocalSplitter implements BodyInterceptor {
               }
             }
             Stmt newVisitedStmt = withNewUse(visitedStmt, oriL, lastChange);
-            bodyBuilder.mergeStmt(visitedStmt, newVisitedStmt);
+            bodyBuilder.replaceStmt(visitedStmt, newVisitedStmt);
             adaptTraps(bodyBuilder, visitedStmt, newVisitedStmt);
             adaptVisitList(visitList, visitedStmt, newVisitedStmt);
           }
@@ -368,8 +368,9 @@ public class LocalSplitter implements BodyInterceptor {
   @Nullable
   protected Local getModifiedUse(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
     if (hasModifiedUse(stmt, oriLocal)) {
-      if (!stmt.getUses().isEmpty()) {
-        for (Value use : stmt.getUses()) {
+      List<Value> useList = stmt.getUses();
+      if (!useList.isEmpty()) {
+        for (Value use : useList) {
           if (isLocalFromSameOrigin(oriLocal, use)) {
             return (Local) use;
           }
