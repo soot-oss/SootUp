@@ -2,8 +2,6 @@ package de.upb.swt.soot.test.core.printer;
 
 import static org.junit.Assert.*;
 
-import com.google.common.graph.GraphBuilder;
-import com.google.common.graph.MutableGraph;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
@@ -11,7 +9,7 @@ import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.PrimitiveType;
@@ -26,9 +24,12 @@ import java.io.StringWriter;
 import java.util.*;
 import org.junit.Test;
 
-/** @author Markus Schmidt */
+/**
+ * @author Markus Schmidt
+ * @author Kaustubh Kelkar updated on 02.07.2020
+ */
 public class PrinterTest {
-  // import collisions are already testet in AbstractStmtPrinterTest covered in
+  // import collisions are already tested in AbstractStmtPrinterTest covered in
   // AbstractStmtPrinterTest
 
   @Test
@@ -46,8 +47,10 @@ public class PrinterTest {
             "private int counter",
             "public static void main()",
             "nop",
+            "return",
             "private int otherMethod() throws FileNotFoundException",
-            "nop"),
+            "nop",
+            "return"),
         Utils.filterJimple(writer.toString()));
   }
 
@@ -57,28 +60,23 @@ public class PrinterTest {
         JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
     View view = project.createOnDemandView();
 
-    final MutableGraph<Stmt> graph = GraphBuilder.directed().build();
-    graph.addNode(new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
-
-    Body bodyOne =
-        new Body(
-            Collections.emptySet(),
-            Collections.emptyList(),
-            graph,
-            null,
-            NoPositionInformation.getInstance());
-    Body bodyTwo =
-        new Body(
-            Collections.emptySet(),
-            Collections.emptyList(),
-            graph,
-            null,
-            NoPositionInformation.getInstance());
-
     String className = "some.package.SomeClass";
     MethodSignature methodSignatureOne =
         view.getIdentifierFactory()
             .getMethodSignature("main", className, "void", Collections.emptyList());
+
+    StmtPositionInfo noPosInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    final JReturnVoidStmt returnVoidStmt = new JReturnVoidStmt(noPosInfo);
+    final JNopStmt jNop = new JNopStmt(noPosInfo);
+    Body.BodyBuilder bodyBuilder = Body.builder();
+
+    bodyBuilder
+        .setStartingStmt(jNop)
+        .addFlow(jNop, returnVoidStmt)
+        .setMethodSignature(methodSignatureOne)
+        .setPosition(NoPositionInformation.getInstance());
+    Body bodyOne = bodyBuilder.build();
+
     SootMethod dummyMainMethod =
         new SootMethod(
             new OverridingMethodSource(methodSignatureOne, bodyOne),
@@ -89,6 +87,11 @@ public class PrinterTest {
     MethodSignature methodSignatureTwo =
         view.getIdentifierFactory()
             .getMethodSignature("otherMethod", className, "int", Collections.emptyList());
+    bodyBuilder
+        .setMethodSignature(methodSignatureTwo)
+        .setPosition(NoPositionInformation.getInstance());
+    Body bodyTwo = bodyBuilder.build();
+
     SootMethod anotherMethod =
         new SootMethod(
             new OverridingMethodSource(methodSignatureOne, bodyTwo),
@@ -115,7 +118,7 @@ public class PrinterTest {
                             JavaIdentifierFactory.getInstance().getClassType(className),
                             PrimitiveType.getInt()),
                     EnumSet.of(Modifier.PRIVATE))),
-            new HashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)),
+            new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)),
             NoPositionInformation.getInstance(),
             EnumSet.of(Modifier.PUBLIC)),
         SourceType.Application);

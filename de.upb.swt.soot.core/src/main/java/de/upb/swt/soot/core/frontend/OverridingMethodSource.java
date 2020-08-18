@@ -1,10 +1,7 @@
 package de.upb.swt.soot.core.frontend;
 
-import com.google.common.graph.ImmutableGraph;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -34,8 +31,7 @@ public class OverridingMethodSource implements MethodSource {
     this.methodSignature = null;
   }
 
-  private OverridingMethodSource(
-      @Nonnull MethodSource delegate, boolean overriddenBody, @Nonnull Body body) {
+  private OverridingMethodSource(@Nonnull MethodSource delegate, @Nonnull Body body) {
     this.delegate = delegate;
     this.body = body;
     this.methodSignature = null;
@@ -62,22 +58,6 @@ public class OverridingMethodSource implements MethodSource {
 
   @Nonnull
   public OverridingMethodSource withBody(@Nonnull Body body) {
-    return new OverridingMethodSource(delegate, true, body);
-  }
-
-  /**
-   * Creates a new {@link OverridingMethodSource} that replaces the statements of the method's body.
-   * If the body is resolved as null, this method throws {@link IllegalStateException}.
-   */
-  @Nonnull
-  public OverridingMethodSource withBodyStmts(
-      @Nonnull Function<ImmutableGraph<Stmt>, ImmutableGraph<Stmt>> stmtModifier) {
-    Body body = resolveBody();
-    if (body == Body.getNoBody()) {
-      throw new IllegalStateException(
-          "Cannot replace statements in method " + delegate.getSignature() + ", body is null");
-    }
-
-    return withBody(body.withStmts(stmtModifier.apply(body.getStmtGraph())));
+    return new OverridingMethodSource(delegate, body);
   }
 }

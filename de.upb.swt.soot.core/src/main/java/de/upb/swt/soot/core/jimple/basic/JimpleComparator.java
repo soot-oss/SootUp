@@ -2,7 +2,7 @@
  * #%L
  * Soot
  * %%
- * Copyright (C) 213.12.2018 Markus Schmidt
+ * Copyright (C) 2018 Markus Schmidt
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

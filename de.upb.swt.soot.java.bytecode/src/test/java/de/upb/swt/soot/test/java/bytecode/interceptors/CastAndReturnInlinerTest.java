@@ -1,8 +1,6 @@
 package de.upb.swt.soot.test.java.bytecode.interceptors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -15,12 +13,11 @@ import de.upb.swt.soot.java.bytecode.interceptors.CastAndReturnInliner;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import org.junit.Ignore;
+import java.util.*;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Marcus Nachtigall */
 @Category(Java8Test.class)
 public class CastAndReturnInlinerTest {
 
@@ -29,8 +26,10 @@ public class CastAndReturnInlinerTest {
    *
    * <pre>
    * a = "str";
-   * goto l0;
-   * l0: b = (String) a;
+   * goto label0;
+   * ...
+   * label0:
+   * b = (String) a;
    * return b;
    * </pre>
    *
@@ -38,12 +37,10 @@ public class CastAndReturnInlinerTest {
    *
    * <pre>
    * a = "str";
-   * return a; // This has changed
-   * l0: b = (String) a;
-   * return b;
+   * return a;
    * </pre>
    */
-  @Ignore
+  @Test
   public void testModification() {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
@@ -61,15 +58,24 @@ public class CastAndReturnInlinerTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
     List<Trap> traps = Collections.emptyList();
-    List<Stmt> stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret);
-    Body testBody = Body.getNoBody(); // FIXME: = new Body(locals, traps, stmts, null);
+    Body.BodyBuilder bodyBuilder = Body.builder();
+    bodyBuilder.setLocals(locals);
+    bodyBuilder.setTraps(traps);
+    bodyBuilder.setStartingStmt(strToA);
+    bodyBuilder.addFlow(strToA, jump);
+    bodyBuilder.addFlow(jump, bToA);
+    bodyBuilder.addFlow(bToA, ret);
+    bodyBuilder.setMethodSignature(
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+    Body testBody = bodyBuilder.build();
 
-    Body processedBody = new CastAndReturnInliner().interceptBody(testBody);
+    Body processedBody = new CastAndReturnInliner().interceptBody(bodyBuilder.build());
 
-    assertStmtsEquiv(
-        ImmutableUtils.immutableList(
-            strToA, JavaJimple.newReturnStmt(a, noPositionInfo), bToA, ret),
-        processedBody.getStmts());
+    List<Stmt> expected = new ArrayList<>();
+    expected.add(strToA);
+    expected.add(JavaJimple.newReturnStmt(a, noPositionInfo));
+    assertStmtsEquiv(expected, processedBody.getStmts());
   }
 
   /**
@@ -83,7 +89,7 @@ public class CastAndReturnInlinerTest {
    * return c; // Note that this does not return b
    * </pre>
    */
-  @Ignore
+  @Test
   public void testNoModification() {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
@@ -104,8 +110,19 @@ public class CastAndReturnInlinerTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
     List<Trap> traps = Collections.emptyList();
-    List<Stmt> stmts = ImmutableUtils.immutableList(strToA, strToC, jump, bToA, ret);
-    Body testBody = Body.getNoBody(); // FIXME [ms] = new Body(locals, traps, stmts, null);
+
+    Body.BodyBuilder bodyBuilder = Body.builder();
+    bodyBuilder.setLocals(locals);
+    bodyBuilder.setTraps(traps);
+    bodyBuilder.setStartingStmt(strToA);
+    bodyBuilder.addFlow(strToA, strToC);
+    bodyBuilder.addFlow(strToC, jump);
+    bodyBuilder.addFlow(jump, bToA);
+    bodyBuilder.addFlow(bToA, ret);
+    bodyBuilder.setMethodSignature(
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+    Body testBody = bodyBuilder.build();
 
     Body processedBody = new CastAndReturnInliner().interceptBody(testBody);
 
@@ -113,10 +130,7 @@ public class CastAndReturnInlinerTest {
   }
 
   private static void assertStmtsEquiv(List<Stmt> expected, List<Stmt> actual) {
-    assertNotNull(expected);
-    assertNotNull(actual);
     assertEquals(expected.size(), actual.size());
-
     for (int i = 0; i < expected.size(); i++) {
       assertTrue(expected.get(i).equivTo(actual.get(i)));
     }

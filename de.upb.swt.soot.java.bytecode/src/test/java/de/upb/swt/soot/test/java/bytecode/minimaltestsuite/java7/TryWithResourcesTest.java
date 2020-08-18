@@ -87,8 +87,6 @@ public class TryWithResourcesTest extends MinimalBytecodeTestSuiteBase {
             "virtualinvoke l1.<java.io.BufferedReader: void close()>()",
             "label15:",
             "$stack13 = l4",
-            "$stack13 = $stack13",
-            "$stack13 = $stack13",
             "throw $stack13",
             "label16:",
             "return",

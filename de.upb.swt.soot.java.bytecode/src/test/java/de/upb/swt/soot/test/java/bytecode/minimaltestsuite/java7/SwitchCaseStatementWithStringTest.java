@@ -23,7 +23,6 @@ public class SwitchCaseStatementWithStringTest extends MinimalBytecodeTestSuiteB
 
   @Override
   public List<String> expectedBodyStmts() {
-    // FIXME: the generated jimple contains unintended repeatings of: "$stack7 = $stack7"
     return Stream.of(
             "l0 := @this: SwitchCaseStatementWithString",
             "l1 = \"something\"",
@@ -51,11 +50,6 @@ public class SwitchCaseStatementWithStringTest extends MinimalBytecodeTestSuiteB
             "l4 = 2",
             "label4:",
             "$stack7 = l4",
-            "$stack7 = $stack7",
-            "$stack7 = $stack7",
-            "$stack7 = $stack7",
-            "$stack7 = $stack7",
-            "$stack7 = $stack7",
             "switch($stack7)",
             "case 0: goto label5",
             "case 1: goto label6",
