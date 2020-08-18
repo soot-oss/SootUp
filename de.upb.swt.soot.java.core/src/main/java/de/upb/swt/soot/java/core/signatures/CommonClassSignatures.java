@@ -4,7 +4,7 @@ package de.upb.swt.soot.java.core.signatures;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019 Ben Hermann
+ * Copyright (C) 2018-2020 Ben Hermann, Markus Schmidt
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

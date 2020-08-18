@@ -4,7 +4,7 @@ package de.upb.swt.soot.java.core;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019 Markus Schmidt, Linghui Luo
+ * Copyright (C) 2019-2020 Markus Schmidt, Linghui Luo and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
