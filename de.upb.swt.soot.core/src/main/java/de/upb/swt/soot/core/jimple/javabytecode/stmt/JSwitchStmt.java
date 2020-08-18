@@ -4,7 +4,7 @@ package de.upb.swt.soot.core.jimple.javabytecode.stmt;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2020 Markus Schmidt
+ * Copyright (C) 2019-2020 Markus Schmidt, Thomas Johannesmeyer
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

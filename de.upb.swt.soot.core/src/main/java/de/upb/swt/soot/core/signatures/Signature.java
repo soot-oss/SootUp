@@ -4,7 +4,7 @@ package de.upb.swt.soot.core.signatures;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019
+ * Copyright (C) 2019-2020 Linghui Luo
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
