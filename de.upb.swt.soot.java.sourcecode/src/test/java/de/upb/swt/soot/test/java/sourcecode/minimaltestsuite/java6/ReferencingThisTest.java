@@ -17,6 +17,24 @@ public class ReferencingThisTest extends MinimalSourceTestSuiteBase {
         "thisMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>    ReferencingThis(){
+   * this(10,20);
+   * System.out.println("this() to invoke current class constructor");
+   * }
+   * ReferencingThis getObject(){
+   * System.out.println("'this' keyword to return the current class instance");
+   * return this;
+   * }
+   * void show(){
+   * System.out.println("'this' keyword as method parameter");
+   * thisDisplay(this);
+   * }
+   * void thisMethod(){
+   * System.out.println(" this keyword as an argument in the constructor call");
+   * ReferencingThis obj= new ReferencingThis(this.a, this.b);
+   * obj.show();
+   * }
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

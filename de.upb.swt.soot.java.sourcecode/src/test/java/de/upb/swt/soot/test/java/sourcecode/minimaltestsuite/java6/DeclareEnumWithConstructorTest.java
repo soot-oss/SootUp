@@ -71,6 +71,17 @@ public class DeclareEnumWithConstructorTest extends MinimalSourceTestSuiteBase {
     assertTrue(sootClass.isEnum());
   }
 
+  /**  <pre>    public void declareEnum(){
+   * for(Type type:Type.values()){
+   * System.out.println(type);
+   * }
+   * }
+   * }
+   * <pre>*/
+  /**  <pre>        private int getValue() {
+   * return value;
+   * }
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

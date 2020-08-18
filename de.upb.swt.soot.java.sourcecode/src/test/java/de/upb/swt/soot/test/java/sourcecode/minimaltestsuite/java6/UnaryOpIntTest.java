@@ -28,6 +28,10 @@ public class UnaryOpIntTest extends MinimalSourceTestSuiteBase {
      */
   }
 
+  /**  <pre>    void methodUnaryOpInt(){
+   * int k = i+j;
+   * }
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

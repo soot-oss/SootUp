@@ -28,6 +28,11 @@ public class InstanceOfCheckTest extends MinimalSourceTestSuiteBase {
     assertTrue(sootClass.getSuperclass().get().getClassName().equals("InstanceOfCheckSuper"));
   }
 
+  /**  <pre>    public void instanceOfCheckMethod(){
+   * InstanceOfCheck obj= new InstanceOfCheck();
+   * System.out.println(obj instanceof InstanceOfCheckSuper);
+   * }
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

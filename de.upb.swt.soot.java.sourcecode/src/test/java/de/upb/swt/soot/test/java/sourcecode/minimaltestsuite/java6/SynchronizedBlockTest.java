@@ -18,6 +18,7 @@ public class SynchronizedBlockTest extends MinimalSourceTestSuiteBase {
         "run", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre><pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

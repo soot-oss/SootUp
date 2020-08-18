@@ -34,6 +34,15 @@ public class ThrowExceptionMethodTest extends MinimalSourceTestSuiteBase {
    *        }
    * </pre>
    */
+
+  /**  <pre>	void divideByZero() throws ArithmeticException{
+   * int i=8/0;
+   * }
+   * void throwCustomException() throws CustomException {
+   * throw new CustomException("Custom Exception");
+   * }
+   * } catch( CustomException e){
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: ThrowExceptionMethod", "$i0 = 8 / 0", "return")

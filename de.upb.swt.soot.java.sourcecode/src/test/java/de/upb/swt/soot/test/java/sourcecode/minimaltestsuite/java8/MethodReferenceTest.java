@@ -25,6 +25,12 @@ public class MethodReferenceTest extends MinimalSourceTestSuiteBase {
     assertJimpleStmts(method, expectedBodyStmts());
   }
 
+  /**  <pre>    public void methodRefMethod(){
+   * System.out.println("Instance Method");
+   * MethodReference obj1 = new MethodReference();
+   *
+   * }
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
