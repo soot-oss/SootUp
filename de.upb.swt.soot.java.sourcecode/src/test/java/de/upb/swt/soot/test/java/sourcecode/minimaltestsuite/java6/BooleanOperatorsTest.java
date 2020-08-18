@@ -52,6 +52,21 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
         methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void relationalOpEqual(){
+   *         int i =  0;
+   *         while (i<=10){
+   *             i++;
+   *             if (i==5){
+   *                 break;
+   *             }
+   *         }
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsRelationalOpEqual() {
     return Stream.of(
             "r0 := @this: BooleanOperators",
@@ -72,6 +87,22 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void relationalOpNotEqual(){
+   *         int i =  0;
+   *         String str = "";
+   *         while (i<10){
+   *             i++;
+   *             if (i!=5){
+   *                 str = "i != 5";
+   *             }
+   *         }
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsRelationalOpNotEqual() {
     return Stream.of(
             "r0 := @this: BooleanOperators",
@@ -94,6 +125,18 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void complementOp(){
+   *         boolean b = true;
+   *         if(b){
+   *             b = !b;
+   *         }
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsComplementOp() {
     return Stream.of(
             "r0 := @this: BooleanOperators",
@@ -107,6 +150,35 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void logicalOpAnd(){
+   *         boolean a = true;
+   *         boolean b = true;
+   *         boolean c = false;
+   *         boolean d = false;
+   *         String str = "";
+   *
+   *         if(a & b){
+   *             str = "A";
+   *         }
+   *
+   *         if (c & d){
+   *             str = "B";
+   *         }
+   *
+   *         if (a & c){
+   *             str = "C";
+   *         }
+   *
+   *         if (d & b){
+   *             str = "D";
+   *         }
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsLogicalOpAnd() {
     return Stream.of(
             "r0 := @this: BooleanOperators",
@@ -147,6 +219,35 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void logicalOpOr(){
+   *         boolean a = true;
+   *         boolean b = true;
+   *         boolean c = false;
+   *         boolean d = false;
+   *         String str = "";
+   *
+   *         if(a | b){
+   *             str = "A";
+   *         }
+   *
+   *         if (c | d){
+   *             str = "B";
+   *         }
+   *
+   *         if (a | c){
+   *             str = "C";
+   *         }
+   *
+   *         if (d | b){
+   *             str = "D";
+   *         }
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsLogicalOpOr() {
     return Stream.of(
             "r0 := @this: BooleanOperators",
@@ -187,6 +288,35 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void logicalOpXor(){
+   *         boolean a = true;
+   *         boolean b = true;
+   *         boolean c = false;
+   *         boolean d = false;
+   *         String str = "";
+   *
+   *         if(a ^ b){
+   *             str = "A";
+   *         }
+   *
+   *         if (c ^ d){
+   *             str = "B";
+   *         }
+   *
+   *         if (a ^ c){
+   *             str = "C";
+   *         }
+   *
+   *         if (d ^ b){
+   *             str = "D";
+   *         }
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsLogicalOpXor() {
     return Stream.of(
             "r0 := @this: BooleanOperators",
@@ -227,6 +357,35 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void ConditionalOpAnd(){
+   *         boolean a = true;
+   *         boolean b = true;
+   *         boolean c = false;
+   *         boolean d = false;
+   *         String str = "";
+   *
+   *         if(a && b){
+   *             str = "A";
+   *         }
+   *
+   *         if (c && d){
+   *             str = "B";
+   *         }
+   *
+   *         if (a && c){
+   *             str = "C";
+   *         }
+   *
+   *         if (d && b){
+   *             str = "D";
+   *         }
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsConditionalOpAnd() {
     return Stream.of(
             "r0 := @this: BooleanOperators",
@@ -279,6 +438,35 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void conditionalOpOr(){
+   *         boolean a = true;
+   *         boolean b = true;
+   *         boolean c = false;
+   *         boolean d = false;
+   *         String str = "";
+   *
+   *         if(a || b){
+   *             str = "A";
+   *         }
+   *
+   *         if (c || d){
+   *             str = "B";
+   *         }
+   *
+   *         if (a || c){
+   *             str = "C";
+   *         }
+   *
+   *         if (d || b){
+   *             str = "D";
+   *         }
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsConditionalOpOr() {
     return Stream.of(
             "r0 := @this: BooleanOperators",
@@ -331,6 +519,17 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void conditionalOp(){
+   *         int i = 5;
+   *         String str = "";
+   *         str = i <10 ? "i less than 10" : "i greater than 10";
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsConditionalOp() {
     return Stream.of(
             "r0 := @this: BooleanOperators",

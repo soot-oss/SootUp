@@ -53,6 +53,15 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
         methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void intArrays(){
+   *         int[][][] intArray3D = {{{1, 2, 3},{5, 6}},{{7, 8, 9},{10,11}}};
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsIntArrays() {
     return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
@@ -83,6 +92,16 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void byteArrays(){
+   *         byte[][][] byteArray3D = {{{7, 8, 9},{10,11}},{{1, 2, 3},{5, 6}}};;
+   *
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsByteArrays() {
     return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
@@ -113,6 +132,16 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void shortArrays(){
+   *         short[][][] shortArray3D = {{{10,20},{40,85}},{{56,59},{95,35}}};
+   *
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsShortArrays() {
     return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
@@ -141,6 +170,16 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void longArrays(){
+   *         long[][][] longArray3D = {{{547087L, 654786L},{547287L, 864645L, 6533786L}},{{34565L,234L},{9851L,63543L}}};
+   *
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsLongArrays() {
     return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
@@ -170,6 +209,16 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void floatArrays(){
+   *         float[][][] floatrray3D = {{{3.14f, 5.46f}, {2.987f, 4.87f}},{{65.15f,854.18f},{16.51f,58.14f}}};
+   *
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsFloatArrays() {
     return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
@@ -198,6 +247,16 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void doubleArrays(){
+   *         double[][][] doubleArray3D = {{{6.765414d, 9.676565646d},{45.345435d}},{{3.5656d,68.234234d},{68416.651d,65416.5d}}};
+   *
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsDoubleArrays() {
     return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
@@ -225,6 +284,16 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void booleanArrays(){
+   *         boolean[][][] boolArray3D = {{{true, false},{true}},{{false,false},{true}}};
+   *
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsBooleanArrays() {
     return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
@@ -251,6 +320,16 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void charArrays(){
+   *         char[][][] charArray3D = {{{'A', 'b', '&'},{'c','$'}},{{'2','G'},{'a','%'}}};
+   *
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsCharArrays() {
     return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
@@ -280,6 +359,15 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void stringArrays() {
+   *         String[][][] stringArray3D = {{{"Hello World"}, {"Greetings", "Welcome"}}, {{"Future","Soot"},{"UPB","HNI"}}};
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsStringArrays() {
     return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",

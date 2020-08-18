@@ -80,6 +80,16 @@ public class DeclareEnumWithConstructorTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public static void main(String[] args) {
+   *         Number number = Number.ONE;
+   *         System.out.println(number.getValue());
+   *     }
+   * </pre>
+   */
   public List<String> expectedMainBodyStmts() {
     return Stream.of(
             "$r0 := @parameter0: java.lang.String[]",
@@ -91,6 +101,22 @@ public class DeclareEnumWithConstructorTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public enum Number{
+   *         ZERO(0),
+   *         ONE(1),
+   *         TWO(2),
+   *         THREE(3);
+   *         private int value;
+   *         Number(int value){
+   *             this.value=value;
+   *         }
+   *  }
+   * </pre>
+   */
   public List<String> expectedEnumConstructorStmts() {
     return Stream.of(
             "$r0 = new DeclareEnumWithConstructor$Number",
@@ -109,6 +135,22 @@ public class DeclareEnumWithConstructorTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>public enum Number{
+   *         ZERO(0),
+   *         ONE(1),
+   *         TWO(2),
+   *         THREE(3);
+   *         private int value;
+   *
+   *     private int getValue() {
+   *             return value;
+   *         }
+   *         }
+   * </pre>
+   */
   public List<String> expectedGetValueStmts() {
     return Stream.of(
             "r0 := @this: DeclareEnumWithConstructor$Number",

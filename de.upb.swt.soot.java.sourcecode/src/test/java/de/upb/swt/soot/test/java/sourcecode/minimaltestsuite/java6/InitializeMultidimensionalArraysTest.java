@@ -25,7 +25,6 @@ public class InitializeMultidimensionalArraysTest extends MinimalSourceTestSuite
     assertJimpleStmts(method, expectedBodyStmtsIntArrays());
 
     method = loadMethod(getMethodSignature("byteArrays"));
-
     assertJimpleStmts(method, expectedBodyStmtsByteArrays());
 
     method = loadMethod(getMethodSignature("shortArrays"));
@@ -35,7 +34,6 @@ public class InitializeMultidimensionalArraysTest extends MinimalSourceTestSuite
     assertJimpleStmts(method, expectedBodyStmtsLongArrays());
 
     method = loadMethod(getMethodSignature("floatArrays"));
-
     assertJimpleStmts(method, expectedBodyStmtsFloatArrays());
 
     method = loadMethod(getMethodSignature("doubleArrays"));
@@ -56,6 +54,15 @@ public class InitializeMultidimensionalArraysTest extends MinimalSourceTestSuite
         methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void intArrays(){
+   *         int[][] anArrayOfInts = {{1, 2, 3},{5, 6},{7, 8, 9}};
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsIntArrays() {
     return Stream.of(
             "r0 := @this: InitializeMultidimensionalArrays",
@@ -78,6 +85,15 @@ public class InitializeMultidimensionalArraysTest extends MinimalSourceTestSuite
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * public void byteArrays(){
+   *         byte[][] anArrayOfBytes = {{4, 5},{2}};
+   *
+   *     }</pre>
+   */
   public List<String> expectedBodyStmtsByteArrays() {
     return Stream.of(
             "r0 := @this: InitializeMultidimensionalArrays",
@@ -93,6 +109,14 @@ public class InitializeMultidimensionalArraysTest extends MinimalSourceTestSuite
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>public void shortArrays(){
+   *         short[][] anArrayOfShorts = {{10, 20, 30},{40}};
+   *
+   *     }</pre>
+   */
   public List<String> expectedBodyStmtsShortArrays() {
     return Stream.of(
             "r0 := @this: InitializeMultidimensionalArrays",
@@ -109,6 +133,14 @@ public class InitializeMultidimensionalArraysTest extends MinimalSourceTestSuite
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>public void longArrays(){
+   *         long[][] anArrayOfLongs = {{547087L, 654786L},{547287L, 864645L, 6533786L},{34565L,234L}};
+   *
+   *     }</pre>
+   */
   public List<String> expectedBodyStmtsLongArrays() {
     return Stream.of(
             "r0 := @this: InitializeMultidimensionalArrays",
@@ -130,6 +162,16 @@ public class InitializeMultidimensionalArraysTest extends MinimalSourceTestSuite
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void floatArrays(){
+   *         float[][] anArrayOfFloats = {{3.14f, 5.46f}, {2.987f, 4.87f}};
+   *
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsFloatArrays() {
     return Stream.of(
             "r0 := @this: InitializeMultidimensionalArrays",
@@ -146,6 +188,17 @@ public class InitializeMultidimensionalArraysTest extends MinimalSourceTestSuite
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void doubleArrays(){
+   *         double[][] anArrayOfDoubles = {{6.765414d, 9.676565646d},{45.345435d},{3.5656d,68.234234d}};
+   *
+   *
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsDoubleArrays() {
     return Stream.of(
             "r0 := @this: InitializeMultidimensionalArrays",
@@ -165,6 +218,15 @@ public class InitializeMultidimensionalArraysTest extends MinimalSourceTestSuite
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * public void booleanArrays(){
+   *         boolean[][] anArrayOfBooleans = {{true, false},{true}};
+   *
+   *     }</pre>
+   */
   public List<String> expectedBodyStmtsBooleanArrays() {
     return Stream.of(
             "r0 := @this: InitializeMultidimensionalArrays",
@@ -180,6 +242,16 @@ public class InitializeMultidimensionalArraysTest extends MinimalSourceTestSuite
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void charArrays(){
+   *         char[][] anArrayOfChars = {{'A', 'b', '&'},{'c','$'},{'2','G'}};
+   *
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsCharArrays() {
     return Stream.of(
             "r0 := @this: InitializeMultidimensionalArrays",
@@ -201,6 +273,15 @@ public class InitializeMultidimensionalArraysTest extends MinimalSourceTestSuite
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void stringArrays(){
+   *         String[][] anArrayOfStrings = {{"Hello World"}, {"Greetings", "Welcome"}};
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsStringArrays() {
     return Stream.of(
             "r0 := @this: InitializeMultidimensionalArrays",

@@ -48,6 +48,17 @@ public class BitwiseOperationsIntTest extends MinimalSourceTestSuiteBase {
         methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void bitwiseOpAnd(){
+   *         int a = 70;
+   *         int b = 20;
+   *         int c = a&b;
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsBitwiseOpAnd() {
     return Stream.of(
             "r0 := @this: BitwiseOperationsInt",
@@ -58,6 +69,17 @@ public class BitwiseOperationsIntTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void bitwiseOpOr(){
+   *         int a = 70;
+   *         int b = 20;
+   *         int c = a|b;
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsBitwiseOpOr() {
     return Stream.of(
             "r0 := @this: BitwiseOperationsInt",
@@ -68,6 +90,17 @@ public class BitwiseOperationsIntTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void bitwiseOpXor(){
+   *         int a = 70;
+   *         int b = 20;
+   *         int c = a^b;
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsBitwiseOpXor() {
     return Stream.of(
             "r0 := @this: BitwiseOperationsInt",
@@ -78,21 +111,61 @@ public class BitwiseOperationsIntTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void bitwiseOpComplement(){
+   *         int a = 70;
+   *         int b = ~a;
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsBitwiseOpComplement() {
     return Stream.of("r0 := @this: BitwiseOperationsInt", "$i0 = 70", "$i1 = neg $i0", "return")
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void bitwiseOpSignedRightShift(){
+   *         int a = 70;
+   *         int b = a >> 5;
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsBitwiseOpSignedRightShift() {
     return Stream.of("r0 := @this: BitwiseOperationsInt", "$i0 = 70", "$i1 = $i0 >> 5", "return")
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void bitwiseOpLeftShift(){
+   *         int a = 70;
+   *         int b = a << 5;
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsBitwiseOpLeftShift() {
     return Stream.of("r0 := @this: BitwiseOperationsInt", "$i0 = 70", "$i1 = $i0 << 5", "return")
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void bitwiseOpUnsignedRightShift(){
+   *         int a = 70;
+   *         int b = a >>> 5;
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsBitwiseOpUnsignedRightShift() {
     return Stream.of("r0 := @this: BitwiseOperationsInt", "$i0 = 70", "$i1 = $i0 >>> 5", "return")
         .collect(Collectors.toList());

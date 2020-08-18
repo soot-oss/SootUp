@@ -47,35 +47,90 @@ public class CharLiteralsTest extends MinimalSourceTestSuiteBase {
         methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void charCharacter(){
+   *         char val = 'a';
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsCharCharacter() {
     return Stream.of("r0 := @this: CharLiterals", "$i0 = 97", "return")
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void charSymbol(){
+   *         char val = '%';
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsCharSymbol() {
     return Stream.of("r0 := @this: CharLiterals", "$i0 = 37", "return")
         .collect(Collectors.toList());
   }
 
+  /** public void charBackslashT(){ char val = '\t'; } */
   public List<String> expectedBodyStmtsCharBackslashT() {
     return Stream.of("r0 := @this: CharLiterals", "$i0 = 9", "return").collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void charBackslash(){
+   *         char val = '\\';
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsCharBackslash() {
     return Stream.of("r0 := @this: CharLiterals", "$i0 = 92", "return")
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void charSingleQuote(){
+   *         char val = '\'';
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsCharSingleQuote() {
     return Stream.of("r0 := @this: CharLiterals", "$i0 = 39", "return")
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void charUnicode(){
+   *         char val = '\u03a9';
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsCharUnicode() {
     return Stream.of("r0 := @this: CharLiterals", "$i0 = 937", "return")
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void specialChar(){
+   *         char val = '™';
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsSpecialChar() {
     return Stream.of("r0 := @this: CharLiterals", "$i0 = 8482", "return")
         .collect(Collectors.toList());

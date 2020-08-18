@@ -25,6 +25,15 @@ public class ThrowExceptionMethodTest extends MinimalSourceTestSuiteBase {
         "throwCustomException", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     void divideByZero() throws ArithmeticException{
+   * 			int i=8/0;
+   *        }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: ThrowExceptionMethod", "$i0 = 8 / 0", "return")
@@ -36,6 +45,15 @@ public class ThrowExceptionMethodTest extends MinimalSourceTestSuiteBase {
         "throwCustomException", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     void throwCustomException() throws CustomException {
+   * 		throw new CustomException("Custom Exception");
+   *        }
+   * </pre>
+   */
   public List<String> expectedBodyStmts1() {
     return Stream.of(
             "r0 := @this: ThrowExceptionMethod",

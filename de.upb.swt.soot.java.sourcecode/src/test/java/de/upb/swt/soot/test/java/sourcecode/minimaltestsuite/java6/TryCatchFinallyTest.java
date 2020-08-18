@@ -20,7 +20,6 @@ public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
         "tryCatchFinally", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  // TODO automate like following for all tests.
   /**
    *
    *
@@ -40,7 +39,7 @@ public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
    * }
    * </pre>
    */
-  public List<String> expectedBodyStmtsTryCatchFinally() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: TryCatchFinally",
             "$r1 = \"\"",
@@ -64,6 +63,6 @@ public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
   @Test
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
-    assertJimpleStmts(method, expectedBodyStmtsTryCatchFinally());
+    assertJimpleStmts(method, expectedBodyStmts());
   }
 }
