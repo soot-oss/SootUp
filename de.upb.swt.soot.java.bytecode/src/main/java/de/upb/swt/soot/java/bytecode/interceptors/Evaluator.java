@@ -4,7 +4,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997 - 2020 Raja Vallée-Rai, Marcus Nachtigall and others
+ * Copyright (C) 1997-2020 Raja Vallée-Rai, Marcus Nachtigall and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
