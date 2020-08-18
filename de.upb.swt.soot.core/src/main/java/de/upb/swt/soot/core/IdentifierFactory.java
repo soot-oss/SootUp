@@ -4,7 +4,7 @@ package de.upb.swt.soot.core;
  * #%L
  * Soot
  * %%
- * Copyright (C) 2018 Andreas Dann
+ * Copyright (C) 2018-2020 Andreas Dann, Linghui luo, Christian Brüggemann and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

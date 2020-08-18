@@ -4,7 +4,7 @@ package de.upb.swt.soot.core.validation;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997 - 2018 Raja Vallée-Rai and others
+ * Copyright (C) 1997-2020 Raja Vallée-Rai, Linghui Luo
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

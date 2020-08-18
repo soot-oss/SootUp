@@ -4,8 +4,7 @@ package de.upb.swt.soot.core.util.printer;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2003 - 2004 Ondrej Lhotak
- * Copyright (C) 2020
+ * Copyright (C) 2003-2020 Ondrej Lhotak, linghui Luo, Markus Schmidt
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
