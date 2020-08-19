@@ -20,6 +20,8 @@ import javax.annotation.Nonnull;
 public class MethodSubSignature extends AbstractClassMemberSubSignature
     implements Comparable<MethodSubSignature> {
 
+  @Nonnull private final List<Type> parameterTypes;
+
   /**
    * Creates a new instance of the {@link FieldSubSignature} class.
    *
@@ -33,8 +35,6 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
 
     this.parameterTypes = ImmutableList.copyOf(parameterTypes);
   }
-
-  @Nonnull private final List<Type> parameterTypes;
 
   /**
    * Gets the parameters in an immutable list.
@@ -78,13 +78,14 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
   private final Supplier<String> _cachedToString =
       Suppliers.memoize(
           () ->
-              String.format(
-                  "%s %s(%s)",
-                  getType(),
-                  getName(),
-                  getParameterTypes().stream()
+              getType()
+                  + " "
+                  + getName()
+                  + "("
+                  + getParameterTypes().stream()
                       .map(Object::toString)
-                      .collect(Collectors.joining(","))));
+                      .collect(Collectors.joining(","))
+                  + ")");
 
   @Override
   @Nonnull

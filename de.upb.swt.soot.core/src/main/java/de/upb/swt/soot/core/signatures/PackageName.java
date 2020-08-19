@@ -49,12 +49,17 @@ public class PackageName {
     this.packageName = packageName;
   }
 
+  /** The name of the package. */
+  public @Nonnull String getPackageName() {
+    return packageName;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
     }
-    if (o == null || !(o instanceof PackageName)) {
+    if (!(o instanceof PackageName)) {
       return false;
     }
     PackageName that = (PackageName) o;
@@ -68,11 +73,6 @@ public class PackageName {
 
   @Override
   public String toString() {
-    return packageName;
-  }
-
-  /** The name of the package. */
-  public @Nonnull String getPackageName() {
     return packageName;
   }
 }
