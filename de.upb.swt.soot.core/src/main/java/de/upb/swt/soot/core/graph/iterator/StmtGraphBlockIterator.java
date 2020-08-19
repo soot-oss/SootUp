@@ -150,10 +150,12 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   @Override
   public boolean hasNext() {
     final boolean hasIteratorMoreElements = cachedNextStmt != null;
-    if (!hasIteratorMoreElements && returnedNodes.size() != graph.nodes().size()) {
+    final int returnedSize = returnedNodes.size();
+    final int actualSize = graph.nodes().size();
+    if (!hasIteratorMoreElements && returnedSize != actualSize) {
       throw new RuntimeException(
           "There are "
-              + (graph.nodes().size() - returnedNodes.size())
+              + (actualSize - returnedSize)
               + " stmts that are not iterated! StmtGraph is not connected from startingStmt!");
     }
     return hasIteratorMoreElements;
