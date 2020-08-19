@@ -292,13 +292,13 @@ public class Printer {
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
   private void printStatementsInBody(Body body, LabeledStmtPrinter printer) {
-    printer.initializeSootMethod(body);
+    Iterable<Stmt> linearizedStmtGraph = printer.initializeSootMethod(body);
 
     ImmutableStmtGraph stmtGraph = body.getStmtGraph();
     Stmt previousStmt;
 
     final Map<Stmt, String> labels = printer.getLabels();
-    for (Stmt currentStmt : body.getStmtGraph()) {
+    for (Stmt currentStmt : linearizedStmtGraph) {
       previousStmt = currentStmt;
 
       // Print appropriate header.

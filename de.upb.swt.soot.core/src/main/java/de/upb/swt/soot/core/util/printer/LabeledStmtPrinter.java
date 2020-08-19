@@ -1,5 +1,6 @@
 package de.upb.swt.soot.core.util.printer;
 
+import com.google.common.collect.Lists;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
@@ -77,8 +78,12 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     }
   }
 
-  /** createLabelMaps */
-  public void initializeSootMethod(Body body) {
+  /**
+   * createLabelMaps
+   *
+   * @return the linearized StmtGraph
+   */
+  public Iterable<Stmt> initializeSootMethod(Body body) {
     this.body = body;
 
     final Collection<Stmt> targetStmtsOfBranches = body.getTargetStmtsInBody();
@@ -119,7 +124,8 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     int refCount = 0;
 
     // Traverse the stmts and assign a label if necessary
-    for (Stmt s : body.getStmtGraph()) {
+    final List<Stmt> linearizedStmtGraph = Lists.newArrayList(body.getStmtGraph());
+    for (Stmt s : linearizedStmtGraph) {
       if (labelStmts.contains(s)) {
         labels.put(s, String.format(formatString, ++labelCount));
       }
@@ -128,6 +134,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
         references.put(s, Integer.toString(refCount++));
       }
     }
+    return linearizedStmtGraph;
   }
 
   @Override
