@@ -21,6 +21,7 @@
  */
 package de.upb.swt.soot.core.util.printer;
 
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -120,15 +121,15 @@ public abstract class AbstractStmtPrinter extends StmtPrinter {
     if (useImports) {
       if (type instanceof ClassType) {
         if (addImport(type)) {
-          output.append(((ClassType) type).getClassName());
+          output.append(Jimple.escape(((ClassType) type).getClassName()));
         }
       } else if (type instanceof ArrayType) {
         ((ArrayType) type).toString(this);
       } else {
-        output.append(type);
+        output.append(Jimple.escape(type.toString()));
       }
     } else {
-      output.append(type);
+      output.append(Jimple.escape(type.toString()));
     }
   }
 

@@ -145,11 +145,12 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   @Override
   public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.DYNAMICINVOKE);
+    final MethodSignature methodSignature = getMethodSignature();
     up.literal(
         " \""
-            + getMethodSignature().getName()
+            + Jimple.escape(methodSignature.getName())
             + "\" <"
-            + getMethodSignature().getSubSignature()
+            + Jimple.escape(methodSignature.getSubSignature().toString())
             + ">(");
     argBoxesToPrinter(up);
 

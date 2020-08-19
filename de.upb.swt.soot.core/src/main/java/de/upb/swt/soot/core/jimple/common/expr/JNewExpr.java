@@ -70,11 +70,6 @@ public final class JNewExpr implements Expr, Copyable {
     up.typeSignature(type);
   }
 
-  // TODO: duplicate getter? ->getType()
-  public ReferenceType getBaseType() {
-    return type;
-  }
-
   @Override
   public Type getType() {
     return type;

@@ -66,7 +66,7 @@ public final class JInstanceOfExpr implements Expr, Copyable {
     up.literal(" ");
     up.literal(Jimple.INSTANCEOF);
     up.literal(" ");
-    up.literal(checkType.toString());
+    up.literal(Jimple.escape(checkType.toString()));
   }
 
   @Override
