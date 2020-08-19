@@ -132,25 +132,21 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
   @Override
   public void methodSignature(MethodSignature methodSig) {
-    if (useImports) {
-      output.append('<');
-      typeSignature(methodSig.getDeclClassType());
-      output.append(": ");
-      typeSignature(methodSig.getType());
-      output.append(' ').append(methodSig.getName()).append('(');
+    output.append('<');
+    typeSignature(methodSig.getDeclClassType());
+    output.append(": ");
+    typeSignature(methodSig.getType());
+    output.append(' ').append(Jimple.escape(methodSig.getName())).append('(');
 
-      final List<Type> parameterTypes = methodSig.getSubSignature().getParameterTypes();
-      for (Type parameterType : parameterTypes) {
-        typeSignature(parameterType);
-        output.append(',');
-      }
-      if (parameterTypes.size() > 0) {
-        output.setLength(output.length() - 1);
-      }
-      output.append(")>");
-    } else {
-      output.append(methodSig.toString());
+    final List<Type> parameterTypes = methodSig.getSubSignature().getParameterTypes();
+    for (Type parameterType : parameterTypes) {
+      typeSignature(parameterType);
+      output.append(',');
     }
+    if (parameterTypes.size() > 0) {
+      output.setLength(output.length() - 1);
+    }
+    output.append(")>");
   }
 
   @Override
