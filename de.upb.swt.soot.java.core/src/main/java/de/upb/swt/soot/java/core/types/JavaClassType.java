@@ -3,7 +3,6 @@ package de.upb.swt.soot.java.core.types;
 import com.google.common.base.Objects;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.inputlocation.FileType;
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
@@ -24,11 +23,10 @@ public class JavaClassType extends ClassType {
       Pattern.compile(
           "^(?:java\\.|sun\\.|javax\\.|com\\.sun\\.|org\\.omg\\.|org\\.xml\\.|org\\.w3c\\.dom)");
 
-  private final String className;
+  @Nonnull private final String className;
+  @Nonnull private final PackageName packageName;
 
-  private final PackageName packageName;
-
-  // TODO Can we hide this somehow from the public API surface?
+  // TODO: [CB] Can we hide this somehow from the public API surface?
   /**
    * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
    * {@link IdentifierFactory}
@@ -36,10 +34,10 @@ public class JavaClassType extends ClassType {
    * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
    * @param packageName the corresponding package
    */
-  public JavaClassType(final String className, final PackageName packageName) {
+  public JavaClassType(@Nonnull final String className, @Nonnull final PackageName packageName) {
     String realClassName = className;
     if (realClassName.contains(".")) {
-      realClassName = realClassName.replace(".", "$");
+      realClassName = realClassName.replace('.', '$');
     }
 
     this.className = realClassName;
@@ -76,7 +74,7 @@ public class JavaClassType extends ClassType {
       sb.append('.');
     }
     sb.append(className);
-    return Jimple.escape(sb.toString());
+    return sb.toString();
   }
 
   @Override
@@ -107,11 +105,13 @@ public class JavaClassType extends ClassType {
   }
 
   /** The simple class name. */
+  @Nonnull
   public String getClassName() {
     return className;
   }
 
   /** The package in which the class resides. */
+  @Nonnull
   public PackageName getPackageName() {
     return packageName;
   }
@@ -119,13 +119,5 @@ public class JavaClassType extends ClassType {
   public boolean isBuiltInClass() {
     // TODO: [ms] for java9 modules library check modules instead of that heuristic
     return LIBRARY_CLASS_PATTERN.matcher(getClassName()).find();
-  }
-
-  private static final class SplitPatternHolder {
-    private static final char SPLIT_CHAR = '.';
-
-    @Nonnull
-    private static final Pattern SPLIT_PATTERN =
-        Pattern.compile(Character.toString(SPLIT_CHAR), Pattern.LITERAL);
   }
 }

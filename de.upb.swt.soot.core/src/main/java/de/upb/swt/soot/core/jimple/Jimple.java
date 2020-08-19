@@ -199,7 +199,7 @@ public abstract class Jimple {
 
   /** Escapes reserved Jimple keywords e.g. used in (Stmt)Printer, necessary in the JimpleParser */
   public static String escape(String str) {
-    return jimpleKeywordList().contains(str) ? StringTools.getQuotedStringOf(str) : str;
+    return StringTools.getQuotedStringOf(str, jimpleKeywordList().contains(str));
   }
 
   public abstract IdentifierFactory getIdentifierFactory();

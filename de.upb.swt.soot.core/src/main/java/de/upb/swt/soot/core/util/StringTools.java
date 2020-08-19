@@ -29,7 +29,7 @@ import java.text.StringCharacterIterator;
 public class StringTools {
 
   /** Returns fromString, but with non-isalpha() characters printed as <code>'\\unnnn'</code>. */
-  public static java.lang.String getEscapedStringOf(String fromString) {
+  public static String getEscapedStringOf(String fromString) {
     // TODO: [ms] possible performance+ maybe(!) work on .charAt(..) instead of .toCharArray)(..)
     char[] fromStringArray = fromString.toCharArray();
 
@@ -86,7 +86,7 @@ public class StringTools {
    * Returns fromString, but with certain characters printed as if they were in a Java string
    * literal. Used by StringConstant.toString()
    */
-  public static String getQuotedStringOf(String fromString) {
+  public static String getQuotedStringOf(String fromString, boolean needsQuotes) {
     // We definitely need fromString.length + 2, but let's have some
     // additional space
     StringBuilder builder = new StringBuilder(fromString.length() + 20);
@@ -95,35 +95,47 @@ public class StringTools {
       char ch = fromString.charAt(i);
       if (ch == '\\') {
         builder.append("\\\\");
+        needsQuotes = true;
       } else if (ch == '\'') {
         builder.append("\\\'");
+        needsQuotes = true;
       } else if (ch == '\"') {
         builder.append("\\\"");
+        needsQuotes = true;
       } else if (ch == '\n') {
         builder.append("\\n");
+        needsQuotes = true;
       } else if (ch == '\t') {
         builder.append("\\t");
+        needsQuotes = true;
       }
       /*
        * 04.04.2006 mbatch added handling of \r, as compilers throw error if unicode
        */
       else if (ch == '\r') {
         builder.append("\\r");
+        needsQuotes = true;
       }
       /*
        * 10.04.2006 Nomait A Naeem added handling of \f, as compilers throw error if unicode
        */
       else if (ch == '\f') {
         builder.append("\\f");
+        needsQuotes = true;
       } else if (ch >= 32 && ch <= 126) {
         builder.append(ch);
+        // TODO: [ms] adapt this list to add quotes in cases where it is necessary
+        if (ch == ' ' || ch == ';') {
+          needsQuotes = true;
+        }
       } else {
         builder.append(getUnicodeStringFromChar(ch));
       }
     }
 
-    builder.append("\"");
-    return builder.toString();
+    return needsQuotes
+        ? builder.append('"').toString()
+        : builder.subSequence(1, builder.length()).toString();
   }
 
   /**

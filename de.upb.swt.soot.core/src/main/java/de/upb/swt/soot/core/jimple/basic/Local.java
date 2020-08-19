@@ -25,7 +25,6 @@
 
 package de.upb.swt.soot.core.jimple.basic;
 
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.visitor.JimpleValueVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.model.Body;
@@ -92,7 +91,7 @@ public class Local implements Immediate, Copyable {
 
   @Override
   public String toString() {
-    return Jimple.escape(getName());
+    return getName();
   }
 
   @Override
