@@ -17,7 +17,9 @@ import javax.annotation.Nullable;
 public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
   @Nonnull private final StmtGraph graph;
-  @Nonnull private final Set<Stmt> returnedNodes;
+  @Nonnull private final Set<Stmt> returnedNodesWithMultiplePredecessorsOrStartingStmt;
+  private int returnedSize = 0;
+
   @Nonnull private final ArrayDeque<Trap> traps;
 
   @Nonnull private final ArrayDeque<Stmt> currentUnbranchedBlock = new ArrayDeque<>();
@@ -34,8 +36,8 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   private StmtGraphBlockIterator(
       @Nonnull StmtGraph graph, @Nonnull Stmt startingStmt, @Nonnull List<Trap> traps) {
     this.graph = graph;
-    returnedNodes = new HashSet<>(graph.nodes().size(), 1);
-    returnedNodes.add(startingStmt);
+    returnedNodesWithMultiplePredecessorsOrStartingStmt = new HashSet<>();
+    returnedNodesWithMultiplePredecessorsOrStartingStmt.add(startingStmt);
     cachedNextStmt = startingStmt;
     this.traps = new ArrayDeque<>(traps);
   }
@@ -58,9 +60,11 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
       }
 
       // skip retrieved stmt if its already returned
-    } while (returnedNodes.contains(stmt));
-    returnedNodes.add(stmt);
+    } while (returnedNodesWithMultiplePredecessorsOrStartingStmt.contains(stmt));
 
+    if (graph.predecessors(stmt).size() > 1) {
+      returnedNodesWithMultiplePredecessorsOrStartingStmt.add(stmt);
+    }
     return stmt;
   }
 
@@ -144,13 +148,13 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
     // prefetch next Stmt
     cachedNextStmt = retrieveNextStmt();
+    returnedSize++;
     return stmt;
   }
 
   @Override
   public boolean hasNext() {
     final boolean hasIteratorMoreElements = cachedNextStmt != null;
-    final int returnedSize = returnedNodes.size();
     final int actualSize = graph.nodes().size();
     if (!hasIteratorMoreElements && returnedSize != actualSize) {
       throw new RuntimeException(
