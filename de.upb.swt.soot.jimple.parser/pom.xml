@@ -74,20 +74,22 @@
             <version>4.7.2</version>
         </dependency>
 
+        <!--
         <dependency>
             <groupId>magpiebridge</groupId>
             <artifactId>magpiebridge</artifactId>
             <version>0.0.6</version>
         </dependency>
+        -->
         <dependency>
             <groupId>de.upb.swt</groupId>
             <artifactId>soot.core</artifactId>
             <version>4.0.0-SNAPSHOT</version>
-            <scope>test</scope>
         </dependency>
 
     </dependencies>
 
+    <!--
     <repositories>
         <repository>
             <id>github</id>
@@ -95,4 +97,5 @@
             <url>https://maven.pkg.github.com/MagpieBridge/MagpieBridge</url>
         </repository>
     </repositories>
+    -->
 </project>
