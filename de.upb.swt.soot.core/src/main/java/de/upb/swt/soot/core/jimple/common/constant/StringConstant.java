@@ -25,10 +25,10 @@
 
 package de.upb.swt.soot.core.jimple.common.constant;
 
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.util.StringTools;
 import javax.annotation.Nonnull;
 
 public class StringConstant implements Constant {
@@ -65,8 +65,8 @@ public class StringConstant implements Constant {
 
   @Override
   public String toString() {
-    final String escape = StringTools.getQuotedStringOf(value);
-    return escape;
+    final String escape = Jimple.escape(value);
+    return escape == value ? "\"" + value + "\"" : escape;
   }
 
   public String getValue() {
