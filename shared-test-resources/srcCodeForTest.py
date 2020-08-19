@@ -7,8 +7,9 @@ import pdb
 
 srcMatches = []
 srcTestMatches = []
+srcTargetDir='..\\..\\dummy'
 
-for root, dirnames, filenames in os.walk('..\\..\\sandbox'):
+for root, dirnames, filenames in os.walk(srcTargetDir):
     for filename in fnmatch.filter(filenames, '*.java'):
         srcMatches.append(os.path.join(root, filename))
 
@@ -21,7 +22,7 @@ for srcFile in srcMatches:
 	ocb=0
 	ccb=0
 	flagRegex=0
-	str ="/**  <pre>"
+	str ="/**  <pre>\n"
 	listData=[]
 	data=""
 	regexMethod =re.compile( "(\w*)[(]((([a-zA-Z])*(\s+)([a-zA-Z]))*)(([,])(\s+)([a-zA-Z])*(\s+)([a-zA-Z])*)*[)]" )
@@ -47,7 +48,7 @@ for srcFile in srcMatches:
 				ocb=0
 				exit
 	
-	str+="<pre>*/"
+	str+="\n<pre>*/"
 	var1=""
 	srcFileName = (srcFile.rsplit('\\',1)[1]).split('.')[0]
 		
