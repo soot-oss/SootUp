@@ -14,7 +14,6 @@ import com.ibm.wala.shrikeCT.InvalidClassFileException;
 import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
-import com.ibm.wala.util.intset.BitVector;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
@@ -499,38 +498,16 @@ public class WalaIRToJimpleConverter {
           stmt2iIndex.put(-1, ret);
         }
 
-        System.out.println("---- " + walaMethod.getSignature());
-
         for (int i = 0; i < insts.length; i++) {
           SSAInstruction ssa = insts[i];
           System.out.println(i + " -> " + ssa.toString(walaMethod.symbolTable()));
         }
         System.out.println();
 
-        // FIXME: [ms] Convert traps - get exceptions which are caught
-        List<Trap> traps = new ArrayList<>();
-        final BitVector catchBlocks = cfg.getCatchBlocks();
-        for (int idx = 0; idx < insts.length; idx++) {
-          if (catchBlocks.get(idx)) {
-
-            System.out.println("####" + insts[idx].getExceptionTypes());
-            ClassType exception =
-                JavaIdentifierFactory.getInstance()
-                    .getClassType("java.lang.Throwable"); // FIXME more precision
-            Stmt from = stmt2iIndex.get(idx);
-            Stmt to = stmt2iIndex.get(idx + 1); // FIXME ?
-            Stmt handler = stmt2iIndex.get(idx); // FIXME
-
-            final JTrap trap = new JTrap(exception, from, to, handler);
-            System.out.println(trap);
-            traps.add(trap);
-          }
-        }
-
         instConverter.setUpTargets(stmt2iIndex, builder);
 
         return builder
-            .setTraps(traps)
+            .setTraps(instConverter.getTraps())
             .setLocals(localGenerator.getLocals())
             .setPosition(convertPosition(bodyPos))
             .build();

@@ -60,13 +60,7 @@ import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
-import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JInvokeStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
@@ -103,7 +97,8 @@ public class InstructionConverter {
   private final Map<JSwitchStmt, List<Integer>> branchingTargetsOfLookUpSwitchStmts;
 
   List<Trap> traps = new ArrayList<>();
-  private SSAInstruction danglingExceptionInstr = null;
+  private Stmt danglingExceptionInstrStart = null;
+  private Stmt danglingExceptionInstrEnd = null;
 
   private final Map<Integer, Local> locals;
   private final IdentifierFactory identifierFactory;
@@ -274,8 +269,6 @@ public class InstructionConverter {
     int exceptionValue = inst.getException();
 
     // FIXME [ms] make exception type more specific
-    System.out.println(symbolTable.getValue(exceptionValue));
-
     JavaClassType exceptionClassType = null;
     if (exceptionClassType == null) {
       exceptionClassType = JavaIdentifierFactory.getInstance().getClassType("java.lang.Throwable");
@@ -289,11 +282,24 @@ public class InstructionConverter {
     // TODO: [ms] position info of parameter, target is missing
     // operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
 
-    return Jimple.newIdentityStmt(
-        local,
-        caught,
-        WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
+    final JIdentityStmt handlerStmt =
+        Jimple.newIdentityStmt(
+            local,
+            caught,
+            WalaIRToJimpleConverter.convertPositionInfo(
+                debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
+
+    // add trap information to body
+    assert (danglingExceptionInstrStart != null);
+    // FIXME adapt danglingExceptionInstrEnd -> exclusive!
+    traps.add(
+        new JTrap(
+            exceptionClassType,
+            danglingExceptionInstrStart,
+            danglingExceptionInstrStart,
+            handlerStmt));
+
+    return handlerStmt;
   }
 
   private Stmt convertMonitorInstruction(
@@ -580,10 +586,14 @@ public class InstructionConverter {
     // TODO: has no operand position yet for throwable
     operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), 0);
 
-    return Jimple.newThrowStmt(
-        local,
-        WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
+    final JThrowStmt jThrowStmt =
+        Jimple.newThrowStmt(
+            local,
+            WalaIRToJimpleConverter.convertPositionInfo(
+                debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
+
+    danglingExceptionInstrStart = jThrowStmt;
+    return jThrowStmt;
   }
 
   private Stmt convertUnaryOpInstruction(
@@ -827,20 +837,25 @@ public class InstructionConverter {
       invoke = Jimple.newStaticInvokeExpr(methodSig, args);
     }
 
+    final Stmt jInvokeStmt;
     if (invokeInst.hasDef()) {
       Type type = converter.convertType(invokeInst.getDeclaredResultType());
       Local v = getLocal(type, invokeInst.getDef());
-      return Jimple.newAssignStmt(
-          v,
-          invoke,
-          WalaIRToJimpleConverter.convertPositionInfo(
-              debugInfo.getInstructionPosition(invokeInst.iIndex()), operandPos));
+      jInvokeStmt =
+          Jimple.newAssignStmt(
+              v,
+              invoke,
+              WalaIRToJimpleConverter.convertPositionInfo(
+                  debugInfo.getInstructionPosition(invokeInst.iIndex()), operandPos));
     } else {
-      return Jimple.newInvokeStmt(
-          invoke,
-          WalaIRToJimpleConverter.convertPositionInfo(
-              debugInfo.getInstructionPosition(invokeInst.iIndex()), operandPos));
+      jInvokeStmt =
+          Jimple.newInvokeStmt(
+              invoke,
+              WalaIRToJimpleConverter.convertPositionInfo(
+                  debugInfo.getInstructionPosition(invokeInst.iIndex()), operandPos));
     }
+    danglingExceptionInstrStart = jInvokeStmt;
+    return jInvokeStmt;
   }
 
   private List<Stmt> convertBranchInstruction(
@@ -1227,5 +1242,9 @@ public class InstructionConverter {
       }
     }
     return false;
+  }
+
+  public List<Trap> getTraps() {
+    return traps;
   }
 }
