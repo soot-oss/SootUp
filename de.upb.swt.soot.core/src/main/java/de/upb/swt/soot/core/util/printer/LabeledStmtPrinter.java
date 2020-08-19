@@ -139,12 +139,13 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     output.append(' ').append(Jimple.escape(methodSig.getName())).append('(');
 
     final List<Type> parameterTypes = methodSig.getSubSignature().getParameterTypes();
-    for (Type parameterType : parameterTypes) {
-      typeSignature(parameterType);
-      output.append(',');
-    }
-    if (parameterTypes.size() > 0) {
-      output.setLength(output.length() - 1);
+    final int parameterTypesSize = parameterTypes.size();
+    if (parameterTypesSize > 0) {
+      typeSignature(parameterTypes.get(0));
+      for (int i = 1; i < parameterTypesSize; i++) {
+        output.append(',');
+        typeSignature(parameterTypes.get(i));
+      }
     }
     output.append(")>");
   }
