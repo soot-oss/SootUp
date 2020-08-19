@@ -20,7 +20,6 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
 
-  // TODO split into multiple test cases
   @Test
   public void test() {
 
@@ -49,6 +48,8 @@ public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
   @Ignore
   public void classTypeDefWithoutAssignment() {
     // TODO: [ms] fix: Type of Local $r1 is should be (java.lang.)String
+    // TODO [kk]: Actual   :[unknown $u0, VariableDeclaration r0, r0 := @this: VariableDeclaration,
+    // $u0 = null, return]
     SootMethod method = loadMethod(getMethodSignature("classTypeDefWithoutAssignment"));
     Body body = method.getBody();
     assertNotNull(body);
@@ -69,36 +70,99 @@ public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
         methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void shortVariable() {
+   *         short a = 10;
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsShortVariable() {
     return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 10", "return")
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void byteVariable() {
+   *         byte b = 0;
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsByteVariable() {
     return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 0", "return")
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void charVariable() {
+   *         char c = 'a';
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsCharVariable() {
     return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 97", "return")
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void intVariable() {
+   *         int d = 512;
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsIntVariable() {
     return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 512", "return")
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void longVariable() {
+   *         long e = 123456789;
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsLongVariable() {
     return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 123456789", "return")
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void floatVariable() {
+   *         float f = 3.14f;
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsFloatVariable() {
     return Stream.of("r0 := @this: VariableDeclaration", "$f0 = 3.14F", "return")
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void doubleVariable() {
+   *         double g = 1.96969654d;
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsDoubleVariable() {
     return Stream.of("r0 := @this: VariableDeclaration", "$d0 = 1.96969654", "return")
         .collect(Collectors.toList());

@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.Test;
 
 /** @author Kaustubh Kelkar */
 public class StaticInitializerTest extends MinimalSourceTestSuiteBase {
@@ -18,20 +19,42 @@ public class StaticInitializerTest extends MinimalSourceTestSuiteBase {
         "methodStaticInitializer", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @org.junit.Test
+  public MethodSignature getStaticMethodSignature() {
+    return identifierFactory.getMethodSignature(
+        "<clinit>", getDeclaredClassSignature(), "void", Collections.emptyList());
+  }
+
+  @Test
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
     SootClass clazz = loadClass(getDeclaredClassSignature());
-    /** TODO assertTrue(method.isStaticInitializer()); */
     assertTrue(
         clazz.getFields().stream()
-            .anyMatch(
-                sootField -> {
-                  return sootField.getName().equals("i") && sootField.isStatic();
-                }));
+            .anyMatch(sootField -> sootField.getName().equals("i") && sootField.isStatic()));
+
+    final SootMethod staticMethod = loadMethod(getStaticMethodSignature());
+    assertTrue(staticMethod.isStatic());
+    assertJimpleStmts(staticMethod, expectedBodyStmtsOfClinit());
   }
 
+  public List<String> expectedBodyStmtsOfClinit() {
+    return Stream.of(
+            "<StaticInitializer: int i> = 5",
+            "$i0 = <StaticInitializer: int i>",
+            "$z0 = $i0 > 4",
+            "if $z0 == 0 goto label1",
+            "<StaticInitializer: int i> = 4",
+            "goto label1",
+            "label1:",
+            "return")
+        .collect(Collectors.toList());
+  }
+
+  /**  <pre>    static void methodStaticInitializer(){
+   * System.out.println(i);
+   * }
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

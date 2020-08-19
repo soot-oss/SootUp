@@ -24,6 +24,10 @@ public class NullVariableTest extends MinimalSourceTestSuiteBase {
         "nullVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>    public void nullVariable(){
+   * String str = null;
+   * }
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: NullVariable", "$r1 = null", "return")

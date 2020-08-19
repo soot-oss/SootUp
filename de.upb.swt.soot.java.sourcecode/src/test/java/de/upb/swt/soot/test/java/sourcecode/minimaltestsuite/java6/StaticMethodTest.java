@@ -30,6 +30,10 @@ public class StaticMethodTest extends MinimalSourceTestSuiteBase {
     assertTrue(method.isStatic());
   }
 
+  /**  <pre>    static void staticMethod(){
+   * System.out.println("static method");
+   * }
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

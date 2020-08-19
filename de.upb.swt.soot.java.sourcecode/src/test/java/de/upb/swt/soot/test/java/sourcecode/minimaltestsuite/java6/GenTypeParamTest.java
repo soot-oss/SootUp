@@ -18,6 +18,15 @@ public class GenTypeParamTest extends MinimalSourceTestSuiteBase {
   }
 
   /** Jimple code will change when Generics are incorporated */
+
+  /**  <pre>   public void geneTypeParamDisplay(){
+   * List<Object> output = new ArrayList< Object >(3);
+   * List<Integer> input = Arrays.asList(1,2,3);
+   * GenTypeParam genTypeParam= new GenTypeParam();
+   * genTypeParam.copy(output,input);
+   * System.out.println(genTypeParam.largestNum(2,8,3));
+   * }
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

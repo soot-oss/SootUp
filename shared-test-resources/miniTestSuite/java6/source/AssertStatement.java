@@ -15,7 +15,7 @@ public class AssertStatement {
     }
 
     // TODO [ms] write tests
-    public void assertStatementExtend() {
+    public void assertStatementExtend2() {
         assert "first" != null;
         int x = 1;
         assert "second" != null;

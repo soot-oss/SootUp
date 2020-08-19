@@ -3,10 +3,12 @@ package de.upb.swt.soot.test.java.bytecode.minimaltestsuite;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.Utils;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
@@ -16,10 +18,12 @@ import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TestWatcher;
@@ -41,15 +45,14 @@ public abstract class MinimalBytecodeTestSuiteBase {
   public static class CustomTestWatcher extends TestWatcher {
     private String classPath = MinimalBytecodeTestSuiteBase.class.getSimpleName();
     private JavaView javaView;
-    private JavaProject project;
 
     /** Load View once for each test directory */
     @Override
     protected void starting(Description description) {
       String prevClassDirName = getTestDirectoryName(getClassPath());
-      setClassPath(description.getClassName());
+      classPath = description.getClassName();
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
-        project =
+        JavaProject project =
             JavaProject.builder(new JavaLanguage(8))
                 .addClassPath(
                     new JavaClassPathAnalysisInputLocation(
@@ -60,21 +63,21 @@ public abstract class MinimalBytecodeTestSuiteBase {
                             + "binary"
                             + File.separator))
                 .build();
-        javaView = project.createOnDemandView();
-        setJavaView(javaView);
+        javaView =
+            project.createOnDemandView(
+                analysisInputLocation ->
+                    new ClassLoadingOptions() {
+                      @Nonnull
+                      @Override
+                      public List<BodyInterceptor> getBodyInterceptors() {
+                        return Collections.emptyList();
+                      }
+                    });
       }
     }
 
     public String getClassPath() {
       return classPath;
-    }
-
-    private void setClassPath(String classPath) {
-      this.classPath = classPath;
-    }
-
-    private void setJavaView(JavaView javaView) {
-      this.javaView = javaView;
     }
 
     public JavaView getJavaView() {
@@ -93,7 +96,7 @@ public abstract class MinimalBytecodeTestSuiteBase {
   }
 
   /**
-   * @returns the name of the parent directory - assuming the directory structure is only one level
+   * @return the name of the parent directory - assuming the directory structure is only one level
    *     deep
    */
   public static String getTestDirectoryName(String classPath) {
@@ -106,15 +109,13 @@ public abstract class MinimalBytecodeTestSuiteBase {
   }
 
   /**
-   * @returns the name of the class - assuming the testname unit has "Test" appended to the
+   * @return the name of the class - assuming the testname unit has "Test" appended to the
    *     respective name of the class
    */
   public String getClassName(String classPath) {
     String[] classPathArray = classPath.split("\\.");
-    String className =
-        classPathArray[classPathArray.length - 1].substring(
-            0, classPathArray[classPathArray.length - 1].length() - 4);
-    return className;
+    return classPathArray[classPathArray.length - 1].substring(
+        0, classPathArray[classPathArray.length - 1].length() - 4);
   }
 
   protected JavaClassType getDeclaredClassSignature() {
@@ -131,15 +132,17 @@ public abstract class MinimalBytecodeTestSuiteBase {
     SootClass clazz = loadClass(methodSignature.getDeclClassType());
     Optional<SootMethod> m = clazz.getMethod(methodSignature);
     assertTrue("No matching method signature found", m.isPresent());
-    SootMethod method = m.get();
-    return method;
+    return m.get();
   }
 
   public void assertJimpleStmts(SootMethod method, List<String> expectedStmts) {
     Body body = method.getBody();
     assertNotNull(body);
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-    assertEquals(expectedStmts, actualStmts);
+    if (!expectedStmts.equals(actualStmts)) {
+      System.out.println(Utils.printJimpleStmtsForTest(Utils.filterJimple(actualStmts.stream())));
+      assertEquals(expectedStmts, actualStmts);
+    }
   }
 
   public List<String> expectedBodyStmts(String... jimpleLines) {

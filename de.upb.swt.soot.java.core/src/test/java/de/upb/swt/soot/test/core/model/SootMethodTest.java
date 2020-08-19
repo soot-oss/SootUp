@@ -4,15 +4,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import com.google.common.graph.GraphBuilder;
-import com.google.common.graph.MutableGraph;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -30,7 +30,10 @@ import java.util.HashSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author Linghui Luo */
+/**
+ * @author Linghui Luo
+ * @author Kaustubh Kelkar updated on 02.07.2020
+ */
 @Category(Java8Test.class)
 public class SootMethodTest {
 
@@ -42,26 +45,29 @@ public class SootMethodTest {
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
-    final MutableGraph<Stmt> graph = GraphBuilder.directed().build();
-
-    graph.addNode(
-        Jimple.newIdentityStmt(
-            generator.generateLocal(type),
-            Jimple.newParameterRef(type, 0),
-            StmtPositionInfo.createNoStmtPositionInfo()));
-    graph.addNode(
-        Jimple.newAssignStmt(
-            generator.generateLocal(type),
-            Jimple.newNewExpr(type),
-            StmtPositionInfo.createNoStmtPositionInfo()));
-
-    Body body = new Body(generator.getLocals(), Collections.emptyList(), graph, null, null);
-
-    assertEquals(2, body.getLocalCount());
-
     MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
+    Body.BodyBuilder bodyBuilder = Body.builder();
+
+    final JIdentityStmt firstStmt =
+        Jimple.newIdentityStmt(
+            generator.generateLocal(type),
+            Jimple.newParameterRef(type, 0),
+            StmtPositionInfo.createNoStmtPositionInfo());
+    final JReturnVoidStmt returnVoidStmt =
+        new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+
+    Body body =
+        bodyBuilder
+            .setStartingStmt(firstStmt)
+            .addFlow(firstStmt, returnVoidStmt)
+            .setMethodSignature(methodSignature)
+            .setLocals(generator.getLocals())
+            .setTraps(Collections.emptyList())
+            .build();
+    assertEquals(1, body.getLocalCount());
+
     SootMethod dummyMainMethod =
         new SootMethod(
             new OverridingMethodSource(methodSignature, body),
@@ -80,12 +86,13 @@ public class SootMethodTest {
                 null,
                 Collections.emptySet(),
                 Collections.singleton(dummyMainMethod),
-                null,
+                NoPositionInformation.getInstance(),
                 EnumSet.of(Modifier.PUBLIC),
                 Collections.emptyList()),
             SourceType.Application);
 
     assertEquals(mainClass.getMethods().size(), 1);
+
     assertTrue(
         mainClass
             .getMethod(methodSignature)

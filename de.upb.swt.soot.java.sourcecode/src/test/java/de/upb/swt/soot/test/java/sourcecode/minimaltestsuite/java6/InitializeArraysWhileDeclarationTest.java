@@ -53,6 +53,15 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
         methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void intArrays(){
+   *         int[] anArrayOfInts = {1, 2, 3};
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsIntArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
@@ -64,6 +73,16 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void byteArrays(){
+   *         byte[] anArrayOfBytes = {4, 5, 6};
+   *
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsByteArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
@@ -75,6 +94,16 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void shortArrays(){
+   *         short[] anArrayOfShorts = {10, 20, 30};
+   *
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsShortArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
@@ -86,6 +115,16 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void longArrays(){
+   *         long[] anArrayOfLongs = {547087L, 564645L, 654786L};
+   *
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsLongArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
@@ -97,6 +136,16 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void floatArrays(){
+   *         float[] anArrayOfFloats = {3.14f, 5.46f, 2.987f, 4.87f};
+   *
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsFloatArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
@@ -109,6 +158,17 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void doubleArrays(){
+   *         double[] anArrayOfDoubles = {6.765414d, 9.676565646d};
+   *
+   *
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsDoubleArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
@@ -119,6 +179,16 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void booleanArrays(){
+   *         boolean[] anArrayOfBooleans = {true, false};
+   *
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsBooleanArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
@@ -129,6 +199,11 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
         .collect(Collectors.toList());
   }
 
+  /**
+   * public void charArrays(){ char[] anArrayOfChars = {'A', 'b', '&'};
+   *
+   * <p>}
+   */
   public List<String> expectedBodyStmtsCharArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
@@ -140,6 +215,15 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void stringArrays(){
+   *         String[] anArrayOfStrings = {"Hello World", "Greetings"};
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsStringArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",

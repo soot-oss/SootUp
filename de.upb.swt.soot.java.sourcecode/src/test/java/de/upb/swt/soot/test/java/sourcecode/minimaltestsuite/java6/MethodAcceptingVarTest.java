@@ -35,7 +35,6 @@ public class MethodAcceptingVarTest extends MinimalSourceTestSuiteBase {
     assertJimpleStmts(method, expectedBodyStmtsLong());
 
     method = loadMethod(getMethodSignature("float"));
-
     assertJimpleStmts(method, expectedBodyStmtsFloat());
 
     method = loadMethod(getMethodSignature("double"));
@@ -50,6 +49,15 @@ public class MethodAcceptingVarTest extends MinimalSourceTestSuiteBase {
         Collections.singletonList(datatype));
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *    public void shortVariable(short a) {
+   *        a++;
+   * }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsShort() {
     return Stream.of(
             "r0 := @this: MethodAcceptingVar",
@@ -61,6 +69,15 @@ public class MethodAcceptingVarTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * public void byteVariable(byte b) {
+   *     b++;
+   * }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsByte() {
     return Stream.of(
             "r0 := @this: MethodAcceptingVar",
@@ -72,12 +89,30 @@ public class MethodAcceptingVarTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * public void charVariable(char c) {
+   *    c = 'a';
+   * }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsChar() {
     return Stream.of(
             "r0 := @this: MethodAcceptingVar", "$c0 := @parameter0: char", "$c0 = 97", "return")
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * public void intVariable(int d) {
+   *    d++;
+   * }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsInt() {
     return Stream.of(
             "r0 := @this: MethodAcceptingVar",
@@ -89,6 +124,15 @@ public class MethodAcceptingVarTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * public void longVariable(long e) {
+   *     e = 123456777;
+   * }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsLong() {
     return Stream.of(
             "r0 := @this: MethodAcceptingVar",
@@ -98,12 +142,30 @@ public class MethodAcceptingVarTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * public void floatVariable(float f) {
+   *         f = 7.77f;
+   * }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsFloat() {
     return Stream.of(
             "r0 := @this: MethodAcceptingVar", "$f0 := @parameter0: float", "$f0 = 7.77F", "return")
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * public void doubleVariable(double g) {
+   *     g = 1.787777777;
+   * }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsDouble() {
     return Stream.of(
             "r0 := @this: MethodAcceptingVar",

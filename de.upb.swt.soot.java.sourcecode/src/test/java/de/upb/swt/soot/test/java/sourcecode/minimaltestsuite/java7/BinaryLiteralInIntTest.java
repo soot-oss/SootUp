@@ -20,6 +20,12 @@ public class BinaryLiteralInIntTest extends MinimalSourceTestSuiteBase {
         "binaryLiteralInInt", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>    public void binaryLiteralInInt(){
+   * int a = 0b10100001010001011010000101000101;
+   * int b = 0b101;
+   * int c = 0B101;
+   * }
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

@@ -21,6 +21,10 @@ public class StringConcatenationTest extends MinimalSourceTestSuiteBase {
         "stringConcatenation", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>    public void stringConcatenation(){
+   * String str = "the" + "string";
+   * }
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

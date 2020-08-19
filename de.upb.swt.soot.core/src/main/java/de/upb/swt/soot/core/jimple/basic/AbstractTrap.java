@@ -35,19 +35,19 @@ import javax.annotation.Nonnull;
 /** Partial implementation of trap (exception catcher), used within Body classes. */
 public class AbstractTrap implements Trap {
   /** The exception being caught. */
-  private final ClassType exception;
+  @Nonnull private final ClassType exception;
 
   /** The first stmt being trapped. */
-  private final Stmt beginStmt;
+  @Nonnull private final Stmt beginStmt;
 
   /** The stmt just before the last stmt being trapped. */
-  private final Stmt endStmt;
+  @Nonnull private final Stmt endStmt;
 
   /** The stmt to which execution flows after the caught exception is triggered. */
-  private final Stmt handlerStmt;
+  @Nonnull private final Stmt handlerStmt;
 
   /** The list of stmts referred to in this Trap (begin, end and handler). */
-  private final List<Stmt> stmts;
+  @Nonnull private final List<Stmt> stmts;
 
   /** Creates an AbstractTrap with the given exception, handler, begin and end stmts. */
   AbstractTrap(
@@ -63,26 +63,31 @@ public class AbstractTrap implements Trap {
   }
 
   @Override
+  @Nonnull
   public Stmt getBeginStmt() {
     return beginStmt;
   }
 
   @Override
+  @Nonnull
   public Stmt getEndStmt() {
     return endStmt;
   }
 
   @Override
+  @Nonnull
   public Stmt getHandlerStmt() {
     return handlerStmt;
   }
 
   @Override
+  @Nonnull
   public List<Stmt> getStmts() {
     return stmts;
   }
 
   @Override
+  @Nonnull
   public ClassType getExceptionType() {
     return exception;
   }

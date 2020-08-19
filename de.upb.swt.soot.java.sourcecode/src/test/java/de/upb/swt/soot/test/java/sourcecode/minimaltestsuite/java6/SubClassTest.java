@@ -26,14 +26,32 @@ public class SubClassTest extends MinimalSourceTestSuiteBase {
         "superclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Test
-  public void testSuperClassStmts() {
-    SootMethod m = loadMethod(getMethodSignature1());
-    assertJimpleStmts(m, expectedBodyStmts1());
-    SootClass sootClass = loadClass(getDeclaredClassSignature());
-    assertTrue(sootClass.getSuperclass().get().getClassName().equals("SuperClass"));
-  }
+  /**
+   *
+   *
+   * <pre>
+   *     public void subclassMethod() {
+   *         aa=10;
+   *         bb=20;
+   *         cc=30;
+   *         dd=40;
+   *     }
+   * </pre>
+   */
 
+  /**  <pre>    public void subclassMethod() {
+   * aa=10;
+   * bb=20;
+   * cc=30;
+   * dd=40;
+   * }
+   * public void superclassMethod(){
+   * super.superclassMethod();
+   * a=100;
+   * b=200;
+   * c=300;
+   * }
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
@@ -46,6 +64,18 @@ public class SubClassTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void superclassMethod(){
+   *         super.superclassMethod();
+   *         a=100;
+   *         b=200;
+   *         c=300;
+   *    }
+   * </pre>
+   */
   public List<String> expectedBodyStmts1() {
     return Stream.of(
             "r0 := @this: SubClass",
@@ -61,5 +91,9 @@ public class SubClassTest extends MinimalSourceTestSuiteBase {
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
+    method = loadMethod(getMethodSignature1());
+    assertJimpleStmts(method, expectedBodyStmts1());
+    SootClass sootClass = loadClass(getDeclaredClassSignature());
+    assertTrue(sootClass.getSuperclass().get().getClassName().equals("SuperClass"));
   }
 }
