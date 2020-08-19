@@ -125,7 +125,7 @@ public class StringTools {
       } else if (ch >= 32 && ch <= 126) {
         builder.append(ch);
         // TODO: [ms] adapt this list to add quotes in cases where it is necessary
-        if (ch == ' ' || ch == ';') {
+        if (ch == ' ' || ch == ';' || ch == '/') {
           needsQuotes = true;
         }
       } else {
