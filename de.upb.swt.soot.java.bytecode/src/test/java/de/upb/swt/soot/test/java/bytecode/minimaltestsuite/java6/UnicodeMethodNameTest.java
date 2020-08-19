@@ -14,7 +14,7 @@ import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
-public class SymbolsAsClassNameTest extends MinimalBytecodeTestSuiteBase {
+public class UnicodeMethodNameTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(

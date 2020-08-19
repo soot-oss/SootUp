@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import org.junit.Ignore;
 
 /** @author Kaustubh Kelkar */
-public class SymbolsAsClassNameTest extends MinimalSourceTestSuiteBase {
+public class UnicodeMethodNameTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
