@@ -15,8 +15,6 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Optional;
 import org.junit.Before;
-import org.mockito.internal.matchers.GreaterOrEqual;
-import org.mockito.internal.matchers.LessOrEqual;
 
 /*-
  * #%L
@@ -85,9 +83,9 @@ public abstract class AnalysisInputLocationTest {
     final Collection<? extends AbstractClassSource> classSources =
         inputLocation.getClassSources(getIdentifierFactory());
 
-    assertThat(classSources.size(), new GreaterOrEqual<>(minClassesFound));
+    assertTrue(classSources.size() >= minClassesFound);
     if (maxClassesFound != -1) {
-      assertThat(classSources.size(), new LessOrEqual<>(maxClassesFound));
+      assertTrue(classSources.size() <= maxClassesFound);
     }
   }
 }
