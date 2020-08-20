@@ -167,7 +167,7 @@ public abstract class StmtGraph implements Iterable<Stmt> {
     final Iterator<Stmt> otherIterator = otherGraph.iterator();
 
     while (iterator.hasNext()) {
-      if (otherIterator.hasNext()) {
+      if (!otherIterator.hasNext()) {
         return false;
       }
       if (!iterator.next().equivTo(otherIterator.next())) {

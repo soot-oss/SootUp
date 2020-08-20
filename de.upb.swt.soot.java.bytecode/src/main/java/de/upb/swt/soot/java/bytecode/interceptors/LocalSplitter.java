@@ -139,7 +139,8 @@ public class LocalSplitter implements BodyInterceptor {
               adaptTraps(bodyBuilder, head, newHead);
               adaptVisitList(visitList, head, newHead);
               // if deflist of modified stmt contains no orilocal, then trace forwards on.
-              if (!newHead.getDefs().isEmpty() && !newHead.getDefs().get(0).equivTo(oriLocal) //Todo:
+              if (!newHead.getDefs().isEmpty()
+                      && !newHead.getDefs().get(0).equivTo(oriLocal) // Todo: simplify
                   || newHead.getDefs().isEmpty()) {
                 for (Stmt succ : bodyBuilder.getStmtGraph().successors(newHead)) {
                   if (!visitedInner.contains(succ) && !forwardsQueue.contains(succ)) {
