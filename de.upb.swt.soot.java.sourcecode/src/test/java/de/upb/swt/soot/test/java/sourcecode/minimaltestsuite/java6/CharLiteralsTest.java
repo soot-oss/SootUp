@@ -75,7 +75,13 @@ public class CharLiteralsTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
-  /** public void charBackslashT(){ char val = '\t'; } */
+  /**
+   *
+   *
+   * <pre>
+   * public void charBackslashT(){ char val = '\t'; }
+   * </pre>
+   */
   public List<String> expectedBodyStmtsCharBackslashT() {
     return Stream.of("r0 := @this: CharLiterals", "$i0 = 9", "return").collect(Collectors.toList());
   }

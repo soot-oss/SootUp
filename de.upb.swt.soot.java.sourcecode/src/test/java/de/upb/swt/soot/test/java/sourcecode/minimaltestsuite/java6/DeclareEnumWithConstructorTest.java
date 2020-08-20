@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
@@ -51,7 +52,7 @@ public class DeclareEnumWithConstructorTest extends MinimalSourceTestSuiteBase {
         Collections.emptyList());
   }
 
-  @org.junit.Test
+  @Test
   public void test() {
     SootMethod sootMethod = loadMethod(getInitMethodSignature());
     assertJimpleStmts(sootMethod, expectedBodyStmts());
@@ -71,14 +72,8 @@ public class DeclareEnumWithConstructorTest extends MinimalSourceTestSuiteBase {
     assertTrue(sootClass.isEnum());
   }
 
-  /**  <pre>    public void declareEnum(){
-   * for(Type type:Type.values()){
-   * System.out.println(type);
-   * }
-   * }
-   * }
-   * <pre>*/
-  /**  <pre>        private int getValue() {
+  /**  <pre>
+   * private int getValue() {
    * return value;
    * }
    * <pre>*/
@@ -149,7 +144,8 @@ public class DeclareEnumWithConstructorTest extends MinimalSourceTestSuiteBase {
   /**
    *
    *
-   * <pre>public enum Number{
+   * <pre>
+   *     public enum Number{
    *         ZERO(0),
    *         ONE(1),
    *         TWO(2),

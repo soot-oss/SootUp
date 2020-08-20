@@ -52,7 +52,8 @@ public class EscapeSequencesInStringTest extends MinimalSourceTestSuiteBase {
   /**
    *
    *
-   * <pre>public void escapeBackslashB(){
+   * <pre>
+   *     public void escapeBackslashB(){
    *         String str = "This escapes backslash b \b";
    *     }
    *     </pre>
@@ -68,7 +69,8 @@ public class EscapeSequencesInStringTest extends MinimalSourceTestSuiteBase {
   /**
    *
    *
-   * <pre>public void escapeBackslashT(){
+   * <pre>
+   *     public void escapeBackslashT(){
    *         String str = "This escapes backslash t \t";
    *     }</pre>
    */
@@ -83,7 +85,8 @@ public class EscapeSequencesInStringTest extends MinimalSourceTestSuiteBase {
   /**
    *
    *
-   * <pre>public void escapeBackslashN(){
+   * <pre>
+   *     public void escapeBackslashN(){
    *         String str = "This escapes backslash n \n";
    *     }</pre>
    */
@@ -98,7 +101,8 @@ public class EscapeSequencesInStringTest extends MinimalSourceTestSuiteBase {
   /**
    *
    *
-   * <pre>public void escapeBackslashF(){
+   * <pre>
+   *     public void escapeBackslashF(){
    *         String str = "This escapes backslash f \f";
    *     }
    *     </pre>

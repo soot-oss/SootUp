@@ -26,14 +26,19 @@ public class DefaultMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
         "defaultInterfaceMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre><pre>*/
-  /**  <pre>    public void interfaceMethod(){
+  /**  <pre>
+   * public void interfaceMethod(){
    * System.out.println("Method interfaceMethod() is implemented");
    * }
    * public void defaultInterfaceMethod(){
    *
+   * //Add this line after default methods are supported
+   *
+   * //DefaultMethodInterface.super.defaultInterfaceMethod();
+   *
    * System.out.println("Method defaultInterfaceMethod() is implemented");
    * };
+   *
    * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {

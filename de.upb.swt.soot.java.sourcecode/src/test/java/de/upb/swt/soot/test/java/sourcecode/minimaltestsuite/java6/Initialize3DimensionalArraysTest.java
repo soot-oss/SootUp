@@ -22,7 +22,6 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
     assertJimpleStmts(method, expectedBodyStmtsIntArrays());
 
     method = loadMethod(getMethodSignature("byteArrays"));
-
     assertJimpleStmts(method, expectedBodyStmtsByteArrays());
 
     method = loadMethod(getMethodSignature("shortArrays"));
@@ -32,7 +31,6 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
     assertJimpleStmts(method, expectedBodyStmtsLongArrays());
 
     method = loadMethod(getMethodSignature("floatArrays"));
-
     assertJimpleStmts(method, expectedBodyStmtsFloatArrays());
 
     method = loadMethod(getMethodSignature("doubleArrays"));

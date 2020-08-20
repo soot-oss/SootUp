@@ -94,7 +94,7 @@ public class AssertStatementTest extends MinimalSourceTestSuiteBase {
    *         assert "first" != null;
    *         int x = 1;
    *         assert "second" != null;
-   *         int x = 2;
+   *         x = 2;
    *     }
    * </pre>
    */

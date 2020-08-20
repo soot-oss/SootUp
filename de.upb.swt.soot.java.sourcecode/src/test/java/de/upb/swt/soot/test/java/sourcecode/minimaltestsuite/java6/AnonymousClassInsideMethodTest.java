@@ -20,7 +20,8 @@ public class AnonymousClassInsideMethodTest extends MinimalSourceTestSuiteBase {
         "anonymousClassInsideMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>    public void anonymousClassInsideMethod() {
+  /**  <pre>
+   * public void anonymousClassInsideMethod() {
    *
    * MathOperation myMathOperation = new MathOperation() {
    * int i = 0;
