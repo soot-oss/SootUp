@@ -23,7 +23,9 @@ public class TryWithResourcesConciseTest extends MinimalSourceTestSuiteBase {
     /** TODO [kk] Java 9 is not supported by WALA, feature can not be tested */
   }
 
-  /**  <pre>    public void printFile() throws Exception{
+  /**
+   * <pre>
+   *     public void printFile() throws Exception{
    * try(BufferedReader bufferedReader = new BufferedReader(new FileReader("file.txt"))){
    * String data = "";
    * while( (data= bufferedReader.readLine()) != null ){
@@ -32,7 +34,9 @@ public class TryWithResourcesConciseTest extends MinimalSourceTestSuiteBase {
    * }
    * }
    * }<pre>*/
-  /**  <pre>    public void printFile() throws Exception {
+  /**
+   * <pre>
+   *     public void printFile() throws Exception {
    * final BufferedReader bufferedReader = new BufferedReader(new FileReader("file.txt"));
    * try(bufferedReader) {
    * String data = "";

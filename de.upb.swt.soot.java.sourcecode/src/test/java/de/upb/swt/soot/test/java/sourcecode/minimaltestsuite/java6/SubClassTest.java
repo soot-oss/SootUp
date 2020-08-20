@@ -39,7 +39,11 @@ public class SubClassTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
 
-  /**  <pre>    public void subclassMethod() {
+  /**
+   *
+   *
+   * <pre>
+   *     public void subclassMethod() {
    * aa=10;
    * bb=20;
    * cc=30;
@@ -51,7 +55,8 @@ public class SubClassTest extends MinimalSourceTestSuiteBase {
    * b=200;
    * c=300;
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

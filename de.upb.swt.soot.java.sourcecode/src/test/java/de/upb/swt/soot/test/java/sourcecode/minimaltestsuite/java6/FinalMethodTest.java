@@ -30,10 +30,15 @@ public class FinalMethodTest extends MinimalSourceTestSuiteBase {
         "finalMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>    final void finalMethod(){
+  /**
+   *
+   *
+   * <pre>
+   *     final void finalMethod(){
    * System.out.println("final method");
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

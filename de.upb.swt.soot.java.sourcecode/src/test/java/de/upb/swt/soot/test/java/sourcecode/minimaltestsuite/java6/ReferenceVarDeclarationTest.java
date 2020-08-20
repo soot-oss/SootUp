@@ -21,10 +21,15 @@ public class ReferenceVarDeclarationTest extends MinimalSourceTestSuiteBase {
         "stringVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>    public void stringVariable() {
+  /**
+   *
+   *
+   * <pre>
+   *     public void stringVariable() {
    * String str = "Hello World";
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: ReferenceVarDeclaration", "$r1 = \"Hello World\"", "return")

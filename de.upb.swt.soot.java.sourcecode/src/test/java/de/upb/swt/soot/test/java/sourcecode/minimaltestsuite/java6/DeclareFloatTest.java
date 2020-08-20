@@ -17,11 +17,16 @@ public class DeclareFloatTest extends MinimalSourceTestSuiteBase {
         "declareFloatMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>    void declareFloatMethod(){
+  /**
+   *
+   *
+   * <pre>
+   *     void declareFloatMethod(){
    * System.out.println(f1);
    * System.out.println(f2);
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

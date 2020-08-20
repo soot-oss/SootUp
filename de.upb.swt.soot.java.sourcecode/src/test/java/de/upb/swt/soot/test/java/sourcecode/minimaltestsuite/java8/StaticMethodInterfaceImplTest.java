@@ -27,22 +27,39 @@ public class StaticMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
         "initStatic", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre><pre>*/
-  /**  <pre>    static void staticMethod(){
+  /**
+   * <pre>
+   * <pre>*/
+  /**
+   *
+   *
+   * <pre>
+   *     static void staticMethod(){
    * System.out.println("static method");
    * }
-   * <pre>*/
-  /**  <pre>    static public void initStatic(){
+   * </pre>
+   */
+  /**
+   *
+   *
+   * <pre>
+   *     static public void initStatic(){
    * System.out.println("Inside initStatic - StaticmethodInterface");
    * }
-   * <pre>*/
-  /**  <pre>    static public void initStatic(){
+   * </pre>
+   */
+  /**
+   *
+   *
+   * <pre>
+   *     static public void initStatic(){
    * System.out.println("Inside initStatic - StaticmethodInterfaceImpl");
    * }
    * public void display(){
    * System.out.println("Inside display - StaticmethodInterfaceImpl");
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

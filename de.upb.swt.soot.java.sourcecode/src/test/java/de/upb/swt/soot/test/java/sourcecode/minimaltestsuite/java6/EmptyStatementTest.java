@@ -21,10 +21,15 @@ public class EmptyStatementTest extends MinimalSourceTestSuiteBase {
         "emptyStatement", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>    public void emptyStatement(){
+  /**
+   *
+   *
+   * <pre>
+   *     public void emptyStatement(){
    * int num  = 5;;
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: EmptyStatement", "$i0 = 5", "return")

@@ -18,7 +18,11 @@ public class ReflectionTest extends MinimalSourceTestSuiteBase {
         "checkReflection", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>    public Reflection(){
+  /**
+   *
+   *
+   * <pre>
+   *     public Reflection(){
    * s="String";
    * }
    * public void checkReflection()  throws  NoSuchMethodException{
@@ -30,7 +34,8 @@ public class ReflectionTest extends MinimalSourceTestSuiteBase {
    * System.out.println(constructor.getName());
    * System.out.println(reflectionClass.getMethods().length);
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

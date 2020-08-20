@@ -21,9 +21,14 @@ public class ForEachLoopTest extends MinimalSourceTestSuiteBase {
         "forEachLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>    public void forEachLoop(){
+  /**
+   *
+   *
+   * <pre>
+   *     public void forEachLoop(){
    * int[] numArray = {10,20,30,40,50,60,71,80,90};
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

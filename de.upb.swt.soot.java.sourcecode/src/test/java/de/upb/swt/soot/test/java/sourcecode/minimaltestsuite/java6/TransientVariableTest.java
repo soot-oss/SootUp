@@ -31,10 +31,15 @@ public class TransientVariableTest extends MinimalSourceTestSuiteBase {
                         && sootField.getModifiers().contains(Modifier.TRANSIENT)));
   }
 
-  /**  <pre>    public void transientVariable(){
+  /**
+   *
+   *
+   * <pre>
+   *     public void transientVariable(){
    * System.out.println(transientVar);
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

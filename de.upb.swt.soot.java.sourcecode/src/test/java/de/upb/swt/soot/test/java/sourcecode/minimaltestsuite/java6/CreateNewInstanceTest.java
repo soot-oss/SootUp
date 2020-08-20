@@ -21,10 +21,15 @@ public class CreateNewInstanceTest extends MinimalSourceTestSuiteBase {
         "createNewInstance", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>    public void createNewInstance(){
+  /**
+   *
+   *
+   * <pre>
+   *     public void createNewInstance(){
    * Person person = new Person(20);
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

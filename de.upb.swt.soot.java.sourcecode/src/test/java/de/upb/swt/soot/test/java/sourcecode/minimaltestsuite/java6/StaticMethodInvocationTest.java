@@ -20,17 +20,27 @@ public class StaticMethodInvocationTest extends MinimalSourceTestSuiteBase {
         "staticMethodInvocation", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>    static void staticMethod(){
+  /**
+   *
+   *
+   * <pre>
+   *     static void staticMethod(){
    * System.out.println("static method");
    * }
-   * <pre>*/
-  /**  <pre>    public static void staticmethod(){
+   * </pre>
+   */
+  /**
+   *
+   *
+   * <pre>
+   *     public static void staticmethod(){
    * String str = "Hello World";
    * }
    * public void staticMethodInvocation(){
    * StaticMethodInvocation.staticmethod();
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

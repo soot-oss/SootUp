@@ -47,7 +47,11 @@ public class PublicClassTest extends MinimalSourceTestSuiteBase {
         modifier + "Method", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>    public void publicMethod() {
+  /**
+   *
+   *
+   * <pre>
+   *     public void publicMethod() {
    *
    * }
    * private void privateMethod() {
@@ -59,7 +63,8 @@ public class PublicClassTest extends MinimalSourceTestSuiteBase {
    * void noModifierMethod() {
    *
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: PublicClass", "return").collect(Collectors.toList());

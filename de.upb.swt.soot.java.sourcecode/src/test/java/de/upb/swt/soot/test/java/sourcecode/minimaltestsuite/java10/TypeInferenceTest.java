@@ -23,7 +23,9 @@ public class TypeInferenceTest extends MinimalSourceTestSuiteBase {
     /** TODO Java 10 is not supported in WALA, feature can not be tested */
   }
 
-  /**  <pre>    public void printFile() throws Exception{
+  /**
+   * <pre>
+   *     public void printFile() throws Exception{
    * var fileName="file.txt";
    * var data = "";
    * var fileReader= new FileReader(fileName);

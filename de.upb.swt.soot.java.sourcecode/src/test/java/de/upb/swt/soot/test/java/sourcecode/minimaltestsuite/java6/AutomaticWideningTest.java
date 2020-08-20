@@ -20,11 +20,16 @@ public class AutomaticWideningTest extends MinimalSourceTestSuiteBase {
         "automaticWidening", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>    public void automaticWidening(){
+  /**
+   *
+   *
+   * <pre>
+   *     public void automaticWidening(){
    * int x = 10;
    * long y = x;
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: AutomaticWidening", "$i0 = 10", "$i1 = $i0", "return")

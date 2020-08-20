@@ -34,10 +34,15 @@ public class StaticVariableTest extends MinimalSourceTestSuiteBase {
                 }));
   }
 
-  /**  <pre>    public static void staticVariable(){
+  /**
+   *
+   *
+   * <pre>
+   *     public static void staticVariable(){
    * System.out.println(num);
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

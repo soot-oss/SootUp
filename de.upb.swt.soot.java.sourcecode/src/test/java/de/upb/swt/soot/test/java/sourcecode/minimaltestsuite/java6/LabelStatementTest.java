@@ -21,7 +21,11 @@ public class LabelStatementTest extends MinimalSourceTestSuiteBase {
         "labelStatement", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>    public void labelStatement(){
+  /**
+   *
+   *
+   * <pre>
+   *     public void labelStatement(){
    * int num = 20;
    * int i = 1;
    * start:
@@ -31,7 +35,8 @@ public class LabelStatementTest extends MinimalSourceTestSuiteBase {
    * else
    * i++;
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

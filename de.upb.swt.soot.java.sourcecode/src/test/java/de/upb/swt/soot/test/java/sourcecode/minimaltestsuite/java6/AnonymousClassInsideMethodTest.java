@@ -20,7 +20,11 @@ public class AnonymousClassInsideMethodTest extends MinimalSourceTestSuiteBase {
         "anonymousClassInsideMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
+   *
    * public void anonymousClassInsideMethod() {
    *
    * MathOperation myMathOperation = new MathOperation() {
@@ -36,7 +40,8 @@ public class AnonymousClassInsideMethodTest extends MinimalSourceTestSuiteBase {
    *
    * }
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

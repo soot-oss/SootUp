@@ -21,20 +21,30 @@ public class DoWhileLoopTest extends MinimalSourceTestSuiteBase {
         "doWhileLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>    public void doWhileLoop() {
+  /**
+   *
+   *
+   * <pre>
+   *     public void doWhileLoop() {
    * int num = 10;
    * int i = 0;
    * do {
    * i++;
    * } while (num > i);
-   * <pre>*/
-  /**  <pre>    public void whileLoop(){
+   * </pre>
+   */
+  /**
+   *
+   *
+   * <pre>
+   *     public void whileLoop(){
    * int num = 10;
    * int i = 0;
    * while(num>i){
    * num--;
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

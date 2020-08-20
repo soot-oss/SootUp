@@ -21,21 +21,31 @@ public class ContinueInWhileLoopTest extends MinimalSourceTestSuiteBase {
         "continueInWhileLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>    public void continueInWhileLoop(){
+  /**
+   *
+   *
+   * <pre>
+   *     public void continueInWhileLoop(){
    * int num = 0;
    * while (num < 10) {
    * if (num == 5) {
    * num++;
    * continue;
    * }
-   * <pre>*/
-  /**  <pre>    public void whileLoop(){
+   * </pre>
+   */
+  /**
+   *
+   *
+   * <pre>
+   *     public void whileLoop(){
    * int num = 10;
    * int i = 0;
    * while(num>i){
    * num--;
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

@@ -26,7 +26,11 @@ public class DefaultMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
         "defaultInterfaceMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
+   *
    * public void interfaceMethod(){
    * System.out.println("Method interfaceMethod() is implemented");
    * }
@@ -39,7 +43,8 @@ public class DefaultMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
    * System.out.println("Method defaultInterfaceMethod() is implemented");
    * };
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

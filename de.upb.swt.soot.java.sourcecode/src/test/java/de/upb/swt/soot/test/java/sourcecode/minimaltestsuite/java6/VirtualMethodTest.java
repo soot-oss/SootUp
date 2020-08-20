@@ -19,7 +19,11 @@ public class VirtualMethodTest extends MinimalSourceTestSuiteBase {
         "virtualMethodDemo", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>    public int getSalary(){ return salary;}
+  /**
+   *
+   *
+   * <pre>
+   *     public int getSalary(){ return salary;}
    * public int getSalary(){
    * return super.getSalary()+bonus;
    * }
@@ -32,7 +36,8 @@ public class VirtualMethodTest extends MinimalSourceTestSuiteBase {
    * System.out.println(e1.getSalary());
    * System.out.println(e2.getSalary());
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

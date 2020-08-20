@@ -20,7 +20,11 @@ public class GenericTypeParamOnClassTest extends MinimalSourceTestSuiteBase {
         "genericTypeParamOnClass", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>        private void set(T t) {
+  /**
+   *
+   *
+   * <pre>
+   *         private void set(T t) {
    * this.t = t;
    * }
    * public T get() {
@@ -31,7 +35,8 @@ public class GenericTypeParamOnClassTest extends MinimalSourceTestSuiteBase {
    * a.set(5);
    * int x = a.get();
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

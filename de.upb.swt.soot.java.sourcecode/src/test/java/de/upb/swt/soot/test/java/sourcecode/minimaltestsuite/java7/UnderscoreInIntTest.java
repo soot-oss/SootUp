@@ -20,10 +20,15 @@ public class UnderscoreInIntTest extends MinimalSourceTestSuiteBase {
         "underscoreInInt", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>    public void underscoreInInt(){
+  /**
+   *
+   *
+   * <pre>
+   *     public void underscoreInInt(){
    * int a = 0b0111_1111_1111_1111_1111_1111_1111_1111;
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: UnderscoreInInt", "$i0 = 2147483647", "return")

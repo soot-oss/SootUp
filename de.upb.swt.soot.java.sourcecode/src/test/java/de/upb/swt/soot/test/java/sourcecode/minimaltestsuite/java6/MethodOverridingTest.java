@@ -22,10 +22,15 @@ public class MethodOverridingTest extends MinimalSourceTestSuiteBase {
         Collections.emptyList());
   }
 
-  /**  <pre>    public void calculateArea(){
+  /**
+   *
+   *
+   * <pre>
+   *     public void calculateArea(){
    * System.out.println("Inside MethodOverriding-calculateArea()");
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

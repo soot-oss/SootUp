@@ -27,11 +27,16 @@ public class MethodAcceptingLamExprTest extends MinimalSourceTestSuiteBase {
   }
   /** TODO update the expectedBodyStmts when Lambda are supported by Wala */
 
-  /**  <pre>    public void lambdaAsParamMethod(){
+  /**
+   *
+   *
+   * <pre>
+   *     public void lambdaAsParamMethod(){
    * //        Percentage percentageValue = (value -> value/100);
    * //        System.out.println("Percentage : " + percentageValue.calcPercentage(45.0));
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: MethodAcceptingLamExpr", "return")
