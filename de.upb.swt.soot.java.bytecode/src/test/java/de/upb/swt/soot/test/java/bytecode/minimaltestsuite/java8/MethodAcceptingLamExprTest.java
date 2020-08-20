@@ -26,6 +26,13 @@ public class MethodAcceptingLamExprTest extends MinimalBytecodeTestSuiteBase {
     /** TODO: [kk] MethodType is not working/ not implemented yet */
   }
 
+  /**  <pre>
+   * public void lambdaAsParamMethod(){
+   * //        Percentage percentageValue = (value -> value/100);
+   * //        System.out.println("Percentage : " + percentageValue.calcPercentage(45.0));
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

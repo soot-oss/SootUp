@@ -21,6 +21,26 @@ public class BreakInWhileLoopTest extends MinimalBytecodeTestSuiteBase {
         "breakInWhileLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>
+   * public void breakInWhileLoop() {
+   * int num = 10;
+   * int i = 5;
+   * while (num > 0) {
+   * num--;
+   * if (num == i) {
+   * break;
+   * }
+   *
+   * <pre>*/
+  /**  <pre>
+   * public void whileLoop(){
+   * int num = 10;
+   * int i = 0;
+   * while(num>i){
+   * num--;
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

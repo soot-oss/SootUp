@@ -21,6 +21,15 @@ public class WhileLoopTest extends MinimalBytecodeTestSuiteBase {
         "whileLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>
+   * public void whileLoop(){
+   * int num = 10;
+   * int i = 0;
+   * while(num>i){
+   * num--;
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

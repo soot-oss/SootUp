@@ -22,6 +22,24 @@ public class TypeInferenceTest extends MinimalBytecodeTestSuiteBase {
         "printFile", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>
+   * public void printFile() throws Exception{
+   * var fileName="file.txt";
+   * var data = "";
+   * var fileReader= new FileReader(fileName);
+   * var bufferedReader= new BufferedReader(fileReader);
+   * while( (data= bufferedReader.readLine()) != null ){
+   * System.out.println(data);
+   * }
+   * bufferedReader.close();
+   * }
+   *
+   * public static void main(String[] args) throws Exception{
+   * TypeInference typeInference = new TypeInference();
+   * typeInference.printFile();
+   * }
+   * }
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

@@ -37,6 +37,12 @@ public class TransientVariableTest extends MinimalBytecodeTestSuiteBase {
                         && sootField.getModifiers().contains(Modifier.TRANSIENT)));
   }
 
+  /**  <pre>
+   * public void transientVariable(){
+   * System.out.println(transientVar);
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

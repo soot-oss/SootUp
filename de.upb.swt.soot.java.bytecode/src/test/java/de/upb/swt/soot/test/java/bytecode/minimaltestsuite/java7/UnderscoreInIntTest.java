@@ -20,6 +20,12 @@ public class UnderscoreInIntTest extends MinimalBytecodeTestSuiteBase {
         "underscoreInInt", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>
+   * public void underscoreInInt(){
+   * int a = 0b0111_1111_1111_1111_1111_1111_1111_1111;
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("l0 := @this: UnderscoreInInt", "l1 = 2147483647", "return")

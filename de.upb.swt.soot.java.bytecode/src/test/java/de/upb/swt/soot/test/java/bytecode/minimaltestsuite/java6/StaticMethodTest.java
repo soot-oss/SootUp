@@ -31,6 +31,12 @@ public class StaticMethodTest extends MinimalBytecodeTestSuiteBase {
     assertTrue(method.isStatic());
   }
 
+  /**  <pre>
+   * static void staticMethod(){
+   * System.out.println("static method");
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

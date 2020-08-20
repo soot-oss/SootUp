@@ -20,6 +20,14 @@ public class AutoboxingTest extends MinimalBytecodeTestSuiteBase {
         "autoboxing", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>
+   * public void autoboxing(){
+   * int i = 5;
+   * i++;
+   * Integer j = i;
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

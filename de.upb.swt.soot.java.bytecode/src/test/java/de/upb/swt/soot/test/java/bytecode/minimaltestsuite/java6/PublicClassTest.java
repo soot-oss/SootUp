@@ -49,6 +49,21 @@ public class PublicClassTest extends MinimalBytecodeTestSuiteBase {
         modifier + "Method", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>
+   * public void publicMethod() {
+   *
+   * }
+   * private void privateMethod() {
+   *
+   * }
+   * protected void protectedMethod() {
+   *
+   * }
+   * void noModifierMethod() {
+   *
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("l0 := @this: PublicClass", "return").collect(Collectors.toList());

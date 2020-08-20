@@ -22,6 +22,21 @@ public class ReflectionTest extends MinimalBytecodeTestSuiteBase {
         "checkReflection", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>
+   * public Reflection(){
+   * s="String";
+   * }
+   * public void checkReflection()  throws  NoSuchMethodException{
+   *
+   * Reflection reflection = new Reflection();
+   * Class reflectionClass = Reflection.class;
+   * System.out.println(reflectionClass);
+   * Constructor constructor = reflectionClass.getConstructor();
+   * System.out.println(constructor.getName());
+   * System.out.println(reflectionClass.getMethods().length);
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

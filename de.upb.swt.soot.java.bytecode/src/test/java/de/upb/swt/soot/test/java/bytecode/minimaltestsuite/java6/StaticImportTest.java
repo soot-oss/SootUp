@@ -28,6 +28,15 @@ public class StaticImportTest extends MinimalBytecodeTestSuiteBase {
     SootClass sootClass = loadClass(getDeclaredClassSignature());
   }
 
+  /**  <pre>
+   * public void mathFunctions(){
+   * out.println(sqrt(4));
+   * out.println(pow(2,5));
+   * out.println(ceil(5.6));
+   * out.println("Static import for System.out");
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

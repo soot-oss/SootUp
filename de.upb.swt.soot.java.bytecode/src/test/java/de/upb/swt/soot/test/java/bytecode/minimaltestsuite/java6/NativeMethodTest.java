@@ -28,6 +28,9 @@ public class NativeMethodTest extends MinimalBytecodeTestSuiteBase {
     assertTrue(sootMethod.isNative());
   }
 
+  /**  <pre>
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

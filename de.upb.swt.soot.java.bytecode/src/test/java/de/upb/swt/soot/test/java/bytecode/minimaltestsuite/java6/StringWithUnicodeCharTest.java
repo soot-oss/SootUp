@@ -21,6 +21,12 @@ public class StringWithUnicodeCharTest extends MinimalBytecodeTestSuiteBase {
         "stringWithUnicodeChar", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>
+   * public void stringWithUnicodeChar(){
+   * String str = "\u0024"+"123";
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("l0 := @this: StringWithUnicodeChar", "l1 = \"$123\"", "return")

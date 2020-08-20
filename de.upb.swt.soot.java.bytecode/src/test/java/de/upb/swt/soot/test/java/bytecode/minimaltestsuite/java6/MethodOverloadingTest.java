@@ -50,6 +50,17 @@ public class MethodOverloadingTest extends MinimalBytecodeTestSuiteBase {
     assertEquals(3, sootClass.getMethods().size());
   }
 
+  /**  <pre>
+   * int calculate(int a, int b){
+   * return a+b;
+   *
+   * }
+   * int calculate(int a){
+   * return a+a;
+   *
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

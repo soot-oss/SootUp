@@ -36,6 +36,23 @@ public class MultiInterfaceImplClassTest extends MinimalBytecodeTestSuiteBase {
                 }));
   }
 
+  /**  <pre>
+   *
+   * <pre>*/
+  /**  <pre>
+   * public void interfaceMethod(){
+   * System.out.print("Method from InterfaceImpl is implemented");
+   * System.out.println("Variable from InterfaceImpl is "+a);
+   * };
+   *
+   * <pre>*/
+  /**  <pre>
+   * public void interfaceMethod(){
+   * System.out.print("Method from InterfaceImpl is implemented");
+   * System.out.println("Variable from InterfaceImpl is "+a);
+   * };
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

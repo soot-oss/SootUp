@@ -22,6 +22,22 @@ public class VirtualMethodTest extends MinimalBytecodeTestSuiteBase {
         "virtualMethodDemo", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>
+   * public int getSalary(){ return salary;}
+   * public int getSalary(){
+   * return super.getSalary()+bonus;
+   * }
+   * public int getSalary(){
+   * return super.getSalary()+raise;
+   * }
+   * public void virtualMethodDemo(){
+   * Employee e1= new TempEmployee(1500,150);
+   * Employee e2= new RegEmployee(1500,500);
+   * System.out.println(e1.getSalary());
+   * System.out.println(e2.getSalary());
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

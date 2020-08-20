@@ -24,6 +24,12 @@ public class EvaluationOrderWithParenthesesTest extends MinimalBytecodeTestSuite
         Collections.emptyList());
   }
 
+  /**  <pre>
+   * public void evaluationOrderWithParentheses(){
+   * int b = ((1 + 2) * 3);
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("l0 := @this: EvaluationOrderWithParentheses", "l1 = 9", "return")

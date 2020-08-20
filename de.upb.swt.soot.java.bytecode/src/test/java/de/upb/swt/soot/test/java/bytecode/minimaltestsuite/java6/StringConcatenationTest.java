@@ -21,6 +21,12 @@ public class StringConcatenationTest extends MinimalBytecodeTestSuiteBase {
         "stringConcatenation", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>
+   * public void stringConcatenation(){
+   * String str = "the" + "string";
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("l0 := @this: StringConcatenation", "l1 = \"thestring\"", "return")
