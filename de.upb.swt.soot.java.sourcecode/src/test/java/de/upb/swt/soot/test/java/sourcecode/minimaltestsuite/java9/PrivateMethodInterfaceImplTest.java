@@ -37,8 +37,11 @@ public class PrivateMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
   }
 
   /**
+   *
+   *
    * <pre>
-   * <pre>*/
+   * </pre>
+   */
   /**
    *
    *

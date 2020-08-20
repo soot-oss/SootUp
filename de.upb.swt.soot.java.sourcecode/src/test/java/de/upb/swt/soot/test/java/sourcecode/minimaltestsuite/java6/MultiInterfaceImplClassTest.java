@@ -34,8 +34,11 @@ public class MultiInterfaceImplClassTest extends MinimalSourceTestSuiteBase {
   }
 
   /**
+   *
+   *
    * <pre>
-   * <pre>*/
+   * </pre>
+   */
   /**
    *
    *

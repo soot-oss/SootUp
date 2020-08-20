@@ -24,6 +24,8 @@ public class TryWithResourcesConciseTest extends MinimalSourceTestSuiteBase {
   }
 
   /**
+   *
+   *
    * <pre>
    *     public void printFile() throws Exception{
    * try(BufferedReader bufferedReader = new BufferedReader(new FileReader("file.txt"))){
@@ -33,8 +35,11 @@ public class TryWithResourcesConciseTest extends MinimalSourceTestSuiteBase {
    * }
    * }
    * }
-   * }<pre>*/
+   * }</pre>
+   */
   /**
+   *
+   *
    * <pre>
    *     public void printFile() throws Exception {
    * final BufferedReader bufferedReader = new BufferedReader(new FileReader("file.txt"));
@@ -50,7 +55,8 @@ public class TryWithResourcesConciseTest extends MinimalSourceTestSuiteBase {
    * TryWithResourcesConcise tryWithResourcesConcise = new TryWithResourcesConcise();
    * tryWithResourcesConcise.printFile();
    * }
-   * }<pre>*/
+   * }</pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

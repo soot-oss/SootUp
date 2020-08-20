@@ -19,8 +19,11 @@ public class SynchronizedBlockTest extends MinimalSourceTestSuiteBase {
   }
 
   /**
+   *
+   *
    * <pre>
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

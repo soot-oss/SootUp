@@ -27,8 +27,11 @@ public class SynchronizedMethodTest extends MinimalSourceTestSuiteBase {
   }
 
   /**
+   *
+   *
    * <pre>
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

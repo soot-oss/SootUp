@@ -24,6 +24,8 @@ public class TypeInferenceTest extends MinimalSourceTestSuiteBase {
   }
 
   /**
+   *
+   *
    * <pre>
    *     public void printFile() throws Exception{
    * var fileName="file.txt";
@@ -40,7 +42,8 @@ public class TypeInferenceTest extends MinimalSourceTestSuiteBase {
    * TypeInference typeInference = new TypeInference();
    * typeInference.printFile();
    * }
-   * }<pre>*/
+   * }</pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

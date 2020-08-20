@@ -24,6 +24,8 @@ public class AnonymousDiamondOperatorTest extends MinimalSourceTestSuiteBase {
   }
 
   /**
+   *
+   *
    * <pre>
    *    public int innerClassDiamond() {
    * MyClass<Integer> obj = new MyClass<>() {
@@ -41,7 +43,8 @@ public class AnonymousDiamondOperatorTest extends MinimalSourceTestSuiteBase {
    *
    * }
    *
-   * }<pre>*/
+   * }</pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

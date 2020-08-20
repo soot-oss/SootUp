@@ -34,8 +34,11 @@ public class InterfaceImplClassTest extends MinimalSourceTestSuiteBase {
   }
 
   /**
+   *
+   *
    * <pre>
-   * <pre>*/
+   * </pre>
+   */
   /**
    *
    *

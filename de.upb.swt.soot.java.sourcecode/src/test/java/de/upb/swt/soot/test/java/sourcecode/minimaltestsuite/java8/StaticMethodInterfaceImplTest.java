@@ -28,8 +28,11 @@ public class StaticMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
   }
 
   /**
+   *
+   *
    * <pre>
-   * <pre>*/
+   * </pre>
+   */
   /**
    *
    *
