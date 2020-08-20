@@ -12,7 +12,7 @@ import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.shrikeCT.ClassConstants;
 import com.ibm.wala.shrikeCT.InvalidClassFileException;
-import com.ibm.wala.ssa.SSAInstruction;
+import com.ibm.wala.ssa.*;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
@@ -509,17 +509,39 @@ public class WalaIRToJimpleConverter {
 
         instConverter.setUpTargets(index2Stmt, builder);
 
-        for (Map.Entry<IBasicBlock<SSAInstruction>, TypeReference[]> catchBlock :
+        // calculate trap information
+        for (Map.Entry<IBasicBlock<SSAInstruction>, TypeReference[]> catchBlockEntry :
             walaMethod.catchTypes().entrySet()) {
 
-          // FIXME start/end of try block
+          final IBasicBlock<SSAInstruction> block = catchBlockEntry.getKey();
+          final TypeReference[] exceptionTypes = catchBlockEntry.getValue();
+
+          // FIXME: [ms] determine start/end of try block that leads into this catch block
           Stmt from = null;
           Stmt to = null;
+          int idx = -1;
+          for (int i = block.getFirstInstructionIndex() - 1; i >= 0; i--) {
+            if (insts[i] instanceof SSAThrowInstruction
+                || (insts[i] instanceof SSAInvokeInstruction
+                    && insts[i].getExceptionTypes().equals(exceptionTypes))) {
+              idx = i;
+              break;
+            }
+          }
 
-          Stmt handlerStmt = index2Stmt.get(catchBlock.getKey().getFirstInstructionIndex());
-          for (TypeReference type : catchBlock.getValue()) {
-            ClassType exception = (ClassType) convertType(type);
-            traps.add(new JTrap(exception, from, to, handlerStmt));
+          if (idx > 0) {
+            IBasicBlock<?> fromBlock = cfg.getBlockForInstruction(idx);
+            from = index2Stmt.get(fromBlock.getFirstInstructionIndex());
+            to = index2Stmt.get(fromBlock.getLastInstructionIndex());
+
+            Stmt handlerStmt = index2Stmt.get(block.getFirstInstructionIndex());
+            for (TypeReference type : exceptionTypes) {
+              ClassType exception = (ClassType) convertType(type);
+              traps.add(new JTrap(exception, from, to, handlerStmt));
+            }
+          } else {
+            // buuuh!
+            assert (false);
           }
         }
 
