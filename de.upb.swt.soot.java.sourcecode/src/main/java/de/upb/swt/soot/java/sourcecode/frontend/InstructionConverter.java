@@ -96,10 +96,6 @@ public class InstructionConverter {
   private final Map<JIfStmt, Integer> branchingTargetsOfIfStmts;
   private final Map<JSwitchStmt, List<Integer>> branchingTargetsOfLookUpSwitchStmts;
 
-  List<Trap> traps = new ArrayList<>();
-  private Stmt danglingExceptionInstrStart = null;
-  private Stmt danglingExceptionInstrEnd = null;
-
   private final Map<Integer, Local> locals;
   private final IdentifierFactory identifierFactory;
 
@@ -288,16 +284,6 @@ public class InstructionConverter {
             caught,
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
-
-    // add trap information to body
-    assert (danglingExceptionInstrStart != null);
-    // FIXME adapt danglingExceptionInstrEnd -> exclusive!
-    traps.add(
-        new JTrap(
-            exceptionClassType,
-            danglingExceptionInstrStart,
-            danglingExceptionInstrStart,
-            handlerStmt));
 
     return handlerStmt;
   }
@@ -592,7 +578,6 @@ public class InstructionConverter {
             WalaIRToJimpleConverter.convertPositionInfo(
                 debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
 
-    danglingExceptionInstrStart = jThrowStmt;
     return jThrowStmt;
   }
 
@@ -854,7 +839,6 @@ public class InstructionConverter {
               WalaIRToJimpleConverter.convertPositionInfo(
                   debugInfo.getInstructionPosition(invokeInst.iIndex()), operandPos));
     }
-    danglingExceptionInstrStart = jInvokeStmt;
     return jInvokeStmt;
   }
 
@@ -1242,9 +1226,5 @@ public class InstructionConverter {
       }
     }
     return false;
-  }
-
-  public List<Trap> getTraps() {
-    return traps;
   }
 }

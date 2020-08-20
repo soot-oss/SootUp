@@ -6,6 +6,7 @@ import com.ibm.wala.cast.loader.AstMethod;
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import com.ibm.wala.cfg.AbstractCFG;
+import com.ibm.wala.cfg.IBasicBlock;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.classLoader.IMethod;
@@ -43,6 +44,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import javax.annotation.Nonnull;
+import scala.annotation.meta.field;
 
 /**
  * Converter which converts WALA IR to jimple.
@@ -401,6 +403,7 @@ public class WalaIRToJimpleConverter {
 
     final Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
+    List<Trap> traps = new ArrayList<>();
 
     if (walaMethod.isAbstract()) {
       return builder.build();
@@ -460,15 +463,15 @@ public class WalaIRToJimpleConverter {
         InstructionConverter instConverter =
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
         // Don't exchange, different stmts could have same ids
-        HashMap<Integer, Stmt> stmt2iIndex = new HashMap<>();
+        HashMap<Integer, Stmt> index2Stmt = new HashMap<>();
         Stmt stmt = null;
         for (SSAInstruction inst : insts) {
-          List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst, stmt2iIndex);
+          List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst, index2Stmt);
           if (!retStmts.isEmpty()) {
             final int retStmtsSize = retStmts.size();
             stmt = retStmts.get(0);
             emitStmt(builder, stmt);
-            stmt2iIndex.put(inst.iIndex(), stmt);
+            index2Stmt.put(inst.iIndex(), stmt);
 
             for (int i = 1; i < retStmtsSize; i++) {
               stmt = retStmts.get(i);
@@ -483,7 +486,7 @@ public class WalaIRToJimpleConverter {
           final boolean isImplicitLastStmtTargetOfBranchStmt = instConverter.hasJumpTarget(-1);
           final boolean validMethodLeaving =
               !(stmt instanceof JReturnVoidStmt || stmt instanceof JThrowStmt);
-          if (stmt2iIndex.isEmpty() || validMethodLeaving || isImplicitLastStmtTargetOfBranchStmt) {
+          if (index2Stmt.isEmpty() || validMethodLeaving || isImplicitLastStmtTargetOfBranchStmt) {
             // TODO? [ms] InstructionPosition of last line in the method seems strange to me ->
             // maybe use lastLine with
             // startcol: -1 because it does not exist in the source explicitly?
@@ -495,7 +498,7 @@ public class WalaIRToJimpleConverter {
             ret = stmt;
           }
           // needed because referencing a branch to the last stmt refers to: -1
-          stmt2iIndex.put(-1, ret);
+          index2Stmt.put(-1, ret);
         }
 
         for (int i = 0; i < insts.length; i++) {
@@ -504,10 +507,24 @@ public class WalaIRToJimpleConverter {
         }
         System.out.println();
 
-        instConverter.setUpTargets(stmt2iIndex, builder);
+        instConverter.setUpTargets(index2Stmt, builder);
+
+        for (Map.Entry<IBasicBlock<SSAInstruction>, TypeReference[]> catchBlock :
+            walaMethod.catchTypes().entrySet()) {
+
+          // FIXME start/end of try block
+          Stmt from = null;
+          Stmt to = null;
+
+          Stmt handlerStmt = index2Stmt.get(catchBlock.getKey().getFirstInstructionIndex());
+          for (TypeReference type : catchBlock.getValue()) {
+            ClassType exception = (ClassType) convertType(type);
+            traps.add(new JTrap(exception, from, to, handlerStmt));
+          }
+        }
 
         return builder
-            .setTraps(instConverter.getTraps())
+            .setTraps(traps)
             .setLocals(localGenerator.getLocals())
             .setPosition(convertPosition(bodyPos))
             .build();
