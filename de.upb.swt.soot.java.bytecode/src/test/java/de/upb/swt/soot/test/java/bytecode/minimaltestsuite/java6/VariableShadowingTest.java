@@ -20,13 +20,17 @@ public class VariableShadowingTest extends MinimalBytecodeTestSuiteBase {
         "variableShadowing", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void variableShadowing(){
    * int val = num;
    * int num = 10;
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

@@ -28,7 +28,10 @@ public class MultiTryCatchTest extends MinimalBytecodeTestSuiteBase {
         "printFile", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void printFile() throws Exception {
    * BufferedReader bufferedReader = new BufferedReader(new FileReader("file.txt"));
    * try {
@@ -51,7 +54,8 @@ public class MultiTryCatchTest extends MinimalBytecodeTestSuiteBase {
    * }
    * }
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

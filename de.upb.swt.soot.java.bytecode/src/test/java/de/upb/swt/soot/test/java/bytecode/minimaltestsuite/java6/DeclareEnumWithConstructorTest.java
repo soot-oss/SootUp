@@ -77,19 +77,30 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
     assertTrue(methods.stream().anyMatch(m -> m.getSignature().getName().equals("getValue")));
   }
 
-  /**  <pre>    public void declareEnum(){
+  /**
+   *
+   *
+   * <pre>    public void declareEnum(){
    * for(Type type:Type.values()){
    * System.out.println(type);
    * }
    * }
    * }
-   * <pre>*/
-  /**  <pre>        private int getValue() {
+   * </pre>
+   */
+  /**
+   *
+   *
+   * <pre>        private int getValue() {
    * return value;
    * }
-   * <pre>*/
+   * </pre>
+   */
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void declareEnum(){
    * for(Type type:Type.values()){
    * System.out.println(type);
@@ -97,7 +108,8 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
    * }
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

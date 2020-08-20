@@ -23,7 +23,10 @@ public class ThrowExceptionMethodTest extends MinimalBytecodeTestSuiteBase {
         "divideByZero", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * void divideByZero() throws ArithmeticException{
    * int i=8/0;
    * }
@@ -32,7 +35,8 @@ public class ThrowExceptionMethodTest extends MinimalBytecodeTestSuiteBase {
    * }
    * } catch( CustomException e){
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("l0 := @this: ThrowExceptionMethod", "l1 = 8 / 0", "return")

@@ -21,7 +21,10 @@ public class GenTypeParamTest extends MinimalBytecodeTestSuiteBase {
         "geneTypeParamDisplay", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void geneTypeParamDisplay(){
    * List<Object> output = new ArrayList< Object >(3);
    * List<Integer> input = Arrays.asList(1,2,3);
@@ -30,7 +33,8 @@ public class GenTypeParamTest extends MinimalBytecodeTestSuiteBase {
    * System.out.println(genTypeParam.largestNum(2,8,3));
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

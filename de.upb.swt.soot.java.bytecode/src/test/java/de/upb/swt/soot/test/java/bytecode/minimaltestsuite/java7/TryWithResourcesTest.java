@@ -28,7 +28,10 @@ public class TryWithResourcesTest extends MinimalBytecodeTestSuiteBase {
     assertJimpleStmts(sootMethod, expectedBodyStmts());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void printFile() throws Exception{
    * try(BufferedReader bufferedReader = new BufferedReader(new FileReader("file.txt"))){
    * String data = "";
@@ -38,7 +41,8 @@ public class TryWithResourcesTest extends MinimalBytecodeTestSuiteBase {
    * }
    * }
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

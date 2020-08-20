@@ -21,12 +21,16 @@ public class FinalVariableTest extends MinimalBytecodeTestSuiteBase {
         "finalVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void finalVariable() {
    * final int num = 5;
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("l0 := @this: FinalVariable", "return").collect(Collectors.toList());

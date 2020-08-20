@@ -37,7 +37,10 @@ public class SubClassTest extends MinimalBytecodeTestSuiteBase {
     assertTrue(sootClass.getSuperclass().get().getClassName().equals("SuperClass"));
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void subclassMethod() {
    * aa=10;
    * bb=20;
@@ -51,7 +54,8 @@ public class SubClassTest extends MinimalBytecodeTestSuiteBase {
    * c=300;
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

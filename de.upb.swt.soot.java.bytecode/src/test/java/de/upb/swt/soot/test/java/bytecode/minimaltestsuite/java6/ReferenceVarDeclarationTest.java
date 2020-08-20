@@ -21,12 +21,16 @@ public class ReferenceVarDeclarationTest extends MinimalBytecodeTestSuiteBase {
         "stringVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void stringVariable() {
    * String str = "Hello World";
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("l0 := @this: ReferenceVarDeclaration", "l1 = \"Hello World\"", "return")

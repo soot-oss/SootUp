@@ -25,12 +25,16 @@ public class MethodOverridingTest extends MinimalBytecodeTestSuiteBase {
         Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void calculateArea(){
    * System.out.println("Inside MethodOverriding-calculateArea()");
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

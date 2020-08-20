@@ -22,7 +22,10 @@ public class TypeInferenceTest extends MinimalBytecodeTestSuiteBase {
         "printFile", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void printFile() throws Exception{
    * var fileName="file.txt";
    * var data = "";
@@ -39,7 +42,8 @@ public class TypeInferenceTest extends MinimalBytecodeTestSuiteBase {
    * typeInference.printFile();
    * }
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

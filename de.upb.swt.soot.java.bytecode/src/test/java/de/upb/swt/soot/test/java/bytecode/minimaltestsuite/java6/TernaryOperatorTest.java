@@ -21,12 +21,16 @@ public class TernaryOperatorTest extends MinimalBytecodeTestSuiteBase {
         "ternaryOperatorMethod", getDeclaredClassSignature(), "boolean", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * boolean ternaryOperatorMethod(){
    * return num < 0 ? false : true;
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

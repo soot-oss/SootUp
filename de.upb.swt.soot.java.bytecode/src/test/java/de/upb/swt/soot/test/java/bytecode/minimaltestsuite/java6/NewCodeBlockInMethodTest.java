@@ -21,13 +21,17 @@ public class NewCodeBlockInMethodTest extends MinimalBytecodeTestSuiteBase {
         "newCodeBlockInMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void newCodeBlockInMethod(){
    * {
    * int i = 5;
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("l0 := @this: NewCodeBlockInMethod", "l1 = 5", "return")

@@ -21,13 +21,17 @@ public class DeclareLongTest extends MinimalBytecodeTestSuiteBase {
         "declareLongMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * void declareLongMethod(){
    * System.out.println(l1);
    * System.out.println(l2);
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

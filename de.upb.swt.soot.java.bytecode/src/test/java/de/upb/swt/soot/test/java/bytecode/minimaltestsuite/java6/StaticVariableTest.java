@@ -37,12 +37,16 @@ public class StaticVariableTest extends MinimalBytecodeTestSuiteBase {
                 }));
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public static void staticVariable(){
    * System.out.println(num);
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

@@ -21,7 +21,10 @@ public class SwitchCaseStatementWithStringTest extends MinimalBytecodeTestSuiteB
         "switchCaseStatementString", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void switchCaseStatementEnum() {
    * String color = "RED";
    * String str = "";
@@ -50,8 +53,12 @@ public class SwitchCaseStatementWithStringTest extends MinimalBytecodeTestSuiteB
    * break;
    * }
    *
-   * <pre>*/
-  /**  <pre>
+   * </pre>
+   */
+  /**
+   *
+   *
+   * <pre>
    * public void switchCaseStatementString() {
    * String key = "something";
    * int retVal;
@@ -69,7 +76,8 @@ public class SwitchCaseStatementWithStringTest extends MinimalBytecodeTestSuiteB
    * retVal = -1;
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

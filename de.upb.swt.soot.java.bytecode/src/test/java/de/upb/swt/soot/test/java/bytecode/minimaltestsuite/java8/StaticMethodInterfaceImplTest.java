@@ -47,22 +47,37 @@ public class StaticMethodInterfaceImplTest extends MinimalBytecodeTestSuiteBase 
                 }));
   }
 
-  /**  <pre>
+  /**
    *
-   * <pre>*/
-  /**  <pre>
+   *
+   * <pre>
+   *
+   * </pre>
+   */
+  /**
+   *
+   *
+   * <pre>
    * static void staticMethod(){
    * System.out.println("static method");
    * }
    *
-   * <pre>*/
-  /**  <pre>
+   * </pre>
+   */
+  /**
+   *
+   *
+   * <pre>
    * static public void initStatic(){
    * System.out.println("Inside initStatic - StaticmethodInterface");
    * }
    *
-   * <pre>*/
-  /**  <pre>
+   * </pre>
+   */
+  /**
+   *
+   *
+   * <pre>
    * static public void initStatic(){
    * System.out.println("Inside initStatic - StaticmethodInterfaceImpl");
    * }
@@ -70,7 +85,8 @@ public class StaticMethodInterfaceImplTest extends MinimalBytecodeTestSuiteBase 
    * System.out.println("Inside display - StaticmethodInterfaceImpl");
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

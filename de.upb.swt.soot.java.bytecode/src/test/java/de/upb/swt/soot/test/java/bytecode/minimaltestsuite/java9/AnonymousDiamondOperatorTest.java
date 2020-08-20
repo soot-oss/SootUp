@@ -22,7 +22,10 @@ public class AnonymousDiamondOperatorTest extends MinimalBytecodeTestSuiteBase {
         "innerClassDiamond", getDeclaredClassSignature(), "int", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public int innerClassDiamond() {
    * MyClass<Integer> obj = new MyClass<>() {
    * Integer add(Integer x, Integer y) {
@@ -40,7 +43,8 @@ public class AnonymousDiamondOperatorTest extends MinimalBytecodeTestSuiteBase {
    * }
    *
    * }
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

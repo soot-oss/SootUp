@@ -21,7 +21,10 @@ public class ReferencingThisTest extends MinimalBytecodeTestSuiteBase {
         "thisMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * ReferencingThis(){
    * this(10,20);
    * System.out.println("this() to invoke current class constructor");
@@ -40,7 +43,8 @@ public class ReferencingThisTest extends MinimalBytecodeTestSuiteBase {
    * obj.show();
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

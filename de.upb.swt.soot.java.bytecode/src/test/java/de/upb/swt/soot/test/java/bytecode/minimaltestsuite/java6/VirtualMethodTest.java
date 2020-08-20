@@ -22,7 +22,10 @@ public class VirtualMethodTest extends MinimalBytecodeTestSuiteBase {
         "virtualMethodDemo", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public int getSalary(){ return salary;}
    * public int getSalary(){
    * return super.getSalary()+bonus;
@@ -37,7 +40,8 @@ public class VirtualMethodTest extends MinimalBytecodeTestSuiteBase {
    * System.out.println(e2.getSalary());
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

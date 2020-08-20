@@ -38,12 +38,16 @@ public class VolatileVariableTest extends MinimalBytecodeTestSuiteBase {
                 }));
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public int increaseCounter(){
    * return counter++;
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

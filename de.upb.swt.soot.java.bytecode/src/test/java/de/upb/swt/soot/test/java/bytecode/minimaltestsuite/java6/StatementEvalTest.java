@@ -20,13 +20,17 @@ public class StatementEvalTest extends MinimalBytecodeTestSuiteBase {
         "statementEval", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void statementEval(){
    * int b = 1;
    * b = b + (b = 3);
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

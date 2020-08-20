@@ -20,7 +20,10 @@ public class NamedClassInsideMethodTest extends MinimalBytecodeTestSuiteBase {
         "namedClassInsideMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void namedClassInsideMethod() {
    *
    * class MyMathOperation implements MathOperation {
@@ -36,7 +39,8 @@ public class NamedClassInsideMethodTest extends MinimalBytecodeTestSuiteBase {
    * }
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

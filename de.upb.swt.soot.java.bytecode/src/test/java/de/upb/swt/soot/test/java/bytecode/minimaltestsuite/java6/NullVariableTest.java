@@ -21,12 +21,16 @@ public class NullVariableTest extends MinimalBytecodeTestSuiteBase {
         "nullVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void nullVariable(){
    * String str = null;
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("l0 := @this: NullVariable", "l1 = null", "return")

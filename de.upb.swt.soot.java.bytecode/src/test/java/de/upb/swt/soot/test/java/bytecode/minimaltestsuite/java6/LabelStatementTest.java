@@ -21,7 +21,10 @@ public class LabelStatementTest extends MinimalBytecodeTestSuiteBase {
         "labelStatement", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void labelStatement(){
    * int num = 20;
    * int i = 1;
@@ -33,7 +36,8 @@ public class LabelStatementTest extends MinimalBytecodeTestSuiteBase {
    * i++;
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

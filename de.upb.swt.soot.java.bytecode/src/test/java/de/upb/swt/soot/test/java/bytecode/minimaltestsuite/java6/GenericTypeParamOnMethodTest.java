@@ -20,12 +20,16 @@ public class GenericTypeParamOnMethodTest extends MinimalBytecodeTestSuiteBase {
         "genericTypeParamOnMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void genericTypeParamOnMethod() {
    * a("Hello World");
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

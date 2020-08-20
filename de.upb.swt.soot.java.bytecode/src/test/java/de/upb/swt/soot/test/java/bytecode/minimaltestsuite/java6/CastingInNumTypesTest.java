@@ -21,7 +21,10 @@ public class CastingInNumTypesTest extends MinimalBytecodeTestSuiteBase {
         "displayNum", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void displayNum(){
    * byte num1 =1;
    * short num2=2;
@@ -48,7 +51,8 @@ public class CastingInNumTypesTest extends MinimalBytecodeTestSuiteBase {
    *
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

@@ -47,7 +47,10 @@ public class DefaultMethodInterfaceImplTest extends MinimalBytecodeTestSuiteBase
                 }));
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void interfaceMethod(){
    * System.out.println("Method interfaceMethod() is implemented");
    * }
@@ -60,7 +63,8 @@ public class DefaultMethodInterfaceImplTest extends MinimalBytecodeTestSuiteBase
    * System.out.println("Method defaultInterfaceMethod() is implemented");
    * };
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

@@ -32,12 +32,16 @@ public class UnaryOpIntTest extends MinimalBytecodeTestSuiteBase {
      */
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * void methodUnaryOpInt(){
    * int k = i+j;
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

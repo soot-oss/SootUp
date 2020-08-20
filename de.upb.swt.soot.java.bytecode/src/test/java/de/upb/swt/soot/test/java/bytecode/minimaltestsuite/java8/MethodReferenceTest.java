@@ -24,7 +24,10 @@ public class MethodReferenceTest extends MinimalBytecodeTestSuiteBase {
 
   /** TODO Update the source code when WALA supports lambda expression */
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public void methodRefMethod(){
    * System.out.println("Instance Method");
    * MethodReference obj1 = new MethodReference();
@@ -33,7 +36,8 @@ public class MethodReferenceTest extends MinimalBytecodeTestSuiteBase {
    *
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

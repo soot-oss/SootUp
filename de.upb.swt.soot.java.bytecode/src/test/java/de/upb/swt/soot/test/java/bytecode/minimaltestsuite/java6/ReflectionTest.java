@@ -22,7 +22,10 @@ public class ReflectionTest extends MinimalBytecodeTestSuiteBase {
         "checkReflection", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   *
+   *
+   * <pre>
    * public Reflection(){
    * s="String";
    * }
@@ -36,7 +39,8 @@ public class ReflectionTest extends MinimalBytecodeTestSuiteBase {
    * System.out.println(reflectionClass.getMethods().length);
    * }
    *
-   * <pre>*/
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
