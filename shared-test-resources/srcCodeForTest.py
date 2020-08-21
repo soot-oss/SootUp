@@ -31,10 +31,28 @@ for srcFile in srcMatches:
 	str ="/**  <pre>\n"
 	listData=[]
 	data=""
+	
+	#Use this regex to form tupples of method name, method body and put it into a map
 	regexMethod =re.compile( "(\w*)[(]((([a-zA-Z])*(\s+)([a-zA-Z]))*)(([,])(\s+)([a-zA-Z])*(\s+)([a-zA-Z])*)*[)]" )
+	
 	#f= open("..\\..\\sandbox\\DeclareLong.java", 'r', encoding="utf8")
 	f= open(srcFile, 'r', encoding="utf8")
 	print(srcFile)
+	
+	'''
+	1.Use this regex for finding the start of method in the line
+	2.Update the python map expectedBody_*() as key to complete method body as value. 
+	3.Use this map to update the srcTest file.
+	'''
+	#[@Override]*(\s*)public List<String> expectedBodyStmts(\S*)[(][)] 
+	
+	'''
+	1. Regex to find /** <pre> the code </pre> */ in the test file and replace with same/updated source code
+	2. Map of 
+	'''
+	
+	
+	
 	
 	for line in f.readlines():
 		if regexMethod.search(line):
