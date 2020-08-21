@@ -501,12 +501,6 @@ public class WalaIRToJimpleConverter {
           index2Stmt.put(-1, ret);
         }
 
-        for (int i = 0; i < insts.length; i++) {
-          SSAInstruction ssa = insts[i];
-          System.out.println(i + " -> " + ssa.toString(walaMethod.symbolTable()));
-        }
-        System.out.println();
-
         instConverter.setUpTargets(index2Stmt, builder);
 
         // calculate trap information
@@ -517,14 +511,45 @@ public class WalaIRToJimpleConverter {
           final TypeReference[] exceptionTypes = catchBlockEntry.getValue();
 
           // find associated try block
-          IBasicBlock<?> fromBlock =
-              cfg.getBlockForInstruction(block.getFirstInstructionIndex() - 1);
-          while (fromBlock.isCatchBlock()) {
-            fromBlock = cfg.getBlockForInstruction(fromBlock.getFirstInstructionIndex() - 1);
+          boolean found = false;
+          IBasicBlock<?> itBlock = null;
+          int idx = block.getFirstInstructionIndex() - 1;
+          while (idx >= 0) {
+            itBlock = cfg.getBlockForInstruction(idx);
+            if (!itBlock.isCatchBlock()) {
+              for (int i = itBlock.getFirstInstructionIndex();
+                  i <= itBlock.getLastInstructionIndex();
+                  i++) {
+                final String instrString = insts[i].toString(walaMethod.symbolTable());
+                // find instructions that ends with: #[0-9]{0,}try
+                if (instrString.endsWith("try")) {
+                  int pos = instrString.length() - 4;
+                  while (pos > 0) {
+                    // skip numbers
+                    if (!('0' <= instrString.charAt(pos) && instrString.charAt(pos) <= '9')) {
+                      break;
+                    }
+                    pos--;
+                  }
+                  if (instrString.charAt(pos) == '#') {
+                    found = true;
+                    break;
+                  }
+                }
+              }
+              if (found) {
+                break;
+              }
+            }
+            idx = itBlock.getFirstInstructionIndex() - 1;
           }
 
-          Stmt from = index2Stmt.get(fromBlock.getFirstInstructionIndex());
-          Stmt to = index2Stmt.get(fromBlock.getLastInstructionIndex());
+          if (!found) {
+            throw new RuntimeException("No associated try-block found!" + block);
+          }
+
+          Stmt from = index2Stmt.get(itBlock.getFirstInstructionIndex());
+          Stmt to = index2Stmt.get(itBlock.getLastInstructionIndex());
 
           Stmt handlerStmt = index2Stmt.get(block.getFirstInstructionIndex());
           for (TypeReference type : exceptionTypes) {
