@@ -20,6 +20,7 @@ public class MultiTryCatchTest extends MinimalSourceTestSuiteBase {
 
   @Override
   public List<String> expectedBodyStmts() {
+    // ms: weird jimple: sequence of gotos - underlying wala instructions have the same anomaly!
     return Stream.of(
             "r0 := @this: MultiTryCatch",
             "label1:",

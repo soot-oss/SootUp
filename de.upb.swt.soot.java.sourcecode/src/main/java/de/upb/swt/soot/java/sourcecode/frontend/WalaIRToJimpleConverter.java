@@ -462,7 +462,6 @@ public class WalaIRToJimpleConverter {
 
         InstructionConverter instConverter =
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
-        // Don't exchange, different stmts could have same ids
         HashMap<Integer, Stmt> index2Stmt = new HashMap<>();
         Stmt stmt = null;
         for (SSAInstruction inst : insts) {
