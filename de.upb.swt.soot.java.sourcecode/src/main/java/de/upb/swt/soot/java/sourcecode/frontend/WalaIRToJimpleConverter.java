@@ -549,7 +549,14 @@ public class WalaIRToJimpleConverter {
           }
 
           Stmt from = index2Stmt.get(itBlock.getFirstInstructionIndex());
-          Stmt to = index2Stmt.get(itBlock.getLastInstructionIndex());
+
+          int iidx = block.getFirstInstructionIndex() - 1;
+          // search end of previous non catch block
+          while (iidx >= 0 && cfg.getBlockForInstruction(iidx).isCatchBlock()) {
+            iidx--;
+          }
+          assert (insts[iidx] instanceof SSAGotoInstruction);
+          Stmt to = index2Stmt.get(iidx);
 
           Stmt handlerStmt = index2Stmt.get(block.getFirstInstructionIndex());
           for (TypeReference type : exceptionTypes) {
