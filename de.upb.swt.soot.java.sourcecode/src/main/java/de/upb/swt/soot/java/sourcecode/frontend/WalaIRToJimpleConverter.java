@@ -464,7 +464,7 @@ public class WalaIRToJimpleConverter {
         HashMap<Integer, Stmt> index2Stmt = new HashMap<>();
         Stmt stmt = null;
         for (SSAInstruction inst : insts) {
-          List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst, index2Stmt);
+          List<Stmt> retStmts = instConverter.convertInstruction(inst, index2Stmt);
           if (!retStmts.isEmpty()) {
             final int retStmtsSize = retStmts.size();
             stmt = retStmts.get(0);
