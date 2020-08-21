@@ -516,32 +516,20 @@ public class WalaIRToJimpleConverter {
           final IBasicBlock<SSAInstruction> block = catchBlockEntry.getKey();
           final TypeReference[] exceptionTypes = catchBlockEntry.getValue();
 
-          // FIXME: [ms] determine start/end of try block that leads into this catch block
-          Stmt from = null;
-          Stmt to = null;
-          int idx = -1;
-          for (int i = block.getFirstInstructionIndex() - 1; i >= 0; i--) {
-            if (insts[i] instanceof SSAThrowInstruction
-                || (insts[i] instanceof SSAInvokeInstruction
-                    && insts[i].getExceptionTypes().equals(exceptionTypes))) {
-              idx = i;
-              break;
-            }
+          // find associated try block
+          IBasicBlock<?> fromBlock =
+              cfg.getBlockForInstruction(block.getFirstInstructionIndex() - 1);
+          while (fromBlock.isCatchBlock()) {
+            fromBlock = cfg.getBlockForInstruction(fromBlock.getFirstInstructionIndex() - 1);
           }
 
-          if (idx > 0) {
-            IBasicBlock<?> fromBlock = cfg.getBlockForInstruction(idx);
-            from = index2Stmt.get(fromBlock.getFirstInstructionIndex());
-            to = index2Stmt.get(fromBlock.getLastInstructionIndex());
+          Stmt from = index2Stmt.get(fromBlock.getFirstInstructionIndex());
+          Stmt to = index2Stmt.get(fromBlock.getLastInstructionIndex());
 
-            Stmt handlerStmt = index2Stmt.get(block.getFirstInstructionIndex());
-            for (TypeReference type : exceptionTypes) {
-              ClassType exception = (ClassType) convertType(type);
-              traps.add(new JTrap(exception, from, to, handlerStmt));
-            }
-          } else {
-            // buuuh!
-            assert (false);
+          Stmt handlerStmt = index2Stmt.get(block.getFirstInstructionIndex());
+          for (TypeReference type : exceptionTypes) {
+            ClassType exception = (ClassType) convertType(type);
+            traps.add(new JTrap(exception, from, to, handlerStmt));
           }
         }
 
