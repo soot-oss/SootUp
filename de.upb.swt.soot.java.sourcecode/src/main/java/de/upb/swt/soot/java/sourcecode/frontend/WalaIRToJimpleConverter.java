@@ -544,11 +544,12 @@ public class WalaIRToJimpleConverter {
             idx = itBlock.getFirstInstructionIndex() - 1;
           }
 
-          if (!found) {
-            throw new RuntimeException("No associated try-block found!" + block);
+          Stmt from;
+          if (found) {
+            from = index2Stmt.get(itBlock.getFirstInstructionIndex());
+          } else {
+            from = index2Stmt.get(0);
           }
-
-          Stmt from = index2Stmt.get(itBlock.getFirstInstructionIndex());
 
           int iidx = block.getFirstInstructionIndex() - 1;
           // search end of previous non catch block
@@ -556,7 +557,7 @@ public class WalaIRToJimpleConverter {
             iidx--;
           }
           assert (insts[iidx] instanceof SSAGotoInstruction);
-          Stmt to = index2Stmt.get(iidx);
+          Stmt to = index2Stmt.get(iidx + 1); // exclusive!
 
           Stmt handlerStmt = index2Stmt.get(block.getFirstInstructionIndex());
           for (TypeReference type : exceptionTypes) {
