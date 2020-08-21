@@ -259,13 +259,10 @@ public class InstructionConverter {
   private Stmt convertGetCaughtExceptionInstruction(SSAGetCaughtExceptionInstruction inst) {
     int exceptionValue = inst.getException();
 
-    // FIXME [ms] make exception type more specific
-    JavaClassType exceptionClassType = null;
-    if (exceptionClassType == null) {
-      exceptionClassType = JavaIdentifierFactory.getInstance().getClassType("java.lang.Throwable");
-    } else {
+    // TODO: [ms] make exception type more specific
+    JavaClassType exceptionClassType =
+        JavaIdentifierFactory.getInstance().getClassType("java.lang.Throwable");
 
-    }
     Local local = getLocal(exceptionClassType, exceptionValue);
     JCaughtExceptionRef caught = JavaJimple.getInstance().newCaughtExceptionRef();
 
