@@ -44,7 +44,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import javax.annotation.Nonnull;
-import scala.annotation.meta.field;
 
 /**
  * Converter which converts WALA IR to jimple.
