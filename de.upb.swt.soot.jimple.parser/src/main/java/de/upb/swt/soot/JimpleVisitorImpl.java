@@ -10,7 +10,6 @@ import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.*;
 import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
-import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
@@ -34,8 +33,8 @@ class JimpleVisitorImpl {
   final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   private Map<String, PackageName> imports = new HashMap<>();
   private ClassType clazz = null;
-  private final HashMap<String, Stmt> unresolvedGotoStmts = new HashMap<>();
-  private final HashMap<String, Stmt> jumpTargets = new HashMap<>();
+  private final HashMap<Stmt, List<String>> unresolvedBranches = new HashMap<>();
+  private final HashMap<String, Stmt> labeledStmts = new HashMap<>();
   private HashMap<String, Local> locals = new HashMap<>();
 
   private Type getType(String typename) {
@@ -218,6 +217,7 @@ class JimpleVisitorImpl {
     @Override
     @Nonnull
     public SootMethod visitMethod(@Nonnull JimpleParser.MethodContext ctx) {
+      Body.BodyBuilder builder = Body.builder();
 
       EnumSet<Modifier> modifier =
           ctx.modifier() == null ? EnumSet.noneOf(Modifier.class) : getModifiers(ctx.modifier());
@@ -241,6 +241,7 @@ class JimpleVisitorImpl {
 
       MethodSignature methodSignature =
           identifierFactory.getMethodSignature(methodname, clazz, type, params);
+      builder.setMethodSignature(methodSignature);
 
       List<ClassType> exceptions =
           ctx.throws_clause() == null
@@ -249,12 +250,10 @@ class JimpleVisitorImpl {
                   .map(identifierFactory::getClassType)
                   .collect(Collectors.toList());
 
-      Body body;
       if (ctx.method_body() == null) {
         throw new IllegalStateException("Body not found");
       } else if (ctx.method_body().SEMICOLON() != null) {
         // no body is given
-        body = null;
       } else {
 
         // declare locals
@@ -278,15 +277,13 @@ class JimpleVisitorImpl {
             list.forEach(localname -> locals.put(localname, new Local(localname, localtype)));
           }
         }
+        builder.setLocals(new HashSet<>(locals.values()));
 
-        // statement
-        JimpleVisitorImpl.StmtVisitor stmtVisitor = new JimpleVisitorImpl.StmtVisitor();
-        List<Stmt> stmts =
-            ctx.method_body().statement() != null
-                ? ctx.method_body().statement().stream()
-                    .map(instruction -> instruction.accept(stmtVisitor))
-                    .collect(Collectors.toList())
-                : Collections.emptyList();
+        // statements
+        JimpleVisitorImpl.StmtVisitor stmtVisitor = new JimpleVisitorImpl.StmtVisitor(builder);
+        if (ctx.method_body().statement() != null) {
+          ctx.method_body().statement().forEach(statement -> statement.accept(stmtVisitor));
+        }
 
         // catch_clause
         List<Trap> traps = new ArrayList<>();
@@ -300,34 +297,32 @@ class JimpleVisitorImpl {
             // jumpTargets.get(it.to),jumpTargets.get(it.with) );
           }
         }
-
-        Position position =
-            new Position(
-                ctx.start.getLine(),
-                ctx.start.getCharPositionInLine(),
-                ctx.stop.getLine(),
-                ctx.stop.getCharPositionInLine());
-
-        body = new Body(new HashSet<>(locals.values()), traps, stmts, position);
+        builder.setTraps(traps);
       }
 
-      OverridingMethodSource oms = new OverridingMethodSource(methodSignature, body);
+      Position position =
+          new Position(
+              ctx.start.getLine(),
+              ctx.start.getCharPositionInLine(),
+              ctx.stop.getLine(),
+              ctx.stop.getCharPositionInLine());
+      builder.setPosition(position);
 
       // TODO: associate labels with goto boxes; maybe with trap labels somehow too?
-      for (Map.Entry<String, Stmt> item : unresolvedGotoStmts.entrySet()) {
-        final Stmt stmt = jumpTargets.get(item.getKey());
-        if (stmt != null) {
-
-          final Stmt value = item.getValue();
-          if (value instanceof JGotoStmt) {
-            // FIXME JGotoStmt.$Accessor.setTarget((JGotoStmt) value, stmt);
+      for (Map.Entry<Stmt, List<String>> item : unresolvedBranches.entrySet()) {
+        final List<String> targetLabels = item.getValue();
+        for (String targetLabel : targetLabels) {
+          final Stmt target = labeledStmts.get(targetLabel);
+          if (target == null) {
+            throw new IllegalStateException(
+                "don't jump into the space! target Stmt not found i.e. no label: " + item.getKey());
+          } else {
+            builder.addFlow(item.getKey(), target);
           }
-
-        } else {
-          throw new IllegalStateException(
-              "don't jump into the space! target Stmt not found i.e. no label: " + item.getKey());
         }
       }
+
+      OverridingMethodSource oms = new OverridingMethodSource(methodSignature, builder.build());
 
       return new SootMethod(oms, methodSignature, modifier, exceptions);
     }
@@ -356,14 +351,17 @@ class JimpleVisitorImpl {
   }
 
   private class StmtVisitor extends JimpleBaseVisitor<Stmt> {
+    @Nonnull private final Body.BodyBuilder builder;
+
+    private StmtVisitor(Body.BodyBuilder builder) {
+      this.builder = builder;
+    }
 
     @Override
     public Stmt visitStatement(JimpleParser.StatementContext ctx) {
-      Stmt stmt = ctx.stmt().accept(new StmtVisitor());
+      Stmt stmt = ctx.stmt().accept(this);
       if (ctx.label_name != null) {
-        // FIXME use a StmtBox ?
-        // JStmtBox target = (JStmtBox) Jimple.newStmtBox(stmt);
-        jumpTargets.put(ctx.label_name.getText(), stmt);
+        labeledStmts.put(ctx.label_name.getText(), stmt);
       }
       return stmt;
     }
@@ -447,7 +445,8 @@ class JimpleVisitorImpl {
         } else if (ctx.IF() != null) {
           final Stmt stmt =
               Jimple.newIfStmt((Immediate) ctx.bool_expr().accept(new ValueVisitor()), pos);
-          unresolvedGotoStmts.put(ctx.goto_stmt().label_name.getText(), stmt);
+          unresolvedBranches.put(
+              stmt, Collections.singletonList(ctx.goto_stmt().label_name.getText()));
           // FIXME add target
           return stmt;
         } else if (ctx.goto_stmt() != null) {
@@ -476,8 +475,7 @@ class JimpleVisitorImpl {
     @Nonnull
     private Stmt buildGotoStmt(JimpleParser.Goto_stmtContext ctx, StmtPositionInfo pos) {
       final Stmt stmt = Jimple.newGotoStmt(pos);
-      // FIXME: target
-      unresolvedGotoStmts.put(ctx.label_name.getText(), stmt);
+      unresolvedBranches.put(stmt, Collections.singletonList(ctx.label_name.getText()));
       return stmt;
     }
   }
