@@ -74,23 +74,5 @@
             <version>4.7.2</version>
         </dependency>
 
-        <!--
-        <dependency>
-            <groupId>magpiebridge</groupId>
-            <artifactId>magpiebridge</artifactId>
-            <version>0.0.6</version>
-        </dependency>
-        -->
-
     </dependencies>
-
-    <!--
-    <repositories>
-        <repository>
-            <id>github</id>
-            <name>GitHub MagpieBridge Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/MagpieBridge/MagpieBridge</url>
-        </repository>
-    </repositories>
-    -->
 </project>

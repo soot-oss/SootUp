@@ -5,9 +5,9 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import java.io.IOException;
 import java.nio.file.Path;
-import org.antlr.v4.runtime.CharStreams;
 
 public class JimpleClassProvider implements ClassProvider {
 
@@ -16,7 +16,7 @@ public class JimpleClassProvider implements ClassProvider {
       AnalysisInputLocation srcNamespace, Path sourcePath, ClassType classSignature) {
 
     try {
-      return new JimpleReader().run(CharStreams.fromPath(sourcePath));
+      return new JimpleReader().parse(sourcePath, JavaIdentifierFactory.getInstance());
     } catch (IOException e) {
       // TODO exception
       throw new RuntimeException(e);
