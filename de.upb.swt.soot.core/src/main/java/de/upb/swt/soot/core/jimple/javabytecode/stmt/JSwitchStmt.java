@@ -100,6 +100,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   public List<Value> getUses() {
     final List<Value> uses = getKey().getUses();
     List<Value> list = new ArrayList<>(uses.size() + 1);
+    list.addAll(uses);
     list.add(getKey());
     return list;
   }
