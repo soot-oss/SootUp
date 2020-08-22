@@ -11,6 +11,7 @@ import de.upb.swt.soot.core.jimple.common.constant.*;
 import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -308,7 +309,7 @@ class JimpleVisitorImpl {
               ctx.stop.getCharPositionInLine());
       builder.setPosition(position);
 
-      // TODO: associate labels with goto boxes; maybe with trap labels somehow too?
+      // associate labeled Stmts with Branching Stmts
       for (Map.Entry<Stmt, List<String>> item : unresolvedBranches.entrySet()) {
         final List<String> targetLabels = item.getValue();
         for (String targetLabel : targetLabels) {
@@ -384,33 +385,35 @@ class JimpleVisitorImpl {
 
         Immediate key = (Immediate) ctx.immediate().accept(new ValueVisitor());
         List<IntConstant> lookup = new ArrayList<>();
-        List<Stmt> targets = new ArrayList<>();
+        List<String> targetLabels = new ArrayList<>();
         int min = Integer.MAX_VALUE;
-        Stmt defaultTarget = null;
+        String defaultLabel = null;
 
         for (JimpleParser.Case_stmtContext it : ctx.case_stmt()) {
-          Stmt stmt = buildGotoStmt(it.goto_stmt(), pos);
           final JimpleParser.Case_labelContext case_labelContext = it.case_label();
           if (case_labelContext.getText() != null && case_labelContext.DEFAULT() != null) {
-            defaultTarget = stmt;
+            defaultLabel = case_labelContext.getText();
           } else if (case_labelContext.getText() != null) {
             final int value = Integer.parseInt(case_labelContext.getText());
             min = Math.min(min, value);
             lookup.add(IntConstant.getInstance(value));
-            targets.add(stmt);
+            targetLabels.add(case_labelContext.getText());
           } else {
-            throw new RuntimeException("Labels are invalid.");
+            throw new RuntimeException("Label is invalid.");
           }
         }
+        // TODO: check order!
+        targetLabels.add(defaultLabel);
 
+        JSwitchStmt switchStmt;
         if (ctx.SWITCH().getText().charAt(0) == 't') {
           int high = min + lookup.size();
-          // FIXME: targets, defaultTarget
-          return Jimple.newTableSwitchStmt(key, min, high, pos);
+          switchStmt = Jimple.newTableSwitchStmt(key, min, high, pos);
         } else {
-          // FIXME targets, defaultTarget,
-          return Jimple.newLookupSwitchStmt(key, lookup, pos);
+          switchStmt = Jimple.newLookupSwitchStmt(key, lookup, pos);
         }
+        unresolvedBranches.put(switchStmt, targetLabels);
+        return switchStmt;
       } else {
         final JimpleParser.AssignmentsContext assignments = ctx.assignments();
         if (assignments != null) {
@@ -447,10 +450,12 @@ class JimpleVisitorImpl {
               Jimple.newIfStmt((Immediate) ctx.bool_expr().accept(new ValueVisitor()), pos);
           unresolvedBranches.put(
               stmt, Collections.singletonList(ctx.goto_stmt().label_name.getText()));
-          // FIXME add target
           return stmt;
         } else if (ctx.goto_stmt() != null) {
-          return buildGotoStmt(ctx.goto_stmt(), pos);
+          final Stmt stmt = Jimple.newGotoStmt(pos);
+          unresolvedBranches.put(
+              stmt, Collections.singletonList(ctx.goto_stmt().label_name.getText()));
+          return stmt;
         } else if (ctx.NOP() != null) {
           return Jimple.newNopStmt(pos);
         } else if (ctx.RET() != null) {
@@ -470,13 +475,6 @@ class JimpleVisitorImpl {
         }
       }
       throw new RuntimeException("Unknown Stmt");
-    }
-
-    @Nonnull
-    private Stmt buildGotoStmt(JimpleParser.Goto_stmtContext ctx, StmtPositionInfo pos) {
-      final Stmt stmt = Jimple.newGotoStmt(pos);
-      unresolvedBranches.put(stmt, Collections.singletonList(ctx.label_name.getText()));
-      return stmt;
     }
   }
 
