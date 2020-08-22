@@ -402,7 +402,6 @@ class JimpleVisitorImpl {
             throw new RuntimeException("Label is invalid.");
           }
         }
-        // TODO: check order!
         targetLabels.add(defaultLabel);
 
         JSwitchStmt switchStmt;
