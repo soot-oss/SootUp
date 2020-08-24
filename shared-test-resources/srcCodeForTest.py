@@ -79,6 +79,7 @@ for srcFile in srcMatches:
 			
 	for filename in srcTestMatches:
 		dummy=srcFileName+"Test"
+		#TODO match exact dummy with filename
 		if dummy in filename:
 			
 			str2=""
