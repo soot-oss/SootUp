@@ -5,18 +5,39 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import java.io.IOException;
 import java.nio.file.Path;
+import org.antlr.v4.runtime.CharStreams;
 
 public class JimpleClassProvider implements ClassProvider {
 
   @Override
   public AbstractClassSource createClassSource(
-      AnalysisInputLocation srcNamespace, Path sourcePath, ClassType classSignature) {
+      AnalysisInputLocation inputlocation, Path sourcePath, ClassType classSignature) {
 
     try {
-      return new JimpleReader().parse(sourcePath, JavaIdentifierFactory.getInstance());
+
+      /*
+          CharStream input = CharStreams.fromString(source);
+          CharStream input = CharStreams.fromPath(path);
+      */
+
+      new JimpleReader().run(CharStreams.fromPath(sourcePath));
+
+      /*
+      return new OverridingClassSource(
+              inputlocation,
+              sourcePath,
+              clazz,
+              superclass,
+              interfaces,
+              outerclass,
+              fields,
+              methods,
+              position,
+              modifier);
+      */
+
     } catch (IOException e) {
       // TODO exception
       throw new RuntimeException(e);

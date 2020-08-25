@@ -23,6 +23,6 @@ public abstract class JavaSootClassSource extends SootClassSource {
 
   public abstract Iterable<AnnotationType> resolveMethodAnnotations();
 
-  // TODO: [ms] move to a better place
+  // TODO: [ms] maybe move to a better place?
   public abstract Iterable<AnnotationType> resolveFieldAnnotations();
 }

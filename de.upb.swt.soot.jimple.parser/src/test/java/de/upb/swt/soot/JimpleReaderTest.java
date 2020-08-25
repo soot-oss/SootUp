@@ -12,11 +12,11 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.junit.Test;
 
-public class JimpleVisitorImplTest {
+public class JimpleReaderTest {
 
   void checkJimpleClass(CharStream cs) {
 
-    JimpleVisitorImpl jimpleVisitor = new JimpleVisitorImpl();
+    JimpleReader jimpleVisitor = new JimpleReader();
     final SootClassSource scs = jimpleVisitor.run(cs);
 
     StringWriter output = new StringWriter();
