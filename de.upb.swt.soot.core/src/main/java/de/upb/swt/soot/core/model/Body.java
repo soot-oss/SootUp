@@ -356,6 +356,41 @@ public class Body implements Copyable {
     return new Body(getMethodSignature(), locals, getStmtGraph(), getPosition());
   }
 
+  /** helps against ConcurrentModificationException; it queues changes until they are commited */
+  private static class StmtGraphManipulator {
+
+    @Nonnull private final List<Stmt> flowsToRemove = new ArrayList<>();
+    @Nonnull private final List<Stmt> flowsToAdd = new ArrayList<>();
+
+    void addFlow(@Nonnull Stmt from, @Nonnull Stmt to) {
+      flowsToAdd.add(from);
+      flowsToAdd.add(to);
+    }
+
+    void removeFlow(@Nonnull Stmt from, @Nonnull Stmt to) {
+      flowsToRemove.add(from);
+      flowsToRemove.add(to);
+    }
+
+    void commit(MutableStmtGraph graph) {
+      Iterator<Stmt> addIt = flowsToAdd.iterator();
+      while (addIt.hasNext()) {
+        final Stmt from = addIt.next();
+        final Stmt to = addIt.next();
+        graph.putEdge(from, to);
+      }
+      flowsToAdd.clear();
+
+      Iterator<Stmt> remIt = flowsToRemove.iterator();
+      while (remIt.hasNext()) {
+        final Stmt from = remIt.next();
+        final Stmt to = remIt.next();
+        graph.removeEdge(from, to);
+      }
+      flowsToRemove.clear();
+    }
+  }
+
   public static BodyBuilder builder() {
     return new BodyBuilder();
   }
@@ -390,6 +425,8 @@ public class Body implements Copyable {
 
     @Nonnull private final MutableStmtGraph cfg;
     @Nullable private MethodSignature methodSig = null;
+
+    @Nullable private StmtGraphManipulator manipulator = null;
 
     BodyBuilder() {
       cfg = new MutableStmtGraph();
@@ -440,13 +477,21 @@ public class Body implements Copyable {
 
     @Nonnull
     public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
-      cfg.putEdge(fromStmt, toStmt);
+      if (manipulator == null) {
+        cfg.putEdge(fromStmt, toStmt);
+      } else {
+        manipulator.addFlow(fromStmt, toStmt);
+      }
       return this;
     }
 
     @Nonnull
     public BodyBuilder removeFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
-      cfg.removeEdge(fromStmt, toStmt);
+      if (manipulator == null) {
+        cfg.removeEdge(fromStmt, toStmt);
+      } else {
+        manipulator.removeFlow(fromStmt, toStmt);
+      }
       return this;
     }
 
@@ -461,6 +506,29 @@ public class Body implements Copyable {
       return this;
     }
 
+    /** */
+    public BodyBuilder enableDeferredChanges() {
+      if (manipulator == null) {
+        manipulator = new StmtGraphManipulator();
+      }
+      return this;
+    }
+
+    public BodyBuilder disableAndCommitDeferredChanges() {
+      if (manipulator != null) {
+        manipulator.commit(cfg);
+        manipulator = null;
+      }
+      return this;
+    }
+
+    public BodyBuilder commitDeferredChanges() {
+      if (manipulator != null) {
+        manipulator.commit(cfg);
+      }
+      return this;
+    }
+
     @Nonnull
     public Body build() {
 
@@ -471,6 +539,9 @@ public class Body implements Copyable {
       if (position == null) {
         setPosition(NoPositionInformation.getInstance());
       }
+
+      // commit pending changes
+      commitDeferredChanges();
 
       final Stmt startingStmt = cfg.getStartingStmt();
       final Set<Stmt> nodes = cfg.nodes();
