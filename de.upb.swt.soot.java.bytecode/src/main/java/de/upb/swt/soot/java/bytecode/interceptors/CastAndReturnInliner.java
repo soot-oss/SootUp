@@ -20,7 +20,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Trap;
@@ -31,7 +31,6 @@ import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -64,23 +63,24 @@ import javax.annotation.Nonnull;
  */
 public class CastAndReturnInliner implements BodyInterceptor {
 
-  @Nonnull
   @Override
-  public Body interceptBody(@Nonnull Body originalBody) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
-    Body.BodyBuilder bodyBuilder = null;
-    ImmutableStmtGraph originalGraph = originalBody.getStmtGraph();
+    StmtGraph originalGraph = builder.getStmtGraph();
 
+    builder.enableDeferredChanges();
     for (Stmt stmt : originalGraph.nodes()) {
       if (!(stmt instanceof JGotoStmt)) {
         continue;
       }
       JGotoStmt gotoStmt = (JGotoStmt) stmt;
 
-      if (!(gotoStmt.getTarget(originalBody) instanceof JAssignStmt)) {
+      Stmt successorOfGoto = originalGraph.successors(gotoStmt).get(0);
+
+      if (!(successorOfGoto instanceof JAssignStmt)) {
         continue;
       }
-      JAssignStmt assign = (JAssignStmt) gotoStmt.getTarget(originalBody);
+      JAssignStmt assign = (JAssignStmt) successorOfGoto;
 
       if (!(assign.getRightOp() instanceof JCastExpr)) {
         continue;
@@ -100,23 +100,17 @@ public class CastAndReturnInliner implements BodyInterceptor {
       JCastExpr ce = (JCastExpr) assign.getRightOp();
       JReturnStmt newStmt = retStmt.withReturnValue((Immediate) ce.getOp());
 
-      // create new instance on demand
-      if (bodyBuilder == null) {
-        bodyBuilder = Body.builder(originalBody);
-      }
-
       // Redirect all flows coming into the GOTO to the new return
       List<Stmt> predecessors = originalGraph.predecessors(gotoStmt);
       for (Stmt pred : predecessors) {
-        bodyBuilder.addFlow(pred, newStmt);
-        bodyBuilder.removeFlow(pred, gotoStmt);
+        builder.addFlow(pred, newStmt);
+        builder.removeFlow(pred, gotoStmt);
       }
       // cleanup now obsolete cast and return statements
-      bodyBuilder.removeFlow(gotoStmt, assign);
-      bodyBuilder.removeFlow(assign, retStmt);
+      builder.removeFlow(gotoStmt, assign);
+      builder.removeFlow(assign, retStmt);
 
-      List<Trap> traps = originalBody.getTraps();
-      boolean trapListUnmodifiable = true;
+      List<Trap> traps = builder.getTraps();
       // if used in a Trap replace occurences of goto by inlined return
       for (int i = 0; i < traps.size(); i++) {
         JTrap trap = (JTrap) traps.get(i);
@@ -134,18 +128,10 @@ public class CastAndReturnInliner implements BodyInterceptor {
           modified = true;
         }
         if (modified) {
-          // copy once we need to modify sth -> create modifiable copy
-          if (trapListUnmodifiable) {
-            traps = new ArrayList<>(traps);
-            trapListUnmodifiable = false;
-            bodyBuilder.setTraps(traps);
-          }
-
           traps.set(i, trap);
         }
       }
     }
-
-    return bodyBuilder != null ? bodyBuilder.build() : originalBody;
+    builder.commitDeferredChanges();
   }
 }
