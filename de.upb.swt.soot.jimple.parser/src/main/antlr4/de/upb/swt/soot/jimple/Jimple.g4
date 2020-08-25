@@ -95,7 +95,7 @@ grammar Jimple;
   // escapes and any char except '\' (92) or '"' (34).
   fragment STRING_CHAR :  ESCAPE_CHAR | ~('\\' | '"') ;
 
-  IDENTIFIER: STRING_CONSTANT | [A-Za-z$_]([A-Za-z0-9$_] | '.' [A-Za-z0-9$_] )*;
+  IDENTIFIER: [A-Za-z$_]([A-Za-z0-9$_] | '.' [A-Za-z0-9$_] )*;
 
   BLANK : [ \t\r\n] ->skip;
 
@@ -117,7 +117,7 @@ grammar Jimple;
   implements_clause : 'implements' names=name_list;
 
   name:
-    /*ident*/ IDENTIFIER ;
+    /*ident*/ IDENTIFIER | STRING_CONSTANT ;
 
   name_list:
     /*single*/ name |
