@@ -476,6 +476,11 @@ public class Body implements Copyable {
     }
 
     @Nonnull
+    public List<Trap> getTraps() {
+      return cfg.getTraps();
+    }
+
+    @Nonnull
     public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
       if (manipulator == null) {
         cfg.putEdge(fromStmt, toStmt);

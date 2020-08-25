@@ -20,6 +20,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import com.google.common.collect.Lists;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
@@ -52,12 +53,14 @@ import javax.annotation.Nonnull;
  */
 public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
 
-  @Nonnull
   @Override
-  public Body interceptBody(@Nonnull Body originalBody) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+
     // Find two traps that use java.lang.Throwable as their type and that span the same code region
-    Collection<Trap> originalTraps = originalBody.getTraps();
-    List<Trap> traps = new ArrayList<>(originalBody.getTraps());
+    Collection<Trap> originalTraps = builder.getTraps();
+    List<Trap> traps = new ArrayList<>(builder.getTraps());
+    List<Stmt> originalBody = Lists.newArrayList(builder.getStmtGraph());
+
     for (Trap trap1 : originalTraps) {
       if (trap1.getExceptionType().getClassName().equals("java.lang.Throwable")) {
         for (Trap trap2 : originalTraps) {
@@ -88,20 +91,20 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
         }
       }
     }
-    return Body.builder(originalBody).setTraps(traps).build();
+
+    builder.setTraps(traps);
   }
 
   /**
    * Checks whether the given trap covers the given unit, i.e., there is an exceptional control flow
    * from the given unit to the given trap
    *
-   * @param body The body containing the stmt and the trap
+   * @param bodyStmts linearized Stmtgraph
    * @param trap The trap
    * @param stmt The unit
    * @return True if there can be an exceptional control flow from the given unit to the given trap
    */
-  private boolean trapCoversStmt(Body body, Trap trap, Stmt stmt) {
-    List<Stmt> bodyStmts = body.getStmts();
+  private boolean trapCoversStmt(List<Stmt> bodyStmts, Trap trap, Stmt stmt) {
     List<Stmt> sequence =
         bodyStmts.subList(
             bodyStmts.indexOf(trap.getBeginStmt()), bodyStmts.indexOf(trap.getEndStmt()));

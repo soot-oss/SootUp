@@ -15,7 +15,6 @@ import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -35,11 +34,13 @@ public class DuplicateCatchAllTrapRemoverTest {
    * (java.lang.String) a] Trap: begin: b = "str" - end: b = (java.lang.String) a - handler: return
    * b
    */
-  @Ignore
-  // FIXME: [ms] Issue #281
+  @Test
   public void testRemoveDuplicate() {
-    Body originalBody = createBody(true);
-    Body processedBody = new DuplicateCatchAllTrapRemover().interceptBody(originalBody);
+    Body.BodyBuilder originalBuilder = createBody(true);
+    Body originalBody = originalBuilder.build();
+
+    new DuplicateCatchAllTrapRemover().interceptBody(originalBuilder);
+    Body processedBody = originalBuilder.build();
 
     Collection<Trap> originalTraps = originalBody.getTraps();
     Collection<Trap> processedTraps = processedBody.getTraps();
@@ -54,8 +55,11 @@ public class DuplicateCatchAllTrapRemoverTest {
   /** Tests the correct handling of a {@link Body} without duplicate catch all traps. */
   @Test
   public void testRemoveNothing() {
-    Body originalBody = createBody(false);
-    Body processedBody = new DuplicateCatchAllTrapRemover().interceptBody(originalBody);
+    Body.BodyBuilder originalBuilder = createBody(false);
+    Body originalBody = originalBuilder.build();
+
+    new DuplicateCatchAllTrapRemover().interceptBody(originalBuilder);
+    Body processedBody = originalBuilder.build();
 
     assertArrayEquals(originalBody.getTraps().toArray(), processedBody.getTraps().toArray());
   }
@@ -72,7 +76,7 @@ public class DuplicateCatchAllTrapRemoverTest {
    * @param containsDuplicate determines whether the Body contains a Trap that should be removed
    * @return the created Body
    */
-  private Body createBody(boolean containsDuplicate) {
+  private Body.BodyBuilder createBody(boolean containsDuplicate) {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
@@ -113,8 +117,7 @@ public class DuplicateCatchAllTrapRemoverTest {
     return builder
         .setLocals(locals)
         .setTraps(traps)
-        .setPosition(NoPositionInformation.getInstance())
-        .build();
+        .setPosition(NoPositionInformation.getInstance());
   }
 
   private static class ExceptionType extends ClassType {
