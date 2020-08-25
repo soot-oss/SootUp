@@ -379,7 +379,6 @@ public class Body implements Copyable {
         final Stmt to = addIt.next();
         graph.putEdge(from, to);
       }
-      flowsToAdd.clear();
 
       Iterator<Stmt> remIt = flowsToRemove.iterator();
       while (remIt.hasNext()) {
@@ -387,6 +386,11 @@ public class Body implements Copyable {
         final Stmt to = remIt.next();
         graph.removeEdge(from, to);
       }
+      clear();
+    }
+
+    public void clear() {
+      flowsToAdd.clear();
       flowsToRemove.clear();
     }
   }
@@ -530,6 +534,13 @@ public class Body implements Copyable {
     public BodyBuilder commitDeferredChanges() {
       if (manipulator != null) {
         manipulator.commit(cfg);
+      }
+      return this;
+    }
+
+    public BodyBuilder clearDeferredChanges() {
+      if (manipulator != null) {
+        manipulator.clear();
       }
       return this;
     }
