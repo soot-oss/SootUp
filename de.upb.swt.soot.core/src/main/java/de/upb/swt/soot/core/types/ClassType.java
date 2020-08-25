@@ -15,4 +15,9 @@ public abstract class ClassType extends ReferenceType {
   public abstract String getClassName();
 
   public abstract PackageName getPackageName();
+
+  @Override
+  public String toString() {
+    return getFullyQualifiedName();
+  }
 }

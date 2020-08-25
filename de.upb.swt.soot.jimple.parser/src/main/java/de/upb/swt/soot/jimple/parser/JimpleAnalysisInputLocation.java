@@ -10,6 +10,7 @@ import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -74,18 +75,20 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
     final JimpleClassProvider classProvider =
         new JimpleClassProvider(classLoadingOptions.getBodyInterceptors());
 
+    final String ext = classProvider.getHandledFileType().toString().toLowerCase();
+
     // is file under path:  with name package.subpackage.class.jimple
-    Path pathToClass = path.resolve(type + "." + classProvider.getHandledFileType());
+    Path pathToClass = path.resolve(type.getFullyQualifiedName() + "." + ext);
     if (!Files.exists(pathToClass)) {
       // is file under path with dir structure: package/subpackage/className.jimple
       pathToClass =
           path.resolve(
-              type.getPackageName().toString().replace('.', '/')
+              type.getPackageName().toString().replace('.', File.separatorChar)
+                  + File.separator
                   + type.getClassName()
                   + "."
-                  + classProvider.getHandledFileType());
+                  + ext);
       if (!Files.exists(pathToClass)) {
-        // TODO: [ms] better throw an exception
         return Optional.empty();
       }
     }

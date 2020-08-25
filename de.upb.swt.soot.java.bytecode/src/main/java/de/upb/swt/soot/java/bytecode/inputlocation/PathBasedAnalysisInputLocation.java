@@ -117,7 +117,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         path.resolve(signature.toPath(classProvider.getHandledFileType(), path.getFileSystem()));
 
     if (!Files.exists(pathToClass)) {
-      // TODO: [ms] better throw an exception?
       return Optional.empty();
     }
 
