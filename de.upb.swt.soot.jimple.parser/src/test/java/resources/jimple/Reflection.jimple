@@ -1,0 +1,79 @@
+public synchronized class Reflection extends java.lang.Object
+{
+    private java.lang.String s;
+
+    public void checkReflection() throws java.lang.NoSuchMethodException
+    {
+        "unknown" $stack4, l0, l1, l2, l3, $stack12, $stack10, $stack11, $stack9, $stack6, $stack5, $stack8, $stack7;
+
+
+        l0 := @this: Reflection;
+
+        $stack4 = new Reflection;
+
+        specialinvoke $stack4.<Reflection: void <init>()>();
+
+        l1 = $stack4;
+
+        l2 = class "LReflection;";
+
+        $stack5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack5.<java.io.PrintStream: void println(java.lang.Object)>(l2);
+
+        $stack6 = newarray (java.lang.Class)[0];
+
+        $stack7 = virtualinvoke l2.<java.lang.Class: java.lang.reflect.Constructor getConstructor(java.lang.Class[])>($stack6);
+
+        l3 = $stack7;
+
+        $stack8 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack9 = virtualinvoke l3.<java.lang.reflect.Constructor: java.lang.String getName()>();
+
+        virtualinvoke $stack8.<java.io.PrintStream: void println(java.lang.String)>($stack9);
+
+        $stack10 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack11 = virtualinvoke l2.<java.lang.Class: java.lang.reflect.Method[] getMethods()>();
+
+        $stack12 = lengthof $stack11;
+
+        virtualinvoke $stack10.<java.io.PrintStream: void println(int)>($stack12);
+
+        return;
+    }
+
+    public static void main(java.lang.String[]) throws java.lang.NoSuchMethodException
+    {
+        "unknown" $stack2, l0, l1;
+
+
+        l0 := @parameter0: java.lang.String[];
+
+        $stack2 = new Reflection;
+
+        specialinvoke $stack2.<Reflection: void <init>()>();
+
+        l1 = $stack2;
+
+        virtualinvoke l1.<Reflection: void checkReflection()>();
+
+        return;
+    }
+
+    public void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: Reflection;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        l0.<Reflection: java.lang.String s> = "String";
+
+        return;
+    }
+}
+

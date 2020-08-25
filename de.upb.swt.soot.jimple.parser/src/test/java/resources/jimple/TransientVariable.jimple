@@ -1,0 +1,35 @@
+synchronized class TransientVariable extends java.lang.Object
+{
+    transient int transientVar;
+
+    public void transientVariable()
+    {
+        "unknown" $stack2, $stack1, l0;
+
+
+        l0 := @this: TransientVariable;
+
+        $stack2 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack1 = l0.<TransientVariable: int transientVar>;
+
+        virtualinvoke $stack2.<java.io.PrintStream: void println(int)>($stack1);
+
+        return;
+    }
+
+    void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: TransientVariable;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        l0.<TransientVariable: int transientVar> = 1;
+
+        return;
+    }
+}
+

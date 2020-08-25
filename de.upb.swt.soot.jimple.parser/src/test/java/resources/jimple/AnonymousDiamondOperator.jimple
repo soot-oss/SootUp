@@ -1,0 +1,63 @@
+public synchronized class AnonymousDiamondOperator extends java.lang.Object
+{
+    public void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: AnonymousDiamondOperator;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        "unknown" $stack2, $stack4, $stack3, l0, l1;
+
+
+        l0 := @parameter0: java.lang.String[];
+
+        $stack2 = new AnonymousDiamondOperator;
+
+        specialinvoke $stack2.<AnonymousDiamondOperator: void <init>()>();
+
+        l1 = $stack2;
+
+        $stack3 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack4 = virtualinvoke l1.<AnonymousDiamondOperator: int innerClassDiamond()>();
+
+        virtualinvoke $stack3.<java.io.PrintStream: void println(int)>($stack4);
+
+        return;
+    }
+
+    public int innerClassDiamond()
+    {
+        "unknown" $stack4, $stack3, l0, l1, l2, $stack6, $stack5, $stack7;
+
+
+        l0 := @this: AnonymousDiamondOperator;
+
+        $stack3 = new AnonymousDiamondOperator$1;
+
+        specialinvoke $stack3.<AnonymousDiamondOperator$1: void <init>(AnonymousDiamondOperator)>(l0);
+
+        l1 = $stack3;
+
+        $stack4 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(22);
+
+        $stack5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(23);
+
+        $stack6 = virtualinvoke l1.<MyClass: java.lang.Object add(java.lang.Object,java.lang.Object)>($stack4, $stack5);
+
+        l2 = (java.lang.Integer) $stack6;
+
+        $stack7 = virtualinvoke l2.<java.lang.Integer: int intValue()>();
+
+        return $stack7;
+    }
+}
+

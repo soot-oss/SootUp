@@ -1,0 +1,35 @@
+public synchronized class DeclareInnerClass$InnerClass extends java.lang.Object
+{
+    final DeclareInnerClass this$0;
+
+    public void <init>(DeclareInnerClass)
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: DeclareInnerClass$InnerClass;
+
+        l1 := @parameter0: DeclareInnerClass;
+
+        l0.<DeclareInnerClass$InnerClass: DeclareInnerClass this$0> = l1;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void methodDisplayInner()
+    {
+        "unknown" $stack1, l0;
+
+
+        l0 := @this: DeclareInnerClass$InnerClass;
+
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>("methodDisplayInner");
+
+        return;
+    }
+}
+

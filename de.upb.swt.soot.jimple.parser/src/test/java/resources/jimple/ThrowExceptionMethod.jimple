@@ -1,0 +1,77 @@
+synchronized class ThrowExceptionMethod extends java.lang.Object
+{
+    public static void main(java.lang.String[])
+    {
+        "unknown" $stack2, $stack4, $stack3, l0, l1, $stack5;
+
+
+        l0 := @parameter0: java.lang.String[];
+
+      label1:
+        $stack2 = new ThrowExceptionMethod;
+
+        specialinvoke $stack2.<ThrowExceptionMethod: void <init>()>();
+
+        l1 = $stack2;
+
+        virtualinvoke l1.<ThrowExceptionMethod: void throwCustomException()>();
+
+      label2:
+        goto label4;
+
+      label3:
+        $stack3 := @caughtexception;
+
+        l1 = $stack3;
+
+        $stack4 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack5 = virtualinvoke l1.<CustomException: java.lang.String getMessage()>();
+
+        virtualinvoke $stack4.<java.io.PrintStream: void println(java.lang.String)>($stack5);
+
+      label4:
+        return;
+
+ catch CustomException from label1 to label2 with label3;
+    }
+
+    void throwCustomException() throws CustomException
+    {
+        "unknown" $stack1, l0;
+
+
+        l0 := @this: ThrowExceptionMethod;
+
+        $stack1 = new CustomException;
+
+        specialinvoke $stack1.<CustomException: void <init>(java.lang.String)>("Custom Exception");
+
+        throw $stack1;
+    }
+
+    void divideByZero() throws java.lang.ArithmeticException
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: ThrowExceptionMethod;
+
+        l1 = 8 / 0;
+
+        return;
+    }
+
+    void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: ThrowExceptionMethod;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}
+

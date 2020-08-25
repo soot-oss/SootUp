@@ -1,0 +1,71 @@
+synchronized class DeclareInnerClass extends java.lang.Object
+{
+    public int a;
+
+    public DeclareInnerClass getDeclareInnerClass()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: DeclareInnerClass;
+
+        return l0;
+    }
+
+    void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: DeclareInnerClass;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        l0.<DeclareInnerClass: int a> = 1;
+
+        return;
+    }
+
+    public void methodDisplayOuter()
+    {
+        "unknown" $stack1, l0;
+
+
+        l0 := @this: DeclareInnerClass;
+
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>("methodDisplayOuter");
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        "unknown" $stack4, $stack3, l0, l1, l2, $stack5;
+
+
+        l0 := @parameter0: java.lang.String[];
+
+        $stack3 = new DeclareInnerClass;
+
+        specialinvoke $stack3.<DeclareInnerClass: void <init>()>();
+
+        l1 = $stack3;
+
+        virtualinvoke l1.<DeclareInnerClass: void methodDisplayOuter()>();
+
+        $stack4 = new DeclareInnerClass$InnerClass;
+
+        $stack5 = staticinvoke <java.util.Objects: java.lang.Object requireNonNull(java.lang.Object)>(l1);
+
+        specialinvoke $stack4.<DeclareInnerClass$InnerClass: void <init>(DeclareInnerClass)>(l1);
+
+        l2 = $stack4;
+
+        virtualinvoke l2.<DeclareInnerClass$InnerClass: void methodDisplayInner()>();
+
+        return;
+    }
+}
+

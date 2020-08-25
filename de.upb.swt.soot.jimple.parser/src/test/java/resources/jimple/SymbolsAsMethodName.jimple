@@ -1,0 +1,29 @@
+public synchronized class SymbolsAsMethodName extends java.lang.Object
+{
+    public void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: SymbolsAsMethodName;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void \u03b1\u03c1\u03b5\u03c4\u03b7()
+    {
+        "unknown" $stack1, l0;
+
+
+        l0 := @this: SymbolsAsMethodName;
+
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>("this is \u03b1\u03c1\u03b5\u03c4\u03b7 method");
+
+        return;
+    }
+}
+

@@ -1,0 +1,33 @@
+public synchronized class NamedClassInsideMethod extends java.lang.Object
+{
+    public void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: NamedClassInsideMethod;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void namedClassInsideMethod()
+    {
+        "unknown" $stack2, l0, l1;
+
+
+        l0 := @this: NamedClassInsideMethod;
+
+        $stack2 = new NamedClassInsideMethod$1MyMathOperation;
+
+        specialinvoke $stack2.<NamedClassInsideMethod$1MyMathOperation: void <init>(NamedClassInsideMethod)>(l0);
+
+        l1 = $stack2;
+
+        interfaceinvoke l1.<NamedClassInsideMethod$MathOperation: void addition()>();
+
+        return;
+    }
+}
+

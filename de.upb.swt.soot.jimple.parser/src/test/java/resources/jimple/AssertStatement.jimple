@@ -1,0 +1,64 @@
+public synchronized class AssertStatement extends java.lang.Object
+{
+    static final boolean $assertionsDisabled;
+
+    public void assertStatement()
+    {
+        "unknown" $stack2, $stack1, l0;
+
+
+        l0 := @this: AssertStatement;
+
+        $stack1 = <AssertStatement: boolean $assertionsDisabled>;
+
+        if $stack1 != 0 goto label1;
+
+        if "" != null goto label1;
+
+        $stack2 = new java.lang.AssertionError;
+
+        specialinvoke $stack2.<java.lang.AssertionError: void <init>()>();
+
+        throw $stack2;
+
+      label1:
+        return;
+    }
+
+    public void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: AssertStatement;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    static void <clinit>()
+    {
+        "unknown" $stack2, $stack1, $stack0;
+
+
+        $stack0 = class "LAssertStatement;";
+
+        $stack1 = virtualinvoke $stack0.<java.lang.Class: boolean desiredAssertionStatus()>();
+
+        if $stack1 != 0 goto label1;
+
+        $stack2 = 1;
+
+        goto label2;
+
+      label1:
+        $stack2 = 0;
+
+      label2:
+        <AssertStatement: boolean $assertionsDisabled> = $stack2;
+
+        return;
+    }
+}
+

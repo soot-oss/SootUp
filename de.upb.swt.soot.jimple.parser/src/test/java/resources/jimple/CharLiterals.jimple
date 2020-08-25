@@ -1,0 +1,99 @@
+public synchronized class CharLiterals extends java.lang.Object
+{
+    public void specialChar()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: CharLiterals;
+
+        l1 = 8482;
+
+        return;
+    }
+
+    public void charBackslash()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: CharLiterals;
+
+        l1 = 92;
+
+        return;
+    }
+
+    public void charBackslashT()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: CharLiterals;
+
+        l1 = 9;
+
+        return;
+    }
+
+    public void charSingleQuote()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: CharLiterals;
+
+        l1 = 39;
+
+        return;
+    }
+
+    public void charUnicode()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: CharLiterals;
+
+        l1 = 937;
+
+        return;
+    }
+
+    public void charSymbol()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: CharLiterals;
+
+        l1 = 37;
+
+        return;
+    }
+
+    public void charCharacter()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: CharLiterals;
+
+        l1 = 97;
+
+        return;
+    }
+
+    public void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: CharLiterals;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}
+

@@ -1,0 +1,97 @@
+public final synchronized enum class DeclareEnum$Type extends java.lang.Enum
+{
+    public static final enum DeclareEnum$Type TYPE3;
+
+    public static final enum DeclareEnum$Type TYPE2;
+
+    private static final DeclareEnum$Type[] $VALUES;
+
+    public static final enum DeclareEnum$Type TYPE1;
+
+    private void <init>(java.lang.String,int)
+    {
+        "unknown" l0, l1, l2;
+
+
+        l0 := @this: DeclareEnum$Type;
+
+        l1 := @parameter0: java.lang.String;
+
+        l2 := @parameter1: int;
+
+        specialinvoke l0.<java.lang.Enum: void <init>(java.lang.String,int)>(l1, l2);
+
+        return;
+    }
+
+    public static DeclareEnum$Type[] values()
+    {
+        "unknown" $stack2, $stack1, $stack0;
+
+
+        $stack0 = <DeclareEnum$Type: DeclareEnum$Type[] $VALUES>;
+
+        $stack1 = virtualinvoke $stack0.<java.lang.Object: java.lang.Object clone()>();
+
+        $stack2 = (DeclareEnum$Type[]) $stack1;
+
+        return $stack2;
+    }
+
+    public static DeclareEnum$Type valueOf(java.lang.String)
+    {
+        "unknown" $stack2, $stack1, l0;
+
+
+        l0 := @parameter0: java.lang.String;
+
+        $stack1 = staticinvoke <java.lang.Enum: java.lang.Enum valueOf(java.lang.Class,java.lang.String)>(class "LDeclareEnum$Type;", l0);
+
+        $stack2 = (DeclareEnum$Type) $stack1;
+
+        return $stack2;
+    }
+
+    static void <clinit>()
+    {
+        "unknown" $stack2, $stack1, $stack4, $stack3, $stack0, $stack6, $stack5;
+
+
+        $stack0 = new DeclareEnum$Type;
+
+        specialinvoke $stack0.<DeclareEnum$Type: void <init>(java.lang.String,int)>("TYPE1", 0);
+
+        <DeclareEnum$Type: DeclareEnum$Type TYPE1> = $stack0;
+
+        $stack1 = new DeclareEnum$Type;
+
+        specialinvoke $stack1.<DeclareEnum$Type: void <init>(java.lang.String,int)>("TYPE2", 1);
+
+        <DeclareEnum$Type: DeclareEnum$Type TYPE2> = $stack1;
+
+        $stack2 = new DeclareEnum$Type;
+
+        specialinvoke $stack2.<DeclareEnum$Type: void <init>(java.lang.String,int)>("TYPE3", 2);
+
+        <DeclareEnum$Type: DeclareEnum$Type TYPE3> = $stack2;
+
+        $stack3 = newarray (DeclareEnum$Type)[3];
+
+        $stack4 = <DeclareEnum$Type: DeclareEnum$Type TYPE1>;
+
+        $stack3[0] = $stack4;
+
+        $stack5 = <DeclareEnum$Type: DeclareEnum$Type TYPE2>;
+
+        $stack3[1] = $stack5;
+
+        $stack6 = <DeclareEnum$Type: DeclareEnum$Type TYPE3>;
+
+        $stack3[2] = $stack6;
+
+        <DeclareEnum$Type: DeclareEnum$Type[] $VALUES> = $stack3;
+
+        return;
+    }
+}
+

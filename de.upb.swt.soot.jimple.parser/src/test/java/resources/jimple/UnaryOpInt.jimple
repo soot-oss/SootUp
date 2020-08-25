@@ -1,0 +1,39 @@
+synchronized class UnaryOpInt extends java.lang.Object
+{
+    int i;
+
+    int j;
+
+    void methodUnaryOpInt()
+    {
+        "unknown" $stack2, l0, $stack3, l1;
+
+
+        l0 := @this: UnaryOpInt;
+
+        $stack3 = l0.<UnaryOpInt: int i>;
+
+        $stack2 = l0.<UnaryOpInt: int j>;
+
+        l1 = $stack3 + $stack2;
+
+        return;
+    }
+
+    void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: UnaryOpInt;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        l0.<UnaryOpInt: int i> = 3;
+
+        l0.<UnaryOpInt: int j> = -3;
+
+        return;
+    }
+}
+

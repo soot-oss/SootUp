@@ -1,0 +1,45 @@
+public synchronized class ForLoop extends java.lang.Object
+{
+    public void forLoop()
+    {
+        "unknown" $stack4, l0, l1, l2, l3, $stack5;
+
+
+        l0 := @this: ForLoop;
+
+        l1 = 10;
+
+        l2 = 0;
+
+        l3 = 0;
+
+      label1:
+        $stack5 = l3;
+
+        $stack4 = l1;
+
+        if $stack5 >= $stack4 goto label2;
+
+        l2 = l2 + 1;
+
+        l3 = l3 + 1;
+
+        goto label1;
+
+      label2:
+        return;
+    }
+
+    public void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: ForLoop;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}
+

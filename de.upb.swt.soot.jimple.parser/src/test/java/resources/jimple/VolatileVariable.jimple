@@ -1,0 +1,35 @@
+synchronized class VolatileVariable extends java.lang.Object
+{
+    public volatile int counter;
+
+    void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: VolatileVariable;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        l0.<VolatileVariable: int counter> = 0;
+
+        return;
+    }
+
+    public int increaseCounter()
+    {
+        "unknown" $stack2, $stack1, l0;
+
+
+        l0 := @this: VolatileVariable;
+
+        $stack1 = l0.<VolatileVariable: int counter>;
+
+        $stack2 = $stack1 + 1;
+
+        l0.<VolatileVariable: int counter> = $stack2;
+
+        return $stack1;
+    }
+}
+

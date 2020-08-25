@@ -1,0 +1,27 @@
+public synchronized class StringConcatenation extends java.lang.Object
+{
+    public void stringConcatenation()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: StringConcatenation;
+
+        l1 = "thestring";
+
+        return;
+    }
+
+    public void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: StringConcatenation;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}
+

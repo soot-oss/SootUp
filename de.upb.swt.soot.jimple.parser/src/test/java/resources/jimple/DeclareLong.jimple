@@ -1,0 +1,63 @@
+public synchronized class DeclareLong extends java.lang.Object
+{
+    long l1;
+
+    long l2;
+
+    void declareLongMethod()
+    {
+        "unknown" $stack2, $stack1, $stack4, l0, $stack3;
+
+
+        l0 := @this: DeclareLong;
+
+        $stack2 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack1 = l0.<DeclareLong: long l1>;
+
+        virtualinvoke $stack2.<java.io.PrintStream: void println(long)>($stack1);
+
+        $stack4 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack3 = l0.<DeclareLong: long l2>;
+
+        virtualinvoke $stack4.<java.io.PrintStream: void println(long)>($stack3);
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        "unknown" $stack2, l0, l1;
+
+
+        l0 := @parameter0: java.lang.String[];
+
+        $stack2 = new DeclareLong;
+
+        specialinvoke $stack2.<DeclareLong: void <init>()>();
+
+        l1 = $stack2;
+
+        virtualinvoke l1.<DeclareLong: void declareLongMethod()>();
+
+        return;
+    }
+
+    public void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: DeclareLong;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        l0.<DeclareLong: long l1> = 154L;
+
+        l0.<DeclareLong: long l2> = 874L;
+
+        return;
+    }
+}
+

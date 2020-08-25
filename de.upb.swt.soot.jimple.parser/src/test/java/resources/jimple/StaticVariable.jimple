@@ -1,0 +1,39 @@
+public synchronized class StaticVariable extends java.lang.Object
+{
+    static int num;
+
+    static void <clinit>()
+    {
+
+        <StaticVariable: int num> = 6;
+
+        return;
+    }
+
+    public void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: StaticVariable;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void staticVariable()
+    {
+        "unknown" $stack1, $stack0;
+
+
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack0 = <StaticVariable: int num>;
+
+        virtualinvoke $stack1.<java.io.PrintStream: void println(int)>($stack0);
+
+        return;
+    }
+}
+

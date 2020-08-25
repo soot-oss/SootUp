@@ -1,0 +1,71 @@
+public synchronized class ForEachLoop extends java.lang.Object
+{
+    public void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: ForEachLoop;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void forEachLoop()
+    {
+        "unknown" l0, l1, l2, l3, l4, l5, l6, $stack9, $stack8, $stack7;
+
+
+        l0 := @this: ForEachLoop;
+
+        $stack7 = newarray (int)[9];
+
+        $stack7[0] = 10;
+
+        $stack7[1] = 20;
+
+        $stack7[2] = 30;
+
+        $stack7[3] = 40;
+
+        $stack7[4] = 50;
+
+        $stack7[5] = 60;
+
+        $stack7[6] = 71;
+
+        $stack7[7] = 80;
+
+        $stack7[8] = 90;
+
+        l1 = $stack7;
+
+        l2 = 0;
+
+        l3 = l1;
+
+        l4 = lengthof l3;
+
+        l5 = 0;
+
+      label1:
+        $stack9 = l5;
+
+        $stack8 = l4;
+
+        if $stack9 >= $stack8 goto label2;
+
+        l6 = l3[l5];
+
+        l2 = l2 + 1;
+
+        l5 = l5 + 1;
+
+        goto label1;
+
+      label2:
+        return;
+    }
+}
+

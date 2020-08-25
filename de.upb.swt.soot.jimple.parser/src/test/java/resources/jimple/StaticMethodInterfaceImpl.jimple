@@ -1,0 +1,63 @@
+synchronized class StaticMethodInterfaceImpl extends java.lang.Object implements StaticMethodInterface
+{
+    public static void initStatic()
+    {
+        "unknown" $stack0;
+
+
+        $stack0 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack0.<java.io.PrintStream: void println(java.lang.String)>("Inside initStatic - StaticmethodInterfaceImpl");
+
+        return;
+    }
+
+    void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: StaticMethodInterfaceImpl;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void display()
+    {
+        "unknown" $stack1, l0;
+
+
+        l0 := @this: StaticMethodInterfaceImpl;
+
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>("Inside display - StaticmethodInterfaceImpl");
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        "unknown" $stack2, l0, l1;
+
+
+        l0 := @parameter0: java.lang.String[];
+
+        staticinvoke <StaticMethodInterface: void initStatic()>();
+
+        staticinvoke <StaticMethodInterfaceImpl: void initStatic()>();
+
+        $stack2 = new StaticMethodInterfaceImpl;
+
+        specialinvoke $stack2.<StaticMethodInterfaceImpl: void <init>()>();
+
+        l1 = $stack2;
+
+        virtualinvoke l1.<StaticMethodInterfaceImpl: void display()>();
+
+        return;
+    }
+}
+

@@ -1,0 +1,27 @@
+public synchronized class NullVariable extends java.lang.Object
+{
+    public void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: NullVariable;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void nullVariable()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: NullVariable;
+
+        l1 = null;
+
+        return;
+    }
+}
+

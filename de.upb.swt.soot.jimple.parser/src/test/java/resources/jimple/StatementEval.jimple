@@ -1,0 +1,33 @@
+public synchronized class StatementEval extends java.lang.Object
+{
+    public void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: StatementEval;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void statementEval()
+    {
+        "unknown" $stack2, l0, l1;
+
+
+        l0 := @this: StatementEval;
+
+        l1 = 1;
+
+        $stack2 = l1;
+
+        l1 = 3;
+
+        l1 = $stack2 + 3;
+
+        return;
+    }
+}
+

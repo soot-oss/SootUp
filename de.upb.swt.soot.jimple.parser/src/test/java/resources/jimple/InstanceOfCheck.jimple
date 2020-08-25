@@ -1,0 +1,37 @@
+synchronized class InstanceOfCheck extends InstanceOfCheckSuper
+{
+    public void instanceOfCheckMethod()
+    {
+        "unknown" $stack2, $stack4, $stack3, l0, l1;
+
+
+        l0 := @this: InstanceOfCheck;
+
+        $stack2 = new InstanceOfCheck;
+
+        specialinvoke $stack2.<InstanceOfCheck: void <init>()>();
+
+        l1 = $stack2;
+
+        $stack4 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack3 = l1 instanceof InstanceOfCheckSuper;
+
+        virtualinvoke $stack4.<java.io.PrintStream: void println(boolean)>($stack3);
+
+        return;
+    }
+
+    void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: InstanceOfCheck;
+
+        specialinvoke l0.<InstanceOfCheckSuper: void <init>()>();
+
+        return;
+    }
+}
+

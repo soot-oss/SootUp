@@ -1,0 +1,63 @@
+synchronized class DefaultMethodInterfaceImpl extends java.lang.Object implements DefaultMethodInterface
+{
+    public void interfaceMethod()
+    {
+        "unknown" $stack1, l0;
+
+
+        l0 := @this: DefaultMethodInterfaceImpl;
+
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>("Method interfaceMethod() is implemented");
+
+        return;
+    }
+
+    void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: DefaultMethodInterfaceImpl;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void defaultInterfaceMethod()
+    {
+        "unknown" $stack1, l0;
+
+
+        l0 := @this: DefaultMethodInterfaceImpl;
+
+        specialinvoke l0.<DefaultMethodInterface: void defaultInterfaceMethod()>();
+
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>("Method defaultInterfaceMethod() is implemented");
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        "unknown" $stack2, l0, l1;
+
+
+        l0 := @parameter0: java.lang.String[];
+
+        $stack2 = new DefaultMethodInterfaceImpl;
+
+        specialinvoke $stack2.<DefaultMethodInterfaceImpl: void <init>()>();
+
+        l1 = $stack2;
+
+        virtualinvoke l1.<DefaultMethodInterfaceImpl: void defaultInterfaceMethod()>();
+
+        return;
+    }
+}
+

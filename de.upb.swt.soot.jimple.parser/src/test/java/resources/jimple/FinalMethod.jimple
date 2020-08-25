@@ -1,0 +1,29 @@
+public synchronized class FinalMethod extends java.lang.Object
+{
+    public void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: FinalMethod;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    final void finalMethod()
+    {
+        "unknown" $stack1, l0;
+
+
+        l0 := @this: FinalMethod;
+
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>("final method");
+
+        return;
+    }
+}
+

@@ -1,0 +1,119 @@
+public synchronized class BitwiseOperationsInt extends java.lang.Object
+{
+    public void bitwiseOpOr()
+    {
+        "unknown" l0, l1, l2, l3;
+
+
+        l0 := @this: BitwiseOperationsInt;
+
+        l1 = 70;
+
+        l2 = 20;
+
+        l3 = l1 | l2;
+
+        return;
+    }
+
+    public void bitwiseOpUnsignedRightShift()
+    {
+        "unknown" l0, l1, l2;
+
+
+        l0 := @this: BitwiseOperationsInt;
+
+        l1 = 70;
+
+        l2 = l1 >>> 5;
+
+        return;
+    }
+
+    public void bitwiseOpAnd()
+    {
+        "unknown" l0, l1, l2, l3;
+
+
+        l0 := @this: BitwiseOperationsInt;
+
+        l1 = 70;
+
+        l2 = 20;
+
+        l3 = l1 & l2;
+
+        return;
+    }
+
+    public void bitwiseOpXor()
+    {
+        "unknown" l0, l1, l2, l3;
+
+
+        l0 := @this: BitwiseOperationsInt;
+
+        l1 = 70;
+
+        l2 = 20;
+
+        l3 = l1 ^ l2;
+
+        return;
+    }
+
+    public void bitwiseOpSignedRightShift()
+    {
+        "unknown" l0, l1, l2;
+
+
+        l0 := @this: BitwiseOperationsInt;
+
+        l1 = 70;
+
+        l2 = l1 >> 5;
+
+        return;
+    }
+
+    public void bitwiseOpLeftShift()
+    {
+        "unknown" l0, l1, l2;
+
+
+        l0 := @this: BitwiseOperationsInt;
+
+        l1 = 70;
+
+        l2 = l1 << 5;
+
+        return;
+    }
+
+    public void bitwiseOpComplement()
+    {
+        "unknown" l0, l1, l2;
+
+
+        l0 := @this: BitwiseOperationsInt;
+
+        l1 = 70;
+
+        l2 = l1 ^ -1;
+
+        return;
+    }
+
+    public void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: BitwiseOperationsInt;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}
+

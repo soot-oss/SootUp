@@ -1,0 +1,139 @@
+public final synchronized enum class DeclareEnumWithConstructor$Number extends java.lang.Enum
+{
+    public static final enum DeclareEnumWithConstructor$Number ONE;
+
+    public static final enum DeclareEnumWithConstructor$Number TWO;
+
+    public static final enum DeclareEnumWithConstructor$Number ZERO;
+
+    public static final enum DeclareEnumWithConstructor$Number THREE;
+
+    private int value;
+
+    private static final DeclareEnumWithConstructor$Number[] $VALUES;
+
+    public static DeclareEnumWithConstructor$Number valueOf(java.lang.String)
+    {
+        "unknown" $stack2, $stack1, l0;
+
+
+        l0 := @parameter0: java.lang.String;
+
+        $stack1 = staticinvoke <java.lang.Enum: java.lang.Enum valueOf(java.lang.Class,java.lang.String)>(class "LDeclareEnumWithConstructor$Number;", l0);
+
+        $stack2 = (DeclareEnumWithConstructor$Number) $stack1;
+
+        return $stack2;
+    }
+
+    private void <init>(java.lang.String,int,int)
+    {
+        "unknown" l0, l1, l2, l3;
+
+
+        l0 := @this: DeclareEnumWithConstructor$Number;
+
+        l1 := @parameter0: java.lang.String;
+
+        l2 := @parameter1: int;
+
+        l3 := @parameter2: int;
+
+        specialinvoke l0.<java.lang.Enum: void <init>(java.lang.String,int)>(l1, l2);
+
+        l0.<DeclareEnumWithConstructor$Number: int value> = l3;
+
+        return;
+    }
+
+    private int getValue()
+    {
+        "unknown" $stack1, l0;
+
+
+        l0 := @this: DeclareEnumWithConstructor$Number;
+
+        $stack1 = l0.<DeclareEnumWithConstructor$Number: int value>;
+
+        return $stack1;
+    }
+
+    public static DeclareEnumWithConstructor$Number[] values()
+    {
+        "unknown" $stack2, $stack1, $stack0;
+
+
+        $stack0 = <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number[] $VALUES>;
+
+        $stack1 = virtualinvoke $stack0.<java.lang.Object: java.lang.Object clone()>();
+
+        $stack2 = (DeclareEnumWithConstructor$Number[]) $stack1;
+
+        return $stack2;
+    }
+
+    static void <clinit>()
+    {
+        "unknown" $stack2, $stack1, $stack4, $stack3, $stack0, $stack6, $stack5, $stack8, $stack7;
+
+
+        $stack0 = new DeclareEnumWithConstructor$Number;
+
+        specialinvoke $stack0.<DeclareEnumWithConstructor$Number: void <init>(java.lang.String,int,int)>("ZERO", 0, 0);
+
+        <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number ZERO> = $stack0;
+
+        $stack1 = new DeclareEnumWithConstructor$Number;
+
+        specialinvoke $stack1.<DeclareEnumWithConstructor$Number: void <init>(java.lang.String,int,int)>("ONE", 1, 1);
+
+        <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number ONE> = $stack1;
+
+        $stack2 = new DeclareEnumWithConstructor$Number;
+
+        specialinvoke $stack2.<DeclareEnumWithConstructor$Number: void <init>(java.lang.String,int,int)>("TWO", 2, 2);
+
+        <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number TWO> = $stack2;
+
+        $stack3 = new DeclareEnumWithConstructor$Number;
+
+        specialinvoke $stack3.<DeclareEnumWithConstructor$Number: void <init>(java.lang.String,int,int)>("THREE", 3, 3);
+
+        <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number THREE> = $stack3;
+
+        $stack4 = newarray (DeclareEnumWithConstructor$Number)[4];
+
+        $stack5 = <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number ZERO>;
+
+        $stack4[0] = $stack5;
+
+        $stack6 = <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number ONE>;
+
+        $stack4[1] = $stack6;
+
+        $stack7 = <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number TWO>;
+
+        $stack4[2] = $stack7;
+
+        $stack8 = <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number THREE>;
+
+        $stack4[3] = $stack8;
+
+        <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number[] $VALUES> = $stack4;
+
+        return;
+    }
+
+    static int access$000(DeclareEnumWithConstructor$Number)
+    {
+        "unknown" $stack1, l0;
+
+
+        l0 := @parameter0: DeclareEnumWithConstructor$Number;
+
+        $stack1 = specialinvoke l0.<DeclareEnumWithConstructor$Number: int getValue()>();
+
+        return $stack1;
+    }
+}
+

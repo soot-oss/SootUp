@@ -1,0 +1,111 @@
+public synchronized class EscapeSequencesInString extends java.lang.Object
+{
+    public void escapeBackslashB()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: EscapeSequencesInString;
+
+        l1 = "This escapes backslash b \u0008";
+
+        return;
+    }
+
+    public void escapeDoubleQuotes()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: EscapeSequencesInString;
+
+        l1 = "This escapes double quotes \"";
+
+        return;
+    }
+
+    public void escapeBackslashN()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: EscapeSequencesInString;
+
+        l1 = "This escapes backslash n \n";
+
+        return;
+    }
+
+    public void escapeBackslashR()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: EscapeSequencesInString;
+
+        l1 = "This escapes backslash r \r";
+
+        return;
+    }
+
+    public void escapeBackslashF()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: EscapeSequencesInString;
+
+        l1 = "This escapes backslash f \f";
+
+        return;
+    }
+
+    public void <init>()
+    {
+        "unknown" l0;
+
+
+        l0 := @this: EscapeSequencesInString;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void escapeSingleQuote()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: EscapeSequencesInString;
+
+        l1 = "This escapes single quote \'";
+
+        return;
+    }
+
+    public void escapeBackslash()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: EscapeSequencesInString;
+
+        l1 = "This escapes backslash \\";
+
+        return;
+    }
+
+    public void escapeBackslashT()
+    {
+        "unknown" l0, l1;
+
+
+        l0 := @this: EscapeSequencesInString;
+
+        l1 = "This escapes backslash t \t";
+
+        return;
+    }
+}
+
