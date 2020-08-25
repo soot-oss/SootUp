@@ -96,8 +96,8 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
   }
 
   /**
-   * Checks whether the given trap covers the given unit, i.e., there is an exceptional control flow
-   * from the given unit to the given trap
+   * Checks whether the given trap covers the given stmt, i.e., there is an exceptional control flow
+   * from the given stmt to the given trap
    *
    * @param bodyStmts linearized Stmtgraph
    * @param trap The trap
@@ -105,11 +105,11 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
    * @return True if there can be an exceptional control flow from the given unit to the given trap
    */
   private boolean trapCoversStmt(List<Stmt> bodyStmts, Trap trap, Stmt stmt) {
-    List<Stmt> sequence =
-        bodyStmts.subList(
-            bodyStmts.indexOf(trap.getBeginStmt()), bodyStmts.indexOf(trap.getEndStmt()));
-    for (Stmt st : sequence) {
-      if (st == stmt) {
+
+    final int endIdxOfTrap = bodyStmts.indexOf(trap.getEndStmt()); // endstmt is exclusive!
+    assert endIdxOfTrap >= 0;
+    for (int i = bodyStmts.indexOf(trap.getBeginStmt()); i < endIdxOfTrap; i++) {
+      if (bodyStmts.get(i) == stmt) {
         return true;
       }
     }
