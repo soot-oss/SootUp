@@ -232,7 +232,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     public Collection<? extends AbstractClassSource> getClassSources(
         @Nonnull IdentifierFactory identifierFactory,
         @Nonnull ClassLoadingOptions classLoadingOptions) {
-      List<AbstractClassSource> classesFromWar = new ArrayList<>();
+      List<AbstractClassSource> foundClasses = new ArrayList<>();
 
       try {
         jarsFromPath =
@@ -243,14 +243,14 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         for (Path jarPath : jarsFromPath) {
           final ArchiveBasedAnalysisInputLocation archiveBasedAnalysisInputLocation =
               new ArchiveBasedAnalysisInputLocation(jarPath);
-          classesFromWar.addAll(
+          foundClasses.addAll(
               archiveBasedAnalysisInputLocation.getClassSources(
                   identifierFactory, classLoadingOptions));
         }
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
-      return classesFromWar;
+      return foundClasses;
     }
 
     @Override
