@@ -3,7 +3,7 @@ package de.upb.swt.soot.jimple.parser;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
-import de.upb.swt.soot.core.frontend.SootClassSource;
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.*;
@@ -21,6 +21,7 @@ import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.jimple.JimpleBaseVisitor;
 import de.upb.swt.soot.jimple.JimpleLexer;
 import de.upb.swt.soot.jimple.JimpleParser;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -49,16 +50,28 @@ class JimpleReader {
         : identifierFactory.getClassType(typename, packageName.getPackageName());
   }
 
-  public SootClassSource run(CharStream charStream) {
+  public OverridingClassSource run(
+      CharStream charStream,
+      AnalysisInputLocation inputlocation,
+      Path sourcePath,
+      ClassType classSignature) {
     JimpleLexer lexer = new JimpleLexer(charStream);
     TokenStream tokens = new CommonTokenStream(lexer);
     JimpleParser parser = new JimpleParser(tokens);
 
     ClassVisitor classVisitor = new ClassVisitor();
     classVisitor.visit(parser.file());
-
-    // FIXME
-    return new OverridingClassSource(classVisitor.fields);
+    return new OverridingClassSource(
+        inputlocation,
+        sourcePath,
+        classSignature,
+        classVisitor.superclass,
+        classVisitor.interfaces,
+        classVisitor.outerclass,
+        classVisitor.fields,
+        classVisitor.methods,
+        classVisitor.position,
+        classVisitor.modifiers);
   }
 
   private class ClassVisitor extends JimpleBaseVisitor<Boolean> {
@@ -67,8 +80,9 @@ class JimpleReader {
     Set<SootMethod> methods = new HashSet<>();
     ClassType superclass = null;
     Set<ClassType> interfaces = null;
-    ClassType outerclass = null;
+    ClassType outerclass = null; // currently not determined in Java etc -> heuristic used
     Position position = NoPositionInformation.getInstance();
+    EnumSet<Modifier> modifiers = null;
 
     @Override
     @Nonnull
@@ -268,7 +282,7 @@ class JimpleReader {
           builder.setLocals(new HashSet<>(locals.values()));
 
           // statements
-          JimpleReader.StmtVisitor stmtVisitor = new JimpleReader.StmtVisitor(builder);
+          StmtVisitor stmtVisitor = new StmtVisitor(builder);
           if (ctx.method_body().statement() != null) {
             ctx.method_body().statement().forEach(statement -> statement.accept(stmtVisitor));
           }
