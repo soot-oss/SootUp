@@ -25,8 +25,6 @@ import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -57,13 +55,12 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
     // Find two traps that use java.lang.Throwable as their type and that span the same code region
-    Collection<Trap> originalTraps = builder.getTraps();
-    List<Trap> traps = new ArrayList<>(builder.getTraps());
-    List<Stmt> originalBody = Lists.newArrayList(builder.getStmtGraph());
+    final List<Trap> traps = builder.getTraps();
+    final List<Stmt> stmtList = Lists.newArrayList(builder.getStmtGraph());
 
-    for (Trap trap1 : originalTraps) {
+    for (Trap trap1 : traps) {
       if (trap1.getExceptionType().getClassName().equals("java.lang.Throwable")) {
-        for (Trap trap2 : originalTraps) {
+        for (Trap trap2 : traps) {
           if (trap1 != trap2
               && trap1.getBeginStmt() == trap2.getBeginStmt()
               && trap1.getEndStmt() == trap2.getEndStmt()
@@ -74,12 +71,12 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
               if (trap3 != trap1
                   && trap3 != trap2
                   && trap3.getExceptionType().getClassName().equals("java.lang.Throwable")) {
-                if (trapCoversStmt(originalBody, trap3, trap1.getHandlerStmt())
+                if (trapCoversStmt(stmtList, trap3, trap1.getHandlerStmt())
                     && trap3.getHandlerStmt() == trap2.getHandlerStmt()) {
                   // c -> t1 -> t3 -> t2 && x -> t2
                   traps.remove(trap2);
                   break;
-                } else if (trapCoversStmt(originalBody, trap3, trap2.getHandlerStmt())
+                } else if (trapCoversStmt(stmtList, trap3, trap2.getHandlerStmt())
                     && trap3.getHandlerStmt() == trap1.getHandlerStmt()) {
                   // c -> t2 -> t3 -> t1 && c -> t1
                   traps.remove(trap1);
@@ -91,8 +88,6 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
         }
       }
     }
-
-    builder.setTraps(traps);
   }
 
   /**
@@ -104,11 +99,11 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
    * @param stmt The unit
    * @return True if there can be an exceptional control flow from the given unit to the given trap
    */
-  private boolean trapCoversStmt(List<Stmt> bodyStmts, Trap trap, Stmt stmt) {
-
-    final int endIdxOfTrap = bodyStmts.indexOf(trap.getEndStmt()); // endstmt is exclusive!
-    assert endIdxOfTrap >= 0;
-    for (int i = bodyStmts.indexOf(trap.getBeginStmt()); i < endIdxOfTrap; i++) {
+  private boolean trapCoversStmt(
+      @Nonnull List<Stmt> bodyStmts, @Nonnull Trap trap, @Nonnull Stmt stmt) {
+    final int startIdx = bodyStmts.indexOf(trap.getBeginStmt());
+    final int endIdx = bodyStmts.indexOf(trap.getEndStmt()); // endstmt is exclusive!
+    for (int i = startIdx; i < endIdx; i++) {
       if (bodyStmts.get(i) == stmt) {
         return true;
       }
