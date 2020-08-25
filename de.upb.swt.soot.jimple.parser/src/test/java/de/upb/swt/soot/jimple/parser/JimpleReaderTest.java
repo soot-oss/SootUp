@@ -377,8 +377,6 @@ public class JimpleReaderTest {
     assertEquals("$i0", Jimple.escape("$i0"));
 
     // keywords
-    assertEquals("\"void\"", Jimple.escape("void"));
-    assertEquals("\"int\"", Jimple.escape("int"));
     assertEquals("\"class\"", Jimple.escape("class"));
     assertEquals("\"throws\"", Jimple.escape("throws"));
 
