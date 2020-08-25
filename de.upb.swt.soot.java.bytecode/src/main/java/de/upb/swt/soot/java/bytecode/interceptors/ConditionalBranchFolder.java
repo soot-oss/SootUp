@@ -21,7 +21,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #L%
  */
 
-import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
@@ -44,14 +43,14 @@ import javax.annotation.Nonnull;
  */
 public class ConditionalBranchFolder implements BodyInterceptor {
 
-  @Nonnull
   @Override
-  public Body interceptBody(@Nonnull Body originalBody) {
-    final Body.BodyBuilder builder = Body.builder(originalBody);
-    final StmtGraph builderStmtGraph = builder.getStmtGraph();
-    final ImmutableStmtGraph stmtGraph = originalBody.getStmtGraph();
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
-    for (Stmt stmt : originalBody.getStmtGraph().nodes()) {
+    final StmtGraph builderStmtGraph = builder.getStmtGraph();
+    final StmtGraph stmtGraph = builder.getStmtGraph();
+
+    builder.enableDeferredChanges();
+    for (Stmt stmt : stmtGraph.nodes()) {
       if (stmt instanceof JIfStmt) {
         JIfStmt ifStmt = (JIfStmt) stmt;
         // check for constant-valued conditions
@@ -94,7 +93,6 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         }
       }
     }
-
-    return builder.build();
+    builder.commitDeferredChanges();
   }
 }

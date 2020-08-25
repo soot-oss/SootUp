@@ -37,8 +37,10 @@ public class ConditionalBranchFolderTest {
    */
   @Test
   public void testUnconditionalBranching() {
-    Body originalBody = createBody(true);
-    Body processedBody = new ConditionalBranchFolder().interceptBody(originalBody);
+    Body.BodyBuilder builder = createBody(true);
+    Body originalBody = builder.build();
+    new ConditionalBranchFolder().interceptBody(builder);
+    Body processedBody = builder.build();
 
     assertEquals(
         originalBody.getStmtGraph().nodes().size() - 2,
@@ -53,8 +55,10 @@ public class ConditionalBranchFolderTest {
    */
   @Test
   public void testConditionalBranching() {
-    Body originalBody = createBody(false);
-    Body processedBody = new ConditionalBranchFolder().interceptBody(originalBody);
+    Body.BodyBuilder builder = createBody(false);
+    Body originalBody = builder.build();
+    new ConditionalBranchFolder().interceptBody(builder);
+    Body processedBody = builder.build();
 
     assertEquals(originalBody.getStmtGraph().nodes(), processedBody.getStmtGraph().nodes());
   }
@@ -65,7 +69,7 @@ public class ConditionalBranchFolderTest {
    * @param constantCondition indicates, whether the condition is constant.
    * @return the generated {@link Body}
    */
-  private static Body createBody(boolean constantCondition) {
+  private static Body.BodyBuilder createBody(boolean constantCondition) {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
@@ -102,6 +106,6 @@ public class ConditionalBranchFolderTest {
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
-    return bodyBuilder.build();
+    return bodyBuilder;
   }
 }
