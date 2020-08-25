@@ -20,16 +20,16 @@ import javax.annotation.Nonnull;
 
 public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   final Path path;
-  final IdentifierFactory factory;
 
-  public JimpleAnalysisInputLocation(Path path, IdentifierFactory factory) {
+  public JimpleAnalysisInputLocation(@Nonnull Path path) {
     this.path = path;
-    this.factory = factory;
   }
 
   @Nonnull
   Collection<? extends AbstractClassSource> walkDirectory(
-      @Nonnull Path dirPath, @Nonnull IdentifierFactory factory, ClassProvider classProvider) {
+      @Nonnull Path dirPath,
+      @Nonnull IdentifierFactory factory,
+      @Nonnull ClassProvider classProvider) {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
       return Files.walk(dirPath)
