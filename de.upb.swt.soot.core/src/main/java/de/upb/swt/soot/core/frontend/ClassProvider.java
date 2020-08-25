@@ -13,7 +13,7 @@ import java.nio.file.Path;
  */
 public interface ClassProvider {
 
-  // TODO: [ms] check why AnalysisInputLocation AND Path?
+  // TODO: [ms] check necessity for AnalysisInputLocation AND Path?
   AbstractClassSource createClassSource(
       AnalysisInputLocation inputLocation, Path sourcePath, ClassType classSignature);
 

@@ -4,12 +4,21 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
+import javax.annotation.Nonnull;
 import org.antlr.v4.runtime.CharStreams;
 
 public class JimpleClassProvider implements ClassProvider {
+
+  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+
+  public JimpleClassProvider(List<BodyInterceptor> bodyInterceptors) {
+    this.bodyInterceptors = bodyInterceptors;
+  }
 
   @Override
   public AbstractClassSource createClassSource(

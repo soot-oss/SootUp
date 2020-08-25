@@ -9,7 +9,6 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.FileType;
-import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
@@ -118,15 +117,11 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         path.resolve(signature.toPath(classProvider.getHandledFileType(), path.getFileSystem()));
 
     if (!Files.exists(pathToClass)) {
+      // TODO: [ms] better throw an exception?
       return Optional.empty();
     }
 
     return Optional.of(classProvider.createClassSource(this, pathToClass, signature));
-  }
-
-  ClassProvider buildClassProvider(@Nonnull ClassLoadingOptions classLoadingOptions) {
-    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
-    return new AsmJavaClassProvider(bodyInterceptors);
   }
 
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
@@ -139,14 +134,19 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
         @Nonnull IdentifierFactory identifierFactory,
         @Nonnull ClassLoadingOptions classLoadingOptions) {
-      return walkDirectory(path, identifierFactory, buildClassProvider(classLoadingOptions));
+      return walkDirectory(
+          path,
+          identifierFactory,
+          new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()));
     }
 
     @Override
     public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
         @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
       return getClassSourceInternal(
-          (JavaClassType) type, path, buildClassProvider(classLoadingOptions));
+          (JavaClassType) type,
+          path,
+          new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()));
     }
   }
 
@@ -188,7 +188,9 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         FileSystem fs = fileSystemCache.get(path);
         final Path archiveRoot = fs.getPath("/");
         return getClassSourceInternal(
-            (JavaClassType) type, archiveRoot, buildClassProvider(classLoadingOptions));
+            (JavaClassType) type,
+            archiveRoot,
+            new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()));
       } catch (ExecutionException e) {
         throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
       }
@@ -201,7 +203,9 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path archiveRoot = fs.getPath("/");
         return walkDirectory(
-            archiveRoot, identifierFactory, buildClassProvider(classLoadingOptions));
+            archiveRoot,
+            identifierFactory,
+            new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()));
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
