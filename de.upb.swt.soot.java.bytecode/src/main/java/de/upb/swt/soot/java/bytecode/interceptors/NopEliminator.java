@@ -26,8 +26,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Nonnull;
 
 /**
@@ -42,32 +41,28 @@ public class NopEliminator implements BodyInterceptor {
    * Removes {@link JNopStmt}s from the given {@link Body}. Complexity is linear with respect to the
    * statements.
    *
-   * @param originalBody The current body before interception.
-   * @return The transformed body.
+   * @param builder The current body before interception.
    */
-  @Nonnull
   @Override
-  public Body interceptBody(@Nonnull Body originalBody) {
-    Body.BodyBuilder builder = Body.builder(originalBody);
-    StmtGraph originalGraph = originalBody.getStmtGraph();
-    Set<Stmt> stmtSet = originalGraph.nodes();
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+    StmtGraph graph = builder.getStmtGraph();
+    Set<Stmt> stmtSet = graph.nodes();
 
+    builder.enableDeferredChanges();
     for (Stmt stmt : stmtSet) {
       if (stmt instanceof JNopStmt) {
-        final List<Stmt> successors = originalGraph.successors(stmt);
+        final Stmt nopStmt = stmt;
+        final List<Stmt> successors = graph.successors(stmt);
         // relink predecessors to successor of nop
-        // [ms] in a valid Body there is always a successor of nop -> last stmt (no
-        // successor) is a
-        // return|throw stmt
+        // [ms] in a valid Body there is always a successor of nop
         final Stmt successorOfNop = successors.iterator().next();
-        builder.removeFlow(stmt, successorOfNop);
-        for (Stmt pred : originalGraph.predecessors(stmt)) {
-          builder.removeFlow(pred, stmt);
+        builder.removeFlow(nopStmt, successorOfNop);
+        for (Stmt pred : graph.predecessors(nopStmt)) {
+          builder.removeFlow(pred, nopStmt);
           builder.addFlow(pred, successorOfNop);
         }
       }
     }
-
-    return builder.build();
+    builder.commitDeferredChanges();
   }
 }
