@@ -4,7 +4,6 @@ import fnmatch
 from re import search
 import pdb
 
-
 srcMatches = []
 srcTestMatches = []
 
@@ -23,19 +22,16 @@ for root, dirnames, filenames in os.walk('..\\de.upb.swt.soot.java.bytecode\\src
     for filename in fnmatch.filter(filenames, '*Test.java'):
         srcTestMatches.append(os.path.join(root, filename))
 
-
 for srcFile in srcMatches:
 	ocb=0
 	ccb=0
 	flagRegex=0
-	str ="/**  <pre>\n"
 	listData=[]
 	data=""
 	
 	#Use this regex to form tupples of method name, method body and put it into a map
 	regexMethod =re.compile( "(\w*)[(]((([a-zA-Z])*(\s+)([a-zA-Z]))*)(([,])(\s+)([a-zA-Z])*(\s+)([a-zA-Z])*)*[)]" )
 	
-	#f= open("..\\..\\sandbox\\DeclareLong.java", 'r', encoding="utf8")
 	f= open(srcFile, 'r', encoding="utf8")
 	print(srcFile)
 	
@@ -51,37 +47,47 @@ for srcFile in srcMatches:
 	2. Map of 
 	'''
 	
-	
-	
+	methodMap={} 
 	
 	for line in f.readlines():
-		if regexMethod.search(line):
+		found=regexMethod.search(line)
+		if found:
+			methodName=""
+			methodBody="/**  <pre>\n"
+			methodName=found.group().split('(',0)[0].capitalize()
+
+			methodMap[methodName]= ""
 			if '{' in line :
 				ocb+=1
 			if '}' in line:
 				ccb+=1
             
-		if ocb >= 1:	
-			str+=line
-			if '{' in line and ocb > 1:
+		if ocb >= 1 and ocb>=ccb:	
+			methodBody+=line
+			if '{' in line and ocb >= 1:
 				ocb+=1
 			if '}' in line:
 				ccb+=1
-	
+			methodBody+="\n<pre>*/"
+			methodMap[methodName]=methodBody
+			
 			if '}' in line and ocb == 1 :
 				ocb=0
 				exit
+		#print(str)
 	
-	str+="\n<pre>*/"
 	var1=""
 	srcFileName = (srcFile.rsplit('\\',1)[1]).split('.')[0]
+	#print(str)
+	print(methodMap)
 		
 			
 	for filename in srcTestMatches:
 		dummy=srcFileName+"Test"
+		print(dummy)
 		#TODO match exact dummy with filename
 		if dummy in filename:
-			
+			found= re.compile("(\s*)public List<String> expectedBodyStmts(\S*)[(][)]")
 			str2=""
 			var1=""
 			strSrcTest1=""
@@ -97,10 +103,11 @@ for srcFile in srcMatches:
 					#print("Line added for "+srcTestFile+line)
 				
 
-			found= re.search(r'  @Override(\s*)public List<String> expectedBodyStmts((.+\s)*)}(\s*)((.+\s)*)}(\s*)',str2,re.DOTALL)
+			#found= re.search(r'  @Override(\s*)public List<String> expectedBodyStmts((.+\s)*)}(\s*)((.+\s)*)}(\s*)',str2,re.DOTALL)
 			
 			if found != None:
-				strSrcTest2= var1.rsplit("\n",3)[0]+str
+				str= methodMap[met]
+				strSrcTest2= var1.rsplit("\n",3)[0]+
 				strSrcTest2+=found.group()
 				New2= ""
 				strSrcTestNew2 = "".join(strSrcTest1.rsplit('@Override', 1))
@@ -109,7 +116,7 @@ for srcFile in srcMatches:
 				#pdb.set_trace()
 				
 				with open(srcTestFile, 'w', encoding="utf8") as filew:
-					filew.writelines(strSrcTestNew2)
+					#filew.writelines(strSrcTestNew2)
 					print("File write for file "+srcTestFile)
 			else :
 				print("No match for "+srcTestFile)
