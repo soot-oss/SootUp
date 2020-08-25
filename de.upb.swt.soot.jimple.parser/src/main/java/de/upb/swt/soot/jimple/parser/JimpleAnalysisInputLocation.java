@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
+/** @author Markus Schmidt */
 public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   final Path path;
 

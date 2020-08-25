@@ -12,6 +12,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import org.antlr.v4.runtime.CharStreams;
 
+/** @author Markus Schmidt */
 public class JimpleClassProvider implements ClassProvider {
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;

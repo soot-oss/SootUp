@@ -140,7 +140,7 @@ public abstract class Jimple {
         SWITCH,
         VIRTUALINVOKE,
         NULL_TYPE,
-        UNKNOWN,
+        // UNKNOWN,
         CMP,
         CMPG,
         CMPL,
