@@ -2,7 +2,13 @@ package de.upb.swt.soot.jimple.parser;
 
 import static org.junit.Assert.assertEquals;
 
+import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SourceType;
+import de.upb.swt.soot.core.util.printer.Printer;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.junit.Test;
@@ -10,18 +16,15 @@ import org.junit.Test;
 public class JimpleReaderTest {
 
   void checkJimpleClass(CharStream cs) {
-    /* FIXME
-       JimpleReader jimpleVisitor = new JimpleReader();
-       jimpleVisitor.run(cs, inputlocation, sourcePath, classSignature);
 
-       StringWriter output = new StringWriter();
-       Printer p = new Printer();
-       final SootClass sc = new SootClass(scs, SourceType.Application);
-       p.printTo(sc, new PrintWriter(output));
+    JimpleReader jimpleVisitor = new JimpleReader();
+    final OverridingClassSource scs = jimpleVisitor.run(cs, null, null, null);
+    StringWriter output = new StringWriter();
+    Printer p = new Printer();
+    final SootClass sc = new SootClass(scs, SourceType.Application);
+    p.printTo(sc, new PrintWriter(output));
 
-       System.out.println(output);
-
-    */
+    System.out.println(output);
   }
 
   @Test
