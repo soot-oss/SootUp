@@ -217,17 +217,17 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     stack = null;
     frames = null;
 
-    Body body = bodyBuilder.setMethodSignature(lazyMethodSignature.get()).build();
+    bodyBuilder.setMethodSignature(lazyMethodSignature.get());
 
     for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
       try {
-        body = bodyInterceptor.interceptBody(body);
+        bodyInterceptor.interceptBody(bodyBuilder);
       } catch (Exception e) {
         throw new RuntimeException(
             "Failed to apply " + bodyInterceptor + " to " + lazyMethodSignature.get(), e);
       }
     }
-    return body;
+    return bodyBuilder.build();
   }
 
   private StackFrame getFrame(AbstractInsnNode insn) {
