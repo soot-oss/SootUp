@@ -24,20 +24,11 @@ public class JimpleClassProvider implements ClassProvider {
   public AbstractClassSource createClassSource(
       AnalysisInputLocation inputlocation, Path sourcePath, ClassType classSignature) {
 
-    // TODO: create new OverridingClassSource instance
-
     try {
-
-      /*
-          CharStream input = CharStreams.fromString(source);
-          CharStream input = CharStreams.fromPath(path);
-      */
-
       final JimpleReader jimpleReader = new JimpleReader();
       return jimpleReader.run(
           CharStreams.fromPath(sourcePath), inputlocation, sourcePath, classSignature);
     } catch (IOException e) {
-      // TODO exception
       throw new RuntimeException(e);
     }
   }
