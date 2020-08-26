@@ -128,17 +128,17 @@ public class DuplicateCatchAllTrapRemoverTest {
 
     @Override
     public String getFullyQualifiedName() {
-      return null;
-    }
-
-    @Override
-    public String getClassName() {
       return "java.lang.Throwable";
     }
 
     @Override
+    public String getClassName() {
+      return "Throwable";
+    }
+
+    @Override
     public PackageName getPackageName() {
-      return null;
+      return new PackageName("java.lang");
     }
   }
 }
