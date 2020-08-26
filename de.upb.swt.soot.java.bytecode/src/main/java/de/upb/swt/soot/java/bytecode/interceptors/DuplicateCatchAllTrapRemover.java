@@ -54,10 +54,17 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
-    // Find two traps that use java.lang.Throwable as their type and that span the same code region
-    final List<Trap> traps = builder.getTraps();
-    final List<Stmt> stmtList = Lists.newArrayList(builder.getStmtGraph());
+    // TODO: [ms] this algorithms costs are cubic!
+    // maybe sorting it into some kind of interval tree and retrieve overlaps will help to reduce
+    // costs
 
+    final List<Trap> traps = builder.getTraps();
+    if (traps.size() < 3) {
+      return;
+    }
+    final List<Stmt> stmtList = builder.getStmts();
+
+    // Find two traps that use java.lang.Throwable as their type and that span the same code region
     for (int i = 0, trapsSize = traps.size(); i < trapsSize; i++) {
       Trap trap1 = traps.get(i);
       if (trap1.getExceptionType().getFullyQualifiedName().equals("java.lang.Throwable")) {

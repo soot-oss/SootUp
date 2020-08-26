@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.model;
  * #L%
  */
 
+import com.google.common.collect.Lists;
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
@@ -447,6 +448,12 @@ public class Body implements Copyable {
     @Nonnull
     public StmtGraph getStmtGraph() {
       return cfg.unmodifiableStmtGraph();
+    }
+
+    @Nonnull
+    public List<Stmt> getStmts() {
+      // [ms] maybe cache that it until modified?
+      return Lists.newArrayList(cfg);
     }
 
     @Nonnull
