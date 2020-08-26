@@ -29,7 +29,7 @@ public class NestedClassShadowTest extends JimpleTestSuiteBase {
 
   // FIXME baseclassPath
   JavaClassType nestedClass =
-      identifierFactory.getClassType(getClassName("baseclassPath" + "$NestedClass"));
+      identifierFactory.getClassType(deriveClassName("baseclassPath" + "$NestedClass"));
   SootClass sootNestedClass = loadClass(nestedClass);
 
   /** Test: OuterClass of NestedClass is NestedClassShadow */

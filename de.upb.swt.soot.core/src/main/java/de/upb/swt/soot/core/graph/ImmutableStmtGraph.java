@@ -5,6 +5,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /** @author Markus Schmidt */
 // [ms] possible performance improvement: on instantiation assign: Collection.singleTonList()
@@ -15,7 +16,7 @@ public class ImmutableStmtGraph extends StmtGraph {
   @Nonnull private final Object[] predecessors;
   @Nonnull private final Map<Stmt, Integer> nodeToIndex;
 
-  @Nonnull private final Stmt startingStmt;
+  @Nullable private final Stmt startingStmt;
   @Nonnull private final List<Trap> traps;
 
   /** creates an immutable copy of the given stmtGraph. */

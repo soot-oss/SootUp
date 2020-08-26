@@ -29,7 +29,7 @@ public class LocalClassShadowTest extends JimpleTestSuiteBase {
 
   // FIXME baseclassPath
   JavaClassType localClass =
-      identifierFactory.getClassType(getClassName("baseclassPath") + "1$LocalClass");
+      identifierFactory.getClassType(deriveClassName("baseclassPath") + "1$LocalClass");
   SootClass sootLocalClass = loadClass(localClass);
 
   /** Test: OuterClass of LocalClass is LocalClassShadow */

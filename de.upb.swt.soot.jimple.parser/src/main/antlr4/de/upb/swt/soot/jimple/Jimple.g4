@@ -117,7 +117,7 @@ grammar Jimple;
   implements_clause : 'implements' names=name_list;
 
   name:
-    /*ident*/ IDENTIFIER | STRING_CONSTANT ;
+    /*ident*/ IDENTIFIER ;// | STRING_CONSTANT ;
 
   name_list:
     /*single*/ name |

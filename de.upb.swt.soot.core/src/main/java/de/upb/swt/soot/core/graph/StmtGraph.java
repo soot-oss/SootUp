@@ -7,6 +7,7 @@ import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Interface for control flow graphs on Jimple Stmts. A StmtGraph is directed and connected (except
@@ -19,6 +20,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class StmtGraph implements Iterable<Stmt> {
 
+  @Nullable
   public abstract Stmt getStartingStmt();
 
   /**

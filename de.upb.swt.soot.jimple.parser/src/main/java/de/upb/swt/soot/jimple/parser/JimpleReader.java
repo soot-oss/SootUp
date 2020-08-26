@@ -31,7 +31,6 @@ class JimpleReader {
 
   final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   private Map<String, PackageName> imports = new HashMap<>();
-  private ClassType clazz = null;
   private final HashMap<Stmt, List<String>> unresolvedBranches = new HashMap<>();
   private final HashMap<String, Stmt> labeledStmts = new HashMap<>();
   private HashMap<String, Local> locals = new HashMap<>();
@@ -60,11 +59,19 @@ class JimpleReader {
     JimpleParser parser = new JimpleParser(tokens);
 
     ClassVisitor classVisitor = new ClassVisitor();
-    classVisitor.visit(parser.file());
+    if (!classVisitor.visit(parser.file())) {
+      throw new RuntimeException("The Jimple file " + sourcePath + "is not well formed.");
+    }
+
+    /*    if( classVisitor.clazz != classSignature ){
+          throw new RuntimeException("Filename does not match the parsed Classname.");
+        }
+    */
+
     return new OverridingClassSource(
         inputlocation,
         sourcePath,
-        classSignature,
+        classVisitor.clazz,
         classVisitor.superclass,
         classVisitor.interfaces,
         classVisitor.outerclass,
@@ -76,6 +83,7 @@ class JimpleReader {
 
   private class ClassVisitor extends JimpleBaseVisitor<Boolean> {
 
+    private ClassType clazz = null;
     Set<SootField> fields = new HashSet<>();
     Set<SootMethod> methods = new HashSet<>();
     ClassType superclass = null;
@@ -128,14 +136,14 @@ class JimpleReader {
         throw new IllegalStateException("Class is not well formed.");
       }
 
-      EnumSet<Modifier> modifier = getModifiers(ctx.modifier());
+      modifiers = getModifiers(ctx.modifier());
       // file_type
       if (ctx.file_type() != null) {
         if (ctx.file_type().getText().equals("interface")) {
-          modifier.add(Modifier.INTERFACE);
+          modifiers.add(Modifier.INTERFACE);
         }
         if (ctx.file_type().getText().equals("annotation")) {
-          modifier.add(Modifier.ANNOTATION);
+          modifiers.add(Modifier.ANNOTATION);
         }
       }
 

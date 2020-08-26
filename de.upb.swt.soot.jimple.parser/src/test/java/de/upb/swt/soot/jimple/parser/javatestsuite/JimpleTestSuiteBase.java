@@ -21,7 +21,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public abstract class JimpleTestSuiteBase {
 
-  static final String baseDir = "resources/jimple/"; // TODO: check!
+  static final String baseDir = "src/test/java/resources/";
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   private View view;
 
@@ -42,7 +42,7 @@ public abstract class JimpleTestSuiteBase {
    * @returns the name of the class - assuming the testname unit has "Test" appended to the
    *     respective name of the class
    */
-  public String getClassName(String classPath) {
+  public String deriveClassName(String classPath) {
     String[] classPathArray = classPath.split("\\.");
     String className =
         classPathArray[classPathArray.length - 1].substring(
@@ -51,8 +51,7 @@ public abstract class JimpleTestSuiteBase {
   }
 
   protected JavaClassType getDeclaredClassSignature() {
-    // FIXME
-    return identifierFactory.getClassType(getClassName("THE-FILE-PATH"));
+    return identifierFactory.getClassType(deriveClassName(this.getClass().getSimpleName()));
   }
 
   public SootClass loadClass(ClassType clazz) {
@@ -65,7 +64,7 @@ public abstract class JimpleTestSuiteBase {
   public SootMethod loadMethod(MethodSignature methodSignature) {
     SootClass clazz = loadClass(methodSignature.getDeclClassType());
     Optional<SootMethod> m = clazz.getMethod(methodSignature);
-    assertTrue("No matching method signature found", m.isPresent());
+    assertTrue("No matching method for the signature found", m.isPresent());
     SootMethod method = m.get();
     return method;
   }

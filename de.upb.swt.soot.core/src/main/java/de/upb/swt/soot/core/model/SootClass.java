@@ -50,7 +50,7 @@ public class SootClass extends AbstractClass<SootClassSource> {
   @Nonnull protected final SourceType sourceType;
   @Nonnull protected final ClassType classSignature;
 
-  public SootClass(SootClassSource classSource, SourceType sourceType) {
+  public SootClass(@Nonnull SootClassSource classSource, @Nonnull SourceType sourceType) {
     super(classSource);
     this.sourceType = sourceType;
     this.classSignature = classSource.getClassType();
