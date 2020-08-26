@@ -26,15 +26,13 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public abstract class JimpleTestSuiteBase {
 
-  static final String baseDir = "src/test/java/resources/";
+  static final String baseDir = "src/test/java/resources/jimple/";
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   private View view;
 
   @Before
   public void setup() {
-    AnalysisInputLocation inputLocation =
-        new JimpleAnalysisInputLocation(
-            Paths.get(baseDir + getTestDirectoryName(getClass().getCanonicalName())));
+    AnalysisInputLocation inputLocation = new JimpleAnalysisInputLocation(Paths.get(baseDir));
     view = new JimpleProject(inputLocation).createOnDemandView();
   }
 
