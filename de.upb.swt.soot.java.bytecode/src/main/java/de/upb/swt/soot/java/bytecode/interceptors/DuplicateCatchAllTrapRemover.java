@@ -44,7 +44,7 @@ import javax.annotation.Nonnull;
  * violates Soot's invariant that there may only be one handler per combination of covered code
  * region and jump target.
  *
- * <p>This transformer detects and removes such unnecessary traps.
+ * <p>This interceptor detects and removes such unnecessary traps.
  *
  * @author Steven Arzt
  * @author Marcus Nachtigall
