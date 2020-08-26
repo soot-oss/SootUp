@@ -58,16 +58,19 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
     final List<Trap> traps = builder.getTraps();
     final List<Stmt> stmtList = Lists.newArrayList(builder.getStmtGraph());
 
-    for (Trap trap1 : traps) {
+    for (int i = 0, trapsSize = traps.size(); i < trapsSize; i++) {
+      Trap trap1 = traps.get(i);
       if (trap1.getExceptionType().getClassName().equals("java.lang.Throwable")) {
-        for (Trap trap2 : traps) {
+        for (int j = 0; j < trapsSize; j++) {
+          Trap trap2 = traps.get(j);
           if (trap1 != trap2
               && trap1.getBeginStmt() == trap2.getBeginStmt()
               && trap1.getEndStmt() == trap2.getEndStmt()
               && trap2.getExceptionType().getClassName().equals("java.lang.Throwable")) {
             // Both traps (t1, t2) span the same code and catch java.lang.Throwable.
             // Check if one trap jumps to a target that then jumps to the target of the other trap
-            for (Trap trap3 : traps) {
+            for (int k = 0, size = traps.size(); k < size; k++) {
+              Trap trap3 = traps.get(k);
               if (trap3 != trap1
                   && trap3 != trap2
                   && trap3.getExceptionType().getClassName().equals("java.lang.Throwable")) {
@@ -75,11 +78,15 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
                     && trap3.getHandlerStmt() == trap2.getHandlerStmt()) {
                   // c -> t1 -> t3 -> t2 && x -> t2
                   traps.remove(trap2);
+                  j--;
+                  trapsSize--;
                   break;
                 } else if (trapCoversStmt(stmtList, trap3, trap2.getHandlerStmt())
                     && trap3.getHandlerStmt() == trap1.getHandlerStmt()) {
                   // c -> t2 -> t3 -> t1 && c -> t1
                   traps.remove(trap1);
+                  i--;
+                  trapsSize--;
                   break;
                 }
               }
