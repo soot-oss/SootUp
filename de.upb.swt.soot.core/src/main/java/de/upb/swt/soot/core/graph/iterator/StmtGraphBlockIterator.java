@@ -29,13 +29,9 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   @Nullable private Stmt cachedNextStmt;
 
   public StmtGraphBlockIterator(@Nonnull StmtGraph graph, List<Trap> traps) {
-    this(graph, graph.getStartingStmt(), traps);
-  }
-
-  private StmtGraphBlockIterator(
-      @Nonnull StmtGraph graph, Stmt startingStmt, @Nonnull List<Trap> traps) {
     this.graph = graph;
     returnedNodes = new HashSet<>(graph.nodes().size(), 1);
+    Stmt startingStmt = graph.getStartingStmt();
     if (startingStmt != null) {
       returnedNodes.add(startingStmt);
     }
