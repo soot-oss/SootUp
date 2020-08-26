@@ -33,10 +33,12 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   }
 
   private StmtGraphBlockIterator(
-      @Nonnull StmtGraph graph, @Nonnull Stmt startingStmt, @Nonnull List<Trap> traps) {
+      @Nonnull StmtGraph graph, Stmt startingStmt, @Nonnull List<Trap> traps) {
     this.graph = graph;
     returnedNodes = new HashSet<>(graph.nodes().size(), 1);
-    returnedNodes.add(startingStmt);
+    if (startingStmt != null) {
+      returnedNodes.add(startingStmt);
+    }
     cachedNextStmt = startingStmt;
     this.traps = traps;
   }
@@ -74,7 +76,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
       throw new NoSuchElementException("Iterator has no more Stmts.");
     }
 
-    if(trapIdx < traps.size()) {
+    if (trapIdx < traps.size()) {
       final Trap nextTrap = traps.get(trapIdx);
       if (stmt == nextTrap.getEndStmt()) {
         currentUnbranchedBlock.addFirst(nextTrap.getHandlerStmt());
