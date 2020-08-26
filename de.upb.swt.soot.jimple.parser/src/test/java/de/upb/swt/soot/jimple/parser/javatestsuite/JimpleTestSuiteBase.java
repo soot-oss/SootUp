@@ -2,6 +2,7 @@ package de.upb.swt.soot.jimple.parser.javatestsuite;
 
 import static org.junit.Assert.*;
 
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -11,10 +12,14 @@ import de.upb.swt.soot.core.util.Utils;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import de.upb.swt.soot.jimple.parser.JimpleAnalysisInputLocation;
+import de.upb.swt.soot.jimple.parser.JimpleProject;
 import de.upb.swt.soot.jimple.parser.categories.Java8Test;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.Before;
 import org.junit.experimental.categories.Category;
 
 /** @author Markus Schmidt */
@@ -25,12 +30,20 @@ public abstract class JimpleTestSuiteBase {
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   private View view;
 
+  @Before
+  public void setup() {
+    AnalysisInputLocation inputLocation =
+        new JimpleAnalysisInputLocation(
+            Paths.get(baseDir + getTestDirectoryName(getClass().getCanonicalName())));
+    view = new JimpleProject(inputLocation).createOnDemandView();
+  }
+
   /**
    * @returns the name of the parent directory - assuming the directory structure is only one level
    *     deep
    */
-  public static String getTestDirectoryName(String classPath) {
-    String[] classPathArray = classPath.split("\\.");
+  public static String getTestDirectoryName(String classOfPath) {
+    String[] classPathArray = classOfPath.split("\\.");
     String testDirectoryName = "";
     if (classPathArray.length > 1) {
       testDirectoryName = classPathArray[classPathArray.length - 2];
