@@ -75,7 +75,7 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
               && trap2.getExceptionType().getFullyQualifiedName().equals("java.lang.Throwable")) {
             // Both traps (t1, t2) span the same code and catch java.lang.Throwable.
             // Check if one trap jumps to a target that then jumps to the target of the other trap
-            for (int k = 0, size = traps.size(); k < size; k++) {
+            for (int k = 0; k < trapsSize; k++) {
               Trap trap3 = traps.get(k);
               if (trap3 != trap1
                   && trap3 != trap2
