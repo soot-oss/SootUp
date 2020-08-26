@@ -17,7 +17,6 @@ import javax.annotation.Nullable;
 public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
   @Nonnull private final StmtGraph graph;
-  @Nonnull private final Set<Stmt> returnedNodes;
   @Nonnull private final List<Trap> traps;
   private int trapIdx = 0;
 
@@ -28,7 +27,11 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   // caching the next Stmt to implement a simple hasNext() and skipping already returned Stmts
   @Nullable private Stmt cachedNextStmt;
 
-  public StmtGraphBlockIterator(@Nonnull StmtGraph graph, List<Trap> traps) {
+  // TODO: [ms] improve memory consumption: only add Stmts with multiple predecessors; count
+  // returnednodes with int;
+  @Nonnull private final Set<Stmt> returnedNodes;
+
+  public StmtGraphBlockIterator(@Nonnull StmtGraph graph, @Nonnull List<Trap> traps) {
     this.graph = graph;
     returnedNodes = new HashSet<>(graph.nodes().size(), 1);
     Stmt startingStmt = graph.getStartingStmt();
