@@ -35,9 +35,6 @@ public class SynchronizedBlockTest extends MinimalBytecodeTestSuiteBase {
    * System.out.println(msg);
    * }
    * }
-   * }
-   *
-   *
    *
    * <pre>*/
   @Override

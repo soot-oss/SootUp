@@ -26,9 +26,6 @@ public class SynchronizedBlockTest extends MinimalSourceTestSuiteBase {
    * System.out.println(msg);
    * }
    * }
-   * }
-   *
-   *
    *
    * <pre>*/
   @Override

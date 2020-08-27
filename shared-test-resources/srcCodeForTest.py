@@ -3,8 +3,10 @@ import os
 import fnmatch
 from re import search
 import pdb
+
 srcMatches = []
 srcTestMatches = []
+
 #Change this variable while updating the JavaDoc for new source code files
 srcTargetDir='..\\..\\target' 
 for root, dirnames, filenames in os.walk(srcTargetDir):
@@ -23,29 +25,11 @@ for srcFile in srcMatches:
 	str ="/**  <pre>\n"
 	listData=[]
 	data=""
-	
-	#Use this regex to form tupples of method name, method body and put it into a map
 	regexMethod =re.compile( "(\w*)[(]((([a-zA-Z])*(\s+)([a-zA-Z]))*)(([,])(\s+)([a-zA-Z])*(\s+)([a-zA-Z])*)*[)]" )
-	
-	#f= open("..\\..\\sandbox\\DeclareLong.java", 'r', encoding="utf8")
 	f= open(srcFile, 'r', encoding="utf8")
 	print(srcFile)
-	
-	'''
-	1.Use this regex for finding the start of method in the line
-	2.Update the python map expectedBody_*() as key to complete method body as value. 
-	3.Use this map to update the srcTest file.
-	'''
-	#[@Override]*(\s*)public List<String> expectedBodyStmts(\S*)[(][)] 
-	
-	'''
-	1. Regex to find /** <pre> the code </pre> */ in the test file and replace with same/updated source code
-	2. Map of 
-	'''
-	
-	
-	
 	foundFlag=0
+
 	for line in f.readlines():
 		found=regexMethod.search(line)
 		if found:
@@ -54,14 +38,17 @@ for srcFile in srcMatches:
 				ocb+=1
 			if '}' in line:
 				ccb+=1
-            
-		if ocb >= 1 or foundFlag ==1:		
 			str+=line
-			if '{' in line and ocb > 1:
+			if found:
+				continue	
+			
+		if ocb >= 1 or foundFlag==1:	
+			if '{' in line :
 				ocb+=1
 			if '}' in line:
 				ccb+=1
-	
+			if ocb>=ccb:
+				str+=line	
 			if '}' in line and ocb == 1 :
 				ocb=0
 				exit
@@ -69,13 +56,11 @@ for srcFile in srcMatches:
 	str+="\n<pre>*/"
 	var1=""
 	srcFileName = (srcFile.rsplit('\\',1)[1]).split('.')[0]
-		
-
+	
 	for filename in srcTestMatches:
 		dummy=srcFileName+"Test"
-		#TODO match exact dummy with filename
-		if dummy in filename:
-
+		filenameDummy = (filename.rsplit('\\',1)[1]).split('.')[0]
+		if dummy == filenameDummy:
 			str2=""
 			var1=""
 			strSrcTest1=""
@@ -100,7 +85,6 @@ for srcFile in srcMatches:
 				#pdb.set_trace()
 				strSrcTestNew2+=strSrcTest2
 				#pdb.set_trace()
-				
 				with open(srcTestFile, 'w', encoding="utf8") as filew:
 					filew.writelines(strSrcTestNew2)
 					print("File write for file "+srcTestFile)

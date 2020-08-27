@@ -35,9 +35,6 @@ public class SynchronizedMethodTest extends MinimalBytecodeTestSuiteBase {
    * {
    * System.out.println("test");
    * }
-   * }
-   *
-   *
    *
    * <pre>*/
   @Override

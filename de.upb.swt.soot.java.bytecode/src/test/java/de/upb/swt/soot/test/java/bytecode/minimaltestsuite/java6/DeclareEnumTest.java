@@ -40,7 +40,6 @@ public class DeclareEnumTest extends MinimalBytecodeTestSuiteBase {
    * System.out.println(type);
    * }
    * }
-   * }
    *
    * <pre>*/
   @Override
