@@ -270,6 +270,12 @@ public class MutableStmtGraph extends StmtGraph {
     return stmts != null && stmts.contains(to);
   }
 
+  /**
+   * Replace a stmt in StmtGraph with a new stmt
+   *
+   * @param oldStmt a stmt which is already in the StmtGraph
+   * @param newStmt a new stmt which will replace the old stmt
+   */
   public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
     if (oldStmt == startingStmt) {
       startingStmt = newStmt;
