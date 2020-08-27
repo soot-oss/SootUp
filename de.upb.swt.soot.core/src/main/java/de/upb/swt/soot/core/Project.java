@@ -1,9 +1,10 @@
 package de.upb.swt.soot.core;
+
 /*-
  * #%L
  * Soot
  * %%
- * Copyright (C) 2019 Linghui Luo, Ben Hermann
+ * Copyright (C) 2018-2020 Linghui Luo, Ben Hermann, Markus Schmidt and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -20,6 +21,7 @@ package de.upb.swt.soot.core;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.views.View;
