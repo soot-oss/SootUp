@@ -68,7 +68,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
 
     StmtGraph originalGraph = builder.getStmtGraph();
 
-    builder.enableDeferredChanges();
+    builder.enableDeferredStmtGraphChanges();
     for (Stmt stmt : originalGraph.nodes()) {
       if (!(stmt instanceof JGotoStmt)) {
         continue;
@@ -132,6 +132,6 @@ public class CastAndReturnInliner implements BodyInterceptor {
         }
       }
     }
-    builder.commitDeferredChanges();
+    builder.commitDeferredStmtGraphChanges();
   }
 }

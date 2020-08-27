@@ -48,7 +48,7 @@ public class NopEliminator implements BodyInterceptor {
     StmtGraph graph = builder.getStmtGraph();
     Set<Stmt> stmtSet = graph.nodes();
 
-    builder.enableDeferredChanges();
+    builder.enableDeferredStmtGraphChanges();
     for (Stmt stmt : stmtSet) {
       if (stmt instanceof JNopStmt) {
         final Stmt nopStmt = stmt;
@@ -63,6 +63,6 @@ public class NopEliminator implements BodyInterceptor {
         }
       }
     }
-    builder.commitDeferredChanges();
+    builder.commitDeferredStmtGraphChanges();
   }
 }

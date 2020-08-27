@@ -374,21 +374,26 @@ public class Body implements Copyable {
       flowsToRemove.add(to);
     }
 
-    void commit(MutableStmtGraph graph) {
-      Iterator<Stmt> addIt = flowsToAdd.iterator();
-      while (addIt.hasNext()) {
-        final Stmt from = addIt.next();
-        final Stmt to = addIt.next();
-        graph.putEdge(from, to);
-      }
+    /** return true if there where queued changes */
+    boolean commit(MutableStmtGraph graph) {
+      if (!flowsToAdd.isEmpty() || !flowsToRemove.isEmpty()) {
+        Iterator<Stmt> addIt = flowsToAdd.iterator();
+        while (addIt.hasNext()) {
+          final Stmt from = addIt.next();
+          final Stmt to = addIt.next();
+          graph.putEdge(from, to);
+        }
 
-      Iterator<Stmt> remIt = flowsToRemove.iterator();
-      while (remIt.hasNext()) {
-        final Stmt from = remIt.next();
-        final Stmt to = remIt.next();
-        graph.removeEdge(from, to);
+        Iterator<Stmt> remIt = flowsToRemove.iterator();
+        while (remIt.hasNext()) {
+          final Stmt from = remIt.next();
+          final Stmt to = remIt.next();
+          graph.removeEdge(from, to);
+        }
+        clear();
+        return true;
       }
-      clear();
+      return false;
     }
 
     public void clear() {
@@ -428,11 +433,11 @@ public class Body implements Copyable {
     @Nonnull private final LocalGenerator localGen = new LocalGenerator(locals);
 
     @Nullable private Position position = null;
-
     @Nonnull private final MutableStmtGraph cfg;
     @Nullable private MethodSignature methodSig = null;
 
     @Nullable private StmtGraphManipulationQueue changeQueue = null;
+    @Nullable private List<Stmt> cachedLinearizedStmts = null;
 
     BodyBuilder() {
       cfg = new MutableStmtGraph();
@@ -453,8 +458,8 @@ public class Body implements Copyable {
 
     @Nonnull
     public List<Stmt> getStmts() {
-      // [ms] maybe cache that it until modified?
-      return Lists.newArrayList(cfg);
+      cachedLinearizedStmts = Lists.newArrayList(cfg);
+      return cachedLinearizedStmts;
     }
 
     @Nonnull
@@ -496,6 +501,7 @@ public class Body implements Copyable {
     public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
       if (changeQueue == null) {
         cfg.putEdge(fromStmt, toStmt);
+        cachedLinearizedStmts = null;
       } else {
         changeQueue.addFlow(fromStmt, toStmt);
       }
@@ -506,6 +512,7 @@ public class Body implements Copyable {
     public BodyBuilder removeFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
       if (changeQueue == null) {
         cfg.removeEdge(fromStmt, toStmt);
+        cachedLinearizedStmts = null;
       } else {
         changeQueue.removeFlow(fromStmt, toStmt);
       }
@@ -523,30 +530,38 @@ public class Body implements Copyable {
       return this;
     }
 
-    /** */
-    public BodyBuilder enableDeferredChanges() {
+    /**
+     * Queues changes to the StmtGraph (e.g. addFlow, removeFlow) until they are commited. helps to
+     * prevent ConcurrentModificationException
+     */
+    public BodyBuilder enableDeferredStmtGraphChanges() {
       if (changeQueue == null) {
         changeQueue = new StmtGraphManipulationQueue();
       }
       return this;
     }
 
-    public BodyBuilder disableAndCommitDeferredChanges() {
-      if (changeQueue != null) {
-        changeQueue.commit(cfg);
-        changeQueue = null;
-      }
+    /**
+     * commits the changes that were added to the queue if that was enabled before AND disables
+     * further queueing of changes.
+     */
+    public BodyBuilder disableAndCommitDeferredStmtGraphChanges() {
+      commitDeferredStmtGraphChanges();
+      changeQueue = null;
       return this;
     }
 
-    public BodyBuilder commitDeferredChanges() {
+    /** commits the changes that were added to the queue if that was enabled before */
+    public BodyBuilder commitDeferredStmtGraphChanges() {
       if (changeQueue != null) {
-        changeQueue.commit(cfg);
+        if (changeQueue.commit(cfg)) {
+          cachedLinearizedStmts = null;
+        }
       }
       return this;
     }
-
-    public BodyBuilder clearDeferredChanges() {
+    /** clears queued changes fot */
+    public BodyBuilder clearDeferredStmtGraphChanges() {
       if (changeQueue != null) {
         changeQueue.clear();
       }
@@ -565,7 +580,7 @@ public class Body implements Copyable {
       }
 
       // commit pending changes
-      commitDeferredChanges();
+      commitDeferredStmtGraphChanges();
 
       final Stmt startingStmt = cfg.getStartingStmt();
       final Set<Stmt> nodes = cfg.nodes();

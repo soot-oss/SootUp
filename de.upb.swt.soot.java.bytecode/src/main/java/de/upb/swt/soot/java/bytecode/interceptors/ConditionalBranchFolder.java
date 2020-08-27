@@ -49,7 +49,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
     final StmtGraph builderStmtGraph = builder.getStmtGraph();
     final StmtGraph stmtGraph = builder.getStmtGraph();
 
-    builder.enableDeferredChanges();
+    builder.enableDeferredStmtGraphChanges();
     for (Stmt stmt : stmtGraph.nodes()) {
       if (stmt instanceof JIfStmt) {
         JIfStmt ifStmt = (JIfStmt) stmt;
@@ -93,6 +93,6 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         }
       }
     }
-    builder.commitDeferredChanges();
+    builder.commitDeferredStmtGraphChanges();
   }
 }
