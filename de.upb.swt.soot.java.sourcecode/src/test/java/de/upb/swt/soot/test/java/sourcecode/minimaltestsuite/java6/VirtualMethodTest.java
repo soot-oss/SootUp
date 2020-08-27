@@ -23,13 +23,6 @@ public class VirtualMethodTest extends MinimalSourceTestSuiteBase {
    *
    *
    * <pre>
-   *     public int getSalary(){ return salary;}
-   * public int getSalary(){
-   * return super.getSalary()+bonus;
-   * }
-   * public int getSalary(){
-   * return super.getSalary()+raise;
-   * }
    * public void virtualMethodDemo(){
    * Employee e1= new TempEmployee(1500,150);
    * Employee e2= new RegEmployee(1500,500);

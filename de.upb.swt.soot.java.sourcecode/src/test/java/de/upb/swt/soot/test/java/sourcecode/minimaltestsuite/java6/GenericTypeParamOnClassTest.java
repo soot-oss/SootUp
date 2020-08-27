@@ -24,12 +24,6 @@ public class GenericTypeParamOnClassTest extends MinimalSourceTestSuiteBase {
    *
    *
    * <pre>
-   *         private void set(T t) {
-   * this.t = t;
-   * }
-   * public T get() {
-   * return t;
-   * }
    * public void genericTypeParamOnClass() {
    * A<Integer> a = new A<Integer>();
    * a.set(5);

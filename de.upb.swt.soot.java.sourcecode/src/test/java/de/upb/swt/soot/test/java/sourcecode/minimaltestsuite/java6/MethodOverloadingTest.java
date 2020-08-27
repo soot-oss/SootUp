@@ -57,21 +57,6 @@ public class MethodOverloadingTest extends MinimalSourceTestSuiteBase {
    *     }
    * </pre>
    */
-
-  /**
-   *
-   *
-   * <pre>
-   *     int calculate(int a, int b){
-   * return a+b;
-   *
-   * }
-   * int calculate(int a){
-   * return a+a;
-   *
-   * }
-   * </pre>
-   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

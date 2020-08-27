@@ -31,33 +31,6 @@ public class StaticMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
    *
    *
    * <pre>
-   * </pre>
-   */
-  /**
-   *
-   *
-   * <pre>
-   *     static void staticMethod(){
-   * System.out.println("static method");
-   * }
-   * </pre>
-   */
-  /**
-   *
-   *
-   * <pre>
-   *     static public void initStatic(){
-   * System.out.println("Inside initStatic - StaticmethodInterface");
-   * }
-   * </pre>
-   */
-  /**
-   *
-   *
-   * <pre>
-   *     static public void initStatic(){
-   * System.out.println("Inside initStatic - StaticmethodInterfaceImpl");
-   * }
    * public void display(){
    * System.out.println("Inside display - StaticmethodInterfaceImpl");
    * }
@@ -73,6 +46,15 @@ public class StaticMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     static public void initStatic(){
+   * System.out.println("Inside initStatic - StaticmethodInterface");
+   * }
+   * </pre>
+   */
   public List<String> expectedBodyStmts1() {
     return Stream.of(
             "$r0 = <java.lang.System: java.io.PrintStream out>",

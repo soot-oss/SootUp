@@ -21,7 +21,7 @@ public class SuperClassTest extends MinimalSourceTestSuiteBase {
    *
    *
    * <pre>
-   *     public void superclassMethod() {
+   * public void superclassMethod() {
    * a=10;
    * b=20;
    * c=30;

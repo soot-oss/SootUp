@@ -21,19 +21,19 @@ public class LabelledLoopBreakTest extends MinimalSourceTestSuiteBase {
         "labelledLoopBreak", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**
-   *
-   *
-   * <pre>
-   *     public void labelledLoopBreak() {
+  /**  <pre>
+   * public void labelledLoopBreak() {
    * start:
    * for (int i = 0; i < 5; i++) {
    * for (int j = 0; j < 5; j++) {
    * if (i == 1) {
    * break start;
    * }
-   * </pre>
-   */
+   * }
+   * }
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

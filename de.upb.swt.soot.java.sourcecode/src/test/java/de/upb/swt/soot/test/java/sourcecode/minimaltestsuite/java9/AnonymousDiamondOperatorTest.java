@@ -36,14 +36,7 @@ public class AnonymousDiamondOperatorTest extends MinimalSourceTestSuiteBase {
    * Integer sum = obj.add(22,23);
    * return sum;
    * }
-   *
-   * public static void main(String args[]){
-   * AnonymousDiamondOperator obj= new AnonymousDiamondOperator();
-   * System.out.println(obj.innerClassDiamond());
-   *
-   * }
-   *
-   * }</pre>
+   * </pre>
    */
   @Override
   public List<String> expectedBodyStmts() {

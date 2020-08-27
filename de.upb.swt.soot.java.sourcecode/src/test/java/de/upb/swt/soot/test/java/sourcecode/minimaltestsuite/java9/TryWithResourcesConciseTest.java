@@ -35,27 +35,7 @@ public class TryWithResourcesConciseTest extends MinimalSourceTestSuiteBase {
    * }
    * }
    * }
-   * }</pre>
-   */
-  /**
-   *
-   *
-   * <pre>
-   *     public void printFile() throws Exception {
-   * final BufferedReader bufferedReader = new BufferedReader(new FileReader("file.txt"));
-   * try(bufferedReader) {
-   * String data = "";
-   * while( (data= bufferedReader.readLine()) != null) {
-   * System.out.println(data);
-   * }
-   * }
-   * }
-   *
-   * public static void main(String[] args) throws  Exception{
-   * TryWithResourcesConcise tryWithResourcesConcise = new TryWithResourcesConcise();
-   * tryWithResourcesConcise.printFile();
-   * }
-   * }</pre>
+   * </pre>
    */
   @Override
   public List<String> expectedBodyStmts() {

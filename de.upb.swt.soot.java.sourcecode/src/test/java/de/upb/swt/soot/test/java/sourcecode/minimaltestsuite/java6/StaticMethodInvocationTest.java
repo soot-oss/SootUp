@@ -20,7 +20,8 @@ public class StaticMethodInvocationTest extends MinimalSourceTestSuiteBase {
         "staticMethodInvocation", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
+  /**
+   * <pre>
    * public void staticMethodInvocation(){
    * StaticMethodInvocation.staticmethod();
    * }

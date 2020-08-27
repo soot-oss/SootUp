@@ -38,25 +38,6 @@ public class SubClassTest extends MinimalSourceTestSuiteBase {
    *     }
    * </pre>
    */
-
-  /**
-   *
-   *
-   * <pre>
-   *     public void subclassMethod() {
-   * aa=10;
-   * bb=20;
-   * cc=30;
-   * dd=40;
-   * }
-   * public void superclassMethod(){
-   * super.superclassMethod();
-   * a=100;
-   * b=200;
-   * c=300;
-   * }
-   * </pre>
-   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

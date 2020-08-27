@@ -21,10 +21,7 @@ public class LabelledLoopBreakTest extends MinimalBytecodeTestSuiteBase {
         "labelledLoopBreak", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**
-   *
-   *
-   * <pre>
+  /**  <pre>
    * public void labelledLoopBreak() {
    * start:
    * for (int i = 0; i < 5; i++) {
@@ -32,9 +29,11 @@ public class LabelledLoopBreakTest extends MinimalBytecodeTestSuiteBase {
    * if (i == 1) {
    * break start;
    * }
+   * }
+   * }
+   * }
    *
-   * </pre>
-   */
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

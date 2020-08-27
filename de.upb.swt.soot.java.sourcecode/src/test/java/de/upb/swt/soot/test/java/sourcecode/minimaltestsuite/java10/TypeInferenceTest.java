@@ -37,12 +37,7 @@ public class TypeInferenceTest extends MinimalSourceTestSuiteBase {
    * }
    * bufferedReader.close();
    * }
-   *
-   * public static void main(String[] args) throws Exception{
-   * TypeInference typeInference = new TypeInference();
-   * typeInference.printFile();
-   * }
-   * }</pre>
+   * </pre>
    */
   @Override
   public List<String> expectedBodyStmts() {

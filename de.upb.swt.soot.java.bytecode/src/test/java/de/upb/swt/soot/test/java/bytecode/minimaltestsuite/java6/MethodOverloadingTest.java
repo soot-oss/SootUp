@@ -58,11 +58,6 @@ public class MethodOverloadingTest extends MinimalBytecodeTestSuiteBase {
    * return a+b;
    *
    * }
-   * int calculate(int a){
-   * return a+a;
-   *
-   * }
-   *
    * </pre>
    */
   @Override
@@ -76,6 +71,16 @@ public class MethodOverloadingTest extends MinimalBytecodeTestSuiteBase {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * int calculate(int a){
+   * return a+a;
+   *
+   *  }
+   *  </pre>
+   */
   public List<String> expectedBodyStmts1() {
     return Stream.of(
             "l0 := @this: MethodOverloading",

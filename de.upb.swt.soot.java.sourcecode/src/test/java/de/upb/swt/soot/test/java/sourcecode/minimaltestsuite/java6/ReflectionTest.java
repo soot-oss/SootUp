@@ -22,9 +22,6 @@ public class ReflectionTest extends MinimalSourceTestSuiteBase {
    *
    *
    * <pre>
-   *     public Reflection(){
-   * s="String";
-   * }
    * public void checkReflection()  throws  NoSuchMethodException{
    *
    * Reflection reflection = new Reflection();
