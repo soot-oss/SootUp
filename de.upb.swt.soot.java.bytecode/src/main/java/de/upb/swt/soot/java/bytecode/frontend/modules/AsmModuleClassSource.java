@@ -3,7 +3,7 @@ package de.upb.swt.soot.java.bytecode.frontend.modules;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2018 Andreas Dann
+ * Copyright (C) 2018-2020 Andreas Dann, Linghui Luo, Christian Brüggemann and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

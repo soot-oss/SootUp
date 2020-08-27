@@ -1,22 +1,10 @@
 package de.upb.swt.soot.core.jimple.basic;
 
-import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.core.types.ReferenceType;
-import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.types.UnknownType;
-import de.upb.swt.soot.core.types.VoidType;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2004 Jennifer Lhotak
+ * Copyright (C) 2004-2020 Jennifer Lhotak, Linghui Luo, Markus Schmidt and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -33,6 +21,18 @@ import javax.annotation.Nullable;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
+import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.types.PrimitiveType;
+import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.types.UnknownType;
+import de.upb.swt.soot.core.types.VoidType;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Generates locals for Body.
