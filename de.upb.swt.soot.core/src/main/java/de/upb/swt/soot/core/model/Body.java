@@ -357,9 +357,10 @@ public class Body implements Copyable {
     return new Body(getMethodSignature(), locals, getStmtGraph(), getPosition());
   }
 
-  /** helps against ConcurrentModificationException; it queues changes until they are commited */
+  /** helps against ConcurrentModificationException; it queues changes until they are committed */
   private static class StmtGraphManipulationQueue {
 
+    // List sizes are a multiple of 2; even: from odd: to of an edge
     @Nonnull private final List<Stmt> flowsToRemove = new ArrayList<>();
     @Nonnull private final List<Stmt> flowsToAdd = new ArrayList<>();
 
