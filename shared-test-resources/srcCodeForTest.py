@@ -8,7 +8,8 @@ srcMatches = []
 srcTestMatches = []
 
 #Change this variable while updating the JavaDoc for new source code files
-srcTargetDir='..\\..\\target' 
+srcTargetDir='..\\..\\target'
+#srcTargetDir='miniTestSuite'  
 
 for root, dirnames, filenames in os.walk(srcTargetDir):
     for filename in fnmatch.filter(filenames, '*.java'):
@@ -48,76 +49,106 @@ for srcFile in srcMatches:
 	'''
 	
 	methodMap={} 
+	foundFlag=0
 	
+	#Making the map of methodname to methodbody
 	for line in f.readlines():
 		found=regexMethod.search(line)
 		if found:
+			foundFlag=1
 			methodName=""
 			methodBody="/**  <pre>\n"
-			methodName=found.group().split('(',0)[0].capitalize()
-
+			methodName = found.group().split('(',1)[0]
+			methodName = " ".join([word[0].upper() + word[1:] for word in methodName.split()])
+			#methodName=found.group().split('(',0)[0].capitalize()
+			methodBody+=line
 			methodMap[methodName]= ""
 			if '{' in line :
 				ocb+=1
 			if '}' in line:
 				ccb+=1
-            
-		if ocb >= 1 and ocb>=ccb:	
-			methodBody+=line
-			if '{' in line and ocb >= 1:
+			if found:
+				continue	
+		if ocb >= 1 or foundFlag ==1:	
+			if ocb>ccb:
+				methodBody+=line
+			if '{' in line :
 				ocb+=1
 			if '}' in line:
 				ccb+=1
-			methodBody+="\n<pre>*/"
-			methodMap[methodName]=methodBody
-			
+			methodMap[methodName]=methodBody+"\n<pre>*/"
 			if '}' in line and ocb == 1 :
 				ocb=0
 				exit
-		#print(str)
-	
+		
 	var1=""
 	srcFileName = (srcFile.rsplit('\\',1)[1]).split('.')[0]
-	#print(str)
-	print(methodMap)
-		
 			
+	#Taping the methodmap[methodname] to the correspondong expectedBodtStmts method
 	for filename in srcTestMatches:
 		dummy=srcFileName+"Test"
-		print(dummy)
-		#TODO match exact dummy with filename
 		if dummy in filename:
-			found= re.compile("(\s*)public List<String> expectedBodyStmts(\S*)[(][)]")
+			regexExp= re.compile("[@Override]*(\s*)public List<String> expectedBodyStmts(\S*)[(][)]")
 			str2=""
 			var1=""
 			strSrcTest1=""
 			strSrcTest2=""
 			srcTestFile=filename
-			str2= open(srcTestFile, 'r', encoding="utf8").read()
+			#str2= open(srcTestFile, 'r', encoding="utf8").read()
+			srcFinalMap={}
+
 			for line in open(srcTestFile, 'r'):
-				l_strip=line.strip()
-				if	"<String> expectedBodyStmts()" in l_strip:
-					break
-				else:
-					strSrcTest1+=line
-					#print("Line added for "+srcTestFile+line)
-				
+				targetKey= "expectedBodyStmts"
+				targetValue=""
+					
+				for key in methodMap:
+					if key in line:
+						targetValue=methodMap[key]
+						targetKey+=key
+					if key not in line or "List<String> expectedBodyStmts()" in line:
+						targetValue=methodMap[key]	
+				srcFinalMap[targetKey]=targetValue
+			
+			
+			ocb=0
+			ccb=0
+			expBodyStmtflag=0	
+			for line in open(srcTestFile, 'r'):
+				found= regexExp.search(line)
+				for key in srcFinalMap:
+					if found:
+						expBodyStmtflag=1
+						targetValue+=line
+					if expBodyStmtflag==1:	
+						if ocb>ccb:
+							targetValue+=line
+						if '{' in line :
+							ocb+=1
+						if '}' in line:
+							ccb+=1
+						if ccb==1:
+							expBodyStmtflag=0
+							targetValue+=line
+							srcFinalMap[key]=targetValue
+
+					
+						
+					if not found and expBodyStmtflag==0:
+						strSrcTest1+=line
+						
+			print(strSrcTest1)
+					
+			for key in srcFinalMap:
+						print("Key :"+key+" Value :"+srcFinalMap[key]+"\n\n")
+
+
+
+			
+			
+			
+		
+			#Write the updated contents into srcTestFile 
 
 			#found= re.search(r'  @Override(\s*)public List<String> expectedBodyStmts((.+\s)*)}(\s*)((.+\s)*)}(\s*)',str2,re.DOTALL)
 			
-			if found != None:
-				str= methodMap[met]
-				strSrcTest2= var1.rsplit("\n",3)[0]+
-				strSrcTest2+=found.group()
-				New2= ""
-				strSrcTestNew2 = "".join(strSrcTest1.rsplit('@Override', 1))
-				#pdb.set_trace()
-				strSrcTestNew2+=strSrcTest2
-				#pdb.set_trace()
-				
-				with open(srcTestFile, 'w', encoding="utf8") as filew:
-					#filew.writelines(strSrcTestNew2)
-					print("File write for file "+srcTestFile)
-			else :
-				print("No match for "+srcTestFile)
-				dummy=""
+							
