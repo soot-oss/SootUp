@@ -358,7 +358,7 @@ public class Body implements Copyable {
   }
 
   /** helps against ConcurrentModificationException; it queues changes until they are commited */
-  private static class StmtGraphManipulator {
+  private static class StmtGraphManipulationQueue {
 
     @Nonnull private final List<Stmt> flowsToRemove = new ArrayList<>();
     @Nonnull private final List<Stmt> flowsToAdd = new ArrayList<>();
@@ -431,7 +431,7 @@ public class Body implements Copyable {
     @Nonnull private final MutableStmtGraph cfg;
     @Nullable private MethodSignature methodSig = null;
 
-    @Nullable private StmtGraphManipulator manipulator = null;
+    @Nullable private StmtGraphManipulationQueue changeQueue = null;
 
     BodyBuilder() {
       cfg = new MutableStmtGraph();
@@ -493,20 +493,20 @@ public class Body implements Copyable {
 
     @Nonnull
     public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
-      if (manipulator == null) {
+      if (changeQueue == null) {
         cfg.putEdge(fromStmt, toStmt);
       } else {
-        manipulator.addFlow(fromStmt, toStmt);
+        changeQueue.addFlow(fromStmt, toStmt);
       }
       return this;
     }
 
     @Nonnull
     public BodyBuilder removeFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
-      if (manipulator == null) {
+      if (changeQueue == null) {
         cfg.removeEdge(fromStmt, toStmt);
       } else {
-        manipulator.removeFlow(fromStmt, toStmt);
+        changeQueue.removeFlow(fromStmt, toStmt);
       }
       return this;
     }
@@ -524,30 +524,30 @@ public class Body implements Copyable {
 
     /** */
     public BodyBuilder enableDeferredChanges() {
-      if (manipulator == null) {
-        manipulator = new StmtGraphManipulator();
+      if (changeQueue == null) {
+        changeQueue = new StmtGraphManipulationQueue();
       }
       return this;
     }
 
     public BodyBuilder disableAndCommitDeferredChanges() {
-      if (manipulator != null) {
-        manipulator.commit(cfg);
-        manipulator = null;
+      if (changeQueue != null) {
+        changeQueue.commit(cfg);
+        changeQueue = null;
       }
       return this;
     }
 
     public BodyBuilder commitDeferredChanges() {
-      if (manipulator != null) {
-        manipulator.commit(cfg);
+      if (changeQueue != null) {
+        changeQueue.commit(cfg);
       }
       return this;
     }
 
     public BodyBuilder clearDeferredChanges() {
-      if (manipulator != null) {
-        manipulator.clear();
+      if (changeQueue != null) {
+        changeQueue.clear();
       }
       return this;
     }
