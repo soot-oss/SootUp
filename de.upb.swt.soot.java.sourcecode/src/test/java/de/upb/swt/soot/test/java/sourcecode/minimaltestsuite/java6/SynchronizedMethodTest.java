@@ -26,12 +26,6 @@ public class SynchronizedMethodTest extends MinimalSourceTestSuiteBase {
     assertTrue(method.isSynchronized());
   }
 
-  /**
-   *
-   *
-   * <pre>
-   * </pre>
-   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
