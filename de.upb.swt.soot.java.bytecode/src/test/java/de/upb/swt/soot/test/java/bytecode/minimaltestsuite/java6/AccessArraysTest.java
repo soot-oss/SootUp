@@ -56,7 +56,11 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    *
    * <pre>
    *     public void intArrays(){
-   *         int[][][] intArray3D = {{{1, 2, 3},{5, 6}},{{7, 8, 9},{10,11}}};
+   *         int[] anArrayOfInts = {1, 2, 3};
+   *         int val;
+   *         for(int item: anArrayOfInts){
+   *             val = item;
+   *         }
    *     }
    * </pre>
    */
@@ -89,7 +93,11 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    *
    * <pre>
    *     public void byteArrays(){
-   *         byte[][][] byteArray3D = {{{7, 8, 9},{10,11}},{{1, 2, 3},{5, 6}}};;
+   *         byte[] anArrayOfBytes = {4, 5, 6};
+   *         byte val;
+   *         for(byte item: anArrayOfBytes){
+   *             val = item;
+   *         }
    *
    *     }
    * </pre>
@@ -123,7 +131,11 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    *
    * <pre>
    *     public void shortArrays(){
-   *         short[][][] shortArray3D = {{{10,20},{40,85}},{{56,59},{95,35}}};
+   *         short[] anArrayOfShorts = {10, 20, 30};
+   *         short val;
+   *         for(short item: anArrayOfShorts){
+   *             val = item;
+   *         }
    *
    *     }
    * </pre>
@@ -157,7 +169,11 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    *
    * <pre>
    *     public void longArrays(){
-   *         long[][][] longArray3D = {{{547087L, 654786L},{547287L, 864645L, 6533786L}},{{34565L,234L},{9851L,63543L}}};
+   *         long[] anArrayOfLongs = {547087L, 564645L, 654786L};
+   *         long val;
+   *         for(long item: anArrayOfLongs){
+   *             val = item;
+   *         }
    *
    *     }
    * </pre>
@@ -191,7 +207,11 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    *
    * <pre>
    *     public void floatArrays(){
-   *         float[][][] floatrray3D = {{{3.14f, 5.46f}, {2.987f, 4.87f}},{{65.15f,854.18f},{16.51f,58.14f}}};
+   *         float[] anArrayOfFloats = {3.14f, 5.46f, 2.987f, 4.87f};
+   *         float val;
+   *         for(float item: anArrayOfFloats){
+   *             val = item;
+   *         }
    *
    *     }
    * </pre>
@@ -226,7 +246,12 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    *
    * <pre>
    *     public void doubleArrays(){
-   *         double[][][] doubleArray3D = {{{6.765414d, 9.676565646d},{45.345435d}},{{3.5656d,68.234234d},{68416.651d,65416.5d}}};
+   *         double[] anArrayOfDoubles = {6.765414d, 9.676565646d};
+   *         double val;
+   *         for(double item: anArrayOfDoubles){
+   *             val = item;
+   *         }
+   *
    *
    *     }
    * </pre>
@@ -259,7 +284,11 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    *
    * <pre>
    *     public void booleanArrays(){
-   *         boolean[][][] boolArray3D = {{{true, false},{true}},{{false,false},{true}}};
+   *         boolean[] anArrayOfBooleans = {true, false};
+   *         boolean val;
+   *         for(boolean item: anArrayOfBooleans){
+   *             val = item;
+   *         }
    *
    *     }
    * </pre>
@@ -292,7 +321,11 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    *
    * <pre>
    *     public void charArrays(){
-   *         char[][][] charArray3D = {{{'A', 'b', '&'},{'c','$'}},{{'2','G'},{'a','%'}}};
+   *         char[] anArrayOfChars = {'A', 'b', '&'};
+   *         char val;
+   *         for(char item: anArrayOfChars){
+   *             val = item;
+   *         }
    *
    *     }
    * </pre>
@@ -325,8 +358,12 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    *
    *
    * <pre>
-   *     public void stringArrays() {
-   *         String[][][] stringArray3D = {{{"Hello World"}, {"Greetings", "Welcome"}}, {{"Future","Soot"},{"UPB","HNI"}}};
+   *     public void stringArrays(){
+   *         String[] anArrayOfStrings = {"Hello World", "Greetings"};
+   *         String val;
+   *         for(String item: anArrayOfStrings){
+   *             val = item;
+   *         }
    *     }
    * </pre>
    */
