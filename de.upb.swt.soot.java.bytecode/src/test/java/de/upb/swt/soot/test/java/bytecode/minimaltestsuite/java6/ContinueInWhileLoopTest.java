@@ -21,10 +21,7 @@ public class ContinueInWhileLoopTest extends MinimalBytecodeTestSuiteBase {
         "continueInWhileLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**
-   *
-   *
-   * <pre>
+  /**  <pre>
    * public void continueInWhileLoop(){
    * int num = 0;
    * while (num < 10) {
@@ -32,22 +29,11 @@ public class ContinueInWhileLoopTest extends MinimalBytecodeTestSuiteBase {
    * num++;
    * continue;
    * }
-   *
-   * </pre>
-   */
-  /**
-   *
-   *
-   * <pre>
-   * public void whileLoop(){
-   * int num = 10;
-   * int i = 0;
-   * while(num>i){
-   * num--;
+   * num++;
+   * }
    * }
    *
-   * </pre>
-   */
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

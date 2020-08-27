@@ -33,15 +33,6 @@ public class DeclareEnumTest extends MinimalSourceTestSuiteBase {
         "declareEnum", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**  <pre>
-   * public void declareEnum(){
-   * for(Type type:Type.values()){
-   * System.out.println(type);
-   * }
-   * }
-   * }
-   *
-   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return super.expectedBodyStmts(

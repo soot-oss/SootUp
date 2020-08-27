@@ -20,32 +20,16 @@ public class DoWhileLoopTest extends MinimalBytecodeTestSuiteBase {
         "doWhileLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**
-   *
-   *
-   * <pre>
+  /**  <pre>
    * public void doWhileLoop() {
    * int num = 10;
    * int i = 0;
    * do {
    * i++;
    * } while (num > i);
-   *
-   * </pre>
-   */
-  /**
-   *
-   *
-   * <pre>
-   * public void whileLoop(){
-   * int num = 10;
-   * int i = 0;
-   * while(num>i){
-   * num--;
    * }
    *
-   * </pre>
-   */
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
