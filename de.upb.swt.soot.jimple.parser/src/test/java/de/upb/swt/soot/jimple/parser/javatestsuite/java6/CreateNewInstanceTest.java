@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class CreateNewInstanceTest extends JimpleTestSuiteBase {
 
@@ -22,9 +22,10 @@ public class CreateNewInstanceTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: CreateNewInstance",
-            "$r1 = new Person",
-            "specialinvoke $r1.<Person: void <init>(int)>(20)",
+            "l0 := @this: CreateNewInstance",
+            "$stack2 = new Person",
+            "specialinvoke $stack2.<Person: void <init>(int)>(20)",
+            "l1 = $stack2",
             "return")
         .collect(Collectors.toList());
   }

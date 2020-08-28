@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class AutomaticWideningTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
@@ -20,7 +20,7 @@ public class AutomaticWideningTest extends JimpleTestSuiteBase {
   }
 
   public List<String> expectedBodyStmts() {
-    return Stream.of("r0 := @this: AutomaticWidening", "$i0 = 10", "$i1 = $i0", "return")
+    return Stream.of("l0 := @this: AutomaticWidening", "l1 = 10", "l2 = (long) l1", "return")
         .collect(Collectors.toList());
   }
 

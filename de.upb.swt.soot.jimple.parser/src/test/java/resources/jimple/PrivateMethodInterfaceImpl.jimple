@@ -2,7 +2,7 @@ public synchronized class PrivateMethodInterfaceImpl extends java.lang.Object im
 {
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: PrivateMethodInterfaceImpl;
@@ -14,7 +14,7 @@ public synchronized class PrivateMethodInterfaceImpl extends java.lang.Object im
 
     public void methodInterfaceImpl()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: PrivateMethodInterfaceImpl;
@@ -26,7 +26,7 @@ public synchronized class PrivateMethodInterfaceImpl extends java.lang.Object im
 
     public static void main(java.lang.String[])
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @parameter0: java.lang.String[];

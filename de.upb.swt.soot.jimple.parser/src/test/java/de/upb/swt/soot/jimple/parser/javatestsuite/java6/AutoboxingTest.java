@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class AutoboxingTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
@@ -21,12 +21,11 @@ public class AutoboxingTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: Autoboxing",
-            "$i0 = 5",
-            "$i1 = $i0",
-            "$i2 = $i0 + 1",
-            "$i0 = $i2",
-            "$i3 = $i0",
+            "l0 := @this: Autoboxing",
+            "l1 = 5",
+            "l1 = l1 + 1",
+            "$stack3 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(l1)",
+            "l2 = $stack3",
             "return")
         .collect(Collectors.toList());
   }

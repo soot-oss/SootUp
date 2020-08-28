@@ -4,7 +4,7 @@ public synchronized class DeclareInnerClass$InnerClass extends java.lang.Object
 
     public void <init>(DeclareInnerClass)
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: DeclareInnerClass$InnerClass;
@@ -20,7 +20,7 @@ public synchronized class DeclareInnerClass$InnerClass extends java.lang.Object
 
     public void methodDisplayInner()
     {
-        "unknown" $stack1, l0;
+        unknown $stack1, l0;
 
 
         l0 := @this: DeclareInnerClass$InnerClass;

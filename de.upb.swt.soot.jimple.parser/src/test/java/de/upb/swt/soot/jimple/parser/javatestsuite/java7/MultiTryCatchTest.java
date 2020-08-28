@@ -2,6 +2,7 @@ package de.upb.swt.soot.jimple.parser.javatestsuite.java7;
 
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.jimple.parser.categories.Java8Test;
 import de.upb.swt.soot.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,8 +10,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class MultiTryCatchTest extends JimpleTestSuiteBase {
+
+  @Test
+  public void test() {
+    SootMethod sootMethod = loadMethod(getMethodSignature());
+    assertJimpleStmts(sootMethod, expectedBodyStmts());
+  }
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
@@ -19,40 +29,79 @@ public class MultiTryCatchTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: MultiTryCatch",
-            "$r1 = new java.io.BufferedReader",
-            "$r2 = new java.io.FileReader",
-            "specialinvoke $r2.<java.io.FileReader: void <init>(java.lang.String)>(\"file.txt\")",
-            "specialinvoke $r1.<java.io.BufferedReader: void <init>(java.io.Reader)>($r2)",
-            "$r3 = \"\"",
-            "$i0 = 10 / 5",
-            "$r4 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r4.<java.io.PrintStream: void println(int)>($i0)",
-            "label1:",
-            "$r5 = virtualinvoke $r1.<java.io.BufferedReader: java.lang.String readLine()>()",
-            "$r3 = $r5",
-            "$z0 = $r5 != null",
-            "if $z0 == 0 goto label2",
-            "$r6 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>($r3)",
-            "goto label1",
-            "label2:",
-            "goto label3",
-            "$r7 := @caughtexception",
-            "$r8 = $r7",
-            "label3:",
-            "virtualinvoke $r1.<java.io.BufferedReader: void close()>()",
-            "goto label4",
-            "$r9 := @caughtexception",
-            "$r10 = $r9",
-            "label4:",
-            "return")
+            "l0 := @this: MultiTryCatch",
+            "$stack6 = new java.io.BufferedReader",
+            "$stack7 = new java.io.FileReader",
+            "specialinvoke $stack7.<java.io.FileReader: void <init>(java.lang.String)>(\"file.txt\")",
+            "specialinvoke $stack6.<java.io.BufferedReader: void <init>(java.io.Reader)>($stack7)",
+            "l1 = $stack6",
+            "label01:",
+            "l2 = \"\"",
+            "l3 = 2",
+            "$stack8 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $stack8.<java.io.PrintStream: void println(int)>(l3)",
+            "label02:",
+            "$stack11 = l1",
+            "$stack9 = virtualinvoke $stack11.<java.io.BufferedReader: java.lang.String readLine()>()",
+            "l2 = $stack9",
+            "if $stack9 == null goto label03",
+            "$stack10 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $stack10.<java.io.PrintStream: void println(java.lang.String)>(l2)",
+            "goto label02",
+            "label03:",
+            "virtualinvoke l1.<java.io.BufferedReader: void close()>()",
+            "label04:",
+            "goto label19",
+            "label05:",
+            "$stack19 := @caughtexception",
+            "l2 = $stack19",
+            "goto label19",
+            "label06:",
+            "$stack18 := @caughtexception",
+            "l2 = $stack18",
+            "label07:",
+            "virtualinvoke l1.<java.io.BufferedReader: void close()>()",
+            "label08:",
+            "goto label19",
+            "label09:",
+            "$stack17 := @caughtexception",
+            "l2 = $stack17",
+            "goto label19",
+            "label10:",
+            "$stack16 := @caughtexception",
+            "l2 = $stack16",
+            "label11:",
+            "virtualinvoke l1.<java.io.BufferedReader: void close()>()",
+            "label12:",
+            "goto label19",
+            "label13:",
+            "$stack15 := @caughtexception",
+            "l2 = $stack15",
+            "goto label19",
+            "label14:",
+            "$stack13 := @caughtexception",
+            "l4 = $stack13",
+            "label15:",
+            "virtualinvoke l1.<java.io.BufferedReader: void close()>()",
+            "label16:",
+            "goto label18",
+            "label17:",
+            "$stack12 := @caughtexception",
+            "l5 = $stack12",
+            "label18:",
+            "$stack14 = l4",
+            "throw $stack14",
+            "label19:",
+            "return",
+            "catch java.io.IOException from label03 to label04 with label05",
+            "catch java.io.IOException from label01 to label03 with label06",
+            "catch java.lang.NumberFormatException from label01 to label03 with label06",
+            "catch java.io.IOException from label07 to label08 with label09",
+            "catch java.lang.Exception from label01 to label03 with label10",
+            "catch java.io.IOException from label11 to label12 with label13",
+            "catch java.lang.Throwable from label01 to label03 with label14",
+            "catch java.io.IOException from label15 to label16 with label17",
+            "catch java.lang.Throwable from label14 to label15 with label14")
         .collect(Collectors.toCollection(ArrayList::new));
-  }
-
-  @Test
-  public void test() {
-    SootMethod method = loadMethod(getMethodSignature());
-    assertJimpleStmts(method, expectedBodyStmts());
   }
 }

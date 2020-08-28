@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author: Hasitha Rajapakse * */
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class StaticMethodInvocationTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
@@ -21,7 +21,7 @@ public class StaticMethodInvocationTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: StaticMethodInvocation",
+            "l0 := @this: StaticMethodInvocation",
             "staticinvoke <StaticMethodInvocation: void staticmethod()>()",
             "return")
         .collect(Collectors.toList());

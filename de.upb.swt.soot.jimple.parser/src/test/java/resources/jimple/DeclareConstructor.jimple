@@ -6,7 +6,7 @@ synchronized class DeclareConstructor extends java.lang.Object
 
     public void <init>(int,int)
     {
-        "unknown" l0, l1, l2;
+        unknown l0, l1, l2;
 
 
         l0 := @this: DeclareConstructor;
@@ -26,7 +26,7 @@ synchronized class DeclareConstructor extends java.lang.Object
 
     public void <init>(int)
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: DeclareConstructor;

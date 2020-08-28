@@ -2,7 +2,7 @@ public synchronized class MethodAcceptingVar extends java.lang.Object
 {
     public void intVariable(int)
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: MethodAcceptingVar;
@@ -16,7 +16,7 @@ public synchronized class MethodAcceptingVar extends java.lang.Object
 
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: MethodAcceptingVar;
@@ -28,7 +28,7 @@ public synchronized class MethodAcceptingVar extends java.lang.Object
 
     public void shortVariable(short)
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @this: MethodAcceptingVar;
@@ -44,7 +44,7 @@ public synchronized class MethodAcceptingVar extends java.lang.Object
 
     public void doubleVariable(double)
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: MethodAcceptingVar;
@@ -58,7 +58,7 @@ public synchronized class MethodAcceptingVar extends java.lang.Object
 
     public void longVariable(long)
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: MethodAcceptingVar;
@@ -72,7 +72,7 @@ public synchronized class MethodAcceptingVar extends java.lang.Object
 
     public void charVariable(char)
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: MethodAcceptingVar;
@@ -86,7 +86,7 @@ public synchronized class MethodAcceptingVar extends java.lang.Object
 
     public void byteVariable(byte)
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @this: MethodAcceptingVar;
@@ -102,7 +102,7 @@ public synchronized class MethodAcceptingVar extends java.lang.Object
 
     public void floatVariable(float)
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: MethodAcceptingVar;

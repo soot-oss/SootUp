@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class ForEachLoopTest extends JimpleTestSuiteBase {
 
@@ -22,31 +22,29 @@ public class ForEachLoopTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: ForEachLoop",
-            "$r1 = newarray (int)[9]",
-            "$r1[0] = 10",
-            "$r1[1] = 20",
-            "$r1[2] = 30",
-            "$r1[3] = 40",
-            "$r1[4] = 50",
-            "$r1[5] = 60",
-            "$r1[6] = 71",
-            "$r1[7] = 80",
-            "$r1[8] = 90",
-            "$i0 = 0",
-            "$r2 = $r1",
-            "$i1 = 0",
+            "l0 := @this: ForEachLoop",
+            "$stack7 = newarray (int)[9]",
+            "$stack7[0] = 10",
+            "$stack7[1] = 20",
+            "$stack7[2] = 30",
+            "$stack7[3] = 40",
+            "$stack7[4] = 50",
+            "$stack7[5] = 60",
+            "$stack7[6] = 71",
+            "$stack7[7] = 80",
+            "$stack7[8] = 90",
+            "l1 = $stack7",
+            "l2 = 0",
+            "l3 = l1",
+            "l4 = lengthof l3",
+            "l5 = 0",
             "label1:",
-            "$i2 = lengthof $r2",
-            "$z0 = $i1 < $i2",
-            "if $z0 == 0 goto label2",
-            "$r3 = $r2[$i1]",
-            "$i3 = $i0",
-            "$i4 = $i0 + 1",
-            "$i0 = $i4",
-            "$i5 = $i1",
-            "$i6 = $i1 + 1",
-            "$i1 = $i6",
+            "$stack9 = l5",
+            "$stack8 = l4",
+            "if $stack9 >= $stack8 goto label2",
+            "l6 = l3[l5]",
+            "l2 = l2 + 1",
+            "l5 = l5 + 1",
             "goto label1",
             "label2:",
             "return")

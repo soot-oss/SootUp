@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class ForLoopTest extends JimpleTestSuiteBase {
 
@@ -22,19 +22,16 @@ public class ForLoopTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: ForLoop",
-            "$i0 = 10",
-            "$i1 = 0",
-            "$i2 = 0",
+            "l0 := @this: ForLoop",
+            "l1 = 10",
+            "l2 = 0",
+            "l3 = 0",
             "label1:",
-            "$z0 = $i2 < $i0",
-            "if $z0 == 0 goto label2",
-            "$i3 = $i1",
-            "$i4 = $i1 + 1",
-            "$i1 = $i4",
-            "$i5 = $i2",
-            "$i6 = $i2 + 1",
-            "$i2 = $i6",
+            "$stack5 = l3",
+            "$stack4 = l1",
+            "if $stack5 >= $stack4 goto label2",
+            "l2 = l2 + 1",
+            "l3 = l3 + 1",
             "goto label1",
             "label2:",
             "return")

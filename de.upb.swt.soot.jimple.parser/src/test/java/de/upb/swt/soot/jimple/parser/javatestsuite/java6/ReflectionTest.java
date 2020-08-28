@@ -2,6 +2,7 @@ package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.jimple.parser.categories.Java8Test;
 import de.upb.swt.soot.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,7 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class ReflectionTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
@@ -19,21 +23,23 @@ public class ReflectionTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: Reflection",
-            "$r1 = new Reflection",
-            "specialinvoke $r1.<Reflection: void <init>()>()",
-            "$r2 = class \"Ljava/lang/Class\"",
-            "$r3 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.Object)>($r2)",
-            "$r4 = newarray (java.lang.Class)[0]",
-            "$r5 = virtualinvoke $r2.<java.lang.Class: java.lang.reflect.Constructor getConstructor(java.lang.Class[])>($r4)",
-            "$r6 = <java.lang.System: java.io.PrintStream out>",
-            "$r7 = virtualinvoke $r5.<java.lang.reflect.Constructor: java.lang.String getName()>()",
-            "virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>($r7)",
-            "$r8 = <java.lang.System: java.io.PrintStream out>",
-            "$r9 = virtualinvoke $r2.<java.lang.Class: java.lang.reflect.Method[] getMethods()>()",
-            "$i0 = lengthof $r9",
-            "virtualinvoke $r8.<java.io.PrintStream: void println(int)>($i0)",
+            "l0 := @this: Reflection",
+            "$stack4 = new Reflection",
+            "specialinvoke $stack4.<Reflection: void <init>()>()",
+            "l1 = $stack4",
+            "l2 = class \"LReflection;\"",
+            "$stack5 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $stack5.<java.io.PrintStream: void println(java.lang.Object)>(l2)",
+            "$stack6 = newarray (java.lang.Class)[0]",
+            "$stack7 = virtualinvoke l2.<java.lang.Class: java.lang.reflect.Constructor getConstructor(java.lang.Class[])>($stack6)",
+            "l3 = $stack7",
+            "$stack8 = <java.lang.System: java.io.PrintStream out>",
+            "$stack9 = virtualinvoke l3.<java.lang.reflect.Constructor: java.lang.String getName()>()",
+            "virtualinvoke $stack8.<java.io.PrintStream: void println(java.lang.String)>($stack9)",
+            "$stack10 = <java.lang.System: java.io.PrintStream out>",
+            "$stack11 = virtualinvoke l2.<java.lang.Class: java.lang.reflect.Method[] getMethods()>()",
+            "$stack12 = lengthof $stack11",
+            "virtualinvoke $stack10.<java.io.PrintStream: void println(int)>($stack12)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

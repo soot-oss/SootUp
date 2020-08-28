@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class BreakInWhileLoopTest extends JimpleTestSuiteBase {
 
@@ -22,21 +22,16 @@ public class BreakInWhileLoopTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: BreakInWhileLoop",
-            "$i0 = 10",
-            "$i1 = 5",
+            "l0 := @this: BreakInWhileLoop",
+            "l1 = 10",
+            "l2 = 5",
             "label1:",
-            "$z0 = $i0 > 0",
-            "if $z0 == 0 goto label3",
-            "$i2 = $i0",
-            "$i3 = $i0 - 1",
-            "$i0 = $i3",
-            "$z1 = $i0 == $i1",
-            "if $z1 == 0 goto label2",
-            "goto label3",
+            "$stack3 = l1",
+            "if $stack3 <= 0 goto label2",
+            "l1 = l1 + -1",
+            "if l1 != l2 goto label1",
+            "goto label2",
             "label2:",
-            "goto label1",
-            "label3:",
             "return")
         .collect(Collectors.toList());
   }

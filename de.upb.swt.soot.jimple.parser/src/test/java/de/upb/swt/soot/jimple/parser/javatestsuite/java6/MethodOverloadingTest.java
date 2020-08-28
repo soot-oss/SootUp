@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.jimple.parser.categories.Java8Test;
 import de.upb.swt.soot.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,8 +15,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class MethodOverloadingTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
@@ -49,20 +52,20 @@ public class MethodOverloadingTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: MethodOverloading",
-            "$i0 := @parameter0: int",
-            "$i1 := @parameter1: int",
-            "$i2 = $i0 + $i1",
-            "return $i2")
+            "l0 := @this: MethodOverloading",
+            "l1 := @parameter0: int",
+            "l2 := @parameter1: int",
+            "$stack3 = l1 + l2",
+            "return $stack3")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
   public List<String> expectedBodyStmts1() {
     return Stream.of(
-            "r0 := @this: MethodOverloading",
-            "$i0 := @parameter0: int",
-            "$i1 = $i0 + $i0",
-            "return $i1")
+            "l0 := @this: MethodOverloading",
+            "l1 := @parameter0: int",
+            "$stack2 = l1 + l1",
+            "return $stack2")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 }

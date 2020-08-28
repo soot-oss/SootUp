@@ -2,7 +2,7 @@ public synchronized class StatementEval extends java.lang.Object
 {
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: StatementEval;
@@ -14,7 +14,7 @@ public synchronized class StatementEval extends java.lang.Object
 
     public void statementEval()
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @this: StatementEval;

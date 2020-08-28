@@ -2,7 +2,7 @@ public synchronized class ForEachLoop extends java.lang.Object
 {
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: ForEachLoop;
@@ -14,7 +14,7 @@ public synchronized class ForEachLoop extends java.lang.Object
 
     public void forEachLoop()
     {
-        "unknown" l0, l1, l2, l3, l4, l5, l6, $stack9, $stack8, $stack7;
+        unknown l0, l1, l2, l3, l4, l5, l6, $stack9, $stack8, $stack7;
 
 
         l0 := @this: ForEachLoop;

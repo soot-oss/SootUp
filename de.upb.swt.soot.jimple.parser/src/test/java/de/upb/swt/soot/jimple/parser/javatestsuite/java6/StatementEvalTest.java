@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class StatementEvalTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
@@ -21,11 +21,11 @@ public class StatementEvalTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: StatementEval",
-            "$i0 = 1",
-            "$i0 = 3",
-            "$i1 = $i0 + 3",
-            "$i0 = $i1",
+            "l0 := @this: StatementEval",
+            "l1 = 1",
+            "$stack2 = l1",
+            "l1 = 3",
+            "l1 = $stack2 + 3",
             "return")
         .collect(Collectors.toList());
   }

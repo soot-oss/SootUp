@@ -6,7 +6,7 @@ synchronized class UnaryOpInt extends java.lang.Object
 
     void methodUnaryOpInt()
     {
-        "unknown" $stack2, l0, $stack3, l1;
+        unknown $stack2, l0, $stack3, l1;
 
 
         l0 := @this: UnaryOpInt;
@@ -22,7 +22,7 @@ synchronized class UnaryOpInt extends java.lang.Object
 
     void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: UnaryOpInt;

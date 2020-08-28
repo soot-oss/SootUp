@@ -4,7 +4,7 @@ public synchronized class SynchronizedBlock extends java.lang.Object
 
     void <init>(java.lang.String)
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: SynchronizedBlock;
@@ -20,7 +20,7 @@ public synchronized class SynchronizedBlock extends java.lang.Object
 
     public void run()
     {
-        "unknown" $stack4, l0, $stack3, l1, l2, $stack6, $stack5, $stack8, $stack7;
+        unknown $stack4, l0, $stack3, l1, l2, $stack6, $stack5, $stack8, $stack7;
 
 
         l0 := @this: SynchronizedBlock;

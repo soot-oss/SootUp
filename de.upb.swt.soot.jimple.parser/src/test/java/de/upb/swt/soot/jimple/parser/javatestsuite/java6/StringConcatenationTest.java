@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class StringConcatenationTest extends JimpleTestSuiteBase {
 
@@ -21,13 +21,7 @@ public class StringConcatenationTest extends JimpleTestSuiteBase {
   }
 
   public List<String> expectedBodyStmts() {
-    return Stream.of(
-            "r0 := @this: StringConcatenation",
-            "$r2 = new java.lang.StringBuilder",
-            "specialinvoke $r2.<java.lang.StringBuilder: void <init>(java.lang.String)>(\"the\")",
-            "$r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"string\")",
-            "$r1 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
-            "return")
+    return Stream.of("l0 := @this: StringConcatenation", "l1 = \"thestring\"", "return")
         .collect(Collectors.toList());
   }
 

@@ -2,7 +2,7 @@ public synchronized class Autoboxing extends java.lang.Object
 {
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: Autoboxing;
@@ -14,7 +14,7 @@ public synchronized class Autoboxing extends java.lang.Object
 
     public void autoboxing()
     {
-        "unknown" $stack3, l0, l1, l2;
+        unknown $stack3, l0, l1, l2;
 
 
         l0 := @this: Autoboxing;

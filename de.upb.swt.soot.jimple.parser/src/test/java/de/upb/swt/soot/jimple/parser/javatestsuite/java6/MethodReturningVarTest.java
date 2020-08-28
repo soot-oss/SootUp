@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -6,9 +5,12 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.jimple.parser.categories.Java8Test;
 import de.upb.swt.soot.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 import java.util.Collections;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class MethodReturningVarTest extends JimpleTestSuiteBase {
 
@@ -16,33 +18,45 @@ public class MethodReturningVarTest extends JimpleTestSuiteBase {
   public void test() {
     SootMethod method = loadMethod(getMethodSignature("short"));
     assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: MethodReturningVar", "$i0 = 10", "return $i0"));
+        method,
+        Stream.of("l0 := @this: MethodReturningVar", "l1 = 10", "return l1")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("byte"));
     assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: MethodReturningVar", "$i0 = 0", "return $i0"));
+        method,
+        Stream.of("l0 := @this: MethodReturningVar", "l1 = 0", "return l1")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("char"));
     assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: MethodReturningVar", "$i0 = 97", "return $i0"));
+        method,
+        Stream.of("l0 := @this: MethodReturningVar", "l1 = 97", "return l1")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("int"));
     assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: MethodReturningVar", "$i0 = 512", "return $i0"));
+        method,
+        Stream.of("l0 := @this: MethodReturningVar", "l1 = 512", "return l1")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("long"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts("r0 := @this: MethodReturningVar", "$i0 = 123456789", "return $i0"));
+        Stream.of("l0 := @this: MethodReturningVar", "l1 = 123456789L", "return l1")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("float"));
     assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: MethodReturningVar", "$f0 = 3.14F", "return $f0"));
+        method,
+        Stream.of("l0 := @this: MethodReturningVar", "l1 = 3.14F", "return l1")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("double"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts("r0 := @this: MethodReturningVar", "$d0 = 1.96969654", "return $d0"));
+        Stream.of("l0 := @this: MethodReturningVar", "l1 = 1.96969654", "return l1")
+            .collect(Collectors.toList()));
   }
 
   public MethodSignature getMethodSignature(String datatype) {

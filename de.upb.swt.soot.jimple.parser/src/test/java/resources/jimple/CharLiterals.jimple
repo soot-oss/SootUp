@@ -2,7 +2,7 @@ public synchronized class CharLiterals extends java.lang.Object
 {
     public void specialChar()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: CharLiterals;
@@ -14,7 +14,7 @@ public synchronized class CharLiterals extends java.lang.Object
 
     public void charBackslash()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: CharLiterals;
@@ -26,7 +26,7 @@ public synchronized class CharLiterals extends java.lang.Object
 
     public void charBackslashT()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: CharLiterals;
@@ -38,7 +38,7 @@ public synchronized class CharLiterals extends java.lang.Object
 
     public void charSingleQuote()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: CharLiterals;
@@ -50,7 +50,7 @@ public synchronized class CharLiterals extends java.lang.Object
 
     public void charUnicode()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: CharLiterals;
@@ -62,7 +62,7 @@ public synchronized class CharLiterals extends java.lang.Object
 
     public void charSymbol()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: CharLiterals;
@@ -74,7 +74,7 @@ public synchronized class CharLiterals extends java.lang.Object
 
     public void charCharacter()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: CharLiterals;
@@ -86,7 +86,7 @@ public synchronized class CharLiterals extends java.lang.Object
 
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: CharLiterals;

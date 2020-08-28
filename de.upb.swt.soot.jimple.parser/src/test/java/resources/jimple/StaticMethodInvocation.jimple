@@ -2,7 +2,7 @@ public synchronized class StaticMethodInvocation extends java.lang.Object
 {
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: StaticMethodInvocation;
@@ -14,7 +14,7 @@ public synchronized class StaticMethodInvocation extends java.lang.Object
 
     public static void staticmethod()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 = "Hello World";
@@ -24,7 +24,7 @@ public synchronized class StaticMethodInvocation extends java.lang.Object
 
     public void staticMethodInvocation()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: StaticMethodInvocation;

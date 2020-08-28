@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class AssertStatementTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
@@ -21,16 +21,14 @@ public class AssertStatementTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: AssertStatement",
-            "$z0 = \"\" != null",
-            "$z1 = <AssertStatement: boolean $assertionsDisabled>",
-            "if $z1 == 1 goto label1",
-            "if $z0 == 1 goto label1",
-            "$r1 = new java.lang.AssertionError",
-            "specialinvoke $r1.<java.lang.AssertionError: void <init>()>()",
-            "throw $r1",
+            "l0 := @this: AssertStatement",
+            "$stack1 = <AssertStatement: boolean $assertionsDisabled>",
+            "if $stack1 != 0 goto label1",
+            "if \"\" != null goto label1",
+            "$stack2 = new java.lang.AssertionError",
+            "specialinvoke $stack2.<java.lang.AssertionError: void <init>()>()",
+            "throw $stack2",
             "label1:",
-            "nop",
             "return")
         .collect(Collectors.toList());
   }

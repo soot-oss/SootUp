@@ -2,7 +2,7 @@ public synchronized class ContinueInWhileLoop extends java.lang.Object
 {
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: ContinueInWhileLoop;
@@ -14,7 +14,7 @@ public synchronized class ContinueInWhileLoop extends java.lang.Object
 
     public void continueInWhileLoop()
     {
-        "unknown" $stack2, $stack3, l0, l1;
+        unknown $stack2, $stack3, l0, l1;
 
 
         l0 := @this: ContinueInWhileLoop;

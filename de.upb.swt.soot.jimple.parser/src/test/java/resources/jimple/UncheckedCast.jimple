@@ -2,7 +2,7 @@ synchronized class UncheckedCast extends java.lang.Object
 {
     void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: UncheckedCast;
@@ -14,7 +14,7 @@ synchronized class UncheckedCast extends java.lang.Object
 
     public static void main(java.lang.String[])
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @parameter0: java.lang.String[];
@@ -32,7 +32,7 @@ synchronized class UncheckedCast extends java.lang.Object
 
     public void uncheckedCastDisplay()
     {
-        "unknown" $stack4, $stack3, l0, l1, l2, $stack12, $stack13, $stack10, $stack11, $stack9, $stack6, $stack5, $stack8, $stack7;
+        unknown $stack4, $stack3, l0, l1, l2, $stack12, $stack13, $stack10, $stack11, $stack9, $stack6, $stack5, $stack8, $stack7;
 
 
         l0 := @this: UncheckedCast;

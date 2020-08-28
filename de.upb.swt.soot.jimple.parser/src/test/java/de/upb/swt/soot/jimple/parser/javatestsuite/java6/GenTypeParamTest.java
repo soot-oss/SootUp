@@ -2,6 +2,7 @@ package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.jimple.parser.categories.Java8Test;
 import de.upb.swt.soot.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,7 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class GenTypeParamTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
@@ -17,24 +21,34 @@ public class GenTypeParamTest extends JimpleTestSuiteBase {
         "geneTypeParamDisplay", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /** Jimple code will change when Generics are incorporated */
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: GenTypeParam",
-            "$r1 = new java.util.ArrayList",
-            "specialinvoke $r1.<java.util.ArrayList: void <init>(int)>(3)",
-            "$r2 = newarray (java.lang.Object)[3]",
-            "$r2[0] = 1",
-            "$r2[1] = 2",
-            "$r2[2] = 3",
-            "$r3 = staticinvoke <java.util.Arrays: java.util.List asList(java.lang.Object[])>($r2)",
-            "$r4 = new GenTypeParam",
-            "specialinvoke $r4.<GenTypeParam: void <init>()>()",
-            "virtualinvoke $r4.<GenTypeParam: void copy(java.util.List,java.util.List)>($r1, $r3)",
-            "$r5 = <java.lang.System: java.io.PrintStream out>",
-            "$r6 = virtualinvoke $r4.<GenTypeParam: java.lang.Number largestNum(java.lang.Number,java.lang.Number,java.lang.Number)>(2, 8, 3)",
-            "$r7 = (java.lang.Integer) $r6",
-            "virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.Object)>($r7)",
+            "l0 := @this: GenTypeParam",
+            "$stack4 = new java.util.ArrayList",
+            "specialinvoke $stack4.<java.util.ArrayList: void <init>(int)>(3)",
+            "l1 = $stack4",
+            "$stack5 = newarray (java.lang.Integer)[3]",
+            "$stack6 = 0",
+            "$stack7 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(1)",
+            "$stack5[$stack6] = $stack7",
+            "$stack8 = 1",
+            "$stack9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(2)",
+            "$stack5[$stack8] = $stack9",
+            "$stack10 = 2",
+            "$stack11 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(3)",
+            "$stack5[$stack10] = $stack11",
+            "$stack12 = staticinvoke <java.util.Arrays: java.util.List asList(java.lang.Object[])>($stack5)",
+            "l2 = $stack12",
+            "$stack13 = new GenTypeParam",
+            "specialinvoke $stack13.<GenTypeParam: void <init>()>()",
+            "l3 = $stack13",
+            "virtualinvoke l3.<GenTypeParam: void copy(java.util.List,java.util.List)>(l1, l2)",
+            "$stack14 = <java.lang.System: java.io.PrintStream out>",
+            "$stack15 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(2)",
+            "$stack16 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(8)",
+            "$stack17 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(3)",
+            "$stack18 = virtualinvoke l3.<GenTypeParam: java.lang.Number largestNum(java.lang.Number,java.lang.Number,java.lang.Number)>($stack15, $stack16, $stack17)",
+            "virtualinvoke $stack14.<java.io.PrintStream: void println(java.lang.Object)>($stack18)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

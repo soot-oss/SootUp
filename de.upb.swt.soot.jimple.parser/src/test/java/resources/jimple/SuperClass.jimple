@@ -10,7 +10,7 @@ synchronized class SuperClass extends java.lang.Object
 
     void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: SuperClass;
@@ -30,7 +30,7 @@ synchronized class SuperClass extends java.lang.Object
 
     public void superclassMethod()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: SuperClass;

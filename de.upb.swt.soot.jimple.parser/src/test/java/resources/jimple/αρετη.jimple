@@ -2,7 +2,7 @@ public synchronized class \u03b1\u03c1\u03b5\u03c4\u03b7 extends java.lang.Objec
 {
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: \u03b1\u03c1\u03b5\u03c4\u03b7;
@@ -14,7 +14,7 @@ public synchronized class \u03b1\u03c1\u03b5\u03c4\u03b7 extends java.lang.Objec
 
     public void \u03b1\u03c1\u03b5\u03c4\u03b7AsClassName()
     {
-        "unknown" $stack1, l0;
+        unknown $stack1, l0;
 
 
         l0 := @this: \u03b1\u03c1\u03b5\u03c4\u03b7;
@@ -28,7 +28,7 @@ public synchronized class \u03b1\u03c1\u03b5\u03c4\u03b7 extends java.lang.Objec
 
     public static void main(java.lang.String[])
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @parameter0: java.lang.String[];

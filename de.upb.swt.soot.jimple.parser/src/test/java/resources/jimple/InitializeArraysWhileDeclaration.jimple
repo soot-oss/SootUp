@@ -2,7 +2,7 @@ public synchronized class InitializeArraysWhileDeclaration extends java.lang.Obj
 {
     public void intArrays()
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @this: InitializeArraysWhileDeclaration;
@@ -22,7 +22,7 @@ public synchronized class InitializeArraysWhileDeclaration extends java.lang.Obj
 
     public void booleanArrays()
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @this: InitializeArraysWhileDeclaration;
@@ -40,7 +40,7 @@ public synchronized class InitializeArraysWhileDeclaration extends java.lang.Obj
 
     public void stringArrays()
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @this: InitializeArraysWhileDeclaration;
@@ -58,7 +58,7 @@ public synchronized class InitializeArraysWhileDeclaration extends java.lang.Obj
 
     public void floatArrays()
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @this: InitializeArraysWhileDeclaration;
@@ -80,7 +80,7 @@ public synchronized class InitializeArraysWhileDeclaration extends java.lang.Obj
 
     public void longArrays()
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @this: InitializeArraysWhileDeclaration;
@@ -100,7 +100,7 @@ public synchronized class InitializeArraysWhileDeclaration extends java.lang.Obj
 
     public void byteArrays()
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @this: InitializeArraysWhileDeclaration;
@@ -120,7 +120,7 @@ public synchronized class InitializeArraysWhileDeclaration extends java.lang.Obj
 
     public void doubleArrays()
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @this: InitializeArraysWhileDeclaration;
@@ -138,7 +138,7 @@ public synchronized class InitializeArraysWhileDeclaration extends java.lang.Obj
 
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: InitializeArraysWhileDeclaration;
@@ -150,7 +150,7 @@ public synchronized class InitializeArraysWhileDeclaration extends java.lang.Obj
 
     public void shortArrays()
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @this: InitializeArraysWhileDeclaration;
@@ -170,7 +170,7 @@ public synchronized class InitializeArraysWhileDeclaration extends java.lang.Obj
 
     public void charArrays()
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @this: InitializeArraysWhileDeclaration;

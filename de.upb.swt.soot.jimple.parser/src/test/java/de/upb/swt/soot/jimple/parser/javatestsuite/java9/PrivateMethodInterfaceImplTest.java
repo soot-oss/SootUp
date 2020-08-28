@@ -5,15 +5,18 @@ import static org.junit.Assert.assertTrue;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.jimple.parser.categories.Java8Test;
 import de.upb.swt.soot.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class PrivateMethodInterfaceImplTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
@@ -21,12 +24,10 @@ public class PrivateMethodInterfaceImplTest extends JimpleTestSuiteBase {
         "methodInterfaceImpl", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Ignore
-  /** TODO WALA does not support Java9 constructs */
-  public void ignoreTest() {
+  @Test
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
-
     SootClass sootClass = loadClass(getDeclaredClassSignature());
     assertTrue(
         sootClass.getInterfaces().stream()
@@ -37,8 +38,8 @@ public class PrivateMethodInterfaceImplTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: PrivateMethodInterfaceImpl",
-            "interfaceinvoke r0.<PrivateMethodInterface: void methodInterface(int,int)>(4, 2)",
+            "l0 := @this: PrivateMethodInterfaceImpl",
+            "virtualinvoke l0.<PrivateMethodInterfaceImpl: void methodInterface(int,int)>(4, 2)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

@@ -2,7 +2,7 @@ synchronized class CastingInNumTypes extends java.lang.Object
 {
     public void displayNum()
     {
-        "unknown" $stack29, $stack27, $stack28, $stack25, $stack26, $stack23, $stack24, $stack21, $stack22, $stack20, l0, l1, $stack18, l2, $stack19, l3, $stack16, l4, $stack17, $stack14, $stack36, l6, $stack15, $stack37, l7, $stack12, $stack34, $stack13, $stack35, l9, $stack32, $stack11, $stack33, $stack30, $stack31;
+        unknown $stack29, $stack27, $stack28, $stack25, $stack26, $stack23, $stack24, $stack21, $stack22, $stack20, l0, l1, $stack18, l2, $stack19, l3, $stack16, l4, $stack17, $stack14, $stack36, l6, $stack15, $stack37, l7, $stack12, $stack34, $stack13, $stack35, l9, $stack32, $stack11, $stack33, $stack30, $stack31;
 
 
         l0 := @this: CastingInNumTypes;
@@ -106,7 +106,7 @@ synchronized class CastingInNumTypes extends java.lang.Object
 
     void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: CastingInNumTypes;
@@ -118,7 +118,7 @@ synchronized class CastingInNumTypes extends java.lang.Object
 
     public static void main(java.lang.String[])
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @parameter0: java.lang.String[];

@@ -2,7 +2,7 @@ synchronized class InterfaceImplClass extends java.lang.Object implements Interf
 {
     void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: InterfaceImplClass;
@@ -14,7 +14,7 @@ synchronized class InterfaceImplClass extends java.lang.Object implements Interf
 
     public void interfaceMethod()
     {
-        "unknown" $stack2, $stack1, l0;
+        unknown $stack2, $stack1, l0;
 
 
         l0 := @this: InterfaceImplClass;

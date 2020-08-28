@@ -6,7 +6,7 @@ synchronized class ReferencingThis extends java.lang.Object
 
     ReferencingThis getObject()
     {
-        "unknown" $stack1, l0;
+        unknown $stack1, l0;
 
 
         l0 := @this: ReferencingThis;
@@ -20,7 +20,7 @@ synchronized class ReferencingThis extends java.lang.Object
 
     void <init>(int,int)
     {
-        "unknown" l0, $stack3, l1, l2;
+        unknown l0, $stack3, l1, l2;
 
 
         l0 := @this: ReferencingThis;
@@ -44,7 +44,7 @@ synchronized class ReferencingThis extends java.lang.Object
 
     void thisDisplay(ReferencingThis)
     {
-        "unknown" $stack2, $stack4, $stack3, l0, l1, $stack9, $stack6, $stack10, $stack5, $stack8, $stack7;
+        unknown $stack2, $stack4, $stack3, l0, l1, $stack9, $stack6, $stack10, $stack5, $stack8, $stack7;
 
 
         l0 := @this: ReferencingThis;
@@ -80,7 +80,7 @@ synchronized class ReferencingThis extends java.lang.Object
 
     void <init>()
     {
-        "unknown" $stack1, l0;
+        unknown $stack1, l0;
 
 
         l0 := @this: ReferencingThis;
@@ -96,7 +96,7 @@ synchronized class ReferencingThis extends java.lang.Object
 
     void show()
     {
-        "unknown" $stack1, l0;
+        unknown $stack1, l0;
 
 
         l0 := @this: ReferencingThis;
@@ -112,7 +112,7 @@ synchronized class ReferencingThis extends java.lang.Object
 
     void thisMethod()
     {
-        "unknown" $stack2, $stack4, $stack3, l0, l1, $stack5;
+        unknown $stack2, $stack4, $stack3, l0, l1, $stack5;
 
 
         l0 := @this: ReferencingThis;

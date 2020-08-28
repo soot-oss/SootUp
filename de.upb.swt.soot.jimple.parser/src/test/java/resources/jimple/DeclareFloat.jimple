@@ -6,7 +6,7 @@ public synchronized class DeclareFloat extends java.lang.Object
 
     void declareFloatMethod()
     {
-        "unknown" $stack2, $stack1, $stack4, l0, $stack3;
+        unknown $stack2, $stack1, $stack4, l0, $stack3;
 
 
         l0 := @this: DeclareFloat;
@@ -28,7 +28,7 @@ public synchronized class DeclareFloat extends java.lang.Object
 
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: DeclareFloat;

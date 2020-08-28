@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class LabelledLoopBreakTest extends JimpleTestSuiteBase {
 
@@ -22,27 +22,24 @@ public class LabelledLoopBreakTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: LabelledLoopBreak",
-            "$i0 = 0",
+            "l0 := @this: LabelledLoopBreak",
+            "l1 = 0",
             "label1:",
-            "$z0 = $i0 < 5",
-            "if $z0 == 0 goto label5",
-            "$i1 = 0",
+            "$stack4 = l1",
+            "$stack3 = 5",
+            "if $stack4 >= $stack3 goto label5",
+            "l2 = 0",
             "label2:",
-            "$z1 = $i1 < 5",
-            "if $z1 == 0 goto label4",
-            "$z2 = $i0 == 1",
-            "if $z2 == 0 goto label3",
+            "$stack6 = l2",
+            "$stack5 = 5",
+            "if $stack6 >= $stack5 goto label4",
+            "if l1 != 1 goto label3",
             "goto label5",
             "label3:",
-            "$i2 = $i1",
-            "$i3 = $i1 + 1",
-            "$i1 = $i3",
+            "l2 = l2 + 1",
             "goto label2",
             "label4:",
-            "$i4 = $i0",
-            "$i5 = $i0 + 1",
-            "$i0 = $i5",
+            "l1 = l1 + 1",
             "goto label1",
             "label5:",
             "return")

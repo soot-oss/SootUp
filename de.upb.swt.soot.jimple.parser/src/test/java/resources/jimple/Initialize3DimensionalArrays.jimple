@@ -2,7 +2,7 @@ public synchronized class Initialize3DimensionalArrays extends java.lang.Object
 {
     public void shortArrays()
     {
-        "unknown" $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
+        unknown $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
 
 
         l0 := @this: Initialize3DimensionalArrays;
@@ -56,7 +56,7 @@ public synchronized class Initialize3DimensionalArrays extends java.lang.Object
 
     public void intArrays()
     {
-        "unknown" $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
+        unknown $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
 
 
         l0 := @this: Initialize3DimensionalArrays;
@@ -114,7 +114,7 @@ public synchronized class Initialize3DimensionalArrays extends java.lang.Object
 
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: Initialize3DimensionalArrays;
@@ -126,7 +126,7 @@ public synchronized class Initialize3DimensionalArrays extends java.lang.Object
 
     public void byteArrays()
     {
-        "unknown" $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
+        unknown $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
 
 
         l0 := @this: Initialize3DimensionalArrays;
@@ -184,7 +184,7 @@ public synchronized class Initialize3DimensionalArrays extends java.lang.Object
 
     public void booleanArrays()
     {
-        "unknown" $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
+        unknown $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
 
 
         l0 := @this: Initialize3DimensionalArrays;
@@ -234,7 +234,7 @@ public synchronized class Initialize3DimensionalArrays extends java.lang.Object
 
     public void stringArrays()
     {
-        "unknown" $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
+        unknown $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
 
 
         l0 := @this: Initialize3DimensionalArrays;
@@ -286,7 +286,7 @@ public synchronized class Initialize3DimensionalArrays extends java.lang.Object
 
     public void longArrays()
     {
-        "unknown" $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
+        unknown $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
 
 
         l0 := @this: Initialize3DimensionalArrays;
@@ -342,7 +342,7 @@ public synchronized class Initialize3DimensionalArrays extends java.lang.Object
 
     public void charArrays()
     {
-        "unknown" $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
+        unknown $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
 
 
         l0 := @this: Initialize3DimensionalArrays;
@@ -398,7 +398,7 @@ public synchronized class Initialize3DimensionalArrays extends java.lang.Object
 
     public void floatArrays()
     {
-        "unknown" $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
+        unknown $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
 
 
         l0 := @this: Initialize3DimensionalArrays;
@@ -452,7 +452,7 @@ public synchronized class Initialize3DimensionalArrays extends java.lang.Object
 
     public void doubleArrays()
     {
-        "unknown" $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
+        unknown $stack2, $stack4, $stack3, l0, l1, $stack6, $stack5, $stack8, $stack7;
 
 
         l0 := @this: Initialize3DimensionalArrays;

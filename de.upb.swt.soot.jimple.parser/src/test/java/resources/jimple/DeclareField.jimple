@@ -6,7 +6,7 @@ synchronized class DeclareField extends java.lang.Object
 
     public static void main(java.lang.String[])
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @parameter0: java.lang.String[];
@@ -26,7 +26,7 @@ synchronized class DeclareField extends java.lang.Object
 
     public void staticDisplay()
     {
-        "unknown" $stack2, $stack1, l0;
+        unknown $stack2, $stack1, l0;
 
 
         l0 := @this: DeclareField;
@@ -42,7 +42,7 @@ synchronized class DeclareField extends java.lang.Object
 
     void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: DeclareField;
@@ -64,7 +64,7 @@ synchronized class DeclareField extends java.lang.Object
 
     public void display()
     {
-        "unknown" $stack1, l0;
+        unknown $stack1, l0;
 
 
         l0 := @this: DeclareField;

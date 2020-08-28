@@ -4,7 +4,7 @@ synchronized class DeclareInnerClass extends java.lang.Object
 
     public DeclareInnerClass getDeclareInnerClass()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: DeclareInnerClass;
@@ -14,7 +14,7 @@ synchronized class DeclareInnerClass extends java.lang.Object
 
     void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: DeclareInnerClass;
@@ -28,7 +28,7 @@ synchronized class DeclareInnerClass extends java.lang.Object
 
     public void methodDisplayOuter()
     {
-        "unknown" $stack1, l0;
+        unknown $stack1, l0;
 
 
         l0 := @this: DeclareInnerClass;
@@ -42,7 +42,7 @@ synchronized class DeclareInnerClass extends java.lang.Object
 
     public static void main(java.lang.String[])
     {
-        "unknown" $stack4, $stack3, l0, l1, l2, $stack5;
+        unknown $stack4, $stack3, l0, l1, l2, $stack5;
 
 
         l0 := @parameter0: java.lang.String[];

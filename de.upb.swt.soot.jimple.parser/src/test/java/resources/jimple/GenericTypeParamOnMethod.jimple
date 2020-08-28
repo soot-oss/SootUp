@@ -2,7 +2,7 @@ public synchronized class GenericTypeParamOnMethod extends java.lang.Object
 {
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: GenericTypeParamOnMethod;
@@ -14,7 +14,7 @@ public synchronized class GenericTypeParamOnMethod extends java.lang.Object
 
     public void genericTypeParamOnMethod()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: GenericTypeParamOnMethod;
@@ -26,7 +26,7 @@ public synchronized class GenericTypeParamOnMethod extends java.lang.Object
 
     public void a(java.lang.Object)
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @this: GenericTypeParamOnMethod;

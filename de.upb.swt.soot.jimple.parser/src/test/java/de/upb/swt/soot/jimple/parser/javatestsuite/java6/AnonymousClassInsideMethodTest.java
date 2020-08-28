@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,8 +11,10 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class AnonymousClassInsideMethodTest extends JimpleTestSuiteBase {
+
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         "anonymousClassInsideMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
@@ -21,10 +22,11 @@ public class AnonymousClassInsideMethodTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: AnonymousClassInsideMethod",
-            "$r1 = new AnonymousClassInsideMethod$1",
-            "specialinvoke $r1.<AnonymousClassInsideMethod$1: void <init>()>()",
-            "interfaceinvoke $r1.<AnonymousClassInsideMethod$MathOperation: void addition()>()",
+            "l0 := @this: AnonymousClassInsideMethod",
+            "$stack2 = new AnonymousClassInsideMethod$1",
+            "specialinvoke $stack2.<AnonymousClassInsideMethod$1: void <init>(AnonymousClassInsideMethod)>(l0)",
+            "l1 = $stack2",
+            "interfaceinvoke l1.<AnonymousClassInsideMethod$MathOperation: void addition()>()",
             "return")
         .collect(Collectors.toList());
   }

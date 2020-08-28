@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -6,9 +5,12 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.jimple.parser.categories.Java8Test;
 import de.upb.swt.soot.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 import java.util.Collections;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class InitializeArraysWithIndexTest extends JimpleTestSuiteBase {
 
@@ -18,100 +20,109 @@ public class InitializeArraysWithIndexTest extends JimpleTestSuiteBase {
     SootMethod method = loadMethod(getMethodSignature("intArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (int)[3]",
-            "$r1[0] = 1",
-            "$r1[1] = 2",
-            "$r1[2] = 3",
-            "return"));
+        Stream.of(
+                "l0 := @this: InitializeArraysWithIndex",
+                "l1 = newarray (int)[3]",
+                "l1[0] = 1",
+                "l1[1] = 2",
+                "l1[2] = 3",
+                "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("byteArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (byte)[3]",
-            "$r1[0] = 4",
-            "$r1[1] = 5",
-            "$r1[2] = 6",
-            "return"));
+        Stream.of(
+                "l0 := @this: InitializeArraysWithIndex",
+                "l1 = newarray (byte)[3]",
+                "l1[0] = 4",
+                "l1[1] = 5",
+                "l1[2] = 6",
+                "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("shortArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (short)[3]",
-            "$r1[0] = 10",
-            "$r1[1] = 20",
-            "$r1[2] = 30",
-            "return"));
+        Stream.of(
+                "l0 := @this: InitializeArraysWithIndex",
+                "l1 = newarray (short)[3]",
+                "l1[0] = 10",
+                "l1[1] = 20",
+                "l1[2] = 30",
+                "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("longArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (long)[3]",
-            "$r1[0] = 547087L",
-            "$r1[1] = 564645L",
-            "$r1[2] = 654786L",
-            "return"));
+        Stream.of(
+                "l0 := @this: InitializeArraysWithIndex",
+                "l1 = newarray (long)[3]",
+                "l1[0] = 547087L",
+                "l1[1] = 564645L",
+                "l1[2] = 654786L",
+                "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("floatArrays"));
 
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (float)[4]",
-            "$r1[0] = 3.14F",
-            "$r1[1] = 5.46F",
-            "$r1[2] = 2.987F",
-            "$r1[3] = 4.87F",
-            "return"));
+        Stream.of(
+                "l0 := @this: InitializeArraysWithIndex",
+                "l1 = newarray (float)[4]",
+                "l1[0] = 3.14F",
+                "l1[1] = 5.46F",
+                "l1[2] = 2.987F",
+                "l1[3] = 4.87F",
+                "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("doubleArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (double)[2]",
-            "$r1[0] = 6.765414",
-            "$r1[1] = 9.676565646",
-            "return"));
+        Stream.of(
+                "l0 := @this: InitializeArraysWithIndex",
+                "l1 = newarray (double)[2]",
+                "l1[0] = 6.765414",
+                "l1[1] = 9.676565646",
+                "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("booleanArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (boolean)[2]",
-            "$r1[0] = 1",
-            "$r1[1] = 0",
-            "return"));
+        Stream.of(
+                "l0 := @this: InitializeArraysWithIndex",
+                "l1 = newarray (boolean)[2]",
+                "l1[0] = 1",
+                "l1[1] = 0",
+                "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("charArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (char)[3]",
-            "$r1[0] = 65",
-            "$r1[1] = 98",
-            "$r1[2] = 38",
-            "return"));
+        Stream.of(
+                "l0 := @this: InitializeArraysWithIndex",
+                "l1 = newarray (char)[3]",
+                "l1[0] = 65",
+                "l1[1] = 98",
+                "l1[2] = 38",
+                "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("stringArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (java.lang.String)[2]",
-            "$r1[0] = \"Hello World\"",
-            "$r1[1] = \"Greetings\"",
-            "return"));
+        Stream.of(
+                "l0 := @this: InitializeArraysWithIndex",
+                "l1 = newarray (java.lang.String)[2]",
+                "l1[0] = \"Hello World\"",
+                "l1[1] = \"Greetings\"",
+                "return")
+            .collect(Collectors.toList()));
   }
 
   public MethodSignature getMethodSignature(String methodName) {

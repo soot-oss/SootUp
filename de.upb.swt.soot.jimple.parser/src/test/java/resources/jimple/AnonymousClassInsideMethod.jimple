@@ -2,7 +2,7 @@ public synchronized class AnonymousClassInsideMethod extends java.lang.Object
 {
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: AnonymousClassInsideMethod;
@@ -14,7 +14,7 @@ public synchronized class AnonymousClassInsideMethod extends java.lang.Object
 
     public void anonymousClassInsideMethod()
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @this: AnonymousClassInsideMethod;

@@ -2,7 +2,7 @@ public synchronized class MethodOverridingSubclass extends MethodOverriding
 {
     public void calculateArea()
     {
-        "unknown" $stack1, l0;
+        unknown $stack1, l0;
 
 
         l0 := @this: MethodOverridingSubclass;
@@ -16,7 +16,7 @@ public synchronized class MethodOverridingSubclass extends MethodOverriding
 
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: MethodOverridingSubclass;

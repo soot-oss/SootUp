@@ -2,7 +2,7 @@ synchronized class DefaultMethodInterfaceImpl extends java.lang.Object implement
 {
     public void interfaceMethod()
     {
-        "unknown" $stack1, l0;
+        unknown $stack1, l0;
 
 
         l0 := @this: DefaultMethodInterfaceImpl;
@@ -16,7 +16,7 @@ synchronized class DefaultMethodInterfaceImpl extends java.lang.Object implement
 
     void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: DefaultMethodInterfaceImpl;
@@ -28,7 +28,7 @@ synchronized class DefaultMethodInterfaceImpl extends java.lang.Object implement
 
     public void defaultInterfaceMethod()
     {
-        "unknown" $stack1, l0;
+        unknown $stack1, l0;
 
 
         l0 := @this: DefaultMethodInterfaceImpl;
@@ -44,7 +44,7 @@ synchronized class DefaultMethodInterfaceImpl extends java.lang.Object implement
 
     public static void main(java.lang.String[])
     {
-        "unknown" $stack2, l0, l1;
+        unknown $stack2, l0, l1;
 
 
         l0 := @parameter0: java.lang.String[];

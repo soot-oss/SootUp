@@ -2,6 +2,7 @@ package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.jimple.parser.categories.Java8Test;
 import de.upb.swt.soot.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,7 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class CastingInNumTypesTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
@@ -19,51 +23,54 @@ public class CastingInNumTypesTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: CastingInNumTypes",
-            "$i0 = 1",
-            "$i1 = 2",
-            "$i2 = 3",
-            "$l0 = 4551598461L",
-            "$f0 = 5.4F",
-            "$d0 = 4.5515954846546467E39",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i0)",
-            "$r2 = <java.lang.System: java.io.PrintStream out>",
-            "$b0 = (byte) $i2",
-            "virtualinvoke $r2.<java.io.PrintStream: void println(int)>($b0)",
-            "$r3 = <java.lang.System: java.io.PrintStream out>",
-            "$d1 = (double) $i1",
-            "virtualinvoke $r3.<java.io.PrintStream: void println(double)>($d1)",
-            "$r4 = <java.lang.System: java.io.PrintStream out>",
-            "$s0 = (short) $l0",
-            "virtualinvoke $r4.<java.io.PrintStream: void println(int)>($s0)",
-            "$r5 = <java.lang.System: java.io.PrintStream out>",
-            "$d2 = (double) $f0",
-            "virtualinvoke $r5.<java.io.PrintStream: void println(double)>($d2)",
-            "$r6 = <java.lang.System: java.io.PrintStream out>",
-            "$i3 = (int) $l0",
-            "virtualinvoke $r6.<java.io.PrintStream: void println(int)>($i3)",
-            "$r7 = <java.lang.System: java.io.PrintStream out>",
-            "$f1 = (float) $d0",
-            "virtualinvoke $r7.<java.io.PrintStream: void println(float)>($f1)",
-            "$r8 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r8.<java.io.PrintStream: void println(double)>($d0)",
-            "$d3 = 4.7867778678678685E51",
-            "$r9 = <java.lang.System: java.io.PrintStream out>",
-            "$f2 = (float) $d3",
-            "virtualinvoke $r9.<java.io.PrintStream: void println(float)>($f2)",
-            "$r10 = <java.lang.System: java.io.PrintStream out>",
-            "$l1 = (long) $d3",
-            "virtualinvoke $r10.<java.io.PrintStream: void println(long)>($l1)",
-            "$r11 = <java.lang.System: java.io.PrintStream out>",
-            "$i4 = (int) $d3",
-            "virtualinvoke $r11.<java.io.PrintStream: void println(int)>($i4)",
-            "$r12 = <java.lang.System: java.io.PrintStream out>",
-            "$s1 = (short) $d3",
-            "virtualinvoke $r12.<java.io.PrintStream: void println(int)>($s1)",
-            "$r13 = <java.lang.System: java.io.PrintStream out>",
-            "$b1 = (byte) $d3",
-            "virtualinvoke $r13.<java.io.PrintStream: void println(int)>($b1)",
+            "l0 := @this: CastingInNumTypes",
+            "l1 = 1",
+            "l2 = 2",
+            "l3 = 3",
+            "l4 = 4551598461L",
+            "l6 = 5.4F",
+            "l7 = 4.5515954846546467E39",
+            "$stack11 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $stack11.<java.io.PrintStream: void println(int)>(l1)",
+            "$stack13 = <java.lang.System: java.io.PrintStream out>",
+            "$stack12 = (byte) l3",
+            "virtualinvoke $stack13.<java.io.PrintStream: void println(int)>($stack12)",
+            "$stack15 = <java.lang.System: java.io.PrintStream out>",
+            "$stack14 = (double) l2",
+            "virtualinvoke $stack15.<java.io.PrintStream: void println(double)>($stack14)",
+            "$stack18 = <java.lang.System: java.io.PrintStream out>",
+            "$stack16 = (int) l4",
+            "$stack17 = (short) $stack16",
+            "virtualinvoke $stack18.<java.io.PrintStream: void println(int)>($stack17)",
+            "$stack20 = <java.lang.System: java.io.PrintStream out>",
+            "$stack19 = (double) l6",
+            "virtualinvoke $stack20.<java.io.PrintStream: void println(double)>($stack19)",
+            "$stack22 = <java.lang.System: java.io.PrintStream out>",
+            "$stack21 = (int) l4",
+            "virtualinvoke $stack22.<java.io.PrintStream: void println(int)>($stack21)",
+            "$stack24 = <java.lang.System: java.io.PrintStream out>",
+            "$stack23 = (float) l7",
+            "virtualinvoke $stack24.<java.io.PrintStream: void println(float)>($stack23)",
+            "$stack25 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $stack25.<java.io.PrintStream: void println(double)>(l7)",
+            "l9 = 4.7867778678678685E51",
+            "$stack27 = <java.lang.System: java.io.PrintStream out>",
+            "$stack26 = (float) l9",
+            "virtualinvoke $stack27.<java.io.PrintStream: void println(float)>($stack26)",
+            "$stack29 = <java.lang.System: java.io.PrintStream out>",
+            "$stack28 = (long) l9",
+            "virtualinvoke $stack29.<java.io.PrintStream: void println(long)>($stack28)",
+            "$stack31 = <java.lang.System: java.io.PrintStream out>",
+            "$stack30 = (int) l9",
+            "virtualinvoke $stack31.<java.io.PrintStream: void println(int)>($stack30)",
+            "$stack34 = <java.lang.System: java.io.PrintStream out>",
+            "$stack32 = (int) l9",
+            "$stack33 = (short) $stack32",
+            "virtualinvoke $stack34.<java.io.PrintStream: void println(int)>($stack33)",
+            "$stack37 = <java.lang.System: java.io.PrintStream out>",
+            "$stack35 = (int) l9",
+            "$stack36 = (byte) $stack35",
+            "virtualinvoke $stack37.<java.io.PrintStream: void println(int)>($stack36)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

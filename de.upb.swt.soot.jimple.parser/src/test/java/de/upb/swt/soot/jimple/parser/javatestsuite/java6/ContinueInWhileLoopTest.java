@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class ContinueInWhileLoopTest extends JimpleTestSuiteBase {
 
@@ -22,24 +22,19 @@ public class ContinueInWhileLoopTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: ContinueInWhileLoop",
-            "$i0 = 0",
+            "l0 := @this: ContinueInWhileLoop",
+            "l1 = 0",
             "label1:",
-            "$z0 = $i0 < 10",
-            "if $z0 == 0 goto label4",
-            "$z1 = $i0 == 5",
-            "if $z1 == 0 goto label2",
-            "$i1 = $i0",
-            "$i2 = $i0 + 1",
-            "$i0 = $i2",
-            "goto label3",
-            "label2:",
-            "$i3 = $i0",
-            "$i4 = $i0 + 1",
-            "$i0 = $i4",
-            "label3:",
+            "$stack3 = l1",
+            "$stack2 = 10",
+            "if $stack3 >= $stack2 goto label3",
+            "if l1 != 5 goto label2",
+            "l1 = l1 + 1",
             "goto label1",
-            "label4:",
+            "label2:",
+            "l1 = l1 + 1",
+            "goto label1",
+            "label3:",
             "return")
         .collect(Collectors.toList());
   }

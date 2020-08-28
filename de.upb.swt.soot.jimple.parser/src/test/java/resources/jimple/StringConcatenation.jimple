@@ -2,7 +2,7 @@ public synchronized class StringConcatenation extends java.lang.Object
 {
     public void stringConcatenation()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: StringConcatenation;
@@ -14,7 +14,7 @@ public synchronized class StringConcatenation extends java.lang.Object
 
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: StringConcatenation;

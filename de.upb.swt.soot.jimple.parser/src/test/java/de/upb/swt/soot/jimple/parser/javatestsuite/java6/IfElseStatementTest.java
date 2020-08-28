@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -6,46 +5,182 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.jimple.parser.categories.Java8Test;
 import de.upb.swt.soot.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class IfElseStatementTest extends JimpleTestSuiteBase {
 
-  public MethodSignature getMethodSignature() {
-    return identifierFactory.getMethodSignature(
-        "ifElseStatement", getDeclaredClassSignature(), "void", Collections.emptyList());
-  }
-
-  public List<String> expectedBodyStmts() {
-    return Stream.of(
-            "r0 := @this: IfElseStatement",
-            "$i0 = 10",
-            "$i1 = 20",
-            "$i2 = 30",
-            "$i3 = 0",
-            "$z0 = $i0 < $i1",
-            "if $z0 == 0 goto label1",
-            "$i3 = 1",
-            "goto label3",
-            "label1:",
-            "$z1 = $i1 < $i2",
-            "if $z1 == 0 goto label2",
-            "$i3 = 2",
-            "goto label3",
-            "label2:",
-            "$i3 = 3",
-            "label3:",
-            "return")
-        .collect(Collectors.toList());
+  @Test
+  public void ifStatement() {
+    SootMethod method = loadMethod(getMethodSignature("ifStatement"));
+    assertJimpleStmts(
+        method,
+        Stream.of(
+                "l0 := @this: IfElseStatement",
+                "l1 := @parameter0: int",
+                "l2 = 0",
+                "if l1 >= 42 goto label1",
+                "l2 = 1",
+                "label1:",
+                "$stack3 = l2",
+                "return $stack3")
+            .collect(Collectors.toList()));
   }
 
   @Test
-  public void test() {
-    SootMethod method = loadMethod(getMethodSignature());
-    assertJimpleStmts(method, expectedBodyStmts());
+  public void ifElseStatement() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseStatement"));
+    assertJimpleStmts(
+        method,
+        Stream.of(
+                "l0 := @this: IfElseStatement",
+                "l1 := @parameter0: int",
+                "l2 = 0",
+                "if l1 >= 42 goto label1",
+                "l2 = 1",
+                "goto label2",
+                "label1:",
+                "l2 = 2",
+                "label2:",
+                "$stack3 = l2",
+                "return $stack3")
+            .collect(Collectors.toList()));
+  }
+
+  @Test
+  public void ifElseIfStatement() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseIfStatement"));
+    assertJimpleStmts(
+        method,
+        Stream.of(
+                "l0 := @this: IfElseStatement",
+                "l1 := @parameter0: int",
+                "l2 = 0",
+                "if l1 >= 42 goto label1",
+                "l2 = 1",
+                "goto label3",
+                "label1:",
+                "if l1 <= 123 goto label2",
+                "l2 = 2",
+                "goto label3",
+                "label2:",
+                "l2 = 3",
+                "label3:",
+                "$stack3 = l2",
+                "return $stack3")
+            .collect(Collectors.toList()));
+  }
+
+  @Test
+  public void ifElseCascadingStatement() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingStatement"));
+    assertJimpleStmts(
+        method,
+        Stream.of(
+                "l0 := @this: IfElseStatement",
+                "l1 := @parameter0: int",
+                "l2 = 0",
+                "if l1 >= 42 goto label2",
+                "if l1 >= 42 goto label1",
+                "l2 = 11",
+                "goto label3",
+                "label1:",
+                "l2 = 12",
+                "goto label3",
+                "label2:",
+                "l2 = 3",
+                "label3:",
+                "$stack3 = l2",
+                "return $stack3")
+            .collect(Collectors.toList()));
+  }
+
+  @Test
+  public void ifElseCascadingInElseStatement() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingInElseStatement"));
+    assertJimpleStmts(
+        method,
+        Stream.of(
+                "l0 := @this: IfElseStatement",
+                "l1 := @parameter0: int",
+                "l2 = 0",
+                "if l1 >= 42 goto label1",
+                "l2 = 1",
+                "goto label3",
+                "label1:",
+                "if l1 >= 42 goto label2",
+                "l2 = 21",
+                "goto label3",
+                "label2:",
+                "l2 = 22",
+                "label3:",
+                "$stack3 = l2",
+                "return $stack3")
+            .collect(Collectors.toList()));
+  }
+
+  @Test
+  public void ifElseCascadingElseIfStatement() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingElseIfStatement"));
+    assertJimpleStmts(
+        method,
+        Stream.of(
+                "l0 := @this: IfElseStatement",
+                "l1 := @parameter0: int",
+                "l2 = 0",
+                "if l1 >= 42 goto label3",
+                "if l1 >= 42 goto label1",
+                "l2 = 11",
+                "goto label4",
+                "label1:",
+                "if l1 <= 123 goto label2",
+                "l2 = 12",
+                "goto label4",
+                "label2:",
+                "l2 = 13",
+                "goto label4",
+                "label3:",
+                "l2 = 2",
+                "label4:",
+                "$stack3 = l2",
+                "return $stack3")
+            .collect(Collectors.toList()));
+  }
+
+  @Test
+  public void ifElseCascadingElseIfInElseStatement() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingElseIfInElseStatement"));
+    assertJimpleStmts(
+        method,
+        Stream.of(
+                "l0 := @this: IfElseStatement",
+                "l1 := @parameter0: int",
+                "l2 = 0",
+                "if l1 >= 42 goto label1",
+                "l2 = 1",
+                "goto label4",
+                "label1:",
+                "if l1 >= 42 goto label2",
+                "l2 = 21",
+                "goto label4",
+                "label2:",
+                "if l1 <= 123 goto label3",
+                "l2 = 22",
+                "goto label4",
+                "label3:",
+                "l2 = 23",
+                "label4:",
+                "$stack3 = l2",
+                "return $stack3")
+            .collect(Collectors.toList()));
+  }
+
+  public MethodSignature getMethodSignature(String methodName) {
+    return identifierFactory.getMethodSignature(
+        methodName, getDeclaredClassSignature(), "int", Collections.singletonList("int"));
   }
 }

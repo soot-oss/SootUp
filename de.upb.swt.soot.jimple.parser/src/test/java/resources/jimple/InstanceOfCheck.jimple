@@ -2,7 +2,7 @@ synchronized class InstanceOfCheck extends InstanceOfCheckSuper
 {
     public void instanceOfCheckMethod()
     {
-        "unknown" $stack2, $stack4, $stack3, l0, l1;
+        unknown $stack2, $stack4, $stack3, l0, l1;
 
 
         l0 := @this: InstanceOfCheck;
@@ -24,7 +24,7 @@ synchronized class InstanceOfCheck extends InstanceOfCheckSuper
 
     void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: InstanceOfCheck;

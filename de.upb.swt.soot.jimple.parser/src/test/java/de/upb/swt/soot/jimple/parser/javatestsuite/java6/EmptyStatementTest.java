@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class EmptyStatementTest extends JimpleTestSuiteBase {
 
@@ -21,7 +21,7 @@ public class EmptyStatementTest extends JimpleTestSuiteBase {
   }
 
   public List<String> expectedBodyStmts() {
-    return Stream.of("r0 := @this: EmptyStatement", "$i0 = 5", "return")
+    return Stream.of("l0 := @this: EmptyStatement", "l1 = 5", "return")
         .collect(Collectors.toList());
   }
 

@@ -2,7 +2,7 @@ public synchronized class InitializeArraysWithIndex extends java.lang.Object
 {
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: InitializeArraysWithIndex;
@@ -14,7 +14,7 @@ public synchronized class InitializeArraysWithIndex extends java.lang.Object
 
     public void intArrays()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: InitializeArraysWithIndex;
@@ -32,7 +32,7 @@ public synchronized class InitializeArraysWithIndex extends java.lang.Object
 
     public void longArrays()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: InitializeArraysWithIndex;
@@ -50,7 +50,7 @@ public synchronized class InitializeArraysWithIndex extends java.lang.Object
 
     public void booleanArrays()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: InitializeArraysWithIndex;
@@ -66,7 +66,7 @@ public synchronized class InitializeArraysWithIndex extends java.lang.Object
 
     public void stringArrays()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: InitializeArraysWithIndex;
@@ -82,7 +82,7 @@ public synchronized class InitializeArraysWithIndex extends java.lang.Object
 
     public void shortArrays()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: InitializeArraysWithIndex;
@@ -100,7 +100,7 @@ public synchronized class InitializeArraysWithIndex extends java.lang.Object
 
     public void floatArrays()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: InitializeArraysWithIndex;
@@ -120,7 +120,7 @@ public synchronized class InitializeArraysWithIndex extends java.lang.Object
 
     public void doubleArrays()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: InitializeArraysWithIndex;
@@ -136,7 +136,7 @@ public synchronized class InitializeArraysWithIndex extends java.lang.Object
 
     public void byteArrays()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: InitializeArraysWithIndex;
@@ -154,7 +154,7 @@ public synchronized class InitializeArraysWithIndex extends java.lang.Object
 
     public void charArrays()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: InitializeArraysWithIndex;

@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -6,74 +5,232 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.jimple.parser.categories.Java8Test;
 import de.upb.swt.soot.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 import java.util.Collections;
-import org.junit.Ignore;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class SwitchCaseStatementTest extends JimpleTestSuiteBase {
 
   @Test
-  public void test() {
+  public void switchCaseStatementEnum() {
     SootMethod method = loadMethod(getMethodSignature("switchCaseStatementEnum"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: SwitchCaseStatement",
-            "$r1 = \"RED\"",
-            "$r2 = \"\"",
-            "$r3 = staticinvoke <SwitchCaseStatement$Color: SwitchCaseStatement$Color valueOf(java.lang.String)>($r1)",
-            "$r4 = <SwitchCaseStatement$Color: SwitchCaseStatement$Color RED>",
-            "if $r3 == $r4 goto label1",
-            "$r5 = <SwitchCaseStatement$Color: SwitchCaseStatement$Color GREEN>",
-            "if $r3 == $r5 goto label2",
-            "goto label3",
-            "label1:",
-            "$r6 = <SwitchCaseStatement$Color: SwitchCaseStatement$Color RED>",
-            "$r2 = \"color red detected\"",
-            "goto label4",
-            "label2:",
-            "$r7 = <SwitchCaseStatement$Color: SwitchCaseStatement$Color GREEN>",
-            "$r2 = \"color green detected\"",
-            "goto label4",
-            "label3:",
-            "$r2 = \"invalid color\"",
-            "goto label4",
-            "label4:",
-            "return"));
+        Stream.of(
+                "l0 := @this: SwitchCaseStatement",
+                "l1 = <SwitchCaseStatement$Color: SwitchCaseStatement$Color RED>",
+                "l2 = \"\"",
+                "$stack3 = <SwitchCaseStatement$1: int[] $SwitchMap$SwitchCaseStatement$Color>",
+                "$stack4 = virtualinvoke l1.<SwitchCaseStatement$Color: int ordinal()>()",
+                "$stack5 = $stack3[$stack4]",
+                "switch($stack5)",
+                "case 1: goto label1",
+                "case 2: goto label2",
+                "default: goto label3",
+                "label1:",
+                "l2 = \"red\"",
+                "goto label4",
+                "label2:",
+                "l2 = \"green\"",
+                "goto label4",
+                "label3:",
+                "l2 = \"invalid\"",
+                "label4:",
+                "return")
+            .collect(Collectors.toList()));
   }
 
-  @Ignore
-  public void testSwitchWithInt() {
-    // FIXME: [ms] Jimple is not correct
-    // 1. multiple goto labels are null
-    // 2. default label is missing
-    // 3. order of statements is not correct: the assignment of case 2 is after *goto label* and
-    // before another label
-    // 4. $r1 = null (refers to "String str;" ) is NullType; current state: set it to UnknownType
-
+  @Test
+  public void testSwitchInt() {
     SootMethod method = loadMethod(getMethodSignature("switchCaseStatementInt"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: SwitchCaseStatement",
-            "$i0 = 2",
-            "$r1 = null",
-            "switch($i0)",
-            "case 1: goto label2",
-            "case 2: goto [?= label3]",
-            "case 3: goto [?= label4]",
-            "default: goto label1",
-            "label1:",
-            "$r1 = \"number 1 detected\"",
-            "goto label3",
-            "$r1 = \"number 2 detected\"",
-            "label2:",
-            "goto label3",
-            "$r1 = \"number 3 detected\"",
-            "goto label3",
-            "label3:",
-            "return"));
+        Stream.of(
+                "l0 := @this: SwitchCaseStatement",
+                "l1 = 5",
+                "switch(l1)",
+                "case 1: goto label1",
+                "case 2: goto label2",
+                "case 3: goto label3",
+                "default: goto label4",
+                "label1:",
+                "l2 = \"one\"",
+                "goto label5",
+                "label2:",
+                "l2 = \"two\"",
+                "goto label5",
+                "label3:",
+                "l2 = \"three\"",
+                "goto label5",
+                "label4:",
+                "l2 = \"invalid\"",
+                "label5:",
+                "return")
+            .collect(Collectors.toList()));
+  }
+
+  @Test
+  public void testSwitchCaseWithoutDefault() {
+    SootMethod method = loadMethod(getMethodSignature("switchCaseWithoutDefault"));
+    assertJimpleStmts(
+        method,
+        Stream.of(
+                "l0 := @this: SwitchCaseStatement",
+                "l1 = 6",
+                "switch(l1)",
+                "case 1: goto label1",
+                "case 2: goto label2",
+                "case 3: goto label3",
+                "default: goto label4",
+                "label1:",
+                "l2 = \"one\"",
+                "goto label4",
+                "label2:",
+                "l2 = \"two\"",
+                "goto label4",
+                "label3:",
+                "l2 = \"three\"",
+                "label4:",
+                "return")
+            .collect(Collectors.toList()));
+  }
+
+  @Test
+  public void testSwitchCaseGroupedTargets() {
+    SootMethod method = loadMethod(getMethodSignature("switchCaseGroupedTargets"));
+    assertJimpleStmts(
+        method,
+        Stream.of(
+                "l0 := @this: SwitchCaseStatement",
+                "l1 = 7",
+                "switch(l1)",
+                "case 1: goto label1",
+                "case 2: goto label1",
+                "case 3: goto label2",
+                "default: goto label3",
+                "label1:",
+                "l2 = \"first\"",
+                "goto label3",
+                "label2:",
+                "l2 = \"second\"",
+                "label3:",
+                "return")
+            .collect(Collectors.toList()));
+  }
+
+  @Test
+  public void testSwitchCaseGroupedTargetsDefault() {
+    SootMethod method = loadMethod(getMethodSignature("switchCaseGroupedTargetsDefault"));
+    assertJimpleStmts(
+        method,
+        Stream.of(
+                "l0 := @this: SwitchCaseStatement",
+                "l1 = 8",
+                "switch(l1)",
+                "case 1: goto label1",
+                "case 2: goto label1",
+                "case 3: goto label2",
+                "default: goto label3",
+                "label1:",
+                "l2 = \"first\"",
+                "goto label4",
+                "label2:",
+                "l2 = \"second\"",
+                "goto label4",
+                "label3:",
+                "l2 = \"other\"",
+                "label4:",
+                "return")
+            .collect(Collectors.toList()));
+  }
+
+  @Test
+  public void switchCaseStatementCaseIncludingIf() {
+    SootMethod method = loadMethod(getMethodSignature("switchCaseStatementCaseIncludingIf"));
+    assertJimpleStmts(
+        method,
+        Stream.of(
+                "l0 := @this: SwitchCaseStatement",
+                "l1 = 2",
+                "switch(l1)",
+                "case 1: goto label1",
+                "case 2: goto label3",
+                "case 3: goto label4",
+                "default: goto label5",
+                "label1:",
+                "l2 = 1",
+                "if l1 != 666 goto label2",
+                "l2 = 11",
+                "goto label6",
+                "label2:",
+                "l2 = 12",
+                "goto label6",
+                "label3:",
+                "l2 = 2",
+                "goto label6",
+                "label4:",
+                "l2 = 3",
+                "goto label6",
+                "label5:",
+                "l2 = -1",
+                "label6:",
+                "return")
+            .collect(Collectors.toList()));
+  }
+
+  @Test
+  public void switchCaseStatementCaseIncludingSwitch() {
+    SootMethod method = loadMethod(getMethodSignature("switchWithSwitch"));
+    assertJimpleStmts(
+        method,
+        Stream.of(
+                "l0 := @this: SwitchCaseStatement",
+                "l1 = 2",
+                "switch(l1)",
+                "case 1: goto label01",
+                "case 2: goto label05",
+                "case 3: goto label10",
+                "default: goto label11",
+                "label01:",
+                "switch(l1)",
+                "case 10: goto label02",
+                "case 20: goto label03",
+                "default: goto label04",
+                "label02:",
+                "l2 = 11",
+                "goto label04",
+                "label03:",
+                "l2 = 12",
+                "label04:",
+                "goto label12",
+                "label05:",
+                "l2 = 2",
+                "switch(l1)",
+                "case 20: goto label06",
+                "case 30: goto label07",
+                "case 40: goto label08",
+                "default: goto label09",
+                "label06:",
+                "l2 = 220",
+                "goto label09",
+                "label07:",
+                "l2 = 230",
+                "goto label09",
+                "label08:",
+                "l2 = 240",
+                "label09:",
+                "goto label12",
+                "label10:",
+                "l2 = 3",
+                "goto label12",
+                "label11:",
+                "l2 = -1",
+                "label12:",
+                "return")
+            .collect(Collectors.toList()));
   }
 
   public MethodSignature getMethodSignature(String methodName) {

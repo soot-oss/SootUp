@@ -10,7 +10,7 @@ public final synchronized enum class DeclareEnum$Type extends java.lang.Enum
 
     private void <init>(java.lang.String,int)
     {
-        "unknown" l0, l1, l2;
+        unknown l0, l1, l2;
 
 
         l0 := @this: DeclareEnum$Type;
@@ -26,7 +26,7 @@ public final synchronized enum class DeclareEnum$Type extends java.lang.Enum
 
     public static DeclareEnum$Type[] values()
     {
-        "unknown" $stack2, $stack1, $stack0;
+        unknown $stack2, $stack1, $stack0;
 
 
         $stack0 = <DeclareEnum$Type: DeclareEnum$Type[] $VALUES>;
@@ -40,7 +40,7 @@ public final synchronized enum class DeclareEnum$Type extends java.lang.Enum
 
     public static DeclareEnum$Type valueOf(java.lang.String)
     {
-        "unknown" $stack2, $stack1, l0;
+        unknown $stack2, $stack1, l0;
 
 
         l0 := @parameter0: java.lang.String;
@@ -54,7 +54,7 @@ public final synchronized enum class DeclareEnum$Type extends java.lang.Enum
 
     static void <clinit>()
     {
-        "unknown" $stack2, $stack1, $stack4, $stack3, $stack0, $stack6, $stack5;
+        unknown $stack2, $stack1, $stack4, $stack3, $stack0, $stack6, $stack5;
 
 
         $stack0 = new DeclareEnum$Type;

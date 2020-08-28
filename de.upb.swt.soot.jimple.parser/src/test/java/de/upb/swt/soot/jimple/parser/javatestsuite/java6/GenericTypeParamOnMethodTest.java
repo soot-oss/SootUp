@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author: Hasitha Rajapakse * */
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class GenericTypeParamOnMethodTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
@@ -21,8 +21,8 @@ public class GenericTypeParamOnMethodTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: GenericTypeParamOnMethod",
-            "virtualinvoke r0.<GenericTypeParamOnMethod: void a(java.lang.Object)>(\"Hello World\")",
+            "l0 := @this: GenericTypeParamOnMethod",
+            "virtualinvoke l0.<GenericTypeParamOnMethod: void a(java.lang.Object)>(\"Hello World\")",
             "return")
         .collect(Collectors.toList());
   }

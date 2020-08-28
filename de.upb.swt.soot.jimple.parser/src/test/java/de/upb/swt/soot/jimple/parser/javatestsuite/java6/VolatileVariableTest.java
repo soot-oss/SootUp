@@ -6,6 +6,7 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.jimple.parser.categories.Java8Test;
 import de.upb.swt.soot.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,8 +14,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class VolatileVariableTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
@@ -37,11 +40,11 @@ public class VolatileVariableTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: VolatileVariable",
-            "$i0 = r0.<VolatileVariable: int counter>",
-            "$i1 = $i0 + 1",
-            "r0.<VolatileVariable: int counter> = $i1",
-            "return $i0")
+            "l0 := @this: VolatileVariable",
+            "$stack1 = l0.<VolatileVariable: int counter>",
+            "$stack2 = $stack1 + 1",
+            "l0.<VolatileVariable: int counter> = $stack2",
+            "return $stack1")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 }

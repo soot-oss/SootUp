@@ -2,7 +2,7 @@ synchronized class NoModifierClass extends java.lang.Object
 {
     void noModifierMethod()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: NoModifierClass;
@@ -12,7 +12,7 @@ synchronized class NoModifierClass extends java.lang.Object
 
     protected void protectedMethod()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: NoModifierClass;
@@ -22,7 +22,7 @@ synchronized class NoModifierClass extends java.lang.Object
 
     void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: NoModifierClass;
@@ -34,7 +34,7 @@ synchronized class NoModifierClass extends java.lang.Object
 
     private void privateMethod()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: NoModifierClass;
@@ -44,7 +44,7 @@ synchronized class NoModifierClass extends java.lang.Object
 
     public void publicMethod()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: NoModifierClass;

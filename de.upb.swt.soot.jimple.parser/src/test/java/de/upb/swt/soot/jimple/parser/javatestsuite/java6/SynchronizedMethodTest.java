@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.jimple.parser.categories.Java8Test;
 import de.upb.swt.soot.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,7 +12,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class SynchronizedMethodTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
@@ -28,10 +32,9 @@ public class SynchronizedMethodTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: SynchronizedMethod",
-            "$r1 = r0.<SynchronizedMethod: SenderMethod sender>",
-            "$r2 = r0.<SynchronizedMethod: java.lang.String msg>",
-            "virtualinvoke $r1.<SenderMethod: void send(java.lang.String)>($r2)",
+            "l0 := @this: SynchronizedMethod",
+            "$stack1 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>(\"test\")",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

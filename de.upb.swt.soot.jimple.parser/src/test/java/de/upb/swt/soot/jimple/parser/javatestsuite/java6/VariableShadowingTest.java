@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class VariableShadowingTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
@@ -21,9 +21,9 @@ public class VariableShadowingTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: VariableShadowing",
-            "$i0 = r0.<VariableShadowing: int num>",
-            "$i1 = 10",
+            "l0 := @this: VariableShadowing",
+            "l1 = l0.<VariableShadowing: int num>",
+            "l2 = 10",
             "return")
         .collect(Collectors.toList());
   }

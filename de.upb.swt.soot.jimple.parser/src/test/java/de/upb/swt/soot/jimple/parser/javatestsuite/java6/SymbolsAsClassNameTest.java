@@ -1,15 +1,19 @@
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.jimple.parser.categories.Java8Test;
 import de.upb.swt.soot.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
+import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class SymbolsAsClassNameTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
@@ -18,11 +22,14 @@ public class SymbolsAsClassNameTest extends JimpleTestSuiteBase {
 
   @Ignore
   public void test() {
-    // this only works on Unicode filesystems
     /**
-     * Exception in thread "main" java.nio.file.InvalidPathException: Illegal char <?> at index 1:
-     * a?et?.java
+     * TODO: does only work on a Unicode filesystem
+     *
+     * <p>Exception in thread "main" java.nio.file.InvalidPathException: Illegal char <?> at index
+     * 1: a?et?.java
      */
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
     SootClass sootClass = loadClass(getDeclaredClassSignature());
     System.out.println(sootClass.getClassSource().getClassType().getClassName());
   }

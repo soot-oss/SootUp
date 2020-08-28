@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class ReferenceVarDeclarationTest extends JimpleTestSuiteBase {
 
@@ -21,7 +21,7 @@ public class ReferenceVarDeclarationTest extends JimpleTestSuiteBase {
   }
 
   public List<String> expectedBodyStmts() {
-    return Stream.of("r0 := @this: ReferenceVarDeclaration", "$r1 = \"Hello World\"", "return")
+    return Stream.of("l0 := @this: ReferenceVarDeclaration", "l1 = \"Hello World\"", "return")
         .collect(Collectors.toList());
   }
 

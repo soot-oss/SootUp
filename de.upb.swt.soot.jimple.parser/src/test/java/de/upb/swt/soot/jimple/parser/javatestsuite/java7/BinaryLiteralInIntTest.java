@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author: Hasitha Rajapakse * */
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class BinaryLiteralInIntTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
@@ -21,7 +21,7 @@ public class BinaryLiteralInIntTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: BinaryLiteralInInt", "$i0 = -1589272251", "$i1 = 5", "$i2 = 5", "return")
+            "l0 := @this: BinaryLiteralInInt", "l1 = -1589272251", "l2 = 5", "l3 = 5", "return")
         .collect(Collectors.toList());
   }
 

@@ -14,7 +14,7 @@ public final synchronized enum class DeclareEnumWithConstructor$Number extends j
 
     public static DeclareEnumWithConstructor$Number valueOf(java.lang.String)
     {
-        "unknown" $stack2, $stack1, l0;
+        unknown $stack2, $stack1, l0;
 
 
         l0 := @parameter0: java.lang.String;
@@ -28,7 +28,7 @@ public final synchronized enum class DeclareEnumWithConstructor$Number extends j
 
     private void <init>(java.lang.String,int,int)
     {
-        "unknown" l0, l1, l2, l3;
+        unknown l0, l1, l2, l3;
 
 
         l0 := @this: DeclareEnumWithConstructor$Number;
@@ -48,7 +48,7 @@ public final synchronized enum class DeclareEnumWithConstructor$Number extends j
 
     private int getValue()
     {
-        "unknown" $stack1, l0;
+        unknown $stack1, l0;
 
 
         l0 := @this: DeclareEnumWithConstructor$Number;
@@ -60,7 +60,7 @@ public final synchronized enum class DeclareEnumWithConstructor$Number extends j
 
     public static DeclareEnumWithConstructor$Number[] values()
     {
-        "unknown" $stack2, $stack1, $stack0;
+        unknown $stack2, $stack1, $stack0;
 
 
         $stack0 = <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number[] $VALUES>;
@@ -74,7 +74,7 @@ public final synchronized enum class DeclareEnumWithConstructor$Number extends j
 
     static void <clinit>()
     {
-        "unknown" $stack2, $stack1, $stack4, $stack3, $stack0, $stack6, $stack5, $stack8, $stack7;
+        unknown $stack2, $stack1, $stack4, $stack3, $stack0, $stack6, $stack5, $stack8, $stack7;
 
 
         $stack0 = new DeclareEnumWithConstructor$Number;
@@ -126,7 +126,7 @@ public final synchronized enum class DeclareEnumWithConstructor$Number extends j
 
     static int access$000(DeclareEnumWithConstructor$Number)
     {
-        "unknown" $stack1, l0;
+        unknown $stack1, l0;
 
 
         l0 := @parameter0: DeclareEnumWithConstructor$Number;

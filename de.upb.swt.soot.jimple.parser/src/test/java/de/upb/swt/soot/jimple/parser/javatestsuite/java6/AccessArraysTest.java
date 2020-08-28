@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -6,238 +5,236 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.jimple.parser.categories.Java8Test;
 import de.upb.swt.soot.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 import java.util.Collections;
-import org.junit.Ignore;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class AccessArraysTest extends JimpleTestSuiteBase {
 
-  @Ignore
+  @Test
   public void test() {
-
-    // FIXME [ms] see InstructionConverter.convertUnaryOpInstruction(...)
-
     SootMethod method = loadMethod(getMethodSignature("intArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: AccessArrays",
-            "$r1 = newarray (int[])[3]",
-            "$r1[0] = 1",
-            "$r1[1] = 2",
-            "$r1[2] = 3",
-            "$i0 = 0",
-            "$r2 = $r1",
-            "$i1 = 0",
-            "label1:",
-            "$i2 = lengthof $r2",
-            "$z0 = $i1 < $i2",
-            "if $z0 == 0 goto label2",
-            "$r3 = $r2[$i1]",
-            "$i0 = $r3",
-            "$i3 = $i1",
-            "$i4 = $i1 + 1",
-            "$i1 = $i4",
-            "goto label1",
-            "label2:",
-            "return"));
+        Stream.of(
+                "l0 := @this: AccessArrays",
+                "$stack7 = newarray (int)[3]",
+                "$stack7[0] = 1",
+                "$stack7[1] = 2",
+                "$stack7[2] = 3",
+                "l1 = $stack7",
+                "l3 = l1",
+                "l4 = lengthof l3",
+                "l5 = 0",
+                "label1:",
+                "$stack9 = l5",
+                "$stack8 = l4",
+                "if $stack9 >= $stack8 goto label2",
+                "l6 = l3[l5]",
+                "l2 = l6",
+                "l5 = l5 + 1",
+                "goto label1",
+                "label2:",
+                "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("byteArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: AccessArrays",
-            "$r1 = newarray (byte[])[3]",
-            "$r1[0] = 4",
-            "$r1[1] = 5",
-            "$r1[2] = 6",
-            "$i0 = 0",
-            "$r2 = $r1",
-            "$i1 = 0",
-            "label1:",
-            "$i2 = lengthof $r2",
-            "$z0 = $i1 < $i2",
-            "if $z0 == 0 goto label2",
-            "$r3 = $r2[$i1]",
-            "$i0 = $r3",
-            "$i3 = $i1",
-            "$i4 = $i1 + 1",
-            "$i1 = $i4",
-            "goto label1",
-            "label2:",
-            "return"));
+        Stream.of(
+                "l0 := @this: AccessArrays",
+                "$stack7 = newarray (byte)[3]",
+                "$stack7[0] = 4",
+                "$stack7[1] = 5",
+                "$stack7[2] = 6",
+                "l1 = $stack7",
+                "l3 = l1",
+                "l4 = lengthof l3",
+                "l5 = 0",
+                "label1:",
+                "$stack9 = l5",
+                "$stack8 = l4",
+                "if $stack9 >= $stack8 goto label2",
+                "l6 = l3[l5]",
+                "l2 = l6",
+                "l5 = l5 + 1",
+                "goto label1",
+                "label2:",
+                "return")
+            .collect(Collectors.toList()));
     method = loadMethod(getMethodSignature("shortArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: AccessArrays",
-            "$r1 = newarray (short[])[3]",
-            "$r1[0] = 10",
-            "$r1[1] = 20",
-            "$r1[2] = 30",
-            "$i0 = 0",
-            "$r2 = $r1",
-            "$i1 = 0",
-            "label1:",
-            "$i2 = lengthof $r2",
-            "$z0 = $i1 < $i2",
-            "if $z0 == 0 goto label2",
-            "$r3 = $r2[$i1]",
-            "$i0 = $r3",
-            "$i3 = $i1",
-            "$i4 = $i1 + 1",
-            "$i1 = $i4",
-            "goto label1",
-            "label2:",
-            "return"));
+        Stream.of(
+                "l0 := @this: AccessArrays",
+                "$stack7 = newarray (short)[3]",
+                "$stack7[0] = 10",
+                "$stack7[1] = 20",
+                "$stack7[2] = 30",
+                "l1 = $stack7",
+                "l3 = l1",
+                "l4 = lengthof l3",
+                "l5 = 0",
+                "label1:",
+                "$stack9 = l5",
+                "$stack8 = l4",
+                "if $stack9 >= $stack8 goto label2",
+                "l6 = l3[l5]",
+                "l2 = l6",
+                "l5 = l5 + 1",
+                "goto label1",
+                "label2:",
+                "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("longArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: AccessArrays",
-            "$r1 = newarray (long[])[3]",
-            "$r1[0] = 547087L",
-            "$r1[1] = 564645L",
-            "$r1[2] = 654786L",
-            "$i0 = 0",
-            "$r2 = $r1",
-            "$i1 = 0",
-            "label1:",
-            "$i2 = lengthof $r2",
-            "$z0 = $i1 < $i2",
-            "if $z0 == 0 goto label2",
-            "$r3 = $r2[$i1]",
-            "$i0 = $r3",
-            "$i3 = $i1",
-            "$i4 = $i1 + 1",
-            "$i1 = $i4",
-            "goto label1",
-            "label2:",
-            "return"));
+        Stream.of(
+                "l0 := @this: AccessArrays",
+                "$stack9 = newarray (long)[3]",
+                "$stack9[0] = 547087L",
+                "$stack9[1] = 564645L",
+                "$stack9[2] = 654786L",
+                "l1 = $stack9",
+                "l4 = l1",
+                "l5 = lengthof l4",
+                "l6 = 0",
+                "label1:",
+                "$stack11 = l6",
+                "$stack10 = l5",
+                "if $stack11 >= $stack10 goto label2",
+                "l7 = l4[l6]",
+                "l2 = l7",
+                "l6 = l6 + 1",
+                "goto label1",
+                "label2:",
+                "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("floatArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: AccessArrays",
-            "$r1 = newarray (float[])[4]",
-            "$r1[0] = 3.14F",
-            "$r1[1] = 5.46F",
-            "$r1[2] = 2.987F",
-            "$r1[3] = 4.87F",
-            "$d0 = 0.0",
-            "$r2 = $r1",
-            "$i0 = 0",
-            "label1:",
-            "$i1 = lengthof $r2",
-            "$z0 = $i0 < $i1",
-            "if $z0 == 0 goto label2",
-            "$r3 = $r2[$i0]",
-            "$d0 = $r3",
-            "$i2 = $i0",
-            "$i3 = $i0 + 1",
-            "$i0 = $i3",
-            "goto label1",
-            "label2:",
-            "return"));
+        Stream.of(
+                "l0 := @this: AccessArrays",
+                "$stack7 = newarray (float)[4]",
+                "$stack7[0] = 3.14F",
+                "$stack7[1] = 5.46F",
+                "$stack7[2] = 2.987F",
+                "$stack7[3] = 4.87F",
+                "l1 = $stack7",
+                "l3 = l1",
+                "l4 = lengthof l3",
+                "l5 = 0",
+                "label1:",
+                "$stack9 = l5",
+                "$stack8 = l4",
+                "if $stack9 >= $stack8 goto label2",
+                "l6 = l3[l5]",
+                "l2 = l6",
+                "l5 = l5 + 1",
+                "goto label1",
+                "label2:",
+                "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("doubleArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: AccessArrays",
-            "$r1 = newarray (double[])[2]",
-            "$r1[0] = 6.765414",
-            "$r1[1] = 9.676565646",
-            "$d0 = 0.0",
-            "$r2 = $r1",
-            "$i0 = 0",
-            "label1:",
-            "$i1 = lengthof $r2",
-            "$z0 = $i0 < $i1",
-            "if $z0 == 0 goto label2",
-            "$r3 = $r2[$i0]",
-            "$d0 = $r3",
-            "$i2 = $i0",
-            "$i3 = $i0 + 1",
-            "$i0 = $i3",
-            "goto label1",
-            "label2:",
-            "return"));
-
+        Stream.of(
+                "l0 := @this: AccessArrays",
+                "$stack9 = newarray (double)[2]",
+                "$stack9[0] = 6.765414",
+                "$stack9[1] = 9.676565646",
+                "l1 = $stack9",
+                "l4 = l1",
+                "l5 = lengthof l4",
+                "l6 = 0",
+                "label1:",
+                "$stack11 = l6",
+                "$stack10 = l5",
+                "if $stack11 >= $stack10 goto label2",
+                "l7 = l4[l6]",
+                "l2 = l7",
+                "l6 = l6 + 1",
+                "goto label1",
+                "label2:",
+                "return")
+            .collect(Collectors.toList()));
     method = loadMethod(getMethodSignature("booleanArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: AccessArrays",
-            "$r1 = newarray (boolean[])[2]",
-            "$r1[0] = 1",
-            "$r1[1] = 0",
-            "$l2 = null", // TODO:[ms] CHECK! should this be null? --> "boolean val;"
-            "$r3 = $r1",
-            "$i0 = 0",
-            "label1:",
-            "$i1 = lengthof $r3",
-            "$z0 = $i0 < $i1",
-            "if $z0 == 0 goto label2",
-            "$r4 = $r3[$i0]",
-            "$r2 = $r4",
-            "$i2 = $i0",
-            "$i3 = $i0 + 1",
-            "$i0 = $i3",
-            "goto label1",
-            "label2:",
-            "return"));
-
+        Stream.of(
+                "l0 := @this: AccessArrays",
+                "$stack7 = newarray (boolean)[2]",
+                "$stack7[0] = 1",
+                "$stack7[1] = 0",
+                "l1 = $stack7",
+                "l3 = l1",
+                "l4 = lengthof l3",
+                "l5 = 0",
+                "label1:",
+                "$stack9 = l5",
+                "$stack8 = l4",
+                "if $stack9 >= $stack8 goto label2",
+                "l6 = l3[l5]",
+                "l2 = l6",
+                "l5 = l5 + 1",
+                "goto label1",
+                "label2:",
+                "return")
+            .collect(Collectors.toList()));
     method = loadMethod(getMethodSignature("charArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: AccessArrays",
-            "$r1 = newarray (char[])[3]",
-            "$r1[0] = 65",
-            "$r1[1] = 98",
-            "$r1[2] = 38",
-            "$i0 = 0",
-            "$r2 = $r1",
-            "$i1 = 0",
-            "label1:",
-            "$i2 = lengthof $r2",
-            "$z0 = $i1 < $i2",
-            "if $z0 == 0 goto label2",
-            "$r3 = $r2[$i1]",
-            "$i0 = $r3",
-            "$i3 = $i1",
-            "$i4 = $i1 + 1",
-            "$i1 = $i4",
-            "goto label1",
-            "label2:",
-            "return"));
+        Stream.of(
+                "l0 := @this: AccessArrays",
+                "$stack7 = newarray (char)[3]",
+                "$stack7[0] = 65",
+                "$stack7[1] = 98",
+                "$stack7[2] = 38",
+                "l1 = $stack7",
+                "l3 = l1",
+                "l4 = lengthof l3",
+                "l5 = 0",
+                "label1:",
+                "$stack9 = l5",
+                "$stack8 = l4",
+                "if $stack9 >= $stack8 goto label2",
+                "l6 = l3[l5]",
+                "l2 = l6",
+                "l5 = l5 + 1",
+                "goto label1",
+                "label2:",
+                "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("stringArrays"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts(
-            "r0 := @this: AccessArrays",
-            "$r1 = newarray (java.lang.String[])[2]",
-            "$r1[0] = \"Hello World\"",
-            "$r1[1] = \"Greetings\"",
-            "$r2 = null",
-            "$r3 = $r1",
-            "$i0 = 0",
-            "label1:",
-            "$i1 = lengthof $r3",
-            "$z0 = $i0 < $i1",
-            "if $z0 == 0 goto label2",
-            "$r4 = $r3[$i0]",
-            "$r2 = $r4",
-            "$i2 = $i0",
-            "$i3 = $i0 + 1",
-            "$i0 = $i3",
-            "goto label1",
-            "label2:",
-            "return"));
+        Stream.of(
+                "l0 := @this: AccessArrays",
+                "$stack7 = newarray (java.lang.String)[2]",
+                "$stack7[0] = \"Hello World\"",
+                "$stack7[1] = \"Greetings\"",
+                "l1 = $stack7",
+                "l3 = l1",
+                "l4 = lengthof l3",
+                "l5 = 0",
+                "label1:",
+                "$stack9 = l5",
+                "$stack8 = l4",
+                "if $stack9 >= $stack8 goto label2",
+                "l6 = l3[l5]",
+                "l2 = l6",
+                "l5 = l5 + 1",
+                "goto label1",
+                "label2:",
+                "return")
+            .collect(Collectors.toList()));
   }
 
   public MethodSignature getMethodSignature(String methodName) {

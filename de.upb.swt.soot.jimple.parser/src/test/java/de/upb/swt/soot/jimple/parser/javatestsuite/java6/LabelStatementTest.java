@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class LabelStatementTest extends JimpleTestSuiteBase {
 
@@ -22,20 +22,18 @@ public class LabelStatementTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: LabelStatement",
-            "$i0 = 20",
-            "$i1 = 1",
+            "l0 := @this: LabelStatement",
+            "l1 = 20",
+            "l2 = 1",
             "label1:",
-            "$z0 = $i1 < $i0",
-            "if $z0 == 0 goto label3",
-            "$i2 = $i1 % 10",
-            "$z1 = $i2 == 0",
-            "if $z1 == 0 goto label2",
+            "$stack5 = l2",
+            "$stack4 = l1",
+            "if $stack5 >= $stack4 goto label3",
+            "$stack3 = l2 % 10",
+            "if $stack3 != 0 goto label2",
             "goto label3",
             "label2:",
-            "$i3 = $i1",
-            "$i4 = $i1 + 1",
-            "$i1 = $i4",
+            "l2 = l2 + 1",
             "goto label1",
             "label3:",
             "return")

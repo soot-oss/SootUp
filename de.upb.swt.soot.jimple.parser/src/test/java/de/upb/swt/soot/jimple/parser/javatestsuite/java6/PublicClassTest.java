@@ -17,14 +17,14 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author: Hasitha Rajapakse */
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class PublicClassTest extends JimpleTestSuiteBase {
 
   @Test
   public void test() {
     SootClass clazz = loadClass(getDeclaredClassSignature());
-    assertEquals(EnumSet.of(Modifier.PUBLIC), clazz.getModifiers());
+    assertEquals(EnumSet.of(Modifier.PUBLIC, Modifier.SYNCHRONIZED), clazz.getModifiers());
 
     SootMethod method;
     method = clazz.getMethod(getMethodSignature("private")).get();
@@ -50,6 +50,6 @@ public class PublicClassTest extends JimpleTestSuiteBase {
   }
 
   public List<String> expectedBodyStmts() {
-    return Stream.of("r0 := @this: PublicClass", "return").collect(Collectors.toList());
+    return Stream.of("l0 := @this: PublicClass", "return").collect(Collectors.toList());
   }
 }

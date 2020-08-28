@@ -2,7 +2,7 @@ public synchronized class UnderscoreInInt extends java.lang.Object
 {
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: UnderscoreInInt;
@@ -14,7 +14,7 @@ public synchronized class UnderscoreInInt extends java.lang.Object
 
     public void underscoreInInt()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: UnderscoreInInt;

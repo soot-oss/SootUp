@@ -2,7 +2,7 @@ public synchronized class ReferenceVarDeclaration extends java.lang.Object
 {
     public void stringVariable()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: ReferenceVarDeclaration;
@@ -14,7 +14,7 @@ public synchronized class ReferenceVarDeclaration extends java.lang.Object
 
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: ReferenceVarDeclaration;

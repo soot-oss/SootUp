@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
 import static org.junit.Assert.assertTrue;
@@ -15,6 +14,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class AbstractClassTest extends JimpleTestSuiteBase {
 
@@ -35,10 +35,11 @@ public class AbstractClassTest extends JimpleTestSuiteBase {
 
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: AbstractClass",
-            "$r1 = new AbstractClass",
-            "specialinvoke $r1.<AbstractClass: void <init>()>()",
-            "virtualinvoke $r1.<A: void a()>()",
+            "l0 := @this: AbstractClass",
+            "$stack2 = new AbstractClass",
+            "specialinvoke $stack2.<AbstractClass: void <init>()>()",
+            "l1 = $stack2",
+            "virtualinvoke l1.<A: void a()>()",
             "return")
         .collect(Collectors.toList());
   }

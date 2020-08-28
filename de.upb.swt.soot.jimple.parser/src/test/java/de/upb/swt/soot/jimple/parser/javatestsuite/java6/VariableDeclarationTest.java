@@ -1,21 +1,16 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.jimple.parser.javatestsuite.java6;
 
-import static de.upb.swt.soot.core.util.Utils.filterJimple;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.jimple.parser.categories.Java8Test;
 import de.upb.swt.soot.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 import java.util.Collections;
-import java.util.List;
-import org.junit.Ignore;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class VariableDeclarationTest extends JimpleTestSuiteBase {
 
@@ -23,51 +18,49 @@ public class VariableDeclarationTest extends JimpleTestSuiteBase {
   public void test() {
 
     SootMethod method = loadMethod(getMethodSignature("shortVariable"));
+
     assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 10", "return"));
+        method,
+        Stream.of("l0 := @this: VariableDeclaration", "l1 = 10", "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("byteVariable"));
+
     assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 0", "return"));
+        method,
+        Stream.of("l0 := @this: VariableDeclaration", "l1 = 0", "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("charVariable"));
+
     assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 97", "return"));
+        method,
+        Stream.of("l0 := @this: VariableDeclaration", "l1 = 97", "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("intVariable"));
     assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 512", "return"));
+        method,
+        Stream.of("l0 := @this: VariableDeclaration", "l1 = 512", "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("longVariable"));
     assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 123456789", "return"));
+        method,
+        Stream.of("l0 := @this: VariableDeclaration", "l1 = 123456789L", "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("floatVariable"));
     assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$f0 = 3.14F", "return"));
+        method,
+        Stream.of("l0 := @this: VariableDeclaration", "l1 = 3.14F", "return")
+            .collect(Collectors.toList()));
 
     method = loadMethod(getMethodSignature("doubleVariable"));
     assertJimpleStmts(
         method,
-        expectedBodyStmts("r0 := @this: VariableDeclaration", "$d0 = 1.96969654", "return"));
-  }
-
-  @Ignore
-  public void classTypeDefWithoutAssignment() {
-    // TODO: [ms] fix: Type of Local $r1 is should be (java.lang.)String
-    SootMethod method = loadMethod(getMethodSignature("classTypeDefWithoutAssignment"));
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts = filterJimple(body.toString());
-    assertEquals(
-        expectedBodyStmts(
-            "java.lang.String $r1",
-            "VariableDeclaration r0",
-            "r0 := @this: VariableDeclaration",
-            "$r1 = null",
-            "return"),
-        actualStmts);
+        Stream.of("l0 := @this: VariableDeclaration", "l1 = 1.96969654", "return")
+            .collect(Collectors.toList()));
   }
 
   public MethodSignature getMethodSignature(String methodName) {

@@ -2,7 +2,7 @@ public synchronized class EscapeSequencesInString extends java.lang.Object
 {
     public void escapeBackslashB()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: EscapeSequencesInString;
@@ -14,7 +14,7 @@ public synchronized class EscapeSequencesInString extends java.lang.Object
 
     public void escapeDoubleQuotes()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: EscapeSequencesInString;
@@ -26,7 +26,7 @@ public synchronized class EscapeSequencesInString extends java.lang.Object
 
     public void escapeBackslashN()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: EscapeSequencesInString;
@@ -38,7 +38,7 @@ public synchronized class EscapeSequencesInString extends java.lang.Object
 
     public void escapeBackslashR()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: EscapeSequencesInString;
@@ -50,7 +50,7 @@ public synchronized class EscapeSequencesInString extends java.lang.Object
 
     public void escapeBackslashF()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: EscapeSequencesInString;
@@ -62,7 +62,7 @@ public synchronized class EscapeSequencesInString extends java.lang.Object
 
     public void <init>()
     {
-        "unknown" l0;
+        unknown l0;
 
 
         l0 := @this: EscapeSequencesInString;
@@ -74,7 +74,7 @@ public synchronized class EscapeSequencesInString extends java.lang.Object
 
     public void escapeSingleQuote()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: EscapeSequencesInString;
@@ -86,7 +86,7 @@ public synchronized class EscapeSequencesInString extends java.lang.Object
 
     public void escapeBackslash()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: EscapeSequencesInString;
@@ -98,7 +98,7 @@ public synchronized class EscapeSequencesInString extends java.lang.Object
 
     public void escapeBackslashT()
     {
-        "unknown" l0, l1;
+        unknown l0, l1;
 
 
         l0 := @this: EscapeSequencesInString;
