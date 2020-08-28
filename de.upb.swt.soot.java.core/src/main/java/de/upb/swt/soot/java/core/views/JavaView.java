@@ -1,5 +1,27 @@
 package de.upb.swt.soot.java.core.views;
 
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2018-2020 Linghui Luo, Jan Martin Persch, Christian Brüggemann and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
@@ -184,13 +206,15 @@ public class JavaView extends AbstractView {
             .map(Optional::get)
             .collect(Collectors.toList());
 
-    if (foundClassSources.size() > 1) {
+    if (foundClassSources.size() < 1) {
+      throw new ResolveException("No class candidates for \"" + type + "\" found.");
+    } else if (foundClassSources.size() > 1) {
       throw new ResolveException(
-          "Class candidates for \""
+          "Multiple class candidates for \""
               + type
-              + "\" found in multiple AnalysisInputLocations. Soot can't decide which AnalysisInputLocation it should refer to for this Type.");
+              + "\" found in the given AnalysisInputLocations. Soot can't decide which AnalysisInputLocation it should refer to for this Type.");
     }
-    return foundClassSources.stream().findAny().map(this::buildClassFrom).get();
+    return buildClassFrom(foundClassSources.get(0));
   }
 
   @Nonnull

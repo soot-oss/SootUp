@@ -4,7 +4,7 @@ package de.upb.swt.soot.core.util;
  * #%L
  * Soot
  * %%
- * Copyright (C) 06.06.2018 Manuel Benz
+ * Copyright (C) 2018-2020 Manuel Benz, Christian Brüggemann and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

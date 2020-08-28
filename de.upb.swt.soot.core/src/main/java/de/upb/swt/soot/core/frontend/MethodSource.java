@@ -1,14 +1,9 @@
 package de.upb.swt.soot.core.frontend;
-
-import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.signatures.MethodSignature;
-import javax.annotation.Nonnull;
-
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1999 Patrick Lam
+ * Copyright (C) 1999-2020 Patrick Lam, Christian Brüggemann and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -25,6 +20,10 @@ import javax.annotation.Nonnull;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import javax.annotation.Nonnull;
 
 /** A class which knows how to produce Body's for SootMethods. */
 public interface MethodSource {
