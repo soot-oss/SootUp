@@ -26,12 +26,13 @@ grammar Jimple;
   LENGTHOF : 'lengthof';
   SWITCH : 'lookupswitch' | 'tableswitch' | 'switch';
   NEG : 'neg';
-  NEW : 'new';
   NEWARRAY : 'newarray';
   NEWMULTIARRAY : 'newmultiarray';
+  NEW : 'new';
   NOP : 'nop';
-  RET : 'ret';
   RETURN : 'return';
+  RET : 'ret';
+
   fragment SPECIALINVOKE : 'specialinvoke';
   fragment VIRTUALINVOKE : 'virtualinvoke';
   fragment INTERFACEINVOKE : 'interfaceinvoke';
@@ -41,8 +42,8 @@ grammar Jimple;
   DYNAMICINVOKE : 'dynamicinvoke';
 
 
-  THROW : 'throw';
   THROWS : 'throws';
+  THROW : 'throw';
   NULL : 'null';
   FROM : 'from';
   TO : 'to';
@@ -95,7 +96,7 @@ grammar Jimple;
   // escapes and any char except '\' (92) or '"' (34).
   fragment STRING_CHAR :  ESCAPE_CHAR | ~('\\' | '"') ;
 
-  IDENTIFIER: [A-Za-z$_]([A-Za-z0-9$_] | '.' [A-Za-z0-9$_] )*;
+  IDENTIFIER: [A-Za-z$_]([A-Za-z0-9$_] | '.' [A-Za-z0-9$_] )*; // | STRING_CONSTANT
 
   BLANK : [ \t\r\n] ->skip;
 
@@ -147,7 +148,7 @@ grammar Jimple;
     /*full*/     L_BRACE declaration* statement* trap_clause* R_BRACE;
 
   declaration:
-                 (unknown='unknown' | nonvoid_type=name) name_list SEMICOLON;
+                 name name_list SEMICOLON;
 
     statement:
     /*label*/    label_name=name COLON stmt SEMICOLON |

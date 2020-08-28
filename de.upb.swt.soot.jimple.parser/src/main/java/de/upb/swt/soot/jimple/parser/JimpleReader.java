@@ -59,8 +59,12 @@ class JimpleReader {
     JimpleParser parser = new JimpleParser(tokens);
 
     ClassVisitor classVisitor = new ClassVisitor();
-    if (!classVisitor.visit(parser.file())) {
-      throw new RuntimeException("The Jimple file " + sourcePath + "is not well formed.");
+
+    try {
+      classVisitor.visit(parser.file());
+    } catch (Exception e) {
+      throw new RuntimeException(
+          "The Jimple file " + sourcePath.toAbsolutePath() + " is not well formed.", e);
     }
 
     /*    if( classVisitor.clazz != classSignature ){
@@ -268,10 +272,9 @@ class JimpleReader {
           locals = new HashMap<>();
           if (ctx.method_body().declaration() != null) {
             for (JimpleParser.DeclarationContext it : ctx.method_body().declaration()) {
+              final String typeStr = it.name().getText();
               Type localtype =
-                  it.unknown != null
-                      ? UnknownType.getInstance()
-                      : getType(it.nonvoid_type.getText());
+                  typeStr.equals("unknown") ? UnknownType.getInstance() : getType(typeStr);
 
               // validate nonvoid
               if (localtype == VoidType.getInstance()) {
@@ -284,7 +287,10 @@ class JimpleReader {
                       (it.name_list() != null
                           ? it.name_list().accept(new NameListVisitor())
                           : it.accept(new NameListVisitor()));
-              list.forEach(localname -> locals.put(localname, new Local(localname, localtype)));
+              list.forEach(
+                  localname -> {
+                    locals.put(localname, new Local(localname, localtype));
+                  });
             }
           }
           builder.setLocals(new HashSet<>(locals.values()));
