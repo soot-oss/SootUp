@@ -95,6 +95,7 @@ class JimpleReader {
     ClassType outerclass = null; // currently not determined in Java etc -> heuristic used
     Position position = NoPositionInformation.getInstance();
     EnumSet<Modifier> modifiers = null;
+    private Stmt lastStmt = null;
 
     @Override
     @Nonnull
@@ -173,6 +174,7 @@ class JimpleReader {
         SootClassMember scm = ctx.member(i).accept(new ClassMemberVisitor());
         if (scm instanceof SootMethod) {
           methods.add((SootMethod) scm);
+          lastStmt = null;
         } else {
           fields.add((SootField) scm);
         }
@@ -380,6 +382,15 @@ class JimpleReader {
         if (ctx.label_name != null) {
           labeledStmts.put(ctx.label_name.getText(), stmt);
         }
+
+        if (lastStmt == null) {
+          builder.setStartingStmt(stmt);
+        } else {
+          if (lastStmt.fallsThrough()) {
+            builder.addFlow(lastStmt, stmt);
+          }
+        }
+        lastStmt = stmt;
         return stmt;
       }
 
