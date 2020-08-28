@@ -196,8 +196,6 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
         printer.typeSignature(exceptionIt.next());
       }
     }
-
-    printer.newline();
   }
 
   /**

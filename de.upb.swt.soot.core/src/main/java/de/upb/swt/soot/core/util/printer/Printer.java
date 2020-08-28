@@ -228,7 +228,7 @@ public class Printer {
           Body body = method.getBody();
           // print method's full signature information
           method.toString(printer);
-
+          printer.newline();
           printBody(body, printer);
 
         } else {
@@ -408,6 +408,7 @@ public class Printer {
         final int len = localList.size();
         if (len > 0) {
           up.local(localList.get(0));
+
           for (int i = 1; i < len; i++) {
             up.literal(", ");
             up.local(localList.get(i));
