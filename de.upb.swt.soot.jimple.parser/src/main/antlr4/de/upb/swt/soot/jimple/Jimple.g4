@@ -115,14 +115,18 @@ grammar Jimple;
 
   extends_clause : 'extends' classname=name;
 
-  implements_clause : 'implements' names=name_list;
+  implements_clause : 'implements' names=type_list;
 
   name:
     /*ident*/ IDENTIFIER ;// | STRING_CONSTANT ;
 
-  name_list:
-    /*single*/ name |
-    /*multi*/  name COMMA name_list;
+  type:        name (L_BRACKET R_BRACKET)? ;
+
+  type_list:
+    /*single*/ type |
+    /*multi*/  type COMMA type_list;
+
+
 
   member:
                 field | method;
@@ -131,24 +135,20 @@ grammar Jimple;
                 modifier* type name SEMICOLON;
 
   method:
-                modifier* type method_name L_PAREN name_list? R_PAREN throws_clause? method_body;
+                modifier* type method_name L_PAREN type_list? R_PAREN throws_clause? method_body;
 
   method_name:
                 '<init>' | '<clinit>' | name;
 
-  type:
-    /*void*/    'void' |
-    /*novoid*/  name;
-
   throws_clause:
-    'throws' name_list;
+    'throws' type_list;
 
   method_body:
     /*empty*/    SEMICOLON |
     /*full*/     L_BRACE declaration* statement* trap_clause* R_BRACE;
 
   declaration:
-                 name name_list SEMICOLON;
+                 name type_list SEMICOLON;
 
     statement:
     /*label*/    label_name=name COLON stmt SEMICOLON |
@@ -172,7 +172,7 @@ grammar Jimple;
     /*identity*/     local=name COLON_EQUALS at_identifier |
     /*assign*/       (reference | local=name) EQUALS expression ;
 
-  at_identifier : '@' ( 'parameter' parameter_idx=DEC_CONSTANT ':' type | 'this:' type | caught='caughtexception');
+  at_identifier : '@' ( ('parameter' parameter_idx=DEC_CONSTANT ':' type) | ('this:' type) | caught='caughtexception');
 
   case_stmt:
     case_label COLON goto_stmt SEMICOLON;
@@ -206,7 +206,7 @@ grammar Jimple;
   invoke_expr:
     /*nonstatic*/ nonstaticinvoke=NONSTATIC_INVOKE local_name=name DOT method_signature L_PAREN arg_list? R_PAREN |
     /*static*/    staticinvoke=STATICINVOKE method_signature L_PAREN arg_list? R_PAREN |
-    /*dynamic*/   dynamicinvoke=DYNAMICINVOKE unnamed_method_name=STRING_CONSTANT CMPLT type L_PAREN name_list? R_PAREN CMPGT L_PAREN dynargs=arg_list? R_PAREN bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
+    /*dynamic*/   dynamicinvoke=DYNAMICINVOKE unnamed_method_name=STRING_CONSTANT CMPLT type L_PAREN type_list? R_PAREN CMPGT L_PAREN dynargs=arg_list? R_PAREN bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
 
   binop_expr:
     left=immediate op=binop right=immediate;
@@ -215,7 +215,7 @@ grammar Jimple;
     unop immediate;
 
   method_signature:
-    CMPLT class_name=name COLON type method_name L_PAREN name_list? R_PAREN CMPGT;
+    CMPLT class_name=name COLON type method_name L_PAREN type_list? R_PAREN CMPGT;
 
   reference:
     /*array*/ name fixed_array_descriptor |
@@ -227,7 +227,7 @@ grammar Jimple;
     CMPLT classname=name COLON type fieldname=name CMPGT;
 
   fixed_array_descriptor:
-    L_BRACKET immediate R_BRACKET;
+    L_BRACKET name R_BRACKET;
 
   arg_list:
     /*single*/ immediate |

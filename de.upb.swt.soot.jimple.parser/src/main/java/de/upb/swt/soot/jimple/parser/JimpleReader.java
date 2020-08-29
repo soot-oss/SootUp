@@ -186,7 +186,7 @@ class JimpleReader {
     private class NameListVisitor extends JimpleBaseVisitor<Collection<String>> {
 
       @Override
-      public List<String> visitName_list(JimpleParser.Name_listContext ctx) {
+      public List<String> visitType_list(JimpleParser.Type_listContext ctx) {
         List<String> list = new ArrayList<>();
         iterate(list, ctx);
         return list;
@@ -200,18 +200,18 @@ class JimpleReader {
       @Override
       public Set<String> visitImplements_clause(JimpleParser.Implements_clauseContext ctx) {
         Set<String> interfaces = new HashSet<>();
-        iterate(interfaces, ctx.name_list());
+        iterate(interfaces, ctx.type_list());
         return interfaces;
       }
 
-      public void iterate(Collection<String> list, JimpleParser.Name_listContext ctx) {
-        JimpleParser.Name_listContext name_listContextIterator = ctx;
+      public void iterate(Collection<String> list, JimpleParser.Type_listContext ctx) {
+        JimpleParser.Type_listContext name_listContextIterator = ctx;
         while (name_listContextIterator != null) {
-          if (name_listContextIterator.name() == null) {
+          if (name_listContextIterator.type() == null) {
             break;
           }
-          list.add(name_listContextIterator.name().getText());
-          name_listContextIterator = name_listContextIterator.name_list();
+          list.add(name_listContextIterator.type().getText());
+          name_listContextIterator = name_listContextIterator.type_list();
         }
       }
     }
@@ -247,9 +247,9 @@ class JimpleReader {
         }
 
         List<Type> params =
-            ctx.name_list() == null
+            ctx.type_list() == null
                 ? Collections.emptyList()
-                : ctx.name_list().accept(new NameListVisitor()).stream()
+                : ctx.type_list().accept(new NameListVisitor()).stream()
                     .map(identifierFactory::getType)
                     .collect(Collectors.toList());
 
@@ -286,8 +286,8 @@ class JimpleReader {
               // TODO: [ms] check is distinction necessary and not already handled?
               List<String> list =
                   (List<String>)
-                      (it.name_list() != null
-                          ? it.name_list().accept(new NameListVisitor())
+                      (it.type_list() != null
+                          ? it.type_list().accept(new NameListVisitor())
                           : it.accept(new NameListVisitor()));
               list.forEach(
                   localname -> {
@@ -526,7 +526,7 @@ class JimpleReader {
           if (!(type instanceof ReferenceType)) {
             throw new IllegalStateException("only base types are allowed");
           }
-          Immediate dim = (Immediate) ctx.fixed_array_descriptor().immediate().accept(this);
+          Immediate dim = (Immediate) ctx.fixed_array_descriptor().name().accept(this);
           return JavaJimple.getInstance().newNewArrayExpr(type, dim);
         } else if (ctx.NEWMULTIARRAY() != null) {
           final Type type = getType(ctx.base_type.getText());
@@ -567,7 +567,7 @@ class JimpleReader {
 
         if (ctx.fixed_array_descriptor() != null) {
           // array
-          Immediate idx = (Immediate) ctx.fixed_array_descriptor().immediate().accept(this);
+          Immediate idx = (Immediate) ctx.fixed_array_descriptor().name().accept(this);
           Local type = getLocal(ctx.name().getText());
           return JavaJimple.getInstance().newArrayRef(type, idx);
         } else if (ctx.DOT() != null) {
@@ -595,7 +595,7 @@ class JimpleReader {
         String classname = ctx.class_name.getText();
         Type type = getType(ctx.type().getText());
         String methodname = ctx.method_name().getText();
-        final JimpleParser.Name_listContext parameterList = ctx.name_list();
+        final JimpleParser.Type_listContext parameterList = ctx.type_list();
         List<Type> params =
             parameterList != null
                 ? parameterList.accept(new NameListVisitor()).stream()
@@ -636,8 +636,8 @@ class JimpleReader {
 
           Type type = getType(ctx.type().getText());
           List<Type> bootstrapMethodRefParams =
-              ctx.name_list() != null
-                  ? ctx.name_list().accept(new NameListVisitor()).stream()
+              ctx.type_list() != null
+                  ? ctx.type_list().accept(new NameListVisitor()).stream()
                       .map(identifierFactory::getType)
                       .collect(Collectors.toList())
                   : Collections.emptyList();
