@@ -191,8 +191,8 @@ grammar Jimple;
 
   expression:
     /*new simple*/  NEW base_type=name |
-    /*new array*/   NEWARRAY L_PAREN nonvoid_type=name R_PAREN fixed_array_descriptor |
-    /*new multi*/   NEWMULTIARRAY L_PAREN base_type=name R_PAREN (L_BRACKET immediate? R_BRACKET)+ |
+    /*new array*/   NEWARRAY L_PAREN array_type=name R_PAREN array_descriptor |
+    /*new multi*/   NEWMULTIARRAY L_PAREN multiarray_type=name R_PAREN (L_BRACKET immediate? R_BRACKET)+ |
     /*cast*/        L_PAREN nonvoid_cast=name R_PAREN op=immediate |
     /*instanceof*/  op=immediate INSTANCEOF nonvoid_type=name |
     /*invoke*/      invoke_expr |
@@ -220,7 +220,7 @@ grammar Jimple;
     CMPLT class_name=name COLON type method_name L_PAREN type_list? R_PAREN CMPGT;
 
   reference:
-    /*array*/ name fixed_array_descriptor |
+    /*array*/ name array_descriptor |
     /*field*/
     /*instance*/ name DOT field_signature |
     /*static*/   field_signature;
@@ -228,7 +228,7 @@ grammar Jimple;
   field_signature:
     CMPLT classname=name COLON type fieldname=name CMPGT;
 
-  fixed_array_descriptor:
+  array_descriptor:
     L_BRACKET immediate R_BRACKET;
 
   arg_list:

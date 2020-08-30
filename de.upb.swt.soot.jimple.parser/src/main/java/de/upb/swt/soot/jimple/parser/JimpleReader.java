@@ -529,24 +529,25 @@ class JimpleReader {
 
         if (ctx.NEW() != null) {
           final Type type = getType(ctx.base_type.getText());
-          if (!(type instanceof ReferenceType)) {
-            throw new IllegalStateException("only base types are allowed");
+          if (!(type instanceof ReferenceType )) {
+            throw new IllegalStateException(type + " is not a ReferenceType." );
           }
           return Jimple.newNewExpr((ReferenceType) type);
         } else if (ctx.NEWARRAY() != null) {
-          final Type type = getType(ctx.nonvoid_type.getText());
-          if (!(type instanceof ReferenceType)) {
-            throw new IllegalStateException("only base types are allowed");
+          final Type type = getType(ctx.array_type.getText());
+          if (type instanceof VoidType || type instanceof NullType || type instanceof ArrayType ) {
+            throw new IllegalStateException(type + " can not be an array type." );
           }
 
           Immediate dim =
-              (Immediate) ctx.fixed_array_descriptor().immediate().accept(new ValueVisitor());
+              (Immediate) ctx.array_descriptor().immediate().accept(new ValueVisitor());
           return JavaJimple.getInstance().newNewArrayExpr(type, dim);
         } else if (ctx.NEWMULTIARRAY() != null) {
-          final Type type = getType(ctx.base_type.getText());
-          if (!(type instanceof ReferenceType)) {
+          final Type type = getType(ctx.multiarray_type.getText());
+          if (!(type instanceof ReferenceType || type instanceof PrimitiveType)) {
             throw new IllegalStateException("only base types are allowed");
           }
+
           List<Immediate> sizes =
               ctx.immediate().stream()
                   .map(imm -> (Immediate) imm.accept(this))
@@ -579,9 +580,9 @@ class JimpleReader {
       @Override
       public Value visitReference(JimpleParser.ReferenceContext ctx) {
 
-        if (ctx.fixed_array_descriptor() != null) {
+        if (ctx.array_descriptor() != null) {
           // array
-          Immediate idx = (Immediate) ctx.fixed_array_descriptor().immediate().accept(this);
+          Immediate idx = (Immediate) ctx.array_descriptor().immediate().accept(this);
           Local type = getLocal(ctx.name().getText());
           return JavaJimple.getInstance().newArrayRef(type, idx);
         } else if (ctx.DOT() != null) {
