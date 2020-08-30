@@ -93,13 +93,12 @@ grammar Jimple;
   // escapes and any char except '\' (92) or '"' (34).
   fragment STRING_CHAR :  ESCAPE_CHAR | ~('\\' | '"') ;
 
-
   BOOL_CONSTANT : 'true' | 'false';
   INTEGER_CONSTANT : (PLUS|MINUS)? (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
   FLOAT_CONSTANT : (PLUS|MINUS)? ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
-  STRING_CONSTANT : '"' STRING_CHAR*? '"';
+  STRING_CONSTANT : '"' STRING_CHAR* '"';
 
-  IDENTIFIER: [A-Za-z$_]([A-Za-z0-9$_] | '.' [A-Za-z0-9$_] )*; // | STRING_CONSTANT
+  IDENTIFIER: [A-Za-z$_]([A-Za-z0-9$_] | '.' [A-Za-z0-9$_] )* ; // | STRING_CONSTANT
 
   BLANK : [ \t\r\n] ->skip;
 
@@ -174,7 +173,7 @@ grammar Jimple;
     /*assign*/       (reference | local=name) EQUALS expression ;
 
 
-  at_identifier : (  '@parameter'parameter_idx=DEC_CONSTANT':'type | ('@this:' type) | caught='@caughtexception');
+  at_identifier : '@parameter' parameter_idx=DEC_CONSTANT ':' type | '@this:' type | caught='@caughtexception';
 
   case_stmt:
     case_label COLON goto_stmt SEMICOLON;
