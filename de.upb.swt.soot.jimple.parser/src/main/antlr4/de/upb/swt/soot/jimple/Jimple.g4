@@ -81,10 +81,14 @@ grammar Jimple;
   DIV : '/';
 
 
+  BOOL_CONSTANT : 'true' | 'false';
+  FLOAT_CONSTANT : (PLUS|MINUS)? ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
+  STRING_CONSTANT : '"' STRING_CHAR* '"';
+
   DEC_CONSTANT : DEC_DIGIT+;
   fragment DEC_DIGIT: [0-9];
   fragment HEX_DIGIT: [0-9A-Fa-f];
-  fragment HEX_CONSTANT : '0' ('x' | 'X') HEX_DIGIT+;
+  HEX_CONSTANT : '0' ('x' | 'X') HEX_DIGIT+;
 
   fragment ESCAPABLE_CHAR : '\\' | ' ' | '\'' | '.' | '"' | 'n' | 't' | 'r' | 'b' | 'f';
   fragment ESCAPE_CODE : 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT;
@@ -93,11 +97,6 @@ grammar Jimple;
   // escapes and any char except '\' (92) or '"' (34).
   fragment STRING_CHAR :  ESCAPE_CHAR | ~('\\' | '"') ;
 
-  BOOL_CONSTANT : 'true' | 'false';
-  INTEGER_CONSTANT : (PLUS|MINUS)? (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
-  FLOAT_CONSTANT : (PLUS|MINUS)? ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
-  STRING_CONSTANT : '"' STRING_CHAR* '"';
-
   IDENTIFIER: [A-Za-z$_]([A-Za-z0-9$_] | '.' [A-Za-z0-9$_] )* ; // | STRING_CONSTANT
 
   BLANK : [ \t\r\n] ->skip;
@@ -105,6 +104,8 @@ grammar Jimple;
  /*
   * Parser Rules
   */
+
+  integer_constant : (PLUS|MINUS)? (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
 
   file:
     importItem* modifier* file_type classname=name extends_clause? implements_clause? L_BRACE member* R_BRACE;
@@ -179,7 +180,7 @@ grammar Jimple;
     case_label COLON goto_stmt SEMICOLON;
 
   case_label:
-    /*constant*/ CASE MINUS? INTEGER_CONSTANT |
+    /*constant*/ CASE integer_constant |
     /*default*/  DEFAULT;
 
   goto_stmt:
@@ -228,7 +229,7 @@ grammar Jimple;
     CMPLT classname=name COLON type fieldname=name CMPGT;
 
   fixed_array_descriptor:
-    L_BRACKET name R_BRACKET;
+    L_BRACKET immediate R_BRACKET;
 
   arg_list:
     /*single*/ immediate |
@@ -240,8 +241,8 @@ grammar Jimple;
 
   constant:
     /*boolean*/ BOOL_CONSTANT |
-    /*integer*/ MINUS? INTEGER_CONSTANT |
-    /*float*/   MINUS? FLOAT_CONSTANT |
+    /*integer*/ integer_constant |
+    /*float*/   FLOAT_CONSTANT |
     /*string*/  STRING_CONSTANT |
     /*clazz*/   CLASS STRING_CONSTANT |
     /*null*/    NULL;
