@@ -692,7 +692,7 @@ class JimpleReader {
           return DoubleConstant.getInstance(Double.parseDouble(floatStr));
         } else if (ctx.CLASS() != null) {
           final String text = ctx.CLASS().getText();
-          return JavaJimple.getInstance().newStringConstant(text.substring(1, text.length() - 1));
+          return JavaJimple.getInstance().newClassConstant(text.substring(1, text.length() - 1));
         } else if (ctx.STRING_CONSTANT() != null) {
           final String text = ctx.STRING_CONSTANT().getText();
           return JavaJimple.getInstance().newStringConstant(text.substring(1, text.length() - 1));
