@@ -333,8 +333,10 @@ class JimpleReader {
             final Stmt target = labeledStmts.get(targetLabel);
             if (target == null) {
               throw new IllegalStateException(
-                  "don't jump into the space! target Stmt not found i.e. no label: "
-                      + item.getKey());
+                  "don't jump into the space! target Stmt not found i.e. no label for: "
+                      + item.getKey()
+                      + " to "
+                      + targetLabel);
             } else {
               builder.addFlow(item.getKey(), target);
             }
@@ -421,12 +423,16 @@ class JimpleReader {
           for (JimpleParser.Case_stmtContext it : ctx.case_stmt()) {
             final JimpleParser.Case_labelContext case_labelContext = it.case_label();
             if (case_labelContext.getText() != null && case_labelContext.DEFAULT() != null) {
-              defaultLabel = case_labelContext.getText();
-            } else if (case_labelContext.getText() != null) {
-              final int value = Integer.parseInt(case_labelContext.getText());
+              if (defaultLabel == null) {
+                defaultLabel = it.goto_stmt().label_name.getText();
+              } else {
+                throw new RuntimeException("only one default label is allowed!");
+              }
+            } else if (case_labelContext.integer_constant().getText() != null) {
+              final int value = Integer.parseInt(case_labelContext.integer_constant().getText());
               min = Math.min(min, value);
               lookup.add(IntConstant.getInstance(value));
-              targetLabels.add(case_labelContext.getText());
+              targetLabels.add(it.goto_stmt().label_name.getText());
             } else {
               throw new RuntimeException("Label is invalid.");
             }
