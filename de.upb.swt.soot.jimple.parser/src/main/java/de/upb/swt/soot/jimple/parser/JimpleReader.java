@@ -378,7 +378,7 @@ class JimpleReader {
 
       @Override
       public Stmt visitStatement(JimpleParser.StatementContext ctx) {
-        Stmt stmt = ctx.stmt().accept(this);
+        Stmt stmt = visitStmt(ctx.stmt());
         if (ctx.label_name != null) {
           labeledStmts.put(ctx.label_name.getText(), stmt);
         }
@@ -387,9 +387,11 @@ class JimpleReader {
           builder.setStartingStmt(stmt);
         } else {
           if (lastStmt.fallsThrough()) {
+            //            System.out.print("link: "+ lastStmt + " => "+ stmt);
             builder.addFlow(lastStmt, stmt);
           }
         }
+        System.out.println(stmt);
         lastStmt = stmt;
         return stmt;
       }
@@ -452,12 +454,13 @@ class JimpleReader {
                   assignments.at_identifier();
               if (at_identifierContext.caught != null) {
                 ref = JavaJimple.getInstance().newCaughtExceptionRef();
-              } else if (at_identifierContext.parameter_idx != null) {
-                int idx = Integer.parseInt(at_identifierContext.parameter_idx.getText());
+              } else if (at_identifierContext.at_param().parameter_idx != null) {
+                int idx = Integer.parseInt(at_identifierContext.at_param().parameter_idx.getText());
                 ref = Jimple.newParameterRef(getType(type), idx);
               } else {
                 // @this: refers always to the current class so we reuse the Type retreived from the
                 // classname
+                // TODO: parse it - validate later
                 ref = Jimple.newThisRef(clazz);
               }
               return Jimple.newIdentityStmt(left, ref, pos);
@@ -467,8 +470,11 @@ class JimpleReader {
                   assignments.local != null
                       ? assignments.local.accept(new ValueVisitor())
                       : assignments.reference().accept(new ValueVisitor());
-              return Jimple.newAssignStmt(
-                  left, assignments.expression().accept(new ValueVisitor()), pos);
+
+              final Value right = assignments.expression().accept(new ValueVisitor());
+              System.out.println(left);
+              System.out.println(right);
+              return Jimple.newAssignStmt(left, right, pos);
             }
 
           } else if (ctx.IF() != null) {

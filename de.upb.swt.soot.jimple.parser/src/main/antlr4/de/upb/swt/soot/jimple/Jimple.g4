@@ -85,7 +85,7 @@ grammar Jimple;
   FLOAT_CONSTANT : ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
   STRING_CONSTANT : '"' STRING_CHAR* '"';
 
-  DEC_CONSTANT : [0-9]+;
+  fragment DEC_CONSTANT : [0-9]+;
   fragment HEX_DIGIT: [0-9A-Fa-f];
   fragment HEX_CONSTANT : '0' ('x' | 'X') HEX_DIGIT+;
 
@@ -172,7 +172,9 @@ grammar Jimple;
     /*identity*/     local=name COLON_EQUALS at_identifier |
     /*assign*/       (reference | local=name) EQUALS expression ;
 
-  at_identifier : '@' ( ('parameter' parameter_idx=DEC_CONSTANT ':' type) | ('this:' type) | caught='caughtexception');
+    at_param : 'parameter'parameter_idx=DEC_CONSTANT ':' type;
+
+  at_identifier : '@' ( at_param | ('this:' type) | caught='caughtexception');
 
   case_stmt:
     case_label COLON goto_stmt SEMICOLON;
