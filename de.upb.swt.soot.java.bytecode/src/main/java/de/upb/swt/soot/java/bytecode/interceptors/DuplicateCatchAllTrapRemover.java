@@ -76,21 +76,25 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
             // Both traps (t1, t2) span the same code and catch java.lang.Throwable.
             // Check if one trap jumps to a target that then jumps to the target of the other trap
             for (int k = 0; k < trapsSize; k++) {
+
               Trap trap3 = traps.get(k);
+              final int startIdx = stmtList.indexOf(trap3.getBeginStmt());
+              final int endIdx = stmtList.indexOf(trap3.getEndStmt()); // endstmt is exclusive!
+
               if (trap3 != trap1
                   && trap3 != trap2
                   && trap3
                       .getExceptionType()
                       .getFullyQualifiedName()
                       .equals("java.lang.Throwable")) {
-                if (trapCoversStmt(stmtList, trap3, trap1.getHandlerStmt())
+                if (trapCoversStmt(stmtList, startIdx, endIdx, trap1.getHandlerStmt())
                     && trap3.getHandlerStmt() == trap2.getHandlerStmt()) {
                   // c -> t1 -> t3 -> t2 && x -> t2
                   traps.remove(trap2);
                   j--;
                   trapsSize--;
                   break;
-                } else if (trapCoversStmt(stmtList, trap3, trap2.getHandlerStmt())
+                } else if (trapCoversStmt(stmtList, startIdx, endIdx, trap2.getHandlerStmt())
                     && trap3.getHandlerStmt() == trap1.getHandlerStmt()) {
                   // c -> t2 -> t3 -> t1 && c -> t1
                   traps.remove(trap1);
@@ -111,15 +115,12 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
    * from the given stmt to the given trap
    *
    * @param bodyStmts linearized Stmtgraph
-   * @param trap The trap
    * @param stmt The unit
    * @return True if there can be an exceptional control flow from the given unit to the given trap
    */
   private boolean trapCoversStmt(
-      @Nonnull List<Stmt> bodyStmts, @Nonnull Trap trap, @Nonnull Stmt stmt) {
-    final int startIdx = bodyStmts.indexOf(trap.getBeginStmt());
-    final int endIdx = bodyStmts.indexOf(trap.getEndStmt()); // endstmt is exclusive!
-    for (int i = startIdx; i < endIdx; i++) {
+      @Nonnull List<Stmt> bodyStmts, int trapBegin, int trapEnd, @Nonnull Stmt stmt) {
+    for (int i = trapBegin; i < trapEnd; i++) {
       if (bodyStmts.get(i) == stmt) {
         return true;
       }
