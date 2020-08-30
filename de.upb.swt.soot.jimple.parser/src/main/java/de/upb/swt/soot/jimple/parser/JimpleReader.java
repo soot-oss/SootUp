@@ -454,8 +454,8 @@ class JimpleReader {
                   assignments.at_identifier();
               if (at_identifierContext.caught != null) {
                 ref = JavaJimple.getInstance().newCaughtExceptionRef();
-              } else if (at_identifierContext.at_param().parameter_idx != null) {
-                int idx = Integer.parseInt(at_identifierContext.at_param().parameter_idx.getText());
+              } else if (at_identifierContext.parameter_idx != null) {
+                int idx = Integer.parseInt(at_identifierContext.parameter_idx.getText());
                 ref = Jimple.newParameterRef(getType(type), idx);
               } else {
                 // @this: refers always to the current class so we reuse the Type retreived from the
@@ -675,9 +675,21 @@ class JimpleReader {
       public Constant visitConstant(JimpleParser.ConstantContext ctx) {
 
         if (ctx.INTEGER_CONSTANT() != null) {
-          return IntConstant.getInstance(Integer.parseInt(ctx.INTEGER_CONSTANT().getText()));
+          String intConst = ctx.INTEGER_CONSTANT().getText();
+          int lastCharPos = intConst.length() - 1;
+          if (intConst.charAt(lastCharPos) == 'L' || intConst.charAt(lastCharPos) == 'l') {
+            intConst = intConst.substring(0, lastCharPos);
+            return LongConstant.getInstance(Long.parseLong(intConst));
+          }
+          return IntConstant.getInstance(Integer.parseInt(intConst));
         } else if (ctx.FLOAT_CONSTANT() != null) {
-          return FloatConstant.getInstance(Float.parseFloat(ctx.FLOAT_CONSTANT().getText()));
+          String floatStr = ctx.FLOAT_CONSTANT().getText();
+          int lastCharPos = floatStr.length() - 1;
+          if (floatStr.charAt(lastCharPos) == 'F' || floatStr.charAt(lastCharPos) == 'f') {
+            floatStr = floatStr.substring(0, lastCharPos);
+            return FloatConstant.getInstance(Float.parseFloat(floatStr));
+          }
+          return DoubleConstant.getInstance(Double.parseDouble(floatStr));
         } else if (ctx.CLASS() != null) {
           final String text = ctx.CLASS().getText();
           return JavaJimple.getInstance().newStringConstant(text.substring(1, text.length() - 1));
