@@ -80,12 +80,9 @@ grammar Jimple;
   MULT : '*';
   DIV : '/';
 
-  BOOL_CONSTANT : 'true' | 'false';
-  INTEGER_CONSTANT : (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
-  FLOAT_CONSTANT : ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
-  STRING_CONSTANT : '"' STRING_CHAR* '"';
 
-  fragment DEC_CONSTANT : [0-9]+;
+  DEC_CONSTANT : DEC_DIGIT+;
+  fragment DEC_DIGIT: [0-9];
   fragment HEX_DIGIT: [0-9A-Fa-f];
   fragment HEX_CONSTANT : '0' ('x' | 'X') HEX_DIGIT+;
 
@@ -95,6 +92,12 @@ grammar Jimple;
 
   // escapes and any char except '\' (92) or '"' (34).
   fragment STRING_CHAR :  ESCAPE_CHAR | ~('\\' | '"') ;
+
+
+  BOOL_CONSTANT : 'true' | 'false';
+  INTEGER_CONSTANT : (PLUS|MINUS)? (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
+  FLOAT_CONSTANT : (PLUS|MINUS)? ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
+  STRING_CONSTANT : '"' STRING_CHAR*? '"';
 
   IDENTIFIER: [A-Za-z$_]([A-Za-z0-9$_] | '.' [A-Za-z0-9$_] )*; // | STRING_CONSTANT
 
@@ -107,7 +110,7 @@ grammar Jimple;
   file:
     importItem* modifier* file_type classname=name extends_clause? implements_clause? L_BRACE member* R_BRACE;
 
-  importItem: 'import' location=name* SEMICOLON;
+  importItem: 'import' location=name SEMICOLON;
 
   modifier : 'abstract' | 'final' | 'native' | 'public' | 'protected' | 'private' | 'static' | 'synchronized' | 'transient' |'volatile' | 'strictfp' | 'enum' | 'annotation';
 
@@ -125,8 +128,6 @@ grammar Jimple;
   type_list:
     /*single*/ type |
     /*multi*/  type COMMA type_list;
-
-
 
   member:
                 field | method;
@@ -150,7 +151,7 @@ grammar Jimple;
   declaration:
                  name type_list SEMICOLON;
 
-    statement:
+  statement:
     /*label*/    label_name=name COLON stmt SEMICOLON |
                  stmt SEMICOLON;
 
@@ -172,9 +173,8 @@ grammar Jimple;
     /*identity*/     local=name COLON_EQUALS at_identifier |
     /*assign*/       (reference | local=name) EQUALS expression ;
 
-    at_param : 'parameter'parameter_idx=DEC_CONSTANT ':' type;
 
-  at_identifier : '@' ( at_param | ('this:' type) | caught='caughtexception');
+  at_identifier : (  '@parameter'parameter_idx=DEC_CONSTANT':'type | ('@this:' type) | caught='@caughtexception');
 
   case_stmt:
     case_label COLON goto_stmt SEMICOLON;
