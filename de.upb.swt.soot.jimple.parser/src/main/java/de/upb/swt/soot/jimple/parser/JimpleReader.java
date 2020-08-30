@@ -532,7 +532,9 @@ class JimpleReader {
           if (!(type instanceof ReferenceType)) {
             throw new IllegalStateException("only base types are allowed");
           }
-          Immediate dim = (Immediate) ctx.fixed_array_descriptor().name().accept(this);
+
+          Immediate dim =
+              (Immediate) ctx.fixed_array_descriptor().immediate().accept(new ValueVisitor());
           return JavaJimple.getInstance().newNewArrayExpr(type, dim);
         } else if (ctx.NEWMULTIARRAY() != null) {
           final Type type = getType(ctx.base_type.getText());
@@ -573,7 +575,7 @@ class JimpleReader {
 
         if (ctx.fixed_array_descriptor() != null) {
           // array
-          Immediate idx = (Immediate) ctx.fixed_array_descriptor().name().accept(this);
+          Immediate idx = (Immediate) ctx.fixed_array_descriptor().immediate().accept(this);
           Local type = getLocal(ctx.name().getText());
           return JavaJimple.getInstance().newArrayRef(type, idx);
         } else if (ctx.DOT() != null) {
@@ -674,8 +676,8 @@ class JimpleReader {
       @Override
       public Constant visitConstant(JimpleParser.ConstantContext ctx) {
 
-        if (ctx.INTEGER_CONSTANT() != null) {
-          String intConst = ctx.INTEGER_CONSTANT().getText();
+        if (ctx.integer_constant() != null) {
+          String intConst = ctx.integer_constant().getText();
           int lastCharPos = intConst.length() - 1;
           if (intConst.charAt(lastCharPos) == 'L' || intConst.charAt(lastCharPos) == 'l') {
             intConst = intConst.substring(0, lastCharPos);
@@ -697,7 +699,9 @@ class JimpleReader {
           final String text = ctx.STRING_CONSTANT().getText();
           return JavaJimple.getInstance().newStringConstant(text.substring(1, text.length() - 1));
         } else if (ctx.BOOL_CONSTANT() != null) {
-          return BooleanConstant.getInstance( ctx.BOOL_CONSTANT().getText().charAt(0) == 't' || ctx.BOOL_CONSTANT().getText().charAt(0) == 'T' );
+          return BooleanConstant.getInstance(
+              ctx.BOOL_CONSTANT().getText().charAt(0) == 't'
+                  || ctx.BOOL_CONSTANT().getText().charAt(0) == 'T');
         } else if (ctx.NULL() != null) {
           return NullConstant.getInstance();
         }
@@ -751,8 +755,10 @@ class JimpleReader {
           return new JMulExpr(left, right);
         } else if (binopctx.DIV() != null) {
           return new JDivExpr(left, right);
+        } else if (binopctx.XOR() != null) {
+          return new JXorExpr(left, right);
         }
-        throw new RuntimeException("Unknown BinOp");
+        throw new RuntimeException("Unknown BinOp: " + binopctx.getText());
       }
 
       @Override
