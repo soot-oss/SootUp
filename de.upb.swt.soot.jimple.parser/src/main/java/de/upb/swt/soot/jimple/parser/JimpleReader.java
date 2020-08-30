@@ -696,6 +696,8 @@ class JimpleReader {
         } else if (ctx.STRING_CONSTANT() != null) {
           final String text = ctx.STRING_CONSTANT().getText();
           return JavaJimple.getInstance().newStringConstant(text.substring(1, text.length() - 1));
+        } else if (ctx.BOOL_CONSTANT() != null) {
+          return BooleanConstant.getInstance( ctx.BOOL_CONSTANT().getText().charAt(0) == 't' || ctx.BOOL_CONSTANT().getText().charAt(0) == 'T' );
         } else if (ctx.NULL() != null) {
           return NullConstant.getInstance();
         }

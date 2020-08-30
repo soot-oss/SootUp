@@ -239,6 +239,7 @@ grammar Jimple;
     /*constant*/ constant;
 
   constant:
+    /*boolean*/ BOOL_CONSTANT |
     /*integer*/ MINUS? INTEGER_CONSTANT |
     /*float*/   MINUS? FLOAT_CONSTANT |
     /*string*/  STRING_CONSTANT |
