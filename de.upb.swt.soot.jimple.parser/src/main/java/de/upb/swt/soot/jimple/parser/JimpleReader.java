@@ -451,28 +451,31 @@ class JimpleReader {
             } else {
               final JimpleParser.AssignmentsContext assignments = ctx.assignments();
               if (assignments != null) {
-                if (assignments.EQUALS() == null) {
+                if (assignments.COLON_EQUALS() != null) {
                   Local left = (Local) assignments.local.accept(valueVisitor);
-                  final String type = assignments.at_identifier().type().getText();
 
                   IdentityRef ref;
                   final JimpleParser.At_identifierContext at_identifierContext =
                       assignments.at_identifier();
                   if (at_identifierContext.caught != null) {
                     ref = JavaJimple.getInstance().newCaughtExceptionRef();
-                  } else if (at_identifierContext.parameter_idx != null) {
-                    int idx = Integer.parseInt(at_identifierContext.parameter_idx.getText());
-                    ref = Jimple.newParameterRef(getType(type), idx);
                   } else {
-                    // @this: refers always to the current class so we reuse the Type retreived from
-                    // the
-                    // classname
-                    // TODO: parse it - validate later
-                    ref = Jimple.newThisRef(clazz);
+                    final String type = assignments.at_identifier().type().getText();
+                    if (at_identifierContext.parameter_idx != null) {
+                      int idx = Integer.parseInt(at_identifierContext.parameter_idx.getText());
+                      ref = Jimple.newParameterRef(getType(type), idx);
+                    } else {
+                      if (clazz.toString().equals(type)) {
+                        // reuse
+                        ref = Jimple.newThisRef(clazz);
+                      } else {
+                        ref = Jimple.newThisRef(getClassType(type));
+                      }
+                    }
                   }
                   return Jimple.newIdentityStmt(left, ref, pos);
 
-                } else {
+                } else if (assignments.EQUALS() != null) {
                   Value left =
                       assignments.local != null
                           ? assignments.local.accept(valueVisitor)
@@ -480,6 +483,8 @@ class JimpleReader {
 
                   final Value right = assignments.expression().accept(valueVisitor);
                   return Jimple.newAssignStmt(left, right, pos);
+                } else {
+                  throw new RuntimeException("bad assignment");
                 }
 
               } else if (ctx.IF() != null) {
