@@ -630,6 +630,7 @@ class JimpleReader {
           return Jimple.newStaticInvokeExpr(methodSig, arglist);
         } else if (ctx.dynamicinvoke != null) {
 
+          // FIXME: [ms] look in old soot how it should look like; implement MethodType.toString()
           Type type = getType(ctx.type().getText());
           List<Type> bootstrapMethodRefParams =
               ctx.type_list() != null
