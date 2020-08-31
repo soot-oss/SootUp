@@ -387,7 +387,6 @@ class JimpleReader {
           } else {
             if (lastStmt.fallsThrough()) {
               builder.addFlow(lastStmt, stmt);
-              System.out.println(lastStmt + "=> " + stmt);
             }
           }
 
