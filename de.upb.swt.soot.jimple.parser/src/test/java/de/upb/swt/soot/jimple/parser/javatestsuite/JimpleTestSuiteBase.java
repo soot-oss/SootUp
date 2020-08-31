@@ -66,14 +66,14 @@ public abstract class JimpleTestSuiteBase {
   public SootClass loadClass(ClassType clazz) {
 
     Optional<SootClass> cs = (Optional<SootClass>) view.getClass(clazz);
-    assertTrue("no matching class signature found", cs.isPresent());
+    assertTrue("no matching class for " + clazz + " found", cs.isPresent());
     return cs.get();
   }
 
   public SootMethod loadMethod(MethodSignature methodSignature) {
     SootClass clazz = loadClass(methodSignature.getDeclClassType());
     Optional<SootMethod> m = clazz.getMethod(methodSignature);
-    assertTrue("No matching method for the signature found", m.isPresent());
+    assertTrue("No matching method for " + methodSignature + " found", m.isPresent());
     SootMethod method = m.get();
     return method;
   }

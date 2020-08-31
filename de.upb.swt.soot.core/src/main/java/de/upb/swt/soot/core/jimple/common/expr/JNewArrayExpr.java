@@ -57,6 +57,7 @@ public final class JNewArrayExpr implements Expr, Copyable {
     this.size = size;
   }
 
+  // TODO: [ms] wrong layer of responsibility; maybe move that in an own transformer
   private static Type simplify(Type baseType, IdentifierFactory identifierFactory) {
     if (baseType instanceof ArrayType) {
       return identifierFactory.getArrayType(
