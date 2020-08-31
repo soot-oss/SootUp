@@ -193,7 +193,7 @@ grammar Jimple;
     /*new simple*/  NEW base_type=name |
     /*new array*/   NEWARRAY L_PAREN array_type=name R_PAREN array_descriptor |
     /*new multi*/   NEWMULTIARRAY L_PAREN multiarray_type=name R_PAREN (L_BRACKET immediate? R_BRACKET)+ |
-    /*cast*/        L_PAREN nonvoid_cast=name R_PAREN op=immediate |
+    /*cast*/        L_PAREN nonvoid_cast=type R_PAREN op=immediate |
     /*instanceof*/  op=immediate INSTANCEOF nonvoid_type=name |
     /*invoke*/      invoke_expr |
     /*reference*/   reference |
