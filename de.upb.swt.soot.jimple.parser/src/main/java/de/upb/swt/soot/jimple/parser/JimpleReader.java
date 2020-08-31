@@ -533,7 +533,7 @@ class JimpleReader {
             return Jimple.newNewExpr((ReferenceType) type);
           } else if (ctx.NEWARRAY() != null) {
             final Type type = getType(ctx.array_type.getText());
-            if (type instanceof VoidType || type instanceof NullType || type instanceof ArrayType) {
+            if (type instanceof VoidType || type instanceof NullType) {
               throw new IllegalStateException(type + " can not be an array type.");
             }
 
