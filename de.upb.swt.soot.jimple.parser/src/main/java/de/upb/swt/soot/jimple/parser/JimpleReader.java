@@ -31,9 +31,6 @@ class JimpleReader {
 
   final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   private Map<String, PackageName> imports = new HashMap<>();
-  private final HashMap<Stmt, List<String>> unresolvedBranches = new HashMap<>();
-  private final HashMap<String, Stmt> labeledStmts = new HashMap<>();
-  private HashMap<String, Local> locals = new HashMap<>();
 
   private Type getType(String typename) {
     PackageName packageName = imports.get(typename);
@@ -172,12 +169,18 @@ class JimpleReader {
 
       // member
       for (int i = 0; i < ctx.member().size(); i++) {
-        SootClassMember scm = ctx.member(i).accept(new ClassMemberVisitor());
-        if (scm instanceof SootMethod) {
+        if (ctx.member(i).method() != null) {
+          SootMethod scm = ctx.member(i).accept(new MethodVisitor());
           methods.add((SootMethod) scm);
           lastStmt = null;
         } else {
-          fields.add((SootField) scm);
+          final JimpleParser.FieldContext field = ctx.member(i).field();
+          EnumSet<Modifier> modifier = getModifiers(field.modifier());
+          fields.add(
+              new SootField(
+                  identifierFactory.getFieldSignature(
+                      field.name().getText(), clazz, field.type().getText()),
+                  modifier));
         }
       }
 
@@ -217,16 +220,26 @@ class JimpleReader {
       }
     }
 
-    private class ClassMemberVisitor extends JimpleBaseVisitor<SootClassMember<?>> {
+    private EnumSet<Modifier> getModifiers(List<JimpleParser.ModifierContext> modifier) {
+      Set<Modifier> modifierSet =
+          modifier.stream()
+              .map(modifierContext -> Modifier.valueOf(modifierContext.getText().toUpperCase()))
+              .collect(Collectors.toSet());
+      return modifierSet.isEmpty() ? EnumSet.noneOf(Modifier.class) : EnumSet.copyOf(modifierSet);
+    }
 
-      @Override
-      public SootField visitField(JimpleParser.FieldContext ctx) {
+    private class MethodVisitor extends JimpleBaseVisitor<SootMethod> {
 
-        EnumSet<Modifier> modifier = getModifiers(ctx.modifier());
+      private final HashMap<Stmt, List<String>> unresolvedBranches = new HashMap<>();
+      private final HashMap<String, Stmt> labeledStmts = new HashMap<>();
+      private HashMap<String, Local> locals = new HashMap<>();
 
-        return new SootField(
-            identifierFactory.getFieldSignature(ctx.name().getText(), clazz, ctx.type().getText()),
-            modifier);
+      public Local getLocal(String name) {
+        final Local local = locals.get(name);
+        if (local == null) {
+          throw new IllegalStateException("a Stmt tried to reference an undeclared Local: " + name);
+        }
+        return local;
       }
 
       @Override
@@ -354,429 +367,419 @@ class JimpleReader {
 
         return new SootMethod(oms, methodSignature, modifier, exceptions);
       }
-    }
 
-    private EnumSet<Modifier> getModifiers(List<JimpleParser.ModifierContext> modifier) {
-      Set<Modifier> modifierSet =
-          modifier.stream()
-              .map(modifierContext -> Modifier.valueOf(modifierContext.getText().toUpperCase()))
-              .collect(Collectors.toSet());
-      return modifierSet.isEmpty() ? EnumSet.noneOf(Modifier.class) : EnumSet.copyOf(modifierSet);
-    }
+      private class StmtVisitor extends JimpleBaseVisitor<Stmt> {
+        @Nonnull private final Body.BodyBuilder builder;
 
-    private class StmtVisitor extends JimpleBaseVisitor<Stmt> {
-      @Nonnull private final Body.BodyBuilder builder;
-
-      private StmtVisitor(Body.BodyBuilder builder) {
-        this.builder = builder;
-      }
-
-      @Override
-      public Stmt visitStatement(JimpleParser.StatementContext ctx) {
-        Stmt stmt = visitStmt(ctx.stmt());
-        if (ctx.label_name != null) {
-          labeledStmts.put(ctx.label_name.getText(), stmt);
+        private StmtVisitor(Body.BodyBuilder builder) {
+          this.builder = builder;
         }
 
-        if (lastStmt == null) {
-          builder.setStartingStmt(stmt);
-        } else {
-          if (lastStmt.fallsThrough()) {
-            builder.addFlow(lastStmt, stmt);
-            System.out.println(lastStmt + "=> " + stmt);
+        @Override
+        public Stmt visitStatement(JimpleParser.StatementContext ctx) {
+          Stmt stmt = visitStmt(ctx.stmt());
+          if (ctx.label_name != null) {
+            labeledStmts.put(ctx.label_name.getText(), stmt);
           }
-        }
 
-        lastStmt = stmt;
-        return stmt;
-      }
-
-      @Override
-      @Nonnull
-      public Stmt visitStmt(JimpleParser.StmtContext ctx) {
-
-        StmtPositionInfo pos = new StmtPositionInfo(ctx.start.getLine());
-
-        if (ctx.BREAKPOINT() != null) {
-          return Jimple.newBreakpointStmt(pos);
-        } else {
-          // TODO? cache that instance? make it static?
-          final ValueVisitor valueVisitor = new ValueVisitor();
-          if (ctx.ENTERMONITOR() != null) {
-            return Jimple.newEnterMonitorStmt(
-                (Immediate) ctx.immediate().accept(valueVisitor), pos);
-          } else if (ctx.EXITMONITOR() != null) {
-            return Jimple.newExitMonitorStmt((Immediate) ctx.immediate().accept(valueVisitor), pos);
-          } else if (ctx.SWITCH() != null) {
-
-            Immediate key = (Immediate) ctx.immediate().accept(valueVisitor);
-            List<IntConstant> lookup = new ArrayList<>();
-            List<String> targetLabels = new ArrayList<>();
-            int min = Integer.MAX_VALUE;
-            String defaultLabel = null;
-
-            for (JimpleParser.Case_stmtContext it : ctx.case_stmt()) {
-              final JimpleParser.Case_labelContext case_labelContext = it.case_label();
-              if (case_labelContext.getText() != null && case_labelContext.DEFAULT() != null) {
-                if (defaultLabel == null) {
-                  defaultLabel = it.goto_stmt().label_name.getText();
-                } else {
-                  throw new RuntimeException("only one default label is allowed!");
-                }
-              } else if (case_labelContext.integer_constant().getText() != null) {
-                final int value = Integer.parseInt(case_labelContext.integer_constant().getText());
-                min = Math.min(min, value);
-                lookup.add(IntConstant.getInstance(value));
-                targetLabels.add(it.goto_stmt().label_name.getText());
-              } else {
-                throw new RuntimeException("Label is invalid.");
-              }
-            }
-            targetLabels.add(defaultLabel);
-
-            JSwitchStmt switchStmt;
-            if (ctx.SWITCH().getText().charAt(0) == 't') {
-              int high = min + lookup.size();
-              switchStmt = Jimple.newTableSwitchStmt(key, min, high, pos);
-            } else {
-              switchStmt = Jimple.newLookupSwitchStmt(key, lookup, pos);
-            }
-            unresolvedBranches.put(switchStmt, targetLabels);
-            return switchStmt;
+          if (lastStmt == null) {
+            builder.setStartingStmt(stmt);
           } else {
-            final JimpleParser.AssignmentsContext assignments = ctx.assignments();
-            if (assignments != null) {
-              if (assignments.EQUALS() == null) {
-                Local left = (Local) assignments.local.accept(valueVisitor);
-                final String type = assignments.at_identifier().type().getText();
-
-                IdentityRef ref;
-                final JimpleParser.At_identifierContext at_identifierContext =
-                    assignments.at_identifier();
-                if (at_identifierContext.caught != null) {
-                  ref = JavaJimple.getInstance().newCaughtExceptionRef();
-                } else if (at_identifierContext.parameter_idx != null) {
-                  int idx = Integer.parseInt(at_identifierContext.parameter_idx.getText());
-                  ref = Jimple.newParameterRef(getType(type), idx);
-                } else {
-                  // @this: refers always to the current class so we reuse the Type retreived from
-                  // the
-                  // classname
-                  // TODO: parse it - validate later
-                  ref = Jimple.newThisRef(clazz);
-                }
-                return Jimple.newIdentityStmt(left, ref, pos);
-
-              } else {
-                Value left =
-                    assignments.local != null
-                        ? assignments.local.accept(valueVisitor)
-                        : assignments.reference().accept(valueVisitor);
-
-                final Value right = assignments.expression().accept(valueVisitor);
-                return Jimple.newAssignStmt(left, right, pos);
-              }
-
-            } else if (ctx.IF() != null) {
-              final Stmt stmt = Jimple.newIfStmt(ctx.bool_expr().accept(valueVisitor), pos);
-              unresolvedBranches.put(
-                  stmt, Collections.singletonList(ctx.goto_stmt().label_name.getText()));
-              return stmt;
-            } else if (ctx.goto_stmt() != null) {
-              final Stmt stmt = Jimple.newGotoStmt(pos);
-              unresolvedBranches.put(
-                  stmt, Collections.singletonList(ctx.goto_stmt().label_name.getText()));
-              return stmt;
-            } else if (ctx.NOP() != null) {
-              return Jimple.newNopStmt(pos);
-            } else if (ctx.RET() != null) {
-              return Jimple.newRetStmt((Immediate) ctx.immediate().accept(valueVisitor), pos);
-            } else if (ctx.RETURN() != null) {
-              if (ctx.immediate() == null) {
-                return Jimple.newReturnVoidStmt(pos);
-              } else {
-                return Jimple.newReturnStmt((Immediate) ctx.immediate().accept(valueVisitor), pos);
-              }
-            } else if (ctx.THROW() != null) {
-              return Jimple.newThrowStmt((Immediate) ctx.immediate().accept(valueVisitor), pos);
-            } else if (ctx.invoke_expr() != null) {
-              return Jimple.newInvokeStmt(
-                  (AbstractInvokeExpr) ctx.invoke_expr().accept(valueVisitor), pos);
+            if (lastStmt.fallsThrough()) {
+              builder.addFlow(lastStmt, stmt);
+              System.out.println(lastStmt + "=> " + stmt);
             }
           }
+
+          lastStmt = stmt;
+          return stmt;
         }
-        throw new RuntimeException("Unknown Stmt");
-      }
-    }
 
-    private class ValueVisitor extends JimpleBaseVisitor<Value> {
+        @Override
+        @Nonnull
+        public Stmt visitStmt(JimpleParser.StmtContext ctx) {
 
-      @Override
-      public Value visitName(JimpleParser.NameContext ctx) {
-        return getLocal(ctx.getText());
-      }
+          StmtPositionInfo pos = new StmtPositionInfo(ctx.start.getLine());
 
-      @Override
-      public Value visitExpression(JimpleParser.ExpressionContext ctx) {
-        if (ctx.NEW() != null) {
-          final Type type = getType(ctx.base_type.getText());
-          if (!(type instanceof ReferenceType)) {
-            throw new IllegalStateException(type + " is not a ReferenceType.");
+          if (ctx.BREAKPOINT() != null) {
+            return Jimple.newBreakpointStmt(pos);
+          } else {
+            // TODO? cache that instance? make it static?
+            final ValueVisitor valueVisitor = new ValueVisitor();
+            if (ctx.ENTERMONITOR() != null) {
+              return Jimple.newEnterMonitorStmt(
+                  (Immediate) ctx.immediate().accept(valueVisitor), pos);
+            } else if (ctx.EXITMONITOR() != null) {
+              return Jimple.newExitMonitorStmt(
+                  (Immediate) ctx.immediate().accept(valueVisitor), pos);
+            } else if (ctx.SWITCH() != null) {
+
+              Immediate key = (Immediate) ctx.immediate().accept(valueVisitor);
+              List<IntConstant> lookup = new ArrayList<>();
+              List<String> targetLabels = new ArrayList<>();
+              int min = Integer.MAX_VALUE;
+              String defaultLabel = null;
+
+              for (JimpleParser.Case_stmtContext it : ctx.case_stmt()) {
+                final JimpleParser.Case_labelContext case_labelContext = it.case_label();
+                if (case_labelContext.getText() != null && case_labelContext.DEFAULT() != null) {
+                  if (defaultLabel == null) {
+                    defaultLabel = it.goto_stmt().label_name.getText();
+                  } else {
+                    throw new RuntimeException("only one default label is allowed!");
+                  }
+                } else if (case_labelContext.integer_constant().getText() != null) {
+                  final int value =
+                      Integer.parseInt(case_labelContext.integer_constant().getText());
+                  min = Math.min(min, value);
+                  lookup.add(IntConstant.getInstance(value));
+                  targetLabels.add(it.goto_stmt().label_name.getText());
+                } else {
+                  throw new RuntimeException("Label is invalid.");
+                }
+              }
+              targetLabels.add(defaultLabel);
+
+              JSwitchStmt switchStmt;
+              if (ctx.SWITCH().getText().charAt(0) == 't') {
+                int high = min + lookup.size();
+                switchStmt = Jimple.newTableSwitchStmt(key, min, high, pos);
+              } else {
+                switchStmt = Jimple.newLookupSwitchStmt(key, lookup, pos);
+              }
+              unresolvedBranches.put(switchStmt, targetLabels);
+              return switchStmt;
+            } else {
+              final JimpleParser.AssignmentsContext assignments = ctx.assignments();
+              if (assignments != null) {
+                if (assignments.EQUALS() == null) {
+                  Local left = (Local) assignments.local.accept(valueVisitor);
+                  final String type = assignments.at_identifier().type().getText();
+
+                  IdentityRef ref;
+                  final JimpleParser.At_identifierContext at_identifierContext =
+                      assignments.at_identifier();
+                  if (at_identifierContext.caught != null) {
+                    ref = JavaJimple.getInstance().newCaughtExceptionRef();
+                  } else if (at_identifierContext.parameter_idx != null) {
+                    int idx = Integer.parseInt(at_identifierContext.parameter_idx.getText());
+                    ref = Jimple.newParameterRef(getType(type), idx);
+                  } else {
+                    // @this: refers always to the current class so we reuse the Type retreived from
+                    // the
+                    // classname
+                    // TODO: parse it - validate later
+                    ref = Jimple.newThisRef(clazz);
+                  }
+                  return Jimple.newIdentityStmt(left, ref, pos);
+
+                } else {
+                  Value left =
+                      assignments.local != null
+                          ? assignments.local.accept(valueVisitor)
+                          : assignments.reference().accept(valueVisitor);
+
+                  final Value right = assignments.expression().accept(valueVisitor);
+                  return Jimple.newAssignStmt(left, right, pos);
+                }
+
+              } else if (ctx.IF() != null) {
+                final Stmt stmt = Jimple.newIfStmt(ctx.bool_expr().accept(valueVisitor), pos);
+                unresolvedBranches.put(
+                    stmt, Collections.singletonList(ctx.goto_stmt().label_name.getText()));
+                return stmt;
+              } else if (ctx.goto_stmt() != null) {
+                final Stmt stmt = Jimple.newGotoStmt(pos);
+                unresolvedBranches.put(
+                    stmt, Collections.singletonList(ctx.goto_stmt().label_name.getText()));
+                return stmt;
+              } else if (ctx.NOP() != null) {
+                return Jimple.newNopStmt(pos);
+              } else if (ctx.RET() != null) {
+                return Jimple.newRetStmt((Immediate) ctx.immediate().accept(valueVisitor), pos);
+              } else if (ctx.RETURN() != null) {
+                if (ctx.immediate() == null) {
+                  return Jimple.newReturnVoidStmt(pos);
+                } else {
+                  return Jimple.newReturnStmt(
+                      (Immediate) ctx.immediate().accept(valueVisitor), pos);
+                }
+              } else if (ctx.THROW() != null) {
+                return Jimple.newThrowStmt((Immediate) ctx.immediate().accept(valueVisitor), pos);
+              } else if (ctx.invoke_expr() != null) {
+                return Jimple.newInvokeStmt(
+                    (AbstractInvokeExpr) ctx.invoke_expr().accept(valueVisitor), pos);
+              }
+            }
           }
-          return Jimple.newNewExpr((ReferenceType) type);
-        } else if (ctx.NEWARRAY() != null) {
-          final Type type = getType(ctx.array_type.getText());
-          if (type instanceof VoidType || type instanceof NullType || type instanceof ArrayType) {
-            throw new IllegalStateException(type + " can not be an array type.");
-          }
-
-          Immediate dim = (Immediate) ctx.array_descriptor().immediate().accept(new ValueVisitor());
-          return JavaJimple.getInstance().newNewArrayExpr(type, dim);
-        } else if (ctx.NEWMULTIARRAY() != null) {
-          final Type type = getType(ctx.multiarray_type.getText());
-          if (!(type instanceof ReferenceType || type instanceof PrimitiveType)) {
-            throw new IllegalStateException("only base types are allowed");
-          }
-
-          List<Immediate> sizes =
-              ctx.immediate().stream()
-                  .map(imm -> (Immediate) imm.accept(this))
-                  .collect(Collectors.toList());
-          if (sizes.size() < 1) {
-            throw new IllegalStateException("size list must have at least one element;");
-          }
-          ArrayType arrtype = JavaIdentifierFactory.getInstance().getArrayType(type, sizes.size());
-          return Jimple.newNewMultiArrayExpr(arrtype, sizes);
-        } else if (ctx.nonvoid_cast != null) {
-          final Type type = getType(ctx.nonvoid_cast.getText());
-          Immediate val = (Immediate) ctx.op.accept(this);
-          return Jimple.newCastExpr(val, type);
-        } else if (ctx.INSTANCEOF() != null) {
-          final Type type = getType(ctx.nonvoid_type.getText());
-          Immediate val = (Immediate) ctx.op.accept(this);
-          return Jimple.newInstanceOfExpr(val, type);
+          throw new RuntimeException("Unknown Stmt");
         }
-        return super.visitExpression(ctx);
       }
 
-      @Override
-      public Value visitImmediate(JimpleParser.ImmediateContext ctx) {
-        if (ctx.name() != null) {
-          return getLocal(ctx.name().getText());
+      private class ValueVisitor extends JimpleBaseVisitor<Value> {
+
+        @Override
+        public Value visitName(JimpleParser.NameContext ctx) {
+          return getLocal(ctx.getText());
         }
-        return ctx.constant().accept(this);
-      }
 
-      @Override
-      public Value visitReference(JimpleParser.ReferenceContext ctx) {
+        @Override
+        public Value visitExpression(JimpleParser.ExpressionContext ctx) {
+          if (ctx.NEW() != null) {
+            final Type type = getType(ctx.base_type.getText());
+            if (!(type instanceof ReferenceType)) {
+              throw new IllegalStateException(type + " is not a ReferenceType.");
+            }
+            return Jimple.newNewExpr((ReferenceType) type);
+          } else if (ctx.NEWARRAY() != null) {
+            final Type type = getType(ctx.array_type.getText());
+            if (type instanceof VoidType || type instanceof NullType || type instanceof ArrayType) {
+              throw new IllegalStateException(type + " can not be an array type.");
+            }
 
-        if (ctx.array_descriptor() != null) {
-          // array
-          Immediate idx = (Immediate) ctx.array_descriptor().immediate().accept(this);
-          Local type = getLocal(ctx.name().getText());
-          return JavaJimple.getInstance().newArrayRef(type, idx);
-        } else if (ctx.DOT() != null) {
-          // instance field
-          String base = ctx.name().getText();
-          FieldSignature fs = getFieldSignature(ctx.field_signature());
+            Immediate dim =
+                (Immediate) ctx.array_descriptor().immediate().accept(new ValueVisitor());
+            return JavaJimple.getInstance().newNewArrayExpr(type, dim);
+          } else if (ctx.NEWMULTIARRAY() != null) {
+            final Type type = getType(ctx.multiarray_type.getText());
+            if (!(type instanceof ReferenceType || type instanceof PrimitiveType)) {
+              throw new IllegalStateException("only base types are allowed");
+            }
 
-          return Jimple.newInstanceFieldRef(getLocal(base), fs);
-
-        } else {
-          // static field
-          FieldSignature fs = getFieldSignature(ctx.field_signature());
-          return Jimple.newStaticFieldRef(fs);
-        }
-      }
-
-      private FieldSignature getFieldSignature(JimpleParser.Field_signatureContext ctx) {
-        String classname = ctx.classname.getText();
-        Type type = getType(ctx.type().getText());
-        String fieldname = ctx.fieldname.getText();
-        return identifierFactory.getFieldSignature(fieldname, getClassType(classname), type);
-      }
-
-      private MethodSignature getMethodSignature(JimpleParser.Method_signatureContext ctx) {
-        String classname = ctx.class_name.getText();
-        Type type = getType(ctx.type().getText());
-        String methodname = ctx.method_name().getText();
-        final JimpleParser.Type_listContext parameterList = ctx.type_list();
-        List<Type> params =
-            parameterList != null
-                ? parameterList.accept(new NameListVisitor()).stream()
-                    .map(identifierFactory::getType)
-                    .collect(Collectors.toList())
-                : Collections.emptyList();
-        return identifierFactory.getMethodSignature(
-            methodname, getClassType(classname), type, params);
-      }
-
-      @Override
-      public Expr visitInvoke_expr(JimpleParser.Invoke_exprContext ctx) {
-
-        List<Immediate> arglist = getArgList(ctx.arg_list(0));
-
-        if (ctx.nonstaticinvoke != null) {
-          Local base = getLocal(ctx.local_name.getText());
-          MethodSignature methodSig = getMethodSignature(ctx.method_signature());
-
-          switch (ctx.nonstaticinvoke.getText().charAt(0)) {
-            case 'i':
-              return Jimple.newInterfaceInvokeExpr(base, methodSig, arglist);
-            case 'v':
-              return Jimple.newVirtualInvokeExpr(base, methodSig, arglist);
-            case 's':
-              return Jimple.newSpecialInvokeExpr(base, methodSig, arglist);
-            default:
-              throw new IllegalStateException("malformed nonstatic invoke.");
+            List<Immediate> sizes =
+                ctx.immediate().stream()
+                    .map(imm -> (Immediate) imm.accept(this))
+                    .collect(Collectors.toList());
+            if (sizes.size() < 1) {
+              throw new IllegalStateException("size list must have at least one element;");
+            }
+            ArrayType arrtype =
+                JavaIdentifierFactory.getInstance().getArrayType(type, sizes.size());
+            return Jimple.newNewMultiArrayExpr(arrtype, sizes);
+          } else if (ctx.nonvoid_cast != null) {
+            final Type type = getType(ctx.nonvoid_cast.getText());
+            Immediate val = (Immediate) ctx.op.accept(this);
+            return Jimple.newCastExpr(val, type);
+          } else if (ctx.INSTANCEOF() != null) {
+            final Type type = getType(ctx.nonvoid_type.getText());
+            Immediate val = (Immediate) ctx.op.accept(this);
+            return Jimple.newInstanceOfExpr(val, type);
           }
+          return super.visitExpression(ctx);
+        }
 
-        } else if (ctx.staticinvoke != null) {
-          MethodSignature methodSig = getMethodSignature(ctx.method_signature());
-          return Jimple.newStaticInvokeExpr(methodSig, arglist);
-        } else if (ctx.dynamicinvoke != null) {
+        @Override
+        public Value visitImmediate(JimpleParser.ImmediateContext ctx) {
+          if (ctx.name() != null) {
+            return getLocal(ctx.name().getText());
+          }
+          return ctx.constant().accept(this);
+        }
 
-          // FIXME: [ms] look in old soot how it should look like; implement MethodType.toString()
+        @Override
+        public Value visitReference(JimpleParser.ReferenceContext ctx) {
+
+          if (ctx.array_descriptor() != null) {
+            // array
+            Immediate idx = (Immediate) ctx.array_descriptor().immediate().accept(this);
+            Local type = getLocal(ctx.name().getText());
+            return JavaJimple.getInstance().newArrayRef(type, idx);
+          } else if (ctx.DOT() != null) {
+            // instance field
+            String base = ctx.name().getText();
+            FieldSignature fs = getFieldSignature(ctx.field_signature());
+
+            return Jimple.newInstanceFieldRef(getLocal(base), fs);
+
+          } else {
+            // static field
+            FieldSignature fs = getFieldSignature(ctx.field_signature());
+            return Jimple.newStaticFieldRef(fs);
+          }
+        }
+
+        private FieldSignature getFieldSignature(JimpleParser.Field_signatureContext ctx) {
+          String classname = ctx.classname.getText();
           Type type = getType(ctx.type().getText());
-          List<Type> bootstrapMethodRefParams =
-              ctx.type_list() != null
-                  ? ctx.type_list().accept(new NameListVisitor()).stream()
+          String fieldname = ctx.fieldname.getText();
+          return identifierFactory.getFieldSignature(fieldname, getClassType(classname), type);
+        }
+
+        private MethodSignature getMethodSignature(JimpleParser.Method_signatureContext ctx) {
+          String classname = ctx.class_name.getText();
+          Type type = getType(ctx.type().getText());
+          String methodname = ctx.method_name().getText();
+          final JimpleParser.Type_listContext parameterList = ctx.type_list();
+          List<Type> params =
+              parameterList != null
+                  ? parameterList.accept(new NameListVisitor()).stream()
                       .map(identifierFactory::getType)
                       .collect(Collectors.toList())
                   : Collections.emptyList();
-          String unnamed_method_name = ctx.unnamed_method_name.getText();
-
-          MethodSignature bootstrapMethodRef =
-              identifierFactory.getMethodSignature(
-                  unnamed_method_name,
-                  identifierFactory.getClassType(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
-                  type,
-                  bootstrapMethodRefParams);
-
-          MethodSignature methodRef = getMethodSignature(ctx.bsm);
-
-          List<Immediate> bootstrapArgs = getArgList(ctx.staticargs);
-
-          return Jimple.newDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, arglist);
+          return identifierFactory.getMethodSignature(
+              methodname, getClassType(classname), type, params);
         }
-        throw new IllegalStateException("malformed Invoke Expression.");
-      }
 
-      @Nonnull
-      private List<Immediate> getArgList(JimpleParser.Arg_listContext immediateIterator) {
-        List<Immediate> arglist = new ArrayList<>();
-        while (immediateIterator != null) {
-          arglist.add((Immediate) immediateIterator.immediate().accept(new ValueVisitor()));
-          immediateIterator = immediateIterator.arg_list();
-        }
-        return arglist;
-      }
+        @Override
+        public Expr visitInvoke_expr(JimpleParser.Invoke_exprContext ctx) {
 
-      @Override
-      public Constant visitConstant(JimpleParser.ConstantContext ctx) {
+          List<Immediate> arglist = getArgList(ctx.arg_list(0));
 
-        if (ctx.integer_constant() != null) {
-          String intConst = ctx.integer_constant().getText();
-          int lastCharPos = intConst.length() - 1;
-          if (intConst.charAt(lastCharPos) == 'L' || intConst.charAt(lastCharPos) == 'l') {
-            intConst = intConst.substring(0, lastCharPos);
-            return LongConstant.getInstance(Long.parseLong(intConst));
+          if (ctx.nonstaticinvoke != null) {
+            Local base = getLocal(ctx.local_name.getText());
+            MethodSignature methodSig = getMethodSignature(ctx.method_signature());
+
+            switch (ctx.nonstaticinvoke.getText().charAt(0)) {
+              case 'i':
+                return Jimple.newInterfaceInvokeExpr(base, methodSig, arglist);
+              case 'v':
+                return Jimple.newVirtualInvokeExpr(base, methodSig, arglist);
+              case 's':
+                return Jimple.newSpecialInvokeExpr(base, methodSig, arglist);
+              default:
+                throw new IllegalStateException("malformed nonstatic invoke.");
+            }
+
+          } else if (ctx.staticinvoke != null) {
+            MethodSignature methodSig = getMethodSignature(ctx.method_signature());
+            return Jimple.newStaticInvokeExpr(methodSig, arglist);
+          } else if (ctx.dynamicinvoke != null) {
+
+            // FIXME: [ms] look in old soot how it should look like; implement MethodType.toString()
+            Type type = getType(ctx.type().getText());
+            List<Type> bootstrapMethodRefParams =
+                ctx.type_list() != null
+                    ? ctx.type_list().accept(new NameListVisitor()).stream()
+                        .map(identifierFactory::getType)
+                        .collect(Collectors.toList())
+                    : Collections.emptyList();
+            String unnamed_method_name = ctx.unnamed_method_name.getText();
+
+            MethodSignature bootstrapMethodRef =
+                identifierFactory.getMethodSignature(
+                    unnamed_method_name,
+                    identifierFactory.getClassType(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
+                    type,
+                    bootstrapMethodRefParams);
+
+            MethodSignature methodRef = getMethodSignature(ctx.bsm);
+
+            List<Immediate> bootstrapArgs = getArgList(ctx.staticargs);
+
+            return Jimple.newDynamicInvokeExpr(
+                bootstrapMethodRef, bootstrapArgs, methodRef, arglist);
           }
-          return IntConstant.getInstance(Integer.parseInt(intConst));
-        } else if (ctx.FLOAT_CONSTANT() != null) {
-          String floatStr = ctx.FLOAT_CONSTANT().getText();
-          int lastCharPos = floatStr.length() - 1;
-          if (floatStr.charAt(lastCharPos) == 'F' || floatStr.charAt(lastCharPos) == 'f') {
-            floatStr = floatStr.substring(0, lastCharPos);
-            return FloatConstant.getInstance(Float.parseFloat(floatStr));
+          throw new IllegalStateException("malformed Invoke Expression.");
+        }
+
+        @Nonnull
+        private List<Immediate> getArgList(JimpleParser.Arg_listContext immediateIterator) {
+          List<Immediate> arglist = new ArrayList<>();
+          while (immediateIterator != null) {
+            arglist.add((Immediate) immediateIterator.immediate().accept(new ValueVisitor()));
+            immediateIterator = immediateIterator.arg_list();
           }
-          return DoubleConstant.getInstance(Double.parseDouble(floatStr));
-        } else if (ctx.CLASS() != null) {
-          final String text = ctx.STRING_CONSTANT().getText();
-          return JavaJimple.getInstance().newClassConstant(text.substring(1, text.length() - 1));
-        } else if (ctx.STRING_CONSTANT() != null) {
-          final String text = ctx.STRING_CONSTANT().getText();
-          return JavaJimple.getInstance().newStringConstant(text.substring(1, text.length() - 1));
-        } else if (ctx.BOOL_CONSTANT() != null) {
-          return BooleanConstant.getInstance(
-              ctx.BOOL_CONSTANT().getText().charAt(0) == 't'
-                  || ctx.BOOL_CONSTANT().getText().charAt(0) == 'T');
-        } else if (ctx.NULL() != null) {
-          return NullConstant.getInstance();
+          return arglist;
         }
-        throw new IllegalStateException("Unknown Constant");
-      }
 
-      @Override
-      public AbstractBinopExpr visitBinop_expr(JimpleParser.Binop_exprContext ctx) {
+        @Override
+        public Constant visitConstant(JimpleParser.ConstantContext ctx) {
 
-        Value left = ctx.left.accept(this);
-        Value right = ctx.right.accept(this);
-
-        JimpleParser.BinopContext binopctx = ctx.op;
-
-        // [ms] maybe its faster to switch( binopctx.getText().hashCode() ) ?
-        if (binopctx.AND() != null) {
-          return new JAndExpr(left, right);
-        } else if (binopctx.OR() != null) {
-          return new JOrExpr(left, right);
-        } else if (binopctx.MOD() != null) {
-          return new JRemExpr(left, right);
-        } else if (binopctx.CMP() != null) {
-          return new JCmpExpr(left, right);
-        } else if (binopctx.CMPG() != null) {
-          return new JCmpgExpr(left, right);
-        } else if (binopctx.CMPL() != null) {
-          return new JCmplExpr(left, right);
-        } else if (binopctx.CMPEQ() != null) {
-          return new JEqExpr(left, right);
-        } else if (binopctx.CMPNE() != null) {
-          return new JNeExpr(left, right);
-        } else if (binopctx.CMPGT() != null) {
-          return new JGtExpr(left, right);
-        } else if (binopctx.CMPGE() != null) {
-          return new JGeExpr(left, right);
-        } else if (binopctx.CMPLT() != null) {
-          return new JLtExpr(left, right);
-        } else if (binopctx.CMPLE() != null) {
-          return new JLeExpr(left, right);
-        } else if (binopctx.SHL() != null) {
-          return new JShlExpr(left, right);
-        } else if (binopctx.SHR() != null) {
-          return new JShrExpr(left, right);
-        } else if (binopctx.USHR() != null) {
-          return new JUshrExpr(left, right);
-        } else if (binopctx.PLUS() != null) {
-          return new JAddExpr(left, right);
-        } else if (binopctx.MINUS() != null) {
-          return new JSubExpr(left, right);
-        } else if (binopctx.MULT() != null) {
-          return new JMulExpr(left, right);
-        } else if (binopctx.DIV() != null) {
-          return new JDivExpr(left, right);
-        } else if (binopctx.XOR() != null) {
-          return new JXorExpr(left, right);
+          if (ctx.integer_constant() != null) {
+            String intConst = ctx.integer_constant().getText();
+            int lastCharPos = intConst.length() - 1;
+            if (intConst.charAt(lastCharPos) == 'L' || intConst.charAt(lastCharPos) == 'l') {
+              intConst = intConst.substring(0, lastCharPos);
+              return LongConstant.getInstance(Long.parseLong(intConst));
+            }
+            return IntConstant.getInstance(Integer.parseInt(intConst));
+          } else if (ctx.FLOAT_CONSTANT() != null) {
+            String floatStr = ctx.FLOAT_CONSTANT().getText();
+            int lastCharPos = floatStr.length() - 1;
+            if (floatStr.charAt(lastCharPos) == 'F' || floatStr.charAt(lastCharPos) == 'f') {
+              floatStr = floatStr.substring(0, lastCharPos);
+              return FloatConstant.getInstance(Float.parseFloat(floatStr));
+            }
+            return DoubleConstant.getInstance(Double.parseDouble(floatStr));
+          } else if (ctx.CLASS() != null) {
+            final String text = ctx.STRING_CONSTANT().getText();
+            return JavaJimple.getInstance().newClassConstant(text.substring(1, text.length() - 1));
+          } else if (ctx.STRING_CONSTANT() != null) {
+            final String text = ctx.STRING_CONSTANT().getText();
+            return JavaJimple.getInstance().newStringConstant(text.substring(1, text.length() - 1));
+          } else if (ctx.BOOL_CONSTANT() != null) {
+            return BooleanConstant.getInstance(
+                ctx.BOOL_CONSTANT().getText().charAt(0) == 't'
+                    || ctx.BOOL_CONSTANT().getText().charAt(0) == 'T');
+          } else if (ctx.NULL() != null) {
+            return NullConstant.getInstance();
+          }
+          throw new IllegalStateException("Unknown Constant");
         }
-        throw new RuntimeException("Unknown BinOp: " + binopctx.getText());
-      }
 
-      @Override
-      public Expr visitUnop_expr(JimpleParser.Unop_exprContext ctx) {
-        Immediate value = (Immediate) ctx.immediate().accept(this);
-        if (ctx.unop().NEG() != null) {
-          return Jimple.newNegExpr(value);
-        } else {
-          return Jimple.newLengthExpr(value);
+        @Override
+        public AbstractBinopExpr visitBinop_expr(JimpleParser.Binop_exprContext ctx) {
+
+          Value left = ctx.left.accept(this);
+          Value right = ctx.right.accept(this);
+
+          JimpleParser.BinopContext binopctx = ctx.op;
+
+          // [ms] maybe its faster to switch( binopctx.getText().hashCode() ) ?
+          if (binopctx.AND() != null) {
+            return new JAndExpr(left, right);
+          } else if (binopctx.OR() != null) {
+            return new JOrExpr(left, right);
+          } else if (binopctx.MOD() != null) {
+            return new JRemExpr(left, right);
+          } else if (binopctx.CMP() != null) {
+            return new JCmpExpr(left, right);
+          } else if (binopctx.CMPG() != null) {
+            return new JCmpgExpr(left, right);
+          } else if (binopctx.CMPL() != null) {
+            return new JCmplExpr(left, right);
+          } else if (binopctx.CMPEQ() != null) {
+            return new JEqExpr(left, right);
+          } else if (binopctx.CMPNE() != null) {
+            return new JNeExpr(left, right);
+          } else if (binopctx.CMPGT() != null) {
+            return new JGtExpr(left, right);
+          } else if (binopctx.CMPGE() != null) {
+            return new JGeExpr(left, right);
+          } else if (binopctx.CMPLT() != null) {
+            return new JLtExpr(left, right);
+          } else if (binopctx.CMPLE() != null) {
+            return new JLeExpr(left, right);
+          } else if (binopctx.SHL() != null) {
+            return new JShlExpr(left, right);
+          } else if (binopctx.SHR() != null) {
+            return new JShrExpr(left, right);
+          } else if (binopctx.USHR() != null) {
+            return new JUshrExpr(left, right);
+          } else if (binopctx.PLUS() != null) {
+            return new JAddExpr(left, right);
+          } else if (binopctx.MINUS() != null) {
+            return new JSubExpr(left, right);
+          } else if (binopctx.MULT() != null) {
+            return new JMulExpr(left, right);
+          } else if (binopctx.DIV() != null) {
+            return new JDivExpr(left, right);
+          } else if (binopctx.XOR() != null) {
+            return new JXorExpr(left, right);
+          }
+          throw new RuntimeException("Unknown BinOp: " + binopctx.getText());
+        }
+
+        @Override
+        public Expr visitUnop_expr(JimpleParser.Unop_exprContext ctx) {
+          Immediate value = (Immediate) ctx.immediate().accept(this);
+          if (ctx.unop().NEG() != null) {
+            return Jimple.newNegExpr(value);
+          } else {
+            return Jimple.newLengthExpr(value);
+          }
         }
       }
-    }
-
-    public Local getLocal(String name) {
-      final Local local = locals.get(name);
-      if (local == null) {
-        throw new IllegalStateException("a Stmt tried to reference an undeclared Local: " + name);
-      }
-      return local;
     }
   }
 }
