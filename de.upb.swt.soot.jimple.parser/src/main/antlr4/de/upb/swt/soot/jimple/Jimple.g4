@@ -123,7 +123,7 @@ grammar Jimple;
   name:
     /*ident*/ IDENTIFIER ;// | STRING_CONSTANT ;
 
-  type:        name (L_BRACKET R_BRACKET)? ;
+  type:        name (L_BRACKET R_BRACKET)*;
 
 
 // TODO [ms] change recursion to flat list: type (COMMA type)*
@@ -193,7 +193,7 @@ grammar Jimple;
 
   expression:
     /*new simple*/  NEW base_type=name |
-    /*new array*/   NEWARRAY L_PAREN array_type=name R_PAREN array_descriptor |
+    /*new array*/   NEWARRAY L_PAREN array_type=type R_PAREN array_descriptor |
     /*new multi*/   NEWMULTIARRAY L_PAREN multiarray_type=name R_PAREN (L_BRACKET immediate? R_BRACKET)+ |
     /*cast*/        L_PAREN nonvoid_cast=type R_PAREN op=immediate |
     /*instanceof*/  op=immediate INSTANCEOF nonvoid_type=name |

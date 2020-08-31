@@ -67,9 +67,10 @@ class JimpleReader {
           "The Jimple file " + sourcePath.toAbsolutePath() + " is not well formed.", e);
     }
 
-    /*    if( classVisitor.clazz != classSignature ){
-          throw new RuntimeException("Filename does not match the parsed Classname.");
-        }
+    /*  TODO: adapt check for innerclass
+    if( !classVisitor.clazz.equals(classSignature) ){
+      throw new RuntimeException("Filename "+ classVisitor.clazz + " does not match the parsed Classname: "+ classSignature );
+    }
     */
 
     return new OverridingClassSource(
@@ -267,7 +268,7 @@ class JimpleReader {
         if (ctx.method_body() == null) {
           throw new IllegalStateException("Body not found");
         } else if (ctx.method_body().SEMICOLON() != null) {
-          // no body is given
+          // no body is given: no brackets, but a semicolon -> abstract
         } else {
 
           // declare locals
