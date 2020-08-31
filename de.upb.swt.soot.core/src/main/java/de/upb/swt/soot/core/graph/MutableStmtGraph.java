@@ -28,6 +28,8 @@ import javax.annotation.Nullable;
  *
  * @author Markus Schmidt
  */
+
+// TODO: [ms] FIXME: zero or one stmts in body
 public class MutableStmtGraph extends StmtGraph {
 
   @Nonnull protected final ArrayList<List<Stmt>> predecessors;
@@ -84,6 +86,7 @@ public class MutableStmtGraph extends StmtGraph {
     return traps;
   }
 
+  @Nullable
   public Stmt getStartingStmt() {
     return startingStmt;
   }

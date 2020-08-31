@@ -311,9 +311,15 @@ class JimpleReader {
           if (trap_clauseContexts != null) {
             for (JimpleParser.Trap_clauseContext it : trap_clauseContexts) {
               ClassType exceptionType = getClassType(it.exceptiontype.getText());
-              // FIXME traps.. how do those stmtBoxes work?
-              // Jimple.newTrap( exceptionType, jumpTargets.get(it.from),
-              // jumpTargets.get(it.to),jumpTargets.get(it.with) );
+              String beginLabel = it.from.getText();
+              String toLabel = it.to.getText();
+              String handlerLabel = it.with.getText();
+              traps.add(
+                  Jimple.newTrap(
+                      exceptionType,
+                      labeledStmts.get(beginLabel),
+                      labeledStmts.get(toLabel),
+                      labeledStmts.get(handlerLabel)));
             }
           }
           builder.setTraps(traps);
