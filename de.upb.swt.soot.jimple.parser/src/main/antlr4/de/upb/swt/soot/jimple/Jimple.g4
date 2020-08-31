@@ -125,6 +125,8 @@ grammar Jimple;
 
   type:        name (L_BRACKET R_BRACKET)? ;
 
+
+// TODO [ms] change recursion to flat list: type (COMMA type)*
   type_list:
     /*single*/ type |
     /*multi*/  type COMMA type_list;
@@ -208,7 +210,7 @@ grammar Jimple;
   invoke_expr:
     /*nonstatic*/ nonstaticinvoke=NONSTATIC_INVOKE local_name=name DOT method_signature L_PAREN arg_list? R_PAREN |
     /*static*/    staticinvoke=STATICINVOKE method_signature L_PAREN arg_list? R_PAREN |
-    /*dynamic*/   dynamicinvoke=DYNAMICINVOKE unnamed_method_name=STRING_CONSTANT CMPLT type L_PAREN type_list? R_PAREN CMPGT L_PAREN dynargs=arg_list? R_PAREN bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
+    /*dynamic*/   dynamicinvoke=DYNAMICINVOKE unnamed_method_name=STRING_CONSTANT CMPLT type L_PAREN type_list? R_PAREN CMPGT L_PAREN arg_list? R_PAREN bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
 
   binop_expr:
     left=immediate op=binop right=immediate;
@@ -231,6 +233,7 @@ grammar Jimple;
   array_descriptor:
     L_BRACKET immediate R_BRACKET;
 
+// TODO [ms] remove rekusrion: immediate (COMMA immediate)*
   arg_list:
     /*single*/ immediate |
     /*multi*/  immediate COMMA arg_list;

@@ -357,20 +357,6 @@ class JimpleReader {
       return modifierSet.isEmpty() ? EnumSet.noneOf(Modifier.class) : EnumSet.copyOf(modifierSet);
     }
 
-    private class ArgListVisitor extends JimpleBaseVisitor<List<Immediate>> {
-      @Override
-      public List<Immediate> visitArg_list(JimpleParser.Arg_listContext ctx) {
-        List<Immediate> args = new ArrayList<>();
-        JimpleParser.Arg_listContext immediateIterator = ctx;
-        do {
-          args.add((Immediate) immediateIterator.immediate().accept(new ValueVisitor()));
-          immediateIterator = immediateIterator.arg_list();
-        } while (immediateIterator != null);
-
-        return args;
-      }
-    }
-
     private class StmtVisitor extends JimpleBaseVisitor<Stmt> {
       @Nonnull private final Body.BodyBuilder builder;
 
@@ -389,11 +375,10 @@ class JimpleReader {
           builder.setStartingStmt(stmt);
         } else {
           if (lastStmt.fallsThrough()) {
-            //            System.out.print("link: "+ lastStmt + " => "+ stmt);
             builder.addFlow(lastStmt, stmt);
+            System.out.println(lastStmt + "=> " + stmt);
           }
         }
-
 
         lastStmt = stmt;
         return stmt;
@@ -414,8 +399,7 @@ class JimpleReader {
             return Jimple.newEnterMonitorStmt(
                 (Immediate) ctx.immediate().accept(valueVisitor), pos);
           } else if (ctx.EXITMONITOR() != null) {
-            return Jimple.newExitMonitorStmt(
-                (Immediate) ctx.immediate().accept(valueVisitor), pos);
+            return Jimple.newExitMonitorStmt((Immediate) ctx.immediate().accept(valueVisitor), pos);
           } else if (ctx.SWITCH() != null) {
 
             Immediate key = (Immediate) ctx.immediate().accept(valueVisitor);
@@ -468,7 +452,8 @@ class JimpleReader {
                   int idx = Integer.parseInt(at_identifierContext.parameter_idx.getText());
                   ref = Jimple.newParameterRef(getType(type), idx);
                 } else {
-                  // @this: refers always to the current class so we reuse the Type retreived from the
+                  // @this: refers always to the current class so we reuse the Type retreived from
+                  // the
                   // classname
                   // TODO: parse it - validate later
                   ref = Jimple.newThisRef(clazz);
@@ -503,8 +488,7 @@ class JimpleReader {
               if (ctx.immediate() == null) {
                 return Jimple.newReturnVoidStmt(pos);
               } else {
-                return Jimple.newReturnStmt(
-                    (Immediate) ctx.immediate().accept(valueVisitor), pos);
+                return Jimple.newReturnStmt((Immediate) ctx.immediate().accept(valueVisitor), pos);
               }
             } else if (ctx.THROW() != null) {
               return Jimple.newThrowStmt((Immediate) ctx.immediate().accept(valueVisitor), pos);
@@ -529,18 +513,17 @@ class JimpleReader {
       public Value visitExpression(JimpleParser.ExpressionContext ctx) {
         if (ctx.NEW() != null) {
           final Type type = getType(ctx.base_type.getText());
-          if (!(type instanceof ReferenceType )) {
-            throw new IllegalStateException(type + " is not a ReferenceType." );
+          if (!(type instanceof ReferenceType)) {
+            throw new IllegalStateException(type + " is not a ReferenceType.");
           }
           return Jimple.newNewExpr((ReferenceType) type);
         } else if (ctx.NEWARRAY() != null) {
           final Type type = getType(ctx.array_type.getText());
-          if (type instanceof VoidType || type instanceof NullType || type instanceof ArrayType ) {
-            throw new IllegalStateException(type + " can not be an array type." );
+          if (type instanceof VoidType || type instanceof NullType || type instanceof ArrayType) {
+            throw new IllegalStateException(type + " can not be an array type.");
           }
 
-          Immediate dim =
-              (Immediate) ctx.array_descriptor().immediate().accept(new ValueVisitor());
+          Immediate dim = (Immediate) ctx.array_descriptor().immediate().accept(new ValueVisitor());
           return JavaJimple.getInstance().newNewArrayExpr(type, dim);
         } else if (ctx.NEWMULTIARRAY() != null) {
           final Type type = getType(ctx.multiarray_type.getText());
@@ -624,13 +607,11 @@ class JimpleReader {
       @Override
       public Expr visitInvoke_expr(JimpleParser.Invoke_exprContext ctx) {
 
+        List<Immediate> arglist = getArgList(ctx.arg_list(0));
+
         if (ctx.nonstaticinvoke != null) {
           Local base = getLocal(ctx.local_name.getText());
           MethodSignature methodSig = getMethodSignature(ctx.method_signature());
-          List<Immediate> arglist =
-              ctx.arg_list() != null && ctx.arg_list().size() > 0
-                  ? ctx.arg_list().get(0).accept(new ArgListVisitor())
-                  : Collections.emptyList();
 
           switch (ctx.nonstaticinvoke.getText().charAt(0)) {
             case 'i':
@@ -640,12 +621,11 @@ class JimpleReader {
             case 's':
               return Jimple.newSpecialInvokeExpr(base, methodSig, arglist);
             default:
-              throw new IllegalStateException("malformed nonstatic invoke");
+              throw new IllegalStateException("malformed nonstatic invoke.");
           }
 
         } else if (ctx.staticinvoke != null) {
           MethodSignature methodSig = getMethodSignature(ctx.method_signature());
-          List<Immediate> arglist = ctx.arg_list().get(0).accept(new ArgListVisitor());
           return Jimple.newStaticInvokeExpr(methodSig, arglist);
         } else if (ctx.dynamicinvoke != null) {
 
@@ -666,18 +646,22 @@ class JimpleReader {
                   bootstrapMethodRefParams);
 
           MethodSignature methodRef = getMethodSignature(ctx.bsm);
-          List<Immediate> args =
-              ctx.dynargs != null
-                  ? ctx.dynargs.accept(new ArgListVisitor())
-                  : Collections.emptyList();
-          List<Immediate> bootstrapArgs =
-              ctx.staticargs != null
-                  ? ctx.staticargs.accept(new ArgListVisitor())
-                  : Collections.emptyList();
 
-          return Jimple.newDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, args);
+          List<Immediate> bootstrapArgs = getArgList(ctx.staticargs);
+
+          return Jimple.newDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, arglist);
         }
         throw new IllegalStateException("malformed Invoke Expression.");
+      }
+
+      @Nonnull
+      private List<Immediate> getArgList(JimpleParser.Arg_listContext immediateIterator) {
+        List<Immediate> arglist = new ArrayList<>();
+        while (immediateIterator != null) {
+          arglist.add((Immediate) immediateIterator.immediate().accept(new ValueVisitor()));
+          immediateIterator = immediateIterator.arg_list();
+        }
+        return arglist;
       }
 
       @Override

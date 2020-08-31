@@ -160,7 +160,7 @@ public abstract class StmtGraph implements Iterable<Stmt> {
           throw new RuntimeException(
               "Stmt '"
                   + stmt
-                  + "' which is not the StartingStmt or a TrapHandler is missing a predecessor!");
+                  + "' which is neither the StartingStmt nor a TrapHandler is missing a predecessor!");
         }
       }
 
