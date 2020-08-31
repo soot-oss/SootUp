@@ -205,28 +205,6 @@ public class MutableStmtGraph extends StmtGraph {
     return Collections.unmodifiableSet(stmtToIdx.keySet());
   }
 
-  @Nonnull
-  public List<Stmt> adjacentNodes(@Nonnull Stmt node) {
-    int nodeIdx = existsNodeOrThrow(node);
-    final List<Stmt> pred = predecessors.get(nodeIdx);
-    final List<Stmt> succ = successors.get(nodeIdx);
-    final int predSize = (pred == null ? 0 : pred.size());
-    final int succSize = (succ == null ? 0 : succ.size());
-    final int degree = predSize + succSize;
-    if (degree > 0) {
-      final List<Stmt> list = new ArrayList<>(degree);
-      if (predSize > 0) {
-        list.addAll(pred);
-      }
-      if (succSize > 0) {
-        list.addAll(succ);
-      }
-      return list;
-    } else {
-      return Collections.emptyList();
-    }
-  }
-
   @Override
   @Nonnull
   public List<Stmt> predecessors(@Nonnull Stmt node) {
