@@ -11,7 +11,6 @@ import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
-import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -165,7 +164,7 @@ class JimpleReader {
       // implements_clause
       if (ctx.implements_clause() != null) {
         interfaces =
-            ctx.implements_clause().type_list().accept(new NameListVisitor()).stream()
+            getTypeList(ctx.implements_clause().type_list()).stream()
                 .map(identifierFactory::getClassType)
                 .collect(Collectors.toSet());
       } else {
@@ -190,30 +189,17 @@ class JimpleReader {
       return true;
     }
 
-    private class NameListVisitor extends JimpleBaseVisitor<Collection<String>> {
-
-      @Override
-      public List<String> visitType_list(JimpleParser.Type_listContext ctx) {
-        List<String> list = new ArrayList<>();
-        iterate(list, ctx);
-        return list;
-      }
-
-      @Override
-      public List<String> visitName(JimpleParser.NameContext ctx) {
-        return Collections.singletonList(ctx.getText());
-      }
-
-      public void iterate(Collection<String> list, JimpleParser.Type_listContext ctx) {
-        JimpleParser.Type_listContext name_listContextIterator = ctx;
-        while (name_listContextIterator != null) {
-          if (name_listContextIterator.type() == null) {
-            break;
-          }
-          list.add(name_listContextIterator.type().getText());
-          name_listContextIterator = name_listContextIterator.type_list();
+    List<String> getTypeList(JimpleParser.Type_listContext ctx) {
+      List<String> list = new ArrayList<>();
+      JimpleParser.Type_listContext name_listContextIterator = ctx;
+      while (name_listContextIterator != null) {
+        if (name_listContextIterator.type() == null) {
+          break;
         }
+        list.add(name_listContextIterator.type().getText());
+        name_listContextIterator = name_listContextIterator.type_list();
       }
+      return list;
     }
 
     private EnumSet<Modifier> getModifiers(List<JimpleParser.ModifierContext> modifier) {
@@ -259,7 +245,7 @@ class JimpleReader {
         List<Type> params =
             ctx.type_list() == null
                 ? Collections.emptyList()
-                : ctx.type_list().accept(new NameListVisitor()).stream()
+                : getTypeList(ctx.type_list()).stream()
                     .map(identifierFactory::getType)
                     .collect(Collectors.toList());
 
@@ -271,7 +257,7 @@ class JimpleReader {
         List<ClassType> exceptions =
             ctx.throws_clause() == null
                 ? Collections.emptyList()
-                : ctx.throws_clause().accept(new NameListVisitor()).stream()
+                : getTypeList(ctx.throws_clause().type_list()).stream()
                     .map(identifierFactory::getClassType)
                     .collect(Collectors.toList());
 
@@ -617,7 +603,7 @@ class JimpleReader {
           final JimpleParser.Type_listContext parameterList = ctx.type_list();
           List<Type> params =
               parameterList != null
-                  ? parameterList.accept(new NameListVisitor()).stream()
+                  ? getTypeList(parameterList).stream()
                       .map(identifierFactory::getType)
                       .collect(Collectors.toList())
                   : Collections.emptyList();
@@ -654,7 +640,7 @@ class JimpleReader {
             Type type = getType(ctx.type().getText());
             List<Type> bootstrapMethodRefParams =
                 ctx.type_list() != null
-                    ? ctx.type_list().accept(new NameListVisitor()).stream()
+                    ? getTypeList(ctx.type_list()).stream()
                         .map(identifierFactory::getType)
                         .collect(Collectors.toList())
                     : Collections.emptyList();
