@@ -135,7 +135,7 @@ grammar Jimple;
     'extends' classname=name;
 
   implements_clause :
-    'implements' names=type_list;
+    'implements' type_list;
 
   name:
     IDENTIFIER ;

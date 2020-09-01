@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.antlr.v4.runtime.*;
 
 class JimpleReader {
@@ -164,7 +165,7 @@ class JimpleReader {
       // implements_clause
       if (ctx.implements_clause() != null) {
         interfaces =
-            ctx.implements_clause().accept(new NameListVisitor()).stream()
+            ctx.implements_clause().type_list().accept(new NameListVisitor()).stream()
                 .map(identifierFactory::getClassType)
                 .collect(Collectors.toSet());
       } else {
@@ -201,13 +202,6 @@ class JimpleReader {
       @Override
       public List<String> visitName(JimpleParser.NameContext ctx) {
         return Collections.singletonList(ctx.getText());
-      }
-
-      @Override
-      public Set<String> visitImplements_clause(JimpleParser.Implements_clauseContext ctx) {
-        Set<String> interfaces = new HashSet<>();
-        iterate(interfaces, ctx.type_list());
-        return interfaces;
       }
 
       public void iterate(Collection<String> list, JimpleParser.Type_listContext ctx) {
@@ -376,7 +370,7 @@ class JimpleReader {
 
       private class StmtVisitor extends JimpleBaseVisitor<Stmt> {
         @Nonnull private final Body.BodyBuilder builder;
-        private Stmt lastStmt = null;
+        @Nullable private Stmt lastStmt = null;
 
         private StmtVisitor(Body.BodyBuilder builder) {
           this.builder = builder;
