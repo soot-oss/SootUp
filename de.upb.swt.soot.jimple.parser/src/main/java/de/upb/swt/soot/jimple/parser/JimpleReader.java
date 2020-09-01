@@ -16,6 +16,7 @@ import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.*;
+import de.upb.swt.soot.core.util.StringTools;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.jimple.JimpleBaseVisitor;
@@ -709,7 +710,7 @@ class JimpleReader {
             final String text = ctx.STRING_CONSTANT().getText();
             return JavaJimple.getInstance().newClassConstant(text.substring(1, text.length() - 1));
           } else if (ctx.STRING_CONSTANT() != null) {
-            final String text = ctx.STRING_CONSTANT().getText();
+            final String text = StringTools.getUnEscapedStringOf(ctx.STRING_CONSTANT().getText());
             return JavaJimple.getInstance().newStringConstant(text.substring(1, text.length() - 1));
           } else if (ctx.BOOL_CONSTANT() != null) {
             return BooleanConstant.getInstance(
