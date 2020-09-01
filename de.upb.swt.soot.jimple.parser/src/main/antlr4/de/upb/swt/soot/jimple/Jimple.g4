@@ -142,10 +142,8 @@ grammar Jimple;
     name (L_BRACKET R_BRACKET)*;
 
 
-// TODO [ms] change recursion to flat list: type (COMMA type)*
   type_list:
-    /*single*/ type |
-    /*multi*/  type COMMA type_list;
+    type (COMMA type)*;
 
   member :
    field | method;
@@ -250,10 +248,8 @@ grammar Jimple;
   array_descriptor :
     L_BRACKET immediate R_BRACKET;
 
-// TODO [ms] remove recursion? -> immediate (COMMA immediate)*
   arg_list :
-    /*single*/ immediate |
-    /*multi*/  immediate COMMA arg_list;
+    immediate (COMMA immediate)*;
 
   immediate :
     /*local*/    local=name |

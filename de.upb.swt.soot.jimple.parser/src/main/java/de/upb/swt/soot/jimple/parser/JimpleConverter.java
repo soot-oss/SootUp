@@ -11,6 +11,7 @@ import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
+import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -190,15 +191,14 @@ class JimpleConverter {
     }
 
     List<String> getTypeList(JimpleParser.Type_listContext ctx) {
-      List<String> list = new ArrayList<>();
-      JimpleParser.Type_listContext name_listContextIterator = ctx;
-      while (name_listContextIterator != null) {
-        if (name_listContextIterator.type() == null) {
-          break;
-        }
-        list.add(name_listContextIterator.type().getText());
-        name_listContextIterator = name_listContextIterator.type_list();
+      final List<JimpleParser.TypeContext> typeList = ctx.type();
+      final int size = typeList.size();
+      List<String> list = new ArrayList<>(size);
+
+      for (JimpleParser.TypeContext typeContext : typeList) {
+        list.add(typeContext.getText());
       }
+
       return list;
     }
 
@@ -280,17 +280,19 @@ class JimpleConverter {
                 throw new IllegalStateException("void is not an allowed Type for a Local.");
               }
 
-              JimpleParser.Arg_listContext immediateIterator = it.arg_list();
-              while (immediateIterator != null) {
-                if (immediateIterator.immediate() != null) {
-                  String localname = immediateIterator.immediate().local.IDENTIFIER().getText();
-                  locals.put(localname, new Local(localname, localtype));
-                } else {
-                  throw new RuntimeException(
-                      "In the Local Declaration you need to reference Locals.");
+              if (it.arg_list() != null) {
+                final List<JimpleParser.ImmediateContext> immediates = it.arg_list().immediate();
+                if (immediates != null) {
+                  for (JimpleParser.ImmediateContext immediate : immediates) {
+                    if (immediate != null && immediate.local != null) {
+                      String localname = immediate.local.IDENTIFIER().getText();
+                      locals.put(localname, new Local(localname, localtype));
+                    } else {
+                      throw new RuntimeException(
+                          "In the Local Declaration you need to reference Locals.");
+                    }
+                  }
                 }
-
-                immediateIterator = immediateIterator.arg_list();
               }
             }
           }
@@ -666,11 +668,14 @@ class JimpleConverter {
         }
 
         @Nonnull
-        private List<Immediate> getArgList(JimpleParser.Arg_listContext immediateIterator) {
+        private List<Immediate> getArgList(JimpleParser.Arg_listContext ctx) {
+          if (ctx == null || ctx.immediate() == null) {
+            return Collections.emptyList();
+          }
+          final List<JimpleParser.ImmediateContext> immediates = ctx.immediate();
           List<Immediate> arglist = new ArrayList<>();
-          while (immediateIterator != null) {
-            arglist.add((Immediate) visitImmediate(immediateIterator.immediate()));
-            immediateIterator = immediateIterator.arg_list();
+          for (JimpleParser.ImmediateContext immediate : immediates) {
+            arglist.add((Immediate) visitImmediate(immediate));
           }
           return arglist;
         }
