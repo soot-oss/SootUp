@@ -118,10 +118,10 @@ grammar Jimple;
     (PLUS|MINUS)? (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
 
   file:
-    importItem* modifier* file_type classname=name extends_clause? implements_clause? L_BRACE member* R_BRACE;
+    importItem* modifier* file_type classname=IDENTIFIER extends_clause? implements_clause? L_BRACE member* R_BRACE;
 
   importItem:
-    'import' location=name SEMICOLON;
+    'import' location=IDENTIFIER SEMICOLON;
 
   modifier :
     'abstract' | 'final' | 'native' | 'public' | 'protected' | 'private' | 'static' | 'synchronized' | 'transient' |'volatile' | 'strictfp' | 'enum' | 'annotation';
@@ -130,16 +130,13 @@ grammar Jimple;
     'class' | 'interface' | 'annotation';
 
   extends_clause :
-    'extends' classname=name;
+    'extends' classname=IDENTIFIER;
 
   implements_clause :
     'implements' type_list;
 
-  name:
-    IDENTIFIER;
-
   type:
-    name (L_BRACKET R_BRACKET)*;
+    IDENTIFIER (L_BRACKET R_BRACKET)*;
 
 
   type_list:
@@ -149,13 +146,13 @@ grammar Jimple;
    field | method;
 
   field :
-    modifier* type name SEMICOLON;
+    modifier* type IDENTIFIER SEMICOLON;
 
   method :
     modifier* type method_name L_PAREN type_list? R_PAREN throws_clause? method_body;
 
   method_name :
-    '<init>' | '<clinit>' | name;
+    '<init>' | '<clinit>' | IDENTIFIER;
 
   throws_clause :
     'throws' type_list;
@@ -168,7 +165,7 @@ grammar Jimple;
     type arg_list SEMICOLON;
 
   statement :
-    label_name=name COLON stmt SEMICOLON |
+    label_name=IDENTIFIER COLON stmt SEMICOLON |
     stmt SEMICOLON;
 
   stmt :
@@ -186,8 +183,8 @@ grammar Jimple;
     BREAKPOINT;
 
   assignments :
-    /*identity*/     local=name COLON_EQUALS identity_ref |
-    /*assign*/       (reference | local=name) EQUALS expression ;
+    /*identity*/     local=IDENTIFIER COLON_EQUALS identity_ref |
+    /*assign*/       (reference | local=IDENTIFIER) EQUALS expression ;
 
   identity_ref :
     '@parameter' parameter_idx=DEC_CONSTANT ':' type | '@this:' type | caught='@caughtexception';
@@ -200,15 +197,15 @@ grammar Jimple;
     DEFAULT;
 
   goto_stmt :
-    GOTO label_name=name;
+    GOTO label_name=IDENTIFIER;
 
   trap_clause :
-    CATCH exceptiontype=name FROM from=name TO to=name WITH with=name SEMICOLON;
+    CATCH exceptiontype=IDENTIFIER FROM from=IDENTIFIER TO to=IDENTIFIER WITH with=IDENTIFIER SEMICOLON;
 
   expression :
-    /*new simple*/  NEW base_type=name |
+    /*new simple*/  NEW base_type=IDENTIFIER |
     /*new array*/   NEWARRAY L_PAREN array_type=type R_PAREN array_descriptor |
-    /*new multi*/   NEWMULTIARRAY L_PAREN multiarray_type=name R_PAREN (L_BRACKET immediate? R_BRACKET)+ |
+    /*new multi*/   NEWMULTIARRAY L_PAREN multiarray_type=IDENTIFIER R_PAREN (L_BRACKET immediate? R_BRACKET)+ |
     /*cast*/        L_PAREN nonvoid_cast=type R_PAREN op=immediate |
     /*instanceof*/  op=immediate INSTANCEOF nonvoid_type=type |
     /*invoke*/      invoke_expr |
@@ -222,7 +219,7 @@ grammar Jimple;
     /*unop*/  unop_expr;
 
   invoke_expr :
-    /*nonstatic*/ nonstaticinvoke=NONSTATIC_INVOKE local_name=name DOT method_signature L_PAREN arg_list? R_PAREN |
+    /*nonstatic*/ nonstaticinvoke=NONSTATIC_INVOKE local_name=IDENTIFIER DOT method_signature L_PAREN arg_list? R_PAREN |
     /*static*/    staticinvoke=STATICINVOKE method_signature L_PAREN arg_list? R_PAREN |
     /*dynamic*/   dynamicinvoke=DYNAMICINVOKE unnamed_method_name=STRING_CONSTANT CMPLT type L_PAREN type_list? R_PAREN CMPGT L_PAREN arg_list? R_PAREN bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
 
@@ -233,16 +230,16 @@ grammar Jimple;
     unop immediate;
 
   method_signature :
-    CMPLT class_name=name COLON type method_name L_PAREN type_list? R_PAREN CMPGT;
+    CMPLT class_name=IDENTIFIER COLON type method_name L_PAREN type_list? R_PAREN CMPGT;
 
   reference :
-    /*array*/ name array_descriptor |
+    /*array*/ IDENTIFIER array_descriptor |
     /*field*/
-    /*instance*/ name DOT field_signature |
+    /*instance*/ IDENTIFIER DOT field_signature |
     /*static*/   field_signature;
 
   field_signature :
-    CMPLT classname=name COLON type fieldname=name CMPGT;
+    CMPLT classname=IDENTIFIER COLON type fieldname=IDENTIFIER CMPGT;
 
   array_descriptor :
     L_BRACKET immediate R_BRACKET;
@@ -251,7 +248,7 @@ grammar Jimple;
     immediate (COMMA immediate)*;
 
   immediate :
-    /*local*/    local=name |
+    /*local*/    local=IDENTIFIER |
     /*constant*/ constant;
 
   constant :

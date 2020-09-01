@@ -181,7 +181,7 @@ class JimpleConverter {
           fields.add(
               new SootField(
                   identifierFactory.getFieldSignature(
-                      field.name().getText(), clazz, field.type().getText()),
+                      field.IDENTIFIER().getText(), clazz, field.type().getText()),
                   modifier));
         }
       }
@@ -282,7 +282,7 @@ class JimpleConverter {
                 if (immediates != null) {
                   for (JimpleParser.ImmediateContext immediate : immediates) {
                     if (immediate != null && immediate.local != null) {
-                      String localname = immediate.local.IDENTIFIER().getText();
+                      String localname = immediate.local.getText();
                       locals.put(localname, new Local(localname, localtype));
                     } else {
                       throw new RuntimeException(
@@ -438,7 +438,7 @@ class JimpleConverter {
               final JimpleParser.AssignmentsContext assignments = ctx.assignments();
               if (assignments != null) {
                 if (assignments.COLON_EQUALS() != null) {
-                  Local left = (Local) valueVisitor.visitName(assignments.local);
+                  Local left = getLocal(assignments.local.getText());
 
                   IdentityRef ref;
                   final JimpleParser.Identity_refContext identityRefCtx =
@@ -464,7 +464,7 @@ class JimpleConverter {
                 } else if (assignments.EQUALS() != null) {
                   Value left =
                       assignments.local != null
-                          ? valueVisitor.visitName(assignments.local)
+                          ? getLocal(assignments.local.getText())
                           : valueVisitor.visitReference(assignments.reference());
 
                   final Value right = valueVisitor.visitExpression(assignments.expression());
@@ -512,11 +512,6 @@ class JimpleConverter {
       private class ValueVisitor extends JimpleBaseVisitor<Value> {
 
         @Override
-        public Value visitName(JimpleParser.NameContext ctx) {
-          return getLocal(ctx.getText());
-        }
-
-        @Override
         public Value visitExpression(JimpleParser.ExpressionContext ctx) {
           if (ctx.NEW() != null) {
             final Type type = getType(ctx.base_type.getText());
@@ -562,8 +557,8 @@ class JimpleConverter {
 
         @Override
         public Value visitImmediate(JimpleParser.ImmediateContext ctx) {
-          if (ctx.name() != null) {
-            return getLocal(ctx.name().getText());
+          if (ctx.IDENTIFIER() != null) {
+            return getLocal(ctx.IDENTIFIER().getText());
           }
           return visitConstant(ctx.constant());
         }
@@ -574,11 +569,11 @@ class JimpleConverter {
           if (ctx.array_descriptor() != null) {
             // array
             Immediate idx = (Immediate) visitImmediate(ctx.array_descriptor().immediate());
-            Local type = getLocal(ctx.name().getText());
+            Local type = getLocal(ctx.IDENTIFIER().getText());
             return JavaJimple.getInstance().newArrayRef(type, idx);
           } else if (ctx.DOT() != null) {
             // instance field
-            String base = ctx.name().getText();
+            String base = ctx.IDENTIFIER().getText();
             FieldSignature fs = getFieldSignature(ctx.field_signature());
 
             return Jimple.newInstanceFieldRef(getLocal(base), fs);
