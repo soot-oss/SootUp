@@ -263,9 +263,7 @@ class JimpleConverter {
 
         if (ctx.method_body() == null) {
           throw new IllegalStateException("Body not found");
-        } else if (ctx.method_body().SEMICOLON() != null) {
-          // no body is given: no brackets, but a semicolon -> abstract
-        } else {
+        } else if (ctx.method_body().SEMICOLON() == null) {
 
           // declare locals
           locals = new HashMap<>();
@@ -301,9 +299,7 @@ class JimpleConverter {
           // statements
           StmtVisitor stmtVisitor = new StmtVisitor(builder);
           if (ctx.method_body().statement() != null) {
-            ctx.method_body()
-                .statement()
-                .forEach(statement -> stmtVisitor.visitStatement(statement));
+            ctx.method_body().statement().forEach(stmtVisitor::visitStatement);
           }
 
           // catch_clause
@@ -325,6 +321,8 @@ class JimpleConverter {
             }
           }
           builder.setTraps(traps);
+        } else {
+          // no body is given: no brackets, but a semicolon -> abstract
         }
 
         Position position =
@@ -362,7 +360,7 @@ class JimpleConverter {
         @Nullable private Stmt lastStmt = null;
         final ValueVisitor valueVisitor = new ValueVisitor();
 
-        private StmtVisitor(Body.BodyBuilder builder) {
+        private StmtVisitor(@Nonnull Body.BodyBuilder builder) {
           this.builder = builder;
         }
 
