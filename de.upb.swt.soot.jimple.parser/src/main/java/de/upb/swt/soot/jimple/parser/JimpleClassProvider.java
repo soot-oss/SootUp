@@ -26,8 +26,8 @@ public class JimpleClassProvider implements ClassProvider {
       AnalysisInputLocation inputlocation, Path sourcePath, ClassType classSignature) {
 
     try {
-      final JimpleReader jimpleReader = new JimpleReader();
-      return jimpleReader.run(
+      final JimpleConverter jimpleConverter = new JimpleConverter();
+      return jimpleConverter.run(
           CharStreams.fromPath(sourcePath), inputlocation, sourcePath, classSignature);
     } catch (IOException e) {
       throw new RuntimeException(e);

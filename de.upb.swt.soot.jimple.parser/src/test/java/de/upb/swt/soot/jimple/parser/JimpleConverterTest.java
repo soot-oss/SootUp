@@ -13,11 +13,11 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.junit.Test;
 
-public class JimpleReaderTest {
+public class JimpleConverterTest {
 
   void checkJimpleClass(CharStream cs) {
 
-    JimpleReader jimpleVisitor = new JimpleReader();
+    JimpleConverter jimpleVisitor = new JimpleConverter();
     final OverridingClassSource scs = jimpleVisitor.run(cs, null, null, null);
     StringWriter output = new StringWriter();
     Printer p = new Printer();

@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.antlr.v4.runtime.*;
 
-class JimpleReader {
+class JimpleConverter {
 
   final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   private Map<String, PackageName> imports = new HashMap<>();
