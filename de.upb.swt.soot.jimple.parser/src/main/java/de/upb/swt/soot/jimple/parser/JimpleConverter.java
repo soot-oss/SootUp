@@ -467,7 +467,7 @@ class JimpleConverter {
                           ? getLocal(assignments.local.getText())
                           : valueVisitor.visitReference(assignments.reference());
 
-                  final Value right = valueVisitor.visitExpression(assignments.expression());
+                  final Value right = valueVisitor.visitValue(assignments.value());
                   return Jimple.newAssignStmt(left, right, pos);
                 } else {
                   throw new RuntimeException("bad assignment");
@@ -512,7 +512,7 @@ class JimpleConverter {
       private class ValueVisitor extends JimpleBaseVisitor<Value> {
 
         @Override
-        public Value visitExpression(JimpleParser.ExpressionContext ctx) {
+        public Value visitValue(JimpleParser.ValueContext ctx) {
           if (ctx.NEW() != null) {
             final Type type = getType(ctx.base_type.getText());
             if (!(type instanceof ReferenceType)) {
@@ -552,7 +552,7 @@ class JimpleConverter {
             Immediate val = (Immediate) visitImmediate(ctx.op);
             return Jimple.newInstanceOfExpr(val, type);
           }
-          return super.visitExpression(ctx);
+          return super.visitValue(ctx);
         }
 
         @Override

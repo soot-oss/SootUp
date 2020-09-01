@@ -184,7 +184,7 @@ grammar Jimple;
 
   assignments :
     /*identity*/     local=IDENTIFIER COLON_EQUALS identity_ref |
-    /*assign*/       (reference | local=IDENTIFIER) EQUALS expression ;
+    /*assign*/       (reference | local=IDENTIFIER) EQUALS value ;
 
   identity_ref :
     '@parameter' parameter_idx=DEC_CONSTANT ':' type | '@this:' type | caught='@caughtexception';
@@ -202,17 +202,17 @@ grammar Jimple;
   trap_clause :
     CATCH exceptiontype=IDENTIFIER FROM from=IDENTIFIER TO to=IDENTIFIER WITH with=IDENTIFIER SEMICOLON;
 
-  expression :
+  value :
+    /*immediate*/   immediate |
+    /*reference*/   reference |
     /*new simple*/  NEW base_type=IDENTIFIER |
     /*new array*/   NEWARRAY L_PAREN array_type=type R_PAREN array_descriptor |
     /*new multi*/   NEWMULTIARRAY L_PAREN multiarray_type=IDENTIFIER R_PAREN (L_BRACKET immediate? R_BRACKET)+ |
     /*cast*/        L_PAREN nonvoid_cast=type R_PAREN op=immediate |
     /*instanceof*/  op=immediate INSTANCEOF nonvoid_type=type |
-    /*invoke*/      invoke_expr |
-    /*reference*/   reference |
     /*binop*/       binop_expr |
-    /*unop*/        unop_expr |
-    /*immediate*/   immediate;
+    /*invoke*/      invoke_expr |
+    /*unop*/        unop_expr ;
 
   bool_expr :
     /*binop*/ binop_expr |
