@@ -23,8 +23,11 @@ public class UnusedLocalEliminatorTest {
 
   @Test
   public void testRemoveUnusedDefsAndUses() {
-    Body originalBody = createBody(true);
-    Body processedBody = new UnusedLocalEliminator().interceptBody(originalBody);
+    Body.BodyBuilder builder = createBody(true);
+    Body originalBody = builder.build();
+
+    new UnusedLocalEliminator().interceptBody(builder);
+    Body processedBody = builder.build();
 
     Set<Local> originalLocals = originalBody.getLocals();
     Set<Local> processedLocals = processedBody.getLocals();
@@ -40,13 +43,15 @@ public class UnusedLocalEliminatorTest {
 
   @Test
   public void testRemoveNothing() {
-    Body originalBody = createBody(false);
-    Body processedBody = new UnusedLocalEliminator().interceptBody(originalBody);
+    Body.BodyBuilder builder = createBody(false);
+    Body originalBody = builder.build();
+    new UnusedLocalEliminator().interceptBody(builder);
+    Body processedBody = builder.build();
 
     assertArrayEquals(originalBody.getStmts().toArray(), processedBody.getStmts().toArray());
   }
 
-  private static Body createBody(boolean unusedLocals) {
+  private static Body.BodyBuilder createBody(boolean unusedLocals) {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
@@ -80,6 +85,6 @@ public class UnusedLocalEliminatorTest {
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "a.b.c", "void", Collections.emptyList()));
-    return builder.build();
+    return builder;
   }
 }

@@ -28,10 +28,8 @@ import javax.annotation.Nonnull;
 
 public class Aggregator implements BodyInterceptor {
 
-  @Nonnull
   @Override
-  public Body interceptBody(@Nonnull Body originalBody) {
+  public void interceptBody(@Nonnull Body.BodyBuilder originalBody) {
     // TODO Implement
-    return originalBody;
   }
 }

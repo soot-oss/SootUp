@@ -28,10 +28,8 @@ import javax.annotation.Nonnull;
 
 public class CopyPropagator implements BodyInterceptor {
 
-  @Nonnull
   @Override
-  public Body interceptBody(@Nonnull Body originalBody) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     // TODO Implement
-    return originalBody;
   }
 }
