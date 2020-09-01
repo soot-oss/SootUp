@@ -43,14 +43,12 @@ grammar Jimple;
   STATICINVOKE : 'staticinvoke';
   DYNAMICINVOKE : 'dynamicinvoke';
 
-
   THROWS : 'throws';
   THROW : 'throw';
   NULL : 'null';
   FROM : 'from';
   TO : 'to';
   WITH : 'with';
-  CLS : 'cls';
 
   COMMA : ',';
   L_BRACE : '{';
@@ -232,7 +230,7 @@ grammar Jimple;
     /*dynamic*/   dynamicinvoke=DYNAMICINVOKE unnamed_method_name=STRING_CONSTANT CMPLT type L_PAREN type_list? R_PAREN CMPGT L_PAREN arg_list? R_PAREN bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
 
   binop_expr :
-    left=immediate op=binop right=immediate;
+    left=immediate binop right=immediate;
 
   unop_expr :
     unop immediate;
@@ -290,6 +288,7 @@ grammar Jimple;
     /*minus*/ MINUS |
     /*mult*/  MULT |
     /*div*/   DIV;
+
 
   unop :
      LENGTHOF | NEG;
