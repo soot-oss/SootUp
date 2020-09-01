@@ -83,47 +83,65 @@ grammar Jimple;
   DIV : '/';
 
 
-  BOOL_CONSTANT : 'true' | 'false';
-  FLOAT_CONSTANT : (PLUS|MINUS)? ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
+  BOOL_CONSTANT :
+    'true' | 'false';
 
-  DEC_CONSTANT : DEC_DIGIT+;
-  fragment DEC_DIGIT: [0-9];
-  fragment HEX_DIGIT: [0-9A-Fa-f];
-  HEX_CONSTANT : '0' ('x' | 'X') HEX_DIGIT+;
+  FLOAT_CONSTANT :
+    (PLUS|MINUS)? ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
 
-  fragment ESCAPABLE_CHAR : '\\' | ' ' | '\'' | '.' | '"' | 'n' | 't' | 'r' | 'b' | 'f';
-  fragment ESCAPE_CHAR : '\\' (ESCAPABLE_CHAR | 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT );
+  DEC_CONSTANT :
+    DEC_DIGIT+;
+  fragment DEC_DIGIT :
+    [0-9];
+  fragment HEX_DIGIT :
+    [0-9A-Fa-f];
+  HEX_CONSTANT :
+    '0' ('x' | 'X') HEX_DIGIT+;
+
+  fragment ESCAPABLE_CHAR :
+    '\\' | ' ' | '\'' | '.' | '"' | 'n' | 't' | 'r' | 'b' | 'f';
+  fragment ESCAPE_CHAR :
+    '\\' (ESCAPABLE_CHAR | 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT );
 
   // escapes and any char except '\' (92) or '"' (34).
   fragment STRING_CHAR :  ESCAPE_CHAR | ~('\\' | '"') ;
 
-  IDENTIFIER: [A-Za-z$_]([A-Za-z0-9$_] | '.' [A-Za-z0-9$_] )* ; // | STRING_CONSTANT
+  IDENTIFIER:
+    [A-Za-z$_]([A-Za-z0-9$_] | '.' [A-Za-z0-9$_] )*;
 
-  BLANK : [ \t\r\n] ->skip;
+  BLANK :
+    [ \t\r\n] ->skip;
 
  /*
   * Parser Rules
   */
 
-  integer_constant : (PLUS|MINUS)? (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
+  integer_constant :
+    (PLUS|MINUS)? (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
 
   file:
     importItem* modifier* file_type classname=name extends_clause? implements_clause? L_BRACE member* R_BRACE;
 
-  importItem: 'import' location=name SEMICOLON;
+  importItem:
+    'import' location=name SEMICOLON;
 
-  modifier : 'abstract' | 'final' | 'native' | 'public' | 'protected' | 'private' | 'static' | 'synchronized' | 'transient' |'volatile' | 'strictfp' | 'enum' | 'annotation';
+  modifier :
+    'abstract' | 'final' | 'native' | 'public' | 'protected' | 'private' | 'static' | 'synchronized' | 'transient' |'volatile' | 'strictfp' | 'enum' | 'annotation';
 
-  file_type : 'class' | 'interface' | 'annotation';
+  file_type :
+    'class' | 'interface' | 'annotation';
 
-  extends_clause : 'extends' classname=name;
+  extends_clause :
+    'extends' classname=name;
 
-  implements_clause : 'implements' names=type_list;
+  implements_clause :
+    'implements' names=type_list;
 
   name:
-    /*ident*/ IDENTIFIER ;// | STRING_CONSTANT ;
+    IDENTIFIER | STRING_CONSTANT ;
 
-  type:        name (L_BRACKET R_BRACKET)*;
+  type:
+    name (L_BRACKET R_BRACKET)*;
 
 
 // TODO [ms] change recursion to flat list: type (COMMA type)*
@@ -131,67 +149,68 @@ grammar Jimple;
     /*single*/ type |
     /*multi*/  type COMMA type_list;
 
-  member:
-                field | method;
+  member :
+   field | method;
 
-  field:
-                modifier* type name SEMICOLON;
+  field :
+    modifier* type name SEMICOLON;
 
-  method:
-                modifier* type method_name L_PAREN type_list? R_PAREN throws_clause? method_body;
+  method :
+    modifier* type method_name L_PAREN type_list? R_PAREN throws_clause? method_body;
 
-  method_name:
-                '<init>' | '<clinit>' | name;
+  method_name :
+    '<init>' | '<clinit>' | name;
 
-  throws_clause:
+  throws_clause :
     'throws' type_list;
 
-  method_body:
+  method_body :
     /*empty*/    SEMICOLON |
     /*full*/     L_BRACE declaration* statement* trap_clause* R_BRACE;
 
-  declaration:
-                 name type_list SEMICOLON;
+  declaration :
+    name type_list SEMICOLON;
 
-  statement:
-    /*label*/    label_name=name COLON stmt SEMICOLON |
-                 stmt SEMICOLON;
+  statement :
+    label_name=name COLON stmt SEMICOLON |
+    stmt SEMICOLON;
 
-  stmt:
-    /*breakpoint*/   BREAKPOINT |
-    /*entermonitor*/ ENTERMONITOR immediate  |
-    /*exitmonitor*/  EXITMONITOR immediate  |
-    /*switch*/       SWITCH L_PAREN immediate R_PAREN L_BRACE case_stmt+ R_BRACE  |
-                     assignments |
-    /*if*/           IF bool_expr goto_stmt |
-    /*goto*/         goto_stmt |
-    /*nop*/          NOP |
-    /*ret*/          RET immediate? |
-    /*return*/       RETURN immediate? |
-    /*throw*/        THROW immediate |
-    /*invoke*/       invoke_expr ;
+  stmt :
+    BREAKPOINT |
+    ENTERMONITOR immediate  |
+    EXITMONITOR immediate  |
+    SWITCH L_PAREN immediate R_PAREN L_BRACE case_stmt+ R_BRACE  |
+    assignments |
+    IF bool_expr goto_stmt |
+    goto_stmt |
+    NOP |
+    RET immediate? |
+    RETURN immediate? |
+    THROW immediate |
+    invoke_expr ;
 
-    assignments:
+    assignments :
     /*identity*/     local=name COLON_EQUALS at_identifier |
     /*assign*/       (reference | local=name) EQUALS expression ;
 
 
-  at_identifier : '@parameter' parameter_idx=DEC_CONSTANT ':' type | '@this:' type | caught='@caughtexception';
+  at_identifier :
+    '@parameter' parameter_idx=DEC_CONSTANT ':' type | '@this:' type | caught='@caughtexception';
 
-  case_stmt:
+  case_stmt :
     case_label COLON goto_stmt SEMICOLON;
 
-  case_label:
-    /*constant*/ CASE integer_constant |
-    /*default*/  DEFAULT;
+  case_label :
+    CASE integer_constant |
+    DEFAULT;
 
-  goto_stmt:
+  goto_stmt :
     GOTO label_name=name;
 
-  trap_clause:
+  trap_clause :
     CATCH exceptiontype=name FROM from=name TO to=name WITH with=name SEMICOLON;
 
-  expression:
+  expression :
     /*new simple*/  NEW base_type=name |
     /*new array*/   NEWARRAY L_PAREN array_type=type R_PAREN array_descriptor |
     /*new multi*/   NEWMULTIARRAY L_PAREN multiarray_type=name R_PAREN (L_BRACKET immediate? R_BRACKET)+ |
@@ -203,46 +222,46 @@ grammar Jimple;
     /*unop*/        unop_expr |
     /*immediate*/   immediate;
 
-  bool_expr:
+  bool_expr :
     /*binop*/ binop_expr |
     /*unop*/  unop_expr;
 
-  invoke_expr:
+  invoke_expr :
     /*nonstatic*/ nonstaticinvoke=NONSTATIC_INVOKE local_name=name DOT method_signature L_PAREN arg_list? R_PAREN |
     /*static*/    staticinvoke=STATICINVOKE method_signature L_PAREN arg_list? R_PAREN |
     /*dynamic*/   dynamicinvoke=DYNAMICINVOKE unnamed_method_name=STRING_CONSTANT CMPLT type L_PAREN type_list? R_PAREN CMPGT L_PAREN arg_list? R_PAREN bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
 
-  binop_expr:
+  binop_expr :
     left=immediate op=binop right=immediate;
 
-  unop_expr:
+  unop_expr :
     unop immediate;
 
-  method_signature:
+  method_signature :
     CMPLT class_name=name COLON type method_name L_PAREN type_list? R_PAREN CMPGT;
 
-  reference:
+  reference :
     /*array*/ name array_descriptor |
     /*field*/
     /*instance*/ name DOT field_signature |
     /*static*/   field_signature;
 
-  field_signature:
+  field_signature :
     CMPLT classname=name COLON type fieldname=name CMPGT;
 
-  array_descriptor:
+  array_descriptor :
     L_BRACKET immediate R_BRACKET;
 
-// TODO [ms] remove rekusrion: immediate (COMMA immediate)*
-  arg_list:
+// TODO [ms] remove recursion? -> immediate (COMMA immediate)*
+  arg_list :
     /*single*/ immediate |
     /*multi*/  immediate COMMA arg_list;
 
-  immediate:
+  immediate :
     /*local*/    local=name |
     /*constant*/ constant;
 
-  constant:
+  constant :
     /*boolean*/ BOOL_CONSTANT |
     /*integer*/ integer_constant |
     /*float*/   FLOAT_CONSTANT |
@@ -250,7 +269,7 @@ grammar Jimple;
     /*clazz*/   CLASS STRING_CONSTANT |
     /*null*/    NULL;
 
-  binop:
+  binop :
     /*and*/   AND |
     /*or*/    OR |
     /*xor*/   XOR |
@@ -272,6 +291,6 @@ grammar Jimple;
     /*mult*/  MULT |
     /*div*/   DIV;
 
-  unop:
+  unop :
      LENGTHOF | NEG;
 
