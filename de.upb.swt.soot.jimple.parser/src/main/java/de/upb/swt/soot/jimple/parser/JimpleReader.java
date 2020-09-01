@@ -132,7 +132,7 @@ class JimpleReader {
 
         // "$" in classname is a heuristic for an inner/outer class
         // FIXME: we dont print outerclass in the Printer
-        final String classname = ctx.classname.getText();
+        final String classname = StringTools.getUnEscapedStringOf(ctx.classname.getText());
         final int dollarPostition = classname.indexOf('$');
         if (dollarPostition > -1) {
           outerclass = getClassType(classname.substring(0, dollarPostition));
@@ -174,8 +174,7 @@ class JimpleReader {
       // member
       for (int i = 0; i < ctx.member().size(); i++) {
         if (ctx.member(i).method() != null) {
-          SootMethod scm = ctx.member(i).accept(new MethodVisitor());
-          methods.add((SootMethod) scm);
+          methods.add(ctx.member(i).accept(new MethodVisitor()));
           lastStmt = null;
         } else {
           final JimpleParser.FieldContext field = ctx.member(i).field();
@@ -272,7 +271,8 @@ class JimpleReader {
                     .collect(Collectors.toList());
 
         MethodSignature methodSignature =
-            identifierFactory.getMethodSignature(methodname, clazz, type, params);
+            identifierFactory.getMethodSignature(
+                StringTools.getUnEscapedStringOf(methodname), clazz, type, params);
         builder.setMethodSignature(methodSignature);
 
         List<ClassType> exceptions =
