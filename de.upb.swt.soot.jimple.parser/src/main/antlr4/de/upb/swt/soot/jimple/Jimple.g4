@@ -210,7 +210,7 @@ grammar Jimple;
     /*new array*/   NEWARRAY L_PAREN array_type=type R_PAREN array_descriptor |
     /*new multi*/   NEWMULTIARRAY L_PAREN multiarray_type=name R_PAREN (L_BRACKET immediate? R_BRACKET)+ |
     /*cast*/        L_PAREN nonvoid_cast=type R_PAREN op=immediate |
-    /*instanceof*/  op=immediate INSTANCEOF nonvoid_type=name |
+    /*instanceof*/  op=immediate INSTANCEOF nonvoid_type=type |
     /*invoke*/      invoke_expr |
     /*reference*/   reference |
     /*binop*/       binop_expr |
