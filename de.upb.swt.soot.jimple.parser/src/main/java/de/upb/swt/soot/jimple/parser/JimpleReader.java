@@ -174,7 +174,7 @@ class JimpleReader {
       // member
       for (int i = 0; i < ctx.member().size(); i++) {
         if (ctx.member(i).method() != null) {
-          methods.add(ctx.member(i).accept(new MethodVisitor()));
+          methods.add(new MethodVisitor().visitMember(ctx.member(i)));
         } else {
           final JimpleParser.FieldContext field = ctx.member(i).field();
           EnumSet<Modifier> modifier = getModifiers(field.modifier());
@@ -300,7 +300,9 @@ class JimpleReader {
           // statements
           StmtVisitor stmtVisitor = new StmtVisitor(builder);
           if (ctx.method_body().statement() != null) {
-            ctx.method_body().statement().forEach(statement -> statement.accept(stmtVisitor));
+            ctx.method_body()
+                .statement()
+                .forEach(statement -> stmtVisitor.visitStatement(statement));
           }
 
           // catch_clause
@@ -394,13 +396,13 @@ class JimpleReader {
             final ValueVisitor valueVisitor = new ValueVisitor();
             if (ctx.ENTERMONITOR() != null) {
               return Jimple.newEnterMonitorStmt(
-                  (Immediate) ctx.immediate().accept(valueVisitor), pos);
+                  (Immediate) valueVisitor.visitImmediate(ctx.immediate()), pos);
             } else if (ctx.EXITMONITOR() != null) {
               return Jimple.newExitMonitorStmt(
-                  (Immediate) ctx.immediate().accept(valueVisitor), pos);
+                  (Immediate) valueVisitor.visitImmediate(ctx.immediate()), pos);
             } else if (ctx.SWITCH() != null) {
 
-              Immediate key = (Immediate) ctx.immediate().accept(valueVisitor);
+              Immediate key = (Immediate) valueVisitor.visitImmediate(ctx.immediate());
               List<IntConstant> lookup = new ArrayList<>();
               List<String> targetLabels = new ArrayList<>();
               int min = Integer.MAX_VALUE;
@@ -439,7 +441,7 @@ class JimpleReader {
               final JimpleParser.AssignmentsContext assignments = ctx.assignments();
               if (assignments != null) {
                 if (assignments.COLON_EQUALS() != null) {
-                  Local left = (Local) assignments.local.accept(valueVisitor);
+                  Local left = (Local) valueVisitor.visitName(assignments.local);
 
                   IdentityRef ref;
                   final JimpleParser.At_identifierContext at_identifierContext =
@@ -465,17 +467,18 @@ class JimpleReader {
                 } else if (assignments.EQUALS() != null) {
                   Value left =
                       assignments.local != null
-                          ? assignments.local.accept(valueVisitor)
-                          : assignments.reference().accept(valueVisitor);
+                          ? valueVisitor.visitName(assignments.local)
+                          : valueVisitor.visitReference(assignments.reference());
 
-                  final Value right = assignments.expression().accept(valueVisitor);
+                  final Value right = valueVisitor.visitExpression(assignments.expression());
                   return Jimple.newAssignStmt(left, right, pos);
                 } else {
                   throw new RuntimeException("bad assignment");
                 }
 
               } else if (ctx.IF() != null) {
-                final Stmt stmt = Jimple.newIfStmt(ctx.bool_expr().accept(valueVisitor), pos);
+                final Stmt stmt =
+                    Jimple.newIfStmt(valueVisitor.visitBool_expr(ctx.bool_expr()), pos);
                 unresolvedBranches.put(
                     stmt, Collections.singletonList(ctx.goto_stmt().label_name.getText()));
                 return stmt;
@@ -487,19 +490,21 @@ class JimpleReader {
               } else if (ctx.NOP() != null) {
                 return Jimple.newNopStmt(pos);
               } else if (ctx.RET() != null) {
-                return Jimple.newRetStmt((Immediate) ctx.immediate().accept(valueVisitor), pos);
+                return Jimple.newRetStmt(
+                    (Immediate) valueVisitor.visitImmediate(ctx.immediate()), pos);
               } else if (ctx.RETURN() != null) {
                 if (ctx.immediate() == null) {
                   return Jimple.newReturnVoidStmt(pos);
                 } else {
                   return Jimple.newReturnStmt(
-                      (Immediate) ctx.immediate().accept(valueVisitor), pos);
+                      (Immediate) valueVisitor.visitImmediate(ctx.immediate()), pos);
                 }
               } else if (ctx.THROW() != null) {
-                return Jimple.newThrowStmt((Immediate) ctx.immediate().accept(valueVisitor), pos);
+                return Jimple.newThrowStmt(
+                    (Immediate) valueVisitor.visitImmediate(ctx.immediate()), pos);
               } else if (ctx.invoke_expr() != null) {
                 return Jimple.newInvokeStmt(
-                    (AbstractInvokeExpr) ctx.invoke_expr().accept(valueVisitor), pos);
+                    (AbstractInvokeExpr) valueVisitor.visitInvoke_expr(ctx.invoke_expr()), pos);
               }
             }
           }
@@ -529,7 +534,7 @@ class JimpleReader {
             }
 
             Immediate dim =
-                (Immediate) ctx.array_descriptor().immediate().accept(new ValueVisitor());
+                (Immediate) new ValueVisitor().visitImmediate(ctx.array_descriptor().immediate());
             return JavaJimple.getInstance().newNewArrayExpr(type, dim);
           } else if (ctx.NEWMULTIARRAY() != null) {
             final Type type = getType(ctx.multiarray_type.getText());
@@ -539,7 +544,7 @@ class JimpleReader {
 
             List<Immediate> sizes =
                 ctx.immediate().stream()
-                    .map(imm -> (Immediate) imm.accept(this))
+                    .map(imm -> (Immediate) visitImmediate(imm))
                     .collect(Collectors.toList());
             if (sizes.size() < 1) {
               throw new IllegalStateException("size list must have at least one element;");
@@ -549,11 +554,11 @@ class JimpleReader {
             return Jimple.newNewMultiArrayExpr(arrtype, sizes);
           } else if (ctx.nonvoid_cast != null) {
             final Type type = getType(ctx.nonvoid_cast.getText());
-            Immediate val = (Immediate) ctx.op.accept(this);
+            Immediate val = (Immediate) visitImmediate(ctx.op);
             return Jimple.newCastExpr(val, type);
           } else if (ctx.INSTANCEOF() != null) {
             final Type type = getType(ctx.nonvoid_type.getText());
-            Immediate val = (Immediate) ctx.op.accept(this);
+            Immediate val = (Immediate) visitImmediate(ctx.op);
             return Jimple.newInstanceOfExpr(val, type);
           }
           return super.visitExpression(ctx);
@@ -564,7 +569,7 @@ class JimpleReader {
           if (ctx.name() != null) {
             return getLocal(ctx.name().getText());
           }
-          return ctx.constant().accept(this);
+          return visitConstant(ctx.constant());
         }
 
         @Override
@@ -572,7 +577,7 @@ class JimpleReader {
 
           if (ctx.array_descriptor() != null) {
             // array
-            Immediate idx = (Immediate) ctx.array_descriptor().immediate().accept(this);
+            Immediate idx = (Immediate) visitImmediate(ctx.array_descriptor().immediate());
             Local type = getLocal(ctx.name().getText());
             return JavaJimple.getInstance().newArrayRef(type, idx);
           } else if (ctx.DOT() != null) {
@@ -667,7 +672,8 @@ class JimpleReader {
         private List<Immediate> getArgList(JimpleParser.Arg_listContext immediateIterator) {
           List<Immediate> arglist = new ArrayList<>();
           while (immediateIterator != null) {
-            arglist.add((Immediate) immediateIterator.immediate().accept(new ValueVisitor()));
+            arglist.add(
+                (Immediate) new ValueVisitor().visitImmediate(immediateIterator.immediate()));
             immediateIterator = immediateIterator.arg_list();
           }
           return arglist;
@@ -711,59 +717,58 @@ class JimpleReader {
         @Override
         public AbstractBinopExpr visitBinop_expr(JimpleParser.Binop_exprContext ctx) {
 
-          Value left = ctx.left.accept(this);
-          Value right = ctx.right.accept(this);
+          Value left = visitImmediate(ctx.left);
+          Value right = visitImmediate(ctx.right);
 
-          JimpleParser.BinopContext binopctx = ctx.op;
-
-          // [ms] maybe its faster to switch( binopctx.getText().hashCode() ) ?
-          if (binopctx.AND() != null) {
-            return new JAndExpr(left, right);
-          } else if (binopctx.OR() != null) {
-            return new JOrExpr(left, right);
-          } else if (binopctx.MOD() != null) {
-            return new JRemExpr(left, right);
-          } else if (binopctx.CMP() != null) {
-            return new JCmpExpr(left, right);
-          } else if (binopctx.CMPG() != null) {
-            return new JCmpgExpr(left, right);
-          } else if (binopctx.CMPL() != null) {
-            return new JCmplExpr(left, right);
-          } else if (binopctx.CMPEQ() != null) {
-            return new JEqExpr(left, right);
-          } else if (binopctx.CMPNE() != null) {
-            return new JNeExpr(left, right);
-          } else if (binopctx.CMPGT() != null) {
-            return new JGtExpr(left, right);
-          } else if (binopctx.CMPGE() != null) {
-            return new JGeExpr(left, right);
-          } else if (binopctx.CMPLT() != null) {
-            return new JLtExpr(left, right);
-          } else if (binopctx.CMPLE() != null) {
-            return new JLeExpr(left, right);
-          } else if (binopctx.SHL() != null) {
-            return new JShlExpr(left, right);
-          } else if (binopctx.SHR() != null) {
-            return new JShrExpr(left, right);
-          } else if (binopctx.USHR() != null) {
-            return new JUshrExpr(left, right);
-          } else if (binopctx.PLUS() != null) {
-            return new JAddExpr(left, right);
-          } else if (binopctx.MINUS() != null) {
-            return new JSubExpr(left, right);
-          } else if (binopctx.MULT() != null) {
-            return new JMulExpr(left, right);
-          } else if (binopctx.DIV() != null) {
-            return new JDivExpr(left, right);
-          } else if (binopctx.XOR() != null) {
-            return new JXorExpr(left, right);
+          switch (ctx.binop().getText()) {
+            case "&":
+              return new JAndExpr(left, right);
+            case "|":
+              return new JOrExpr(left, right);
+            case "%":
+              return new JRemExpr(left, right);
+            case "cmp":
+              return new JCmpExpr(left, right);
+            case "cmpg":
+              return new JCmpgExpr(left, right);
+            case "cmpl":
+              return new JCmplExpr(left, right);
+            case "==":
+              return new JEqExpr(left, right);
+            case "!=":
+              return new JNeExpr(left, right);
+            case ">":
+              return new JGtExpr(left, right);
+            case ">=":
+              return new JGeExpr(left, right);
+            case "<":
+              return new JLtExpr(left, right);
+            case "<=":
+              return new JLeExpr(left, right);
+            case "<<":
+              return new JShlExpr(left, right);
+            case ">>":
+              return new JShrExpr(left, right);
+            case ">>>":
+              return new JUshrExpr(left, right);
+            case "+":
+              return new JAddExpr(left, right);
+            case "-":
+              return new JSubExpr(left, right);
+            case "*":
+              return new JMulExpr(left, right);
+            case "/":
+              return new JDivExpr(left, right);
+            case "^":
+              return new JXorExpr(left, right);
+            default:
+              throw new RuntimeException("Unknown BinOp: " + ctx.binop().getText());
           }
-          throw new RuntimeException("Unknown BinOp: " + binopctx.getText());
         }
 
         @Override
         public Expr visitUnop_expr(JimpleParser.Unop_exprContext ctx) {
-          Immediate value = (Immediate) ctx.immediate().accept(this);
+          Immediate value = (Immediate) visitImmediate(ctx.immediate());
           if (ctx.unop().NEG() != null) {
             return Jimple.newNegExpr(value);
           } else {
