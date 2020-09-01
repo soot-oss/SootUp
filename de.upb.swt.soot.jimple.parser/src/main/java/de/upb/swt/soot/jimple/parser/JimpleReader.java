@@ -707,11 +707,12 @@ class JimpleReader {
             }
             return DoubleConstant.getInstance(Double.parseDouble(floatStr));
           } else if (ctx.CLASS() != null) {
-            final String text = ctx.STRING_CONSTANT().getText();
-            return JavaJimple.getInstance().newClassConstant(text.substring(1, text.length() - 1));
+            final String text = ctx.STRING_CONSTANT().getChild(1).getText();
+            return JavaJimple.getInstance().newClassConstant(text);
           } else if (ctx.STRING_CONSTANT() != null) {
-            final String text = StringTools.getUnEscapedStringOf(ctx.STRING_CONSTANT().getText());
-            return JavaJimple.getInstance().newStringConstant(text.substring(1, text.length() - 1));
+            final String text =
+                StringTools.getUnEscapedStringOf(ctx.STRING_CONSTANT().getChild(1).getText());
+            return JavaJimple.getInstance().newStringConstant(text);
           } else if (ctx.BOOL_CONSTANT() != null) {
             return BooleanConstant.getInstance(
                 ctx.BOOL_CONSTANT().getText().charAt(0) == 't'
