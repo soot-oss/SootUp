@@ -39,6 +39,17 @@ public abstract class ClassType extends ReferenceType {
   public abstract PackageName getPackageName();
 
   @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (getClass() != o.getClass()) {
+      return false;
+    }
+    return getFullyQualifiedName().equals(((ClassType) o).getFullyQualifiedName());
+  }
+
+  @Override
   public String toString() {
     return getFullyQualifiedName();
   }

@@ -138,24 +138,31 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public void removeNode(@Nonnull Stmt node) {
-    final int nodeIdx = existsNodeOrThrow(node);
+    final int nodeIdx = getNodeIdx(node);
     stmtToIdx.remove(node);
 
     // cleanup edges
     final List<Stmt> preds = predecessors.get(nodeIdx);
-    preds.forEach(pred -> successors.get(existsNodeOrThrow(pred)).remove(node));
+    preds.forEach(pred -> successors.get(getNodeIdx(pred)).remove(node));
     predecessors.set(nodeIdx, null); // invalidate entry
 
     final List<Stmt> succs = successors.get(nodeIdx);
-    succs.forEach(succ -> predecessors.get(existsNodeOrThrow(succ)).remove(node));
+    succs.forEach(succ -> predecessors.get(getNodeIdx(succ)).remove(node));
     successors.set(nodeIdx, null); // invalidate entry
   }
 
-  private int existsNodeOrThrow(@Nonnull Stmt node) {
-    final Integer idx = stmtToIdx.get(node);
+  private int getNodeIdx(@Nonnull Stmt node) {
+    Integer idx = stmtToIdx.get(node);
     if (idx == null) {
-      addNode(node);
       throw new RuntimeException("'" + node + "' is currently not a Node in this StmtGraph.");
+    }
+    return idx;
+  }
+
+  private int getNodeIdxOrCreate(@Nonnull Stmt node) {
+    Integer idx = stmtToIdx.get(node);
+    if (idx == null) {
+      idx = addNode(node);
     }
     return idx;
   }
@@ -165,8 +172,8 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
-    int fromIdx = existsNodeOrThrow(from);
-    int toIdx = existsNodeOrThrow(to);
+    int fromIdx = getNodeIdx(from);
+    int toIdx = getNodeIdx(to);
 
     final List<Stmt> pred = predecessors.get(toIdx);
     if (pred != null) {
@@ -185,27 +192,27 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets) {
-    Integer fromIdx = stmtToIdx.get(from);
-    if (fromIdx == null) {
-      fromIdx = addNode(from);
-    }
+    int fromIdx = getNodeIdxOrCreate(from);
 
     targets.forEach(
-        node -> {
-          if (!containsNode(node)) {
-            if (from == node) {
+        target -> {
+          if (!containsNode(target)) {
+            if (from == target) {
               throw new RuntimeException("A Stmt can't flow to itself.");
             }
-            addNode(node);
+            addNode(target);
           }
         });
 
-    // cleanup existing edges before replacing it with the new list with successors
-    successors(from).forEach(succ -> predecessors.get(existsNodeOrThrow(succ)).remove(from));
+    // cleanup existing edges to the successors of *from* Stmt before replacing it with the new list
+    // of successors
+    successors(from).forEach(succ -> predecessors.get(getNodeIdx(succ)).remove(from));
 
+    // add *from* Stmt as predecessor to every *target* Stmt
     for (Stmt target : targets) {
-      predecessors.get(existsNodeOrThrow(target)).add(from);
+      predecessors.get(getNodeIdxOrCreate(target)).add(from);
     }
+    // set list of successors
     successors.set(fromIdx, targets);
   }
 
@@ -214,15 +221,8 @@ public class MutableStmtGraph extends StmtGraph {
       throw new RuntimeException("A Stmt can't flow to itself.");
     }
 
-    Integer fromIdx = stmtToIdx.get(from);
-    if (fromIdx == null) {
-      fromIdx = addNode(from);
-    }
-
-    Integer toIdx = stmtToIdx.get(to);
-    if (toIdx == null) {
-      toIdx = addNode(to);
-    }
+    int fromIdx = getNodeIdxOrCreate(from);
+    int toIdx = getNodeIdxOrCreate(to);
 
     predecessors.get(toIdx).add(from);
     successors.get(fromIdx).add(to);
@@ -237,7 +237,7 @@ public class MutableStmtGraph extends StmtGraph {
   @Override
   @Nonnull
   public List<Stmt> predecessors(@Nonnull Stmt node) {
-    int nodeIdx = existsNodeOrThrow(node);
+    int nodeIdx = getNodeIdx(node);
     final List<Stmt> stmts = predecessors.get(nodeIdx);
     if (stmts == null) {
       return Collections.emptyList();
@@ -248,7 +248,7 @@ public class MutableStmtGraph extends StmtGraph {
   @Override
   @Nonnull
   public List<Stmt> successors(@Nonnull Stmt node) {
-    int nodeIdx = existsNodeOrThrow(node);
+    int nodeIdx = getNodeIdx(node);
     final List<Stmt> stmts = successors.get(nodeIdx);
     if (stmts == null) {
       return Collections.emptyList();
@@ -258,21 +258,21 @@ public class MutableStmtGraph extends StmtGraph {
 
   @Override
   public int inDegree(@Nonnull Stmt node) {
-    int nodeIdx = existsNodeOrThrow(node);
+    int nodeIdx = getNodeIdx(node);
     final List<Stmt> stmts = predecessors.get(nodeIdx);
     return stmts == null ? 0 : stmts.size();
   }
 
   @Override
   public int outDegree(@Nonnull Stmt node) {
-    int nodeIdx = existsNodeOrThrow(node);
+    int nodeIdx = getNodeIdx(node);
     final List<Stmt> stmts = successors.get(nodeIdx);
     return stmts == null ? 0 : stmts.size();
   }
 
   @Override
   public boolean hasEdgeConnecting(@Nonnull Stmt from, @Nonnull Stmt to) {
-    int fromIdx = existsNodeOrThrow(from);
+    int fromIdx = getNodeIdx(from);
     final List<Stmt> stmts = successors.get(fromIdx);
     return stmts != null && stmts.contains(to);
   }

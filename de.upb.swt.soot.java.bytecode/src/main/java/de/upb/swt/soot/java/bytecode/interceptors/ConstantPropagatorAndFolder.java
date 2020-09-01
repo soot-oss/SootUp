@@ -32,10 +32,8 @@ import javax.annotation.Nonnull;
  */
 public class ConstantPropagatorAndFolder implements BodyInterceptor {
 
-  @Nonnull
   @Override
-  public Body interceptBody(@Nonnull Body originalBody) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     // TODO Implement
-    return originalBody;
   }
 }
