@@ -35,13 +35,15 @@ class JimpleReader {
   private Map<String, PackageName> imports = new HashMap<>();
 
   private Type getType(String typename) {
+    typename = StringTools.getUnEscapedStringOf(typename);
     PackageName packageName = imports.get(typename);
     return packageName == null
         ? identifierFactory.getType(typename)
-        : identifierFactory.getClassType(typename, packageName.getPackageName());
+        : identifierFactory.getType(packageName.getPackageName() + "." + typename);
   }
 
   private ClassType getClassType(String typename) {
+    typename = StringTools.getUnEscapedStringOf(typename);
     PackageName packageName = imports.get(typename);
     return packageName == null
         ? identifierFactory.getClassType(typename)
