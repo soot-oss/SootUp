@@ -67,12 +67,7 @@ public class StringTools {
       if (((ch >= 32 && ch <= 126) || ch == cr || ch == lf) && ch != '\\') {
         sb.append(ch);
       } else {
-        sb.append("\\u");
-        final String hexVal = Integer.toHexString(ch);
-        for (int i = hexVal.length(); i < 4; i++) {
-          sb.append('0');
-        }
-        sb.append(hexVal);
+        sb.append(getUnicodeStringFromChar(ch));
       }
     }
 
@@ -143,25 +138,22 @@ public class StringTools {
    * .
    */
   public static String getUnicodeStringFromChar(char ch) {
-    String s = Integer.toHexString(ch);
-    String padding = null;
-
-    switch (s.length()) {
+    StringBuilder sb = new StringBuilder(6);
+    sb.append("\\u");
+    final String hexVal = Integer.toHexString(ch);
+    switch (hexVal.length()) {
       case 1:
-        padding = "000";
+        sb.append("000");
         break;
       case 2:
-        padding = "00";
+        sb.append("00");
         break;
       case 3:
-        padding = "0";
-        break;
-      case 4:
-        padding = "";
+        sb.append('0');
         break;
     }
-
-    return "\\u" + padding + s;
+    sb.append(hexVal);
+    return sb.toString();
   }
 
   /**
