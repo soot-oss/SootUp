@@ -107,7 +107,7 @@ grammar Jimple;
   fragment STRING_CHAR :  ESCAPE_CHAR | ~('\\' | '"') ;
 
   IDENTIFIER:
-    ([A-Za-z$_] | ESCAPE_CHAR) ( ESCAPE_CHAR | [A-Za-z0-9$_] | '.' (ESCAPE_CHAR | [A-Za-z0-9$_]) )*;
+    ([A-Za-z$_] | ESCAPE_CHAR) ( (ESCAPE_CHAR | [A-Za-z0-9$_]) | '.' (ESCAPE_CHAR | [A-Za-z0-9$_]) )*;
 
   BLANK :
     [ \t\r\n] ->skip;
@@ -169,7 +169,7 @@ grammar Jimple;
     /*full*/     L_BRACE declaration* statement* trap_clause* R_BRACE;
 
   declaration :
-    name type_list SEMICOLON;
+    type arg_list SEMICOLON;
 
   statement :
     label_name=name COLON stmt SEMICOLON |

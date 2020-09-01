@@ -11,6 +11,7 @@ import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
+import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -55,6 +56,10 @@ class JimpleReader {
     JimpleLexer lexer = new JimpleLexer(charStream);
     TokenStream tokens = new CommonTokenStream(lexer);
     JimpleParser parser = new JimpleParser(tokens);
+
+    if (charStream.size() == 0) {
+      throw new RuntimeException("Empty File to parse.");
+    }
 
     ClassVisitor classVisitor = new ClassVisitor();
 
@@ -131,10 +136,8 @@ class JimpleReader {
         final int dollarPostition = classname.indexOf('$');
         if (dollarPostition > -1) {
           outerclass = getClassType(classname.substring(0, dollarPostition));
-          clazz = getClassType(classname.substring(dollarPostition + 1));
-        } else {
-          clazz = getClassType(classname);
         }
+        clazz = getClassType(classname);
 
       } else {
         throw new IllegalStateException("Class is not well formed.");
@@ -289,7 +292,7 @@ class JimpleReader {
           locals = new HashMap<>();
           if (ctx.method_body().declaration() != null) {
             for (JimpleParser.DeclarationContext it : ctx.method_body().declaration()) {
-              final String typeStr = it.name().getText();
+              final String typeStr = it.type().getText();
               Type localtype =
                   typeStr.equals("unknown") ? UnknownType.getInstance() : getType(typeStr);
 
@@ -298,16 +301,19 @@ class JimpleReader {
                 throw new IllegalStateException("void is not an allowed Type for a Local.");
               }
 
-              // TODO: [ms] check is distinction necessary and not already handled?
-              List<String> list =
-                  (List<String>)
-                      (it.type_list() != null
-                          ? it.type_list().accept(new NameListVisitor())
-                          : it.accept(new NameListVisitor()));
-              list.forEach(
-                  localname -> {
-                    locals.put(localname, new Local(localname, localtype));
-                  });
+              final ValueVisitor visitor = new ValueVisitor();
+              JimpleParser.Arg_listContext immediateIterator = it.arg_list();
+              while (immediateIterator != null) {
+                if (immediateIterator.immediate() != null) {
+                  String localname = immediateIterator.immediate().local.IDENTIFIER().getText();
+                  locals.put(localname, new Local(localname, localtype));
+                } else {
+                  throw new RuntimeException(
+                      "In the Local Declaration you need to reference Locals.");
+                }
+
+                immediateIterator = immediateIterator.arg_list();
+              }
             }
           }
           builder.setLocals(new HashSet<>(locals.values()));
