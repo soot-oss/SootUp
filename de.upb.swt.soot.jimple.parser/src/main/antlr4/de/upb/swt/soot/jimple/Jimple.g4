@@ -7,6 +7,8 @@ grammar Jimple;
   LINE_COMMENT : '//' ~('\n'|'\r')* ->skip;
   LONG_COMMENT : '/*' ~('*')* '*'+ ( ~('*' | '/')* ~('*')* '*'+)* '/' -> skip;
 
+  STRING_CONSTANT : '"' STRING_CHAR* '"';
+
   CLASS : 'class';
   EXTENDS : 'extends';
   IMPLEMENTS : 'implements';
@@ -83,7 +85,6 @@ grammar Jimple;
 
   BOOL_CONSTANT : 'true' | 'false';
   FLOAT_CONSTANT : (PLUS|MINUS)? ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
-  STRING_CONSTANT : '"' STRING_CHAR* '"';
 
   DEC_CONSTANT : DEC_DIGIT+;
   fragment DEC_DIGIT: [0-9];
@@ -91,8 +92,7 @@ grammar Jimple;
   HEX_CONSTANT : '0' ('x' | 'X') HEX_DIGIT+;
 
   fragment ESCAPABLE_CHAR : '\\' | ' ' | '\'' | '.' | '"' | 'n' | 't' | 'r' | 'b' | 'f';
-  fragment ESCAPE_CODE : 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT;
-  fragment ESCAPE_CHAR : '\\' (ESCAPABLE_CHAR | ESCAPE_CODE);
+  fragment ESCAPE_CHAR : '\\' (ESCAPABLE_CHAR | 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT );
 
   // escapes and any char except '\' (92) or '"' (34).
   fragment STRING_CHAR :  ESCAPE_CHAR | ~('\\' | '"') ;
