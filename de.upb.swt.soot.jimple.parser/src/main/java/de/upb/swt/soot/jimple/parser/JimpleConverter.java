@@ -592,21 +592,6 @@ class JimpleConverter {
           return identifierFactory.getFieldSignature(fieldname, getClassType(classname), type);
         }
 
-        private MethodSignature getMethodSignature(JimpleParser.Method_signatureContext ctx) {
-          String classname = ctx.class_name.getText();
-          Type type = getType(ctx.type().getText());
-          String methodname = ctx.method_name().getText();
-          final JimpleParser.Type_listContext parameterList = ctx.type_list();
-          List<Type> params =
-              parameterList != null
-                  ? getTypeList(parameterList).stream()
-                      .map(identifierFactory::getType)
-                      .collect(Collectors.toList())
-                  : Collections.emptyList();
-          return identifierFactory.getMethodSignature(
-              methodname, getClassType(classname), type, params);
-        }
-
         @Override
         public Expr visitInvoke_expr(JimpleParser.Invoke_exprContext ctx) {
 
@@ -657,19 +642,6 @@ class JimpleConverter {
                 bootstrapMethodRef, bootstrapArgs, methodRef, arglist);
           }
           throw new IllegalStateException("malformed Invoke Expression.");
-        }
-
-        @Nonnull
-        private List<Immediate> getArgList(JimpleParser.Arg_listContext ctx) {
-          if (ctx == null || ctx.immediate() == null) {
-            return Collections.emptyList();
-          }
-          final List<JimpleParser.ImmediateContext> immediates = ctx.immediate();
-          List<Immediate> arglist = new ArrayList<>();
-          for (JimpleParser.ImmediateContext immediate : immediates) {
-            arglist.add((Immediate) visitImmediate(immediate));
-          }
-          return arglist;
         }
 
         @Override
@@ -767,6 +739,35 @@ class JimpleConverter {
           } else {
             return Jimple.newLengthExpr(value);
           }
+        }
+
+        @Nonnull
+        private MethodSignature getMethodSignature(JimpleParser.Method_signatureContext ctx) {
+          String classname = ctx.class_name.getText();
+          Type type = getType(ctx.type().getText());
+          String methodname = ctx.method_name().getText();
+          final JimpleParser.Type_listContext parameterList = ctx.type_list();
+          List<Type> params =
+              parameterList != null
+                  ? getTypeList(parameterList).stream()
+                      .map(identifierFactory::getType)
+                      .collect(Collectors.toList())
+                  : Collections.emptyList();
+          return identifierFactory.getMethodSignature(
+              methodname, getClassType(classname), type, params);
+        }
+
+        @Nonnull
+        private List<Immediate> getArgList(JimpleParser.Arg_listContext ctx) {
+          if (ctx == null || ctx.immediate() == null) {
+            return Collections.emptyList();
+          }
+          final List<JimpleParser.ImmediateContext> immediates = ctx.immediate();
+          List<Immediate> arglist = new ArrayList<>();
+          for (JimpleParser.ImmediateContext immediate : immediates) {
+            arglist.add((Immediate) visitImmediate(immediate));
+          }
+          return arglist;
         }
       }
     }
