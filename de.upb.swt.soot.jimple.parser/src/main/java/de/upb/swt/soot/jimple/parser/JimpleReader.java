@@ -720,50 +720,50 @@ class JimpleReader {
           Value left = visitImmediate(ctx.left);
           Value right = visitImmediate(ctx.right);
 
-          switch (ctx.binop().getText()) {
-            case "&":
-              return new JAndExpr(left, right);
-            case "|":
-              return new JOrExpr(left, right);
-            case "%":
-              return new JRemExpr(left, right);
-            case "cmp":
-              return new JCmpExpr(left, right);
-            case "cmpg":
-              return new JCmpgExpr(left, right);
-            case "cmpl":
-              return new JCmplExpr(left, right);
-            case "==":
-              return new JEqExpr(left, right);
-            case "!=":
-              return new JNeExpr(left, right);
-            case ">":
-              return new JGtExpr(left, right);
-            case ">=":
-              return new JGeExpr(left, right);
-            case "<":
-              return new JLtExpr(left, right);
-            case "<=":
-              return new JLeExpr(left, right);
-            case "<<":
-              return new JShlExpr(left, right);
-            case ">>":
-              return new JShrExpr(left, right);
-            case ">>>":
-              return new JUshrExpr(left, right);
-            case "+":
-              return new JAddExpr(left, right);
-            case "-":
-              return new JSubExpr(left, right);
-            case "*":
-              return new JMulExpr(left, right);
-            case "/":
-              return new JDivExpr(left, right);
-            case "^":
-              return new JXorExpr(left, right);
-            default:
-              throw new RuntimeException("Unknown BinOp: " + ctx.binop().getText());
+          JimpleParser.BinopContext binopctx = ctx.binop();
+
+          if (binopctx.AND() != null) {
+            return new JAndExpr(left, right);
+          } else if (binopctx.OR() != null) {
+            return new JOrExpr(left, right);
+          } else if (binopctx.MOD() != null) {
+            return new JRemExpr(left, right);
+          } else if (binopctx.CMP() != null) {
+            return new JCmpExpr(left, right);
+          } else if (binopctx.CMPG() != null) {
+            return new JCmpgExpr(left, right);
+          } else if (binopctx.CMPL() != null) {
+            return new JCmplExpr(left, right);
+          } else if (binopctx.CMPEQ() != null) {
+            return new JEqExpr(left, right);
+          } else if (binopctx.CMPNE() != null) {
+            return new JNeExpr(left, right);
+          } else if (binopctx.CMPGT() != null) {
+            return new JGtExpr(left, right);
+          } else if (binopctx.CMPGE() != null) {
+            return new JGeExpr(left, right);
+          } else if (binopctx.CMPLT() != null) {
+            return new JLtExpr(left, right);
+          } else if (binopctx.CMPLE() != null) {
+            return new JLeExpr(left, right);
+          } else if (binopctx.SHL() != null) {
+            return new JShlExpr(left, right);
+          } else if (binopctx.SHR() != null) {
+            return new JShrExpr(left, right);
+          } else if (binopctx.USHR() != null) {
+            return new JUshrExpr(left, right);
+          } else if (binopctx.PLUS() != null) {
+            return new JAddExpr(left, right);
+          } else if (binopctx.MINUS() != null) {
+            return new JSubExpr(left, right);
+          } else if (binopctx.MULT() != null) {
+            return new JMulExpr(left, right);
+          } else if (binopctx.DIV() != null) {
+            return new JDivExpr(left, right);
+          } else if (binopctx.XOR() != null) {
+            return new JXorExpr(left, right);
           }
+          throw new RuntimeException("Unknown BinOp: " + binopctx.getText());
         }
 
         @Override
