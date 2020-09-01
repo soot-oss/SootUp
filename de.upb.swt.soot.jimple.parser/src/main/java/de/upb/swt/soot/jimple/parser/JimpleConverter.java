@@ -280,7 +280,6 @@ class JimpleConverter {
                 throw new IllegalStateException("void is not an allowed Type for a Local.");
               }
 
-              final ValueVisitor visitor = new ValueVisitor();
               JimpleParser.Arg_listContext immediateIterator = it.arg_list();
               while (immediateIterator != null) {
                 if (immediateIterator.immediate() != null) {
@@ -359,6 +358,7 @@ class JimpleConverter {
       private class StmtVisitor extends JimpleBaseVisitor<Stmt> {
         @Nonnull private final Body.BodyBuilder builder;
         @Nullable private Stmt lastStmt = null;
+        final ValueVisitor valueVisitor = new ValueVisitor();
 
         private StmtVisitor(Body.BodyBuilder builder) {
           this.builder = builder;
@@ -392,8 +392,6 @@ class JimpleConverter {
           if (ctx.BREAKPOINT() != null) {
             return Jimple.newBreakpointStmt(pos);
           } else {
-            // TODO? cache that instance? make it static?
-            final ValueVisitor valueVisitor = new ValueVisitor();
             if (ctx.ENTERMONITOR() != null) {
               return Jimple.newEnterMonitorStmt(
                   (Immediate) valueVisitor.visitImmediate(ctx.immediate()), pos);
@@ -533,8 +531,7 @@ class JimpleConverter {
               throw new IllegalStateException(type + " can not be an array type.");
             }
 
-            Immediate dim =
-                (Immediate) new ValueVisitor().visitImmediate(ctx.array_descriptor().immediate());
+            Immediate dim = (Immediate) visitImmediate(ctx.array_descriptor().immediate());
             return JavaJimple.getInstance().newNewArrayExpr(type, dim);
           } else if (ctx.NEWMULTIARRAY() != null) {
             final Type type = getType(ctx.multiarray_type.getText());
@@ -672,8 +669,7 @@ class JimpleConverter {
         private List<Immediate> getArgList(JimpleParser.Arg_listContext immediateIterator) {
           List<Immediate> arglist = new ArrayList<>();
           while (immediateIterator != null) {
-            arglist.add(
-                (Immediate) new ValueVisitor().visitImmediate(immediateIterator.immediate()));
+            arglist.add((Immediate) visitImmediate(immediateIterator.immediate()));
             immediateIterator = immediateIterator.arg_list();
           }
           return arglist;
