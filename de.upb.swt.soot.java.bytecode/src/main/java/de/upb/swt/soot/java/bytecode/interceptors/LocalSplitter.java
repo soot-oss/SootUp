@@ -39,10 +39,8 @@ import javax.annotation.Nonnull;
  */
 public class LocalSplitter implements BodyInterceptor {
 
-  @Nonnull
   @Override
-  public Body interceptBody(@Nonnull Body originalBody) {
-    // TODO Implement
-    return originalBody;
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+    // TODO Implement;
   }
 }

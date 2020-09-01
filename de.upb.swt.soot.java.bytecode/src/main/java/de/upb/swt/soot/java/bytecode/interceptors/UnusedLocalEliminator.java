@@ -41,17 +41,15 @@ public class UnusedLocalEliminator implements BodyInterceptor {
    * Removes unused local variables from the List of Stmts of the given {@link Body}. Complexity is
    * linear with respect to the statements.
    *
-   * @param originalBody The current body before interception.
-   * @return The transformed body.
+   * @param builder the BodyBuilder.
    */
-  @Nonnull
   @Override
-  public Body interceptBody(@Nonnull Body originalBody) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
     Set<Local> locals = new HashSet<>();
 
     // Traverse statements copying all used uses and defs
-    for (Stmt stmt : originalBody.getStmts()) {
+    for (Stmt stmt : builder.getStmtGraph()) {
       for (Value value : stmt.getUsesAndDefs()) {
         if (value instanceof Local) {
           Local local = (Local) value;
@@ -60,6 +58,6 @@ public class UnusedLocalEliminator implements BodyInterceptor {
       }
     }
 
-    return Body.builder(originalBody).setLocals(locals).build();
+    builder.setLocals(locals);
   }
 }
