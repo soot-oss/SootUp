@@ -101,7 +101,6 @@ class JimpleReader {
     ClassType outerclass = null; // currently not determined in Java etc -> heuristic used
     Position position = NoPositionInformation.getInstance();
     EnumSet<Modifier> modifiers = null;
-    private Stmt lastStmt = null;
 
     @Override
     @Nonnull
@@ -133,7 +132,6 @@ class JimpleReader {
       if (ctx.classname != null) {
 
         // "$" in classname is a heuristic for an inner/outer class
-        // FIXME: we dont print outerclass in the Printer
         final String classname = StringTools.getUnEscapedStringOf(ctx.classname.getText());
         final int dollarPostition = classname.indexOf('$');
         if (dollarPostition > -1) {
@@ -177,7 +175,6 @@ class JimpleReader {
       for (int i = 0; i < ctx.member().size(); i++) {
         if (ctx.member(i).method() != null) {
           methods.add(ctx.member(i).accept(new MethodVisitor()));
-          lastStmt = null;
         } else {
           final JimpleParser.FieldContext field = ctx.member(i).field();
           EnumSet<Modifier> modifier = getModifiers(field.modifier());
@@ -379,6 +376,7 @@ class JimpleReader {
 
       private class StmtVisitor extends JimpleBaseVisitor<Stmt> {
         @Nonnull private final Body.BodyBuilder builder;
+        private Stmt lastStmt = null;
 
         private StmtVisitor(Body.BodyBuilder builder) {
           this.builder = builder;
