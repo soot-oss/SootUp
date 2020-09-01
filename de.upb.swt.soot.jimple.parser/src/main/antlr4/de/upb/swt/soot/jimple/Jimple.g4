@@ -105,7 +105,7 @@ grammar Jimple;
   fragment STRING_CHAR :  ESCAPE_CHAR | ~('\\' | '"') ;
 
   IDENTIFIER:
-    ([A-Za-z$_] | ESCAPE_CHAR) ( (ESCAPE_CHAR | [A-Za-z0-9$_]) | '.' (ESCAPE_CHAR | [A-Za-z0-9$_]) )*;
+    (([A-Za-z$_] | ESCAPE_CHAR) ( (ESCAPE_CHAR | [A-Za-z0-9$_]) | '.' (ESCAPE_CHAR | [A-Za-z0-9$_]) )*) | ('"' ~('\n' | '\r' | '"') '"');
 
   BLANK :
     [ \t\r\n] ->skip;
@@ -136,7 +136,7 @@ grammar Jimple;
     'implements' type_list;
 
   name:
-    IDENTIFIER ;
+    IDENTIFIER;
 
   type:
     name (L_BRACKET R_BRACKET)*;
