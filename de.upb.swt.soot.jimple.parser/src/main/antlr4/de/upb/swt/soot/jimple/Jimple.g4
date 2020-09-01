@@ -172,25 +172,24 @@ grammar Jimple;
     stmt SEMICOLON;
 
   stmt :
-    BREAKPOINT |
-    ENTERMONITOR immediate  |
-    EXITMONITOR immediate  |
-    SWITCH L_PAREN immediate R_PAREN L_BRACE case_stmt+ R_BRACE  |
     assignments |
     IF bool_expr goto_stmt |
     goto_stmt |
-    NOP |
-    RET immediate? |
+    invoke_expr |
     RETURN immediate? |
+    SWITCH L_PAREN immediate R_PAREN L_BRACE case_stmt+ R_BRACE |
+    RET immediate? |
     THROW immediate |
-    invoke_expr ;
+    ENTERMONITOR immediate |
+    EXITMONITOR immediate |
+    NOP |
+    BREAKPOINT;
 
-    assignments :
-    /*identity*/     local=name COLON_EQUALS at_identifier |
+  assignments :
+    /*identity*/     local=name COLON_EQUALS identity_ref |
     /*assign*/       (reference | local=name) EQUALS expression ;
 
-
-  at_identifier :
+  identity_ref :
     '@parameter' parameter_idx=DEC_CONSTANT ':' type | '@this:' type | caught='@caughtexception';
 
   case_stmt :

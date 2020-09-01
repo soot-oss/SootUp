@@ -11,7 +11,6 @@ import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
-import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -442,14 +441,14 @@ class JimpleConverter {
                   Local left = (Local) valueVisitor.visitName(assignments.local);
 
                   IdentityRef ref;
-                  final JimpleParser.At_identifierContext at_identifierContext =
-                      assignments.at_identifier();
-                  if (at_identifierContext.caught != null) {
+                  final JimpleParser.Identity_refContext identityRefCtx =
+                      assignments.identity_ref();
+                  if (identityRefCtx.caught != null) {
                     ref = JavaJimple.getInstance().newCaughtExceptionRef();
                   } else {
-                    final String type = assignments.at_identifier().type().getText();
-                    if (at_identifierContext.parameter_idx != null) {
-                      int idx = Integer.parseInt(at_identifierContext.parameter_idx.getText());
+                    final String type = assignments.identity_ref().type().getText();
+                    if (identityRefCtx.parameter_idx != null) {
+                      int idx = Integer.parseInt(identityRefCtx.parameter_idx.getText());
                       ref = Jimple.newParameterRef(getType(type), idx);
                     } else {
                       if (clazz.toString().equals(type)) {
