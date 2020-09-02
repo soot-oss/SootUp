@@ -60,7 +60,7 @@ class JimpleConverter {
     JimpleParser parser = new JimpleParser(tokens);
 
     if (charStream.size() == 0) {
-      throw new RuntimeException("Empty File to parse.");
+      throw new IllegalStateException("Empty File to parse.");
     }
 
     ClassVisitor classVisitor = new ClassVisitor();
@@ -68,13 +68,13 @@ class JimpleConverter {
     try {
       classVisitor.visit(parser.file());
     } catch (Exception e) {
-      throw new RuntimeException(
+      throw new IllegalStateException(
           "The Jimple file " + sourcePath.toAbsolutePath() + " is not well formed.", e);
     }
 
     /*  TODO: adapt check for innerclass
     if( !classVisitor.clazz.equals(classSignature) ){
-      throw new RuntimeException("Filename "+ classVisitor.clazz + " does not match the parsed Classname: "+ classSignature );
+      throw new IllegalStateException("Filename "+ classVisitor.clazz + " does not match the parsed Classname: "+ classSignature );
     }
     */
 
@@ -283,7 +283,7 @@ class JimpleConverter {
                       String localname = immediate.local.getText();
                       locals.put(localname, new Local(localname, localtype));
                     } else {
-                      throw new RuntimeException(
+                      throw new IllegalStateException(
                           ctx.start.getLine() + ": Thats not a Local in the Local Declaration.");
                     }
                   }
@@ -410,7 +410,7 @@ class JimpleConverter {
                   if (defaultLabel == null) {
                     defaultLabel = it.goto_stmt().label_name.getText();
                   } else {
-                    throw new RuntimeException(
+                    throw new IllegalStateException(
                         ctx.start.getLine() + ": Only one default label is allowed!");
                   }
                 } else if (case_labelContext.integer_constant().getText() != null) {
@@ -420,7 +420,7 @@ class JimpleConverter {
                   lookup.add(IntConstant.getInstance(value));
                   targetLabels.add(it.goto_stmt().label_name.getText());
                 } else {
-                  throw new RuntimeException(ctx.start.getLine() + ": Label is invalid.");
+                  throw new IllegalStateException(ctx.start.getLine() + ": Label is invalid.");
                 }
               }
               targetLabels.add(defaultLabel);
@@ -470,7 +470,7 @@ class JimpleConverter {
                   final Value right = valueVisitor.visitValue(assignments.value());
                   return Jimple.newAssignStmt(left, right, pos);
                 } else {
-                  throw new RuntimeException(ctx.start.getLine() + ": Bad assignment");
+                  throw new IllegalStateException(ctx.start.getLine() + ": Bad assignment");
                 }
 
               } else if (ctx.IF() != null) {
@@ -505,7 +505,7 @@ class JimpleConverter {
               }
             }
           }
-          throw new RuntimeException(ctx.start.getLine() + ": Unknown Stmt");
+          throw new IllegalStateException(ctx.start.getLine() + ": Unknown Stmt");
         }
       }
 
@@ -733,7 +733,7 @@ class JimpleConverter {
           } else if (binopctx.XOR() != null) {
             return new JXorExpr(left, right);
           }
-          throw new RuntimeException(
+          throw new IllegalStateException(
               ctx.start.getLine() + ": Unknown BinOp: " + binopctx.getText());
         }
 
@@ -750,13 +750,13 @@ class JimpleConverter {
         @Nonnull
         private MethodSignature getMethodSignature(JimpleParser.Method_signatureContext ctx) {
           if (ctx == null) {
-            throw new RuntimeException(ctx.start.getLine() + ": MethodSignature is missing.");
+            throw new IllegalStateException(ctx.start.getLine() + ": MethodSignature is missing.");
           }
           final Token class_name = ctx.class_name;
           final JimpleParser.TypeContext typeCtx = ctx.type();
           final JimpleParser.Method_nameContext method_nameCtx = ctx.method_name();
           if (class_name == null || typeCtx == null || method_nameCtx == null) {
-            throw new RuntimeException(
+            throw new IllegalStateException(
                 ctx.start.getLine() + ": MethodSignature is not well formed.");
           }
           String classname = class_name.getText();
