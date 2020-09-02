@@ -87,15 +87,16 @@ public class LocalSplitterTest {
   public void testLocalSplitterForBinaryBranches() {
 
     Body body = createBBBody();
+    Body.BodyBuilder builder = new Body.BodyBuilder(body);
     LocalSplitter localSplitter = new LocalSplitter();
-    Body newBody = localSplitter.interceptBody(body);
+    localSplitter.interceptBody(builder);
     Body expectedBody = createExpectedBBBody();
 
     // check newBody's locals
-    assertLocalsEquiv(expectedBody.getLocals(), newBody.getLocals());
+    assertLocalsEquiv(expectedBody.getLocals(), builder.getLocals());
 
     // check newBody's stmtGraph
-    assertStmtGraphEquiv(expectedBody.getStmtGraph(), newBody.getStmtGraph());
+    assertStmtGraphEquiv(expectedBody.getStmtGraph(), builder.getStmtGraph());
   }
 
   /**
@@ -125,15 +126,16 @@ public class LocalSplitterTest {
   public void testLocalSplitterForMultilocals() {
 
     Body body = createMultilocalsBody();
+    Body.BodyBuilder builder = new Body.BodyBuilder(body);
     LocalSplitter localSplitter = new LocalSplitter();
-    Body newBody = localSplitter.interceptBody(body);
+    localSplitter.interceptBody(builder);
     Body expectedBody = createExpectedMuiltilocalsBody();
 
     // check newBody's locals
-    assertLocalsEquiv(expectedBody.getLocals(), newBody.getLocals());
+    assertLocalsEquiv(expectedBody.getLocals(), builder.getLocals());
 
     // check newBody's stmtGraph
-    assertStmtGraphEquiv(expectedBody.getStmtGraph(), newBody.getStmtGraph());
+    assertStmtGraphEquiv(expectedBody.getStmtGraph(), builder.getStmtGraph());
   }
 
   /**
@@ -175,15 +177,16 @@ public class LocalSplitterTest {
   public void testLocalSplitterForLoop() {
 
     Body body = createLoopBody();
+    Body.BodyBuilder builder = new Body.BodyBuilder(body);
     LocalSplitter localSplitter = new LocalSplitter();
-    Body newBody = localSplitter.interceptBody(body);
+    localSplitter.interceptBody(builder);
     Body expectedBody = createExpectedLoopBody();
 
     // check newBody's locals
-    assertLocalsEquiv(expectedBody.getLocals(), newBody.getLocals());
+    assertLocalsEquiv(expectedBody.getLocals(), builder.getLocals());
 
     // check newBody's stmtGraph
-    assertStmtGraphEquiv(expectedBody.getStmtGraph(), newBody.getStmtGraph());
+    assertStmtGraphEquiv(expectedBody.getStmtGraph(), builder.getStmtGraph());
   }
 
   /** bodycreater for BinaryBranches */

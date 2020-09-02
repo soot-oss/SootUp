@@ -443,7 +443,7 @@ public class Body implements Copyable {
       cfg = new MutableStmtGraph();
     }
 
-    BodyBuilder(@Nonnull Body body) {
+    public BodyBuilder(@Nonnull Body body) {
       setMethodSignature(body.getMethodSignature());
       setLocals(body.getLocals());
       setPosition(body.getPosition());
@@ -460,6 +460,11 @@ public class Body implements Copyable {
     public List<Stmt> getStmts() {
       cachedLinearizedStmts = Lists.newArrayList(cfg);
       return cachedLinearizedStmts;
+    }
+
+    @Nonnull
+    public Set<Local> getLocals() {
+      return Collections.unmodifiableSet(locals);
     }
 
     @Nonnull
