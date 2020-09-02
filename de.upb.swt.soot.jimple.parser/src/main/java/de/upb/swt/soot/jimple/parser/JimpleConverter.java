@@ -140,7 +140,7 @@ class JimpleConverter {
         clazz = getClassType(classname);
 
       } else {
-        throw new IllegalStateException("Class is not well formed.");
+        throw new IllegalStateException(ctx.start.getLine() + ": Classname is not well formed.");
       }
 
       modifiers = getModifiers(ctx.modifier());
@@ -217,8 +217,9 @@ class JimpleConverter {
 
       public Local getLocal(String name) {
         final Local local = locals.get(name);
+        // TODO: [ms] allow parsing exported jimple option: omitLocals
         if (local == null) {
-          throw new IllegalStateException("a Stmt tried to reference an undeclared Local: " + name);
+          throw new IllegalStateException("A Stmt tried to reference an undeclared Local: " + name);
         }
         return local;
       }
@@ -233,12 +234,12 @@ class JimpleConverter {
 
         final Type type = getType(ctx.type().getText());
         if (type == null) {
-          throw new IllegalStateException("returntype not found");
+          throw new IllegalStateException(ctx.start.getLine() + ": Returntype not found");
         }
 
         final String methodname = ctx.method_name().getText();
         if (methodname == null) {
-          throw new IllegalStateException("methodname not found");
+          throw new IllegalStateException(ctx.start.getLine() + ": Methodname not found");
         }
 
         List<Type> params =
@@ -261,7 +262,7 @@ class JimpleConverter {
                     .collect(Collectors.toList());
 
         if (ctx.method_body() == null) {
-          throw new IllegalStateException("Body not found");
+          throw new IllegalStateException(ctx.start.getLine() + ": Body not found");
         } else if (ctx.method_body().SEMICOLON() == null) {
 
           // declare locals
@@ -274,7 +275,8 @@ class JimpleConverter {
 
               // validate nonvoid
               if (localtype == VoidType.getInstance()) {
-                throw new IllegalStateException("void is not an allowed Type for a Local.");
+                throw new IllegalStateException(
+                    ctx.start.getLine() + ": Void is not an allowed Type for a Local.");
               }
 
               if (it.arg_list() != null) {
@@ -286,7 +288,7 @@ class JimpleConverter {
                       locals.put(localname, new Local(localname, localtype));
                     } else {
                       throw new RuntimeException(
-                          "In the Local Declaration you need to reference Locals.");
+                          ctx.start.getLine() + ": Thats not a Local in the Local Declaration.");
                     }
                   }
                 }
@@ -339,7 +341,8 @@ class JimpleConverter {
             final Stmt target = labeledStmts.get(targetLabel);
             if (target == null) {
               throw new IllegalStateException(
-                  "don't jump into the space! target Stmt not found i.e. no label for: "
+                  ctx.start.getLine()
+                      + ": Don't jump into the Space! The Target Stmt not found i.e. no label for: "
                       + item.getKey()
                       + " to "
                       + targetLabel);
@@ -411,7 +414,8 @@ class JimpleConverter {
                   if (defaultLabel == null) {
                     defaultLabel = it.goto_stmt().label_name.getText();
                   } else {
-                    throw new RuntimeException("only one default label is allowed!");
+                    throw new RuntimeException(
+                        ctx.start.getLine() + ": Only one default label is allowed!");
                   }
                 } else if (case_labelContext.integer_constant().getText() != null) {
                   final int value =
@@ -420,7 +424,7 @@ class JimpleConverter {
                   lookup.add(IntConstant.getInstance(value));
                   targetLabels.add(it.goto_stmt().label_name.getText());
                 } else {
-                  throw new RuntimeException("Label is invalid.");
+                  throw new RuntimeException(ctx.start.getLine() + ": Label is invalid.");
                 }
               }
               targetLabels.add(defaultLabel);
@@ -470,7 +474,7 @@ class JimpleConverter {
                   final Value right = valueVisitor.visitValue(assignments.value());
                   return Jimple.newAssignStmt(left, right, pos);
                 } else {
-                  throw new RuntimeException("bad assignment");
+                  throw new RuntimeException(ctx.start.getLine() + ": Bad assignment");
                 }
 
               } else if (ctx.IF() != null) {
@@ -505,7 +509,7 @@ class JimpleConverter {
               }
             }
           }
-          throw new RuntimeException("Unknown Stmt");
+          throw new RuntimeException(ctx.start.getLine() + ": Unknown Stmt");
         }
       }
 
@@ -513,24 +517,27 @@ class JimpleConverter {
 
         @Override
         public Value visitValue(JimpleParser.ValueContext ctx) {
-          if (ctx.NEW() != null) {
+          if (ctx.NEW() != null && ctx.base_type != null) {
             final Type type = getType(ctx.base_type.getText());
             if (!(type instanceof ReferenceType)) {
-              throw new IllegalStateException(type + " is not a ReferenceType.");
+              throw new IllegalStateException(
+                  ctx.start.getLine() + ": " + type + " is not a ReferenceType.");
             }
             return Jimple.newNewExpr((ReferenceType) type);
           } else if (ctx.NEWARRAY() != null) {
             final Type type = getType(ctx.array_type.getText());
             if (type instanceof VoidType || type instanceof NullType) {
-              throw new IllegalStateException(type + " can not be an array type.");
+              throw new IllegalStateException(
+                  ctx.start.getLine() + ": " + type + " can not be an ArrayType.");
             }
 
             Immediate dim = (Immediate) visitImmediate(ctx.array_descriptor().immediate());
             return JavaJimple.getInstance().newNewArrayExpr(type, dim);
-          } else if (ctx.NEWMULTIARRAY() != null) {
+          } else if (ctx.NEWMULTIARRAY() != null && ctx.immediate() != null) {
             final Type type = getType(ctx.multiarray_type.getText());
             if (!(type instanceof ReferenceType || type instanceof PrimitiveType)) {
-              throw new IllegalStateException("only base types are allowed");
+              throw new IllegalStateException(
+                  ctx.start.getLine() + ": Only base types are allowed");
             }
 
             List<Immediate> sizes =
@@ -538,16 +545,17 @@ class JimpleConverter {
                     .map(imm -> (Immediate) visitImmediate(imm))
                     .collect(Collectors.toList());
             if (sizes.size() < 1) {
-              throw new IllegalStateException("size list must have at least one element;");
+              throw new IllegalStateException(
+                  ctx.start.getLine() + ": The Size list must have at least one Element;");
             }
             ArrayType arrtype =
                 JavaIdentifierFactory.getInstance().getArrayType(type, sizes.size());
             return Jimple.newNewMultiArrayExpr(arrtype, sizes);
-          } else if (ctx.nonvoid_cast != null) {
+          } else if (ctx.nonvoid_cast != null && ctx.op != null) {
             final Type type = getType(ctx.nonvoid_cast.getText());
             Immediate val = (Immediate) visitImmediate(ctx.op);
             return Jimple.newCastExpr(val, type);
-          } else if (ctx.INSTANCEOF() != null) {
+          } else if (ctx.INSTANCEOF() != null && ctx.op != null) {
             final Type type = getType(ctx.nonvoid_type.getText());
             Immediate val = (Immediate) visitImmediate(ctx.op);
             return Jimple.newInstanceOfExpr(val, type);
@@ -609,7 +617,8 @@ class JimpleConverter {
               case 's':
                 return Jimple.newSpecialInvokeExpr(base, methodSig, arglist);
               default:
-                throw new IllegalStateException("malformed nonstatic invoke.");
+                throw new IllegalStateException(
+                    ctx.start.getLine() + ": Unknown Nonstatic Invoke.");
             }
 
           } else if (ctx.staticinvoke != null) {
@@ -641,7 +650,7 @@ class JimpleConverter {
             return Jimple.newDynamicInvokeExpr(
                 bootstrapMethodRef, bootstrapArgs, methodRef, arglist);
           }
-          throw new IllegalStateException("malformed Invoke Expression.");
+          throw new IllegalStateException(ctx.start.getLine() + ": Malformed Invoke Expression.");
         }
 
         @Override
@@ -676,7 +685,7 @@ class JimpleConverter {
           } else if (ctx.NULL() != null) {
             return NullConstant.getInstance();
           }
-          throw new IllegalStateException("Unknown Constant");
+          throw new IllegalStateException(ctx.start.getLine() + ": Unknown Constant");
         }
 
         @Override
@@ -728,7 +737,8 @@ class JimpleConverter {
           } else if (binopctx.XOR() != null) {
             return new JXorExpr(left, right);
           }
-          throw new RuntimeException("Unknown BinOp: " + binopctx.getText());
+          throw new RuntimeException(
+              ctx.start.getLine() + ": Unknown BinOp: " + binopctx.getText());
         }
 
         @Override
@@ -743,9 +753,19 @@ class JimpleConverter {
 
         @Nonnull
         private MethodSignature getMethodSignature(JimpleParser.Method_signatureContext ctx) {
-          String classname = ctx.class_name.getText();
-          Type type = getType(ctx.type().getText());
-          String methodname = ctx.method_name().getText();
+          if (ctx == null) {
+            throw new RuntimeException(ctx.start.getLine() + ": MethodSignature is missing.");
+          }
+          final Token class_name = ctx.class_name;
+          final JimpleParser.TypeContext typeCtx = ctx.type();
+          final JimpleParser.Method_nameContext method_nameCtx = ctx.method_name();
+          if (class_name == null || typeCtx == null || method_nameCtx == null) {
+            throw new RuntimeException(
+                ctx.start.getLine() + ": MethodSignature is not well formed.");
+          }
+          String classname = class_name.getText();
+          Type type = getType(typeCtx.getText());
+          String methodname = method_nameCtx.getText();
           final JimpleParser.Type_listContext parameterList = ctx.type_list();
           List<Type> params =
               parameterList != null
