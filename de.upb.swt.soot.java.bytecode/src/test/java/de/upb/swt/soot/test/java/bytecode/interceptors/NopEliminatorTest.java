@@ -36,8 +36,11 @@ public class NopEliminatorTest {
    */
   @Test
   public void testJNopEnd() {
-    Body testBody = createBody(true);
-    Body processedBody = new NopEliminator().interceptBody(testBody);
+    Body.BodyBuilder builder = createBody(true);
+    Body testBody = builder.build();
+
+    new NopEliminator().interceptBody(builder);
+    Body processedBody = builder.build();
 
     ImmutableStmtGraph expectedGraph = testBody.getStmtGraph();
     ImmutableStmtGraph actualGraph = processedBody.getStmtGraph();
@@ -54,8 +57,10 @@ public class NopEliminatorTest {
    */
   @Test
   public void testNoJNops() {
-    Body testBody = createBody(false);
-    Body processedBody = new NopEliminator().interceptBody(testBody);
+    Body.BodyBuilder testBuilder = createBody(false);
+    Body testBody = testBuilder.build();
+    new NopEliminator().interceptBody(testBuilder);
+    Body processedBody = testBuilder.build();
 
     assertEquals(testBody.getStmtGraph().nodes(), processedBody.getStmtGraph().nodes());
   }
@@ -66,7 +71,7 @@ public class NopEliminatorTest {
    * @param withNop indicates, whether a nop is included
    * @return the generated {@link Body}
    */
-  private static Body createBody(boolean withNop) {
+  private static Body.BodyBuilder createBody(boolean withNop) {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
@@ -95,7 +100,7 @@ public class NopEliminatorTest {
     builder.addFlow(jump, bToA);
     builder.addFlow(bToA, ret);
     if (withNop) {
-      // strToA, jump, bToA, ret, nop;
+      // strToA, jump, bToA, nop, ret;
       JNopStmt nop = new JNopStmt(noPositionInfo);
       builder.removeFlow(bToA, ret);
       builder.addFlow(bToA, nop);
@@ -105,6 +110,6 @@ public class NopEliminatorTest {
     builder.setTraps(traps);
     builder.setPosition(NoPositionInformation.getInstance());
 
-    return builder.build();
+    return builder;
   }
 }
