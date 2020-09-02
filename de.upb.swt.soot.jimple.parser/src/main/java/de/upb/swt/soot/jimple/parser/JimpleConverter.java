@@ -215,13 +215,9 @@ class JimpleConverter {
       private final HashMap<String, Stmt> labeledStmts = new HashMap<>();
       private HashMap<String, Local> locals = new HashMap<>();
 
-      public Local getLocal(String name) {
-        final Local local = locals.get(name);
-        // TODO: [ms] allow parsing exported jimple option: omitLocals
-        if (local == null) {
-          throw new IllegalStateException("A Stmt tried to reference an undeclared Local: " + name);
-        }
-        return local;
+      public Local getLocal(@Nonnull String name) {
+        return locals.computeIfAbsent(
+            name, (ignored) -> new Local(name, UnknownType.getInstance()));
       }
 
       @Override
