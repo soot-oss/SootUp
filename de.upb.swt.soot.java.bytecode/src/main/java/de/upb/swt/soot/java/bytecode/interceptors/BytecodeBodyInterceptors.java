@@ -41,7 +41,8 @@ public enum BytecodeBodyInterceptors {
       new DeadAssignmentEliminator(),
       new NopEliminator(),
       new ConditionalBranchFolder(),
-      new EmptySwitchEliminator());
+      new EmptySwitchEliminator(),
+      new SingleStaticAssignment());
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 

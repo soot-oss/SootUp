@@ -25,15 +25,13 @@ import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 
-/**A BodyTransformer that attemps to indentify the usage of the single static assignment */
+/** A BodyTransformer that attemps to indentify the usage of the single static assignment */
 public class SingleStaticAssignment implements BodyInterceptor {
-    @Override
-    public void interceptBody(@NotNull Body.BodyBuilder builder) {
-        //TODO implement (Refer Soot Shimple):  BodyBuilder for SSA
-        // Remove nops before building cfg
-        // PhiNode insertion: If a varibale is not defined aling all paths of entry to a node
-        StmtGraph stmtGraph= builder.getStmtGraph();
-
-
-    }
+  @Override
+  public void interceptBody(@NotNull Body.BodyBuilder builder) {
+    // TODO implement (Refer Soot Shimple):  BodyBuilder for SSA
+    // Remove nops before building cfg
+    // PhiNode insertion: If a varibale is not defined aling all paths of entry to a node
+    StmtGraph stmtGraph = builder.getStmtGraph();
+  }
 }
