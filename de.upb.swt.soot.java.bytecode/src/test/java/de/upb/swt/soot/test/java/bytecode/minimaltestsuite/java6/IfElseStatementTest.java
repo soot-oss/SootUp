@@ -5,6 +5,9 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -13,11 +16,49 @@ import org.junit.experimental.categories.Category;
 public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
-  public void ifStatement() {
+  public void test() {
     SootMethod method = loadMethod(getMethodSignature("ifStatement"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+    assertJimpleStmts(method, expectedBodyStmtsIfStatement());
+
+    method = loadMethod(getMethodSignature("ifElseStatement"));
+    assertJimpleStmts(method, expectedBodyStmtsIfElseStatement());
+
+    method = loadMethod(getMethodSignature("ifElseIfStatement"));
+    assertJimpleStmts(method, expectedBodyStmtsIfElseIfStatement());
+
+    method = loadMethod(getMethodSignature("ifElseCascadingStatement"));
+    assertJimpleStmts(method, expectedBodyStmtsIfElseCascadingStatement());
+
+    method = loadMethod(getMethodSignature("ifElseCascadingInElseStatement"));
+    assertJimpleStmts(method, expectedBodyStmtsIfElseCascadingInElseStatement());
+
+    method = loadMethod(getMethodSignature("ifElseCascadingElseIfStatement"));
+    assertJimpleStmts(method, expectedBodyStmtsIfElseCascadingElseIfStatement());
+
+    method = loadMethod(getMethodSignature("ifElseCascadingElseIfInElseStatement"));
+    assertJimpleStmts(method, expectedBodyStmtsIfElseCascadingElseIfInElseStatement());
+  }
+
+  public MethodSignature getMethodSignature(String methodName) {
+    return identifierFactory.getMethodSignature(
+        methodName, getDeclaredClassSignature(), "int", Collections.singletonList("int"));
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   *     public int ifStatement(int a){
+   *         int val = 0;
+   *         if(a < 42){
+   *             val = 1;
+   *         }
+   *         return val;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsIfStatement() {
+    return Stream.of(
             "l0 := @this: IfElseStatement",
             "l1 := @parameter0: int",
             "l2 = 0",
@@ -25,15 +66,27 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 1",
             "label1:",
             "$stack3 = l2",
-            "return $stack3"));
+            "return $stack3")
+        .collect(Collectors.toList());
   }
 
-  @Test
-  public void ifElseStatement() {
-    SootMethod method = loadMethod(getMethodSignature("ifElseStatement"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *  public int ifElseStatement(int a){
+   *         int val = 0;
+   *         if(a < 42){
+   *             val = 1;
+   *         }else{
+   *             val = 2;
+   *         }
+   *         return val;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsIfElseStatement() {
+    return Stream.of(
             "l0 := @this: IfElseStatement",
             "l1 := @parameter0: int",
             "l2 = 0",
@@ -44,15 +97,29 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 2",
             "label2:",
             "$stack3 = l2",
-            "return $stack3"));
+            "return $stack3")
+        .collect(Collectors.toList());
   }
 
-  @Test
-  public void ifElseIfStatement() {
-    SootMethod method = loadMethod(getMethodSignature("ifElseIfStatement"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public int ifElseIfStatement(int a){
+   *         int val = 0;
+   *         if(a < 42){
+   *             val = 1;
+   *         }else if( a > 123){
+   *             val = 2;
+   *         }else{
+   *             val = 3;
+   *         }
+   *         return val;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsIfElseIfStatement() {
+    return Stream.of(
             "l0 := @this: IfElseStatement",
             "l1 := @parameter0: int",
             "l2 = 0",
@@ -67,15 +134,31 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 3",
             "label3:",
             "$stack3 = l2",
-            "return $stack3"));
+            "return $stack3")
+        .collect(Collectors.toList());
   }
 
-  @Test
-  public void ifElseCascadingStatement() {
-    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingStatement"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public int ifElseCascadingStatement(int a){
+   *         int val = 0;
+   *         if(a < 42){
+   *             if(a < 42){
+   *                 val = 11;
+   *             }else{
+   *                 val = 12;
+   *             }
+   *         }else{
+   *             val = 3;
+   *         }
+   *         return val;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsIfElseCascadingStatement() {
+    return Stream.of(
             "l0 := @this: IfElseStatement",
             "l1 := @parameter0: int",
             "l2 = 0",
@@ -90,15 +173,31 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 3",
             "label3:",
             "$stack3 = l2",
-            "return $stack3"));
+            "return $stack3")
+        .collect(Collectors.toList());
   }
 
-  @Test
-  public void ifElseCascadingInElseStatement() {
-    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingInElseStatement"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public int ifElseCascadingInElseStatement(int a){
+   *         int val = 0;
+   *         if(a < 42){
+   *             val = 1;
+   *         }else{
+   *             if(a < 42){
+   *                 val = 21;
+   *             }else{
+   *                 val = 22;
+   *             }
+   *         }
+   *         return val;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsIfElseCascadingInElseStatement() {
+    return Stream.of(
             "l0 := @this: IfElseStatement",
             "l1 := @parameter0: int",
             "l2 = 0",
@@ -113,15 +212,33 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 22",
             "label3:",
             "$stack3 = l2",
-            "return $stack3"));
+            "return $stack3")
+        .collect(Collectors.toList());
   }
 
-  @Test
-  public void ifElseCascadingElseIfStatement() {
-    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingElseIfStatement"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public int ifElseCascadingElseIfStatement(int a){
+   *         int val = 0;
+   *         if(a < 42){
+   *             if(a < 42){
+   *                 val = 11;
+   *             }else if(a > 123){
+   *                 val = 12;
+   *             }else{
+   *                 val = 13;
+   *             }
+   *         }else{
+   *             val = 2;
+   *         }
+   *         return val;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsIfElseCascadingElseIfStatement() {
+    return Stream.of(
             "l0 := @this: IfElseStatement",
             "l1 := @parameter0: int",
             "l2 = 0",
@@ -140,15 +257,33 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 2",
             "label4:",
             "$stack3 = l2",
-            "return $stack3"));
+            "return $stack3")
+        .collect(Collectors.toList());
   }
 
-  @Test
-  public void ifElseCascadingElseIfInElseStatement() {
-    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingElseIfInElseStatement"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public int ifElseCascadingElseIfInElseStatement(int a){
+   *         int val = 0;
+   *         if(a < 42){
+   *             val = 1;
+   *         }else{
+   *             if(a < 42){
+   *                 val = 21;
+   *             }else if(a > 123){
+   *                 val = 22;
+   *             }else{
+   *                 val = 23;
+   *             }
+   *         }
+   *         return val;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsIfElseCascadingElseIfInElseStatement() {
+    return Stream.of(
             "l0 := @this: IfElseStatement",
             "l1 := @parameter0: int",
             "l2 = 0",
@@ -167,11 +302,7 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l2 = 23",
             "label4:",
             "$stack3 = l2",
-            "return $stack3"));
-  }
-
-  public MethodSignature getMethodSignature(String methodName) {
-    return identifierFactory.getMethodSignature(
-        methodName, getDeclaredClassSignature(), "int", Collections.singletonList("int"));
+            "return $stack3")
+        .collect(Collectors.toList());
   }
 }

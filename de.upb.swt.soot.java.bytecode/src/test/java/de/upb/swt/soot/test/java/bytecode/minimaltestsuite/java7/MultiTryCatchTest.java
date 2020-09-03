@@ -28,6 +28,34 @@ public class MultiTryCatchTest extends MinimalBytecodeTestSuiteBase {
         "printFile", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * public void printFile() throws Exception {
+   * BufferedReader bufferedReader = new BufferedReader(new FileReader("file.txt"));
+   * try {
+   * String data = "";
+   * int divisor = 10/5;
+   * System.out.println(divisor);
+   * while ((data = bufferedReader.readLine()) != null) {
+   * System.out.println(data);
+   * }
+   * }
+   * catch( IOException | NumberFormatException e){
+   *
+   * }catch (Exception e){
+   *
+   * }finally {
+   * try {
+   * bufferedReader.close();
+   * } catch (IOException e) {
+   * }
+   * }
+   * }
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

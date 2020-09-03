@@ -17,6 +17,17 @@ public class UncheckedCastTest extends MinimalSourceTestSuiteBase {
         "uncheckedCastDisplay", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void uncheckedCastDisplay(){
+   * List list = Arrays.asList(5,8,9,6);
+   * List<Double> intList= list;
+   * System.out.println(intList);
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

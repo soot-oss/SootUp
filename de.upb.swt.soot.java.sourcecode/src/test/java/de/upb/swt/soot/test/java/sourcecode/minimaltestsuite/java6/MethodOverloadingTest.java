@@ -47,6 +47,16 @@ public class MethodOverloadingTest extends MinimalSourceTestSuiteBase {
     assertEquals(3, sootClass.getMethods().size());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     int calculate(int a, int b){
+   *         return a+b;
+   *
+   *     }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
@@ -58,6 +68,16 @@ public class MethodOverloadingTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * int calculate(int a){
+   *         return a+a;
+   *
+   *     }
+   *     </pre>
+   */
   public List<String> expectedBodyStmts1() {
     return Stream.of(
             "r0 := @this: MethodOverloading",

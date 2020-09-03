@@ -21,6 +21,16 @@ public class EmptyStatementTest extends MinimalBytecodeTestSuiteBase {
         "emptyStatement", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * public void emptyStatement(){
+   * int num  = 5;;
+   * }
+   *
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("l0 := @this: EmptyStatement", "l1 = 5", "return")

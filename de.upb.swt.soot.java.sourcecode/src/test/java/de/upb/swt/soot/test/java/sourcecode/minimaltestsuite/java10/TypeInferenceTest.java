@@ -23,6 +23,22 @@ public class TypeInferenceTest extends MinimalSourceTestSuiteBase {
     /** TODO Java 10 is not supported in WALA, feature can not be tested */
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void printFile() throws Exception{
+   * var fileName="file.txt";
+   * var data = "";
+   * var fileReader= new FileReader(fileName);
+   * var bufferedReader= new BufferedReader(fileReader);
+   * while( (data= bufferedReader.readLine()) != null ){
+   * System.out.println(data);
+   * }
+   * bufferedReader.close();
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

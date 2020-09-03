@@ -30,6 +30,13 @@ public class SynchronizedMethodTest extends MinimalBytecodeTestSuiteBase {
     assertTrue(method.isSynchronized());
   }
 
+  /**  <pre>
+   * public synchronized void run()
+   * {
+   * System.out.println("test");
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

@@ -24,6 +24,15 @@ public class EvaluationOrderWithParenthesesTest extends MinimalSourceTestSuiteBa
         Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void evaluationOrderWithParentheses(){
+   * int b = ((1 + 2) * 3);
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

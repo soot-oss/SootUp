@@ -20,6 +20,12 @@ public class StaticMethodInvocationTest extends MinimalBytecodeTestSuiteBase {
         "staticMethodInvocation", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>
+   * public void staticMethodInvocation(){
+   * StaticMethodInvocation.staticmethod();
+   * }
+   * }
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

@@ -605,7 +605,11 @@ public class Body implements Copyable {
       }
 
       // validate statements
-      cfg.validateStmtConnectionsInGraph();
+      try {
+        cfg.validateStmtConnectionsInGraph();
+      } catch (Exception e) {
+        throw new RuntimeException("StmtGraph of " + methodSig + " is invalid.", e);
+      }
 
       return new Body(methodSig, locals, cfg, position);
     }

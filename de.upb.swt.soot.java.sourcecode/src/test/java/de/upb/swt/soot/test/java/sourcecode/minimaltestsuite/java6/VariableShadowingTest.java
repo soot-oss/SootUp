@@ -20,6 +20,16 @@ public class VariableShadowingTest extends MinimalSourceTestSuiteBase {
         "variableShadowing", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void variableShadowing(){
+   * int val = num;
+   * int num = 10;
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

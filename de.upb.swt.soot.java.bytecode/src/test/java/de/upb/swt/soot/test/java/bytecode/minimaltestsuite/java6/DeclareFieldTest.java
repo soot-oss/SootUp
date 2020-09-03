@@ -57,6 +57,15 @@ public class DeclareFieldTest extends MinimalBytecodeTestSuiteBase {
                 }));
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void display(){
+   *         System.out.println(s);
+   *     }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
@@ -67,6 +76,15 @@ public class DeclareFieldTest extends MinimalBytecodeTestSuiteBase {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void staticDisplay(){
+   *         System.out.println(i);
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmts1() {
     return Stream.of(
             "l0 := @this: DeclareField",

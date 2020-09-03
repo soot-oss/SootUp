@@ -31,6 +31,16 @@ public class DeclareConstructorTest extends MinimalSourceTestSuiteBase {
     assertJimpleStmts(method, expectedBodyStmts1());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * public DeclareConstructor(int var1){
+   *         this.var1=var1;
+   *         this.var2=0;
+   *     }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
@@ -43,6 +53,16 @@ public class DeclareConstructorTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public DeclareConstructor(int var1, int var2){
+   *         this.var1=var1;
+   *         this.var2=var2;
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmts1() {
     return Stream.of(
             "r0 := @this: DeclareConstructor",

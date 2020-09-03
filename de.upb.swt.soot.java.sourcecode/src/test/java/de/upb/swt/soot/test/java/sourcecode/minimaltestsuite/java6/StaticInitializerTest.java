@@ -38,6 +38,20 @@ public class StaticInitializerTest extends MinimalSourceTestSuiteBase {
     assertJimpleStmts(staticMethod, expectedBodyStmtsOfClinit());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * static int i=5;
+   *
+   *     static{
+   *         if(i>4)
+   *         {
+   *             i=4;
+   *         }
+   *     }
+   *    </pre>
+   */
   public List<String> expectedBodyStmtsOfClinit() {
     return Stream.of(
             "<StaticInitializer: int i> = 5",
@@ -51,6 +65,15 @@ public class StaticInitializerTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     static void methodStaticInitializer(){
+   * System.out.println(i);
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
