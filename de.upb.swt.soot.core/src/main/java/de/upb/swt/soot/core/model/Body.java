@@ -463,6 +463,11 @@ public class Body implements Copyable {
     }
 
     @Nonnull
+    public Set<Local> getLocals() {
+      return Collections.unmodifiableSet(locals);
+    }
+
+    @Nonnull
     public BodyBuilder setStartingStmt(@Nonnull Stmt startingStmt) {
       cfg.setStartingStmt(startingStmt);
       return this;
@@ -489,6 +494,13 @@ public class Body implements Copyable {
     @Nonnull
     public BodyBuilder setTraps(@Nonnull List<Trap> traps) {
       cfg.setTraps(traps);
+      return this;
+    }
+
+    /** replace the oldStmt with newStmt in stmtGraph and branches */
+    @Nonnull
+    public BodyBuilder replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+      cfg.replaceNode(oldStmt, newStmt);
       return this;
     }
 
