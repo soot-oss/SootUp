@@ -443,7 +443,7 @@ public class Body implements Copyable {
       cfg = new MutableStmtGraph();
     }
 
-    public BodyBuilder(@Nonnull Body body) {
+    BodyBuilder(@Nonnull Body body) {
       setMethodSignature(body.getMethodSignature());
       setLocals(body.getLocals());
       setPosition(body.getPosition());

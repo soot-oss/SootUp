@@ -87,7 +87,7 @@ public class LocalSplitterTest {
   public void testLocalSplitterForBinaryBranches() {
 
     Body body = createBBBody();
-    Body.BodyBuilder builder = new Body.BodyBuilder(body);
+    Body.BodyBuilder builder = Body.builder(body);
     LocalSplitter localSplitter = new LocalSplitter();
     localSplitter.interceptBody(builder);
     Body expectedBody = createExpectedBBBody();
@@ -126,7 +126,7 @@ public class LocalSplitterTest {
   public void testLocalSplitterForMultilocals() {
 
     Body body = createMultilocalsBody();
-    Body.BodyBuilder builder = new Body.BodyBuilder(body);
+    Body.BodyBuilder builder = Body.builder(body);
     LocalSplitter localSplitter = new LocalSplitter();
     localSplitter.interceptBody(builder);
     Body expectedBody = createExpectedMuiltilocalsBody();
@@ -177,7 +177,7 @@ public class LocalSplitterTest {
   public void testLocalSplitterForLoop() {
 
     Body body = createLoopBody();
-    Body.BodyBuilder builder = new Body.BodyBuilder(body);
+    Body.BodyBuilder builder = Body.builder(body);
     LocalSplitter localSplitter = new LocalSplitter();
     localSplitter.interceptBody(builder);
     Body expectedBody = createExpectedLoopBody();
