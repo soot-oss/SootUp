@@ -20,6 +20,19 @@ public class SuperClassTest extends MinimalBytecodeTestSuiteBase {
         "superclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * public void superclassMethod() {
+   * a=10;
+   * b=20;
+   * c=30;
+   * d=40;
+   * }
+   *
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

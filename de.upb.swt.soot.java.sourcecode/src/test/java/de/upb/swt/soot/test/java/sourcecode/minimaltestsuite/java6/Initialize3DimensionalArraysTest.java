@@ -5,19 +5,63 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase {
+
   @Test
   public void test() {
 
     SootMethod method = loadMethod(getMethodSignature("intArrays"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+    assertJimpleStmts(method, expectedBodyStmtsIntArrays());
+
+    method = loadMethod(getMethodSignature("byteArrays"));
+    assertJimpleStmts(method, expectedBodyStmtsByteArrays());
+
+    method = loadMethod(getMethodSignature("shortArrays"));
+    assertJimpleStmts(method, expectedBodyStmtsShortArrays());
+
+    method = loadMethod(getMethodSignature("longArrays"));
+    assertJimpleStmts(method, expectedBodyStmtsLongArrays());
+
+    method = loadMethod(getMethodSignature("floatArrays"));
+    assertJimpleStmts(method, expectedBodyStmtsFloatArrays());
+
+    method = loadMethod(getMethodSignature("doubleArrays"));
+    assertJimpleStmts(method, expectedBodyStmtsDoubleArrays());
+
+    method = loadMethod(getMethodSignature("booleanArrays"));
+    assertJimpleStmts(method, expectedBodyStmtsBooleanArrays());
+
+    method = loadMethod(getMethodSignature("charArrays"));
+    assertJimpleStmts(method, expectedBodyStmtsCharArrays());
+
+    method = loadMethod(getMethodSignature("stringArrays"));
+    assertJimpleStmts(method, expectedBodyStmtsStringArrays());
+  }
+
+  public MethodSignature getMethodSignature(String methodName) {
+    return identifierFactory.getMethodSignature(
+        methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   *     public void intArrays(){
+   *         int[][][] intArray3D = {{{1, 2, 3},{5, 6}},{{7, 8, 9},{10,11}}};
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsIntArrays() {
+    return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
             "$r1 = newarray (int[][])[2]",
             "$r2 = newarray (int[])[2]",
@@ -42,13 +86,22 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
             "$r7[1] = 11",
             "$r5[1] = $r7",
             "$r1[1] = $r5",
-            "return"));
+            "return")
+        .collect(Collectors.toList());
+  }
 
-    method = loadMethod(getMethodSignature("byteArrays"));
-
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void byteArrays(){
+   *         byte[][][] byteArray3D = {{{7, 8, 9},{10,11}},{{1, 2, 3},{5, 6}}};;
+   *
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsByteArrays() {
+    return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
             "$r1 = newarray (byte[][])[2]",
             "$r2 = newarray (byte[])[2]",
@@ -73,12 +126,22 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
             "$r7[1] = 6",
             "$r5[1] = $r7",
             "$r1[1] = $r5",
-            "return"));
+            "return")
+        .collect(Collectors.toList());
+  }
 
-    method = loadMethod(getMethodSignature("shortArrays"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void shortArrays(){
+   *         short[][][] shortArray3D = {{{10,20},{40,85}},{{56,59},{95,35}}};
+   *
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsShortArrays() {
+    return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
             "$r1 = newarray (short[][])[2]",
             "$r2 = newarray (short[])[2]",
@@ -101,12 +164,22 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
             "$r7[1] = 35",
             "$r5[1] = $r7",
             "$r1[1] = $r5",
-            "return"));
+            "return")
+        .collect(Collectors.toList());
+  }
 
-    method = loadMethod(getMethodSignature("longArrays"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void longArrays(){
+   *         long[][][] longArray3D = {{{547087L, 654786L},{547287L, 864645L, 6533786L}},{{34565L,234L},{9851L,63543L}}};
+   *
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsLongArrays() {
+    return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
             "$r1 = newarray (long[][])[2]",
             "$r2 = newarray (long[])[2]",
@@ -130,13 +203,22 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
             "$r7[1] = 63543L",
             "$r5[1] = $r7",
             "$r1[1] = $r5",
-            "return"));
+            "return")
+        .collect(Collectors.toList());
+  }
 
-    method = loadMethod(getMethodSignature("floatArrays"));
-
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void floatArrays(){
+   *         float[][][] floatrray3D = {{{3.14f, 5.46f}, {2.987f, 4.87f}},{{65.15f,854.18f},{16.51f,58.14f}}};
+   *
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsFloatArrays() {
+    return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
             "$r1 = newarray (float[][])[2]",
             "$r2 = newarray (float[])[2]",
@@ -159,12 +241,22 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
             "$r7[1] = 58.14F",
             "$r5[1] = $r7",
             "$r1[1] = $r5",
-            "return"));
+            "return")
+        .collect(Collectors.toList());
+  }
 
-    method = loadMethod(getMethodSignature("doubleArrays"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void doubleArrays(){
+   *         double[][][] doubleArray3D = {{{6.765414d, 9.676565646d},{45.345435d}},{{3.5656d,68.234234d},{68416.651d,65416.5d}}};
+   *
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsDoubleArrays() {
+    return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
             "$r1 = newarray (double[][])[2]",
             "$r2 = newarray (double[])[2]",
@@ -186,12 +278,22 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
             "$r7[1] = 65416.5",
             "$r5[1] = $r7",
             "$r1[1] = $r5",
-            "return"));
+            "return")
+        .collect(Collectors.toList());
+  }
 
-    method = loadMethod(getMethodSignature("booleanArrays"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void booleanArrays(){
+   *         boolean[][][] boolArray3D = {{{true, false},{true}},{{false,false},{true}}};
+   *
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsBooleanArrays() {
+    return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
             "$r1 = newarray (boolean[][])[2]",
             "$r2 = newarray (boolean[])[2]",
@@ -212,12 +314,22 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
             "$r7[0] = 1",
             "$r5[1] = $r7",
             "$r1[1] = $r5",
-            "return"));
+            "return")
+        .collect(Collectors.toList());
+  }
 
-    method = loadMethod(getMethodSignature("charArrays"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void charArrays(){
+   *         char[][][] charArray3D = {{{'A', 'b', '&'},{'c','$'}},{{'2','G'},{'a','%'}}};
+   *
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsCharArrays() {
+    return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
             "$r1 = newarray (char[][])[2]",
             "$r2 = newarray (char[])[2]",
@@ -241,12 +353,21 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
             "$r7[1] = 37",
             "$r5[1] = $r7",
             "$r1[1] = $r5",
-            "return"));
+            "return")
+        .collect(Collectors.toList());
+  }
 
-    method = loadMethod(getMethodSignature("stringArrays"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void stringArrays() {
+   *         String[][][] stringArray3D = {{{"Hello World"}, {"Greetings", "Welcome"}}, {{"Future","Soot"},{"UPB","HNI"}}};
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsStringArrays() {
+    return Stream.of(
             "r0 := @this: Initialize3DimensionalArrays",
             "$r1 = newarray (java.lang.String[][])[2]",
             "$r2 = newarray (java.lang.String[])[2]",
@@ -268,11 +389,7 @@ public class Initialize3DimensionalArraysTest extends MinimalSourceTestSuiteBase
             "$r7[1] = \"HNI\"",
             "$r5[1] = $r7",
             "$r1[1] = $r5",
-            "return"));
-  }
-
-  public MethodSignature getMethodSignature(String methodName) {
-    return identifierFactory.getMethodSignature(
-        methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
+            "return")
+        .collect(Collectors.toList());
   }
 }

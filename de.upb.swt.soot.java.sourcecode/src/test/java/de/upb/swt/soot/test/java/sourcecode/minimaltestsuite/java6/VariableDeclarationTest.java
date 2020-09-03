@@ -11,6 +11,8 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -22,38 +24,32 @@ public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
   public void test() {
 
     SootMethod method = loadMethod(getMethodSignature("shortVariable"));
-    assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 10", "return"));
+    assertJimpleStmts(method, expectedBodyStmtsShortVariable());
 
     method = loadMethod(getMethodSignature("byteVariable"));
-    assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 0", "return"));
+    assertJimpleStmts(method, expectedBodyStmtsByteVariable());
 
     method = loadMethod(getMethodSignature("charVariable"));
-    assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 97", "return"));
+    assertJimpleStmts(method, expectedBodyStmtsCharVariable());
 
     method = loadMethod(getMethodSignature("intVariable"));
-    assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 512", "return"));
+    assertJimpleStmts(method, expectedBodyStmtsIntVariable());
 
     method = loadMethod(getMethodSignature("longVariable"));
-    assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 123456789", "return"));
+    assertJimpleStmts(method, expectedBodyStmtsLongVariable());
 
     method = loadMethod(getMethodSignature("floatVariable"));
-    assertJimpleStmts(
-        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$f0 = 3.14F", "return"));
+    assertJimpleStmts(method, expectedBodyStmtsFloatVariable());
 
     method = loadMethod(getMethodSignature("doubleVariable"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts("r0 := @this: VariableDeclaration", "$d0 = 1.96969654", "return"));
+    assertJimpleStmts(method, expectedBodyStmtsDoubleVariable());
   }
 
   @Ignore
   public void classTypeDefWithoutAssignment() {
     // TODO: [ms] fix: Type of Local $r1 is should be (java.lang.)String
+    // TODO [kk]: Actual   :[unknown $u0, VariableDeclaration r0, r0 := @this: VariableDeclaration,
+    // $u0 = null, return]
     SootMethod method = loadMethod(getMethodSignature("classTypeDefWithoutAssignment"));
     Body body = method.getBody();
     assertNotNull(body);
@@ -72,5 +68,103 @@ public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature(String methodName) {
     return identifierFactory.getMethodSignature(
         methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   *     public void shortVariable() {
+   *         short a = 10;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsShortVariable() {
+    return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 10", "return")
+        .collect(Collectors.toList());
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   *     public void byteVariable() {
+   *         byte b = 0;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsByteVariable() {
+    return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 0", "return")
+        .collect(Collectors.toList());
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   *     public void charVariable() {
+   *         char c = 'a';
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsCharVariable() {
+    return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 97", "return")
+        .collect(Collectors.toList());
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   *     public void intVariable() {
+   *         int d = 512;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsIntVariable() {
+    return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 512", "return")
+        .collect(Collectors.toList());
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   *     public void longVariable() {
+   *         long e = 123456789;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsLongVariable() {
+    return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 123456789", "return")
+        .collect(Collectors.toList());
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   *     public void floatVariable() {
+   *         float f = 3.14f;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsFloatVariable() {
+    return Stream.of("r0 := @this: VariableDeclaration", "$f0 = 3.14F", "return")
+        .collect(Collectors.toList());
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   *     public void doubleVariable() {
+   *         double g = 1.96969654d;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsDoubleVariable() {
+    return Stream.of("r0 := @this: VariableDeclaration", "$d0 = 1.96969654", "return")
+        .collect(Collectors.toList());
   }
 }

@@ -14,11 +14,32 @@ import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
-public class SymbolsAsClassNameTest extends MinimalBytecodeTestSuiteBase {
+public class UnicodeMethodNameTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         "αρετηAsClassName", getDeclaredClassSignature(), "void", Collections.emptyList());
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * public class UnicodeMethodName {
+   *     public void αρετη(){
+   *         System.out.println("this is αρετη method");
+   *     }
+   * }
+   * </pre>
+   */
+  @Override
+  public List<String> expectedBodyStmts() {
+    return Stream.of(
+            "r0 := @this: αρετη",
+            "$r1 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"this is αρετη class\")",
+            "return")
+        .collect(Collectors.toList());
   }
 
   @Ignore
@@ -33,15 +54,5 @@ public class SymbolsAsClassNameTest extends MinimalBytecodeTestSuiteBase {
     assertJimpleStmts(method, expectedBodyStmts());
     SootClass sootClass = loadClass(getDeclaredClassSignature());
     System.out.println(sootClass.getClassSource().getClassType().getClassName());
-  }
-
-  @Override
-  public List<String> expectedBodyStmts() {
-    return Stream.of(
-            "r0 := @this: αρετη",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"this is αρετη class\")",
-            "return")
-        .collect(Collectors.toList());
   }
 }

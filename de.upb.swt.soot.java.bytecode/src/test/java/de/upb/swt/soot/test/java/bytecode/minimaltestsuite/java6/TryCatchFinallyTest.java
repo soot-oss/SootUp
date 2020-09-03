@@ -4,7 +4,11 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -13,11 +17,79 @@ import org.junit.experimental.categories.Category;
 public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
-  public void tryCatch() {
+  public void test() {
     SootMethod sootMethod = loadMethod(getMethodSignature("tryCatch"));
-    assertJimpleStmts(
-        sootMethod,
-        expectedBodyStmts(
+    assertJimpleStmts(sootMethod, expectedBodyStmtsTryCatch());
+
+    sootMethod = loadMethod(getMethodSignature("tryCatchFinally"));
+    assertJimpleStmts(sootMethod, expectedBodyStmtsTryCatchFinally());
+  }
+
+  @Test
+  public void tryCatchCombined() {
+    SootMethod sootMethod = loadMethod(getMethodSignature("tryCatchCombined"));
+    assertJimpleStmts(sootMethod, expectedBodyStmtsTryCatchCombined());
+  }
+
+  @Test
+  public void tryCatchFinallyCombined() {
+    SootMethod sootMethod = loadMethod(getMethodSignature("tryCatchFinallyCombined"));
+    assertJimpleStmts(sootMethod, expectedBodyStmtsTryCatchFinallyCombined());
+  }
+
+  @Test
+  public void tryCatchNested() {
+    SootMethod sootMethod = loadMethod(getMethodSignature("tryCatchNested"));
+    assertJimpleStmts(sootMethod, expectedBodyStmtsTryCatchNested());
+  }
+
+  @Test
+  public void tryCatchFinallyNested() {
+    SootMethod sootMethod = loadMethod(getMethodSignature("tryCatchFinallyNested"));
+    assertJimpleStmts(sootMethod, expectedBodyStmtsTryCatchFinallyNested());
+  }
+
+  @Test
+  public void tryCatchNestedInCatch() {
+    SootMethod sootMethod = loadMethod(getMethodSignature("tryCatchNestedInCatch"));
+    assertJimpleStmts(sootMethod, expectedBodyStmtsTryCatchNestedInCatch());
+  }
+
+  @Test
+  public void tryCatchFinallyNestedInCatch() {
+    SootMethod sootMethod = loadMethod(getMethodSignature("tryCatchFinallyNestedInCatch"));
+    assertJimpleStmts(sootMethod, expectedBodyStmtsTryCatchFinallyNestedInCatch());
+  }
+
+  @Test
+  public void tryCatchFinallyNestedInFinally() {
+    SootMethod sootMethod = loadMethod(getMethodSignature("tryCatchFinallyNestedInFinally"));
+    assertJimpleStmts(sootMethod, expectedBodyStmtsTryCatchFinallyNestedInFinally());
+  }
+
+  public MethodSignature getMethodSignature(String methodName) {
+    return identifierFactory.getMethodSignature(
+        methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   *     public void tryCatch() {
+   *         String str = "";
+   *         try {
+   *             str = "try";
+   *             System.out.println(str);
+   *         } catch (Exception e) {
+   *             str = "catch";
+   *             System.out.println(str);
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsTryCatch() {
+    return Stream.of(
             "l0 := @this: TryCatchFinally",
             "l1 = \"\"",
             "label1:",
@@ -34,15 +106,31 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
             "virtualinvoke $stack5.<java.io.PrintStream: void println(java.lang.String)>(l1)",
             "label4:",
             "return",
-            "catch java.lang.Exception from label1 to label2 with label3"));
+            "catch java.lang.Exception from label1 to label2 with label3")
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  @Test
-  public void tryCatchFinally() {
-    SootMethod sootMethod = loadMethod(getMethodSignature("tryCatchFinally"));
-    assertJimpleStmts(
-        sootMethod,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void tryCatchFinally() {
+   *         String str = "";
+   *         try {
+   *             str = "try";
+   *             System.out.println(str);
+   *         } catch (Exception e) {
+   *             str = "catch";
+   *             System.out.println(str);
+   *         } finally {
+   *             str = "finally";
+   *             System.out.println(str);
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsTryCatchFinally() {
+    return Stream.of(
             "l0 := @this: TryCatchFinally",
             "l1 = \"\"",
             "label1:",
@@ -76,15 +164,28 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
             "return",
             "catch java.lang.Exception from label1 to label2 with label3",
             "catch java.lang.Throwable from label1 to label2 with label5",
-            "catch java.lang.Throwable from label3 to label4 with label5"));
+            "catch java.lang.Throwable from label3 to label4 with label5")
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  @Test
-  public void tryCatchCombined() {
-    SootMethod sootMethod = loadMethod(getMethodSignature("tryCatchCombined"));
-    assertJimpleStmts(
-        sootMethod,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void tryCatchCombined() {
+   *         String str = "";
+   *         try {
+   *             str = "try";
+   *             System.out.println(str);
+   *         } catch (RuntimeException | StackOverflowError e) {
+   *             str = "catch";
+   *             System.out.println(str);
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsTryCatchCombined() {
+    return Stream.of(
             "l0 := @this: TryCatchFinally",
             "l1 = \"\"",
             "label1:",
@@ -102,15 +203,31 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
             "label4:",
             "return",
             "catch java.lang.RuntimeException from label1 to label2 with label3",
-            "catch java.lang.StackOverflowError from label1 to label2 with label3"));
+            "catch java.lang.StackOverflowError from label1 to label2 with label3")
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  @Test
-  public void tryCatchFinallyCombined() {
-    SootMethod sootMethod = loadMethod(getMethodSignature("tryCatchFinallyCombined"));
-    assertJimpleStmts(
-        sootMethod,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void tryCatchFinallyCombined() {
+   *         String str = "";
+   *         try {
+   *             str = "try";
+   *             System.out.println(str);
+   *         } catch (RuntimeException | StackOverflowError e) {
+   *             str = "catch";
+   *             System.out.println(str);
+   *         } finally {
+   *             str = "finally";
+   *             System.out.println(str);
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsTryCatchFinallyCombined() {
+    return Stream.of(
             "l0 := @this: TryCatchFinally",
             "l1 = \"\"",
             "label1:",
@@ -145,15 +262,35 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
             "catch java.lang.RuntimeException from label1 to label2 with label3",
             "catch java.lang.StackOverflowError from label1 to label2 with label3",
             "catch java.lang.Throwable from label1 to label2 with label5",
-            "catch java.lang.Throwable from label3 to label4 with label5"));
+            "catch java.lang.Throwable from label3 to label4 with label5")
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  @Test
-  public void tryCatchNested() {
-    SootMethod sootMethod = loadMethod(getMethodSignature("tryCatchNested"));
-    assertJimpleStmts(
-        sootMethod,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void tryCatchNested() {
+   *         String str = "";
+   *         try {
+   *             str = "1try";
+   *             System.out.println(str);
+   *             try {
+   *                 str = "2try";
+   *                 System.out.println(str);
+   *             } catch (Exception e) {
+   *                 str = "2catch";
+   *                 System.out.println(str);
+   *             }
+   *         } catch (Exception e) {
+   *             str = "1catch";
+   *             System.out.println(str);
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsTryCatchNested() {
+    return Stream.of(
             "l0 := @this: TryCatchFinally",
             "l1 = \"\"",
             "label1:",
@@ -183,15 +320,38 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
             "label7:",
             "return",
             "catch java.lang.Exception from label2 to label3 with label4",
-            "catch java.lang.Exception from label1 to label5 with label6"));
+            "catch java.lang.Exception from label1 to label5 with label6")
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  @Test
-  public void tryCatchFinallyNested() {
-    SootMethod sootMethod = loadMethod(getMethodSignature("tryCatchFinallyNested"));
-    assertJimpleStmts(
-        sootMethod,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void tryCatchFinallyNested() {
+   *         String str = "";
+   *         try {
+   *             str = "1try";
+   *             System.out.println(str);
+   *             try {
+   *                 str = "2try";
+   *                 System.out.println(str);
+   *             } catch (Exception e) {
+   *                 str = "2catch";
+   *                 System.out.println(str);
+   *             }
+   *         } catch (Exception e) {
+   *             str = "1catch";
+   *             System.out.println(str);
+   *         }finally {
+   *             str = "1finally";
+   *             System.out.println(str);
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsTryCatchFinallyNested() {
+    return Stream.of(
             "l0 := @this: TryCatchFinally",
             "l1 = \"\"",
             "label1:",
@@ -240,15 +400,35 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
             "catch java.lang.Exception from label2 to label3 with label4",
             "catch java.lang.Exception from label1 to label5 with label6",
             "catch java.lang.Throwable from label1 to label5 with label8",
-            "catch java.lang.Throwable from label6 to label7 with label8"));
+            "catch java.lang.Throwable from label6 to label7 with label8")
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  @Test
-  public void tryCatchNestedInCatch() {
-    SootMethod sootMethod = loadMethod(getMethodSignature("tryCatchNestedInCatch"));
-    assertJimpleStmts(
-        sootMethod,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void tryCatchNestedInCatch() {
+   *         String str = "";
+   *         try {
+   *             str = "1try";
+   *             System.out.println(str);
+   *         } catch (Exception e) {
+   *             str = "1catch";
+   *             System.out.println(str);
+   *             try {
+   *                 str = "2try";
+   *                 System.out.println(str);
+   *             } catch (Exception ex) {
+   *                 str = "2catch";
+   *                 System.out.println(str);
+   *             }
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsTryCatchNestedInCatch() {
+    return Stream.of(
             "l0 := @this: TryCatchFinally",
             "l1 = \"\"",
             "label1:",
@@ -278,15 +458,38 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
             "label7:",
             "return",
             "catch java.lang.Exception from label1 to label2 with label3",
-            "catch java.lang.Exception from label4 to label5 with label6"));
+            "catch java.lang.Exception from label4 to label5 with label6")
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  @Test
-  public void tryCatchFinallyNestedInCatch() {
-    SootMethod sootMethod = loadMethod(getMethodSignature("tryCatchFinallyNestedInCatch"));
-    assertJimpleStmts(
-        sootMethod,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void tryCatchFinallyNestedInCatch() {
+   *         String str = "";
+   *         try {
+   *             str = "1try";
+   *             System.out.println(str);
+   *         } catch (Exception e) {
+   *             str = "1catch";
+   *             System.out.println(str);
+   *             try {
+   *                 str = "2try";
+   *                 System.out.println(str);
+   *             } catch (Exception ex) {
+   *                 str = "2catch";
+   *                 System.out.println(str);
+   *             }
+   *         }finally {
+   *             str = "1finally";
+   *             System.out.println(str);
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsTryCatchFinallyNestedInCatch() {
+    return Stream.of(
             "l0 := @this: TryCatchFinally",
             "l1 = \"\"",
             "label01:",
@@ -337,15 +540,38 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
             "catch java.lang.Exception from label04 to label05 with label06",
             "catch java.lang.Throwable from label01 to label02 with label08",
             "catch java.lang.Throwable from label03 to label07 with label08",
-            "catch java.lang.Throwable from label08 to label09 with label08"));
+            "catch java.lang.Throwable from label08 to label09 with label08")
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  @Test
-  public void tryCatchFinallyNestedInFinally() {
-    SootMethod sootMethod = loadMethod(getMethodSignature("tryCatchFinallyNestedInFinally"));
-    assertJimpleStmts(
-        sootMethod,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void tryCatchFinallyNestedInFinally() {
+   *         String str = "";
+   *         try {
+   *             str = "1try";
+   *             System.out.println(str);
+   *         } catch (Exception e) {
+   *             str = "1catch";
+   *             System.out.println(str);
+   *         }finally {
+   *             str = "1finally";
+   *             System.out.println(str);
+   *             try {
+   *                 str = "2try";
+   *                 System.out.println(str);
+   *             } catch (Exception e) {
+   *                 str = "2catch";
+   *                 System.out.println(str);
+   *             }
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsTryCatchFinallyNestedInFinally() {
+    return Stream.of(
             "l0 := @this: TryCatchFinally",
             "l1 = \"\"",
             "label01:",
@@ -420,11 +646,7 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
             "catch java.lang.Exception from label08 to label09 with label10",
             "catch java.lang.Throwable from label01 to label02 with label11",
             "catch java.lang.Throwable from label06 to label07 with label11",
-            "catch java.lang.Exception from label12 to label13 with label14"));
-  }
-
-  public MethodSignature getMethodSignature(String methodName) {
-    return identifierFactory.getMethodSignature(
-        methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
+            "catch java.lang.Exception from label12 to label13 with label14")
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 }

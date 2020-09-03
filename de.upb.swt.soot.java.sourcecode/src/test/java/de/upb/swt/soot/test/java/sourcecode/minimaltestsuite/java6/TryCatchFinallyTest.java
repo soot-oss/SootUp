@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
@@ -9,6 +8,7 @@ import java.util.Collections;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Hasitha Rajapakse */
 @Category(Java8Test.class)
 public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
 

@@ -18,6 +18,15 @@ public class TernaryOperatorTest extends MinimalSourceTestSuiteBase {
         "ternaryOperatorMethod", getDeclaredClassSignature(), "boolean", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     boolean ternaryOperatorMethod(){
+   * return num < 0 ? false : true;
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

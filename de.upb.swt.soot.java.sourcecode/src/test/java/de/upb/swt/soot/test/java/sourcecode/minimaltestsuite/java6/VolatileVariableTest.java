@@ -35,6 +35,15 @@ public class VolatileVariableTest extends MinimalSourceTestSuiteBase {
                 }));
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public int increaseCounter(){
+   * return counter++;
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

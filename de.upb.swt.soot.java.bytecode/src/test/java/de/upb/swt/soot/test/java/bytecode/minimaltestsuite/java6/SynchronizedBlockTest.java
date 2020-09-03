@@ -27,6 +27,16 @@ public class SynchronizedBlockTest extends MinimalBytecodeTestSuiteBase {
     assertJimpleStmts(method, expectedBodyStmts());
   }
 
+  /**  <pre>
+   * public void run()
+   * {
+   * synchronized(msg)
+   * {
+   * System.out.println(msg);
+   * }
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

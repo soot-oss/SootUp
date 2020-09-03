@@ -21,6 +21,15 @@ public class StringWithUnicodeCharTest extends MinimalSourceTestSuiteBase {
         "stringWithUnicodeChar", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void stringWithUnicodeChar(){
+   * String str = "\u0024"+"123";
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

@@ -53,6 +53,16 @@ public class StaticInitializerTest extends MinimalBytecodeTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * static void methodStaticInitializer(){
+   * System.out.println(i);
+   * }
+   *
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

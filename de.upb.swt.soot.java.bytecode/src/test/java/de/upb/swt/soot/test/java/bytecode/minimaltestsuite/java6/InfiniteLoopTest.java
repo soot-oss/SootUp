@@ -20,6 +20,17 @@ public class InfiniteLoopTest extends MinimalBytecodeTestSuiteBase {
         "stmtLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * void stmtLoop(){
+   * infloop:
+   * break infloop;
+   * }
+   *
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("l0 := @this: InfiniteLoop", "return").collect(Collectors.toList());

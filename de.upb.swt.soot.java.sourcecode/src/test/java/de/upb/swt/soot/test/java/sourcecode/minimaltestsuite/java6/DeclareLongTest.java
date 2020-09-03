@@ -17,6 +17,16 @@ public class DeclareLongTest extends MinimalSourceTestSuiteBase {
         "declareLongMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     void declareLongMethod(){
+   * System.out.println(l1);
+   * System.out.println(l2);
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

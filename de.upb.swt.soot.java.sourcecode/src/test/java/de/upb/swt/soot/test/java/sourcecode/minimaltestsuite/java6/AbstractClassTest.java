@@ -34,6 +34,16 @@ public class AbstractClassTest extends MinimalSourceTestSuiteBase {
         "abstractClass", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void abstractClass(){
+   *         A obj = new AbstractClass();
+   *         obj.a();
+   *     }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
