@@ -109,11 +109,11 @@ public class MutableStmtGraph extends StmtGraph {
     return startingStmt;
   }
 
-  public int addNode(@Nonnull Stmt node) {
+  private int addNode(@Nonnull Stmt node) {
     final int idx = nextFreeId++;
     stmtToIdx.put(node, idx);
     predecessors.add(
-        new ArrayList<>(1)); // [ms] hint: wastes an entry if its the TrapHandler or firststmt
+        new ArrayList<>(1)); // [ms] hint: wastes an entry if its a TrapHandler or the first Stmt
 
     final int calculatedSuccessorSize;
     if (node instanceof JSwitchStmt) {
@@ -129,7 +129,7 @@ public class MutableStmtGraph extends StmtGraph {
     return idx;
   }
 
-  public void removeNode(@Nonnull Stmt node) {
+  private void removeNode(@Nonnull Stmt node) {
     final int nodeIdx = getNodeIdx(node);
     stmtToIdx.remove(node);
 

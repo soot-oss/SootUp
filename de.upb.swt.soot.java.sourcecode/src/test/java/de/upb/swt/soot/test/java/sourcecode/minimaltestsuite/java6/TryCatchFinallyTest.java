@@ -5,15 +5,11 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.Collections;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Hasitha Rajapakse */
 @Category(Java8Test.class)
-@Ignore
-// FIXME: [ms] sourcecodefrontend does not add Traps yet to connect unexceptional flows with
-// traphandlers! Issue #299
 public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
 
   @Test
@@ -23,18 +19,21 @@ public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
         sootMethod,
         expectedBodyStmts(
             "r0 := @this: TryCatchFinally",
+            "label1:",
             "$r1 = \"\"",
             "$r1 = \"try\"",
             "$r2 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label1",
+            "goto label3",
+            "label2:",
             "$r3 := @caughtexception",
             "$r4 = $r3",
             "$r1 = \"catch\"",
             "$r5 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "label1:",
-            "return"));
+            "label3:",
+            "return",
+            "catch java.lang.Exception from label1 to label2 with label2"));
   }
 
   @Test
@@ -44,27 +43,32 @@ public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
         sootMethod,
         expectedBodyStmts(
             "r0 := @this: TryCatchFinally",
+            "label1:",
             "$r1 = \"\"",
             "$r1 = \"try\"",
             "$r2 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label1",
+            "goto label4",
+            "label2:",
             "$r3 := @caughtexception",
             "$r4 = $r3",
             "$r1 = \"catch\"",
             "$r5 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label1",
+            "goto label4",
+            "label3:",
             "$r6 := @caughtexception",
             "$r1 = \"finally\"",
             "$r7 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r7.<java.io.PrintStream: void println(java.lang.String)>($r1)",
             "throw $r6",
-            "label1:",
+            "label4:",
             "$r1 = \"finally\"",
             "$r8 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r8.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "return"));
+            "return",
+            "catch java.lang.Exception from label1 to label2 with label2",
+            "catch java.lang.Throwable from label1 to label3 with label3"));
   }
 
   @Test
@@ -74,18 +78,22 @@ public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
         sootMethod,
         expectedBodyStmts(
             "r0 := @this: TryCatchFinally",
+            "label1:",
             "$r1 = \"\"",
             "$r1 = \"try\"",
             "$r2 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label1",
+            "goto label3",
+            "label2:",
             "$r3 := @caughtexception",
             "$r4 = $r3",
             "$r1 = \"catch\"",
             "$r5 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "label1:",
-            "return"));
+            "label3:",
+            "return",
+            "catch java.lang.RuntimeException from label1 to label2 with label2",
+            "catch java.lang.StackOverflowError from label1 to label2 with label2"));
   }
 
   @Test
@@ -95,27 +103,33 @@ public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
         sootMethod,
         expectedBodyStmts(
             "r0 := @this: TryCatchFinally",
+            "label1:",
             "$r1 = \"\"",
             "$r1 = \"try\"",
             "$r2 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label1",
+            "goto label4",
+            "label2:",
             "$r3 := @caughtexception",
             "$r4 = $r3",
             "$r1 = \"catch\"",
             "$r5 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label1",
+            "goto label4",
+            "label3:",
             "$r6 := @caughtexception",
             "$r1 = \"finally\"",
             "$r7 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r7.<java.io.PrintStream: void println(java.lang.String)>($r1)",
             "throw $r6",
-            "label1:",
+            "label4:",
             "$r1 = \"finally\"",
             "$r8 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r8.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "return"));
+            "return",
+            "catch java.lang.RuntimeException from label1 to label2 with label2",
+            "catch java.lang.StackOverflowError from label1 to label2 with label2",
+            "catch java.lang.Throwable from label1 to label3 with label3"));
   }
 
   @Test
@@ -129,24 +143,29 @@ public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
             "$r1 = \"1try\"",
             "$r2 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1)",
+            "label1:",
             "$r1 = \"2try\"",
             "$r3 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label1",
+            "goto label3",
+            "label2:",
             "$r4 := @caughtexception",
             "$r5 = $r4",
             "$r1 = \"2catch\"",
             "$r6 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "label1:",
-            "goto label2",
+            "label3:",
+            "goto label5",
+            "label4:",
             "$r7 := @caughtexception",
             "$r8 = $r7",
             "$r1 = \"1catch\"",
             "$r9 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r9.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "label2:",
-            "return"));
+            "label5:",
+            "return",
+            "catch java.lang.Exception from label1 to label2 with label2",
+            "catch java.lang.Exception from label1 to label4 with label4"));
   }
 
   @Test
@@ -160,33 +179,40 @@ public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
             "$r1 = \"1try\"",
             "$r2 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1)",
+            "label1:",
             "$r1 = \"2try\"",
             "$r3 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label1",
+            "goto label3",
+            "label2:",
             "$r4 := @caughtexception",
             "$r5 = $r4",
             "$r1 = \"2catch\"",
             "$r6 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "label1:",
-            "goto label2",
+            "label3:",
+            "goto label6",
+            "label4:",
             "$r7 := @caughtexception",
             "$r8 = $r7",
             "$r1 = \"1catch\"",
             "$r9 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r9.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label2",
+            "goto label6",
+            "label5:",
             "$r10 := @caughtexception",
             "$r1 = \"1finally\"",
             "$r11 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r11.<java.io.PrintStream: void println(java.lang.String)>($r1)",
             "throw $r10",
-            "label2:",
+            "label6:",
             "$r1 = \"1finally\"",
             "$r12 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r12.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "return"));
+            "return",
+            "catch java.lang.Exception from label1 to label2 with label2",
+            "catch java.lang.Exception from label1 to label4 with label4",
+            "catch java.lang.Throwable from label1 to label5 with label5"));
   }
 
   @Test
@@ -196,27 +222,33 @@ public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
         sootMethod,
         expectedBodyStmts(
             "r0 := @this: TryCatchFinally",
+            "label1:",
             "$r1 = \"\"",
             "$r1 = \"1try\"",
             "$r2 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label1",
+            "goto label5",
+            "label2:",
             "$r3 := @caughtexception",
             "$r4 = $r3",
             "$r1 = \"1catch\"",
             "$r5 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>($r1)",
+            "label3:",
             "$r1 = \"2try\"",
             "$r6 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label1",
+            "goto label5",
+            "label4:",
             "$r7 := @caughtexception",
             "$r8 = $r7",
             "$r1 = \"2catch\"",
             "$r9 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r9.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "label1:",
-            "return"));
+            "label5:",
+            "return",
+            "catch java.lang.Exception from label1 to label2 with label2",
+            "catch java.lang.Exception from label3 to label4 with label4"));
   }
 
   @Test
@@ -226,37 +258,44 @@ public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
         sootMethod,
         expectedBodyStmts(
             "r0 := @this: TryCatchFinally",
+            "label1:",
             "$r1 = \"\"",
             "$r1 = \"1try\"",
             "$r2 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label2",
+            "goto label5",
+            "label2:",
             "$r3 := @caughtexception",
             "$r4 = $r3",
             "$r1 = \"1catch\"",
             "$r5 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label1",
+            "goto label6",
+            "label3:",
             "$r6 := @caughtexception",
             "$r1 = \"1finally\"",
             "$r7 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r7.<java.io.PrintStream: void println(java.lang.String)>($r1)",
             "throw $r6",
-            "label1:",
-            "$r1 = \"2try\"",
-            "$r8 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r8.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label2",
+            "label4:",
             "$r9 := @caughtexception",
             "$r10 = $r9",
             "$r1 = \"2catch\"",
             "$r11 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r11.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "label2:",
+            "label5:",
             "$r1 = \"1finally\"",
             "$r12 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r12.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "return"));
+            "return",
+            "label6:",
+            "$r1 = \"2try\"",
+            "$r8 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $r8.<java.io.PrintStream: void println(java.lang.String)>($r1)",
+            "goto label5",
+            "catch java.lang.Exception from label1 to label2 with label2",
+            "catch java.lang.Throwable from label1 to label3 with label3",
+            "catch java.lang.Exception from label6 to label4 with label4"));
   }
 
   @Test
@@ -266,47 +305,58 @@ public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
         sootMethod,
         expectedBodyStmts(
             "r0 := @this: TryCatchFinally",
+            "label01:",
             "$r1 = \"\"",
             "$r1 = \"1try\"",
             "$r2 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label2",
+            "goto label09",
+            "label02:",
             "$r3 := @caughtexception",
             "$r4 = $r3",
             "$r1 = \"1catch\"",
             "$r5 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label2",
+            "goto label09",
+            "label03:",
             "$r6 := @caughtexception",
             "$r1 = \"1finally\"",
             "$r7 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r7.<java.io.PrintStream: void println(java.lang.String)>($r1)",
+            "label04:",
             "$r1 = \"2try\"",
             "$r8 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r8.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label1",
+            "goto label06",
+            "label05:",
             "$r9 := @caughtexception",
             "$r10 = $r9",
             "$r1 = \"2catch\"",
             "$r11 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r11.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "label1:",
+            "label06:",
             "throw $r6",
-            "label2:",
-            "$r1 = \"1finally\"",
-            "$r12 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r12.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "$r1 = \"2try\"",
-            "$r13 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r13.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "goto label3",
+            "label07:",
             "$r14 := @caughtexception",
             "$r15 = $r14",
             "$r1 = \"2catch\"",
             "$r16 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r16.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-            "label3:",
-            "return"));
+            "label08:",
+            "return",
+            "label09:",
+            "$r1 = \"1finally\"",
+            "$r12 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $r12.<java.io.PrintStream: void println(java.lang.String)>($r1)",
+            "label10:",
+            "$r1 = \"2try\"",
+            "$r13 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $r13.<java.io.PrintStream: void println(java.lang.String)>($r1)",
+            "goto label08",
+            "catch java.lang.Exception from label01 to label02 with label02",
+            "catch java.lang.Throwable from label01 to label03 with label03",
+            "catch java.lang.Throwable from label04 to label05 with label05",
+            "catch java.lang.Exception from label10 to label07 with label07"));
   }
 
   public MethodSignature getMethodSignature(String methodName) {
