@@ -31,7 +31,7 @@ public class SingleStaticAssignment implements BodyInterceptor {
   public void interceptBody(@NotNull Body.BodyBuilder builder) {
     // TODO implement (Refer Soot Shimple):  BodyBuilder for SSA
     // Remove nops before building cfg
-    // PhiNode insertion: If a varibale is not defined aling all paths of entry to a node
+    // PhiNode insertion: If a variable is not defined along all paths of entry to a node
     StmtGraph stmtGraph = builder.getStmtGraph();
   }
 }
