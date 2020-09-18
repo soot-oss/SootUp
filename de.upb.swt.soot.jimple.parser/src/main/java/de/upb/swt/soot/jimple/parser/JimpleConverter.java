@@ -55,9 +55,7 @@ class JimpleConverter {
       AnalysisInputLocation inputlocation,
       Path sourcePath,
       ClassType classSignature) {
-    JimpleLexer lexer = new JimpleLexer(charStream);
-    TokenStream tokens = new CommonTokenStream(lexer);
-    JimpleParser parser = new JimpleParser(tokens);
+    JimpleParser parser = getJimpleParser(charStream);
 
     if (charStream.size() == 0) {
       throw new IllegalStateException("Empty File to parse.");
@@ -89,6 +87,13 @@ class JimpleConverter {
         classVisitor.methods,
         classVisitor.position,
         classVisitor.modifiers);
+  }
+
+  @Nonnull
+  public static JimpleParser getJimpleParser(CharStream charStream) {
+    JimpleLexer lexer = new JimpleLexer(charStream);
+    TokenStream tokens = new CommonTokenStream(lexer);
+    return new JimpleParser(tokens);
   }
 
   private class ClassVisitor extends JimpleBaseVisitor<Boolean> {
