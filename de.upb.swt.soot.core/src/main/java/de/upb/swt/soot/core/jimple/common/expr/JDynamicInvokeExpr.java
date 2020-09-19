@@ -124,7 +124,7 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
 
     builder.append(") ");
     builder.append(this.getBootstrapMethodSignature());
-    builder.append("(");
+    builder.append('(');
     final int len = bootstrapMethodSignatureArgBoxes.length;
     if (0 < len) {
       builder.append(bootstrapMethodSignatureArgBoxes[0].getValue().toString());
@@ -133,7 +133,7 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
         builder.append(bootstrapMethodSignatureArgBoxes[i].getValue().toString());
       }
     }
-    builder.append(")");
+    builder.append(')');
 
     return builder.toString();
   }

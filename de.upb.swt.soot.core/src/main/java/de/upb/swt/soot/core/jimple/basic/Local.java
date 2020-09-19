@@ -25,6 +25,7 @@ package de.upb.swt.soot.core.jimple.basic;
 import de.upb.swt.soot.core.jimple.visitor.JimpleValueVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -44,11 +45,20 @@ public class Local implements Immediate, Copyable {
 
   @Nonnull private final String name;
   @Nonnull private final Type type;
+  @Nonnull private final Position position; // position of the declaration
 
   /** Constructs a JimpleLocal of the given name and type. */
   public Local(@Nonnull String name, @Nonnull Type type) {
     this.name = name;
     this.type = type;
+    position = NoPositionInformation.getInstance();
+  }
+
+  /** Constructs a JimpleLocal of the given name and type. */
+  public Local(@Nonnull String name, @Nonnull Type type, @Nonnull Position position) {
+    this.name = name;
+    this.type = type;
+    this.position = position;
   }
 
   // Can be safely suppressed, JimpleComparator performs this check
@@ -99,6 +109,11 @@ public class Local implements Immediate, Copyable {
   @Override
   public final List<Value> getUses() {
     return Collections.emptyList();
+  }
+
+  @Nonnull
+  public Position getPosition() {
+    return position;
   }
 
   @Override
