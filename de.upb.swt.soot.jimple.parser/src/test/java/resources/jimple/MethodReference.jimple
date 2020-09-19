@@ -41,7 +41,7 @@ public synchronized class MethodReference extends java.lang.Object
 
         $stack4 = staticinvoke <java.util.Objects: java.lang.Object requireNonNull(java.lang.Object)>(l1);
 
-        $stack5 = dynamicinvoke "display" <"MyInterface display(MethodReference)">(l1) <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(de.upb.swt.soot.core.jimple.common.constant.MethodType@4f89730f, handle: <MethodReference: void methodRefMethod()>, de.upb.swt.soot.core.jimple.common.constant.MethodType@4f89730f);
+        $stack5 = dynamicinvoke "display" <"MyInterface display(MethodReference)">(l1) <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(methodtype: void __METHODTYPE__(), handle: <MethodReference: void methodRefMethod()>, methodtype: void __METHODTYPE__());
 
         l2 = $stack5;
 
