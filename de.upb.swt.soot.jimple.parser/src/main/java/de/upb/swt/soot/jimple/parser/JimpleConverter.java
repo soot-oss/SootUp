@@ -701,8 +701,6 @@ class JimpleConverter {
             return new JAndExpr(left, right);
           } else if (binopctx.OR() != null) {
             return new JOrExpr(left, right);
-          } else if (binopctx.MOD() != null) {
-            return new JRemExpr(left, right);
           } else if (binopctx.CMP() != null) {
             return new JCmpExpr(left, right);
           } else if (binopctx.CMPG() != null) {
@@ -737,7 +735,10 @@ class JimpleConverter {
             return new JDivExpr(left, right);
           } else if (binopctx.XOR() != null) {
             return new JXorExpr(left, right);
+          } else if (binopctx.MOD() != null) {
+            return new JRemExpr(left, right);
           }
+
           throw new IllegalStateException(
               ctx.start.getLine() + ": Unknown BinOp: " + binopctx.getText());
         }

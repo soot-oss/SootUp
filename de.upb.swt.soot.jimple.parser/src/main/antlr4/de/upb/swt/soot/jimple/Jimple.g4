@@ -110,6 +110,10 @@ grammar Jimple;
   BLANK :
     [ \t\r\n] ->skip;
 
+
+  CATCHERROR:
+    . ;
+
  /*
   * Parser Rules
   */
@@ -264,7 +268,6 @@ grammar Jimple;
     /*and*/   AND |
     /*or*/    OR |
     /*xor*/   XOR |
-    /*mod*/   MOD |
     /*cmp*/   CMP |
     /*cmpg*/  CMPG |
     /*cmpl*/  CMPL |
@@ -280,7 +283,8 @@ grammar Jimple;
     /*plus*/  PLUS |
     /*minus*/ MINUS |
     /*mult*/  MULT |
-    /*div*/   DIV;
+    /*div*/   DIV |
+    /*mod*/   MOD;
 
 
   unop :
