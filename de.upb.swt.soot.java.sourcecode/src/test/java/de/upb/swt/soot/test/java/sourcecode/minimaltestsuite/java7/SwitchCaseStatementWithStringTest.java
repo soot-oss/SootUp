@@ -9,7 +9,8 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.*;
-import org.junit.Ignore;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -22,35 +23,38 @@ public class SwitchCaseStatementWithStringTest extends MinimalSourceTestSuiteBas
         "switchCaseStatementString", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Ignore
-  @Test
-  public void test() {
-    // FIXME: [ms] the generated jimple is not correct: $i1,$i1,$i3 are undefined/not assigned to
+  @Override
+  public List<String> expectedBodyStmts() {
+    // TODO: [ms] the generated jimple is not correct: $i1,$i1,$i3 are undefined/not assigned to
     // anything
-    SootMethod method = loadMethod(getMethodSignature());
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+    return Stream.of(
             "r0 := @this: SwitchCaseStatementWithString",
             "$r1 = \"something\"",
             "$i0 = 0",
-            "if $r1 == $i1 goto label1",
+            "if $r1 == $i1 goto label3",
             "if $r1 == $i2 goto label2",
-            "if $r1 == $i3 goto label3",
+            "if $r1 == $i3 goto label1",
             "goto label4",
             "label1:",
-            "$i0 = 1",
+            "$i0 = 3",
             "goto label5",
             "label2:",
             "$i0 = 2",
             "goto label5",
             "label3:",
-            "$i0 = 3",
+            "$i0 = 1",
             "goto label5",
             "label4:",
             "$i4 = 0 - 1",
             "$i0 = $i4",
             "label5:",
-            "return"));
+            "return")
+        .collect(Collectors.toList());
+  }
+
+  @Test
+  public void test() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
   }
 }

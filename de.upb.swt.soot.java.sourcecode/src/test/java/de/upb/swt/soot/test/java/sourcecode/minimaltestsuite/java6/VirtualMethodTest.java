@@ -19,6 +19,18 @@ public class VirtualMethodTest extends MinimalSourceTestSuiteBase {
         "virtualMethodDemo", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * public void virtualMethodDemo(){
+   * Employee e1= new TempEmployee(1500,150);
+   * Employee e2= new RegEmployee(1500,500);
+   * System.out.println(e1.getSalary());
+   * System.out.println(e2.getSalary());
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

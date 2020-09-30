@@ -21,6 +21,15 @@ public class FinalVariableTest extends MinimalSourceTestSuiteBase {
         "finalVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void finalVariable() {
+   * final int num = 5;
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: FinalVariable", "$i0 = 5", "return")

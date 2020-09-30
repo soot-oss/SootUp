@@ -27,20 +27,15 @@ import javax.annotation.Nonnull;
 
 /**
  * @author
- * @see #interceptBody(Body)
+ * @see #interceptBody(Body.BodyBuilder)
  */
 public interface BodyInterceptor {
 
   /**
-   * Takes a body and may apply a transformation to it, for example removing unused local variables.
-   * Since {@link Body} is immutable, this needs to create a new instance.
+   * Takes a BodyBuilder and may apply a transformation to it, for example removing unused local
+   * variables.
    *
-   * <p>In case no transformation is applied, this method may return the original body it received
-   * as its parameter.
-   *
-   * <p><b>Warning:</b> Implementations of this method must not modify the original body or any of
-   * its contents.
+   * @param builder
    */
-  @Nonnull
-  Body interceptBody(@Nonnull Body originalBody);
+  void interceptBody(@Nonnull Body.BodyBuilder builder);
 }

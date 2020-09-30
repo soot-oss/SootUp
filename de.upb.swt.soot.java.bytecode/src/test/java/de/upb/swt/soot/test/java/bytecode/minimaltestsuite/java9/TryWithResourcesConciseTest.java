@@ -28,6 +28,42 @@ public class TryWithResourcesConciseTest extends MinimalBytecodeTestSuiteBase {
     assertJimpleStmts(sootMethod, expectedBodyStmts());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * public void printFile() throws Exception{
+   * try(BufferedReader bufferedReader = new BufferedReader(new FileReader("file.txt"))){
+   * String data = "";
+   * while( (data= bufferedReader.readLine()) != null ){
+   * System.out.println(data);
+   * }
+   * }
+   * }
+   * }
+   * </pre>
+   */
+  /**
+   *
+   *
+   * <pre>
+   * public void printFile() throws Exception {
+   * final BufferedReader bufferedReader = new BufferedReader(new FileReader("file.txt"));
+   * try(bufferedReader) {
+   * String data = "";
+   * while( (data= bufferedReader.readLine()) != null) {
+   * System.out.println(data);
+   * }
+   * }
+   * }
+   *
+   * public static void main(String[] args) throws  Exception{
+   * TryWithResourcesConcise tryWithResourcesConcise = new TryWithResourcesConcise();
+   * tryWithResourcesConcise.printFile();
+   * }
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

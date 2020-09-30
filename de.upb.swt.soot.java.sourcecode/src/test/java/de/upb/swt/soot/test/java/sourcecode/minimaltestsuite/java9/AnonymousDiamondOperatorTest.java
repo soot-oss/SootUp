@@ -23,6 +23,21 @@ public class AnonymousDiamondOperatorTest extends MinimalSourceTestSuiteBase {
     /** TODO Check for anonymous declarations once Java 9 is supported in WALA */
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *    public int innerClassDiamond() {
+   * MyClass<Integer> obj = new MyClass<>() {
+   * Integer add(Integer x, Integer y) {
+   * return x+y;
+   * }
+   * };
+   * Integer sum = obj.add(22,23);
+   * return sum;
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

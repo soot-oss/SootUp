@@ -20,6 +20,22 @@ public class NamedClassInsideMethodTest extends MinimalSourceTestSuiteBase {
         "namedClassInsideMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>
+   * public void namedClassInsideMethod() {
+   *
+   * class MyMathOperation implements MathOperation {
+   * int i = 0;
+   * public void addition() {
+   * i++;
+   * }
+   * }
+   *
+   * MathOperation myMathOperation = new MyMathOperation();
+   * myMathOperation.addition();
+   *
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
