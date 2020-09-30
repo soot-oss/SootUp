@@ -20,21 +20,22 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.InvokeExprBox;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
 import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
 import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
-import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
+import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
@@ -55,20 +56,17 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
   Map<Local, List<Stmt>> allDefs = new HashMap<>();
   Map<Local, List<Stmt>> allUses = new HashMap<>();
 
-  @Nonnull
   @Override
-  public Body interceptBody(@Nonnull Body originalBody) {
-    Body.BodyBuilder builder = Body.builder(originalBody);
-    StmtGraph originalGraph = originalBody.getStmtGraph();
-    final ImmutableStmtGraph stmtGraph = originalBody.getStmtGraph();
-    List<Stmt> stmts = originalBody.getStmts();
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+    boolean eliminateOnlyStackLocals = false; // TODO: in old soot (Line 96): boolean eliminateOnlyStackLocals = PhaseOptions.getBoolen(options, "only-stack-variable"); what should I call instead?
+    StmtGraph stmtGraph = builder.getStmtGraph();
+    List<Stmt> stmts = builder.getStmts();
+    Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
 
-    Deque<Stmt> deque = new ArrayDeque<Stmt>(originalBody.getStmts().size());
+    boolean isStatic = false; // TODO: in old soot: boolean isStatic = originalBody.getMethod.isStatic(); (Line 113)
     boolean allEssential = true;
     boolean checkInvoke = false;
-    boolean isStatic = false; // TODO: boolean isStatic = originalBody.getMethod.isStatic();
     Local thisLocal = null;
-    boolean eliminateOnlyStackLocals = false; // TODO: boolean eliminateOnlyStackLocals = PhaseOptions.getBoolen(options, "only-stack-variable");
 
     for (Iterator<Stmt> iterator = stmtGraph.nodes().iterator(); iterator.hasNext();) {
       Stmt stmt = iterator.next();
@@ -80,7 +78,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
 
         if (!removeNop){
           removeNop = true;
-          for (Trap trap : originalBody.getTraps()){
+          for (Trap trap : builder.getTraps()){
             if (trap.getEndStmt() == stmt){
               removeNop = false;
               break;
@@ -97,6 +95,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
         Value lhs = assignStmt.getLeftOp();
         Value rhs = assignStmt.getRightOp();
 
+        // Stmt is of the form a = a which is useless
         if(lhs == rhs && lhs instanceof Local){
           iterator.remove();
           continue;
@@ -112,9 +111,9 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
           if(rhs instanceof JCastExpr){
             // CastExpr: can trigger ClassCastException, but null-casts never fail
             JCastExpr castExpr = (JCastExpr) rhs;
-            Type type = castExpr.getType(); // TODO: I am not sure whether this is the correct method. Old soot calls getCastType(), which does not exist here
+            Type type = castExpr.getType(); // TODO: I am not sure whether this is the correct method. Old soot calls getCastType() (Line 166), which does not exist here
             Value value = castExpr.getOp();
-            isEssential = !(value instanceof NullConstant) && type instanceof ReferenceType; // TODO: Old soot checks type instanceof RefLikeType. ReferenceType is something different there
+            isEssential = !(value instanceof NullConstant) && type instanceof ReferenceType; // TODO: Old soot checks type instanceof RefLikeType (Line 168). ReferenceType is something different there
           } else if (rhs instanceof InvokeExprBox || rhs instanceof JArrayRef || rhs instanceof JNewExpr || rhs instanceof JNewArrayExpr || rhs instanceof JNewMultiArrayExpr){
             // InvokeExprBox: can have side effects (like throwing a null pointer exception)
             // JArrayRef: can have side effects (like throwing a null pointer exception)
@@ -129,7 +128,12 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
             if(rhs instanceof JInstanceFieldRef){
               JInstanceFieldRef instanceFieldRef = (JInstanceFieldRef) rhs;
               if(!isStatic && thisLocal == null){
-                thisLocal = originalBody.getThisLocal();
+                for(Stmt s : builder.getStmts()){  // TODO: for loop replaces originalBody.getThisLocal() from old soot (Line 185)
+                  if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JThisRef) {
+                    thisLocal = (Local) (((JIdentityStmt) s).getLeftOp());
+                    break;
+                  }
+                }
               }
 
               // Any JInstanceFieldRef may have side effects, unless the base is reading from 'this' in a non-static method
@@ -146,13 +150,13 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
             isEssential = type2Int || type1 instanceof PrimitiveType && ((PrimitiveType) type1).getName().equals(PrimitiveType.getInt().getName())
                 || type1 instanceof PrimitiveType && ((PrimitiveType) type1).getName().equals(PrimitiveType.getLong().getName())
                 || type2 instanceof PrimitiveType && ((PrimitiveType) type2).getName().equals(PrimitiveType.getLong().getName())
-                || type1 instanceof UnknownType || type2 instanceof UnknownType; // TODO: this is kinda ugly
+                || type1 instanceof UnknownType || type2 instanceof UnknownType; // FIXME: this is kinda ugly
 
             if(isEssential && type2Int){
               Value value = expr.getOp2();
-              if(value instanceof LongConstant){
-                LongConstant longConstant = (LongConstant) value;
-                isEssential = (longConstant.getValue() == 0);
+              if(value instanceof IntConstant){
+                IntConstant intConstant = (IntConstant) value;
+                isEssential = (intConstant.getValue() == 0);
               } else {
                 isEssential = true; // could be 0, we don't know
               }
@@ -170,7 +174,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
 
     if(checkInvoke || !allEssential){
       // Add all the statements which are used to compute values for the essential statements, recursively
-      collectDefs(originalBody); // TODO: old soot calls final LocalDefs localDefs = LocalDefs.Factory.newLocalDefs(b); instead
+      collectDefs(builder.getStmts()); // TODO: old soot calls final LocalDefs localDefs = LocalDefs.Factory.newLocalDefs(b); instead
 
       if(!allEssential){
         Set<Stmt> essential = new HashSet<>(stmts.size());
@@ -193,7 +197,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       }
 
       if(checkInvoke){
-        collectUses(originalBody);  // TODO: old soot calls final LocalUses localUses = LocalUses.Factory.newLocalUses(b, localDefs); instead
+        collectUses(builder.getStmts());  // TODO: old soot calls final LocalUses localUses = LocalUses.Factory.newLocalUses(b, localDefs); instead
         //Eliminate dead assignments from invokes such as x = f(), where x is no longer used
         List<JAssignStmt> postProcess = new ArrayList<>();
         for(Stmt stmt : stmts){
@@ -204,7 +208,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
               boolean deadAssignment = true;
               Local local = (Local) assignStmt.getRightOp();
               for(Stmt use : allUses.get(local)){
-                if(originalBody.getStmts().contains(use)){    // TODO: this should be the update list of still available statements, right?
+                if(builder.getStmts().contains(use)){
                   deadAssignment = false;
                   break;
                 }
@@ -219,36 +223,36 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
         for(JAssignStmt assignStmt : postProcess){
           // Transform it into a simple invoke
           Stmt newInvoke = Jimple.newInvokeStmt(assignStmt.getInvokeExpr(), assignStmt.getPositionInfo());
-          // TODO old Soot called newInvoke.addAllTagsOf(assigneStmt) - we don't need anything similar, right?
+          // TODO old Soot called newInvoke.addAllTagsOf(assigneStmt) - do we need anything similar?
           builder.replaceStmt(assignStmt, newInvoke);
         }
       }
     }
 
-    return builder.build();
+    builder.commitDeferredStmtGraphChanges();
   }
 
-  private void collectDefs(Body body){
-    for(Stmt stmt : body.getStmts()){
+  private void collectDefs(List<Stmt> stmts){
+    for(Stmt stmt : stmts){
       List<Value> defs = stmt.getDefs();
       for(Value value : defs){
         if(value instanceof Local){
-          List<Stmt> stmts = allDefs.get((Local) value);
-          stmts.add(stmt);
-          allDefs.put((Local) value, stmts);
+          List<Stmt> localDefs = allDefs.get(value);
+          localDefs.add(stmt);
+          allDefs.put((Local) value, localDefs);
         }
       }
     }
   }
 
-  private void collectUses(Body body){
-    for(Stmt stmt : body.getStmts()){
+  private void collectUses(List<Stmt> stmts){
+    for(Stmt stmt : stmts){
       List<Value> uses = stmt.getUses();
       for(Value value : uses){
         if(value instanceof Local){
-          List<Stmt> stmts = allUses.get((Local) value);
-          stmts.add(stmt);
-          allUses.put((Local) value, stmts);
+          List<Stmt> localUses = allUses.get(value);
+          localUses.add(stmt);
+          allUses.put((Local) value, localUses);
         }
       }
     }
