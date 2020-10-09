@@ -49,9 +49,7 @@ public class Local implements Immediate, Copyable {
 
   /** Constructs a JimpleLocal of the given name and type. */
   public Local(@Nonnull String name, @Nonnull Type type) {
-    this.name = name;
-    this.type = type;
-    position = NoPositionInformation.getInstance();
+    this(name, type, NoPositionInformation.getInstance());
   }
 
   /** Constructs a JimpleLocal of the given name and type. */

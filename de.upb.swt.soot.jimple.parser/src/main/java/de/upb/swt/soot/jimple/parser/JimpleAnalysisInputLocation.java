@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -95,5 +96,18 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
     }
 
     return Optional.of(classProvider.createClassSource(this, pathToClass, type));
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof JimpleAnalysisInputLocation)) {
+      return false;
+    }
+    return path.equals(((JimpleAnalysisInputLocation) o).path);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(path);
   }
 }

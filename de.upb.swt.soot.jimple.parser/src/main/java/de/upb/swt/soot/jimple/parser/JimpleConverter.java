@@ -183,11 +183,14 @@ class JimpleConverter {
         } else {
           final JimpleParser.FieldContext field = ctx.member(i).field();
           EnumSet<Modifier> modifier = getModifiers(field.modifier());
+          // FIXME
+          final NoPositionInformation pos = NoPositionInformation.getInstance();
           fields.add(
               new SootField(
                   identifierFactory.getFieldSignature(
                       field.IDENTIFIER().getText(), clazz, field.type().getText()),
-                  modifier));
+                  modifier,
+                  pos));
         }
       }
 
@@ -327,13 +330,13 @@ class JimpleConverter {
           // no body is given: no brackets, but a semicolon -> abstract
         }
 
-        Position position =
+        Position classPosition =
             new Position(
                 ctx.start.getLine(),
                 ctx.start.getCharPositionInLine(),
                 ctx.stop.getLine(),
                 ctx.stop.getCharPositionInLine());
-        builder.setPosition(position);
+        builder.setPosition(classPosition);
 
         // associate labeled Stmts with Branching Stmts
         for (Map.Entry<Stmt, List<String>> item : unresolvedBranches.entrySet()) {
@@ -354,8 +357,8 @@ class JimpleConverter {
         }
 
         OverridingMethodSource oms = new OverridingMethodSource(methodSignature, builder.build());
-
-        return new SootMethod(oms, methodSignature, modifier, exceptions);
+        Position methodPosition = NoPositionInformation.getInstance();
+        return new SootMethod(oms, methodSignature, modifier, exceptions, methodPosition);
       }
 
       private class StmtVisitor extends JimpleBaseVisitor<Stmt> {

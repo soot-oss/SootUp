@@ -82,7 +82,8 @@ public class PrinterTest {
             new OverridingMethodSource(methodSignatureOne, bodyOne),
             methodSignatureOne,
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
-            Collections.emptyList());
+            Collections.emptyList(),
+            NoPositionInformation.getInstance());
 
     MethodSignature methodSignatureTwo =
         view.getIdentifierFactory()
@@ -99,7 +100,8 @@ public class PrinterTest {
             EnumSet.of(Modifier.PRIVATE),
             Collections.singletonList(
                 JavaIdentifierFactory.getInstance()
-                    .getClassType("files.stuff.FileNotFoundException")));
+                    .getClassType("files.stuff.FileNotFoundException")),
+            NoPositionInformation.getInstance());
 
     return new SootClass(
         new OverridingClassSource(
@@ -117,7 +119,8 @@ public class PrinterTest {
                             "counter",
                             JavaIdentifierFactory.getInstance().getClassType(className),
                             PrimitiveType.getInt()),
-                    EnumSet.of(Modifier.PRIVATE))),
+                    EnumSet.of(Modifier.PRIVATE),
+                    NoPositionInformation.getInstance())),
             new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)),
             NoPositionInformation.getInstance(),
             EnumSet.of(Modifier.PUBLIC)),

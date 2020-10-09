@@ -140,7 +140,7 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
     return Optional.empty();
   }
 
-  private @Nonnull Optional<AnalysisInputLocation> nsForPath(@Nonnull Path path) {
+  private @Nonnull Optional<AnalysisInputLocation> inputLocationForPath(@Nonnull Path path) {
     if (Files.exists(path) && (Files.isDirectory(path) || PathUtils.isArchive(path))) {
       return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path));
     } else {
@@ -158,7 +158,7 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
   private List<AnalysisInputLocation> explodeClassPath(@Nonnull String jarPath) {
     try {
       return explode(jarPath)
-          .flatMap(cp -> StreamUtils.optionalToStream(nsForPath(cp)))
+          .flatMap(cp -> StreamUtils.optionalToStream(inputLocationForPath(cp)))
           .collect(Collectors.toList());
 
     } catch (IllegalArgumentException e) {

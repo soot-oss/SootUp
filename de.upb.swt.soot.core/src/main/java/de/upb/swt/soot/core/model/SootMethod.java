@@ -27,6 +27,7 @@ import com.google.common.collect.ImmutableList;
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
@@ -69,8 +70,9 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
       @Nonnull MethodSource source,
       @Nonnull MethodSignature methodSignature,
       @Nonnull Iterable<Modifier> modifiers,
-      @Nonnull Iterable<ClassType> thrownExceptions) {
-    super(methodSignature, modifiers);
+      @Nonnull Iterable<ClassType> thrownExceptions,
+      @Nonnull Position position) {
+    super(methodSignature, modifiers, position);
 
     this.methodSource = source;
     this.parameterTypes = ImmutableUtils.immutableListOf(methodSignature.getParameterTypes());
@@ -211,22 +213,25 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
         overrider.apply(new OverridingMethodSource(methodSource)),
         getSignature(),
         getModifiers(),
-        exceptions);
+        exceptions,
+        getPosition());
   }
 
   @Nonnull
   public SootMethod withSource(MethodSource source) {
-    return new SootMethod(source, getSignature(), getModifiers(), exceptions);
+    return new SootMethod(source, getSignature(), getModifiers(), exceptions, getPosition());
   }
 
   @Nonnull
   public SootMethod withModifiers(Iterable<Modifier> modifiers) {
-    return new SootMethod(methodSource, getSignature(), modifiers, getExceptionSignatures());
+    return new SootMethod(
+        methodSource, getSignature(), modifiers, getExceptionSignatures(), getPosition());
   }
 
   @Nonnull
   public SootMethod withThrownExceptions(Iterable<ClassType> thrownExceptions) {
-    return new SootMethod(methodSource, getSignature(), getModifiers(), thrownExceptions);
+    return new SootMethod(
+        methodSource, getSignature(), getModifiers(), thrownExceptions, getPosition());
   }
 
   @Nonnull
@@ -235,7 +240,8 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
         new OverridingMethodSource(methodSource).withBody(body),
         getSignature(),
         getModifiers(),
-        exceptions);
+        exceptions,
+        getPosition());
   }
 
   /**
@@ -279,6 +285,8 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   public interface BuildStep {
     @Nonnull
     SootMethod build();
+
+    BuildStep withPosition(Position position);
   }
 
   /**
@@ -290,23 +298,29 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
       implements MethodSourceStep, SignatureStep, ModifierStep, ThrownExceptionsStep, BuildStep {
 
     @Nullable private MethodSource source;
-    @Nullable private Iterable<Modifier> modifiers;
+    @Nonnull private Iterable<Modifier> modifiers = Collections.emptyList();
     @Nullable private MethodSignature methodSignature;
     @Nonnull private Iterable<ClassType> thrownExceptions = Collections.emptyList();
+    @Nonnull private Position position = NoPositionInformation.getInstance();
 
     @Nonnull
     protected Iterable<Modifier> getModifiers() {
       return modifiers;
     }
 
-    @Nonnull
+    @Nullable
     protected MethodSource getSource() {
       return source;
     }
 
-    @Nonnull
+    @Nullable
     protected MethodSignature getSignature() {
       return methodSignature;
+    }
+
+    @Nonnull
+    public Position getPosition() {
+      return position;
     }
 
     @Nonnull
@@ -342,10 +356,18 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
       return this;
     }
 
+    @Nonnull
+    public BuildStep withPosition(@Nonnull Position position) {
+      this.position = position;
+      return this;
+    }
+
     @Override
     @Nonnull
     public SootMethod build() {
-      return new SootMethod(getSource(), getSignature(), getModifiers(), getThrownExceptions());
+      // nonnull is enforced by stepwise builder pattern
+      return new SootMethod(
+          getSource(), getSignature(), getModifiers(), getThrownExceptions(), position);
     }
   }
 }

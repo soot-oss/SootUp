@@ -73,7 +73,8 @@ public class SootMethodTest {
             new OverridingMethodSource(methodSignature, body),
             methodSignature,
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
-            Collections.emptyList());
+            Collections.emptyList(),
+            NoPositionInformation.getInstance());
 
     JavaSootClass mainClass =
         new JavaSootClass(

@@ -42,6 +42,7 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
@@ -155,7 +156,8 @@ public class WalaIRToJimpleConverter {
       // create enclosing reference to outerClass
       FieldSignature signature =
           identifierFactory.getFieldSignature("this$0", classSig, outerClass);
-      SootField enclosingObject = new SootField(signature, EnumSet.of(Modifier.FINAL));
+      SootField enclosingObject =
+          new SootField(signature, EnumSet.of(Modifier.FINAL), NoPositionInformation.getInstance());
       sootFields.add(enclosingObject);
     }
 
@@ -222,7 +224,7 @@ public class WalaIRToJimpleConverter {
     EnumSet<Modifier> modifiers = convertModifiers(walaField);
     FieldSignature signature =
         identifierFactory.getFieldSignature(walaField.getName().toString(), classSig, type);
-    return new SootField(signature, modifiers);
+    return new SootField(signature, modifiers, NoPositionInformation.getInstance());
   }
 
   /**

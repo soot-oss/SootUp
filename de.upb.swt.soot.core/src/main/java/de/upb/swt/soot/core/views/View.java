@@ -48,6 +48,7 @@ public interface View {
   Collection<? extends AbstractClass<? extends AbstractClassSource>> getClasses();
 
   /** Return all classes in the view. */
+  // TODO: [ms] necessary?!
   @Nonnull
   default Stream<? extends AbstractClass<? extends AbstractClassSource>> getClassesStream() {
     return getClasses().stream();
@@ -74,8 +75,11 @@ public interface View {
   @Nonnull
   IdentifierFactory getIdentifierFactory();
 
+  // TODO: [ms] does it need to be public? -> abstract class? then use CompletableFuture in
+  // initialization?
   boolean doneResolving();
 
+  // TODO: [ms] necessary here? is interconnected with Jimple Parsing / Jimple Printer class..
   @Nonnull
   String quotedNameOf(@Nonnull String name);
 

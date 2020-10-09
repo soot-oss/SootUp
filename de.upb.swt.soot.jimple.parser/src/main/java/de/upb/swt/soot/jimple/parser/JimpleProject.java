@@ -15,6 +15,14 @@ public class JimpleProject extends Project {
     super(JimpleLanguage.getInstance(), inputLocation, DefaultSourceTypeSpecifier.getInstance());
   }
 
+  public JimpleProject(@Nonnull List<AnalysisInputLocation> inputLocation) {
+    super(
+        JimpleLanguage.getInstance(),
+        inputLocation,
+        JimpleLanguage.getInstance().getIdentifierFactory(),
+        DefaultSourceTypeSpecifier.getInstance());
+  }
+
   public JimpleProject(
       @Nonnull AnalysisInputLocation inputLocation,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {

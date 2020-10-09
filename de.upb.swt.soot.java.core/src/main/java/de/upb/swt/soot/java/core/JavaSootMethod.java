@@ -26,6 +26,7 @@ import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
+import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
@@ -43,8 +44,9 @@ public class JavaSootMethod extends SootMethod {
       @Nonnull MethodSignature methodSignature,
       @Nonnull Iterable<Modifier> modifiers,
       @Nonnull Iterable<ClassType> thrownExceptions,
-      @Nonnull Iterable<AnnotationType> annotations) {
-    super(source, methodSignature, modifiers, thrownExceptions);
+      @Nonnull Iterable<AnnotationType> annotations,
+      @Nonnull Position position) {
+    super(source, methodSignature, modifiers, thrownExceptions, position);
     this.annotations = annotations;
   }
 
@@ -75,33 +77,50 @@ public class JavaSootMethod extends SootMethod {
         getSignature(),
         getModifiers(),
         exceptions,
-        getAnnotations());
+        getAnnotations(),
+        getPosition());
   }
 
   @Nonnull
   @Override
   public JavaSootMethod withSource(@Nonnull MethodSource source) {
-    return new JavaSootMethod(source, getSignature(), getModifiers(), exceptions, getAnnotations());
+    return new JavaSootMethod(
+        source, getSignature(), getModifiers(), exceptions, getAnnotations(), getPosition());
   }
 
   @Nonnull
   @Override
   public JavaSootMethod withModifiers(@Nonnull Iterable<Modifier> modifiers) {
     return new JavaSootMethod(
-        methodSource, getSignature(), modifiers, getExceptionSignatures(), getAnnotations());
+        methodSource,
+        getSignature(),
+        modifiers,
+        getExceptionSignatures(),
+        getAnnotations(),
+        getPosition());
   }
 
   @Nonnull
   @Override
   public JavaSootMethod withThrownExceptions(@Nonnull Iterable<ClassType> thrownExceptions) {
     return new JavaSootMethod(
-        methodSource, getSignature(), getModifiers(), thrownExceptions, getAnnotations());
+        methodSource,
+        getSignature(),
+        getModifiers(),
+        thrownExceptions,
+        getAnnotations(),
+        getPosition());
   }
 
   @Nonnull
   public JavaSootMethod withAnnotations(@Nonnull Iterable<AnnotationType> annotations) {
     return new JavaSootMethod(
-        methodSource, getSignature(), getModifiers(), getExceptionSignatures(), annotations);
+        methodSource,
+        getSignature(),
+        getModifiers(),
+        getExceptionSignatures(),
+        annotations,
+        getPosition());
   }
 
   @Nonnull
@@ -112,7 +131,8 @@ public class JavaSootMethod extends SootMethod {
         getSignature(),
         getModifiers(),
         exceptions,
-        getAnnotations());
+        getAnnotations(),
+        getPosition());
   }
 
   @Nonnull
@@ -150,7 +170,12 @@ public class JavaSootMethod extends SootMethod {
     @Nonnull
     public JavaSootMethod build() {
       return new JavaSootMethod(
-          getSource(), getSignature(), getModifiers(), getThrownExceptions(), getAnnotations());
+          getSource(),
+          getSignature(),
+          getModifiers(),
+          getThrownExceptions(),
+          getAnnotations(),
+          getPosition());
     }
   }
 }

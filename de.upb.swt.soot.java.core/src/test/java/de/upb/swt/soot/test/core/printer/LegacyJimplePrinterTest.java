@@ -50,7 +50,8 @@ public class LegacyJimplePrinterTest {
             new OverridingMethodSource(methodSignature, body),
             methodSignature,
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
-            Collections.emptyList());
+            Collections.emptyList(),
+            NoPositionInformation.getInstance());
 
     return new SootClass(
         new OverridingClassSource(

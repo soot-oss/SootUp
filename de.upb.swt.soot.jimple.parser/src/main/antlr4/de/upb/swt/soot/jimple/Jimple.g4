@@ -169,8 +169,7 @@ grammar Jimple;
     type arg_list SEMICOLON;
 
   statement :
-    label_name=IDENTIFIER COLON stmt SEMICOLON |
-    stmt SEMICOLON;
+    (label_name=IDENTIFIER COLON)? stmt SEMICOLON;
 
   stmt :
     assignments |
@@ -207,9 +206,9 @@ grammar Jimple;
     CATCH exceptiontype=IDENTIFIER FROM from=IDENTIFIER TO to=IDENTIFIER WITH with=IDENTIFIER SEMICOLON;
 
   value :
-    /*immediate*/   immediate |
-    /*reference*/   reference |
-    /*new simple*/  NEW base_type=IDENTIFIER |
+    /*immediate*/      immediate |
+    /*reference*/      reference |
+    /*new primitive*/  NEW base_type=IDENTIFIER |
     /*new array*/   NEWARRAY L_PAREN array_type=type R_PAREN array_descriptor |
     /*new multi*/   NEWMULTIARRAY L_PAREN multiarray_type=IDENTIFIER R_PAREN (L_BRACKET immediate? R_BRACKET)+ |
     /*cast*/        L_PAREN nonvoid_cast=type R_PAREN op=immediate |
