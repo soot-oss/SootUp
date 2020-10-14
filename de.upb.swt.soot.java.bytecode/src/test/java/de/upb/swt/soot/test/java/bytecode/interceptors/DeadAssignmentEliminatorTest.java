@@ -5,11 +5,12 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
+import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import de.upb.swt.soot.java.bytecode.interceptors.NopEliminator;
+import de.upb.swt.soot.java.bytecode.interceptors.DeadAssignmentEliminator;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -28,7 +29,7 @@ public class DeadAssignmentEliminatorTest {
     public void TestModification(){
         Body.BodyBuilder testBuilder = createBody(false);
         Body testBody = testBuilder.build();
-        new NopEliminator().interceptBody(testBuilder);
+        new DeadAssignmentEliminator().interceptBody(testBuilder);
         Body processedBody = testBuilder.build();
         ImmutableStmtGraph expectedGraph = testBody.getStmtGraph();
         ImmutableStmtGraph actualGraph = processedBody.getStmtGraph();
@@ -40,7 +41,7 @@ public class DeadAssignmentEliminatorTest {
     public void TestNoModification(){
         Body.BodyBuilder testBuilder = createBody(true);
         Body testBody = testBuilder.build();
-        new NopEliminator().interceptBody(testBuilder);
+        new DeadAssignmentEliminator().interceptBody(testBuilder);
         Body processedBody = testBuilder.build();
         ImmutableStmtGraph expectedGraph = testBody.getStmtGraph();
         ImmutableStmtGraph actualGraph = processedBody.getStmtGraph();
@@ -54,17 +55,15 @@ public class DeadAssignmentEliminatorTest {
         StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
 
         JavaClassType objectType = factory.getClassType("java.lang.Object");
-        JavaClassType stringType = factory.getClassType("java.lang.String");
 
         Local a = JavaJimple.newLocal("a", objectType);
-        Local b = JavaJimple.newLocal("b", stringType);
+        Local b = JavaJimple.newLocal("b", objectType);
+        Local c = JavaJimple.newLocal("c", PrimitiveType.getInt());
 
         Stmt strToA = JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
-        Stmt strToB = JavaJimple.newAssignStmt(b, javaJimple.newStringConstant("string"), noPositionInfo);
-        Stmt aToB = JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
         Stmt ret = JavaJimple.newReturnStmt(a, noPositionInfo);
 
-        Set<Local> locals = ImmutableUtils.immutableSet(a, b);
+        Set<Local> locals = ImmutableUtils.immutableSet(a, b, c);
         List<Trap> traps = new ArrayList<>();
 
         Body.BodyBuilder builder = Body.builder();
@@ -74,11 +73,13 @@ public class DeadAssignmentEliminatorTest {
                 .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
         if(essentialOption){
-            builder.addFlow(strToA, strToB);
-            builder.addFlow(strToB, ret);
+            Stmt newToB = JavaJimple.newAssignStmt(b, JavaJimple.newNewExpr(objectType), noPositionInfo);
+            builder.addFlow(strToA, newToB);
+            builder.addFlow(newToB, ret);
         } else {
-            builder.addFlow(strToA, aToB);
-            builder.addFlow(aToB, ret);
+            Stmt intToC = JavaJimple.newAssignStmt(c, IntConstant.getInstance(42), noPositionInfo);
+            builder.addFlow(strToA, intToC);
+            builder.addFlow(intToC, ret);
         }
         builder.setLocals(locals);
         builder.setTraps(traps);

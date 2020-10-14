@@ -62,11 +62,12 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
 
-    boolean isStatic = false; // TODO: in old soot: boolean isStatic = originalBody.getMethod.isStatic(); (Line 113)
+    boolean isStatic = true; // TODO: in old soot: boolean isStatic = originalBody.getMethod.isStatic(); (Line 113)
     boolean allEssential = true;
     boolean checkInvoke = false;
     Local thisLocal = null;
 
+    builder.enableDeferredStmtGraphChanges();
     for (Iterator<Stmt> iterator = stmtGraph.nodes().iterator(); iterator.hasNext();) {
       Stmt stmt = iterator.next();
       boolean isEssential = true;
@@ -188,8 +189,21 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
             }
           }
         }
+
         // Remove the dead statements
-        stmts.retainAll(essential);
+        for(Stmt stmt : stmts){
+          if(!essential.contains(stmt)){
+            for(Stmt predecessor : stmtGraph.predecessors(stmt)){
+              builder.removeFlow(predecessor, stmt);
+              for(Stmt successor : stmtGraph.successors(stmt)){
+                builder.addFlow(predecessor, successor);
+              }
+            }
+            for(Stmt successor : stmtGraph.successors(stmt)){
+              builder.removeFlow(stmt, successor);
+            }
+          }
+        }
       }
 
       if(checkInvoke){
@@ -233,6 +247,9 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       for(Value value : defs){
         if(value instanceof Local){
           List<Stmt> localDefs = allDefs.get(value);
+          if(localDefs == null){
+            localDefs = new ArrayList<>();
+          }
           localDefs.add(stmt);
           allDefs.put((Local) value, localDefs);
         }
@@ -246,6 +263,9 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       for(Value value : uses){
         if(value instanceof Local){
           List<Stmt> localUses = allUses.get(value);
+          if(localUses == null){
+            localUses = new ArrayList<>();
+          }
           localUses.add(stmt);
           allUses.put((Local) value, localUses);
         }
