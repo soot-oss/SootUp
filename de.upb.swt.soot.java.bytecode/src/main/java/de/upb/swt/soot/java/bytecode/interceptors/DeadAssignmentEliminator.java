@@ -27,7 +27,6 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
 import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
 import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
@@ -111,9 +110,9 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
           if(rhs instanceof JCastExpr){
             // CastExpr: can trigger ClassCastException, but null-casts never fail
             JCastExpr castExpr = (JCastExpr) rhs;
-            Type type = castExpr.getType(); // TODO: I am not sure whether this is the correct method. Old soot calls getCastType() (Line 166), which does not exist here
+            Type type = castExpr.getType();
             Value value = castExpr.getOp();
-            isEssential = !(value instanceof NullConstant) && type instanceof ReferenceType; // TODO: Old soot checks type instanceof RefLikeType (Line 168). ReferenceType is something different there
+            isEssential = !(value instanceof NullConstant) && type instanceof ReferenceType;
           } else if (rhs instanceof InvokeExprBox || rhs instanceof JArrayRef || rhs instanceof JNewExpr || rhs instanceof JNewArrayExpr || rhs instanceof JNewMultiArrayExpr){
             // InvokeExprBox: can have side effects (like throwing a null pointer exception)
             // JArrayRef: can have side effects (like throwing a null pointer exception)
@@ -145,12 +144,9 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
             Type type2 = expr.getOp2().getType();
 
             // Can trigger a division by zero
-            boolean type2Int = type2 instanceof PrimitiveType && ((PrimitiveType) type2).getName().equals(PrimitiveType.getInt().getName());
-
-            isEssential = type2Int || type1 instanceof PrimitiveType && ((PrimitiveType) type1).getName().equals(PrimitiveType.getInt().getName())
-                || type1 instanceof PrimitiveType && ((PrimitiveType) type1).getName().equals(PrimitiveType.getLong().getName())
-                || type2 instanceof PrimitiveType && ((PrimitiveType) type2).getName().equals(PrimitiveType.getLong().getName())
-                || type1 instanceof UnknownType || type2 instanceof UnknownType; // FIXME: this is kinda ugly
+            boolean type2Int = type2 instanceof PrimitiveType && type2.equals(PrimitiveType.getInt());
+            isEssential = type2Int || type1 instanceof PrimitiveType && (type1.equals(PrimitiveType.getInt()) || type1.equals(PrimitiveType.getLong())) ||
+                type2 instanceof PrimitiveType && type2.equals(PrimitiveType.getLong()) || type1 instanceof UnknownType || type2 instanceof UnknownType;
 
             if(isEssential && type2Int){
               Value value = expr.getOp2();
@@ -223,7 +219,6 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
         for(JAssignStmt assignStmt : postProcess){
           // Transform it into a simple invoke
           Stmt newInvoke = Jimple.newInvokeStmt(assignStmt.getInvokeExpr(), assignStmt.getPositionInfo());
-          // TODO old Soot called newInvoke.addAllTagsOf(assigneStmt) - do we need anything similar?
           builder.replaceStmt(assignStmt, newInvoke);
         }
       }
