@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.frontend;
  */
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import java.io.IOException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -66,7 +67,7 @@ public class OverridingMethodSource implements MethodSource {
 
   @Nonnull
   @Override
-  public Body resolveBody() throws ResolveException {
+  public Body resolveBody() throws IOException {
     return body != null ? body : delegate.resolveBody();
   }
 

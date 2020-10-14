@@ -22,12 +22,15 @@ package de.upb.swt.soot.java.bytecode.frontend;
  */
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.frontend.modules.AsmModuleClassSource;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -50,7 +53,12 @@ public class AsmJavaClassProvider implements ClassProvider {
       AnalysisInputLocation srcNamespace, Path sourcePath, ClassType classType) {
     SootClassNode classNode = new SootClassNode();
 
-    AsmUtil.initAsmClassSource(sourcePath, classNode);
+    try {
+      AsmUtil.initAsmClassSource(sourcePath, classNode);
+    } catch (IOException exception) {
+      throw new ResolveException(
+          exception.getMessage(), sourcePath, NoPositionInformation.getInstance());
+    }
 
     JavaClassType klassType = (JavaClassType) classType;
     if (klassType.isModuleInfo()) {

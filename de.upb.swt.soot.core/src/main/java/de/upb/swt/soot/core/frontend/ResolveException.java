@@ -2,6 +2,7 @@ package de.upb.swt.soot.core.frontend;
 
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.model.Position;
+import java.nio.file.Path;
 import javax.annotation.Nonnull;
 
 /*-
@@ -34,6 +35,10 @@ public class ResolveException extends RuntimeException {
   public ResolveException(@Nonnull String message) {
     // FIXME uri parameter; range
     this(message, "", NoPositionInformation.getInstance());
+  }
+
+  public ResolveException(String message, Path sourcePath, Position position) {
+    this(message, sourcePath.toString(), position);
   }
 
   public ResolveException(

@@ -44,7 +44,7 @@ public class EagerInputLocation implements AnalysisInputLocation {
     map = Collections.emptyMap();
   }
 
-  public EagerInputLocation(Map<ClassType, AbstractClassSource> map) {
+  public EagerInputLocation(@Nonnull Map<ClassType, AbstractClassSource> map) {
     this.map = ImmutableMap.copyOf(map);
   }
 

@@ -39,7 +39,6 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,13 +65,13 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
    */
   public JavaClassPathAnalysisInputLocation(@Nonnull String classPath) {
     if (isNullOrEmpty(classPath)) {
-      throw new InvalidClassPathException("Empty class path given");
+      throw new IllegalStateException("Empty class path given");
     }
 
     cpEntries = explodeClassPath(classPath);
 
     if (cpEntries.isEmpty()) {
-      throw new InvalidClassPathException("Empty class path is given.");
+      throw new IllegalStateException("Empty class path is given.");
     }
   }
 
@@ -105,9 +104,9 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
         return StreamUtils.iteratorToStream(
             Files.newDirectoryStream(baseDir, "*.{jar,JAR}").iterator());
       } catch (PatternSyntaxException | NotDirectoryException e) {
-        throw new InvalidClassPathException("Malformed wildcard entry", e);
+        throw new IllegalStateException("Malformed wildcard entry", e);
       } catch (IOException e) {
-        throw new InvalidClassPathException("Couldn't access entries denoted by wildcard", e);
+        throw new IllegalStateException("Couldn't access entries denoted by wildcard", e);
       }
     } else {
       return Stream.of(Paths.get(entry));
@@ -162,22 +161,7 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
           .collect(Collectors.toList());
 
     } catch (IllegalArgumentException e) {
-      throw new InvalidClassPathException("Malformed class path given: " + jarPath, e);
-    }
-  }
-
-  protected static final class InvalidClassPathException extends IllegalArgumentException {
-
-    InvalidClassPathException(@Nullable String message) {
-      super(message);
-    }
-
-    InvalidClassPathException(@Nullable String message, @Nullable Throwable cause) {
-      super(message, cause);
-    }
-
-    public InvalidClassPathException(@Nullable Throwable cause) {
-      super(cause);
+      throw new IllegalStateException("Malformed class path given: " + jarPath, e);
     }
   }
 }
