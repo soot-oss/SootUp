@@ -37,15 +37,5 @@ public class MethodReferenceTest extends MinimalBytecodeTestSuiteBase {
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
-
-    System.out.println(
-        loadMethod(
-                identifierFactory.getMethodSignature(
-                    "main",
-                    getDeclaredClassSignature(),
-                    "void",
-                    Collections.singletonList("java.lang.String[]")))
-            .getBody()
-            .toString());
   }
 }
