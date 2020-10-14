@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.frontend;
 
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import java.io.IOException;
 import javax.annotation.Nonnull;
 
 /** A class which knows how to produce Body's for SootMethods. */
@@ -30,7 +31,7 @@ public interface MethodSource {
 
   /** Returns a filled-out body for the given SootMethod. This may be an expensive operation. */
   @Nonnull
-  Body resolveBody() throws ResolveException;
+  Body resolveBody() throws ResolveException, IOException;
 
   @Nonnull
   MethodSignature getSignature();

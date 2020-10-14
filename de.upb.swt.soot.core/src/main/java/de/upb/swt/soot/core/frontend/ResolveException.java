@@ -1,4 +1,9 @@
 package de.upb.swt.soot.core.frontend;
+
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
+import de.upb.swt.soot.core.model.Position;
+import javax.annotation.Nonnull;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -22,11 +27,29 @@ package de.upb.swt.soot.core.frontend;
  */
 public class ResolveException extends RuntimeException {
 
-  public ResolveException(String message) {
-    super(message);
+  @Nonnull private final String inputUri;
+  @Nonnull private final Position range;
+
+  // FIXME: [ms] fix usages to give a file uri
+  public ResolveException(@Nonnull String message) {
+    // FIXME uri parameter; range
+    this(message, "", NoPositionInformation.getInstance());
   }
 
-  public ResolveException(String message, Throwable cause) {
-    super(message, cause);
+  public ResolveException(
+      @Nonnull String message, @Nonnull String inputUri, @Nonnull Position range) {
+    super(message);
+    this.inputUri = inputUri;
+    this.range = range;
+  }
+
+  @Nonnull
+  public String getInputUri() {
+    return inputUri;
+  }
+
+  @Nonnull
+  public Position getRange() {
+    return range;
   }
 }

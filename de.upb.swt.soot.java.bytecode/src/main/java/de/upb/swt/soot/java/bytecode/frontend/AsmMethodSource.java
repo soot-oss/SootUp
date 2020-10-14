@@ -92,6 +92,7 @@ import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import java.io.IOException;
 import java.util.*;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -180,7 +181,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   @Override
   @Nonnull
-  public Body resolveBody() throws AsmFrontendException {
+  public Body resolveBody() throws IOException {
     // FIXME: [AD] add real line number
     Position bodyPos = NoPositionInformation.getInstance();
     bodyBuilder.setPosition(bodyPos);
@@ -1911,7 +1912,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     return false;
   }
 
-  private void buildLocals() throws AsmFrontendException {
+  private void buildLocals() throws IOException {
 
     MethodSignature methodSignature = lazyMethodSignature.get();
 
@@ -1941,7 +1942,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     bodyBuilder.setLocals(bodyLocals);
   }
 
-  private void buildTraps() throws AsmFrontendException {
+  private void buildTraps() throws IOException {
     List<Trap> traps = new ArrayList<>();
 
     for (TryCatchBlockNode trycatch : tryCatchBlocks) {
