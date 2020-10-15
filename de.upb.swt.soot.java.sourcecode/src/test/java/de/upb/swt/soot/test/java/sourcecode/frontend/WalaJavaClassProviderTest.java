@@ -4,15 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.frontend.ClassSource;
-import de.upb.swt.soot.core.inputlocation.FileType;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.nio.file.Paths;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -30,21 +28,17 @@ public class WalaJavaClassProviderTest {
             ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
-    WalaJavaClassProvider provider = new WalaJavaClassProvider(exclusionFilePath);
-    ClassSource classSource = provider.createClassSource(inputLocation, Paths.get(srcDir), type);
+    WalaJavaClassProvider provider = new WalaJavaClassProvider(srcDir, exclusionFilePath);
+    SootClassSource classSource =
+        provider.createClassSource(inputLocation, Paths.get(srcDir), type);
 
-    Assert.assertEquals(type, classSource.getClassType());
+    assertEquals(type, classSource.getClassType());
 
-    ClassSource content = classSource;
+    SootClassSource content = classSource;
     assertNotNull(content);
     assertEquals(3, content.resolveMethods().size());
     assertEquals(0, content.resolveFields().size());
 
     assertEquals(content, (classSource));
-  }
-
-  @Test
-  public void testGetHandledFileType() {
-    Assert.assertEquals(FileType.JAVA, new WalaJavaClassProvider().getHandledFileType());
   }
 }

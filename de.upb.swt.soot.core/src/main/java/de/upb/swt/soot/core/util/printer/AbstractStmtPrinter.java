@@ -1,8 +1,10 @@
+package de.upb.swt.soot.core.util.printer;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2003 Ondrej Lhotak
+ * Copyright (C) 2003-2020 Ondrej Lhotak, Linghui Luo, Markus Schmidt
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -19,26 +21,66 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package de.upb.swt.soot.core.util.printer;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
-import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.SootField;
-import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.PackageName;
+import de.upb.swt.soot.core.types.ArrayType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nonnull;
 
 /** Partial default StmtPrinter implementation. */
-public abstract class AbstractStmtPrinter implements StmtPrinter {
+public abstract class AbstractStmtPrinter extends StmtPrinter {
 
   protected boolean startOfLine = true;
-  protected String indent = "        ";
+  protected final char indentChar = '\u0020';
+  protected final int indentStep = 4;
+  protected int indent = 0;
+
   protected StringBuilder output = new StringBuilder();
-  protected HashSet<String> quotableLocals;
+  private final HashMap<String, PackageName> imports = new HashMap<>();
+
+  boolean useImports = false;
+
+  void enableImports(boolean enable) {
+    useImports = enable;
+  }
+
+  /**
+   * * addImport keeps track of imported Packages/Classes
+   *
+   * @return whether this ClassName does not collide with another ClassName from a different package
+   *     that was already added
+   */
+  public boolean addImport(Type referencedImport) {
+    if (referencedImport instanceof ClassType) {
+      final String referencedClassName = ((ClassType) referencedImport).getClassName();
+      final PackageName referencedPackageName = ((ClassType) referencedImport).getPackageName();
+      // handle ClassName/import collisions
+      final PackageName packageName = imports.get(referencedClassName);
+      if (packageName == null) {
+        imports.put(referencedClassName, referencedPackageName);
+        return true;
+      } else return packageName.equals(referencedPackageName);
+    }
+    return false;
+  }
+
+  public Map<String, PackageName> getImports() {
+    return imports;
+  }
+
+  public void stmt(Stmt currentStmt) {
+    startStmt(currentStmt);
+    currentStmt.toString(this);
+    endStmt(currentStmt);
+    output.append(";");
+    newline();
+  }
 
   @Override
   public void startStmt(Stmt u) {
@@ -49,65 +91,47 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   public void endStmt(Stmt u) {}
 
   @Override
-  public void startStmtBox(StmtBox ub) {
-    handleIndent();
-  }
-
-  @Override
-  public void endStmtBox(StmtBox ub) {}
-
-  @Override
-  public void startValueBox(ValueBox vb) {
-    handleIndent();
-  }
-
-  @Override
-  public void endValueBox(ValueBox vb) {}
-
-  @Override
   public void noIndent() {
     startOfLine = false;
   }
 
   @Override
+  public void setIndent(int offset) {
+    indent += offset;
+  }
+
+  @Override
   public void incIndent() {
-    indent = indent + "    ";
+    indent += indentStep;
   }
 
   @Override
   public void decIndent() {
-    if (indent.length() >= 4) {
-      indent = indent.substring(4);
+    indent -= indentStep;
+  }
+
+  public void modifier(String str) {
+    handleIndent();
+    output.append(str);
+  }
+
+  @Override
+  public void typeSignature(@Nonnull Type type) {
+    handleIndent();
+    if (useImports) {
+      if (type instanceof ClassType) {
+        if (addImport(type)) {
+          output.append(((ClassType) type).getClassName());
+        }
+      } else if (type instanceof ArrayType) {
+        ((ArrayType) type).toString(this);
+      } else {
+        output.append(type);
+      }
+    } else {
+      output.append(type);
     }
   }
-
-  @Override
-  public void setIndent(String indent) {
-    this.indent = indent;
-  }
-
-  @Override
-  public String getIndent() {
-    return indent;
-  }
-
-  @Override
-  public abstract void literal(String s);
-
-  @Override
-  public abstract void typeSignature(Type t);
-
-  @Override
-  public abstract void method(SootMethod m);
-
-  @Override
-  public abstract void field(SootField f);
-
-  @Override
-  public abstract void identityRef(IdentityRef r);
-
-  @Override
-  public abstract void stmtRef(Stmt u, boolean branchTarget);
 
   @Override
   public void newline() {
@@ -124,25 +148,20 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   @Override
   public void constant(Constant c) {
     handleIndent();
-    output.append(c.toString());
+    output.append(c);
+  }
+
+  public void handleIndent() {
+    if (startOfLine) {
+      for (int i = indent; i > 0; i--) {
+        output.append(indentChar);
+      }
+    }
+    startOfLine = false;
   }
 
   @Override
   public String toString() {
-    String ret = output.toString();
-    output = new StringBuilder();
-    return ret;
-  }
-
-  @Override
-  public StringBuilder output() {
-    return output;
-  }
-
-  protected void handleIndent() {
-    if (startOfLine) {
-      output.append(indent);
-    }
-    startOfLine = false;
+    return output.toString();
   }
 }

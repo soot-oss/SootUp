@@ -4,7 +4,7 @@ package de.upb.swt.soot.core.types;
  * #%L
  * Soot
  * %%
- * Copyright (C) 2018 Secure Software Engineering Department, University of Paderborn
+ * Copyright (C) 2019-2020 Christian Brüggemann, Markus Schmidt
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -100,6 +100,14 @@ public class PrimitiveType extends Type {
   @Nonnull
   public static Optional<PrimitiveType> find(@Nonnull String name) {
     return Optional.ofNullable(CACHED_SIGNATURES.get(name));
+  }
+
+  public static boolean isIntLikeType(Type t) {
+    return t.equals(PrimitiveType.getInt())
+        || t.equals(PrimitiveType.getByte())
+        || t.equals(PrimitiveType.getShort())
+        || t.equals(PrimitiveType.getChar())
+        || t.equals(PrimitiveType.getBoolean());
   }
 
   @Nonnull

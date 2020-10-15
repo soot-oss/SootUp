@@ -1,25 +1,28 @@
-/*
- * @author Linghui Luo
- * @version 1.0
- */
-
-/*
- * Modified by the Sable Research Group and others 1997-1999.
- * See the 'credits' file distributed with Soot for the complete list of
- * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
- */
-
 package de.upb.swt.soot.core.jimple.common.stmt;
 
-import de.upb.swt.soot.core.jimple.basic.Immediate;
-import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
-import de.upb.swt.soot.core.jimple.basic.RValueBox;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
-import de.upb.swt.soot.core.jimple.basic.StmtBoxOwner;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
-import de.upb.swt.soot.core.jimple.basic.VariableBox;
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 1997-2020 Etienne Gagnon, Linghui Luo, Markus Schmidt and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
@@ -27,10 +30,9 @@ import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
-import java.util.List;
 import javax.annotation.Nonnull;
 
-/** The Class JAssignStmt. */
+/** Represents the assignment of one value to another */
 public final class JAssignStmt extends AbstractDefinitionStmt implements Copyable {
 
   /** The Class LinkedVariableBox. */
@@ -124,7 +126,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @param variable the variable on the left side of the assign statement.
    * @param rValue the value on the right side of the assign statement.
    */
-  public JAssignStmt(Value variable, Value rValue, PositionInfo positionInfo) {
+  public JAssignStmt(Value variable, Value rValue, StmtPositionInfo positionInfo) {
     this(new LinkedVariableBox(variable), new LinkedRValueBox(rValue), positionInfo);
 
     ((LinkedVariableBox) getLeftBox()).setOtherBox(getRightBox());
@@ -142,7 +144,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @param variableBox the variable box on the left side of the assign statement.
    * @param rvalueBox the rvalue box on the right side of the assign statement.
    */
-  protected JAssignStmt(ValueBox variableBox, ValueBox rvalueBox, PositionInfo positionInfo) {
+  protected JAssignStmt(ValueBox variableBox, ValueBox rvalueBox, StmtPositionInfo positionInfo) {
     super(variableBox, rvalueBox, positionInfo);
   }
 
@@ -202,14 +204,12 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    */
   @Override
   public JArrayRef getArrayRef() {
-    if (!containsArrayRef()) {
-      throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
-    }
-
-    if (getLeftBox().getValue() instanceof JArrayRef) {
+    if (getLeftOp() instanceof JArrayRef) {
       return (JArrayRef) getLeftBox().getValue();
-    } else {
+    } else if (getRightOp() instanceof JArrayRef) {
       return (JArrayRef) getRightBox().getValue();
+    } else {
+      throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
     }
   }
 
@@ -280,22 +280,6 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   /*
    * (non-Javadoc)
    *
-   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getUnitBoxes()
-   */
-  @Override
-  public List<StmtBox> getStmtBoxes() {
-    // handle possible PhiExpr's
-    Value rvalue = getRightBox().getValue();
-    if (rvalue instanceof StmtBoxOwner) {
-      return ((StmtBoxOwner) rvalue).getStmtBoxes();
-    }
-
-    return super.getStmtBoxes();
-  }
-
-  /*
-   * (non-Javadoc)
-   *
    * @see java.lang.Object#toString()
    */
   @Override
@@ -346,7 +330,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   }
 
   @Nonnull
-  public JAssignStmt withPositionInfo(PositionInfo positionInfo) {
+  public JAssignStmt withPositionInfo(StmtPositionInfo positionInfo) {
     return new JAssignStmt(getLeftOp(), getRightOp(), positionInfo);
   }
 }

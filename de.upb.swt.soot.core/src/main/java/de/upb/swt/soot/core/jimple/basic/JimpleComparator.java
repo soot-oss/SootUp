@@ -1,8 +1,10 @@
+package de.upb.swt.soot.core.jimple.basic;
+
 /*-
  * #%L
  * Soot
  * %%
- * Copyright (C) 213.12.2018 Markus Schmidt
+ * Copyright (C) 2018-2020 Christian Brüggemann, Markus Schmidt and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -19,8 +21,6 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-
-package de.upb.swt.soot.core.jimple.basic;
 
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
@@ -44,23 +44,8 @@ import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
-import de.upb.swt.soot.core.jimple.common.stmt.AbstractOpStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.AbstractSwitchStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JInvokeStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JBreakpointStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JExitMonitorStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JLookupSwitchStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JRetStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.*;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
 import java.util.Iterator;
 
 /**
@@ -115,7 +100,8 @@ public class JimpleComparator {
     if (!(o instanceof Local)) {
       return false;
     }
-    return obj.equivHashCode() == ((Local) o).equivHashCode();
+    Local local = (Local) o;
+    return obj.getName().equals(local.getName()) && obj.getType().equals(local.getType());
   }
 
   public boolean caseBreakpointStmt(JBreakpointStmt stmt, Object o) {
@@ -160,7 +146,7 @@ public class JimpleComparator {
   }
 
   public boolean caseGotoStmt(JGotoStmt stmt, Object o) {
-    return (o instanceof JGotoStmt) && stmt.getTarget().equivTo(((JGotoStmt) o).getTarget(), this);
+    return (o instanceof JGotoStmt);
   }
 
   public boolean caseIfStmt(JIfStmt stmt, Object o) {
@@ -168,41 +154,35 @@ public class JimpleComparator {
       return false;
     }
     JIfStmt ifStmt = (JIfStmt) o;
-    return stmt.getCondition().equivTo(ifStmt.getCondition(), this)
-        && stmt.getTarget().equivTo(ifStmt.getTarget(), this);
+    return stmt.getCondition().equivTo(ifStmt.getCondition(), this);
   }
 
-  protected boolean caseAbstractSwitchStmt(AbstractSwitchStmt obj, AbstractSwitchStmt o) {
-    if (obj.getKey() != o.getKey() || obj.getDefaultTarget() != o.getDefaultTarget()) {
+  /**
+   * assumes that different sequence of (otherwise equivalent) cases means values are not considered
+   * equivalent
+   */
+  public boolean caseSwitchStmt(JSwitchStmt stmt, Object o) {
+    if (!(o instanceof JSwitchStmt)) {
       return false;
     }
-    if (obj.getTargetCount() != o.getTargetCount()) {
+    JSwitchStmt otherSwitchStmt = (JSwitchStmt) o;
+
+    if (stmt.getKey() != otherSwitchStmt.getKey()) {
       return false;
     }
-    for (int i = obj.getTargetCount() - 1; i >= 0; i--) {
-      if (!obj.getTarget(i).equivTo(o.getTarget(i), this)) {
+
+    if (stmt.getValueCount() != otherSwitchStmt.getValueCount()) {
+      return false;
+    }
+
+    Iterator<IntConstant> valueIterator = stmt.getValues().iterator();
+    for (IntConstant valuesOther : otherSwitchStmt.getValues()) {
+      if (!valuesOther.equivTo(valueIterator.next(), this)) {
         return false;
       }
     }
+
     return true;
-  }
-
-  public boolean caseLookupSwitchStmt(JLookupSwitchStmt stmt, Object o) {
-    if (!(o instanceof JLookupSwitchStmt)) {
-      return false;
-    }
-
-    JLookupSwitchStmt lookupSwitchStmt = (JLookupSwitchStmt) o;
-    if (stmt.getLookupValueCount() != lookupSwitchStmt.getLookupValueCount()) {
-      return false;
-    }
-    Iterator<IntConstant> lvIterator = stmt.getLookupValues().iterator();
-    for (IntConstant lvOther : lookupSwitchStmt.getLookupValues()) {
-      if (!lvOther.equivTo(lvIterator.next(), this)) {
-        return false;
-      }
-    }
-    return caseAbstractSwitchStmt(stmt, lookupSwitchStmt);
   }
 
   public boolean caseNopStmt(JNopStmt stmt, Object o) {
@@ -225,18 +205,6 @@ public class JimpleComparator {
 
   public boolean caseReturnVoidStmt(JReturnVoidStmt stmt, Object o) {
     return (o instanceof JReturnVoidStmt);
-  }
-
-  public boolean caseTableSwitchStmt(JTableSwitchStmt stmt, Object o) {
-    if (!(o instanceof JTableSwitchStmt)) {
-      return false;
-    }
-    JTableSwitchStmt tableSwitchStmt = (JTableSwitchStmt) o;
-    if (stmt.getLowIndex() != tableSwitchStmt.getLowIndex()
-        || stmt.getHighIndex() != tableSwitchStmt.getHighIndex()) {
-      return false;
-    }
-    return caseAbstractSwitchStmt(stmt, tableSwitchStmt);
   }
 
   public boolean caseThrowStmt(JThrowStmt stmt, Object o) {

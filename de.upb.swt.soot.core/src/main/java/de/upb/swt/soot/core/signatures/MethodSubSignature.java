@@ -1,10 +1,33 @@
 package de.upb.swt.soot.core.signatures;
 
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2019-2020 Jan Martin Persch, Christian Brüggemann, Markus Schmidt
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 import com.google.common.base.Objects;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
-import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.util.printer.StmtPrinter;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -16,25 +39,24 @@ import javax.annotation.Nonnull;
  *
  * @author Jan Martin Persch
  */
-public class MethodSubSignature extends AbstractClassMemberSubSignature {
+public class MethodSubSignature extends AbstractClassMemberSubSignature
+    implements Comparable<MethodSubSignature> {
 
   /**
    * Creates a new instance of the {@link FieldSubSignature} class.
    *
    * @param name The method name.
-   * @param parameterSignatures The signatures of the method parameters.
+   * @param parameterTypes The signatures of the method parameters.
    * @param type The return type signature.
    */
   public MethodSubSignature(
-      @Nonnull String name,
-      @Nonnull Iterable<? extends Type> parameterSignatures,
-      @Nonnull Type type) {
+      @Nonnull String name, @Nonnull Iterable<? extends Type> parameterTypes, @Nonnull Type type) {
     super(name, type);
 
-    this.parameterSignatures = ImmutableList.copyOf(parameterSignatures);
+    this.parameterTypes = ImmutableList.copyOf(parameterTypes);
   }
 
-  @Nonnull private final List<Type> parameterSignatures;
+  @Nonnull private final List<Type> parameterTypes;
 
   /**
    * Gets the parameters in an immutable list.
@@ -42,8 +64,8 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature {
    * @return The value to get.
    */
   @Nonnull
-  public List<Type> getParameterSignatures() {
-    return this.parameterSignatures;
+  public List<Type> getParameterTypes() {
+    return parameterTypes;
   }
 
   @Override
@@ -61,34 +83,53 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature {
     }
 
     MethodSubSignature that = (MethodSubSignature) o;
-    return Objects.equal(getParameterSignatures(), that.getParameterSignatures());
+
+    return Objects.equal(getParameterTypes(), that.getParameterTypes());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(super.hashCode(), getParameterSignatures());
+    return Objects.hashCode(super.hashCode(), getParameterTypes());
   }
 
   @Override
-  @Nonnull
-  public MethodSignature toFullSignature(@Nonnull JavaClassType declClassSignature) {
-    return new MethodSignature(declClassSignature, this);
+  public int compareTo(@Nonnull MethodSubSignature o) {
+    return super.compareTo(o);
   }
 
-  private final Supplier<String> cachedToString =
+  private final Supplier<String> _cachedToString =
       Suppliers.memoize(
           () ->
               String.format(
                   "%s %s(%s)",
                   getType(),
                   getName(),
-                  getParameterSignatures().stream()
+                  getParameterTypes().stream()
                       .map(Object::toString)
                       .collect(Collectors.joining(","))));
 
   @Override
   @Nonnull
   public String toString() {
-    return cachedToString.get();
+    return _cachedToString.get();
+  }
+
+  @Override
+  public void toString(StmtPrinter printer) {
+    printer.typeSignature(getType());
+    printer.literal(" ");
+    printer.literal(getName());
+    printer.literal("(");
+
+    Iterator<Type> it = getParameterTypes().iterator();
+    if (it.hasNext()) {
+      printer.typeSignature(it.next());
+      while (it.hasNext()) {
+        printer.literal(",");
+        printer.typeSignature(it.next());
+      }
+    }
+
+    printer.literal(")");
   }
 }

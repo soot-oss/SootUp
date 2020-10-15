@@ -1,12 +1,32 @@
 package de.upb.swt.soot.core.views;
 
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2018-2020 Linghui Luo, Ben Hermann, Christian Brüggemann and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.Options;
 import de.upb.swt.soot.core.Scope;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.model.AbstractClass;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
@@ -16,7 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * A view on code.
+ * A View is essentially a collection of code belonging to a {@link de.upb.swt.soot.core.Project}.
  *
  * @author Linghui Luo
  * @author Ben Hermann
@@ -25,28 +45,22 @@ public interface View {
 
   /** Return all classes in the view. */
   @Nonnull
-  Collection<AbstractClass<? extends AbstractClassSource>> getClasses();
+  Collection<? extends AbstractClass<? extends AbstractClassSource>> getClasses();
 
   /** Return all classes in the view. */
   @Nonnull
-  default Stream<AbstractClass<? extends AbstractClassSource>> getClassesStream() {
+  default Stream<? extends AbstractClass<? extends AbstractClassSource>> getClassesStream() {
     return getClasses().stream();
   }
 
   /**
-   * Return a class with given classType.
+   * Return a class with given signature.
    *
-   * @return A class with given classType.
+   * @return A class with given signature.
    */
   @Nonnull
-  Optional<AbstractClass<? extends AbstractClassSource>> getClass(@Nonnull JavaClassType classType);
-
-  @Nonnull
-  default AbstractClass<? extends AbstractClassSource> getClassOrThrow(
-      @Nonnull JavaClassType classType) {
-    return getClass(classType)
-        .orElseThrow(() -> new ResolveException("Could not find " + classType + " in view"));
-  }
+  Optional<? extends AbstractClass<? extends AbstractClassSource>> getClass(
+      @Nonnull ClassType signature);
 
   /**
    * Returns the scope if the view is scoped.
@@ -56,21 +70,9 @@ public interface View {
   @Nonnull
   Optional<Scope> getScope();
 
-  //  /**
-  //   * Returns the {@link JavaClassType} with given class Signature from the view. If there
-  // is no RefType with given className
-  //   * exists, create a new instance.
-  //   */
-  //  @Nonnull
-  //  JavaClassType getRefType(@Nonnull Type classSignature);
-
   /** Returns the {@link IdentifierFactory} for this view. */
   @Nonnull
   IdentifierFactory getIdentifierFactory();
-
-  /** Return the {@link Options} of this view. */
-  @Nonnull
-  Options getOptions();
 
   boolean doneResolving();
 
@@ -98,29 +100,6 @@ public interface View {
     putModuleData(key, computedModuleData);
     return computedModuleData;
   }
-
-  //  // TODO: [JMP] Move type resolving into view.
-  //  /**
-  //   * Returns a backed list of the exceptions thrown by this methodRef.
-  //   */
-  //  public @Nonnull Collection<SootClass> getExceptions() {
-  //    return this.exceptions.stream()
-  //             .map(e -> this.getView().getClass(e))
-  //             .filter(Optional::isPresent).map(Optional::get)
-  //             .map(it -> (SootClass) it).collect(Collectors.toSet());
-  //  }
-
-  //  // TODO: This was placed in `JDynamicInvokeExpr`
-  //  public Optional<SootMethod> getBootstrapMethod() {
-  //    JavaClassType signature = bsm.declClassSignature;
-  //    Optional<AbstractClass> op = this.getView().getClass(signature);
-  //    if (op.isPresent()) {
-  //      AbstractClass klass = op.get();
-  //      Optional<? extends Method> m = klass.getMethod(bsm);
-  //      return m.map(c -> (SootMethod) c);
-  //    }
-  //    return Optional.empty();
-  //  }
 
   /**
    * A key for use with {@link #getModuleData(ModuleDataKey)}, {@link #putModuleData(ModuleDataKey,

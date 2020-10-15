@@ -1,15 +1,35 @@
 package de.upb.swt.soot.java.bytecode.inputlocation;
-
-import de.upb.swt.soot.core.ModuleIdentifierFactory;
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2018-2020 Andreas Dann, Christian Brüggemann and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
-import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassResolvingException;
-import de.upb.swt.soot.core.inputlocation.PathUtils;
-import de.upb.swt.soot.core.signatures.ModuleSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.core.types.ModuleDecoratorClassType;
+import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.java.bytecode.frontend.modules.AsmModuleClassSource;
+import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.signatures.ModuleSignature;
+import de.upb.swt.soot.java.core.types.JavaClassType;
+import de.upb.swt.soot.java.core.types.ModuleDecoratorClassType;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -43,7 +63,7 @@ import javax.annotation.Nullable;
 public class ModuleFinder {
   private @Nonnull ClassProvider classProvider;
   // associate a module name with the input location, that represents the module
-  private @Nonnull Map<String, AbstractAnalysisInputLocation> moduleInputLocation = new HashMap<>();
+  private @Nonnull Map<String, AnalysisInputLocation> moduleInputLocation = new HashMap<>();
   private int next = 0;
 
   private @Nonnull List<Path> modulePathEntries;
@@ -62,7 +82,7 @@ public class ModuleFinder {
         JavaClassPathAnalysisInputLocation.explode(modulePath).collect(Collectors.toList());
     // add the input location for the jrt virtual file system
     // FIXME: Set Jrt File input location by default?
-    jrtFileSystemNamespace = new JrtFileSystemAnalysisInputLocation(classProvider);
+    jrtFileSystemNamespace = new JrtFileSystemAnalysisInputLocation();
 
     // discover all system's modules
     Collection<String> modules = jrtFileSystemNamespace.discoverModules();
@@ -77,8 +97,8 @@ public class ModuleFinder {
    * @param moduleName the module name
    * @return the input location that resolves classes contained in the module
    */
-  public @Nullable AbstractAnalysisInputLocation discoverModule(@Nonnull String moduleName) {
-    AbstractAnalysisInputLocation inputLocationForModule = moduleInputLocation.get(moduleName);
+  public @Nullable AnalysisInputLocation discoverModule(@Nonnull String moduleName) {
+    AnalysisInputLocation inputLocationForModule = moduleInputLocation.get(moduleName);
     if (inputLocationForModule != null) {
       return inputLocationForModule;
     }

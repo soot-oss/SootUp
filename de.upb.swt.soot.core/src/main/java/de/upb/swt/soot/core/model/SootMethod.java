@@ -1,9 +1,10 @@
 package de.upb.swt.soot.core.model;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997 - 1999 Raja Vallee-Rai
+ * Copyright (C) 1997-2020 Raja Vallee-Rai, Linghui Luo, Jan Martin Persch and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -28,15 +29,15 @@ import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import de.upb.swt.soot.core.util.builder.BuilderException;
+import de.upb.swt.soot.core.util.printer.StmtPrinter;
+import java.util.*;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -52,16 +53,13 @@ import javax.annotation.Nullable;
  */
 public class SootMethod extends SootClassMember<MethodSignature> implements Method, Copyable {
 
-  @Nonnull protected static final String CONSTRUCTOR_NAME = "<init>";
-  @Nonnull protected static final String STATIC_INITIALIZER_NAME = "<clinit>";
-
   /**
    * An array of parameter types taken by this <code>SootMethod</code> object, in declaration order.
    */
   @Nonnull protected final ImmutableList<Type> parameterTypes;
 
   /** Declared exceptions thrown by this methodRef. Created upon demand. */
-  @Nonnull protected final ImmutableList<JavaClassType> exceptions;
+  @Nonnull protected final ImmutableList<ClassType> exceptions;
 
   /** Tells this methodRef how to find out where its body lives. */
   @Nonnull protected final MethodSource methodSource;
@@ -71,11 +69,11 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
       @Nonnull MethodSource source,
       @Nonnull MethodSignature methodSignature,
       @Nonnull Iterable<Modifier> modifiers,
-      @Nonnull Iterable<JavaClassType> thrownExceptions) {
+      @Nonnull Iterable<ClassType> thrownExceptions) {
     super(methodSignature, modifiers);
 
     this.methodSource = source;
-    this.parameterTypes = ImmutableUtils.immutableListOf(methodSignature.getParameterSignatures());
+    this.parameterTypes = ImmutableUtils.immutableListOf(methodSignature.getParameterTypes());
     this.exceptions = ImmutableUtils.immutableListOf(thrownExceptions);
   }
 
@@ -86,10 +84,6 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     Body body;
     try {
       body = this.methodSource.resolveBody();
-
-      if (body != null) {
-        body.setMethod(this);
-      }
     } catch (ResolveException e) {
       body = null;
 
@@ -144,7 +138,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   }
 
   @Nonnull
-  public List<JavaClassType> getExceptionSignatures() {
+  public List<ClassType> getExceptionSignatures() {
     return exceptions;
   }
 
@@ -167,64 +161,44 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   public boolean isMain() {
     return isPublic()
         && isStatic()
-        && this.getSubSignature().toString().equals("void main(java.lang.String[])");
-  }
-
-  /**
-   * @return yes, if this function is a constructor. Please not that &lt;clinit&gt; methods are not
-   *     treated as constructors in this methodRef.
-   */
-  public boolean isConstructor() {
-    return this.getSignature().getName().equals(CONSTRUCTOR_NAME);
-  }
-
-  /** @return yes, if this function is a static initializer. */
-  public boolean isStaticInitializer() {
-    return this.getSignature().getName().equals(STATIC_INITIALIZER_NAME);
+        && getSubSignature().toString().equals("void main(java.lang.String[])");
   }
 
   /** We rely on the JDK class recognition to decide if a method is JDK method. */
-  public boolean isJavaLibraryMethod() {
-    return getSignature().getDeclClassType().isJavaLibraryClass();
+  public boolean isBuiltInMethod() {
+    return getSignature().getDeclClassType().isBuiltInClass();
   }
 
   /**
    * Returns the declaration of this method, as used at the top of textual body representations
    * (before the {}'s containing the code for representation.)
    */
-  public String getDeclaration() {
-    StringBuilder builder = new StringBuilder();
+  public void toString(StmtPrinter printer) {
 
-    // modifiers
-    StringTokenizer st = new StringTokenizer(Modifier.toString(this.getModifiers()));
-    if (st.hasMoreTokens()) {
-      builder.append(st.nextToken());
+    // print modifiers
+    final Set<Modifier> modifiers = getModifiers();
+    printer.modifier(Modifier.toString(modifiers));
+    if (modifiers.size() != 0) {
+      printer.literal(" ");
     }
 
-    while (st.hasMoreTokens()) {
-      builder.append(" ").append(st.nextToken());
-    }
-
-    if (builder.length() != 0) {
-      builder.append(" ");
-    }
-
-    // return type + name
-
-    builder.append(this.getSubSignature().toString());
+    // print returnType + name + ( parameterList )
+    final MethodSubSignature subSignature = getSubSignature();
+    subSignature.toString(printer);
 
     // Print exceptions
-    Iterator<JavaClassType> exceptionIt = this.getExceptionSignatures().iterator();
-
+    Iterator<ClassType> exceptionIt = getExceptionSignatures().iterator();
     if (exceptionIt.hasNext()) {
-      builder.append(" throws ").append(exceptionIt.next());
+      printer.literal(" throws ");
+      printer.typeSignature(exceptionIt.next());
 
       while (exceptionIt.hasNext()) {
-        builder.append(", ").append(exceptionIt.next());
+        printer.literal(", ");
+        printer.typeSignature(exceptionIt.next());
       }
     }
 
-    return builder.toString().intern();
+    printer.newline();
   }
 
   /**
@@ -249,72 +223,62 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
   @Nonnull
   public SootMethod withModifiers(Iterable<Modifier> modifiers) {
-    return new SootMethod(methodSource, getSignature(), getModifiers(), exceptions);
+    return new SootMethod(methodSource, getSignature(), modifiers, getExceptionSignatures());
   }
 
   @Nonnull
-  public SootMethod withThrownExceptions(Iterable<JavaClassType> thrownExceptions) {
+  public SootMethod withThrownExceptions(Iterable<ClassType> thrownExceptions) {
     return new SootMethod(methodSource, getSignature(), getModifiers(), thrownExceptions);
   }
 
-  /**
-   * Creates a {@link SootMethod} builder.
-   *
-   * @return A {@link SootMethod} builder.
-   */
   @Nonnull
-  public static Builder.MethodSourceStep builder() {
-    return new SootMethodBuilder();
+  public SootMethod withBody(@Nonnull Body body) {
+    return new SootMethod(
+        new OverridingMethodSource(methodSource).withBody(body),
+        getSignature(),
+        getModifiers(),
+        exceptions);
   }
 
   /**
-   * Defines a stepwise builder for the {@link SootMethod} class.
+   * Creates a builder for {@link SootMethod}s.
    *
-   * @see #builder()
-   * @author Jan Martin Persch
+   * @return A {@link SootMethodBuilder}.
    */
-  public interface Builder extends SootClassMember.Builder<MethodSignature, SootMethod> {
-    interface MethodSourceStep {
-      /**
-       * Sets the {@link MethodSource}.
-       *
-       * @param value The value to set.
-       * @return This fluent builder.
-       */
-      @Nonnull
-      MethodSignatureStep withSource(@Nonnull MethodSource value);
+  @Nonnull
+  public static MethodSourceStep builder() {
+    return new SootMethodBuilder();
+  }
+
+  public interface MethodSourceStep {
+    @Nonnull
+    SignatureStep withSource(@Nonnull MethodSource value);
+  }
+
+  public interface SignatureStep {
+    @Nonnull
+    ModifierStep withSignature(@Nonnull MethodSignature value);
+  }
+
+  public interface ModifierStep {
+    @Nonnull
+    ThrownExceptionsStep withModifier(@Nonnull Iterable<Modifier> modifier);
+
+    @Nonnull
+    default ThrownExceptionsStep withModifiers(@Nonnull Modifier first, @Nonnull Modifier... rest) {
+      return withModifier(EnumSet.of(first, rest));
     }
+  }
 
-    interface MethodSignatureStep {
-      /**
-       * Sets the {@link MethodSignature}.
-       *
-       * @param value The value to set.
-       * @return This fluent builder.
-       */
-      @Nonnull
-      ModifiersStep withSignature(@Nonnull MethodSignature value);
-    }
+  public interface ThrownExceptionsStep {
+    @Nonnull
+    BuildStep withThrownExceptions(@Nonnull Iterable<ClassType> value);
 
-    interface ModifiersStep extends SootClassMember.Builder.ModifiersStep<ThrownExceptionsStep> {}
+    @Nonnull
+    SootMethod build();
+  }
 
-    interface ThrownExceptionsStep extends Builder {
-      /**
-       * Sets the exceptions thrown by the method to build. This step is optional.
-       *
-       * @param value The value to set.
-       * @return This fluent builder.
-       */
-      @Nonnull
-      Builder withThrownExceptions(@Nonnull Iterable<JavaClassType> value);
-    }
-
-    /**
-     * Builds the {@link SootMethod}.
-     *
-     * @return The created {@link SootMethod}.
-     * @throws BuilderException A build error occurred.
-     */
+  public interface BuildStep {
     @Nonnull
     SootMethod build();
   }
@@ -324,120 +288,66 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
    *
    * @author Jan Martin Persch
    */
-  protected static class SootMethodBuilder
-      extends SootClassMemberBuilder<MethodSignature, SootMethod>
-      implements Builder.MethodSourceStep,
-          Builder.MethodSignatureStep,
-          Builder.ModifiersStep,
-          Builder.ThrownExceptionsStep,
-          Builder {
+  public static class SootMethodBuilder
+      implements MethodSourceStep, SignatureStep, ModifierStep, ThrownExceptionsStep, BuildStep {
 
-    /** Creates a new instance of the {@link SootMethodBuilder} class. */
-    SootMethodBuilder() {
-      super(SootMethod.class);
-    }
+    @Nullable private MethodSource source;
+    @Nullable private Iterable<Modifier> modifiers;
+    @Nullable private MethodSignature methodSignature;
+    @Nonnull private Iterable<ClassType> thrownExceptions = Collections.emptyList();
 
-    @Nullable private MethodSource _source;
-
-    /**
-     * Gets the method source content.
-     *
-     * @return The value to get.
-     */
-    @Nonnull
-    protected MethodSource getSource() {
-      return ensureValue(this._source, "source");
-    }
-
-    /**
-     * Sets the method source content.
-     *
-     * @param value The value to set.
-     */
-    @Nonnull
-    public MethodSignatureStep withSource(@Nonnull MethodSource value) {
-      this._source = value;
-
-      return this;
-    }
-
-    private @Nullable MethodSignature _methodSignature;
-
-    /**
-     * Gets the method sub-signature.
-     *
-     * @return The value to get.
-     */
-    @Nonnull
-    protected MethodSignature getSignature() {
-      return ensureValue(this._methodSignature, "signature");
-    }
-
-    /**
-     * Sets the method sub-signature.
-     *
-     * @param value The value to set.
-     */
-    @Nonnull
-    public ModifiersStep withSignature(@Nonnull MethodSignature value) {
-      this._methodSignature = value;
-
-      return this;
-    }
-
-    @Nullable private Iterable<Modifier> _modifiers;
-
-    /**
-     * Gets the modifiers.
-     *
-     * @return The value to get.
-     */
     @Nonnull
     protected Iterable<Modifier> getModifiers() {
-      return ensureValue(this._modifiers, "modifiers");
+      return modifiers;
     }
 
-    /**
-     * Sets the modifiers.
-     *
-     * @param value The value to set.
-     */
     @Nonnull
-    public ThrownExceptionsStep withModifiers(@Nonnull Iterable<Modifier> value) {
-      this._modifiers = value;
-
-      return this;
+    protected MethodSource getSource() {
+      return source;
     }
 
-    @Nullable private Iterable<JavaClassType> _thrownExceptions = Collections.emptyList();
-
-    /**
-     * Gets the thrown exceptions.
-     *
-     * @return The value to get.
-     */
     @Nonnull
-    protected Iterable<JavaClassType> getThrownExceptions() {
-      return ensureValue(this._thrownExceptions, "thrownExceptions");
+    protected MethodSignature getSignature() {
+      return methodSignature;
     }
 
-    /**
-     * Sets the thrown exceptions.
-     *
-     * @param value The value to set.
-     */
     @Nonnull
-    public Builder withThrownExceptions(@Nonnull Iterable<JavaClassType> value) {
-      this._thrownExceptions = value;
+    protected Iterable<ClassType> getThrownExceptions() {
+      return thrownExceptions;
+    }
 
+    @Override
+    @Nonnull
+    public SignatureStep withSource(@Nonnull MethodSource source) {
+      this.source = source;
       return this;
     }
 
     @Override
     @Nonnull
-    protected SootMethod make() {
-      return new SootMethod(
-          this.getSource(), this.getSignature(), this.getModifiers(), this.getThrownExceptions());
+    public ModifierStep withSignature(@Nonnull MethodSignature methodSignature) {
+      this.methodSignature = methodSignature;
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public ThrownExceptionsStep withModifier(@Nonnull Iterable<Modifier> modifiers) {
+      this.modifiers = modifiers;
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public BuildStep withThrownExceptions(@Nonnull Iterable<ClassType> thrownExceptions) {
+      this.thrownExceptions = thrownExceptions;
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public SootMethod build() {
+      return new SootMethod(getSource(), getSignature(), getModifiers(), getThrownExceptions());
     }
   }
 }

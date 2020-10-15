@@ -1,20 +1,25 @@
-/* Soot - a J*va Optimization Framework
- * Copyright (C) 1997-1999 Etienne Gagnon
+package de.upb.swt.soot.core.jimple.visitor;
+
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 1997-2020 Etienne Gagnon, Linghui Luo, Christian Brüggemann
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
  */
 
 /*
@@ -22,8 +27,6 @@
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
-
-package de.upb.swt.soot.core.jimple.visitor;
 
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
@@ -34,12 +37,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JBreakpointStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JExitMonitorStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JLookupSwitchStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JRetStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
 
 public interface StmtVisitor extends Visitor {
   void caseBreakpointStmt(JBreakpointStmt stmt);
@@ -58,8 +56,6 @@ public interface StmtVisitor extends Visitor {
 
   void caseIfStmt(JIfStmt stmt);
 
-  void caseLookupSwitchStmt(JLookupSwitchStmt stmt);
-
   void caseNopStmt(JNopStmt stmt);
 
   void caseRetStmt(JRetStmt stmt);
@@ -68,7 +64,7 @@ public interface StmtVisitor extends Visitor {
 
   void caseReturnVoidStmt(JReturnVoidStmt stmt);
 
-  void caseTableSwitchStmt(JTableSwitchStmt stmt);
+  void caseSwitchStmt(JSwitchStmt stmt);
 
   void caseThrowStmt(JThrowStmt stmt);
 

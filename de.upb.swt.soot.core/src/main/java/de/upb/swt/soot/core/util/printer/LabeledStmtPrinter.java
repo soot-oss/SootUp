@@ -1,37 +1,55 @@
 package de.upb.swt.soot.core.util.printer;
 
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2003-2020 Ondrej Lhotak, Linghui Luo, Markus Schmidt
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
+import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.signatures.FieldSubSignature;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   /** branch targets * */
   protected Map<Stmt, String> labels;
-  /** for unit references in Phi nodes * */
-  protected Map<Stmt, String> references;
 
-  protected String labelIndent = "\u0020\u0020\u0020\u0020\u0020";
+  /**
+   * for stmt references in Phi nodes (ms: and other occurences TODO: check and improve comment) *
+   */
+  protected Map<Stmt, String> references;
 
   public LabeledStmtPrinter() {}
 
-  public LabeledStmtPrinter(Body b) {
-    createLabelMaps(b);
-  }
-
-  public Map<Stmt, String> labels() {
+  public Map<Stmt, String> getLabels() {
     return labels;
   }
 
-  public Map<Stmt, String> references() {
+  public Map<Stmt, String> getReferences() {
     return references;
   }
 
@@ -48,54 +66,64 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   public abstract void identityRef(IdentityRef r);
 
   @Override
-  public abstract void typeSignature(Type t);
-
-  @Override
-  public void stmtRef(Stmt u, boolean branchTarget) {
-    String oldIndent = getIndent();
+  public void stmtRef(Stmt stmt, boolean branchTarget) {
 
     // normal case, ie labels
     if (branchTarget) {
-      setIndent(labelIndent);
+
+      setIndent(-indentStep / 2);
       handleIndent();
-      setIndent(oldIndent);
-      String label = labels.get(u);
-      if (label == null || "<unnamed>".equals(label)) {
-        label = "[?= " + u + "]";
+      setIndent(indentStep / 2);
+
+      String label = labels.get(stmt);
+      if (label == null) {
+        output.append("[?= ").append(stmt).append(']');
+      } else {
+        output.append(label);
       }
-      output.append(label);
-    }
-    // refs to control flow predecessors (for Shimple)
-    else {
-      String ref = references.get(u);
+
+    } else {
+
+      String ref = references.get(stmt);
 
       if (startOfLine) {
-        String newIndent = "(" + ref + ")" + indent.substring(ref.length() + 2);
-
-        setIndent(newIndent);
+        setIndent(-indentStep / 2);
         handleIndent();
-        setIndent(oldIndent);
+        setIndent(indentStep / 2);
+
+        output.append('(').append(ref).append(')');
       } else {
-        output.append(ref);
+        output.append(stmt);
       }
     }
   }
 
-  public void createLabelMaps(Body body) {
-    Collection<Stmt> stmts = body.getStmts();
+  /** createLabelMaps */
+  public void initializeSootMethod(Body body) {
+    this.body = body;
 
-    labels = new HashMap<>(stmts.size() * 2 + 1, 0.7f);
-    references = new HashMap<>(stmts.size() * 2 + 1, 0.7f);
+    final Collection<Stmt> targetStmtsOfBranches = body.getTargetStmtsInBody();
+    final List<Trap> traps = body.getTraps();
+
+    final int maxEstimatedSize = targetStmtsOfBranches.size() + traps.size() * 3;
+    labels = new HashMap<>(maxEstimatedSize, 1);
+    references = new HashMap<>(maxEstimatedSize, 1);
 
     // Create statement name table
     Set<Stmt> labelStmts = new HashSet<>();
     Set<Stmt> refStmts = new HashSet<>();
 
-    // Build labelStmts and refStmts
-    for (StmtBox box : body.getAllStmtBoxes()) {
-      Stmt stmt = box.getStmt();
+    Set<Stmt> trapStmts = new HashSet<>();
+    traps.forEach(
+        trap -> {
+          trapStmts.add(trap.getHandlerStmt());
+          trapStmts.add(trap.getBeginStmt());
+          trapStmts.add(trap.getEndStmt());
+        });
 
-      if (box.isBranchTarget()) {
+    // Build labelStmts and refStmts
+    for (Stmt stmt : targetStmtsOfBranches) {
+      if (body.isStmtBranchTarget(stmt) || trapStmts.contains(stmt)) {
         labelStmts.add(stmt);
       } else {
         refStmts.add(stmt);
@@ -112,7 +140,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     int refCount = 0;
 
     // Traverse the stmts and assign a label if necessary
-    for (Stmt s : stmts) {
+    for (Stmt s : body.getStmtGraph()) {
       if (labelStmts.contains(s)) {
         labels.put(s, String.format(formatString, ++labelCount));
       }
@@ -120,6 +148,43 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       if (refStmts.contains(s)) {
         references.put(s, Integer.toString(refCount++));
       }
+    }
+  }
+
+  @Override
+  public void methodSignature(MethodSignature methodSig) {
+    if (useImports) {
+      output.append('<');
+      typeSignature(methodSig.getDeclClassType());
+      output.append(": ");
+      typeSignature(methodSig.getType());
+      output.append(' ').append(methodSig.getName()).append('(');
+
+      final List<Type> parameterTypes = methodSig.getSubSignature().getParameterTypes();
+      for (Type parameterType : parameterTypes) {
+        typeSignature(parameterType);
+        output.append(',');
+      }
+      if (parameterTypes.size() > 0) {
+        output.setLength(output.length() - 1);
+      }
+      output.append(")>");
+    } else {
+      output.append(methodSig.toString());
+    }
+  }
+
+  @Override
+  public void fieldSignature(FieldSignature fieldSig) {
+    if (useImports) {
+      output.append('<');
+      typeSignature(fieldSig.getDeclClassType());
+      output.append(": ");
+      final FieldSubSignature subSignature = fieldSig.getSubSignature();
+      typeSignature(subSignature.getType());
+      output.append(' ').append(subSignature.getName()).append('>');
+    } else {
+      output.append(fieldSig.toString());
     }
   }
 }

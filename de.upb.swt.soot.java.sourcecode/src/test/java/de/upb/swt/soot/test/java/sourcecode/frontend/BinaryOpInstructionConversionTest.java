@@ -1,13 +1,12 @@
 package de.upb.swt.soot.test.java.sourcecode.frontend;
 
-import static de.upb.swt.soot.test.java.sourcecode.frontend.Utils.assertEquiv;
-import static de.upb.swt.soot.test.java.sourcecode.frontend.Utils.assertInstanceOfSatisfying;
+import static de.upb.swt.soot.core.util.Utils.assertEquiv;
+import static de.upb.swt.soot.core.util.Utils.assertInstanceOfSatisfying;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
@@ -39,14 +38,15 @@ import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
+import de.upb.swt.soot.core.util.Utils;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.WalaClassLoaderTestUtils;
-import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -54,15 +54,15 @@ import org.junit.experimental.categories.Category;
 /** @author Linghui Luo */
 @Category(Java8Test.class)
 public class BinaryOpInstructionConversionTest {
-  private WalaClassLoader loader;
-  private DefaultIdentifierFactory identifierFactory;
+  private WalaJavaClassProvider loader;
+  private JavaIdentifierFactory identifierFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
-    loader = new WalaClassLoader(srcDir, null);
-    identifierFactory = DefaultIdentifierFactory.getInstance();
+    loader = new WalaJavaClassProvider(srcDir);
+    identifierFactory = JavaIdentifierFactory.getInstance();
     declareClassSig = identifierFactory.getClassType("BinaryOperations");
   }
 
@@ -1305,7 +1305,7 @@ public class BinaryOpInstructionConversionTest {
               new JEqExpr(new Local("$z0", PrimitiveType.getBoolean()), IntConstant.getInstance(0)),
               stmt.getCondition());
           assertInstanceOfSatisfying(
-              stmt.getTarget(),
+              stmt.getTarget(body),
               JAssignStmt.class,
               target -> {
                 assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getLeftOp());
@@ -1326,7 +1326,7 @@ public class BinaryOpInstructionConversionTest {
         JGotoStmt.class,
         stmt ->
             assertInstanceOfSatisfying(
-                stmt.getTarget(),
+                stmt.getTarget(body),
                 JReturnStmt.class,
                 target ->
                     assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getOp())));
@@ -1397,7 +1397,7 @@ public class BinaryOpInstructionConversionTest {
               new JEqExpr(new Local("$z0", PrimitiveType.getBoolean()), IntConstant.getInstance(0)),
               stmt.getCondition());
           assertInstanceOfSatisfying(
-              stmt.getTarget(),
+              stmt.getTarget(body),
               JAssignStmt.class,
               target -> {
                 assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getLeftOp());
@@ -1418,7 +1418,7 @@ public class BinaryOpInstructionConversionTest {
         JGotoStmt.class,
         stmt ->
             assertInstanceOfSatisfying(
-                stmt.getTarget(),
+                stmt.getTarget(body),
                 JReturnStmt.class,
                 target ->
                     assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getOp())));
@@ -1924,5 +1924,140 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(6),
         JReturnStmt.class,
         stmt -> assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getOp()));
+  }
+
+  @Test
+  public void testString1() {
+    Optional<SootMethod> m =
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
+            identifierFactory.getMethodSignature(
+                "getString1",
+                declareClassSig,
+                "java.lang.String",
+                Arrays.asList("java.lang.String")));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+
+    Body body = method.getBody();
+    assertNotNull(body);
+
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(Stmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    List<String> expectedStmts =
+        Stream.of(
+                "r0 := @this: BinaryOperations",
+                "$r1 := @parameter0: java.lang.String",
+                "$r3 = new java.lang.StringBuilder",
+                "specialinvoke $r3.<java.lang.StringBuilder: void <init>(java.lang.String)>(\"abc\")",
+                "$r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r1)",
+                "$r2 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+                "return $r2")
+            .collect(Collectors.toCollection(ArrayList::new));
+    assertEquals(expectedStmts, actualStmts);
+  }
+
+  @Test
+  public void testString2() {
+    Optional<SootMethod> m =
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
+            identifierFactory.getMethodSignature(
+                "getString2",
+                declareClassSig,
+                "java.lang.String",
+                Collections.singletonList("java.lang.String")));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+
+    Body body = method.getBody();
+    assertNotNull(body);
+    Utils.print(method, false);
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(Stmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    List<String> expectedStmts =
+        Stream.of(
+                "r0 := @this: BinaryOperations",
+                "$r1 := @parameter0: java.lang.String",
+                "$r3 = new java.lang.StringBuilder",
+                "specialinvoke $r3.<java.lang.StringBuilder: void <init>(java.lang.String)>($r1)",
+                "$r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"xyz\")",
+                "$r2 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+                "return $r2")
+            .collect(Collectors.toCollection(ArrayList::new));
+    assertEquals(expectedStmts, actualStmts);
+  }
+
+  @Test
+  public void testString3() {
+    Optional<SootMethod> m =
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
+            identifierFactory.getMethodSignature(
+                "getString3",
+                declareClassSig,
+                "java.lang.String",
+                Arrays.asList("java.lang.String", "java.lang.String")));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+
+    Body body = method.getBody();
+    assertNotNull(body);
+
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(Stmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    List<String> expectedStmts =
+        Stream.of(
+                "r0 := @this: BinaryOperations",
+                "$r1 := @parameter0: java.lang.String",
+                "$r2 := @parameter1: java.lang.String",
+                "$r4 = new java.lang.StringBuilder",
+                "specialinvoke $r4.<java.lang.StringBuilder: void <init>(java.lang.String)>($r1)",
+                "$r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r2)",
+                "$r3 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+                "return $r3")
+            .collect(Collectors.toCollection(ArrayList::new));
+    assertEquals(expectedStmts, actualStmts);
+  }
+
+  @Test
+  public void testString4() {
+    Optional<SootMethod> m =
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
+            identifierFactory.getMethodSignature(
+                "getString4", declareClassSig, "java.lang.String", Collections.emptyList()));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    Body body = method.getBody();
+    assertNotNull(body);
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(Stmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    List<String> expectedStmts =
+        Stream.of(
+                "r0 := @this: BinaryOperations",
+                "$r2 = new java.lang.StringBuilder",
+                "specialinvoke $r2.<java.lang.StringBuilder: void <init>(java.lang.String)>(\"abc\")",
+                "$r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"xyz\")",
+                "$r1 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+                "$r5 = new java.lang.StringBuilder",
+                "specialinvoke $r5.<java.lang.StringBuilder: void <init>(java.lang.String)>($r1)",
+                "$r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"efg\")",
+                "$r4 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+                "return $r4")
+            .collect(Collectors.toCollection(ArrayList::new));
+    assertEquals(expectedStmts, actualStmts);
   }
 }

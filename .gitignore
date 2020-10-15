@@ -2,7 +2,7 @@
 ### Java template
 # Compiled class file
 *.class
-!src/test/resources/**/*.class
+!shared-test-resources/miniTestSuite/**/*.class
 
 # Log file
 *.log
@@ -16,6 +16,8 @@
 # Package Files #
 *.jar
 *.war
+!shared-test-resources/java-miniapps/MiniApp.jar
+!shared-test-resources/java-warApp/dummyWarApp.war
 *.ear
 *.zip
 *.tar.gz
@@ -152,3 +154,7 @@ fabric.properties
 \.project
 
 \.classpath
+.vscode/launch.json
+.vscode/settings.json
+=======
+.vscode/

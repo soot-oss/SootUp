@@ -1,17 +1,40 @@
 package de.upb.swt.soot.java.bytecode.inputlocation;
-
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2018-2020 Andreas Dann, Christian Brüggemann and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
-import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.FileType;
-import de.upb.swt.soot.core.inputlocation.PathUtils;
-import de.upb.swt.soot.core.signatures.ModulePackageName;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
+import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.signatures.ModulePackageName;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.DirectoryStream;
@@ -31,25 +54,25 @@ import javax.annotation.Nonnull;
  *
  * @author Andreas Dann created on 06.06.18
  */
-public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLocation {
+public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInputLocation {
 
-  private FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
-
-  public JrtFileSystemAnalysisInputLocation(ClassProvider classProvider) {
-    super(classProvider);
-  }
+  private final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType signature) {
-    if (signature.getPackageName() instanceof ModulePackageName) {
-      return this.getClassSourceInternalForModule(signature);
+      @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
+    JavaClassType klassType = (JavaClassType) classType;
+    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
+    if (klassType.getPackageName() instanceof ModulePackageName) {
+      return this.getClassSourceInternalForModule(
+          klassType, new AsmJavaClassProvider(bodyInterceptors));
     }
-    return this.getClassSourceInternalForClassPath(signature);
+    return this.getClassSourceInternalForClassPath(
+        klassType, new AsmJavaClassProvider(bodyInterceptors));
   }
 
   private @Nonnull Optional<AbstractClassSource> getClassSourceInternalForClassPath(
-      @Nonnull JavaClassType classSignature) {
+      @Nonnull JavaClassType classSignature, @Nonnull ClassProvider classProvider) {
 
     Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
     final Path moduleRoot = theFileSystem.getPath("modules");
@@ -71,7 +94,7 @@ public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLoc
   }
 
   private @Nonnull Optional<? extends AbstractClassSource> getClassSourceInternalForModule(
-      @Nonnull JavaClassType classSignature) {
+      @Nonnull JavaClassType classSignature, @Nonnull ClassProvider classProvider) {
     Preconditions.checkArgument(classSignature.getPackageName() instanceof ModulePackageName);
 
     ModulePackageName modulePackageSignature = (ModulePackageName) classSignature.getPackageName();
@@ -93,14 +116,19 @@ public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLoc
   // get the factory, which I should use the create the correspond class signatures
   @Override
   public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory) {
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
+    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
 
     final Path archiveRoot = theFileSystem.getPath("modules");
-    return walkDirectory(archiveRoot, identifierFactory);
+    return walkDirectory(
+        archiveRoot, identifierFactory, new AsmJavaClassProvider(bodyInterceptors));
   }
 
   protected @Nonnull Collection<? extends AbstractClassSource> walkDirectory(
-      @Nonnull Path dirPath, @Nonnull IdentifierFactory identifierFactory) {
+      @Nonnull Path dirPath,
+      @Nonnull IdentifierFactory identifierFactory,
+      ClassProvider classProvider) {
 
     final FileType handledFileType = classProvider.getHandledFileType();
     try {
@@ -155,6 +183,8 @@ public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLoc
       final Path filename, final Path moduleDir, final IdentifierFactory identifierFactory) {
 
     // else use the module system and create fully class signature
+    JavaClassType sig = (JavaClassType) identifierFactory.fromPath(filename);
+
     if (identifierFactory instanceof ModuleIdentifierFactory) {
       // FIXME: adann clean this up!
       // String filename = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
@@ -165,7 +195,6 @@ public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLoc
       // String packagename = packageFileName.toString().replace('/', '.');
       // String classname = FilenameUtils.removeExtension(packageFileName.getFileName().toString());
       //
-      JavaClassType sig = identifierFactory.fromPath(filename);
 
       return ((ModuleIdentifierFactory) identifierFactory)
           .getClassType(
@@ -173,6 +202,6 @@ public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLoc
     }
 
     // if we are using the normal signature factory, than trim the module from the path
-    return identifierFactory.fromPath(filename);
+    return sig;
   }
 }

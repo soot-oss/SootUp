@@ -1,29 +1,26 @@
-/* Soot - a J*va Optimization Framework
- * Copyright (C) 1999 Patrick Lam
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- */
-
-/*
- * Modified by the Sable Research Group and others 1997-1999.
- * See the 'credits' file distributed with Soot for the complete list of
- * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
- */
-
 package de.upb.swt.soot.core.jimple.common.expr;
+
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 1999-2020 Patrick Lam, Christian Brüggemann, Linghui Luo and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -37,9 +34,17 @@ public abstract class AbstractBinopExpr implements Expr {
   private final ValueBox op1Box;
   private final ValueBox op2Box;
 
+  // new attributes : later if ValueBox is deleted, then add "final" to it.
+  private Value op1;
+  private Value op2;
+
   AbstractBinopExpr(ValueBox op1Box, ValueBox op2Box) {
     this.op1Box = op1Box;
     this.op2Box = op2Box;
+
+    // new attributes: later if ValueBox is deleted, then fit the constructor.
+    this.op1 = op1Box.getValue();
+    this.op2 = op2Box.getValue();
   }
 
   public Value getOp1() {
@@ -59,13 +64,11 @@ public abstract class AbstractBinopExpr implements Expr {
   }
 
   @Override
-  public final List<ValueBox> getUseBoxes() {
-
-    List<ValueBox> list = new ArrayList<>(op1Box.getValue().getUseBoxes());
-    list.add(op1Box);
-    list.addAll(op2Box.getValue().getUseBoxes());
-    list.add(op2Box);
-
+  public final List<Value> getUses() {
+    List<Value> list = new ArrayList<>(op1Box.getValue().getUses());
+    list.add(op1Box.getValue());
+    list.addAll(op2Box.getValue().getUses());
+    list.add(op2Box.getValue());
     return list;
   }
 

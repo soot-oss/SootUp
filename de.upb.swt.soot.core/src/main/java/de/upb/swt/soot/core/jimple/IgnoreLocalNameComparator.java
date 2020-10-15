@@ -1,8 +1,9 @@
+package de.upb.swt.soot.core.jimple;
 /*-
  * #%L
  * Soot
  * %%
- * Copyright (C) 15.11.2018 Markus Schmidt
+ * Copyright (C) 2018-2020 Markus Schmidt and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -19,8 +20,6 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-
-package de.upb.swt.soot.core.jimple;
 
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Local;

@@ -1,231 +1,170 @@
+/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import static de.upb.swt.soot.core.util.Utils.filterJimple;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.java.sourcecode.WalaClassLoaderTestUtils;
-import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.LoadClassesWithWala;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class VariableDeclarationTest {
-
-  private String srcDir = "src/test/resources/minimaltestsuite/java6/";
-  private String className = "VariableDeclaration";
-  private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
-
-  @Before
-  public void loadClasses() {
-    loadClassesWithWala.classLoader(srcDir, className);
-  }
+public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
 
   @Test
-  public void shortVariableTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "shortVariable",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
+  public void test() {
+
+    SootMethod method = loadMethod(getMethodSignature("shortVariable"));
+    assertJimpleStmts(method, expectedBodyStmtsShortVariable());
+
+    method = loadMethod(getMethodSignature("byteVariable"));
+    assertJimpleStmts(method, expectedBodyStmtsByteVariable());
+
+    method = loadMethod(getMethodSignature("charVariable"));
+    assertJimpleStmts(method, expectedBodyStmtsCharVariable());
+
+    method = loadMethod(getMethodSignature("intVariable"));
+    assertJimpleStmts(method, expectedBodyStmtsIntVariable());
+
+    method = loadMethod(getMethodSignature("longVariable"));
+    assertJimpleStmts(method, expectedBodyStmtsLongVariable());
+
+    method = loadMethod(getMethodSignature("floatVariable"));
+    assertJimpleStmts(method, expectedBodyStmtsFloatVariable());
+
+    method = loadMethod(getMethodSignature("doubleVariable"));
+    assertJimpleStmts(method, expectedBodyStmtsDoubleVariable());
+  }
+
+  @Ignore
+  public void classTypeDefWithoutAssignment() {
+    // TODO: [ms] fix: Type of Local $r1 is should be (java.lang.)String
+    // TODO [kk]: Actual   :[unknown $u0, VariableDeclaration r0, r0 := @this: VariableDeclaration,
+    // $u0 = null, return]
+    SootMethod method = loadMethod(getMethodSignature("classTypeDefWithoutAssignment"));
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
-        Stream.of("r0 := @this: VariableDeclaration", "$i0 = 10", "return")
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    assertEquals(expectedStmts, actualStmts);
+    List<String> actualStmts = filterJimple(body.toString());
+    assertEquals(
+        expectedBodyStmts(
+            "java.lang.String $r1",
+            "VariableDeclaration r0",
+            "r0 := @this: VariableDeclaration",
+            "$r1 = null",
+            "return"),
+        actualStmts);
   }
 
-  @Test
-  public void byteVariableTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "byteVariable",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
-        Stream.of("r0 := @this: VariableDeclaration", "$i0 = 0", "return")
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    assertEquals(expectedStmts, actualStmts);
+  public MethodSignature getMethodSignature(String methodName) {
+    return identifierFactory.getMethodSignature(
+        methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Test
-  public void charVariableTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "charVariable",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
-        Stream.of("r0 := @this: VariableDeclaration", "$i0 = 97", "return")
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    assertEquals(expectedStmts, actualStmts);
+  /**
+   *
+   *
+   * <pre>
+   *     public void shortVariable() {
+   *         short a = 10;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsShortVariable() {
+    return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 10", "return")
+        .collect(Collectors.toList());
   }
 
-  @Test
-  public void intVariableTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "intVariable",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
-        Stream.of("r0 := @this: VariableDeclaration", "$i0 = 512", "return")
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    assertEquals(expectedStmts, actualStmts);
+  /**
+   *
+   *
+   * <pre>
+   *     public void byteVariable() {
+   *         byte b = 0;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsByteVariable() {
+    return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 0", "return")
+        .collect(Collectors.toList());
   }
 
-  @Test
-  public void longVariableTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "longVariable",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
-        Stream.of("r0 := @this: VariableDeclaration", "$i0 = 123456789", "return")
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    assertEquals(expectedStmts, actualStmts);
+  /**
+   *
+   *
+   * <pre>
+   *     public void charVariable() {
+   *         char c = 'a';
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsCharVariable() {
+    return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 97", "return")
+        .collect(Collectors.toList());
   }
 
-  @Test
-  public void floatVariableTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "floatVariable",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
-        Stream.of("r0 := @this: VariableDeclaration", "$f0 = 3.14F", "return")
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    assertEquals(expectedStmts, actualStmts);
+  /**
+   *
+   *
+   * <pre>
+   *     public void intVariable() {
+   *         int d = 512;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsIntVariable() {
+    return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 512", "return")
+        .collect(Collectors.toList());
   }
 
-  @Test
-  public void doubleVariableTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "doubleVariable",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
+  /**
+   *
+   *
+   * <pre>
+   *     public void longVariable() {
+   *         long e = 123456789;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsLongVariable() {
+    return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 123456789", "return")
+        .collect(Collectors.toList());
+  }
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+  /**
+   *
+   *
+   * <pre>
+   *     public void floatVariable() {
+   *         float f = 3.14f;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsFloatVariable() {
+    return Stream.of("r0 := @this: VariableDeclaration", "$f0 = 3.14F", "return")
+        .collect(Collectors.toList());
+  }
 
-    List<String> expectedStmts =
-        Stream.of("r0 := @this: VariableDeclaration", "$d0 = 1.96969654", "return")
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    assertEquals(expectedStmts, actualStmts);
+  /**
+   *
+   *
+   * <pre>
+   *     public void doubleVariable() {
+   *         double g = 1.96969654d;
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsDoubleVariable() {
+    return Stream.of("r0 := @this: VariableDeclaration", "$d0 = 1.96969654", "return")
+        .collect(Collectors.toList());
   }
 }

@@ -1,25 +1,45 @@
 package de.upb.swt.soot.java.bytecode.inputlocation;
-
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2018-2020 Andreas Dann, Christian Brüggemann and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
-import de.upb.swt.soot.core.frontend.ClassSource;
-import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.ClassResolvingException;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
-import de.upb.swt.soot.core.signatures.ModulePackageName;
 import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.core.types.ArrayType;
-import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.types.*;
+import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.signatures.ModulePackageName;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
@@ -40,48 +60,50 @@ import org.slf4j.LoggerFactory;
  * @see <a
  *     href=http://docs.oracle.com/javase/9/docs/api/java/lang/module/ModuleFinder.html#of-java.nio.file.Path...->ModuleFinder</a>
  */
-public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLocation {
+public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInputLocation {
   private static final @Nonnull Logger logger =
       LoggerFactory.getLogger(JavaModulePathAnalysisInputLocation.class);
 
-  private final ModuleFinder moduleFinder;
+  @Nonnull private final String modulePath;
 
   /**
    * Creates a {@link JavaModulePathAnalysisInputLocation} which locates classes in the given module
    * path.
    *
    * @param modulePath The class path to search in The {@link ClassProvider} for generating {@link
-   *     ClassSource}es for the files found on the class path
+   *     SootClassSource}es for the files found on the class path
    */
-  public JavaModulePathAnalysisInputLocation(
-      @Nonnull String modulePath, @Nonnull ClassProvider classProvider) {
-    super(classProvider);
-    this.moduleFinder = new ModuleFinder(classProvider, modulePath);
+  public JavaModulePathAnalysisInputLocation(@Nonnull String modulePath) {
+    this.modulePath = modulePath;
   }
 
   @Override
   public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory) {
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
     Preconditions.checkArgument(
         identifierFactory instanceof ModuleIdentifierFactory,
         "Factory must be a ModuleSignatureFactory");
 
+    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
+    ModuleFinder moduleFinder =
+        new ModuleFinder(new AsmJavaClassProvider(bodyInterceptors), modulePath);
     Set<AbstractClassSource> found = new HashSet<>();
     Collection<String> availableModules = moduleFinder.discoverAllModules();
     for (String module : availableModules) {
-      AbstractAnalysisInputLocation ns = moduleFinder.discoverModule(module);
+      AnalysisInputLocation inputLocation = moduleFinder.discoverModule(module);
       IdentifierFactory identifierFactoryWrapper = identifierFactory;
-      if (ns == null) {
+      if (inputLocation == null) {
         continue;
       }
-      if (!(ns instanceof JrtFileSystemAnalysisInputLocation)) {
+      if (!(inputLocation instanceof JrtFileSystemAnalysisInputLocation)) {
         /*
          * we need a wrapper to create correct types for the found classes, all other ignore modules by default, or have
          * no clue about modules.
          */
         identifierFactoryWrapper = new IdentifierFactoryWrapper(identifierFactoryWrapper, module);
       }
-      found.addAll(ns.getClassSources(identifierFactoryWrapper));
+      found.addAll(inputLocation.getClassSources(identifierFactoryWrapper));
     }
 
     return found;
@@ -89,22 +111,26 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType signature) {
+      @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
+    JavaClassType klassType = (JavaClassType) classType;
+    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
 
     String modulename =
-        ((ModulePackageName) signature.getPackageName()).getModuleSignature().getModuleName();
+        ((ModulePackageName) klassType.getPackageName()).getModuleSignature().getModuleName();
     // lookup the ns for the class provider from the cache and use him...
-    AbstractAnalysisInputLocation ns = moduleFinder.discoverModule(modulename);
+    AnalysisInputLocation inputLocation =
+        new ModuleFinder(new AsmJavaClassProvider(bodyInterceptors), modulePath)
+            .discoverModule(modulename);
 
-    if (ns == null) {
+    if (inputLocation == null) {
       try {
-        throw new ClassResolvingException("No Namespace for class " + signature);
+        throw new ClassResolvingException("No Namespace for class " + klassType);
       } catch (ClassResolvingException e) {
         e.printStackTrace();
         return Optional.empty();
       }
     }
-    return ns.getClassSource(signature);
+    return inputLocation.getClassSource(klassType);
   }
 
   private static class IdentifierFactoryWrapper implements IdentifierFactory {
@@ -118,13 +144,12 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
     }
 
     @Override
-    public @Nonnull JavaClassType getClassType(
-        @Nonnull String className, @Nonnull String packageName) {
+    public @Nonnull ClassType getClassType(@Nonnull String className, @Nonnull String packageName) {
       return factory.getClassType(className, packageName);
     }
 
     @Override
-    public @Nonnull JavaClassType getClassType(@Nonnull String fullyQualifiedClassName) {
+    public @Nonnull ClassType getClassType(@Nonnull String fullyQualifiedClassName) {
       return factory.getClassType(fullyQualifiedClassName);
     }
 
@@ -144,7 +169,7 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
     }
 
     @Override
-    public @Nonnull JavaClassType fromPath(@Nonnull Path file) {
+    public @Nonnull ClassType fromPath(@Nonnull Path file) {
       if (factory instanceof ModuleIdentifierFactory) {
         ModuleIdentifierFactory moduleSignatureFactory = (ModuleIdentifierFactory) factory;
         String fullyQualifiedName =
@@ -179,7 +204,7 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
     @Override
     public MethodSignature getMethodSignature(
         String methodName,
-        JavaClassType declaringClassSignature,
+        ClassType declaringClassSignature,
         String fqReturnType,
         List<String> parameters) {
       return factory.getMethodSignature(
@@ -189,7 +214,7 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
     @Override
     public MethodSignature getMethodSignature(
         String methodName,
-        JavaClassType declaringClassSignature,
+        ClassType declaringClassSignature,
         Type fqReturnType,
         List<Type> parameters) {
       return factory.getMethodSignature(
@@ -206,7 +231,7 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
     @Override
     @Nonnull
     public MethodSignature getMethodSignature(
-        @Nonnull JavaClassType declaringClassSignature, @Nonnull MethodSubSignature subSignature) {
+        @Nonnull ClassType declaringClassSignature, @Nonnull MethodSubSignature subSignature) {
       return factory.getMethodSignature(declaringClassSignature, subSignature);
     }
 
@@ -239,20 +264,20 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
 
     @Override
     public FieldSignature getFieldSignature(
-        String fieldName, JavaClassType declaringClassSignature, String fieldType) {
+        String fieldName, ClassType declaringClassSignature, String fieldType) {
       return factory.getFieldSignature(fieldName, declaringClassSignature, fieldType);
     }
 
     @Override
     public FieldSignature getFieldSignature(
-        String fieldName, JavaClassType declaringClassSignature, Type fieldType) {
+        String fieldName, ClassType declaringClassSignature, Type fieldType) {
       return factory.getFieldSignature(fieldName, declaringClassSignature, fieldType);
     }
 
     @Override
     @Nonnull
     public FieldSignature getFieldSignature(
-        @Nonnull JavaClassType declaringClassSignature, @Nonnull FieldSubSignature subSignature) {
+        @Nonnull ClassType declaringClassSignature, @Nonnull FieldSubSignature subSignature) {
       return factory.getFieldSignature(declaringClassSignature, subSignature);
     }
 

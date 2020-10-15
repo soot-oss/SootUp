@@ -5,13 +5,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.util.Utils;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.WalaClassLoaderTestUtils;
-import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
+import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,16 +26,16 @@ import org.junit.experimental.categories.Category;
 /** @author Linghui Luo */
 @Category(Java8Test.class)
 public class InvokeTest {
-  private WalaClassLoader loader;
+  private WalaJavaClassProvider loader;
 
-  private DefaultIdentifierFactory identifierFactory;
+  private JavaIdentifierFactory identifierFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
-    loader = new WalaClassLoader(srcDir, null);
-    identifierFactory = DefaultIdentifierFactory.getInstance();
+    loader = new WalaJavaClassProvider(srcDir);
+    identifierFactory = JavaIdentifierFactory.getInstance();
   }
 
   @Test
@@ -52,10 +52,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -83,10 +80,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -115,10 +109,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -144,10 +135,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -178,10 +166,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -201,17 +186,14 @@ public class InvokeTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "repro1", declareClassSig, "void", Arrays.asList("java.lang.Object")));
+                "repro1", declareClassSig, "void", Collections.singletonList("java.lang.Object")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -231,17 +213,14 @@ public class InvokeTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "repro2", declareClassSig, "void", Arrays.asList("java.lang.Object")));
+                "repro2", declareClassSig, "void", Collections.singletonList("java.lang.Object")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -251,13 +230,17 @@ public class InvokeTest {
                 "$r3 = \"A\"",
                 "$r4 = \"B\"",
                 "$z0 = $r3 == $r4",
-                "if $z0 == 0 goto $z1 = 5 < 3",
+                "if $z0 == 0 goto label1",
                 "return",
+                "label1:",
                 "$z1 = 5 < 3",
-                "if $z1 == 0 goto $z2 = 5.0 < 3.0",
+                "if $z1 == 0 goto label2",
                 "return",
+                "label2:",
                 "$z2 = 5.0 < 3.0",
-                "if $z2 == 0 goto return",
+                "if $z2 == 0 goto label3",
+                "return",
+                "label3:",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -278,17 +261,13 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: InvokeVirtual",
                 "$r1 := @parameter0: InvokeVirtual",
                 "$r2 = r0.<InvokeVirtual: java.lang.String x>",
-                "$r3 = r0.<InvokeVirtual: java.lang.String x>",
+                "$r3 = $r1.<InvokeVirtual: java.lang.String x>",
                 "$z0 = virtualinvoke $r2.<java.lang.String: boolean equals(java.lang.Object)>($r3)",
                 "return $z0")
             .collect(Collectors.toCollection(ArrayList::new));
@@ -310,10 +289,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -340,10 +316,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(

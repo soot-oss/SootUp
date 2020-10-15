@@ -1,8 +1,10 @@
+package de.upb.swt.soot.core.util.printer;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2003 Ondrej Lhotak
+ * Copyright (C) 2003-2020 Ondrej Lhotak, linghui Luo, Markus Schmidt and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -19,10 +21,8 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package de.upb.swt.soot.core.util.printer;
 
-import de.upb.swt.soot.core.graph.AbstractStmtGraph;
-import de.upb.swt.soot.core.graph.BriefStmtGraph;
+import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -33,46 +33,61 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.signatures.PackageName;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * Prints out a class and all its methods.
  *
  * <p>modified by Linghui Luo, 11.10.2018
  */
+
+// TODO: [ms] clean up or implement sth with addJimpleLn,getJimpleLnNum,addJimpleLnTags etc. check
+// old soot for intention
+
 public class Printer {
 
-  private static final int USE_ABBREVIATIONS = 0x0001;
-  private static final int ADD_JIMPLE_LN = 0x0010;
-  private int options = 0;
+  /**
+   * Options to control.. UseAbbreviations: print a breif overview of the given SootClass|SootMethod
+   * OmitLocalsDeclaration: don't print Local declarations at the beginning of each method
+   * AddJimpleLn: unsupported yet UseImports: Enable Java like imports to improve readability by
+   * shortening the Signatures LegacyMode: Print Jimple like it was printed in old Soot (<= Version
+   * 4)
+   */
+  public enum Option {
+    UseAbbreviations,
+    OmitLocalsDeclaration,
+    AddJimpleLn,
+    UseImports,
+    LegacyMode
+  }
+
+  private final Set<Option> options = EnumSet.noneOf(Option.class);
   private static int jimpleLnNum = 0; // actual line number
 
-  public Printer() {}
-
-  public boolean useAbbreviations() {
-    return (options & USE_ABBREVIATIONS) != 0;
+  public Printer(Option... options) {
+    this.options.addAll(Arrays.asList(options));
   }
 
-  public boolean addJimpleLn() {
-    return (options & ADD_JIMPLE_LN) != 0;
+  private boolean useAbbreviations() {
+    return options.contains(Option.UseAbbreviations);
   }
 
-  public void setOption(int opt) {
-    options |= opt;
+  private boolean addJimpleLn() {
+    return options.contains(Option.AddJimpleLn);
   }
 
-  public void clearOption(int opt) {
-    options &= ~opt;
+  public void setOption(Option opt) {
+    options.add(opt);
+  }
+
+  public void clearOption(Option opt) {
+    options.remove(opt);
   }
 
   public int getJimpleLnNum() {
@@ -87,68 +102,72 @@ public class Printer {
     jimpleLnNum++;
   }
 
-  public void printTo(SootClass cl, PrintWriter out) {
-    LabeledStmtPrinter printer;
+  private LabeledStmtPrinter determinePrinter(Body body) {
     if (useAbbreviations()) {
-      printer = new BriefStmtPrinter();
+      return new BriefStmtPrinter(body);
+    } else if (options.contains(Option.LegacyMode)) {
+      return new LegacyJimplePrinter(body);
     } else {
-      printer = new NormalStmtPrinter();
+      return new NormalStmtPrinter(body);
     }
-    printTo(cl, out, printer);
   }
 
-  public void printTo(SootClass cl, PrintWriter out, LabeledStmtPrinter printer) {
+  public void printTo(SootClass cl, PrintWriter out) {
+
+    LabeledStmtPrinter printer = determinePrinter(null);
+    printer.enableImports(options.contains(Option.UseImports));
+
     // add jimple line number tags
     setJimpleLnNum(1);
 
     // Print class name + modifiers
     {
-      StringTokenizer st = new StringTokenizer(Modifier.toString(cl.getModifiers()));
-      while (st.hasMoreTokens()) {
-        String tok = st.nextToken();
-        if (cl.isInterface() && tok.equals("abstract")) {
-          continue;
-        }
-        out.print(tok + " ");
+      EnumSet<Modifier> modifiers = EnumSet.copyOf(cl.getModifiers());
+      // remove unwanted modifier combinations
+      if (cl.isInterface() && Modifier.isAbstract(modifiers)) {
+        modifiers.remove(Modifier.ABSTRACT);
+      }
+      if (modifiers.size() != 0) {
+        printer.modifier(Modifier.toString(modifiers));
+        printer.literal(" ");
+      }
+      if (!Modifier.isInterface(modifiers) && !Modifier.isAnnotation(modifiers)) {
+        printer.literal("class ");
       }
 
-      String classPrefix = "";
-
-      if (!cl.isInterface()) {
-        classPrefix = classPrefix + " class";
-        classPrefix = classPrefix.trim();
-      }
-
-      out.print(classPrefix + " " + cl.getType() + "");
+      printer.typeSignature(cl.getType());
     }
 
     // Print extension
     {
-      Optional<JavaClassType> superclassSignature = cl.getSuperClass();
+      Optional<ClassType> superclassSignature = cl.getSuperclass();
 
       superclassSignature.ifPresent(
-          javaClassSignature -> out.print(" extends " + javaClassSignature));
+          javaClassSignature -> {
+            printer.literal(" extends ");
+            printer.typeSignature(javaClassSignature);
+          });
     }
 
     // Print interfaces
     {
-      Iterator<JavaClassType> interfaceIt = cl.getInterfaces().iterator();
+      Iterator<ClassType> interfaceIt = cl.getInterfaces().iterator();
 
       if (interfaceIt.hasNext()) {
-        out.print(" implements ");
 
-        out.print(interfaceIt.next());
+        printer.literal(" implements ");
+        printer.typeSignature(interfaceIt.next());
 
         while (interfaceIt.hasNext()) {
-          out.print(",");
-          out.print(" " + interfaceIt.next());
+          printer.literal(", ");
+          printer.typeSignature(interfaceIt.next());
         }
       }
     }
 
-    out.println();
+    printer.newline();
     incJimpleLnNum();
-    out.println("{");
+    printer.literal("{");
     incJimpleLnNum();
 
     // Print fields
@@ -156,191 +175,202 @@ public class Printer {
       Iterator<? extends Field> fieldIt = cl.getFields().iterator();
 
       if (fieldIt.hasNext()) {
+        printer.incIndent();
         while (fieldIt.hasNext()) {
           SootField f = (SootField) fieldIt.next();
-
-          out.println("    " + f.getDeclaration() + ";");
+          printer.newline();
+          printer.handleIndent();
+          printer.literal(f.getDeclaration());
+          printer.literal(";");
+          printer.newline();
           if (addJimpleLn()) {
-            setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f));
+            setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f.getSignature()));
           }
         }
+
+        printer.decIndent();
       }
     }
 
     // Print methods
-    printMethod(cl, out, printer);
+    printMethods(cl, printer, out);
+    printer.literal("}");
 
-    out.println("}");
+    printer.newline();
     incJimpleLnNum();
+
+    // if enabled: print the list of imports and append class contents
+    if (options.contains(Option.UseImports)) {
+      Map<String, PackageName> entries = printer.getImports();
+      // remove current class itself from imports
+      entries.remove(cl.getType().getClassName());
+
+      for (Map.Entry<String, PackageName> item : entries.entrySet()) {
+        out.println("import " + item.getValue() + "." + item.getKey() + ";");
+      }
+      out.println();
+    }
+
+    out.println(printer.toString());
   }
 
-  private void printMethod(SootClass cl, PrintWriter out, LabeledStmtPrinter printer) {
+  private void printMethods(SootClass cl, LabeledStmtPrinter printer, PrintWriter out) {
     Iterator<? extends Method> methodIt = cl.getMethods().iterator();
     if (methodIt.hasNext()) {
-      if (cl.getMethods().size() != 0) {
-        out.println();
-        incJimpleLnNum();
-      }
+      printer.incIndent();
+      printer.newline();
+      incJimpleLnNum();
 
       while (methodIt.hasNext()) {
         SootMethod method = (SootMethod) methodIt.next();
 
-        if (!Modifier.isAbstract(method.getModifiers())
-            && !Modifier.isNative(method.getModifiers())) {
-          if (!method.hasBody()) {
-            throw new RuntimeException("method " + method.getName() + " has no body!");
-          }
-
+        if (method.hasBody()) {
           Body body = method.getBody();
-          printer.createLabelMaps(body);
-          printTo(body, out, printer);
+          // print method's full signature information
+          method.toString(printer);
 
-          if (methodIt.hasNext()) {
-            out.println();
-            incJimpleLnNum();
-          }
+          printBody(body, printer);
+
         } else {
-          out.print("    ");
-          out.print(method.getDeclaration());
-          out.println(";");
+          printer.handleIndent();
+          method.toString(printer);
+          printer.literal(";");
           incJimpleLnNum();
-          if (methodIt.hasNext()) {
-            out.println();
-            incJimpleLnNum();
-          }
+        }
+
+        if (methodIt.hasNext()) {
+          printer.newline();
+          incJimpleLnNum();
         }
       }
+      printer.decIndent();
     }
   }
 
   /**
-   * Prints out the methodRef corresponding to b Body, (declaration and body), in the textual format
-   * corresponding to the IR used to encode b body.
-   *
-   * @param out a PrintWriter instance to print to.
+   * Prints out the method corresponding to body Body, (declaration and body), in the textual format
+   * corresponding to the IR used to encode body body.
    */
-  public void printTo(Body b, PrintWriter out) {
-    LabeledStmtPrinter printer;
-    if (useAbbreviations()) {
-      printer = new BriefStmtPrinter(b);
-    } else {
-      printer = new NormalStmtPrinter(b);
-    }
-    printTo(b, out, printer);
+  public void printTo(Body body, PrintWriter out) {
+    LabeledStmtPrinter printer = determinePrinter(body);
+    printer.enableImports(options.contains(Option.UseImports));
+    printBody(body, printer);
+    out.print(printer);
   }
 
   /**
-   * Prints out the methodRef corresponding to b Body, (declaration and body), in the textual format
+   * Prints out the method corresponding to b Body, (declaration and body), in the textual format
    * corresponding to the IR used to encode b body.
    *
-   * @param out a PrintWriter instance to print to.
    * @param printer the StmtPrinter that determines how to print the statements
    */
-  public void printTo(Body b, PrintWriter out, LabeledStmtPrinter printer) {
+  private void printBody(Body b, LabeledStmtPrinter printer) {
 
-    String decl = b.getMethod().getDeclaration();
-
-    out.println("    " + decl);
     if (addJimpleLn()) {
-      setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), b.getMethod()));
+      setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), b.getMethodSignature()));
     }
-    out.println("    {");
+
+    printer.handleIndent();
+    printer.literal("{");
+    printer.newline();
     incJimpleLnNum();
 
-    AbstractStmtGraph unitGraph = new BriefStmtGraph(b);
+    printer.incIndent();
 
-    printLocalsInBody(b, printer);
-    printStatementsInBody(b, out, printer, unitGraph);
+    if (!options.contains(Option.OmitLocalsDeclaration)) {
+      printLocalsInBody(b, printer);
+    }
+    printStatementsInBody(b, printer);
 
-    out.println("    }");
+    printer.decIndent();
+
+    printer.handleIndent();
+    printer.literal("}");
     incJimpleLnNum();
+    printer.newline();
   }
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
-  private void printStatementsInBody(
-      Body body, PrintWriter out, LabeledStmtPrinter up, AbstractStmtGraph unitGraph) {
-    Collection<Stmt> units = body.getStmts();
+  private void printStatementsInBody(Body body, LabeledStmtPrinter printer) {
+    printer.initializeSootMethod(body);
+
+    ImmutableStmtGraph stmtGraph = body.getStmtGraph();
     Stmt previousStmt;
 
-    for (Stmt currentStmt : units) {
+    final Map<Stmt, String> labels = printer.getLabels();
+    for (Stmt currentStmt : body.getStmtGraph()) {
       previousStmt = currentStmt;
 
       // Print appropriate header.
       {
-        // Put an empty line if the previous node was a branch node, the current node is a join node
-        // or the previous statement does not have body statement as a successor, or if
-        // body statement has a label on it
+        // Put an empty line if:
+        // a) the previous stmt was a branch node
+        // b) the current stmt is a join node
+        // c) the previous stmt does not have stmt as a successor
+        // d) if the current stmt has a label on it
 
-        if (currentStmt != units.iterator().next()) {
-          if (unitGraph.getSuccsOf(previousStmt).size() != 1
-              || unitGraph.getPredsOf(currentStmt).size() != 1
-              || up.labels().containsKey(currentStmt)) {
-            up.newline();
-          } else {
-            // Or if the previous node does not have body statement as a successor.
-
-            List<Stmt> succs = unitGraph.getSuccsOf(previousStmt);
-
-            if (succs.get(0) != currentStmt) {
-              up.newline();
-            }
+        final boolean currentStmtHasLabel = labels.get(currentStmt) != null;
+        if (stmtGraph.successors(previousStmt).size() != 1
+            || stmtGraph.predecessors(currentStmt).size() != 1
+            || currentStmtHasLabel) {
+          printer.newline();
+        } else {
+          // Or if the previous node does not have statement as a successor.
+          final Iterator<Stmt> succIterator = stmtGraph.successors(previousStmt).iterator();
+          if (succIterator.hasNext() && succIterator.next() != currentStmt) {
+            printer.newline();
           }
         }
 
-        if (up.labels().containsKey(currentStmt)) {
-          up.stmtRef(currentStmt, true);
-          up.literal(":");
-          up.newline();
+        if (currentStmtHasLabel) {
+          printer.stmtRef(currentStmt, true);
+          printer.literal(":");
+          printer.newline();
         }
 
-        if (up.references().containsKey(currentStmt)) {
-          up.stmtRef(currentStmt, false);
+        if (printer.getReferences().containsKey(currentStmt)) {
+          printer.stmtRef(currentStmt, false);
         }
       }
 
-      up.startStmt(currentStmt);
-      currentStmt.toString(up);
-      up.endStmt(currentStmt);
-
-      up.literal(";");
-      up.newline();
+      printer.stmt(currentStmt);
+      incJimpleLnNum();
     }
-    out.print(up.toString());
 
     // Print out exceptions
     {
       Iterator<Trap> trapIt = body.getTraps().iterator();
 
       if (trapIt.hasNext()) {
-        out.println();
+        printer.newline();
         incJimpleLnNum();
       }
 
       while (trapIt.hasNext()) {
         Trap trap = trapIt.next();
 
-        out.println(
-            "        catch "
-                + trap.getException()
-                + " from "
-                + up.labels().get(trap.getBeginStmt())
-                + " to "
-                + up.labels().get(trap.getEndStmt())
-                + " with "
-                + up.labels().get(trap.getHandlerStmt())
-                + ";");
-
+        printer.noIndent();
+        printer.literal(" catch ");
+        printer.typeSignature(trap.getExceptionType());
+        printer.literal(" from ");
+        printer.literal(labels.get(trap.getBeginStmt()));
+        printer.literal(" to ");
+        printer.literal(labels.get(trap.getEndStmt()));
+        printer.literal(" with ");
+        printer.literal(labels.get(trap.getHandlerStmt()));
+        printer.literal(";");
+        printer.newline();
         incJimpleLnNum();
       }
     }
   }
 
-  private int addJimpleLnTags(int lnNum, SootMethod meth) {
+  private int addJimpleLnTags(int lnNum, MethodSignature meth) {
     lnNum++;
     return lnNum;
   }
 
-  private int addJimpleLnTags(int lnNum, SootField f) {
+  private int addJimpleLnTags(int lnNum, FieldSignature f) {
     lnNum++;
     return lnNum;
   }
@@ -379,9 +409,9 @@ public class Printer {
           final int len = localList.size();
           if (len > 0) {
             up.local(localList.get(0));
-            for (int k = 1; k < len; k++) {
+            for (int i = 1; i < len; i++) {
               up.literal(", ");
-              up.local(localList.get(k));
+              up.local(localList.get(i));
             }
           }
 
