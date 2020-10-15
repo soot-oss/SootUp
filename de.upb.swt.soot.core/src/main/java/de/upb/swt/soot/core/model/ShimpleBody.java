@@ -3,7 +3,7 @@ package de.upb.swt.soot.core.model;
 import java.util.Map;
 import javax.annotation.Nonnull;
 
-/** Implementing the Body class for SSA implementation */
+/** Implementing the ShimpleBody class for SSA implementation */
 public class ShimpleBody {
 
   // TODO protected ShimpleOptions options;
@@ -13,7 +13,7 @@ public class ShimpleBody {
   ShimpleBody(Body body, Map options) {
 
     // must happen before SPatchingChain gets created
-    // TODO implemetnt Shimple options
+    // TODO implement Shimple options
     /*this.options = new ShimpleOptions(options);
     setSSA(true);
     isExtendedSSA = this.options.extended();
