@@ -33,7 +33,7 @@ import javax.annotation.Nonnull;
  *
  * @author Jan Martin Persch
  */
-public class FieldSubSignature extends AbstractClassMemberSubSignature
+public class FieldSubSignature extends SootClassMemberSubSignature
     implements Comparable<FieldSubSignature> {
 
   /**

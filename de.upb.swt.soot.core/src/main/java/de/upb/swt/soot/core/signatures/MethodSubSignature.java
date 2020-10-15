@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
  *
  * @author Jan Martin Persch
  */
-public class MethodSubSignature extends AbstractClassMemberSubSignature
+public class MethodSubSignature extends SootClassMemberSubSignature
     implements Comparable<MethodSubSignature> {
 
   /**

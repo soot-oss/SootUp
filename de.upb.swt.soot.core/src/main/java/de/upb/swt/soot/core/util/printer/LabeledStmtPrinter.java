@@ -160,7 +160,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       typeSignature(methodSig.getType());
       output.append(' ').append(methodSig.getName()).append('(');
 
-      final List<Type> parameterTypes = methodSig.getSubSignature().getParameterTypes();
+      final List<Type> parameterTypes = methodSig.getParameterTypes();
       for (Type parameterType : parameterTypes) {
         typeSignature(parameterType);
         output.append(',');

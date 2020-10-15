@@ -11,8 +11,10 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
+import de.upb.swt.soot.java.core.types.JavaClassType;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
@@ -63,14 +65,14 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
     processWorkList(view, workList, processed, updated);
 
     // Step 2: Add edges from old methods to methods overridden in the new class
-    List<JavaClassType> superClasses = hierarchy.superClassesOf(classType);
-    Set<JavaClassType> implementedInterfaces = hierarchy.implementedInterfacesOf(classType);
-    Stream<JavaClassType> superTypes =
+    List<ClassType> superClasses = hierarchy.superClassesOf(classType);
+    Set<ClassType> implementedInterfaces = hierarchy.implementedInterfacesOf(classType);
+    Stream<ClassType> superTypes =
         Stream.concat(superClasses.stream(), implementedInterfaces.stream());
 
     Set<MethodSubSignature> newMethodSubSigs =
         newMethodSignatures.stream()
-            .map(MethodSignature::getSubSignature)
+            .map(methodSignature -> (MethodSubSignature) methodSignature.getSubSignature())
             .collect(Collectors.toSet());
 
     superTypes
@@ -83,7 +85,7 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
             overriddenMethodSig -> {
               //noinspection OptionalGetWithoutIsPresent (We know this exists)
               MethodSignature overridingMethodSig =
-                  clazz.getMethod(overriddenMethodSig.getSubSignature()).get().getSignature();
+                  clazz.getMethod((MethodSubSignature) overriddenMethodSig.getSubSignature()).get().getSignature();
 
               for (MethodSignature callingMethodSig : oldCallGraph.callsTo(overriddenMethodSig)) {
                 updated.addCall(callingMethodSig, overridingMethodSig);

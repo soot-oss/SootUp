@@ -25,6 +25,7 @@ package de.upb.swt.soot.core.views;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Scope;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
@@ -101,7 +102,14 @@ public interface View {
     return computedModuleData;
   }
 
-  /**
+  @Nonnull
+  default AbstractClass<? extends AbstractClassSource> getClassOrThrow(
+          @Nonnull ClassType classType) {
+    return getClass(classType)
+            .orElseThrow(() -> new ResolveException("Could not find " + classType + " in view"));
+  }
+
+    /**
    * A key for use with {@link #getModuleData(ModuleDataKey)}, {@link #putModuleData(ModuleDataKey,
    * Object)} and {@link #computeModuleDataIfAbsent(ModuleDataKey, Supplier)}. This allows
    * additional data to be stored or cached inside a {@link View} and to be retrieved in a type-safe

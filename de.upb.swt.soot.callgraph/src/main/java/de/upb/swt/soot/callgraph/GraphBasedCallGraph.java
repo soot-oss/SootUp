@@ -2,12 +2,13 @@ package de.upb.swt.soot.callgraph;
 
 import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import org.jgrapht.graph.DefaultDirectedGraph;
 
 /** @author Christian Brüggemann */
