@@ -104,12 +104,12 @@ public interface View {
 
   @Nonnull
   default AbstractClass<? extends AbstractClassSource> getClassOrThrow(
-          @Nonnull ClassType classType) {
+      @Nonnull ClassType classType) {
     return getClass(classType)
-            .orElseThrow(() -> new ResolveException("Could not find " + classType + " in view"));
+        .orElseThrow(() -> new ResolveException("Could not find " + classType + " in view"));
   }
 
-    /**
+  /**
    * A key for use with {@link #getModuleData(ModuleDataKey)}, {@link #putModuleData(ModuleDataKey,
    * Object)} and {@link #computeModuleDataIfAbsent(ModuleDataKey, Supplier)}. This allows
    * additional data to be stored or cached inside a {@link View} and to be retrieved in a type-safe

@@ -14,7 +14,6 @@ import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
@@ -85,7 +84,10 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
             overriddenMethodSig -> {
               //noinspection OptionalGetWithoutIsPresent (We know this exists)
               MethodSignature overridingMethodSig =
-                  clazz.getMethod((MethodSubSignature) overriddenMethodSig.getSubSignature()).get().getSignature();
+                  clazz
+                      .getMethod((MethodSubSignature) overriddenMethodSig.getSubSignature())
+                      .get()
+                      .getSignature();
 
               for (MethodSignature callingMethodSig : oldCallGraph.callsTo(overriddenMethodSig)) {
                 updated.addCall(callingMethodSig, overridingMethodSig);

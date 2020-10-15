@@ -2,7 +2,6 @@ package de.upb.swt.soot.callgraph;
 
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-
 import java.util.List;
 import javax.annotation.Nonnull;
 

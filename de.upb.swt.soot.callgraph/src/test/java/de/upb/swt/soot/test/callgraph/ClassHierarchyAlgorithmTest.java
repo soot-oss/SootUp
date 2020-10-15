@@ -8,21 +8,16 @@ import de.upb.swt.soot.callgraph.CallGraphAlgorithm;
 import de.upb.swt.soot.callgraph.ClassHierarchyAlgorithm;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
-import de.upb.swt.soot.core.Project;
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import de.upb.swt.soot.java.sourcecode.WalaClassLoaderTestUtils;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.util.*;
 import org.junit.Ignore;
@@ -47,11 +42,14 @@ public class ClassHierarchyAlgorithmTest {
 
     List<AnalysisInputLocation> locs =
         Arrays.asList(
-            new JavaClassPathAnalysisInputLocation(
-                System.getProperty("java.home") + "/lib/rt.jar"),
+            new JavaClassPathAnalysisInputLocation(System.getProperty("java.home") + "/lib/rt.jar"),
             new JavaSourcePathAnalysisInputLocation(Collections.singleton(walaClassPath), null));
 
-    JavaProject javaProject = JavaProject.builder(new JavaLanguage(8)).addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath)).addClassPath(locs).build();
+    JavaProject javaProject =
+        JavaProject.builder(new JavaLanguage(8))
+            .addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath))
+            .addClassPath(locs)
+            .build();
 
     View view = javaProject.createOnDemandView();
 
@@ -149,10 +147,12 @@ public class ClassHierarchyAlgorithmTest {
   @Test
   public void testAddClass() {
 
-
     String walaClassPath = "src/test/resources/callgraph/Misc";
 
-    JavaProject javaProject = JavaProject.builder(new JavaLanguage(8)).addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath)).build();
+    JavaProject javaProject =
+        JavaProject.builder(new JavaLanguage(8))
+            .addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath))
+            .build();
 
     View view = javaProject.createOnDemandView();
 

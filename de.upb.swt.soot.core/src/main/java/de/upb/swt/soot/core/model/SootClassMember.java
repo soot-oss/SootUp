@@ -22,8 +22,8 @@ package de.upb.swt.soot.core.model;
  */
 
 import com.google.common.collect.ImmutableSet;
-import de.upb.swt.soot.core.signatures.SootClassMemberSubSignature;
 import de.upb.swt.soot.core.signatures.SootClassMemberSignature;
+import de.upb.swt.soot.core.signatures.SootClassMemberSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import java.util.Objects;
