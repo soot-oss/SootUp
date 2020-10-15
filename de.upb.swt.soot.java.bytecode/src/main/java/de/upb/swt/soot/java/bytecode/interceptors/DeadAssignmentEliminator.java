@@ -40,13 +40,13 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.*;
-
-import javax.annotation.Nonnull;
 import java.util.*;
+import javax.annotation.Nonnull;
 
 /**
- * This interceptor eliminates assignment statements to locals whose values are not subsequently used, unless evaluating the right-hand side of the assignment may cause side-effects.
- * Complexity is linear with respect to the statements.
+ * This interceptor eliminates assignment statements to locals whose values are not subsequently
+ * used, unless evaluating the right-hand side of the assignment may cause side-effects. Complexity
+ * is linear with respect to the statements.
  *
  * @author Marcus Nachtigall
  */
@@ -57,29 +57,29 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    boolean eliminateOnlyStackLocals = false; // TODO: in old soot (Line 96): boolean eliminateOnlyStackLocals = PhaseOptions.getBoolen(options, "only-stack-variable"); what should I call instead?
+    boolean eliminateOnlyStackLocals = false;
     StmtGraph stmtGraph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
 
-    boolean isStatic = true; // TODO: in old soot: boolean isStatic = originalBody.getMethod.isStatic(); (Line 113)
+    boolean isStatic = true;
     boolean allEssential = true;
     boolean checkInvoke = false;
     Local thisLocal = null;
 
     builder.enableDeferredStmtGraphChanges();
-    for (Iterator<Stmt> iterator = stmtGraph.nodes().iterator(); iterator.hasNext();) {
+    for (Iterator<Stmt> iterator = stmtGraph.nodes().iterator(); iterator.hasNext(); ) {
       Stmt stmt = iterator.next();
       boolean isEssential = true;
 
-      if (stmt instanceof JNopStmt){
+      if (stmt instanceof JNopStmt) {
         // Do not remove nop if it is used for a Trap which is at the very end of the code
         boolean removeNop = iterator.hasNext();
 
-        if (!removeNop){
+        if (!removeNop) {
           removeNop = true;
-          for (Trap trap : builder.getTraps()){
-            if (trap.getEndStmt() == stmt){
+          for (Trap trap : builder.getTraps()) {
+            if (trap.getEndStmt() == stmt) {
               removeNop = false;
               break;
             }
@@ -90,68 +90,84 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
           iterator.remove();
           continue;
         }
-      } else if (stmt instanceof JAssignStmt){
+      } else if (stmt instanceof JAssignStmt) {
         JAssignStmt assignStmt = (JAssignStmt) stmt;
         Value lhs = assignStmt.getLeftOp();
         Value rhs = assignStmt.getRightOp();
 
         // Stmt is of the form a = a which is useless
-        if(lhs == rhs && lhs instanceof Local){
+        if (lhs == rhs && lhs instanceof Local) {
           iterator.remove();
           continue;
         }
 
-        if(lhs instanceof Local && (!eliminateOnlyStackLocals || ((Local) lhs).getName().startsWith("$") || lhs.getType() instanceof NullType)){
+        if (lhs instanceof Local
+            && (!eliminateOnlyStackLocals
+                || ((Local) lhs).getName().startsWith("$")
+                || lhs.getType() instanceof NullType)) {
           isEssential = false;
 
-          if(!checkInvoke){
+          if (!checkInvoke) {
             checkInvoke = assignStmt.containsInvokeExpr();
           }
 
-          if(rhs instanceof JCastExpr){
+          if (rhs instanceof JCastExpr) {
             // CastExpr: can trigger ClassCastException, but null-casts never fail
             JCastExpr castExpr = (JCastExpr) rhs;
             Type type = castExpr.getType();
             Value value = castExpr.getOp();
             isEssential = !(value instanceof NullConstant) && type instanceof ReferenceType;
-          } else if (rhs instanceof InvokeExprBox || rhs instanceof JArrayRef || rhs instanceof JNewExpr || rhs instanceof JNewArrayExpr || rhs instanceof JNewMultiArrayExpr){
+          } else if (rhs instanceof InvokeExprBox
+              || rhs instanceof JArrayRef
+              || rhs instanceof JNewExpr
+              || rhs instanceof JNewArrayExpr
+              || rhs instanceof JNewMultiArrayExpr) {
             // InvokeExprBox: can have side effects (like throwing a null pointer exception)
             // JArrayRef: can have side effects (like throwing a null pointer exception)
             // JNewExpr: can trigger class initialization
             // JNewArrayExpr: can throw exception
             // JNewMultiArrayExpr: can throw exception
             isEssential = true;
-          } else if (rhs instanceof JFieldRef){
+          } else if (rhs instanceof JFieldRef) {
             // can trigger class initialization
             isEssential = true;
 
-            if(rhs instanceof JInstanceFieldRef){
+            if (rhs instanceof JInstanceFieldRef) {
               JInstanceFieldRef instanceFieldRef = (JInstanceFieldRef) rhs;
-              if(!isStatic && thisLocal == null){
-                for(Stmt s : builder.getStmts()){  // TODO: for loop replaces originalBody.getThisLocal() from old soot (Line 185)
-                  if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JThisRef) {
+              if (!isStatic && thisLocal == null) {
+                for (Stmt s : builder.getStmts()) {
+                  if (s instanceof JIdentityStmt
+                      && ((JIdentityStmt) s).getRightOp() instanceof JThisRef) {
                     thisLocal = (Local) (((JIdentityStmt) s).getLeftOp());
                     break;
                   }
                 }
               }
 
-              // Any JInstanceFieldRef may have side effects, unless the base is reading from 'this' in a non-static method
+              // Any JInstanceFieldRef may have side effects, unless the base is reading from 'this'
+              // in a non-static method
               isEssential = (isStatic || thisLocal != instanceFieldRef.getBase());
             }
-          } else if (rhs instanceof JDivExpr || rhs instanceof JRemExpr){
+          } else if (rhs instanceof JDivExpr || rhs instanceof JRemExpr) {
             AbstractBinopExpr expr = (AbstractBinopExpr) rhs;
             Type type1 = expr.getOp1().getType();
             Type type2 = expr.getOp2().getType();
 
             // Can trigger a division by zero
-            boolean type2Int = type2 instanceof PrimitiveType && type2.equals(PrimitiveType.getInt());
-            isEssential = type2Int || type1 instanceof PrimitiveType && (type1.equals(PrimitiveType.getInt()) || type1.equals(PrimitiveType.getLong())) ||
-                type2 instanceof PrimitiveType && type2.equals(PrimitiveType.getLong()) || type1 instanceof UnknownType || type2 instanceof UnknownType;
+            boolean type2Int =
+                type2 instanceof PrimitiveType && type2.equals(PrimitiveType.getInt());
+            isEssential =
+                type2Int
+                    || type1 instanceof PrimitiveType
+                        && (type1.equals(PrimitiveType.getInt())
+                            || type1.equals(PrimitiveType.getLong()))
+                    || type2 instanceof PrimitiveType && type2.equals(PrimitiveType.getLong())
+                    || type1 instanceof UnknownType
+                    || type2 instanceof UnknownType;
 
-            if(isEssential && type2Int){
+            if (isEssential && type2Int) {
               Value value = expr.getOp2();
-              if(value instanceof IntConstant){
+              if (value instanceof IntConstant) {
                 IntConstant intConstant = (IntConstant) value;
                 isEssential = (intConstant.getValue() == 0);
               } else {
@@ -162,27 +178,28 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
         }
       }
 
-      if(isEssential){
+      if (isEssential) {
         deque.addFirst(stmt);
       }
 
       allEssential &= isEssential;
     }
 
-    if(checkInvoke || !allEssential){
-      // Add all the statements which are used to compute values for the essential statements, recursively
-      collectDefs(builder.getStmts()); // TODO: old soot calls final LocalDefs localDefs = LocalDefs.Factory.newLocalDefs(b); instead
+    if (checkInvoke || !allEssential) {
+      // Add all the statements which are used to compute values for the essential statements,
+      // recursively
+      collectDefs(builder.getStmts());
 
-      if(!allEssential){
+      if (!allEssential) {
         Set<Stmt> essential = new HashSet<>(stmts.size());
-        while(!deque.isEmpty()){
+        while (!deque.isEmpty()) {
           Stmt stmt = deque.removeFirst();
-          if(essential.add(stmt)){
-            for(Value value : stmt.getUses()){
-              if(value instanceof Local){
+          if (essential.add(stmt)) {
+            for (Value value : stmt.getUses()) {
+              if (value instanceof Local) {
                 Local local = (Local) value;
                 List<Stmt> defs = allDefs.get(local);
-                if(defs != null){
+                if (defs != null) {
                   deque.addAll(defs);
                 }
               }
@@ -191,48 +208,49 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
         }
 
         // Remove the dead statements
-        for(Stmt stmt : stmts){
-          if(!essential.contains(stmt)){
-            for(Stmt predecessor : stmtGraph.predecessors(stmt)){
+        for (Stmt stmt : stmts) {
+          if (!essential.contains(stmt)) {
+            for (Stmt predecessor : stmtGraph.predecessors(stmt)) {
               builder.removeFlow(predecessor, stmt);
-              for(Stmt successor : stmtGraph.successors(stmt)){
+              for (Stmt successor : stmtGraph.successors(stmt)) {
                 builder.addFlow(predecessor, successor);
               }
             }
-            for(Stmt successor : stmtGraph.successors(stmt)){
+            for (Stmt successor : stmtGraph.successors(stmt)) {
               builder.removeFlow(stmt, successor);
             }
           }
         }
       }
 
-      if(checkInvoke){
-        collectUses(builder.getStmts());  // TODO: old soot calls final LocalUses localUses = LocalUses.Factory.newLocalUses(b, localDefs); instead
-        //Eliminate dead assignments from invokes such as x = f(), where x is no longer used
+      if (checkInvoke) {
+        collectUses(builder.getStmts());
+        // Eliminate dead assignments from invokes such as x = f(), where x is no longer used
         List<JAssignStmt> postProcess = new ArrayList<>();
-        for(Stmt stmt : stmts){
-          if(stmt instanceof JAssignStmt){
+        for (Stmt stmt : stmts) {
+          if (stmt instanceof JAssignStmt) {
             JAssignStmt assignStmt = (JAssignStmt) stmt;
-            if(assignStmt.containsInvokeExpr()){
+            if (assignStmt.containsInvokeExpr()) {
               // Just find one use of local which is essential
               boolean deadAssignment = true;
               Local local = (Local) assignStmt.getRightOp();
-              for(Stmt use : allUses.get(local)){
-                if(builder.getStmts().contains(use)){
+              for (Stmt use : allUses.get(local)) {
+                if (builder.getStmts().contains(use)) {
                   deadAssignment = false;
                   break;
                 }
               }
-              if(deadAssignment){
+              if (deadAssignment) {
                 postProcess.add(assignStmt);
               }
             }
           }
         }
 
-        for(JAssignStmt assignStmt : postProcess){
+        for (JAssignStmt assignStmt : postProcess) {
           // Transform it into a simple invoke
-          Stmt newInvoke = Jimple.newInvokeStmt(assignStmt.getInvokeExpr(), assignStmt.getPositionInfo());
+          Stmt newInvoke =
+              Jimple.newInvokeStmt(assignStmt.getInvokeExpr(), assignStmt.getPositionInfo());
           builder.replaceStmt(assignStmt, newInvoke);
         }
       }
@@ -241,13 +259,13 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     builder.commitDeferredStmtGraphChanges();
   }
 
-  private void collectDefs(List<Stmt> stmts){
-    for(Stmt stmt : stmts){
+  private void collectDefs(List<Stmt> stmts) {
+    for (Stmt stmt : stmts) {
       List<Value> defs = stmt.getDefs();
-      for(Value value : defs){
-        if(value instanceof Local){
+      for (Value value : defs) {
+        if (value instanceof Local) {
           List<Stmt> localDefs = allDefs.get(value);
-          if(localDefs == null){
+          if (localDefs == null) {
             localDefs = new ArrayList<>();
           }
           localDefs.add(stmt);
@@ -257,13 +275,13 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     }
   }
 
-  private void collectUses(List<Stmt> stmts){
-    for(Stmt stmt : stmts){
+  private void collectUses(List<Stmt> stmts) {
+    for (Stmt stmt : stmts) {
       List<Value> uses = stmt.getUses();
-      for(Value value : uses){
-        if(value instanceof Local){
+      for (Value value : uses) {
+        if (value instanceof Local) {
           List<Stmt> localUses = allUses.get(value);
-          if(localUses == null){
+          if (localUses == null) {
             localUses = new ArrayList<>();
           }
           localUses.add(stmt);
