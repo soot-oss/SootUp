@@ -21,22 +21,22 @@ public class CharLiteralsTest extends MinimalSourceTestSuiteBase {
   @Test
   public void test() {
     SootMethod method = loadMethod(getMethodSignature("charCharacter"));
-//    assertJimpleStmts(method, expectedBodyStmtsCharCharacter());
-//
-//    method = loadMethod(getMethodSignature("charSymbol"));
-//    assertJimpleStmts(method, expectedBodyStmtsCharSymbol());
-//
-//    method = loadMethod(getMethodSignature("charBackslashT"));
-//    assertJimpleStmts(method, expectedBodyStmtsCharBackslashT());
-//
-//    method = loadMethod(getMethodSignature("charBackslash"));
-//    assertJimpleStmts(method, expectedBodyStmtsCharBackslash());
-//
-//    method = loadMethod(getMethodSignature("charSingleQuote"));
-//    assertJimpleStmts(method, expectedBodyStmtsCharSingleQuote());
-//
-//    method = loadMethod(getMethodSignature("charUnicode"));
-//    assertJimpleStmts(method, expectedBodyStmtsCharUnicode());
+    assertJimpleStmts(method, expectedBodyStmtsCharCharacter());
+
+    method = loadMethod(getMethodSignature("charSymbol"));
+    assertJimpleStmts(method, expectedBodyStmtsCharSymbol());
+
+    method = loadMethod(getMethodSignature("charBackslashT"));
+    assertJimpleStmts(method, expectedBodyStmtsCharBackslashT());
+
+    method = loadMethod(getMethodSignature("charBackslash"));
+    assertJimpleStmts(method, expectedBodyStmtsCharBackslash());
+
+    method = loadMethod(getMethodSignature("charSingleQuote"));
+    assertJimpleStmts(method, expectedBodyStmtsCharSingleQuote());
+
+    method = loadMethod(getMethodSignature("charUnicode"));
+    assertJimpleStmts(method, expectedBodyStmtsCharUnicode());
 
     method = loadMethod(getMethodSignature("specialChar"));
     assertJimpleStmts(method, expectedBodyStmtsSpecialChar());
