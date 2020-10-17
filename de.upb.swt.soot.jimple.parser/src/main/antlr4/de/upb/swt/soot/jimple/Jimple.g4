@@ -105,7 +105,7 @@ grammar Jimple;
   fragment STRING_CHAR :  ESCAPE_CHAR | ~('\\' | '"') ;
 
   IDENTIFIER:
-    (([A-Za-z$_] | ESCAPE_CHAR) ( (ESCAPE_CHAR | [A-Za-z0-9$_]) | '.' (ESCAPE_CHAR | [A-Za-z0-9$_]) )*);
+    (([A-Za-z$_] | ESCAPE_CHAR) ( (ESCAPE_CHAR | [A-Za-z0-9$_] | STRING_CONSTANT) | '.' (ESCAPE_CHAR | [A-Za-z0-9$_] | STRING_CONSTANT) )*);
 
   BLANK :
     [ \t\r\n] ->skip;
