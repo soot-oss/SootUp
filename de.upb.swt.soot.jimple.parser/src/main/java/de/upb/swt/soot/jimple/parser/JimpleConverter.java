@@ -64,11 +64,7 @@ class JimpleConverter {
     }
 
     ClassVisitor classVisitor = new ClassVisitor();
-    try {
-      classVisitor.visit(parser.file());
-    } catch (Exception e) {
-      throw new ResolveException("The Jimple file is not well formed.", path, null);
-    }
+    classVisitor.visit(parser.file());
 
     return new OverridingClassSource(
         inputlocation,
@@ -442,7 +438,7 @@ class JimpleConverter {
           final JimpleParser.StmtContext stmtCtx = ctx.stmt();
           if (stmtCtx == null) {
             throw new ResolveException(
-                "Couldn't parse Stmt in line ",
+                "Couldn't parse Stmt.",
                 path,
                 new Position(
                     ctx.start.getLine(),

@@ -41,7 +41,7 @@ public class ResolveException extends RuntimeException {
   public ResolveException(
       @Nonnull String message, @Nonnull Path sourcePath, @Nullable Position position) {
     this(
-        message,
+        message + " " + sourcePath + " " + position,
         "file:/" + sourcePath.toAbsolutePath().toString(),
         position == null ? NoPositionInformation.getInstance() : position);
   }
