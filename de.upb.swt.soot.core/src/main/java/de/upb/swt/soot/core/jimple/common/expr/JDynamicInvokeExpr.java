@@ -116,7 +116,7 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
     StringBuilder builder = new StringBuilder();
     builder.append(Jimple.DYNAMICINVOKE);
     builder.append(" \"");
-    builder.append(getMethodSignature()); // quoted method name (can be any UTF8 string)
+    builder.append(getMethodSignature().getName()); // quoted method name (can be any UTF8 string)
     builder.append("\" <");
     builder.append(getNamelessSubSig(getMethodSignature().getSubSignature()));
     builder.append(">(");
@@ -144,12 +144,9 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
     up.literal(Jimple.DYNAMICINVOKE);
     final MethodSignature methodSignature = getMethodSignature();
 
-    // dont print methodname from methodsubsignature in the usual way
     final MethodSubSignature mSubSig = methodSignature.getSubSignature();
-
-    String namelessSubSig = getNamelessSubSig(mSubSig);
-
-    up.literal(" " + Jimple.escape(mSubSig.getName()) + " <" + namelessSubSig + ">(");
+    // dont print methodname from methodsubsignature in the usual way
+    up.literal(" " + Jimple.escape(mSubSig.getName()) + " <" + getNamelessSubSig(mSubSig) + ">(");
     argBoxesToPrinter(up);
 
     up.literal(") ");

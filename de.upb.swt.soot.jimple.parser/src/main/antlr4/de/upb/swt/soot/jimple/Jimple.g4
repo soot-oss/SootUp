@@ -235,8 +235,12 @@ grammar Jimple;
   unop_expr :
     unop immediate;
 
+  method_subsignature:
+   type method_name L_PAREN type_list? R_PAREN;
+
   method_signature :
-    CMPLT class_name=identifier COLON type method_name L_PAREN type_list? R_PAREN CMPGT;
+    CMPLT class_name=identifier COLON method_subsignature CMPGT;
+
 
   reference :
     /*array*/ identifier array_descriptor |
@@ -263,7 +267,9 @@ grammar Jimple;
     /*float*/   FLOAT_CONSTANT |
     /*string*/  STRING_CONSTANT |
     /*clazz*/   CLASS STRING_CONSTANT |
-    /*null*/    NULL;
+    /*null*/    NULL |
+                'handle:' method_signature |
+                'methodtype:' method_subsignature ;
 
   binop :
     /*and*/   AND |

@@ -649,7 +649,7 @@ class JimpleConverter {
             List<Immediate> bootstrapArgs = getArgList(ctx.staticargs);
 
             return Jimple.newDynamicInvokeExpr(
-                bootstrapMethodRef, bootstrapArgs, methodRef, arglist);
+                methodRef, bootstrapArgs, bootstrapMethodRef, arglist);
           }
           throw new IllegalStateException(ctx.start.getLine() + ": Malformed Invoke Expression.");
         }
@@ -685,6 +685,23 @@ class JimpleConverter {
                     || ctx.BOOL_CONSTANT().getText().charAt(0) == 'T');
           } else if (ctx.NULL() != null) {
             return NullConstant.getInstance();
+          } else if (ctx.method_signature() != null) {
+            final MethodSignature methodSignature = getMethodSignature(ctx.method_signature());
+            // TODO: [ms] support handles with JFieldRef too
+            // FIXME: [ms] update/specify tag when its printed
+            return JavaJimple.getInstance().newMethodHandle(methodSignature, 0);
+          } else if (ctx.method_subsignature() != null) {
+            final JimpleParser.Type_listContext typelist = ctx.method_subsignature().type_list();
+            final List<Type> typeList =
+                typelist == null
+                    ? Collections.emptyList()
+                    : getTypeList(typelist).stream()
+                        .map(identifierFactory::getType)
+                        .collect(Collectors.toList());
+            return JavaJimple.getInstance()
+                .newMethodType(
+                    typeList,
+                    identifierFactory.getType(ctx.method_subsignature().method_name().getText()));
           }
           throw new IllegalStateException(ctx.start.getLine() + ": Unknown Constant");
         }
@@ -759,8 +776,9 @@ class JimpleConverter {
             throw new IllegalStateException(ctx.start.getLine() + ": MethodSignature is missing.");
           }
           final JimpleParser.IdentifierContext class_name = ctx.class_name;
-          final JimpleParser.TypeContext typeCtx = ctx.type();
-          final JimpleParser.Method_nameContext method_nameCtx = ctx.method_name();
+          final JimpleParser.TypeContext typeCtx = ctx.method_subsignature().type();
+          final JimpleParser.Method_nameContext method_nameCtx =
+              ctx.method_subsignature().method_name();
           if (class_name == null || typeCtx == null || method_nameCtx == null) {
             throw new IllegalStateException(
                 ctx.start.getLine() + ": MethodSignature is not well formed.");
@@ -768,7 +786,7 @@ class JimpleConverter {
           String classname = class_name.getText();
           Type type = getType(typeCtx.getText());
           String methodname = method_nameCtx.getText();
-          final JimpleParser.Type_listContext parameterList = ctx.type_list();
+          final JimpleParser.Type_listContext parameterList = ctx.method_subsignature().type_list();
           List<Type> params =
               parameterList != null
                   ? getTypeList(parameterList).stream()
