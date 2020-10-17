@@ -168,10 +168,7 @@ class JimpleConverter {
 
       // implements_clause
       if (ctx.implements_clause() != null) {
-        interfaces =
-            getTypeList(ctx.implements_clause().type_list()).stream()
-                .map(identifierFactory::getClassType)
-                .collect(Collectors.toSet());
+        interfaces = getClassTypeSet(ctx.implements_clause().type_list());
       } else {
         interfaces = Collections.emptySet();
       }
@@ -197,16 +194,45 @@ class JimpleConverter {
       return true;
     }
 
-    List<String> getTypeList(JimpleParser.Type_listContext ctx) {
+    List<Type> getTypeList(JimpleParser.Type_listContext ctx) {
       final List<JimpleParser.TypeContext> typeList = ctx.type();
       final int size = typeList.size();
-      List<String> list = new ArrayList<>(size);
-
-      for (JimpleParser.TypeContext typeContext : typeList) {
-        list.add(typeContext.getText());
+      if (size < 1) {
+        return Collections.emptyList();
       }
 
+      List<Type> list = new ArrayList<>(size);
+      for (JimpleParser.TypeContext typeContext : typeList) {
+        list.add(identifierFactory.getType(typeContext.getText()));
+      }
       return list;
+    }
+
+    private List<ClassType> getClassTypeList(JimpleParser.Type_listContext type_list) {
+      final List<JimpleParser.TypeContext> typeList = type_list.type();
+      final int size = typeList.size();
+      if (size < 1) {
+        return Collections.emptyList();
+      }
+
+      List<ClassType> list = new ArrayList<>(size);
+      for (JimpleParser.TypeContext typeContext : typeList) {
+        list.add(identifierFactory.getClassType(typeContext.getText()));
+      }
+      return list;
+    }
+
+    private Set<ClassType> getClassTypeSet(JimpleParser.Type_listContext type_list) {
+      final List<JimpleParser.TypeContext> typeList = type_list.type();
+      final int size = typeList.size();
+      if (size < 1) {
+        return Collections.emptySet();
+      }
+      Set<ClassType> set = new HashSet<>(size);
+      for (JimpleParser.TypeContext typeContext : typeList) {
+        set.add(identifierFactory.getClassType(typeContext.getText()));
+      }
+      return set;
     }
 
     private EnumSet<Modifier> getModifiers(List<JimpleParser.ModifierContext> modifier) {
@@ -246,24 +272,14 @@ class JimpleConverter {
           throw new IllegalStateException(ctx.start.getLine() + ": Methodname not found");
         }
 
-        List<Type> params =
-            ctx.type_list() == null
-                ? Collections.emptyList()
-                : getTypeList(ctx.type_list()).stream()
-                    .map(identifierFactory::getType)
-                    .collect(Collectors.toList());
+        List<Type> params = getTypeList(ctx.type_list());
 
         MethodSignature methodSignature =
             identifierFactory.getMethodSignature(
                 StringTools.getUnEscapedStringOf(methodname), clazz, type, params);
         builder.setMethodSignature(methodSignature);
 
-        List<ClassType> exceptions =
-            ctx.throws_clause() == null
-                ? Collections.emptyList()
-                : getTypeList(ctx.throws_clause().type_list()).stream()
-                    .map(identifierFactory::getClassType)
-                    .collect(Collectors.toList());
+        List<ClassType> exceptions = getClassTypeList(ctx.throws_clause().type_list());
 
         if (ctx.method_body() == null) {
           throw new IllegalStateException(ctx.start.getLine() + ": Body not found");
@@ -630,13 +646,7 @@ class JimpleConverter {
             return Jimple.newStaticInvokeExpr(methodSig, arglist);
           } else if (ctx.dynamicinvoke != null) {
 
-            List<Type> bootstrapMethodRefParams =
-                ctx.type_list() != null
-                    ? getTypeList(ctx.type_list()).stream()
-                        .map(identifierFactory::getType)
-                        .collect(Collectors.toList())
-                    : Collections.emptyList();
-
+            List<Type> bootstrapMethodRefParams = getTypeList(ctx.type_list());
             MethodSignature bootstrapMethodRef =
                 identifierFactory.getMethodSignature(
                     ctx.unnamed_method_name.getText(),
@@ -692,12 +702,7 @@ class JimpleConverter {
             return JavaJimple.getInstance().newMethodHandle(methodSignature, 0);
           } else if (ctx.method_subsignature() != null) {
             final JimpleParser.Type_listContext typelist = ctx.method_subsignature().type_list();
-            final List<Type> typeList =
-                typelist == null
-                    ? Collections.emptyList()
-                    : getTypeList(typelist).stream()
-                        .map(identifierFactory::getType)
-                        .collect(Collectors.toList());
+            final List<Type> typeList = getTypeList(typelist);
             return JavaJimple.getInstance()
                 .newMethodType(
                     typeList,
@@ -786,13 +791,7 @@ class JimpleConverter {
           String classname = class_name.getText();
           Type type = getType(typeCtx.getText());
           String methodname = method_nameCtx.getText();
-          final JimpleParser.Type_listContext parameterList = ctx.method_subsignature().type_list();
-          List<Type> params =
-              parameterList != null
-                  ? getTypeList(parameterList).stream()
-                      .map(identifierFactory::getType)
-                      .collect(Collectors.toList())
-                  : Collections.emptyList();
+          List<Type> params = getTypeList(ctx.method_subsignature().type_list());
           return identifierFactory.getMethodSignature(
               methodname, getClassType(classname), type, params);
         }
