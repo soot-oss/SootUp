@@ -103,7 +103,7 @@ class JimpleConverter {
     Set<SootMethod> methods = new HashSet<>();
     ClassType superclass = null;
     Set<ClassType> interfaces = null;
-    ClassType outerclass = null; // currently not determined in Java etc -> heuristic used
+    ClassType outerclass = null; // currently not determined in Java etc -> heuristic will be used
     Position position = NoPositionInformation.getInstance();
     EnumSet<Modifier> modifiers = null;
 
@@ -111,7 +111,7 @@ class JimpleConverter {
     @Nonnull
     public Boolean visitFile(@Nonnull JimpleParser.FileContext ctx) {
 
-      // position
+      // TODO: make more precise: set position of the class (not the file)
       position =
           new Position(
               ctx.start.getLine(), ctx.start.getCharPositionInLine(), ctx.stop.getLine(), -1);
@@ -630,21 +630,18 @@ class JimpleConverter {
             return Jimple.newStaticInvokeExpr(methodSig, arglist);
           } else if (ctx.dynamicinvoke != null) {
 
-            // FIXME: [ms] look in old soot how it should look like; implement MethodType.toString()
-            Type type = getType(ctx.type().getText());
             List<Type> bootstrapMethodRefParams =
                 ctx.type_list() != null
                     ? getTypeList(ctx.type_list()).stream()
                         .map(identifierFactory::getType)
                         .collect(Collectors.toList())
                     : Collections.emptyList();
-            String unnamed_method_name = ctx.unnamed_method_name.getText();
 
             MethodSignature bootstrapMethodRef =
                 identifierFactory.getMethodSignature(
-                    unnamed_method_name,
+                    ctx.unnamed_method_name.getText(),
                     identifierFactory.getClassType(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
-                    type,
+                    getType(ctx.name.getText()),
                     bootstrapMethodRefParams);
 
             MethodSignature methodRef = getMethodSignature(ctx.bsm);

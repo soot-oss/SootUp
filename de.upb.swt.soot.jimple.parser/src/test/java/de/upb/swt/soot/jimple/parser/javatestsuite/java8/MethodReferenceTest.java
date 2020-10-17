@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
@@ -21,7 +21,7 @@ public class MethodReferenceTest extends JimpleTestSuiteBase {
         "methodRefMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /** TODO Update the source code when WALA supports lambda expression */
+  /** TODO [kk] Update the source code when WALA supports lambda expression */
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "l0 := @this: MethodReference",
@@ -31,7 +31,8 @@ public class MethodReferenceTest extends JimpleTestSuiteBase {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  @Test
+  @Ignore
+  // FIXME: [ms] printed jimple is suspicious at dynamicinvoke
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());

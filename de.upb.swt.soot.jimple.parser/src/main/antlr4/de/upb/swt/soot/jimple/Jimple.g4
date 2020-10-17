@@ -224,7 +224,7 @@ grammar Jimple;
   invoke_expr :
     /*nonstatic*/ nonstaticinvoke=NONSTATIC_INVOKE local_name=IDENTIFIER DOT method_signature L_PAREN arg_list? R_PAREN |
     /*static*/    staticinvoke=STATICINVOKE method_signature L_PAREN arg_list? R_PAREN |
-    /*dynamic*/   dynamicinvoke=DYNAMICINVOKE unnamed_method_name=STRING_CONSTANT CMPLT type L_PAREN type_list? R_PAREN CMPGT L_PAREN arg_list? R_PAREN
+    /*dynamic*/   dynamicinvoke=DYNAMICINVOKE name=STRING_CONSTANT CMPLT unnamed_method_name=type L_PAREN parameter_list=type_list? R_PAREN CMPGT L_PAREN dyn_args=arg_list? R_PAREN
                                                                                               bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
 
   binop_expr :
