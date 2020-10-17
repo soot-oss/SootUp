@@ -185,8 +185,11 @@ class JimpleConverter {
       return true;
     }
 
-    List<Type> getTypeList(JimpleParser.Type_listContext ctx) {
-      final List<JimpleParser.TypeContext> typeList = ctx.type();
+    List<Type> getTypeList(JimpleParser.Type_listContext type_list) {
+      if (type_list == null) {
+        return Collections.emptyList();
+      }
+      final List<JimpleParser.TypeContext> typeList = type_list.type();
       final int size = typeList.size();
       if (size < 1) {
         return Collections.emptyList();
@@ -200,6 +203,9 @@ class JimpleConverter {
     }
 
     private List<ClassType> getClassTypeList(JimpleParser.Type_listContext type_list) {
+      if (type_list == null) {
+        return Collections.emptyList();
+      }
       final List<JimpleParser.TypeContext> typeList = type_list.type();
       final int size = typeList.size();
       if (size < 1) {
@@ -214,6 +220,9 @@ class JimpleConverter {
     }
 
     private Set<ClassType> getClassTypeSet(JimpleParser.Type_listContext type_list) {
+      if (type_list == null) {
+        return Collections.emptySet();
+      }
       final List<JimpleParser.TypeContext> typeList = type_list.type();
       final int size = typeList.size();
       if (size < 1) {
@@ -270,7 +279,10 @@ class JimpleConverter {
                 StringTools.getUnEscapedStringOf(methodname), clazz, type, params);
         builder.setMethodSignature(methodSignature);
 
-        List<ClassType> exceptions = getClassTypeList(ctx.throws_clause().type_list());
+        List<ClassType> exceptions =
+            ctx.throws_clause() == null
+                ? Collections.emptyList()
+                : getClassTypeList(ctx.throws_clause().type_list());
 
         if (ctx.method_body() == null) {
           throw new IllegalStateException(ctx.start.getLine() + ": Body not found");
