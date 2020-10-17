@@ -18,7 +18,7 @@ public class JimpleConverterTest {
   void checkJimpleClass(CharStream cs) {
 
     JimpleConverter jimpleVisitor = new JimpleConverter();
-    final OverridingClassSource scs = jimpleVisitor.run(cs, null, null, null);
+    final OverridingClassSource scs = jimpleVisitor.run(cs, null, null);
     StringWriter output = new StringWriter();
     Printer p = new Printer();
     final SootClass sc = new SootClass(scs, SourceType.Application);

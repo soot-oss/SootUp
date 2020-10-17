@@ -51,10 +51,7 @@ class JimpleConverter {
   }
 
   public OverridingClassSource run(
-      CharStream charStream,
-      AnalysisInputLocation inputlocation,
-      Path sourcePath,
-      ClassType classSignature) {
+      CharStream charStream, AnalysisInputLocation inputlocation, Path sourcePath) {
     JimpleParser parser = getJimpleParser(charStream);
 
     if (charStream.size() == 0) {
@@ -69,12 +66,6 @@ class JimpleConverter {
       throw new IllegalStateException(
           "The Jimple file " + sourcePath.toAbsolutePath() + " is not well formed.", e);
     }
-
-    /*  TODO: adapt check for innerclass
-    if( !classVisitor.clazz.equals(classSignature) ){
-      throw new IllegalStateException("Filename "+ classVisitor.clazz + " does not match the parsed Classname: "+ classSignature );
-    }
-    */
 
     return new OverridingClassSource(
         inputlocation,
