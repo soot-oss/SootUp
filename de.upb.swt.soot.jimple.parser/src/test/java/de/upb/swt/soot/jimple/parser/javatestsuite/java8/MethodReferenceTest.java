@@ -21,7 +21,6 @@ public class MethodReferenceTest extends JimpleTestSuiteBase {
         "methodRefMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /** TODO [kk] Update the source code when WALA supports lambda expression */
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "l0 := @this: MethodReference",
@@ -32,7 +31,6 @@ public class MethodReferenceTest extends JimpleTestSuiteBase {
   }
 
   @Test
-  // FIXME: [ms] printed jimple is suspicious at dynamicinvoke
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
