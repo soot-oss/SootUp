@@ -30,6 +30,7 @@ import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.Arrays;
@@ -39,7 +40,7 @@ import javax.annotation.Nonnull;
 
 public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copyable {
 
-  private final MethodSignature bootstrapMethodSignature;
+  @Nonnull private final MethodSignature bootstrapMethodSignature;
   // TODO: use immutable List?
   private final ValueBox[] bootstrapMethodSignatureArgBoxes;
   private final int tag;
@@ -117,7 +118,7 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
     builder.append(" \"");
     builder.append(getMethodSignature()); // quoted method name (can be any UTF8 string)
     builder.append("\" <");
-    builder.append(getMethodSignature().getSubSignature());
+    builder.append(getNamelessSubSig(getMethodSignature().getSubSignature()));
     builder.append(">(");
 
     argBoxesToString(builder);
@@ -142,12 +143,13 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.DYNAMICINVOKE);
     final MethodSignature methodSignature = getMethodSignature();
-    up.literal(
-        " \""
-            + Jimple.escape(methodSignature.getName())
-            + "\" <"
-            + Jimple.escape(methodSignature.getSubSignature().toString())
-            + ">(");
+
+    // dont print methodname from methodsubsignature in the usual way
+    final MethodSubSignature mSubSig = methodSignature.getSubSignature();
+
+    String namelessSubSig = getNamelessSubSig(mSubSig);
+
+    up.literal(" " + Jimple.escape(mSubSig.getName()) + " <" + namelessSubSig + ">(");
     argBoxesToPrinter(up);
 
     up.literal(") ");
@@ -162,6 +164,16 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
       }
     }
     up.literal(")");
+  }
+
+  @Nonnull
+  private String getNamelessSubSig(MethodSubSignature mSubSig) {
+    return mSubSig.getType()
+        + " ("
+        + mSubSig.getParameterTypes().stream()
+            .map(Object::toString)
+            .collect(Collectors.joining(","))
+        + ")";
   }
 
   @Override
