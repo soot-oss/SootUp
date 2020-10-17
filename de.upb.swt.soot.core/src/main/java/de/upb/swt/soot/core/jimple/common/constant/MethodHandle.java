@@ -79,13 +79,13 @@ public class MethodHandle implements Constant {
     }
   }
 
-  private final MethodSignature methodRef;
+  private final MethodSignature methodSignature;
   private final JFieldRef fieldRef;
 
   public int tag;
 
   public MethodHandle(MethodSignature ref, int tag, Type type) {
-    this.methodRef = ref;
+    this.methodSignature = ref;
     this.tag = tag;
     this.fieldRef = null;
     this.type = type;
@@ -94,7 +94,7 @@ public class MethodHandle implements Constant {
   public MethodHandle(JFieldRef ref, int tag, Type type) {
     this.fieldRef = ref;
     this.tag = tag;
-    this.methodRef = null;
+    this.methodSignature = null;
     this.type = type;
   }
 
@@ -108,7 +108,7 @@ public class MethodHandle implements Constant {
 
   @Override
   public String toString() {
-    return "handle: " + methodRef;
+    return "handle: " + methodSignature;
   }
 
   @Override
@@ -116,8 +116,8 @@ public class MethodHandle implements Constant {
     return type;
   }
 
-  public MethodSignature getMethodRef() {
-    return methodRef;
+  public MethodSignature getMethodSignature() {
+    return methodSignature;
   }
 
   @Override
@@ -129,7 +129,7 @@ public class MethodHandle implements Constant {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((methodRef == null) ? 0 : methodRef.hashCode());
+    result = prime * result + ((methodSignature == null) ? 0 : methodSignature.hashCode());
     return result;
   }
 
@@ -145,10 +145,10 @@ public class MethodHandle implements Constant {
       return false;
     }
     MethodHandle other = (MethodHandle) obj;
-    if (methodRef == null) {
-      return other.methodRef == null;
+    if (methodSignature == null) {
+      return other.methodSignature == null;
     } else {
-      return methodRef.equals(other.methodRef);
+      return methodSignature.equals(other.methodSignature);
     }
   }
 }
