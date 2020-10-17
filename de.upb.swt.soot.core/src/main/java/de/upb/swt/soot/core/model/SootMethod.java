@@ -35,6 +35,7 @@ import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
+import java.io.IOException;
 import java.util.*;
 import java.util.Collections;
 import java.util.Iterator;
@@ -86,9 +87,8 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     Body body;
     try {
       body = this.methodSource.resolveBody();
-    } catch (ResolveException e) {
+    } catch (ResolveException | IOException e) {
       body = null;
-
       // TODO: [JMP] Exception handling
       e.printStackTrace();
     }

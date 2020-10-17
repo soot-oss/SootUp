@@ -38,7 +38,7 @@ public class ResolveException extends RuntimeException {
   }
 
   public ResolveException(String message, Path sourcePath, Position position) {
-    this(message, sourcePath.toString(), position);
+    this(message, "file:/" + sourcePath.toAbsolutePath().toString(), position);
   }
 
   public ResolveException(
