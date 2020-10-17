@@ -30,6 +30,16 @@ public class FinalMethodTest extends MinimalBytecodeTestSuiteBase {
         "finalMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * final void finalMethod(){
+   * System.out.println("final method");
+   * }
+   *
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

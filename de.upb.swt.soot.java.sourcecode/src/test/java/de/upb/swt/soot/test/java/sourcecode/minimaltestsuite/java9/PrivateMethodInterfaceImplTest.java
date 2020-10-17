@@ -36,6 +36,15 @@ public class PrivateMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
                     javaClassType.getClassName().equalsIgnoreCase("PrivateMethodInterface")));
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void methodInterfaceImpl(){
+   * methodInterface(4,2);
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

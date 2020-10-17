@@ -21,6 +21,16 @@ public class ForLoopTest extends MinimalBytecodeTestSuiteBase {
         "forLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**  <pre>
+   * public void forLoop(){
+   * int j = 10;
+   * int num = 0;
+   * for(int i=0; i<j; i++){
+   * num++;
+   * }
+   * }
+   *
+   * <pre>*/
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

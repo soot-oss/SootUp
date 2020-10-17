@@ -111,11 +111,11 @@ public class MutableStmtGraph extends StmtGraph {
     return startingStmt;
   }
 
-  public int addNode(@Nonnull Stmt node) {
+  private int addNode(@Nonnull Stmt node) {
     final int idx = nextFreeId++;
     stmtToIdx.put(node, idx);
     predecessors.add(
-        new ArrayList<>(1)); // [ms] hint: wastes an entry if its the TrapHandler or firststmt
+        new ArrayList<>(1)); // [ms] hint: wastes an entry if its a TrapHandler or the first Stmt
 
     final int calculatedSuccessorSize;
     if (node instanceof JSwitchStmt) {
@@ -137,7 +137,7 @@ public class MutableStmtGraph extends StmtGraph {
     return idx;
   }
 
-  public void removeNode(@Nonnull Stmt node) {
+  private void removeNode(@Nonnull Stmt node) {
     final int nodeIdx = getNodeIdx(node);
     stmtToIdx.remove(node);
 
@@ -275,5 +275,41 @@ public class MutableStmtGraph extends StmtGraph {
     int fromIdx = getNodeIdx(from);
     final List<Stmt> stmts = successors.get(fromIdx);
     return stmts != null && stmts.contains(to);
+  }
+
+  /**
+   * Replace a stmt in StmtGraph with a new stmt
+   *
+   * @param oldStmt a stmt which is already in the StmtGraph
+   * @param newStmt a new stmt which will replace the old stmt
+   */
+  public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+    if (oldStmt == startingStmt) {
+      startingStmt = newStmt;
+    }
+    if (!containsNode(oldStmt)) {
+      throw new RuntimeException("The StmtGraph contains no such oldStmt");
+    }
+    int idx = stmtToIdx.get(oldStmt);
+    stmtToIdx.remove(oldStmt, idx);
+    stmtToIdx.put(newStmt, idx);
+
+    List<Stmt> preds = predecessors.get(idx);
+    for (Stmt pred : preds) {
+      int predIdx = stmtToIdx.get(pred);
+      List<Stmt> succs = successors.get(predIdx);
+      int succIdx = succs.indexOf(oldStmt);
+      succs.set(succIdx, newStmt);
+      successors.set(predIdx, succs);
+    }
+
+    List<Stmt> succs = successors.get(idx);
+    for (Stmt succ : succs) {
+      int succIdx = stmtToIdx.get(succ);
+      List<Stmt> predList = predecessors.get(succIdx);
+      int predIdx = predList.indexOf(oldStmt);
+      predList.set(predIdx, newStmt);
+      predecessors.set(succIdx, predList);
+    }
   }
 }

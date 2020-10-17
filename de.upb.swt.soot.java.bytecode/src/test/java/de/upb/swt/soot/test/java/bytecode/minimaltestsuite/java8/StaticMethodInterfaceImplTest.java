@@ -47,6 +47,46 @@ public class StaticMethodInterfaceImplTest extends MinimalBytecodeTestSuiteBase 
                 }));
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *
+   * </pre>
+   */
+  /**
+   *
+   *
+   * <pre>
+   * static void staticMethod(){
+   * System.out.println("static method");
+   * }
+   *
+   * </pre>
+   */
+  /**
+   *
+   *
+   * <pre>
+   * static public void initStatic(){
+   * System.out.println("Inside initStatic - StaticmethodInterface");
+   * }
+   *
+   * </pre>
+   */
+  /**
+   *
+   *
+   * <pre>
+   * static public void initStatic(){
+   * System.out.println("Inside initStatic - StaticmethodInterfaceImpl");
+   * }
+   * public void display(){
+   * System.out.println("Inside display - StaticmethodInterfaceImpl");
+   * }
+   *
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

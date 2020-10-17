@@ -21,6 +21,7 @@ public class DeclareInnerClassTest extends MinimalBytecodeTestSuiteBase {
       JavaIdentifierFactory.getInstance()
           .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$InnerClass");
 
+  @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         "methodDisplayOuter", getDeclaredClassSignature(), "void", Collections.emptyList());
@@ -35,16 +36,20 @@ public class DeclareInnerClassTest extends MinimalBytecodeTestSuiteBase {
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
-    //    SootClass sootClass = loadClass(getDeclaredClassSignature());
 
-    SootMethod sootMethod = loadMethod(getMethodSignature());
-    assertJimpleStmts(sootMethod, expectedBodyStmts());
-
-    //    SootClass innerClass = loadClass(innerClassType);
-    SootMethod innerMethod = loadMethod(getInnerMethodSignature());
-    assertJimpleStmts(innerMethod, expectedInnerClassBodyStmts());
+    method = loadMethod(getInnerMethodSignature());
+    assertJimpleStmts(method, expectedInnerClassBodyStmts());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void methodDisplayOuter(){
+   *         System.out.println("methodDisplayOuter");
+   *     }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
@@ -55,6 +60,15 @@ public class DeclareInnerClassTest extends MinimalBytecodeTestSuiteBase {
         .collect(Collectors.toList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void methodDisplayInner(){
+   *             System.out.println("methodDisplayInner");
+   *         }
+   * </pre>
+   */
   public List<String> expectedInnerClassBodyStmts() {
     return Stream.of(
             "l0 := @this: DeclareInnerClass$InnerClass",

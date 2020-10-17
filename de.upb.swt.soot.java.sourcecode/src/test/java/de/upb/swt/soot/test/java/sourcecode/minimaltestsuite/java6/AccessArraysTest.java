@@ -16,6 +16,7 @@ public class AccessArraysTest extends MinimalSourceTestSuiteBase {
   public void test() {
 
     // FIXME [ms] see InstructionConverter.convertUnaryOpInstruction(...)
+    // TODO split into multiple test cases
 
     SootMethod method = loadMethod(getMethodSignature("intArrays"));
     assertJimpleStmts(

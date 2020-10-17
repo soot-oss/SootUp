@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
@@ -6,9 +5,15 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/**
+ * @author Hasitha Rajapakse
+ * @author Kaustubh Kelkar
+ */
 @Category(Java8Test.class)
 public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
 
@@ -16,9 +21,54 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
   public void test() {
 
     SootMethod method = loadMethod(getMethodSignature("relationalOpEqual"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+    assertJimpleStmts(method, expectedBodyStmtsRelationalOpEqual());
+
+    method = loadMethod(getMethodSignature("relationalOpNotEqual"));
+    assertJimpleStmts(method, expectedBodyStmtsRelationalOpNotEqual());
+
+    method = loadMethod(getMethodSignature("complementOp"));
+    assertJimpleStmts(method, expectedBodyStmtsComplementOp());
+
+    method = loadMethod(getMethodSignature("logicalOpAnd"));
+    assertJimpleStmts(method, expectedBodyStmtsLogicalOpAnd());
+
+    method = loadMethod(getMethodSignature("logicalOpOr"));
+
+    assertJimpleStmts(method, expectedBodyStmtsLogicalOpOr());
+
+    method = loadMethod(getMethodSignature("logicalOpXor"));
+    assertJimpleStmts(method, expectedBodyStmtsLogicalOpXor());
+
+    method = loadMethod(getMethodSignature("ConditionalOpAnd"));
+    assertJimpleStmts(method, expectedBodyStmtsConditionalOpAnd());
+    method = loadMethod(getMethodSignature("conditionalOpOr"));
+    assertJimpleStmts(method, expectedBodyStmtsConditionalOpOr());
+    method = loadMethod(getMethodSignature("conditionalOp"));
+    assertJimpleStmts(method, expectedBodyStmtsConditionalOp());
+  }
+
+  public MethodSignature getMethodSignature(String methodName) {
+    return identifierFactory.getMethodSignature(
+        methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   *     public void relationalOpEqual(){
+   *         int i =  0;
+   *         while (i<=10){
+   *             i++;
+   *             if (i==5){
+   *                 break;
+   *             }
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsRelationalOpEqual() {
+    return Stream.of(
             "r0 := @this: BooleanOperators",
             "$i0 = 0",
             "label1:",
@@ -33,12 +83,28 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
             "label2:",
             "goto label1",
             "label3:",
-            "return"));
+            "return")
+        .collect(Collectors.toList());
+  }
 
-    method = loadMethod(getMethodSignature("relationalOpNotEqual"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void relationalOpNotEqual(){
+   *         int i =  0;
+   *         String str = "";
+   *         while (i<10){
+   *             i++;
+   *             if (i!=5){
+   *                 str = "i != 5";
+   *             }
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsRelationalOpNotEqual() {
+    return Stream.of(
             "r0 := @this: BooleanOperators",
             "$i0 = 0",
             "$r1 = \"\"",
@@ -55,12 +121,24 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
             "label2:",
             "goto label1",
             "label3:",
-            "return"));
+            "return")
+        .collect(Collectors.toList());
+  }
 
-    method = loadMethod(getMethodSignature("complementOp"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void complementOp(){
+   *         boolean b = true;
+   *         if(b){
+   *             b = !b;
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsComplementOp() {
+    return Stream.of(
             "r0 := @this: BooleanOperators",
             "$z0 = 1",
             "if $z0 == 0 goto label1",
@@ -68,12 +146,41 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
             "$z0 = $z1",
             "goto label1",
             "label1:",
-            "return"));
+            "return")
+        .collect(Collectors.toList());
+  }
 
-    method = loadMethod(getMethodSignature("logicalOpAnd"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void logicalOpAnd(){
+   *         boolean a = true;
+   *         boolean b = true;
+   *         boolean c = false;
+   *         boolean d = false;
+   *         String str = "";
+   *
+   *         if(a & b){
+   *             str = "A";
+   *         }
+   *
+   *         if (c & d){
+   *             str = "B";
+   *         }
+   *
+   *         if (a & c){
+   *             str = "C";
+   *         }
+   *
+   *         if (d & b){
+   *             str = "D";
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsLogicalOpAnd() {
+    return Stream.of(
             "r0 := @this: BooleanOperators",
             "$z0 = 1",
             "$z1 = 1",
@@ -108,13 +215,41 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
             "$r1 = \"D\"",
             "goto label4",
             "label4:",
-            "return"));
+            "return")
+        .collect(Collectors.toList());
+  }
 
-    method = loadMethod(getMethodSignature("logicalOpOr"));
-
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void logicalOpOr(){
+   *         boolean a = true;
+   *         boolean b = true;
+   *         boolean c = false;
+   *         boolean d = false;
+   *         String str = "";
+   *
+   *         if(a | b){
+   *             str = "A";
+   *         }
+   *
+   *         if (c | d){
+   *             str = "B";
+   *         }
+   *
+   *         if (a | c){
+   *             str = "C";
+   *         }
+   *
+   *         if (d | b){
+   *             str = "D";
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsLogicalOpOr() {
+    return Stream.of(
             "r0 := @this: BooleanOperators",
             "$z0 = 1",
             "$z1 = 1",
@@ -149,12 +284,41 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
             "$r1 = \"D\"",
             "goto label4",
             "label4:",
-            "return"));
+            "return")
+        .collect(Collectors.toList());
+  }
 
-    method = loadMethod(getMethodSignature("logicalOpXor"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void logicalOpXor(){
+   *         boolean a = true;
+   *         boolean b = true;
+   *         boolean c = false;
+   *         boolean d = false;
+   *         String str = "";
+   *
+   *         if(a ^ b){
+   *             str = "A";
+   *         }
+   *
+   *         if (c ^ d){
+   *             str = "B";
+   *         }
+   *
+   *         if (a ^ c){
+   *             str = "C";
+   *         }
+   *
+   *         if (d ^ b){
+   *             str = "D";
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsLogicalOpXor() {
+    return Stream.of(
             "r0 := @this: BooleanOperators",
             "$z0 = 1",
             "$z1 = 1",
@@ -189,12 +353,41 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
             "$r1 = \"D\"",
             "goto label4",
             "label4:",
-            "return"));
+            "return")
+        .collect(Collectors.toList());
+  }
 
-    method = loadMethod(getMethodSignature("ConditionalOpAnd"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+  /**
+   *
+   *
+   * <pre>
+   *     public void ConditionalOpAnd(){
+   *         boolean a = true;
+   *         boolean b = true;
+   *         boolean c = false;
+   *         boolean d = false;
+   *         String str = "";
+   *
+   *         if(a && b){
+   *             str = "A";
+   *         }
+   *
+   *         if (c && d){
+   *             str = "B";
+   *         }
+   *
+   *         if (a && c){
+   *             str = "C";
+   *         }
+   *
+   *         if (d && b){
+   *             str = "D";
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsConditionalOpAnd() {
+    return Stream.of(
             "r0 := @this: BooleanOperators",
             "$z0 = 1",
             "$z1 = 1",
@@ -241,11 +434,41 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
             "$r1 = \"D\"",
             "goto label12",
             "label12:",
-            "return"));
-    method = loadMethod(getMethodSignature("conditionalOpOr"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+            "return")
+        .collect(Collectors.toList());
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   *     public void conditionalOpOr(){
+   *         boolean a = true;
+   *         boolean b = true;
+   *         boolean c = false;
+   *         boolean d = false;
+   *         String str = "";
+   *
+   *         if(a || b){
+   *             str = "A";
+   *         }
+   *
+   *         if (c || d){
+   *             str = "B";
+   *         }
+   *
+   *         if (a || c){
+   *             str = "C";
+   *         }
+   *
+   *         if (d || b){
+   *             str = "D";
+   *         }
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsConditionalOpOr() {
+    return Stream.of(
             "r0 := @this: BooleanOperators",
             "$z0 = 1",
             "$z1 = 1",
@@ -292,11 +515,23 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
             "$r1 = \"D\"",
             "goto label12",
             "label12:",
-            "return"));
-    method = loadMethod(getMethodSignature("conditionalOp"));
-    assertJimpleStmts(
-        method,
-        expectedBodyStmts(
+            "return")
+        .collect(Collectors.toList());
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   *     public void conditionalOp(){
+   *         int i = 5;
+   *         String str = "";
+   *         str = i <10 ? "i less than 10" : "i greater than 10";
+   *     }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsConditionalOp() {
+    return Stream.of(
             "r0 := @this: BooleanOperators",
             "$i0 = 5",
             "$r1 = \"\"",
@@ -308,11 +543,7 @@ public class BooleanOperatorsTest extends MinimalSourceTestSuiteBase {
             "$r2 = \"i greater than 10\"",
             "label2:",
             "$r1 = $r2",
-            "return"));
-  }
-
-  public MethodSignature getMethodSignature(String methodName) {
-    return identifierFactory.getMethodSignature(
-        methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
+            "return")
+        .collect(Collectors.toList());
   }
 }

@@ -22,6 +22,16 @@ public class InfiniteLoopTest extends MinimalSourceTestSuiteBase {
         "stmtLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *   void stmtLoop(){
+   * infloop:
+   * break infloop;
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: InfiniteLoop", "goto label1", "label1:", "return")

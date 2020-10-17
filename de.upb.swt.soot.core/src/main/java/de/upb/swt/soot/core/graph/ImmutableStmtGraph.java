@@ -22,7 +22,6 @@ package de.upb.swt.soot.core.graph;
  */
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,15 +31,23 @@ import javax.annotation.Nullable;
 // directly and not on demand -> change type of sucessors/predecessors to List<Stmt> this removes
 // additional checks in successor()/predecessor()
 public class ImmutableStmtGraph extends StmtGraph {
-  @Nonnull private final Object[] successors;
+
+  @Nonnull
+  private final Map<Stmt, Integer>
+      nodeToIndex; // maps a Stmt to its elementIndex in successors[] and predecessors[]
+
+  @Nonnull
+  private final Object[]
+      successors; // these Arrays consists of elements of type Stmt and List<Stmt>
+  // to reduce memory consumption we assign Stmt if there is only one item in the list.
+  // if the element is requested we upgrade the element to the returned list - "lazy loading"
   @Nonnull private final Object[] predecessors;
-  @Nonnull private final Map<Stmt, Integer> nodeToIndex;
 
   @Nullable private final Stmt startingStmt;
   @Nonnull private final List<Trap> traps;
 
   /** creates an immutable copy of the given stmtGraph. */
-  private ImmutableStmtGraph(StmtGraph originalStmtGraph) {
+  protected ImmutableStmtGraph(StmtGraph originalStmtGraph) {
     final Set<Stmt> nodes = originalStmtGraph.nodes();
     final int nodeSize = nodes.size();
     nodeToIndex = new HashMap<>(nodeSize);
@@ -122,6 +129,9 @@ public class ImmutableStmtGraph extends StmtGraph {
   @Override
   public List<Stmt> predecessors(@Nonnull Stmt node) {
     final Integer idx = nodeToIndex.get(node);
+    if (idx == null) {
+      throw new RuntimeException("The given Stmt is not a node in the Graph.");
+    }
     if (predecessors[idx] instanceof Stmt) {
       final List<Stmt> stmts = Collections.singletonList((Stmt) predecessors[idx]);
       predecessors[idx] = stmts;
@@ -134,6 +144,9 @@ public class ImmutableStmtGraph extends StmtGraph {
   @Override
   public List<Stmt> successors(@Nonnull Stmt node) {
     final Integer idx = nodeToIndex.get(node);
+    if (idx == null) {
+      throw new RuntimeException("The given Stmt is not a node in the Graph.");
+    }
     if (successors[idx] instanceof Stmt) {
       final List<Stmt> stmts = Collections.singletonList((Stmt) successors[idx]);
       successors[idx] = stmts;
@@ -149,22 +162,7 @@ public class ImmutableStmtGraph extends StmtGraph {
 
   @Override
   public int outDegree(@Nonnull Stmt node) {
-    // TODO: [ms]: check if this is faster: successors( node ).size();
-    return successorsOfANode(node);
-  }
-
-  private int successorsOfANode(@Nonnull Stmt node) {
-    if (node instanceof JIfStmt) {
-      return 2;
-    } else if (node instanceof JSwitchStmt) {
-      return ((JSwitchStmt) node).getValueCount();
-    } else if (node instanceof JReturnVoidStmt
-        || node instanceof JReturnStmt
-        || node instanceof JThrowStmt) {
-      return 0;
-    } else {
-      return 1;
-    }
+    return successors(node).size();
   }
 
   @Override

@@ -20,6 +20,17 @@ public class αρετηTest extends MinimalSourceTestSuiteBase {
         "αρετηAsClassName", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * public class αρετη {
+   *     public void αρετηAsClassName(){
+   *         System.out.println("this is αρετη class");
+   *     }
+   * }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     // TODO: likely the Jimple lines need a change when it works until here

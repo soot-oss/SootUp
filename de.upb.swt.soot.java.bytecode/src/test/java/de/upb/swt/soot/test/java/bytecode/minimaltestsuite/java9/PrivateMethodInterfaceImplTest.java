@@ -37,6 +37,41 @@ public class PrivateMethodInterfaceImplTest extends MinimalBytecodeTestSuiteBase
                     javaClassType.getClassName().equalsIgnoreCase("PrivateMethodInterface")));
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *
+   * </pre>
+   */
+  /**
+   *
+   *
+   * <pre>
+   * public default void methodInterface(int a, int b) {
+   * add(a, b);
+   * sub(a, b);
+   * System.out.println("methodInterface() in PrivateMethodInterface");
+   * }
+   * private void add(int a, int b){
+   * System.out.println(a+b);
+   * }
+   * private static void sub(int a, int b){
+   * System.out.println(a-b);
+   * };
+   *
+   * </pre>
+   */
+  /**
+   *
+   *
+   * <pre>
+   * public void methodInterfaceImpl(){
+   * methodInterface(4,2);
+   * }
+   *
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

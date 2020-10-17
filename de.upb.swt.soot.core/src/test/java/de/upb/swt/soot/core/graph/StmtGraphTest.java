@@ -17,8 +17,6 @@ public class StmtGraphTest {
     Stmt stmt1 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     Stmt stmt2 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     MutableStmtGraph graph = new MutableStmtGraph();
-    graph.addNode(stmt1);
-    graph.addNode(stmt2);
     graph.putEdge(stmt1, stmt2);
     graph.setStartingStmt(stmt1);
 
@@ -60,8 +58,6 @@ public class StmtGraphTest {
     Stmt stmt1 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     Stmt stmt2 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     MutableStmtGraph graph = new MutableStmtGraph();
-    graph.addNode(stmt1);
-    graph.addNode(stmt2);
     graph.putEdge(stmt1, stmt2);
     graph.setStartingStmt(stmt1);
 
@@ -84,7 +80,6 @@ public class StmtGraphTest {
   public void addNode() {
     Stmt stmt = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     MutableStmtGraph graph = new MutableStmtGraph();
-    graph.addNode(stmt);
     assertEquals(0, graph.inDegree(stmt));
     assertEquals(0, graph.outDegree(stmt));
   }
@@ -96,9 +91,6 @@ public class StmtGraphTest {
     Stmt stmt3 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
 
     MutableStmtGraph graph = new MutableStmtGraph();
-    graph.addNode(stmt1);
-    graph.addNode(stmt2);
-    graph.addNode(stmt3);
     graph.setEdges(stmt1, Arrays.asList(stmt2, stmt3));
 
     assertTrue(graph.predecessors(stmt2).contains(stmt1));
@@ -121,11 +113,6 @@ public class StmtGraphTest {
     Stmt stmt5 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
 
     MutableStmtGraph graph = new MutableStmtGraph();
-    graph.addNode(stmt1);
-    graph.addNode(stmt2);
-    graph.addNode(stmt3);
-    graph.addNode(stmt4);
-    graph.addNode(stmt5);
     graph.putEdge(stmt1, stmt2);
     graph.putEdge(stmt1, stmt3);
 
@@ -147,9 +134,7 @@ public class StmtGraphTest {
   public void removeNodeWOEdges() {
     Stmt stmt = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     MutableStmtGraph graph = new MutableStmtGraph();
-    graph.addNode(stmt);
     assertTrue(graph.nodes().contains(stmt));
-    graph.removeNode(stmt);
     assertFalse(graph.nodes().contains(stmt));
   }
 
@@ -158,15 +143,12 @@ public class StmtGraphTest {
     Stmt stmt1 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     Stmt stmt2 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     MutableStmtGraph graph = new MutableStmtGraph();
-    graph.addNode(stmt1);
-    graph.addNode(stmt2);
     graph.putEdge(stmt1, stmt2);
 
     assertTrue(graph.nodes().contains(stmt1));
     assertEquals(Collections.singletonList(stmt2), graph.successors(stmt1));
     assertEquals(Collections.singletonList(stmt1), graph.predecessors(stmt2));
 
-    graph.removeNode(stmt1);
     assertFalse(graph.nodes().contains(stmt1));
     try {
       graph.predecessors(stmt2);
@@ -188,15 +170,12 @@ public class StmtGraphTest {
     Stmt stmt1 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     Stmt stmt2 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     MutableStmtGraph graph = new MutableStmtGraph();
-    graph.addNode(stmt1);
-    graph.addNode(stmt2);
     graph.putEdge(stmt1, stmt2);
 
     assertTrue(graph.nodes().contains(stmt2));
     assertEquals(Collections.singletonList(stmt2), graph.successors(stmt1));
     assertEquals(Collections.singletonList(stmt1), graph.predecessors(stmt2));
 
-    graph.removeNode(stmt2);
     assertFalse(graph.nodes().contains(stmt2));
     try {
       graph.predecessors(stmt2);
@@ -218,8 +197,6 @@ public class StmtGraphTest {
     Stmt stmt1 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     Stmt stmt2 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     MutableStmtGraph graph = new MutableStmtGraph();
-    graph.addNode(stmt1);
-    graph.addNode(stmt2);
     graph.putEdge(stmt1, stmt2);
 
     assertEquals(1, graph.successors(stmt1).size());
@@ -235,8 +212,6 @@ public class StmtGraphTest {
     Stmt stmt1 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     Stmt stmt2 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     MutableStmtGraph graph = new MutableStmtGraph();
-    graph.addNode(stmt1);
-    graph.addNode(stmt2);
 
     assertFalse(graph.hasEdgeConnecting(stmt1, stmt2));
 
@@ -258,7 +233,6 @@ public class StmtGraphTest {
     Stmt stmt1 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     Stmt stmt2 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     MutableStmtGraph graph = new MutableStmtGraph();
-    graph.addNode(stmt1);
     // stmt2 is not in the graph!
     graph.putEdge(stmt1, stmt2);
   }
@@ -271,9 +245,6 @@ public class StmtGraphTest {
     Stmt stmt3 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
 
     MutableStmtGraph graph = new MutableStmtGraph();
-    graph.addNode(stmt1);
-    graph.addNode(stmt2);
-    graph.addNode(stmt3);
     graph.putEdge(stmt1, stmt2);
     graph.putEdge(stmt2, stmt3);
 

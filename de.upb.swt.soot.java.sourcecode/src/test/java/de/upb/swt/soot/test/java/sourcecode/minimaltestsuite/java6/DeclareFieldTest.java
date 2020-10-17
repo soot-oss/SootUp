@@ -54,6 +54,15 @@ public class DeclareFieldTest extends MinimalSourceTestSuiteBase {
                 }));
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void display(){
+   *         System.out.println(s);
+   *     }
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
@@ -65,6 +74,15 @@ public class DeclareFieldTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
+  /**
+   *
+   *
+   * <pre>
+   *     public void staticDisplay(){
+   *         System.out.println(i);
+   *     }
+   * </pre>
+   */
   public List<String> expectedBodyStmts1() {
     return Stream.of(
             "r0 := @this: DeclareField",

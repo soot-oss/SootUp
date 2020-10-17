@@ -20,6 +20,18 @@ public class DeclareIntTest extends MinimalBytecodeTestSuiteBase {
         "declareIntMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /**
+   *
+   *
+   * <pre>
+   * void declareIntMethod(){
+   * System.out.println(dec);
+   * System.out.println(hex);
+   * System.out.println(oct);
+   * }
+   *
+   * </pre>
+   */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
