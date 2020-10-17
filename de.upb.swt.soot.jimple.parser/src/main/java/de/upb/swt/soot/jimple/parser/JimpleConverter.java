@@ -641,7 +641,7 @@ class JimpleConverter {
 
           if (ctx.nonstaticinvoke != null) {
             Local base = getLocal(ctx.local_name.getText());
-            MethodSignature methodSig = getMethodSignature(ctx.method_signature());
+            MethodSignature methodSig = getMethodSignature(ctx.method_signature(), ctx);
 
             switch (ctx.nonstaticinvoke.getText().charAt(0)) {
               case 'i':
@@ -656,7 +656,7 @@ class JimpleConverter {
             }
 
           } else if (ctx.staticinvoke != null) {
-            MethodSignature methodSig = getMethodSignature(ctx.method_signature());
+            MethodSignature methodSig = getMethodSignature(ctx.method_signature(), ctx);
             return Jimple.newStaticInvokeExpr(methodSig, arglist);
           } else if (ctx.dynamicinvoke != null) {
 
@@ -668,7 +668,7 @@ class JimpleConverter {
                     getType(ctx.name.getText()),
                     bootstrapMethodRefParams);
 
-            MethodSignature methodRef = getMethodSignature(ctx.bsm);
+            MethodSignature methodRef = getMethodSignature(ctx.bsm, ctx);
 
             List<Immediate> bootstrapArgs = getArgList(ctx.staticargs);
 
@@ -711,7 +711,7 @@ class JimpleConverter {
           } else if (ctx.NULL() != null) {
             return NullConstant.getInstance();
           } else if (ctx.method_signature() != null) {
-            final MethodSignature methodSignature = getMethodSignature(ctx.method_signature());
+            final MethodSignature methodSignature = getMethodSignature(ctx.method_signature(), ctx);
             // TODO: [ms] support handles with JFieldRef too
             // FIXME: [ms] update/specify tag when its printed
             return JavaJimple.getInstance().newMethodHandle(methodSignature, 0);
@@ -790,10 +790,11 @@ class JimpleConverter {
         }
 
         @Nonnull
-        private MethodSignature getMethodSignature(JimpleParser.Method_signatureContext ctx) {
+        private MethodSignature getMethodSignature(
+            JimpleParser.Method_signatureContext ctx, ParserRuleContext parentCtx) {
           if (ctx == null) {
             throw new ResolveException(
-                "MethodSignature is missing.", path, buildPositionFromCtx(ctx));
+                "MethodSignature is missing.", path, buildPositionFromCtx(parentCtx));
           }
           final JimpleParser.IdentifierContext class_name = ctx.class_name;
           final JimpleParser.TypeContext typeCtx = ctx.method_subsignature().type();
@@ -817,7 +818,7 @@ class JimpleConverter {
             return Collections.emptyList();
           }
           final List<JimpleParser.ImmediateContext> immediates = ctx.immediate();
-          List<Immediate> arglist = new ArrayList<>();
+          List<Immediate> arglist = new ArrayList<>(immediates.size());
           for (JimpleParser.ImmediateContext immediate : immediates) {
             arglist.add((Immediate) visitImmediate(immediate));
           }
