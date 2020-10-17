@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
@@ -31,7 +31,7 @@ public class MethodReferenceTest extends JimpleTestSuiteBase {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  @Ignore
+  @Test
   // FIXME: [ms] printed jimple is suspicious at dynamicinvoke
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());

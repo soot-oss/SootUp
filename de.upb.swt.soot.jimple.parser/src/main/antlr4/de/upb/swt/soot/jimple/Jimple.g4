@@ -105,7 +105,7 @@ grammar Jimple;
   fragment STRING_CHAR :  ESCAPE_CHAR | ~('\\' | '"') ;
 
   IDENTIFIER:
-    (([A-Za-z$_] | ESCAPE_CHAR) ( (ESCAPE_CHAR | [A-Za-z0-9$_]) | '.' (ESCAPE_CHAR | [A-Za-z0-9$_]) )*) | ('"' ~('\n' | '\r' | '"') '"');
+    (([A-Za-z$_] | ESCAPE_CHAR) ( (ESCAPE_CHAR | [A-Za-z0-9$_]) | '.' (ESCAPE_CHAR | [A-Za-z0-9$_]) )*);
 
   BLANK :
     [ \t\r\n] ->skip;
@@ -117,15 +117,17 @@ grammar Jimple;
  /*
   * Parser Rules
   */
+  identifier:
+    IDENTIFIER | STRING_CONSTANT;
 
   integer_constant :
     (PLUS|MINUS)? (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
 
   file:
-    importItem* modifier* file_type classname=IDENTIFIER extends_clause? implements_clause? L_BRACE member* R_BRACE;
+    importItem* modifier* file_type classname=identifier extends_clause? implements_clause? L_BRACE member* R_BRACE;
 
   importItem:
-    'import' location=IDENTIFIER SEMICOLON;
+    'import' location=identifier SEMICOLON;
 
   modifier :
     'abstract' | 'final' | 'native' | 'public' | 'protected' | 'private' | 'static' | 'synchronized' | 'transient' |'volatile' | 'strictfp' | 'enum';
@@ -134,13 +136,13 @@ grammar Jimple;
     'class' | 'interface' | 'annotation';
 
   extends_clause :
-    'extends' classname=IDENTIFIER;
+    'extends' classname=identifier;
 
   implements_clause :
     'implements' type_list;
 
   type:
-    IDENTIFIER (L_BRACKET R_BRACKET)*;
+    identifier (L_BRACKET R_BRACKET)*;
 
 
   type_list:
@@ -150,13 +152,13 @@ grammar Jimple;
    field | method;
 
   field :
-    modifier* type IDENTIFIER SEMICOLON;
+    modifier* type identifier SEMICOLON;
 
   method :
     modifier* type method_name L_PAREN type_list? R_PAREN throws_clause? method_body;
 
   method_name :
-    '<init>' | '<clinit>' | IDENTIFIER;
+    '<init>' | '<clinit>' | identifier;
 
   throws_clause :
     'throws' type_list;
@@ -169,7 +171,7 @@ grammar Jimple;
     type arg_list SEMICOLON;
 
   statement :
-    (label_name=IDENTIFIER COLON)? stmt SEMICOLON;
+    (label_name=identifier COLON)? stmt SEMICOLON;
 
   stmt :
     assignments |
@@ -186,8 +188,8 @@ grammar Jimple;
     BREAKPOINT;
 
   assignments :
-    /*identity*/     local=IDENTIFIER COLON_EQUALS identity_ref |
-    /*assign*/       (reference | local=IDENTIFIER) EQUALS value ;
+    /*identity*/     local=identifier COLON_EQUALS identity_ref |
+    /*assign*/       (reference | local=identifier) EQUALS value ;
 
   identity_ref :
     '@parameter' parameter_idx=DEC_CONSTANT ':' type | '@this:' type | caught='@caughtexception';
@@ -200,17 +202,17 @@ grammar Jimple;
     DEFAULT;
 
   goto_stmt :
-    GOTO label_name=IDENTIFIER;
+    GOTO label_name=identifier;
 
   trap_clause :
-    CATCH exceptiontype=IDENTIFIER FROM from=IDENTIFIER TO to=IDENTIFIER WITH with=IDENTIFIER SEMICOLON;
+    CATCH exceptiontype=identifier FROM from=identifier TO to=identifier WITH with=identifier SEMICOLON;
 
   value :
     /*immediate*/      immediate |
     /*reference*/      reference |
-    /*new primitive*/  NEW base_type=IDENTIFIER |
+    /*new primitive*/  NEW base_type=identifier |
     /*new array*/   NEWARRAY L_PAREN array_type=type R_PAREN array_descriptor |
-    /*new multi*/   NEWMULTIARRAY L_PAREN multiarray_type=IDENTIFIER R_PAREN (L_BRACKET immediate? R_BRACKET)+ |
+    /*new multi*/   NEWMULTIARRAY L_PAREN multiarray_type=identifier R_PAREN (L_BRACKET immediate? R_BRACKET)+ |
     /*cast*/        L_PAREN nonvoid_cast=type R_PAREN op=immediate |
     /*instanceof*/  op=immediate INSTANCEOF nonvoid_type=type |
     /*binop*/       binop_expr |
@@ -222,9 +224,9 @@ grammar Jimple;
     /*unop*/  unop_expr;
 
   invoke_expr :
-    /*nonstatic*/ nonstaticinvoke=NONSTATIC_INVOKE local_name=IDENTIFIER DOT method_signature L_PAREN arg_list? R_PAREN |
+    /*nonstatic*/ nonstaticinvoke=NONSTATIC_INVOKE local_name=identifier DOT method_signature L_PAREN arg_list? R_PAREN |
     /*static*/    staticinvoke=STATICINVOKE method_signature L_PAREN arg_list? R_PAREN |
-    /*dynamic*/   dynamicinvoke=DYNAMICINVOKE name=STRING_CONSTANT CMPLT unnamed_method_name=type L_PAREN parameter_list=type_list? R_PAREN CMPGT L_PAREN dyn_args=arg_list? R_PAREN
+    /*dynamic*/   dynamicinvoke=DYNAMICINVOKE name=identifier CMPLT unnamed_method_name=type L_PAREN parameter_list=type_list? R_PAREN CMPGT L_PAREN dyn_args=arg_list? R_PAREN
                                                                                               bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
 
   binop_expr :
@@ -234,16 +236,16 @@ grammar Jimple;
     unop immediate;
 
   method_signature :
-    CMPLT class_name=IDENTIFIER COLON type method_name L_PAREN type_list? R_PAREN CMPGT;
+    CMPLT class_name=identifier COLON type method_name L_PAREN type_list? R_PAREN CMPGT;
 
   reference :
-    /*array*/ IDENTIFIER array_descriptor |
+    /*array*/ identifier array_descriptor |
     /*field*/
-    /*instance*/ IDENTIFIER DOT field_signature |
+    /*instance*/ identifier DOT field_signature |
     /*static*/   field_signature;
 
   field_signature :
-    CMPLT classname=IDENTIFIER COLON type fieldname=IDENTIFIER CMPGT;
+    CMPLT classname=identifier COLON type fieldname=identifier CMPGT;
 
   array_descriptor :
     L_BRACKET immediate R_BRACKET;
@@ -252,7 +254,7 @@ grammar Jimple;
     immediate (COMMA immediate)*;
 
   immediate :
-    /*local*/    local=IDENTIFIER |
+    /*local*/    local=identifier |
     /*constant*/ constant;
 
   constant :

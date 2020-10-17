@@ -188,7 +188,7 @@ class JimpleConverter {
           fields.add(
               new SootField(
                   identifierFactory.getFieldSignature(
-                      field.IDENTIFIER().getText(), clazz, field.type().getText()),
+                      field.identifier().getText(), clazz, field.type().getText()),
                   modifier,
                   pos));
         }
@@ -569,8 +569,8 @@ class JimpleConverter {
 
         @Override
         public Value visitImmediate(JimpleParser.ImmediateContext ctx) {
-          if (ctx.IDENTIFIER() != null) {
-            return getLocal(ctx.IDENTIFIER().getText());
+          if (ctx.identifier() != null) {
+            return getLocal(ctx.identifier().getText());
           }
           return visitConstant(ctx.constant());
         }
@@ -581,11 +581,11 @@ class JimpleConverter {
           if (ctx.array_descriptor() != null) {
             // array
             Immediate idx = (Immediate) visitImmediate(ctx.array_descriptor().immediate());
-            Local type = getLocal(ctx.IDENTIFIER().getText());
+            Local type = getLocal(ctx.identifier().getText());
             return JavaJimple.getInstance().newArrayRef(type, idx);
           } else if (ctx.DOT() != null) {
             // instance field
-            String base = ctx.IDENTIFIER().getText();
+            String base = ctx.identifier().getText();
             FieldSignature fs = getFieldSignature(ctx.field_signature());
 
             return Jimple.newInstanceFieldRef(getLocal(base), fs);
@@ -758,7 +758,7 @@ class JimpleConverter {
           if (ctx == null) {
             throw new IllegalStateException(ctx.start.getLine() + ": MethodSignature is missing.");
           }
-          final Token class_name = ctx.class_name;
+          final JimpleParser.IdentifierContext class_name = ctx.class_name;
           final JimpleParser.TypeContext typeCtx = ctx.type();
           final JimpleParser.Method_nameContext method_nameCtx = ctx.method_name();
           if (class_name == null || typeCtx == null || method_nameCtx == null) {
