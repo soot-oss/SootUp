@@ -4,6 +4,7 @@ import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.model.Position;
 import java.nio.file.Path;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /*-
  * #%L
@@ -34,11 +35,15 @@ public class ResolveException extends RuntimeException {
   // FIXME: [ms] fix usages to give a file uri
   public ResolveException(@Nonnull String message) {
     // FIXME uri parameter; range
-    this(message, "", NoPositionInformation.getInstance());
+    this(message, "./file-does-not-exist", NoPositionInformation.getInstance());
   }
 
-  public ResolveException(String message, Path sourcePath, Position position) {
-    this(message, "file:/" + sourcePath.toAbsolutePath().toString(), position);
+  public ResolveException(
+      @Nonnull String message, @Nonnull Path sourcePath, @Nullable Position position) {
+    this(
+        message,
+        "file:/" + sourcePath.toAbsolutePath().toString(),
+        position == null ? NoPositionInformation.getInstance() : position);
   }
 
   public ResolveException(
