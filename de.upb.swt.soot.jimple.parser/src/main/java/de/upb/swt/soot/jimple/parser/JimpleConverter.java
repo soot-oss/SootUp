@@ -383,7 +383,7 @@ class JimpleConverter {
         }
 
         OverridingMethodSource oms = new OverridingMethodSource(methodSignature, builder.build());
-        Position methodPosition = NoPositionInformation.getInstance();
+        Position methodPosition = buildPositionFromCtx(ctx);
         return new SootMethod(oms, methodSignature, modifier, exceptions, methodPosition);
       }
 
