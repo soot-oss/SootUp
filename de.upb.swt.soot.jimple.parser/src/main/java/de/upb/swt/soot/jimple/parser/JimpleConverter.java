@@ -15,7 +15,6 @@ import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.core.util.StringTools;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
@@ -33,28 +32,13 @@ import org.antlr.v4.runtime.*;
 public class JimpleConverter {
 
   final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-  private Map<String, PackageName> imports = new HashMap<>();
+  private JimpleConverterUtil util;
   private Path path;
-
-  private Type getType(String typename) {
-    typename = StringTools.getUnEscapedStringOf(typename);
-    PackageName packageName = imports.get(typename);
-    return packageName == null
-        ? identifierFactory.getType(typename)
-        : identifierFactory.getType(packageName.getPackageName() + "." + typename);
-  }
-
-  private ClassType getClassType(String typename) {
-    typename = StringTools.getUnEscapedStringOf(typename);
-    PackageName packageName = imports.get(typename);
-    return packageName == null
-        ? identifierFactory.getClassType(typename)
-        : identifierFactory.getClassType(typename, packageName.getPackageName());
-  }
 
   public OverridingClassSource run(
       CharStream charStream, AnalysisInputLocation inputlocation, Path sourcePath) {
     path = sourcePath.toAbsolutePath();
+    util = new JimpleConverterUtil(path.toString());
 
     if (charStream.size() == 0) {
       throw new ResolveException("Empty File to parse.", path, null);
@@ -114,23 +98,9 @@ public class JimpleConverter {
       position = buildPositionFromCtx(ctx);
 
       // imports
-      imports =
-          ctx.importItem().stream()
-              .filter(item -> item.location != null)
-              .map(item -> identifierFactory.getClassType(item.location.getText()))
-              .collect(
-                  Collectors.toMap(
-                      ClassType::getClassName,
-                      ClassType::getPackageName,
-                      (a, b) -> {
-                        if (!a.equals(b)) {
-                          throw new ResolveException(
-                              "Multiple Imports for the same ClassName can not be resolved!",
-                              path,
-                              buildPositionFromCtx(ctx));
-                        }
-                        return b;
-                      }));
+      ctx.importItem().stream()
+          .filter(item -> item.location != null)
+          .forEach(importCtx -> util.addImport(importCtx));
 
       // class_name
       if (ctx.classname != null) {
@@ -139,9 +109,9 @@ public class JimpleConverter {
         final String classname = StringTools.getUnEscapedStringOf(ctx.classname.getText());
         final int dollarPostition = classname.indexOf('$');
         if (dollarPostition > -1) {
-          outerclass = getClassType(classname.substring(0, dollarPostition));
+          outerclass = util.getClassType(classname.substring(0, dollarPostition));
         }
-        clazz = getClassType(classname);
+        clazz = util.getClassType(classname);
 
       } else {
         throw new ResolveException(
@@ -161,14 +131,14 @@ public class JimpleConverter {
 
       // extends_clause
       if (ctx.extends_clause() != null) {
-        superclass = getClassType(ctx.extends_clause().classname.getText());
+        superclass = util.getClassType(ctx.extends_clause().classname.getText());
       } else {
         superclass = null;
       }
 
       // implements_clause
       if (ctx.implements_clause() != null) {
-        interfaces = getClassTypeSet(ctx.implements_clause().type_list());
+        interfaces = util.getClassTypeSet(ctx.implements_clause().type_list());
       } else {
         interfaces = Collections.emptySet();
       }
@@ -191,56 +161,6 @@ public class JimpleConverter {
       }
 
       return true;
-    }
-
-    List<Type> getTypeList(JimpleParser.Type_listContext type_list) {
-      if (type_list == null) {
-        return Collections.emptyList();
-      }
-      final List<JimpleParser.TypeContext> typeList = type_list.type();
-      final int size = typeList.size();
-      if (size < 1) {
-        return Collections.emptyList();
-      }
-
-      List<Type> list = new ArrayList<>(size);
-      for (JimpleParser.TypeContext typeContext : typeList) {
-        list.add(identifierFactory.getType(typeContext.getText()));
-      }
-      return list;
-    }
-
-    private List<ClassType> getClassTypeList(JimpleParser.Type_listContext type_list) {
-      if (type_list == null) {
-        return Collections.emptyList();
-      }
-      final List<JimpleParser.TypeContext> typeList = type_list.type();
-      final int size = typeList.size();
-      if (size < 1) {
-        return Collections.emptyList();
-      }
-
-      List<ClassType> list = new ArrayList<>(size);
-      for (JimpleParser.TypeContext typeContext : typeList) {
-        list.add(identifierFactory.getClassType(typeContext.getText()));
-      }
-      return list;
-    }
-
-    private Set<ClassType> getClassTypeSet(JimpleParser.Type_listContext type_list) {
-      if (type_list == null) {
-        return Collections.emptySet();
-      }
-      final List<JimpleParser.TypeContext> typeList = type_list.type();
-      final int size = typeList.size();
-      if (size < 1) {
-        return Collections.emptySet();
-      }
-      Set<ClassType> set = new HashSet<>(size);
-      for (JimpleParser.TypeContext typeContext : typeList) {
-        set.add(identifierFactory.getClassType(typeContext.getText()));
-      }
-      return set;
     }
 
     private EnumSet<Modifier> getModifiers(List<JimpleParser.ModifierContext> modifier) {
@@ -270,7 +190,7 @@ public class JimpleConverter {
         EnumSet<Modifier> modifier =
             ctx.modifier() == null ? EnumSet.noneOf(Modifier.class) : getModifiers(ctx.modifier());
 
-        final Type type = getType(ctx.type().getText());
+        final Type type = util.getType(ctx.type().getText());
         if (type == null) {
           throw new ResolveException("Returntype not found.", path, buildPositionFromCtx(ctx));
         }
@@ -280,7 +200,7 @@ public class JimpleConverter {
           throw new ResolveException(" Methodname not found.", path, buildPositionFromCtx(ctx));
         }
 
-        List<Type> params = getTypeList(ctx.type_list());
+        List<Type> params = util.getTypeList(ctx.type_list());
 
         MethodSignature methodSignature =
             identifierFactory.getMethodSignature(
@@ -290,7 +210,7 @@ public class JimpleConverter {
         List<ClassType> exceptions =
             ctx.throws_clause() == null
                 ? Collections.emptyList()
-                : getClassTypeList(ctx.throws_clause().type_list());
+                : util.getClassTypeList(ctx.throws_clause().type_list());
 
         if (ctx.method_body() == null) {
           throw new ResolveException("404 Body not found.", path, buildPositionFromCtx(ctx));
@@ -302,7 +222,7 @@ public class JimpleConverter {
             for (JimpleParser.DeclarationContext it : ctx.method_body().declaration()) {
               final String typeStr = it.type().getText();
               Type localtype =
-                  typeStr.equals("unknown") ? UnknownType.getInstance() : getType(typeStr);
+                  typeStr.equals("unknown") ? UnknownType.getInstance() : util.getType(typeStr);
 
               // validate nonvoid
               if (localtype == VoidType.getInstance()) {
@@ -342,7 +262,7 @@ public class JimpleConverter {
               ctx.method_body().trap_clause();
           if (trap_clauseContexts != null) {
             for (JimpleParser.Trap_clauseContext it : trap_clauseContexts) {
-              ClassType exceptionType = getClassType(it.exceptiontype.getText());
+              ClassType exceptionType = util.getClassType(it.exceptiontype.getText());
               String beginLabel = it.from.getText();
               String toLabel = it.to.getText();
               String handlerLabel = it.with.getText();
@@ -486,13 +406,13 @@ public class JimpleConverter {
                     final String type = assignments.identity_ref().type().getText();
                     if (identityRefCtx.parameter_idx != null) {
                       int idx = Integer.parseInt(identityRefCtx.parameter_idx.getText());
-                      ref = Jimple.newParameterRef(getType(type), idx);
+                      ref = Jimple.newParameterRef(util.getType(type), idx);
                     } else {
                       if (clazz.toString().equals(type)) {
                         // reuse
                         ref = Jimple.newThisRef(clazz);
                       } else {
-                        ref = Jimple.newThisRef(getClassType(type));
+                        ref = Jimple.newThisRef(util.getClassType(type));
                       }
                     }
                   }
@@ -552,14 +472,14 @@ public class JimpleConverter {
         @Override
         public Value visitValue(JimpleParser.ValueContext ctx) {
           if (ctx.NEW() != null && ctx.base_type != null) {
-            final Type type = getType(ctx.base_type.getText());
+            final Type type = util.getType(ctx.base_type.getText());
             if (!(type instanceof ReferenceType)) {
               throw new ResolveException(
                   type + " is not a ReferenceType.", path, buildPositionFromCtx(ctx));
             }
             return Jimple.newNewExpr((ReferenceType) type);
           } else if (ctx.NEWARRAY() != null) {
-            final Type type = getType(ctx.array_type.getText());
+            final Type type = util.getType(ctx.array_type.getText());
             if (type instanceof VoidType || type instanceof NullType) {
               throw new ResolveException(
                   type + " can not be an ArrayType.", path, buildPositionFromCtx(ctx));
@@ -568,7 +488,7 @@ public class JimpleConverter {
             Immediate dim = (Immediate) visitImmediate(ctx.array_descriptor().immediate());
             return JavaJimple.getInstance().newNewArrayExpr(type, dim);
           } else if (ctx.NEWMULTIARRAY() != null && ctx.immediate() != null) {
-            final Type type = getType(ctx.multiarray_type.getText());
+            final Type type = util.getType(ctx.multiarray_type.getText());
             if (!(type instanceof ReferenceType || type instanceof PrimitiveType)) {
               throw new ResolveException(
                   " Only base types are allowed", path, buildPositionFromCtx(ctx));
@@ -582,15 +502,14 @@ public class JimpleConverter {
               throw new ResolveException(
                   "The Size list must have at least one Element.", path, buildPositionFromCtx(ctx));
             }
-            ArrayType arrtype =
-                JavaIdentifierFactory.getInstance().getArrayType(type, sizes.size());
+            ArrayType arrtype = identifierFactory.getArrayType(type, sizes.size());
             return Jimple.newNewMultiArrayExpr(arrtype, sizes);
           } else if (ctx.nonvoid_cast != null && ctx.op != null) {
-            final Type type = getType(ctx.nonvoid_cast.getText());
+            final Type type = util.getType(ctx.nonvoid_cast.getText());
             Immediate val = (Immediate) visitImmediate(ctx.op);
             return Jimple.newCastExpr(val, type);
           } else if (ctx.INSTANCEOF() != null && ctx.op != null) {
-            final Type type = getType(ctx.nonvoid_type.getText());
+            final Type type = util.getType(ctx.nonvoid_type.getText());
             Immediate val = (Immediate) visitImmediate(ctx.op);
             return Jimple.newInstanceOfExpr(val, type);
           }
@@ -616,22 +535,14 @@ public class JimpleConverter {
           } else if (ctx.DOT() != null) {
             // instance field
             String base = ctx.identifier().getText();
-            FieldSignature fs = getFieldSignature(ctx.field_signature());
-
+            FieldSignature fs = util.getFieldSignature(ctx.field_signature());
             return Jimple.newInstanceFieldRef(getLocal(base), fs);
 
           } else {
             // static field
-            FieldSignature fs = getFieldSignature(ctx.field_signature());
+            FieldSignature fs = util.getFieldSignature(ctx.field_signature());
             return Jimple.newStaticFieldRef(fs);
           }
-        }
-
-        private FieldSignature getFieldSignature(JimpleParser.Field_signatureContext ctx) {
-          String classname = ctx.classname.getText();
-          Type type = getType(ctx.type().getText());
-          String fieldname = ctx.fieldname.getText();
-          return identifierFactory.getFieldSignature(fieldname, getClassType(classname), type);
         }
 
         @Override
@@ -641,7 +552,7 @@ public class JimpleConverter {
 
           if (ctx.nonstaticinvoke != null) {
             Local base = getLocal(ctx.local_name.getText());
-            MethodSignature methodSig = getMethodSignature(ctx.method_signature(), ctx);
+            MethodSignature methodSig = util.getMethodSignature(ctx.method_signature(), ctx);
 
             switch (ctx.nonstaticinvoke.getText().charAt(0)) {
               case 'i':
@@ -656,19 +567,19 @@ public class JimpleConverter {
             }
 
           } else if (ctx.staticinvoke != null) {
-            MethodSignature methodSig = getMethodSignature(ctx.method_signature(), ctx);
+            MethodSignature methodSig = util.getMethodSignature(ctx.method_signature(), ctx);
             return Jimple.newStaticInvokeExpr(methodSig, arglist);
           } else if (ctx.dynamicinvoke != null) {
 
-            List<Type> bootstrapMethodRefParams = getTypeList(ctx.type_list());
+            List<Type> bootstrapMethodRefParams = util.getTypeList(ctx.type_list());
             MethodSignature bootstrapMethodRef =
                 identifierFactory.getMethodSignature(
                     ctx.unnamed_method_name.getText(),
                     identifierFactory.getClassType(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
-                    getType(ctx.name.getText()),
+                    util.getType(ctx.name.getText()),
                     bootstrapMethodRefParams);
 
-            MethodSignature methodRef = getMethodSignature(ctx.bsm, ctx);
+            MethodSignature methodRef = util.getMethodSignature(ctx.bsm, ctx);
 
             List<Immediate> bootstrapArgs = getArgList(ctx.staticargs);
 
@@ -710,14 +621,15 @@ public class JimpleConverter {
           } else if (ctx.NULL() != null) {
             return NullConstant.getInstance();
           } else if (ctx.methodhandle != null && ctx.method_signature() != null) {
-            final MethodSignature methodSignature = getMethodSignature(ctx.method_signature(), ctx);
+            final MethodSignature methodSignature =
+                util.getMethodSignature(ctx.method_signature(), ctx);
             // TODO: [ms] support handles with JFieldRef too
             // FIXME: [ms] update/specify tag when its printed
             // return JavaJimple.getInstance().newMethodHandle( , 0);
             return JavaJimple.getInstance().newMethodHandle(methodSignature, 0);
           } else if (ctx.methodtype != null && ctx.method_subsignature() != null) {
             final JimpleParser.Type_listContext typelist = ctx.method_subsignature().type_list();
-            final List<Type> typeList = getTypeList(typelist);
+            final List<Type> typeList = util.getTypeList(typelist);
             return JavaJimple.getInstance()
                 .newMethodType(
                     typeList,
@@ -787,29 +699,6 @@ public class JimpleConverter {
           } else {
             return Jimple.newLengthExpr(value);
           }
-        }
-
-        @Nonnull
-        private MethodSignature getMethodSignature(
-            JimpleParser.Method_signatureContext ctx, ParserRuleContext parentCtx) {
-          if (ctx == null) {
-            throw new ResolveException(
-                "MethodSignature is missing.", path, buildPositionFromCtx(parentCtx));
-          }
-          final JimpleParser.IdentifierContext class_name = ctx.class_name;
-          final JimpleParser.TypeContext typeCtx = ctx.method_subsignature().type();
-          final JimpleParser.Method_nameContext method_nameCtx =
-              ctx.method_subsignature().method_name();
-          if (class_name == null || typeCtx == null || method_nameCtx == null) {
-            throw new ResolveException(
-                "MethodSignature is not well formed.", path, buildPositionFromCtx(ctx));
-          }
-          String classname = class_name.getText();
-          Type type = getType(typeCtx.getText());
-          String methodname = method_nameCtx.getText();
-          List<Type> params = getTypeList(ctx.method_subsignature().type_list());
-          return identifierFactory.getMethodSignature(
-              methodname, getClassType(classname), type, params);
         }
 
         @Nonnull

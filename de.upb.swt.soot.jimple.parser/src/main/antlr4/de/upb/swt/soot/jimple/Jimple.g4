@@ -110,10 +110,6 @@ grammar Jimple;
   BLANK :
     [ \t\r\n] ->skip;
 
-
-  CATCHERROR:
-    . ;
-
  /*
   * Parser Rules
   */
