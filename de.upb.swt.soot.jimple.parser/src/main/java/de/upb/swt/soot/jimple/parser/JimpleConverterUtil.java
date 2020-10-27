@@ -154,7 +154,7 @@ public class JimpleConverterUtil {
   }
 
   @Nonnull
-  public JimpleParser createJimpleParser(CharStream charStream, Path path) {
+  public static JimpleParser createJimpleParser(CharStream charStream, Path path) {
     JimpleLexer lexer = new JimpleLexer(charStream);
     TokenStream tokens = new CommonTokenStream(lexer);
     JimpleParser parser = new JimpleParser(tokens);

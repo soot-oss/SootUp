@@ -150,7 +150,7 @@ public class JavaView extends AbstractView {
   @Override
   @Nonnull
   public synchronized Collection<SootClass> getClasses() {
-    return getAbstractClasses()
+    return getAbstractClassSources()
         .filter(clazz -> clazz instanceof SootClass)
         .map(clazz -> (SootClass) clazz)
         .collect(Collectors.toList());
@@ -163,7 +163,7 @@ public class JavaView extends AbstractView {
   }
 
   @Nonnull
-  synchronized Stream<AbstractClass<? extends AbstractClassSource>> getAbstractClasses() {
+  synchronized Stream<AbstractClass<? extends AbstractClassSource>> getAbstractClassSources() {
     resolveAll();
     return map.values().stream();
   }

@@ -10,7 +10,6 @@ import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.AbstractView;
-import java.util.*;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +61,7 @@ public class JimpleView extends AbstractView {
   @Override
   @Nonnull
   public synchronized Collection<SootClass> getClasses() {
-    return getAbstractClasses()
+    return getAbstractClassSources()
         .filter(clazz -> clazz instanceof SootClass)
         .map(clazz -> (SootClass) clazz)
         .collect(Collectors.toList());
@@ -75,7 +74,7 @@ public class JimpleView extends AbstractView {
   }
 
   @Nonnull
-  synchronized Stream<AbstractClass<? extends AbstractClassSource>> getAbstractClasses() {
+  synchronized Stream<AbstractClass<? extends AbstractClassSource>> getAbstractClassSources() {
     resolveAll();
     return map.values().stream();
   }
