@@ -4,7 +4,6 @@ import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.model.Position;
 import java.nio.file.Path;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /*-
  * #%L
@@ -38,12 +37,13 @@ public class ResolveException extends RuntimeException {
     this(message, "./file-does-not-exist", NoPositionInformation.getInstance());
   }
 
+  public ResolveException(@Nonnull String message, @Nonnull Path sourcePath) {
+    this(message, sourcePath, NoPositionInformation.getInstance());
+  }
+
   public ResolveException(
-      @Nonnull String message, @Nonnull Path sourcePath, @Nullable Position position) {
-    this(
-        message,
-        "file://" + sourcePath.toAbsolutePath().toString(),
-        position == null ? NoPositionInformation.getInstance() : position);
+      @Nonnull String message, @Nonnull Path sourcePath, @Nonnull Position position) {
+    this(message, "file://" + sourcePath.toAbsolutePath().toString(), position);
   }
 
   private ResolveException(

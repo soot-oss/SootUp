@@ -40,6 +40,10 @@ public class EagerInputLocation implements AnalysisInputLocation {
 
   @Nonnull private final Map<ClassType, AbstractClassSource> map;
 
+  /**
+   * not useful for retrieval of classes via view. // FIXME: circular dependency on sootclass <->
+   * remove inputlocation from sootclass..
+   */
   public EagerInputLocation() {
     map = Collections.emptyMap();
   }
