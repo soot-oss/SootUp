@@ -2,6 +2,7 @@ package de.upb.swt.soot.jimple.parser;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
@@ -50,9 +51,8 @@ public class JimpleConverterUtil {
   }
 
   @Nonnull
-  public static de.upb.swt.soot.core.model.Position buildPositionFromCtx(
-      @Nonnull ParserRuleContext ctx) {
-    return new de.upb.swt.soot.core.model.Position(
+  public static Position buildPositionFromCtx(@Nonnull ParserRuleContext ctx) {
+    return new Position(
         ctx.start.getLine(),
         ctx.start.getCharPositionInLine(),
         ctx.stop.getLine(),
