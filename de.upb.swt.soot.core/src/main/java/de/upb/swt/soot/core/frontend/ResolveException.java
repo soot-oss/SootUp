@@ -46,7 +46,7 @@ public class ResolveException extends RuntimeException {
         position == null ? NoPositionInformation.getInstance() : position);
   }
 
-  public ResolveException(
+  private ResolveException(
       @Nonnull String message, @Nonnull String inputUri, @Nonnull Position range) {
     super(message + " " + inputUri + " " + range);
     this.range = range;

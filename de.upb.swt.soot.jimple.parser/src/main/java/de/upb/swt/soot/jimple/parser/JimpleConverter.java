@@ -37,8 +37,7 @@ public class JimpleConverter {
 
   public OverridingClassSource run(
       CharStream charStream, AnalysisInputLocation inputlocation, Path sourcePath) {
-    path = sourcePath.toAbsolutePath();
-    util = new JimpleConverterUtil(path.toString());
+    util = new JimpleConverterUtil(path);
 
     if (charStream.size() == 0) {
       throw new ResolveException("Empty File to parse.", path, null);

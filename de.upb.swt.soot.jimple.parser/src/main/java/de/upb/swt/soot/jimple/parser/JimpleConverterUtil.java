@@ -11,6 +11,7 @@ import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.StringTools;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.jimple.JimpleParser;
+import java.nio.file.Path;
 import java.util.*;
 import javax.annotation.Nonnull;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -24,10 +25,10 @@ public class JimpleConverterUtil {
 
   private final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   private final Map<String, PackageName> imports = new HashMap<>();
-  private final String fileUri;
+  @Nonnull private final Path fileUri;
 
-  public JimpleConverterUtil(String fileUri) {
-    this.fileUri = fileUri;
+  public JimpleConverterUtil(@Nonnull Path file) {
+    this.fileUri = file;
   }
 
   public IdentifierFactory getIdentifierFactory() {
