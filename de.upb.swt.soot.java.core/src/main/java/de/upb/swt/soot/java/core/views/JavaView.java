@@ -178,7 +178,10 @@ public class JavaView extends AbstractView {
               if (clazz instanceof SootClass) {
                 return (SootClass) clazz;
               } else {
-                throw new ResolveException(type + " is not a regular Java class!");
+                throw new ResolveException(
+                    type + " is not a regular Java class!",
+                    clazz.getClassSource().getSourcePath(),
+                    null);
               }
             });
   }

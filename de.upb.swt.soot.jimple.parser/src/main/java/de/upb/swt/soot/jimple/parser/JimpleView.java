@@ -113,6 +113,7 @@ public class JimpleView extends AbstractView {
     if (foundClassSources.size() < 1) {
       throw new ResolveException("No class candidates for \"" + type + "\" found.");
     } else if (foundClassSources.size() > 1) {
+      // TODO: print those analysisInputLocation to the user
       throw new ResolveException(
           "Multiple class candidates for \""
               + type
