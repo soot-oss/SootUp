@@ -32,7 +32,8 @@ import javax.annotation.Nonnull;
 public class JimpleView extends AbstractView {
 
   @Nonnull
-  private final Map<ClassType, AbstractClass<? extends AbstractClassSource>> map = new HashMap<>();
+  private final Map<ClassType, AbstractClass<? extends AbstractClassSource>> cache =
+      new HashMap<>();
 
   private volatile boolean isFullyResolved = false;
 
@@ -76,7 +77,7 @@ public class JimpleView extends AbstractView {
   @Nonnull
   synchronized Stream<AbstractClass<? extends AbstractClassSource>> getAbstractClassSources() {
     resolveAll();
-    return map.values().stream();
+    return cache.values().stream();
   }
 
   @Override
@@ -87,7 +88,7 @@ public class JimpleView extends AbstractView {
 
   @Nonnull
   Optional<AbstractClass<? extends AbstractClassSource>> getAbstractClass(@Nonnull ClassType type) {
-    AbstractClass<? extends AbstractClassSource> cachedClass = map.get(type);
+    AbstractClass<? extends AbstractClassSource> cachedClass = cache.get(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
@@ -124,7 +125,7 @@ public class JimpleView extends AbstractView {
   private synchronized Optional<AbstractClass<? extends AbstractClassSource>> buildClassFrom(
       AbstractClassSource classSource) {
     AbstractClass<? extends AbstractClassSource> theClass =
-        map.computeIfAbsent(
+        cache.computeIfAbsent(
             classSource.getClassType(),
             type ->
                 classSource.buildClass(getProject().getSourceTypeSpecifier().sourceTypeFor(type)));
