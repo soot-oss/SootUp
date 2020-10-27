@@ -268,8 +268,8 @@ grammar Jimple;
     /*string*/  STRING_CONSTANT |
     /*clazz*/   CLASS STRING_CONSTANT |
     /*null*/    NULL |
-                'handle:' method_signature |
-                'methodtype:' method_subsignature ;
+                methodhandle='handle:' method_signature |
+                methodtype='methodtype:' method_subsignature ;
 
   binop :
     /*and*/   AND |

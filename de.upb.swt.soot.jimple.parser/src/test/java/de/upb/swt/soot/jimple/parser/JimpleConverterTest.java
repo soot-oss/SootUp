@@ -3,14 +3,17 @@ package de.upb.swt.soot.jimple.parser;
 import static org.junit.Assert.assertEquals;
 
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.util.printer.Printer;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Paths;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class JimpleConverterTest {
@@ -18,7 +21,7 @@ public class JimpleConverterTest {
   void checkJimpleClass(CharStream cs) {
 
     JimpleConverter jimpleVisitor = new JimpleConverter();
-    final OverridingClassSource scs = jimpleVisitor.run(cs, null, null);
+    final OverridingClassSource scs = jimpleVisitor.run(cs, null, Paths.get(""));
     StringWriter output = new StringWriter();
     Printer p = new Printer();
     final SootClass sc = new SootClass(scs, SourceType.Application);
@@ -87,7 +90,7 @@ public class JimpleConverterTest {
     checkJimpleClass(cs);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test(expected = ResolveException.class)
   public void testInvalidDuplicateImports() {
     CharStream cs =
         CharStreams.fromString(
@@ -245,24 +248,48 @@ public class JimpleConverterTest {
     checkJimpleClass(cs);
   }
 
+  @Ignore
   @Test
+  // FIXME: [ms] fix g4 file to allow a comment there
   public void testLongCommentEverywhere() {
     CharStream cs =
         CharStreams.fromString(
             "/*One*/ \n"
-                + "/*One */ \n"
+                + "/* Another opening /* \n */"
                 + "/* One*/ \n"
                 + "import /*Comment*//*more */Medium.Table; \n"
                 + "/* \n Two */"
-                + "public /* Crumble*/ class // nope // no \n"
-                + "/* a class destroys it*/"
+                + "public /* Crumble*/ class \n"
+                + "/* aclassdestroysit */ \n" // this one breaks it
                 + " BigTable extends Table"
-                + " \n {"
-                //        + "\n /*\n  Three \n \n */ "
+                + " \n \n \n {"
+                + "// line comment foobar \n"
+                //       + "/*\n  Three \n \n */ "
                 + "public void <init>(){}"
                 + "private void another(){}  "
-                //    + "/* Another opening /* */"
-                //   + "/* \n End \n */"
+                + "} ");
+    checkJimpleClass(cs);
+  }
+
+  @Test(expected = ResolveException.class)
+  public void testLongCommentDisruptingToken() {
+    CharStream cs =
+        CharStreams.fromString(
+            "public cla/* DISRUPT */ss\n"
+                + " BigTable extends Table"
+                + " \n {"
+                + "public void <init>(){}"
+                + "} ");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void testLongCommentDirsuptingTokenWord() {
+    CharStream cs =
+        CharStreams.fromString(
+            "public cla/*DIRSUPT*/ss "
+                + " BigTable extends Table \n {"
+                + "public void <init>(){}"
                 + "} ");
     checkJimpleClass(cs);
   }

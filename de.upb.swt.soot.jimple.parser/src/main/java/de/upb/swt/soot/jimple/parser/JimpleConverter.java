@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.antlr.v4.runtime.*;
 
-class JimpleConverter {
+public class JimpleConverter {
 
   final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   private Map<String, PackageName> imports = new HashMap<>();
@@ -709,12 +709,13 @@ class JimpleConverter {
             return BooleanConstant.getInstance(firstChar == 't' || firstChar == 'T');
           } else if (ctx.NULL() != null) {
             return NullConstant.getInstance();
-          } else if (ctx.method_signature() != null) {
+          } else if (ctx.methodhandle != null && ctx.method_signature() != null) {
             final MethodSignature methodSignature = getMethodSignature(ctx.method_signature(), ctx);
             // TODO: [ms] support handles with JFieldRef too
             // FIXME: [ms] update/specify tag when its printed
+            // return JavaJimple.getInstance().newMethodHandle( , 0);
             return JavaJimple.getInstance().newMethodHandle(methodSignature, 0);
-          } else if (ctx.method_subsignature() != null) {
+          } else if (ctx.methodtype != null && ctx.method_subsignature() != null) {
             final JimpleParser.Type_listContext typelist = ctx.method_subsignature().type_list();
             final List<Type> typeList = getTypeList(typelist);
             return JavaJimple.getInstance()
