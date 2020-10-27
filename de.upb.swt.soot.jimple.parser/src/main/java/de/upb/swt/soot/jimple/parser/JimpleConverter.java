@@ -20,7 +20,6 @@ import de.upb.swt.soot.core.util.StringTools;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.jimple.JimpleBaseVisitor;
-import de.upb.swt.soot.jimple.JimpleLexer;
 import de.upb.swt.soot.jimple.JimpleParser;
 import java.nio.file.Path;
 import java.util.*;
@@ -43,26 +42,7 @@ public class JimpleConverter {
       throw new ResolveException("Empty File to parse.", path, null);
     }
 
-    JimpleLexer lexer = new JimpleLexer(charStream);
-    TokenStream tokens = new CommonTokenStream(lexer);
-    JimpleParser parser = new JimpleParser(tokens);
-
-    parser.removeErrorListeners();
-    parser.addErrorListener(
-        new BaseErrorListener() {
-          @Override
-          public void syntaxError(
-              Recognizer<?, ?> recognizer,
-              Object offendingSymbol,
-              int line,
-              int charPositionInLine,
-              String msg,
-              RecognitionException e) {
-            throw new ResolveException(
-                "Jimple Syntaxerror: " + msg, path, new Position(line, charPositionInLine, -1, -1));
-          }
-        });
-
+    JimpleParser parser = util.createJimpleParser(charStream, path);
     ClassVisitor classVisitor = new ClassVisitor();
     classVisitor.visit(parser.file());
 
