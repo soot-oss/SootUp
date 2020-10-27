@@ -84,8 +84,8 @@ public class MethodHandle implements Constant {
 
   public int tag;
 
-  public MethodHandle(MethodSignature ref, int tag, Type type) {
-    this.methodSignature = ref;
+  public MethodHandle(MethodSignature methodSignature, int tag, Type type) {
+    this.methodSignature = methodSignature;
     this.tag = tag;
     this.fieldRef = null;
     this.type = type;
@@ -107,6 +107,8 @@ public class MethodHandle implements Constant {
   }
 
   @Override
+  // FIXME: [ms] serialize in a way it can be restored with the same parameters; adapt Jimple.g4 and
+  // JimpleConverter.java
   public String toString() {
     return "handle: " + methodSignature;
   }

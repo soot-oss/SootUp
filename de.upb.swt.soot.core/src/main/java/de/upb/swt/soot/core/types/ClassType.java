@@ -23,13 +23,14 @@ package de.upb.swt.soot.core.types;
  */
 
 import de.upb.swt.soot.core.signatures.PackageName;
+import de.upb.swt.soot.core.signatures.Signature;
 
 /**
  * Represents the signature of a Class
  *
  * @author Markus Schmidt
  */
-public abstract class ClassType extends ReferenceType {
+public abstract class ClassType extends ReferenceType implements Signature {
   public abstract boolean isBuiltInClass();
 
   public abstract String getFullyQualifiedName();
