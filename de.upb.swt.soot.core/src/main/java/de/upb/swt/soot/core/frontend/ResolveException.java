@@ -33,24 +33,24 @@ public class ResolveException extends RuntimeException {
   @Nonnull private final Position range;
 
   // FIXME: [ms] fix usages to give a file uri
+  @Deprecated
   public ResolveException(@Nonnull String message) {
-    // FIXME uri parameter; range
     this(message, "./file-does-not-exist", NoPositionInformation.getInstance());
   }
 
   public ResolveException(
       @Nonnull String message, @Nonnull Path sourcePath, @Nullable Position position) {
     this(
-        message + " " + sourcePath + " " + position,
-        "file:/" + sourcePath.toAbsolutePath().toString(),
+        message,
+        "file://" + sourcePath.toAbsolutePath().toString(),
         position == null ? NoPositionInformation.getInstance() : position);
   }
 
   public ResolveException(
       @Nonnull String message, @Nonnull String inputUri, @Nonnull Position range) {
-    super(message);
-    this.inputUri = inputUri;
+    super(message + " " + inputUri + " " + range);
     this.range = range;
+    this.inputUri = inputUri;
   }
 
   @Nonnull
