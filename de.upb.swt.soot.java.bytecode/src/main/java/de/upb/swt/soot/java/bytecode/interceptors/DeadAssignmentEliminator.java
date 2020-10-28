@@ -32,9 +32,7 @@ import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
-import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
@@ -61,6 +59,8 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     StmtGraph stmtGraph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
+
+    // Make a first pass through the statements, noting the statements we must absolutely keep
 
     boolean isStatic = true;
     boolean allEssential = true;
@@ -135,13 +135,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
             if (rhs instanceof JInstanceFieldRef) {
               JInstanceFieldRef instanceFieldRef = (JInstanceFieldRef) rhs;
               if (!isStatic && thisLocal == null) {
-                for (Stmt s : builder.getStmts()) {
-                  if (s instanceof JIdentityStmt
-                      && ((JIdentityStmt) s).getRightOp() instanceof JThisRef) {
-                    thisLocal = (Local) (((JIdentityStmt) s).getLeftOp());
-                    break;
-                  }
-                }
+                thisLocal = stmtGraph.getThisLocal();
               }
 
               // Any JInstanceFieldRef may have side effects, unless the base is reading from 'this'
@@ -188,7 +182,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     if (checkInvoke || !allEssential) {
       // Add all the statements which are used to compute values for the essential statements,
       // recursively
-      collectDefs(builder.getStmts());
+      allDefs = UtilInterceptors.collectDefs(builder.getStmts(), allDefs);
 
       if (!allEssential) {
         Set<Stmt> essential = new HashSet<>(stmts.size());
@@ -224,7 +218,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       }
 
       if (checkInvoke) {
-        collectUses(builder.getStmts());
+        allUses = UtilInterceptors.collectUses(builder.getStmts(), allUses);
         // Eliminate dead assignments from invokes such as x = f(), where x is no longer used
         List<JAssignStmt> postProcess = new ArrayList<>();
         for (Stmt stmt : stmts) {
@@ -257,37 +251,5 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     }
 
     builder.commitDeferredStmtGraphChanges();
-  }
-
-  private void collectDefs(List<Stmt> stmts) {
-    for (Stmt stmt : stmts) {
-      List<Value> defs = stmt.getDefs();
-      for (Value value : defs) {
-        if (value instanceof Local) {
-          List<Stmt> localDefs = allDefs.get(value);
-          if (localDefs == null) {
-            localDefs = new ArrayList<>();
-          }
-          localDefs.add(stmt);
-          allDefs.put((Local) value, localDefs);
-        }
-      }
-    }
-  }
-
-  private void collectUses(List<Stmt> stmts) {
-    for (Stmt stmt : stmts) {
-      List<Value> uses = stmt.getUses();
-      for (Value value : uses) {
-        if (value instanceof Local) {
-          List<Stmt> localUses = allUses.get(value);
-          if (localUses == null) {
-            localUses = new ArrayList<>();
-          }
-          localUses.add(stmt);
-          allUses.put((Local) value, localUses);
-        }
-      }
-    }
   }
 }
