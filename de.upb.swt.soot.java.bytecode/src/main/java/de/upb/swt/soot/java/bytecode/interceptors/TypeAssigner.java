@@ -30,11 +30,9 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.NullType;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import javax.annotation.Nonnull;
 
 // https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/typing/TypeAssigner.java
 
@@ -56,55 +54,64 @@ public class TypeAssigner implements BodyInterceptor {
   // ************************************assist_functions*******************************
 
   /**
-   * Remove all Stmts which use locals with {@link de.upb.swt.soot.core.types.NullType}
-   * and lead up to NullPointerException at runtime.
+   * Remove all Stmts which use locals with {@link de.upb.swt.soot.core.types.NullType} and lead up
+   * to NullPointerException at runtime.
+   *
    * @param builder a instance of {@link de.upb.swt.soot.core.model.Body.BodyBuilder}
    */
-  protected void replaceNullType(@Nonnull Body.BodyBuilder builder){
+  protected void removeNullPointerStmts(@Nonnull Body.BodyBuilder builder) {
 
-    //Check whether there's a local with NullType. If no, return immediately
-    for(Local local : builder.getLocals()){
-      if(local.getType() instanceof NullType){
+    // Check whether there's a local with NullType. If no, return immediately
+    for (Local local : builder.getLocals()) {
+      if (local.getType() instanceof NullType) {
         return;
       }
     }
 
-    //Iterate all Stmts to find out all Stmts leading up to NullPointerException
+    // Iterate all Stmts to find out all Stmts leading up to NullPointerException
     List<Stmt> stmts = builder.getStmts();
-    //Create a list to store the found Stmts
+    // Create a list to store the found Stmts
     List<Stmt> stmtsToRemove = new ArrayList<>();
-    for(Stmt stmt : stmts){
+    for (Stmt stmt : stmts) {
       List<Value> uses = stmt.getUses();
-      for(Value use : uses){
-        if(use instanceof Local && use.getType() instanceof NullType){
-          //1.case use is a base of ArrayRef
-          if(stmt.containsArrayRef() && stmt.getArrayRef().getBase().equivTo(use)){
+      for (Value use : uses) {
+        if (use instanceof Local && use.getType() instanceof NullType) {
+          // 1.case use is a base of ArrayRef
+          if (stmt.containsArrayRef() && stmt.getArrayRef().getBase().equivTo(use)) {
             stmtsToRemove.add(stmt);
           }
-          //2.case use is an InstanceFieldRef
-          else if(stmt.containsFieldRef()){
+          // 2.case use is an InstanceFieldRef
+          else if (stmt.containsFieldRef()) {
             JFieldRef ref = stmt.getFieldRef();
-            if(ref instanceof JInstanceFieldRef && ((JInstanceFieldRef) ref).getBase().equivTo(use)){
+            if (ref instanceof JInstanceFieldRef
+                && ((JInstanceFieldRef) ref).getBase().equivTo(use)) {
               stmtsToRemove.add(stmt);
             }
           }
-          //3.case use is a base of InstanceInvokeExpr
-          else if(stmt.containsInvokeExpr()){
+          // 3.case use is a base of InstanceInvokeExpr
+          else if (stmt.containsInvokeExpr()) {
             AbstractInvokeExpr expr = stmt.getInvokeExpr();
-            if(expr instanceof AbstractInstanceInvokeExpr && ((AbstractInstanceInvokeExpr) expr).getBase().equivTo((use))){
+            if (expr instanceof AbstractInstanceInvokeExpr
+                && ((AbstractInstanceInvokeExpr) expr).getBase().equivTo((use))) {
               stmtsToRemove.add(stmt);
             }
           }
         }
       }
     }
-    //Remove all collected Stmts from method's body
-    for(Stmt stmt: stmtsToRemove){
-
+    // Remove all collected Stmts from method's body
+    for (Stmt stmt : stmtsToRemove) {
+      builder = builder.removeStmt(stmt);
     }
 
+    // After removing such Stmts, it's posssible, there could be dead assignments in body
+    // If there were, eliminate them
+    BodyInterceptor assignmentEliminator = new DeadAssignmentEliminator();
+    assignmentEliminator.interceptBody(builder);
 
-
-
+    // After eliminating dead assignments, it's posssible, there could be unused locals in body
+    // If so, eliminate it/them
+    BodyInterceptor localEliminator = new UnusedLocalEliminator();
+    localEliminator.interceptBody(builder);
   }
 }
