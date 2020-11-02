@@ -241,7 +241,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   }
 
   @Nonnull
-  private Local getLocal(int idx) {
+  private Local getOrCreateLocal(int idx) {
     if (idx >= maxLocals) {
       throw new IllegalArgumentException("Invalid local index: " + idx);
     }
@@ -567,7 +567,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   }
 
   private void convertIincInsn(@Nonnull IincInsnNode insn) {
-    Local local = getLocal(insn.var);
+    Local local = getOrCreateLocal(insn.var);
     assignReadOps(local);
     if (!InsnToStmt.containsKey(insn)) {
       JAddExpr add = Jimple.newAddExpr(local, IntConstant.getInstance(insn.incr));
@@ -1653,7 +1653,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     Operand[] out = frame.getOut();
     Operand opr;
     if (out == null) {
-      opr = new Operand(insn, getLocal(insn.var));
+      opr = new Operand(insn, getOrCreateLocal(insn.var));
       frame.setOut(opr);
     } else {
       opr = out[0];
@@ -1670,7 +1670,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     boolean dword = op == LSTORE || op == DSTORE;
     StackFrame frame = getFrame(insn);
     Operand opr = dword ? popDual() : pop();
-    Local local = getLocal(insn.var);
+    Local local = getOrCreateLocal(insn.var);
     if (!InsnToStmt.containsKey(insn)) {
       AbstractDefinitionStmt as =
           Jimple.newAssignStmt(
@@ -1696,7 +1696,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       if (!InsnToStmt.containsKey(insn)) {
         setStmt(
             insn,
-            Jimple.newRetStmt(getLocal(insn.var), StmtPositionInfo.createNoStmtPositionInfo()));
+            Jimple.newRetStmt(
+                getOrCreateLocal(insn.var), StmtPositionInfo.createNoStmtPositionInfo()));
       }
     } else {
       throw new AssertionError("Unknown var op: " + op);
@@ -1919,14 +1920,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
     int iloc = 0;
     if (!lazyModifiers.get().contains(Modifier.STATIC)) {
-      Local l = getLocal(iloc++);
+      Local l = getOrCreateLocal(iloc++);
       emitStmt(
           Jimple.newIdentityStmt(
               l, Jimple.newThisRef(declaringClass), StmtPositionInfo.createNoStmtPositionInfo()));
     }
     int nrp = 0;
     for (Type parameterType : methodSignature.getParameterTypes()) {
-      Local local = getLocal(iloc);
+      Local local = getOrCreateLocal(iloc);
       emitStmt(
           Jimple.newIdentityStmt(
               local,
