@@ -27,7 +27,7 @@ public class ReflectionTest extends JimpleTestSuiteBase {
             "$stack4 = new Reflection",
             "specialinvoke $stack4.<Reflection: void <init>()>()",
             "l1 = $stack4",
-            "l2 = class \"LReflection;\"",
+            "l2 = class Reflection",
             "$stack5 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack5.<java.io.PrintStream: void println(java.lang.Object)>(l2)",
             "$stack6 = newarray (java.lang.Class)[0]",

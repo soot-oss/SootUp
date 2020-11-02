@@ -264,7 +264,7 @@ grammar Jimple;
     /*integer*/ integer_constant |
     /*float*/   FLOAT_CONSTANT |
     /*string*/  STRING_CONSTANT |
-    /*clazz*/   CLASS STRING_CONSTANT |
+    /*clazz*/   CLASS identifier |
     /*null*/    NULL |
                 methodhandle='handle:' method_signature |
                 methodtype='methodtype:' method_subsignature ;

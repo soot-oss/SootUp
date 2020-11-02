@@ -595,7 +595,7 @@ public class JimpleConverter {
             }
             return DoubleConstant.getInstance(Double.parseDouble(floatStr));
           } else if (ctx.CLASS() != null) {
-            final String text = Jimple.unescape(ctx.STRING_CONSTANT().getText());
+            final String text = Jimple.unescape(ctx.identifier().getText());
             return JavaJimple.getInstance().newClassConstant(text);
           } else if (ctx.STRING_CONSTANT() != null) {
             final String text = Jimple.unescape(ctx.STRING_CONSTANT().getText());

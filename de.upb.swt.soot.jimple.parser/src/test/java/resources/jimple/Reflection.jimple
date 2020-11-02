@@ -15,7 +15,7 @@ public synchronized class Reflection extends java.lang.Object
 
         l1 = $stack4;
 
-        l2 = class "LReflection;";
+        l2 = class Reflection;
 
         $stack5 = <java.lang.System: java.io.PrintStream out>;
 
