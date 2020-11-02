@@ -1998,6 +1998,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
       // assign Stmt associated with the current instruction. see
       // https://asm.ow2.io/javadoc/org/objectweb/asm/Label.html
+      // there can be multiple labels assigned to the following stmt!
       final boolean isLabelNode = insn instanceof LabelNode;
       if (isLabelNode) {
         // Save the label to assign it to the next real Stmt
