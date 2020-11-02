@@ -44,7 +44,8 @@ public final class MethodDispatchResolver {
   public static Set<MethodSignature> resolveAbstractDispatch(View view, MethodSignature m) {
     TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
 
-    if(!m.getSubSignature().getName().equals("print")&&!m.getSubSignature().getName().equals("<init>")){
+    if (!m.getSubSignature().getName().equals("print")
+        && !m.getSubSignature().getName().equals("<init>")) {
       System.out.println(m);
     }
 

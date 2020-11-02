@@ -124,18 +124,19 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
     switch (vertex.type) {
       case Interface:
-//        graph.incomingEdgesOf(vertex).stream()
-//                .filter(
-//                        edge ->
-//                                edge.type == EdgeType.ClassDirectlyImplements
-//                                        || edge.type == EdgeType.InterfaceDirectlyExtends)
-//                .map(graph::getEdgeSource).forEach(directSubclass -> subclasses.add(directSubclass.javaClassType));
+        //        graph.incomingEdgesOf(vertex).stream()
+        //                .filter(
+        //                        edge ->
+        //                                edge.type == EdgeType.ClassDirectlyImplements
+        //                                        || edge.type == EdgeType.InterfaceDirectlyExtends)
+        //                .map(graph::getEdgeSource).forEach(directSubclass ->
+        // subclasses.add(directSubclass.javaClassType));
         break;
       case Class:
         graph.incomingEdgesOf(vertex).stream()
-                .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
-                .map(graph::getEdgeSource)
-                .forEach(directSubclass -> subclasses.add(directSubclass.javaClassType));
+            .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
+            .map(graph::getEdgeSource)
+            .forEach(directSubclass -> subclasses.add(directSubclass.javaClassType));
         break;
       default:
         throw new AssertionError("Unknown vertex type!");
@@ -143,7 +144,6 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
     return subclasses;
   }
-
 
   @Nonnull
   private List<Vertex> superClassesOf(@Nonnull Vertex classVertex, boolean includingSelf) {

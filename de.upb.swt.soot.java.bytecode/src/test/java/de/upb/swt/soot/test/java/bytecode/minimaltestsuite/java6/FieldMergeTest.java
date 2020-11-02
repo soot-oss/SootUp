@@ -12,25 +12,21 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-
 @Category(Java8Test.class)
 public class FieldMergeTest extends MinimalBytecodeTestSuiteBase {
-    public MethodSignature getMethodSignature() {
-        return identifierFactory.getMethodSignature(
-                "<init>", getDeclaredClassSignature(), "void", Collections.emptyList());
-    }
+  public MethodSignature getMethodSignature() {
+    return identifierFactory.getMethodSignature(
+        "<init>", getDeclaredClassSignature(), "void", Collections.emptyList());
+  }
 
+  @Override
+  public List<String> expectedBodyStmts() {
+    return Stream.of("").collect(Collectors.toCollection(ArrayList::new));
+  }
 
-    @Override
-    public List<String> expectedBodyStmts() {
-        return Stream.of(
-                "")
-                .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    @Test
-    public void test() {
-        SootMethod method = loadMethod(getMethodSignature());
-        assertJimpleStmts(method, expectedBodyStmts());
-    }
+  @Test
+  public void test() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
+  }
 }

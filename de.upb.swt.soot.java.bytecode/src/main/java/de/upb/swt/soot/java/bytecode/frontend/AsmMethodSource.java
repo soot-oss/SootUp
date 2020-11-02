@@ -40,6 +40,7 @@ import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.*;
 import de.upb.swt.soot.core.frontend.MethodSource;
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
@@ -2000,6 +2001,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       if (isLabelNode) {
         // Save the label to assign it to the next real Stmt
         danglingLabel = ((LabelNode) insn);
+        System.out.println(danglingLabel);
       }
 
       Stmt stmt = InsnToStmt.get(insn);
@@ -2009,9 +2011,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
       // associate label with following stmt
       if (danglingLabel != null) {
-        labelsToStmt.put(
-            danglingLabel,
-            stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt);
+        Stmt value = stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt;
+        if (value == null) {
+          System.out.println("stmt is null for danglingLabel");
+        }
+        labelsToStmt.put(danglingLabel, value);
 
         // If this is an exception handler, register the starting Stmt for it
         if (isLabelNode) {
@@ -2046,6 +2050,18 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     for (Map.Entry<Stmt, LabelNode> entry : stmtsThatBranchToLabel.entries()) {
       final Stmt fromStmt = entry.getKey();
       final Stmt targetStmt = labelsToStmt.get(entry.getValue());
+      if (targetStmt == null) {
+        for (Map.Entry e : labelsToStmt.entrySet()) {
+          System.out.println("key: " + e.getKey() + "; value: " + e.getValue());
+        }
+        throw new ResolveException(
+            "targetStmt not found for fromStmt:"
+                + fromStmt
+                + " "
+                + entry.getValue()
+                + " in method:"
+                + lazyMethodSignature.get());
+      }
       bodyBuilder.addFlow(fromStmt, targetStmt);
     }
   }

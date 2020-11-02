@@ -75,10 +75,7 @@ public class ClassHierarchyAlgorithmTest {
 
   @Test
   public void testMiscExample1() {
-    /**
-     * We expect constructors for B and C
-     * We expect A.print(), B.print(), C.print(), D.print()
-     */
+    /** We expect constructors for B and C We expect A.print(), B.print(), C.print(), D.print() */
     CallGraph cg = loadCallGraph("Misc", "example1.Example");
 
     MethodSignature constructorB =
@@ -89,11 +86,11 @@ public class ClassHierarchyAlgorithmTest {
             Collections.emptyList());
 
     MethodSignature constructorC =
-            identifierFactory.getMethodSignature(
-                    "<init>",
-                    identifierFactory.getClassType("example1.C"),
-                    "void",
-                    Collections.emptyList());
+        identifierFactory.getMethodSignature(
+            "<init>",
+            identifierFactory.getClassType("example1.C"),
+            "void",
+            Collections.emptyList());
 
     MethodSignature methodA =
         identifierFactory.getMethodSignature(

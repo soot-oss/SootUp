@@ -174,7 +174,11 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
     final int returnedSize = returnedNodes.size();
     final int actualSize = graph.nodes().size();
     if (!hasIteratorMoreElements && returnedSize != actualSize) {
-      String info = graph.nodes().stream().filter(n -> !returnedNodes.contains(n)).collect(Collectors.toList()).toString();
+      String info =
+          graph.nodes().stream()
+              .filter(n -> !returnedNodes.contains(n))
+              .collect(Collectors.toList())
+              .toString();
       throw new RuntimeException(
           "There are "
               + (actualSize - returnedSize)

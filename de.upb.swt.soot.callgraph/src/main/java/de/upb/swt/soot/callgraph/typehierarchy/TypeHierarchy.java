@@ -81,10 +81,7 @@ public interface TypeHierarchy {
   @Nonnull
   Set<ClassType> subtypesOf(@Nonnull ClassType type);
 
-  /**
-   *
-   * Returns the direct implementers of an interface or direct subclasses of a class.
-   */
+  /** Returns the direct implementers of an interface or direct subclasses of a class. */
   @Nonnull
   Set<ClassType> directSubtypesOf(@Nonnull ClassType type);
 

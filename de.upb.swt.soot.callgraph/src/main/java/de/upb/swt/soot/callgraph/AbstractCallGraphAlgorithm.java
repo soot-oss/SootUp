@@ -64,14 +64,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       MethodSignature currentMethodSignature = workList.pop();
       if (processed.contains(currentMethodSignature)) continue;
 
-
-
       Stream<MethodSignature> invocationTargets =
           resolveAllCallsFromSourceMethod(view, currentMethodSignature);
 
       invocationTargets.forEach(
           t -> {
-//            System.out.println("target:" + t);
+            //            System.out.println("target:" + t);
             if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
             if (!cg.containsMethod(t)) cg.addMethod(t);
             if (!cg.containsCall(currentMethodSignature, t)) {
@@ -87,15 +85,15 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   Stream<MethodSignature> resolveAllCallsFromSourceMethod(View view, MethodSignature sourceMethod) {
     Method currentMethodCandidate =
         view.getClass(sourceMethod.getDeclClassType())
-//                .map(clazz -> (SootClass) clazz)
-//                .filter(clazz -> !clazz.isInterface())
-                .flatMap(c -> c.getMethod(sourceMethod))
-                .orElse(null);
+            //                .map(clazz -> (SootClass) clazz)
+            //                .filter(clazz -> !clazz.isInterface())
+            .flatMap(c -> c.getMethod(sourceMethod))
+            .orElse(null);
     if (currentMethodCandidate == null) return Stream.empty();
 
     SootMethod currentMethod = (SootMethod) currentMethodCandidate;
 
-    if(((SootClass) view.getClass(sourceMethod.getDeclClassType()).get()).isInterface()){
+    if (((SootClass) view.getClass(sourceMethod.getDeclClassType()).get()).isInterface()) {
       return Stream.empty();
     }
 
