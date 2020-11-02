@@ -1,20 +1,25 @@
-/* Soot - a J*va Optimization Framework
- * Copyright (C) 1997-1999 Raja Vallee-Rai
+package de.upb.swt.soot.core.jimple.common.constant;
+
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 1997-2020 Raja Vallee-Rai, Linghui Luo, Christian Brüggemann and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
  */
 
 /*
@@ -22,8 +27,6 @@
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
-
-package de.upb.swt.soot.core.jimple.common.constant;
 
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -36,18 +39,17 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
 
   private final double value;
 
-  private DoubleConstant(double value) {
+  private DoubleConstant(@Nonnull double value) {
     this.value = value;
   }
 
-  public static DoubleConstant getInstance(double value) {
+  public static DoubleConstant getInstance(@Nonnull double value) {
     return new DoubleConstant(value);
   }
 
   @Override
   public boolean equals(Object c) {
-    return (c instanceof DoubleConstant
-        && Double.compare(((DoubleConstant) c).value, this.value) == 0);
+    return (c instanceof DoubleConstant && Double.compare(((DoubleConstant) c).value, value) == 0);
   }
 
   /** Returns a hash code for this DoubleConstant object. */
@@ -61,76 +63,76 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
   @Nonnull
   @Override
   public DoubleConstant add(@Nonnull DoubleConstant c) {
-    return DoubleConstant.getInstance(this.value + c.value);
+    return DoubleConstant.getInstance(value + c.value);
   }
 
   @Nonnull
   @Override
   public DoubleConstant subtract(@Nonnull DoubleConstant c) {
-    return DoubleConstant.getInstance(this.value - c.value);
+    return DoubleConstant.getInstance(value - c.value);
   }
 
   @Nonnull
   @Override
   public DoubleConstant multiply(@Nonnull DoubleConstant c) {
-    return DoubleConstant.getInstance(this.value * c.value);
+    return DoubleConstant.getInstance(value * c.value);
   }
 
   @Nonnull
   @Override
   public DoubleConstant divide(@Nonnull DoubleConstant c) {
-    return DoubleConstant.getInstance(this.value / c.value);
+    return DoubleConstant.getInstance(value / c.value);
   }
 
   @Nonnull
   @Override
   public DoubleConstant remainder(@Nonnull DoubleConstant c) {
-    return DoubleConstant.getInstance(this.value % c.value);
+    return DoubleConstant.getInstance(value % c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant equalEqual(@Nonnull DoubleConstant c) {
-    return BooleanConstant.getInstance(Double.compare(this.value, c.value) == 0);
+    return BooleanConstant.getInstance(Double.compare(value, c.value) == 0);
   }
 
   @Nonnull
   @Override
   public BooleanConstant notEqual(@Nonnull DoubleConstant c) {
-    return BooleanConstant.getInstance(Double.compare(this.value, c.value) != 0);
+    return BooleanConstant.getInstance(Double.compare(value, c.value) != 0);
   }
 
   @Nonnull
   @Override
   public BooleanConstant lessThan(@Nonnull DoubleConstant c) {
-    return BooleanConstant.getInstance(Double.compare(this.value, c.value) < 0);
+    return BooleanConstant.getInstance(Double.compare(value, c.value) < 0);
   }
 
   @Nonnull
   @Override
   public BooleanConstant lessThanOrEqual(@Nonnull DoubleConstant c) {
-    return BooleanConstant.getInstance(Double.compare(this.value, c.value) <= 0);
+    return BooleanConstant.getInstance(Double.compare(value, c.value) <= 0);
   }
 
   @Nonnull
   @Override
   public BooleanConstant greaterThan(@Nonnull DoubleConstant c) {
-    return BooleanConstant.getInstance(Double.compare(this.value, c.value) > 0);
+    return BooleanConstant.getInstance(Double.compare(value, c.value) > 0);
   }
 
   @Nonnull
   @Override
   public BooleanConstant greaterThanOrEqual(@Nonnull DoubleConstant c) {
-    return BooleanConstant.getInstance(Double.compare(this.value, c.value) >= 0);
+    return BooleanConstant.getInstance(Double.compare(value, c.value) >= 0);
   }
 
   @Nonnull
   @Override
   public IntConstant cmpg(@Nonnull DoubleConstant constant) {
     final double cValue = constant.value;
-    if (this.value < cValue) {
+    if (value < cValue) {
       return IntConstant.getInstance(-1);
-    } else if (this.value == cValue) {
+    } else if (value == cValue) {
       return IntConstant.getInstance(0);
     } else {
       return IntConstant.getInstance(1);
@@ -141,9 +143,9 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
   @Override
   public IntConstant cmpl(@Nonnull DoubleConstant constant) {
     final double cValue = constant.value;
-    if (this.value > cValue) {
+    if (value > cValue) {
       return IntConstant.getInstance(1);
-    } else if (this.value == cValue) {
+    } else if (value == cValue) {
       return IntConstant.getInstance(0);
     } else {
       return IntConstant.getInstance(-1);
@@ -153,7 +155,7 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
   @Nonnull
   @Override
   public DoubleConstant negate() {
-    return DoubleConstant.getInstance(-(this.value));
+    return DoubleConstant.getInstance(-(value));
   }
 
   @Override
@@ -175,7 +177,7 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ConstantVisitor) sw).caseDoubleConstant(this);
   }
 

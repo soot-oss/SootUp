@@ -1,38 +1,67 @@
 package de.upb.swt.soot.core.frontend;
-
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2019-2020 Linghui Luo, Markus Schmidt, Andreas Dann and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 import com.google.common.base.Objects;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.AbstractClass;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.model.SourceType;
+import de.upb.swt.soot.core.signatures.Signature;
+import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.views.View;
 import java.nio.file.Path;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * AbstractClassSource represents a Compilation Unit (Interpretation Unit for interpreted
+ * languages). e.g. its connecting a file with source(code) to a {@link Signature} that a {@link
+ * View} can resolve.
+ */
 public abstract class AbstractClassSource {
   protected final AnalysisInputLocation srcNamespace;
   protected final Path sourcePath;
-  // TODO: AD unfortunately I need to change it in the ModuleFinder, since I only know a module's
-  // name after resolving its
-  // module-info.class
-  protected JavaClassType classSignature;
+  protected ClassType classSignature;
 
   public AbstractClassSource(
-      AnalysisInputLocation srcNamespace, JavaClassType classSignature, Path sourcePath) {
+      @Nonnull AnalysisInputLocation srcNamespace,
+      @Nonnull ClassType classSignature,
+      @Nonnull Path sourcePath) {
     this.srcNamespace = srcNamespace;
     this.classSignature = classSignature;
     this.sourcePath = sourcePath;
   }
 
-  public JavaClassType getClassType() {
+  public ClassType getClassType() {
     return classSignature;
   }
 
-  public abstract AbstractClass buildClass();
+  public abstract AbstractClass<? extends AbstractClassSource> buildClass(
+      @Nonnull SourceType sourceType);
 
   public Path getSourcePath() {
     return sourcePath;
   }
 
-  public void setClassSignature(JavaClassType classSignature) {
+  public void setClassSignature(ClassType classSignature) {
     this.classSignature = classSignature;
   }
 

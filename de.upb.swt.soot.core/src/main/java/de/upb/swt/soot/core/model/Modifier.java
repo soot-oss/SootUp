@@ -1,33 +1,32 @@
-/* Soot - a J*va Optimization Framework
- * Copyright (C) 1997-1999 Raja Vallee-Rai
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- */
-
-/*
- * Modified by the Sable Research Group and others 1997-1999.
- * See the 'credits' file distributed with Soot for the complete list of
- * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
- */
-
 // Incomplete class
 
 package de.upb.swt.soot.core.model;
 
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 1997-2020 Raja Vallee-Rai, Jan Martin Persch, Christian Brüggemann and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
+import java.util.EnumSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -36,38 +35,34 @@ import javax.annotation.Nonnull;
  * methods to query these.
  */
 public enum Modifier {
-  ABSTRACT(0x0400),
-  FINAL(0x0010),
-  INTERFACE(0x0200),
-  NATIVE(0x0100),
+  PUBLIC(0x0001),
   PRIVATE(0x0002),
   PROTECTED(0x0004),
-  PUBLIC(0x0001),
+
+  ABSTRACT(0x0400),
   STATIC(0x0008),
+  FINAL(0x0010),
+
   SYNCHRONIZED(0x0020),
+  NATIVE(0x0100),
   TRANSIENT(0x0080), /* VARARGS for methods */
   VOLATILE(0x0040), /* BRIDGE for methods */
   STRICTFP(0x0800),
   ANNOTATION(0x2000),
   ENUM(0x4000),
+  INTERFACE(0x0200),
+
   MODULE(0x8000),
 
   // dex specifific modifiers
   SYNTHETIC(0x1000),
   CONSTRUCTOR(0x10000),
-  DECLARED_SYNCHRONIZED(0x20000),
-
-  // modifier for java 9 modules
-  OPEN(0x0020),
-  REQUIRES_TRANSITIVE(0x0020),
-  REQUIRES_STATIC(0x0040),
-  REQUIRES_SYNTHETIC(0x1000),
-  REQUIRES_MANDATED(0x8000);
+  DECLARED_SYNCHRONIZED(0x20000);
 
   private final int bytecode;
 
   Modifier(int i) {
-    this.bytecode = i;
+    bytecode = i;
   }
 
   public static boolean isAbstract(@Nonnull Set<Modifier> m) {
@@ -200,11 +195,22 @@ public enum Modifier {
       builder.append("interface ");
     }
 
-    return (builder.toString()).trim();
+    // trim
+    final int lastCharPos = builder.length() - 1;
+    if (lastCharPos > 0) {
+      builder.setLength(lastCharPos);
+    }
+    return builder.toString();
+  }
+
+  @Nonnull
+  // depends on the natural order of the Enums!
+  public static String toString(@Nonnull EnumSet<Modifier> m) {
+    return m.stream().map((mod) -> mod.name().toLowerCase()).collect(Collectors.joining(" "));
   }
 
   /** @return the bytecode of this Modifier. */
   public int getBytecode() {
-    return this.bytecode;
+    return bytecode;
   }
 }

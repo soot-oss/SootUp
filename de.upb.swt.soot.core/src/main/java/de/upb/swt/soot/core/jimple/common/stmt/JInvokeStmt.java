@@ -1,33 +1,30 @@
-/* Soot - a J*va Optimization Framework
- * Copyright (C) 1999 Patrick Lam
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- */
-
-/*
- * Modified by the Sable Research Group and others 1997-1999.
- * See the 'credits' file distributed with Soot for the complete list of
- * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
- */
-
 package de.upb.swt.soot.core.jimple.common.stmt;
+
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 1999-2020 Patrick Lam, Linghui Luo, Markus Schmidt and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
@@ -39,17 +36,22 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-public final class JInvokeStmt extends AbstractStmt implements Copyable {
+/** A method call */
+public final class JInvokeStmt extends Stmt implements Copyable {
 
   private final ValueBox invokeExprBox;
+  // new attributes: later if ValueBox is deleted, then add "final" to it.
+  private Value invokeExpr;
 
-  public JInvokeStmt(Value invokeExpr, PositionInfo positionInfo) {
+  public JInvokeStmt(Value invokeExpr, StmtPositionInfo positionInfo) {
     this(Jimple.newInvokeExprBox(invokeExpr), positionInfo);
   }
 
-  private JInvokeStmt(ValueBox invokeExprBox, PositionInfo positionInfo) {
+  private JInvokeStmt(ValueBox invokeExprBox, StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.invokeExprBox = invokeExprBox;
+    // new attribute: later if ValueBox is deleted, then fit the constructor.
+    this.invokeExpr = invokeExprBox.getValue();
   }
 
   @Override
@@ -78,11 +80,9 @@ public final class JInvokeStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public List<ValueBox> getUseBoxes() {
-
-    List<ValueBox> list = new ArrayList<>(invokeExprBox.getValue().getUseBoxes());
-    list.add(invokeExprBox);
-
+  public List<Value> getUses() {
+    List<Value> list = new ArrayList<>(invokeExpr.getUses());
+    list.add(invokeExpr);
     return list;
   }
 
@@ -113,11 +113,11 @@ public final class JInvokeStmt extends AbstractStmt implements Copyable {
 
   @Nonnull
   public JInvokeStmt withInvokeExpr(Value invokeExpr) {
-    return new JInvokeStmt(invokeExprBox, getPositionInfo());
+    return new JInvokeStmt(invokeExpr, getPositionInfo());
   }
 
   @Nonnull
-  public JInvokeStmt withPositionInfo(PositionInfo positionInfo) {
+  public JInvokeStmt withPositionInfo(StmtPositionInfo positionInfo) {
     return new JInvokeStmt(invokeExprBox, positionInfo);
   }
 }

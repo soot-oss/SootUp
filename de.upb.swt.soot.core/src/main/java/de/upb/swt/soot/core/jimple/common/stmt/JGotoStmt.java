@@ -1,95 +1,70 @@
-/* Soot - a J*va Optimization Framework
- * Copyright (C) 1999 Patrick Lam
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- */
-
-/*
- * Modified by the Sable Research Group and others 1997-1999.
- * See the 'credits' file distributed with Soot for the complete list of
- * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
- */
-
 package de.upb.swt.soot.core.jimple.common.stmt;
+
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 1999-2020 Patrick Lam, Linghui Luo, Markus Schmidt and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
+import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-public final class JGotoStmt extends AbstractStmt implements Copyable {
+/** Unconditionally jumps to a target Stmt */
+public class JGotoStmt extends BranchingStmt implements Copyable {
 
-  private final StmtBox targetBox;
-  private final List<StmtBox> targetBoxes;
-
-  public JGotoStmt(Stmt target, PositionInfo positionInfo) {
-    this(Jimple.newStmtBox(target), positionInfo);
-  }
-
-  public JGotoStmt(StmtBox box, PositionInfo positionInfo) {
+  public JGotoStmt(StmtPositionInfo positionInfo) {
     super(positionInfo);
-    targetBox = box;
-    targetBoxes = Collections.singletonList(box);
   }
 
   @Override
   public String toString() {
-    Stmt t = getTarget();
-    String target = "(branch)";
-    if (!t.branches()) {
-      target = t.toString();
-    }
-    return Jimple.GOTO + " [?= " + target + "]";
+    return Jimple.GOTO;
   }
 
   @Override
-  public void toString(StmtPrinter up) {
-    up.literal(Jimple.GOTO);
-    up.literal(" ");
-    targetBox.toString(up);
+  public void toString(@Nonnull StmtPrinter stmtPrinter) {
+    stmtPrinter.literal(Jimple.GOTO);
+    stmtPrinter.literal(" ");
+    stmtPrinter.stmtRef(getTarget(stmtPrinter.getBody()), true);
   }
 
-  public Stmt getTarget() {
-    return targetBox.getStmt();
-  }
-
-  /** Violates immutability. Only use this for legacy code. */
-  @Deprecated
-  private void setTarget(Stmt target) {
-    StmtBox.$Accessor.setStmt(targetBox, target);
-  }
-
-  public StmtBox getTargetBox() {
-    return targetBox;
+  public Stmt getTarget(Body body) {
+    // [ms] bounds are validated in Body
+    return getTargetStmts(body).get(0);
   }
 
   @Override
-  public List<StmtBox> getStmtBoxes() {
-    return targetBoxes;
+  @Nonnull
+  public List<Stmt> getTargetStmts(Body body) {
+    return body.getBranchTargetsOf(this);
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseGotoStmt(this);
   }
 
@@ -104,37 +79,17 @@ public final class JGotoStmt extends AbstractStmt implements Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseGotoStmt(this, o);
   }
 
   @Override
   public int equivHashCode() {
-    return targetBox.getStmt().equivHashCode();
+    return 44;
   }
 
   @Nonnull
-  public JGotoStmt withTarget(Stmt target) {
-    return new JGotoStmt(target, getPositionInfo());
-  }
-
-  @Nonnull
-  public JGotoStmt withPositionInfo(PositionInfo positionInfo) {
-    return new JGotoStmt(getTarget(), positionInfo);
-  }
-
-  /** This class is for internal use only. It will be removed in the future. */
-  @Deprecated
-  public static class $Accessor {
-    // This class deliberately starts with a $-sign to discourage usage
-    // of this Soot implementation detail.
-
-    /** Violates immutability. Only use this for legacy code. */
-    @Deprecated
-    public static void setTarget(JGotoStmt stmt, Stmt target) {
-      stmt.setTarget(target);
-    }
-
-    private $Accessor() {}
+  public JGotoStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+    return new JGotoStmt(positionInfo);
   }
 }

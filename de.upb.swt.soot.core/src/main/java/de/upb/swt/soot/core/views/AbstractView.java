@@ -1,10 +1,30 @@
 package de.upb.swt.soot.core.views;
 
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2018-2020 Linghui Luo, Christian Brüggemann and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.Options;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.Scope;
-import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -16,15 +36,13 @@ import javax.annotation.Nullable;
  *
  * @author Linghui Luo
  */
-public abstract class AbstractView<S extends AnalysisInputLocation> implements View {
+public abstract class AbstractView implements View {
 
-  @Nonnull private final Project<S> project;
-
-  @Nonnull private final Options options = new Options();
+  @Nonnull private final Project project;
 
   @Nonnull private final Map<ModuleDataKey<?>, Object> moduleData = new HashMap<>();
 
-  public AbstractView(@Nonnull Project<S> project) {
+  public AbstractView(@Nonnull Project project) {
     this.project = project;
   }
 
@@ -41,14 +59,8 @@ public abstract class AbstractView<S extends AnalysisInputLocation> implements V
     return null;
   }
 
-  @Override
   @Nonnull
-  public Options getOptions() {
-    return this.options;
-  }
-
-  @Nonnull
-  public Project<S> getProject() {
+  public Project getProject() {
     return project;
   }
 

@@ -1,5 +1,25 @@
 package de.upb.swt.soot.callgraph.typehierarchy;
-
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2019-2020 Christian Brüggemann
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -7,7 +27,7 @@ import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,7 +44,12 @@ public final class MethodDispatchResolver {
   public static Set<MethodSignature> resolveAbstractDispatch(View view, MethodSignature m) {
     TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
 
-    return hierarchy.subtypesOf(m.getDeclClassType()).stream()
+    if (!m.getSubSignature().getName().equals("print")
+        && !m.getSubSignature().getName().equals("<init>")) {
+      System.out.println(m);
+    }
+
+    return hierarchy.directSubtypesOf(m.getDeclClassType()).stream()
         .map(
             subtype ->
                 view.getClass(subtype)
@@ -52,7 +77,7 @@ public final class MethodDispatchResolver {
   public static boolean canDispatch(
       MethodSignature called, MethodSignature potentialTarget, TypeHierarchy hierarchy) {
     return called.getName().equals(potentialTarget.getName())
-        && called.getParameterSignatures().equals(potentialTarget.getParameterSignatures())
+        && called.getParameterTypes().equals(potentialTarget.getParameterTypes())
         && (called.getType().equals(potentialTarget.getType())
             || hierarchy.isSubtype(called.getType(), potentialTarget.getType()));
   }
@@ -66,9 +91,9 @@ public final class MethodDispatchResolver {
   public static MethodSignature resolveConcreteDispatch(View view, MethodSignature m) {
     TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
 
-    JavaClassType superClassType = m.getDeclClassType();
+    ClassType superClassType = m.getDeclClassType();
     do {
-      JavaClassType finalSuperClassType = superClassType;
+      ClassType finalSuperClassType = superClassType;
       AbstractClass<? extends AbstractClassSource> superClass =
           view.getClass(superClassType)
               .orElseThrow(

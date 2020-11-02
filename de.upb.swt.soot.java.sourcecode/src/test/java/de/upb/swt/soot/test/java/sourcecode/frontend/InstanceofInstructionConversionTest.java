@@ -5,13 +5,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.util.Utils;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.WalaClassLoaderTestUtils;
-import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
+import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,16 +25,16 @@ import org.junit.experimental.categories.Category;
 /** @author Linghui Luo */
 @Category(Java8Test.class)
 public class InstanceofInstructionConversionTest {
-  private WalaClassLoader loader;
+  private WalaJavaClassProvider loader;
 
-  private DefaultIdentifierFactory typeFactory;
+  private JavaIdentifierFactory typeFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
-    loader = new WalaClassLoader(srcDir, null);
-    typeFactory = DefaultIdentifierFactory.getInstance();
+    loader = new WalaJavaClassProvider(srcDir);
+    typeFactory = JavaIdentifierFactory.getInstance();
     declareClassSig = typeFactory.getClassType("InstanceOf");
   }
 
@@ -54,10 +54,7 @@ public class InstanceofInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(

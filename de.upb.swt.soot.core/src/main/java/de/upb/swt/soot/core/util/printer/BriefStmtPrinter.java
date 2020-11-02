@@ -1,30 +1,41 @@
 package de.upb.swt.soot.core.util.printer;
 
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2018-2020 Linghui Luo, Christian Brüggemann, Markus Schmidt
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.signatures.FieldSignature;
-import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.Type;
 
 /** StmtPrinter implementation for normal Jimple */
 public class BriefStmtPrinter extends LabeledStmtPrinter {
 
-  public BriefStmtPrinter() {}
-
   public BriefStmtPrinter(Body body) {
-    super(body);
-  }
-
-  @Override
-  public void startStmt(Stmt u) {
-    super.startStmt(u);
+    super();
   }
 
   @Override
@@ -32,7 +43,7 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
     handleIndent();
     if (m.isStatic()) {
       output.append(m.getDeclaringClassType().getFullyQualifiedName());
-      literal(".");
+      output.append(".");
     }
     output.append(m.getSignature().getName());
   }
@@ -42,7 +53,7 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
     handleIndent();
     if (f.isStatic()) {
       output.append(f.getDeclaringClassType().getFullyQualifiedName());
-      literal(".");
+      output.append(".");
     }
     output.append(f.getSignature().getName());
   }
@@ -51,12 +62,12 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
   public void identityRef(IdentityRef r) {
     handleIndent();
     if (r instanceof JThisRef) {
-      literal("@this");
+      output.append("@this");
     } else if (r instanceof JParameterRef) {
       JParameterRef pr = (JParameterRef) r;
-      literal("@parameter" + pr.getIndex());
+      output.append("@parameter" + pr.getIndex());
     } else if (r instanceof JCaughtExceptionRef) {
-      literal("@caughtexception");
+      output.append("@caughtexception");
     } else {
       throw new RuntimeException();
     }
@@ -66,7 +77,6 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
 
   @Override
   public void literal(String s) {
-    handleIndent();
     if (eatSpace && s.equals(" ")) {
       eatSpace = false;
       return;
@@ -80,21 +90,5 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
     }
 
     output.append(s);
-  }
-
-  @Override
-  public void typeSignature(Type t) {
-    handleIndent();
-    output.append(t.toString());
-  }
-
-  @Override
-  public void methodSignature(MethodSignature sig) {
-    output.append(sig.toString());
-  }
-
-  @Override
-  public void fieldSignature(FieldSignature fieldSig) {
-    output.append(fieldSig.toString());
   }
 }

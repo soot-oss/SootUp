@@ -1,7 +1,31 @@
 package de.upb.swt.soot.core.signatures;
 
-import de.upb.swt.soot.core.types.JavaClassType;
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2019-2020 Jan Martin Persch, Markus Schmidt
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
+import com.google.common.base.Suppliers;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.util.printer.StmtPrinter;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
 /**
@@ -9,7 +33,8 @@ import javax.annotation.Nonnull;
  *
  * @author Jan Martin Persch
  */
-public class FieldSubSignature extends AbstractClassMemberSubSignature {
+public class FieldSubSignature extends SootClassMemberSubSignature
+    implements Comparable<FieldSubSignature> {
 
   /**
    * Creates a new instance of the {@link FieldSubSignature} class.
@@ -22,8 +47,23 @@ public class FieldSubSignature extends AbstractClassMemberSubSignature {
   }
 
   @Override
+  public int compareTo(@Nonnull FieldSubSignature o) {
+    return super.compareTo(o);
+  }
+
+  private final Supplier<String> _cachedToString =
+      Suppliers.memoize(() -> String.format("%s %s", getType(), getName()));
+
+  @Override
   @Nonnull
-  public FieldSignature toFullSignature(@Nonnull JavaClassType declClassSignature) {
-    return new FieldSignature(declClassSignature, this);
+  public String toString() {
+    return _cachedToString.get();
+  }
+
+  @Override
+  public void toString(StmtPrinter printer) {
+    printer.typeSignature(getType());
+    printer.literal(" ");
+    printer.literal(getName());
   }
 }

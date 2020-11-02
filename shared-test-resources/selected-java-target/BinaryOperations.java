@@ -98,4 +98,26 @@ public class BinaryOperations {
   public boolean smallerEqual(byte a, byte b) {
     return a <= b;
   }
+  
+  public String getString1(String b)
+  {
+    return "abc" + b;
+  }
+  
+  public String getString2(String b)
+  {
+    return  b +"xyz";
+  }
+  
+  public String getString3(String a, String b)
+  {
+    return a + b;
+  }
+  
+  public String getString4()
+  {
+    return "abc"+"xyz"+"efg";
+  }
+ 
+ 
 }

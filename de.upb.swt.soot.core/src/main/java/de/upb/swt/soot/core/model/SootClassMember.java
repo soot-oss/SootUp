@@ -3,7 +3,7 @@ package de.upb.swt.soot.core.model;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997 - 1999 Raja Vallee-Rai
+ * Copyright (C) 1997 - 1999 Raja Vallee-Rai, Linghui Luo, Markus Schmidt and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,13 +22,11 @@ package de.upb.swt.soot.core.model;
  */
 
 import com.google.common.collect.ImmutableSet;
-import de.upb.swt.soot.core.signatures.AbstractClassMemberSignature;
-import de.upb.swt.soot.core.signatures.AbstractClassMemberSubSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.signatures.SootClassMemberSignature;
+import de.upb.swt.soot.core.signatures.SootClassMemberSubSignature;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import de.upb.swt.soot.core.util.builder.AbstractBuilder;
-import de.upb.swt.soot.core.util.builder.BuilderException;
-import java.util.EnumSet;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nonnull;
 
@@ -38,7 +36,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
+public abstract class SootClassMember<S extends SootClassMemberSignature> {
 
   @Nonnull private final S signature;
   @Nonnull private final ImmutableSet<Modifier> modifiers;
@@ -50,7 +48,7 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
 
   /** Returns the SootClass declaring this one. */
   @Nonnull
-  public JavaClassType getDeclaringClassType() {
+  public ClassType getDeclaringClassType() {
     return this.signature.getDeclClassType();
   }
 
@@ -89,91 +87,31 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
     return modifiers;
   }
 
-  /** Returns a hash code for this methodRef consistent with structural equality. */
+  /** Returns a hash code for this method consistent with structural equality. */
   public int equivHashCode() {
-    return modifiers.hashCode() * 17 + signature.hashCode();
+    return Objects.hash(modifiers, signature);
   }
 
-  /** Returns the signature of this methodRef. */
+  /** Returns the signature of this method. */
   @Override
   @Nonnull
   public String toString() {
     return signature.toString();
   }
 
-  /** Returns the Soot signature of this methodRef. Used to refer to methods unambiguously. */
+  /** Returns the Soot signature of this method. Used to refer to methods unambiguously. */
   @Nonnull
   public S getSignature() {
     return signature;
   }
 
   @Nonnull
-  public AbstractClassMemberSubSignature getSubSignature() {
+  public SootClassMemberSubSignature getSubSignature() {
     return signature.getSubSignature();
   }
 
   @Nonnull
   public String getName() {
     return this.signature.getName();
-  }
-
-  /**
-   * Defines the base interface for {@link SootClassMember} builders.
-   *
-   * @param <T> The type of the class to build.
-   * @author Jan Martin Persch
-   */
-  public interface Builder<S extends AbstractClassMemberSignature, T extends SootClassMember<S>> {
-
-    interface ModifiersStep<B> {
-      /**
-       * Sets the {@link Modifier modifiers}.
-       *
-       * @param value The value to set.
-       * @return This fluent builder.
-       */
-      @Nonnull
-      B withModifiers(@Nonnull Iterable<Modifier> value);
-
-      /**
-       * Sets the {@link Modifier modifiers}.
-       *
-       * @param first The first value.
-       * @param rest The rest values.
-       * @return This fluent builder.
-       */
-      @Nonnull
-      default B withModifiers(@Nonnull Modifier first, @Nonnull Modifier... rest) {
-        return this.withModifiers(EnumSet.of(first, rest));
-      }
-    }
-
-    /**
-     * Builds the {@link SootMethod}.
-     *
-     * @return The created {@link SootMethod}.
-     * @throws BuilderException A build error occurred.
-     */
-    @Nonnull
-    T build();
-  }
-
-  /**
-   * Defines base class for {@link SootClassMember} builders.
-   *
-   * @author Jan Martin Persch
-   */
-  abstract static class SootClassMemberBuilder<
-          S extends AbstractClassMemberSignature, T extends SootClassMember<S>>
-      extends AbstractBuilder<T> {
-
-    /**
-     * Creates a new instance of the {@link SootMethod.SootMethodBuilder} class.
-     *
-     * @param buildableClass The type of the class to build.
-     */
-    SootClassMemberBuilder(@Nonnull Class<T> buildableClass) {
-      super(buildableClass);
-    }
   }
 }

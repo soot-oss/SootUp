@@ -13,19 +13,16 @@ import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
-import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
-import de.upb.swt.soot.core.types.ArrayType;
-import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.core.types.NullType;
-import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.OverridingJavaClassSource;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
@@ -40,6 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar update on 22.04.2020 */
 @Category(Java8Test.class)
 public class ViewTypeHierarchyTest {
 
@@ -62,9 +60,9 @@ public class ViewTypeHierarchyTest {
             .distinct()
             .collect(Collectors.joining(File.pathSeparator));
     analysisInputLocation =
-        new JavaClassPathAnalysisInputLocation(
-            jarFile + File.pathSeparator + rtJarClassPath, new AsmJavaClassProvider());
-    Project<JavaClassPathAnalysisInputLocation> p = new Project<>(analysisInputLocation);
+        new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
+    Project p =
+        JavaProject.builder(new JavaLanguage(8)).addClassPath(analysisInputLocation).build();
     view = p.createOnDemandView();
     typeHierarchy = new ViewTypeHierarchy(view);
   }
@@ -72,16 +70,10 @@ public class ViewTypeHierarchyTest {
   @Test
   public void implementersOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    JavaClassType iNamespace = factory.getClassType("INamespace", "de.upb.soot.namespaces");
-    Set<JavaClassType> implementers = typeHierarchy.implementersOf(iNamespace);
-    ImmutableSet<JavaClassType> expectedImplementers =
-        immutableSet(
-            factory.getClassType("de.upb.soot.namespaces.PathBasedNamespace$ArchiveBasedNamespace"),
-            factory.getClassType("de.upb.soot.namespaces.PathBasedNamespace"),
-            factory.getClassType("de.upb.soot.namespaces.AbstractNamespace"),
-            factory.getClassType("de.upb.soot.namespaces.JavaClassPathNamespace"),
-            factory.getClassType(
-                "de.upb.soot.namespaces.PathBasedNamespace$DirectoryBasedNamespace"));
+    ClassType iNamespace = factory.getClassType("IFaceOperations", "utils");
+    Set<ClassType> implementers = typeHierarchy.implementersOf(iNamespace);
+    ImmutableSet<ClassType> expectedImplementers =
+        immutableSet(factory.getClassType("utils.Operations"));
     assertEquals(expectedImplementers, implementers);
 
     expectedImplementers.forEach(
@@ -92,16 +84,10 @@ public class ViewTypeHierarchyTest {
   @Test
   public void subclassesOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    JavaClassType abstractNamespace =
-        factory.getClassType("AbstractNamespace", "de.upb.soot.namespaces");
-    Set<JavaClassType> subclasses = typeHierarchy.subclassesOf(abstractNamespace);
-    ImmutableSet<JavaClassType> expectedSubclasses =
-        immutableSet(
-            factory.getClassType("de.upb.soot.namespaces.PathBasedNamespace$ArchiveBasedNamespace"),
-            factory.getClassType("de.upb.soot.namespaces.PathBasedNamespace"),
-            factory.getClassType("de.upb.soot.namespaces.JavaClassPathNamespace"),
-            factory.getClassType(
-                "de.upb.soot.namespaces.PathBasedNamespace$DirectoryBasedNamespace"));
+    ClassType abstractNamespace = factory.getClassType("AbstractDataStrcture", "ds");
+    Set<ClassType> subclasses = typeHierarchy.subclassesOf(abstractNamespace);
+    ImmutableSet<ClassType> expectedSubclasses =
+        immutableSet(factory.getClassType("ds.Employee"), factory.getClassType("ds.Department"));
     assertEquals(expectedSubclasses, subclasses);
     assertFalse(
         "A class should not be a subclass of itself", subclasses.contains(abstractNamespace));
@@ -113,19 +99,18 @@ public class ViewTypeHierarchyTest {
   @Test
   public void implementedInterfacesOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    JavaClassType javaClassPathNamespace =
-        factory.getClassType("JavaClassPathNamespace", "de.upb.soot.namespaces");
-    JavaClassType iNamespace = factory.getClassType("de.upb.soot.namespaces.INamespace");
-    Set<JavaClassType> implementedInterfaces =
+    ClassType javaClassPathNamespace = factory.getClassType("Operations", "utils");
+    ClassType iNamespace = factory.getClassType("utils.IFaceOperations");
+    Set<ClassType> implementedInterfaces =
         typeHierarchy.implementedInterfacesOf(javaClassPathNamespace);
     assertEquals(immutableSet(iNamespace), implementedInterfaces);
     assertTrue(typeHierarchy.isSubtype(iNamespace, javaClassPathNamespace));
 
     // Test with an interface that extends another one, i.e. List extends Collection
-    JavaClassType arrayList = factory.getClassType("ArrayList", "java.util");
-    JavaClassType collection = factory.getClassType("Collection", "java.util");
-    JavaClassType list = factory.getClassType("List", "java.util");
-    Set<JavaClassType> implementedInterfacesOfArrayList =
+    ClassType arrayList = factory.getClassType("ArrayList", "java.util");
+    ClassType collection = factory.getClassType("Collection", "java.util");
+    ClassType list = factory.getClassType("List", "java.util");
+    Set<ClassType> implementedInterfacesOfArrayList =
         typeHierarchy.implementedInterfacesOf(arrayList);
     assertTrue(
         "ArrayList implements Collection", implementedInterfacesOfArrayList.contains(collection));
@@ -140,10 +125,9 @@ public class ViewTypeHierarchyTest {
   @Test
   public void superClassOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    JavaClassType javaClassPathNamespace =
-        factory.getClassType("JavaClassPathNamespace", "de.upb.soot.namespaces");
-    JavaClassType superClass = typeHierarchy.superClassOf(javaClassPathNamespace);
-    assertEquals(factory.getClassType("de.upb.soot.namespaces.AbstractNamespace"), superClass);
+    ClassType javaClassPathNamespace = factory.getClassType("Employee", "ds");
+    ClassType superClass = typeHierarchy.superClassOf(javaClassPathNamespace);
+    assertEquals(factory.getClassType("ds.AbstractDataStrcture"), superClass);
     assertNull(
         "java.lang.Object should not have a superclass",
         typeHierarchy.superClassOf(factory.getClassType("java.lang.Object")));
@@ -156,12 +140,11 @@ public class ViewTypeHierarchyTest {
   @Test
   public void superClassesOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    JavaClassType javaClassPathNamespace =
-        factory.getClassType("JavaClassPathNamespace", "de.upb.soot.namespaces");
-    List<JavaClassType> superClasses = typeHierarchy.superClassesOf(javaClassPathNamespace);
-    ImmutableList<JavaClassType> expectedSuperClasses =
+    ClassType javaClassPathNamespace = factory.getClassType("Employee", "ds");
+    List<ClassType> superClasses = typeHierarchy.superClassesOf(javaClassPathNamespace);
+    ImmutableList<ClassType> expectedSuperClasses =
         immutableList(
-            factory.getClassType("de.upb.soot.namespaces.AbstractNamespace"),
+            factory.getClassType("ds.AbstractDataStrcture"),
             factory.getClassType("java.lang.Object"));
 
     assertEquals(expectedSuperClasses, superClasses);
@@ -205,18 +188,19 @@ public class ViewTypeHierarchyTest {
   @Test
   public void addType() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    EagerJavaClassSource classSource =
-        new EagerJavaClassSource(
+    OverridingJavaClassSource classSource =
+        new OverridingJavaClassSource(
             analysisInputLocation,
             null,
             factory.getClassType("adummytype.Type"),
-            factory.getClassType("de.upb.soot.namespaces.JavaClassPathNamespace"),
+            factory.getClassType("ds.Employee"),
             Collections.emptySet(),
             null,
             Collections.emptySet(),
             Collections.emptySet(),
             null,
-            EnumSet.of(Modifier.FINAL));
+            EnumSet.of(Modifier.FINAL),
+            Collections.emptyList());
     SootClass sootClass = new SootClass(classSource, SourceType.Application);
 
     typeHierarchy.addType(sootClass);
@@ -224,7 +208,7 @@ public class ViewTypeHierarchyTest {
     assertTrue(
         "Newly added type must be detected as a subtype",
         typeHierarchy
-            .subclassesOf(factory.getClassType("de.upb.soot.namespaces.AbstractNamespace"))
+            .subclassesOf(factory.getClassType("ds.AbstractDataStrcture"))
             .contains(sootClass.getType()));
   }
 
@@ -260,11 +244,11 @@ public class ViewTypeHierarchyTest {
     ArrayType cloneableDim1Type =
         factory.getArrayType(factory.getClassType("java.lang.Cloneable"), 1);
 
-    JavaClassType objectType = factory.getClassType("java.lang.Object");
-    JavaClassType stringType = factory.getClassType("java.lang.String");
-    JavaClassType serializableType = factory.getClassType("java.io.Serializable");
-    JavaClassType cloneableType = factory.getClassType("java.lang.Cloneable");
-    JavaClassType arrayListType = factory.getClassType("java.util.ArrayList");
+    ClassType objectType = factory.getClassType("java.lang.Object");
+    ClassType stringType = factory.getClassType("java.lang.String");
+    ClassType serializableType = factory.getClassType("java.io.Serializable");
+    ClassType cloneableType = factory.getClassType("java.lang.Cloneable");
+    ClassType arrayListType = factory.getClassType("java.util.ArrayList");
 
     // We don't consider types to be subtypes of itself
     Stream.of(

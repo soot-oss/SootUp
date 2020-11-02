@@ -1,33 +1,30 @@
-/* Soot - a J*va Optimization Framework
- * Copyright (C) 1999 Patrick Lam
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- */
-
-/*
- * Modified by the Sable Research Group and others 1997-1999.
- * See the 'credits' file distributed with Soot for the complete list of
- * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
- */
-
 package de.upb.swt.soot.core.jimple.common.ref;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 1999-2020 Patrick Lam, linghui Luo, Markus Schmidt
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.visitor.RefVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
@@ -37,7 +34,11 @@ import java.util.List;
 
 public final class JCaughtExceptionRef implements IdentityRef, Copyable {
 
-  public JCaughtExceptionRef() {}
+  private final Type type;
+
+  public JCaughtExceptionRef(Type type) {
+    this.type = type;
+  }
 
   @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
@@ -61,18 +62,17 @@ public final class JCaughtExceptionRef implements IdentityRef, Copyable {
   }
 
   @Override
-  public final List<ValueBox> getUseBoxes() {
+  public final List<Value> getUses() {
     return Collections.emptyList();
   }
 
   @Override
   public Type getType() {
-    // TODO: [JMP] Get cached instance
-    return DefaultIdentifierFactory.getInstance().getType("java.lang.Throwable");
+    return type;
   }
 
   @Override
   public void accept(Visitor sw) {
-    // TODO
+    ((RefVisitor) sw).caseCaughtExceptionRef(this);
   }
 }

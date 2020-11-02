@@ -4,7 +4,7 @@ package de.upb.swt.soot.core.types;
  * #%L
  * Soot
  * %%
- * Copyright (C) 2018 Secure Software Engineering Department, University of Paderborn
+ * Copyright (C) 2018-2020 Markus Schmidt
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

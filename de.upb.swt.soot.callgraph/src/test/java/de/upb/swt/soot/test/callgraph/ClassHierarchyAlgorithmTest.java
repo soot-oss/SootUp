@@ -8,19 +8,15 @@ import de.upb.swt.soot.callgraph.CallGraphAlgorithm;
 import de.upb.swt.soot.callgraph.ClassHierarchyAlgorithm;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
-import de.upb.swt.soot.core.Project;
-import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.CompositeInputLocation;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.core.views.JavaView;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import de.upb.swt.soot.java.sourcecode.WalaClassLoaderTestUtils;
-import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.util.*;
 import org.junit.Ignore;
@@ -36,31 +32,32 @@ import org.junit.experimental.categories.Category;
 public class ClassHierarchyAlgorithmTest {
 
   // TODO: StaticInitializers, Lambdas ?
-  DefaultIdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
+  JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   JavaClassType mainClassSignature;
   MethodSignature mainMethodSignature;
 
   CallGraph loadCallGraph(String testDirectory, String className) {
     String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
-    WalaClassLoader loader = new WalaClassLoader(walaClassPath, null);
 
-    List<AnalysisInputLocation> locs =
-        Arrays.asList(
-            new JavaClassPathAnalysisInputLocation(
-                System.getProperty("java.home") + "/lib/rt.jar", new AsmJavaClassProvider()),
-            new JavaSourcePathAnalysisInputLocation(Collections.singleton(walaClassPath), null));
+    JavaProject javaProject =
+        JavaProject.builder(new JavaLanguage(8))
+            .addClassPath(
+                new JavaClassPathAnalysisInputLocation(
+                    System.getProperty("java.home") + "/lib/rt.jar"))
+            .addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath))
+            .build();
 
-    AnalysisInputLocation inputLocation = new CompositeInputLocation(locs);
+    System.out.println(System.getProperty("java.home"));
 
-    Project project = new Project(inputLocation);
-    View view = project.createOnDemandView();
+    View view = javaProject.createOnDemandView();
 
     mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =
         identifierFactory.getMethodSignature(
             "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
 
-    Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, mainMethodSignature);
+    SootClass sc = (SootClass) view.getClass(mainClassSignature).get();
+    Optional<SootMethod> m = sc.getMethod(mainMethodSignature);
     assertTrue(mainMethodSignature + " not found in classloader", m.isPresent());
 
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
@@ -78,19 +75,20 @@ public class ClassHierarchyAlgorithmTest {
 
   @Test
   public void testMiscExample1() {
+    /** We expect constructors for B and C We expect A.print(), B.print(), C.print(), D.print() */
     CallGraph cg = loadCallGraph("Misc", "example1.Example");
-
-    MethodSignature constructorA =
-        identifierFactory.getMethodSignature(
-            "<init>",
-            identifierFactory.getClassType("example1.A"),
-            "void",
-            Collections.emptyList());
 
     MethodSignature constructorB =
         identifierFactory.getMethodSignature(
             "<init>",
             identifierFactory.getClassType("example1.B"),
+            "void",
+            Collections.emptyList());
+
+    MethodSignature constructorC =
+        identifierFactory.getMethodSignature(
+            "<init>",
+            identifierFactory.getClassType("example1.C"),
             "void",
             Collections.emptyList());
 
@@ -122,8 +120,8 @@ public class ClassHierarchyAlgorithmTest {
             "void",
             Collections.singletonList("example1.A"));
 
-    assertTrue(cg.containsCall(mainMethodSignature, constructorA));
     assertTrue(cg.containsCall(mainMethodSignature, constructorB));
+    assertTrue(cg.containsCall(mainMethodSignature, constructorC));
 
     assertTrue(cg.containsCall(mainMethodSignature, methodA));
     assertTrue(cg.containsCall(mainMethodSignature, methodB));
@@ -132,8 +130,8 @@ public class ClassHierarchyAlgorithmTest {
 
     assertEquals(6, cg.callsFrom(mainMethodSignature).size());
 
-    assertEquals(1, cg.callsTo(constructorA).size());
     assertEquals(1, cg.callsTo(constructorB).size());
+    assertEquals(1, cg.callsTo(constructorC).size());
     assertEquals(1, cg.callsTo(methodA).size());
     assertEquals(1, cg.callsTo(methodB).size());
     assertEquals(1, cg.callsTo(methodC).size());
@@ -149,12 +147,13 @@ public class ClassHierarchyAlgorithmTest {
   public void testAddClass() {
 
     String walaClassPath = "src/test/resources/callgraph/Misc";
-    WalaClassLoader loader = new WalaClassLoader(walaClassPath, null);
-    AnalysisInputLocation inputLocation =
-        new JavaClassPathAnalysisInputLocation(walaClassPath, null);
 
-    Project project = new Project(inputLocation);
-    View view = new JavaView<>(project);
+    JavaProject javaProject =
+        JavaProject.builder(new JavaLanguage(8))
+            .addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath))
+            .build();
+
+    View view = javaProject.createOnDemandView();
 
     mainMethodSignature =
         identifierFactory.getMethodSignature(
@@ -162,8 +161,6 @@ public class ClassHierarchyAlgorithmTest {
             identifierFactory.getClassType("update.operation.cg.Class"),
             "void",
             Collections.singletonList("java.lang.String[]"));
-    Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, mainMethodSignature);
-    assertTrue(m.isPresent());
 
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature(
@@ -174,7 +171,8 @@ public class ClassHierarchyAlgorithmTest {
 
     final TypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
     CallGraphAlgorithm cha = new ClassHierarchyAlgorithm(view, typeHierarchy);
-    CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
+    //    CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
+    CallGraph cg = loadCallGraph("Misc", "update.operation.cg.Class");
 
     JavaClassType newClass =
         new JavaClassType("AdderA", identifierFactory.getPackageName("update.operation.cg"));

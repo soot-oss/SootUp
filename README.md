@@ -1,39 +1,29 @@
-# Future Soot core library [![Build Status](https://soot-build.cs.uni-paderborn.de/jenkins/job/soot-reloaded/job/branches/job/develop/badge/icon)](https://soot-build.cs.uni-paderborn.de/jenkins/job/soot-reloaded/job/branches/job/develop/) [![Jacoco Coverage](https://soot-build.cs.uni-paderborn.de/public/futureSoot/origin/develop/soot-reloaded/soot-reloaded-develop/build/jacoco.svg)](https://soot-build.cs.uni-paderborn.de/jenkins/job/soot-reloaded/job/soot-reloaded-develop/lastBuild/jacoco/)
-
+# Future Soot core library ![Java CI with Maven](https://github.com/secure-software-engineering/soot-reloaded/workflows/Java%20CI%20with%20Maven/badge.svg?branch=develop)
 
 ![Logo](logo.png)
 
 This is the home of the **FutureSoot** project.
-
 A complete overhaul of the good, old static analysis framework [Soot](https://github.com/Sable/soot).
 
 ## FutureSoot provides
 - New Improved API
-- Multiple Scenes
-- Full Java 11 Support
+- Multiple Views (Scenes)
 - Up-to-Date SourceCode Frontend
 - Full-Diff Support for Classes
+- Full Java 11 Support
 - Incremental Updates of Program Representation
-- Fully-Parallelized/Distributed Architecture using [Akka](https://akka.io/)
+- Fully-Parallelized/Distributed Architecture
 
-## Coding Guidelines & Misc.
+## What is done and what needs to be done
+- Big todo list: https://github.com/secure-software-engineering/soot-reloaded/wiki/TODOs
+- Project Management: We use Zenhub to manage the project. Issues are created according to the big todo list.
 
-[Coding guidelines and contributors notice!](../../wiki/contribution-to-soot-reloaded)
+## Contribution Guidelines 
 
-[Notizen zum kick-off meeting](../../wiki/kickoff-meeting)
+- [Coding guidelines and contributors notice!](../../wiki/contribution-to-soot-reloaded)
 
-[Design of update mechanism](../../wiki/Design-of-update-mechanism)
+## [Contributors](https://github.com/secure-software-engineering/soot-reloaded/graphs/contributors) 
 
-[Actor model for new soot ](../../wiki/Actor-model-for-new-soot)
 
-## Contributors (alphabetized by surname)
 
-- Manuel Benz mbenz@uni-paderborn.de
-- Christian Brüggemann cbruegg@mail.upb.de
-- Andreas Dann andreas.dann@uni-paderborn.de
-- Julian Dolby dolby@us.ibm.com 
-- Ben Hermann ben.hermann@uni-paderborn.de
-- Linghui Luo linghui.luo@uni-paderborn.de
-- Jan Martin Persch jmpersch@hni.upb.de
-- Markus Schmidt smarkus@mail.upb.de
 

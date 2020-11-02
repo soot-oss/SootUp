@@ -4,7 +4,7 @@ package de.upb.swt.soot.core.util;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997 - 1999 Raja Vallee-Rai
+ * Copyright (C) 1997-2020 Raja Vallee-Rai, Linghui luo, Christian Brüggemann
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

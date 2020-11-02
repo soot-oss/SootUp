@@ -1,38 +1,36 @@
-/* Soot - a J*va Optimization Framework
- * Copyright (C) 2005 - Jennifer Lhotak
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- */
-
-/*
- * Modified by the Sable Research Group and others 1997-1999.
- * See the 'credits' file distributed with Soot for the complete list of
- * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
- */
-
 package de.upb.swt.soot.core.jimple.common.constant;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
-import de.upb.swt.soot.core.jimple.common.ref.FieldRef;
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2005-2020 Jennifer Lhotak, Andreas Dann, Linghui Luo and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
+import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
 
 public class MethodHandle implements Constant {
+
+  private final Type type;
 
   public enum Kind {
     REF_GET_FIELD(1, "REF_GET_FIELD"),
@@ -82,28 +80,22 @@ public class MethodHandle implements Constant {
   }
 
   private final MethodSignature methodRef;
-  private final FieldRef fieldRef;
+  private final JFieldRef fieldRef;
 
   public int tag;
 
-  private MethodHandle(MethodSignature ref, int tag) {
+  public MethodHandle(MethodSignature ref, int tag, Type type) {
     this.methodRef = ref;
     this.tag = tag;
     this.fieldRef = null;
+    this.type = type;
   }
 
-  private MethodHandle(FieldRef ref, int tag) {
+  public MethodHandle(JFieldRef ref, int tag, Type type) {
     this.fieldRef = ref;
     this.tag = tag;
     this.methodRef = null;
-  }
-
-  public static MethodHandle getInstance(MethodSignature ref, int tag) {
-    return new MethodHandle(ref, tag);
-  }
-
-  public static MethodHandle getInstance(FieldRef ref, int tag) {
-    return new MethodHandle(ref, tag);
+    this.type = type;
   }
 
   public static boolean isMethodRef(int kind) {
@@ -121,7 +113,7 @@ public class MethodHandle implements Constant {
 
   @Override
   public Type getType() {
-    return DefaultIdentifierFactory.getInstance().getType("java.lang.invoke.MethodHandle");
+    return type;
   }
 
   public MethodSignature getMethodRef() {

@@ -1,9 +1,10 @@
 package de.upb.swt.soot.core.model;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997 - 1999 Raja Vallee-Rai
+ * Copyright (C) 1997-2020 Raja Vallee-Rai, Linghui Luo, Markus Schmidt and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,59 +22,46 @@ package de.upb.swt.soot.core.model;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
-import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import com.google.common.collect.Lists;
+import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
+import de.upb.swt.soot.core.graph.MutableStmtGraph;
+import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
-import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.common.stmt.*;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.EscapedWriter;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.Printer;
-import de.upb.swt.soot.core.validation.BodyValidator;
-import de.upb.swt.soot.core.validation.CheckEscapingValidator;
-import de.upb.swt.soot.core.validation.CheckInitValidator;
-import de.upb.swt.soot.core.validation.CheckTypesValidator;
-import de.upb.swt.soot.core.validation.CheckVoidLocalesValidator;
-import de.upb.swt.soot.core.validation.IdentityStatementsValidator;
-import de.upb.swt.soot.core.validation.LocalsValidator;
-import de.upb.swt.soot.core.validation.StmtBoxesValidator;
-import de.upb.swt.soot.core.validation.TrapsValidator;
-import de.upb.swt.soot.core.validation.UsesValidator;
-import de.upb.swt.soot.core.validation.ValidationException;
-import de.upb.swt.soot.core.validation.ValueBoxesValidator;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
+import de.upb.swt.soot.core.validation.*;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.io.StringWriter;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Class that models the Jimple body (code attribute) of a methodRef.
+ * Class that models the Jimple body (code attribute) of a method.
  *
  * @author Linghui Luo
  */
-public final class Body implements Copyable {
+public class Body implements Copyable {
+
   /** The locals for this Body. */
   private final Set<Local> locals;
 
-  /** The traps for this Body. */
-  private final List<Trap> traps;
-
   /** The stmts for this Body. */
-  private final List<Stmt> stmts;
+  @Nonnull private final ImmutableStmtGraph cfg;
 
-  @Nullable private final Position position;
+  /** The Position Information in the Source for this Body. */
+  @Nonnull private final Position position;
+
+  /** The MethodSignature associated with this Body. */
+  @Nonnull private final MethodSignature methodSignature;
 
   /** An array containing some validators in order to validate the JimpleBody */
   @Nonnull
@@ -90,55 +78,30 @@ public final class Body implements Copyable {
           new CheckEscapingValidator());
 
   /**
-   * Creates an body which is not associated to any methodRef.
+   * Creates an body which is not associated to any method.
    *
    * @param locals please use {@link LocalGenerator} to generate local for a body.
    */
-  public Body(
+  private Body(
+      @Nonnull MethodSignature methodSignature,
       @Nonnull Set<Local> locals,
-      @Nonnull List<Trap> traps,
-      @Nonnull List<Stmt> stmts,
-      @Nullable Position position) {
+      @Nonnull StmtGraph stmtGraph,
+      @Nonnull Position position) {
+    this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
-    this.traps = Collections.unmodifiableList(traps);
-    this.stmts = Collections.unmodifiableList(stmts);
+    this.cfg = ImmutableStmtGraph.copyOf(stmtGraph);
     this.position = position;
-
     // FIXME: [JMP] Virtual method call in constructor
     checkInit();
   }
 
-  /** The methodRef associated with this Body. */
-  @Nullable private volatile SootMethod _method;
-
   /**
-   * Returns the methodRef associated with this Body.
+   * Returns the MethodSignature associated with this Body.
    *
-   * @return the methodRef that owns this body.
+   * @return the method that owns this body.
    */
-  public SootMethod getMethod() {
-    SootMethod owner = this._method;
-
-    if (owner == null) {
-      throw new IllegalStateException(
-          "The owning method of this body instance has not been not set yet.");
-    }
-
-    return owner;
-  }
-
-  /**
-   * Sets the methodRef associated with this Body.
-   *
-   * @param value the methodRef that owns this body.
-   */
-  protected synchronized void setMethod(@Nullable SootMethod value) {
-    if (this._method != null) {
-      throw new IllegalStateException(
-          "The declaring class of this soot class member has already been set.");
-    }
-
-    this._method = value;
+  public MethodSignature getMethodSignature() {
+    return methodSignature;
   }
 
   /** Returns the number of locals declared in this body. */
@@ -159,7 +122,7 @@ public final class Body implements Copyable {
     runValidation(new ValueBoxesValidator());
   }
 
-  /** Verifies that each Local of getUseAndDefBoxes() is in this body's locals Chain. */
+  /** Verifies that each Local of getUsesAndDefs() is in this body's locals Chain. */
   public void validateLocals() {
     runValidation(new LocalsValidator());
   }
@@ -184,9 +147,10 @@ public final class Body implements Copyable {
     return locals;
   }
 
-  /** Returns a backed view of the traps found in this Body. */
-  public Collection<Trap> getTraps() {
-    return traps;
+  /** Returns an unmodifiable view of the traps found in this Body. */
+  @Nonnull
+  public List<Trap> getTraps() {
+    return cfg.getTraps();
   }
 
   /** Return unit containing the \@this-assignment * */
@@ -197,15 +161,15 @@ public final class Body implements Copyable {
       }
     }
 
-    throw new RuntimeException("couldn't find this-assignment!" + " in " + getMethod());
+    throw new RuntimeException("couldn't find this-assignment!" + " in " + getMethodSignature());
   }
 
-  /** Return LHS of the first identity stmt assigning from \@this. * */
+  /** Return LHS of the first identity stmt assigning from \@this. */
   public Local getThisLocal() {
     return (Local) (((JIdentityStmt) getThisStmt()).getLeftOp());
   }
 
-  /** Return LHS of the first identity stmt assigning from \@parameter i. * */
+  /** Return LHS of the first identity stmt assigning from \@parameter i. */
   public Local getParameterLocal(int i) {
     for (Stmt s : getStmts()) {
       if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
@@ -217,7 +181,7 @@ public final class Body implements Copyable {
       }
     }
 
-    throw new RuntimeException("couldn't find JParameterRef" + i + "! in " + getMethod());
+    throw new RuntimeException("couldn't find JParameterRef" + i + "! in " + getMethodSignature());
   }
 
   /**
@@ -227,10 +191,12 @@ public final class Body implements Copyable {
    *     ordered as per the parameter index.
    * @throws RuntimeException if a JParameterRef is missing
    */
+  @Nonnull
   public Collection<Local> getParameterLocals() {
-    final int numParams = getMethod().getParameterCount();
-    final List<Local> retVal = new ArrayList<>(numParams);
-    for (Stmt u : stmts) {
+    final List<Local> retVal = new ArrayList<>();
+    // TODO: [ms] performance: don't iterate over all stmt -> lazy vs freedom/error tolerance -> use
+    // fixed index positions at the beginning?
+    for (Stmt u : cfg.nodes()) {
       if (u instanceof JIdentityStmt) {
         JIdentityStmt is = (JIdentityStmt) u;
         if (is.getRightOp() instanceof JParameterRef) {
@@ -239,19 +205,56 @@ public final class Body implements Copyable {
         }
       }
     }
-    if (retVal.size() != numParams) {
-      throw new RuntimeException("couldn't find JParameterRef! in " + getMethod());
-    }
     return Collections.unmodifiableCollection(retVal);
   }
 
   /**
-   * Returns the statements that make up this body.
+   * Returns the result of iterating through all Stmts in this body. All Stmts thus found are
+   * returned. Branching Stmts and statements which use PhiExpr will have Stmts; a Stmt contains a
+   * Stmt that is either a target of a branch or is being used as a pointer to the end of a CFG
+   * block.
+   *
+   * <p>This method was typically used for pointer patching, e.g. when the unit chain is cloned.
+   *
+   * @return A collection of all the Stmts
+   */
+  @Nonnull
+  public Collection<Stmt> getTargetStmtsInBody() {
+    List<Stmt> stmtList = new ArrayList<>();
+    for (Stmt stmt : cfg.nodes()) {
+      if (stmt instanceof BranchingStmt) {
+        if (stmt instanceof JIfStmt) {
+          stmtList.add(((JIfStmt) stmt).getTarget(this));
+        } else if (stmt instanceof JGotoStmt) {
+          stmtList.add(((JGotoStmt) stmt).getTarget(this));
+        } else if (stmt instanceof JSwitchStmt) {
+          stmtList.addAll(getBranchTargetsOf((BranchingStmt) stmt));
+        }
+      }
+    }
+
+    for (Trap item : getTraps()) {
+      stmtList.addAll(item.getStmts());
+    }
+    return Collections.unmodifiableCollection(stmtList);
+  }
+
+  /**
+   * returns the control flow graph that represents this body into a linear List of statements.
    *
    * @return the statements in this Body
    */
+  @Nonnull
   public List<Stmt> getStmts() {
-    return Collections.unmodifiableList(stmts);
+    final ArrayList<Stmt> stmts = new ArrayList<>(cfg.nodes().size());
+    for (Stmt stmt : cfg) {
+      stmts.add(stmt);
+    }
+    return stmts;
+  }
+
+  public ImmutableStmtGraph getStmtGraph() {
+    return cfg;
   }
 
   private void checkInit() {
@@ -261,62 +264,50 @@ public final class Body implements Copyable {
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    ByteArrayOutputStream streamOut = new ByteArrayOutputStream();
-    PrintWriter writerOut = new PrintWriter(new EscapedWriter(new OutputStreamWriter(streamOut)));
-    try {
+    StringWriter writer = new StringWriter();
+    try (PrintWriter writerOut = new PrintWriter(new EscapedWriter(writer))) {
       new Printer().printTo(this, writerOut);
-    } catch (RuntimeException e) {
-      throw new RuntimeException();
     }
-    writerOut.flush();
-    writerOut.close();
-    return streamOut.toString();
+    return writer.toString();
   }
 
-  @Nullable
+  @Nonnull
   public Position getPosition() {
-    return this.position;
+    return position;
   }
 
-  // FIXME "This code does not work and has to be adapted in future features."
-  //   https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r267259693
-  //
-  //  /**
-  //   * Make sure that the JimpleBody is well formed. If not, throw an exception. Right now,
-  // performs only a handful of checks.
-  //   */
-  //  public void validate() {
-  //    final List<ValidationException> exceptionList = new ArrayList<>();
-  //    validate(exceptionList);
-  //    if (!exceptionList.isEmpty()) {
-  //      throw exceptionList.get(0);
-  //    }
-  //  }
+  /** returns a List of Branch targets of Branching Stmts */
+  @Nonnull
+  public List<Stmt> getBranchTargetsOf(@Nonnull BranchingStmt fromStmt) {
+    return cfg.successors(fromStmt);
+  }
 
-  //  /**
-  //   * Validates the jimple body and saves a list of all validation errors
-  //   *
-  //   * @param exceptionList
-  //   *          the list of validation errors
-  //   */
-  //  public void validate(List<ValidationException> exceptionList) {
-  //    validate(exceptionList);
-  //    final boolean runAllValidators
-  //        = this.method.getView().getOptions().debug() ||
-  // this.method.getView().getOptions().validate();
-  //    for (BodyValidator validator : validators) {
-  //      if (!validator.isBasicValidator() && !runAllValidators) {
-  //        continue;
-  //      }
-  //      validator.validate(this, exceptionList);
-  //    }
-  //  }
+  public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
+    final List<Stmt> predecessors = cfg.predecessors(targetStmt);
+    if (predecessors.size() > 1) {
+      return true;
+    }
+
+    final Iterator<Stmt> iterator = predecessors.iterator();
+    if (iterator.hasNext()) {
+      Stmt pred = iterator.next();
+      if (pred.branches()) {
+        if (pred instanceof JIfStmt) {
+          return ((JIfStmt) pred).getTarget(this) == targetStmt;
+        }
+        return true;
+      }
+    }
+
+    return false;
+  }
 
   public void validateIdentityStatements() {
     runValidation(new IdentityStatementsValidator());
   }
 
   /** Returns the first non-identity stmt in this body. */
+  @Nonnull
   public Stmt getFirstNonIdentityStmt() {
     Iterator<Stmt> it = getStmts().iterator();
     Stmt o = null;
@@ -331,55 +322,296 @@ public final class Body implements Copyable {
     return o;
   }
 
-  public Collection<ValueBox> getUseBoxes() {
-    // TODO Auto-generated methodRef stub
-    return null;
-  }
+  /**
+   * Returns the results of iterating through all Stmts in this Body and querying them for Values
+   * defined. All of the Values found are then returned as a List.
+   *
+   * @return a List of all the Values for Values defined by this Body's Stmts.
+   */
+  public Collection<Value> getUses() {
+    ArrayList<Value> useList = new ArrayList<>();
 
-  public Collection<ValueBox> getDefBoxes() {
-    // TODO Auto-generated methodRef stub
-    return null;
+    for (Stmt stmt : cfg.nodes()) {
+      useList.addAll(stmt.getUses());
+    }
+    return useList;
   }
 
   /**
-   * Returns the result of iterating through all Stmts in this body and querying them for their
-   * StmtBoxes. All StmtBoxes thus found are returned. Branching Stmts and statements which use
-   * PhiExpr will have StmtBoxes; a StmtBox contains a Stmt that is either a target of a branch or
-   * is being used as a pointer to the end of a CFG block.
+   * Returns the results of iterating through all Stmts in this Body and querying them for Values
+   * defined. All of the Values found are then returned as a List.
    *
-   * <p>This methodRef is typically used for pointer patching, e.g. when the unit chain is cloned.
-   *
-   * @return A collection of all the StmtBoxes held by this body's units.
+   * @return a List of all the Values for Values defined by this Body's Stmts.
    */
-  public Collection<StmtBox> getAllStmtBoxes() {
-    List<StmtBox> stmtBoxList = new ArrayList<>();
-    for (Stmt item : stmts) {
-      stmtBoxList.addAll(item.getStmtBoxes());
+  public Collection<Value> getDefs() {
+    ArrayList<Value> defList = new ArrayList<>();
+
+    for (Stmt stmt : cfg.nodes()) {
+      defList.addAll(stmt.getDefs());
+    }
+    return defList;
+  }
+
+  @Nonnull
+  public Body withLocals(@Nonnull Set<Local> locals) {
+    return new Body(getMethodSignature(), locals, getStmtGraph(), getPosition());
+  }
+
+  /** helps against ConcurrentModificationException; it queues changes until they are committed */
+  private static class StmtGraphManipulationQueue {
+
+    // List sizes are a multiple of 2; even: from odd: to of an edge
+    @Nonnull private final List<Stmt> flowsToRemove = new ArrayList<>();
+    @Nonnull private final List<Stmt> flowsToAdd = new ArrayList<>();
+
+    void addFlow(@Nonnull Stmt from, @Nonnull Stmt to) {
+      flowsToAdd.add(from);
+      flowsToAdd.add(to);
     }
 
-    for (Trap item : traps) {
-      stmtBoxList.addAll(item.getStmtBoxes());
+    void removeFlow(@Nonnull Stmt from, @Nonnull Stmt to) {
+      flowsToRemove.add(from);
+      flowsToRemove.add(to);
     }
-    return Collections.unmodifiableCollection(stmtBoxList);
+
+    /** return true if there where queued changes */
+    boolean commit(MutableStmtGraph graph) {
+      if (!flowsToAdd.isEmpty() || !flowsToRemove.isEmpty()) {
+        Iterator<Stmt> addIt = flowsToAdd.iterator();
+        while (addIt.hasNext()) {
+          final Stmt from = addIt.next();
+          final Stmt to = addIt.next();
+          graph.putEdge(from, to);
+        }
+
+        Iterator<Stmt> remIt = flowsToRemove.iterator();
+        while (remIt.hasNext()) {
+          final Stmt from = remIt.next();
+          final Stmt to = remIt.next();
+          graph.removeEdge(from, to);
+        }
+        clear();
+        return true;
+      }
+      return false;
+    }
+
+    public void clear() {
+      flowsToAdd.clear();
+      flowsToRemove.clear();
+    }
   }
 
-  @Nonnull
-  public Body withLocals(Set<Local> locals) {
-    return new Body(locals, traps, stmts, position);
+  public static BodyBuilder builder() {
+    return new BodyBuilder();
   }
 
-  @Nonnull
-  public Body withTraps(List<Trap> traps) {
-    return new Body(locals, traps, stmts, position);
+  public static BodyBuilder builder(Body body) {
+    return new BodyBuilder(body);
   }
 
-  @Nonnull
-  public Body withStmts(List<Stmt> stmts) {
-    return new Body(locals, traps, stmts, position);
-  }
+  /**
+   * The BodyBuilder helps to create a new Body in a fluent way (see Builder Pattern)
+   *
+   * <pre>
+   * <code>
+   * Stmt stmt1, stmt2, stmt3;
+   * ...
+   * Body.BodyBuilder builder = Body.builder();
+   * builder.setMethodSignature( ... );
+   * builder.setStartingStmt(stmt1);
+   * builder.addFlow(stmt1,stmt2);
+   * builder.addFlow(stmt2,stmt3);
+   * ...
+   * Body body = builder.build();
+   *
+   * </code>
+   * </pre>
+   */
+  public static class BodyBuilder {
+    @Nonnull private Set<Local> locals = new HashSet<>();
+    @Nonnull private final LocalGenerator localGen = new LocalGenerator(locals);
 
-  @Nonnull
-  public Body withPosition(Position position) {
-    return new Body(locals, traps, stmts, position);
+    @Nullable private Position position = null;
+    @Nonnull private final MutableStmtGraph cfg;
+    @Nullable private MethodSignature methodSig = null;
+
+    @Nullable private StmtGraphManipulationQueue changeQueue = null;
+    @Nullable private List<Stmt> cachedLinearizedStmts = null;
+
+    BodyBuilder() {
+      cfg = new MutableStmtGraph();
+    }
+
+    BodyBuilder(@Nonnull Body body) {
+      setMethodSignature(body.getMethodSignature());
+      setLocals(body.getLocals());
+      setPosition(body.getPosition());
+      cfg = new MutableStmtGraph(body.getStmtGraph());
+      setTraps(body.getTraps());
+    }
+
+    @Nonnull
+    public StmtGraph getStmtGraph() {
+      return cfg.unmodifiableStmtGraph();
+    }
+
+    @Nonnull
+    public List<Stmt> getStmts() {
+      cachedLinearizedStmts = Lists.newArrayList(cfg);
+      return cachedLinearizedStmts;
+    }
+
+    @Nonnull
+    public Set<Local> getLocals() {
+      return Collections.unmodifiableSet(locals);
+    }
+
+    @Nonnull
+    public BodyBuilder setStartingStmt(@Nonnull Stmt startingStmt) {
+      cfg.setStartingStmt(startingStmt);
+      return this;
+    }
+
+    @Nonnull
+    public BodyBuilder setLocals(@Nonnull Set<Local> locals) {
+      this.locals = locals;
+      return this;
+    }
+
+    @Nonnull
+    public BodyBuilder addLocal(@Nonnull String name, Type type) {
+      locals.add(localGen.generateLocal(type));
+      return this;
+    }
+
+    @Nonnull
+    public BodyBuilder addLocal(@Nonnull Local local) {
+      locals.add(local);
+      return this;
+    }
+
+    @Nonnull
+    public BodyBuilder setTraps(@Nonnull List<Trap> traps) {
+      cfg.setTraps(traps);
+      return this;
+    }
+
+    /** replace the oldStmt with newStmt in stmtGraph and branches */
+    @Nonnull
+    public BodyBuilder replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+      cfg.replaceNode(oldStmt, newStmt);
+      return this;
+    }
+
+    @Nonnull
+    public List<Trap> getTraps() {
+      return cfg.getTraps();
+    }
+
+    @Nonnull
+    public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
+      if (changeQueue == null) {
+        cfg.putEdge(fromStmt, toStmt);
+        cachedLinearizedStmts = null;
+      } else {
+        changeQueue.addFlow(fromStmt, toStmt);
+      }
+      return this;
+    }
+
+    @Nonnull
+    public BodyBuilder removeFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
+      if (changeQueue == null) {
+        cfg.removeEdge(fromStmt, toStmt);
+        cachedLinearizedStmts = null;
+      } else {
+        changeQueue.removeFlow(fromStmt, toStmt);
+      }
+      return this;
+    }
+
+    @Nonnull
+    public BodyBuilder setPosition(@Nonnull Position position) {
+      this.position = position;
+      return this;
+    }
+
+    public BodyBuilder setMethodSignature(MethodSignature methodSig) {
+      this.methodSig = methodSig;
+      return this;
+    }
+
+    /**
+     * Queues changes to the StmtGraph (e.g. addFlow, removeFlow) until they are commited. helps to
+     * prevent ConcurrentModificationException
+     */
+    public BodyBuilder enableDeferredStmtGraphChanges() {
+      if (changeQueue == null) {
+        changeQueue = new StmtGraphManipulationQueue();
+      }
+      return this;
+    }
+
+    /**
+     * commits the changes that were added to the queue if that was enabled before AND disables
+     * further queueing of changes.
+     */
+    public BodyBuilder disableAndCommitDeferredStmtGraphChanges() {
+      commitDeferredStmtGraphChanges();
+      changeQueue = null;
+      return this;
+    }
+
+    /** commits the changes that were added to the queue if that was enabled before */
+    public BodyBuilder commitDeferredStmtGraphChanges() {
+      if (changeQueue != null) {
+        if (changeQueue.commit(cfg)) {
+          cachedLinearizedStmts = null;
+        }
+      }
+      return this;
+    }
+    /** clears queued changes fot */
+    public BodyBuilder clearDeferredStmtGraphChanges() {
+      if (changeQueue != null) {
+        changeQueue.clear();
+      }
+      return this;
+    }
+
+    @Nonnull
+    public Body build() {
+
+      if (methodSig == null) {
+        throw new RuntimeException("There is no MethodSignature set.");
+      }
+
+      if (position == null) {
+        setPosition(NoPositionInformation.getInstance());
+      }
+
+      // commit pending changes
+      commitDeferredStmtGraphChanges();
+
+      final Stmt startingStmt = cfg.getStartingStmt();
+      final Set<Stmt> nodes = cfg.nodes();
+      if (nodes.size() > 0 && !nodes.contains(startingStmt)) {
+        throw new RuntimeException(
+            methodSig
+                + ": The given startingStmt '"
+                + startingStmt
+                + "' does not exist in the StmtGraph.");
+      }
+
+      // validate statements
+      try {
+        cfg.validateStmtConnectionsInGraph();
+      } catch (Exception e) {
+        throw new RuntimeException("StmtGraph of " + methodSig + " is invalid.", e);
+      }
+
+      return new Body(methodSig, locals, cfg, position);
+    }
   }
 }

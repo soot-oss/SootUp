@@ -4,7 +4,7 @@ package de.upb.swt.soot.core.signatures;
  * #%L
  * Soot
  * %%
- * Copyright (C) 2018 Andreas Dann
+ * Copyright (C) 2018-2020 Andreas Dann, Christian Brüggemann and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,7 +23,7 @@ package de.upb.swt.soot.core.signatures;
  */
 
 import com.google.common.base.Objects;
-import scala.collection.script.Remove;
+import javax.annotation.Nonnull;
 
 /**
  * Represents a Java Package.
@@ -35,11 +35,13 @@ public class PackageName {
   /** Represents the default package. */
   public static final PackageName DEFAULT_PACKAGE = new PackageName("");
 
+  public static final String PACKAGE_INFO = "package-info";
+
   private final String packageName;
 
   /**
    * Internal: Constructs a Package Signature of a Java package. Instances should only be created by
-   * a {@link Remove}
+   * a {@link de.upb.swt.soot.core.IdentifierFactory }
    *
    * @param packageName the package's name
    */
@@ -52,7 +54,7 @@ public class PackageName {
     if (this == o) {
       return true;
     }
-    if (o == null || getClass() != o.getClass()) {
+    if (o == null || !(o instanceof PackageName)) {
       return false;
     }
     PackageName that = (PackageName) o;
@@ -70,7 +72,7 @@ public class PackageName {
   }
 
   /** The name of the package. */
-  public String getPackageName() {
+  public @Nonnull String getPackageName() {
     return packageName;
   }
 }

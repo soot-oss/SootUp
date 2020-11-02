@@ -1,91 +1,67 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <name>Soot Java Sourcecode Frontend</name>
-  <artifactId>soot.java.sourcecode</artifactId>
-  <packaging>jar</packaging>
-  <parent>
-    <groupId>de.upb.swt</groupId>
-    <artifactId>soot</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
-  </parent>
+	<name>Soot Java Sourcecode Frontend</name>
+	<artifactId>soot.java.sourcecode</artifactId>
+	<packaging>jar</packaging>
+	<parent>
+		<groupId>de.upb.swt</groupId>
+		<artifactId>soot</artifactId>
+		<version>4.0.0-SNAPSHOT</version>
+	</parent>
 
-  <properties>
-    <wala.version>1.5.4.1</wala.version>
-  </properties>
+	<properties>
+		<wala.version>1.5.4</wala.version>
+	</properties>
 
-  <dependencies>
-
-    <dependency>
-      <groupId>de.upb.swt</groupId>
-      <artifactId>soot.core</artifactId>
-      <version>4.0.0-SNAPSHOT</version>
-    </dependency>
-
-    <!-- wala java source code front-end dependences -->
-    <dependency>
-      <groupId>com.ibm.wala</groupId>
-      <artifactId>com.ibm.wala.core</artifactId>
-      <version>${wala.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.ibm.wala</groupId>
-      <artifactId>com.ibm.wala.cast</artifactId>
-      <version>${wala.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.ibm.wala</groupId>
-      <artifactId>com.ibm.wala.cast.java</artifactId>
-      <version>${wala.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.ibm.wala</groupId>
-      <artifactId>com.ibm.wala.cast.java.ecj</artifactId>
-      <version>${wala.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.ibm.wala</groupId>
-      <artifactId>com.ibm.wala.util</artifactId>
-      <version>${wala.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.ibm.wala</groupId>
-      <artifactId>com.ibm.wala.shrike</artifactId>
-      <version>${wala.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.ibm.wala</groupId>
-      <artifactId>com.ibm.wala.dalvik</artifactId>
-      <version>${wala.version}</version>
-    </dependency>
-    <!--eclipse jdt, used by wala java source front end -->
-    <dependency>
-      <groupId>org.eclipse.jdt</groupId>
-      <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.15.0</version>
-    </dependency>
-
-  </dependencies>
-
-  <repositories>
-    <!-- include wala repo -->
-    <repository>
-      <id>wala</id>
-      <name>wala snapshots</name>
-      <url>https://soot-build.cs.uni-paderborn.de/nexus/repository/wala/</url>
-    </repository>
-  </repositories>
-
-  <distributionManagement>
-    <repository>
-      <uniqueVersion>true</uniqueVersion>
-      <id>wala</id>
-      <name>wala repository</name>
-      <url>https://soot-build.cs.uni-paderborn.de/nexus/repository/wala/</url>
-      <layout>default</layout>
-    </repository>
-  </distributionManagement>
-
+	<dependencies>
+		<dependency>
+			<groupId>de.upb.swt</groupId>
+			<artifactId>soot.core</artifactId>
+			<version>4.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>de.upb.swt</groupId>
+			<artifactId>soot.java.core</artifactId>
+			<version>4.0.0-SNAPSHOT</version>
+		</dependency>
+		<!-- wala java source code front-end dependences -->
+		<dependency>
+			<groupId>com.ibm.wala</groupId>
+			<artifactId>com.ibm.wala.core</artifactId>
+			<version>${wala.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.wala</groupId>
+			<artifactId>com.ibm.wala.cast</artifactId>
+			<version>${wala.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.wala</groupId>
+			<artifactId>com.ibm.wala.cast.java</artifactId>
+			<version>${wala.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.wala</groupId>
+			<artifactId>com.ibm.wala.cast.java.ecj</artifactId>
+			<version>${wala.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.wala</groupId>
+			<artifactId>com.ibm.wala.util</artifactId>
+			<version>${wala.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.wala</groupId>
+			<artifactId>com.ibm.wala.shrike</artifactId>
+			<version>${wala.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.wala</groupId>
+			<artifactId>com.ibm.wala.dalvik</artifactId>
+			<version>${wala.version}</version>
+		</dependency>
+	</dependencies>
 </project>

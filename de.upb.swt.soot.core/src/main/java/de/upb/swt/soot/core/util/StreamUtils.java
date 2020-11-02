@@ -1,5 +1,27 @@
 package de.upb.swt.soot.core.util;
 
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2019-2020 Hasitha Rajapakse
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.Spliterator;
@@ -57,7 +79,6 @@ public class StreamUtils {
    * @param clazz The class to cast to.
    * @param <C> The type of the casted object.
    * @return The specified <i>stream</i>.
-   * @see FunctionalUtils#tryCastTo(Class)
    */
   @Nonnull
   public static <C> Stream<C> filterAllCasted(@Nonnull Stream<?> stream, @Nonnull Class<C> clazz) {
@@ -65,12 +86,12 @@ public class StreamUtils {
   }
 
   /**
-   * Returns the <i>value</i>, if it is not <tt>null</tt>; otherwise, it returns <i>other</i>.
+   * Returns the <i>value</i>, if it is not {@code null}; otherwise, it returns <i>other</i>.
    *
-   * @param value The value to get, if it is not <tt>null</tt>.
-   * @param other The other to get, if <i>value</i> is <tt>null</tt>.
+   * @param value The value to get, if it is not {@code null}.
+   * @param other The other to get, if <i>value</i> is {@code null}.
    * @param <T> The type of the value.
-   * @return <i>value</i>, if it is not <tt>null</tt>; otherwise, <i>other</i>.
+   * @return <i>value</i>, if it is not {@code null}; otherwise, <i>other</i>.
    * @see Optional#orElse(Object)
    */
   @Nonnull

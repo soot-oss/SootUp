@@ -1,106 +1,91 @@
 package de.upb.swt.soot.core.jimple.basic;
 
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.types.JavaClassType;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-/* Soot - a J*va Optimization Framework
- * Copyright (C) 1997-1999 Raja Vallee-Rai
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 1997-2020 Raja Vallee-Rai, Markus Schmidt, Linghui Luo and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- */
-
-/*
- * Modified by the Sable Research Group and others 1997-1999.
- * See the 'credits' file distributed with Soot for the complete list of
- * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
  */
 
 /** Partial implementation of trap (exception catcher), used within Body classes. */
-@SuppressWarnings("serial")
 public class AbstractTrap implements Trap {
   /** The exception being caught. */
-  private transient JavaClassType exception;
+  @Nonnull private final ClassType exception;
 
-  /** The first unit being trapped. */
-  private final StmtBox beginStmtBox;
+  /** The first stmt being trapped. */
+  @Nonnull private final Stmt beginStmt;
 
-  /** The unit just before the last unit being trapped. */
-  private final StmtBox endStmtBox;
+  /** The stmt just before the last stmt being trapped. */
+  @Nonnull private final Stmt endStmt;
 
-  /** The unit to which execution flows after the caught exception is triggered. */
-  private final StmtBox handlerStmtBox;
+  /** The stmt to which execution flows after the caught exception is triggered. */
+  @Nonnull private final Stmt handlerStmt;
 
-  /** The list of unitBoxes referred to in this Trap (begin, end and handler. */
-  private final List<StmtBox> unitBoxes;
+  /** The list of stmts referred to in this Trap (begin, end and handler). */
+  @Nonnull private final List<Stmt> stmts;
 
-  private void writeObject(ObjectOutputStream out) throws IOException {
-    out.defaultWriteObject();
-    out.writeObject(exception.getFullyQualifiedName());
-  }
-
-  /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
+  /** Creates an AbstractTrap with the given exception, handler, begin and end stmts. */
   AbstractTrap(
-      JavaClassType exception, StmtBox beginStmtBox, StmtBox endStmtBox, StmtBox handlerStmtBox) {
+      @Nonnull ClassType exception,
+      @Nonnull Stmt beginStmt,
+      @Nonnull Stmt endStmt,
+      @Nonnull Stmt handlerStmt) {
     this.exception = exception;
-    this.beginStmtBox = beginStmtBox;
-    this.endStmtBox = endStmtBox;
-    this.handlerStmtBox = handlerStmtBox;
-    this.unitBoxes =
-        Collections.unmodifiableList(Arrays.asList(beginStmtBox, endStmtBox, handlerStmtBox));
+    this.beginStmt = beginStmt;
+    this.endStmt = endStmt;
+    this.handlerStmt = handlerStmt;
+    this.stmts = Collections.unmodifiableList(Arrays.asList(beginStmt, endStmt, handlerStmt));
   }
 
   @Override
+  @Nonnull
   public Stmt getBeginStmt() {
-    return beginStmtBox.getStmt();
+    return beginStmt;
   }
 
   @Override
+  @Nonnull
   public Stmt getEndStmt() {
-    return endStmtBox.getStmt();
+    return endStmt;
   }
 
   @Override
+  @Nonnull
   public Stmt getHandlerStmt() {
-    return handlerStmtBox.getStmt();
-  }
-
-  public StmtBox getHandlerStmtBox() {
-    return handlerStmtBox;
-  }
-
-  public StmtBox getBeginStmtBox() {
-    return beginStmtBox;
-  }
-
-  public StmtBox getEndStmtBox() {
-    return endStmtBox;
+    return handlerStmt;
   }
 
   @Override
-  public List<StmtBox> getStmtBoxes() {
-    return unitBoxes;
+  @Nonnull
+  public List<Stmt> getStmts() {
+    return stmts;
   }
 
   @Override
-  public JavaClassType getException() {
+  @Nonnull
+  public ClassType getExceptionType() {
     return exception;
   }
 }
