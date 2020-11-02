@@ -217,9 +217,6 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public void putEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
-    if (from == to) {
-      throw new RuntimeException("A Stmt can't flow to itself.");
-    }
 
     int fromIdx = getNodeIdxOrCreate(from);
     int toIdx = getNodeIdxOrCreate(to);

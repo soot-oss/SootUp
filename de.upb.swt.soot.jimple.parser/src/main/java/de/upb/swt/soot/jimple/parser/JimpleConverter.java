@@ -285,7 +285,7 @@ public class JimpleConverter {
         try {
           build = builder.build();
         } catch (Exception e) {
-          throw new ResolveException(methodname + " " + e.getMessage(), path, methodPosition);
+          throw new ResolveException(methodname + " " + e.getMessage(), path, methodPosition, e);
         }
         OverridingMethodSource oms = new OverridingMethodSource(methodSignature, build);
         return new SootMethod(oms, methodSignature, modifier, exceptions, methodPosition);
@@ -308,7 +308,8 @@ public class JimpleConverter {
           }
           Stmt stmt = visitStmt(stmtCtx);
           if (ctx.label_name != null) {
-            labeledStmts.put(ctx.label_name.getText(), stmt);
+            final String labelname = ctx.label_name.getText();
+            labeledStmts.put(labelname, stmt);
           }
 
           if (lastStmt == null) {
@@ -368,7 +369,7 @@ public class JimpleConverter {
 
               JSwitchStmt switchStmt;
               if (ctx.SWITCH().getText().charAt(0) == 't') {
-                int high = min + lookup.size();
+                int high = min + lookup.size() - 1;
                 switchStmt = Jimple.newTableSwitchStmt(key, min, high, pos);
               } else {
                 switchStmt = Jimple.newLookupSwitchStmt(key, lookup, pos);
