@@ -39,13 +39,18 @@ public class ClassHierarchyAlgorithmTest {
   CallGraph loadCallGraph(String testDirectory, String className) {
     String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
 
+    double version = Double.parseDouble(System.getProperty("java.specification.version"));
+    if (version > 1.8) {
+      fail("The rt.jar is not available after Java 8. You are using version " + version);
+    }
+
     JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
-            .addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath))
-            .build();
+            JavaProject.builder(new JavaLanguage(8))
+                    .addClassPath(
+                            new JavaClassPathAnalysisInputLocation(
+                                    System.getProperty("java.home") + "/lib/rt.jar"))
+                    .addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath))
+                    .build();
 
     System.out.println(System.getProperty("java.home"));
 
