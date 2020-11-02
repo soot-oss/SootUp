@@ -45,12 +45,12 @@ public class ClassHierarchyAlgorithmTest {
     }
 
     JavaProject javaProject =
-            JavaProject.builder(new JavaLanguage(8))
-                    .addClassPath(
-                            new JavaClassPathAnalysisInputLocation(
-                                    System.getProperty("java.home") + "/lib/rt.jar"))
-                    .addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath))
-                    .build();
+        JavaProject.builder(new JavaLanguage(8))
+            .addClassPath(
+                new JavaClassPathAnalysisInputLocation(
+                    System.getProperty("java.home") + "/lib/rt.jar"))
+            .addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath))
+            .build();
 
     System.out.println(System.getProperty("java.home"));
 

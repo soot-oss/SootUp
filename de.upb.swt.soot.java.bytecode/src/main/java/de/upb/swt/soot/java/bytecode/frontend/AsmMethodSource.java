@@ -193,7 +193,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     stmtsThatBranchToLabel = LinkedListMultimap.create();
     InsnToStmt = new LinkedHashMap<>(nrInsn);
     frames = new LinkedHashMap<>(nrInsn);
-    trapHandler = new LinkedHashMap(tryCatchBlocks.size());
+    trapHandler = new LinkedHashMap<>(tryCatchBlocks.size());
 
     /* retrieve all trap handlers */
     for (TryCatchBlockNode tc : tryCatchBlocks) {
