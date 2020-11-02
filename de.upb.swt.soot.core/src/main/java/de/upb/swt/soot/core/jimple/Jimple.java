@@ -200,6 +200,12 @@ public abstract class Jimple {
     return StringTools.getQuotedStringOf(str, jimpleKeywordList().contains(str));
   }
 
+  // FIXME: implement
+  public static String unescape(String str) {
+    // TODO: unescape + add: jimpleKeywordList().contains(str)
+    return StringTools.getUnEscapedStringOf(str);
+  }
+
   public abstract IdentifierFactory getIdentifierFactory();
 
   /** Constructs a XorExpr(Immediate, Immediate) grammar chunk. */

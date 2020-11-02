@@ -179,9 +179,7 @@ public class JavaView extends AbstractView {
                 return (SootClass) clazz;
               } else {
                 throw new ResolveException(
-                    type + " is not a regular Java class!",
-                    clazz.getClassSource().getSourcePath(),
-                    null);
+                    type + " is not a regular Java class!", clazz.getClassSource().getSourcePath());
               }
             });
   }

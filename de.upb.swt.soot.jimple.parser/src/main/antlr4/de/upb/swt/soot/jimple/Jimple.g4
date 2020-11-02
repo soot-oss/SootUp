@@ -110,6 +110,8 @@ grammar Jimple;
   BLANK :
     [ \t\r\n] ->skip;
 
+  CATCHALL_ERRORTOKEN : . ;
+
  /*
   * Parser Rules
   */
@@ -129,7 +131,7 @@ grammar Jimple;
     'abstract' | 'final' | 'native' | 'public' | 'protected' | 'private' | 'static' | 'synchronized' | 'transient' |'volatile' | 'strictfp' | 'enum';
 
   file_type :
-    'class' | 'interface' | 'annotation';
+    'class' | 'interface' | 'annotation interface';
 
   extends_clause :
     'extends' classname=identifier;

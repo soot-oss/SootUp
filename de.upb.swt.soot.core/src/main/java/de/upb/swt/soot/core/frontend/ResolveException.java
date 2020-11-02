@@ -43,12 +43,34 @@ public class ResolveException extends RuntimeException {
 
   public ResolveException(
       @Nonnull String message, @Nonnull Path sourcePath, @Nonnull Position position) {
-    this(message, "file://" + sourcePath.toAbsolutePath().toString(), position);
+    this(message, "file:/" + sourcePath.toAbsolutePath().toString(), position);
   }
 
   private ResolveException(
       @Nonnull String message, @Nonnull String inputUri, @Nonnull Position range) {
     super(message + " " + inputUri + " " + range);
+    this.range = range;
+    this.inputUri = inputUri;
+  }
+
+  public ResolveException(@Nonnull String message, @Nonnull Path sourcePath, @Nonnull Exception e) {
+    this(message, sourcePath, NoPositionInformation.getInstance(), e);
+  }
+
+  public ResolveException(
+      @Nonnull String message,
+      @Nonnull Path sourcePath,
+      @Nonnull Position position,
+      @Nonnull Exception e) {
+    this(message, "file:/" + sourcePath.toAbsolutePath().toString(), position, e);
+  }
+
+  private ResolveException(
+      @Nonnull String message,
+      @Nonnull String inputUri,
+      @Nonnull Position range,
+      @Nonnull Exception e) {
+    super(message + " " + inputUri + " " + range, e);
     this.range = range;
     this.inputUri = inputUri;
   }

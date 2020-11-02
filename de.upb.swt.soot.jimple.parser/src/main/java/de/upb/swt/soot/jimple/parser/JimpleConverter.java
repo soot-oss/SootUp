@@ -16,7 +16,6 @@ import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.*;
-import de.upb.swt.soot.core.util.StringTools;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.jimple.JimpleBaseVisitor;
@@ -86,7 +85,7 @@ public class JimpleConverter {
       if (ctx.classname != null) {
 
         // "$" in classname is a heuristic for an inner/outer class
-        final String classname = StringTools.getUnEscapedStringOf(ctx.classname.getText());
+        final String classname = Jimple.unescape(ctx.classname.getText());
         final int dollarPostition = classname.indexOf('$');
         if (dollarPostition > -1) {
           outerclass = util.getClassType(classname.substring(0, dollarPostition));
@@ -183,8 +182,7 @@ public class JimpleConverter {
         List<Type> params = util.getTypeList(ctx.type_list());
 
         MethodSignature methodSignature =
-            identifierFactory.getMethodSignature(
-                StringTools.getUnEscapedStringOf(methodname), clazz, type, params);
+            identifierFactory.getMethodSignature(Jimple.unescape(methodname), clazz, type, params);
         builder.setMethodSignature(methodSignature);
 
         List<ClassType> exceptions =
@@ -282,8 +280,14 @@ public class JimpleConverter {
           }
         }
 
-        OverridingMethodSource oms = new OverridingMethodSource(methodSignature, builder.build());
         Position methodPosition = buildPositionFromCtx(ctx);
+        final Body build;
+        try {
+          build = builder.build();
+        } catch (Exception e) {
+          throw new ResolveException(methodname + " " + e.getMessage(), path, methodPosition);
+        }
+        OverridingMethodSource oms = new OverridingMethodSource(methodSignature, build);
         return new SootMethod(oms, methodSignature, modifier, exceptions, methodPosition);
       }
 
@@ -590,11 +594,11 @@ public class JimpleConverter {
             }
             return DoubleConstant.getInstance(Double.parseDouble(floatStr));
           } else if (ctx.CLASS() != null) {
-            final String text = ctx.STRING_CONSTANT().getText();
-            return JavaJimple.getInstance().newClassConstant(text.substring(1, text.length() - 1));
+            final String text = Jimple.unescape(ctx.STRING_CONSTANT().getText());
+            return JavaJimple.getInstance().newClassConstant(text);
           } else if (ctx.STRING_CONSTANT() != null) {
-            final String text = StringTools.getUnEscapedStringOf(ctx.STRING_CONSTANT().getText());
-            return JavaJimple.getInstance().newStringConstant(text.substring(1, text.length() - 1));
+            final String text = Jimple.unescape(ctx.STRING_CONSTANT().getText());
+            return JavaJimple.getInstance().newStringConstant(text);
           } else if (ctx.BOOL_CONSTANT() != null) {
             final char firstChar = ctx.BOOL_CONSTANT().getText().charAt(0);
             return BooleanConstant.getInstance(firstChar == 't' || firstChar == 'T');

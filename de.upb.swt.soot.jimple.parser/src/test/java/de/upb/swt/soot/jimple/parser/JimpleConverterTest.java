@@ -410,7 +410,21 @@ public class JimpleConverterTest {
     assertEquals("\"class\"", Jimple.escape("class"));
     assertEquals("\"throws\"", Jimple.escape("throws"));
 
-    // TODO unicode
+    // current soot escaping: packages
+    assertEquals("\"java.annotation.something\"", Jimple.escape("java.annotation.something"));
+    assertEquals("\"java.class.something\"", Jimple.escape("class.something.foobar"));
+    assertEquals("\"something.foobar.class\"", Jimple.escape("something.foobar.class"));
 
+    // unescape from old soot too (escaped package names partially)
+    assertEquals("java.annotation.something", Jimple.unescape("java.\"annotation\".something"));
+    assertEquals("java.annotation.something", Jimple.unescape("\"java\".\"annotation\".something"));
+    assertEquals("java.annotation.something", Jimple.unescape("java.\"annotation\".something"));
+
+    // "normal" escaping / unescaping of a single item
+    assertEquals("stringWithEscpaed\\\"something", Jimple.escape("stringWithEscpaed\"something"));
+    assertEquals("stringWithEscpaed\"something", Jimple.unescape("stringWithEscpaed\\\"something"));
+
+    // from: usual string constant assignment
+    assertEquals("usual string", Jimple.unescape("\"usual string\""));
   }
 }

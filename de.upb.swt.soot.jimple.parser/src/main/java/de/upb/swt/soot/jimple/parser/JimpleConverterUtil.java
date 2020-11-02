@@ -156,6 +156,22 @@ public class JimpleConverterUtil {
   @Nonnull
   public static JimpleParser createJimpleParser(CharStream charStream, Path path) {
     JimpleLexer lexer = new JimpleLexer(charStream);
+    lexer.removeErrorListeners();
+    lexer.addErrorListener(
+        new BaseErrorListener() {
+          @Override
+          public void syntaxError(
+              Recognizer<?, ?> recognizer,
+              Object offendingSymbol,
+              int line,
+              int charPositionInLine,
+              String msg,
+              RecognitionException e) {
+            throw new ResolveException(
+                "Jimple Syntaxerror: " + msg, path, new Position(line, charPositionInLine, -1, -1));
+          }
+        });
+
     TokenStream tokens = new CommonTokenStream(lexer);
     JimpleParser parser = new JimpleParser(tokens);
 
