@@ -2018,8 +2018,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         if (isLabelNode) {
           JIdentityStmt caughtEx = findIdentityRefInContainer(stmt);
           if (caughtEx != null && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
-            // We directly place this label
-            danglingLabel.forEach(l -> labelsToStmt.put(l, caughtEx));
+            danglingLabel.forEach(l -> trapHandler.put(l, caughtEx));
           }
         }
         danglingLabel.clear();
