@@ -1991,7 +1991,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private void buildStmts() {
     AbstractInsnNode insn = instructions.getFirst();
     labelsToStmt = new HashMap<>();
-    LabelNode danglingLabel = null;
+    ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
 
     do {
 
@@ -2000,8 +2000,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       final boolean isLabelNode = insn instanceof LabelNode;
       if (isLabelNode) {
         // Save the label to assign it to the next real Stmt
-        danglingLabel = ((LabelNode) insn);
-        System.out.println(danglingLabel);
+        danglingLabel.add((LabelNode) insn);
       }
 
       Stmt stmt = InsnToStmt.get(insn);
@@ -2010,22 +2009,19 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       }
 
       // associate label with following stmt
-      if (danglingLabel != null) {
-        Stmt value = stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt;
-        if (value == null) {
-          System.out.println("stmt is null for danglingLabel");
-        }
-        labelsToStmt.put(danglingLabel, value);
-
+      if (!danglingLabel.isEmpty()) {
+        Stmt targetStmt =
+            stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt;
+        danglingLabel.forEach(l -> labelsToStmt.put(l, targetStmt));
         // If this is an exception handler, register the starting Stmt for it
         if (isLabelNode) {
           JIdentityStmt caughtEx = findIdentityRefInContainer(stmt);
           if (caughtEx != null && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
             // We directly place this label
-            trapHandler.put(danglingLabel, caughtEx);
+            danglingLabel.forEach(l -> labelsToStmt.put(l, caughtEx));
           }
         }
-        danglingLabel = null;
+        danglingLabel.clear();
       }
 
       emitStmts(stmt);
@@ -2046,20 +2042,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       bodyBuilder.addFlow(gotoImpl, targetStmt);
     }
 
-    // link branching stmts with its targets
     for (Map.Entry<Stmt, LabelNode> entry : stmtsThatBranchToLabel.entries()) {
       final Stmt fromStmt = entry.getKey();
       final Stmt targetStmt = labelsToStmt.get(entry.getValue());
       if (targetStmt == null) {
-        for (Map.Entry e : labelsToStmt.entrySet()) {
-          System.out.println("key: " + e.getKey() + "; value: " + e.getValue());
-        }
         throw new ResolveException(
-            "targetStmt not found for fromStmt:"
+            "targetStmt not found for fromStmt"
                 + fromStmt
                 + " "
                 + entry.getValue()
-                + " in method:"
+                + " in method "
                 + lazyMethodSignature.get());
       }
       bodyBuilder.addFlow(fromStmt, targetStmt);
