@@ -32,7 +32,7 @@ public enum BytecodeBodyInterceptors {
       new CastAndReturnInliner(),
       new DuplicateCatchAllTrapRemover(),
       new UnreachableCodeEliminator(),
-      new LocalSplitter(),
+      //new LocalSplitter(),
       new Aggregator(),
       new UnusedLocalEliminator(),
       new TypeAssigner(),

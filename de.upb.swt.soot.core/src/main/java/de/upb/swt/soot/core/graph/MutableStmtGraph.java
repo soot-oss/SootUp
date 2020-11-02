@@ -264,6 +264,7 @@ public class MutableStmtGraph extends StmtGraph {
   public List<Stmt> successors(@Nonnull Stmt node) {
     int nodeIdx = getNodeIdx(node);
     final List<Stmt> stmts = successors.get(nodeIdx);
+
     if (stmts == null) {
       return Collections.emptyList();
     }
