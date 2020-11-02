@@ -1375,7 +1375,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       List<Type> types = expr.getMethodSignature().getParameterTypes();
       Operand[] oprs;
       int nrArgs = types.size();
-      if (lazyModifiers.get().contains(Modifier.STATIC)) {
+      boolean isInstanceMethod = expr instanceof AbstractInstanceInvokeExpr;
+      if (!isInstanceMethod) {
         oprs = nrArgs == 0 ? null : new Operand[nrArgs];
       } else {
         oprs = new Operand[nrArgs + 1];
@@ -1384,7 +1385,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         while (nrArgs-- != 0) {
           oprs[nrArgs] = pop(types.get(nrArgs));
         }
-        if (!lazyModifiers.get().contains(Modifier.STATIC)) {
+        if (isInstanceMethod) {
           oprs[oprs.length - 1] = pop();
         }
         frame.mergeIn(oprs);
