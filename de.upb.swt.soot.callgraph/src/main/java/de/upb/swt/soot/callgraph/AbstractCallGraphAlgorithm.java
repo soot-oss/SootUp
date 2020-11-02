@@ -25,6 +25,7 @@ package de.upb.swt.soot.callgraph;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Method;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.views.View;
@@ -63,11 +64,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       MethodSignature currentMethodSignature = workList.pop();
       if (processed.contains(currentMethodSignature)) continue;
 
+
+
       Stream<MethodSignature> invocationTargets =
           resolveAllCallsFromSourceMethod(view, currentMethodSignature);
 
       invocationTargets.forEach(
           t -> {
+//            System.out.println("target:" + t);
             if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
             if (!cg.containsMethod(t)) cg.addMethod(t);
             if (!cg.containsCall(currentMethodSignature, t)) {
@@ -83,14 +87,20 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   Stream<MethodSignature> resolveAllCallsFromSourceMethod(View view, MethodSignature sourceMethod) {
     Method currentMethodCandidate =
         view.getClass(sourceMethod.getDeclClassType())
-            .flatMap(c -> c.getMethod(sourceMethod))
-            .orElse(null);
+//                .map(clazz -> (SootClass) clazz)
+//                .filter(clazz -> !clazz.isInterface())
+                .flatMap(c -> c.getMethod(sourceMethod))
+                .orElse(null);
     if (currentMethodCandidate == null) return Stream.empty();
 
     SootMethod currentMethod = (SootMethod) currentMethodCandidate;
 
+    if(((SootClass) view.getClass(sourceMethod.getDeclClassType()).get()).isInterface()){
+      return Stream.empty();
+    }
+
     if (currentMethod.hasBody()) {
-      return currentMethod.getBody().getStmts().stream()
+      return currentMethod.getBody().getStmtGraph().nodes().stream()
           .filter(Stmt::containsInvokeExpr)
           .flatMap(s -> resolveCall(currentMethod, s.getInvokeExpr()));
     } else {

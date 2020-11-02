@@ -27,20 +27,14 @@ import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.swt.soot.core.model.AbstractClass;
-import de.upb.swt.soot.core.model.Method;
-import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -116,20 +110,33 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
   @Nonnull
   protected Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
+    Stream<MethodSignature> result = Stream.of(targetMethodSignature);
 
-    SootMethod targetMethod =
-        (SootMethod)
-            view.getClass(targetMethodSignature.getDeclClassType())
-                .flatMap(clazz -> clazz.getMethod(targetMethodSignature))
-                .orElseThrow(
-                    () ->
-                        new ResolveException(
-                            "Could not find " + targetMethodSignature + " in view"));
+//    if(((SootClass) view.getClass(targetMethodSignature.getDeclClassType()).get()).isInterface()){
+//      return result;
+//    }
 
-    if (Modifier.isStatic(targetMethod.getModifiers())) {
-      return Stream.of(targetMethodSignature);
-    } else {
-      return MethodDispatchResolver.resolveAbstractDispatch(view, targetMethodSignature).stream();
+    Optional op = view.getClass(targetMethodSignature.getDeclClassType())
+            .flatMap(clazz -> clazz.getMethod(targetMethodSignature));
+
+    if (op.isPresent()){
+      SootMethod targetMethod = (SootMethod) op.get();
+      if (Modifier.isStatic(targetMethod.getModifiers())) {
+        return result;
+      }
     }
+
+//    SootMethod targetMethod =
+//        (SootMethod)
+//                (view.getClass(targetMethodSignature.getDeclClassType()))
+//                .flatMap(clazz -> clazz.getMethod(targetMethodSignature)).get();
+//                .orElseThrow(
+//                    () ->
+//                        new ResolveException(
+//                            "Could not find " + targetMethodSignature + " in view"));
+
+
+    return Stream.concat(result, MethodDispatchResolver.resolveAbstractDispatch(view, targetMethodSignature).stream());
+
   }
 }

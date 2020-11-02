@@ -8,7 +8,6 @@ import de.upb.swt.soot.callgraph.CallGraphAlgorithm;
 import de.upb.swt.soot.callgraph.ClassHierarchyAlgorithm;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
-import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -40,16 +39,15 @@ public class ClassHierarchyAlgorithmTest {
   CallGraph loadCallGraph(String testDirectory, String className) {
     String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
 
-    List<AnalysisInputLocation> locs =
-        Arrays.asList(
-            new JavaClassPathAnalysisInputLocation(System.getProperty("java.home") + "/lib/rt.jar"),
-            new JavaSourcePathAnalysisInputLocation(Collections.singleton(walaClassPath), null));
-
     JavaProject javaProject =
         JavaProject.builder(new JavaLanguage(8))
+            .addClassPath(
+                new JavaClassPathAnalysisInputLocation(
+                    System.getProperty("java.home") + "/lib/rt.jar"))
             .addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath))
-            .addClassPath(locs)
             .build();
+
+    System.out.println(System.getProperty("java.home"));
 
     View view = javaProject.createOnDemandView();
 
@@ -77,14 +75,11 @@ public class ClassHierarchyAlgorithmTest {
 
   @Test
   public void testMiscExample1() {
+    /**
+     * We expect constructors for B and C
+     * We expect A.print(), B.print(), C.print(), D.print()
+     */
     CallGraph cg = loadCallGraph("Misc", "example1.Example");
-
-    MethodSignature constructorA =
-        identifierFactory.getMethodSignature(
-            "<init>",
-            identifierFactory.getClassType("example1.A"),
-            "void",
-            Collections.emptyList());
 
     MethodSignature constructorB =
         identifierFactory.getMethodSignature(
@@ -92,6 +87,13 @@ public class ClassHierarchyAlgorithmTest {
             identifierFactory.getClassType("example1.B"),
             "void",
             Collections.emptyList());
+
+    MethodSignature constructorC =
+            identifierFactory.getMethodSignature(
+                    "<init>",
+                    identifierFactory.getClassType("example1.C"),
+                    "void",
+                    Collections.emptyList());
 
     MethodSignature methodA =
         identifierFactory.getMethodSignature(
@@ -121,8 +123,8 @@ public class ClassHierarchyAlgorithmTest {
             "void",
             Collections.singletonList("example1.A"));
 
-    assertTrue(cg.containsCall(mainMethodSignature, constructorA));
     assertTrue(cg.containsCall(mainMethodSignature, constructorB));
+    assertTrue(cg.containsCall(mainMethodSignature, constructorC));
 
     assertTrue(cg.containsCall(mainMethodSignature, methodA));
     assertTrue(cg.containsCall(mainMethodSignature, methodB));
@@ -131,8 +133,8 @@ public class ClassHierarchyAlgorithmTest {
 
     assertEquals(6, cg.callsFrom(mainMethodSignature).size());
 
-    assertEquals(1, cg.callsTo(constructorA).size());
     assertEquals(1, cg.callsTo(constructorB).size());
+    assertEquals(1, cg.callsTo(constructorC).size());
     assertEquals(1, cg.callsTo(methodA).size());
     assertEquals(1, cg.callsTo(methodB).size());
     assertEquals(1, cg.callsTo(methodC).size());
@@ -162,9 +164,6 @@ public class ClassHierarchyAlgorithmTest {
             identifierFactory.getClassType("update.operation.cg.Class"),
             "void",
             Collections.singletonList("java.lang.String[]"));
-    SootClass sc = (SootClass) view.getClass(mainClassSignature).get();
-    Optional<SootMethod> m = sc.getMethod(mainMethodSignature);
-    assertTrue(m.isPresent());
 
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature(
@@ -175,7 +174,8 @@ public class ClassHierarchyAlgorithmTest {
 
     final TypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
     CallGraphAlgorithm cha = new ClassHierarchyAlgorithm(view, typeHierarchy);
-    CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
+    //    CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
+    CallGraph cg = loadCallGraph("Misc", "update.operation.cg.Class");
 
     JavaClassType newClass =
         new JavaClassType("AdderA", identifierFactory.getPackageName("update.operation.cg"));

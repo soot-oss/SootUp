@@ -110,6 +110,42 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   @Nonnull
+  @Override
+  public Set<ClassType> directSubtypesOf(@Nonnull ClassType type) {
+    ScanResult scanResult = lazyScanResult.get();
+    Vertex vertex = scanResult.typeToVertex.get(type);
+    if (vertex == null) {
+      throw new ResolveException("Could not find " + type + " in hierarchy.");
+    }
+
+    Set<ClassType> subclasses = new HashSet<>();
+
+    Graph<Vertex, Edge> graph = scanResult.graph;
+
+    switch (vertex.type) {
+      case Interface:
+//        graph.incomingEdgesOf(vertex).stream()
+//                .filter(
+//                        edge ->
+//                                edge.type == EdgeType.ClassDirectlyImplements
+//                                        || edge.type == EdgeType.InterfaceDirectlyExtends)
+//                .map(graph::getEdgeSource).forEach(directSubclass -> subclasses.add(directSubclass.javaClassType));
+        break;
+      case Class:
+        graph.incomingEdgesOf(vertex).stream()
+                .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
+                .map(graph::getEdgeSource)
+                .forEach(directSubclass -> subclasses.add(directSubclass.javaClassType));
+        break;
+      default:
+        throw new AssertionError("Unknown vertex type!");
+    }
+
+    return subclasses;
+  }
+
+
+  @Nonnull
   private List<Vertex> superClassesOf(@Nonnull Vertex classVertex, boolean includingSelf) {
     ScanResult scanResult = lazyScanResult.get();
     Graph<Vertex, Edge> graph = scanResult.graph;

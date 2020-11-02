@@ -9,12 +9,11 @@ import de.upb.swt.soot.java.core.views.JavaView;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.util.Collections;
 import org.junit.ClassRule;
-import org.junit.Test;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
 /** @author: Hasitha Rajapakse * */
-public class JavaTypeHierarchyBase {
+public abstract class JavaTypeHierarchyTestBase {
   // Test Resource Folder Path
   static final String baseDir = "src/test/resources/javatypehierarchy/";
 
@@ -24,7 +23,7 @@ public class JavaTypeHierarchyBase {
 
   public static class CustomTestWatcher extends TestWatcher {
 
-    private String className = JavaTypeHierarchyBase.class.getSimpleName();
+    private String className = JavaTypeHierarchyTestBase.class.getSimpleName();
     private AnalysisInputLocation srcCode;
     private JavaView view;
     private JavaProject project;
@@ -75,7 +74,4 @@ public class JavaTypeHierarchyBase {
     }
     return testDirectoryName;
   }
-
-  @Test
-  public void method() {}
 }
