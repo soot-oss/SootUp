@@ -124,13 +124,13 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
     switch (vertex.type) {
       case Interface:
-        //        graph.incomingEdgesOf(vertex).stream()
-        //                .filter(
-        //                        edge ->
-        //                                edge.type == EdgeType.ClassDirectlyImplements
-        //                                        || edge.type == EdgeType.InterfaceDirectlyExtends)
-        //                .map(graph::getEdgeSource).forEach(directSubclass ->
-        // subclasses.add(directSubclass.javaClassType));
+        graph.incomingEdgesOf(vertex).stream()
+            .filter(
+                edge ->
+                    edge.type == EdgeType.ClassDirectlyImplements
+                        || edge.type == EdgeType.InterfaceDirectlyExtends)
+            .map(graph::getEdgeSource)
+            .forEach(directSubclass -> subclasses.add(directSubclass.javaClassType));
         break;
       case Class:
         graph.incomingEdgesOf(vertex).stream()
