@@ -36,6 +36,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.*;
 import java.util.*;
@@ -55,16 +56,18 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    boolean eliminateOnlyStackLocals = false;
+    // eliminateOnlyStackLocals: locals which are: nulltype or not referencing a field
+    // TODO[MN]: config parameter
+    boolean eliminateOnlyStackLocals = true;
     StmtGraph stmtGraph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
 
     // Make a first pass through the statements, noting the statements we must absolutely keep
 
-    boolean isStatic = true;
+    boolean isStatic = Modifier.isStatic(builder.getModifiers());
     boolean allEssential = true;
-    boolean checkInvoke = false;
+    boolean containsInvoke = false;
     Local thisLocal = null;
 
     builder.enableDeferredStmtGraphChanges();
@@ -107,8 +110,9 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
                 || lhs.getType() instanceof NullType)) {
           isEssential = false;
 
-          if (!checkInvoke) {
-            checkInvoke = assignStmt.containsInvokeExpr();
+          if (!containsInvoke) {
+            // performance optimization: to not repeat containsInvokeExpr()
+            containsInvoke = assignStmt.containsInvokeExpr();
           }
 
           if (rhs instanceof JCastExpr) {
@@ -179,7 +183,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       allEssential &= isEssential;
     }
 
-    if (checkInvoke || !allEssential) {
+    if (containsInvoke || !allEssential) {
       // Add all the statements which are used to compute values for the essential statements,
       // recursively
       allDefs = UtilInterceptors.collectDefs(builder.getStmts(), allDefs);
@@ -217,7 +221,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
         }
       }
 
-      if (checkInvoke) {
+      if (containsInvoke) {
         allUses = UtilInterceptors.collectUses(builder.getStmts(), allUses);
         // Eliminate dead assignments from invokes such as x = f(), where x is no longer used
         List<JAssignStmt> postProcess = new ArrayList<>();

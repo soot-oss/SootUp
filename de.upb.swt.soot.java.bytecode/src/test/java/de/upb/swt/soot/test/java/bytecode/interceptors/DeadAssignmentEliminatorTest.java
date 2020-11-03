@@ -65,7 +65,7 @@ public class DeadAssignmentEliminatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(a, b, c);
     List<Trap> traps = new ArrayList<>();
 
-    Body.BodyBuilder builder = Body.builder();
+    Body.BodyBuilder builder = Body.builder(new ArrayList<>());
     builder.setStartingStmt(strToA);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()

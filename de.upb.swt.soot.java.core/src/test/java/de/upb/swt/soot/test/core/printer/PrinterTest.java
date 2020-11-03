@@ -3,8 +3,8 @@ package de.upb.swt.soot.test.core.printer;
 import static org.junit.Assert.*;
 
 import de.upb.swt.soot.core.Project;
+import de.upb.swt.soot.core.frontend.OverridingBodySource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
-import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
@@ -68,7 +68,7 @@ public class PrinterTest {
     StmtPositionInfo noPosInfo = StmtPositionInfo.createNoStmtPositionInfo();
     final JReturnVoidStmt returnVoidStmt = new JReturnVoidStmt(noPosInfo);
     final JNopStmt jNop = new JNopStmt(noPosInfo);
-    Body.BodyBuilder bodyBuilder = Body.builder();
+    Body.BodyBuilder bodyBuilder = Body.builder(new ArrayList<>());
 
     bodyBuilder
         .setStartingStmt(jNop)
@@ -79,7 +79,7 @@ public class PrinterTest {
 
     SootMethod dummyMainMethod =
         new SootMethod(
-            new OverridingMethodSource(methodSignatureOne, bodyOne),
+            new OverridingBodySource(methodSignatureOne, bodyOne),
             methodSignatureOne,
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
             Collections.emptyList());
@@ -94,7 +94,7 @@ public class PrinterTest {
 
     SootMethod anotherMethod =
         new SootMethod(
-            new OverridingMethodSource(methodSignatureOne, bodyTwo),
+            new OverridingBodySource(methodSignatureOne, bodyTwo),
             methodSignatureTwo,
             EnumSet.of(Modifier.PRIVATE),
             Collections.singletonList(

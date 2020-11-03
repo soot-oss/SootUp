@@ -24,8 +24,8 @@ package de.upb.swt.soot.core.model;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
-import de.upb.swt.soot.core.frontend.MethodSource;
-import de.upb.swt.soot.core.frontend.OverridingMethodSource;
+import de.upb.swt.soot.core.frontend.BodySource;
+import de.upb.swt.soot.core.frontend.OverridingBodySource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
@@ -62,17 +62,17 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   @Nonnull protected final ImmutableList<ClassType> exceptions;
 
   /** Tells this methodRef how to find out where its body lives. */
-  @Nonnull protected final MethodSource methodSource;
+  @Nonnull protected final BodySource bodySource;
 
   /** Constructs a SootMethod object with the given attributes. */
   public SootMethod(
-      @Nonnull MethodSource source,
+      @Nonnull BodySource source,
       @Nonnull MethodSignature methodSignature,
       @Nonnull Iterable<Modifier> modifiers,
       @Nonnull Iterable<ClassType> thrownExceptions) {
     super(methodSignature, modifiers);
 
-    this.methodSource = source;
+    this.bodySource = source;
     this.parameterTypes = ImmutableUtils.immutableListOf(methodSignature.getParameterTypes());
     this.exceptions = ImmutableUtils.immutableListOf(thrownExceptions);
   }
@@ -83,7 +83,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
     Body body;
     try {
-      body = this.methodSource.resolveBody();
+      body = this.bodySource.resolveBody(this.getModifiers());
     } catch (ResolveException e) {
       body = null;
 
@@ -202,39 +202,39 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   }
 
   /**
-   * Creates a new SootMethod based on a new {@link OverridingMethodSource}. This is useful to
-   * change selected parts of a {@link SootMethod} without recreating a {@link MethodSource}
-   * completely. {@link OverridingMethodSource} allows for replacing the body of a method.
+   * Creates a new SootMethod based on a new {@link OverridingBodySource}. This is useful to change
+   * selected parts of a {@link SootMethod} without recreating a {@link BodySource} completely.
+   * {@link OverridingBodySource} allows for replacing the body of a method.
    */
   @Nonnull
   public SootMethod withOverridingMethodSource(
-      Function<OverridingMethodSource, OverridingMethodSource> overrider) {
+      Function<OverridingBodySource, OverridingBodySource> overrider) {
     return new SootMethod(
-        overrider.apply(new OverridingMethodSource(methodSource)),
+        overrider.apply(new OverridingBodySource(bodySource)),
         getSignature(),
         getModifiers(),
         exceptions);
   }
 
   @Nonnull
-  public SootMethod withSource(MethodSource source) {
+  public SootMethod withSource(BodySource source) {
     return new SootMethod(source, getSignature(), getModifiers(), exceptions);
   }
 
   @Nonnull
   public SootMethod withModifiers(Iterable<Modifier> modifiers) {
-    return new SootMethod(methodSource, getSignature(), modifiers, getExceptionSignatures());
+    return new SootMethod(bodySource, getSignature(), modifiers, getExceptionSignatures());
   }
 
   @Nonnull
   public SootMethod withThrownExceptions(Iterable<ClassType> thrownExceptions) {
-    return new SootMethod(methodSource, getSignature(), getModifiers(), thrownExceptions);
+    return new SootMethod(bodySource, getSignature(), getModifiers(), thrownExceptions);
   }
 
   @Nonnull
   public SootMethod withBody(@Nonnull Body body) {
     return new SootMethod(
-        new OverridingMethodSource(methodSource).withBody(body),
+        new OverridingBodySource(bodySource).withBody(body),
         getSignature(),
         getModifiers(),
         exceptions);
@@ -252,7 +252,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
   public interface MethodSourceStep {
     @Nonnull
-    SignatureStep withSource(@Nonnull MethodSource value);
+    SignatureStep withSource(@Nonnull BodySource value);
   }
 
   public interface SignatureStep {
@@ -291,7 +291,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   public static class SootMethodBuilder
       implements MethodSourceStep, SignatureStep, ModifierStep, ThrownExceptionsStep, BuildStep {
 
-    @Nullable private MethodSource source;
+    @Nullable private BodySource source;
     @Nullable private Iterable<Modifier> modifiers;
     @Nullable private MethodSignature methodSignature;
     @Nonnull private Iterable<ClassType> thrownExceptions = Collections.emptyList();
@@ -302,7 +302,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     }
 
     @Nonnull
-    protected MethodSource getSource() {
+    protected BodySource getSource() {
       return source;
     }
 
@@ -318,7 +318,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
     @Override
     @Nonnull
-    public SignatureStep withSource(@Nonnull MethodSource source) {
+    public SignatureStep withSource(@Nonnull BodySource source) {
       this.source = source;
       return this;
     }
