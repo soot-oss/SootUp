@@ -85,17 +85,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   Stream<MethodSignature> resolveAllCallsFromSourceMethod(View view, MethodSignature sourceMethod) {
     Method currentMethodCandidate =
         view.getClass(sourceMethod.getDeclClassType())
-            //                .map(clazz -> (SootClass) clazz)
-            //                .filter(clazz -> !clazz.isInterface())
             .flatMap(c -> c.getMethod(sourceMethod))
             .orElse(null);
     if (currentMethodCandidate == null) return Stream.empty();
 
     SootMethod currentMethod = (SootMethod) currentMethodCandidate;
-
-    if (((SootClass) view.getClass(sourceMethod.getDeclClassType()).get()).isInterface()) {
-      return Stream.empty();
-    }
 
     if (currentMethod.hasBody()) {
       return currentMethod.getBody().getStmtGraph().nodes().stream()
