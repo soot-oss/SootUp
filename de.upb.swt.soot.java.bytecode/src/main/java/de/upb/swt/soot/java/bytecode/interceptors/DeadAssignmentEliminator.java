@@ -36,6 +36,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.BodyUtils;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.*;
@@ -58,7 +59,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     // eliminateOnlyStackLocals: locals which are: nulltype or not referencing a field
     // TODO[MN]: config parameter
-    boolean eliminateOnlyStackLocals = true;
+    boolean eliminateOnlyStackLocals = false;
     StmtGraph stmtGraph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
@@ -186,7 +187,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     if (containsInvoke || !allEssential) {
       // Add all the statements which are used to compute values for the essential statements,
       // recursively
-      allDefs = UtilInterceptors.collectDefs(builder.getStmts(), allDefs);
+      allDefs = BodyUtils.collectDefs(builder.getStmts());
 
       if (!allEssential) {
         Set<Stmt> essential = new HashSet<>(stmts.size());
@@ -222,7 +223,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       }
 
       if (containsInvoke) {
-        allUses = UtilInterceptors.collectUses(builder.getStmts(), allUses);
+        allUses = BodyUtils.collectUses(builder.getStmts());
         // Eliminate dead assignments from invokes such as x = f(), where x is no longer used
         List<JAssignStmt> postProcess = new ArrayList<>();
         for (Stmt stmt : stmts) {

@@ -1,4 +1,4 @@
-package de.upb.swt.soot.java.bytecode.interceptors;
+package de.upb.swt.soot.core.model;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -24,25 +24,25 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Util class for BodyInterceptors
+ * Util class for the Body
  *
  * @author Marcus Nachtigall
  */
-public class UtilInterceptors {
+public class BodyUtils {
 
   /**
-   * Collects all defining statements of a Local from a list of statements and updates the Map of
-   * all definitions
+   * Collects all defining statements of a Local from a list of statements
    *
    * @param stmts The searched list of statements
-   * @param allDefs The Map of definitions that has to be updated
-   * @return The updated Map of definitions
+   * @return A map of Locals and their using statements
    */
-  static Map<Local, List<Stmt>> collectDefs(List<Stmt> stmts, Map<Local, List<Stmt>> allDefs) {
+  public static Map<Local, List<Stmt>> collectDefs(List<Stmt> stmts) {
+    Map<Local, List<Stmt>> allDefs = new HashMap<>();
     for (Stmt stmt : stmts) {
       List<Value> defs = stmt.getDefs();
       for (Value value : defs) {
@@ -60,14 +60,13 @@ public class UtilInterceptors {
   }
 
   /**
-   * Collects all statements using Locals and update the Map of all used Locals with their
-   * corresponding statements
+   * Collects all using statements of a Local from a list of statements
    *
    * @param stmts The searched list of statements
-   * @param allUses The Map of uses that has to be updated
-   * @return The updated Map of uses
+   * @return A map of Locals and their using statements
    */
-  static Map<Local, List<Stmt>> collectUses(List<Stmt> stmts, Map<Local, List<Stmt>> allUses) {
+  public static Map<Local, List<Stmt>> collectUses(List<Stmt> stmts) {
+    Map<Local, List<Stmt>> allUses = new HashMap<>();
     for (Stmt stmt : stmts) {
       List<Value> uses = stmt.getUses();
       for (Value value : uses) {
