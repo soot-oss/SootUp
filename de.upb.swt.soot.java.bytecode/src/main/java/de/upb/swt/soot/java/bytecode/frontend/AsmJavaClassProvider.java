@@ -57,7 +57,7 @@ public class AsmJavaClassProvider implements ClassProvider {
       AsmUtil.initAsmClassSource(sourcePath, classNode);
     } catch (IOException exception) {
       throw new ResolveException(
-          exception.getMessage(), sourcePath, NoPositionInformation.getInstance());
+          exception.getMessage(), sourcePath, NoPositionInformation.getInstance(), exception);
     }
 
     JavaClassType klassType = (JavaClassType) classType;
