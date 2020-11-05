@@ -44,6 +44,8 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   private final int tag;
 
   /** Assigns values returned by newImmediateBox to an array bsmArgBoxes of type ValueBox. */
+  // TODO: [ms] if we only allow: INVOKEDYNAMIC_DUMMY_CLASS_NAME as class for classSig.. why dont we
+  // just want methodsubsignature as parameter?!
   public JDynamicInvokeExpr(
       MethodSignature bootstrapMethodSignature,
       List<? extends Value> bootstrapArgs,

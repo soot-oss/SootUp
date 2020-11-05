@@ -27,6 +27,7 @@ import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JDynamicInvokeExpr;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
@@ -109,6 +110,11 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
   @Nonnull
   protected Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
+    if ((invokeExpr instanceof JDynamicInvokeExpr)) {
+      // TODO: [ms] handle dynamicInvoke differently than just ignoring?
+      return Stream.empty();
+    }
+
     Stream<MethodSignature> result = Stream.of(targetMethodSignature);
 
     SootMethod targetMethod =
@@ -118,7 +124,7 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
                 .orElseThrow(
                     () ->
                         new ResolveException(
-                            "Could not find " + targetMethodSignature + " in view"));
+                            "Could not find " + targetMethodSignature + " in View"));
 
     if (Modifier.isStatic(targetMethod.getModifiers())) {
       return result;
