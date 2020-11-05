@@ -75,14 +75,6 @@ public interface View {
   @Nonnull
   IdentifierFactory getIdentifierFactory();
 
-  // TODO: [ms] does it need to be public? -> abstract class? then use CompletableFuture in
-  // initialization?
-  boolean doneResolving();
-
-  // TODO: [ms] necessary here? is interconnected with Jimple Parsing / Jimple Printer class..
-  @Nonnull
-  String quotedNameOf(@Nonnull String name);
-
   /** @see ModuleDataKey */
   <T> void putModuleData(@Nonnull ModuleDataKey<T> key, @Nonnull T value);
 

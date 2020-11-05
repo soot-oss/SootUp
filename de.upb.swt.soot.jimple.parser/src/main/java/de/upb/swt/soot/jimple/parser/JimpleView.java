@@ -5,7 +5,6 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
@@ -152,16 +151,5 @@ public class JimpleView extends AbstractView {
             })
         .forEach(this::buildClassFrom);
     isFullyResolved = true;
-  }
-
-  @Override
-  public boolean doneResolving() {
-    return isFullyResolved;
-  }
-
-  @Override
-  @Nonnull
-  public String quotedNameOf(@Nonnull String s) {
-    return Jimple.escape(s);
   }
 }

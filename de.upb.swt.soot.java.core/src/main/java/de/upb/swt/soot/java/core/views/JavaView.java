@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -249,40 +248,5 @@ public class JavaView extends AbstractView {
             })
         .forEach(this::buildClassFrom);
     isFullyResolved = true;
-  }
-
-  @Override
-  public boolean doneResolving() {
-    return isFullyResolved;
-  }
-
-  private static final class SplitPatternHolder {
-    private static final char SPLIT_CHAR = '.';
-
-    @Nonnull
-    private static final Pattern SPLIT_PATTERN =
-        Pattern.compile(Character.toString(SPLIT_CHAR), Pattern.LITERAL);
-  }
-
-  @Override
-  @Nonnull
-  public String quotedNameOf(@Nonnull String s) {
-    StringBuilder res = new StringBuilder(s.length() + 16);
-
-    for (String part : SplitPatternHolder.SPLIT_PATTERN.split(s)) {
-      if (res.length() > 0) {
-        res.append(SplitPatternHolder.SPLIT_CHAR);
-      }
-
-      if (part.startsWith("-") || RESERVED_NAMES.contains(part)) {
-        res.append('\'');
-        res.append(part);
-        res.append('\'');
-      } else {
-        res.append(part);
-      }
-    }
-
-    return res.toString();
   }
 }
