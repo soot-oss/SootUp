@@ -125,7 +125,18 @@ public class JimpleConverter {
       // member
       for (int i = 0; i < ctx.member().size(); i++) {
         if (ctx.member(i).method() != null) {
-          methods.add(new MethodVisitor().visitMember(ctx.member(i)));
+          final SootMethod m = new MethodVisitor().visitMember(ctx.member(i));
+          if (methods.stream()
+              .anyMatch(
+                  meth -> {
+                    final MethodSignature signature = m.getSignature();
+                    return meth.getSignature().equals(signature);
+                  })) {
+            throw new ResolveException(
+                "Method with the same Signature does already exist.", path, m.getPosition());
+          }
+          methods.add(m);
+
         } else {
           final JimpleParser.FieldContext fieldCtx = ctx.member(i).field();
           EnumSet<Modifier> modifier = getModifiers(fieldCtx.modifier());
@@ -137,7 +148,7 @@ public class JimpleConverter {
                   modifier,
                   pos);
           if (fields.stream().anyMatch(e -> e.getName().equals(fieldName))) {
-            throw new ResolveException("Duplicate field definition.", path, pos);
+            throw new ResolveException("Field with the same name does already exist.", path, pos);
           } else {
             fields.add(f);
           }

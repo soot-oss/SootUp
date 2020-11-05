@@ -252,7 +252,7 @@ public class JimpleConverterTest {
 
   @Ignore
   @Test
-  // FIXME: [ms] fix g4 file to allow a comment there
+  // TODO: [ms] fix g4 file to allow a comment there
   public void testLongCommentEverywhere() {
     CharStream cs =
         CharStreams.fromString(
