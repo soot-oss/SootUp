@@ -110,7 +110,7 @@ public class JimpleConverter {
 
       // extends_clause
       if (ctx.extends_clause() != null) {
-        superclass = util.getClassType(ctx.extends_clause().classname.getText());
+        superclass = util.getClassType(Jimple.unescape(ctx.extends_clause().classname.getText()));
       } else {
         superclass = null;
       }

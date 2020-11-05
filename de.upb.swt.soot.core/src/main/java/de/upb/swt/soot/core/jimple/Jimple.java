@@ -208,14 +208,14 @@ public abstract class Jimple {
     int lastAppendedPos = 0;
     int openHyphenPos = -1;
     for (int i = 0; i < str.length(); i++) {
-      if (str.charAt(i) == '"' && !lastWasRealEscape) {
+      if ((str.charAt(i) == '"' || str.charAt(i) == '\'') && !lastWasRealEscape) {
         if (openHyphenPos < 0) {
           if (lastAppendedPos < i) {
             sb.append(StringTools.getUnEscapedStringOf(str.substring(lastAppendedPos, i)));
           }
           openHyphenPos = i;
           lastAppendedPos = i;
-        } else {
+        } else if (str.charAt(i) == str.charAt(openHyphenPos)) {
           sb.append(StringTools.getUnEscapedStringOf(str.substring(openHyphenPos + 1, i)));
           openHyphenPos = -1;
           lastAppendedPos = i + 1;

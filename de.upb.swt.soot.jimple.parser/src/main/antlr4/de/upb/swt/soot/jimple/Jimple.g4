@@ -7,7 +7,8 @@ grammar Jimple;
   LINE_COMMENT : '//' ~('\n'|'\r')* ->skip;
   LONG_COMMENT : '/*' ~('*')* '*'+ ( ~('*' | '/')* ~('*')* '*'+)* '/' -> skip;
 
-  STRING_CONSTANT : '"' STRING_CHAR* '"';
+  HYPHEN: ('"' | '\'');
+  STRING_CONSTANT : HYPHEN STRING_CHAR* HYPHEN;
 
   CLASS : 'class';
   EXTENDS : 'extends';
@@ -97,12 +98,12 @@ grammar Jimple;
     '0' ('x' | 'X') HEX_DIGIT+;
 
   fragment ESCAPABLE_CHAR :
-    '\\' | ' ' | '\'' | '.' | '"' | 'n' | 't' | 'r' | 'b' | 'f';
+    '\\' | ' ' | '\'' | '.' | HYPHEN | 'n' | 't' | 'r' | 'b' | 'f';
   fragment ESCAPE_CHAR :
     '\\' (ESCAPABLE_CHAR | 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT );
 
-  // escapes and any char except '\' (92) or '"' (34).
-  fragment STRING_CHAR :  ESCAPE_CHAR | ~('\\' | '"') ;
+  // escapes and any char except \ (92) or " (34) and '.
+  fragment STRING_CHAR :  ESCAPE_CHAR | ~('\\' | '"' | '\'') ;
 
   IDENTIFIER:
     (([A-Za-z$_] | ESCAPE_CHAR) ( (ESCAPE_CHAR | [A-Za-z0-9$_] | STRING_CONSTANT) | '.' (ESCAPE_CHAR | [A-Za-z0-9$_] | STRING_CONSTANT) )*);

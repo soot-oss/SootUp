@@ -2,6 +2,7 @@ package de.upb.swt.soot.jimple.parser;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -148,7 +149,7 @@ public class JimpleConverterUtil {
     }
     Set<ClassType> set = new HashSet<>(size);
     for (JimpleParser.TypeContext typeContext : typeList) {
-      set.add(identifierFactory.getClassType(typeContext.getText()));
+      set.add(identifierFactory.getClassType(Jimple.unescape(typeContext.getText())));
     }
     return set;
   }

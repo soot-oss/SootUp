@@ -517,4 +517,15 @@ public class JimpleConverterTest {
     // from: usual string constant assignment
     assertEquals("usual string", Jimple.unescape("\"usual string\""));
   }
+
+  @Test
+  public void testSingleQuoteEscapeSeq() {
+    CharStream cs =
+        CharStreams.fromString(
+            "\n"
+                + "  public annotation interface android.support.'annotation'.SomeAnnotation extends java.lang.Object implements java.lang.'annotation'.Annotation\n"
+                + "  {\n"
+                + "  }");
+    checkJimpleClass(cs);
+  }
 }
