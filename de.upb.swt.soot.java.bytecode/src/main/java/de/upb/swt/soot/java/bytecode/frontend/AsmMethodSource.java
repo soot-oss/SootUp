@@ -1912,7 +1912,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     return false;
   }
 
-  private void buildLocals() throws IOException {
+  private void buildLocals() {
 
     MethodSignature methodSignature = lazyMethodSignature.get();
 
@@ -1942,7 +1942,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     bodyBuilder.setLocals(bodyLocals);
   }
 
-  private void buildTraps() throws IOException {
+  private void buildTraps() {
     List<Trap> traps = new ArrayList<>();
 
     for (TryCatchBlockNode trycatch : tryCatchBlocks) {
