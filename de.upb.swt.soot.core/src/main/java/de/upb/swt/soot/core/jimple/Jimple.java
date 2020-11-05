@@ -200,10 +200,34 @@ public abstract class Jimple {
     return StringTools.getQuotedStringOf(str, jimpleKeywordList().contains(str));
   }
 
-  // FIXME: implement
   public static String unescape(String str) {
-    // TODO: unescape + add: jimpleKeywordList().contains(str)
-    return StringTools.getUnEscapedStringOf(str);
+    StringBuilder sb = new StringBuilder();
+
+    // filter for only \ and not \\ preceeding a possible escapable char
+    boolean lastWasRealEscape = false;
+    int openHyphenPos = -1;
+    for (int i = 0; i < str.length(); i++) {
+      if (str.charAt(i) == '"' && !lastWasRealEscape) {
+        if (openHyphenPos < 0) {
+          openHyphenPos = i;
+        } else {
+          sb.append(StringTools.getUnEscapedStringOf(str.substring(openHyphenPos + 1, i)));
+          openHyphenPos = -1;
+        }
+
+      } else if (openHyphenPos < 0) {
+        // add everything if there is "active" hyphened sequence
+        sb.append(str.charAt(i));
+      }
+      lastWasRealEscape = !lastWasRealEscape && str.charAt(i) == '\\';
+    }
+
+    // add the rest of it even if its not surrounded (ended) by hyphens
+    if (openHyphenPos > 0) {
+      sb.append(StringTools.getUnEscapedStringOf(str.substring(openHyphenPos + 1)));
+    }
+
+    return sb.toString();
   }
 
   public abstract IdentifierFactory getIdentifierFactory();

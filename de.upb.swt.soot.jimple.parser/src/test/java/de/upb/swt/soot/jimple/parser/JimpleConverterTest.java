@@ -1,6 +1,8 @@
 package de.upb.swt.soot.jimple.parser;
 
+import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
@@ -8,11 +10,13 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.util.printer.Printer;
+import de.upb.swt.soot.jimple.JimpleParser;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Paths;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointCharStream;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -80,7 +84,7 @@ public class JimpleConverterTest {
   }
 
   @Test
-  public void testValidDuplicateImports() {
+  public void testValidTolerantDuplicateImports() {
     CharStream cs =
         CharStreams.fromString(
             "import Small.Table; \n"
@@ -411,9 +415,11 @@ public class JimpleConverterTest {
     assertEquals("\"throws\"", Jimple.escape("throws"));
 
     // current soot escaping: packages
-    assertEquals("\"java.annotation.something\"", Jimple.escape("java.annotation.something"));
-    assertEquals("\"java.class.something\"", Jimple.escape("class.something.foobar"));
-    assertEquals("\"something.foobar.class\"", Jimple.escape("something.foobar.class"));
+    /* TODO: first: really necessary to escape that?
+        assertEquals("\"java.annotation.something\"", Jimple.escape("java.annotation.something"));
+        assertEquals("\"java.class.something\"", Jimple.escape("class.something.foobar"));
+        assertEquals("\"something.foobar.class\"", Jimple.escape("something.foobar.class"));
+    */
 
     // unescape from old soot too (escaped package names partially)
     assertEquals("java.annotation.something", Jimple.unescape("java.\"annotation\".something"));
@@ -421,10 +427,103 @@ public class JimpleConverterTest {
     assertEquals("java.annotation.something", Jimple.unescape("java.\"annotation\".something"));
 
     // "normal" escaping / unescaping of a single item
-    assertEquals("stringWithEscpaed\\\"something", Jimple.escape("stringWithEscpaed\"something"));
-    assertEquals("stringWithEscpaed\"something", Jimple.unescape("stringWithEscpaed\\\"something"));
+    assertEquals(
+        "stringWithEscaped\"something", Jimple.unescape("\"stringWithEscaped\\\"something\""));
+    assertEquals("java.annotation.something", Jimple.unescape("\"java.\"annotation\".something\""));
+
+    assertNotEquals(
+        "stringWithEscaped\\\"something", Jimple.unescape("\"stringWithEscaped\"something\""));
+    assertNotEquals(
+        "stringWithEscaped\\\"something", Jimple.unescape("\"stringWithEscaped\"something"));
+    assertNotEquals(
+        "stringWithEscaped\"something", Jimple.unescape("stringWithEscaped\\\"something"));
 
     // from: usual string constant assignment
     assertEquals("usual string", Jimple.unescape("\"usual string\""));
+  }
+
+  @Test
+  public void testParsingEscapedIdentifiers() {
+
+    // keyword
+    {
+      try {
+        final CodePointCharStream charStream = CharStreams.fromString("class");
+        final JimpleParser parser =
+            JimpleConverterUtil.createJimpleParser(
+                charStream, Paths.get("InputFromString.doesNotExists"));
+        assertEquals("class", parser.identifier().getText());
+        fail("class can not be an unescaped identifier");
+      } catch (ResolveException ignored) {
+      }
+    }
+
+    {
+      final CodePointCharStream charStream = CharStreams.fromString("Banana.class.AClass");
+      final JimpleParser parser =
+          JimpleConverterUtil.createJimpleParser(
+              charStream, Paths.get("InputFromString.doesNotExists"));
+      assertEquals("Banana.class.AClass", parser.identifier().getText());
+    }
+    {
+      final CodePointCharStream charStream = CharStreams.fromString("Banana.\"class\".AClass");
+      final JimpleParser parser =
+          JimpleConverterUtil.createJimpleParser(
+              charStream, Paths.get("InputFromString.doesNotExists"));
+      assertEquals("Banana.\"class\".AClass", parser.identifier().getText());
+    }
+    {
+      final CodePointCharStream charStream = CharStreams.fromString("\"Banana.class.AClass\"");
+      final JimpleParser parser =
+          JimpleConverterUtil.createJimpleParser(
+              charStream, Paths.get("InputFromString.doesNotExists"));
+      assertEquals("\"Banana.class.AClass\"", parser.identifier().getText());
+    }
+
+    {
+      final CodePointCharStream charStream = CharStreams.fromString("\"Banana. class .AClass\"");
+      final JimpleParser parser =
+          JimpleConverterUtil.createJimpleParser(
+              charStream, Paths.get("InputFromString.doesNotExists"));
+      assertEquals("\"Banana. class .AClass\"", parser.identifier().getText());
+    }
+    {
+      final CodePointCharStream charStream = CharStreams.fromString("Banana. class .AClass");
+      final JimpleParser parser =
+          JimpleConverterUtil.createJimpleParser(
+              charStream, Paths.get("InputFromString.doesNotExists"));
+      assertNotEquals("Banana. class .AClass", parser.identifier().getText());
+    }
+
+    // escapechar
+    {
+      final CodePointCharStream charStream = CharStreams.fromString("Banana.\\\"AClass");
+      final JimpleParser parser =
+          JimpleConverterUtil.createJimpleParser(
+              charStream, Paths.get("InputFromString.doesNotExists"));
+      assertEquals("Banana.\\\"AClass", parser.identifier().getText());
+    }
+
+    {
+      final CodePointCharStream charStream = CharStreams.fromString("Banana.\\\\AClass");
+      final JimpleParser parser =
+          JimpleConverterUtil.createJimpleParser(
+              charStream, Paths.get("InputFromString.doesNotExists"));
+      assertEquals("Banana.\\\\AClass", parser.identifier().getText());
+    }
+    // unnecessary escaping -> problem -> parser is not tolerant to that
+    {
+      final CodePointCharStream charStream = CharStreams.fromString("Banana\\AClass");
+      final JimpleParser parser =
+          JimpleConverterUtil.createJimpleParser(
+              charStream, Paths.get("InputFromString.doesNotExists"));
+      assertNotEquals("Banana\\AClass", parser.identifier().getText());
+    }
+
+    final CodePointCharStream charStream = CharStreams.fromString("Banana");
+    final JimpleParser parser =
+        JimpleConverterUtil.createJimpleParser(
+            charStream, Paths.get("InputFromString.doesNotExists"));
+    assertEquals("Banana", parser.identifier().getText());
   }
 }
