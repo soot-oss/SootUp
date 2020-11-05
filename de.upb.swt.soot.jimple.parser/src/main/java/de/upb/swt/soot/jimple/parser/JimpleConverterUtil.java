@@ -68,7 +68,7 @@ public class JimpleConverterUtil {
     final ClassType classType = identifierFactory.getClassType(item.location.getText());
     final PackageName duplicate =
         imports.putIfAbsent(classType.getClassName(), classType.getPackageName());
-    if (duplicate != null) {
+    if (duplicate != null && !duplicate.equals(classType.getPackageName())) {
       throw new ResolveException(
           "Multiple Imports for the same ClassName can not be resolved!",
           fileUri,
