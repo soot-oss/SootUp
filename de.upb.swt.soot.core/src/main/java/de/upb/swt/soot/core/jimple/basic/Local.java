@@ -63,12 +63,15 @@ public class Local implements Immediate, Copyable {
   @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
   @Override
   public boolean equals(Object o) {
-    return equivTo(o);
+    if (!(o instanceof Local)) {
+      return false;
+    }
+    return name.equals(((Local) o).getName());
   }
 
   @Override
   public int hashCode() {
-    return equivHashCode();
+    return Objects.hashCode(name);
   }
 
   @Override
@@ -78,7 +81,7 @@ public class Local implements Immediate, Copyable {
 
   @Override
   public int equivHashCode() {
-    return Objects.hash(name);
+    return Objects.hash(name, type);
   }
 
   /** Returns the name of this object. */
