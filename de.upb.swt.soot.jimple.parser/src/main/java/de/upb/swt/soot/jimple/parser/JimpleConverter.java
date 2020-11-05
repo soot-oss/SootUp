@@ -130,12 +130,17 @@ public class JimpleConverter {
           final JimpleParser.FieldContext fieldCtx = ctx.member(i).field();
           EnumSet<Modifier> modifier = getModifiers(fieldCtx.modifier());
           final Position pos = buildPositionFromCtx(ctx);
-          fields.add(
+          final String fieldName = Jimple.unescape(fieldCtx.identifier().getText());
+          final SootField f =
               new SootField(
-                  identifierFactory.getFieldSignature(
-                      fieldCtx.identifier().getText(), clazz, fieldCtx.type().getText()),
+                  identifierFactory.getFieldSignature(fieldName, clazz, fieldCtx.type().getText()),
                   modifier,
-                  pos));
+                  pos);
+          if (fields.stream().anyMatch(e -> e.getName().equals(fieldName))) {
+            throw new ResolveException("Duplicate field definition.", path, pos);
+          } else {
+            fields.add(f);
+          }
         }
       }
 

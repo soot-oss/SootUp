@@ -205,26 +205,28 @@ public abstract class Jimple {
 
     // filter for only \ and not \\ preceeding a possible escapable char
     boolean lastWasRealEscape = false;
+    int lastAppendedPos = 0;
     int openHyphenPos = -1;
     for (int i = 0; i < str.length(); i++) {
       if (str.charAt(i) == '"' && !lastWasRealEscape) {
         if (openHyphenPos < 0) {
+          if (lastAppendedPos < i) {
+            sb.append(StringTools.getUnEscapedStringOf(str.substring(lastAppendedPos, i)));
+          }
           openHyphenPos = i;
+          lastAppendedPos = i;
         } else {
           sb.append(StringTools.getUnEscapedStringOf(str.substring(openHyphenPos + 1, i)));
           openHyphenPos = -1;
+          lastAppendedPos = i + 1;
         }
-
-      } else if (openHyphenPos < 0) {
-        // add everything if there is "active" hyphened sequence
-        sb.append(str.charAt(i));
       }
       lastWasRealEscape = !lastWasRealEscape && str.charAt(i) == '\\';
     }
 
-    // add the rest of it even if its not surrounded (ended) by hyphens
-    if (openHyphenPos > 0) {
-      sb.append(StringTools.getUnEscapedStringOf(str.substring(openHyphenPos + 1)));
+    // if there has been nothing with hyphens etc.
+    if (lastAppendedPos < str.length()) {
+      sb.append(StringTools.getUnEscapedStringOf(str.substring(lastAppendedPos)));
     }
 
     return sb.toString();
