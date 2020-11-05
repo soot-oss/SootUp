@@ -62,9 +62,6 @@ public class StringConstant implements Constant {
 
   @Override
   public String toString() {
-    if (value.length() == 0) {
-      return "\"\"";
-    }
     final String escape = Jimple.escape(value);
     if (escape.charAt(0) != '\"') {
       return "\"" + value + "\"";

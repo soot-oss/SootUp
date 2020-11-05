@@ -197,6 +197,9 @@ public abstract class Jimple {
 
   /** Escapes reserved Jimple keywords e.g. used in (Stmt)Printer, necessary in the JimpleParser */
   public static String escape(String str) {
+    if (str.length() == 0) {
+      return "\"\"";
+    }
     return StringTools.getQuotedStringOf(str, jimpleKeywordList().contains(str));
   }
 
