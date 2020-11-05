@@ -358,54 +358,6 @@ public class Body implements Copyable {
     return new Body(getMethodSignature(), locals, getStmtGraph(), getPosition());
   }
 
-  /**
-   * Collects all defining statements of a Local from a list of statements
-   *
-   * @param stmts The searched list of statements
-   * @return A map of Locals and their using statements
-   */
-  public static Map<Local, List<Stmt>> collectDefs(List<Stmt> stmts) {
-    Map<Local, List<Stmt>> allDefs = new HashMap<>();
-    for (Stmt stmt : stmts) {
-      List<Value> defs = stmt.getDefs();
-      for (Value value : defs) {
-        if (value instanceof Local) {
-          List<Stmt> localDefs = allDefs.get(value);
-          if (localDefs == null) {
-            localDefs = new ArrayList<>();
-          }
-          localDefs.add(stmt);
-          allDefs.put((Local) value, localDefs);
-        }
-      }
-    }
-    return allDefs;
-  }
-
-  /**
-   * Collects all using statements of a Local from a list of statements
-   *
-   * @param stmts The searched list of statements
-   * @return A map of Locals and their using statements
-   */
-  public static Map<Local, List<Stmt>> collectUses(List<Stmt> stmts) {
-    Map<Local, List<Stmt>> allUses = new HashMap<>();
-    for (Stmt stmt : stmts) {
-      List<Value> uses = stmt.getUses();
-      for (Value value : uses) {
-        if (value instanceof Local) {
-          List<Stmt> localUses = allUses.get(value);
-          if (localUses == null) {
-            localUses = new ArrayList<>();
-          }
-          localUses.add(stmt);
-          allUses.put((Local) value, localUses);
-        }
-      }
-    }
-    return allUses;
-  }
-
   /** helps against ConcurrentModificationException; it queues changes until they are committed */
   private static class StmtGraphManipulationQueue {
 
