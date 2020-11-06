@@ -34,14 +34,10 @@ class BranchedInsnInfo {
   /* current stack at edge */
   @Nullable private List<Operand> stack;
 
-  BranchedInsnInfo(AbstractInsnNode insn) {
-    this(insn, new ArrayList<>());
-  }
-
-  BranchedInsnInfo(AbstractInsnNode insn, List<Operand> opr) {
+  BranchedInsnInfo(@Nonnull AbstractInsnNode insn, @Nonnull List<Operand> operands) {
     this.insn = insn;
     this.prevStacks = new LinkedList<>();
-    this.stack = opr;
+    this.stack = operands;
   }
 
   @Nonnull

@@ -1687,10 +1687,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         // Save the statements
         inlineExceptionHandlers.put(ln, as);
       } else {
-        worklist.add(new BranchedInsnInfo(ln));
+        worklist.add(new BranchedInsnInfo(ln, new ArrayList<>()));
       }
     }
-    worklist.add(new BranchedInsnInfo(instructions.getFirst()));
+    worklist.add(new BranchedInsnInfo(instructions.getFirst(), new ArrayList<>()));
     Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges = HashBasedTable.create(1, 1);
 
     do {
