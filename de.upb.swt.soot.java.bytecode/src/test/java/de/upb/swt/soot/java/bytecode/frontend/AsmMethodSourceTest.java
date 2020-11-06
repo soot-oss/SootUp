@@ -1,0 +1,56 @@
+package de.upb.swt.soot.java.bytecode.frontend;
+
+import static junit.framework.TestCase.fail;
+import static org.junit.Assert.*;
+
+import de.upb.swt.soot.core.frontend.AbstractClassSource;
+import de.upb.swt.soot.core.model.AbstractClass;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.views.View;
+import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
+import de.upb.swt.soot.java.core.types.JavaClassType;
+import java.util.Arrays;
+import org.junit.Test;
+
+public class AsmMethodSourceTest {
+
+  @Test
+  public void testFix_StackUnderrun_convertPutFieldInsn_init() {
+
+    double version = Double.parseDouble(System.getProperty("java.specification.version"));
+    if (version > 1.8) {
+      fail("The rt.jar is not available after Java 8. You are using version " + version);
+    }
+
+    JavaProject javaProject =
+        JavaProject.builder(new JavaLanguage(8))
+            .addClassPath(
+                new JavaClassPathAnalysisInputLocation(
+                    System.getProperty("java.home") + "/lib/rt.jar"))
+            .build();
+
+    View view = javaProject.createOnDemandView();
+
+    JavaClassType mainClassSignature =
+        JavaIdentifierFactory.getInstance()
+            .getClassType("javax.management.NotificationBroadcasterSupport");
+    MethodSignature mainMethodSignature =
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature(
+                "<init>",
+                mainClassSignature,
+                "void",
+                Arrays.asList(
+                    "java.util.concurrent.Executor", "javax.management.MBeanNotificationInfo[]"));
+
+    final AbstractClass<? extends AbstractClassSource> abstractClass =
+        view.getClass(mainClassSignature).get();
+
+    final SootMethod method = (SootMethod) abstractClass.getMethod(mainMethodSignature).get();
+    method.getBody().getStmts();
+  }
+}

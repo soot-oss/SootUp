@@ -26,7 +26,7 @@ import org.junit.experimental.categories.Category;
 /**
  * Input source examples taken from https://bitbucket.org/delors/jcg/src/master/
  *
- * @author: Markus Schmidt
+ * @author Markus Schmidt
  */
 @Category(Java8Test.class)
 public class ClassHierarchyAlgorithmTest {
