@@ -1,3 +1,25 @@
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2018-2020 Andreas Dann, Markus Schmidt and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 package de.upb.swt.soot.java.bytecode.frontend;
 
 import de.upb.swt.soot.core.jimple.Jimple;
@@ -12,6 +34,10 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import org.objectweb.asm.tree.AbstractInsnNode;
 
+/**
+ * This class resembles the stack which the bytecode fills. It is used to convert to jimple with
+ * Locals. (stack-machine -> "register" machine model)
+ */
 public class OperandStack {
 
   private final AsmMethodSource methodSource;
@@ -38,7 +64,7 @@ public class OperandStack {
   }
 
   public void pushDual(Operand opr) {
-    stack.add(methodSource.DWORD_DUMMY);
+    stack.add(AsmMethodSource.DWORD_DUMMY);
     stack.add(opr);
   }
 
@@ -64,7 +90,7 @@ public class OperandStack {
   public Operand popDual() {
     Operand o = pop();
     Operand o2 = pop();
-    if (o2 != methodSource.DWORD_DUMMY && o2 != o) {
+    if (o2 != AsmMethodSource.DWORD_DUMMY && o2 != o) {
       throw new AssertionError("Not dummy operand, " + o2.value + " -- " + o.value);
     }
     return o;
