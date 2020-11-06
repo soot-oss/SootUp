@@ -111,7 +111,6 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
   protected Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
     if ((invokeExpr instanceof JDynamicInvokeExpr)) {
-      // TODO: [ms] handle dynamicInvoke differently than just ignoring?
       return Stream.empty();
     }
 
