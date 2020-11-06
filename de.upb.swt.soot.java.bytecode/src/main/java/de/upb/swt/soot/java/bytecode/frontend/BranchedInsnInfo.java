@@ -46,7 +46,7 @@ final class BranchedInsnInfo {
     this.stack = opr;
   }
 
-  public List<Operand> getStack() {
+  public List<Operand> getOperandStack() {
     return stack;
   }
 
