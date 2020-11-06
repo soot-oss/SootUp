@@ -1663,7 +1663,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           continue tgt_loop;
         }
       }
-      edge.replaceStack(operandStack.getStack());
+      edge.setStack(operandStack.getStack());
       prevStacks.add(stackss);
       conversionWorklist.add(edge);
     } while (i < lastIdx && (tgt = tgts.get(i++)) != null);
