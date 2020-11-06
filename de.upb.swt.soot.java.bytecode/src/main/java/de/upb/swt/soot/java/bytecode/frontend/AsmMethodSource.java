@@ -203,6 +203,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     try {
       convert();
     } catch (Exception e) {
+      instructions.iterator().forEachRemaining(item -> System.out.println(AsmUtil.toString(item)));
       throw new RuntimeException("Failed to convert " + lazyMethodSignature.get(), e);
     }
 
