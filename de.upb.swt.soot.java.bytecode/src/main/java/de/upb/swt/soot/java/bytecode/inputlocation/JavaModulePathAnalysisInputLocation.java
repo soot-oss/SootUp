@@ -24,10 +24,10 @@ import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.inputlocation.ClassResolvingException;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
@@ -124,8 +124,8 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
 
     if (inputLocation == null) {
       try {
-        throw new ClassResolvingException("No Namespace for class " + klassType);
-      } catch (ClassResolvingException e) {
+        throw new ResolveException("No Namespace for class " + klassType);
+      } catch (ResolveException e) {
         e.printStackTrace();
         return Optional.empty();
       }
