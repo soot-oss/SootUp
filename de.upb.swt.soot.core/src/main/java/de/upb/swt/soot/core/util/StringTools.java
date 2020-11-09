@@ -118,7 +118,7 @@ public class StringTools {
       else if (ch == '\f') {
         builder.append("\\f");
         needsQuotes = true;
-      } else if (ch >= 32 && ch <= 126) {
+      } else if (ch >= 32 && ch <= 126 /* is printable ascii */) {
         builder.append(ch);
         // TODO: [ms] adapt this list to add quotes in cases where it is necessary
         if (ch == ' ' || ch == ';' || ch == '/') {
