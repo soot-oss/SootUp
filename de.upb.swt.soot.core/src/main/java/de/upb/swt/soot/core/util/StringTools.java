@@ -42,7 +42,8 @@ public class StringTools {
     final int size = fromStringArray.length;
     for (int j = 0; j < size; j++) {
       char ch = fromStringArray[j];
-      if (!(((ch >= 32 && ch <= 126) || ch == cr || ch == lf) && ch != '\\')) {
+      final boolean isPrintableAscii = (ch >= 32 && ch <= 126);
+      if (!((isPrintableAscii || ch == cr || ch == lf) && ch != '\\')) {
         firstNonAlphaPos = j;
         break;
       }
