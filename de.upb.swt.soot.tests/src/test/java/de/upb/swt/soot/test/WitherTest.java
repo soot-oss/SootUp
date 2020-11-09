@@ -21,6 +21,7 @@ import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.JavaSootClassSource;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
@@ -61,7 +62,7 @@ public class WitherTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body.BodyBuilder bodyBuilder = Body.builder();
+    Body.BodyBuilder bodyBuilder = Body.builder(new ArrayList<>());
     final JIdentityStmt firstStmt =
         Jimple.newIdentityStmt(
             generator.generateLocal(declareClassSig),

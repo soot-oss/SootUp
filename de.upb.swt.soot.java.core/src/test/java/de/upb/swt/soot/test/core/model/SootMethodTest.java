@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.Project;
-import de.upb.swt.soot.core.frontend.OverridingMethodSource;
+import de.upb.swt.soot.core.frontend.OverridingBodySource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
@@ -48,7 +48,7 @@ public class SootMethodTest {
     MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
-    Body.BodyBuilder bodyBuilder = Body.builder();
+    Body.BodyBuilder bodyBuilder = Body.builder(null);
 
     final JIdentityStmt firstStmt =
         Jimple.newIdentityStmt(
@@ -70,7 +70,7 @@ public class SootMethodTest {
 
     SootMethod dummyMainMethod =
         new SootMethod(
-            new OverridingMethodSource(methodSignature, body),
+            new OverridingBodySource(methodSignature, body),
             methodSignature,
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
             Collections.emptyList());
