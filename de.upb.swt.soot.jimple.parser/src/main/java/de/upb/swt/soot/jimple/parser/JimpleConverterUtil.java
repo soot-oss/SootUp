@@ -6,6 +6,7 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
@@ -86,17 +87,34 @@ public class JimpleConverterUtil {
     }
 
     JimpleParser.IdentifierContext class_name = ctx.class_name;
-    JimpleParser.TypeContext typeCtx = ctx.method_subsignature().type();
-    JimpleParser.Method_nameContext method_nameCtx = ctx.method_subsignature().method_name();
-    if (class_name == null || typeCtx == null || method_nameCtx == null) {
+    if (class_name == null) {
       throw new ResolveException(
           "MethodSignature is not well formed.", fileUri, buildPositionFromCtx(ctx));
     }
+
+    final MethodSubSignature methodSubSignature =
+        getMethodSubSignature(ctx.method_subsignature(), ctx);
     String classname = class_name.getText();
+    return identifierFactory.getMethodSignature(getClassType(classname), methodSubSignature);
+  }
+
+  @Nonnull
+  public MethodSubSignature getMethodSubSignature(
+      JimpleParser.Method_subsignatureContext ctx, ParserRuleContext parentCtx) {
+    if (ctx == null) {
+      throw new ResolveException(
+          "MethodSignature is missing.", fileUri, buildPositionFromCtx(parentCtx));
+    }
+    JimpleParser.TypeContext typeCtx = ctx.type();
+    JimpleParser.Method_nameContext method_nameCtx = ctx.method_name();
+    if (typeCtx == null || method_nameCtx == null) {
+      throw new ResolveException(
+          "MethodSignature is not well formed.", fileUri, buildPositionFromCtx(ctx));
+    }
     Type type = getType(typeCtx.getText());
     String methodname = Jimple.unescape(method_nameCtx.getText());
-    List<Type> params = getTypeList(ctx.method_subsignature().type_list());
-    return identifierFactory.getMethodSignature(methodname, getClassType(classname), type, params);
+    List<Type> params = getTypeList(ctx.type_list());
+    return identifierFactory.getMethodSubSignature(methodname, params, type);
   }
 
   public FieldSignature getFieldSignature(JimpleParser.Field_signatureContext ctx) {

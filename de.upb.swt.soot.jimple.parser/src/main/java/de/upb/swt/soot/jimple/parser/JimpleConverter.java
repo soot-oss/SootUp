@@ -192,7 +192,7 @@ public class JimpleConverter {
 
         final String methodname = ctx.method_subsignature().method_name().getText();
         if (methodname == null) {
-          throw new ResolveException(" Methodname not found.", path, buildPositionFromCtx(ctx));
+          throw new ResolveException("Methodname not found.", path, buildPositionFromCtx(ctx));
         }
 
         List<Type> params = util.getTypeList(ctx.method_subsignature().type_list());
