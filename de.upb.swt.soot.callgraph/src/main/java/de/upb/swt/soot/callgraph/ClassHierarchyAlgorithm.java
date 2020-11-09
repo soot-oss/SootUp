@@ -120,10 +120,7 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
         (SootMethod)
             view.getClass(targetMethodSignature.getDeclClassType())
                 .flatMap(clazz -> clazz.getMethod(targetMethodSignature))
-                .orElseThrow(
-                    () ->
-                        new ResolveException(
-                            "Could not find " + targetMethodSignature + " in View"));
+                .orElseGet(() -> findMethodInHierarchy(targetMethodSignature));
 
     if (Modifier.isStatic(targetMethod.getModifiers())) {
       return result;
@@ -132,5 +129,27 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
           result,
           MethodDispatchResolver.resolveAbstractDispatch(view, targetMethodSignature).stream());
     }
+  }
+
+  private <T extends Method> T findMethodInHierarchy(MethodSignature sig) {
+    SootClass sc = (SootClass) view.getClass(sig.getDeclClassType()).get();
+    Optional<ClassType> optSuperclass = sc.getSuperclass();
+
+    Optional<SootMethod> optMethod;
+    while (optSuperclass.isPresent()) {
+      ClassType superClassType = optSuperclass.get();
+      SootClass superClass = (SootClass) view.getClass(superClassType).get();
+      optMethod = superClass.getMethod((MethodSubSignature) sig.getSubSignature());
+      if (optMethod.isPresent()) {
+        return (T) optMethod.get();
+      }
+      optSuperclass = superClass.getSuperclass();
+    }
+    throw new ResolveException(
+        "Could not find \""
+            + sig.getSubSignature()
+            + "\" in "
+            + sig.getDeclClassType().getClassName()
+            + " and in its superclasses");
   }
 }
