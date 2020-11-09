@@ -190,12 +190,12 @@ public class JimpleConverter {
           throw new ResolveException("Returntype not found.", path, buildPositionFromCtx(ctx));
         }
 
-        final String methodname = ctx.method_name().getText();
+        final String methodname = ctx.method_subsignature().method_name().getText();
         if (methodname == null) {
           throw new ResolveException(" Methodname not found.", path, buildPositionFromCtx(ctx));
         }
 
-        List<Type> params = util.getTypeList(ctx.type_list());
+        List<Type> params = util.getTypeList(ctx.method_subsignature().type_list());
 
         MethodSignature methodSignature =
             identifierFactory.getMethodSignature(Jimple.unescape(methodname), clazz, type, params);
