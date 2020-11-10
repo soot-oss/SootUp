@@ -20,8 +20,14 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import java.util.Iterator;
 import javax.annotation.Nonnull;
 
 // https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/scalar/EmptySwitchEliminator.java
@@ -31,12 +37,26 @@ import javax.annotation.Nonnull;
  * blocks of the form switch(x) { default: ... }. Such blocks are replaced by the code of the
  * default block.
  *
- * @author Steven Arzt
+ * @author Steven Arzt, Zun Wang
  */
 public class EmptySwitchEliminator implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    // TODO Implement
+    // Iterate all stmts in the body
+    Iterator<Stmt> stmtIterator = builder.getStmtGraph().iterator();
+    while (stmtIterator.hasNext()) {
+      Stmt stmt = stmtIterator.next();
+      // If the observed stmt an instance of LookupSwitchStmt
+      if (stmt instanceof JSwitchStmt && !((JSwitchStmt) stmt).isTableSwitch()) {
+        Body body = builder.build();
+        JSwitchStmt sw = (JSwitchStmt) stmt;
+        if (sw.getTargetStmts(body).size() == 1 && sw.getDefaultTarget(body).isPresent()) {
+          StmtPositionInfo positionInfo = sw.getPositionInfo();
+          JGotoStmt gotoStmt = Jimple.newGotoStmt(positionInfo);
+          builder.replaceStmt(sw, gotoStmt);
+        }
+      }
+    }
   }
 }
