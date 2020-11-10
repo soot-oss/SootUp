@@ -13,6 +13,7 @@ import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
@@ -59,7 +60,8 @@ public class EmptySwitchEliminatorTest {
   public void testEmptySwitch() {
 
     Body body = createEmptySwitchBody();
-    Body.BodyBuilder builder = Body.builder(body);
+    List<Modifier> modifiers = new ArrayList<>();
+    Body.BodyBuilder builder = Body.builder(body, modifiers);
     EmptySwitchEliminator eliminator = new EmptySwitchEliminator();
     eliminator.interceptBody(builder);
 
@@ -73,7 +75,8 @@ public class EmptySwitchEliminatorTest {
     Stmt sw = JavaJimple.newLookupSwitchStmt(l1, values, noStmtPositionInfo);
 
     // build an instance of BodyBuilder
-    Body.BodyBuilder builder = Body.builder();
+    List<Modifier> modifiers = new ArrayList<>();
+    Body.BodyBuilder builder = Body.builder(modifiers);
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
@@ -100,7 +103,8 @@ public class EmptySwitchEliminatorTest {
     Stmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
     // build an instance of BodyBuilder
-    Body.BodyBuilder builder = Body.builder();
+    List<Modifier> modifiers = new ArrayList<>();
+    Body.BodyBuilder builder = Body.builder(modifiers);
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
