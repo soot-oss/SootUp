@@ -60,6 +60,7 @@ public class EmptySwitchEliminatorTest {
   public void testEmptySwitch() {
 
     Body body = createEmptySwitchBody();
+
     List<Modifier> modifiers = new ArrayList<>();
     Body.BodyBuilder builder = Body.builder(body, modifiers);
     EmptySwitchEliminator eliminator = new EmptySwitchEliminator();

@@ -44,14 +44,15 @@ public class EmptySwitchEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     // Iterate all stmts in the body
-    Iterator<Stmt> stmtIterator = builder.getStmtGraph().iterator();
-    while (stmtIterator.hasNext()) {
-      Stmt stmt = stmtIterator.next();
-      // If the observed stmt an instance of LookupSwitchStmt
-      if (stmt instanceof JSwitchStmt && !((JSwitchStmt) stmt).isTableSwitch()) {
+    Iterator<Stmt> stmts = builder.getStmtGraph().iterator();
+
+    while (stmts.hasNext()) {
+      Stmt stmt = stmts.next();
+      // If the observed stmt an instance of JSwitchStmt
+      if (stmt instanceof JSwitchStmt) {
         Body body = builder.build();
         JSwitchStmt sw = (JSwitchStmt) stmt;
-        if (sw.getTargetStmts(body).size() == 1 && sw.getDefaultTarget(body).isPresent()) {
+        if (sw.getValueCount() == 1 && sw.getDefaultTarget(body).isPresent()) {
           StmtPositionInfo positionInfo = sw.getPositionInfo();
           JGotoStmt gotoStmt = Jimple.newGotoStmt(positionInfo);
           builder.replaceStmt(sw, gotoStmt);
