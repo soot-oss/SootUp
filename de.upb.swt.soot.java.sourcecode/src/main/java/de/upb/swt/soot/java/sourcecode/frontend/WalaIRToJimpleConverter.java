@@ -35,8 +35,8 @@ import com.ibm.wala.shrikeCT.InvalidClassFileException;
 import com.ibm.wala.ssa.*;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
+import de.upb.swt.soot.core.frontend.OverridingBodySource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
-import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
@@ -264,7 +264,7 @@ public class WalaIRToJimpleConverter {
 
     Body body = createBody(methodSig, modifiers, walaMethod);
     return new WalaSootMethod(
-        new OverridingMethodSource(methodSig, body),
+        new OverridingBodySource(methodSig, body),
         methodSig,
         modifiers,
         thrownExceptions,
@@ -420,7 +420,7 @@ public class WalaIRToJimpleConverter {
     rememberedStmt = null;
     isFirstStmtSet = false;
 
-    final Body.BodyBuilder builder = Body.builder();
+    final Body.BodyBuilder builder = Body.builder(new ArrayList<>());
     builder.setMethodSignature(methodSignature);
     List<Trap> traps = new ArrayList<>();
 
