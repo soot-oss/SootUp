@@ -140,7 +140,7 @@ public class JimpleConverter {
         } else {
           final JimpleParser.FieldContext fieldCtx = ctx.member(i).field();
           EnumSet<Modifier> modifier = getModifiers(fieldCtx.modifier());
-          final Position pos = buildPositionFromCtx(ctx);
+          final Position pos = buildPositionFromCtx(fieldCtx);
           final String fieldName = Jimple.unescape(fieldCtx.identifier().getText());
           final SootField f =
               new SootField(
