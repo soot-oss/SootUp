@@ -57,7 +57,8 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
   @Nonnull
   @Override
   public CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType) {
-    MutableCallGraph updated = oldCallGraph.copy();
+    // TODO: check why oldCallGraph.copy() doesn't work
+    MutableCallGraph updated = (MutableCallGraph) oldCallGraph; //.copy();
 
     AbstractClass<? extends AbstractClassSource> clazz = view.getClassOrThrow(classType);
     Set<MethodSignature> newMethodSignatures =
