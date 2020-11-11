@@ -308,9 +308,6 @@ public class WalaJavaClassProvider implements ClassProvider {
     JavaSourceLoaderImpl.JavaClass walaClass = null;
     if (clazz instanceof JavaSourceLoaderImpl.JavaClass) {
       walaClass = (JavaSourceLoaderImpl.JavaClass) clazz;
-    } else {
-      throw new RuntimeException(
-          clazz.getName() + " is not instanceof JavaSourceLoaderImpl.JavaClass");
     }
 
     if (walaClass == null && className.contains("$")) {
@@ -350,11 +347,7 @@ public class WalaJavaClassProvider implements ClassProvider {
   @Override
   public SootClassSource createClassSource(
       AnalysisInputLocation srcNamespace, Path sourcePath, ClassType type) {
-    return getClassSource(type)
-        .orElseThrow(
-            () ->
-                new ResolveException(
-                    "Could not resolve " + type + " in " + classSources.toString()));
+    return getClassSource(type).orElse(null);
   }
 
   @Override
