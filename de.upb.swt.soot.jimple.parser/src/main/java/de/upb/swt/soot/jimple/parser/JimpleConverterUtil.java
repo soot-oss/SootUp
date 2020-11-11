@@ -55,11 +55,28 @@ public class JimpleConverterUtil {
 
   @Nonnull
   public static Position buildPositionFromCtx(@Nonnull ParserRuleContext ctx) {
+
+    // calc end position (line number+char offset in line) as antlr is not capable to do it
+    // intuitively
+    String tokenstr = ctx.getText();
+    // lsp indexes everything zero based - antlr does it only chars in line; linenos are indexed
+    // one-based => subtract one ;)
+    int lineCount = -1;
+    int fromIdx = 0;
+    int lastLineBreakIdx = 0;
+    while ((fromIdx = tokenstr.indexOf("\n", fromIdx)) != -1) {
+      lastLineBreakIdx = fromIdx;
+      lineCount++;
+      fromIdx++;
+    }
+
+    int endCharLength = tokenstr.length() - lastLineBreakIdx;
+
     return new Position(
-        ctx.start.getLine(),
+        ctx.start.getLine() - 1,
         ctx.start.getCharPositionInLine(),
-        ctx.stop.getLine(),
-        ctx.stop.getCharPositionInLine());
+        ctx.stop.getLine() + lineCount,
+        ctx.stop.getCharPositionInLine() + endCharLength);
   }
 
   public void addImport(JimpleParser.ImportItemContext item) {
