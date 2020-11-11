@@ -62,8 +62,6 @@ public abstract class Jimple {
   public static final String DYNAMICINVOKE = "dynamicinvoke";
   public static final String STATICINVOKE = "staticinvoke";
   public static final String VIRTUALINVOKE = "virtualinvoke";
-  public static final String NULL_TYPE = "null_type";
-  public static final String UNKNOWN = "unknown";
   public static final String CMP = "cmp";
   public static final String CMPG = "cmpg";
   public static final String CMPL = "cmpl";
@@ -74,12 +72,8 @@ public abstract class Jimple {
   public static final String NEG = "neg";
   public static final String IF = "if";
   public static final String ABSTRACT = "abstract";
-  //  public static final String BOOLEAN = "boolean";
-  public static final String BREAK = "break";
-  //  public static final String BYTE = "byte";
   public static final String CASE = "case";
   public static final String CATCH = "catch";
-  // public static final String CHAR = "char";
   public static final String CLASS = "class";
   public static final String FINAL = "final";
   public static final String NATIVE = "native";
@@ -94,14 +88,6 @@ public abstract class Jimple {
   public static final String ENUM = "enum";
   public static final String ANNOTATION = "annotation";
   public static final String INTERFACE = "interface";
-  /*
-  public static final String VOID = "void";
-  public static final String SHORT = "short";
-  public static final String INT = "int";
-  public static final String LONG = "long";
-  public static final String FLOAT = "float";
-  public static final String DOUBLE = "double";
-   */
   public static final String EXTENDS = "extends";
   public static final String IMPLEMENTS = "implements";
   public static final String BREAKPOINT = "breakpoint";
@@ -117,7 +103,6 @@ public abstract class Jimple {
   public static final String FROM = "from";
   public static final String TO = "to";
   public static final String WITH = "with";
-  public static final String CLS = "cls"; // FIXME [ms] whats that?
   public static final String TRUE = "true";
   public static final String FALSE = "false";
 
@@ -137,8 +122,6 @@ public abstract class Jimple {
         STATICINVOKE,
         SWITCH,
         VIRTUALINVOKE,
-        NULL_TYPE,
-        // UNKNOWN,
         CMP,
         CMPG,
         CMPL,
@@ -149,12 +132,8 @@ public abstract class Jimple {
         NEG,
         IF,
         ABSTRACT,
-        // BOOLEAN,
-        BREAK,
-        // BYTE,
         CASE,
         CATCH,
-        //        CHAR,
         CLASS,
         FINAL,
         NATIVE,
@@ -169,12 +148,6 @@ public abstract class Jimple {
         ENUM,
         ANNOTATION,
         INTERFACE,
-        /*        VOID,
-        SHORT,
-        INT,
-        LONG,
-        FLOAT,
-        DOUBLE,*/
         EXTENDS,
         IMPLEMENTS,
         BREAKPOINT,
@@ -189,7 +162,6 @@ public abstract class Jimple {
         FROM,
         TO,
         WITH,
-        CLS,
         TRUE,
         FALSE);
     return l;
