@@ -25,7 +25,7 @@ package de.upb.swt.soot.test.java.bytecode.inputlocation;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.frontend.MethodSource;
+import de.upb.swt.soot.core.frontend.BodySource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
@@ -141,9 +141,9 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                 ImmutableUtils.immutableSet(
                     SootMethod.builder()
                         .withSource(
-                            new MethodSource() {
+                            new BodySource() {
                               @Override
-                              public Body resolveBody() {
+                              public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) {
                                 /* [ms] violating @Nonnull */
                                 return null;
                               }

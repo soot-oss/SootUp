@@ -39,7 +39,7 @@ import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.*;
-import de.upb.swt.soot.core.frontend.MethodSource;
+import de.upb.swt.soot.core.frontend.BodySource;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
@@ -75,10 +75,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
-import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.Position;
-import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
@@ -102,11 +99,11 @@ import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.tree.*;
 
 /**
- * A {@link MethodSource} that can read Java bytecode
+ * A {@link BodySource} that can read Java bytecode
  *
  * @author Andreas Dann
  */
-public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
+public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   private static final Operand DWORD_DUMMY = new Operand(null, null);
 
@@ -140,7 +137,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
 
   private Map<LabelNode, Stmt> labelsToStmt;
-  @Nonnull private final Body.BodyBuilder bodyBuilder = Body.builder();
+  @Nonnull private final Body.BodyBuilder bodyBuilder = Body.builder(new ArrayList<>());
 
   Stmt rememberedStmt = null;
   boolean isFirstStmtSet = false;
@@ -181,7 +178,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   @Override
   @Nonnull
-  public Body resolveBody() throws IOException {
+  public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) throws IOException {
     // FIXME: [AD] add real line number
     Position bodyPos = NoPositionInformation.getInstance();
     bodyBuilder.setPosition(bodyPos);

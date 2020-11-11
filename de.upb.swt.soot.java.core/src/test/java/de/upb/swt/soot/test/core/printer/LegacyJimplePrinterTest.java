@@ -3,8 +3,8 @@ package de.upb.swt.soot.test.core.printer;
 import static org.junit.Assert.*;
 
 import de.upb.swt.soot.core.Project;
+import de.upb.swt.soot.core.frontend.OverridingBodySource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
-import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
@@ -47,7 +47,7 @@ public class LegacyJimplePrinterTest {
 
     SootMethod dummyMainMethod =
         new SootMethod(
-            new OverridingMethodSource(methodSignature, body),
+            new OverridingBodySource(methodSignature, body),
             methodSignature,
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
             Collections.emptyList(),
@@ -83,7 +83,7 @@ public class LegacyJimplePrinterTest {
     Stmt tableSwitch = new JSwitchStmt(IntConstant.getInstance(42), 4, 5, noPosInfo);
 
     {
-      Body.BodyBuilder builder = Body.builder();
+      Body.BodyBuilder builder = Body.builder(new ArrayList<>());
       builder.setStartingStmt(tableSwitch);
 
       builder.addFlow(tableSwitch, jNop);
@@ -118,7 +118,7 @@ public class LegacyJimplePrinterTest {
     {
       Stmt lookupSwitch = new JSwitchStmt(IntConstant.getInstance(123), lookupValues, noPosInfo);
 
-      Body.BodyBuilder builder = Body.builder();
+      Body.BodyBuilder builder = Body.builder(new ArrayList<>());
       builder.setStartingStmt(lookupSwitch);
 
       builder.addFlow(lookupSwitch, jNop);
@@ -154,6 +154,6 @@ public class LegacyJimplePrinterTest {
   @Test(expected = RuntimeException.class)
   public void testValidOptions() {
     Printer p = new Printer(Printer.Option.UseImports, Printer.Option.LegacyMode);
-    p.printTo(buildClass(Body.builder()), new PrintWriter(new StringWriter()));
+    p.printTo(buildClass(Body.builder(new ArrayList<>())), new PrintWriter(new StringWriter()));
   }
 }
