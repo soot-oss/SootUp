@@ -425,7 +425,7 @@ public class WalaIRToJimpleConverter {
     rememberedStmt = null;
     isFirstStmtSet = false;
 
-    final Body.BodyBuilder builder = Body.builder(new ArrayList<>());
+    final Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
     List<Trap> traps = new ArrayList<>();
 

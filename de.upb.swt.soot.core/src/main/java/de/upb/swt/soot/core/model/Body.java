@@ -406,7 +406,7 @@ public class Body implements Copyable {
     return new BodyBuilder();
   }
 
-  public static BodyBuilder builder(@Nonnull Body body, Iterable<Modifier> modifiers) {
+  public static BodyBuilder builder(@Nonnull Body body, Set<Modifier> modifiers) {
     return new BodyBuilder(body, modifiers);
   }
 
@@ -431,7 +431,7 @@ public class Body implements Copyable {
   public static class BodyBuilder {
     @Nonnull private Set<Local> locals = new HashSet<>();
     @Nonnull private final LocalGenerator localGen = new LocalGenerator(locals);
-    @Nullable private Iterable<Modifier> modifiers = null;
+    @Nonnull private Set<Modifier> modifiers = Collections.emptySet();
 
     @Nullable private Position position = null;
     @Nonnull private final MutableStmtGraph cfg;
@@ -444,7 +444,7 @@ public class Body implements Copyable {
       cfg = new MutableStmtGraph();
     }
 
-    BodyBuilder(@Nonnull Body body, @Nonnull Iterable<Modifier> modifiers) {
+    BodyBuilder(@Nonnull Body body, @Nonnull Set<Modifier> modifiers) {
       setModifiers(modifiers);
       setMethodSignature(body.getMethodSignature());
       setLocals(body.getLocals());
@@ -533,8 +533,9 @@ public class Body implements Copyable {
       return this;
     }
 
-    public void setModifiers(@Nonnull Iterable<Modifier> modifiers) {
+    public BodyBuilder setModifiers(@Nonnull Set<Modifier> modifiers) {
       this.modifiers = modifiers;
+      return this;
     }
 
     @Nonnull
@@ -597,10 +598,6 @@ public class Body implements Copyable {
         setPosition(NoPositionInformation.getInstance());
       }
 
-      if (modifiers == null) {
-        throw new RuntimeException("There is no Modifier set.");
-      }
-
       // commit pending changes
       commitDeferredStmtGraphChanges();
 
@@ -622,6 +619,10 @@ public class Body implements Copyable {
       }
 
       return new Body(methodSig, locals, cfg, position);
+    }
+
+    public Set<Modifier> getModifiers() {
+      return modifiers;
     }
   }
 }

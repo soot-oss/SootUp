@@ -68,7 +68,7 @@ public class PrinterTest {
     StmtPositionInfo noPosInfo = StmtPositionInfo.createNoStmtPositionInfo();
     final JReturnVoidStmt returnVoidStmt = new JReturnVoidStmt(noPosInfo);
     final JNopStmt jNop = new JNopStmt(noPosInfo);
-    Body.BodyBuilder bodyBuilder = Body.builder(new ArrayList<>());
+    Body.BodyBuilder bodyBuilder = Body.builder();
 
     bodyBuilder
         .setStartingStmt(jNop)
