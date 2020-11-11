@@ -87,7 +87,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     Body body;
     try {
       body = bodySource.resolveBody(getModifiers());
-    } catch (ResolveException e | IOException e) {
+    } catch (ResolveException | IOException e) {
       body = null;
       // TODO: [JMP] Exception handling
       e.printStackTrace();
@@ -219,20 +219,19 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
   @Nonnull
   public SootMethod withSource(BodySource source) {
-    return new SootMethod(source, getSignature(), getModifiers(), exceptions,
-            getPosition());
+    return new SootMethod(source, getSignature(), getModifiers(), exceptions, getPosition());
   }
 
   @Nonnull
   public SootMethod withModifiers(Iterable<Modifier> modifiers) {
-    return new SootMethod(bodySource, getSignature(), modifiers, getExceptionSignatures(),
-            getPosition());
+    return new SootMethod(
+        bodySource, getSignature(), modifiers, getExceptionSignatures(), getPosition());
   }
 
   @Nonnull
   public SootMethod withThrownExceptions(Iterable<ClassType> thrownExceptions) {
-    return new SootMethod(bodySource, getSignature(), getModifiers(), thrownExceptions,
-            getPosition());
+    return new SootMethod(
+        bodySource, getSignature(), getModifiers(), thrownExceptions, getPosition());
   }
 
   @Nonnull
@@ -284,8 +283,11 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   }
 
   public interface BuildStep {
-    @Nonnull SootMethod build();
-    @Nonnull BuildStep withPosition(Position position);
+    @Nonnull
+    SootMethod build();
+
+    @Nonnull
+    BuildStep withPosition(Position position);
   }
 
   /**
@@ -296,9 +298,8 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   public static class SootMethodBuilder
       implements MethodSourceStep, SignatureStep, ModifierStep, ThrownExceptionsStep, BuildStep {
 
-    @Nullable private MethodSource source;
-    @Nonnull private Iterable<Modifier> modifiers = Collections.emptyList();
     @Nullable private BodySource source;
+    @Nonnull private Iterable<Modifier> modifiers = Collections.emptyList();
     @Nullable private MethodSignature methodSignature;
     @Nonnull private Iterable<ClassType> thrownExceptions = Collections.emptyList();
     @Nonnull private Position position = NoPositionInformation.getInstance();
