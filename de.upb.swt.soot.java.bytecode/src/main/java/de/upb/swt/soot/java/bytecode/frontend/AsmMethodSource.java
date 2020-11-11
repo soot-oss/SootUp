@@ -137,7 +137,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
 
   private Map<LabelNode, Stmt> labelsToStmt;
-  @Nonnull private final Body.BodyBuilder bodyBuilder = Body.builder(new ArrayList<>());
+  @Nonnull private final Body.BodyBuilder bodyBuilder = Body.builder();
 
   Stmt rememberedStmt = null;
   boolean isFirstStmtSet = false;
@@ -182,6 +182,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // FIXME: [AD] add real line number
     Position bodyPos = NoPositionInformation.getInstance();
     bodyBuilder.setPosition(bodyPos);
+    // TODO: [ms] as we always need modifiers: dont memoize them +more usage
+    bodyBuilder.setModifiers(lazyModifiers.get());
 
     /* initialize */
     int nrInsn = instructions.size();
