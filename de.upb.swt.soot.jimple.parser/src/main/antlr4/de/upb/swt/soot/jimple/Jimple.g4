@@ -154,7 +154,7 @@ grammar Jimple;
     modifier* type identifier SEMICOLON;
 
   method :
-    modifier* type method_subsignature throws_clause? method_body;
+    modifier* method_subsignature throws_clause? method_body;
 
   method_name :
     '<init>' | '<clinit>' | identifier;

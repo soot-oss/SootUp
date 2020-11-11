@@ -1,8 +1,8 @@
 package de.upb.swt.soot.jimple.parser;
 
 import de.upb.swt.soot.core.IdentifierFactory;
+import de.upb.swt.soot.core.frontend.OverridingBodySource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
-import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
@@ -185,17 +185,24 @@ public class JimpleConverter {
         EnumSet<Modifier> modifier =
             ctx.modifier() == null ? EnumSet.noneOf(Modifier.class) : getModifiers(ctx.modifier());
 
-        final Type type = util.getType(ctx.type().getText());
+        final JimpleParser.Method_subsignatureContext method_subsignatureContext =
+            ctx.method_subsignature();
+        if (method_subsignatureContext == null) {
+          throw new ResolveException(
+              "Methodsubsignature not found.", path, buildPositionFromCtx(ctx));
+        }
+
+        final Type type = util.getType(method_subsignatureContext.type().getText());
         if (type == null) {
           throw new ResolveException("Returntype not found.", path, buildPositionFromCtx(ctx));
         }
 
-        final String methodname = ctx.method_subsignature().method_name().getText();
+        final String methodname = method_subsignatureContext.method_name().getText();
         if (methodname == null) {
           throw new ResolveException("Methodname not found.", path, buildPositionFromCtx(ctx));
         }
 
-        List<Type> params = util.getTypeList(ctx.method_subsignature().type_list());
+        List<Type> params = util.getTypeList(method_subsignatureContext.type_list());
 
         MethodSignature methodSignature =
             identifierFactory.getMethodSignature(Jimple.unescape(methodname), clazz, type, params);
@@ -303,7 +310,7 @@ public class JimpleConverter {
         } catch (Exception e) {
           throw new ResolveException(methodname + " " + e.getMessage(), path, methodPosition, e);
         }
-        OverridingMethodSource oms = new OverridingMethodSource(methodSignature, build);
+        OverridingBodySource oms = new OverridingBodySource(methodSignature, build);
         return new SootMethod(oms, methodSignature, modifier, exceptions, methodPosition);
       }
 
