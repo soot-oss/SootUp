@@ -74,7 +74,7 @@ public class JimpleConverter {
     @Nonnull
     public Boolean visitFile(@Nonnull JimpleParser.FileContext ctx) {
 
-      position = JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx);
+      position = JimpleConverterUtil.buildPositionFromCtx(ctx);
 
       // imports
       ctx.importItem().stream()
@@ -94,9 +94,7 @@ public class JimpleConverter {
 
       } else {
         throw new ResolveException(
-            "Classname is not well formed.",
-            path,
-            JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+            "Classname is not well formed.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));
       }
 
       modifiers = getModifiers(ctx.modifier());
@@ -142,8 +140,7 @@ public class JimpleConverter {
         } else {
           final JimpleParser.FieldContext fieldCtx = ctx.member(i).field();
           EnumSet<Modifier> modifier = getModifiers(fieldCtx.modifier());
-          final Position pos =
-              JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) fieldCtx);
+          final Position pos = JimpleConverterUtil.buildPositionFromCtx(fieldCtx);
           final String fieldName = Jimple.unescape(fieldCtx.identifier().getText());
           final SootField f =
               new SootField(
@@ -194,25 +191,19 @@ public class JimpleConverter {
             ctx.method_subsignature();
         if (method_subsignatureContext == null) {
           throw new ResolveException(
-              "Methodsubsignature not found.",
-              path,
-              JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+              "Methodsubsignature not found.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));
         }
 
         final Type type = util.getType(method_subsignatureContext.type().getText());
         if (type == null) {
           throw new ResolveException(
-              "Returntype not found.",
-              path,
-              JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+              "Returntype not found.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));
         }
 
         final String methodname = method_subsignatureContext.method_name().getText();
         if (methodname == null) {
           throw new ResolveException(
-              "Methodname not found.",
-              path,
-              JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+              "Methodname not found.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));
         }
 
         List<Type> params = util.getTypeList(method_subsignatureContext.type_list());
@@ -228,9 +219,7 @@ public class JimpleConverter {
 
         if (ctx.method_body() == null) {
           throw new ResolveException(
-              "404 Body not found.",
-              path,
-              JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+              "404 Body not found.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));
         } else if (ctx.method_body().SEMICOLON() == null) {
 
           // declare locals
@@ -246,7 +235,7 @@ public class JimpleConverter {
                 throw new ResolveException(
                     "Void is not an allowed Type for a Local.",
                     path,
-                    JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+                    JimpleConverterUtil.buildPositionFromCtx(ctx));
               }
 
               if (it.arg_list() != null) {
@@ -260,7 +249,7 @@ public class JimpleConverter {
                       throw new ResolveException(
                           "Thats not a Local in the Local Declaration.",
                           path,
-                          JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+                          JimpleConverterUtil.buildPositionFromCtx(ctx));
                     }
                   }
                 }
@@ -298,7 +287,7 @@ public class JimpleConverter {
           // no body is given: no brackets, but a semicolon -> abstract
         }
 
-        Position classPosition = JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx);
+        Position classPosition = JimpleConverterUtil.buildPositionFromCtx(ctx);
         builder.setPosition(classPosition);
 
         // associate labeled Stmts with Branching Stmts
@@ -313,7 +302,7 @@ public class JimpleConverter {
                       + " to "
                       + targetLabel,
                   path,
-                  JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+                  JimpleConverterUtil.buildPositionFromCtx(ctx));
 
             } else {
               builder.addFlow(item.getKey(), target);
@@ -321,7 +310,7 @@ public class JimpleConverter {
           }
         }
 
-        Position methodPosition = JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx);
+        Position methodPosition = JimpleConverterUtil.buildPositionFromCtx(ctx);
         final Body build;
         try {
           build = builder.build();
@@ -346,9 +335,7 @@ public class JimpleConverter {
           final JimpleParser.StmtContext stmtCtx = ctx.stmt();
           if (stmtCtx == null) {
             throw new ResolveException(
-                "Couldn't parse Stmt.",
-                path,
-                JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+                "Couldn't parse Stmt.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));
           }
           Stmt stmt = visitStmt(stmtCtx);
           if (ctx.label_name != null) {
@@ -399,7 +386,7 @@ public class JimpleConverter {
                     throw new ResolveException(
                         "Only one default label is allowed!",
                         path,
-                        JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+                        JimpleConverterUtil.buildPositionFromCtx(ctx));
                   }
                 } else if (case_labelContext.integer_constant().getText() != null) {
                   final int value =
@@ -409,9 +396,7 @@ public class JimpleConverter {
                   targetLabels.add(it.goto_stmt().label_name.getText());
                 } else {
                   throw new ResolveException(
-                      "Label is invalid.",
-                      path,
-                      JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+                      "Label is invalid.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));
                 }
               }
               targetLabels.add(defaultLabel);
@@ -462,9 +447,7 @@ public class JimpleConverter {
                   return Jimple.newAssignStmt(left, right, pos);
                 } else {
                   throw new ResolveException(
-                      "Invalid assignment.",
-                      path,
-                      JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+                      "Invalid assignment.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));
                 }
 
               } else if (ctx.IF() != null) {
@@ -500,9 +483,7 @@ public class JimpleConverter {
             }
           }
           throw new ResolveException(
-              "Unknown Stmt.",
-              path,
-              JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+              "Unknown Stmt.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));
         }
       }
 
@@ -516,7 +497,7 @@ public class JimpleConverter {
               throw new ResolveException(
                   type + " is not a ReferenceType.",
                   path,
-                  JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+                  JimpleConverterUtil.buildPositionFromCtx(ctx));
             }
             return Jimple.newNewExpr((ReferenceType) type);
           } else if (ctx.NEWARRAY() != null) {
@@ -525,7 +506,7 @@ public class JimpleConverter {
               throw new ResolveException(
                   type + " can not be an ArrayType.",
                   path,
-                  JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+                  JimpleConverterUtil.buildPositionFromCtx(ctx));
             }
 
             Immediate dim = (Immediate) visitImmediate(ctx.array_descriptor().immediate());
@@ -536,7 +517,7 @@ public class JimpleConverter {
               throw new ResolveException(
                   " Only base types are allowed",
                   path,
-                  JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+                  JimpleConverterUtil.buildPositionFromCtx(ctx));
             }
 
             List<Immediate> sizes =
@@ -547,7 +528,7 @@ public class JimpleConverter {
               throw new ResolveException(
                   "The Size list must have at least one Element.",
                   path,
-                  JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+                  JimpleConverterUtil.buildPositionFromCtx(ctx));
             }
             ArrayType arrtype = identifierFactory.getArrayType(type, sizes.size());
             return Jimple.newNewMultiArrayExpr(arrtype, sizes);
@@ -612,7 +593,7 @@ public class JimpleConverter {
                 throw new ResolveException(
                     "Unknown Nonstatic Invoke.",
                     path,
-                    JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+                    JimpleConverterUtil.buildPositionFromCtx(ctx));
             }
 
           } else if (ctx.staticinvoke != null) {
@@ -636,9 +617,7 @@ public class JimpleConverter {
                 methodRef, bootstrapArgs, bootstrapMethodRef, arglist);
           }
           throw new ResolveException(
-              "Malformed Invoke Expression.",
-              path,
-              JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+              "Malformed Invoke Expression.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));
         }
 
         @Override
@@ -687,9 +666,7 @@ public class JimpleConverter {
                     identifierFactory.getType(ctx.method_subsignature().method_name().getText()));
           }
           throw new ResolveException(
-              "Unknown Constant.",
-              path,
-              JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+              "Unknown Constant.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));
         }
 
         @Override
@@ -744,7 +721,7 @@ public class JimpleConverter {
           throw new ResolveException(
               "Unknown BinOp: " + binopctx.getText(),
               path,
-              JimpleConverterUtil.buildPositionFromCtx((ParserRuleContext) ctx));
+              JimpleConverterUtil.buildPositionFromCtx(ctx));
         }
 
         @Override
