@@ -88,7 +88,7 @@ public class EmptySwitchEliminatorTest {
     eliminator.interceptBody(builder);
 
     Body expectedBody = createExpectedEmptySwitchBody();
-    AssertUtils.assertStmtGraphEquiv(expectedBody.getStmtGraph(), builder.getStmtGraph());
+    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
   }
 
   private Body createEmptySwitchBody() {

@@ -4,7 +4,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2020
+ * Copyright (C) 2019-2020 Zun Wang
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -24,9 +24,13 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 
 import com.google.common.collect.Lists;
 import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import de.upb.swt.soot.core.model.Body;
+
+import java.util.Set;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -35,23 +39,42 @@ import static org.junit.Assert.assertTrue;
 
 public class AssertUtils {
 
-    //assert whether two stmtGraph have the same stmts
-    public static void assertStmtGraphEquiv(StmtGraph expected, StmtGraph actual) {
-        assertNotNull(expected);
-        assertNotNull(actual);
-        final boolean condition = expected.equivTo(actual);
+    //assert whether two bodys have the same locals
+    public static void assertLocalsEquiv(Body expected, Body actual) {
+        Set<Local> expected_locals = expected.getLocals();
+        Set<Local> actual_locals = actual.getLocals();
+        assertNotNull(expected_locals);
+        assertNotNull(actual_locals);
+        assertEquals(expected_locals.size(), actual_locals.size());
+        boolean isEqual = true;
+        for (Local local : actual_locals) {
+            if (!expected_locals.contains(local)) {
+                isEqual = false;
+                break;
+            }
+        }
+        assertTrue(isEqual);
+    }
+
+    //assert whether two bodys have the same stmtGraphs
+    public static void assertStmtGraphEquiv(Body expected, Body actual) {
+        StmtGraph expected_SG = expected.getStmtGraph();
+        StmtGraph actual_SG = actual.getStmtGraph();
+        assertNotNull(expected_SG);
+        assertNotNull(actual_SG);
+        final boolean condition = expected_SG.equivTo(actual_SG);
         if (!condition) {
             System.out.println("expected:");
-            System.out.println(Lists.newArrayList(expected.iterator()));
+            System.out.println(Lists.newArrayList(expected_SG.iterator()));
             System.out.println("actual:");
-            System.out.println(Lists.newArrayList(actual.iterator()) + "\n");
+            System.out.println(Lists.newArrayList(actual_SG.iterator()) + "\n");
 
-            for (Stmt s : expected) {
-                System.out.println(s + " => " + expected.successors(s));
+            for (Stmt s : expected_SG) {
+                System.out.println(s + " => " + expected_SG.successors(s));
             }
             System.out.println();
-            for (Stmt s : actual) {
-                System.out.println(s + " => " + actual.successors(s));
+            for (Stmt s : actual_SG) {
+                System.out.println(s + " => " + actual_SG.successors(s));
             }
         }
         assertTrue(condition);
