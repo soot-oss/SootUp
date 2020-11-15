@@ -37,6 +37,7 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
+import de.upb.swt.soot.java.bytecode.interceptors.AssertUtils;
 import de.upb.swt.soot.java.bytecode.interceptors.EmptySwitchEliminator;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
@@ -87,7 +88,7 @@ public class EmptySwitchEliminatorTest {
     eliminator.interceptBody(builder);
 
     Body expectedBody = createExpectedEmptySwitchBody();
-    assertStmtGraphEquiv(expectedBody.getStmtGraph(), builder.getStmtGraph());
+    AssertUtils.assertStmtGraphEquiv(expectedBody.getStmtGraph(), builder.getStmtGraph());
   }
 
   private Body createEmptySwitchBody() {
@@ -145,26 +146,5 @@ public class EmptySwitchEliminatorTest {
     builder.setPosition(NoPositionInformation.getInstance());
 
     return builder.build();
-  }
-
-  private void assertStmtGraphEquiv(StmtGraph expected, StmtGraph actual) {
-    assertNotNull(expected);
-    assertNotNull(actual);
-    final boolean condition = expected.equivTo(actual);
-    if (!condition) {
-      System.out.println("expected:");
-      System.out.println(Lists.newArrayList(expected.iterator()));
-      System.out.println("actual:");
-      System.out.println(Lists.newArrayList(actual.iterator()) + "\n");
-
-      for (Stmt s : expected) {
-        System.out.println(s + " => " + expected.successors(s));
-      }
-      System.out.println();
-      for (Stmt s : actual) {
-        System.out.println(s + " => " + actual.successors(s));
-      }
-    }
-    assertTrue(condition);
   }
 }

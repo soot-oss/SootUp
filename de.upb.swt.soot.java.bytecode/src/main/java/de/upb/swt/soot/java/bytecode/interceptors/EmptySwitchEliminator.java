@@ -30,8 +30,6 @@ import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.Iterator;
 import javax.annotation.Nonnull;
 
-// https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/scalar/EmptySwitchEliminator.java
-
 /**
  * Removes empty switch statements which always take the default action from a method body, i.e.
  * blocks of the form switch(x) { default: ... }. Such blocks are replaced by the code of the
@@ -52,7 +50,8 @@ public class EmptySwitchEliminator implements BodyInterceptor {
       if (stmt instanceof JSwitchStmt) {
         Body body = builder.build();
         JSwitchStmt sw = (JSwitchStmt) stmt;
-        if (sw.getValueCount() == 1 && sw.getDefaultTarget(body).isPresent()) {
+        // if there's only defaultStmt
+        if (sw.getValueCount() == 1) {
           StmtPositionInfo positionInfo = sw.getPositionInfo();
           JGotoStmt gotoStmt = Jimple.newGotoStmt(positionInfo);
           builder.replaceStmt(sw, gotoStmt);
