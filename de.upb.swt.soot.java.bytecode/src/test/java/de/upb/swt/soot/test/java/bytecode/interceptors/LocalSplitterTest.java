@@ -3,8 +3,6 @@ package de.upb.swt.soot.test.java.bytecode.interceptors;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import com.google.common.collect.Lists;
-import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
@@ -473,5 +471,4 @@ public class LocalSplitterTest {
 
     return builder.build();
   }
-
 }

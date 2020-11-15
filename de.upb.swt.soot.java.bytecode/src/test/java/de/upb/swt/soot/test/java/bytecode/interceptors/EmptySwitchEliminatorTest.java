@@ -20,12 +20,8 @@ package de.upb.swt.soot.test.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import com.google.common.collect.Lists;
-import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
