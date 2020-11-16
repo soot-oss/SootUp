@@ -146,6 +146,7 @@ public class ClassHierarchyAlgorithmTest {
     assertEquals(0, cg.callsFrom(methodD).size());
   }
 
+  @Ignore
   @Test
   public void testAddClass() {
 
