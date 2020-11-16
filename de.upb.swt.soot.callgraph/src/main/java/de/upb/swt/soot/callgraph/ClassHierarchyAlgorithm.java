@@ -99,7 +99,7 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
                       .get()
                       .getSignature();
 
-              for (MethodSignature callingMethodSig : oldCallGraph.callsTo(overriddenMethodSig)) {
+              for (MethodSignature callingMethodSig : updated.callsTo(overriddenMethodSig)) {
                 updated.addCall(callingMethodSig, overridingMethodSig);
               }
             });

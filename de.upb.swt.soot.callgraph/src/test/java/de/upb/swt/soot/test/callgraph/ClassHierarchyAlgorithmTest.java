@@ -146,7 +146,6 @@ public class ClassHierarchyAlgorithmTest {
     assertEquals(0, cg.callsFrom(methodD).size());
   }
 
-  @Ignore
   @Test
   public void testAddClass() {
 
@@ -178,8 +177,7 @@ public class ClassHierarchyAlgorithmTest {
 
     final TypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
     CallGraphAlgorithm cha = new ClassHierarchyAlgorithm(view, typeHierarchy);
-    //    CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
-    CallGraph cg = loadCallGraph("Misc", "update.operation.cg.Class");
+    CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
 
     JavaClassType newClass =
         new JavaClassType("AdderA", identifierFactory.getPackageName("update.operation.cg"));
