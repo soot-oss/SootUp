@@ -44,7 +44,7 @@ public final class MethodDispatchResolver {
   public static Set<MethodSignature> resolveAbstractDispatch(View view, MethodSignature m) {
     TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
 
-    return hierarchy.directSubtypesOf(m.getDeclClassType()).stream()
+    return hierarchy.subtypesOf(m.getDeclClassType()).stream()
         .map(
             subtype ->
                 view.getClass(subtype)
