@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.model;
  */
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
@@ -402,12 +403,12 @@ public class Body implements Copyable {
     }
   }
 
-  public static BodyBuilder builder() {
-    return new BodyBuilder();
+  public static BodyBuilder builder(Iterable<Modifier> modifiers) {
+    return new BodyBuilder(modifiers);
   }
 
-  public static BodyBuilder builder(Body body) {
-    return new BodyBuilder(body);
+  public static BodyBuilder builder(@Nonnull Body body, Iterable<Modifier> modifiers) {
+    return new BodyBuilder(body, modifiers);
   }
 
   /**
@@ -431,6 +432,7 @@ public class Body implements Copyable {
   public static class BodyBuilder {
     @Nonnull private Set<Local> locals = new HashSet<>();
     @Nonnull private final LocalGenerator localGen = new LocalGenerator(locals);
+    @Nonnull private final Iterable<Modifier> modifiers;
 
     @Nullable private Position position = null;
     @Nonnull private final MutableStmtGraph cfg;
@@ -439,11 +441,13 @@ public class Body implements Copyable {
     @Nullable private StmtGraphManipulationQueue changeQueue = null;
     @Nullable private List<Stmt> cachedLinearizedStmts = null;
 
-    BodyBuilder() {
+    BodyBuilder(@Nonnull Iterable<Modifier> modifiers) {
+      this.modifiers = modifiers;
       cfg = new MutableStmtGraph();
     }
 
-    BodyBuilder(@Nonnull Body body) {
+    BodyBuilder(@Nonnull Body body, @Nonnull Iterable<Modifier> modifiers) {
+      this.modifiers = modifiers;
       setMethodSignature(body.getMethodSignature());
       setLocals(body.getLocals());
       setPosition(body.getPosition());
@@ -460,6 +464,11 @@ public class Body implements Copyable {
     public List<Stmt> getStmts() {
       cachedLinearizedStmts = Lists.newArrayList(cfg);
       return cachedLinearizedStmts;
+    }
+
+    @Nonnull
+    public Set<Modifier> getModifiers() {
+      return Sets.newHashSet(modifiers);
     }
 
     @Nonnull

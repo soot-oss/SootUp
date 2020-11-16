@@ -104,7 +104,7 @@ public class DuplicateCatchAllTrapRemoverTest {
     }
     List<Stmt> stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret);
 
-    BodyBuilder builder = Body.builder();
+    BodyBuilder builder = Body.builder(new ArrayList<>());
     for (int i = 0; i < stmts.size() - 1; i++) {
       Stmt from = stmts.get(i);
       Stmt to = stmts.get(i + 1);

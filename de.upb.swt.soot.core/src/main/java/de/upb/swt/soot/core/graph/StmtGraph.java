@@ -21,7 +21,9 @@ package de.upb.swt.soot.core.graph;
  * #L%
  */
 import de.upb.swt.soot.core.graph.iterator.StmtGraphBlockIterator;
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import java.util.*;
@@ -294,6 +296,21 @@ public abstract class StmtGraph implements Iterable<Stmt> {
         }
       }
     }
+  }
+
+  /**
+   * Returns the LHS of the first identity stmt assigning from \@this.
+   *
+   * @return The this local
+   */
+  public Local getThisLocal() {
+    for (Stmt stmt : nodes()) {
+      if (stmt instanceof JIdentityStmt
+          && ((JIdentityStmt) stmt).getRightOp() instanceof JThisRef) {
+        return (Local) ((JIdentityStmt) stmt).getLeftOp();
+      }
+    }
+    throw new RuntimeException("couldn't find this-assignment in StmtGraph");
   }
 
   @Override

@@ -12,6 +12,7 @@ import de.upb.swt.soot.java.bytecode.interceptors.UnusedLocalEliminator;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
 import org.junit.Test;
@@ -74,7 +75,7 @@ public class UnusedLocalEliminatorTest {
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
     Stmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
-    final Body.BodyBuilder builder = Body.builder();
+    final Body.BodyBuilder builder = Body.builder(new ArrayList<>());
     locals.forEach(builder::addLocal);
 
     builder.setStartingStmt(strToA);
