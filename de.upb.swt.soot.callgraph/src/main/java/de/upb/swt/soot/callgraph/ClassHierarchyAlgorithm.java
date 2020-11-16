@@ -28,6 +28,7 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JDynamicInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
@@ -123,7 +124,7 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
                 .flatMap(clazz -> clazz.getMethod(targetMethodSignature))
                 .orElseGet(() -> findMethodInHierarchy(targetMethodSignature));
 
-    if (Modifier.isStatic(targetMethod.getModifiers())) {
+    if (Modifier.isStatic(targetMethod.getModifiers()) || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return result;
     } else {
       return Stream.concat(
