@@ -59,7 +59,7 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
   @Override
   public CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType) {
     // TODO: check why oldCallGraph.copy() doesn't work
-    MutableCallGraph updated = (MutableCallGraph) oldCallGraph; //.copy();
+    MutableCallGraph updated = (MutableCallGraph) oldCallGraph; // .copy();
 
     AbstractClass<? extends AbstractClassSource> clazz = view.getClassOrThrow(classType);
     Set<MethodSignature> newMethodSignatures =
@@ -124,7 +124,8 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
                 .flatMap(clazz -> clazz.getMethod(targetMethodSignature))
                 .orElseGet(() -> findMethodInHierarchy(targetMethodSignature));
 
-    if (Modifier.isStatic(targetMethod.getModifiers()) || (invokeExpr instanceof JSpecialInvokeExpr)) {
+    if (Modifier.isStatic(targetMethod.getModifiers())
+        || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return result;
     } else {
       return Stream.concat(
