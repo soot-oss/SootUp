@@ -25,6 +25,7 @@ package de.upb.swt.soot.core.signatures;
 import com.google.common.base.Objects;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.Iterator;
@@ -42,6 +43,8 @@ import javax.annotation.Nonnull;
 public class MethodSubSignature extends AbstractClassMemberSubSignature
     implements Comparable<MethodSubSignature> {
 
+  @Nonnull private final List<Type> parameterTypes;
+
   /**
    * Creates a new instance of the {@link FieldSubSignature} class.
    *
@@ -55,8 +58,6 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
 
     this.parameterTypes = ImmutableList.copyOf(parameterTypes);
   }
-
-  @Nonnull private final List<Type> parameterTypes;
 
   /**
    * Gets the parameters in an immutable list.
@@ -100,13 +101,14 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
   private final Supplier<String> _cachedToString =
       Suppliers.memoize(
           () ->
-              String.format(
-                  "%s %s(%s)",
-                  getType(),
-                  getName(),
-                  getParameterTypes().stream()
+              getType()
+                  + " "
+                  + getName()
+                  + "("
+                  + getParameterTypes().stream()
                       .map(Object::toString)
-                      .collect(Collectors.joining(","))));
+                      .collect(Collectors.joining(","))
+                  + ")");
 
   @Override
   @Nonnull
@@ -118,7 +120,7 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
   public void toString(StmtPrinter printer) {
     printer.typeSignature(getType());
     printer.literal(" ");
-    printer.literal(getName());
+    printer.literal(Jimple.escape(getName()));
     printer.literal("(");
 
     Iterator<Type> it = getParameterTypes().iterator();

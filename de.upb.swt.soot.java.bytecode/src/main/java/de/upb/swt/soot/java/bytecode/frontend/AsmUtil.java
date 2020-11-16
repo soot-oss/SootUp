@@ -56,15 +56,11 @@ public final class AsmUtil {
    */
   protected static void initAsmClassSource(
       @Nonnull Path classSource, @Nonnull AsmJavaClassProvider.SootClassNode classNode)
-      throws AsmFrontendException {
-    try {
-      try (InputStream sourceFileInputStream = Files.newInputStream(classSource)) {
-        ClassReader clsr = new ClassReader(sourceFileInputStream);
+      throws IOException {
+    try (InputStream sourceFileInputStream = Files.newInputStream(classSource)) {
+      ClassReader clsr = new ClassReader(sourceFileInputStream);
 
-        clsr.accept(classNode, ClassReader.SKIP_FRAMES);
-      }
-    } catch (IOException e) {
-      throw new AsmFrontendException(e.getMessage());
+      clsr.accept(classNode, ClassReader.SKIP_FRAMES);
     }
   }
 

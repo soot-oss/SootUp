@@ -41,10 +41,13 @@ public abstract class SootClassMember<Sig extends SootClassMemberSignature> {
 
   @Nonnull private final Sig _signature;
   @Nonnull private final ImmutableSet<Modifier> _modifiers;
+  @Nonnull private final Position position;
 
-  SootClassMember(@Nonnull Sig signature, @Nonnull Iterable<Modifier> modifiers) {
+  SootClassMember(
+      @Nonnull Sig signature, @Nonnull Iterable<Modifier> modifiers, @Nonnull Position position) {
     this._signature = signature;
     this._modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
+    this.position = position;
   }
 
   /** Returns the SootClass declaring this one. */
@@ -114,5 +117,10 @@ public abstract class SootClassMember<Sig extends SootClassMemberSignature> {
   @Nonnull
   public String getName() {
     return this._signature.getName();
+  }
+
+  @Nonnull
+  public Position getPosition() {
+    return position;
   }
 }

@@ -1,0 +1,41 @@
+public synchronized class WhileLoop extends java.lang.Object
+{
+    public void whileLoop()
+    {
+        unknown $stack4, $stack3, l0, l1, l2;
+
+
+        l0 := @this: WhileLoop;
+
+        l1 = 10;
+
+        l2 = 0;
+
+      label1:
+        $stack4 = l1;
+
+        $stack3 = l2;
+
+        if $stack4 <= $stack3 goto label2;
+
+        l1 = l1 + -1;
+
+        goto label1;
+
+      label2:
+        return;
+    }
+
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: WhileLoop;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}
+

@@ -48,6 +48,8 @@ import javax.annotation.Nullable;
  *
  * @author Markus Schmidt
  */
+
+// TODO: [ms] FIXME: zero or one stmts in body
 public class MutableStmtGraph extends StmtGraph {
 
   @Nonnull protected final ArrayList<List<Stmt>> predecessors;
@@ -120,7 +122,13 @@ public class MutableStmtGraph extends StmtGraph {
       calculatedSuccessorSize = ((JSwitchStmt) node).getValueCount();
     } else if (node instanceof JIfStmt) {
       calculatedSuccessorSize = 2;
-    } else {
+    }
+    /* memory- vs runtime+
+      else if( node instanceof JReturnStmt || node instanceof JThrowStmt ){
+      successors.add( Collections.emptyList());
+      return idx;
+    }*/
+    else {
       calculatedSuccessorSize = 1;
     }
 
@@ -209,9 +217,6 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   public void putEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
-    if (from == to) {
-      throw new RuntimeException("A Stmt can't flow to itself.");
-    }
 
     int fromIdx = getNodeIdxOrCreate(from);
     int toIdx = getNodeIdxOrCreate(to);
@@ -224,28 +229,6 @@ public class MutableStmtGraph extends StmtGraph {
   @Nonnull
   public Set<Stmt> nodes() {
     return Collections.unmodifiableSet(stmtToIdx.keySet());
-  }
-
-  @Nonnull
-  public List<Stmt> adjacentNodes(@Nonnull Stmt node) {
-    int nodeIdx = getNodeIdx(node);
-    final List<Stmt> pred = predecessors.get(nodeIdx);
-    final List<Stmt> succ = successors.get(nodeIdx);
-    final int predSize = (pred == null ? 0 : pred.size());
-    final int succSize = (succ == null ? 0 : succ.size());
-    final int degree = predSize + succSize;
-    if (degree > 0) {
-      final List<Stmt> list = new ArrayList<>(degree);
-      if (predSize > 0) {
-        list.addAll(pred);
-      }
-      if (succSize > 0) {
-        list.addAll(succ);
-      }
-      return list;
-    } else {
-      return Collections.emptyList();
-    }
   }
 
   @Override

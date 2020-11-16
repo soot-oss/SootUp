@@ -4,7 +4,7 @@ package de.upb.swt.soot.core.jimple.common.constant;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2020 Raja Vallee-Rai, linghui Luo and others
+ * Copyright (C) 1997-2020 Raja Vallee-Rai, Linghui Luo and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,10 +22,10 @@ package de.upb.swt.soot.core.jimple.common.constant;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.util.StringTools;
 import javax.annotation.Nonnull;
 
 public class StringConstant implements Constant {
@@ -62,7 +62,11 @@ public class StringConstant implements Constant {
 
   @Override
   public String toString() {
-    return StringTools.getQuotedStringOf(value);
+    final String escape = Jimple.escape(value);
+    if (escape.charAt(0) != '\"') {
+      return "\"" + value + "\"";
+    }
+    return escape;
   }
 
   public String getValue() {

@@ -48,6 +48,7 @@ public interface View {
   Collection<? extends AbstractClass<? extends AbstractClassSource>> getClasses();
 
   /** Return all classes in the view. */
+  // TODO: [ms] necessary?!
   @Nonnull
   default Stream<? extends AbstractClass<? extends AbstractClassSource>> getClassesStream() {
     return getClasses().stream();
@@ -73,11 +74,6 @@ public interface View {
   /** Returns the {@link IdentifierFactory} for this view. */
   @Nonnull
   IdentifierFactory getIdentifierFactory();
-
-  boolean doneResolving();
-
-  @Nonnull
-  String quotedNameOf(@Nonnull String name);
 
   /** @see ModuleDataKey */
   <T> void putModuleData(@Nonnull ModuleDataKey<T> key, @Nonnull T value);

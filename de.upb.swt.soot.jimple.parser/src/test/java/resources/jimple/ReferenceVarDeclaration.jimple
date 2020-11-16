@@ -1,0 +1,27 @@
+public synchronized class ReferenceVarDeclaration extends java.lang.Object
+{
+    public void stringVariable()
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: ReferenceVarDeclaration;
+
+        l1 = "Hello World";
+
+        return;
+    }
+
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: ReferenceVarDeclaration;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}
+

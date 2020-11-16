@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.model;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.types.Type;
@@ -38,8 +39,11 @@ import javax.annotation.Nonnull;
 public class SootField extends SootClassMember<FieldSignature> implements Field {
 
   /** Constructs a Soot field with the given name, type and modifiers. */
-  public SootField(@Nonnull FieldSignature signature, @Nonnull Iterable<Modifier> modifiers) {
-    super(signature, modifiers);
+  public SootField(
+      @Nonnull FieldSignature signature,
+      @Nonnull Iterable<Modifier> modifiers,
+      @Nonnull Position position) {
+    super(signature, modifiers, position);
   }
 
   @Nonnull
@@ -69,12 +73,12 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
 
   @Nonnull
   public SootField withSignature(@Nonnull FieldSignature signature) {
-    return new SootField(signature, getModifiers());
+    return new SootField(signature, getModifiers(), getPosition());
   }
 
   @Nonnull
   public SootField withModifiers(@Nonnull Iterable<Modifier> modifiers) {
-    return new SootField(getSignature(), modifiers);
+    return new SootField(getSignature(), modifiers, getPosition());
   }
 
   /**
@@ -103,6 +107,8 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
   }
 
   public interface BuildStep {
+    BuildStep withPosition(@Nonnull Position pos);
+
     @Nonnull
     SootField build();
   }
@@ -116,6 +122,7 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
 
     private FieldSignature signature;
     private Iterable<Modifier> modifiers;
+    private Position position = NoPositionInformation.getInstance();
 
     @Nonnull
     protected FieldSignature getSignature() {
@@ -125,6 +132,11 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
     @Nonnull
     protected Iterable<Modifier> getModifiers() {
       return modifiers;
+    }
+
+    @Nonnull
+    public Position getPosition() {
+      return position;
     }
 
     @Override
@@ -143,8 +155,15 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
 
     @Override
     @Nonnull
+    public BuildStep withPosition(@Nonnull Position position) {
+      this.position = position;
+      return this;
+    }
+
+    @Override
+    @Nonnull
     public SootField build() {
-      return new SootField(getSignature(), getModifiers());
+      return new SootField(getSignature(), getModifiers(), getPosition());
     }
   }
 }

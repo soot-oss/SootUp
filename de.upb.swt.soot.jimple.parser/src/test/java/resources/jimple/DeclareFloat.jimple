@@ -1,0 +1,45 @@
+public synchronized class DeclareFloat extends java.lang.Object
+{
+    float f1;
+
+    float f2;
+
+    void declareFloatMethod()
+    {
+        unknown $stack2, $stack1, $stack4, l0, $stack3;
+
+
+        l0 := @this: DeclareFloat;
+
+        $stack2 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack1 = l0.<DeclareFloat: float f1>;
+
+        virtualinvoke $stack2.<java.io.PrintStream: void println(float)>($stack1);
+
+        $stack4 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack3 = l0.<DeclareFloat: float f2>;
+
+        virtualinvoke $stack4.<java.io.PrintStream: void println(float)>($stack3);
+
+        return;
+    }
+
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: DeclareFloat;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        l0.<DeclareFloat: float f1> = 451.0F;
+
+        l0.<DeclareFloat: float f2> = 6.6546467E11F;
+
+        return;
+    }
+}
+

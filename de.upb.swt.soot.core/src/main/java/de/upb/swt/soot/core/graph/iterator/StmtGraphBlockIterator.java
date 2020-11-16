@@ -37,8 +37,8 @@ import javax.annotation.Nullable;
 public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
   @Nonnull private final StmtGraph graph;
-  @Nonnull private final Set<Stmt> returnedNodes;
-  @Nonnull private final ArrayDeque<Trap> traps;
+  @Nonnull private final List<Trap> traps;
+  private int trapIdx = 0;
 
   @Nonnull private final ArrayDeque<Stmt> currentUnbranchedBlock = new ArrayDeque<>();
   @Nonnull private final ArrayDeque<Stmt> nestedBlocks = new ArrayDeque<>();
@@ -47,17 +47,19 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   // caching the next Stmt to implement a simple hasNext() and skipping already returned Stmts
   @Nullable private Stmt cachedNextStmt;
 
-  public StmtGraphBlockIterator(@Nonnull StmtGraph graph, List<Trap> traps) {
-    this(graph, graph.getStartingStmt(), traps);
-  }
+  // TODO: [ms] improve memory consumption: only add Stmts with multiple predecessors; count
+  // returnednodes with int;
+  @Nonnull private final Set<Stmt> returnedNodes;
 
-  private StmtGraphBlockIterator(
-      @Nonnull StmtGraph graph, @Nonnull Stmt startingStmt, @Nonnull List<Trap> traps) {
+  public StmtGraphBlockIterator(@Nonnull StmtGraph graph, @Nonnull List<Trap> traps) {
     this.graph = graph;
     returnedNodes = new HashSet<>(graph.nodes().size(), 1);
-    returnedNodes.add(startingStmt);
+    Stmt startingStmt = graph.getStartingStmt();
+    if (startingStmt != null) {
+      returnedNodes.add(startingStmt);
+    }
     cachedNextStmt = startingStmt;
-    this.traps = new ArrayDeque<>(traps);
+    this.traps = traps;
   }
 
   @Nullable
@@ -69,8 +71,8 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
         stmt = currentUnbranchedBlock.pollFirst();
       } else if (!nestedBlocks.isEmpty()) {
         stmt = nestedBlocks.pollFirst();
-      } else if (!traps.isEmpty()) {
-        stmt = traps.pollFirst().getHandlerStmt();
+      } else if (trapIdx < traps.size()) {
+        stmt = traps.get(trapIdx++).getHandlerStmt();
       } else if (!otherBlocks.isEmpty()) {
         stmt = otherBlocks.pollFirst();
       } else {
@@ -93,10 +95,12 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
       throw new NoSuchElementException("Iterator has no more Stmts.");
     }
 
-    final Trap nextTrap = traps.peekFirst();
-    if (nextTrap != null && stmt == nextTrap.getEndStmt()) {
-      currentUnbranchedBlock.addFirst(nextTrap.getHandlerStmt());
-      traps.removeFirst();
+    if (trapIdx < traps.size()) {
+      final Trap nextTrap = traps.get(trapIdx);
+      if (stmt == nextTrap.getEndStmt()) {
+        currentUnbranchedBlock.addFirst(nextTrap.getHandlerStmt());
+        trapIdx++;
+      }
     }
 
     final List<Stmt> successors = graph.successors(stmt);

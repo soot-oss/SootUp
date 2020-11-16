@@ -40,6 +40,10 @@ import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -152,7 +156,8 @@ public class WalaIRToJimpleConverter {
       // create enclosing reference to outerClass
       FieldSignature signature =
           identifierFactory.getFieldSignature("this$0", classSig, outerClass);
-      SootField enclosingObject = new SootField(signature, EnumSet.of(Modifier.FINAL));
+      SootField enclosingObject =
+          new SootField(signature, EnumSet.of(Modifier.FINAL), NoPositionInformation.getInstance());
       sootFields.add(enclosingObject);
     }
 
@@ -219,7 +224,7 @@ public class WalaIRToJimpleConverter {
     EnumSet<Modifier> modifiers = convertModifiers(walaField);
     FieldSignature signature =
         identifierFactory.getFieldSignature(walaField.getName().toString(), classSig, type);
-    return new SootField(signature, modifiers);
+    return new SootField(signature, modifiers, NoPositionInformation.getInstance());
   }
 
   /**
@@ -420,7 +425,7 @@ public class WalaIRToJimpleConverter {
     rememberedStmt = null;
     isFirstStmtSet = false;
 
-    final Body.BodyBuilder builder = Body.builder(new ArrayList<>());
+    final Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
     List<Trap> traps = new ArrayList<>();
 

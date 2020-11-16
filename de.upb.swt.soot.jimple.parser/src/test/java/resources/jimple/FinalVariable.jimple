@@ -1,0 +1,25 @@
+public synchronized class FinalVariable extends java.lang.Object
+{
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: FinalVariable;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void finalVariable()
+    {
+        unknown l0;
+
+
+        l0 := @this: FinalVariable;
+
+        return;
+    }
+}
+

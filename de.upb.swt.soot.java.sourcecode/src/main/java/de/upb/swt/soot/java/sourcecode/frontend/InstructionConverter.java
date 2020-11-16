@@ -328,7 +328,10 @@ public class InstructionConverter {
     FieldSignature fieldSig =
         identifierFactory.getFieldSignature("$assertionsDisabled", cSig, "boolean");
     SootField assertionsDisabled =
-        new SootField(fieldSig, EnumSet.of(Modifier.FINAL, Modifier.STATIC));
+        new SootField(
+            fieldSig,
+            EnumSet.of(Modifier.FINAL, Modifier.STATIC),
+            NoPositionInformation.getInstance());
 
     converter.addSootField(assertionsDisabled);
     Local testLocal = localGenerator.generateLocal(PrimitiveType.getBoolean());
@@ -430,7 +433,9 @@ public class InstructionConverter {
         FieldSignature fieldSig =
             identifierFactory.getFieldSignature(
                 "val$" + access.variableName, cSig, type.toString());
-        SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
+        SootField field =
+            new SootField(
+                fieldSig, EnumSet.of(Modifier.FINAL), NoPositionInformation.getInstance());
         left = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field); // add this field to class
         // TODO in old jimple this is not supported
@@ -461,7 +466,9 @@ public class InstructionConverter {
         FieldSignature fieldSig =
             identifierFactory.getFieldSignature(
                 "val$" + access.variableName, cSig, type.toString());
-        SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
+        SootField field =
+            new SootField(
+                fieldSig, EnumSet.of(Modifier.FINAL), NoPositionInformation.getInstance());
         rvalue = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field); // add this field to class
       } else {

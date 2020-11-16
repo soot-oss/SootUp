@@ -30,6 +30,7 @@ import de.upb.swt.soot.java.core.views.JavaModuleView;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * The Class JavaViewBuilder builds views for given project.
@@ -90,7 +91,7 @@ public class JavaViewBuilder {
    */
   @Nonnull
   public JavaView createView(Scope s) {
-    return null;
+    throw new NotImplementedException();
   }
 
   /**

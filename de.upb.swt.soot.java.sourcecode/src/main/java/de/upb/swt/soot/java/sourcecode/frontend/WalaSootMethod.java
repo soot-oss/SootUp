@@ -23,6 +23,7 @@ package de.upb.swt.soot.java.sourcecode.frontend;
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 import de.upb.swt.soot.core.frontend.BodySource;
 import de.upb.swt.soot.core.frontend.OverridingBodySource;
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -59,7 +60,8 @@ public class WalaSootMethod extends JavaSootMethod {
         methodSignature,
         modifiers,
         thrownExceptions,
-        Collections.emptyList() // TODO: [ms] implement annotations
+        Collections.emptyList(), // TODO: [ms] implement annotations
+        NoPositionInformation.getInstance() // TODO: fixme
         );
     this.debugInfo = debugInfo;
   }
