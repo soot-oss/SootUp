@@ -100,28 +100,28 @@ public class ClassHierarchyAlgorithmTest {
             "print",
             identifierFactory.getClassType("example1.A"),
             "void",
-            Collections.singletonList("example1.A"));
+            Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodB =
         identifierFactory.getMethodSignature(
             "print",
             identifierFactory.getClassType("example1.B"),
             "void",
-            Collections.singletonList("example1.A"));
+            Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodC =
         identifierFactory.getMethodSignature(
             "print",
             identifierFactory.getClassType("example1.C"),
             "void",
-            Collections.singletonList("example1.A"));
+            Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodD =
         identifierFactory.getMethodSignature(
             "print",
             identifierFactory.getClassType("example1.D"),
             "void",
-            Collections.singletonList("example1.A"));
+            Collections.singletonList("java.lang.Object"));
 
     assertTrue(cg.containsCall(mainMethodSignature, constructorB));
     assertTrue(cg.containsCall(mainMethodSignature, constructorC));
@@ -133,7 +133,7 @@ public class ClassHierarchyAlgorithmTest {
 
     assertEquals(6, cg.callsFrom(mainMethodSignature).size());
 
-    assertEquals(1, cg.callsTo(constructorB).size());
+    assertEquals(2, cg.callsTo(constructorB).size());
     assertEquals(1, cg.callsTo(constructorC).size());
     assertEquals(1, cg.callsTo(methodA).size());
     assertEquals(1, cg.callsTo(methodB).size());
@@ -184,11 +184,11 @@ public class ClassHierarchyAlgorithmTest {
         new JavaClassType("AdderA", identifierFactory.getPackageName("update.operation.cg"));
     CallGraph newCallGraph = cha.addClass(cg, newClass);
 
-    assertEquals(0, cg.callsTo(mainMethodSignature));
-    assertEquals(1, newCallGraph.callsTo(mainMethodSignature));
+    assertEquals(0, cg.callsTo(mainMethodSignature).size());
+    assertEquals(1, newCallGraph.callsTo(mainMethodSignature).size());
 
-    assertEquals(1, cg.callsTo(methodSignature));
-    assertEquals(3, newCallGraph.callsTo(methodSignature));
+    assertEquals(1, cg.callsTo(methodSignature).size());
+    assertEquals(3, newCallGraph.callsTo(methodSignature).size());
   }
 
   @Test
