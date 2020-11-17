@@ -29,7 +29,6 @@ import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
@@ -37,10 +36,9 @@ import de.upb.swt.soot.java.bytecode.interceptors.EmptySwitchEliminator;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -77,8 +75,7 @@ public class EmptySwitchEliminatorTest {
 
     Body body = createEmptySwitchBody();
 
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(body, modifiers);
+    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     EmptySwitchEliminator eliminator = new EmptySwitchEliminator();
     eliminator.interceptBody(builder);
 
@@ -92,8 +89,7 @@ public class EmptySwitchEliminatorTest {
     Stmt sw = JavaJimple.newLookupSwitchStmt(l1, values, noStmtPositionInfo);
 
     // build an instance of BodyBuilder
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(modifiers);
+    Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
@@ -120,8 +116,7 @@ public class EmptySwitchEliminatorTest {
     Stmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
     // build an instance of BodyBuilder
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(modifiers);
+    Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
