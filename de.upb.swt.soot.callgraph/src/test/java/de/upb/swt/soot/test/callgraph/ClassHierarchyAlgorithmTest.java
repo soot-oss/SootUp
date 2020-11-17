@@ -67,9 +67,6 @@ public class ClassHierarchyAlgorithmTest {
     CallGraphAlgorithm cha = new ClassHierarchyAlgorithm(view, typeHierarchy);
     CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
 
-    // TODO: remove debuginfo
-    System.out.println(cg);
-
     assertTrue(
         mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
     assertNotNull(cg);
