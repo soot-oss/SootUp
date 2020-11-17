@@ -92,6 +92,7 @@ import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import java.io.IOException;
 import java.util.*;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -138,7 +139,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
 
   private Map<LabelNode, Stmt> labelsToStmt;
-  @Nonnull private final Body.BodyBuilder bodyBuilder = Body.builder(new ArrayList<>());
+  @Nonnull private final Body.BodyBuilder bodyBuilder = Body.builder();
 
   Stmt rememberedStmt = null;
   boolean isFirstStmtSet = false;
@@ -179,7 +180,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Override
   @Nonnull
-  public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) throws AsmFrontendException {
+  public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) throws IOException {
     // FIXME: [AD] add real line number
     Position bodyPos = NoPositionInformation.getInstance();
     bodyBuilder.setPosition(bodyPos);
@@ -1797,7 +1798,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return false;
   }
 
-  private void buildLocals() throws AsmFrontendException {
+  private void buildLocals() {
 
     MethodSignature methodSignature = lazyMethodSignature.get();
 
@@ -1827,7 +1828,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     bodyBuilder.setLocals(bodyLocals);
   }
 
-  private void buildTraps() throws AsmFrontendException {
+  private void buildTraps() {
     List<Trap> traps = new ArrayList<>();
 
     for (TryCatchBlockNode trycatch : tryCatchBlocks) {
