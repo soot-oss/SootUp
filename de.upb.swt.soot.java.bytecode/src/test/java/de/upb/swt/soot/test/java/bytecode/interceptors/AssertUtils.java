@@ -1,4 +1,4 @@
-package de.upb.swt.soot.java.bytecode.interceptors;
+package de.upb.swt.soot.test.java.bytecode.interceptors;
 
 /*-
  * #%L

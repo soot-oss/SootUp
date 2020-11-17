@@ -33,7 +33,6 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import de.upb.swt.soot.java.bytecode.interceptors.AssertUtils;
 import de.upb.swt.soot.java.bytecode.interceptors.EmptySwitchEliminator;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
