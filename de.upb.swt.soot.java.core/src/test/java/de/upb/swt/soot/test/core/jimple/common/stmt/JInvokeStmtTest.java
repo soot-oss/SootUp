@@ -154,7 +154,7 @@ public class JInvokeStmtTest {
 
     // toString
     Assert.assertEquals(
-        "dynamicinvoke \"<soot.dummy.InvokeDynamic: void mylambda()>\" <void mylambda()>() <Runnable: void run()>()",
+        "dynamicinvoke \"mylambda\" <void ()>() <Runnable: void run()>()",
         dynamicInvokeStmt.toString());
 
     // equivTo

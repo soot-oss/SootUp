@@ -1,0 +1,33 @@
+public synchronized class AnonymousClassInsideMethod extends java.lang.Object
+{
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: AnonymousClassInsideMethod;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void anonymousClassInsideMethod()
+    {
+        unknown $stack2, l0, l1;
+
+
+        l0 := @this: AnonymousClassInsideMethod;
+
+        $stack2 = new AnonymousClassInsideMethod$1;
+
+        specialinvoke $stack2.<AnonymousClassInsideMethod$1: void <init>(AnonymousClassInsideMethod)>(l0);
+
+        l1 = $stack2;
+
+        interfaceinvoke l1.<AnonymousClassInsideMethod$MathOperation: void addition()>();
+
+        return;
+    }
+}
+

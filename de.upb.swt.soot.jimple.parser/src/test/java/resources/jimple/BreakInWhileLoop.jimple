@@ -1,0 +1,41 @@
+public synchronized class BreakInWhileLoop extends java.lang.Object
+{
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: BreakInWhileLoop;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void breakInWhileLoop()
+    {
+        unknown $stack3, l0, l1, l2;
+
+
+        l0 := @this: BreakInWhileLoop;
+
+        l1 = 10;
+
+        l2 = 5;
+
+      label1:
+        $stack3 = l1;
+
+        if $stack3 <= 0 goto label2;
+
+        l1 = l1 + -1;
+
+        if l1 != l2 goto label1;
+
+        goto label2;
+
+      label2:
+        return;
+    }
+}
+

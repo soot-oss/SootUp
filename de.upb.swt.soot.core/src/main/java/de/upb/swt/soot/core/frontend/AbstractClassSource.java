@@ -37,6 +37,8 @@ import javax.annotation.Nullable;
  * View} can resolve.
  */
 public abstract class AbstractClassSource {
+  // TODO: [ms] I dont see the necessity of the AnalysisInputLocation in this class; maybe not even
+  // for sourcepath
   protected final AnalysisInputLocation srcNamespace;
   protected final Path sourcePath;
   protected ClassType classSignature;

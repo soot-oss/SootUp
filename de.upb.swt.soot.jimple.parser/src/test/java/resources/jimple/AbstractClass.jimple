@@ -1,0 +1,36 @@
+public synchronized class AbstractClass extends A
+{
+
+    void a()
+    {
+        unknown $stack1, l0;
+
+        l0 := @this: AbstractClass;
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+        virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>("abstract class");
+        return;
+    }
+    public void abstractClass()
+    {
+        unknown $stack2, l0, l1;
+
+        l0 := @this: AbstractClass;
+        $stack2 = new AbstractClass;
+        specialinvoke $stack2.<AbstractClass: void <init>()>();
+        l1 = $stack2;
+        virtualinvoke l1.<A: void a()>();
+        return;
+    }
+
+    public void <init>()
+    {
+        unknown l0;
+
+        l0 := @this: AbstractClass;
+        specialinvoke l0.<A: void <init>()>();
+        return;
+    }
+
+
+}
+

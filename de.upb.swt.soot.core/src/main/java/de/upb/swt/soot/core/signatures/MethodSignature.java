@@ -50,15 +50,15 @@ public class MethodSignature extends SootClassMemberSignature {
       final @Nonnull ClassType declaringClass, final @Nonnull MethodSubSignature subSignature) {
     super(declaringClass, subSignature);
 
-    this._subSignature = subSignature;
+    this.subSignature = subSignature;
   }
 
-  private final @Nonnull MethodSubSignature _subSignature;
+  private final @Nonnull MethodSubSignature subSignature;
 
   @Override
   @Nonnull
   public MethodSubSignature getSubSignature() {
-    return _subSignature;
+    return subSignature;
   }
 
   /** The method's parameters' signatures. */

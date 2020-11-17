@@ -8,7 +8,6 @@ import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.VoidType;
@@ -84,8 +83,7 @@ public class LocalSplitterTest {
   public void testLocalSplitterForBinaryBranches() {
 
     Body body = createBBBody();
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(body, modifiers);
+    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     LocalSplitter localSplitter = new LocalSplitter();
     localSplitter.interceptBody(builder);
     Body expectedBody = createExpectedBBBody();
@@ -124,8 +122,7 @@ public class LocalSplitterTest {
   public void testLocalSplitterForMultilocals() {
 
     Body body = createMultilocalsBody();
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(body, modifiers);
+    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     LocalSplitter localSplitter = new LocalSplitter();
     localSplitter.interceptBody(builder);
     Body expectedBody = createExpectedMuiltilocalsBody();
@@ -176,8 +173,7 @@ public class LocalSplitterTest {
   public void testLocalSplitterForLoop() {
 
     Body body = createLoopBody();
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(body, modifiers);
+    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     LocalSplitter localSplitter = new LocalSplitter();
     localSplitter.interceptBody(builder);
     Body expectedBody = createExpectedLoopBody();
@@ -191,8 +187,7 @@ public class LocalSplitterTest {
 
   /** bodycreater for BinaryBranches */
   private Body createBBBody() {
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(modifiers);
+    Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -237,8 +232,7 @@ public class LocalSplitterTest {
 
   private Body createExpectedBBBody() {
 
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(modifiers);
+    Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -290,8 +284,7 @@ public class LocalSplitterTest {
   /** bodycreater for multilocals */
   private Body createMultilocalsBody() {
 
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(modifiers);
+    Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -327,8 +320,7 @@ public class LocalSplitterTest {
 
   private Body createExpectedMuiltilocalsBody() {
 
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(modifiers);
+    Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -369,8 +361,7 @@ public class LocalSplitterTest {
   /** bodycreater for Loop */
   private Body createLoopBody() {
 
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(modifiers);
+    Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -419,8 +410,7 @@ public class LocalSplitterTest {
 
   private Body createExpectedLoopBody() {
 
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(modifiers);
+    Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
 
     // build set locals

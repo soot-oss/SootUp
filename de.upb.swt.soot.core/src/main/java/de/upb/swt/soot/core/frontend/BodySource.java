@@ -24,6 +24,7 @@ package de.upb.swt.soot.core.frontend;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import java.io.IOException;
 import javax.annotation.Nonnull;
 
 /** A class which knows how to produce Body's for SootMethods. */
@@ -35,7 +36,7 @@ public interface BodySource {
    * @param modifiers The collection of modifiers
    */
   @Nonnull
-  Body resolveBody(@Nonnull Iterable<Modifier> modifiers) throws ResolveException;
+  Body resolveBody(@Nonnull Iterable<Modifier> modifiers) throws ResolveException, IOException;
 
   @Nonnull
   MethodSignature getSignature();

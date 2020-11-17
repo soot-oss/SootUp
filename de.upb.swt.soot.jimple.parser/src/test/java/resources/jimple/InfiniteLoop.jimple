@@ -1,0 +1,25 @@
+synchronized class InfiniteLoop extends java.lang.Object
+{
+    void stmtLoop()
+    {
+        unknown l0;
+
+
+        l0 := @this: InfiniteLoop;
+
+        return;
+    }
+
+    void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: InfiniteLoop;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}
+

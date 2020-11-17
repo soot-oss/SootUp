@@ -24,6 +24,7 @@ package de.upb.swt.soot.core.signatures;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Suppliers;
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.function.Supplier;
@@ -97,7 +98,10 @@ public abstract class AbstractClassMemberSubSignature {
   }
 
   private final Supplier<String> _cachedToString =
-      Suppliers.memoize(() -> String.format("%s %s", getType(), getName()));
+      Suppliers.memoize(
+          () ->
+              String.format(
+                  "%s %s", Jimple.escape(getType().toString()), Jimple.escape(getName())));
 
   @Override
   @Nonnull

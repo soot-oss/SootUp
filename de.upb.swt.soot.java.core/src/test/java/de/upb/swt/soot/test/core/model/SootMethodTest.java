@@ -48,7 +48,7 @@ public class SootMethodTest {
     MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
-    Body.BodyBuilder bodyBuilder = Body.builder(null);
+    Body.BodyBuilder bodyBuilder = Body.builder();
 
     final JIdentityStmt firstStmt =
         Jimple.newIdentityStmt(
@@ -73,7 +73,8 @@ public class SootMethodTest {
             new OverridingBodySource(methodSignature, body),
             methodSignature,
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
-            Collections.emptyList());
+            Collections.emptyList(),
+            NoPositionInformation.getInstance());
 
     JavaSootClass mainClass =
         new JavaSootClass(

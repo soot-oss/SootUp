@@ -1,0 +1,99 @@
+public synchronized class MethodReturningVar extends java.lang.Object
+{
+    public long longVariable()
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: MethodReturningVar;
+
+        l1 = 123456789L;
+
+        return l1;
+    }
+
+    public byte byteVariable()
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: MethodReturningVar;
+
+        l1 = 0;
+
+        return l1;
+    }
+
+    public char charVariable()
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: MethodReturningVar;
+
+        l1 = 97;
+
+        return l1;
+    }
+
+    public int intVariable()
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: MethodReturningVar;
+
+        l1 = 512;
+
+        return l1;
+    }
+
+    public float floatVariable()
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: MethodReturningVar;
+
+        l1 = 3.14F;
+
+        return l1;
+    }
+
+    public short shortVariable()
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: MethodReturningVar;
+
+        l1 = 10;
+
+        return l1;
+    }
+
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: MethodReturningVar;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public double doubleVariable()
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: MethodReturningVar;
+
+        l1 = 1.96969654;
+
+        return l1;
+    }
+}
+

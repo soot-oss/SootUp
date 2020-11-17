@@ -39,6 +39,7 @@ public class ReflectionTest extends MinimalSourceTestSuiteBase {
             "r0 := @this: Reflection",
             "$r1 = new Reflection",
             "specialinvoke $r1.<Reflection: void <init>()>()",
+            // TODO: [ms] check whether this representation of the class is like intended/correct
             "$r2 = class \"Ljava/lang/Class\"",
             "$r3 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.Object)>($r2)",
