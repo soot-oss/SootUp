@@ -1,0 +1,65 @@
+synchronized class StaticImport extends java.lang.Object
+{
+    public static void main(java.lang.String[])
+    {
+        unknown $stack2, l0, l1;
+
+
+        l0 := @parameter0: java.lang.String[];
+
+        $stack2 = new StaticImport;
+
+        specialinvoke $stack2.<StaticImport: void <init>()>();
+
+        l1 = $stack2;
+
+        virtualinvoke l1.<StaticImport: void mathFunctions()>();
+
+        return;
+    }
+
+    public void mathFunctions()
+    {
+        unknown $stack2, $stack1, $stack4, $stack3, l0, $stack6, $stack5, $stack7;
+
+
+        l0 := @this: StaticImport;
+
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack2 = staticinvoke <java.lang.Math: double sqrt(double)>(4.0);
+
+        virtualinvoke $stack1.<java.io.PrintStream: void println(double)>($stack2);
+
+        $stack3 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack4 = staticinvoke <java.lang.Math: double pow(double,double)>(2.0, 5.0);
+
+        virtualinvoke $stack3.<java.io.PrintStream: void println(double)>($stack4);
+
+        $stack5 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack6 = staticinvoke <java.lang.Math: double ceil(double)>(5.6);
+
+        virtualinvoke $stack5.<java.io.PrintStream: void println(double)>($stack6);
+
+        $stack7 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack7.<java.io.PrintStream: void println(java.lang.String)>("Static import for System.out");
+
+        return;
+    }
+
+    void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: StaticImport;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}
+

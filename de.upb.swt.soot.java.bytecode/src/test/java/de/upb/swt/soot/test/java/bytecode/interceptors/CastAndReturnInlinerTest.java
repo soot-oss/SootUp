@@ -8,7 +8,6 @@ import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.bytecode.interceptors.CastAndReturnInliner;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
@@ -59,8 +58,7 @@ public class CastAndReturnInlinerTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
     List<Trap> traps = Collections.emptyList();
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder bodyBuilder = Body.builder(modifiers);
+    Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
     bodyBuilder.setTraps(traps);
     bodyBuilder.setStartingStmt(strToA);
@@ -114,8 +112,7 @@ public class CastAndReturnInlinerTest {
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
     List<Trap> traps = Collections.emptyList();
 
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder bodyBuilder = Body.builder(modifiers);
+    Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
     bodyBuilder.setTraps(traps);
     bodyBuilder.setStartingStmt(strToA);

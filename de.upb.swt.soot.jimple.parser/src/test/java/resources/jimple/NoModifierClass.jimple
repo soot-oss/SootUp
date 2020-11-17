@@ -1,0 +1,55 @@
+synchronized class NoModifierClass extends java.lang.Object
+{
+    void noModifierMethod()
+    {
+        unknown l0;
+
+
+        l0 := @this: NoModifierClass;
+
+        return;
+    }
+
+    protected void protectedMethod()
+    {
+        unknown l0;
+
+
+        l0 := @this: NoModifierClass;
+
+        return;
+    }
+
+    void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: NoModifierClass;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    private void privateMethod()
+    {
+        unknown l0;
+
+
+        l0 := @this: NoModifierClass;
+
+        return;
+    }
+
+    public void publicMethod()
+    {
+        unknown l0;
+
+
+        l0 := @this: NoModifierClass;
+
+        return;
+    }
+}
+

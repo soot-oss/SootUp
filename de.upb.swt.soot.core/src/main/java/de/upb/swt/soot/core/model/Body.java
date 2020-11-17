@@ -23,7 +23,6 @@ package de.upb.swt.soot.core.model;
  */
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
@@ -403,11 +402,11 @@ public class Body implements Copyable {
     }
   }
 
-  public static BodyBuilder builder(Iterable<Modifier> modifiers) {
-    return new BodyBuilder(modifiers);
+  public static BodyBuilder builder() {
+    return new BodyBuilder();
   }
 
-  public static BodyBuilder builder(@Nonnull Body body, Iterable<Modifier> modifiers) {
+  public static BodyBuilder builder(@Nonnull Body body, Set<Modifier> modifiers) {
     return new BodyBuilder(body, modifiers);
   }
 
@@ -432,7 +431,7 @@ public class Body implements Copyable {
   public static class BodyBuilder {
     @Nonnull private Set<Local> locals = new HashSet<>();
     @Nonnull private final LocalGenerator localGen = new LocalGenerator(locals);
-    @Nonnull private final Iterable<Modifier> modifiers;
+    @Nonnull private Set<Modifier> modifiers = Collections.emptySet();
 
     @Nullable private Position position = null;
     @Nonnull private final MutableStmtGraph cfg;
@@ -441,13 +440,12 @@ public class Body implements Copyable {
     @Nullable private StmtGraphManipulationQueue changeQueue = null;
     @Nullable private List<Stmt> cachedLinearizedStmts = null;
 
-    BodyBuilder(@Nonnull Iterable<Modifier> modifiers) {
-      this.modifiers = modifiers;
+    BodyBuilder() {
       cfg = new MutableStmtGraph();
     }
 
-    BodyBuilder(@Nonnull Body body, @Nonnull Iterable<Modifier> modifiers) {
-      this.modifiers = modifiers;
+    BodyBuilder(@Nonnull Body body, @Nonnull Set<Modifier> modifiers) {
+      setModifiers(modifiers);
       setMethodSignature(body.getMethodSignature());
       setLocals(body.getLocals());
       setPosition(body.getPosition());
@@ -464,11 +462,6 @@ public class Body implements Copyable {
     public List<Stmt> getStmts() {
       cachedLinearizedStmts = Lists.newArrayList(cfg);
       return cachedLinearizedStmts;
-    }
-
-    @Nonnull
-    public Set<Modifier> getModifiers() {
-      return Sets.newHashSet(modifiers);
     }
 
     @Nonnull
@@ -537,6 +530,11 @@ public class Body implements Copyable {
       } else {
         changeQueue.removeFlow(fromStmt, toStmt);
       }
+      return this;
+    }
+
+    public BodyBuilder setModifiers(@Nonnull Set<Modifier> modifiers) {
+      this.modifiers = modifiers;
       return this;
     }
 
@@ -621,6 +619,10 @@ public class Body implements Copyable {
       }
 
       return new Body(methodSig, locals, cfg, position);
+    }
+
+    public Set<Modifier> getModifiers() {
+      return modifiers;
     }
   }
 }

@@ -1,0 +1,43 @@
+public synchronized class GenericTypeParamOnMethod extends java.lang.Object
+{
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: GenericTypeParamOnMethod;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void genericTypeParamOnMethod()
+    {
+        unknown l0;
+
+
+        l0 := @this: GenericTypeParamOnMethod;
+
+        virtualinvoke l0.<GenericTypeParamOnMethod: void a(java.lang.Object)>("Hello World");
+
+        return;
+    }
+
+    public void a(java.lang.Object)
+    {
+        unknown $stack2, l0, l1;
+
+
+        l0 := @this: GenericTypeParamOnMethod;
+
+        l1 := @parameter0: java.lang.Object;
+
+        $stack2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack2.<java.io.PrintStream: void println(java.lang.Object)>(l1);
+
+        return;
+    }
+}
+

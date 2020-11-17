@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.util.printer;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -77,9 +78,9 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
       String label = labels.get(stmt);
       if (label == null) {
-        output.append("[?= ").append(stmt).append(']');
+        output.append("[?= ").append(Jimple.escape(stmt.toString())).append(']');
       } else {
-        output.append(label);
+        output.append(Jimple.escape(label));
       }
 
     } else {
@@ -91,15 +92,19 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
         handleIndent();
         setIndent(indentStep / 2);
 
-        output.append('(').append(ref).append(')');
+        output.append('(').append(Jimple.escape(ref)).append(')');
       } else {
-        output.append(stmt);
+        output.append(Jimple.escape(ref));
       }
     }
   }
 
-  /** createLabelMaps */
-  public void initializeSootMethod(Body body) {
+  /**
+   * createLabelMaps
+   *
+   * @return the linearized StmtGraph
+   */
+  public Iterable<Stmt> initializeSootMethod(Body body) {
     this.body = body;
 
     final Collection<Stmt> targetStmtsOfBranches = body.getTargetStmtsInBody();
@@ -140,7 +145,8 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     int refCount = 0;
 
     // Traverse the stmts and assign a label if necessary
-    for (Stmt s : body.getStmtGraph()) {
+    final List<Stmt> linearizedStmtGraph = body.getStmts();
+    for (Stmt s : linearizedStmtGraph) {
       if (labelStmts.contains(s)) {
         labels.put(s, String.format(formatString, ++labelCount));
       }
@@ -149,42 +155,36 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
         references.put(s, Integer.toString(refCount++));
       }
     }
+    return linearizedStmtGraph;
   }
 
   @Override
   public void methodSignature(MethodSignature methodSig) {
-    if (useImports) {
-      output.append('<');
-      typeSignature(methodSig.getDeclClassType());
-      output.append(": ");
-      typeSignature(methodSig.getType());
-      output.append(' ').append(methodSig.getName()).append('(');
+    output.append('<');
+    typeSignature(methodSig.getDeclClassType());
+    output.append(": ");
+    typeSignature(methodSig.getType());
+    output.append(' ').append(Jimple.escape(methodSig.getName())).append('(');
 
-      final List<Type> parameterTypes = methodSig.getParameterTypes();
-      for (Type parameterType : parameterTypes) {
-        typeSignature(parameterType);
+    final List<Type> parameterTypes = methodSig.getSubSignature().getParameterTypes();
+    final int parameterTypesSize = parameterTypes.size();
+    if (parameterTypesSize > 0) {
+      typeSignature(parameterTypes.get(0));
+      for (int i = 1; i < parameterTypesSize; i++) {
         output.append(',');
+        typeSignature(parameterTypes.get(i));
       }
-      if (parameterTypes.size() > 0) {
-        output.setLength(output.length() - 1);
-      }
-      output.append(")>");
-    } else {
-      output.append(methodSig.toString());
     }
+    output.append(")>");
   }
 
   @Override
   public void fieldSignature(FieldSignature fieldSig) {
-    if (useImports) {
-      output.append('<');
-      typeSignature(fieldSig.getDeclClassType());
-      output.append(": ");
-      final FieldSubSignature subSignature = fieldSig.getSubSignature();
-      typeSignature(subSignature.getType());
-      output.append(' ').append(subSignature.getName()).append('>');
-    } else {
-      output.append(fieldSig.toString());
-    }
+    output.append('<');
+    typeSignature(fieldSig.getDeclClassType());
+    output.append(": ");
+    final FieldSubSignature subSignature = fieldSig.getSubSignature();
+    typeSignature(subSignature.getType());
+    output.append(' ').append(Jimple.escape(subSignature.getName())).append('>');
   }
 }

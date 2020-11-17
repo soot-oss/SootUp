@@ -1,4 +1,5 @@
 package de.upb.swt.soot.core.model;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -23,7 +24,6 @@ package de.upb.swt.soot.core.model;
 
 import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.core.signatures.SootClassMemberSignature;
-import de.upb.swt.soot.core.signatures.SootClassMemberSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import java.util.Objects;
@@ -40,10 +40,13 @@ public abstract class SootClassMember<S extends SootClassMemberSignature> {
 
   @Nonnull private final S signature;
   @Nonnull private final ImmutableSet<Modifier> modifiers;
+  @Nonnull private final Position position;
 
-  SootClassMember(@Nonnull S signature, @Nonnull Iterable<Modifier> modifiers) {
+  SootClassMember(
+      @Nonnull S signature, @Nonnull Iterable<Modifier> modifiers, @Nonnull Position position) {
     this.signature = signature;
     this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
+    this.position = position;
   }
 
   /** Returns the SootClass declaring this one. */
@@ -106,12 +109,17 @@ public abstract class SootClassMember<S extends SootClassMemberSignature> {
   }
 
   @Nonnull
-  public SootClassMemberSubSignature getSubSignature() {
+  public SootClassMemberSignature getSubSignature() {
     return signature.getSubSignature();
   }
 
   @Nonnull
   public String getName() {
     return this.signature.getName();
+  }
+
+  @Nonnull
+  public Position getPosition() {
+    return position;
   }
 }

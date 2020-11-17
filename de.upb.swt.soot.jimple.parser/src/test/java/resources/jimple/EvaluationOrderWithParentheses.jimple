@@ -1,0 +1,27 @@
+public synchronized class EvaluationOrderWithParentheses extends java.lang.Object
+{
+    public void evaluationOrderWithParentheses()
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: EvaluationOrderWithParentheses;
+
+        l1 = 9;
+
+        return;
+    }
+
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: EvaluationOrderWithParentheses;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}
+

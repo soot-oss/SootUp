@@ -1,4 +1,10 @@
 package de.upb.swt.soot.core.frontend;
+
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
+import de.upb.swt.soot.core.model.Position;
+import java.nio.file.Path;
+import javax.annotation.Nonnull;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -22,11 +28,60 @@ package de.upb.swt.soot.core.frontend;
  */
 public class ResolveException extends RuntimeException {
 
-  public ResolveException(String message) {
-    super(message);
+  @Nonnull private final String inputUri;
+  @Nonnull private final Position range;
+
+  // FIXME: [ms] fix usages to give a file uri
+  @Deprecated
+  public ResolveException(@Nonnull String message) {
+    this(message, "./file-does-not-exist", NoPositionInformation.getInstance());
   }
 
-  public ResolveException(String message, Throwable cause) {
-    super(message, cause);
+  public ResolveException(@Nonnull String message, @Nonnull Path sourcePath) {
+    this(message, sourcePath, NoPositionInformation.getInstance());
+  }
+
+  public ResolveException(
+      @Nonnull String message, @Nonnull Path sourcePath, @Nonnull Position position) {
+    this(message, "file:/" + sourcePath.toAbsolutePath().toString(), position);
+  }
+
+  private ResolveException(
+      @Nonnull String message, @Nonnull String inputUri, @Nonnull Position range) {
+    super(message + " " + inputUri + " " + range);
+    this.range = range;
+    this.inputUri = inputUri;
+  }
+
+  public ResolveException(@Nonnull String message, @Nonnull Path sourcePath, @Nonnull Exception e) {
+    this(message, sourcePath, NoPositionInformation.getInstance(), e);
+  }
+
+  public ResolveException(
+      @Nonnull String message,
+      @Nonnull Path sourcePath,
+      @Nonnull Position position,
+      @Nonnull Exception e) {
+    this(message, "file:/" + sourcePath.toAbsolutePath().toString(), position, e);
+  }
+
+  private ResolveException(
+      @Nonnull String message,
+      @Nonnull String inputUri,
+      @Nonnull Position range,
+      @Nonnull Exception e) {
+    super(message + " " + inputUri + " " + range, e);
+    this.range = range;
+    this.inputUri = inputUri;
+  }
+
+  @Nonnull
+  public String getInputUri() {
+    return inputUri;
+  }
+
+  @Nonnull
+  public Position getRange() {
+    return range;
   }
 }

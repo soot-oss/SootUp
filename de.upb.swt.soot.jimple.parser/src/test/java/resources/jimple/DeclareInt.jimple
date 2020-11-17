@@ -1,0 +1,55 @@
+public synchronized class DeclareInt extends java.lang.Object
+{
+    int hex;
+
+    int dec;
+
+    int oct;
+
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: DeclareInt;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        l0.<DeclareInt: int dec> = 111;
+
+        l0.<DeclareInt: int hex> = 31;
+
+        l0.<DeclareInt: int oct> = 111;
+
+        return;
+    }
+
+    void declareIntMethod()
+    {
+        unknown $stack2, $stack1, $stack4, l0, $stack3, $stack6, $stack5;
+
+
+        l0 := @this: DeclareInt;
+
+        $stack2 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack1 = l0.<DeclareInt: int dec>;
+
+        virtualinvoke $stack2.<java.io.PrintStream: void println(int)>($stack1);
+
+        $stack4 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack3 = l0.<DeclareInt: int hex>;
+
+        virtualinvoke $stack4.<java.io.PrintStream: void println(int)>($stack3);
+
+        $stack6 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack5 = l0.<DeclareInt: int oct>;
+
+        virtualinvoke $stack6.<java.io.PrintStream: void println(int)>($stack5);
+
+        return;
+    }
+}
+

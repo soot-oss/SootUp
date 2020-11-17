@@ -52,6 +52,20 @@ public abstract class SootClassMemberSignature implements Signature {
     return subSignature;
   }
 
+  /** The signature of the declaring class. */
+  @Nonnull
+  public ClassType getDeclClassType() {
+    return declClassSignature;
+  }
+
+  public Type getType() {
+    return subSignature.getType();
+  }
+
+  public String getName() {
+    return subSignature.getName();
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -73,19 +87,5 @@ public abstract class SootClassMemberSignature implements Signature {
   @Override
   public String toString() {
     return "<" + declClassSignature + ": " + getSubSignature() + '>';
-  }
-
-  /** The signature of the declaring class. */
-  @Nonnull
-  public ClassType getDeclClassType() {
-    return declClassSignature;
-  }
-
-  public Type getType() {
-    return subSignature.getType();
-  }
-
-  public String getName() {
-    return subSignature.getName();
   }
 }

@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.signatures;
  */
 
 import com.google.common.base.Suppliers;
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.function.Supplier;
@@ -64,6 +65,6 @@ public class FieldSubSignature extends SootClassMemberSubSignature
   public void toString(StmtPrinter printer) {
     printer.typeSignature(getType());
     printer.literal(" ");
-    printer.literal(getName());
+    printer.literal(Jimple.escape(getName()));
   }
 }

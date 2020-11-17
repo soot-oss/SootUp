@@ -183,6 +183,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // FIXME: [AD] add real line number
     Position bodyPos = NoPositionInformation.getInstance();
     bodyBuilder.setPosition(bodyPos);
+    // TODO: [ms] as we always need modifiers: dont memoize them +more usage
+    bodyBuilder.setModifiers(lazyModifiers.get());
 
     /* initialize */
     int nrInsn = instructions.size();
@@ -1361,7 +1363,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         oprs = new Operand[nrArgs + 1];
       }
       if (oprs != null) {
-        while (nrArgs-- >= 0) {
+        while (nrArgs-- > 0) {
           oprs[nrArgs] = operandStack.pop(types.get(nrArgs));
         }
         if (!isStaticInvokeExpr) {
@@ -1924,6 +1926,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       bodyBuilder.addFlow(gotoImpl, targetStmt);
     }
 
+    // link branching stmts with its targets
     for (Map.Entry<Stmt, LabelNode> entry : stmtsThatBranchToLabel.entries()) {
       final Stmt fromStmt = entry.getKey();
       final Stmt targetStmt = labelsToStmt.get(entry.getValue());

@@ -53,7 +53,7 @@ public class JavaModuleView extends JavaView {
 
   @Nonnull
   public synchronized Collection<JavaModuleInfo> getModuleInfos() {
-    return getAbstractClasses()
+    return getAbstractClassSources()
         .filter(clazz -> clazz instanceof JavaModuleInfo)
         .map(clazz -> (JavaModuleInfo) clazz)
         .collect(Collectors.toList());

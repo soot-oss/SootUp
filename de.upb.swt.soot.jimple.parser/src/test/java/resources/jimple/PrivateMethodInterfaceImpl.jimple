@@ -1,0 +1,45 @@
+public synchronized class PrivateMethodInterfaceImpl extends java.lang.Object implements PrivateMethodInterface
+{
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: PrivateMethodInterfaceImpl;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void methodInterfaceImpl()
+    {
+        unknown l0;
+
+
+        l0 := @this: PrivateMethodInterfaceImpl;
+
+        virtualinvoke l0.<PrivateMethodInterfaceImpl: void methodInterface(int,int)>(4, 2);
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        unknown $stack2, l0, l1;
+
+
+        l0 := @parameter0: java.lang.String[];
+
+        $stack2 = new PrivateMethodInterfaceImpl;
+
+        specialinvoke $stack2.<PrivateMethodInterfaceImpl: void <init>()>();
+
+        l1 = $stack2;
+
+        virtualinvoke l1.<PrivateMethodInterfaceImpl: void methodInterfaceImpl()>();
+
+        return;
+    }
+}
+

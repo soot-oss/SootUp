@@ -28,47 +28,51 @@ import java.text.StringCharacterIterator;
 /** Utility methods for string manipulations commonly used in Soot. */
 public class StringTools {
 
-  /**
-   * Returns fromString, but with non-isalpha() characters printed as <code>'\\unnnn'</code>. Used
-   * by SootClass to generate output.
-   */
-  public static java.lang.String getEscapedStringOf(String fromString) {
-    char[] fromStringArray;
-    int cr;
-    int lf;
-    int ch;
-    StringBuilder whole = new StringBuilder();
-    StringBuilder mini = new StringBuilder();
+  /** Returns fromString, but with non-isalpha() characters printed as <code>'\\unnnn'</code>. */
+  public static String getEscapedStringOf(String fromString) {
+    // TODO: [ms] possible performance+ maybe(!) work on .charAt(..) instead of .toCharArray)(..)
+    char[] fromStringArray = fromString.toCharArray();
 
-    fromStringArray = fromString.toCharArray();
+    // TODO: [ms] this makes the exported jimple platform dependent? improve!
+    char cr = lineSeparator.charAt(0);
+    char lf = lineSeparator.length() == 2 ? lineSeparator.charAt(1) : cr;
 
-    cr = lineSeparator.charAt(0);
-    lf = -1;
-
-    if (lineSeparator.length() == 2) {
-      lf = lineSeparator.charAt(1);
+    // find if there is (find the first) a need to escape
+    int firstNonAlphaPos = -1;
+    final int size = fromStringArray.length;
+    for (int j = 0; j < size; j++) {
+      char ch = fromStringArray[j];
+      final boolean isPrintableAscii = (ch >= 32 && ch <= 126);
+      if (!((isPrintableAscii || ch == cr || ch == lf) && ch != '\\')) {
+        firstNonAlphaPos = j;
+        break;
+      }
     }
 
-    for (char element : fromStringArray) {
-      ch = element;
+    // no need to escape?
+    if (firstNonAlphaPos == -1) {
+      return fromString;
+    }
+
+    StringBuilder sb = new StringBuilder(fromString.length() + 5); // [ms] lower bound - maybe more.
+    // copy chars until first non alpha char to bypass the condition checking again
+    for (int i = 0; i < firstNonAlphaPos; i++) {
+      sb.append(fromStringArray[i]);
+    }
+
+    // copy and escape the rest
+    for (int j = firstNonAlphaPos, fromStringArrayLength = fromStringArray.length;
+        j < fromStringArrayLength;
+        j++) {
+      char ch = fromStringArray[j];
       if (((ch >= 32 && ch <= 126) || ch == cr || ch == lf) && ch != '\\') {
-        whole.append((char) ch);
-
-        continue;
+        sb.append(ch);
+      } else {
+        sb.append(getUnicodeStringFromChar(ch));
       }
-
-      mini.setLength(0);
-      mini.append(Integer.toHexString(ch));
-
-      while (mini.length() < 4) {
-        mini.insert(0, "0");
-      }
-
-      mini.insert(0, "\\u");
-      whole.append(mini.toString());
     }
 
-    return whole.toString();
+    return sb.toString();
   }
 
   /** Convenience field storing the system line separator. */
@@ -78,7 +82,7 @@ public class StringTools {
    * Returns fromString, but with certain characters printed as if they were in a Java string
    * literal. Used by StringConstant.toString()
    */
-  public static String getQuotedStringOf(String fromString) {
+  public static String getQuotedStringOf(String fromString, boolean needsQuotes) {
     // We definitely need fromString.length + 2, but let's have some
     // additional space
     StringBuilder builder = new StringBuilder(fromString.length() + 20);
@@ -87,35 +91,47 @@ public class StringTools {
       char ch = fromString.charAt(i);
       if (ch == '\\') {
         builder.append("\\\\");
+        needsQuotes = true;
       } else if (ch == '\'') {
         builder.append("\\\'");
+        needsQuotes = true;
       } else if (ch == '\"') {
         builder.append("\\\"");
+        needsQuotes = true;
       } else if (ch == '\n') {
         builder.append("\\n");
+        needsQuotes = true;
       } else if (ch == '\t') {
         builder.append("\\t");
+        needsQuotes = true;
       }
       /*
        * 04.04.2006 mbatch added handling of \r, as compilers throw error if unicode
        */
       else if (ch == '\r') {
         builder.append("\\r");
+        needsQuotes = true;
       }
       /*
        * 10.04.2006 Nomait A Naeem added handling of \f, as compilers throw error if unicode
        */
       else if (ch == '\f') {
         builder.append("\\f");
-      } else if (ch >= 32 && ch <= 126) {
+        needsQuotes = true;
+      } else if (ch >= 32 && ch <= 126 /* is printable ascii */) {
         builder.append(ch);
+        // TODO: [ms] adapt this list to add quotes in cases where it is necessary
+        if (ch == ' ' || ch == ';' || ch == '/') {
+          needsQuotes = true;
+        }
       } else {
         builder.append(getUnicodeStringFromChar(ch));
       }
     }
 
-    builder.append("\"");
-    return builder.toString();
+    return needsQuotes
+        ? builder.append('"').toString()
+        : builder.subSequence(1, builder.length()).toString();
   }
 
   /**
@@ -123,25 +139,22 @@ public class StringTools {
    * .
    */
   public static String getUnicodeStringFromChar(char ch) {
-    String s = Integer.toHexString(ch);
-    String padding = null;
-
-    switch (s.length()) {
+    StringBuilder sb = new StringBuilder(6);
+    sb.append("\\u");
+    final String hexVal = Integer.toHexString(ch);
+    switch (hexVal.length()) {
       case 1:
-        padding = "000";
+        sb.append("000");
         break;
       case 2:
-        padding = "00";
+        sb.append("00");
         break;
       case 3:
-        padding = "0";
-        break;
-      case 4:
-        padding = "";
+        sb.append('0');
         break;
     }
-
-    return "\\u" + padding + s;
+    sb.append(hexVal);
+    return sb.toString();
   }
 
   /**

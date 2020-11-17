@@ -9,15 +9,9 @@ import de.upb.swt.soot.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLoc
 import de.upb.swt.soot.java.bytecode.inputlocation.ModuleFinder;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
-import java.lang.reflect.Field;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Map;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.powermock.reflect.Whitebox;
 
 /** @author Kaustubh Kelkar update on 16.04.2020 */
 @Category(Java9Test.class)
@@ -45,23 +39,9 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
     assertTrue(inputLocation instanceof JrtFileSystemAnalysisInputLocation);
   }
 
-  @Test
-  public void automaticModuleName() throws Exception {
-    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), warFile);
-    String jarName = "foo-1.2.3-SNAPSHOT.jar";
-    String result =
-        Whitebox.invokeMethod(moduleFinder, "createModuleNameForAutomaticModule", jarName);
-    Assert.assertEquals("foo", result);
-  }
-
-  @Test
-  public void automaticModuleName2() throws Exception {
-    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), warFile);
-    String jarName = "foo-bar.jar";
-    String result =
-        Whitebox.invokeMethod(moduleFinder, "createModuleNameForAutomaticModule", jarName);
-    Assert.assertEquals("foo.bar", result);
-  }
+  // TODO: Test name generation for automaticModules (Java9)
+  //  String jarName = "foo-1.2.3-SNAPSHOT.jar"; -> foo
+  //  String jarName = "foo-bar.jar"; --> foo.bar
 
   @Test
   public void modularJar() {
@@ -71,22 +51,5 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
             "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/");
     Collection<String> discoveredModules = moduleFinder.discoverAllModules();
     assertTrue(discoveredModules.contains("de.upb.mod"));
-  }
-
-  @Test
-  @SuppressWarnings("unchecked")
-  public void explodedModule() throws Exception {
-
-    ModuleFinder moduleFinder =
-        new ModuleFinder(
-            new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors()),
-            "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules");
-    Path p =
-        Paths.get("../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/testMod");
-    Whitebox.invokeMethod(moduleFinder, "buildModuleForExplodedModule", p);
-    Field field = Whitebox.getField(moduleFinder.getClass(), "moduleInputLocation");
-    Map<String, AnalysisInputLocation> values =
-        (Map<String, AnalysisInputLocation>) field.get(moduleFinder);
-    assertTrue(values.containsKey("fancyMod"));
   }
 }

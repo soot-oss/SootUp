@@ -59,6 +59,7 @@ public class Printer {
    * shortening the Signatures LegacyMode: Print Jimple like it was printed in old Soot (<= Version
    * 4)
    */
+  // TODO: [ms] enhancement: add option to print a class with all inherited members
   public enum Option {
     UseAbbreviations,
     OmitLocalsDeclaration,
@@ -228,7 +229,7 @@ public class Printer {
           Body body = method.getBody();
           // print method's full signature information
           method.toString(printer);
-
+          printer.newline();
           printBody(body, printer);
 
         } else {
@@ -292,13 +293,13 @@ public class Printer {
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
   private void printStatementsInBody(Body body, LabeledStmtPrinter printer) {
-    printer.initializeSootMethod(body);
+    Iterable<Stmt> linearizedStmtGraph = printer.initializeSootMethod(body);
 
     ImmutableStmtGraph stmtGraph = body.getStmtGraph();
     Stmt previousStmt;
 
     final Map<Stmt, String> labels = printer.getLabels();
-    for (Stmt currentStmt : body.getStmtGraph()) {
+    for (Stmt currentStmt : linearizedStmtGraph) {
       previousStmt = currentStmt;
 
       // Print appropriate header.
@@ -376,53 +377,52 @@ public class Printer {
   }
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
+  // Print out local variables
   private void printLocalsInBody(Body body, StmtPrinter up) {
-    // Print out local variables
+    Map<Type, List<Local>> typeToLocals = new LinkedHashMap<>(body.getLocalCount() * 2 + 1, 0.7f);
+
+    // group locals by type
     {
-      Map<Type, List<Local>> typeToLocals = new LinkedHashMap<>(body.getLocalCount() * 2 + 1, 0.7f);
+      for (Local local : body.getLocals()) {
+        List<Local> localList;
 
-      // Collect locals
-      {
-        for (Local local : body.getLocals()) {
-          List<Local> localList;
+        Type t = local.getType();
 
-          Type t = local.getType();
-
-          if (typeToLocals.containsKey(t)) {
-            localList = typeToLocals.get(t);
-          } else {
-            localList = new ArrayList<>();
-            typeToLocals.put(t, localList);
-          }
-
-          localList.add(local);
+        if (typeToLocals.containsKey(t)) {
+          localList = typeToLocals.get(t);
+        } else {
+          localList = new ArrayList<>();
+          typeToLocals.put(t, localList);
         }
+
+        localList.add(local);
       }
+    }
 
-      // Print locals
-      {
-        for (Type type : typeToLocals.keySet()) {
-          List<Local> localList = new ArrayList<>(typeToLocals.get(type));
-          up.typeSignature(type);
-          up.literal(" ");
+    // Print locals
+    {
+      for (Type type : typeToLocals.keySet()) {
+        List<Local> localList = new ArrayList<>(typeToLocals.get(type));
+        up.typeSignature(type);
+        up.literal(" ");
 
-          final int len = localList.size();
-          if (len > 0) {
-            up.local(localList.get(0));
-            for (int i = 1; i < len; i++) {
-              up.literal(", ");
-              up.local(localList.get(i));
-            }
+        final int len = localList.size();
+        if (len > 0) {
+          up.local(localList.get(0));
+
+          for (int i = 1; i < len; i++) {
+            up.literal(", ");
+            up.local(localList.get(i));
           }
-
-          up.literal(";");
-          up.newline();
         }
-      }
 
-      if (!typeToLocals.isEmpty()) {
+        up.literal(";");
         up.newline();
       }
+    }
+
+    if (!typeToLocals.isEmpty()) {
+      up.newline();
     }
   }
 }

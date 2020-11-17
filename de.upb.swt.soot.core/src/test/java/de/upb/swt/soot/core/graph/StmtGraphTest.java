@@ -271,8 +271,5 @@ public class StmtGraphTest {
     assertEquals(0, graph.predecessors(stmt1).size());
     assertEquals(1, graph.successors(stmt1).size());
     assertTrue(graph.successors(stmt1).contains(stmt2));
-
-    assertEquals(Collections.singletonList(stmt2), graph.adjacentNodes(stmt1));
-    assertEquals(Arrays.asList(stmt1, stmt3), graph.adjacentNodes(stmt2));
   }
 }

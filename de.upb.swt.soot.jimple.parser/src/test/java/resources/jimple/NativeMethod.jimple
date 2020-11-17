@@ -1,0 +1,17 @@
+public synchronized class NativeMethod extends java.lang.Object
+{
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: NativeMethod;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public native int returnResult(int)
+;}
+
