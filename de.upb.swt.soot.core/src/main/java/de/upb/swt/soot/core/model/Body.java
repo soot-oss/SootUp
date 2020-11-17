@@ -539,12 +539,6 @@ public class Body implements Copyable {
     }
 
     @Nonnull
-    public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
-      // Todo[Zun] Implement!!
-      return this;
-    }
-
-    @Nonnull
     public BodyBuilder setPosition(@Nonnull Position position) {
       this.position = position;
       return this;
