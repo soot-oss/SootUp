@@ -46,7 +46,6 @@ public class FieldSignature extends SootClassMemberSignature {
     this.subSignature = subSignature;
   }
 
-
   @Override
   @Nonnull
   public FieldSubSignature getSubSignature() {
