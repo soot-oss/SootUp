@@ -15,9 +15,7 @@ import de.upb.swt.soot.java.bytecode.interceptors.EmptySwitchEliminator;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-
 import java.util.*;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
