@@ -1,10 +1,6 @@
 package de.upb.swt.soot.test.java.bytecode.interceptors;
 
-import static org.junit.Assert.*;
-
 import categories.Java8Test;
-import com.google.common.collect.Lists;
-import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
@@ -93,10 +89,10 @@ public class LocalSplitterTest {
     Body expectedBody = createExpectedBBBody();
 
     // check newBody's locals
-    assertLocalsEquiv(expectedBody.getLocals(), builder.getLocals());
+    AssertUtils.assertLocalsEquiv(expectedBody, builder.build());
 
     // check newBody's stmtGraph
-    assertStmtGraphEquiv(expectedBody.getStmtGraph(), builder.getStmtGraph());
+    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
   }
 
   /**
@@ -132,10 +128,10 @@ public class LocalSplitterTest {
     Body expectedBody = createExpectedMuiltilocalsBody();
 
     // check newBody's locals
-    assertLocalsEquiv(expectedBody.getLocals(), builder.getLocals());
+    AssertUtils.assertLocalsEquiv(expectedBody, builder.build());
 
     // check newBody's stmtGraph
-    assertStmtGraphEquiv(expectedBody.getStmtGraph(), builder.getStmtGraph());
+    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
   }
 
   /**
@@ -183,10 +179,10 @@ public class LocalSplitterTest {
     Body expectedBody = createExpectedLoopBody();
 
     // check newBody's locals
-    assertLocalsEquiv(expectedBody.getLocals(), builder.getLocals());
+    AssertUtils.assertLocalsEquiv(expectedBody, builder.build());
 
     // check newBody's stmtGraph
-    assertStmtGraphEquiv(expectedBody.getStmtGraph(), builder.getStmtGraph());
+    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
   }
 
   /** bodycreater for BinaryBranches */
@@ -461,40 +457,5 @@ public class LocalSplitterTest {
     builder.setPosition(position);
 
     return builder.build();
-  }
-
-  private static void assertLocalsEquiv(Set<Local> expected, Set<Local> actual) {
-    assertNotNull(expected);
-    assertNotNull(actual);
-    assertEquals(expected.size(), actual.size());
-    boolean isEqual = true;
-    for (Local local : actual) {
-      if (!expected.contains(local)) {
-        isEqual = false;
-        break;
-      }
-    }
-    assertTrue(isEqual);
-  }
-
-  private void assertStmtGraphEquiv(StmtGraph expected, StmtGraph actual) {
-    assertNotNull(expected);
-    assertNotNull(actual);
-    final boolean condition = expected.equivTo(actual);
-    if (!condition) {
-      System.out.println("expected:");
-      System.out.println(Lists.newArrayList(expected.iterator()));
-      System.out.println("actual:");
-      System.out.println(Lists.newArrayList(actual.iterator()) + "\n");
-
-      for (Stmt s : expected) {
-        System.out.println(s + " => " + expected.successors(s));
-      }
-      System.out.println();
-      for (Stmt s : actual) {
-        System.out.println(s + " => " + actual.successors(s));
-      }
-    }
-    assertTrue(condition);
   }
 }
