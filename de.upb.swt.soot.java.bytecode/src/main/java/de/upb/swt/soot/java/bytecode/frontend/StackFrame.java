@@ -189,7 +189,7 @@ final class StackFrame {
       }
 
       /*
-       * this version uses allocates local if it finds both operands have stack locals allocated already
+       * this version uses allocated locals if it finds both operands have stack locals allocated already
        */
       /*
        * if (stack == null) { if (in.size() != 1) throw new AssertionError("Local h " + in.size()); stack =

@@ -299,11 +299,16 @@ public class WalaJavaClassProvider implements ClassProvider {
   private JavaSourceLoaderImpl.JavaClass loadWalaClass(
       ClassType signature, WalaIRToJimpleConverter walaToSoot) {
     String className = walaToSoot.convertClassNameFromSoot(signature.getFullyQualifiedName());
-    JavaSourceLoaderImpl.JavaClass walaClass =
-        (JavaSourceLoaderImpl.JavaClass)
-            classHierarchy
-                .getLoader(JavaSourceAnalysisScope.SOURCE)
-                .lookupClass(TypeName.findOrCreate(className));
+
+    IClass clazz =
+        classHierarchy
+            .getLoader(JavaSourceAnalysisScope.SOURCE)
+            .lookupClass(TypeName.findOrCreate(className));
+
+    JavaSourceLoaderImpl.JavaClass walaClass = null;
+    if (clazz instanceof JavaSourceLoaderImpl.JavaClass) {
+      walaClass = (JavaSourceLoaderImpl.JavaClass) clazz;
+    }
 
     if (walaClass == null && className.contains("$")) {
       // search for a possible inner class
@@ -342,11 +347,7 @@ public class WalaJavaClassProvider implements ClassProvider {
   @Override
   public SootClassSource createClassSource(
       AnalysisInputLocation srcNamespace, Path sourcePath, ClassType type) {
-    return getClassSource(type)
-        .orElseThrow(
-            () ->
-                new ResolveException(
-                    "Could not resolve " + type + " in " + classSources.toString()));
+    return getClassSource(type).orElse(null);
   }
 
   @Override

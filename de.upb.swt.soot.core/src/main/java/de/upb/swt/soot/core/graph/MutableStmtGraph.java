@@ -113,6 +113,12 @@ public class MutableStmtGraph extends StmtGraph {
 
   private int addNode(@Nonnull Stmt node) {
     final int idx = nextFreeId++;
+    if (node == null) {
+      System.out.println("node is null in addNode:");
+      for (StackTraceElement element : (new Throwable()).getStackTrace()) {
+        System.out.println(element);
+      }
+    }
     stmtToIdx.put(node, idx);
     predecessors.add(
         new ArrayList<>(1)); // [ms] hint: wastes an entry if its a TrapHandler or the first Stmt
@@ -247,6 +253,7 @@ public class MutableStmtGraph extends StmtGraph {
   public List<Stmt> successors(@Nonnull Stmt node) {
     int nodeIdx = getNodeIdx(node);
     final List<Stmt> stmts = successors.get(nodeIdx);
+
     if (stmts == null) {
       return Collections.emptyList();
     }

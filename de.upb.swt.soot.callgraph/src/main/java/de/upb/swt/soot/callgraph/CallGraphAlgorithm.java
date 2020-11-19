@@ -1,9 +1,10 @@
-package de.upb.swt.soot.core.inputlocation;
+package de.upb.swt.soot.callgraph;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2018-2020 Linghui Luo and others
+ * Copyright (C) 2019-2020 Linghui Luo, Christian Brüggemann, Ben Hermann, Markus Schmidt
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -20,19 +21,16 @@ package de.upb.swt.soot.core.inputlocation;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import javax.annotation.Nullable;
 
-public class ClassResolvingException extends Throwable {
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.java.core.types.JavaClassType;
+import java.util.List;
+import javax.annotation.Nonnull;
 
-  public ClassResolvingException(@Nullable String message) {
-    super(message);
-  }
+public interface CallGraphAlgorithm {
+  @Nonnull
+  CallGraph initialize(@Nonnull List<MethodSignature> entryPoints);
 
-  public ClassResolvingException(@Nullable String message, @Nullable Throwable cause) {
-    super(message, cause);
-  }
-
-  public ClassResolvingException(@Nullable Throwable cause) {
-    super(cause);
-  }
+  @Nonnull
+  CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType);
 }

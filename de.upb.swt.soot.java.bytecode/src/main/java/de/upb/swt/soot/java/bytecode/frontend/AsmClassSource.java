@@ -125,7 +125,7 @@ class AsmClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public Set<Modifier> resolveModifiers() {
+  public EnumSet<Modifier> resolveModifiers() {
     EnumSet<Modifier> modifiers = AsmUtil.getModifiers(classNode.access);
     return modifiers;
   }

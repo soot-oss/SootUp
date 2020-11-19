@@ -38,15 +38,16 @@ import javax.annotation.Nullable;
  * @see MethodSubSignature
  * @author Jan Martin Persch
  */
-public abstract class AbstractClassMemberSubSignature {
+public abstract class SootClassMemberSubSignature {
 
-  /** Creates a new instance of the {@link AbstractClassMemberSubSignature} class. */
-  protected AbstractClassMemberSubSignature(@Nonnull String name, @Nonnull Type type) {
+  @Nonnull private final String name;
+  @Nonnull private final Type type;
+
+  /** Creates a new instance of the {@link SootClassMemberSubSignature} class. */
+  protected SootClassMemberSubSignature(@Nonnull String name, @Nonnull Type type) {
     this.name = name;
     this.type = type;
   }
-
-  @Nonnull private final String name;
 
   /**
    * Gets the name.
@@ -57,8 +58,6 @@ public abstract class AbstractClassMemberSubSignature {
   public String getName() {
     return name;
   }
-
-  @Nonnull private final Type type;
 
   /**
    * Gets the type.
@@ -79,7 +78,7 @@ public abstract class AbstractClassMemberSubSignature {
       return false;
     }
 
-    AbstractClassMemberSubSignature that = (AbstractClassMemberSubSignature) o;
+    SootClassMemberSubSignature that = (SootClassMemberSubSignature) o;
 
     return Objects.equal(getName(), that.getName()) && Objects.equal(getType(), that.getType());
   }
@@ -89,7 +88,7 @@ public abstract class AbstractClassMemberSubSignature {
     return Objects.hashCode(getName(), getType());
   }
 
-  protected int compareTo(@Nonnull AbstractClassMemberSubSignature o) {
+  protected int compareTo(@Nonnull SootClassMemberSubSignature o) {
     int r = this.getName().compareTo(o.getName());
 
     if (r != 0) return r;

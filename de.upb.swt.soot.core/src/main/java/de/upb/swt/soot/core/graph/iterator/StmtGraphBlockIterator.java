@@ -24,6 +24,7 @@ import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -177,10 +178,16 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
     final int returnedSize = returnedNodes.size();
     final int actualSize = graph.nodes().size();
     if (!hasIteratorMoreElements && returnedSize != actualSize) {
+      String info =
+          graph.nodes().stream()
+              .filter(n -> !returnedNodes.contains(n))
+              .collect(Collectors.toList())
+              .toString();
       throw new RuntimeException(
           "There are "
               + (actualSize - returnedSize)
-              + " stmts that are not iterated! StmtGraph is not connected from startingStmt!");
+              + " stmts that are not iterated! StmtGraph is not connected from startingStmt!"
+              + info);
     }
     return hasIteratorMoreElements;
   }
