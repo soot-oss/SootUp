@@ -40,11 +40,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
-public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
+public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @Nonnull private final View view;
   @Nonnull private final TypeHierarchy hierarchy;
 
-  public ClassHierarchyAlgorithm(@Nonnull View view, @Nonnull TypeHierarchy hierarchy) {
+  public ClassHierarchyAnalysisAlgorithm(@Nonnull View view, @Nonnull TypeHierarchy hierarchy) {
     this.view = view;
     this.hierarchy = hierarchy;
   }
@@ -121,7 +121,7 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
         (SootMethod)
             view.getClass(targetMethodSignature.getDeclClassType())
                 .flatMap(clazz -> clazz.getMethod(targetMethodSignature))
-                .orElseGet(() -> findMethodInHierarchy(targetMethodSignature));
+                .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
 
     if (Modifier.isStatic(targetMethod.getModifiers())
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
@@ -131,27 +131,5 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
           result,
           MethodDispatchResolver.resolveAbstractDispatch(view, targetMethodSignature).stream());
     }
-  }
-
-  private <T extends Method> T findMethodInHierarchy(MethodSignature sig) {
-    SootClass sc = (SootClass) view.getClass(sig.getDeclClassType()).get();
-    Optional<ClassType> optSuperclass = sc.getSuperclass();
-
-    Optional<SootMethod> optMethod;
-    while (optSuperclass.isPresent()) {
-      ClassType superClassType = optSuperclass.get();
-      SootClass superClass = (SootClass) view.getClass(superClassType).get();
-      optMethod = superClass.getMethod((MethodSubSignature) sig.getSubSignature());
-      if (optMethod.isPresent()) {
-        return (T) optMethod.get();
-      }
-      optSuperclass = superClass.getSuperclass();
-    }
-    throw new ResolveException(
-        "Could not find \""
-            + sig.getSubSignature()
-            + "\" in "
-            + sig.getDeclClassType().getClassName()
-            + " and in its superclasses");
   }
 }

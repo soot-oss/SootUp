@@ -5,7 +5,7 @@ import static junit.framework.TestCase.*;
 import categories.Java8Test;
 import de.upb.swt.soot.callgraph.CallGraph;
 import de.upb.swt.soot.callgraph.CallGraphAlgorithm;
-import de.upb.swt.soot.callgraph.ClassHierarchyAlgorithm;
+import de.upb.swt.soot.callgraph.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;
@@ -29,7 +29,7 @@ import org.junit.experimental.categories.Category;
  * @author Markus Schmidt
  */
 @Category(Java8Test.class)
-public class ClassHierarchyAlgorithmTest {
+public class ClassHierarchyAnalysisAlgorithmTest {
 
   // TODO: StaticInitializers, Lambdas ?
   JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
@@ -64,7 +64,7 @@ public class ClassHierarchyAlgorithmTest {
     assertTrue(mainMethodSignature + " not found in classloader", m.isPresent());
 
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    CallGraphAlgorithm cha = new ClassHierarchyAlgorithm(view, typeHierarchy);
+    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
     CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
 
     assertTrue(
@@ -173,7 +173,7 @@ public class ClassHierarchyAlgorithmTest {
             Collections.emptyList());
 
     final TypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    CallGraphAlgorithm cha = new ClassHierarchyAlgorithm(view, typeHierarchy);
+    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
     CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
 
     JavaClassType newClass =

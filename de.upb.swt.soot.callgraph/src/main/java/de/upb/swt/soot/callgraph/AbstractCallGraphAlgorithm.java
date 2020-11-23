@@ -22,17 +22,18 @@ package de.upb.swt.soot.callgraph;
  * #L%
  */
 
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Method;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.signatures.MethodSubSignature;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
@@ -96,6 +97,31 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     } else {
       return Stream.empty();
     }
+  }
+
+  /**
+   * finds the given method signature in class's superclasses
+   */
+  final <T extends Method> T findMethodInHierarchy(View view, MethodSignature sig) {
+    SootClass sc = (SootClass) view.getClass(sig.getDeclClassType()).get();
+    Optional<ClassType> optSuperclass = sc.getSuperclass();
+
+    Optional<SootMethod> optMethod;
+    while (optSuperclass.isPresent()) {
+      ClassType superClassType = optSuperclass.get();
+      SootClass superClass = (SootClass) view.getClass(superClassType).get();
+      optMethod = superClass.getMethod((MethodSubSignature) sig.getSubSignature());
+      if (optMethod.isPresent()) {
+        return (T) optMethod.get();
+      }
+      optSuperclass = superClass.getSuperclass();
+    }
+    throw new ResolveException(
+            "Could not find \""
+                    + sig.getSubSignature()
+                    + "\" in "
+                    + sig.getDeclClassType().getClassName()
+                    + " and in its superclasses");
   }
 
   @Nonnull
