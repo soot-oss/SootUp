@@ -4,22 +4,11 @@ import static junit.framework.TestCase.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.callgraph.CallGraph;
-import de.upb.swt.soot.callgraph.CallGraphAlgorithm;
 import de.upb.swt.soot.callgraph.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
-import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
-import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.JavaProject;
-import de.upb.swt.soot.java.core.language.JavaLanguage;
-import de.upb.swt.soot.java.core.types.JavaClassType;
-import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.util.*;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -29,15 +18,16 @@ import org.junit.experimental.categories.Category;
  * @author Markus Schmidt
  */
 @Category(Java8Test.class)
-public class ClassHierarchyAnalysisAlgorithmTest extends CallGraphTestBase<ClassHierarchyAnalysisAlgorithm>{
+public class ClassHierarchyAnalysisAlgorithmTest
+    extends CallGraphTestBase<ClassHierarchyAnalysisAlgorithm> {
 
   // TODO: StaticInitializers, Lambdas ?
 
   @Override
-  protected ClassHierarchyAnalysisAlgorithm createAlgorithm(View view, TypeHierarchy typeHierarchy) {
+  protected ClassHierarchyAnalysisAlgorithm createAlgorithm(
+      View view, TypeHierarchy typeHierarchy) {
     return new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
   }
-
 
   @Test
   public void testMiscExample1() {
@@ -108,6 +98,4 @@ public class ClassHierarchyAnalysisAlgorithmTest extends CallGraphTestBase<Class
     assertEquals(0, cg.callsFrom(methodC).size());
     assertEquals(0, cg.callsFrom(methodD).size());
   }
-
-
 }

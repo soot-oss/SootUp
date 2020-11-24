@@ -4,36 +4,22 @@ import static junit.framework.TestCase.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.callgraph.CallGraph;
-import de.upb.swt.soot.callgraph.CallGraphAlgorithm;
-import de.upb.swt.soot.callgraph.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.RapidTypeAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
-import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
-import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.JavaProject;
-import de.upb.swt.soot.java.core.language.JavaLanguage;
-import de.upb.swt.soot.java.core.types.JavaClassType;
-import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.util.Collections;
-import java.util.Optional;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Kadiray Karakaya */
 @Category(Java8Test.class)
-public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeAnalysisAlgorithm>{
-
+public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeAnalysisAlgorithm> {
 
   @Override
   protected RapidTypeAnalysisAlgorithm createAlgorithm(View view, TypeHierarchy typeHierarchy) {
     return new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
   }
-
 
   @Test
   public void testMiscExample1() {
@@ -102,5 +88,4 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
     assertEquals(0, cg.callsFrom(methodB).size());
     assertEquals(0, cg.callsFrom(methodC).size());
   }
-
 }
