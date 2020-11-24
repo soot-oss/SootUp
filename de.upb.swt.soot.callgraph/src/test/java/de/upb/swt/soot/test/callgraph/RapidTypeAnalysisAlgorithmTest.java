@@ -5,7 +5,9 @@ import static junit.framework.TestCase.*;
 import categories.Java8Test;
 import de.upb.swt.soot.callgraph.CallGraph;
 import de.upb.swt.soot.callgraph.CallGraphAlgorithm;
+import de.upb.swt.soot.callgraph.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.RapidTypeAnalysisAlgorithm;
+import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -24,48 +26,14 @@ import org.junit.experimental.categories.Category;
 
 /** @author Kadiray Karakaya */
 @Category(Java8Test.class)
-public class RapidTypeAnalysisAlgorithmTest {
+public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeAnalysisAlgorithm>{
 
-  JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-  JavaClassType mainClassSignature;
-  MethodSignature mainMethodSignature;
 
-  CallGraph loadCallGraph(String testDirectory, String className) {
-    String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
-
-    double version = Double.parseDouble(System.getProperty("java.specification.version"));
-    if (version > 1.8) {
-      fail("The rt.jar is not available after Java 8. You are using version " + version);
-    }
-
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
-            .addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath))
-            .build();
-
-    View view = javaProject.createOnDemandView();
-
-    mainClassSignature = identifierFactory.getClassType(className);
-    mainMethodSignature =
-        identifierFactory.getMethodSignature(
-            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
-
-    SootClass sc = (SootClass) view.getClass(mainClassSignature).get();
-    Optional<SootMethod> m = sc.getMethod(mainMethodSignature);
-    assertTrue(mainMethodSignature + " not found in classloader", m.isPresent());
-
-    final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    CallGraphAlgorithm rta = new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
-    CallGraph cg = rta.initialize(Collections.singletonList(mainMethodSignature));
-
-    assertTrue(
-        mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
-    assertNotNull(cg);
-    return cg;
+  @Override
+  protected RapidTypeAnalysisAlgorithm createAlgorithm(View view, TypeHierarchy typeHierarchy) {
+    return new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
   }
+
 
   @Test
   public void testMiscExample1() {
@@ -120,6 +88,7 @@ public class RapidTypeAnalysisAlgorithmTest {
     assertTrue(cg.containsCall(mainMethodSignature, methodA));
     assertTrue(cg.containsCall(mainMethodSignature, methodB));
     assertTrue(cg.containsCall(mainMethodSignature, methodC));
+    assertFalse(cg.containsMethod(methodD));
 
     assertEquals(5, cg.callsFrom(mainMethodSignature).size());
 
@@ -133,4 +102,5 @@ public class RapidTypeAnalysisAlgorithmTest {
     assertEquals(0, cg.callsFrom(methodB).size());
     assertEquals(0, cg.callsFrom(methodC).size());
   }
+
 }
