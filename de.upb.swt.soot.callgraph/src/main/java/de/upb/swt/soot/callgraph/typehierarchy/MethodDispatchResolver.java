@@ -60,6 +60,31 @@ public final class MethodDispatchResolver {
   }
 
   /**
+   * Searches the view for classes that implement or override the method <code>m</code> and returns
+   * the set of method signatures that a method call could resolve to within the given classes.
+   */
+  @Nonnull
+  public static Set<MethodSignature> resolveAbstractDispatchInClasses(
+      View view, MethodSignature m, Set<ClassType> classes) {
+    TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
+
+    return hierarchy.subtypesOf(m.getDeclClassType()).stream()
+        .map(
+            subtype ->
+                view.getClass(subtype)
+                    .orElseThrow(
+                        () ->
+                            new ResolveException(
+                                "Could not resolve " + subtype + ", but found it in hierarchy.")))
+        .filter(c -> classes.contains(c.getType()))
+        .flatMap(abstractClass -> abstractClass.getMethods().stream())
+        .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
+        .filter(method -> method instanceof SootMethod && !((SootMethod) method).isAbstract())
+        .map(Method::getSignature)
+        .collect(Collectors.toSet());
+  }
+
+  /**
    * <b>Warning!</b> Assumes that for an abstract dispatch, <code>potentialTarget</code> is declared
    * in the same or a subtype of the declaring class of <code>called</code>.
    *

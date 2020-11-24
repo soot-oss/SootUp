@@ -25,7 +25,6 @@ package de.upb.swt.soot.callgraph;
 import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JDynamicInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;

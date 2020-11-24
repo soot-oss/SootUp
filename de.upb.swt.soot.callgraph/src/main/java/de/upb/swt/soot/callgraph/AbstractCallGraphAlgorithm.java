@@ -32,7 +32,6 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
-
 import java.util.*;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -99,9 +98,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
   }
 
-  /**
-   * finds the given method signature in class's superclasses
-   */
+  /** finds the given method signature in class's superclasses */
   final <T extends Method> T findMethodInHierarchy(View view, MethodSignature sig) {
     SootClass sc = (SootClass) view.getClass(sig.getDeclClassType()).get();
     Optional<ClassType> optSuperclass = sc.getSuperclass();
@@ -117,11 +114,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       optSuperclass = superClass.getSuperclass();
     }
     throw new ResolveException(
-            "Could not find \""
-                    + sig.getSubSignature()
-                    + "\" in "
-                    + sig.getDeclClassType().getClassName()
-                    + " and in its superclasses");
+        "Could not find \""
+            + sig.getSubSignature()
+            + "\" in "
+            + sig.getDeclClassType().getClassName()
+            + " and in its superclasses");
   }
 
   @Nonnull
