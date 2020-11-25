@@ -35,7 +35,6 @@ public class ReplaceUseRefVisitorTest {
   Local localIndex = JavaJimple.newLocal("index", intType);
   Local localNewIndex = JavaJimple.newLocal("newIndex", intType);
 
-
   FieldSignature fieldSignature = new FieldSignature(arrayType, "field", intType);
 
   /** Test use replacing in case JArrayRef. */
@@ -66,7 +65,7 @@ public class ReplaceUseRefVisitorTest {
     assertTrue(newRef.getUses().equals(expectedUses));
     expectedUses.clear();
 
-    //replace local index with newUse
+    // replace local index with newUse
     visitor = new ReplaceUseRefVisitor(localIndex, localNewIndex);
     ref = javaJimple.newArrayRef(base, localIndex);
     ref.accept(visitor);
