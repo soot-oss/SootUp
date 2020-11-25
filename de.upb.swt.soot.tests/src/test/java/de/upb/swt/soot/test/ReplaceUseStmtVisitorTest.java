@@ -11,7 +11,6 @@ import de.upb.swt.soot.core.jimple.common.expr.Expr;
 import de.upb.swt.soot.core.jimple.common.ref.Ref;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.ReplaceUseStmtVisitor;
-import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
@@ -37,12 +36,7 @@ public class ReplaceUseStmtVisitorTest {
   Local var = JavaJimple.newLocal("var", intType);
 
   Local base = JavaJimple.newLocal("base", testClass);
-  Local arg1 = JavaJimple.newLocal("arg1", intType);
-  Local arg2 = JavaJimple.newLocal("arg2", intType);
-  Local arg3 = JavaJimple.newLocal("arg3", intType);
-  Local newArg = JavaJimple.newLocal("argn", intType);
 
-  FieldSignature fieldSignature = new FieldSignature(testClass, "field", intType);
   MethodSignature methodeWithOutParas =
       new MethodSignature(testClass, "invokeExpr", Collections.emptyList(), voidType);
 
@@ -61,6 +55,7 @@ public class ReplaceUseStmtVisitorTest {
     Stmt newStmt = visitor.getNewStmt();
 
     List<Value> expectedUses = new ArrayList<>();
+
     expectedUses.add(JavaJimple.newAddExpr(newOp, op2));
     expectedUses.add(newOp);
     expectedUses.add(op2);
@@ -75,13 +70,13 @@ public class ReplaceUseStmtVisitorTest {
     assertTrue(isExpected);
 
     // rValue is a Ref
-    Ref ref = javaJimple.newArrayRef(op1, op1);
+    Ref ref = javaJimple.newArrayRef(op1, op2);
     stmt = JavaJimple.newAssignStmt(var, ref, noStmtPositionInfo);
     stmt.accept(visitor);
     newStmt = visitor.getNewStmt();
 
-    expectedUses.set(0, javaJimple.newArrayRef(newOp, newOp));
-    expectedUses.set(2, newOp);
+    expectedUses.set(0, javaJimple.newArrayRef(newOp, op2));
+    expectedUses.set(1, newOp);
 
     isExpected = false;
     for (int i = 0; i < 3; i++) {
