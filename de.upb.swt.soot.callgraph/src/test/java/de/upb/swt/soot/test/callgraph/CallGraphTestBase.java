@@ -59,7 +59,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertTrue(mainMethodSignature + " not found in classloader", m.isPresent());
 
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    CallGraphAlgorithm algorithm = createAlgorithm(view, typeHierarchy);
+    algorithm = createAlgorithm(view, typeHierarchy);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
     assertTrue(
@@ -68,27 +68,9 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     return cg;
   }
 
-  // @Test
+  @Test
   public void testAddClass() {
-
-    String walaClassPath = "src/test/resources/callgraph/Misc";
-
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
-            .addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath))
-            .build();
-
-    View view = javaProject.createOnDemandView();
-
-    mainMethodSignature =
-        identifierFactory.getMethodSignature(
-            "main",
-            identifierFactory.getClassType("update.operation.cg.Class"),
-            "void",
-            Collections.singletonList("java.lang.String[]"));
+    CallGraph cg = loadCallGraph("Misc", "update.operation.cg.Class");
 
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature(
@@ -97,13 +79,9 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "void",
             Collections.emptyList());
 
-    final TypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
-    CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
-
     JavaClassType newClass =
         new JavaClassType("AdderA", identifierFactory.getPackageName("update.operation.cg"));
-    CallGraph newCallGraph = cha.addClass(cg, newClass);
+    CallGraph newCallGraph = algorithm.addClass(cg, newClass);
 
     TestCase.assertEquals(0, cg.callsTo(mainMethodSignature).size());
     TestCase.assertEquals(1, newCallGraph.callsTo(mainMethodSignature).size());
