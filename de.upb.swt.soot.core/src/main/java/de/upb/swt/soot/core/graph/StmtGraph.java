@@ -29,6 +29,7 @@ import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Interface for control flow graphs on Jimple Stmts. A StmtGraph is directed and connected (except
@@ -41,6 +42,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class StmtGraph implements Iterable<Stmt> {
 
+  @Nullable
   public abstract Stmt getStartingStmt();
 
   /**
@@ -237,7 +239,6 @@ public abstract class StmtGraph implements Iterable<Stmt> {
   /** validates whether the each Stmt has the correct amount of outgoing flows. */
   public void validateStmtConnectionsInGraph() {
     for (Stmt stmt : nodes()) {
-
       final List<Stmt> successors = successors(stmt);
       final int successorCount = successors.size();
 
@@ -249,7 +250,7 @@ public abstract class StmtGraph implements Iterable<Stmt> {
           throw new RuntimeException(
               "Stmt '"
                   + stmt
-                  + "' which is not the StartingStmt or a TrapHandler is missing a predecessor!");
+                  + "' which is neither the StartingStmt nor a TrapHandler is missing a predecessor!");
         }
       }
 

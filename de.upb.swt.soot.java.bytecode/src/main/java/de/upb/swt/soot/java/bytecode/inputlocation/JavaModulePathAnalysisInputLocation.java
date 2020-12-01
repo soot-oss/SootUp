@@ -24,10 +24,10 @@ import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.inputlocation.ClassResolvingException;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
@@ -93,7 +93,9 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
     for (String module : availableModules) {
       AnalysisInputLocation inputLocation = moduleFinder.discoverModule(module);
       IdentifierFactory identifierFactoryWrapper = identifierFactory;
-
+      if (inputLocation == null) {
+        continue;
+      }
       if (!(inputLocation instanceof JrtFileSystemAnalysisInputLocation)) {
         /*
          * we need a wrapper to create correct types for the found classes, all other ignore modules by default, or have
@@ -101,9 +103,7 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
          */
         identifierFactoryWrapper = new IdentifierFactoryWrapper(identifierFactoryWrapper, module);
       }
-
-      // FIXME: [JMP] `inputLocation` may be `null`
-      found.addAll(inputLocation.getClassSources(identifierFactoryWrapper, classLoadingOptions));
+      found.addAll(inputLocation.getClassSources(identifierFactoryWrapper));
     }
 
     return found;
@@ -124,16 +124,12 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
 
     if (inputLocation == null) {
       try {
-        throw new ClassResolvingException("No Namespace for class " + klassType);
-      } catch (ClassResolvingException e) {
+        throw new ResolveException("No Namespace for class " + klassType);
+      } catch (ResolveException e) {
         e.printStackTrace();
-        // FIXME: [JMP] Throwing exception and catching it immediately? This causes `inputLocation`
-        // to remain
-        // `null`.
+        return Optional.empty();
       }
     }
-
-    // FIXME: [JMP] `inputLocation` may be `null`
     return inputLocation.getClassSource(klassType);
   }
 

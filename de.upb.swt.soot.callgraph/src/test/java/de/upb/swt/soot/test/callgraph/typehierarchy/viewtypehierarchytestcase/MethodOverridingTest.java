@@ -9,14 +9,14 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyBase;
+import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyTestBase;
 import java.util.Collections;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Hasitha Rajapakse * */
 @Category(Java8Test.class)
-public class MethodOverridingTest extends JavaTypeHierarchyBase {
+public class MethodOverridingTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {
     ViewTypeHierarchy typeHierarchy =

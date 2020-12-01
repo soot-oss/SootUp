@@ -20,6 +20,7 @@ import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import de.upb.swt.soot.java.sourcecode.WalaClassLoaderTestUtils;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.util.Collections;
 import java.util.List;

@@ -1,0 +1,99 @@
+public synchronized class VariableDeclaration extends java.lang.Object
+{
+    public void shortVariable()
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: VariableDeclaration;
+
+        l1 = 10;
+
+        return;
+    }
+
+    public void doubleVariable()
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: VariableDeclaration;
+
+        l1 = 1.96969654;
+
+        return;
+    }
+
+    public void intVariable()
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: VariableDeclaration;
+
+        l1 = 512;
+
+        return;
+    }
+
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: VariableDeclaration;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void longVariable()
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: VariableDeclaration;
+
+        l1 = 123456789L;
+
+        return;
+    }
+
+    public void byteVariable()
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: VariableDeclaration;
+
+        l1 = 0;
+
+        return;
+    }
+
+    public void charVariable()
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: VariableDeclaration;
+
+        l1 = 97;
+
+        return;
+    }
+
+    public void floatVariable()
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: VariableDeclaration;
+
+        l1 = 3.14F;
+
+        return;
+    }
+}
+

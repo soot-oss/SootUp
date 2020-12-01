@@ -42,6 +42,7 @@ public class αρετηTest extends MinimalBytecodeTestSuiteBase {
   }
 
   @Test
+  // test only works on a filesystem that supports unicode
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());

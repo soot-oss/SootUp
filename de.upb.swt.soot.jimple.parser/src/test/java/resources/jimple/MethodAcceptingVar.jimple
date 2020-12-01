@@ -1,0 +1,117 @@
+public synchronized class MethodAcceptingVar extends java.lang.Object
+{
+    public void intVariable(int)
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: MethodAcceptingVar;
+
+        l1 := @parameter0: int;
+
+        l1 = l1 + 1;
+
+        return;
+    }
+
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: MethodAcceptingVar;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void shortVariable(short)
+    {
+        unknown $stack2, l0, l1;
+
+
+        l0 := @this: MethodAcceptingVar;
+
+        l1 := @parameter0: short;
+
+        $stack2 = l1 + 1;
+
+        l1 = (short) $stack2;
+
+        return;
+    }
+
+    public void doubleVariable(double)
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: MethodAcceptingVar;
+
+        l1 := @parameter0: double;
+
+        l1 = 1.787777777;
+
+        return;
+    }
+
+    public void longVariable(long)
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: MethodAcceptingVar;
+
+        l1 := @parameter0: long;
+
+        l1 = 123456777L;
+
+        return;
+    }
+
+    public void charVariable(char)
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: MethodAcceptingVar;
+
+        l1 := @parameter0: char;
+
+        l1 = 97;
+
+        return;
+    }
+
+    public void byteVariable(byte)
+    {
+        unknown $stack2, l0, l1;
+
+
+        l0 := @this: MethodAcceptingVar;
+
+        l1 := @parameter0: byte;
+
+        $stack2 = l1 + 1;
+
+        l1 = (byte) $stack2;
+
+        return;
+    }
+
+    public void floatVariable(float)
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: MethodAcceptingVar;
+
+        l1 := @parameter0: float;
+
+        l1 = 7.77F;
+
+        return;
+    }
+}
+

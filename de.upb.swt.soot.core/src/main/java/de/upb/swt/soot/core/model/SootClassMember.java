@@ -23,8 +23,8 @@ package de.upb.swt.soot.core.model;
  */
 
 import com.google.common.collect.ImmutableSet;
-import de.upb.swt.soot.core.signatures.AbstractClassMemberSubSignature;
 import de.upb.swt.soot.core.signatures.SootClassMemberSignature;
+import de.upb.swt.soot.core.signatures.SootClassMemberSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import java.util.Objects;
@@ -37,20 +37,23 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public abstract class SootClassMember<Sig extends SootClassMemberSignature> {
+public abstract class SootClassMember<S extends SootClassMemberSignature> {
 
-  @Nonnull private final Sig _signature;
-  @Nonnull private final ImmutableSet<Modifier> _modifiers;
+  @Nonnull private final S signature;
+  @Nonnull private final ImmutableSet<Modifier> modifiers;
+  @Nonnull private final Position position;
 
-  SootClassMember(@Nonnull Sig signature, @Nonnull Iterable<Modifier> modifiers) {
-    this._signature = signature;
-    this._modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
+  SootClassMember(
+      @Nonnull S signature, @Nonnull Iterable<Modifier> modifiers, @Nonnull Position position) {
+    this.signature = signature;
+    this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
+    this.position = position;
   }
 
   /** Returns the SootClass declaring this one. */
   @Nonnull
   public ClassType getDeclaringClassType() {
-    return this._signature.getDeclClassType();
+    return this.signature.getDeclClassType();
   }
 
   /** Convenience methodRef returning true if this class member is protected. */
@@ -85,34 +88,39 @@ public abstract class SootClassMember<Sig extends SootClassMemberSignature> {
    */
   @Nonnull
   public Set<Modifier> getModifiers() {
-    return _modifiers;
+    return modifiers;
   }
 
-  /** Returns a hash code for this methodRef consistent with structural equality. */
+  /** Returns a hash code for this method consistent with structural equality. */
   public int equivHashCode() {
-    return Objects.hash(_modifiers, _signature);
+    return Objects.hash(modifiers, signature);
   }
 
-  /** Returns the signature of this methodRef. */
+  /** Returns the signature of this method. */
   @Override
   @Nonnull
   public String toString() {
-    return _signature.toString();
+    return signature.toString();
   }
 
-  /** Returns the Soot signature of this methodRef. Used to refer to methods unambiguously. */
+  /** Returns the Soot signature of this method. Used to refer to methods unambiguously. */
   @Nonnull
-  public Sig getSignature() {
-    return _signature;
+  public S getSignature() {
+    return signature;
   }
 
   @Nonnull
-  public AbstractClassMemberSubSignature getSubSignature() {
-    return _signature.getSubSignature();
+  public SootClassMemberSubSignature getSubSignature() {
+    return signature.getSubSignature();
   }
 
   @Nonnull
   public String getName() {
-    return this._signature.getName();
+    return this.signature.getName();
+  }
+
+  @Nonnull
+  public Position getPosition() {
+    return position;
   }
 }

@@ -1,0 +1,33 @@
+synchronized class MultiInterfaceImplClass extends java.lang.Object implements InterfaceImplDummy, InterfaceImpl
+{
+    public void interfaceMethod()
+    {
+        unknown $stack2, $stack1, l0;
+
+
+        l0 := @this: MultiInterfaceImplClass;
+
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack1.<java.io.PrintStream: void print(java.lang.String)>("Method from InterfaceImpl is implemented");
+
+        $stack2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack2.<java.io.PrintStream: void println(java.lang.String)>("Variable from InterfaceImpl is 10");
+
+        return;
+    }
+
+    void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: MultiInterfaceImplClass;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}
+

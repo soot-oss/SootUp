@@ -1,0 +1,67 @@
+synchronized class SubClass extends SuperClass
+{
+    int cc;
+
+    protected int bb;
+
+    public int aa;
+
+    private int dd;
+
+    public void superclassMethod()
+    {
+        unknown l0;
+
+
+        l0 := @this: SubClass;
+
+        specialinvoke l0.<SuperClass: void superclassMethod()>();
+
+        l0.<SubClass: int a> = 100;
+
+        l0.<SubClass: int b> = 200;
+
+        l0.<SubClass: int c> = 300;
+
+        return;
+    }
+
+    public void subclassMethod()
+    {
+        unknown l0;
+
+
+        l0 := @this: SubClass;
+
+        l0.<SubClass: int aa> = 10;
+
+        l0.<SubClass: int bb> = 20;
+
+        l0.<SubClass: int cc> = 30;
+
+        l0.<SubClass: int dd> = 40;
+
+        return;
+    }
+
+    void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: SubClass;
+
+        specialinvoke l0.<SuperClass: void <init>()>();
+
+        l0.<SubClass: int aa> = 1;
+
+        l0.<SubClass: int bb> = 2;
+
+        l0.<SubClass: int cc> = 3;
+
+        l0.<SubClass: int dd> = 4;
+
+        return;
+    }
+}
+

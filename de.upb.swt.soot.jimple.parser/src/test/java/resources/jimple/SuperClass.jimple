@@ -1,0 +1,49 @@
+synchronized class SuperClass extends java.lang.Object
+{
+    int c;
+
+    protected int b;
+
+    private int d;
+
+    public int a;
+
+    void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: SuperClass;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        l0.<SuperClass: int a> = 1;
+
+        l0.<SuperClass: int b> = 2;
+
+        l0.<SuperClass: int c> = 3;
+
+        l0.<SuperClass: int d> = 4;
+
+        return;
+    }
+
+    public void superclassMethod()
+    {
+        unknown l0;
+
+
+        l0 := @this: SuperClass;
+
+        l0.<SuperClass: int a> = 10;
+
+        l0.<SuperClass: int b> = 20;
+
+        l0.<SuperClass: int c> = 30;
+
+        l0.<SuperClass: int d> = 40;
+
+        return;
+    }
+}
+

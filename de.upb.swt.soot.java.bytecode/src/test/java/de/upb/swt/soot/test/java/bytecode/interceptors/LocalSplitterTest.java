@@ -1,10 +1,6 @@
 package de.upb.swt.soot.test.java.bytecode.interceptors;
 
-import static org.junit.Assert.*;
-
 import categories.Java8Test;
-import com.google.common.collect.Lists;
-import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
@@ -12,7 +8,6 @@ import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.VoidType;
@@ -88,17 +83,16 @@ public class LocalSplitterTest {
   public void testLocalSplitterForBinaryBranches() {
 
     Body body = createBBBody();
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(body, modifiers);
+    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     LocalSplitter localSplitter = new LocalSplitter();
     localSplitter.interceptBody(builder);
     Body expectedBody = createExpectedBBBody();
 
     // check newBody's locals
-    assertLocalsEquiv(expectedBody.getLocals(), builder.getLocals());
+    AssertUtils.assertLocalsEquiv(expectedBody, builder.build());
 
     // check newBody's stmtGraph
-    assertStmtGraphEquiv(expectedBody.getStmtGraph(), builder.getStmtGraph());
+    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
   }
 
   /**
@@ -128,17 +122,16 @@ public class LocalSplitterTest {
   public void testLocalSplitterForMultilocals() {
 
     Body body = createMultilocalsBody();
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(body, modifiers);
+    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     LocalSplitter localSplitter = new LocalSplitter();
     localSplitter.interceptBody(builder);
     Body expectedBody = createExpectedMuiltilocalsBody();
 
     // check newBody's locals
-    assertLocalsEquiv(expectedBody.getLocals(), builder.getLocals());
+    AssertUtils.assertLocalsEquiv(expectedBody, builder.build());
 
     // check newBody's stmtGraph
-    assertStmtGraphEquiv(expectedBody.getStmtGraph(), builder.getStmtGraph());
+    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
   }
 
   /**
@@ -180,23 +173,21 @@ public class LocalSplitterTest {
   public void testLocalSplitterForLoop() {
 
     Body body = createLoopBody();
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(body, modifiers);
+    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     LocalSplitter localSplitter = new LocalSplitter();
     localSplitter.interceptBody(builder);
     Body expectedBody = createExpectedLoopBody();
 
     // check newBody's locals
-    assertLocalsEquiv(expectedBody.getLocals(), builder.getLocals());
+    AssertUtils.assertLocalsEquiv(expectedBody, builder.build());
 
     // check newBody's stmtGraph
-    assertStmtGraphEquiv(expectedBody.getStmtGraph(), builder.getStmtGraph());
+    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
   }
 
   /** bodycreater for BinaryBranches */
   private Body createBBBody() {
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(modifiers);
+    Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -241,8 +232,7 @@ public class LocalSplitterTest {
 
   private Body createExpectedBBBody() {
 
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(modifiers);
+    Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -294,8 +284,7 @@ public class LocalSplitterTest {
   /** bodycreater for multilocals */
   private Body createMultilocalsBody() {
 
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(modifiers);
+    Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -331,8 +320,7 @@ public class LocalSplitterTest {
 
   private Body createExpectedMuiltilocalsBody() {
 
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(modifiers);
+    Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -373,8 +361,7 @@ public class LocalSplitterTest {
   /** bodycreater for Loop */
   private Body createLoopBody() {
 
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(modifiers);
+    Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -423,8 +410,7 @@ public class LocalSplitterTest {
 
   private Body createExpectedLoopBody() {
 
-    List<Modifier> modifiers = new ArrayList<>();
-    Body.BodyBuilder builder = Body.builder(modifiers);
+    Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -471,40 +457,5 @@ public class LocalSplitterTest {
     builder.setPosition(position);
 
     return builder.build();
-  }
-
-  private static void assertLocalsEquiv(Set<Local> expected, Set<Local> actual) {
-    assertNotNull(expected);
-    assertNotNull(actual);
-    assertEquals(expected.size(), actual.size());
-    boolean isEqual = true;
-    for (Local local : actual) {
-      if (!expected.contains(local)) {
-        isEqual = false;
-        break;
-      }
-    }
-    assertTrue(isEqual);
-  }
-
-  private void assertStmtGraphEquiv(StmtGraph expected, StmtGraph actual) {
-    assertNotNull(expected);
-    assertNotNull(actual);
-    final boolean condition = expected.equivTo(actual);
-    if (!condition) {
-      System.out.println("expected:");
-      System.out.println(Lists.newArrayList(expected.iterator()));
-      System.out.println("actual:");
-      System.out.println(Lists.newArrayList(actual.iterator()) + "\n");
-
-      for (Stmt s : expected) {
-        System.out.println(s + " => " + expected.successors(s));
-      }
-      System.out.println();
-      for (Stmt s : actual) {
-        System.out.println(s + " => " + actual.successors(s));
-      }
-    }
-    assertTrue(condition);
   }
 }

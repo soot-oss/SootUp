@@ -1,0 +1,33 @@
+public synchronized class Autoboxing extends java.lang.Object
+{
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: Autoboxing;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void autoboxing()
+    {
+        unknown $stack3, l0, l1, l2;
+
+
+        l0 := @this: Autoboxing;
+
+        l1 = 5;
+
+        l1 = l1 + 1;
+
+        $stack3 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(l1);
+
+        l2 = $stack3;
+
+        return;
+    }
+}
+

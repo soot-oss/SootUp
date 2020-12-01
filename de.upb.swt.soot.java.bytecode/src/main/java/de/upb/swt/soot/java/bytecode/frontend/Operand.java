@@ -36,10 +36,10 @@ import org.objectweb.asm.tree.AbstractInsnNode;
  */
 final class Operand {
 
-  @Nonnull final AbstractInsnNode insn;
-  @Nonnull final Value value;
-  @Nullable Local stack;
-  @Nonnull private final List<ValueBox> boxes = new ArrayList<>();
+  @Nonnull protected final AbstractInsnNode insn;
+  @Nonnull protected final Value value;
+  @Nullable protected Local stack;
+  @Nonnull protected final List<ValueBox> boxes = new ArrayList<>();
 
   /**
    * Constructs a new stack operand.
@@ -119,6 +119,26 @@ final class Operand {
         + ", boxes="
         + boxes
         + '}';
+  }
+
+  @Nonnull
+  public AbstractInsnNode getInsn() {
+    return insn;
+  }
+
+  @Nonnull
+  public Value getValue() {
+    return value;
+  }
+
+  @Nullable
+  public Local getStack() {
+    return stack;
+  }
+
+  @Nonnull
+  public List<ValueBox> getBoxes() {
+    return boxes;
   }
 
   @Override

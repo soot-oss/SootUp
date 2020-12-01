@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.frontend;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import java.io.IOException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -68,7 +69,7 @@ public class OverridingBodySource implements BodySource {
 
   @Nonnull
   @Override
-  public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) {
+  public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) throws IOException {
     return body != null ? body : delegate.resolveBody(modifiers);
   }
 

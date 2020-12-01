@@ -1,0 +1,55 @@
+public synchronized class PublicClass extends java.lang.Object
+{
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: PublicClass;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void publicMethod()
+    {
+        unknown l0;
+
+
+        l0 := @this: PublicClass;
+
+        return;
+    }
+
+    protected void protectedMethod()
+    {
+        unknown l0;
+
+
+        l0 := @this: PublicClass;
+
+        return;
+    }
+
+    void noModifierMethod()
+    {
+        unknown l0;
+
+
+        l0 := @this: PublicClass;
+
+        return;
+    }
+
+    private void privateMethod()
+    {
+        unknown l0;
+
+
+        l0 := @this: PublicClass;
+
+        return;
+    }
+}
+

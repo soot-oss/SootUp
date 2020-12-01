@@ -23,8 +23,10 @@ package de.upb.swt.soot.test.java.bytecode.inputlocation;
  */
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.BodySource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.model.*;
@@ -33,6 +35,7 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
+import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
@@ -41,6 +44,8 @@ import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.File;
+import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
@@ -169,5 +174,34 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     assertEquals("java.lang.String", c.getField(nameFieldSubSignature).get().getType().toString());
     assertEquals("empName", c.getField(nameFieldSubSignature).get().getName());
+  }
+
+  void runtimeContains(View view, String classname, String packageName) {
+    final ClassType sig = getIdentifierFactory().getClassType(classname, packageName);
+    assertTrue(sig + " is not found in rt.jar", view.getClass(sig).isPresent());
+  }
+
+  @Test
+  public void testRuntimeJar() {
+    PathBasedAnalysisInputLocation pathBasedNamespace =
+        PathBasedAnalysisInputLocation.createForClassContainer(
+            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"));
+
+    final Collection<? extends AbstractClassSource> classSources =
+        pathBasedNamespace.getClassSources(getIdentifierFactory());
+
+    View v =
+        JavaProject.builder(new JavaLanguage(8))
+            .addClassPath(pathBasedNamespace)
+            .build()
+            .createOnDemandView();
+    // test some standard jre classes
+    runtimeContains(v, "Object", "java.lang");
+    runtimeContains(v, "List", "java.util");
+    runtimeContains(v, "Map", "java.util");
+    runtimeContains(v, "ArrayList", "java.util");
+    runtimeContains(v, "HashMap", "java.util");
+    runtimeContains(v, "Collection", "java.util");
+    runtimeContains(v, "Comparator", "java.util");
   }
 }

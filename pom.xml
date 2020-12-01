@@ -17,14 +17,15 @@
 		</license>
 	</licenses>
 
-	<modules>
-		<module>de.upb.swt.soot.core</module>
-		<module>de.upb.swt.soot.java.core</module>
-		<module>de.upb.swt.soot.java.bytecode</module>
-		<module>de.upb.swt.soot.java.sourcecode</module>
-		<module>de.upb.swt.soot.tests</module>
-		<module>de.upb.swt.soot.callgraph</module>
-	</modules>
+  <modules>
+    <module>de.upb.swt.soot.core</module>
+    <module>de.upb.swt.soot.java.core</module>
+    <module>de.upb.swt.soot.java.bytecode</module>
+    <module>de.upb.swt.soot.java.sourcecode</module>
+    <module>de.upb.swt.soot.tests</module>
+    <module>de.upb.swt.soot.callgraph</module>
+    <module>de.upb.swt.soot.jimple.parser</module>
+  </modules>
 
 	<!-- Shared Configuration -->
 	<properties>
@@ -131,7 +132,7 @@
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>${jacoco-maven-plugin.version}</version>
 				<executions>
-					<!--Prepares the property pointing to the JaCoCo runtime agent which 
+					<!--Prepares the property pointing to the JaCoCo runtime agent which
 						is passed as VM argument when Maven the Surefire plugin is executed. -->
 					<execution>
 						<id>pre-unit-test</id>
@@ -141,13 +142,13 @@
 						<configuration>
 							<!-- Sets the path to the file which contains the execution data. -->
 							<destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
-							<!-- Sets the name of the property containing the settings for JaCoCo 
+							<!-- Sets the name of the property containing the settings for JaCoCo
 								runtime agent. -->
 							<propertyName>surefireArgLine</propertyName>
 						</configuration>
 
 					</execution>
-					<!-- Ensures that the code coverage report for unit tests is created 
+					<!-- Ensures that the code coverage report for unit tests is created
 						after unit tests have been run. -->
 					<execution>
 						<id>post-unit-test</id>
@@ -195,7 +196,7 @@
 						</goals>
 						<configuration>
 							<reportFile>${project.reporting.outputDirectory}/jacoco-ut/jacoco.csv</reportFile>
-							<!-- <passing>70</passing> Legal values: instruction, branch, line, 
+							<!-- <passing>70</passing> Legal values: instruction, branch, line,
 								method. Optional, default instruction. -->
 							<metric>method</metric>
 						</configuration>
@@ -287,20 +288,6 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-			<version>${powermock-module-junit4.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito -->
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito</artifactId>
-			<version>${powermock-api-mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- adds `@Nullable` and `@Nonnull` annotations -->

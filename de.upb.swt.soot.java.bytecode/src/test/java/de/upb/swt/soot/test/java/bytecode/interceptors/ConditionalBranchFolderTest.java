@@ -16,7 +16,6 @@ import de.upb.swt.soot.java.bytecode.interceptors.ConditionalBranchFolder;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -96,7 +95,7 @@ public class ConditionalBranchFolderTest {
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
     List<Trap> traps = Collections.emptyList();
 
-    Body.BodyBuilder bodyBuilder = Body.builder(new ArrayList<>());
+    Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
     bodyBuilder.setTraps(traps);
     bodyBuilder.setStartingStmt(strToA);

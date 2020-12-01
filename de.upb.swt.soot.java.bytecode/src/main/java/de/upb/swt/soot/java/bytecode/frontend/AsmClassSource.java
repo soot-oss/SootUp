@@ -70,8 +70,12 @@ class AsmClassSource extends JavaSootClassSource {
                   signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
               EnumSet<Modifier> modifiers = AsmUtil.getModifiers(fieldNode.access);
 
-              // FIXME: implement support for annotation
-              return new JavaSootField(fieldSignature, modifiers, Collections.emptyList());
+              // FIXME: implement support for annotation; add Position info
+              return new JavaSootField(
+                  fieldSignature,
+                  modifiers,
+                  Collections.emptyList(),
+                  NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());
   }
@@ -95,13 +99,14 @@ class AsmClassSource extends JavaSootClassSource {
               MethodSignature methodSignature =
                   signatureFactory.getMethodSignature(methodName, cs, retType, sigTypes);
 
-              // FIXME: implement support for annotation
+              // FIXME: implement support for annotation; position/line numbers if possible
               return new JavaSootMethod(
                   asmClassClassSourceContent,
                   methodSignature,
                   modifiers,
                   exceptions,
-                  Collections.emptyList());
+                  Collections.emptyList(),
+                  NoPositionInformation.getInstance());
             });
   }
 
@@ -120,7 +125,7 @@ class AsmClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public Set<Modifier> resolveModifiers() {
+  public EnumSet<Modifier> resolveModifiers() {
     EnumSet<Modifier> modifiers = AsmUtil.getModifiers(classNode.access);
     return modifiers;
   }

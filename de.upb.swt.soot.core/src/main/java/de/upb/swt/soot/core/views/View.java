@@ -25,6 +25,7 @@ package de.upb.swt.soot.core.views;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Scope;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
@@ -48,6 +49,7 @@ public interface View {
   Collection<? extends AbstractClass<? extends AbstractClassSource>> getClasses();
 
   /** Return all classes in the view. */
+  // TODO: [ms] necessary?!
   @Nonnull
   default Stream<? extends AbstractClass<? extends AbstractClassSource>> getClassesStream() {
     return getClasses().stream();
@@ -74,11 +76,6 @@ public interface View {
   @Nonnull
   IdentifierFactory getIdentifierFactory();
 
-  boolean doneResolving();
-
-  @Nonnull
-  String quotedNameOf(@Nonnull String name);
-
   /** @see ModuleDataKey */
   <T> void putModuleData(@Nonnull ModuleDataKey<T> key, @Nonnull T value);
 
@@ -99,6 +96,13 @@ public interface View {
     T computedModuleData = dataSupplier.get();
     putModuleData(key, computedModuleData);
     return computedModuleData;
+  }
+
+  @Nonnull
+  default AbstractClass<? extends AbstractClassSource> getClassOrThrow(
+      @Nonnull ClassType classType) {
+    return getClass(classType)
+        .orElseThrow(() -> new ResolveException("Could not find " + classType + " in view"));
   }
 
   /**
