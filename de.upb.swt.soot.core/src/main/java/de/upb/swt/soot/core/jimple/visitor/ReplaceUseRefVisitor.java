@@ -53,9 +53,7 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
   @Nonnull
   @Override
   public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef v) {
-    if (!(newUse instanceof Local)) {
-      throw new RuntimeException(newUse.toString() + " should be an instance of Local");
-    } else if (v.getBase().equivTo(oldUse)) {
+    if (newUse instanceof Local && v.getBase().equivTo(oldUse)) {
       newRef = v.withBase(newUse);
     } else {
       defaultCase(v);
@@ -65,19 +63,13 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
   @Nonnull
   @Override
   public void caseArrayRef(@Nonnull JArrayRef v) {
-    if (!(newUse instanceof Immediate)) {
-      throw new RuntimeException(newUse.toString() + " should be an instance of Immediate");
-    }
-    if (v.getBase().equivTo(oldUse)) {
-      if (!(newUse instanceof Local)) {
-        throw new RuntimeException(newUse.toString() + " should be an instance of Local");
-      }
-      newRef = v.withBase(newUse);
-    } else if (v.getIndex().equivTo(oldUse)) {
-      newRef = v.withIndex(newUse);
-    } else {
-      defaultCase(v);
-    }
+     if(newUse instanceof Local && v.getBase().equivTo(oldUse)){
+        newRef = v.withBase(newUse);
+     }else if(newUse instanceof Immediate && v.getIndex().equivTo(oldUse)){
+        newRef = v.withIndex(newUse);
+     }else{
+       defaultCase(v);
+     }
   }
 
   @Nonnull

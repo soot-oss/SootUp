@@ -74,11 +74,9 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
     Value rValue = stmt.getRightOp();
     Value newRValue = null;
 
-    if (rValue instanceof Local && rValue.equivTo(oldUse)) {
-      if (!(newUse instanceof Local)) {
-        throw new RuntimeException(newUse.toString() + " should be an instance of Local");
-      }
-      newRValue = newUse;
+    if (rValue instanceof Local) {
+      if ((newUse instanceof Local) && rValue.equivTo(oldUse))
+        newRValue = newUse;
 
     } else if (rValue instanceof Ref) {
 
@@ -112,11 +110,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
   @Nonnull
   @Override
   public void caseEnterMonitorStmt(@Nonnull JEnterMonitorStmt stmt) {
-    Value op = stmt.getOp();
-    if (op.equivTo(oldUse)) {
-      if (!(newUse instanceof Immediate)) {
-        throw new RuntimeException(newUse.toString() + " should be an instance of Immediate");
-      }
+    if (newUse instanceof Immediate && stmt.getOp().equivTo(oldUse)) {
       newStmt = stmt.withOp(newUse);
     } else {
       defaultCase(stmt);
@@ -126,11 +120,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
   @Nonnull
   @Override
   public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
-    Value op = stmt.getOp();
-    if (op.equivTo(oldUse)) {
-      if (!(newUse instanceof Immediate)) {
-        throw new RuntimeException(newUse.toString() + " should be an instance of Immediate");
-      }
+    if (newUse instanceof Immediate && stmt.getOp().equivTo(oldUse)) {
       newStmt = stmt.withOp(newUse);
     } else {
       defaultCase(stmt);
@@ -165,11 +155,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
   @Nonnull
   @Override
   public void caseRetStmt(@Nonnull JRetStmt stmt) {
-    Value stmtAddress = stmt.getStmtAddress();
-    if (stmtAddress.equivTo(oldUse)) {
-      if (!(newUse instanceof Immediate)) {
-        throw new RuntimeException(newUse.toString() + " should be an instance of Immediate");
-      }
+    if (newUse instanceof Immediate && stmt.getStmtAddress().equivTo(oldUse)) {
       newStmt = stmt.withStmtAddress((Immediate) newUse);
     } else {
       defaultCase(stmt);
@@ -179,11 +165,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
   @Nonnull
   @Override
   public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
-    Value op = stmt.getOp();
-    if (op.equivTo(oldUse)) {
-      if (!(newUse instanceof Immediate)) {
-        throw new RuntimeException(newUse.toString() + " should be an instance of Immediate");
-      }
+    if (newUse instanceof Immediate && stmt.getOp().equivTo(oldUse)) {
       newStmt = stmt.withReturnValue((Immediate) newUse);
     } else {
       defaultCase(stmt);
@@ -199,11 +181,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
   @Nonnull
   @Override
   public void caseSwitchStmt(@Nonnull JSwitchStmt stmt) {
-    Value key = stmt.getKey();
-    if (key.equivTo(oldUse)) {
-      if (!(newUse instanceof Immediate)) {
-        throw new RuntimeException(newUse.toString() + " should be an instance of Immediate");
-      }
+    if (newUse instanceof Immediate && stmt.getKey().equivTo(oldUse)) {
       newStmt = stmt.withKey((Immediate) newUse);
     } else {
       defaultCase(stmt);
@@ -213,11 +191,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
   @Nonnull
   @Override
   public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
-    Value op = stmt.getOp();
-    if (op.equivTo(oldUse)) {
-      if (!(newUse instanceof Immediate)) {
-        throw new RuntimeException(newUse.toString() + " should be an instance of Immediate");
-      }
+    if (newUse instanceof Immediate && stmt.getOp().equivTo(oldUse)) {
       newStmt = stmt.withOp(newUse);
     } else {
       defaultCase(stmt);
