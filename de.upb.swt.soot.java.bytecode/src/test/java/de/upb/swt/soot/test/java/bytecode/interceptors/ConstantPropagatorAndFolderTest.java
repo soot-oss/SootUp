@@ -99,7 +99,7 @@ public class ConstantPropagatorAndFolderTest {
     }
     Stmt ret = JavaJimple.newReturnStmt(c, noPositionInfo);
 
-    Body.BodyBuilder builder = Body.builder(new ArrayList<>());
+    Body.BodyBuilder builder = Body.builder();
     builder.setStartingStmt(assignA);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
