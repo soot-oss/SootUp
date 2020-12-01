@@ -34,10 +34,8 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -143,7 +141,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
     AbstractClass<? extends AbstractClassSource> clazz = view.getClassOrThrow(classType);
     Set<MethodSignature> newMethodSignatures =
-            clazz.getMethods().stream().map(Method::getSignature).collect(Collectors.toSet());
+        clazz.getMethods().stream().map(Method::getSignature).collect(Collectors.toSet());
 
     if (newMethodSignatures.stream().anyMatch(oldCallGraph::containsMethod)) {
       throw new IllegalArgumentException("CallGraph already contains methods from " + classType);
@@ -158,32 +156,32 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     List<ClassType> superClasses = typeHierarchy.superClassesOf(classType);
     Set<ClassType> implementedInterfaces = typeHierarchy.implementedInterfacesOf(classType);
     Stream<ClassType> superTypes =
-            Stream.concat(superClasses.stream(), implementedInterfaces.stream());
+        Stream.concat(superClasses.stream(), implementedInterfaces.stream());
 
     Set<MethodSubSignature> newMethodSubSigs =
-            newMethodSignatures.stream()
-                    .map(methodSignature -> (MethodSubSignature) methodSignature.getSubSignature())
-                    .collect(Collectors.toSet());
+        newMethodSignatures.stream()
+            .map(methodSignature -> (MethodSubSignature) methodSignature.getSubSignature())
+            .collect(Collectors.toSet());
 
     superTypes
-            .map(view::getClassOrThrow)
-            .flatMap(superType -> superType.getMethods().stream())
-            .map(Method::getSignature)
-            .filter(
-                    superTypeMethodSig -> newMethodSubSigs.contains(superTypeMethodSig.getSubSignature()))
-            .forEach(
-                    overriddenMethodSig -> {
-                      //noinspection OptionalGetWithoutIsPresent (We know this exists)
-                      MethodSignature overridingMethodSig =
-                              clazz
-                                      .getMethod((MethodSubSignature) overriddenMethodSig.getSubSignature())
-                                      .get()
-                                      .getSignature();
+        .map(view::getClassOrThrow)
+        .flatMap(superType -> superType.getMethods().stream())
+        .map(Method::getSignature)
+        .filter(
+            superTypeMethodSig -> newMethodSubSigs.contains(superTypeMethodSig.getSubSignature()))
+        .forEach(
+            overriddenMethodSig -> {
+              //noinspection OptionalGetWithoutIsPresent (We know this exists)
+              MethodSignature overridingMethodSig =
+                  clazz
+                      .getMethod((MethodSubSignature) overriddenMethodSig.getSubSignature())
+                      .get()
+                      .getSignature();
 
-                      for (MethodSignature callingMethodSig : updated.callsTo(overriddenMethodSig)) {
-                        updated.addCall(callingMethodSig, overridingMethodSig);
-                      }
-                    });
+              for (MethodSignature callingMethodSig : updated.callsTo(overriddenMethodSig)) {
+                updated.addCall(callingMethodSig, overridingMethodSig);
+              }
+            });
 
     return updated;
   }

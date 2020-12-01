@@ -24,18 +24,13 @@ package de.upb.swt.soot.callgraph;
 
 import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JDynamicInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.signatures.MethodSubSignature;
-import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
@@ -50,7 +45,6 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
   public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
     return constructCompleteCallGraph(view, entryPoints);
   }
-
 
   @Override
   @Nonnull
