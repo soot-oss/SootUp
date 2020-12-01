@@ -22,21 +22,36 @@ package de.upb.swt.soot.callgraph;
  * #L%
  */
 
+import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
+import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
+import de.upb.swt.soot.java.core.types.JavaClassType;
+
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
+
+  @Nonnull protected final View view;
+  @Nonnull protected final TypeHierarchy typeHierarchy;
+
+  protected AbstractCallGraphAlgorithm(View view, TypeHierarchy typeHierarchy) {
+    this.view = view;
+    this.typeHierarchy = typeHierarchy;
+  }
 
   @Nonnull
   final CallGraph constructCompleteCallGraph(View view, List<MethodSignature> entryPoints) {
@@ -119,6 +134,58 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             + "\" in "
             + sig.getDeclClassType().getClassName()
             + " and in its superclasses");
+  }
+
+  @Nonnull
+  @Override
+  public CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType) {
+    MutableCallGraph updated = oldCallGraph.copy();
+
+    AbstractClass<? extends AbstractClassSource> clazz = view.getClassOrThrow(classType);
+    Set<MethodSignature> newMethodSignatures =
+            clazz.getMethods().stream().map(Method::getSignature).collect(Collectors.toSet());
+
+    if (newMethodSignatures.stream().anyMatch(oldCallGraph::containsMethod)) {
+      throw new IllegalArgumentException("CallGraph already contains methods from " + classType);
+    }
+
+    // Step 1: Add edges from the new methods to other methods
+    Deque<MethodSignature> workList = new ArrayDeque<>(newMethodSignatures);
+    Set<MethodSignature> processed = new HashSet<>(oldCallGraph.getMethodSignatures());
+    processWorkList(view, workList, processed, updated);
+
+    // Step 2: Add edges from old methods to methods overridden in the new class
+    List<ClassType> superClasses = typeHierarchy.superClassesOf(classType);
+    Set<ClassType> implementedInterfaces = typeHierarchy.implementedInterfacesOf(classType);
+    Stream<ClassType> superTypes =
+            Stream.concat(superClasses.stream(), implementedInterfaces.stream());
+
+    Set<MethodSubSignature> newMethodSubSigs =
+            newMethodSignatures.stream()
+                    .map(methodSignature -> (MethodSubSignature) methodSignature.getSubSignature())
+                    .collect(Collectors.toSet());
+
+    superTypes
+            .map(view::getClassOrThrow)
+            .flatMap(superType -> superType.getMethods().stream())
+            .map(Method::getSignature)
+            .filter(
+                    superTypeMethodSig -> newMethodSubSigs.contains(superTypeMethodSig.getSubSignature()))
+            .forEach(
+                    overriddenMethodSig -> {
+                      //noinspection OptionalGetWithoutIsPresent (We know this exists)
+                      MethodSignature overridingMethodSig =
+                              clazz
+                                      .getMethod((MethodSubSignature) overriddenMethodSig.getSubSignature())
+                                      .get()
+                                      .getSignature();
+
+                      for (MethodSignature callingMethodSig : updated.callsTo(overriddenMethodSig)) {
+                        updated.addCall(callingMethodSig, overridingMethodSig);
+                      }
+                    });
+
+    return updated;
   }
 
   @Nonnull
