@@ -1,7 +1,6 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
 import de.upb.swt.soot.core.graph.StmtGraph;
-import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
@@ -11,6 +10,7 @@ import de.upb.swt.soot.core.model.Body;
 import java.util.*;
 import javax.annotation.Nonnull;
 
+/** @author Zun Wang */
 public class InterceptorUtils {
 
   /**
@@ -32,13 +32,12 @@ public class InterceptorUtils {
     queue.add(stmt);
     while (!queue.isEmpty()) {
       Stmt s = queue.removeFirst();
-      visited.add(s);
-      for (Stmt pred : graph.predecessors(s)) {
-        if (!visited.contains(pred)) {
-          visited.add(pred);
-          if (s instanceof AbstractDefinitionStmt && s.getDefs().get(0).equivTo(use)) {
-            defStmts.add(pred);
-          } else {
+      if (!visited.contains(s)) {
+        visited.add(s);
+        if (s instanceof AbstractDefinitionStmt && s.getDefs().get(0).equivTo(use)) {
+          defStmts.add(s);
+        } else {
+          for (Stmt pred : graph.predecessors(s)) {
             queue.add(pred);
           }
         }
@@ -57,9 +56,9 @@ public class InterceptorUtils {
    */
   @Nonnull
   public static Stmt withNewUse(
-          @Nonnull Stmt oldStmt, @Nonnull Value oldUse, @Nonnull Value newUse) {
+      @Nonnull Stmt oldStmt, @Nonnull Value oldUse, @Nonnull Value newUse) {
     ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(oldUse, newUse);
     oldStmt.accept(visitor);
-    return Objects.requireNonNull(visitor.getNewStmt());
+    return visitor.getNewStmt();
   }
 }
