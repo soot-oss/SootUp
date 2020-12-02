@@ -23,7 +23,6 @@ package de.upb.swt.soot.core.jimple.visitor;
  */
 
 import de.upb.swt.soot.core.jimple.basic.Immediate;
-import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
@@ -34,7 +33,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Replace old use of a Stmt with a new use
+ * Replace old use(Value) of a Stmt with a new use(Value)
  *
  * @author Zun Wang
  */
@@ -74,8 +73,8 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
     Value rValue = stmt.getRightOp();
     Value newRValue = null;
 
-    if (rValue instanceof Local) {
-      if ((newUse instanceof Local) && rValue.equivTo(oldUse)) newRValue = newUse;
+    if (rValue instanceof Immediate) {
+      if ((newUse instanceof Immediate) && rValue.equivTo(oldUse)) newRValue = newUse;
 
     } else if (rValue instanceof Ref) {
 
