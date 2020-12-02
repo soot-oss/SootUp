@@ -24,37 +24,27 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
+import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
+import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
+import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
+import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.types.ReferenceType;
 import java.util.*;
 import javax.annotation.Nonnull;
 
+/** @author Zun Wang */
 public class CopyPropagator implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    // Create a map with
-    // key: local in the left hand side of a definitionStmt
-    // value: times of the corresponding local as definition
-    Map<Local, Integer> localToDefCount = new HashMap<>();
-    List<Stmt> stmts = builder.getStmts();
-    for (Stmt stmt : stmts) {
-      if (stmt instanceof AbstractDefinitionStmt
-          && ((AbstractDefinitionStmt) stmt).getLeftOp() instanceof Local) {
-        Local local = (Local) ((AbstractDefinitionStmt) stmt).getLeftOp();
-        if (!localToDefCount.containsKey(local)) {
-          localToDefCount.put(local, 1);
-        } else {
-          Integer oldCount = localToDefCount.get(local);
-          localToDefCount.replace(local, oldCount + 1);
-        }
-      }
-    }
 
     Iterator<Stmt> stmtsIt = builder.getStmtGraph().iterator();
+
     while (stmtsIt.hasNext()) {
       Stmt stmt = stmtsIt.next();
       for (Value use : stmt.getUses()) {
@@ -66,9 +56,10 @@ public class CopyPropagator implements BodyInterceptor {
           if (defsOfUse.size() == 1) {
             propagable = true;
 
-            // If local is defined two or more times, and at each time the local is assigned the
-            // same constant value,
+            // If local is defined two or more times, and each defStmt in form :
+            // defLocal = constant and all constants are same,
             // then the propagation of this local available.
+
           } else if (defsOfUse.size() > 1) {
             Constant con = null;
             for (Stmt defStmt : defsOfUse) {
@@ -92,13 +83,38 @@ public class CopyPropagator implements BodyInterceptor {
 
           if (propagable) {
             AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
-            if (defStmt.getRightOp() instanceof Constant) {}
+            Value rhs = defStmt.getRightOp();
+            // if rhs is a constant, then replace use, if it is possible
+            if (rhs instanceof Constant) {
+              Stmt newStmt = InterceptorUtils.withNewUse(stmt, use, rhs);
+              if (!stmt.equals(newStmt)) {
+                builder.replaceStmt(stmt, newStmt);
+              }
+            }
+            // if rhs is a cast expr with a ref type and its op is 0 (IntConstant or LongConstant)
+            // then replace use, if it is possible
+            if (rhs instanceof JCastExpr) {
+              if (rhs.getType() instanceof ReferenceType) {
+                Value op = ((JCastExpr) rhs).getOp();
+                if ((op instanceof IntConstant && op.equals(IntConstant.getInstance(0)))
+                    || (op instanceof LongConstant && op.equals(LongConstant.getInstance(0)))) {
+                  Stmt newStmt = InterceptorUtils.withNewUse(stmt, use, NullConstant.getInstance());
+                  if (!stmt.equals(newStmt)) {
+                    builder.replaceStmt(stmt, newStmt);
+                  }
+                }
+              }
+            }
+            // if rhs is a local, then replace use, if it is possible
+            if (rhs instanceof Local && !rhs.equivTo(use)) {
+              Stmt newStmt = InterceptorUtils.withNewUse(stmt, use, rhs);
+              if (!stmt.equals(newStmt)) {
+                builder.replaceStmt(stmt, newStmt);
+              }
+            }
           }
         }
       }
     }
   }
-
-  // ******************assist_functions*************************
-
 }
