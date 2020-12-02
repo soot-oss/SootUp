@@ -75,8 +75,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
     Value newRValue = null;
 
     if (rValue instanceof Local) {
-      if ((newUse instanceof Local) && rValue.equivTo(oldUse))
-        newRValue = newUse;
+      if ((newUse instanceof Local) && rValue.equivTo(oldUse)) newRValue = newUse;
 
     } else if (rValue instanceof Ref) {
 
