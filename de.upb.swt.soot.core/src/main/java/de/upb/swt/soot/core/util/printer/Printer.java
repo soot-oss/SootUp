@@ -40,6 +40,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import java.io.PrintWriter;
 import java.util.*;
+import sun.reflect.annotation.AnnotationType;
 
 /**
  * Prints out a class and all its methods.
@@ -123,6 +124,17 @@ public class Printer {
 
     // Print class name + modifiers
     {
+
+      // FIXME: [ms] create own printer per language
+      // if( cl instanceof JavaSootClass)
+      {
+        // print annotation:
+        Iterable<AnnotationType> annotationIt = cl.getAnnotations().iterator();
+        while (annotationIt.hasNext()) {
+          printer.literal("// @" + annotationIt.next() + ";");
+        }
+      }
+
       EnumSet<Modifier> modifiers = EnumSet.copyOf(cl.getModifiers());
       // remove unwanted modifier combinations
       if (cl.isInterface() && Modifier.isAbstract(modifiers)) {
