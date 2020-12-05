@@ -126,7 +126,7 @@ public final class MethodDispatchResolver {
               .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
               .findAny()
               .orElse(null);
-      if (!((SootMethod) concreteMethod).isAbstract()) {
+      if (concreteMethod != null && !((SootMethod) concreteMethod).isAbstract()) {
         return concreteMethod.getSignature();
       }
 
@@ -152,7 +152,7 @@ public final class MethodDispatchResolver {
         view.getClass(specialMethodSig.getDeclClassType())
             .flatMap(cl -> cl.getMethod(specialMethodSig))
             .orElse(null);
-    if (((SootMethod) specialMethod).isPrivate()) {
+    if (specialMethod != null && ((SootMethod) specialMethod).isPrivate()) {
       return specialMethodSig;
     }
 
