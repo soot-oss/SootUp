@@ -54,7 +54,7 @@ public final class MethodDispatchResolver {
                                 "Could not resolve " + subtype + ", but found it in hierarchy.")))
         .flatMap(abstractClass -> abstractClass.getMethods().stream())
         .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
-        .filter(method -> method instanceof SootMethod && !((SootMethod) method).isAbstract())
+        .filter(method -> !((SootMethod) method).isAbstract())
         .map(Method::getSignature)
         .collect(Collectors.toSet());
   }
@@ -79,7 +79,7 @@ public final class MethodDispatchResolver {
         .filter(c -> classes.contains(c.getType()))
         .flatMap(abstractClass -> abstractClass.getMethods().stream())
         .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
-        .filter(method -> method instanceof SootMethod && !((SootMethod) method).isAbstract())
+        .filter(method -> !((SootMethod) method).isAbstract())
         .map(Method::getSignature)
         .collect(Collectors.toSet());
   }
@@ -126,7 +126,7 @@ public final class MethodDispatchResolver {
               .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
               .findAny()
               .orElse(null);
-      if (concreteMethod instanceof SootMethod && !((SootMethod) concreteMethod).isAbstract()) {
+      if (!((SootMethod) concreteMethod).isAbstract()) {
         return concreteMethod.getSignature();
       }
 
@@ -152,7 +152,7 @@ public final class MethodDispatchResolver {
         view.getClass(specialMethodSig.getDeclClassType())
             .flatMap(cl -> cl.getMethod(specialMethodSig))
             .orElse(null);
-    if (specialMethod instanceof SootMethod && ((SootMethod) specialMethod).isPrivate()) {
+    if (((SootMethod) specialMethod).isPrivate()) {
       return specialMethodSig;
     }
 
