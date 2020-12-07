@@ -6,7 +6,10 @@ import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
+import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
+import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
+import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
@@ -37,55 +40,79 @@ public class CopyPropagatorTest {
   IdentityRef identityRef = JavaJimple.newThisRef(classType);
 
   // build locals
-  Local l0 = JavaJimple.newLocal("l0", intType);
-  Local l1 = JavaJimple.newLocal("l1", intType);
-  Local l2 = JavaJimple.newLocal("l2", intType);
-  Local l3 = JavaJimple.newLocal("l3", intType);
-  Local r0 = JavaJimple.newLocal("r0", intType);
+  Local i1 = JavaJimple.newLocal("i1", intType);
+  Local i2 = JavaJimple.newLocal("i2", intType);
+  Local i3 = JavaJimple.newLocal("i3", intType);
 
-  // build expr
-  Expr expr = JavaJimple.newNewExpr(refType);
+  Local r0 = JavaJimple.newLocal("r0", refType);
+  Local r1 = JavaJimple.newLocal("r1", refType);
+  Local r2 = JavaJimple.newLocal("r2", refType);
+  Local r3 = JavaJimple.newLocal("r3", refType);
+  Local r4 = JavaJimple.newLocal("r4", refType);
+  Local r5 = JavaJimple.newLocal("r5", refType);
+  Local r6 = JavaJimple.newLocal("r6", refType);
+
+  JCastExpr intCastExpr = JavaJimple.newCastExpr(IntConstant.getInstance(0), refType);
 
   // build Stmts
-  // l0 := @this Test
-  Stmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
-  // r0 = new ref
-  Stmt stmt1 = JavaJimple.newAssignStmt(r0, expr, noStmtPositionInfo);
-  // l1 = r0
-  Stmt stmt2 = JavaJimple.newAssignStmt(l1, r0, noStmtPositionInfo);
-  // l2 = l1
-  Stmt stmt3 = JavaJimple.newAssignStmt(l2, l1, noStmtPositionInfo);
-  // l3 = l2
-  Stmt stmt4 = JavaJimple.newAssignStmt(l3, l2, noStmtPositionInfo);
+  // r0 := @this Test
+  Stmt startingStmt = JavaJimple.newIdentityStmt(r0, identityRef, noStmtPositionInfo);
+  // r1 = new ref
+  Expr expr = JavaJimple.newNewExpr(refType);
+  Stmt stmt1 = JavaJimple.newAssignStmt(r1, expr, noStmtPositionInfo);
+  // r2 = r1
+  Stmt stmt2 = JavaJimple.newAssignStmt(r2, r1, noStmtPositionInfo);
+  // r3 = r2
+  Stmt stmt3 = JavaJimple.newAssignStmt(r3, r2, noStmtPositionInfo);
+  // r4 = r3
+  Stmt stmt4 = JavaJimple.newAssignStmt(r4, r3, noStmtPositionInfo);
   // return
   Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
-  // l2 = rLocal
-  Stmt estmt3 = JavaJimple.newAssignStmt(l2, r0, noStmtPositionInfo);
-  // l3 = rLocal
-  Stmt estmt4 = JavaJimple.newAssignStmt(l3, r0, noStmtPositionInfo);
+  // r3 = r1;
+  Stmt estmt3 = JavaJimple.newAssignStmt(r3, r1, noStmtPositionInfo);
+  // r4 = r1
+  Stmt estmt4 = JavaJimple.newAssignStmt(r4, r1, noStmtPositionInfo);
 
-  // l1 = 5
-  Stmt stmt5 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(5), noStmtPositionInfo);
-  // l2 = 0
-  Stmt stmt6 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(0), noStmtPositionInfo);
-  // if l2 > l1 goto
-  Value condition = JavaJimple.newGtExpr(l2, l1);
+  // i1 = 5
+  Stmt stmt5 = JavaJimple.newAssignStmt(i1, IntConstant.getInstance(5), noStmtPositionInfo);
+  // i2 = 0
+  Stmt stmt6 = JavaJimple.newAssignStmt(i2, IntConstant.getInstance(0), noStmtPositionInfo);
+  // if i2 > i1 goto
+  Value condition = JavaJimple.newGtExpr(i2, i1);
   Stmt stmt7 = JavaJimple.newIfStmt(condition, noStmtPositionInfo);
-  // l3 = l1 + 1
-  Expr add1 = JavaJimple.newAddExpr(l1, IntConstant.getInstance(1));
-  Stmt stmt8 = JavaJimple.newAssignStmt(l3, add1, noStmtPositionInfo);
-  // l2 = l2 + 1
-  Expr add2 = JavaJimple.newAddExpr(l2, IntConstant.getInstance(1));
-  Stmt stmt9 = JavaJimple.newAssignStmt(l2, add2, noStmtPositionInfo);
+  // i3 = i1 + 1
+  Expr add1 = JavaJimple.newAddExpr(i1, IntConstant.getInstance(1));
+  Stmt stmt8 = JavaJimple.newAssignStmt(i3, add1, noStmtPositionInfo);
+  // i2 = i2 + 1
+  Expr add2 = JavaJimple.newAddExpr(i2, IntConstant.getInstance(1));
+  Stmt stmt9 = JavaJimple.newAssignStmt(i2, add2, noStmtPositionInfo);
   Stmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
-  // if l2 > 5 goto
-  Value econdition = JavaJimple.newGtExpr(l2, IntConstant.getInstance(5));
+  // if i2 > 5 goto
+  Value econdition = JavaJimple.newGtExpr(i2, IntConstant.getInstance(5));
   Stmt estmt7 = JavaJimple.newIfStmt(econdition, noStmtPositionInfo);
-  // l3 = 5 + 1
+  // i3 = 5 + 1
   Expr eadd1 = JavaJimple.newAddExpr(IntConstant.getInstance(5), IntConstant.getInstance(1));
-  Stmt estmt8 = JavaJimple.newAssignStmt(l3, eadd1, noStmtPositionInfo);
+  Stmt estmt8 = JavaJimple.newAssignStmt(i3, eadd1, noStmtPositionInfo);
+
+  // r0 := @this Test; r1 = (ref) 0; r2 = (ref) 0L; r3 = (ref) 1; r4 = r1, r5 = r2
+  // r1 = (ref) 0
+  JCastExpr intCast = JavaJimple.newCastExpr(IntConstant.getInstance(0), refType);
+  Stmt stmt10 = JavaJimple.newAssignStmt(r1, intCast, noStmtPositionInfo);
+  // r2 = (ref) 0L
+  JCastExpr longCast = JavaJimple.newCastExpr(LongConstant.getInstance(0), refType);
+  Stmt stmt11 = JavaJimple.newAssignStmt(r2, longCast, noStmtPositionInfo);
+  // r3 = (ref) 1
+  JCastExpr intCast1 = JavaJimple.newCastExpr(IntConstant.getInstance(1), refType);
+  Stmt stmt12 = JavaJimple.newAssignStmt(r3, intCast1, noStmtPositionInfo);
+  // r5 = r2
+  Stmt stmt13 = JavaJimple.newAssignStmt(r5, r2, noStmtPositionInfo);
+  // r6 = r3
+  Stmt stmt14 = JavaJimple.newAssignStmt(r6, r3, noStmtPositionInfo);
+
+  Stmt eestmt4 = JavaJimple.newAssignStmt(r4, NullConstant.getInstance(), noStmtPositionInfo);
+  Stmt estmt13 = JavaJimple.newAssignStmt(r5, NullConstant.getInstance(), noStmtPositionInfo);
 
   @Test
   /** Test the copy propagation's chain */
@@ -101,7 +128,7 @@ public class CopyPropagatorTest {
   }
 
   @Test
-  /** Test the copy propagation's chain */
+  /** Test the copy propagation for loop */
   public void testLoopBody() {
 
     Body body = createLoopBody();
@@ -113,7 +140,20 @@ public class CopyPropagatorTest {
     AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
   }
 
-  /** l0 := @this Test; r0 = new ref; l1 = r0; l2 = l1; l3 = l2; return */
+  @Test
+  /** Test the copy propagation for castExpr */
+  public void testCastExprBody() {
+
+    Body body = createCastExprBody();
+    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
+    CopyPropagator propagator = new CopyPropagator();
+    propagator.interceptBody(builder);
+
+    Body expectedBody = createExpectedCastExprBody();
+    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
+  }
+
+  /** r0 := @this Test; r1 = new ref; r2 = r1; r3 = r2; r4 = r3; return */
   private Body createChainBody() {
 
     // build an instance of BodyBuilder
@@ -121,7 +161,7 @@ public class CopyPropagatorTest {
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
-    Set<Local> locals = ImmutableUtils.immutableSet(r0, l0, l1, l2, l3);
+    Set<Local> locals = ImmutableUtils.immutableSet(r0, r1, r2, r3, r4);
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
@@ -140,7 +180,7 @@ public class CopyPropagatorTest {
     return builder.build();
   }
 
-  /** l0 := @this Test; r0 = new; l1 = r0; l2 = r0; l3 = r0; return */
+  /** r0 := @this Test; r1 = new ref; r2 = r1; r3 = r1; r4 = r1; return */
   private Body createExpectedChainBody() {
 
     // build an instance of BodyBuilder
@@ -148,7 +188,7 @@ public class CopyPropagatorTest {
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
-    Set<Local> locals = ImmutableUtils.immutableSet(r0, l0, l1, l2, l3);
+    Set<Local> locals = ImmutableUtils.immutableSet(r0, r1, r2, r3, r4);
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
@@ -168,7 +208,7 @@ public class CopyPropagatorTest {
   }
 
   /**
-   * l0 := @this Test; l1 = 5; l2 = 0; if l2 > l1 goto label2; l3 = l1 + 1; l2 = l2 + 1; goto
+   * l0 := @this Test; i1 = 5; i2 = 0; if i2 > i1 goto label2; i3 = i1 + 1; i2 = i2 + 1; goto
    * label1; return
    */
   private Body createLoopBody() {
@@ -178,7 +218,7 @@ public class CopyPropagatorTest {
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
+    Set<Local> locals = ImmutableUtils.immutableSet(r0, i1, i2, i3);
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
@@ -201,8 +241,8 @@ public class CopyPropagatorTest {
   }
 
   /**
-   * l0 := @this Test; l1 = 5; l2 = 0; if l2 > l1 goto label2; l3 = l1 + 1; l2 = l2 + 1; goto
-   * label1; return
+   * l0 := @this Test; i1 = 5; i2 = 0; if i2 > 5 goto label2; i3 = 5 + 1; i2 = i2 + 1; goto label1;
+   * return
    */
   private Body createExpectedLoopBody() {
     // build an instance of BodyBuilder
@@ -210,7 +250,7 @@ public class CopyPropagatorTest {
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
+    Set<Local> locals = ImmutableUtils.immutableSet(r0, i1, i2, i3);
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
@@ -222,6 +262,66 @@ public class CopyPropagatorTest {
     builder.addFlow(stmt9, gotoStmt);
     builder.addFlow(gotoStmt, estmt7);
     builder.addFlow(estmt7, ret);
+
+    // set startingStmt
+    builder.setStartingStmt(startingStmt);
+
+    // set Position
+    builder.setPosition(NoPositionInformation.getInstance());
+
+    return builder.build();
+  }
+
+  /**
+   * r0 := @this Test; r1 = (ref) 0; r2 = (ref) 0L; r3 = (ref) (long) 1; r4 = r1, r5 = r2; r6 = r3;
+   */
+  private Body createCastExprBody() {
+
+    // build an instance of BodyBuilder
+    Body.BodyBuilder builder = Body.builder();
+    builder.setMethodSignature(methodSignature);
+
+    // add locals into builder
+    Set<Local> locals = ImmutableUtils.immutableSet(r0, r1, r2, r3, r4, r5);
+    builder.setLocals(locals);
+
+    // build stmtsGraph for the builder
+    builder.addFlow(startingStmt, stmt10);
+    builder.addFlow(stmt10, stmt11);
+    builder.addFlow(stmt11, stmt12);
+    builder.addFlow(stmt12, estmt4);
+    builder.addFlow(estmt4, stmt13);
+    builder.addFlow(stmt13, stmt14);
+    builder.addFlow(stmt14, ret);
+
+    // set startingStmt
+    builder.setStartingStmt(startingStmt);
+
+    // set Position
+    builder.setPosition(NoPositionInformation.getInstance());
+
+    return builder.build();
+  }
+
+  /** r0 := @this Test; r1 = (ref) 0; r2 = (ref) 0l; r3 = (ref) 1; r4 = null, r5 = null; r6 = r3; */
+  private Body createExpectedCastExprBody() {
+
+    // build an instance of BodyBuilder
+    Body.BodyBuilder builder = Body.builder();
+    builder.setMethodSignature(methodSignature);
+
+    // add locals into builder
+    Set<Local> locals = ImmutableUtils.immutableSet(r0, r1, r2, r3, r4, r5);
+    builder.setLocals(locals);
+
+    // build stmtsGraph for the builder
+    builder.addFlow(startingStmt, stmt10);
+    builder.addFlow(stmt10, stmt11);
+    builder.addFlow(stmt11, stmt12);
+    builder.addFlow(stmt12, eestmt4);
+    builder.addFlow(eestmt4, estmt13);
+    builder.addFlow(estmt13, stmt14);
+    builder.addFlow(stmt14, ret);
 
     // set startingStmt
     builder.setStartingStmt(startingStmt);
