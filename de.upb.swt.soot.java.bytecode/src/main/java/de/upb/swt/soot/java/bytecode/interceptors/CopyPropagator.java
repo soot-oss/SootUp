@@ -42,11 +42,7 @@ public class CopyPropagator implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-
-    Iterator<Stmt> stmtsIt = builder.getStmtGraph().iterator();
-
-    while (stmtsIt.hasNext()) {
-      Stmt stmt = stmtsIt.next();
+    for (Stmt stmt : builder.getStmtGraph()) {
       for (Value use : stmt.getUses()) {
         if (use instanceof Local) {
           List<Stmt> defsOfUse = InterceptorUtils.getDefsForLocalUse(builder, (Local) use, stmt);
