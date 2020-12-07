@@ -42,79 +42,74 @@ public class CopyPropagator implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-
-    Iterator<Stmt> stmtsIt = builder.getStmtGraph().iterator();
-
-    while (stmtsIt.hasNext()) {
-      Stmt stmt = stmtsIt.next();
+    for (Stmt stmt : builder.getStmtGraph()) {
       for (Value use : stmt.getUses()) {
         if (use instanceof Local) {
           List<Stmt> defsOfUse = InterceptorUtils.getDefsForLocalUse(builder, (Local) use, stmt);
 
-          // If local is defined just one time, then the propagation of this local available.
-          boolean propagable = false;
-          if (defsOfUse.size() == 1) {
-            propagable = true;
-
-            // If local is defined two or more times, and each defStmt in form :
-            // defLocal = constant and all constants are same,
-            // then the propagation of this local available.
-
-          } else if (defsOfUse.size() > 1) {
-            Constant con = null;
-            for (Stmt defStmt : defsOfUse) {
-              if (defStmt instanceof JAssignStmt
-                  && ((JAssignStmt) defStmt).getRightOp() instanceof Constant) {
-                Constant rhs = (Constant) ((JAssignStmt) defStmt).getRightOp();
-                if (con == null) {
-                  con = rhs;
-                } else if (rhs.equals(con)) {
-                  propagable = true;
-                } else {
-                  propagable = false;
-                  break;
-                }
-              } else {
-                propagable = false;
-                break;
-              }
-            }
-          }
-
-          if (propagable) {
+          if (isPropagable(defsOfUse)) {
             AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
             Value rhs = defStmt.getRightOp();
             // if rhs is a constant, then replace use, if it is possible
             if (rhs instanceof Constant) {
-              Stmt newStmt = InterceptorUtils.withNewUse(stmt, use, rhs);
-              if (!stmt.equals(newStmt)) {
-                builder.replaceStmt(stmt, newStmt);
-              }
+              replaceUse(builder, stmt, use, rhs);
             }
             // if rhs is a cast expr with a ref type and its op is 0 (IntConstant or LongConstant)
             // then replace use, if it is possible
-            else if (rhs instanceof JCastExpr) {
-              if (rhs.getType() instanceof ReferenceType) {
-                Value op = ((JCastExpr) rhs).getOp();
-                if ((op instanceof IntConstant && op.equals(IntConstant.getInstance(0)))
-                    || (op instanceof LongConstant && op.equals(LongConstant.getInstance(0)))) {
-                  Stmt newStmt = InterceptorUtils.withNewUse(stmt, use, NullConstant.getInstance());
-                  if (!stmt.equals(newStmt)) {
-                    builder.replaceStmt(stmt, newStmt);
-                  }
-                }
+            if (rhs instanceof JCastExpr && rhs.getType() instanceof ReferenceType) {
+              Value op = ((JCastExpr) rhs).getOp();
+              if ((op instanceof IntConstant && op.equals(IntConstant.getInstance(0)))
+                  || (op instanceof LongConstant && op.equals(LongConstant.getInstance(0)))) {
+                replaceUse(builder, stmt, use, NullConstant.getInstance());
               }
             }
             // if rhs is a local, then replace use, if it is possible
-            else if (rhs instanceof Local && !rhs.equivTo(use)) {
-              Stmt newStmt = InterceptorUtils.withNewUse(stmt, use, rhs);
-              if (!stmt.equals(newStmt)) {
-                builder.replaceStmt(stmt, newStmt);
-              }
+            if (rhs instanceof Local && !rhs.equivTo(use)) {
+              replaceUse(builder, stmt, use, rhs);
             }
           }
         }
       }
     }
+  }
+
+  private void replaceUse(@Nonnull Body.BodyBuilder builder, Stmt stmt, Value use, Value rhs) {
+    Stmt newStmt = InterceptorUtils.withNewUse(stmt, use, rhs);
+    if (!stmt.equals(newStmt)) {
+      builder.replaceStmt(stmt, newStmt);
+    }
+  }
+
+  private boolean isPropagable(List<Stmt> defsOfUse) {
+    // If local is defined just one time, then the propagation of this local available.
+    boolean propagable = false;
+    if (defsOfUse.size() == 1) {
+      propagable = true;
+
+      // If local is defined two or more times, and each defStmt in form :
+      // defLocal = constant and all constants are same,
+      // then the propagation of this local available.
+
+    } else if (defsOfUse.size() > 1) {
+      Constant con = null;
+      for (Stmt defStmt : defsOfUse) {
+        if (defStmt instanceof JAssignStmt
+            && ((JAssignStmt) defStmt).getRightOp() instanceof Constant) {
+          Constant rhs = (Constant) ((JAssignStmt) defStmt).getRightOp();
+          if (con == null) {
+            con = rhs;
+          } else if (rhs.equals(con)) {
+            propagable = true;
+          } else {
+            propagable = false;
+            break;
+          }
+        } else {
+          propagable = false;
+          break;
+        }
+      }
+    }
+    return propagable;
   }
 }
