@@ -93,7 +93,7 @@ public class CopyPropagator implements BodyInterceptor {
             }
             // if rhs is a cast expr with a ref type and its op is 0 (IntConstant or LongConstant)
             // then replace use, if it is possible
-            if (rhs instanceof JCastExpr) {
+            else if (rhs instanceof JCastExpr) {
               if (rhs.getType() instanceof ReferenceType) {
                 Value op = ((JCastExpr) rhs).getOp();
                 if ((op instanceof IntConstant && op.equals(IntConstant.getInstance(0)))
@@ -106,7 +106,7 @@ public class CopyPropagator implements BodyInterceptor {
               }
             }
             // if rhs is a local, then replace use, if it is possible
-            if (rhs instanceof Local && !rhs.equivTo(use)) {
+            else if (rhs instanceof Local && !rhs.equivTo(use)) {
               Stmt newStmt = InterceptorUtils.withNewUse(stmt, use, rhs);
               if (!stmt.equals(newStmt)) {
                 builder.replaceStmt(stmt, newStmt);
