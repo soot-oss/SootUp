@@ -32,6 +32,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.BodyUtils;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ReferenceType;
 import java.util.*;
@@ -45,7 +46,7 @@ public class CopyPropagator implements BodyInterceptor {
     for (Stmt stmt : builder.getStmtGraph()) {
       for (Value use : stmt.getUses()) {
         if (use instanceof Local) {
-          List<Stmt> defsOfUse = InterceptorUtils.getDefsForLocalUse(builder, (Local) use, stmt);
+          List<Stmt> defsOfUse = BodyUtils.getDefsForLocalUse(builder, (Local) use, stmt);
 
           if (isPropagable(defsOfUse)) {
             AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
@@ -74,7 +75,7 @@ public class CopyPropagator implements BodyInterceptor {
   }
 
   private void replaceUse(@Nonnull Body.BodyBuilder builder, Stmt stmt, Value use, Value rhs) {
-    Stmt newStmt = InterceptorUtils.withNewUse(stmt, use, rhs);
+    Stmt newStmt = BodyUtils.withNewUse(stmt, use, rhs);
     if (!stmt.equals(newStmt)) {
       builder.replaceStmt(stmt, newStmt);
     }
