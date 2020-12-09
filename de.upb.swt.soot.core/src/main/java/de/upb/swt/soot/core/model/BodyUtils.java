@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.model;
  */
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,5 +82,16 @@ public class BodyUtils {
       }
     }
     return allUses;
+  }
+
+  public static List<Stmt> getDefsOfLocal(Local local, List<Stmt> defs) {
+    List<Stmt> localDefs = new ArrayList<>();
+    for (Stmt stmt : defs) {
+      if (stmt instanceof AbstractDefinitionStmt
+          && ((AbstractDefinitionStmt) stmt).getLeftOp().equals(local)) {
+        localDefs.add(stmt);
+      }
+    }
+    return localDefs;
   }
 }

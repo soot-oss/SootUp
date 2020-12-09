@@ -30,8 +30,10 @@ import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.BodyUtils;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -49,12 +51,12 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
     List<Stmt> remainingStmts = builder.getStmts();
 
     builder.enableDeferredStmtGraphChanges();
-    // Perform a constant/local propagation pass.
+    // Perform a constant/local propagation pass
     // go through each use in each statement
-    while (!remainingStmts.isEmpty()) {
-      Stmt stmt = remainingStmts.get(0);
+    for(Iterator<Stmt> it = remainingStmts.iterator(); it.hasNext();){
+      Stmt stmt = it.next();
       // propagation pass
-      if (stmt instanceof AbstractDefinitionStmt) {
+      if (stmt instanceof JAssignStmt) {
         Value rhs = ((AbstractDefinitionStmt) stmt).getRightOp();
         if (rhs instanceof AbstractBinopExpr) {
           Value op1 = ((AbstractBinopExpr) rhs).getOp1();
@@ -94,7 +96,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
       } else {
         for (Value value : stmt.getUses()) {
           if (value instanceof Local) {
-            List<Stmt> defsOfUse = getDefsOfLocal((Local) value, defs);
+            List<Stmt> defsOfUse = BodyUtils.getDefsOfLocal((Local) value, defs);
             if (defsOfUse.size() == 1) {
               AbstractDefinitionStmt definitionStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
               Value rhs = definitionStmt.getRightOp();
@@ -130,19 +132,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
           }
         }
       }
-      remainingStmts.remove(0);
     }
     builder.commitDeferredStmtGraphChanges();
-  }
-
-  private List<Stmt> getDefsOfLocal(Local local, List<Stmt> defs) {
-    List<Stmt> localDefs = new ArrayList<>();
-    for (Stmt stmt : defs) {
-      if (stmt instanceof AbstractDefinitionStmt
-          && ((AbstractDefinitionStmt) stmt).getLeftOp().equals(local)) {
-        localDefs.add(stmt);
-      }
-    }
-    return localDefs;
   }
 }
