@@ -28,19 +28,21 @@ import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.util.Printer;
+import org.objectweb.asm.util.Textifier;
+import org.objectweb.asm.util.TraceMethodVisitor;
 
 public final class AsmUtil {
 
@@ -56,15 +58,11 @@ public final class AsmUtil {
    */
   protected static void initAsmClassSource(
       @Nonnull Path classSource, @Nonnull AsmJavaClassProvider.SootClassNode classNode)
-      throws AsmFrontendException {
-    try {
-      try (InputStream sourceFileInputStream = Files.newInputStream(classSource)) {
-        ClassReader clsr = new ClassReader(sourceFileInputStream);
+      throws IOException {
+    try (InputStream sourceFileInputStream = Files.newInputStream(classSource)) {
+      ClassReader clsr = new ClassReader(sourceFileInputStream);
 
-        clsr.accept(classNode, ClassReader.SKIP_FRAMES);
-      }
-    } catch (IOException e) {
-      throw new AsmFrontendException(e.getMessage());
+      clsr.accept(classNode, ClassReader.SKIP_FRAMES);
     }
   }
 
@@ -259,5 +257,17 @@ public final class AsmUtil {
       return null;
     }
     return JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(asmClassName));
+  }
+
+  public static String toString(AbstractInsnNode insn) {
+    Printer printer = new Textifier();
+    TraceMethodVisitor mp = new TraceMethodVisitor(printer);
+
+    insn.accept(mp);
+    StringWriter sw = new StringWriter();
+    printer.print(new PrintWriter(sw));
+    return Arrays.stream(sw.toString().split("\n"))
+        .filter(line -> !line.trim().isEmpty())
+        .reduce("", String::concat);
   }
 }

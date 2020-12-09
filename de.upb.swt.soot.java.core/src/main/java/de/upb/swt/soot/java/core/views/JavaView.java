@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -121,7 +120,8 @@ public class JavaView extends AbstractView {
           "strictfp");
 
   @Nonnull
-  private final Map<ClassType, AbstractClass<? extends AbstractClassSource>> map = new HashMap<>();
+  private final Map<ClassType, AbstractClass<? extends AbstractClassSource>> cache =
+      new HashMap<>();
 
   private volatile boolean isFullyResolved = false;
 
@@ -150,7 +150,7 @@ public class JavaView extends AbstractView {
   @Override
   @Nonnull
   public synchronized Collection<SootClass> getClasses() {
-    return getAbstractClasses()
+    return getAbstractClassSources()
         .filter(clazz -> clazz instanceof SootClass)
         .map(clazz -> (SootClass) clazz)
         .collect(Collectors.toList());
@@ -163,9 +163,9 @@ public class JavaView extends AbstractView {
   }
 
   @Nonnull
-  synchronized Stream<AbstractClass<? extends AbstractClassSource>> getAbstractClasses() {
+  synchronized Stream<AbstractClass<? extends AbstractClassSource>> getAbstractClassSources() {
     resolveAll();
-    return map.values().stream();
+    return cache.values().stream();
   }
 
   @Override
@@ -177,14 +177,15 @@ public class JavaView extends AbstractView {
               if (clazz instanceof SootClass) {
                 return (SootClass) clazz;
               } else {
-                throw new ResolveException(type + " is not a regular Java class!");
+                throw new ResolveException(
+                    type + " is not a regular Java class!", clazz.getClassSource().getSourcePath());
               }
             });
   }
 
   @Nonnull
   Optional<AbstractClass<? extends AbstractClassSource>> getAbstractClass(@Nonnull ClassType type) {
-    AbstractClass<? extends AbstractClassSource> cachedClass = map.get(type);
+    AbstractClass<? extends AbstractClassSource> cachedClass = cache.get(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
@@ -221,7 +222,7 @@ public class JavaView extends AbstractView {
   private synchronized Optional<AbstractClass<? extends AbstractClassSource>> buildClassFrom(
       AbstractClassSource classSource) {
     AbstractClass<? extends AbstractClassSource> theClass =
-        map.computeIfAbsent(
+        cache.computeIfAbsent(
             classSource.getClassType(),
             type ->
                 classSource.buildClass(getProject().getSourceTypeSpecifier().sourceTypeFor(type)));
@@ -247,40 +248,5 @@ public class JavaView extends AbstractView {
             })
         .forEach(this::buildClassFrom);
     isFullyResolved = true;
-  }
-
-  @Override
-  public boolean doneResolving() {
-    return isFullyResolved;
-  }
-
-  private static final class SplitPatternHolder {
-    private static final char SPLIT_CHAR = '.';
-
-    @Nonnull
-    private static final Pattern SPLIT_PATTERN =
-        Pattern.compile(Character.toString(SPLIT_CHAR), Pattern.LITERAL);
-  }
-
-  @Override
-  @Nonnull
-  public String quotedNameOf(@Nonnull String s) {
-    StringBuilder res = new StringBuilder(s.length() + 16);
-
-    for (String part : SplitPatternHolder.SPLIT_PATTERN.split(s)) {
-      if (res.length() > 0) {
-        res.append(SplitPatternHolder.SPLIT_CHAR);
-      }
-
-      if (part.startsWith("-") || RESERVED_NAMES.contains(part)) {
-        res.append('\'');
-        res.append(part);
-        res.append('\'');
-      } else {
-        res.append(part);
-      }
-    }
-
-    return res.toString();
   }
 }

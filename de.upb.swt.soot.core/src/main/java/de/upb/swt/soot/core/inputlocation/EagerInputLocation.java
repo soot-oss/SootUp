@@ -20,37 +20,56 @@ package de.upb.swt.soot.core.inputlocation;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import com.google.common.collect.ImmutableMap;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/** @author Markus Schmidt */
-
-// TODO: implement sth useful - more than this dummy
+/**
+ * stores (already loaded) ClassType -> ClassSource associations for retrieval
+ *
+ * @author Markus Schmidt
+ */
 public class EagerInputLocation implements AnalysisInputLocation {
+
+  @Nonnull private final Map<ClassType, AbstractClassSource> map;
+
+  /**
+   * not useful for retrieval of classes via view. // FIXME: circular dependency on sootclass <->
+   * remove inputlocation from sootclass..
+   */
+  public EagerInputLocation() {
+    map = Collections.emptyMap();
+  }
+
+  public EagerInputLocation(@Nonnull Map<ClassType, AbstractClassSource> map) {
+    this.map = ImmutableMap.copyOf(map);
+  }
 
   @Nonnull
   @Override
   public Optional<AbstractClassSource> getClassSource(@Nonnull ClassType type) {
-    return Optional.empty();
+    return Optional.ofNullable(map.get(type));
   }
 
   @Nonnull
   @Override
   public Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory) {
-    throw new ResolveException("getClassSources not implemented - No class sources found.");
+    return map.values();
   }
 
   @Override
   public @Nonnull Optional<AbstractClassSource> getClassSource(
       @Nonnull ClassType type, @Nullable ClassLoadingOptions classLoadingOptions) {
-    return Optional.empty();
+    // FIXME: add classloadingoptions
+    return Optional.ofNullable(map.get(type));
   }
 
   @Nonnull
@@ -58,6 +77,7 @@ public class EagerInputLocation implements AnalysisInputLocation {
   public Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nullable ClassLoadingOptions classLoadingOptions) {
-    throw new ResolveException("getClassSources not implemented - No class sources found.");
+    // FIXME: add classloadingoptions
+    return map.values();
   }
 }

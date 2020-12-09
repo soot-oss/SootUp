@@ -10,7 +10,7 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyBase;
+import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyTestBase;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,7 +19,7 @@ import org.junit.experimental.categories.Category;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
-public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyBase {
+public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyTestBase {
 
   ViewTypeHierarchy typeHierarchy =
       (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());

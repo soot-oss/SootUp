@@ -1,0 +1,241 @@
+public synchronized class IfElseStatement extends java.lang.Object
+{
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: IfElseStatement;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public int ifElseCascadingStatement(int)
+    {
+        unknown $stack3, l0, l1, l2;
+
+
+        l0 := @this: IfElseStatement;
+
+        l1 := @parameter0: int;
+
+        l2 = 0;
+
+        if l1 >= 42 goto label2;
+
+        if l1 >= 42 goto label1;
+
+        l2 = 11;
+
+        goto label3;
+
+      label1:
+        l2 = 12;
+
+        goto label3;
+
+      label2:
+        l2 = 3;
+
+      label3:
+        $stack3 = l2;
+
+        return $stack3;
+    }
+
+    public int ifElseCascadingElseIfStatement(int)
+    {
+        unknown $stack3, l0, l1, l2;
+
+
+        l0 := @this: IfElseStatement;
+
+        l1 := @parameter0: int;
+
+        l2 = 0;
+
+        if l1 >= 42 goto label3;
+
+        if l1 >= 42 goto label1;
+
+        l2 = 11;
+
+        goto label4;
+
+      label1:
+        if l1 <= 123 goto label2;
+
+        l2 = 12;
+
+        goto label4;
+
+      label2:
+        l2 = 13;
+
+        goto label4;
+
+      label3:
+        l2 = 2;
+
+      label4:
+        $stack3 = l2;
+
+        return $stack3;
+    }
+
+    public int ifElseCascadingElseIfInElseStatement(int)
+    {
+        unknown $stack3, l0, l1, l2;
+
+
+        l0 := @this: IfElseStatement;
+
+        l1 := @parameter0: int;
+
+        l2 = 0;
+
+        if l1 >= 42 goto label1;
+
+        l2 = 1;
+
+        goto label4;
+
+      label1:
+        if l1 >= 42 goto label2;
+
+        l2 = 21;
+
+        goto label4;
+
+      label2:
+        if l1 <= 123 goto label3;
+
+        l2 = 22;
+
+        goto label4;
+
+      label3:
+        l2 = 23;
+
+      label4:
+        $stack3 = l2;
+
+        return $stack3;
+    }
+
+    public int ifElseIfStatement(int)
+    {
+        unknown $stack3, l0, l1, l2;
+
+
+        l0 := @this: IfElseStatement;
+
+        l1 := @parameter0: int;
+
+        l2 = 0;
+
+        if l1 >= 42 goto label1;
+
+        l2 = 1;
+
+        goto label3;
+
+      label1:
+        if l1 <= 123 goto label2;
+
+        l2 = 2;
+
+        goto label3;
+
+      label2:
+        l2 = 3;
+
+      label3:
+        $stack3 = l2;
+
+        return $stack3;
+    }
+
+    public int ifStatement(int)
+    {
+        unknown $stack3, l0, l1, l2;
+
+
+        l0 := @this: IfElseStatement;
+
+        l1 := @parameter0: int;
+
+        l2 = 0;
+
+        if l1 >= 42 goto label1;
+
+        l2 = 1;
+
+      label1:
+        $stack3 = l2;
+
+        return $stack3;
+    }
+
+    public int ifElseStatement(int)
+    {
+        unknown $stack3, l0, l1, l2;
+
+
+        l0 := @this: IfElseStatement;
+
+        l1 := @parameter0: int;
+
+        l2 = 0;
+
+        if l1 >= 42 goto label1;
+
+        l2 = 1;
+
+        goto label2;
+
+      label1:
+        l2 = 2;
+
+      label2:
+        $stack3 = l2;
+
+        return $stack3;
+    }
+
+    public int ifElseCascadingInElseStatement(int)
+    {
+        unknown $stack3, l0, l1, l2;
+
+
+        l0 := @this: IfElseStatement;
+
+        l1 := @parameter0: int;
+
+        l2 = 0;
+
+        if l1 >= 42 goto label1;
+
+        l2 = 1;
+
+        goto label3;
+
+      label1:
+        if l1 >= 42 goto label2;
+
+        l2 = 21;
+
+        goto label3;
+
+      label2:
+        l2 = 22;
+
+      label3:
+        $stack3 = l2;
+
+        return $stack3;
+    }
+}
+

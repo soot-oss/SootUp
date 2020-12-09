@@ -23,17 +23,18 @@ package de.upb.swt.soot.core.model;
  */
 
 /** This class represents Position Information i.e. for IDEs to locate positions in sources. */
+// TODO: [ms] it represents a range - rename?
 public class Position {
 
   private final int firstLine;
-  private final int lastLine;
   private final int firstCol;
+  private final int lastLine;
   private final int lastCol;
 
   public Position(int firstLine, int firstCol, int lastLine, int lastCol) {
     this.firstLine = firstLine;
-    this.lastLine = lastLine;
     this.firstCol = firstCol;
+    this.lastLine = lastLine;
     this.lastCol = lastCol;
   }
 

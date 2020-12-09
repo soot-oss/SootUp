@@ -89,8 +89,7 @@ public class JavaJimple extends Jimple {
 
   public MethodType newMethodType(List<Type> parameterTypes, Type returnType) {
     return new MethodType(
-        parameterTypes,
-        returnType,
+        getIdentifierFactory().getMethodSubSignature("__METHODTYPE__", parameterTypes, returnType),
         getIdentifierFactory().getClassType("java.lang.invoke.MethodType"));
   }
 }

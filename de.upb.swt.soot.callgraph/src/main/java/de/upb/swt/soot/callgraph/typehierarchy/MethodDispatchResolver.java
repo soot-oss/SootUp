@@ -54,7 +54,32 @@ public final class MethodDispatchResolver {
                                 "Could not resolve " + subtype + ", but found it in hierarchy.")))
         .flatMap(abstractClass -> abstractClass.getMethods().stream())
         .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
-        .filter(method -> method instanceof SootMethod && !((SootMethod) method).isAbstract())
+        .filter(method -> !((SootMethod) method).isAbstract())
+        .map(Method::getSignature)
+        .collect(Collectors.toSet());
+  }
+
+  /**
+   * Searches the view for classes that implement or override the method <code>m</code> and returns
+   * the set of method signatures that a method call could resolve to within the given classes.
+   */
+  @Nonnull
+  public static Set<MethodSignature> resolveAbstractDispatchInClasses(
+      View view, MethodSignature m, Set<ClassType> classes) {
+    TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
+
+    return hierarchy.subtypesOf(m.getDeclClassType()).stream()
+        .map(
+            subtype ->
+                view.getClass(subtype)
+                    .orElseThrow(
+                        () ->
+                            new ResolveException(
+                                "Could not resolve " + subtype + ", but found it in hierarchy.")))
+        .filter(c -> classes.contains(c.getType()))
+        .flatMap(abstractClass -> abstractClass.getMethods().stream())
+        .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
+        .filter(method -> !((SootMethod) method).isAbstract())
         .map(Method::getSignature)
         .collect(Collectors.toSet());
   }
@@ -69,7 +94,7 @@ public final class MethodDispatchResolver {
    * @return Whether name and parameters are equal and the return type of <code>potentialTarget
    *     </code> is compatible with the return type of <code>called</code>.
    */
-  private static boolean canDispatch(
+  public static boolean canDispatch(
       MethodSignature called, MethodSignature potentialTarget, TypeHierarchy hierarchy) {
     return called.getName().equals(potentialTarget.getName())
         && called.getParameterTypes().equals(potentialTarget.getParameterTypes())
@@ -101,7 +126,7 @@ public final class MethodDispatchResolver {
               .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
               .findAny()
               .orElse(null);
-      if (concreteMethod instanceof SootMethod && !((SootMethod) concreteMethod).isAbstract()) {
+      if (concreteMethod != null && !((SootMethod) concreteMethod).isAbstract()) {
         return concreteMethod.getSignature();
       }
 
@@ -127,7 +152,7 @@ public final class MethodDispatchResolver {
         view.getClass(specialMethodSig.getDeclClassType())
             .flatMap(cl -> cl.getMethod(specialMethodSig))
             .orElse(null);
-    if (specialMethod instanceof SootMethod && ((SootMethod) specialMethod).isPrivate()) {
+    if (specialMethod != null && ((SootMethod) specialMethod).isPrivate()) {
       return specialMethodSig;
     }
 

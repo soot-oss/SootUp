@@ -81,6 +81,10 @@ public interface TypeHierarchy {
   @Nonnull
   Set<ClassType> subtypesOf(@Nonnull ClassType type);
 
+  /** Returns the direct implementers of an interface or direct subclasses of a class. */
+  @Nonnull
+  Set<ClassType> directSubtypesOf(@Nonnull ClassType type);
+
   /**
    * Returns the direct superclass of <code>classType</code>. If <code>classType == java.lang.Object
    * </code>, this method returns null.

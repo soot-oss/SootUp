@@ -9,6 +9,7 @@ import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
 import de.upb.swt.soot.core.model.Modifier;
@@ -47,7 +48,8 @@ public class JFieldRefTest {
     ClassType declaringClassSignature =
         JavaIdentifierFactory.getInstance().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
-    SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
+    SootField field =
+        new SootField(fieldSig, EnumSet.of(Modifier.FINAL), NoPositionInformation.getInstance());
 
     JavaSootClass mainClass =
         new JavaSootClass(
@@ -79,7 +81,8 @@ public class JFieldRefTest {
     ClassType declaringClassSignature =
         JavaIdentifierFactory.getInstance().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
-    SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
+    SootField field =
+        new SootField(fieldSig, EnumSet.of(Modifier.FINAL), NoPositionInformation.getInstance());
 
     JavaSootClass mainClass =
         new JavaSootClass(

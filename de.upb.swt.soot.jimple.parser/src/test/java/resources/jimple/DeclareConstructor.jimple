@@ -1,0 +1,45 @@
+synchronized class DeclareConstructor extends java.lang.Object
+{
+    public int var1;
+
+    public int var2;
+
+    public void <init>(int,int)
+    {
+        unknown l0, l1, l2;
+
+
+        l0 := @this: DeclareConstructor;
+
+        l1 := @parameter0: int;
+
+        l2 := @parameter1: int;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        l0.<DeclareConstructor: int var1> = l1;
+
+        l0.<DeclareConstructor: int var2> = l2;
+
+        return;
+    }
+
+    public void <init>(int)
+    {
+        unknown l0, l1;
+
+
+        l0 := @this: DeclareConstructor;
+
+        l1 := @parameter0: int;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        l0.<DeclareConstructor: int var1> = l1;
+
+        l0.<DeclareConstructor: int var2> = 0;
+
+        return;
+    }
+}
+

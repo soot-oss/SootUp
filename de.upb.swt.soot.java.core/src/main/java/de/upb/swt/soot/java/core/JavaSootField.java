@@ -23,6 +23,7 @@ package de.upb.swt.soot.java.core;
  */
 
 import de.upb.swt.soot.core.model.Modifier;
+import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import java.util.Collections;
@@ -38,12 +39,14 @@ public class JavaSootField extends SootField {
    * @param signature
    * @param modifiers
    * @param annotations
+   * @param position
    */
   public JavaSootField(
       @Nonnull FieldSignature signature,
       @Nonnull Iterable<Modifier> modifiers,
-      @Nonnull Iterable<AnnotationType> annotations) {
-    super(signature, modifiers);
+      @Nonnull Iterable<AnnotationType> annotations,
+      Position position) {
+    super(signature, modifiers, position);
     this.annotations = annotations;
   }
 
@@ -54,7 +57,7 @@ public class JavaSootField extends SootField {
 
   @Nonnull
   public JavaSootField withAnnotations(@Nonnull Iterable<AnnotationType> annotations) {
-    return new JavaSootField(getSignature(), getModifiers(), annotations);
+    return new JavaSootField(getSignature(), getModifiers(), annotations, getPosition());
   }
 
   @Nonnull
@@ -91,7 +94,7 @@ public class JavaSootField extends SootField {
     @Override
     @Nonnull
     public JavaSootField build() {
-      return new JavaSootField(getSignature(), getModifiers(), getAnnotations());
+      return new JavaSootField(getSignature(), getModifiers(), getAnnotations(), getPosition());
     }
   }
 }

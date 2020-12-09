@@ -22,8 +22,8 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
  */
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.ClassResolvingException;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.java.bytecode.frontend.modules.AsmModuleClassSource;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
@@ -175,13 +175,13 @@ public class ModuleFinder {
             buildModuleForJar(entry);
           }
         }
-      } catch (IOException | ClassResolvingException e) {
+      } catch (IOException | ResolveException e) {
         e.printStackTrace();
       }
     }
   }
 
-  private void buildModuleForExplodedModule(@Nonnull Path dir) throws ClassResolvingException {
+  private void buildModuleForExplodedModule(@Nonnull Path dir) throws ResolveException {
     // create the input location for this module dir
     PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.createForClassContainer(dir);
@@ -234,8 +234,8 @@ public class ModuleFinder {
       String moduleName = null;
       try {
         moduleName = getModuleName(moduleInfoSource);
-      } catch (ClassResolvingException classResolvingException) {
-        classResolvingException.printStackTrace();
+      } catch (ResolveException ResolveException) {
+        ResolveException.printStackTrace();
       }
 
       this.moduleInputLocation.put(moduleName, inputLocation);
@@ -259,13 +259,12 @@ public class ModuleFinder {
   }
 
   private @Nonnull String getModuleName(@Nonnull AbstractClassSource moduleInfoSource)
-      throws ClassResolvingException {
+      throws ResolveException {
     // FIXME: somehow in need the module name from the source code ...
     // AbstractClass moduleInfoClass = this.classProvider.reify(moduleInfoSource);
     AbstractClassSource moduleInfoClass = moduleInfoSource;
     if (!(moduleInfoClass instanceof AsmModuleClassSource)) {
-      throw new ClassResolvingException(
-          "Class is named module-info but does not reify to SootModuleInfo");
+      throw new ResolveException("Class is named module-info but does not reify to SootModuleInfo");
     }
     // FIXME: here is no view or anything to resolve the content...??? Why do I need a view anyway?
 

@@ -1,0 +1,29 @@
+public synchronized class SynchronizedMethod extends java.lang.Object
+{
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: SynchronizedMethod;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public synchronized void run()
+    {
+        unknown $stack1, l0;
+
+
+        l0 := @this: SynchronizedMethod;
+
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>("test");
+
+        return;
+    }
+}
+

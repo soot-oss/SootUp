@@ -41,10 +41,8 @@ import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.*;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import de.upb.swt.soot.core.util.StringTools;
+import java.util.*;
 
 /**
  * The Jimple class contains all the constructors for the components of the Jimple grammar for the
@@ -64,8 +62,6 @@ public abstract class Jimple {
   public static final String DYNAMICINVOKE = "dynamicinvoke";
   public static final String STATICINVOKE = "staticinvoke";
   public static final String VIRTUALINVOKE = "virtualinvoke";
-  public static final String NULL_TYPE = "null_type";
-  public static final String UNKNOWN = "unknown";
   public static final String CMP = "cmp";
   public static final String CMPG = "cmpg";
   public static final String CMPL = "cmpl";
@@ -76,16 +72,12 @@ public abstract class Jimple {
   public static final String NEG = "neg";
   public static final String IF = "if";
   public static final String ABSTRACT = "abstract";
-  public static final String BOOLEAN = "boolean";
-  public static final String BREAK = "break";
-  public static final String BYTE = "byte";
   public static final String CASE = "case";
   public static final String CATCH = "catch";
-  public static final String CHAR = "char";
   public static final String CLASS = "class";
   public static final String FINAL = "final";
   public static final String NATIVE = "native";
-  public static final String PUBLIC = "public static";
+  public static final String PUBLIC = "public";
   public static final String PROTECTED = "protected";
   public static final String PRIVATE = "private";
   public static final String STATIC = "static";
@@ -96,12 +88,6 @@ public abstract class Jimple {
   public static final String ENUM = "enum";
   public static final String ANNOTATION = "annotation";
   public static final String INTERFACE = "interface";
-  public static final String VOID = "void";
-  public static final String SHORT = "short";
-  public static final String INT = "int";
-  public static final String LONG = "long";
-  public static final String FLOAT = "float";
-  public static final String DOUBLE = "double";
   public static final String EXTENDS = "extends";
   public static final String IMPLEMENTS = "implements";
   public static final String BREAKPOINT = "breakpoint";
@@ -117,79 +103,107 @@ public abstract class Jimple {
   public static final String FROM = "from";
   public static final String TO = "to";
   public static final String WITH = "with";
-  public static final String CLS = "cls";
   public static final String TRUE = "true";
   public static final String FALSE = "false";
 
-  /** Returns a list of collections. */
+  /**
+   * Returns a list of keywords for Jimple. This list has to be in sync with the tokens for the
+   * jimple parser. This way StmtPrinter can escape reserved words while serializing if needed.
+   */
   public static List<String> jimpleKeywordList() {
-    List<String> l = new LinkedList<>();
-    Collections.addAll(
-        l,
-        NEWARRAY,
-        NEWMULTIARRAY,
-        NOP,
-        RET,
-        SPECIALINVOKE,
-        STATICINVOKE,
-        SWITCH,
-        VIRTUALINVOKE,
-        NULL_TYPE,
-        UNKNOWN,
-        CMP,
-        CMPG,
-        CMPL,
-        ENTERMONITOR,
-        EXITMONITOR,
-        INTERFACEINVOKE,
-        LENGTHOF,
-        NEG,
-        IF,
-        ABSTRACT,
-        BOOLEAN,
-        BREAK,
-        BYTE,
-        CASE,
-        CATCH,
-        CHAR,
-        CLASS,
-        FINAL,
-        NATIVE,
-        PUBLIC,
-        PROTECTED,
-        PRIVATE,
-        STATIC,
-        SYNCHRONIZED,
-        TRANSIENT,
-        VOLATILE,
-        STRICTFP,
-        ENUM,
-        ANNOTATION,
-        INTERFACE,
-        VOID,
-        SHORT,
-        INT,
-        LONG,
-        FLOAT,
-        DOUBLE,
-        EXTENDS,
-        IMPLEMENTS,
-        BREAKPOINT,
-        DEFAULT,
-        GOTO,
-        INSTANCEOF,
-        NEW,
-        RETURN,
-        THROW,
-        THROWS,
-        NULL,
-        FROM,
-        TO,
-        WITH,
-        CLS,
-        TRUE,
-        FALSE);
+    List<String> l =
+        Arrays.asList(
+            NEWARRAY,
+            NEWMULTIARRAY,
+            NOP,
+            RET,
+            SPECIALINVOKE,
+            STATICINVOKE,
+            SWITCH,
+            VIRTUALINVOKE,
+            CMP,
+            CMPG,
+            CMPL,
+            ENTERMONITOR,
+            EXITMONITOR,
+            INTERFACEINVOKE,
+            LENGTHOF,
+            NEG,
+            IF,
+            ABSTRACT,
+            CASE,
+            CATCH,
+            CLASS,
+            FINAL,
+            NATIVE,
+            PUBLIC,
+            PROTECTED,
+            PRIVATE,
+            STATIC,
+            SYNCHRONIZED,
+            TRANSIENT,
+            VOLATILE,
+            STRICTFP,
+            ENUM,
+            ANNOTATION,
+            INTERFACE,
+            EXTENDS,
+            IMPLEMENTS,
+            BREAKPOINT,
+            DEFAULT,
+            GOTO,
+            INSTANCEOF,
+            NEW,
+            RETURN,
+            THROW,
+            THROWS,
+            NULL,
+            FROM,
+            TO,
+            WITH,
+            TRUE,
+            FALSE);
     return l;
+  }
+
+  /** Escapes reserved Jimple keywords e.g. used in (Stmt)Printer, necessary in the JimpleParser */
+  public static String escape(String str) {
+    if (str.length() == 0) {
+      return "\"\"";
+    }
+    return StringTools.getQuotedStringOf(str, jimpleKeywordList().contains(str));
+  }
+
+  public static String unescape(String str) {
+    StringBuilder sb = new StringBuilder();
+
+    // filter for only \ and not \\ preceeding a possible escapable char
+    boolean lastWasRealEscape = false;
+    int lastAppendedPos = 0;
+    int openHyphenPos = -1;
+    for (int i = 0; i < str.length(); i++) {
+      if ((str.charAt(i) == '"' || str.charAt(i) == '\'') && !lastWasRealEscape) {
+        if (openHyphenPos < 0) {
+          if (lastAppendedPos < i) {
+            sb.append(StringTools.getUnEscapedStringOf(str.substring(lastAppendedPos, i)));
+          }
+          openHyphenPos = i;
+          lastAppendedPos = i;
+        } else if (str.charAt(i) == str.charAt(openHyphenPos)) {
+          sb.append(StringTools.getUnEscapedStringOf(str.substring(openHyphenPos + 1, i)));
+          openHyphenPos = -1;
+          lastAppendedPos = i + 1;
+        }
+      }
+      lastWasRealEscape = !lastWasRealEscape && str.charAt(i) == '\\';
+    }
+
+    // if there has been nothing with hyphens etc.
+    if (lastAppendedPos < str.length()) {
+      sb.append(StringTools.getUnEscapedStringOf(str.substring(lastAppendedPos)));
+    }
+
+    return sb.toString();
   }
 
   public abstract IdentifierFactory getIdentifierFactory();

@@ -1,0 +1,139 @@
+synchronized class ReferencingThis extends java.lang.Object
+{
+    int b;
+
+    int a;
+
+    ReferencingThis getObject()
+    {
+        unknown $stack1, l0;
+
+
+        l0 := @this: ReferencingThis;
+
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>("\'this\' keyword to return the current class instance");
+
+        return l0;
+    }
+
+    void <init>(int,int)
+    {
+        unknown l0, $stack3, l1, l2;
+
+
+        l0 := @this: ReferencingThis;
+
+        l1 := @parameter0: int;
+
+        l2 := @parameter1: int;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        l0.<ReferencingThis: int a> = l1;
+
+        l0.<ReferencingThis: int b> = l2;
+
+        $stack3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack3.<java.io.PrintStream: void println(java.lang.String)>("\'this\' keyword to refer current class instance variables");
+
+        return;
+    }
+
+    void thisDisplay(ReferencingThis)
+    {
+        unknown $stack2, $stack4, $stack3, l0, l1, $stack9, $stack6, $stack10, $stack5, $stack8, $stack7;
+
+
+        l0 := @this: ReferencingThis;
+
+        l1 := @parameter0: ReferencingThis;
+
+        $stack2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack2.<java.io.PrintStream: void println(java.lang.String)>("\'this\' keyword to refer current class instance variables");
+
+        $stack4 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack3 = new java.lang.StringBuilder;
+
+        specialinvoke $stack3.<java.lang.StringBuilder: void <init>()>();
+
+        $stack5 = l0.<ReferencingThis: int a>;
+
+        $stack6 = virtualinvoke $stack3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($stack5);
+
+        $stack7 = virtualinvoke $stack6.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" ");
+
+        $stack8 = l0.<ReferencingThis: int b>;
+
+        $stack9 = virtualinvoke $stack7.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($stack8);
+
+        $stack10 = virtualinvoke $stack9.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $stack4.<java.io.PrintStream: void println(java.lang.String)>($stack10);
+
+        return;
+    }
+
+    void <init>()
+    {
+        unknown $stack1, l0;
+
+
+        l0 := @this: ReferencingThis;
+
+        specialinvoke l0.<ReferencingThis: void <init>(int,int)>(10, 20);
+
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>("this() to invoke current class constructor");
+
+        return;
+    }
+
+    void show()
+    {
+        unknown $stack1, l0;
+
+
+        l0 := @this: ReferencingThis;
+
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>("\'this\' keyword as method parameter");
+
+        virtualinvoke l0.<ReferencingThis: void thisDisplay(ReferencingThis)>(l0);
+
+        return;
+    }
+
+    void thisMethod()
+    {
+        unknown $stack2, $stack4, $stack3, l0, l1, $stack5;
+
+
+        l0 := @this: ReferencingThis;
+
+        $stack2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $stack2.<java.io.PrintStream: void println(java.lang.String)>(" this keyword as an argument in the constructor call");
+
+        $stack3 = new ReferencingThis;
+
+        $stack5 = l0.<ReferencingThis: int a>;
+
+        $stack4 = l0.<ReferencingThis: int b>;
+
+        specialinvoke $stack3.<ReferencingThis: void <init>(int,int)>($stack5, $stack4);
+
+        l1 = $stack3;
+
+        virtualinvoke l1.<ReferencingThis: void show()>();
+
+        return;
+    }
+}
+
