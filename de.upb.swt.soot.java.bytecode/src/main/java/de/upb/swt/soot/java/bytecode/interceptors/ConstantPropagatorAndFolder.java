@@ -53,7 +53,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
     builder.enableDeferredStmtGraphChanges();
     // Perform a constant/local propagation pass
     // go through each use in each statement
-    for(Iterator<Stmt> it = remainingStmts.iterator(); it.hasNext();){
+    for (Iterator<Stmt> it = remainingStmts.iterator(); it.hasNext(); ) {
       Stmt stmt = it.next();
       // propagation pass
       if (stmt instanceof JAssignStmt) {
