@@ -87,18 +87,18 @@ public class BodyUtils {
   /**
    * Get all definition-stmts which define the given local used by the given stmt.
    *
-   * @param builder an instance of BodyBuilder whose body contains the given stmt.
+   * @param graph a stmt graph which contains the given stmts.
    * @param use a local that is used by the given stmt.
    * @param stmt a stmt which uses the given local.
    * @return
    */
-  public static List<Stmt> getDefsForLocalUse(Body.BodyBuilder builder, Local use, Stmt stmt) {
+  public static List<Stmt> getDefsForLocalUse(StmtGraph graph, Local use, Stmt stmt) {
     if (!stmt.getUses().contains(use)) {
       throw new RuntimeException(stmt + " doesn't use the local " + use.toString());
     }
     List<Stmt> defStmts = new ArrayList<>();
     Set<Stmt> visited = new HashSet<>();
-    StmtGraph graph = builder.getStmtGraph();
+
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(stmt);
     while (!queue.isEmpty()) {

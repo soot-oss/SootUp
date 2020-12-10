@@ -46,7 +46,8 @@ public class CopyPropagator implements BodyInterceptor {
     for (Stmt stmt : builder.getStmtGraph()) {
       for (Value use : stmt.getUses()) {
         if (use instanceof Local) {
-          List<Stmt> defsOfUse = BodyUtils.getDefsForLocalUse(builder, (Local) use, stmt);
+          List<Stmt> defsOfUse =
+              BodyUtils.getDefsForLocalUse(builder.getStmtGraph(), (Local) use, stmt);
 
           if (isPropagable(defsOfUse)) {
             AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
