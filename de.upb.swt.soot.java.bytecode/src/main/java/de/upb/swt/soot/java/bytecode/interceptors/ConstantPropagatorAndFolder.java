@@ -33,7 +33,6 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.BodyUtils;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -53,8 +52,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
     builder.enableDeferredStmtGraphChanges();
     // Perform a constant/local propagation pass
     // go through each use in each statement
-    for (Iterator<Stmt> it = remainingStmts.iterator(); it.hasNext(); ) {
-      Stmt stmt = it.next();
+    for (Stmt stmt : remainingStmts) {
       // propagation pass
       if (stmt instanceof JAssignStmt) {
         Value rhs = ((AbstractDefinitionStmt) stmt).getRightOp();
