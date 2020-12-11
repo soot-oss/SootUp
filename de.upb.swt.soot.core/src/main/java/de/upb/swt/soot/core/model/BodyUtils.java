@@ -20,18 +20,19 @@ package de.upb.swt.soot.core.model;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import de.upb.swt.soot.core.jimple.visitor.ReplaceUseStmtVisitor;
+import java.util.*;
+import javax.annotation.Nonnull;
 
 /**
  * Util class for the Body
  *
- * @author Marcus Nachtigall
+ * @author Marcus Nachtigall, Zun Wang
  */
 public class BodyUtils {
 
@@ -81,5 +82,54 @@ public class BodyUtils {
       }
     }
     return allUses;
+  }
+
+  /**
+   * Get all definition-stmts which define the given local used by the given stmt.
+   *
+   * @param graph a stmt graph which contains the given stmts.
+   * @param use a local that is used by the given stmt.
+   * @param stmt a stmt which uses the given local.
+   * @return
+   */
+  public static List<Stmt> getDefsForLocalUse(StmtGraph graph, Local use, Stmt stmt) {
+    if (!stmt.getUses().contains(use)) {
+      throw new RuntimeException(stmt + " doesn't use the local " + use.toString());
+    }
+    List<Stmt> defStmts = new ArrayList<>();
+    Set<Stmt> visited = new HashSet<>();
+
+    Deque<Stmt> queue = new ArrayDeque<>();
+    queue.add(stmt);
+    while (!queue.isEmpty()) {
+      Stmt s = queue.removeFirst();
+      if (!visited.contains(s)) {
+        visited.add(s);
+        if (s instanceof AbstractDefinitionStmt && s.getDefs().get(0).equivTo(use)) {
+          defStmts.add(s);
+        } else {
+          for (Stmt pred : graph.predecessors(s)) {
+            queue.add(pred);
+          }
+        }
+      }
+    }
+    return defStmts;
+  }
+
+  /**
+   * Use newUse to replace the oldUse in oldStmt.
+   *
+   * @param oldStmt a Stmt that has oldUse.
+   * @param oldUse a Value in the useList of oldStmt.
+   * @param newUse a Value is to replace oldUse
+   * @return a new Stmt with newUse
+   */
+  @Nonnull
+  public static Stmt withNewUse(
+      @Nonnull Stmt oldStmt, @Nonnull Value oldUse, @Nonnull Value newUse) {
+    ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(oldUse, newUse);
+    oldStmt.accept(visitor);
+    return visitor.getNewStmt();
   }
 }
