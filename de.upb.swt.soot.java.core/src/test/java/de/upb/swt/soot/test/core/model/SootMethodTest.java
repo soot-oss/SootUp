@@ -26,7 +26,8 @@ import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -44,7 +45,7 @@ public class SootMethodTest {
     View view = project.createOnDemandView();
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
-    LocalGenerator generator = new LocalGenerator(new HashSet<>());
+    LocalGenerator generator = new LocalGenerator(new LinkedHashSet<>());
     MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());

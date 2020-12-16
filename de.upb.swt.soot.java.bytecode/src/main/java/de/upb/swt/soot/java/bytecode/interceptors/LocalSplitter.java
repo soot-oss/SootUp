@@ -75,8 +75,8 @@ public class LocalSplitter implements BodyInterceptor {
     // Find all Locals that must be split
     // If a local as a definition appears two or more times, then this local must be split
     List<Stmt> stmts = builder.getStmts();
-    Set<Local> visitedLocals = new HashSet<>();
-    Set<Local> toSplitLocals = new HashSet<>();
+    Set<Local> visitedLocals = new LinkedHashSet<>();
+    Set<Local> toSplitLocals = new LinkedHashSet<>();
     for (Stmt stmt : stmts) {
       if (!stmt.getDefs().isEmpty()) {
         Value def = stmt.getDefs().get(0);
@@ -90,7 +90,7 @@ public class LocalSplitter implements BodyInterceptor {
     }
 
     // Create a new Local-Set for the modified new body.
-    Set<Local> newLocals = new HashSet<>(builder.getLocals());
+    Set<Local> newLocals = new LinkedHashSet<>(builder.getLocals());
     int localIndex = 1;
 
     // Find out all positions where a trap is inserted, store them in a map

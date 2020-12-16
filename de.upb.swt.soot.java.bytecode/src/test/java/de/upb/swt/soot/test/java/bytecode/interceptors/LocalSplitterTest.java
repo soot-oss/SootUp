@@ -11,7 +11,6 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.VoidType;
-import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.bytecode.interceptors.LocalSplitter;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
@@ -191,7 +190,9 @@ public class LocalSplitterTest {
     builder.setMethodSignature(methodSignature);
 
     // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1);
+    Set<Local> locals = new LinkedHashSet<>();
+    locals.add(l0);
+    locals.add(l1);
     builder.setLocals(locals);
 
     Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(0), noStmtPositionInfo);
@@ -236,7 +237,12 @@ public class LocalSplitterTest {
     builder.setMethodSignature(methodSignature);
 
     // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l1hash1, l1hash2, l1hash3);
+    Set<Local> locals = new LinkedHashSet<>();
+    locals.add(l0);
+    locals.add(l1);
+    locals.add(l1hash1);
+    locals.add(l1hash2);
+    locals.add(l1hash3);
     builder.setLocals(locals);
 
     Stmt stmt1 = JavaJimple.newAssignStmt(l1hash1, IntConstant.getInstance(0), noStmtPositionInfo);
@@ -288,7 +294,10 @@ public class LocalSplitterTest {
     builder.setMethodSignature(methodSignature);
 
     // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2);
+    Set<Local> locals = new LinkedHashSet<>();
+    locals.add(l0);
+    locals.add(l1);
+    locals.add(l2);
     builder.setLocals(locals);
 
     Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(0), noStmtPositionInfo);
@@ -324,7 +333,15 @@ public class LocalSplitterTest {
     builder.setMethodSignature(methodSignature);
 
     // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l1hash1, l2hash2, l1hash3, l2hash4);
+    Set<Local> locals = new LinkedHashSet<>();
+    locals.add(l0);
+    locals.add(l1);
+    locals.add(l2);
+    locals.add(l1hash1);
+    locals.add(l2hash2);
+    locals.add(l1hash3);
+    locals.add(l2hash4);
+
     builder.setLocals(locals);
 
     Stmt stmt1 = JavaJimple.newAssignStmt(l1hash1, IntConstant.getInstance(0), noStmtPositionInfo);
@@ -365,7 +382,12 @@ public class LocalSplitterTest {
     builder.setMethodSignature(methodSignature);
 
     // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, stack3, stack4);
+    Set<Local> locals = new LinkedHashSet<>();
+    locals.add(l0);
+    locals.add(l1);
+    locals.add(l2);
+    locals.add(stack3);
+    locals.add(stack4);
     builder.setLocals(locals);
 
     Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(0), noStmtPositionInfo);
@@ -414,7 +436,15 @@ public class LocalSplitterTest {
     builder.setMethodSignature(methodSignature);
 
     // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, stack3, stack4, l1hash1, l1hash2);
+    Set<Local> locals = new LinkedHashSet<>();
+    locals.add(l0);
+    locals.add(l1);
+    locals.add(l2);
+    locals.add(stack3);
+    locals.add(stack4);
+    locals.add(l1hash1);
+    locals.add(l1hash2);
+
     builder.setLocals(locals);
 
     Stmt stmt1 = JavaJimple.newAssignStmt(l1hash1, IntConstant.getInstance(0), noStmtPositionInfo);
