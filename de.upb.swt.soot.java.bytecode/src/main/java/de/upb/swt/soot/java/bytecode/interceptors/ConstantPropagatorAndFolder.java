@@ -69,7 +69,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
             defs.add(assignStmt);
           }
         }
-      } else {
+      } else if (stmt instanceof JReturnStmt) {
         for (Value value : stmt.getUses()) {
           if (value instanceof Local) {
             List<Stmt> defsOfUse = BodyUtils.getDefsOfLocal((Local) value, defs);
@@ -79,12 +79,10 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
               if (rhs instanceof NumericConstant
                   || rhs instanceof StringConstant
                   || rhs instanceof NullConstant) {
-                if (stmt instanceof JReturnStmt) {
-                  JReturnStmt returnStmt = new JReturnStmt(rhs, stmt.getPositionInfo());
-                  builder.replaceStmt(stmt, returnStmt);
-                  stmt = returnStmt;
-                  defs.add(returnStmt);
-                }
+                JReturnStmt returnStmt = new JReturnStmt(rhs, stmt.getPositionInfo());
+                builder.replaceStmt(stmt, returnStmt);
+                stmt = returnStmt;
+                defs.add(returnStmt);
               }
             }
           }
