@@ -20,16 +20,123 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import com.sun.xml.internal.ws.api.model.ExceptionType;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.types.NullType;
+import de.upb.swt.soot.core.types.PrimitiveType;
+import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.types.UnknownType;
+
 import javax.annotation.Nonnull;
+import java.util.*;
 
 // https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/scalar/LocalNameStandardizer.java
 
+/**
+ * @author Zun Wang
+ */
 public class LocalNameStandardizer implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    // TODO Implement
+
+    //Get the order of all Locals' occurrences and store them into a map
+    Map<Local, Integer> localToFirstOccurrence = new HashMap<>();
+    int defsCount = 0;
+    for(Stmt stmt : builder.getStmtGraph()){
+      Local def = null;
+      if(!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local){
+        def = (Local) stmt.getDefs().get(0);
+      }
+      if(def != null && !localToFirstOccurrence.keySet().contains(def)){
+        localToFirstOccurrence.put(def, defsCount);
+        defsCount++;
+      }
+    }
+
+    //Sort all locals in a list
+    ArrayList<Local> localsList = new ArrayList<>(builder.getLocals());
+    LocalComparator localComparator = new LocalComparator(localToFirstOccurrence);
+    Collections.sort(localsList, localComparator);
+
+
+    Set<Local> sortedLocals = new LinkedHashSet<>(localsList);
+
+    //Assign new name to each local
+    int refCount = 0;
+    int longCount = 0;
+    int booleanCount = 0;
+    int charCount = 0;
+    int floatCount = 0;
+    int doubleCount = 0;
+    int errorCount = 0;
+    int nullCount = 0;
+
+    for(Local local : sortedLocals){
+
+      String prefix = "";
+      boolean hasDollar = local.getName().startsWith("$");
+      if(hasDollar){
+        prefix = "$";
+      }
+      Type type = local.getType();
+
+      if(type.equals(PrimitiveType.getByte())){
+        local.withName(prefix + "b" + longCount);
+        longCount++;
+      }else if(type.equals(PrimitiveType.getShort())){
+        local.withName(prefix + "s" + longCount);
+        longCount++;
+      }else if(type.equals(PrimitiveType.getInt())){
+        local.withName(prefix + "i" + longCount);
+        longCount++;
+      }else if(type.equals(PrimitiveType.getLong())){
+        local.withName(prefix + "l" + longCount);
+        longCount++;
+      }else if(type.equals(PrimitiveType.getFloat())){
+        local.withName(prefix + "f" + floatCount);
+        floatCount++;
+      }else if(type.equals(PrimitiveType.getDouble())){
+        local.withName(prefix + "d" + doubleCount);
+        doubleCount++;
+      }else if(type.equals(PrimitiveType.getChar())){
+        local.withName(prefix + "c" + charCount);
+        charCount++;
+      }else if(type.equals(PrimitiveType.getBoolean())){
+        local.withName(prefix + "z" + booleanCount);
+        booleanCount++;
+      } else if(type instanceof UnknownType){
+        local.withName(prefix + "e" + errorCount);
+        errorCount++;
+      }else if(type instanceof NullType){
+        local.withName(prefix + "n" + nullCount);
+        nullCount++;
+      }else{
+        local.withName(prefix + "r" + refCount);
+        refCount++;
+      }
+    }
+
+    builder.setLocals(sortedLocals);
+  }
+
+  private class LocalComparator implements Comparator<Local>{
+
+    Map<Local, Integer> localToFirstOccurance;
+    public LocalComparator(Map<Local, Integer> localToInteger){
+      this.localToFirstOccurance = localToInteger;
+    }
+
+    @Override
+    public int compare(Local local1, Local local2) {
+      int result = local1.getType().toString().compareTo(local2.getType().toString());
+      if(result == 0){
+        result = Integer.compare(localToFirstOccurance.get(local1), localToFirstOccurance.get(local2));
+      }
+      return result;
+    }
   }
 }
