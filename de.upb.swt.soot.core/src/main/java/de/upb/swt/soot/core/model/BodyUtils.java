@@ -84,6 +84,17 @@ public class BodyUtils {
     return allUses;
   }
 
+  public static List<Stmt> getDefsOfLocal(Local local, List<Stmt> defs) {
+    List<Stmt> localDefs = new ArrayList<>();
+    for (Stmt stmt : defs) {
+      if (stmt instanceof AbstractDefinitionStmt
+          && ((AbstractDefinitionStmt) stmt).getLeftOp().equals(local)) {
+        localDefs.add(stmt);
+      }
+    }
+    return localDefs;
+  }
+
   /**
    * Get all definition-stmts which define the given local used by the given stmt.
    *
