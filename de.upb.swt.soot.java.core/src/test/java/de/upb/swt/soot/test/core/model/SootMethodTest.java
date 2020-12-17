@@ -27,7 +27,6 @@ import de.upb.swt.soot.java.core.language.JavaLanguage;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 

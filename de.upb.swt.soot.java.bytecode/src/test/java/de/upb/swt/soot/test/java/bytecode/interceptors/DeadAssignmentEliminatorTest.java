@@ -15,9 +15,7 @@ import de.upb.swt.soot.java.bytecode.interceptors.DeadAssignmentEliminator;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-
 import java.util.*;
-
 import org.junit.Test;
 
 public class DeadAssignmentEliminatorTest {
