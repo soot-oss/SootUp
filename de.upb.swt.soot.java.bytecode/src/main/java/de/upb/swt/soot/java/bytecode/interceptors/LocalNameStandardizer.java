@@ -77,28 +77,28 @@ public class LocalNameStandardizer implements BodyInterceptor {
       Type type = local.getType();
       int index = localsList.indexOf(local);
 
-      if (type.toString().equals(PrimitiveType.getByte().toString())) {
+      if (type.equals(PrimitiveType.getByte())) {
         localsList.set(index, local.withName(prefix + "b" + longCount));
         longCount++;
-      } else if (type.toString().equals(PrimitiveType.getShort().toString())) {
+      } else if (type.equals(PrimitiveType.getShort())) {
         localsList.set(index, local.withName(prefix + "s" + longCount));
         longCount++;
-      } else if (type.toString().equals(PrimitiveType.getInt().toString())) {
+      } else if (type.equals(PrimitiveType.getInt())) {
         localsList.set(index, local.withName(prefix + "i" + longCount));
         longCount++;
-      } else if (type.toString().equals(PrimitiveType.getLong().toString())) {
+      } else if (type.equals(PrimitiveType.getLong())) {
         localsList.set(index, local.withName(prefix + "l" + longCount));
         longCount++;
-      } else if (type.toString().equals(PrimitiveType.getFloat().toString())) {
+      } else if (type.equals(PrimitiveType.getFloat())) {
         localsList.set(index, local.withName(prefix + "f" + floatCount));
         floatCount++;
-      } else if (type.toString().equals(PrimitiveType.getDouble().toString())) {
+      } else if (type.equals(PrimitiveType.getDouble())) {
         localsList.set(index, local.withName(prefix + "d" + doubleCount));
         doubleCount++;
-      } else if (type.toString().equals(PrimitiveType.getChar().toString())) {
+      } else if (type.equals(PrimitiveType.getChar())) {
         localsList.set(index, local.withName(prefix + "c" + charCount));
         charCount++;
-      } else if (type.toString().equals(PrimitiveType.getBoolean().toString())) {
+      } else if (type.equals(PrimitiveType.getBoolean())) {
         localsList.set(index, local.withName(prefix + "z" + booleanCount));
         booleanCount++;
       } else if (type instanceof UnknownType) {
