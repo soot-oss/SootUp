@@ -8,6 +8,7 @@ import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.bytecode.interceptors.NopEliminator;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
@@ -83,9 +84,8 @@ public class NopEliminatorTest {
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
     Stmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
-    Set<Local> locals = new LinkedHashSet<>();
-    locals.add(a);
-    locals.add(b);
+    Set<Local> locals = ImmutableUtils.immutableSet(a, b);
+
     List<Trap> traps = new ArrayList<>();
 
     Body.BodyBuilder builder = Body.builder();

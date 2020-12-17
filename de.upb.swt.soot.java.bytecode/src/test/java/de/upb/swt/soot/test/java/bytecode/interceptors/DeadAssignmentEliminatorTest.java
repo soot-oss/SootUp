@@ -11,6 +11,7 @@ import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.types.PrimitiveType;
+import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.bytecode.interceptors.DeadAssignmentEliminator;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
@@ -58,10 +59,9 @@ public class DeadAssignmentEliminatorTest {
     Stmt strToA = JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(a, noPositionInfo);
 
-    Set<Local> locals = new LinkedHashSet<>();
-    locals.add(a);
-    locals.add(b);
-    locals.add(c);
+    Set<Local> locals = ImmutableUtils.immutableSet(a, b, c);
+    ;
+
     List<Trap> traps = new ArrayList<>();
 
     Body.BodyBuilder builder = Body.builder();

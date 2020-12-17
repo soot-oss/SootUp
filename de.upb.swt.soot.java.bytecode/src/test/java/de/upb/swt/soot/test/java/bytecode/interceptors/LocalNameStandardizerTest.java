@@ -17,6 +17,7 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.bytecode.interceptors.LocalNameStandardizer;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
@@ -58,7 +59,7 @@ public class LocalNameStandardizerTest {
   Local r2 = JavaJimple.newLocal("r2", refType);
   Local e0 = JavaJimple.newLocal("e0", UnknownType.getInstance());
 
-  List<Local> expectedLocals = new ArrayList<>();
+  Set<Local> expectedLocals = ImmutableUtils.immutableSet(z0, d0, i0, i1, r0, r1, r2, e0);
 
   // build stmts
   Stmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
@@ -82,19 +83,11 @@ public class LocalNameStandardizerTest {
     LocalNameStandardizer standardizer = new LocalNameStandardizer();
     standardizer.interceptBody(builder);
 
-    expectedLocals.add(z0);
-    expectedLocals.add(d0);
-    expectedLocals.add(i0);
-    expectedLocals.add(i1);
-    expectedLocals.add(r0);
-    expectedLocals.add(r1);
-    expectedLocals.add(r2);
-    expectedLocals.add(e0);
-
     assertEquals(builder.getLocals().size(), expectedLocals.size());
-    List<Local> locals = new ArrayList<>(builder.getLocals());
-    for (int i = 0; i < locals.size(); i++) {
-      assertEquals(locals.get(i), expectedLocals.get(i));
+    List<Local> localsList = new ArrayList<>(builder.getLocals());
+    List<Local> expectedLocalsList = new ArrayList<>(expectedLocals);
+    for (int i = 0; i < localsList.size(); i++) {
+      assertEquals(localsList.get(i), expectedLocalsList.get(i));
     }
   }
 
@@ -105,15 +98,7 @@ public class LocalNameStandardizerTest {
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
-    Set<Local> locals = new LinkedHashSet<>();
-    locals.add(l0);
-    locals.add(l1);
-    locals.add(l2);
-    locals.add(l3);
-    locals.add(l4);
-    locals.add(l5);
-    locals.add(l6);
-    locals.add(l7);
+    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3, l4, l5, l6, l7);
 
     builder.setLocals(locals);
 

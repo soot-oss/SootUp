@@ -10,6 +10,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.bytecode.interceptors.EmptySwitchEliminator;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
@@ -69,10 +70,8 @@ public class EmptySwitchEliminatorTest {
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
-    Set<Local> locals = new LinkedHashSet<>();
-    locals.add(l0);
-    locals.add(l1);
-    locals.add(l2);
+    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2);
+
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
@@ -99,10 +98,7 @@ public class EmptySwitchEliminatorTest {
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
-    Set<Local> locals = new LinkedHashSet<>();
-    locals.add(l0);
-    locals.add(l1);
-    locals.add(l2);
+    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2);
 
     builder.setLocals(locals);
 

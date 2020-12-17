@@ -11,12 +11,12 @@ import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JEqExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.bytecode.interceptors.ConditionalBranchFolder;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.junit.Test;
@@ -92,9 +92,8 @@ public class ConditionalBranchFolderTest {
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
     Stmt ret2 = JavaJimple.newReturnStmt(a, noPositionInfo);
 
-    Set<Local> locals = new LinkedHashSet<>();
-    locals.add(a);
-    locals.add(b);
+    Set<Local> locals = ImmutableUtils.immutableSet(a, b);
+
     List<Trap> traps = Collections.emptyList();
 
     Body.BodyBuilder bodyBuilder = Body.builder();

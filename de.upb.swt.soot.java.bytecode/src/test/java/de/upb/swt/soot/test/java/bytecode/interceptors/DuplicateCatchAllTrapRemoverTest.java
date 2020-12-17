@@ -85,9 +85,8 @@ public class DuplicateCatchAllTrapRemoverTest {
     JavaClassType stringType = factory.getClassType("java.lang.String");
     Local a = JavaJimple.newLocal("a", objectType);
     Local b = JavaJimple.newLocal("b", stringType);
-    Set<Local> locals = new LinkedHashSet<>();
-    locals.add(a);
-    locals.add(b);
+    Set<Local> locals = ImmutableUtils.immutableSet(a, b);
+    ;
 
     Stmt strToA = JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
     Stmt bToA = JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
