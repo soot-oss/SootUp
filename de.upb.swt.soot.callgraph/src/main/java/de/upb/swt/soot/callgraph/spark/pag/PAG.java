@@ -27,7 +27,7 @@ import de.upb.swt.soot.callgraph.spark.pointsto.PointsToSet;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.SootField;
 
-public class PointerAssignmentGraph implements PointsToAnalysis {
+public class PAG implements PointsToAnalysis {
     @Override
     public PointsToSet reachingObjects(Local l) {
         return null;
