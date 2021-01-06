@@ -22,7 +22,6 @@ package de.upb.swt.soot.core.frontend;
  */
 import com.google.common.base.Objects;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.Signature;
 import de.upb.swt.soot.core.types.ClassType;
@@ -36,7 +35,7 @@ import javax.annotation.Nullable;
  * languages). e.g. its connecting a file with source(code) to a {@link Signature} that a {@link
  * View} can resolve.
  */
-public abstract class AbstractClassSource {
+public abstract class AbstractClassSource<T> {
   // TODO: [ms] I dont see the necessity of the AnalysisInputLocation in this class; maybe not even
   // for sourcepath
   protected final AnalysisInputLocation srcNamespace;
@@ -56,8 +55,7 @@ public abstract class AbstractClassSource {
     return classSignature;
   }
 
-  public abstract AbstractClass<? extends AbstractClassSource> buildClass(
-      @Nonnull SourceType sourceType);
+  public abstract T buildClass(@Nonnull SourceType sourceType);
 
   public Path getSourcePath() {
     return sourcePath;

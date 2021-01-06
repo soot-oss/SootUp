@@ -28,11 +28,10 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.model.AbstractClass;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.views.AbstractView;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +39,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -119,9 +117,7 @@ public class JavaView extends AbstractView {
           "dynamicinvoke",
           "strictfp");
 
-  @Nonnull
-  private final Map<ClassType, AbstractClass<? extends AbstractClassSource>> cache =
-      new HashMap<>();
+  @Nonnull private final Map<ClassType, JavaSootClass> cache = new HashMap<>();
 
   private volatile boolean isFullyResolved = false;
 
@@ -149,43 +145,20 @@ public class JavaView extends AbstractView {
 
   @Override
   @Nonnull
-  public synchronized Collection<SootClass> getClasses() {
-    return getAbstractClassSources()
-        .filter(clazz -> clazz instanceof SootClass)
-        .map(clazz -> (SootClass) clazz)
-        .collect(Collectors.toList());
-  }
-
-  @Override
-  @Nonnull
-  public Stream<SootClass> getClassesStream() {
-    return getClasses().stream();
-  }
-
-  @Nonnull
-  synchronized Stream<AbstractClass<? extends AbstractClassSource>> getAbstractClassSources() {
+  public synchronized Collection<JavaSootClass> getClasses() {
     resolveAll();
-    return cache.values().stream();
+    return cache.values();
   }
 
   @Override
   @Nonnull
-  public synchronized Optional<SootClass> getClass(@Nonnull ClassType type) {
-    return getAbstractClass(type)
-        .map(
-            clazz -> {
-              if (clazz instanceof SootClass) {
-                return (SootClass) clazz;
-              } else {
-                throw new ResolveException(
-                    type + " is not a regular Java class!", clazz.getClassSource().getSourcePath());
-              }
-            });
+  public synchronized Optional<JavaSootClass> getClass(@Nonnull ClassType type) {
+    return getAbstractClass(type);
   }
 
   @Nonnull
-  Optional<AbstractClass<? extends AbstractClassSource>> getAbstractClass(@Nonnull ClassType type) {
-    AbstractClass<? extends AbstractClassSource> cachedClass = cache.get(type);
+  Optional<JavaSootClass> getAbstractClass(@Nonnull ClassType type) {
+    JavaSootClass cachedClass = cache.get(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
@@ -219,9 +192,9 @@ public class JavaView extends AbstractView {
   }
 
   @Nonnull
-  private synchronized Optional<AbstractClass<? extends AbstractClassSource>> buildClassFrom(
-      AbstractClassSource classSource) {
-    AbstractClass<? extends AbstractClassSource> theClass =
+  private synchronized Optional<JavaSootClass> buildClassFrom(
+      AbstractClassSource<JavaSootClass> classSource) {
+    JavaSootClass theClass =
         cache.computeIfAbsent(
             classSource.getClassType(),
             type ->

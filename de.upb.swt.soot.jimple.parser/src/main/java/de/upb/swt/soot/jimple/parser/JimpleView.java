@@ -122,13 +122,15 @@ public class JimpleView extends AbstractView {
   }
 
   @Nonnull
-  private synchronized Optional<AbstractClass<? extends AbstractClassSource>> buildClassFrom(
-      AbstractClassSource classSource) {
-    AbstractClass<? extends AbstractClassSource> theClass =
-        cache.computeIfAbsent(
-            classSource.getClassType(),
-            type ->
-                classSource.buildClass(getProject().getSourceTypeSpecifier().sourceTypeFor(type)));
+  private synchronized Optional<SootClass> buildClassFrom(
+      AbstractClassSource<SootClass> classSource) {
+    SootClass theClass =
+        (SootClass)
+            cache.computeIfAbsent(
+                classSource.getClassType(),
+                type ->
+                    classSource.buildClass(
+                        getProject().getSourceTypeSpecifier().sourceTypeFor(type)));
     return Optional.of(theClass);
   }
 

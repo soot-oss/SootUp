@@ -43,7 +43,7 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public abstract class SootClassSource extends AbstractClassSource {
+public abstract class SootClassSource extends AbstractClassSource<SootClass> {
 
   @Override
   @Nonnull

@@ -48,7 +48,6 @@ public class JavaClassType extends ClassType {
   @Nonnull private final String className;
   @Nonnull private final PackageName packageName;
 
-  // TODO: [CB] Can we hide this somehow from the public API surface?
   /**
    * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
    * {@link IdentifierFactory}
@@ -58,10 +57,10 @@ public class JavaClassType extends ClassType {
    */
   public JavaClassType(@Nonnull final String className, @Nonnull final PackageName packageName) {
     String realClassName = className;
+    // TODO: [ms] shall we do that inner class conversion here?
     if (realClassName.contains(".")) {
       realClassName = realClassName.replace('.', '$');
     }
-
     this.className = realClassName;
     this.packageName = packageName;
   }
