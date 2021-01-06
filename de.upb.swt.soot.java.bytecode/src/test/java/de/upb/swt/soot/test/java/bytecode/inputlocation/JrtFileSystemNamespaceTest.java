@@ -7,11 +7,14 @@ import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Collection;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
 @Category(Java9Test.class)
+// TODO: [ms] unignore when JavaModules are implemented
+@Ignore("implement JavaModules")
 public class JrtFileSystemNamespaceTest extends AnalysisInputLocationTest {
 
   @Test
