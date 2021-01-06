@@ -109,13 +109,18 @@ public class JimpleView extends AbstractView {
             .map(Optional::get)
             .collect(Collectors.toList());
 
-    if (foundClassSources.size() > 1) {
+    if (foundClassSources.size() < 1) {
+      return Optional.empty();
+    } else if (foundClassSources.size() > 1) {
       throw new ResolveException(
-              "Multiple class candidates for \""
-                      + type
-                      + "\" found in the given AnalysisInputLocations. Soot can't decide which AnalysisInputLocation it should refer to for this Type.\n"
-                      + "The candidates are "+ foundClassSources.stream().map(  cs -> cs.getSourcePath().toString() ).collect(Collectors.joining(","))
-              , foundClassSources.get(0).getSourcePath());
+          "Multiple class candidates for \""
+              + type
+              + "\" found in the given AnalysisInputLocations. Soot can't decide which AnalysisInputLocation it should refer to for this Type.\n"
+              + "The candidates are "
+              + foundClassSources.stream()
+                  .map(cs -> cs.getSourcePath().toString())
+                  .collect(Collectors.joining(",")),
+          foundClassSources.get(0).getSourcePath());
     }
     return buildClassFrom(foundClassSources.get(0));
   }
