@@ -74,32 +74,32 @@ public interface View<T extends SootClass> {
   @Nonnull
   IdentifierFactory getIdentifierFactory();
 
+  @Nonnull
+  default T getClassOrThrow(@Nonnull ClassType classType) {
+    return getClass(classType)
+        .orElseThrow(() -> new ResolveException("Could not find " + classType + " in View."));
+  }
+
   /** @see ModuleDataKey */
-  <T> void putModuleData(@Nonnull ModuleDataKey<T> key, @Nonnull T value);
+  <K> void putModuleData(@Nonnull ModuleDataKey<K> key, @Nonnull K value);
 
   /** @see ModuleDataKey */
   @Nullable
-  <T> T getModuleData(@Nonnull ModuleDataKey<T> key);
+  <K> K getModuleData(@Nonnull ModuleDataKey<K> key);
 
   /**
    * @see java.util.Map#computeIfAbsent(Object, Function)
    * @see ModuleDataKey
    */
-  default <T> T computeModuleDataIfAbsent(@Nonnull ModuleDataKey<T> key, Supplier<T> dataSupplier) {
-    T moduleData = getModuleData(key);
+  default <K> K computeModuleDataIfAbsent(@Nonnull ModuleDataKey<K> key, Supplier<K> dataSupplier) {
+    K moduleData = getModuleData(key);
     if (moduleData != null) {
       return moduleData;
     }
 
-    T computedModuleData = dataSupplier.get();
+    K computedModuleData = dataSupplier.get();
     putModuleData(key, computedModuleData);
     return computedModuleData;
-  }
-
-  @Nonnull
-  default T getClassOrThrow(@Nonnull ClassType classType) {
-    return getClass(classType)
-        .orElseThrow(() -> new ResolveException("Could not find " + classType + " in View."));
   }
 
   /**
