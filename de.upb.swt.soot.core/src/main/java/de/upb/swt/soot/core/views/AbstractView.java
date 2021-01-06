@@ -25,6 +25,7 @@ package de.upb.swt.soot.core.views;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.Scope;
+import de.upb.swt.soot.core.model.SootClass;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -36,7 +37,7 @@ import javax.annotation.Nullable;
  *
  * @author Linghui Luo
  */
-public abstract class AbstractView implements View {
+public abstract class AbstractView<T extends SootClass> implements View<T> {
 
   @Nonnull private final Project project;
 

@@ -47,7 +47,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo created on 31.07.2018
  * @author Jan Martin Persch
  */
-public class JavaView extends AbstractView {
+public class JavaView extends AbstractView<JavaSootClass> {
 
   /** Defines Java's reserved names. */
   @Nonnull
