@@ -99,7 +99,7 @@ public interface View<T extends SootClass> {
   @Nonnull
   default T getClassOrThrow(@Nonnull ClassType classType) {
     return getClass(classType)
-        .orElseThrow(() -> new ResolveException("Could not find " + classType + " in view"));
+        .orElseThrow(() -> new ResolveException("Could not find " + classType + " in View."));
   }
 
   /**
@@ -127,9 +127,9 @@ public interface View<T extends SootClass> {
    *   }
    * </pre>
    *
-   * @param <T> The type of the stored and retrieved data that is associated with the key
+   * @param <K> The type of the stored and retrieved data that is associated with the key
    * @author Christian Brüggemann
    */
   @SuppressWarnings("unused") // Used in modules
-  abstract class ModuleDataKey<T> {}
+  abstract class ModuleDataKey<K> {}
 }
