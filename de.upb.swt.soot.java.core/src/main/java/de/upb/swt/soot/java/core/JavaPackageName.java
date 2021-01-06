@@ -22,7 +22,6 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Collections;
@@ -59,11 +58,10 @@ public class JavaPackageName extends PackageName {
 
   public Iterable<AnnotationType> getAnnotations(JavaView view, String packageName) {
     if (annotations != null) {
-      Optional<SootClass> sc =
+      Optional<JavaSootClass> sc =
           view.getClass(
               JavaIdentifierFactory.getInstance().getClassType(PACKAGE_INFO, packageName));
-      annotations =
-          sc.isPresent() ? ((JavaSootClass) sc.get()).getAnnotations() : Collections.emptyList();
+      annotations = sc.isPresent() ? (sc.get()).getAnnotations() : Collections.emptyList();
     }
     return annotations;
   }
