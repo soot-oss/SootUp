@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -28,11 +27,9 @@ import javax.annotation.Nonnull;
 
 // TODO: [ms] rethink of that view per language structure -> this could be the base implementation
 // for View if we really need different views in the future?
-public class JimpleView extends AbstractView {
+public class JimpleView extends AbstractView<SootClass> {
 
-  @Nonnull
-  private final Map<ClassType, AbstractClass<? extends AbstractClassSource>> cache =
-      new HashMap<>();
+  @Nonnull private final Map<ClassType, SootClass> cache = new HashMap<>();
 
   private volatile boolean isFullyResolved = false;
 
@@ -61,22 +58,13 @@ public class JimpleView extends AbstractView {
   @Override
   @Nonnull
   public synchronized Collection<SootClass> getClasses() {
-    return getAbstractClassSources()
-        .filter(clazz -> clazz instanceof SootClass)
-        .map(clazz -> (SootClass) clazz)
-        .collect(Collectors.toList());
-  }
-
-  @Override
-  @Nonnull
-  public Stream<SootClass> getClassesStream() {
-    return getClasses().stream();
+    return getAbstractClassSources();
   }
 
   @Nonnull
-  synchronized Stream<AbstractClass<? extends AbstractClassSource>> getAbstractClassSources() {
+  synchronized Collection<SootClass> getAbstractClassSources() {
     resolveAll();
-    return cache.values().stream();
+    return cache.values();
   }
 
   @Override

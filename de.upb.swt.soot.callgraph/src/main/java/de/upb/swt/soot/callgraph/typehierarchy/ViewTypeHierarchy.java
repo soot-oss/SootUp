@@ -25,9 +25,7 @@ import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.Edge
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.EdgeType;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.Vertex;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.VertexType;
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
-import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
@@ -287,7 +285,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     Map<ClassType, Vertex> typeToVertex = new HashMap<>();
     Graph<Vertex, Edge> graph = new SimpleDirectedGraph<>(null, null, false);
 
-    view.getClassesStream()
+    view.getClasses().stream()
         .forEach(sootClass -> addSootClassToGraph(sootClass, typeToVertex, graph));
     double runtimeMs = (System.nanoTime() - startNanos) / 1e6;
     log.info("Type hierarchy scan took " + runtimeMs + " ms");
@@ -345,14 +343,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   @Nonnull
   private SootClass sootClassFor(@Nonnull ClassType classType) {
-    AbstractClass<? extends AbstractClassSource> aClass =
-        view.getClass(classType)
-            .orElseThrow(
-                () -> new ResolveException("Could not find " + classType + " in view " + view));
-    if (!(aClass instanceof SootClass)) {
-      throw new ResolveException("" + classType + " is not a regular Java class");
-    }
-    return (SootClass) aClass;
+    return view.getClassOrThrow(classType);
   }
 
   @Override

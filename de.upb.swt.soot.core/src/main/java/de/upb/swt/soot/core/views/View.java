@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -46,13 +45,6 @@ public interface View<T extends SootClass> {
   /** Return all classes in the view. */
   @Nonnull
   Collection<T> getClasses();
-
-  /** Return all classes in the view. */
-  // TODO: [ms] necessary?!
-  @Nonnull
-  default Stream<T> getClassesStream() {
-    return getClasses().stream();
-  }
 
   /**
    * Return a class with given signature.

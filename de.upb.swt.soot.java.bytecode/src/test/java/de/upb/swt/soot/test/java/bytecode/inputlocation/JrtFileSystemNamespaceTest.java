@@ -25,7 +25,7 @@ public class JrtFileSystemNamespaceTest extends AnalysisInputLocationTest {
   }
 
   @Test
-  // FIXME  findout why this test is slow > 1 sec
+  // FIXME [AD] find out why this test is slow > 1 sec
   public void getClassSourceModule() {
     JrtFileSystemAnalysisInputLocation ns = new JrtFileSystemAnalysisInputLocation();
     final JavaClassType sig =
