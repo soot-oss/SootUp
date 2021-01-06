@@ -16,7 +16,7 @@ import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar update on 16.04.2020 */
 @Category(Java9Test.class)
-// TODO: unignore when modules are supported
+// TODO: [ms] unignore when modules are supported
 @Ignore
 public class ModuleFinderTest extends AnalysisInputLocationTest {
 

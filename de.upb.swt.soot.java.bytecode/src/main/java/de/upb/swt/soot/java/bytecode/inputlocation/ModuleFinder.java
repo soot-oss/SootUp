@@ -24,7 +24,7 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.util.PathUtils;
-import de.upb.swt.soot.java.bytecode.frontend.modules.AsmModuleClassSource;
+import de.upb.swt.soot.java.bytecode.frontend.modules.AsmModuleSource;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +46,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sun.tools.jar.resources.jar;
 
 /**
  * Discovers all modules in a given module path. For automatic modules, names are generated.
@@ -212,7 +211,7 @@ public class ModuleFinder {
   private void buildModuleForJar(@Nonnull Path jar) {
     PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
-    Optional<AsmModuleClassSource> moduleInfoFile = Optional.empty();
+    Optional<AsmModuleSource> moduleInfoFile = Optional.empty();
     try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");
       Path mi =
@@ -231,7 +230,7 @@ public class ModuleFinder {
       e.printStackTrace();
     }
     if (moduleInfoFile.isPresent()) {
-      AsmModuleClassSource moduleInfoSource = moduleInfoFile.get();
+      AsmModuleSource moduleInfoSource = moduleInfoFile.get();
       // get the module name
       String moduleName = null;
       try {
@@ -253,19 +252,19 @@ public class ModuleFinder {
   }
 
   // FIXME: quickly parse the module name
-  private @Nonnull String parseModuleInfoClassFile(@Nonnull AsmModuleClassSource moduleInfo) {
-    if (moduleInfo instanceof AsmModuleClassSource) {
-      return ((AsmModuleClassSource) moduleInfo).getModuleName();
+  private @Nonnull String parseModuleInfoClassFile(@Nonnull AsmModuleSource moduleInfo) {
+    if (moduleInfo instanceof AsmModuleSource) {
+      return ((AsmModuleSource) moduleInfo).getModuleName();
     }
     return "";
   }
 
-  private @Nonnull String getModuleName(@Nonnull AsmModuleClassSource moduleInfoSource)
+  private @Nonnull String getModuleName(@Nonnull AsmModuleSource moduleInfoSource)
       throws ResolveException {
     // FIXME: somehow in need the module name from the source code ...
     // AbstractClass moduleInfoClass = this.classProvider.reify(moduleInfoSource);
-    AsmModuleClassSource moduleInfoClass = moduleInfoSource;
-    if (!(moduleInfoClass instanceof AsmModuleClassSource)) {
+    AsmModuleSource moduleInfoClass = moduleInfoSource;
+    if (!(moduleInfoClass instanceof AsmModuleSource)) {
       throw new ResolveException("Class is named module-info but does not reify to SootModuleInfo");
     }
     // FIXME: here is no view or anything to resolve the content...??? Why do I need a view anyway?
