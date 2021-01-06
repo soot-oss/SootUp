@@ -22,9 +22,9 @@ package de.upb.swt.soot.callgraph.spark.pag;
  * #L%
  */
 
+import de.upb.swt.soot.callgraph.spark.sets.EmptyPointsToSet;
 import de.upb.swt.soot.callgraph.spark.sets.PointsToSetInternal;
 import de.upb.swt.soot.core.types.Type;
-import jdk.nashorn.internal.ir.VarNode;
 
 /**
  * Represents every node in the pointer assignment graph.

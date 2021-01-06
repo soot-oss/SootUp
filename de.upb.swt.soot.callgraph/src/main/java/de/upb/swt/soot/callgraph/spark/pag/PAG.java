@@ -24,10 +24,17 @@ package de.upb.swt.soot.callgraph.spark.pag;
 
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToSet;
+import de.upb.swt.soot.callgraph.spark.sets.PointsToSetFactory;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.SootField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PAG implements PointsToAnalysis {
+    private static final Logger logger = LoggerFactory.getLogger(PAG.class);
+
+    protected PointsToSetFactory setFactory;
+
     @Override
     public PointsToSet reachingObjects(Local l) {
         return null;
@@ -51,5 +58,9 @@ public class PAG implements PointsToAnalysis {
     @Override
     public PointsToSet reachingObjectsOfArrayElement(PointsToSet s) {
         return null;
+    }
+
+    public PointsToSetFactory getSetFactory() {
+        return setFactory;
     }
 }

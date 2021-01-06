@@ -43,6 +43,37 @@ import java.util.Set;
 public abstract class PointsToSetInternal implements EqualsSupportingPointsToSet {
     private static final Logger logger = LoggerFactory.getLogger(PointsToSetInternal.class);
 
+    /**
+     * Adds contents of other minus the contents of exclude into this set; returns true if this set changed.
+     */
+    public boolean addAll(PointsToSetInternal other, final PointsToSetInternal exclude) {
+        if (other instanceof DoublePointsToSet) {
+            return addAll(other.getNewSet(), exclude) | addAll(other.getOldSet(), exclude);
+        } else if (other instanceof EmptyPointsToSet) {
+            return false;
+        } else if (exclude instanceof EmptyPointsToSet) {
+            return addAll(other, null);
+        }
+        if (!G.v().PointsToSetInternal_warnedAlready) {
+            logger.warn("using default implementation of addAll. You should implement a faster specialized implementation.");
+            logger.debug("" + "this is of type " + getClass().getName());
+            logger.debug("" + "other is of type " + other.getClass().getName());
+            if (exclude == null) {
+                logger.debug("" + "exclude is null");
+            } else {
+                logger.debug("" + "exclude is of type " + exclude.getClass().getName());
+            }
+            G.v().PointsToSetInternal_warnedAlready = true;
+        }
+        return other.forall(new P2SetVisitor() {
+            public final void visit(Node n) {
+                if (exclude == null || !exclude.contains(n)) {
+                    returnValue = add(n) | returnValue;
+                }
+            }
+        });
+    }
+
     /** Calls v's visit method on all nodes in this set. */
     public abstract boolean forall(P2SetVisitor v);
 
