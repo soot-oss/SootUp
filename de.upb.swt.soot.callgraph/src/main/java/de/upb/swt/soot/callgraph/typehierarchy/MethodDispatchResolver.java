@@ -25,6 +25,7 @@ import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.Method;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
@@ -41,7 +42,8 @@ public final class MethodDispatchResolver {
    * the set of method signatures that a method call could resolve to.
    */
   @Nonnull
-  public static Set<MethodSignature> resolveAbstractDispatch(View view, MethodSignature m) {
+  public static Set<MethodSignature> resolveAbstractDispatch(
+      View<? extends SootClass> view, MethodSignature m) {
     TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
 
     return hierarchy.subtypesOf(m.getDeclClassType()).stream()
@@ -65,7 +67,7 @@ public final class MethodDispatchResolver {
    */
   @Nonnull
   public static Set<MethodSignature> resolveAbstractDispatchInClasses(
-      View view, MethodSignature m, Set<ClassType> classes) {
+      View<? extends SootClass> view, MethodSignature m, Set<ClassType> classes) {
     TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
 
     return hierarchy.subtypesOf(m.getDeclClassType()).stream()
@@ -108,7 +110,8 @@ public final class MethodDispatchResolver {
    * concrete implementation.
    */
   @Nonnull
-  public static MethodSignature resolveConcreteDispatch(View view, MethodSignature m) {
+  public static MethodSignature resolveConcreteDispatch(
+      View<? extends SootClass> view, MethodSignature m) {
     TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
 
     ClassType superClassType = m.getDeclClassType();
@@ -142,7 +145,9 @@ public final class MethodDispatchResolver {
    */
   @Nonnull
   public static MethodSignature resolveSpecialDispatch(
-      View view, JSpecialInvokeExpr specialInvokeExpr, MethodSignature container) {
+      View<? extends SootClass> view,
+      JSpecialInvokeExpr specialInvokeExpr,
+      MethodSignature container) {
     MethodSignature specialMethodSig = specialInvokeExpr.getMethodSignature();
     if (specialMethodSig.getSubSignature().getName().equals("<init>")) {
       return specialMethodSig;

@@ -61,9 +61,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   private final Supplier<ScanResult> lazyScanResult = Suppliers.memoize(this::scanView);
 
-  @Nonnull private final View view;
+  @Nonnull private final View<? extends SootClass> view;
 
-  public ViewTypeHierarchy(@Nonnull View view) {
+  public ViewTypeHierarchy(@Nonnull View<? extends SootClass> view) {
     this.view = view;
   }
 
@@ -75,7 +75,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       throw new ResolveException("Could not find " + interfaceType + " in hierarchy.");
     }
     if (vertex.type != VertexType.Interface) {
-      throw new IllegalArgumentException(interfaceType + " is not an interface");
+      throw new IllegalArgumentException(interfaceType + " is not an interface.");
     }
     return subtypesOf(interfaceType);
   }
@@ -88,7 +88,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       throw new ResolveException("Could not find " + classType + " in hierarchy.");
     }
     if (vertex.type != VertexType.Class) {
-      throw new IllegalArgumentException(classType + " is not a class");
+      throw new IllegalArgumentException(classType + " is not a class.");
     }
     return subtypesOf(classType);
   }
@@ -288,8 +288,6 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     Graph<Vertex, Edge> graph = new SimpleDirectedGraph<>(null, null, false);
 
     view.getClassesStream()
-        .filter(aClass -> aClass instanceof SootClass)
-        .map(aClass -> (SootClass) aClass)
         .forEach(sootClass -> addSootClassToGraph(sootClass, typeToVertex, graph));
     double runtimeMs = (System.nanoTime() - startNanos) / 1e6;
     log.info("Type hierarchy scan took " + runtimeMs + " ms");
