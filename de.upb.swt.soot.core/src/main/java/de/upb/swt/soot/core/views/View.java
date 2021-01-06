@@ -24,9 +24,8 @@ package de.upb.swt.soot.core.views;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Scope;
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
-import de.upb.swt.soot.core.model.AbstractClass;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
 import java.util.Optional;
@@ -42,16 +41,16 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public interface View {
+public interface View<T extends SootClass> {
 
   /** Return all classes in the view. */
   @Nonnull
-  Collection<? extends AbstractClass<? extends AbstractClassSource>> getClasses();
+  Collection<T> getClasses();
 
   /** Return all classes in the view. */
   // TODO: [ms] necessary?!
   @Nonnull
-  default Stream<? extends AbstractClass<? extends AbstractClassSource>> getClassesStream() {
+  default Stream<T> getClassesStream() {
     return getClasses().stream();
   }
 
@@ -61,8 +60,7 @@ public interface View {
    * @return A class with given signature.
    */
   @Nonnull
-  Optional<? extends AbstractClass<? extends AbstractClassSource>> getClass(
-      @Nonnull ClassType signature);
+  Optional<T> getClass(@Nonnull ClassType signature);
 
   /**
    * Returns the scope if the view is scoped.
@@ -99,8 +97,7 @@ public interface View {
   }
 
   @Nonnull
-  default AbstractClass<? extends AbstractClassSource> getClassOrThrow(
-      @Nonnull ClassType classType) {
+  default T getClassOrThrow(@Nonnull ClassType classType) {
     return getClass(classType)
         .orElseThrow(() -> new ResolveException("Could not find " + classType + " in view"));
   }
