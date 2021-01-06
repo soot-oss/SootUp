@@ -20,16 +20,12 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.java.bytecode.frontend.modules.AsmModuleClassSource;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
-import de.upb.swt.soot.java.core.signatures.ModuleSignature;
-import de.upb.swt.soot.java.core.types.JavaClassType;
-import de.upb.swt.soot.java.core.types.ModuleDecoratorClassType;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -50,6 +46,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import sun.tools.jar.resources.jar;
 
 /**
  * Discovers all modules in a given module path. For automatic modules, names are generated.
@@ -192,15 +189,19 @@ public class ModuleFinder {
     if (!Files.exists(moduleInfoFile) && !Files.isRegularFile(moduleInfoFile)) {
       return;
     }
+
+    // TODO: [ms] reify module class in a different way
+    /*
     // get the module's name out of this module-info file
     Optional<? extends AbstractClassSource> moduleInfoClassSource =
         inputLocation.getClassSource(ModuleIdentifierFactory.MODULE_INFO_CLASS);
     if (moduleInfoClassSource.isPresent()) {
-      AbstractClassSource moduleInfoSource = moduleInfoClassSource.get();
+      AsmModuleClassSource moduleInfoSource = moduleInfoClassSource.get();
       // get the module name
       String moduleName = this.getModuleName(moduleInfoSource);
       this.moduleInputLocation.put(moduleName, inputLocation);
     }
+    */
   }
 
   /**
@@ -211,7 +212,7 @@ public class ModuleFinder {
   private void buildModuleForJar(@Nonnull Path jar) {
     PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
-    Optional<? extends AbstractClassSource> moduleInfoFile = Optional.empty();
+    Optional<AsmModuleClassSource> moduleInfoFile = Optional.empty();
     try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");
       Path mi =
@@ -223,13 +224,14 @@ public class ModuleFinder {
         // we have a modular jar
         // get the module name
         // create proper moduleInfoSignature
-        moduleInfoFile = inputLocation.getClassSource(ModuleIdentifierFactory.MODULE_INFO_CLASS);
+        // FIXME: [ms] get module file  moduleInfoFile =
+        // inputLocation.getClassSource(ModuleIdentifierFactory.MODULE_INFO_CLASS);
       }
     } catch (IOException e) {
       e.printStackTrace();
     }
     if (moduleInfoFile.isPresent()) {
-      AbstractClassSource moduleInfoSource = moduleInfoFile.get();
+      AsmModuleClassSource moduleInfoSource = moduleInfoFile.get();
       // get the module name
       String moduleName = null;
       try {
@@ -251,38 +253,25 @@ public class ModuleFinder {
   }
 
   // FIXME: quickly parse the module name
-  private @Nonnull String parseModuleInfoClassFile(@Nonnull AbstractClassSource moduleInfo) {
+  private @Nonnull String parseModuleInfoClassFile(@Nonnull AsmModuleClassSource moduleInfo) {
     if (moduleInfo instanceof AsmModuleClassSource) {
       return ((AsmModuleClassSource) moduleInfo).getModuleName();
     }
     return "";
   }
 
-  private @Nonnull String getModuleName(@Nonnull AbstractClassSource moduleInfoSource)
+  private @Nonnull String getModuleName(@Nonnull AsmModuleClassSource moduleInfoSource)
       throws ResolveException {
     // FIXME: somehow in need the module name from the source code ...
     // AbstractClass moduleInfoClass = this.classProvider.reify(moduleInfoSource);
-    AbstractClassSource moduleInfoClass = moduleInfoSource;
+    AsmModuleClassSource moduleInfoClass = moduleInfoSource;
     if (!(moduleInfoClass instanceof AsmModuleClassSource)) {
       throw new ResolveException("Class is named module-info but does not reify to SootModuleInfo");
     }
     // FIXME: here is no view or anything to resolve the content...??? Why do I need a view anyway?
-
     String moduleName = parseModuleInfoClassFile(moduleInfoClass);
-    createProperModuleSignature(moduleInfoSource, moduleName);
 
     return moduleName;
-  }
-
-  private void createProperModuleSignature(
-      AbstractClassSource moduleInfoSource, String moduleName) {
-    // create proper moduleInfoSignature
-    // add the module name, which was unknown before
-    // moduleInfoSource.setClassSignature();
-    ModuleSignature moduleSignature = ModuleIdentifierFactory.getModuleSignature(moduleName);
-    JavaClassType sig =
-        new ModuleDecoratorClassType(ModuleIdentifierFactory.MODULE_INFO_CLASS, moduleSignature);
-    moduleInfoSource.setClassSignature(sig);
   }
 
   /**

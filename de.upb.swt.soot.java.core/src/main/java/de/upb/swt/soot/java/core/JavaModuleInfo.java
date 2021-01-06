@@ -40,7 +40,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
-public class JavaModuleInfo extends AbstractClass<AbstractModuleClassSource> {
+public class JavaModuleInfo extends AbstractClass<AbstractModuleSource> {
 
   @Nonnull private final ClassType classSignature;
   // FIXME: how to create automatic modules
@@ -50,7 +50,7 @@ public class JavaModuleInfo extends AbstractClass<AbstractModuleClassSource> {
   // FIXME: or module Signature?
   private String moduleName;
 
-  public JavaModuleInfo(AbstractModuleClassSource classSource, boolean isAutomaticModule) {
+  public JavaModuleInfo(AbstractModuleSource classSource, boolean isAutomaticModule) {
     super(classSource);
     this.classSignature = classSource.getClassType();
     this.isAutomaticModule = isAutomaticModule;
@@ -111,7 +111,7 @@ public class JavaModuleInfo extends AbstractClass<AbstractModuleClassSource> {
   private final Supplier<Set<JavaClassType>> _lazyProvidedServices =
       Suppliers.memoize(this::lazyProvidesInitializer);
 
-  private AbstractModuleClassSource getModuleClassSourceContent() throws ResolveException {
+  private AbstractModuleSource getModuleClassSourceContent() throws ResolveException {
     if (this.classSource == null) {
       throw new ResolveException("Module classSource is null");
     }

@@ -25,6 +25,7 @@ package de.upb.swt.soot.java.core.types;
 import com.google.common.base.Objects;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 
+// TODO [ms] is this information necessary?!
 public class ModuleDecoratorClassType extends JavaClassType {
 
   private final JavaClassType wrappedSignature;

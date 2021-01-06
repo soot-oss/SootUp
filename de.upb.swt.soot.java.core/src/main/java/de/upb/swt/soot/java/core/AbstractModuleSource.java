@@ -22,12 +22,10 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SourceType;
-import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -39,12 +37,9 @@ import javax.annotation.Nonnull;
  *
  * @author Linghui Luo
  */
-public abstract class AbstractModuleClassSource extends AbstractClassSource {
+public abstract class AbstractModuleSource {
 
-  public AbstractModuleClassSource(
-      AnalysisInputLocation srcNamespace, ClassType classSignature, Path sourcePath) {
-    super(srcNamespace, classSignature, sourcePath);
-  }
+  public AbstractModuleSource(AnalysisInputLocation srcNamespace, Path sourcePath) {}
 
   public JavaModuleInfo buildClass(@Nonnull SourceType sourceType) {
     return new JavaModuleInfo(this, false);

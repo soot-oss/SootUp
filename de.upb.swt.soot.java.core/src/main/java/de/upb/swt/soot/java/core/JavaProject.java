@@ -44,39 +44,38 @@ import javax.annotation.Nonnull;
  */
 public class JavaProject extends Project {
 
-  private JavaViewBuilder viewBuilder;
-
   public JavaProject(
       JavaLanguage language,
       @Nonnull List<AnalysisInputLocation> inputLocations,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     super(language, inputLocations, JavaIdentifierFactory.getInstance(), sourceTypeSpecifier);
-    this.viewBuilder = new JavaViewBuilder(this);
   }
 
   @Nonnull
   @Override
   public JavaView createOnDemandView() {
-    return viewBuilder.createOnDemandView();
+    return new JavaView(this);
   }
 
   @Nonnull
   @Override
   public JavaView createOnDemandView(
       @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
-    return viewBuilder.createOnDemandView(classLoadingOptionsSpecifier);
+    return new JavaView(this, classLoadingOptionsSpecifier);
   }
 
   @Nonnull
   @Override
   public JavaView createFullView() {
-    return viewBuilder.createFullView();
+    final JavaView view = createOnDemandView();
+    view.getClasses();
+    return view;
   }
 
   @Nonnull
   @Override
   public JavaView createView(Scope s) {
-    return viewBuilder.createView(s);
+    return createOnDemandView();
   }
 
   /**
@@ -119,12 +118,14 @@ public class JavaProject extends Project {
 
     @Nonnull
     JavaProjectBuilder addModulePath(Collection<AnalysisInputLocation> analysisInputLocation) {
+      // TODO [ms]: java modules
       this.analysisInputLocations.addAll(analysisInputLocation);
       return this;
     }
 
     @Nonnull
     JavaProjectBuilder addModulePath(AnalysisInputLocation analysisInputLocation) {
+      // TODO [ms]: java modules
       this.analysisInputLocations.add(analysisInputLocation);
       return this;
     }
