@@ -20,10 +20,9 @@ package de.upb.swt.soot.callgraph.typehierarchy;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
+
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
-import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -56,7 +55,7 @@ public final class MethodDispatchResolver {
                                 "Could not resolve " + subtype + ", but found it in hierarchy.")))
         .flatMap(abstractClass -> abstractClass.getMethods().stream())
         .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
-        .filter(method -> !((SootMethod) method).isAbstract())
+        .filter(method -> !method.isAbstract())
         .map(Method::getSignature)
         .collect(Collectors.toSet());
   }
@@ -81,7 +80,7 @@ public final class MethodDispatchResolver {
         .filter(c -> classes.contains(c.getType()))
         .flatMap(abstractClass -> abstractClass.getMethods().stream())
         .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
-        .filter(method -> !((SootMethod) method).isAbstract())
+        .filter(method -> !method.isAbstract())
         .map(Method::getSignature)
         .collect(Collectors.toSet());
   }
@@ -117,19 +116,19 @@ public final class MethodDispatchResolver {
     ClassType superClassType = m.getDeclClassType();
     do {
       ClassType finalSuperClassType = superClassType;
-      AbstractClass<? extends AbstractClassSource> superClass =
+      SootClass superClass =
           view.getClass(superClassType)
               .orElseThrow(
                   () ->
                       new ResolveException(
                           "Did not find class " + finalSuperClassType + " in View"));
 
-      Method concreteMethod =
+      SootMethod concreteMethod =
           superClass.getMethods().stream()
               .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
               .findAny()
               .orElse(null);
-      if (concreteMethod != null && !((SootMethod) concreteMethod).isAbstract()) {
+      if (concreteMethod != null && !concreteMethod.isAbstract()) {
         return concreteMethod.getSignature();
       }
 
@@ -153,11 +152,11 @@ public final class MethodDispatchResolver {
       return specialMethodSig;
     }
 
-    Method specialMethod =
+    SootMethod specialMethod =
         view.getClass(specialMethodSig.getDeclClassType())
             .flatMap(cl -> cl.getMethod(specialMethodSig))
             .orElse(null);
-    if (specialMethod != null && ((SootMethod) specialMethod).isPrivate()) {
+    if (specialMethod != null && specialMethod.isPrivate()) {
       return specialMethodSig;
     }
 
