@@ -51,14 +51,14 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Copya
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     getLeftBox().toString(up);
     up.literal(" := ");
     getRightBox().toString(up);
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseIdentityStmt(this);
   }
 

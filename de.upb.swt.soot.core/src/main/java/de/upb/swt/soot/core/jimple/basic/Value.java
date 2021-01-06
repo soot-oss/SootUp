@@ -26,6 +26,7 @@ import de.upb.swt.soot.core.jimple.visitor.Acceptor;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /**
  * Data used as, for instance, arguments to instructions; typical implementations are constants or
@@ -46,5 +47,5 @@ public interface Value extends Acceptor, EquivTo {
   /** Returns the Soot type of this Value. */
   Type getType();
 
-  void toString(StmtPrinter up);
+  void toString(@Nonnull StmtPrinter up);
 }

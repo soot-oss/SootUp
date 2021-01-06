@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.jimple.basic;
  */
 
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
+import javax.annotation.Nonnull;
 
 /**
  * A box which can contain values.
@@ -59,7 +60,7 @@ public abstract class ValueBox {
     return value;
   }
 
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     // up.startValueBox(this);
     value.toString(up);
     // up.endValueBox(this);

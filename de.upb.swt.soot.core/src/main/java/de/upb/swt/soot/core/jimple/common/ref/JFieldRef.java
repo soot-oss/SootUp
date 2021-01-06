@@ -32,17 +32,19 @@ import javax.annotation.Nonnull;
 
 public abstract class JFieldRef implements ConcreteRef {
 
-  private final FieldSignature fieldSignature;
+  @Nonnull private final FieldSignature fieldSignature;
 
-  JFieldRef(FieldSignature fieldSignature) {
+  JFieldRef(@Nonnull FieldSignature fieldSignature) {
     this.fieldSignature = fieldSignature;
   }
 
-  public @Nonnull Optional<SootField> getField(@Nonnull View<? extends SootClass> view) {
+  @Nonnull
+  public Optional<SootField> getField(@Nonnull View<? extends SootClass> view) {
     return view.getClass(fieldSignature.getDeclClassType())
         .flatMap(it -> it.getField(fieldSignature).map(field -> (SootField) field));
   }
 
+  @Nonnull
   public FieldSignature getFieldSignature() {
     return fieldSignature;
   }

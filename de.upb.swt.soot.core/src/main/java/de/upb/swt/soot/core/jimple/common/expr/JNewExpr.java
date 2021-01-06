@@ -61,7 +61,7 @@ public final class JNewExpr implements Expr, Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.NEW);
     up.literal(" ");
     up.typeSignature(type);
@@ -78,7 +78,7 @@ public final class JNewExpr implements Expr, Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseNewExpr(this);
   }
 
