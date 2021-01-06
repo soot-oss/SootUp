@@ -27,9 +27,9 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.views.View;
 import java.util.List;
 
-public class OnDemandClassHierarchyAlgorithm extends ClassHierarchyAlgorithm {
+public class OnDemandClassHierarchyAnalysisAlgorithm extends ClassHierarchyAnalysisAlgorithm {
 
-  public OnDemandClassHierarchyAlgorithm(View view, TypeHierarchy hierarchy) {
+  public OnDemandClassHierarchyAnalysisAlgorithm(View view, TypeHierarchy hierarchy) {
     super(view, hierarchy);
   }
 
