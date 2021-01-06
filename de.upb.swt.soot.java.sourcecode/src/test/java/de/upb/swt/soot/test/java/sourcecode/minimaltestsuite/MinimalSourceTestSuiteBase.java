@@ -12,6 +12,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.Utils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
@@ -123,7 +124,7 @@ public abstract class MinimalSourceTestSuiteBase {
   }
 
   public SootClass loadClass(ClassType clazz) {
-    Optional<SootClass> cs = customTestWatcher.getJavaView().getClass(clazz);
+    Optional<JavaSootClass> cs = customTestWatcher.getJavaView().getClass(clazz);
     assertTrue("no matching class signature found", cs.isPresent());
     return cs.get();
   }
