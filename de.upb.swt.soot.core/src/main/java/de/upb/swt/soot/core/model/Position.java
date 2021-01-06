@@ -24,7 +24,7 @@ package de.upb.swt.soot.core.model;
 
 /** This class represents Position Information i.e. for IDEs to locate positions in sources. */
 // TODO: [ms] it represents a range - rename?
-public class Position {
+public class Position implements Comparable<Position> {
 
   private final int firstLine;
   private final int firstCol;
@@ -56,5 +56,39 @@ public class Position {
 
   public String toString() {
     return "[" + firstLine + ":" + firstCol + "-" + lastLine + ":" + lastCol + "]";
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Position)) {
+      return false;
+    }
+    Position p = (Position) o;
+    return firstLine == p.getFirstLine()
+        && firstCol == p.getFirstCol()
+        && lastLine == p.getLastLine()
+        && lastCol == p.getLastCol();
+  }
+
+  /**
+   * Compares "Positions" by their starting line/column Note: this class has a natural ordering that
+   * is inconsistent with equals
+   */
+  @Override
+  public int compareTo(Position position) {
+    if (getFirstLine() < position.getFirstLine()) {
+      return -1;
+    } else if (getFirstLine() == position.getFirstLine()) {
+      if (getFirstCol() < position.getFirstCol()) {
+        return -1;
+      } else if (getFirstCol() == position.getFirstCol()) {
+        return 0;
+      }
+      return 1;
+    }
+    return 1;
   }
 }
