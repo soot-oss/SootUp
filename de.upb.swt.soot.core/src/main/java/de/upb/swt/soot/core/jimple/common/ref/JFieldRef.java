@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.jimple.common.ref;
  * #L%
  */
 
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.types.Type;
@@ -37,7 +38,7 @@ public abstract class JFieldRef implements ConcreteRef {
     this.fieldSignature = fieldSignature;
   }
 
-  public @Nonnull Optional<SootField> getField(@Nonnull View view) {
+  public @Nonnull Optional<SootField> getField(@Nonnull View<? extends SootClass> view) {
     return view.getClass(fieldSignature.getDeclClassType())
         .flatMap(it -> it.getField(fieldSignature).map(field -> (SootField) field));
   }
