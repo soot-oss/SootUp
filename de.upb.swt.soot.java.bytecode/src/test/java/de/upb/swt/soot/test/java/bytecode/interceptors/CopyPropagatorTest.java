@@ -162,6 +162,7 @@ public class CopyPropagatorTest {
 
     // add locals into builder
     Set<Local> locals = ImmutableUtils.immutableSet(r0, r1, r2, r3, r4);
+
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
@@ -189,6 +190,7 @@ public class CopyPropagatorTest {
 
     // add locals into builder
     Set<Local> locals = ImmutableUtils.immutableSet(r0, r1, r2, r3, r4);
+
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
@@ -219,6 +221,7 @@ public class CopyPropagatorTest {
 
     // add locals into builder
     Set<Local> locals = ImmutableUtils.immutableSet(r0, i1, i2, i3);
+
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
@@ -251,6 +254,7 @@ public class CopyPropagatorTest {
 
     // add locals into builder
     Set<Local> locals = ImmutableUtils.immutableSet(r0, i1, i2, i3);
+
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
@@ -283,6 +287,7 @@ public class CopyPropagatorTest {
 
     // add locals into builder
     Set<Local> locals = ImmutableUtils.immutableSet(r0, r1, r2, r3, r4, r5);
+
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
@@ -312,6 +317,7 @@ public class CopyPropagatorTest {
 
     // add locals into builder
     Set<Local> locals = ImmutableUtils.immutableSet(r0, r1, r2, r3, r4, r5);
+
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder

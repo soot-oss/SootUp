@@ -93,6 +93,7 @@ public class ConditionalBranchFolderTest {
     Stmt ret2 = JavaJimple.newReturnStmt(a, noPositionInfo);
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
+
     List<Trap> traps = Collections.emptyList();
 
     Body.BodyBuilder bodyBuilder = Body.builder();

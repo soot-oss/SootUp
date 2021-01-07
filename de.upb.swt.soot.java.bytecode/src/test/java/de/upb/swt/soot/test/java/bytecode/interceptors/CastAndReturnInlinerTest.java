@@ -57,6 +57,7 @@ public class CastAndReturnInlinerTest {
     Stmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
+
     List<Trap> traps = Collections.emptyList();
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
@@ -110,6 +111,7 @@ public class CastAndReturnInlinerTest {
     Stmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
+
     List<Trap> traps = Collections.emptyList();
 
     Body.BodyBuilder bodyBuilder = Body.builder();
