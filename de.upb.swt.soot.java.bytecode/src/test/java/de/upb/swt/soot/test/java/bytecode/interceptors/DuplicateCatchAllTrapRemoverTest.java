@@ -86,7 +86,6 @@ public class DuplicateCatchAllTrapRemoverTest {
     Local a = JavaJimple.newLocal("a", objectType);
     Local b = JavaJimple.newLocal("b", stringType);
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
-    ;
 
     Stmt strToA = JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
     Stmt bToA = JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
