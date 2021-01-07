@@ -60,7 +60,6 @@ public class DeadAssignmentEliminatorTest {
     Stmt ret = JavaJimple.newReturnStmt(a, noPositionInfo);
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b, c);
-    ;
 
     List<Trap> traps = new ArrayList<>();
 
