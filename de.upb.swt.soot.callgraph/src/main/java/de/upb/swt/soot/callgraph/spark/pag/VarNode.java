@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,7 +128,7 @@ public abstract class VarNode extends ValNode implements Comparable {
 
     VarNode(PAG pag, Object variable, Type t) {
         super(pag, t);
-        if (!(t instanceof RefLikeType) || t instanceof AnySubType) {
+        if (!(t instanceof ReferenceType) || t instanceof AnySubType) {
             throw new RuntimeException("Attempt to create VarNode of type " + t);
         }
         this.variable = variable;
