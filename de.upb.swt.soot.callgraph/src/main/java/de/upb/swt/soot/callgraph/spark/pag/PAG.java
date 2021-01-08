@@ -35,8 +35,6 @@ public class PAG implements PointsToAnalysis {
 
     protected PointsToSetFactory setFactory;
 
-    public int maxFinishNumber = 0;
-
     @Override
     public PointsToSet reachingObjects(Local l) {
         return null;

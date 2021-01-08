@@ -41,6 +41,8 @@ import org.slf4j.LoggerFactory;
 public abstract class VarNode extends ValNode implements Comparable {
     private static final Logger logger = LoggerFactory.getLogger(VarNode.class);
 
+    private int maxFinishNumber = 0;
+
 //    public Context context() {
 //        return null;
 //    }
@@ -72,8 +74,8 @@ public abstract class VarNode extends ValNode implements Comparable {
 
     public void setFinishingNumber(int i) {
         finishingNumber = i;
-        if (i > pag.maxFinishNumber) {
-            pag.maxFinishNumber = i;
+        if (i > maxFinishNumber) {
+            maxFinishNumber = i;
         }
     }
 
@@ -133,7 +135,7 @@ public abstract class VarNode extends ValNode implements Comparable {
         }
         this.variable = variable;
         pag.getVarNodeNumberer().add(this);
-        setFinishingNumber(++pag.maxFinishNumber);
+        setFinishingNumber(++maxFinishNumber);
     }
 
     /** Registers a frn as having this node as its base. */
