@@ -19,5 +19,11 @@ public class FieldReferenceNode extends Node {
        this.base.addField(this);
     }
 
+    public VariableNode getBase() {
+        return base;
+    }
 
+    public Field getField() {
+        return field;
+    }
 }

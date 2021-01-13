@@ -24,4 +24,9 @@ public class VariableNode extends Node {
         }
         fields.add(field);
     }
+
+    public Object getVariable() {
+        return variable;
+    }
+
 }
