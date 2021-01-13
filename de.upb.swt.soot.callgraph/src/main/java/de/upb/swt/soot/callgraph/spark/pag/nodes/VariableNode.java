@@ -10,6 +10,7 @@ public class VariableNode extends Node {
 
     // TODO: [kk] need a more precise type, or generics
     private Object variable;
+    private Set<FieldReferenceNode> fields;
 
 
     public VariableNode(Object variable, Type type) {
@@ -17,4 +18,10 @@ public class VariableNode extends Node {
         this.type = type;
     }
 
+    public void addField(FieldReferenceNode field){
+        if(fields==null){
+            fields = new HashSet<>();
+        }
+        fields.add(field);
+    }
 }
