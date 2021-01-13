@@ -22,7 +22,7 @@ package de.upb.swt.soot.callgraph.spark.sets;
  * #L%
  */
 
-import de.upb.swt.soot.callgraph.spark.pag.PAG;
+import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToSet;
 import de.upb.swt.soot.core.types.Type;
 
@@ -36,11 +36,11 @@ import java.util.Set;
  * @author Kadiray Karakaya
  */
 public class DoublePointsToSet extends PointsToSetInternal {
-    private PAG pag;
+    private PointerAssignmentGraph pag;
     protected PointsToSetInternal newSet;
     protected PointsToSetInternal oldSet;
 
-    public DoublePointsToSet(Type type, PAG pag) {
+    public DoublePointsToSet(Type type, PointerAssignmentGraph pag) {
         super(type);
         newSet = G.v().newSetFactory.newSet(type, pag);
         oldSet = G.v().oldSetFactory.newSet(type, pag);
@@ -145,7 +145,7 @@ public class DoublePointsToSet extends PointsToSetInternal {
     }
 
     private static P2SetFactory defaultP2SetFactory = new P2SetFactory() {
-        public PointsToSetInternal newSet(Type type, PAG pag) {
+        public PointsToSetInternal newSet(Type type, PointerAssignmentGraph pag) {
             return new DoublePointsToSet(type, pag);
         }
     };

@@ -23,7 +23,7 @@ package de.upb.swt.soot.callgraph.spark.sets;
  */
 
 import de.upb.swt.soot.callgraph.spark.pag.Node;
-import de.upb.swt.soot.callgraph.spark.pag.PAG;
+import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToSet;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.types.Type;
@@ -206,7 +206,7 @@ public abstract class PointsToSetInternal implements EqualsSupportingPointsToSet
     protected Type type;
 
     // Added by Adam Richard
-    protected BitVector getBitMask(PointsToSetInternal other, PAG pag) {
+    protected BitVector getBitMask(PointsToSetInternal other, PointerAssignmentGraph pag) {
         /*
          * Prevents propogating points-to sets of inappropriate type. E.g. if you have in the code being analyzed: Shape s =
          * (Circle)c; then the points-to set of s is only the elements in the points-to set of c that have type Circle.

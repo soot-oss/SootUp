@@ -23,7 +23,7 @@ package de.upb.swt.soot.callgraph.spark.sets;
  */
 
 
-import de.upb.swt.soot.callgraph.spark.pag.PAG;
+import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.core.types.Type;
 
 /**
@@ -33,5 +33,5 @@ import de.upb.swt.soot.core.types.Type;
  */
 public abstract class PointsToSetFactory<T extends PointsToSetInternal> {
     /** Returns a newly-created set. */
-    public abstract T newSet(Type type, PAG pag);
+    public abstract T newSet(Type type, PointerAssignmentGraph pag);
 }

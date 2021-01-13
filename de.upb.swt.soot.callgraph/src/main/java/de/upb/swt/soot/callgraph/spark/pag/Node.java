@@ -35,7 +35,7 @@ public class Node implements ReferenceVariable{
     private int number = 0;
     protected Type type;
     protected Node replacement;
-    protected PAG pag;
+    protected PointerAssignmentGraph pag;
     protected PointsToSetInternal p2set;
 
     public final int getNumber() {
@@ -47,7 +47,7 @@ public class Node implements ReferenceVariable{
     }
 
     /** Creates a new node of pointer assignment graph pag, with type type. */
-    Node(PAG pag, Type type) {
+    Node(PointerAssignmentGraph pag, Type type) {
 //        if (TypeManager.isUnresolved(type)) {
 //            throw new RuntimeException("Unresolved type " + type);
 //        }
@@ -135,7 +135,7 @@ public class Node implements ReferenceVariable{
     }
 
     /** Returns the pointer assignment graph that this node is a part of. */
-    public PAG getPag() {
+    public PointerAssignmentGraph getPag() {
         return pag;
     }
 

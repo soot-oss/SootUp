@@ -128,7 +128,7 @@ public abstract class VarNode extends ValNode implements Comparable {
 
     /* End of public methods. */
 
-    VarNode(PAG pag, Object variable, Type t) {
+    VarNode(PointerAssignmentGraph pag, Object variable, Type t) {
         super(pag, t);
         if (!(t instanceof ReferenceType) || t instanceof AnySubType) {
             throw new RuntimeException("Attempt to create VarNode of type " + t);

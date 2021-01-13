@@ -30,7 +30,7 @@ public class FieldRefNode extends ValNode {
     protected VarNode base;
     protected SparkField field;
 
-    FieldRefNode(PAG pag, VarNode base, SparkField field) {
+    FieldRefNode(PointerAssignmentGraph pag, VarNode base, SparkField field) {
         super(pag, null);
         if (field == null) {
             throw new RuntimeException("null field");

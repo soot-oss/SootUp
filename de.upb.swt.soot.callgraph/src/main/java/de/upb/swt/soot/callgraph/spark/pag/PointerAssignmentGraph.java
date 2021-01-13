@@ -22,15 +22,9 @@ package de.upb.swt.soot.callgraph.spark.pag;
  * #L%
  */
 
-import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
 
-/**
- * Represents a simple of field ref node (Green or Red) in the pointer assignment graph.
- *
- * @author Kadiray Karakaya
- */
-public class ValNode extends Node {
-    protected ValNode(PointerAssignmentGraph pag, Type t) {
-        super(pag, t);
-    }
+public class PointerAssignmentGraph {
+
+
 }
