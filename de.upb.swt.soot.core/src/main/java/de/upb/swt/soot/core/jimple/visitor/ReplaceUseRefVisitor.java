@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.ref.*;
@@ -35,22 +36,24 @@ import javax.annotation.Nonnull;
 public class ReplaceUseRefVisitor extends AbstractRefVisitor {
 
   Value oldUse;
-  Local newUse;
+  Value newUse;
   Ref newRef;
 
-  public ReplaceUseRefVisitor(@Nonnull Value oldUse, @Nonnull Local newUse) {
+  public ReplaceUseRefVisitor(@Nonnull Value oldUse, @Nonnull Value newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
   }
 
   @Nonnull
   @Override
-  public void caseStaticFieldRef(@Nonnull JStaticFieldRef v) {}
+  public void caseStaticFieldRef(@Nonnull JStaticFieldRef v) {
+    defaultCase(v);
+  }
 
   @Nonnull
   @Override
   public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef v) {
-    if (v.getBase().equivTo(oldUse)) {
+    if (newUse instanceof Local && v.getBase().equivTo(oldUse)) {
       newRef = v.withBase(newUse);
     } else {
       defaultCase(v);
@@ -60,12 +63,9 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
   @Nonnull
   @Override
   public void caseArrayRef(@Nonnull JArrayRef v) {
-    if (v.getBase().equivTo(oldUse) && v.getIndex().equivTo(oldUse)) {
-      JArrayRef ref = v.withBase(newUse);
-      newRef = ref.withIndex(newUse);
-    } else if (v.getBase().equivTo(oldUse)) {
+    if (newUse instanceof Local && v.getBase().equivTo(oldUse)) {
       newRef = v.withBase(newUse);
-    } else if (v.getIndex().equivTo(oldUse)) {
+    } else if (newUse instanceof Immediate && v.getIndex().equivTo(oldUse)) {
       newRef = v.withIndex(newUse);
     } else {
       defaultCase(v);

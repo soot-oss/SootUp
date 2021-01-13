@@ -22,7 +22,7 @@ import de.upb.swt.soot.java.core.JavaSootClassSource;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +47,7 @@ public class WitherTest {
   @Test
   public void testWithers() {
 
-    LocalGenerator generator = new LocalGenerator(new HashSet<>());
+    LocalGenerator generator = new LocalGenerator(new LinkedHashSet<>());
     Optional<SootClassSource> classSource = loader.getClassSource(declareClassSig);
     assertTrue(classSource.isPresent());
     JavaSootClass sootClass =

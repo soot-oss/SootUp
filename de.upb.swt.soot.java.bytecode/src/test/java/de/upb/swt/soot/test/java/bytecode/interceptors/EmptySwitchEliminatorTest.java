@@ -71,6 +71,7 @@ public class EmptySwitchEliminatorTest {
 
     // add locals into builder
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2);
+
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
@@ -98,6 +99,7 @@ public class EmptySwitchEliminatorTest {
 
     // add locals into builder
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2);
+
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder

@@ -16,7 +16,6 @@ import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.bytecode.interceptors.ConstantPropagatorAndFolder;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -99,7 +98,7 @@ public class ConstantPropagatorAndFolderTest {
     }
     Stmt ret = JavaJimple.newReturnStmt(c, noPositionInfo);
 
-    Body.BodyBuilder builder = Body.builder(new ArrayList<>());
+    Body.BodyBuilder builder = Body.builder();
     builder.setStartingStmt(assignA);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()

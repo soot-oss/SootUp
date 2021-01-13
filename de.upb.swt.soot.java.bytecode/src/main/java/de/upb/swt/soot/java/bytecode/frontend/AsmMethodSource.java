@@ -1824,7 +1824,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
     }
 
-    Set<Local> bodyLocals = new HashSet<>(locals.values());
+    Set<Local> bodyLocals = new LinkedHashSet<>(locals.values());
     bodyBuilder.setLocals(bodyLocals);
   }
 
