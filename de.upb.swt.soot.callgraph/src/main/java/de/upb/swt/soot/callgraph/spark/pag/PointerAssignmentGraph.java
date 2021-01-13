@@ -22,9 +22,38 @@ package de.upb.swt.soot.callgraph.spark.pag;
  * #L%
  */
 
+import com.sun.javafx.geom.Edge;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+
+import javax.annotation.Nonnull;
+
 
 public class PointerAssignmentGraph {
 
+    private static class Vertex {
+        @Nonnull
+        final Node node;
 
+        private Vertex(@Nonnull Node node) {
+            this.node = node;
+        }
+    }
+
+    private static class Edge {}
+
+    private final DefaultDirectedGraph<Vertex, Edge> graph;
+
+    public PointerAssignmentGraph() {
+        this.graph = new DefaultDirectedGraph<>(null, null, false);
+    }
+
+    public void addEdge(Node source, Node target){
+        graph.addEdge(new Vertex(source), new Vertex(target));
+    }
 }
