@@ -45,7 +45,23 @@ public class PointerAssignmentGraph {
         }
     }
 
-    private static class Edge {}
+    private static class Edge extends DefaultEdge {
+        private EdgeType edgeType;
+
+        public Edge(EdgeType edgeType){
+            this.edgeType = edgeType;
+        }
+
+        public EdgeType getEdgeType(){
+            return edgeType;
+        }
+
+        @Override
+        public String toString(){
+            return "(" + getSource() + " : " + getTarget() + " : " + edgeType + ")";
+        }
+
+    }
 
     private final DefaultDirectedGraph<Vertex, Edge> graph;
 
