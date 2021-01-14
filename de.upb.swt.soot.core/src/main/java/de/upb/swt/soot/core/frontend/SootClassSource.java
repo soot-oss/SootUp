@@ -43,12 +43,12 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public abstract class SootClassSource extends AbstractClassSource<SootClass> {
+public abstract class SootClassSource<S extends SootClass> extends AbstractClassSource<S> {
 
   @Override
   @Nonnull
-  public SootClass buildClass(@Nonnull SourceType sourceType) {
-    return new SootClass(this, sourceType);
+  public S buildClass(@Nonnull SourceType sourceType) {
+    return (S) new SootClass(this, sourceType);
   }
 
   /**
@@ -66,13 +66,13 @@ public abstract class SootClassSource extends AbstractClassSource<SootClass> {
    *     resolved {@link SootClassSource}, backed up by the given file
    */
   public SootClassSource(
-      @Nonnull AnalysisInputLocation srcNamespace,
+      @Nonnull AnalysisInputLocation<S> srcNamespace,
       @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
     super(srcNamespace, classSignature, sourcePath);
   }
 
-  protected SootClassSource(SootClassSource delegate) {
+  protected SootClassSource(SootClassSource<S> delegate) {
     super(delegate.srcNamespace, delegate.getClassType(), delegate.getSourcePath());
   }
 

@@ -39,12 +39,12 @@ import javax.annotation.Nullable;
 public abstract class AbstractClassSource<T extends SootClass> {
   // TODO: [ms] I dont see the necessity of the AnalysisInputLocation in this class; maybe not even
   // for sourcepath
-  protected final AnalysisInputLocation srcNamespace;
+  protected final AnalysisInputLocation<T> srcNamespace;
   protected final Path sourcePath;
   protected ClassType classSignature;
 
   public AbstractClassSource(
-      @Nonnull AnalysisInputLocation srcNamespace,
+      @Nonnull AnalysisInputLocation<T> srcNamespace,
       @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
     this.srcNamespace = srcNamespace;
@@ -81,7 +81,7 @@ public abstract class AbstractClassSource<T extends SootClass> {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AbstractClassSource that = (AbstractClassSource) o;
+    AbstractClassSource<T> that = (AbstractClassSource<T>) o;
     return Objects.equal(srcNamespace, that.srcNamespace)
         && Objects.equal(sourcePath, that.sourcePath);
   }

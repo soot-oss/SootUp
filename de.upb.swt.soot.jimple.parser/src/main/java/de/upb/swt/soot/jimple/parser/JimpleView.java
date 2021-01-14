@@ -5,7 +5,6 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.AbstractView;
@@ -34,7 +33,8 @@ public class JimpleView extends AbstractView<SootClass> {
   private volatile boolean isFullyResolved = false;
 
   @Nonnull
-  protected Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier;
+  protected Function<AnalysisInputLocation<SootClass>, ClassLoadingOptions>
+      classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link de.upb.swt.soot.java.core.views.JavaView} class. */
   public JimpleView(@Nonnull Project project) {
@@ -50,7 +50,9 @@ public class JimpleView extends AbstractView<SootClass> {
    */
   public JimpleView(
       @Nonnull Project project,
-      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
+      @Nonnull
+          Function<AnalysisInputLocation<SootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
   }
@@ -74,13 +76,13 @@ public class JimpleView extends AbstractView<SootClass> {
   }
 
   @Nonnull
-  Optional<AbstractClass<? extends AbstractClassSource>> getAbstractClass(@Nonnull ClassType type) {
-    AbstractClass<? extends AbstractClassSource> cachedClass = cache.get(type);
+  Optional<SootClass> getAbstractClass(@Nonnull ClassType type) {
+    SootClass cachedClass = cache.get(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
 
-    final List<AbstractClassSource> foundClassSources =
+    final List<AbstractClassSource<SootClass>> foundClassSources =
         getProject().getInputLocations().stream()
             .map(
                 location -> {
@@ -113,12 +115,10 @@ public class JimpleView extends AbstractView<SootClass> {
   private synchronized Optional<SootClass> buildClassFrom(
       AbstractClassSource<SootClass> classSource) {
     SootClass theClass =
-        (SootClass)
-            cache.computeIfAbsent(
-                classSource.getClassType(),
-                type ->
-                    classSource.buildClass(
-                        getProject().getSourceTypeSpecifier().sourceTypeFor(type)));
+        cache.computeIfAbsent(
+            classSource.getClassType(),
+            type ->
+                classSource.buildClass(getProject().getSourceTypeSpecifier().sourceTypeFor(type)));
     return Optional.of(theClass);
   }
 

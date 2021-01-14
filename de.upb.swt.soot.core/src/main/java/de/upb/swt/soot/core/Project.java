@@ -22,8 +22,11 @@ package de.upb.swt.soot.core;
  * #L%
  */
 
+import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
+import de.upb.swt.soot.core.model.AbstractClass;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.views.View;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,12 +42,14 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public abstract class Project {
+public abstract class Project<
+    V extends View<? extends AbstractClass<? extends AbstractClassSource<? extends SootClass>>>,
+    S extends SootClass> {
 
   @Nonnull
   private final IdentifierFactory identifierFactory; // THINK:[ms] is this really necessary?
 
-  @Nonnull private final List<AnalysisInputLocation> inputLocations;
+  @Nonnull private final List<AnalysisInputLocation<S>> inputLocations;
   @Nonnull private final SourceTypeSpecifier sourceTypeSpecifier;
   @Nonnull private final Language language;
   /**
@@ -56,7 +61,7 @@ public abstract class Project {
    */
   public Project(
       @Nonnull Language language,
-      @Nonnull AnalysisInputLocation inputLocation,
+      @Nonnull AnalysisInputLocation<S> inputLocation,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     this(
         language,
@@ -75,11 +80,11 @@ public abstract class Project {
    */
   public Project(
       @Nonnull Language language,
-      @Nonnull List<AnalysisInputLocation> inputLocations,
+      @Nonnull List<AnalysisInputLocation<S>> inputLocations,
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     this.language = language;
-    List<AnalysisInputLocation> unmodifiableInputLocations =
+    List<AnalysisInputLocation<S>> unmodifiableInputLocations =
         Collections.unmodifiableList(new ArrayList<>(inputLocations));
 
     if (unmodifiableInputLocations.isEmpty()) {
@@ -93,8 +98,8 @@ public abstract class Project {
 
   /** Gets the inputLocations. */
   @Nonnull
-  public List<AnalysisInputLocation> getInputLocations() {
-    return this.inputLocations;
+  public List<AnalysisInputLocation<S>> getInputLocations() {
+    return inputLocations;
   }
 
   @Nonnull
@@ -119,19 +124,20 @@ public abstract class Project {
    * @return A complete view on the provided code
    */
   @Nonnull
-  public abstract View createFullView();
+  public abstract V createFullView();
 
   /**
    * Creates an on-demand View that uses the default {@link
    * de.upb.swt.soot.core.inputlocation.ClassLoadingOptions} of each frontend.
    */
   @Nonnull
-  public abstract View createOnDemandView();
+  public abstract V createOnDemandView();
 
   /** Creates an on-demand View with custom {@link ClassLoadingOptions}. */
   @Nonnull
-  public abstract View createOnDemandView(
-      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier);
+  public abstract V createOnDemandView(
+      @Nonnull
+          Function<AnalysisInputLocation<S>, ClassLoadingOptions> classLoadingOptionsSpecifier);
 
   /**
    * Returns a partial view on the code based on the provided scope and all input locations in the
@@ -141,5 +147,6 @@ public abstract class Project {
    * @return A scoped view of the provided code
    */
   @Nonnull
+  // TODO raw type
   public abstract View createView(Scope s);
 }

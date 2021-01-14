@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
 public abstract class JavaSootClassSource extends SootClassSource {
 
   public JavaSootClassSource(
-      @Nonnull AnalysisInputLocation srcNamespace,
+      @Nonnull AnalysisInputLocation<JavaSootClass> srcNamespace,
       @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
     super(srcNamespace, classSignature, sourcePath);

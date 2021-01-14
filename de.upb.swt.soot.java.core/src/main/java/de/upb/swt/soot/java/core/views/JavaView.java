@@ -122,7 +122,8 @@ public class JavaView extends AbstractView<JavaSootClass> {
   private volatile boolean isFullyResolved = false;
 
   @Nonnull
-  protected Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier;
+  protected Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
+      classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link JavaView} class. */
   public JavaView(@Nonnull Project project) {
@@ -137,8 +138,10 @@ public class JavaView extends AbstractView<JavaSootClass> {
    *     options.
    */
   public JavaView(
-      @Nonnull Project project,
-      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
+      @Nonnull Project<JavaView, JavaSootClass> project,
+      @Nonnull
+          Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
   }
@@ -163,7 +166,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
       return Optional.of(cachedClass);
     }
 
-    final List<AbstractClassSource> foundClassSources =
+    final List<AbstractClassSource<JavaSootClass>> foundClassSources =
         getProject().getInputLocations().stream()
             .map(
                 location -> {

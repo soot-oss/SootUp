@@ -25,6 +25,7 @@ import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.java.bytecode.frontend.modules.AsmModuleSource;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
 import java.io.File;
 import java.io.IOException;
@@ -57,9 +58,10 @@ import javax.annotation.Nullable;
  * @author Andreas Dann on 28.06.18
  */
 public class ModuleFinder {
-  private @Nonnull ClassProvider classProvider;
+  private @Nonnull ClassProvider<JavaSootClass> classProvider;
   // associate a module name with the input location, that represents the module
-  private @Nonnull Map<String, AnalysisInputLocation> moduleInputLocation = new HashMap<>();
+  private @Nonnull Map<String, AnalysisInputLocation<JavaSootClass>> moduleInputLocation =
+      new HashMap<>();
   private int next = 0;
 
   private @Nonnull List<Path> modulePathEntries;
@@ -72,7 +74,8 @@ public class ModuleFinder {
    * @param classProvider the class provider for resolving found classes
    * @param modulePath the module path
    */
-  public ModuleFinder(@Nonnull ClassProvider classProvider, @Nonnull String modulePath) {
+  public ModuleFinder(
+      @Nonnull ClassProvider<JavaSootClass> classProvider, @Nonnull String modulePath) {
     this.classProvider = classProvider;
     this.modulePathEntries =
         JavaClassPathAnalysisInputLocation.explode(modulePath).collect(Collectors.toList());
@@ -93,8 +96,9 @@ public class ModuleFinder {
    * @param moduleName the module name
    * @return the input location that resolves classes contained in the module
    */
-  public @Nullable AnalysisInputLocation discoverModule(@Nonnull String moduleName) {
-    AnalysisInputLocation inputLocationForModule = moduleInputLocation.get(moduleName);
+  public @Nullable AnalysisInputLocation<JavaSootClass> discoverModule(@Nonnull String moduleName) {
+    AnalysisInputLocation<JavaSootClass> inputLocationForModule =
+        moduleInputLocation.get(moduleName);
     if (inputLocationForModule != null) {
       return inputLocationForModule;
     }

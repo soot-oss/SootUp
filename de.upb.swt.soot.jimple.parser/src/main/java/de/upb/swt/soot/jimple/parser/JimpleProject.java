@@ -4,18 +4,19 @@ import de.upb.swt.soot.core.*;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
+import de.upb.swt.soot.core.model.SootClass;
 import java.util.List;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class JimpleProject extends Project {
+public class JimpleProject extends Project<JimpleView, SootClass> {
 
   public JimpleProject(@Nonnull AnalysisInputLocation inputLocation) {
     super(JimpleLanguage.getInstance(), inputLocation, DefaultSourceTypeSpecifier.getInstance());
   }
 
-  public JimpleProject(@Nonnull List<AnalysisInputLocation> inputLocation) {
+  public JimpleProject(@Nonnull List<AnalysisInputLocation<SootClass>> inputLocation) {
     super(
         JimpleLanguage.getInstance(),
         inputLocation,
@@ -24,13 +25,13 @@ public class JimpleProject extends Project {
   }
 
   public JimpleProject(
-      @Nonnull AnalysisInputLocation inputLocation,
+      @Nonnull AnalysisInputLocation<SootClass> inputLocation,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     super(JimpleLanguage.getInstance(), inputLocation, sourceTypeSpecifier);
   }
 
   public JimpleProject(
-      @Nonnull List<AnalysisInputLocation> inputLocations,
+      @Nonnull List<AnalysisInputLocation<SootClass>> inputLocations,
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     super(JimpleLanguage.getInstance(), inputLocations, identifierFactory, sourceTypeSpecifier);
@@ -53,7 +54,9 @@ public class JimpleProject extends Project {
   @Nonnull
   @Override
   public JimpleView createOnDemandView(
-      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
+      @Nonnull
+          Function<AnalysisInputLocation<SootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
     return new JimpleView(this, classLoadingOptionsSpecifier);
   }
 

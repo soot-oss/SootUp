@@ -42,11 +42,11 @@ import javax.annotation.Nonnull;
  * @author Markus Schmidt
  * @author Linghui Luo
  */
-public class JavaProject extends Project {
+public class JavaProject extends Project<JavaView, JavaSootClass> {
 
   public JavaProject(
       JavaLanguage language,
-      @Nonnull List<AnalysisInputLocation> inputLocations,
+      @Nonnull List<AnalysisInputLocation<JavaSootClass>> inputLocations,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     super(language, inputLocations, JavaIdentifierFactory.getInstance(), sourceTypeSpecifier);
   }
@@ -60,7 +60,9 @@ public class JavaProject extends Project {
   @Nonnull
   @Override
   public JavaView createOnDemandView(
-      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
+      @Nonnull
+          Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
     return new JavaView(this, classLoadingOptionsSpecifier);
   }
 
@@ -89,7 +91,8 @@ public class JavaProject extends Project {
   }
 
   public static class JavaProjectBuilder {
-    private final List<AnalysisInputLocation> analysisInputLocations = new ArrayList<>();
+    private final List<AnalysisInputLocation<JavaSootClass>> analysisInputLocations =
+        new ArrayList<>();
     private SourceTypeSpecifier sourceTypeSpecifier = DefaultSourceTypeSpecifier.getInstance();
     private final JavaLanguage language;
 
@@ -105,26 +108,28 @@ public class JavaProject extends Project {
 
     @Nonnull
     public JavaProjectBuilder addClassPath(
-        Collection<AnalysisInputLocation> analysisInputLocations) {
+        Collection<AnalysisInputLocation<JavaSootClass>> analysisInputLocations) {
       this.analysisInputLocations.addAll(analysisInputLocations);
       return this;
     }
 
     @Nonnull
-    public JavaProjectBuilder addClassPath(AnalysisInputLocation analysisInputLocation) {
+    public JavaProjectBuilder addClassPath(
+        AnalysisInputLocation<JavaSootClass> analysisInputLocation) {
       this.analysisInputLocations.add(analysisInputLocation);
       return this;
     }
 
     @Nonnull
-    JavaProjectBuilder addModulePath(Collection<AnalysisInputLocation> analysisInputLocation) {
+    JavaProjectBuilder addModulePath(
+        Collection<AnalysisInputLocation<JavaSootClass>> analysisInputLocation) {
       // TODO [ms]: java modules
       this.analysisInputLocations.addAll(analysisInputLocation);
       return this;
     }
 
     @Nonnull
-    JavaProjectBuilder addModulePath(AnalysisInputLocation analysisInputLocation) {
+    JavaProjectBuilder addModulePath(AnalysisInputLocation<JavaSootClass> analysisInputLocation) {
       // TODO [ms]: java modules
       this.analysisInputLocations.add(analysisInputLocation);
       return this;
