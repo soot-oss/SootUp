@@ -1,5 +1,7 @@
 package de.upb.swt.soot.callgraph.spark.builder;
 
+import de.upb.swt.soot.callgraph.CallGraph;
+
 public class PointsToAnalysisBuilder {
 
     private ContextSensitivity contextSensitivity = ContextSensitivity.CONTEXT_INSENSITIVE;
@@ -28,6 +30,8 @@ public class PointsToAnalysisBuilder {
     //RTA: Setting RTA to true sets
     // - types-for-sites to true,
     // - causes Spark to use a single points-to set for all variables
+
+    CallGraph callGraph;
 
 
 
