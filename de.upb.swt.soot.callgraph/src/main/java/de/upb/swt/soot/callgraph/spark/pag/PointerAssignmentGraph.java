@@ -23,6 +23,7 @@ package de.upb.swt.soot.callgraph.spark.pag;
  */
 
 import com.sun.javafx.geom.Edge;
+import de.upb.swt.soot.callgraph.CallGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
@@ -35,6 +36,23 @@ import javax.annotation.Nonnull;
 
 
 public class PointerAssignmentGraph {
+
+    // VariableNodes for local variables and static fields
+    // Single VariableNode for all thrown exceptions
+    // Depending on the options:
+    // instance fields, method params and return values are represented with:
+    // - variable, or
+    // - field reference nodes
+    // Array elements are always represented with field reference node
+    // allocnodes created for alloc sites and string constants, including args to main method
+
+    // Edges are created for all pointer-valued assignments including:
+    // - casts
+    // - throw catch
+    // - pointers passed to and returned from methods (unless cfg is otf)
+    // special edges for implicit flows:
+    // - finalize methods
+    // - java.lang.Thread start method to run method
 
     private static class Vertex {
         @Nonnull
@@ -64,8 +82,10 @@ public class PointerAssignmentGraph {
     }
 
     private final DefaultDirectedGraph<Vertex, Edge> graph;
+    private CallGraph callGraph;
 
-    public PointerAssignmentGraph() {
+    public PointerAssignmentGraph(CallGraph callGraph) {
+        this.callGraph = callGraph;
         this.graph = new DefaultDirectedGraph<>(null, null, false);
     }
 

@@ -31,7 +31,7 @@ public class PointsToAnalysisBuilder {
     // - types-for-sites to true,
     // - causes Spark to use a single points-to set for all variables
 
-    CallGraph callGraph;
+
 
 
 
