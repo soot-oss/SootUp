@@ -147,6 +147,5 @@ public abstract class Project<
    * @return A scoped view of the provided code
    */
   @Nonnull
-  // TODO raw type
-  public abstract View createView(Scope s);
+  public abstract V createView(Scope s);
 }
