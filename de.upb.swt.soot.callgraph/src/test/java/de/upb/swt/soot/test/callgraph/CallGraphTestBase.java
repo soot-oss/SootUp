@@ -8,12 +8,12 @@ import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import de.upb.swt.soot.java.core.views.JavaView;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.util.Collections;
 import java.util.Optional;
@@ -29,7 +29,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   protected JavaClassType mainClassSignature;
   protected MethodSignature mainMethodSignature;
 
-  protected abstract T createAlgorithm(View view, TypeHierarchy typeHierarchy);
+  protected abstract T createAlgorithm(JavaView view, TypeHierarchy typeHierarchy);
 
   CallGraph loadCallGraph(String testDirectory, String className) {
     String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
@@ -47,7 +47,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             .addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath))
             .build();
 
-    View view = javaProject.createOnDemandView();
+    JavaView view = javaProject.createOnDemandView();
 
     mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =

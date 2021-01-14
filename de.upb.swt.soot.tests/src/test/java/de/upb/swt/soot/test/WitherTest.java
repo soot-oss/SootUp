@@ -48,7 +48,7 @@ public class WitherTest {
   public void testWithers() {
 
     LocalGenerator generator = new LocalGenerator(new LinkedHashSet<>());
-    Optional<SootClassSource> classSource = loader.getClassSource(declareClassSig);
+    Optional<SootClassSource<JavaSootClass>> classSource = loader.getClassSource(declareClassSig);
     assertTrue(classSource.isPresent());
     JavaSootClass sootClass =
         new JavaSootClass((JavaSootClassSource) classSource.get(), SourceType.Application);

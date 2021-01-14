@@ -7,17 +7,16 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
@@ -31,7 +30,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class MethodDispatchResolverTest {
 
-  private View view;
+  private JavaView view;
   public static final String jarFile = "../shared-test-resources/java-miniapps/MiniApp.jar";
 
   @Before
@@ -48,7 +47,7 @@ public class MethodDispatchResolverTest {
             .collect(Collectors.joining(File.pathSeparator));
     JavaClassPathAnalysisInputLocation analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
-    Project p =
+    JavaProject p =
         JavaProject.builder(new JavaLanguage(8)).addClassPath(analysisInputLocation).build();
     view = p.createOnDemandView();
   }
