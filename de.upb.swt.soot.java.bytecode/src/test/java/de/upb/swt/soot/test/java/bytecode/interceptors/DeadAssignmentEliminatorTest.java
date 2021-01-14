@@ -16,10 +16,7 @@ import de.upb.swt.soot.java.bytecode.interceptors.DeadAssignmentEliminator;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import org.junit.Test;
 
 public class DeadAssignmentEliminatorTest {
@@ -63,6 +60,7 @@ public class DeadAssignmentEliminatorTest {
     Stmt ret = JavaJimple.newReturnStmt(a, noPositionInfo);
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b, c);
+
     List<Trap> traps = new ArrayList<>();
 
     Body.BodyBuilder builder = Body.builder();

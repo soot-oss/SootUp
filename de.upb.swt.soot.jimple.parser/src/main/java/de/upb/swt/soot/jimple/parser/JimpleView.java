@@ -100,13 +100,17 @@ public class JimpleView extends AbstractView<SootClass> {
             .collect(Collectors.toList());
 
     if (foundClassSources.size() < 1) {
-      throw new ResolveException("No class candidates for \"" + type + "\" found.");
+      return Optional.empty();
     } else if (foundClassSources.size() > 1) {
-      // TODO: print those analysisInputLocation to the user
       throw new ResolveException(
           "Multiple class candidates for \""
               + type
-              + "\" found in the given AnalysisInputLocations. Soot can't decide which AnalysisInputLocation it should refer to for this Type.");
+              + "\" found in the given AnalysisInputLocations. Soot can't decide which AnalysisInputLocation it should refer to for this Type.\n"
+              + "The candidates are "
+              + foundClassSources.stream()
+                  .map(cs -> cs.getSourcePath().toString())
+                  .collect(Collectors.joining(",")),
+          foundClassSources.get(0).getSourcePath());
     }
     return buildClassFrom(foundClassSources.get(0));
   }
