@@ -87,7 +87,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.INTERFACEINVOKE);
     up.literal(" ");
     getBaseBox().toString(up);
@@ -99,7 +99,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseInterfaceInvokeExpr(this);
   }
 

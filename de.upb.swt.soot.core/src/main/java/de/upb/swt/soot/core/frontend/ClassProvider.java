@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.frontend;
 
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import java.nio.file.Path;
 
@@ -32,11 +33,11 @@ import java.nio.file.Path;
  *
  * @author Manuel Benz
  */
-public interface ClassProvider {
+public interface ClassProvider<T extends SootClass> {
 
   // TODO: [ms] check necessity for AnalysisInputLocation AND Path?
-  AbstractClassSource createClassSource(
-      AnalysisInputLocation inputLocation, Path sourcePath, ClassType classSignature);
+  AbstractClassSource<T> createClassSource(
+      AnalysisInputLocation<T> inputLocation, Path sourcePath, ClassType classSignature);
 
   /** Returns the file type that is handled by this provider, e.g. class, jimple, java */
   FileType getHandledFileType();

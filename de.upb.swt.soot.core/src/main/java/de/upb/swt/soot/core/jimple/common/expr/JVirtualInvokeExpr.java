@@ -62,7 +62,7 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr impleme
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.VIRTUALINVOKE);
     up.literal(" ");
     getBaseBox().toString(up);
@@ -74,7 +74,7 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr impleme
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseVirtualInvokeExpr(this);
   }
 

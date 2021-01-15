@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
  *
  * @author Linghui Luo
  */
-public abstract class AbstractClass<T extends AbstractClassSource> {
+public abstract class AbstractClass<T extends AbstractClassSource<?>> {
 
   protected final T classSource;
 
@@ -48,7 +48,7 @@ public abstract class AbstractClass<T extends AbstractClassSource> {
     this.classSource = cs;
   }
 
-  public AbstractClassSource getClassSource() {
+  public T getClassSource() {
     return classSource;
   }
 

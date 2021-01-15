@@ -28,6 +28,7 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public interface Constant extends Immediate {
 
@@ -51,7 +52,7 @@ public interface Constant extends Immediate {
   }
 
   @Override
-  default void toString(StmtPrinter up) {
+  default void toString(@Nonnull StmtPrinter up) {
     up.constant(this);
   }
 }

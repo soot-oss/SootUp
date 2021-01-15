@@ -37,6 +37,7 @@ import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -78,7 +79,7 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
   }
 
   @Override
-  public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
+  public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
     Preconditions.checkArgument(
@@ -88,10 +89,10 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
     ModuleFinder moduleFinder =
         new ModuleFinder(new AsmJavaClassProvider(bodyInterceptors), modulePath);
-    Set<AbstractClassSource> found = new HashSet<>();
+    Set<AbstractClassSource<JavaSootClass>> found = new HashSet<>();
     Collection<String> availableModules = moduleFinder.discoverAllModules();
     for (String module : availableModules) {
-      AnalysisInputLocation inputLocation = moduleFinder.discoverModule(module);
+      AnalysisInputLocation<JavaSootClass> inputLocation = moduleFinder.discoverModule(module);
       IdentifierFactory identifierFactoryWrapper = identifierFactory;
       if (inputLocation == null) {
         continue;
@@ -110,7 +111,7 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
   }
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
+  public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
       @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
     JavaClassType klassType = (JavaClassType) classType;
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();

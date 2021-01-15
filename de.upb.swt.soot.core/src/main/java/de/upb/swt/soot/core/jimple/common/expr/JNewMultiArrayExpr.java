@@ -92,7 +92,7 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     Type t = baseType.getBaseType();
 
     up.literal(Jimple.NEWMULTIARRAY);
@@ -154,7 +154,7 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseNewMultiArrayExpr(this);
   }
 

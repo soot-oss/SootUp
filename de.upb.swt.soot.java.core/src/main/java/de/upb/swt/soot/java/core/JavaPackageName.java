@@ -22,7 +22,6 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Collections;
@@ -32,6 +31,7 @@ import javax.annotation.Nullable;
 
 public class JavaPackageName extends PackageName {
 
+  // if null: information is not loaded
   @Nullable private Iterable<AnnotationType> annotations;
 
   /**
@@ -57,13 +57,14 @@ public class JavaPackageName extends PackageName {
     this.annotations = annotations;
   }
 
-  public Iterable<AnnotationType> getAnnotations(JavaView view, String packageName) {
-    if (annotations != null) {
-      Optional<SootClass> sc =
+  @Nonnull
+  public Iterable<AnnotationType> getAnnotations(
+      @Nonnull JavaView view, @Nonnull String packageName) {
+    if (annotations == null) {
+      Optional<JavaSootClass> sc =
           view.getClass(
               JavaIdentifierFactory.getInstance().getClassType(PACKAGE_INFO, packageName));
-      annotations =
-          sc.isPresent() ? ((JavaSootClass) sc.get()).getAnnotations() : Collections.emptyList();
+      annotations = sc.isPresent() ? (sc.get()).getAnnotations() : Collections.emptyList();
     }
     return annotations;
   }

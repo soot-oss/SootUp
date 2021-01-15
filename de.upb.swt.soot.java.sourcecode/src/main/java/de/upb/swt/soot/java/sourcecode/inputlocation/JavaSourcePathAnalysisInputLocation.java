@@ -26,6 +26,7 @@ import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Linghui Luo
  */
-public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocation {
+public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocation<JavaSootClass> {
 
   private static final Logger log =
       LoggerFactory.getLogger(JavaSourcePathAnalysisInputLocation.class);
@@ -52,7 +53,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
   @Nonnull private final Set<String> sourcePaths;
   @Nonnull private final WalaJavaClassProvider classProvider;
 
-  private final String exclusionFilePath;
+  @Nullable private final String exclusionFilePath;
 
   /**
    * Create a {@link JavaSourcePathAnalysisInputLocation} which locates java source code in the
@@ -81,20 +82,22 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
     this.classProvider = new WalaJavaClassProvider(sourcePaths, exclusionFilePath);
   }
 
+  @Nonnull
   @Override
-  public Optional<? extends AbstractClassSource> getClassSource(@Nonnull ClassType type) {
+  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+      @Nonnull ClassType type) {
     return getClassSource(type, SourcecodeClassLoadingOptions.Default);
   }
 
   @Nonnull
-  public Collection<? extends AbstractClassSource> getClassSources(
+  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory) {
     return getClassSources(identifierFactory, SourcecodeClassLoadingOptions.Default);
   }
 
   @Override
   @Nonnull
-  public Collection<? extends AbstractClassSource> getClassSources(
+  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
     return classProvider.getClassSources();
@@ -102,7 +105,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
 
   @Override
   @Nonnull
-  public Optional<? extends AbstractClassSource> getClassSource(
+  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
       @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
     for (String path : sourcePaths) {
       try {

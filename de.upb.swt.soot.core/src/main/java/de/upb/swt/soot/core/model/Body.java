@@ -253,6 +253,7 @@ public class Body implements Copyable {
     return stmts;
   }
 
+  @Nonnull
   public ImmutableStmtGraph getStmtGraph() {
     return cfg;
   }

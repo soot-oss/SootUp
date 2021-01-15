@@ -25,9 +25,7 @@ import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.Edge
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.EdgeType;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.Vertex;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.VertexType;
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
-import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
@@ -61,9 +59,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   private final Supplier<ScanResult> lazyScanResult = Suppliers.memoize(this::scanView);
 
-  @Nonnull private final View view;
+  @Nonnull private final View<? extends SootClass> view;
 
-  public ViewTypeHierarchy(@Nonnull View view) {
+  public ViewTypeHierarchy(@Nonnull View<? extends SootClass> view) {
     this.view = view;
   }
 
@@ -75,7 +73,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       throw new ResolveException("Could not find " + interfaceType + " in hierarchy.");
     }
     if (vertex.type != VertexType.Interface) {
-      throw new IllegalArgumentException(interfaceType + " is not an interface");
+      throw new IllegalArgumentException(interfaceType + " is not an interface.");
     }
     return subtypesOf(interfaceType);
   }
@@ -88,7 +86,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       throw new ResolveException("Could not find " + classType + " in hierarchy.");
     }
     if (vertex.type != VertexType.Class) {
-      throw new IllegalArgumentException(classType + " is not a class");
+      throw new IllegalArgumentException(classType + " is not a class.");
     }
     return subtypesOf(classType);
   }
@@ -287,9 +285,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     Map<ClassType, Vertex> typeToVertex = new HashMap<>();
     Graph<Vertex, Edge> graph = new SimpleDirectedGraph<>(null, null, false);
 
-    view.getClassesStream()
-        .filter(aClass -> aClass instanceof SootClass)
-        .map(aClass -> (SootClass) aClass)
+    view.getClasses().stream()
         .forEach(sootClass -> addSootClassToGraph(sootClass, typeToVertex, graph));
     double runtimeMs = (System.nanoTime() - startNanos) / 1e6;
     log.info("Type hierarchy scan took " + runtimeMs + " ms");
@@ -347,14 +343,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   @Nonnull
   private SootClass sootClassFor(@Nonnull ClassType classType) {
-    AbstractClass<? extends AbstractClassSource> aClass =
-        view.getClass(classType)
-            .orElseThrow(
-                () -> new ResolveException("Could not find " + classType + " in view " + view));
-    if (!(aClass instanceof SootClass)) {
-      throw new ResolveException("" + classType + " is not a regular Java class");
-    }
-    return (SootClass) aClass;
+    return view.getClassOrThrow(classType);
   }
 
   @Override

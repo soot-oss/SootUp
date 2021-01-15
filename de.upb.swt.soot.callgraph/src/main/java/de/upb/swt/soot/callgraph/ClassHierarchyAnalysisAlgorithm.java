@@ -36,7 +36,8 @@ import javax.annotation.Nonnull;
 
 public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
-  public ClassHierarchyAnalysisAlgorithm(@Nonnull View view, @Nonnull TypeHierarchy typeHierarchy) {
+  public ClassHierarchyAnalysisAlgorithm(
+      @Nonnull View<? extends SootClass> view, @Nonnull TypeHierarchy typeHierarchy) {
     super(view, typeHierarchy);
   }
 

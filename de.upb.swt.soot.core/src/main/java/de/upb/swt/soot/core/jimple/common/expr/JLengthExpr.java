@@ -56,7 +56,7 @@ public final class JLengthExpr extends AbstractUnopExpr implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.LENGTHOF);
     up.literal(" ");
     getOpBox().toString(up);
@@ -68,7 +68,7 @@ public final class JLengthExpr extends AbstractUnopExpr implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseLengthExpr(this);
   }
 
