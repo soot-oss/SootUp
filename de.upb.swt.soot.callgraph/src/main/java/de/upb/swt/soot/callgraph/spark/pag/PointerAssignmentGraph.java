@@ -92,4 +92,9 @@ public class PointerAssignmentGraph {
     public void addEdge(Node source, Node target){
         graph.addEdge(new Vertex(source), new Vertex(target));
     }
+
+    public void addIntraproceduralPointerAssignmentGraph(IntraproceduralPointerAssignmentGraph intraPAG){
+        DefaultDirectedGraph<IntraproceduralPointerAssignmentGraph.Vertex, IntraproceduralPointerAssignmentGraph.Edge> intraGraph = intraPAG.getGraph();
+        // handle intraGraph
+    }
 }
