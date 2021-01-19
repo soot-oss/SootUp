@@ -5,10 +5,10 @@ import static org.junit.Assert.*;
 import categories.Java8Test;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.AbstractClass;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Collection;
 import java.util.Comparator;
@@ -85,7 +85,7 @@ public class JavaViewTest {
 
   @Ignore
   public void testResolveAll() {
-    Collection<SootClass> classes = this.view.getClasses();
+    Collection<JavaSootClass> classes = this.view.getClasses();
 
     assertEquals(classes.size(), this.signatures.size());
 

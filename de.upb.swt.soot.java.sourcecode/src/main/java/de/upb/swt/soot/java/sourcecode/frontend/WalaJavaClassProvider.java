@@ -45,6 +45,7 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.*;
 import java.nio.file.Path;
@@ -58,12 +59,12 @@ import javax.annotation.Nullable;
  *
  * @author Linghui Luo
  */
-public class WalaJavaClassProvider implements ClassProvider {
+public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
 
   private Set<String> sourcePath;
   private IClassHierarchy classHierarchy;
   private List<SootClass> sootClasses;
-  private List<SootClassSource> classSources;
+  private List<SootClassSource<JavaSootClass>> classSources;
   private AnalysisScope scope;
   private ClassLoaderFactory factory;
   private final File walaPropertiesFile = new File("target/classes/wala.properties");
@@ -222,7 +223,7 @@ public class WalaJavaClassProvider implements ClassProvider {
    *
    * @return list of classes
    */
-  public List<SootClassSource> getClassSources() {
+  public List<SootClassSource<JavaSootClass>> getClassSources() {
     Iterator<IClass> it = iterateWalaClasses();
     if (classSources == null) {
       classSources = new ArrayList<>();
@@ -230,7 +231,7 @@ public class WalaJavaClassProvider implements ClassProvider {
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
     while (it.hasNext()) {
       JavaSourceLoaderImpl.JavaClass walaClass = (JavaSourceLoaderImpl.JavaClass) it.next();
-      SootClassSource sootClass = walaToSoot.convertToClassSource(walaClass);
+      SootClassSource<JavaSootClass> sootClass = walaToSoot.convertToClassSource(walaClass);
       classSources.add(sootClass);
     }
     return classSources;
@@ -286,7 +287,7 @@ public class WalaJavaClassProvider implements ClassProvider {
   }
 
   /** Return a ClassSource with the given signature converted from a WALA class. */
-  public Optional<SootClassSource> getClassSource(ClassType signature) {
+  public Optional<SootClassSource<JavaSootClass>> getClassSource(ClassType signature) {
     if (classHierarchy == null) {
       buildClassHierachy();
     }
@@ -299,11 +300,16 @@ public class WalaJavaClassProvider implements ClassProvider {
   private JavaSourceLoaderImpl.JavaClass loadWalaClass(
       ClassType signature, WalaIRToJimpleConverter walaToSoot) {
     String className = walaToSoot.convertClassNameFromSoot(signature.getFullyQualifiedName());
-    JavaSourceLoaderImpl.JavaClass walaClass =
-        (JavaSourceLoaderImpl.JavaClass)
-            classHierarchy
-                .getLoader(JavaSourceAnalysisScope.SOURCE)
-                .lookupClass(TypeName.findOrCreate(className));
+
+    IClass clazz =
+        classHierarchy
+            .getLoader(JavaSourceAnalysisScope.SOURCE)
+            .lookupClass(TypeName.findOrCreate(className));
+
+    JavaSourceLoaderImpl.JavaClass walaClass = null;
+    if (clazz instanceof JavaSourceLoaderImpl.JavaClass) {
+      walaClass = (JavaSourceLoaderImpl.JavaClass) clazz;
+    }
 
     if (walaClass == null && className.contains("$")) {
       // search for a possible inner class
@@ -340,13 +346,9 @@ public class WalaJavaClassProvider implements ClassProvider {
   }
 
   @Override
-  public SootClassSource createClassSource(
-      AnalysisInputLocation srcNamespace, Path sourcePath, ClassType type) {
-    return getClassSource(type)
-        .orElseThrow(
-            () ->
-                new ResolveException(
-                    "Could not resolve " + type + " in " + classSources.toString()));
+  public SootClassSource<JavaSootClass> createClassSource(
+      AnalysisInputLocation<JavaSootClass> srcNamespace, Path sourcePath, ClassType type) {
+    return getClassSource(type).orElse(null);
   }
 
   @Override

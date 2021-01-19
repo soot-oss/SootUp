@@ -20,11 +20,11 @@ package de.upb.swt.soot.callgraph.typehierarchy;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
+
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
-import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.Method;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
@@ -41,7 +41,8 @@ public final class MethodDispatchResolver {
    * the set of method signatures that a method call could resolve to.
    */
   @Nonnull
-  public static Set<MethodSignature> resolveAbstractDispatch(View view, MethodSignature m) {
+  public static Set<MethodSignature> resolveAbstractDispatch(
+      View<? extends SootClass> view, MethodSignature m) {
     TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
 
     return hierarchy.subtypesOf(m.getDeclClassType()).stream()
@@ -54,7 +55,32 @@ public final class MethodDispatchResolver {
                                 "Could not resolve " + subtype + ", but found it in hierarchy.")))
         .flatMap(abstractClass -> abstractClass.getMethods().stream())
         .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
-        .filter(method -> method instanceof SootMethod && !((SootMethod) method).isAbstract())
+        .filter(method -> !method.isAbstract())
+        .map(Method::getSignature)
+        .collect(Collectors.toSet());
+  }
+
+  /**
+   * Searches the view for classes that implement or override the method <code>m</code> and returns
+   * the set of method signatures that a method call could resolve to within the given classes.
+   */
+  @Nonnull
+  public static Set<MethodSignature> resolveAbstractDispatchInClasses(
+      View<? extends SootClass> view, MethodSignature m, Set<ClassType> classes) {
+    TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
+
+    return hierarchy.subtypesOf(m.getDeclClassType()).stream()
+        .map(
+            subtype ->
+                view.getClass(subtype)
+                    .orElseThrow(
+                        () ->
+                            new ResolveException(
+                                "Could not resolve " + subtype + ", but found it in hierarchy.")))
+        .filter(c -> classes.contains(c.getType()))
+        .flatMap(abstractClass -> abstractClass.getMethods().stream())
+        .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
+        .filter(method -> !method.isAbstract())
         .map(Method::getSignature)
         .collect(Collectors.toSet());
   }
@@ -69,7 +95,7 @@ public final class MethodDispatchResolver {
    * @return Whether name and parameters are equal and the return type of <code>potentialTarget
    *     </code> is compatible with the return type of <code>called</code>.
    */
-  private static boolean canDispatch(
+  public static boolean canDispatch(
       MethodSignature called, MethodSignature potentialTarget, TypeHierarchy hierarchy) {
     return called.getName().equals(potentialTarget.getName())
         && called.getParameterTypes().equals(potentialTarget.getParameterTypes())
@@ -83,25 +109,26 @@ public final class MethodDispatchResolver {
    * concrete implementation.
    */
   @Nonnull
-  public static MethodSignature resolveConcreteDispatch(View view, MethodSignature m) {
+  public static MethodSignature resolveConcreteDispatch(
+      View<? extends SootClass> view, MethodSignature m) {
     TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
 
     ClassType superClassType = m.getDeclClassType();
     do {
       ClassType finalSuperClassType = superClassType;
-      AbstractClass<? extends AbstractClassSource> superClass =
+      SootClass superClass =
           view.getClass(superClassType)
               .orElseThrow(
                   () ->
                       new ResolveException(
                           "Did not find class " + finalSuperClassType + " in View"));
 
-      Method concreteMethod =
+      SootMethod concreteMethod =
           superClass.getMethods().stream()
               .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
               .findAny()
               .orElse(null);
-      if (concreteMethod instanceof SootMethod && !((SootMethod) concreteMethod).isAbstract()) {
+      if (concreteMethod != null && !concreteMethod.isAbstract()) {
         return concreteMethod.getSignature();
       }
 
@@ -117,17 +144,19 @@ public final class MethodDispatchResolver {
    */
   @Nonnull
   public static MethodSignature resolveSpecialDispatch(
-      View view, JSpecialInvokeExpr specialInvokeExpr, MethodSignature container) {
+      View<? extends SootClass> view,
+      JSpecialInvokeExpr specialInvokeExpr,
+      MethodSignature container) {
     MethodSignature specialMethodSig = specialInvokeExpr.getMethodSignature();
     if (specialMethodSig.getSubSignature().getName().equals("<init>")) {
       return specialMethodSig;
     }
 
-    Method specialMethod =
+    SootMethod specialMethod =
         view.getClass(specialMethodSig.getDeclClassType())
             .flatMap(cl -> cl.getMethod(specialMethodSig))
             .orElse(null);
-    if (specialMethod instanceof SootMethod && ((SootMethod) specialMethod).isPrivate()) {
+    if (specialMethod != null && specialMethod.isPrivate()) {
       return specialMethodSig;
     }
 

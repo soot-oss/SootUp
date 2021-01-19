@@ -239,7 +239,6 @@ public abstract class StmtGraph implements Iterable<Stmt> {
   /** validates whether the each Stmt has the correct amount of outgoing flows. */
   public void validateStmtConnectionsInGraph() {
     for (Stmt stmt : nodes()) {
-
       final List<Stmt> successors = successors(stmt);
       final int successorCount = successors.size();
 

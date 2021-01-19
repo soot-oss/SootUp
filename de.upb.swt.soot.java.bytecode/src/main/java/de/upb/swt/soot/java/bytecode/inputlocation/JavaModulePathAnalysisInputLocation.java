@@ -24,10 +24,10 @@ import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.inputlocation.ClassResolvingException;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
@@ -37,6 +37,7 @@ import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -78,7 +79,7 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
   }
 
   @Override
-  public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
+  public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
     Preconditions.checkArgument(
@@ -88,12 +89,14 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
     ModuleFinder moduleFinder =
         new ModuleFinder(new AsmJavaClassProvider(bodyInterceptors), modulePath);
-    Set<AbstractClassSource> found = new HashSet<>();
+    Set<AbstractClassSource<JavaSootClass>> found = new HashSet<>();
     Collection<String> availableModules = moduleFinder.discoverAllModules();
     for (String module : availableModules) {
-      AnalysisInputLocation inputLocation = moduleFinder.discoverModule(module);
+      AnalysisInputLocation<JavaSootClass> inputLocation = moduleFinder.discoverModule(module);
       IdentifierFactory identifierFactoryWrapper = identifierFactory;
-
+      if (inputLocation == null) {
+        continue;
+      }
       if (!(inputLocation instanceof JrtFileSystemAnalysisInputLocation)) {
         /*
          * we need a wrapper to create correct types for the found classes, all other ignore modules by default, or have
@@ -101,16 +104,14 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
          */
         identifierFactoryWrapper = new IdentifierFactoryWrapper(identifierFactoryWrapper, module);
       }
-
-      // FIXME: [JMP] `inputLocation` may be `null`
-      found.addAll(inputLocation.getClassSources(identifierFactoryWrapper, classLoadingOptions));
+      found.addAll(inputLocation.getClassSources(identifierFactoryWrapper));
     }
 
     return found;
   }
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
+  public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
       @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
     JavaClassType klassType = (JavaClassType) classType;
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
@@ -124,16 +125,12 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
 
     if (inputLocation == null) {
       try {
-        throw new ClassResolvingException("No Namespace for class " + klassType);
-      } catch (ClassResolvingException e) {
+        throw new ResolveException("No Namespace for class " + klassType);
+      } catch (ResolveException e) {
         e.printStackTrace();
-        // FIXME: [JMP] Throwing exception and catching it immediately? This causes `inputLocation`
-        // to remain
-        // `null`.
+        return Optional.empty();
       }
     }
-
-    // FIXME: [JMP] `inputLocation` may be `null`
     return inputLocation.getClassSource(klassType);
   }
 

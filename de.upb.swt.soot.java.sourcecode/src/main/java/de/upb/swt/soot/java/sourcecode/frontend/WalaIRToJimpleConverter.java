@@ -141,7 +141,7 @@ public class WalaIRToJimpleConverter {
     Position position = walaClass.getSourcePosition();
 
     // convert modifiers
-    EnumSet<Modifier> modifiers = converModifiers(walaClass);
+    EnumSet<Modifier> modifiers = convertModifiers(walaClass);
 
     // convert fields
     Set<IField> fields = HashSetFactory.make(walaClass.getDeclaredInstanceFields());
@@ -377,7 +377,7 @@ public class WalaIRToJimpleConverter {
     return modifiers;
   }
 
-  public EnumSet<Modifier> converModifiers(AstClass klass) {
+  public EnumSet<Modifier> convertModifiers(AstClass klass) {
     int modif = klass.getModifiers();
     EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
     if (klass.isAbstract()) {
@@ -435,7 +435,7 @@ public class WalaIRToJimpleConverter {
 
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
-      LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
+      LocalGenerator localGenerator = new LocalGenerator(new LinkedHashSet<>());
       // convert all wala instructions to jimple statements
       SSAInstruction[] insts = (SSAInstruction[]) cfg.getInstructions();
       if (insts.length > 0) {

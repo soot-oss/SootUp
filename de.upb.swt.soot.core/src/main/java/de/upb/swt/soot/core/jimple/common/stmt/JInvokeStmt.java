@@ -65,7 +65,7 @@ public final class JInvokeStmt extends Stmt implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     invokeExprBox.toString(up);
   }
 
@@ -87,7 +87,7 @@ public final class JInvokeStmt extends Stmt implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseInvokeStmt(this);
   }
 

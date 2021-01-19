@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -17,12 +16,9 @@ import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.JavaProject;
-import de.upb.swt.soot.java.core.JavaSootClass;
-import de.upb.swt.soot.java.core.OverridingJavaClassSource;
+import de.upb.swt.soot.java.core.*;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Collections;
 import java.util.EnumSet;
 import org.junit.Before;
@@ -33,11 +29,11 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class JFieldRefTest {
 
-  View view;
+  JavaView view;
 
   @Before
   public void setUp() {
-    Project project =
+    JavaProject project =
         JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
     view = project.createOnDemandView();
   }

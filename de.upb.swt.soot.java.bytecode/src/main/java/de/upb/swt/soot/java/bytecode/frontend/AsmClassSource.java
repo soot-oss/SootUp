@@ -51,7 +51,7 @@ class AsmClassSource extends JavaSootClassSource {
   @Nonnull private final ClassNode classNode;
 
   public AsmClassSource(
-      AnalysisInputLocation inputLocation,
+      AnalysisInputLocation<JavaSootClass> inputLocation,
       Path sourcePath,
       JavaClassType javaClassType,
       @Nonnull ClassNode classNode) {
@@ -125,7 +125,7 @@ class AsmClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public Set<Modifier> resolveModifiers() {
+  public EnumSet<Modifier> resolveModifiers() {
     EnumSet<Modifier> modifiers = AsmUtil.getModifiers(classNode.access);
     return modifiers;
   }

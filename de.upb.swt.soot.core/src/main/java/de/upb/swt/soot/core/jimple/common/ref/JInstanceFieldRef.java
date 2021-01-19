@@ -25,6 +25,7 @@ package de.upb.swt.soot.core.jimple.common.ref;
  * @author Linghui Luo
  * @version 1.0
  */
+
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -63,7 +64,7 @@ public final class JInstanceFieldRef extends JFieldRef implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     baseBox.toString(up);
     up.literal(".");
     up.fieldSignature(getFieldSignature());
@@ -85,7 +86,7 @@ public final class JInstanceFieldRef extends JFieldRef implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((RefVisitor) sw).caseInstanceFieldRef(this);
   }
 

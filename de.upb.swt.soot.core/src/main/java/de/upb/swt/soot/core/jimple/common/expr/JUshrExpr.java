@@ -43,7 +43,7 @@ public final class JUshrExpr extends AbstractIntLongBinopExpr implements Copyabl
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseUshrExpr(this);
   }
 

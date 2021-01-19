@@ -192,6 +192,7 @@ public class LocalSplitterTest {
 
     // build set locals
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1);
+
     builder.setLocals(locals);
 
     Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(0), noStmtPositionInfo);
@@ -237,6 +238,7 @@ public class LocalSplitterTest {
 
     // build set locals
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l1hash1, l1hash2, l1hash3);
+
     builder.setLocals(locals);
 
     Stmt stmt1 = JavaJimple.newAssignStmt(l1hash1, IntConstant.getInstance(0), noStmtPositionInfo);
@@ -289,6 +291,7 @@ public class LocalSplitterTest {
 
     // build set locals
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2);
+
     builder.setLocals(locals);
 
     Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(0), noStmtPositionInfo);
@@ -325,6 +328,7 @@ public class LocalSplitterTest {
 
     // build set locals
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l1hash1, l2hash2, l1hash3, l2hash4);
+
     builder.setLocals(locals);
 
     Stmt stmt1 = JavaJimple.newAssignStmt(l1hash1, IntConstant.getInstance(0), noStmtPositionInfo);
@@ -366,6 +370,7 @@ public class LocalSplitterTest {
 
     // build set locals
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, stack3, stack4);
+
     builder.setLocals(locals);
 
     Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(0), noStmtPositionInfo);
@@ -415,6 +420,7 @@ public class LocalSplitterTest {
 
     // build set locals
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, stack3, stack4, l1hash1, l1hash2);
+
     builder.setLocals(locals);
 
     Stmt stmt1 = JavaJimple.newAssignStmt(l1hash1, IntConstant.getInstance(0), noStmtPositionInfo);

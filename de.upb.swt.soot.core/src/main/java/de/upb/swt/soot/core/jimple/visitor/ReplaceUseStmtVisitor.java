@@ -22,7 +22,7 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
@@ -33,17 +33,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Replace old use of a Stmt with a new use
+ * Replace old use(Value) of a Stmt with a new use(Value)
  *
  * @author Zun Wang
  */
 public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
 
   @Nonnull private final Value oldUse;
-  @Nonnull private final Local newUse;
+  @Nonnull private final Value newUse;
   @Nullable private Stmt newStmt = null;
 
-  public ReplaceUseStmtVisitor(@Nonnull Value oldUse, @Nonnull Local newUse) {
+  public ReplaceUseStmtVisitor(@Nonnull Value oldUse, @Nonnull Value newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
   }
@@ -73,12 +73,12 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
     Value rValue = stmt.getRightOp();
     Value newRValue = null;
 
-    if (rValue instanceof Local && rValue.equivTo(oldUse)) {
-      newRValue = newUse;
+    if (rValue instanceof Immediate) {
+      if ((newUse instanceof Immediate) && rValue.equivTo(oldUse)) newRValue = newUse;
 
     } else if (rValue instanceof Ref) {
 
-      ReplaceUseRefVisitor refVisitor = new ReplaceUseRefVisitor(oldUse, (Local) newUse);
+      ReplaceUseRefVisitor refVisitor = new ReplaceUseRefVisitor(oldUse, newUse);
       rValue.accept(refVisitor);
       if (!refVisitor.getNewRef().equivTo(rValue)) {
         newRValue = refVisitor.getNewRef();
@@ -108,8 +108,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
   @Nonnull
   @Override
   public void caseEnterMonitorStmt(@Nonnull JEnterMonitorStmt stmt) {
-    Value op = stmt.getOp();
-    if (op.equivTo(oldUse)) {
+    if (newUse instanceof Immediate && stmt.getOp().equivTo(oldUse)) {
       newStmt = stmt.withOp(newUse);
     } else {
       defaultCase(stmt);
@@ -119,8 +118,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
   @Nonnull
   @Override
   public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
-    Value op = stmt.getOp();
-    if (op.equivTo(oldUse)) {
+    if (newUse instanceof Immediate && stmt.getOp().equivTo(oldUse)) {
       newStmt = stmt.withOp(newUse);
     } else {
       defaultCase(stmt);
@@ -155,9 +153,8 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
   @Nonnull
   @Override
   public void caseRetStmt(@Nonnull JRetStmt stmt) {
-    Value stmtAddress = stmt.getStmtAddress();
-    if (stmtAddress.equivTo(oldUse)) {
-      newStmt = stmt.withStmtAddress(newUse);
+    if (newUse instanceof Immediate && stmt.getStmtAddress().equivTo(oldUse)) {
+      newStmt = stmt.withStmtAddress((Immediate) newUse);
     } else {
       defaultCase(stmt);
     }
@@ -166,9 +163,8 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
   @Nonnull
   @Override
   public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
-    Value op = stmt.getOp();
-    if (op.equivTo(oldUse)) {
-      newStmt = stmt.withReturnValue(newUse);
+    if (newUse instanceof Immediate && stmt.getOp().equivTo(oldUse)) {
+      newStmt = stmt.withReturnValue((Immediate) newUse);
     } else {
       defaultCase(stmt);
     }
@@ -183,9 +179,8 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
   @Nonnull
   @Override
   public void caseSwitchStmt(@Nonnull JSwitchStmt stmt) {
-    Value key = stmt.getKey();
-    if (key.equivTo(oldUse)) {
-      newStmt = stmt.withKey(newUse);
+    if (newUse instanceof Immediate && stmt.getKey().equivTo(oldUse)) {
+      newStmt = stmt.withKey((Immediate) newUse);
     } else {
       defaultCase(stmt);
     }
@@ -194,8 +189,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
   @Nonnull
   @Override
   public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
-    Value op = stmt.getOp();
-    if (op.equivTo(oldUse)) {
+    if (newUse instanceof Immediate && stmt.getOp().equivTo(oldUse)) {
       newStmt = stmt.withOp(newUse);
     } else {
       defaultCase(stmt);

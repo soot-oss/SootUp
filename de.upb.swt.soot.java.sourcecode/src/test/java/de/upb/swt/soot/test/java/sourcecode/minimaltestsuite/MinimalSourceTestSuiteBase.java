@@ -3,7 +3,6 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -12,6 +11,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.Utils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
@@ -42,7 +42,6 @@ public abstract class MinimalSourceTestSuiteBase {
   public static class CustomTestWatcher extends TestWatcher {
     private String classPath = MinimalSourceTestSuiteBase.class.getSimpleName();
     private JavaView javaView;
-    private JavaProject project;
 
     /** Load WalaClassLoader once for each test directory */
     @Override
@@ -50,7 +49,7 @@ public abstract class MinimalSourceTestSuiteBase {
       String prevClassDirName = getTestDirectoryName(getClassPath());
       setClassPath(description.getClassName());
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
-        project =
+        JavaProject project =
             JavaProject.builder(new JavaLanguage(8))
                 .addClassPath(
                     new JavaSourcePathAnalysisInputLocation(
@@ -94,7 +93,7 @@ public abstract class MinimalSourceTestSuiteBase {
   }
 
   /**
-   * @returns the name of the parent directory - assuming the directory structure is only one level
+   * @return the name of the parent directory - assuming the directory structure is only one level
    *     deep
    */
   public static String getTestDirectoryName(String classPath) {
@@ -107,7 +106,7 @@ public abstract class MinimalSourceTestSuiteBase {
   }
 
   /**
-   * @returns the name of the class - assuming the testname unit has "Test" appended to the
+   * @return the name of the class - assuming the testname unit has "Test" appended to the
    *     respective name of the class
    */
   public String getClassName(String classPath) {
@@ -123,7 +122,7 @@ public abstract class MinimalSourceTestSuiteBase {
   }
 
   public SootClass loadClass(ClassType clazz) {
-    Optional<SootClass> cs = customTestWatcher.getJavaView().getClass(clazz);
+    Optional<JavaSootClass> cs = customTestWatcher.getJavaView().getClass(clazz);
     assertTrue("no matching class signature found", cs.isPresent());
     return cs.get();
   }
@@ -132,8 +131,7 @@ public abstract class MinimalSourceTestSuiteBase {
     SootClass clazz = loadClass(methodSignature.getDeclClassType());
     Optional<SootMethod> m = clazz.getMethod(methodSignature);
     assertTrue("No matching method signature found", m.isPresent());
-    SootMethod method = m.get();
-    return method;
+    return m.get();
   }
 
   public void assertJimpleStmts(SootMethod method, List<String> expectedStmts) {

@@ -21,6 +21,7 @@ package de.upb.swt.soot.callgraph.typehierarchy;
  * #L%
  */
 import com.google.common.base.Suppliers;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.core.views.View;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ import javax.annotation.Nullable;
  */
 public interface TypeHierarchy {
 
-  static TypeHierarchy fromView(View view) {
+  static TypeHierarchy fromView(View<? extends SootClass> view) {
     return view.computeModuleDataIfAbsent(
             TypeHierarchyKey.getInstance(),
             () -> Suppliers.memoize(() -> new ViewTypeHierarchy(view)))
@@ -80,6 +81,10 @@ public interface TypeHierarchy {
    */
   @Nonnull
   Set<ClassType> subtypesOf(@Nonnull ClassType type);
+
+  /** Returns the direct implementers of an interface or direct subclasses of a class. */
+  @Nonnull
+  Set<ClassType> directSubtypesOf(@Nonnull ClassType type);
 
   /**
    * Returns the direct superclass of <code>classType</code>. If <code>classType == java.lang.Object

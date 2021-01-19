@@ -39,16 +39,16 @@ public abstract class SootClassMemberSignature implements Signature {
   /** The signature of the declaring class. */
   @Nonnull private final ClassType declClassSignature;
 
-  @Nonnull private final AbstractClassMemberSubSignature subSignature;
+  @Nonnull private final SootClassMemberSubSignature subSignature;
 
   public SootClassMemberSignature(
-      @Nonnull ClassType klass, @Nonnull AbstractClassMemberSubSignature subSignature) {
+      @Nonnull ClassType klass, @Nonnull SootClassMemberSubSignature subSignature) {
     this.declClassSignature = klass;
     this.subSignature = subSignature;
   }
 
   @Nonnull
-  public AbstractClassMemberSubSignature getSubSignature() {
+  public SootClassMemberSubSignature getSubSignature() {
     return subSignature;
   }
 

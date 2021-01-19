@@ -58,7 +58,7 @@ public final class JInstanceOfExpr implements Expr, Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     opBox.toString(up);
     up.literal(" ");
     up.literal(Jimple.INSTANCEOF);
@@ -102,7 +102,7 @@ public final class JInstanceOfExpr implements Expr, Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseInstanceOfExpr(this);
   }
 

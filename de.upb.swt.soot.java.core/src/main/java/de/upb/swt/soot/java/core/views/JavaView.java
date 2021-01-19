@@ -22,17 +22,14 @@ package de.upb.swt.soot.java.core.views;
  * #L%
  */
 
-import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.model.AbstractClass;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.views.AbstractView;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +37,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -49,87 +45,18 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo created on 31.07.2018
  * @author Jan Martin Persch
  */
-public class JavaView extends AbstractView {
+public class JavaView extends AbstractView<JavaSootClass> {
 
-  /** Defines Java's reserved names. */
-  @Nonnull
-  public static final ImmutableSet<String> RESERVED_NAMES =
-      ImmutableUtils.immutableSet(
-          "newarray",
-          "newmultiarray",
-          "nop",
-          "ret",
-          "specialinvoke",
-          "staticinvoke",
-          "tableswitch",
-          "virtualinvoke",
-          "null_type",
-          "unknown",
-          "cmp",
-          "cmpg",
-          "cmpl",
-          "entermonitor",
-          "exitmonitor",
-          "interfaceinvoke",
-          "lengthof",
-          "lookupswitch",
-          "neg",
-          "if",
-          "abstract",
-          "annotation",
-          "boolean",
-          "break",
-          "byte",
-          "case",
-          "catch",
-          "char",
-          "class",
-          "enum",
-          "final",
-          "native",
-          "public",
-          "protected",
-          "private",
-          "static",
-          "synchronized",
-          "transient",
-          "volatile",
-          "interface",
-          "void",
-          "short",
-          "int",
-          "long",
-          "float",
-          "double",
-          "extends",
-          "implements",
-          "breakpoint",
-          "default",
-          "goto",
-          "instanceof",
-          "new",
-          "return",
-          "throw",
-          "throws",
-          "null",
-          "from",
-          "to",
-          "with",
-          "cls",
-          "dynamicinvoke",
-          "strictfp");
-
-  @Nonnull
-  private final Map<ClassType, AbstractClass<? extends AbstractClassSource>> cache =
-      new HashMap<>();
+  @Nonnull private final Map<ClassType, JavaSootClass> cache = new HashMap<>();
 
   private volatile boolean isFullyResolved = false;
 
   @Nonnull
-  protected Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier;
+  protected Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
+      classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link JavaView} class. */
-  public JavaView(@Nonnull Project project) {
+  public JavaView(@Nonnull Project<JavaView, JavaSootClass> project) {
     this(project, analysisInputLocation -> null);
   }
 
@@ -141,56 +68,35 @@ public class JavaView extends AbstractView {
    *     options.
    */
   public JavaView(
-      @Nonnull Project project,
-      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
+      @Nonnull Project<JavaView, JavaSootClass> project,
+      @Nonnull
+          Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
   }
 
   @Override
   @Nonnull
-  public synchronized Collection<SootClass> getClasses() {
-    return getAbstractClassSources()
-        .filter(clazz -> clazz instanceof SootClass)
-        .map(clazz -> (SootClass) clazz)
-        .collect(Collectors.toList());
-  }
-
-  @Override
-  @Nonnull
-  public Stream<SootClass> getClassesStream() {
-    return getClasses().stream();
-  }
-
-  @Nonnull
-  synchronized Stream<AbstractClass<? extends AbstractClassSource>> getAbstractClassSources() {
+  public synchronized Collection<JavaSootClass> getClasses() {
     resolveAll();
-    return cache.values().stream();
+    return cache.values();
   }
 
   @Override
   @Nonnull
-  public synchronized Optional<SootClass> getClass(@Nonnull ClassType type) {
-    return getAbstractClass(type)
-        .map(
-            clazz -> {
-              if (clazz instanceof SootClass) {
-                return (SootClass) clazz;
-              } else {
-                throw new ResolveException(
-                    type + " is not a regular Java class!", clazz.getClassSource().getSourcePath());
-              }
-            });
+  public synchronized Optional<JavaSootClass> getClass(@Nonnull ClassType type) {
+    return getAbstractClass(type);
   }
 
   @Nonnull
-  Optional<AbstractClass<? extends AbstractClassSource>> getAbstractClass(@Nonnull ClassType type) {
-    AbstractClass<? extends AbstractClassSource> cachedClass = cache.get(type);
+  Optional<JavaSootClass> getAbstractClass(@Nonnull ClassType type) {
+    JavaSootClass cachedClass = cache.get(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
 
-    final List<AbstractClassSource> foundClassSources =
+    final List<AbstractClassSource<JavaSootClass>> foundClassSources =
         getProject().getInputLocations().stream()
             .map(
                 location -> {
@@ -208,20 +114,25 @@ public class JavaView extends AbstractView {
             .collect(Collectors.toList());
 
     if (foundClassSources.size() < 1) {
-      throw new ResolveException("No class candidates for \"" + type + "\" found.");
+      return Optional.empty();
     } else if (foundClassSources.size() > 1) {
       throw new ResolveException(
           "Multiple class candidates for \""
               + type
-              + "\" found in the given AnalysisInputLocations. Soot can't decide which AnalysisInputLocation it should refer to for this Type.");
+              + "\" found in the given AnalysisInputLocations. Soot can't decide which AnalysisInputLocation it should refer to for this Type.\n"
+              + "The candidates are "
+              + foundClassSources.stream()
+                  .map(cs -> cs.getSourcePath().toString())
+                  .collect(Collectors.joining(",")),
+          foundClassSources.get(0).getSourcePath());
     }
     return buildClassFrom(foundClassSources.get(0));
   }
 
   @Nonnull
-  private synchronized Optional<AbstractClass<? extends AbstractClassSource>> buildClassFrom(
-      AbstractClassSource classSource) {
-    AbstractClass<? extends AbstractClassSource> theClass =
+  private synchronized Optional<JavaSootClass> buildClassFrom(
+      AbstractClassSource<JavaSootClass> classSource) {
+    JavaSootClass theClass =
         cache.computeIfAbsent(
             classSource.getClassType(),
             type ->

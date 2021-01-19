@@ -22,7 +22,10 @@ package de.upb.swt.soot.core.jimple.common.stmt;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.*;
+import de.upb.swt.soot.core.jimple.basic.EquivTo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
@@ -87,7 +90,7 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
    */
   public abstract boolean branches();
 
-  public abstract void toString(StmtPrinter up);
+  public abstract void toString(@Nonnull StmtPrinter up);
 
   /** Used to implement the Switchable construct via OOP */
   public void accept(@Nonnull Visitor sw) {}

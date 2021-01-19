@@ -21,11 +21,8 @@ package de.upb.swt.soot.java.bytecode.frontend.modules;
  * #L%
  */
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.java.bytecode.frontend.AsmUtil;
-import de.upb.swt.soot.java.core.AbstractModuleClassSource;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
@@ -40,16 +37,22 @@ import org.objectweb.asm.tree.ModuleOpenNode;
 import org.objectweb.asm.tree.ModuleProvideNode;
 import org.objectweb.asm.tree.ModuleRequireNode;
 
-public class AsmModuleClassSource extends AbstractModuleClassSource {
+public class AsmModuleSource extends JavaModuleInfo {
 
   private final ModuleNode module;
 
-  public AsmModuleClassSource(
+  /*
+   * hint: [ms] AD resolved a module via: AsmUtil.initAsmClassSource(sourcePath, classNode); classNode.module
+   * */
+  public AsmModuleSource(
       AnalysisInputLocation srcNamespace,
       Path sourcePath,
       JavaClassType classSignature,
       @Nonnull ModuleNode moduleNode) {
-    super(srcNamespace, classSignature, sourcePath);
+
+    // FIXME: [ms] determine whether it is an automatic module
+    super(false);
+
     this.module = moduleNode;
   }
 
@@ -155,10 +158,5 @@ public class AsmModuleClassSource extends AbstractModuleClassSource {
   public Set<Modifier> resolveModifiers() {
     EnumSet<Modifier> modifiers = AsmUtil.getModifiers(module.access);
     return modifiers;
-  }
-
-  @Override
-  public Position resolvePosition() {
-    return NoPositionInformation.getInstance();
   }
 }

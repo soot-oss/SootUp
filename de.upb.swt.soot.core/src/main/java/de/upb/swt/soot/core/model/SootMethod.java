@@ -60,10 +60,10 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
    */
   @Nonnull protected final ImmutableList<Type> parameterTypes;
 
-  /** Declared exceptions thrown by this methodRef. Created upon demand. */
+  /** Declared exceptions thrown by this method. Created upon demand. */
   @Nonnull protected final ImmutableList<ClassType> exceptions;
 
-  /** Tells this methodRef how to find out where its body lives. */
+  /** Tells this method how to find out where its body lives. */
   @Nonnull protected final BodySource bodySource;
 
   /** Constructs a SootMethod object with the given attributes. */
@@ -121,14 +121,14 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     return parameterTypes.get(n);
   }
 
-  /** Returns a read-only list of the parameter types of this methodRef. */
+  /** Returns a read-only list of the parameter types of this method. */
   public List<Type> getParameterTypes() {
     return parameterTypes;
   }
 
   private final @Nonnull Supplier<Body> _lazyBody = Suppliers.memoize(this::lazyBodyInitializer);
 
-  /** Retrieves the active body for this methodRef. */
+  /** Retrieves the active body for this method. */
   @Nullable
   public Body getBody() {
     return this._lazyBody.get(); // TODO: [JMP] Refactor to return `.getAsOptional()`
