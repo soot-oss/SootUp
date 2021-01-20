@@ -25,18 +25,15 @@ import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import org.checkerframework.checker.units.qual.A;
-
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 /**
  * A BodyInterceptor that removes all unreachable stmts from the given Body.
  *
  * @author Zun Wang
  */
-
 public class UnreachableCodeEliminator implements BodyInterceptor {
 
   @Override
@@ -47,44 +44,46 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
 
     List<Trap> traps = builder.getTraps();
 
-    //store all stmts which has no predecessors in the graph
-    //notice: it's possible, that a trap's HandlerStmt is not in Graph
+    // store all stmts which has no predecessors in the graph
+    // notice: it's possible, that a trap's HandlerStmt is not in Graph
     Deque<Stmt> startStmts = new ArrayDeque<>();
     startStmts.addLast(stmtsInBody.get(0));
 
-    for(Trap trap : traps){
+    for (Trap trap : traps) {
       startStmts.addFirst(trap.getHandlerStmt());
     }
     int trapPos = 0;
     boolean prunedTrap = false;
 
-    //store all stmts which are reachable
+    // store all stmts which are reachable
     Set<Stmt> reachableStmts = new HashSet<>();
-    while(!startStmts.isEmpty()){
+    while (!startStmts.isEmpty()) {
       Stmt stmt = startStmts.removeFirst();
-      if(stmt.toString().contains("@caughtexception")){
-        if(!graph.containsNode(stmt)){
+      if (stmt.toString().contains("@caughtexception")) {
+        if (!graph.containsNode(stmt)) {
           traps.remove(traps.get(trapPos));
           prunedTrap = true;
           break;
         }
         trapPos++;
       }
-      if(reachableStmts.add(stmt)){
-        for(Stmt succ : graph.successors(stmt)){
+      if (reachableStmts.add(stmt)) {
+        for (Stmt succ : graph.successors(stmt)) {
           startStmts.addFirst(succ);
         }
       }
     }
 
-    //get all stmts which are unreachable
-    Set<Stmt> unreachableStmts = stmtsInBody.stream().filter(stmt ->!reachableStmts.contains(stmt)).collect(Collectors.toSet());
+    // get all stmts which are unreachable
+    Set<Stmt> unreachableStmts =
+        stmtsInBody.stream()
+            .filter(stmt -> !reachableStmts.contains(stmt))
+            .collect(Collectors.toSet());
 
-    if(prunedTrap){
+    if (prunedTrap) {
       builder.setTraps(traps);
     }
 
     unreachableStmts.forEach(stmt -> builder.removeStmt(stmt));
-
   }
 }
