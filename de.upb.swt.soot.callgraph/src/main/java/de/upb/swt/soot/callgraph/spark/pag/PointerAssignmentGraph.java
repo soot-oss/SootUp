@@ -24,9 +24,11 @@ package de.upb.swt.soot.callgraph.spark.pag;
 
 import de.upb.swt.soot.callgraph.CallGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
-import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.frontend.AbstractClassSource;
+import de.upb.swt.soot.core.model.AbstractClass;
+import de.upb.swt.soot.core.model.Method;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.views.View;
-import javafx.scene.Scene;
 import org.jgrapht.graph.DefaultDirectedGraph;
 
 
@@ -61,14 +63,25 @@ public class PointerAssignmentGraph {
     }
 
     private void build(){
-
+        for(AbstractClass<? extends AbstractClassSource> clazz: view.getClasses()){
+            for (Method method : clazz.getMethods()) {
+                SootMethod sootMethod = (SootMethod) method;
+                if(sootMethod.isConcrete() || sootMethod.isNative()){
+                    // TODO: native case
+                    if(callGraph.containsMethod(sootMethod.getSignature())){
+                        IntraproceduralPointerAssignmentGraph intraPAG = new IntraproceduralPointerAssignmentGraph(sootMethod);
+                        addIntraproceduralPointerAssignmentGraph(intraPAG);
+                    }
+                }
+            }
+        }
     }
 
-    public void addEdge(Node source, Node target){
+    private void addEdge(Node source, Node target){
         graph.addEdge(new SparkVertex(source), new SparkVertex(target));
     }
 
-    public void addIntraproceduralPointerAssignmentGraph(IntraproceduralPointerAssignmentGraph intraPAG){
+    private void addIntraproceduralPointerAssignmentGraph(IntraproceduralPointerAssignmentGraph intraPAG){
         DefaultDirectedGraph<SparkVertex, SparkEdge> intraGraph = intraPAG.getGraph();
         // handle intraGraph
     }
