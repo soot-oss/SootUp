@@ -66,12 +66,9 @@ public class PointerAssignmentGraph {
         for(AbstractClass<? extends AbstractClassSource> clazz: view.getClasses()){
             for (Method method : clazz.getMethods()) {
                 SootMethod sootMethod = (SootMethod) method;
-                if(sootMethod.isConcrete() || sootMethod.isNative()){
-                    // TODO: native case
-                    if(callGraph.containsMethod(sootMethod.getSignature())){
-                        IntraproceduralPointerAssignmentGraph intraPAG = new IntraproceduralPointerAssignmentGraph(sootMethod);
-                        addIntraproceduralPointerAssignmentGraph(intraPAG);
-                    }
+                if(!sootMethod.isAbstract() && callGraph.containsMethod(sootMethod.getSignature())){
+                    IntraproceduralPointerAssignmentGraph intraPAG = new IntraproceduralPointerAssignmentGraph(sootMethod);
+                    addIntraproceduralPointerAssignmentGraph(intraPAG);
                 }
             }
         }
