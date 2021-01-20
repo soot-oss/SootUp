@@ -1,6 +1,9 @@
 package de.upb.swt.soot.test.callgraph.spark;
 
+import categories.Java8Test;
 import de.upb.swt.soot.callgraph.CallGraph;
+import de.upb.swt.soot.callgraph.CallGraphAlgorithm;
+import de.upb.swt.soot.callgraph.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.spark.Spark;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;
@@ -14,12 +17,14 @@ import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.Optional;
 
 import static junit.framework.TestCase.*;
 
+@Category(Java8Test.class)
 public class SparkBasicTest {
 
     protected String testDirectory, className;
@@ -27,8 +32,8 @@ public class SparkBasicTest {
     protected JavaClassType mainClassSignature;
     protected MethodSignature mainMethodSignature;
 
-    private void setup(String testDirectory, String className) {
-        String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
+    private void setup(String className) {
+        String walaClassPath = "src/test/resources/callgraph/spark/basic";
 
         double version = Double.parseDouble(System.getProperty("java.specification.version"));
         if (version > 1.8) {
@@ -55,13 +60,10 @@ public class SparkBasicTest {
         assertTrue(mainMethodSignature + " not found in classloader", m.isPresent());
 
         final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-        algorithm = createAlgorithm(view, typeHierarchy);
-        CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
-
-        assertTrue(
-                mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
-        assertNotNull(cg);
-        return cg;
+        CallGraphAlgorithm algorithm = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+        CallGraph callGraph = algorithm.initialize(Collections.singletonList(mainMethodSignature));
+        Spark spark = new Spark(view, callGraph);
+        spark.analyze();
     }
 
     @Test

@@ -22,18 +22,12 @@ package de.upb.swt.soot.callgraph.spark.pag;
  * #L%
  */
 
-import com.sun.javafx.geom.Edge;
 import de.upb.swt.soot.callgraph.CallGraph;
-import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
-import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
-import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
-import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.views.View;
+import javafx.scene.Scene;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DefaultEdge;
-import sun.security.provider.certpath.Vertex;
-
-import javax.annotation.Nonnull;
 
 
 public class PointerAssignmentGraph {
@@ -56,15 +50,18 @@ public class PointerAssignmentGraph {
     // - java.lang.Thread start method to run method
 
 
-
-
-
     private final DefaultDirectedGraph<SparkVertex, SparkEdge> graph;
     private CallGraph callGraph;
+    private View view;
 
-    public PointerAssignmentGraph(CallGraph callGraph) {
+    public PointerAssignmentGraph(View view, CallGraph callGraph) {
+        this.view = view;
         this.callGraph = callGraph;
         this.graph = new DefaultDirectedGraph<>(null, null, false);
+    }
+
+    private void build(){
+
     }
 
     public void addEdge(Node source, Node target){
