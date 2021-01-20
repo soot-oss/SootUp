@@ -26,7 +26,6 @@ import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import java.util.*;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -305,9 +304,8 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   /**
-   * Remove a node from the graph.
-   * startingStmt in graph is not supported.
-   * The succs and preds after the node removing don't have any connection to each other.
+   * Remove a node from the graph. startingStmt in graph is not supported. The succs and preds after
+   * the node removing don't have any connection to each other.
    *
    * @param node a stmt which is already in the StmtGraph or not in the StmtGraph
    */
@@ -317,9 +315,9 @@ public class MutableStmtGraph extends StmtGraph {
       nextFreeId--;
       int nodeIdx = getNodeIdx(node);
 
-      for(Stmt stmt : stmtToIdx.keySet()){
-        if(stmtToIdx.get(stmt) > nodeIdx){
-          Integer newIdx = stmtToIdx.get(stmt) - 1 ;
+      for (Stmt stmt : stmtToIdx.keySet()) {
+        if (stmtToIdx.get(stmt) > nodeIdx) {
+          Integer newIdx = stmtToIdx.get(stmt) - 1;
           stmtToIdx.replace(stmt, newIdx);
         }
       }
@@ -328,11 +326,11 @@ public class MutableStmtGraph extends StmtGraph {
       predecessors.remove(nodeIdx);
       successors.remove(nodeIdx);
 
-      for(List<Stmt> preds : predecessors){
+      for (List<Stmt> preds : predecessors) {
         preds.stream().filter(pred -> pred != node);
       }
 
-      for(List<Stmt> succs : successors){
+      for (List<Stmt> succs : successors) {
         succs.stream().filter(succ -> succ != node);
       }
     }
