@@ -39,15 +39,20 @@ public class IntraproceduralPointerAssignmentGraph {
     }
 
     private void processStmt(Stmt stmt){
+        if(!canProcess(stmt)){
+            return;
+        }
+
+    }
+
+    private boolean canProcess(Stmt stmt) {
         // TODO: types-for-invoke
         if(stmt.containsInvokeExpr()){
             AbstractInvokeExpr invokeExpr = stmt.getInvokeExpr();
-            if(invokeExpr instanceof JVirtualInvokeExpr){
-                if(!isReflectionNewInstance(invokeExpr)){
-                    return;
-                }
+            if(!isReflectionNewInstance(invokeExpr)){
+                return false;
             } else if (!(invokeExpr instanceof JStaticInvokeExpr)){
-                return;
+                return false;
             }
         }
     }
