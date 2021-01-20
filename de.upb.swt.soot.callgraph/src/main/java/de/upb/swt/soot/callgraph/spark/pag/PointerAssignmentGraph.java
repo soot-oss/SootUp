@@ -31,6 +31,7 @@ import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import sun.security.provider.certpath.Vertex;
 
 import javax.annotation.Nonnull;
 
@@ -54,34 +55,11 @@ public class PointerAssignmentGraph {
     // - finalize methods
     // - java.lang.Thread start method to run method
 
-    private static class Vertex {
-        @Nonnull
-        final Node node;
 
-        private Vertex(@Nonnull Node node) {
-            this.node = node;
-        }
-    }
 
-    private static class Edge extends DefaultEdge {
-        private EdgeType edgeType;
 
-        public Edge(EdgeType edgeType){
-            this.edgeType = edgeType;
-        }
 
-        public EdgeType getEdgeType(){
-            return edgeType;
-        }
-
-        @Override
-        public String toString(){
-            return "(" + getSource() + " : " + getTarget() + " : " + edgeType + ")";
-        }
-
-    }
-
-    private final DefaultDirectedGraph<Vertex, Edge> graph;
+    private final DefaultDirectedGraph<SparkVertex, SparkEdge> graph;
     private CallGraph callGraph;
 
     public PointerAssignmentGraph(CallGraph callGraph) {
@@ -90,11 +68,11 @@ public class PointerAssignmentGraph {
     }
 
     public void addEdge(Node source, Node target){
-        graph.addEdge(new Vertex(source), new Vertex(target));
+        graph.addEdge(new SparkVertex(source), new SparkVertex(target));
     }
 
     public void addIntraproceduralPointerAssignmentGraph(IntraproceduralPointerAssignmentGraph intraPAG){
-        DefaultDirectedGraph<IntraproceduralPointerAssignmentGraph.Vertex, IntraproceduralPointerAssignmentGraph.Edge> intraGraph = intraPAG.getGraph();
+        DefaultDirectedGraph<SparkVertex, SparkEdge> intraGraph = intraPAG.getGraph();
         // handle intraGraph
     }
 }
