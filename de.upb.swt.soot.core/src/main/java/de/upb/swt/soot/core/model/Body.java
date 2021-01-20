@@ -506,6 +506,13 @@ public class Body implements Copyable {
       return this;
     }
 
+    /** remove the a stmt from the graph and stmt */
+    @Nonnull
+    public BodyBuilder removeStmt(Stmt stmt) {
+      cfg.removeNode(stmt);
+      return this;
+    }
+
     @Nonnull
     public List<Trap> getTraps() {
       return cfg.getTraps();
