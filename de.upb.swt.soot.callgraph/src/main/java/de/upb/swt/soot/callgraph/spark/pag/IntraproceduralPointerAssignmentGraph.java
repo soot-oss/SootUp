@@ -2,13 +2,18 @@ package de.upb.swt.soot.callgraph.spark.pag;
 
 import com.sun.javafx.geom.Edge;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
+import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JVirtualInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.JBreakpointStmt;
+import de.upb.swt.soot.core.jimple.visitor.AbstractStmtVisitor;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.ReferenceType;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import sun.jvm.hotspot.debugger.cdbg.RefType;
@@ -42,7 +47,25 @@ public class IntraproceduralPointerAssignmentGraph {
         if(!canProcess(stmt)){
             return;
         }
+        stmt.accept(new AbstractStmtVisitor() {
+            @Override
+            final public void caseAssignStmt(JAssignStmt stmt){
+                Value leftOp = stmt.getLeftOp();
+                Value rightOp = stmt.getRightOp();
+                if(!(leftOp.getType() instanceof ReferenceType)){
+                    return;
+                }
+                if (!(rightOp.getType() instanceof ReferenceType))
+                    throw new AssertionError("Type mismatch in assignment " + stmt + " in method "
+                            + method.getSignature());
+                //TODO: is MethodNodeFactory more suitable?
+            }
 
+            @Override
+            public void caseBreakpointStmt(JBreakpointStmt stmt) {
+                super.caseBreakpointStmt(stmt);
+            }
+        });
     }
 
     private boolean canProcess(Stmt stmt) {
@@ -55,6 +78,7 @@ public class IntraproceduralPointerAssignmentGraph {
                 return false;
             }
         }
+        return true;
     }
 
     public DefaultDirectedGraph<SparkVertex, SparkEdge> getGraph(){
