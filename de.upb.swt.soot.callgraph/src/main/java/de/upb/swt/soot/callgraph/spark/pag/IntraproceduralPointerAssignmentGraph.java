@@ -23,6 +23,7 @@ package de.upb.swt.soot.callgraph.spark.pag;
  */
 
 import de.upb.swt.soot.callgraph.spark.builder.MethodNodeFactory;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -64,4 +65,12 @@ public class IntraproceduralPointerAssignmentGraph {
   public PointerAssignmentGraph getPointerAssignmentGraph() {
     return pag;
   }
+
+  public void addEdge(Node source, Node target){
+    if(source == null){
+      return;
+    }
+    graph.addEdge(new SparkVertex(source), new SparkVertex(target));
+  }
+
 }

@@ -22,6 +22,7 @@ package de.upb.swt.soot.callgraph.spark.builder;
  * #L%
  */
 
+import afu.org.checkerframework.checker.oigj.qual.O;
 import de.upb.swt.soot.callgraph.spark.pag.IntraproceduralPointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
@@ -29,10 +30,12 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JVirtualInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
+import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
+import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JBreakpointStmt;
 import de.upb.swt.soot.core.jimple.visitor.AbstractStmtVisitor;
+import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -41,6 +44,8 @@ import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import jdk.nashorn.internal.ir.VarNode;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class MethodNodeFactory extends AbstractStmtVisitor {
   private SootMethod method;
@@ -56,7 +61,13 @@ public class MethodNodeFactory extends AbstractStmtVisitor {
   protected final ReferenceType rtHashtableEmptyIterator;
   protected final ReferenceType rtHashtableEmptyEnumerator;
 
-  {
+
+  public MethodNodeFactory(IntraproceduralPointerAssignmentGraph intraPag) {
+    this.intraPag = intraPag;
+    this.pag = intraPag.getPointerAssignmentGraph();
+    this.view = pag.getView();
+    setMethod(intraPag.getMethod());
+
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     rtClass = new JavaClassType("Class", identifierFactory.getPackageName("java.lang"));
     rtStringType = new JavaClassType("String", identifierFactory.getPackageName("java.lang"));
@@ -64,17 +75,10 @@ public class MethodNodeFactory extends AbstractStmtVisitor {
     rtHashMap = new JavaClassType("HashMap", identifierFactory.getPackageName("java.util"));
     rtLinkedList = new JavaClassType("LinkedList", identifierFactory.getPackageName("java.util"));
     rtHashtableEmptyIterator =
-        new JavaClassType("Hashtable$EmptyIterator", identifierFactory.getPackageName("java.util"));
+            new JavaClassType("Hashtable$EmptyIterator", identifierFactory.getPackageName("java.util"));
     rtHashtableEmptyEnumerator =
-        new JavaClassType(
-            "Hashtable$EmptyEnumerator", identifierFactory.getPackageName("java.util"));
-  }
-
-  public MethodNodeFactory(IntraproceduralPointerAssignmentGraph intraPag) {
-    this.intraPag = intraPag;
-    this.pag = intraPag.getPointerAssignmentGraph();
-    this.view = pag.getView();
-    setMethod(intraPag.getMethod());
+            new JavaClassType(
+                    "Hashtable$EmptyEnumerator", identifierFactory.getPackageName("java.util"));
   }
 
   /** Sets the method for which a graph is currently being built. */
@@ -118,15 +122,65 @@ public class MethodNodeFactory extends AbstractStmtVisitor {
             if (!(leftOp.getType() instanceof ReferenceType)) {
               return;
             }
-            if (!(rightOp.getType() instanceof ReferenceType))
+            if (!(rightOp.getType() instanceof ReferenceType)) {
               throw new AssertionError(
-                  "Type mismatch in assignment " + stmt + " in method " + method.getSignature());
-            // TODO: is MethodNodeFactory more suitable?
+                      "Type mismatch in assignment " + stmt + " in method " + method.getSignature());
+            }
+            leftOp.accept(MethodNodeFactory.this);
+            Node target = getNode();
+            rightOp.accept(MethodNodeFactory.this);
+            Node source = getNode();
+            if(leftOp instanceof JInstanceFieldRef){
+              ((JInstanceFieldRef) leftOp).getBase().accept(MethodNodeFactory.this);
+              // TODO: pag.addDereference((VarNode) getNode());
+              throw new NotImplementedException();
+            }
+            if(rightOp instanceof JInstanceFieldRef){
+              ((JInstanceFieldRef) rightOp).getBase().accept(MethodNodeFactory.this);
+              // TODO: pag.addDereference((VarNode) getNode());
+              throw new NotImplementedException();
+            } else if (rightOp instanceof JStaticFieldRef){
+              JStaticFieldRef staticFieldRef = (JStaticFieldRef) rightOp;
+              staticFieldRef.getFieldSignature();
+              // TODO: SPARK_OPT empties-as-allocs
+
+            }
+            intraPag.addEdge(source, target);
           }
 
           @Override
-          public void caseBreakpointStmt(JBreakpointStmt stmt) {
-            super.caseBreakpointStmt(stmt);
+          public void caseReturnStmt(JReturnStmt returnStmt){
+            if(!(returnStmt.getOp().getType() instanceof ReferenceType)){
+              return;
+            }
+            returnStmt.getOp().accept(MethodNodeFactory.this);
+            Node returnNode = getNode();
+            //TODO: intraPag.addEdge(returnNode, caseRet);
+            throw new NotImplementedException();
+          }
+
+          @Override
+          public void caseIdentityStmt(JIdentityStmt identityStmt){
+            if(!(identityStmt.getLeftOp().getType() instanceof ReferenceType)){
+              return;
+            }
+            Value leftOp = identityStmt.getLeftOp();
+            Value rightOp = identityStmt.getRightOp();
+            leftOp.accept(MethodNodeFactory.this);
+            Node target = getNode();
+            rightOp.accept(MethodNodeFactory.this);
+            Node source = getNode();
+            intraPag.addEdge(source, target);
+
+            // TODO: SPARK_OPT library_disabled
+
+          }
+
+          @Override
+          public void caseThrowStmt(JThrowStmt throwStmt) {
+            throwStmt.getOp().accept(MethodNodeFactory.this);
+            // TODO: mpag.addOutEdge(getNode(), pag.nodeFactory().caseThrow());
+            throw new NotImplementedException();
           }
         });
   }
