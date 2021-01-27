@@ -1,65 +1,67 @@
 package de.upb.swt.soot.callgraph.spark.pag;
 
-import com.sun.javafx.geom.Edge;
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2002-2021 Ondrej Lhotak, Kadiray Karakaya and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 import de.upb.swt.soot.callgraph.spark.builder.MethodNodeFactory;
-import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JVirtualInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JBreakpointStmt;
-import de.upb.swt.soot.core.jimple.visitor.AbstractStmtVisitor;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.ReferenceType;
-import de.upb.swt.soot.core.views.View;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DefaultEdge;
-import sun.jvm.hotspot.debugger.cdbg.RefType;
-import sun.security.provider.certpath.Vertex;
-
-import javax.annotation.Nonnull;
 
 public class IntraproceduralPointerAssignmentGraph {
 
-    private PointerAssignmentGraph pag;
-    private DefaultDirectedGraph<SparkVertex, SparkEdge> graph;
-    private MethodNodeFactory nodeFactory;
+  private PointerAssignmentGraph pag;
+  private DefaultDirectedGraph<SparkVertex, SparkEdge> graph;
+  private MethodNodeFactory nodeFactory;
 
-    private SootMethod method;
+  private SootMethod method;
 
-    public IntraproceduralPointerAssignmentGraph(PointerAssignmentGraph pag, SootMethod method){
-        this.pag = pag;
-        this.method = method;
-        this.nodeFactory = new MethodNodeFactory(this);
+  public IntraproceduralPointerAssignmentGraph(PointerAssignmentGraph pag, SootMethod method) {
+    this.pag = pag;
+    this.method = method;
+    this.nodeFactory = new MethodNodeFactory(this);
+  }
+
+  public void build() {
+    if (method.isConcrete()) {
+      Body body = method.getBody();
+      for (Stmt stmt : body.getStmts()) {
+        nodeFactory.processStmt(stmt);
+      }
+    } else {
+      // TODO: build for native
     }
+  }
 
-    public void build(){
-        if(method.isConcrete()){
-            Body body = method.getBody();
-            for(Stmt stmt: body.getStmts()){
-                nodeFactory.processStmt(stmt);
-            }
-        } else {
-            // TODO: build for native
-        }
-    }
+  public DefaultDirectedGraph<SparkVertex, SparkEdge> getGraph() {
+    return graph;
+  }
 
-    public DefaultDirectedGraph<SparkVertex, SparkEdge> getGraph(){
-        return graph;
-    }
+  public SootMethod getMethod() {
+    return method;
+  }
 
-
-
-    public SootMethod getMethod(){
-        return method;
-    }
-
-    public PointerAssignmentGraph getPointerAssignmentGraph(){
-        return pag;
-    }
-
+  public PointerAssignmentGraph getPointerAssignmentGraph() {
+    return pag;
+  }
 }

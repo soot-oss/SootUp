@@ -26,11 +26,7 @@ import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.types.Type;
 import java.util.Set;
 
-/**
- * A generic interface to some set of runtime objects computed by a pointer analysis.
- *
- * @author Kadiray Karakaya
- */
+/** A generic interface to some set of runtime objects computed by a pointer analysis. */
 public interface PointsToSet {
   /** Returns true if this set contains no run-time objects. */
   public boolean isEmpty();

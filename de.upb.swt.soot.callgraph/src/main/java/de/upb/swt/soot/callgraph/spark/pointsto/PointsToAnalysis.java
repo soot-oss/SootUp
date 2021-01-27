@@ -1,7 +1,6 @@
 package de.upb.swt.soot.callgraph.spark.pointsto;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.model.SootField;
 
 /*-
  * #%L
@@ -25,13 +24,8 @@ import de.upb.swt.soot.core.model.SootField;
  * #L%
  */
 
-/**
- * A generic interface to any type of pointer analysis.
- *
- * @author Kadiray Karakaya
- */
+/** A generic interface to any type of pointer analysis. */
 public interface PointsToAnalysis {
 
   public PointsToSet getPointsToSet(Local local);
-
 }
