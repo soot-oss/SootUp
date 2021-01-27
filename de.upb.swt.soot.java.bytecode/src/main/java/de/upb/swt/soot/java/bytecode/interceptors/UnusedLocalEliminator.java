@@ -26,7 +26,7 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.annotation.Nonnull;
 
@@ -46,7 +46,7 @@ public class UnusedLocalEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
-    Set<Local> locals = new HashSet<>();
+    Set<Local> locals = new LinkedHashSet<>();
 
     // Traverse statements copying all used uses and defs
     for (Stmt stmt : builder.getStmtGraph()) {

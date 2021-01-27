@@ -87,7 +87,7 @@ public final class JNewArrayExpr implements Expr, Copyable {
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.NEWARRAY);
     up.literal(" ");
     up.literal("(");
@@ -129,7 +129,7 @@ public final class JNewArrayExpr implements Expr, Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ExprVisitor) sw).caseNewArrayExpr(this);
   }
 

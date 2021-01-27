@@ -253,6 +253,7 @@ public class Body implements Copyable {
     return stmts;
   }
 
+  @Nonnull
   public ImmutableStmtGraph getStmtGraph() {
     return cfg;
   }
@@ -429,7 +430,7 @@ public class Body implements Copyable {
    * </pre>
    */
   public static class BodyBuilder {
-    @Nonnull private Set<Local> locals = new HashSet<>();
+    @Nonnull private Set<Local> locals = new LinkedHashSet<>();
     @Nonnull private final LocalGenerator localGen = new LocalGenerator(locals);
     @Nonnull private Set<Modifier> modifiers = Collections.emptySet();
 

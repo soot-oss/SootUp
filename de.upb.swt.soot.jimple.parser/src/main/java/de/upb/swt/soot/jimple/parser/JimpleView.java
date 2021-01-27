@@ -5,7 +5,6 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.AbstractView;
@@ -16,7 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -28,16 +26,15 @@ import javax.annotation.Nonnull;
 
 // TODO: [ms] rethink of that view per language structure -> this could be the base implementation
 // for View if we really need different views in the future?
-public class JimpleView extends AbstractView {
+public class JimpleView extends AbstractView<SootClass> {
 
-  @Nonnull
-  private final Map<ClassType, AbstractClass<? extends AbstractClassSource>> cache =
-      new HashMap<>();
+  @Nonnull private final Map<ClassType, SootClass> cache = new HashMap<>();
 
   private volatile boolean isFullyResolved = false;
 
   @Nonnull
-  protected Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier;
+  protected Function<AnalysisInputLocation<SootClass>, ClassLoadingOptions>
+      classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link de.upb.swt.soot.java.core.views.JavaView} class. */
   public JimpleView(@Nonnull Project project) {
@@ -53,7 +50,9 @@ public class JimpleView extends AbstractView {
    */
   public JimpleView(
       @Nonnull Project project,
-      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
+      @Nonnull
+          Function<AnalysisInputLocation<SootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
   }
@@ -61,22 +60,13 @@ public class JimpleView extends AbstractView {
   @Override
   @Nonnull
   public synchronized Collection<SootClass> getClasses() {
-    return getAbstractClassSources()
-        .filter(clazz -> clazz instanceof SootClass)
-        .map(clazz -> (SootClass) clazz)
-        .collect(Collectors.toList());
-  }
-
-  @Override
-  @Nonnull
-  public Stream<SootClass> getClassesStream() {
-    return getClasses().stream();
+    return getAbstractClassSources();
   }
 
   @Nonnull
-  synchronized Stream<AbstractClass<? extends AbstractClassSource>> getAbstractClassSources() {
+  synchronized Collection<SootClass> getAbstractClassSources() {
     resolveAll();
-    return cache.values().stream();
+    return cache.values();
   }
 
   @Override
@@ -86,13 +76,13 @@ public class JimpleView extends AbstractView {
   }
 
   @Nonnull
-  Optional<AbstractClass<? extends AbstractClassSource>> getAbstractClass(@Nonnull ClassType type) {
-    AbstractClass<? extends AbstractClassSource> cachedClass = cache.get(type);
+  Optional<SootClass> getAbstractClass(@Nonnull ClassType type) {
+    SootClass cachedClass = cache.get(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
 
-    final List<AbstractClassSource> foundClassSources =
+    final List<AbstractClassSource<SootClass>> foundClassSources =
         getProject().getInputLocations().stream()
             .map(
                 location -> {
@@ -110,21 +100,25 @@ public class JimpleView extends AbstractView {
             .collect(Collectors.toList());
 
     if (foundClassSources.size() < 1) {
-      throw new ResolveException("No class candidates for \"" + type + "\" found.");
+      return Optional.empty();
     } else if (foundClassSources.size() > 1) {
-      // TODO: print those analysisInputLocation to the user
       throw new ResolveException(
           "Multiple class candidates for \""
               + type
-              + "\" found in the given AnalysisInputLocations. Soot can't decide which AnalysisInputLocation it should refer to for this Type.");
+              + "\" found in the given AnalysisInputLocations. Soot can't decide which AnalysisInputLocation it should refer to for this Type.\n"
+              + "The candidates are "
+              + foundClassSources.stream()
+                  .map(cs -> cs.getSourcePath().toString())
+                  .collect(Collectors.joining(",")),
+          foundClassSources.get(0).getSourcePath());
     }
     return buildClassFrom(foundClassSources.get(0));
   }
 
   @Nonnull
-  private synchronized Optional<AbstractClass<? extends AbstractClassSource>> buildClassFrom(
-      AbstractClassSource classSource) {
-    AbstractClass<? extends AbstractClassSource> theClass =
+  private synchronized Optional<SootClass> buildClassFrom(
+      AbstractClassSource<SootClass> classSource) {
+    SootClass theClass =
         cache.computeIfAbsent(
             classSource.getClassType(),
             type ->

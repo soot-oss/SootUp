@@ -13,10 +13,7 @@ import de.upb.swt.soot.java.bytecode.interceptors.NopEliminator;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -88,6 +85,7 @@ public class NopEliminatorTest {
     Stmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
+
     List<Trap> traps = new ArrayList<>();
 
     Body.BodyBuilder builder = Body.builder();
