@@ -22,10 +22,11 @@ package de.upb.swt.soot.callgraph.spark.builder;
  * #L%
  */
 
-import afu.org.checkerframework.checker.oigj.qual.O;
 import de.upb.swt.soot.callgraph.spark.pag.IntraproceduralPointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
+import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
@@ -33,9 +34,7 @@ import de.upb.swt.soot.core.jimple.common.expr.JVirtualInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JBreakpointStmt;
 import de.upb.swt.soot.core.jimple.visitor.AbstractStmtVisitor;
-import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -44,7 +43,8 @@ import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import jdk.nashorn.internal.ir.VarNode;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class MethodNodeFactory extends AbstractStmtVisitor {
@@ -221,4 +221,12 @@ public class MethodNodeFactory extends AbstractStmtVisitor {
     }
     return false;
   }
+
+  public Node caseThis(){
+    VariableNode node = pag.getOrCreateLocalVariableNode(new ImmutablePair<SootMethod, String>(method, PointsToAnalysis.THIS_NODE),
+            method.getDeclaringClassType(), method);
+    //TODO: setInterProcTarget
+    return node;
+  }
+
 }

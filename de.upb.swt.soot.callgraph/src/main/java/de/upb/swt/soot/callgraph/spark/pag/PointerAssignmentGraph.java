@@ -23,12 +23,18 @@ package de.upb.swt.soot.callgraph.spark.pag;
  */
 
 import de.upb.swt.soot.callgraph.CallGraph;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.LocalVariableNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import org.jgrapht.graph.DefaultDirectedGraph;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class PointerAssignmentGraph {
 
@@ -52,6 +58,9 @@ public class PointerAssignmentGraph {
   private final DefaultDirectedGraph<SparkVertex, SparkEdge> graph;
   private CallGraph callGraph;
   private View<? extends SootClass> view;
+
+  private final Map<Local, LocalVariableNode> localToNodeMap = new HashMap<>();
+  private final Map<Object, LocalVariableNode> valToLocalVariableNode = new HashMap<>();
 
   public PointerAssignmentGraph(View view, CallGraph callGraph) {
     this.view = view;
@@ -85,4 +94,34 @@ public class PointerAssignmentGraph {
   public View getView() {
     return view;
   }
+
+  public LocalVariableNode getOrCreateLocalVariableNode(Object value, Type type, SootMethod method){
+    //TODO: SPARK_OPTS RTA
+    if(value instanceof Local){
+      Local local = (Local) value;
+      // TODO: numbering?
+      LocalVariableNode localVariableNode = localToNodeMap.get(local);
+      if(localVariableNode == null){
+        localVariableNode = new LocalVariableNode(value, type, method);
+        localToNodeMap.put(local, localVariableNode);
+        //TODO: addNodeTag()
+      } else if(!(localVariableNode.getType().equals(type))){
+        throw new RuntimeException("Value " + value + " of type " + type + " previously had type " + localVariableNode.getType());
+      }
+      return localVariableNode;
+    }
+    LocalVariableNode localVariableNode = valToLocalVariableNode.get(value);
+    if(localVariableNode == null){
+      localVariableNode = new LocalVariableNode(value, type, method);
+      valToLocalVariableNode.put(value, localVariableNode);
+      //TODO: addNodeTag()
+    } else if(!(localVariableNode.getType().equals(type))){
+      throw new RuntimeException("Value " + value + " of type " + type + " previously had type " + localVariableNode.getType());
+    }
+    return localVariableNode;
+  }
+
+
+
+
 }

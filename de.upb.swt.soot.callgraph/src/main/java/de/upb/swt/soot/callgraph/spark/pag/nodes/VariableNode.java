@@ -29,7 +29,7 @@ import java.util.Set;
 public class VariableNode extends Node {
 
   // TODO: [kk] need a more precise type, or generics
-  private Object variable;
+  protected Object variable;
   private Set<FieldReferenceNode> fields;
 
   public VariableNode(Object variable, Type type) {
