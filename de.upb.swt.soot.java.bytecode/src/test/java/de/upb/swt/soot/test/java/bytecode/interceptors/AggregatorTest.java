@@ -8,6 +8,7 @@ import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
+import de.upb.swt.soot.core.jimple.common.expr.JAddExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.types.PrimitiveType;
@@ -35,7 +36,7 @@ public class AggregatorTest {
     assertEquals(originalStmts.size(), processedStmts.size());
     assertNotEquals(originalStmts.get(0), processedStmts.get(0));
     assertEquals("b = a", originalStmts.get(1).toString());
-    assertEquals("b = 7", processedStmts.get(1).toString());
+    assertEquals("b = 7 + 4", processedStmts.get(1).toString());
     assertEquals(originalStmts.get(2), processedStmts.get(2));
   }
 
@@ -63,7 +64,8 @@ public class AggregatorTest {
     Stmt intToA = JavaJimple.newAssignStmt(a, IntConstant.getInstance(7), noPositionInfo);
     Stmt intToB;
     if (withAggregation) {
-      intToB = JavaJimple.newAssignStmt(b, a, noPositionInfo);
+      intToB =
+          JavaJimple.newAssignStmt(b, new JAddExpr(a, IntConstant.getInstance(4)), noPositionInfo);
     } else {
       intToB = JavaJimple.newAssignStmt(b, IntConstant.getInstance(42), noPositionInfo);
     }
