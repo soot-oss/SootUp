@@ -28,7 +28,7 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 public interface PointsToAnalysis {
 
   public static final String THIS_NODE = "THIS_NODE";
-  public static final int RETURN_NODE = -2;
+  public static final String RETURN_NODE = "RETURN_NODE";
   public static final String THROW_NODE = "THROW_NODE";
   public static final String ARRAY_ELEMENTS_NODE = "ARRAY_ELEMENTS_NODE";
   public static final String CAST_NODE = "CAST_NODE";

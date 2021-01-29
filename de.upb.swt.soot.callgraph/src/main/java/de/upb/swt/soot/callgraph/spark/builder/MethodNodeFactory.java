@@ -223,8 +223,27 @@ public class MethodNodeFactory extends AbstractStmtVisitor {
   }
 
   public Node caseThis(){
-    VariableNode node = pag.getOrCreateLocalVariableNode(new ImmutablePair<SootMethod, String>(method, PointsToAnalysis.THIS_NODE),
+    VariableNode node = pag.getOrCreateLocalVariableNode(
+            new ImmutablePair<SootMethod, String>(method, PointsToAnalysis.THIS_NODE),
             method.getDeclaringClassType(), method);
+    //TODO: setInterProcTarget
+    return node;
+  }
+
+  public Node caseParameter(int index){
+    VariableNode node = pag.getOrCreateLocalVariableNode(
+            new ImmutablePair<SootMethod, Integer>(method, new Integer(index)),
+            method.getParameterType(index), method);
+    //TODO: setInterProcTarget
+    return node;
+  }
+
+  public void casePhiExpr(){
+    throw new NotImplementedException();
+  }
+
+  public Node caseReturn(){
+    VariableNode node = pag.getOrCreateLocalVariableNode(new ImmutablePair<SootMethod, String>(method, PointsToAnalysis.RETURN_NODE), method.getReturnTypeSignature(), method);
     //TODO: setInterProcTarget
     return node;
   }
