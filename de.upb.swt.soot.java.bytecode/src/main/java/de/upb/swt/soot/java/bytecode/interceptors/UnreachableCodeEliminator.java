@@ -26,7 +26,6 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.*;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -40,48 +39,66 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
     StmtGraph graph = builder.getStmtGraph();
-    List<Stmt> stmtsInBody = builder.getStmts();
+    Set<Stmt> stmtsInBody = graph.nodes();
 
+    Set<Stmt> unreachableStmts = new HashSet<>();
+    // get all unreachable stmts
+    for (Stmt stmt : stmtsInBody) {
+      if (graph.predecessors(stmt).size() == 0) {
+        if (!stmt.equals(graph.getStartingStmt())
+            && !stmt.toString().contains("@caughtexception")) {
+          unreachableStmts.add(stmt);
+        }
+      }
+    }
+
+    // if all predecessors of a stmt are unreachable, then this stmt is also unreachable
+    int counter = 1;
+
+    while (counter > 0) {
+      counter = 0;
+
+      for (Stmt stmt : stmtsInBody) {
+
+        if (!unreachableStmts.contains(stmt)) {
+
+          if (!stmt.equals(graph.getStartingStmt())
+              && !stmt.toString().contains("@caughtexception")) {
+            boolean unreachable = true;
+
+            for (Stmt pred : graph.predecessors(stmt)) {
+              if (!unreachableStmts.contains(pred)) {
+                unreachable = false;
+                break;
+              }
+            }
+
+            if (unreachable) {
+              unreachableStmts.add(stmt);
+              counter++;
+            }
+          }
+        }
+      }
+    }
+
+    // delete unvalid traps
     List<Trap> traps = builder.getTraps();
 
-    // store all stmts which has no predecessors in the graph
-    // notice: it's possible, that a trap's HandlerStmt is not in Graph
-    Deque<Stmt> startStmts = new ArrayDeque<>();
-    startStmts.addLast(stmtsInBody.get(0));
+    Iterator<Trap> trapIterator = traps.iterator();
 
-    for (Trap trap : traps) {
-      startStmts.addFirst(trap.getHandlerStmt());
-    }
-    int trapPos = 0;
-    boolean prunedTrap = false;
+    while (trapIterator.hasNext()) {
 
-    // store all stmts which are reachable
-    Set<Stmt> reachableStmts = new HashSet<>();
-    while (!startStmts.isEmpty()) {
-      Stmt stmt = startStmts.removeFirst();
-      if (stmt.toString().contains("@caughtexception")) {
-        if (!graph.containsNode(stmt)) {
-          traps.remove(traps.get(trapPos));
-          prunedTrap = true;
-          break;
-        }
-        trapPos++;
+      Trap trap = trapIterator.next();
+      if (!graph.nodes().contains(trap.getHandlerStmt())) {
+
+        trapIterator.remove();
+
+      } else if (trap.getBeginStmt() == trap.getEndStmt()) {
+
+        trapIterator.remove();
+        trap.getStmts().forEach(stmt -> unreachableStmts.add(stmt));
       }
-      if (reachableStmts.add(stmt)) {
-        for (Stmt succ : graph.successors(stmt)) {
-          startStmts.addFirst(succ);
-        }
-      }
-    }
-
-    // get all stmts which are unreachable
-    Set<Stmt> unreachableStmts =
-        stmtsInBody.stream()
-            .filter(stmt -> !reachableStmts.contains(stmt))
-            .collect(Collectors.toSet());
-
-    if (prunedTrap) {
-      builder.setTraps(traps);
     }
 
     unreachableStmts.forEach(stmt -> builder.removeStmt(stmt));
