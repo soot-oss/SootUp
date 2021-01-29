@@ -52,4 +52,31 @@ public class AssertUtils {
     }
     assertTrue(condition);
   }
+
+  // assert whether two stmtsset contain the same stmts
+  public static void assertStmtsSetEquiv(Set<Stmt> expected, Set<Stmt> actual) {
+
+    assertNotNull(expected);
+    assertNotNull(actual);
+    assertEquals(expected.size(), actual.size());
+    if (expected.size() != actual.size()) {
+      System.out.println("expected size of set: " + expected.size());
+      System.out.println("actual size of set: " + actual.size());
+    }
+    boolean condition = true;
+    for (Stmt stmt : actual) {
+      if (!expected.contains(stmt)) {
+        condition = false;
+        break;
+      }
+    }
+
+    if (!condition) {
+      System.out.println("expected:");
+      System.out.println(expected);
+      System.out.println("actual:");
+      System.out.println(actual);
+    }
+    assertTrue(condition);
+  }
 }
