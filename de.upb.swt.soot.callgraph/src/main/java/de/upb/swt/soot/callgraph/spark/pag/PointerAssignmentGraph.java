@@ -23,14 +23,18 @@ package de.upb.swt.soot.callgraph.spark.pag;
  */
 
 import de.upb.swt.soot.callgraph.CallGraph;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.FieldReferenceNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.LocalVariableNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
+import jdk.nashorn.internal.ir.VarNode;
 import org.jgrapht.graph.DefaultDirectedGraph;
 
 import java.util.HashMap;
@@ -122,6 +126,24 @@ public class PointerAssignmentGraph {
   }
 
 
+  /**
+   * Finds or creates the FieldRefNode for base variable base and field field, of type type.
+   */
+  public FieldReferenceNode getOrCreateFieldReferenceNode(VariableNode base, Field field) {
+    FieldReferenceNode fieldRef = base.getField(field);
+    if (fieldRef == null) {
+      fieldRef = new FieldReferenceNode(base, field);
+      if (base instanceof LocalVariableNode) {
+        addNodeTag(fieldRef, ((LocalVariableNode) base).getMethod());
+      } else {
+        addNodeTag(fieldRef, null);
+      }
+    }
+    return fieldRef;
+  }
 
+  private void addNodeTag(Node node, SootMethod m) {
+    // TODO: disabled by default
+  }
 
 }

@@ -16,8 +16,14 @@ public class LocalVariableNode extends VariableNode{
         this.method = method;
     }
 
+    public SootMethod getMethod(){
+        return method;
+    }
+
     @Override
     public String toString() {
         return "LocalVarNode " /*+ getNumber() + " "*/ + variable + " " + method;
     }
+
+
 }

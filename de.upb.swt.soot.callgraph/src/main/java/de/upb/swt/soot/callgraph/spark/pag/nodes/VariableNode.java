@@ -22,29 +22,41 @@ package de.upb.swt.soot.callgraph.spark.pag.nodes;
  * #L%
  */
 
+import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.types.Type;
+
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+/**
+ * Represents a simple variable node (Green) in the pointer assignment graph.
+ * */
 public class VariableNode extends Node {
 
   // TODO: [kk] need a more precise type, or generics
   protected Object variable;
-  private Set<FieldReferenceNode> fields;
+  private Map<Field, FieldReferenceNode> fields;
+
 
   public VariableNode(Object variable, Type type) {
     this.variable = variable;
     this.type = type;
   }
 
-  public void addField(FieldReferenceNode field) {
+  public void addField(Field field, FieldReferenceNode fieldNode) {
     if (fields == null) {
-      fields = new HashSet<>();
+      fields = new HashMap<>();
     }
-    fields.add(field);
+    fields.put(field, fieldNode);
   }
 
   public Object getVariable() {
     return variable;
+  }
+
+  public FieldReferenceNode getField(Field field){
+    return fields.get(field);
   }
 }

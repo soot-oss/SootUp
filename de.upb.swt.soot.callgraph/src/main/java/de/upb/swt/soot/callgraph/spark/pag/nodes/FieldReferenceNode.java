@@ -30,11 +30,10 @@ public class FieldReferenceNode extends Node {
   private VariableNode base;
   private Field field;
 
-  public FieldReferenceNode(VariableNode base, Field field, Type type) {
+  public FieldReferenceNode(VariableNode base, Field field) {
     this.base = base;
     this.field = field;
-    this.type = type;
-    this.base.addField(this);
+    this.base.addField(field, this);
   }
 
   public VariableNode getBase() {
@@ -44,4 +43,5 @@ public class FieldReferenceNode extends Node {
   public Field getField() {
     return field;
   }
+
 }

@@ -24,6 +24,7 @@ package de.upb.swt.soot.callgraph.spark.builder;
 
 import de.upb.swt.soot.callgraph.spark.pag.IntraproceduralPointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.ArrayElement;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
@@ -246,6 +247,10 @@ public class MethodNodeFactory extends AbstractStmtVisitor {
     VariableNode node = pag.getOrCreateLocalVariableNode(new ImmutablePair<SootMethod, String>(method, PointsToAnalysis.RETURN_NODE), method.getReturnTypeSignature(), method);
     //TODO: setInterProcTarget
     return node;
+  }
+
+  public Node caseArray(VariableNode base){
+    return pag.getOrCreateFieldReferenceNode(base, new ArrayElement());
   }
 
 }
