@@ -50,7 +50,7 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
     // get all start stmts: startingStmt and handlerStmts
     Deque<Stmt> queue = new ArrayDeque<>();
     for (Stmt stmt : stmtsInBody) {
-      if (isStartStmt(builder, stmt)) {
+      if (isStartStmt(graph, stmt)) {
         queue.addLast(stmt);
       }
     }
@@ -95,17 +95,15 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
   /**
    * Check whether the given stmt is a start stmt: startingStmt or handlerStmt of a trap
    *
-   * @param builder an instance of BodyBuilder
+   * @param graph
    * @param stmt a stmt in the given BodyBuilder
    * @return if the given stmt is a start stmt, then return true, otherwise return false.
    */
-  private boolean isStartStmt(Body.BodyBuilder builder, Stmt stmt) {
-    if (stmt.equals(builder.getStmtGraph().getStartingStmt())) {
-      return true;
-    } else if (stmt instanceof JIdentityStmt
-        && ((JIdentityStmt) stmt).getRightOp() instanceof JCaughtExceptionRef) {
+  private boolean isStartStmt(StmtGraph graph, Stmt stmt) {
+    if (stmt == graph.getStartingStmt()) {
       return true;
     }
-    return false;
+    return stmt instanceof JIdentityStmt
+        && ((JIdentityStmt) stmt).getRightOp() instanceof JCaughtExceptionRef;
   }
 }
