@@ -28,10 +28,14 @@ import de.upb.swt.soot.callgraph.spark.pag.nodes.ArrayElement;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JVirtualInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
+import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
@@ -252,5 +256,25 @@ public class MethodNodeFactory extends AbstractStmtVisitor {
   public Node caseArray(VariableNode base){
     return pag.getOrCreateFieldReferenceNode(base, new ArrayElement());
   }
+
+  public void caseArrayRef(JArrayRef ref){
+    caseLocal((Local) ref.getBase());
+    setResult(caseArray((VariableNode) getNode()));
+  }
+
+  public void caseLocal(Local local){
+    setResult(pag.getOrCreateLocalVariableNode(local, local.getType(), method));
+  }
+
+  public void caseCastExpr(JCastExpr castExpr){
+    Pair<JCastExpr, String> castPair = new ImmutablePair<>(castExpr, PointsToAnalysis.CAST_NODE);
+    castExpr.getOp().accept(this);
+    Node opNode = getNode();
+    Node castNode = pag.getOrCreateLocalVariableNode(castPair, castExpr.getType(), method);
+    intraPag.addEdge(opNode, castNode);
+    setResult(castNode);
+  }
+
+
 
 }
