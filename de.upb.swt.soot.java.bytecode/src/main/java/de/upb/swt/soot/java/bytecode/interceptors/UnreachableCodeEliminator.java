@@ -22,66 +22,90 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  */
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 /**
  * A BodyInterceptor that removes all unreachable stmts from the given Body.
  *
  * @author Zun Wang
  */
-
 public class UnreachableCodeEliminator implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
     StmtGraph graph = builder.getStmtGraph();
-    List<Stmt> stmtsInBody = builder.getStmts();
+    Set<Stmt> stmtsInBody = graph.nodes();
 
-    List<Trap> traps = builder.getTraps();
-    boolean trapsReduced = false;
+    Set<Stmt> unreachableStmts = new HashSet<>();
+    Set<Stmt> reachableStmts = new HashSet<>();
 
-    //store all stmts which has no predecessors in the graph
-    Deque<Stmt> startStmts = new ArrayDeque<>();
-    startStmts.addLast(stmtsInBody.get(0));
-    for(Trap trap : builder.getTraps()){
-      if(stmtsInBody.contains(trap.getBeginStmt())){
-        startStmts.addLast(trap.getBeginStmt());
-      }else{
-        traps.remove(trap);
-        trapsReduced = true;
+    // get all start stmts: startingStmt and handlerStmts
+    Deque<Stmt> queue = new ArrayDeque<>();
+    for (Stmt stmt : stmtsInBody) {
+      if (isStartStmt(builder, stmt)) {
+        queue.addLast(stmt);
       }
     }
 
-    //store all stmts which are reachable
-    Set<Stmt> reachableStmts = new HashSet<>();
-    while(!startStmts.isEmpty()){
-      Stmt stmt = startStmts.removeFirst();
-      if(reachableStmts.add(stmt)){
-        for(Stmt succ : graph.successors(stmt)){
-          startStmts.addFirst(succ);
+    // get all reachable stmts
+    while (!queue.isEmpty()) {
+      Stmt stmt = queue.removeFirst();
+      reachableStmts.add(stmt);
+      for (Stmt succ : graph.successors(stmt)) {
+        if (!reachableStmts.contains(succ)) {
+          queue.addLast(succ);
         }
       }
     }
 
-    //get all stmts which are unreachable
-    Set<Stmt> unreachableStmts = new HashSet<>();
-    for(Stmt stmt : stmtsInBody){
-      if(!reachableStmts.contains(stmt)){
-        unreachableStmts.add(stmt);
+    unreachableStmts =
+        stmtsInBody.stream()
+            .filter(stmt -> !reachableStmts.contains(stmt))
+            .collect(Collectors.toSet());
+
+    // delete invalid traps
+    List<Trap> traps = builder.getTraps();
+
+    Iterator<Trap> trapIterator = traps.iterator();
+
+    while (trapIterator.hasNext()) {
+      Trap trap = trapIterator.next();
+      if (!reachableStmts.contains(trap.getHandlerStmt())) {
+        trapIterator.remove();
+
+      } else if (trap.getBeginStmt() == trap.getEndStmt()) {
+        trapIterator.remove();
+        for (Stmt stmt : trap.getStmts()) {
+          unreachableStmts.add(stmt);
+        }
       }
     }
 
-    if(trapsReduced){
-      builder.setTraps(traps);
+    unreachableStmts.forEach(stmt -> builder.removeStmt(stmt));
+  }
+
+  /**
+   * Check whether the given stmt is a start stmt: startingStmt or handlerStmt of a trap
+   *
+   * @param builder an instance of BodyBuilder
+   * @param stmt a stmt in the given BodyBuilder
+   * @return if the given stmt is a start stmt, then return true, otherwise return false.
+   */
+  private boolean isStartStmt(Body.BodyBuilder builder, Stmt stmt) {
+    if (stmt.equals(builder.getStmtGraph().getStartingStmt())) {
+      return true;
+    } else if (stmt instanceof JIdentityStmt
+        && ((JIdentityStmt) stmt).getRightOp() instanceof JCaughtExceptionRef) {
+      return true;
     }
-
-
-    //TODO: build body with new list of units??
-
+    return false;
   }
 }

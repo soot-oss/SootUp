@@ -143,20 +143,6 @@ public class MutableStmtGraph extends StmtGraph {
     return idx;
   }
 
-  private void removeNode(@Nonnull Stmt node) {
-    final int nodeIdx = getNodeIdx(node);
-    stmtToIdx.remove(node);
-
-    // cleanup edges
-    final List<Stmt> preds = predecessors.get(nodeIdx);
-    preds.forEach(pred -> successors.get(getNodeIdx(pred)).remove(node));
-    predecessors.set(nodeIdx, null); // invalidate entry
-
-    final List<Stmt> succs = successors.get(nodeIdx);
-    succs.forEach(succ -> predecessors.get(getNodeIdx(succ)).remove(node));
-    successors.set(nodeIdx, null); // invalidate entry
-  }
-
   private int getNodeIdx(@Nonnull Stmt node) {
     Integer idx = stmtToIdx.get(node);
     if (idx == null) {
@@ -314,6 +300,39 @@ public class MutableStmtGraph extends StmtGraph {
       int predIdx = predList.indexOf(oldStmt);
       predList.set(predIdx, newStmt);
       predecessors.set(succIdx, predList);
+    }
+  }
+
+  /**
+   * Remove a node from the graph. startingStmt in graph is not supported. The succs and preds after
+   * the node removing don't have any connection to each other.
+   *
+   * @param node a stmt which is already in the StmtGraph or not in the StmtGraph
+   */
+  public void removeNode(@Nonnull Stmt node) {
+
+    if (stmtToIdx.keySet().contains(node)) {
+      nextFreeId--;
+      int nodeIdx = getNodeIdx(node);
+
+      for (Stmt stmt : stmtToIdx.keySet()) {
+        if (stmtToIdx.get(stmt) > nodeIdx) {
+          Integer newIdx = stmtToIdx.get(stmt) - 1;
+          stmtToIdx.replace(stmt, newIdx);
+        }
+      }
+
+      stmtToIdx.remove(node, nodeIdx);
+      predecessors.remove(nodeIdx);
+      successors.remove(nodeIdx);
+
+      for (List<Stmt> preds : predecessors) {
+        preds.stream().filter(pred -> pred != node);
+      }
+
+      for (List<Stmt> succs : successors) {
+        succs.stream().filter(succ -> succ != node);
+      }
     }
   }
 }
