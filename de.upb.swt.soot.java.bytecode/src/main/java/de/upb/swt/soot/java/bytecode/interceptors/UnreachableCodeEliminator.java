@@ -109,15 +109,4 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
     return false;
   }
 
-  private boolean hasAllProdecessors(
-      Collection<Stmt> collection, Body.BodyBuilder builder, Stmt stmt) {
-    boolean hasAllPreds = true;
-    for (Stmt pred : builder.getStmtGraph().predecessors(stmt)) {
-      if (!collection.contains(pred)) {
-        hasAllPreds = false;
-        break;
-      }
-    }
-    return hasAllPreds;
-  }
 }
