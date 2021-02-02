@@ -30,14 +30,13 @@ import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
+import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JVirtualInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
-import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
-import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
-import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
+import de.upb.swt.soot.core.jimple.common.ref.*;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.visitor.AbstractStmtVisitor;
 import de.upb.swt.soot.core.model.SootClass;
@@ -275,6 +274,38 @@ public class MethodNodeFactory extends AbstractStmtVisitor {
     setResult(castNode);
   }
 
+
+  private boolean isStringBuffer(Type type) {
+    if (!(type instanceof ReferenceType)) {
+      return false;
+    }
+    ReferenceType refType = (ReferenceType) type;
+    String s = refType.toString();
+    if (s.equals("java.lang.StringBuffer")) {
+      return true;
+    }
+    if (s.equals("java.lang.StringBuilder")) {
+      return true;
+    }
+    return false;
+  }
+
+  public void caseParameterRef(JParameterRef ref){
+    setResult(caseParameter(ref.getIndex()));
+  }
+
+  public void caseThisRef(JThisRef ref){
+    setResult(caseThis());
+  }
+
+  public void caseNullConstant(NullConstant nullConstant){
+    setResult(null);
+  }
+
+  @Override
+  public void defaultCase(Object obj) {
+    throw new RuntimeException("failed to handle " + obj);
+  }
 
 
 }
