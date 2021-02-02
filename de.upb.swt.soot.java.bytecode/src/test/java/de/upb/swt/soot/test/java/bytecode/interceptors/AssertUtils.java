@@ -58,11 +58,12 @@ public class AssertUtils {
 
     assertNotNull(expected);
     assertNotNull(actual);
-    assertEquals(expected.size(), actual.size());
     if (expected.size() != actual.size()) {
+      System.out.println("Expected size is not equal to actual size: ");
       System.out.println("expected size of set: " + expected.size());
       System.out.println("actual size of set: " + actual.size());
     }
+    assertEquals(expected.size(), actual.size());
     boolean condition = true;
     for (Stmt stmt : actual) {
       if (!expected.contains(stmt)) {

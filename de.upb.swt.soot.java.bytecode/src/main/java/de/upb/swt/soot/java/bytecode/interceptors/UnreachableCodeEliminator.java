@@ -22,10 +22,13 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  */
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -42,65 +45,79 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
     Set<Stmt> stmtsInBody = graph.nodes();
 
     Set<Stmt> unreachableStmts = new HashSet<>();
-    // get all unreachable stmts
+    Set<Stmt> reachableStmts = new HashSet<>();
+
+    // get all start stmts: startingStmt and handlerStmts
+    Deque<Stmt> queue = new ArrayDeque<>();
     for (Stmt stmt : stmtsInBody) {
-      if (graph.predecessors(stmt).size() == 0) {
-        if (!stmt.equals(graph.getStartingStmt())
-            && !stmt.toString().contains("@caughtexception")) {
-          unreachableStmts.add(stmt);
+      if (isStartStmt(builder, stmt)) {
+        queue.addLast(stmt);
+      }
+    }
+
+    // get all reachable stmts
+    while (!queue.isEmpty()) {
+      Stmt stmt = queue.removeFirst();
+      reachableStmts.add(stmt);
+      for (Stmt succ : graph.successors(stmt)) {
+        if (!reachableStmts.contains(succ)) {
+          queue.addLast(succ);
         }
       }
     }
 
-    // if all predecessors of a stmt are unreachable, then this stmt is also unreachable
-    int counter = 1;
+    unreachableStmts =
+        stmtsInBody.stream()
+            .filter(stmt -> !reachableStmts.contains(stmt))
+            .collect(Collectors.toSet());
 
-    while (counter > 0) {
-      counter = 0;
-
-      for (Stmt stmt : stmtsInBody) {
-
-        if (!unreachableStmts.contains(stmt)) {
-
-          if (!stmt.equals(graph.getStartingStmt())
-              && !stmt.toString().contains("@caughtexception")) {
-            boolean unreachable = true;
-
-            for (Stmt pred : graph.predecessors(stmt)) {
-              if (!unreachableStmts.contains(pred)) {
-                unreachable = false;
-                break;
-              }
-            }
-
-            if (unreachable) {
-              unreachableStmts.add(stmt);
-              counter++;
-            }
-          }
-        }
-      }
-    }
-
-    // delete unvalid traps
+    // delete invalid traps
     List<Trap> traps = builder.getTraps();
 
     Iterator<Trap> trapIterator = traps.iterator();
 
     while (trapIterator.hasNext()) {
-
       Trap trap = trapIterator.next();
-      if (!graph.nodes().contains(trap.getHandlerStmt())) {
-
+      if (!reachableStmts.contains(trap.getHandlerStmt())) {
         trapIterator.remove();
 
       } else if (trap.getBeginStmt() == trap.getEndStmt()) {
-
         trapIterator.remove();
-        trap.getStmts().forEach(stmt -> unreachableStmts.add(stmt));
+        for (Stmt stmt : trap.getStmts()) {
+          unreachableStmts.add(stmt);
+        }
       }
     }
 
     unreachableStmts.forEach(stmt -> builder.removeStmt(stmt));
+  }
+
+  /**
+   * Check whether the given stmt is a start stmt: startingStmt or handlerStmt of a trap
+   *
+   * @param builder an instance of BodyBuilder
+   * @param stmt a stmt in the given BodyBuilder
+   * @return if the given stmt is a start stmt, then return true, otherwise return false.
+   */
+  private boolean isStartStmt(Body.BodyBuilder builder, Stmt stmt) {
+    if (stmt.equals(builder.getStmtGraph().getStartingStmt())) {
+      return true;
+    } else if (stmt instanceof JIdentityStmt
+        && ((JIdentityStmt) stmt).getRightOp() instanceof JCaughtExceptionRef) {
+      return true;
+    }
+    return false;
+  }
+
+  private boolean hasAllProdecessors(
+      Collection<Stmt> collection, Body.BodyBuilder builder, Stmt stmt) {
+    boolean hasAllPreds = true;
+    for (Stmt pred : builder.getStmtGraph().predecessors(stmt)) {
+      if (!collection.contains(pred)) {
+        hasAllPreds = false;
+        break;
+      }
+    }
+    return hasAllPreds;
   }
 }
