@@ -328,9 +328,9 @@ public class MutableStmtGraph extends StmtGraph {
 
       for (List<Stmt> preds : predecessors) {
         Iterator<Stmt> it = preds.iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
           Stmt pred = it.next();
-          if(pred == node){
+          if (pred == node) {
             it.remove();
           }
         }
@@ -338,9 +338,9 @@ public class MutableStmtGraph extends StmtGraph {
 
       for (List<Stmt> succs : successors) {
         Iterator<Stmt> it = succs.iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
           Stmt succ = it.next();
-          if(succ == node){
+          if (succ == node) {
             it.remove();
           }
         }

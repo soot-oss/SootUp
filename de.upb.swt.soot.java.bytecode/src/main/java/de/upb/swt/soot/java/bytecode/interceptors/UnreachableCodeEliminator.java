@@ -50,9 +50,10 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
 
     // get all start stmts: startingStmt and handlerStmts
     Deque<Stmt> queue = new ArrayDeque<>();
-    queue.addLast(graph.getStartingStmt());
-    for (Trap trap : traps) {
-      queue.addLast(trap.getHandlerStmt());
+    for (Stmt stmt : stmtsInBody) {
+      if (isStartStmt(graph, stmt)) {
+        queue.addLast(stmt);
+      }
     }
 
     // get all reachable stmts
