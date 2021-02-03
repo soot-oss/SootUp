@@ -111,12 +111,9 @@ public class Aggregator implements BodyInterceptor {
                               }
                             }
                           } else if (stmtDef instanceof JArrayRef) {
-                            if (propagatingInvokeExpr) {
-                              // Cannot aggregate an invoke expr past an array write
-                              cantAggr = true;
-                              break;
-                            } else if (propagatingArrayRef) {
-                              // Cannot aggregate an array read past a write
+                            if (propagatingInvokeExpr || propagatingArrayRef) {
+                              // Cannot aggregate an invoke expr past an array write and cannot
+                              // aggregate an array read past a write
                               cantAggr = true;
                               break;
                             }
@@ -149,16 +146,24 @@ public class Aggregator implements BodyInterceptor {
                   if (assignStmt.getRightOp() instanceof AbstractBinopExpr) {
                     AbstractBinopExpr rightOp = (AbstractBinopExpr) assignStmt.getRightOp();
                     if (rightOp.getOp1() == val) {
-                      // TODO: replace only op1 of the AbstractBinopExpr
+                      AbstractBinopExpr newBinopExpr = rightOp.withOp1(aggregatee);
+                      newStmt =
+                          new JAssignStmt(
+                              assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());
                     } else if (rightOp.getOp2() == val) {
-                      // TODO: replace only op2 of the AbstractBinopExpr
+                      AbstractBinopExpr newBinopExpr = rightOp.withOp2(aggregatee);
+                      newStmt =
+                          new JAssignStmt(
+                              assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());
                     }
                   } else {
                     newStmt = ((JAssignStmt) stmt).withRValue(aggregatee);
                   }
-                  builder.replaceStmt(stmt, newStmt);
-                  JNopStmt nopStmt = new JNopStmt(stmt.getPositionInfo());
-                  builder.replaceStmt(relevantDef, nopStmt);
+                  if (newStmt != null) {
+                    builder.replaceStmt(stmt, newStmt);
+                    JNopStmt nopStmt = new JNopStmt(stmt.getPositionInfo());
+                    builder.replaceStmt(relevantDef, nopStmt);
+                  }
                 }
               }
             }

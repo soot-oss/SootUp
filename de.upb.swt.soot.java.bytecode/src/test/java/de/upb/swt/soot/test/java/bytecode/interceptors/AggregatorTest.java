@@ -35,7 +35,7 @@ public class AggregatorTest {
 
     assertEquals(originalStmts.size(), processedStmts.size());
     assertNotEquals(originalStmts.get(0), processedStmts.get(0));
-    assertEquals("b = a", originalStmts.get(1).toString());
+    assertEquals("b = a + 4", originalStmts.get(1).toString());
     assertEquals("b = 7 + 4", processedStmts.get(1).toString());
     assertEquals(originalStmts.get(2), processedStmts.get(2));
   }

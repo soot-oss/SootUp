@@ -102,4 +102,8 @@ public abstract class AbstractBinopExpr implements Expr {
     up.literal(getSymbol());
     op2Box.toString(up);
   }
+
+  public abstract AbstractBinopExpr withOp1(Value value);
+
+  public abstract AbstractBinopExpr withOp2(Value value);
 }
