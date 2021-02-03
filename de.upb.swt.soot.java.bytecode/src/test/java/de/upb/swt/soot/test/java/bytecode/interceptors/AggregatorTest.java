@@ -24,6 +24,15 @@ import org.junit.Test;
 
 public class AggregatorTest {
 
+  /**
+   * Tests the correct aggregation. Transforms from
+   *
+   * <p>a = 7; b = a + 4; return;
+   *
+   * <p>to
+   *
+   * <p>nop; b = 7 + 4; return;
+   */
   @Test
   public void testAggregation() {
     Body.BodyBuilder testBuilder = createBody(true);
@@ -40,6 +49,12 @@ public class AggregatorTest {
     assertEquals(originalStmts.get(2), processedStmts.get(2));
   }
 
+  /**
+   * Tests the correct handling of a builder without any aggregation. Considers the following code,
+   * but does not change anything:
+   *
+   * <p>a = 7; b = 42; return;
+   */
   @Test
   public void testNoAggregation() {
     Body.BodyBuilder testBuilder = createBody(false);
