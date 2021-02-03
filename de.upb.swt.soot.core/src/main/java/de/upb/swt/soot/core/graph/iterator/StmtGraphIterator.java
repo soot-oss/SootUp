@@ -33,11 +33,11 @@ import javax.annotation.Nonnull;
 public abstract class StmtGraphIterator implements Iterator<Stmt> {
 
   @Nonnull private final StmtGraph graph;
-  @Nonnull protected final Set<Stmt> alreadyInsertedNodes;
+  @Nonnull protected final Set<Stmt> discovered;
 
   protected StmtGraphIterator(@Nonnull StmtGraph graph) {
     this.graph = graph;
-    alreadyInsertedNodes = new HashSet<>(graph.nodes().size(), 1);
+    discovered = new HashSet<>(graph.nodes().size(), 1);
   }
 
   /** creates a Breadth First Search Iterator */
@@ -67,9 +67,9 @@ public abstract class StmtGraphIterator implements Iterator<Stmt> {
     Stmt stmt = removeFromContainer();
     final List<Stmt> successors = getGraph().successors(stmt);
     for (Stmt succ : successors) {
-      if (!alreadyInsertedNodes.contains(succ)) {
+      if (!discovered.contains(succ)) {
         addToContainer(succ);
-        alreadyInsertedNodes.add(succ);
+        discovered.add(succ);
       }
     }
     return stmt;
