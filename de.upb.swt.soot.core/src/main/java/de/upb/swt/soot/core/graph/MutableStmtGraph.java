@@ -312,7 +312,7 @@ public class MutableStmtGraph extends StmtGraph {
   public void removeNode(@Nonnull Stmt node) {
 
     if (stmtToIdx.keySet().contains(node)) {
-      nextFreeId--;
+
       int nodeIdx = getNodeIdx(node);
 
       for (Stmt stmt : stmtToIdx.keySet()) {
@@ -327,11 +327,23 @@ public class MutableStmtGraph extends StmtGraph {
       successors.remove(nodeIdx);
 
       for (List<Stmt> preds : predecessors) {
-        preds.stream().filter(pred -> pred != node);
+        Iterator<Stmt> it = preds.iterator();
+        while(it.hasNext()){
+          Stmt pred = it.next();
+          if(pred == node){
+            it.remove();
+          }
+        }
       }
 
       for (List<Stmt> succs : successors) {
-        succs.stream().filter(succ -> succ != node);
+        Iterator<Stmt> it = succs.iterator();
+        while(it.hasNext()){
+          Stmt succ = it.next();
+          if(succ == node){
+            it.remove();
+          }
+        }
       }
     }
   }
