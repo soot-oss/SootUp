@@ -32,9 +32,9 @@ import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.*;
-import de.upb.swt.soot.java.core.AnnotationType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.jimple.basic.JavaLocal;
+import de.upb.swt.soot.java.core.types.AnnotationType;
 import java.util.List;
 
 /**

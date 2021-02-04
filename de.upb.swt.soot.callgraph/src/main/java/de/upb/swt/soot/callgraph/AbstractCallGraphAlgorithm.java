@@ -120,7 +120,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     while (optSuperclass.isPresent()) {
       ClassType superClassType = optSuperclass.get();
       SootClass superClass = view.getClass(superClassType).get();
-      optMethod = superClass.getMethod(sig.getSubSignature());
+      optMethod = (Optional<SootMethod>) superClass.getMethod(sig.getSubSignature());
       if (optMethod.isPresent()) {
         return (T) optMethod.get();
       }

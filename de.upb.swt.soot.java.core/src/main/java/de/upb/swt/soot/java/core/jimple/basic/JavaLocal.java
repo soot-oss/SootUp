@@ -24,7 +24,7 @@ package de.upb.swt.soot.java.core.jimple.basic;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.java.core.AnnotationType;
+import de.upb.swt.soot.java.core.types.AnnotationType;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 

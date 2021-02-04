@@ -48,10 +48,9 @@ public abstract class JavaSootClassSource extends SootClassSource {
     super(delegate);
   }
 
-  public abstract Iterable<AnnotationType> resolveAnnotations();
+  public abstract Iterable<AnnotationExpr> resolveAnnotations();
 
-  public abstract Iterable<AnnotationType> resolveMethodAnnotations();
+  public abstract Iterable<AnnotationExpr> resolveMethodAnnotations();
 
-  // TODO: [ms] maybe move to a better place?
-  public abstract Iterable<AnnotationType> resolveFieldAnnotations();
+  public abstract Iterable<AnnotationExpr> resolveFieldAnnotations();
 }

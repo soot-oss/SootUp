@@ -72,10 +72,10 @@ public abstract class JimpleTestSuiteBase {
 
   public SootMethod loadMethod(MethodSignature methodSignature) {
     SootClass clazz = loadClass(methodSignature.getDeclClassType());
-    Optional<SootMethod> m = clazz.getMethod(methodSignature);
+    Optional<? extends SootMethod> m = clazz.getMethod(methodSignature);
     if (!m.isPresent()) {
       System.out.println("existing methods:");
-      clazz.getMethods().forEach(meth -> System.out.println(meth));
+      clazz.getMethods().forEach(System.out::println);
     }
     assertTrue("No matching method for " + methodSignature + " found", m.isPresent());
     SootMethod method = m.get();

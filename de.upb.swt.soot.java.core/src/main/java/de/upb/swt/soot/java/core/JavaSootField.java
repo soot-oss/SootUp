@@ -26,6 +26,7 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.java.core.types.AnnotationType;
 import java.util.Collections;
 import javax.annotation.Nonnull;
 

@@ -110,7 +110,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     // Print method
     assertTrue("setEmpSalary".equalsIgnoreCase(foundMethod.getName()));
-    assertEquals("void", foundMethod.getReturnTypeSignature().toString());
+    assertEquals("void", foundMethod.getReturnType().toString());
     assertEquals(1, foundMethod.getParameterCount());
     assertTrue(
         foundMethod.getParameterTypes().stream()
@@ -169,6 +169,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                         .build()),
                 null,
                 EnumSet.of(Modifier.PUBLIC),
+                Collections.emptyList(),
                 Collections.emptyList()),
             SourceType.Application);
 

@@ -92,7 +92,11 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
 
   public abstract void toString(@Nonnull StmtPrinter up);
 
-  /** Used to implement the Switchable construct via OOP */
+  /**
+   * Used to implement the Switchable construct via OOP
+   *
+   * @param sw
+   */
   public void accept(@Nonnull Visitor sw) {}
 
   public boolean containsInvokeExpr() {

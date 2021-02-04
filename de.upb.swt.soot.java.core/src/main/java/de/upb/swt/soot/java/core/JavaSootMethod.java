@@ -30,6 +30,7 @@ import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.java.core.types.AnnotationType;
 import java.util.Collections;
 import java.util.function.Function;
 import javax.annotation.Nonnull;

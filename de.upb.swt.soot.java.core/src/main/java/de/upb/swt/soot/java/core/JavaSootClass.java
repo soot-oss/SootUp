@@ -24,7 +24,11 @@ package de.upb.swt.soot.java.core;
 
 import com.google.common.base.Suppliers;
 import de.upb.swt.soot.core.model.*;
+import de.upb.swt.soot.core.signatures.FieldSubSignature;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.types.Type;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -44,12 +48,55 @@ public class JavaSootClass extends SootClass {
     super(classSource, sourceType);
   }
 
-  private final Supplier<Iterable<AnnotationType>> lazyAnnotations =
+  private final Supplier<Iterable<AnnotationExpr>> lazyAnnotations =
       Suppliers.memoize(((JavaSootClassSource) classSource)::resolveAnnotations);
 
   @Nonnull
-  public Iterable<AnnotationType> getAnnotations() {
+  public Iterable<AnnotationExpr> getAnnotations() {
     return lazyAnnotations.get();
+  }
+
+  @Nonnull
+  @Override
+  public Set<JavaSootMethod> getMethods() {
+    return (Set<JavaSootMethod>) super.getMethods();
+  }
+
+  @Nonnull
+  @Override
+  public Set<JavaSootField> getFields() {
+    return (Set<JavaSootField>) super.getFields();
+  }
+
+  @Nonnull
+  @Override
+  public Optional<JavaSootField> getField(String name) {
+    return (Optional<JavaSootField>) super.getField(name);
+  }
+
+  @Nonnull
+  @Override
+  public Optional<JavaSootField> getField(@Nonnull FieldSubSignature subSignature) {
+    return (Optional<JavaSootField>) super.getField(subSignature);
+  }
+
+  @Nonnull
+  @Override
+  public Optional<JavaSootMethod> getMethod(@Nonnull MethodSignature signature) {
+    return (Optional<JavaSootMethod>) super.getMethod(signature);
+  }
+
+  @Nonnull
+  @Override
+  public Optional<JavaSootMethod> getMethod(
+      @Nonnull String name, @Nonnull Iterable<? extends Type> parameterTypes) {
+    return (Optional<JavaSootMethod>) super.getMethod(name, parameterTypes);
+  }
+
+  @Nonnull
+  @Override
+  public Optional<JavaSootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
+    return (Optional<JavaSootMethod>) super.getMethod(subSignature);
   }
 
   @Override

@@ -15,13 +15,13 @@ import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.JavaSootMethod;
 import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import java.util.Collections;
@@ -68,11 +68,12 @@ public class SootMethodTest {
             .build();
     assertEquals(1, body.getLocalCount());
 
-    SootMethod dummyMainMethod =
-        new SootMethod(
+    JavaSootMethod dummyMainMethod =
+        new JavaSootMethod(
             new OverridingBodySource(methodSignature, body),
             methodSignature,
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
+            Collections.emptyList(),
             Collections.emptyList(),
             NoPositionInformation.getInstance());
 
@@ -89,6 +90,7 @@ public class SootMethodTest {
                 Collections.singleton(dummyMainMethod),
                 NoPositionInformation.getInstance(),
                 EnumSet.of(Modifier.PUBLIC),
+                Collections.emptyList(),
                 Collections.emptyList()),
             SourceType.Application);
 

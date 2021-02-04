@@ -257,7 +257,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         name = "l" + idx;
       }
       // TODO: [ms] implement annotations for Locals here as third parameter in JavaJimple.newLocal(
-      local = Jimple.newLocal(name, UnknownType.getInstance());
+      local = JavaJimple.newLocal(name, UnknownType.getInstance());
       locals.put(i, local);
     }
     return local;
@@ -294,9 +294,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Nonnull
   Local newStackLocal() {
     int idx = nextLocal++;
-    // TODO: [ms] implement annotations for Locals here as third parameter ->
-    // JavaJimple.newLocal(...)
-    Local l = Jimple.newLocal("$stack" + idx, UnknownType.getInstance());
+    // TODO: [ms] implement annotations for Locals here as third parameter
+    Local l = JavaJimple.newLocal("$stack" + idx, UnknownType.getInstance());
     locals.put(idx, l);
     return l;
   }

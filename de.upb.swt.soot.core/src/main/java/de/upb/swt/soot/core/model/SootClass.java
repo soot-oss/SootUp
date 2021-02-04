@@ -62,14 +62,12 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
   @Nonnull public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
   @Nonnull
-  private Set<SootField> lazyFieldInitializer() {
-    Set<SootField> fields;
+  private Set<? extends SootField> lazyFieldInitializer() {
+    Set<? extends SootField> fields;
 
     try {
       fields = ImmutableUtils.immutableSetOf(this.classSource.resolveFields());
     } catch (ResolveException e) {
-      fields = ImmutableUtils.emptyImmutableSet();
-
       // TODO: [JMP] Exception handling
       e.printStackTrace();
       throw new IllegalStateException(e);
@@ -85,8 +83,6 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
     try {
       methods = ImmutableUtils.immutableSetOf(this.classSource.resolveMethods());
     } catch (ResolveException e) {
-      methods = ImmutableUtils.emptyImmutableSet();
-
       // TODO: [JMP] Exception handling
       e.printStackTrace();
       throw new IllegalStateException(e);
@@ -101,18 +97,18 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
 
   /** Gets the {@link Method methods} of this {@link SootClass} in an immutable set. */
   @Nonnull
-  public Set<SootMethod> getMethods() {
+  public Set<? extends SootMethod> getMethods() {
     return this._lazyMethods.get();
   }
 
   @Nonnull
-  private final Supplier<Set<SootField>> _lazyFields =
+  private final Supplier<Set<? extends SootField>> _lazyFields =
       Suppliers.memoize(this::lazyFieldInitializer);
 
   /** Gets the {@link Field fields} of this {@link SootClass} in an immutable set. */
   @Override
   @Nonnull
-  public Set<SootField> getFields() {
+  public Set<? extends SootField> getFields() {
     return this._lazyFields.get();
   }
 
@@ -126,7 +122,7 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
    * than one field with the given name. Returns null if no field with the given name exists.
    */
   @Nonnull
-  public Optional<SootField> getField(String name) {
+  public Optional<? extends SootField> getField(String name) {
     return this.getFields().stream()
         .filter(field -> field.getSignature().getName().equals(name))
         .reduce(
@@ -140,7 +136,7 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
    * null is returned.
    */
   @Nonnull
-  public Optional<SootField> getField(@Nonnull FieldSubSignature subSignature) {
+  public Optional<? extends SootField> getField(@Nonnull FieldSubSignature subSignature) {
     return this.getFields().stream()
         .filter(field -> field.getSubSignature().equals(subSignature))
         .findAny();
@@ -151,7 +147,7 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
    * matching method can be found, null is returned.
    */
   @Nonnull
-  public Optional<SootMethod> getMethod(@Nonnull MethodSignature signature) {
+  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
     return this.getMethods().stream()
         .filter(method -> method.getSignature().equals(signature))
         .findAny();
@@ -162,7 +158,8 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
    * AmbiguousMethodException if there is more than one method with the given name and parameter.
    */
   @Nonnull
-  public Optional<SootMethod> getMethod(String name, Iterable<? extends Type> parameterTypes) {
+  public Optional<? extends SootMethod> getMethod(
+      String name, Iterable<? extends Type> parameterTypes) {
     return this.getMethods().stream()
         .filter(
             method ->
@@ -180,7 +177,7 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
    * method with the given is found, null is returned.
    */
   @Nonnull
-  public Optional<SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
+  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
     return this.getMethods().stream()
         .filter(method -> method.getSubSignature().equals(subSignature))
         .findAny();

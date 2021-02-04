@@ -200,6 +200,7 @@ public class ViewTypeHierarchyTest {
             Collections.emptySet(),
             null,
             EnumSet.of(Modifier.FINAL),
+            Collections.emptyList(),
             Collections.emptyList());
     SootClass sootClass = new SootClass(classSource, SourceType.Application);
 

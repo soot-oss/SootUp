@@ -32,18 +32,19 @@ import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.java.core.*;
+import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.MethodNode;
+import org.apache.commons.lang3.ClassUtils;
+import org.objectweb.asm.tree.*;
 
 /** A ClassSource that reads from Java bytecode */
 class AsmClassSource extends JavaSootClassSource {
@@ -88,6 +89,24 @@ class AsmClassSource extends JavaSootClassSource {
               AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
               asmClassClassSourceContent.setDeclaringClass(cs);
 
+              System.out.println("anno default: " + methodSource.annotationDefault);
+              if (methodSource.invisibleParameterAnnotations != null) {
+                System.out.println(
+                    "param annos: "
+                        + Arrays.stream(methodSource.invisibleParameterAnnotations)
+                            .map(m -> convertAnnotation(m))
+                            .map(Object::toString)
+                            .collect(Collectors.joining()));
+              }
+              System.out.println(
+                  "inv annos: " + convertAnnotation(methodSource.invisibleAnnotations));
+              System.out.println(
+                  "visible annos: " + convertAnnotation(methodSource.visibleAnnotations));
+
+              System.out.println(
+                  "inv type anno " + convertAnnotation(methodSource.invisibleTypeAnnotations));
+              System.out.println("type anno " + methodSource.visibleTypeAnnotations);
+
               List<ClassType> exceptions = new ArrayList<>();
               exceptions.addAll(AsmUtil.asmIdToSignature(methodSource.exceptions));
 
@@ -99,19 +118,50 @@ class AsmClassSource extends JavaSootClassSource {
               MethodSignature methodSignature =
                   signatureFactory.getMethodSignature(methodName, cs, retType, sigTypes);
 
-              // FIXME: implement support for annotation; position/line numbers if possible
+              // TODO: position/line numbers if possible
               return new JavaSootMethod(
                   asmClassClassSourceContent,
                   methodSignature,
                   modifiers,
                   exceptions,
-                  Collections.emptyList(),
+                  convertAnnotation(methodSource.visibleAnnotations),
                   NoPositionInformation.getInstance());
             });
   }
 
+  private static String convertAnnotation(TypeAnnotationNode node) {
+    return node.desc + node.typePath + node.typeRef;
+  }
+
+  private static List<AnnotationExpr> convertAnnotation(List<? extends AnnotationNode> nodes) {
+    if (nodes == null) {
+      return Collections.emptyList();
+    }
+    return nodes.stream()
+        .map(AsmClassSource::convertAnnotation)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+  }
+
+  private static AnnotationExpr convertAnnotation(AnnotationNode node) {
+    if (node == null || node.desc == null) {
+      return null;
+    }
+
+    final String s = AsmUtil.toQualifiedName(node.desc);
+    // TODO: do it via IdentifierFactory
+    AnnotationType annoType =
+        new AnnotationType(
+            ClassUtils.getShortClassName(s), new PackageName(ClassUtils.getPackageName(s)));
+    // if (node.values == null) {
+    return new AnnotationExpr(annoType, Collections.emptyMap());
+    //    }
+
+    //   return new AnnotationExpr( annoType, node.values  );
+  }
+
   @Nonnull
-  public Collection<SootMethod> resolveMethods() throws ResolveException {
+  public Collection<? extends SootMethod> resolveMethods() throws ResolveException {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveMethods(classNode.methods, identifierFactory, classSignature)
         .collect(Collectors.toSet());
@@ -131,12 +181,12 @@ class AsmClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public Set<ClassType> resolveInterfaces() {
+  public Set<? extends ClassType> resolveInterfaces() {
     return new HashSet<>(AsmUtil.asmIdToSignature(classNode.interfaces));
   }
 
   @Nonnull
-  public Optional<ClassType> resolveSuperclass() {
+  public Optional<? extends ClassType> resolveSuperclass() {
     if (classNode.superName == null) {
       return Optional.empty();
     }
@@ -144,7 +194,7 @@ class AsmClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public Optional<ClassType> resolveOuterClass() {
+  public Optional<? extends ClassType> resolveOuterClass() {
     return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.outerClass));
   }
 
@@ -160,22 +210,31 @@ class AsmClassSource extends JavaSootClassSource {
 
   @Nonnull
   @Override
-  public Iterable<AnnotationType> resolveAnnotations() {
-    // TODO [ms] implement
+  public Iterable<AnnotationExpr> resolveAnnotations() {
+    // FIXME [ms] implement
+    System.out.println("classanno: " + convertAnnotation(classNode.invisibleAnnotations));
+    System.out.println("classanno: " + convertAnnotation(classNode.visibleAnnotations));
+
     return null;
   }
 
   @Nonnull
   @Override
-  public Iterable<AnnotationType> resolveMethodAnnotations() {
-    // TODO [ms] implement
+  public Iterable<AnnotationExpr> resolveMethodAnnotations() {
+    // FIXME [ms] implement
+    System.out.println("classanno: " + convertAnnotation(classNode.invisibleAnnotations));
+    System.out.println("classanno: " + convertAnnotation(classNode.visibleAnnotations));
+
     return null;
   }
 
   @Nonnull
   @Override
-  public Iterable<AnnotationType> resolveFieldAnnotations() {
-    // TODO [ms] implement
+  public Iterable<AnnotationExpr> resolveFieldAnnotations() {
+    // FIXME [ms] implement
+    System.out.println("classanno: " + convertAnnotation(classNode.invisibleAnnotations));
+    System.out.println("classanno: " + convertAnnotation(classNode.visibleAnnotations));
+
     return null;
   }
 }

@@ -76,8 +76,8 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
     SootClass superClass =
         customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
 
-    Set<SootMethod> methodsSetOfSootClass = sootClass.getMethods();
-    Set<SootMethod> methodsSetOfSuperClass = superClass.getMethods();
+    Set<SootMethod> methodsSetOfSootClass = (Set<SootMethod>) sootClass.getMethods();
+    Set<SootMethod> methodsSetOfSuperClass = (Set<SootMethod>) superClass.getMethods();
 
     Set<MethodSubSignature> methodSignaturesOfSootClass =
         methodsSetOfSootClass.stream()

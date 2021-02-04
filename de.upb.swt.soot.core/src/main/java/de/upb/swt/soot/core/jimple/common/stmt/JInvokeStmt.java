@@ -102,7 +102,7 @@ public final class JInvokeStmt extends Stmt implements Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseInvokeStmt(this, o);
   }
 
