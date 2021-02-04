@@ -71,11 +71,11 @@ class AsmClassSource extends JavaSootClassSource {
                   signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
               EnumSet<Modifier> modifiers = AsmUtil.getModifiers(fieldNode.access);
 
-              // FIXME: implement support for annotation; add Position info
+              // TODO: add Position info
               return new JavaSootField(
                   fieldSignature,
                   modifiers,
-                  Collections.emptyList(),
+                  convertAnnotation(fieldNode.visibleAnnotations),
                   NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());
