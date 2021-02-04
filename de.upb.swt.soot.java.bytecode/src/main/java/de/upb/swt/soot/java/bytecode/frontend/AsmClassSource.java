@@ -207,34 +207,4 @@ class AsmClassSource extends JavaSootClassSource {
   public String toString() {
     return getSourcePath().toString();
   }
-
-  @Nonnull
-  @Override
-  public Iterable<AnnotationExpr> resolveAnnotations() {
-    // FIXME [ms] implement
-    System.out.println("classanno: " + convertAnnotation(classNode.invisibleAnnotations));
-    System.out.println("classanno: " + convertAnnotation(classNode.visibleAnnotations));
-
-    return null;
-  }
-
-  @Nonnull
-  @Override
-  public Iterable<AnnotationExpr> resolveMethodAnnotations() {
-    // FIXME [ms] implement
-    System.out.println("classanno: " + convertAnnotation(classNode.invisibleAnnotations));
-    System.out.println("classanno: " + convertAnnotation(classNode.visibleAnnotations));
-
-    return null;
-  }
-
-  @Nonnull
-  @Override
-  public Iterable<AnnotationExpr> resolveFieldAnnotations() {
-    // FIXME [ms] implement
-    System.out.println("classanno: " + convertAnnotation(classNode.invisibleAnnotations));
-    System.out.println("classanno: " + convertAnnotation(classNode.visibleAnnotations));
-
-    return null;
-  }
 }

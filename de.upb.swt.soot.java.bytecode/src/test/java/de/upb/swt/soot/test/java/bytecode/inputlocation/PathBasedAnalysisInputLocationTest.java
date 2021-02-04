@@ -170,6 +170,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                 null,
                 EnumSet.of(Modifier.PUBLIC),
                 Collections.emptyList(),
+                Collections.emptyList(),
                 Collections.emptyList()),
             SourceType.Application);
 

@@ -64,7 +64,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
   @Nullable private final JavaSootClassSource delegate;
   @Nullable private final Iterable<AnnotationExpr> annotations;
   @Nullable private final Iterable<AnnotationExpr> methodAnnotations;
-  // TODO: @Nullable private final Iterable<AnnotationExpr> fieldAnnotations;
+  @Nullable private final Iterable<AnnotationExpr> fieldAnnotations;
 
   public OverridingJavaClassSource(@Nonnull JavaSootClassSource delegate) {
     super(delegate);
@@ -78,6 +78,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
     position = null;
     annotations = null;
     methodAnnotations = null;
+    fieldAnnotations = null;
   }
 
   private OverridingJavaClassSource(
@@ -90,6 +91,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
       @Nullable Position position,
       @Nullable Iterable<AnnotationExpr> annotations,
       @Nullable Iterable<AnnotationExpr> methodAnnotations,
+      @Nullable Iterable<AnnotationExpr> fieldAnnotations,
       @Nonnull JavaSootClassSource delegate) {
     super(delegate);
     this.overriddenSootMethods = overriddenSootMethods;
@@ -102,6 +104,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
     this.delegate = delegate;
     this.annotations = annotations;
     this.methodAnnotations = methodAnnotations;
+    this.fieldAnnotations = fieldAnnotations;
   }
 
   /** Class source where all information already available */
@@ -117,7 +120,8 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
       @Nonnull Position position,
       @Nonnull EnumSet<Modifier> modifiers,
       @Nonnull Iterable<AnnotationExpr> annotations,
-      @Nonnull Iterable<AnnotationExpr> methodAnnotations) {
+      @Nonnull Iterable<AnnotationExpr> methodAnnotations,
+      @Nullable Iterable<AnnotationExpr> fieldAnnotations) {
     super(srcNamespace, classType, sourcePath);
 
     this.delegate = null;
@@ -130,6 +134,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
     this.position = position;
     this.annotations = annotations;
     this.methodAnnotations = methodAnnotations;
+    this.fieldAnnotations = fieldAnnotations;
   }
 
   @Nonnull
@@ -172,27 +177,6 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
   @Override
   public Position resolvePosition() {
     return position != null ? position : delegate.resolvePosition();
-  }
-
-  @Nonnull
-  @Override
-  public Iterable<AnnotationExpr> resolveAnnotations() {
-    return annotations != null ? annotations : delegate.resolveAnnotations();
-    // TODO: [ms] implement
-  }
-
-  @Override
-  public Iterable<AnnotationExpr> resolveMethodAnnotations() {
-    // TODO: [ms] implement
-    return annotations != null ? methodAnnotations : delegate.resolveMethodAnnotations();
-  }
-
-  @Nonnull
-  @Override
-  public Iterable<AnnotationExpr> resolveFieldAnnotations() {
-    //  return fieldAnnotations != null ? fieldAnnotations : delegate.resolveFieldAnnotations();
-    // TODO: [ms] implement
-    return null;
   }
 
   @Override
@@ -274,6 +258,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
         position,
         annotations,
         methodAnnotations,
+        fieldAnnotations,
         delegate);
   }
 
@@ -297,6 +282,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
         position,
         annotations,
         methodAnnotations,
+        fieldAnnotations,
         delegate);
   }
 
@@ -312,6 +298,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
         position,
         annotations,
         methodAnnotations,
+        fieldAnnotations,
         delegate);
   }
 
@@ -327,6 +314,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
         position,
         annotations,
         methodAnnotations,
+        fieldAnnotations,
         delegate);
   }
 
@@ -343,6 +331,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
         position,
         annotations,
         methodAnnotations,
+        fieldAnnotations,
         delegate);
   }
 
@@ -359,6 +348,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
         position,
         annotations,
         methodAnnotations,
+        fieldAnnotations,
         delegate);
   }
 
@@ -374,6 +364,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
         position,
         annotations,
         methodAnnotations,
+        fieldAnnotations,
         delegate);
   }
 }

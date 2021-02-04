@@ -47,10 +47,4 @@ public abstract class JavaSootClassSource extends SootClassSource {
   protected JavaSootClassSource(SootClassSource delegate) {
     super(delegate);
   }
-
-  public abstract Iterable<AnnotationExpr> resolveAnnotations();
-
-  public abstract Iterable<AnnotationExpr> resolveMethodAnnotations();
-
-  public abstract Iterable<AnnotationExpr> resolveFieldAnnotations();
 }

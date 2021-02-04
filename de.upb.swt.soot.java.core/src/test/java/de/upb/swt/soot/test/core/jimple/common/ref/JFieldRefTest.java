@@ -61,6 +61,7 @@ public class JFieldRefTest {
                 null,
                 EnumSet.of(Modifier.PUBLIC),
                 Collections.emptyList(),
+                Collections.emptyList(),
                 Collections.emptyList()),
             SourceType.Application);
     JStaticFieldRef ref = Jimple.newStaticFieldRef(fieldSig);
@@ -94,6 +95,7 @@ public class JFieldRefTest {
                 Collections.emptySet(),
                 null,
                 EnumSet.of(Modifier.PUBLIC),
+                Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList()),
             SourceType.Application);

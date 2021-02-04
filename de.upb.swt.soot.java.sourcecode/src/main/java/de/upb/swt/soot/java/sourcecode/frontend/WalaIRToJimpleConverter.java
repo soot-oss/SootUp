@@ -210,8 +210,8 @@ public class WalaIRToJimpleConverter {
         convertPosition(position),
         modifiers,
         Collections.emptyList(), // TODO:[ms] implement annotations
-        Collections.emptyList() // TODO:[ms] implement methodannotations
-        );
+        Collections.emptyList(), // TODO:[ms] implement methodannotations
+        Collections.emptyList()); // TODO:[ms] implement fieldannotations
   }
 
   /**
