@@ -70,6 +70,7 @@ public class PointerAssignmentGraph {
   private final Map<Object, AllocationNode> valToAllocationNode = new HashMap<>();
   private final Queue<AllocationNode> newAllocationNodes = new ArrayDeque<>();
   private final Table<Object, Type, AllocationNode> valToReflectiveAllocationNode = HashBasedTable.create();
+  private final Map<Object, GlobalVariableNode> valToGlobalVariableNode = new HashMap<>();
 
   public PointerAssignmentGraph(View view, CallGraph callGraph) {
     this.view = view;
@@ -172,6 +173,19 @@ public class PointerAssignmentGraph {
         newAllocationNodes.add(node);
         addNodeTag(node, method);
       }
+    }
+    return node;
+  }
+
+  public GlobalVariableNode getOrCreateGlobalVariableNode(Object value, Type type){
+    // TODO: SPARK_OPTS rta
+
+    GlobalVariableNode node = valToGlobalVariableNode.get(value);
+    if(node==null){
+      node = new GlobalVariableNode(value,type);
+      addNodeTag(node, null);
+    } else if(!node.getType().equals(type)){
+      throw new RuntimeException("Value " + value + " of type " + type + " previously had type " + node.getType());
     }
     return node;
   }
