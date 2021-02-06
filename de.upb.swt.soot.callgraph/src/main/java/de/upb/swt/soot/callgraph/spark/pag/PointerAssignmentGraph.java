@@ -22,12 +22,12 @@ package de.upb.swt.soot.callgraph.spark.pag;
  * #L%
  */
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import de.upb.swt.soot.callgraph.CallGraph;
-import de.upb.swt.soot.callgraph.spark.pag.nodes.FieldReferenceNode;
-import de.upb.swt.soot.callgraph.spark.pag.nodes.LocalVariableNode;
-import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
-import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
 import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.SootClass;
@@ -37,8 +37,10 @@ import de.upb.swt.soot.core.views.View;
 import jdk.nashorn.internal.ir.VarNode;
 import org.jgrapht.graph.DefaultDirectedGraph;
 
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 
 public class PointerAssignmentGraph {
 
@@ -65,6 +67,9 @@ public class PointerAssignmentGraph {
 
   private final Map<Local, LocalVariableNode> localToNodeMap = new HashMap<>();
   private final Map<Object, LocalVariableNode> valToLocalVariableNode = new HashMap<>();
+  private final Map<Object, AllocationNode> valToAllocationNode = new HashMap<>();
+  private final Queue<AllocationNode> newAllocationNodes = new ArrayDeque<>();
+  private final Table<Object, Type, AllocationNode> valToReflectiveAllocationNode = HashBasedTable.create();
 
   public PointerAssignmentGraph(View view, CallGraph callGraph) {
     this.view = view;
@@ -145,5 +150,31 @@ public class PointerAssignmentGraph {
   private void addNodeTag(Node node, SootMethod m) {
     // TODO: disabled by default
   }
+
+  public AllocationNode getOrCreateAllocationNode(Object newExpr, Type type, SootMethod method){
+    // TODO: SPARK_OPT types-for-sites
+    AllocationNode node;
+    if(newExpr instanceof JNewExpr){
+      node =  valToAllocationNode.get(newExpr);
+      if(node == null){
+        node = new AllocationNode(type, (JNewExpr) newExpr, method);
+        valToAllocationNode.put(newExpr, node);
+        newAllocationNodes.add(node);
+        addNodeTag(node, null);
+      } else if(!node.getType().equals(type)){
+        throw new RuntimeException("NewExpr " + newExpr + " of type " + type + " previously had type " + node.getType());
+      }
+    } else {
+      node = valToReflectiveAllocationNode.get(newExpr, type);
+      if(node == null){
+        node = new AllocationNode(type, newExpr, method);
+        valToReflectiveAllocationNode.put(newExpr, type, node);
+        newAllocationNodes.add(node);
+        addNodeTag(node, method);
+      }
+    }
+    return node;
+  }
+
 
 }

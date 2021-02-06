@@ -33,18 +33,17 @@ public class AllocationNode extends Node {
   Each allocation node has an associated type, and all objects that it represents are
   expected to have exactly this type at run-time (not a subtype)
    */
-  // TODO: [kk] old soot used Object instead of JNewExpr
-  private JNewExpr newExpr;
+  private Object newExpr;
   private SootMethod method;
   private Set<ConcreteFieldNode> fields;
 
-  public AllocationNode(Type type, JNewExpr newExpr, SootMethod method) {
+  public AllocationNode(Type type, Object newExpr, SootMethod method) {
     this.type = type;
     this.newExpr = newExpr;
     this.method = method;
   }
 
-  public JNewExpr getNewExpr() {
+  public Object getNewExpr() {
     return newExpr;
   }
 
