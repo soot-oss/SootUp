@@ -91,7 +91,7 @@ public class PointerAssignmentGraph {
     }
   }
 
-  private void addEdge(Node source, Node target) {
+  public void addEdge(Node source, Node target) {
     graph.addEdge(new SparkVertex(source), new SparkVertex(target));
   }
 
