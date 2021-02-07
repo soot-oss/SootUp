@@ -32,7 +32,7 @@ public class SparkBasicTest {
   protected MethodSignature mainMethodSignature;
 
   private void setup(String className) {
-    String walaClassPath = "src/test/resources/callgraph/spark/basic";
+    String walaClassPath = "src/test/resources/spark/Basic";
 
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
     if (version > 1.8) {
@@ -65,6 +65,8 @@ public class SparkBasicTest {
     spark.analyze();
   }
 
-  //@Test
-  public void simplePointsToAnalysis() {}
+  @Test
+  public void simplePointsToAnalysis() {
+    setup("Test1");
+  }
 }
