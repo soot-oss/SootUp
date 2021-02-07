@@ -76,6 +76,7 @@ public class PointerAssignmentGraph {
     this.view = view;
     this.callGraph = callGraph;
     this.graph = new DefaultDirectedGraph<>(null, null, false);
+    build();
   }
 
   private void build() {
@@ -187,6 +188,13 @@ public class PointerAssignmentGraph {
     } else if(!node.getType().equals(type)){
       throw new RuntimeException("Value " + value + " of type " + type + " previously had type " + node.getType());
     }
+    return node;
+  }
+
+  public FieldReferenceNode getOrCreateLocalFieldReferenceNode(Object baseValue, Type baseType, Field field, SootMethod method){
+    VariableNode base = getOrCreateLocalVariableNode(baseValue, baseType, method);
+    FieldReferenceNode node = getOrCreateFieldReferenceNode(base, field);
+    //TODO: SPARK_OPTS library mode
     return node;
   }
 

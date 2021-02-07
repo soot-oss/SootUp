@@ -32,10 +32,7 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
 import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
-import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JVirtualInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.*;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.visitor.AbstractStmtVisitor;
@@ -261,10 +258,6 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor {
     setResult(caseArray((VariableNode) getNode()));
   }
 
-  public void caseLocal(Local local){
-    setResult(pag.getOrCreateLocalVariableNode(local, local.getType(), method));
-  }
-
   public void caseCastExpr(JCastExpr castExpr){
     Pair<JCastExpr, String> castPair = new ImmutablePair<>(castExpr, PointsToAnalysis.CAST_NODE);
     castExpr.getOp().accept(this);
@@ -274,6 +267,26 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor {
     setResult(castNode);
   }
 
+  @Override
+  public void caseCaughtExceptionRef(JCaughtExceptionRef ref) {
+    setResult(pag.getNodeFactory().caseThrow());
+  }
+
+  @Override
+  public void caseInstanceFieldRef(JInstanceFieldRef ref) {
+    // TODO: SPARK_OPT field-based vta
+    setResult(pag.getOrCreateLocalFieldReferenceNode(ref.getBase(), ref.getBase().getType(), ref.getField(view).get(), method));
+  }
+
+  public void caseLocal(Local local){
+    setResult(pag.getOrCreateLocalVariableNode(local, local.getType(), method));
+  }
+
+
+  @Override
+  public void caseNewArrayExpr(JNewArrayExpr expr) {
+    setResult(pag.getOrCreateAllocationNode(expr, expr.getType(), method));
+  }
 
   private boolean isStringBuffer(Type type) {
     if (!(type instanceof ReferenceType)) {
