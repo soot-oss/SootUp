@@ -24,12 +24,14 @@ package de.upb.swt.soot.callgraph.spark.builder;
 
 import de.upb.swt.soot.callgraph.spark.pag.IntraproceduralPointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.ArrayElement;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
 import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
 import de.upb.swt.soot.core.jimple.common.expr.*;
@@ -39,6 +41,7 @@ import de.upb.swt.soot.core.jimple.visitor.AbstractStmtVisitor;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
@@ -47,6 +50,8 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import java.lang.reflect.Array;
 
 public class MethodNodeFactory extends AbstractJimpleValueVisitor {
   private SootMethod method;
@@ -303,8 +308,39 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor {
     return false;
   }
 
+  @Override
+  public void caseNewExpr(JNewExpr expr) {
+    // TODO: SPARK_OPT merge-stringbuffer
+    setResult(pag.getOrCreateAllocationNode(expr, expr.getType(), method));
+  }
+
+
+  @Override
+  public void caseNewMultiArrayExpr(JNewMultiArrayExpr expr) {
+    ArrayType type = (ArrayType) expr.getType();
+    AllocationNode prevAllocationNode = pag.getOrCreateAllocationNode(new ImmutablePair<Expr, Integer>(expr, new Integer(type.getDimension())), type, method);
+    VariableNode prevVariableNode = pag.getOrCreateLocalVariableNode(prevAllocationNode, prevAllocationNode.getType(), method);
+    intraPag.addEdge(prevAllocationNode, prevVariableNode);
+    setResult(prevAllocationNode);
+    // TODO: do we need to handle elementType?
+  }
+
   public void caseParameterRef(JParameterRef ref){
     setResult(caseParameter(ref.getIndex()));
+  }
+
+  @Override
+  public void caseStaticFieldRef(JStaticFieldRef ref) {
+    setResult(pag.getOrCreateGlobalVariableNode(ref.getField(view), ref.getField(view).get().getType()));
+  }
+
+  @Override
+  public void caseStringConstant(StringConstant sc) {
+    //TODO: SPARK_OPT string-constant
+    AllocationNode strConstant = pag.getOrCreateAllocationNode(PointsToAnalysis.STRING_NODE, rtStringType, null);
+    VariableNode strConstantLocal = pag.getOrCreateGlobalVariableNode(strConstant, rtStringType);
+    pag.addEdge(strConstant, strConstantLocal);
+    setResult(strConstantLocal);
   }
 
   public void caseThisRef(JThisRef ref){
