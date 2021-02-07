@@ -27,6 +27,10 @@ import de.upb.swt.soot.core.types.Type;
 public class Node {
   protected Type type;
 
+  public Node(Type type) {
+    this.type = type;
+  }
+
   public Type getType() {
     return type;
   }

@@ -24,10 +24,7 @@ package de.upb.swt.soot.callgraph.spark.builder;
 
 import de.upb.swt.soot.callgraph.spark.pag.IntraproceduralPointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
-import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
-import de.upb.swt.soot.callgraph.spark.pag.nodes.ArrayElement;
-import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
-import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -60,6 +57,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor {
   private View<? extends SootClass> view;
 
   protected final ReferenceType rtClass;
+  protected final ReferenceType rtObject;
   protected final ReferenceType rtStringType;
   protected final ReferenceType rtHashSet;
   protected final ReferenceType rtHashMap;
@@ -76,6 +74,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor {
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     rtClass = new JavaClassType("Class", identifierFactory.getPackageName("java.lang"));
+    rtObject = new JavaClassType("Object", identifierFactory.getPackageName("java.lang"));
     rtStringType = new JavaClassType("String", identifierFactory.getPackageName("java.lang"));
     rtHashSet = new JavaClassType("HashSet", identifierFactory.getPackageName("java.util"));
     rtHashMap = new JavaClassType("HashMap", identifierFactory.getPackageName("java.util"));
@@ -364,5 +363,29 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor {
     throw new RuntimeException("failed to handle " + obj);
   }
 
+  @Override
+  public void caseStaticInvokeExpr(JStaticInvokeExpr expr) {
+    MethodSignature methodSignature = expr.getMethodSignature();
+    if(expr.getArgCount() == 1 && expr.getArg(0) instanceof  StringConstant && methodSignature.getName().equals("forName")
+      && methodSignature.getDeclClassType().getFullyQualifiedName().equals("java.lang.Class") && methodSignature.getParameterTypes().size()==1){
+      // This is a call to Class.forName
+      StringConstant classNameConst = (StringConstant) expr.getArg(0);
+      String constStr = "L" + classNameConst.getValue().replaceAll("\\.", "/") + ";";
+      caseClassConstant(new ClassConstant(constStr, null)); // [KK] type not needed in old soot
+    }
+  }
 
+
+  @Override
+  public void caseVirtualInvokeExpr(JVirtualInvokeExpr expr) {
+    if(isReflectionNewInstance(expr)){
+      NewInstanceNode newInstanceNode = pag.getOrCreateNewInstanceNode(expr, rtObject, method);
+      expr.getBase().accept(this);
+      Node srcNode = getNode();
+      intraPag.addEdge(srcNode, newInstanceNode);
+      setResult(newInstanceNode);
+    } else {
+      throw new RuntimeException("Unhandled case of JVirtualInvokeExpr");
+    }
+  }
 }

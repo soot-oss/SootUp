@@ -28,6 +28,7 @@ import de.upb.swt.soot.callgraph.CallGraph;
 import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
 import de.upb.swt.soot.core.model.Field;
@@ -70,6 +71,7 @@ public class PointerAssignmentGraph {
   private final Queue<AllocationNode> newAllocationNodes = new ArrayDeque<>();
   private final Table<Object, Type, AllocationNode> valToReflectiveAllocationNode = HashBasedTable.create();
   private final Map<Object, GlobalVariableNode> valToGlobalVariableNode = new HashMap<>();
+  private final Map<Value, NewInstanceNode> valToNewInstanceNode = new HashMap<>();
   private final GlobalNodeFactory nodeFactory = new GlobalNodeFactory(this);
   private final List<VariableNode> dereferences = new ArrayList<>();
 
@@ -207,6 +209,16 @@ public class PointerAssignmentGraph {
       valToAllocationNode.put(cc, node);
       newAllocationNodes.add(node);
       addNodeTag(node, null);
+    }
+    return node;
+  }
+
+  public NewInstanceNode getOrCreateNewInstanceNode(Value value, Type type, SootMethod method){
+    NewInstanceNode node = valToNewInstanceNode.get(value);
+    if(node == null){
+      node = new NewInstanceNode(type, value);
+      valToNewInstanceNode.put(value, node);
+      addNodeTag(node, method);
     }
     return node;
   }
