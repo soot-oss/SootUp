@@ -96,11 +96,17 @@ public class GlobalNodeFactory {
         return sanl;
     }
 
+    public Node caseNewInstance(VariableNode cls){
+        // TODO: do we need to handle ContextVarNode?
+        // TODO: dynamicClasses
+        VariableNode node = pag.getOrCreateGlobalVariableNode(cls, rtObject);
+        return node;
+    }
+
     public Node caseThrow(){
         VariableNode node = pag.getOrCreateGlobalVariableNode(PointsToAnalysis.EXCEPTION_NODE, rtThrowable);
         // TODO: setInterProcTarget, Source
         return node;
     }
-
 
 }
