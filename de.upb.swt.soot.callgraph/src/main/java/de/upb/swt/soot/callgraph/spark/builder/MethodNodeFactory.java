@@ -352,6 +352,14 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor {
   }
 
   @Override
+  public void caseClassConstant(ClassConstant cc) {
+    AllocationNode classConstant = pag.getOrCreateClassConstantNode(cc);
+    VariableNode classConstantLocal = pag.getOrCreateGlobalVariableNode(classConstant, rtClass);
+    pag.addEdge(classConstant, classConstantLocal);
+    setResult(classConstantLocal);
+  }
+
+  @Override
   public void defaultCase(Object obj) {
     throw new RuntimeException("failed to handle " + obj);
   }

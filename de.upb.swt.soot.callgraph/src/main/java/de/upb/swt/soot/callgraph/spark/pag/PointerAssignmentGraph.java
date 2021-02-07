@@ -28,6 +28,7 @@ import de.upb.swt.soot.callgraph.CallGraph;
 import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
 import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.model.Method;
@@ -195,6 +196,18 @@ public class PointerAssignmentGraph {
     VariableNode base = getOrCreateLocalVariableNode(baseValue, baseType, method);
     FieldReferenceNode node = getOrCreateFieldReferenceNode(base, field);
     //TODO: SPARK_OPTS library mode
+    return node;
+  }
+
+  public AllocationNode getOrCreateClassConstantNode(ClassConstant cc){
+    // TODO: SPARK_OPT types-for-sites vta
+    ClassConstantNode node = (ClassConstantNode) valToAllocationNode.get(cc);
+    if(node == null){
+      node = new ClassConstantNode(cc);
+      valToAllocationNode.put(cc, node);
+      newAllocationNodes.add(node);
+      addNodeTag(node, null);
+    }
     return node;
   }
 
