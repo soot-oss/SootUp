@@ -25,6 +25,7 @@ package de.upb.swt.soot.callgraph.spark.pag;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import de.upb.swt.soot.callgraph.CallGraph;
+import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
@@ -37,10 +38,7 @@ import de.upb.swt.soot.core.views.View;
 import jdk.nashorn.internal.ir.VarNode;
 import org.jgrapht.graph.DefaultDirectedGraph;
 
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 public class PointerAssignmentGraph {
 
@@ -71,6 +69,8 @@ public class PointerAssignmentGraph {
   private final Queue<AllocationNode> newAllocationNodes = new ArrayDeque<>();
   private final Table<Object, Type, AllocationNode> valToReflectiveAllocationNode = HashBasedTable.create();
   private final Map<Object, GlobalVariableNode> valToGlobalVariableNode = new HashMap<>();
+  private final GlobalNodeFactory nodeFactory = new GlobalNodeFactory(this);
+  private final List<VariableNode> dereferences = new ArrayList<>();
 
   public PointerAssignmentGraph(View view, CallGraph callGraph) {
     this.view = view;
@@ -188,6 +188,17 @@ public class PointerAssignmentGraph {
       throw new RuntimeException("Value " + value + " of type " + type + " previously had type " + node.getType());
     }
     return node;
+  }
+
+  /**
+   * Adds the base of a dereference to the list of dereferenced variables.
+   */
+  public void addDereference(VariableNode base) {
+    dereferences.add(base);
+  }
+
+  public GlobalNodeFactory getNodeFactory(){
+    return nodeFactory;
   }
 
 
