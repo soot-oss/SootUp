@@ -22,7 +22,7 @@ public class LocalVariableNode extends VariableNode{
 
     @Override
     public String toString() {
-        return "LocalVarNode " /*+ getNumber() + " "*/ + variable + " " + method;
+        return "LocalVariableNode " /*+ getNumber() + " "*/ + variable + " " + method;
     }
 
 
