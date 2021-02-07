@@ -159,7 +159,7 @@ public class MethodNodeFactory extends AbstractStmtVisitor {
             }
             returnStmt.getOp().accept(MethodNodeFactory.this);
             Node returnNode = getNode();
-            //TODO: intraPag.addEdge(returnNode, caseRet);
+            intraPag.addEdge(returnNode, caseReturn());
             throw new NotImplementedException();
           }
 
