@@ -51,7 +51,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class MethodNodeFactory extends AbstractStmtVisitor {
+public class MethodNodeFactory extends AbstractJimpleValueVisitor {
   private SootMethod method;
   private IntraproceduralPointerAssignmentGraph intraPag;
   private PointerAssignmentGraph pag;
