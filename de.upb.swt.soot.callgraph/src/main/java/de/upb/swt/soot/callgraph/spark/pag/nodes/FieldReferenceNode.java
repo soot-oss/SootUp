@@ -23,7 +23,6 @@ package de.upb.swt.soot.callgraph.spark.pag.nodes;
  */
 
 import de.upb.swt.soot.core.model.Field;
-import de.upb.swt.soot.core.types.Type;
 
 public class FieldReferenceNode extends Node {
 
@@ -43,5 +42,4 @@ public class FieldReferenceNode extends Node {
   public Field getField() {
     return field;
   }
-
 }

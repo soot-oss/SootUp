@@ -22,7 +22,6 @@ package de.upb.swt.soot.callgraph.spark.pag.nodes;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.Type;
 import java.util.HashSet;

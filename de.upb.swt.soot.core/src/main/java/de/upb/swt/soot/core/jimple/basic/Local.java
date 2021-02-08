@@ -66,7 +66,7 @@ public class Local implements Immediate, Copyable {
     if (!(o instanceof Local)) {
       return false;
     }
-    return name.equals(((Local) o).getName()) && type.equals(((Local)o).getType());
+    return name.equals(((Local) o).getName()) && type.equals(((Local) o).getType());
   }
 
   @Override

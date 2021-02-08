@@ -30,20 +30,18 @@ import de.upb.swt.soot.core.model.SootMethod;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
 
 public class IntraproceduralPointerAssignmentGraph {
 
-  private static final Logger log = LoggerFactory.getLogger(IntraproceduralPointerAssignmentGraph.class);
+  private static final Logger log =
+      LoggerFactory.getLogger(IntraproceduralPointerAssignmentGraph.class);
 
   private PointerAssignmentGraph pag;
   private DefaultDirectedGraph<SparkVertex, SparkEdge> graph;
   private SootMethod method;
   private MethodNodeFactory nodeFactory;
   private boolean isBuilt = false;
-  private boolean isAdded =  false;
-
-
+  private boolean isAdded = false;
 
   public IntraproceduralPointerAssignmentGraph(PointerAssignmentGraph pag, SootMethod method) {
     this.pag = pag;
@@ -62,7 +60,7 @@ public class IntraproceduralPointerAssignmentGraph {
     } else {
       // TODO: build for native
     }
-    //TODO: addMiscEdges
+    // TODO: addMiscEdges
   }
 
   public DefaultDirectedGraph<SparkVertex, SparkEdge> getGraph() {
@@ -77,8 +75,8 @@ public class IntraproceduralPointerAssignmentGraph {
     return pag;
   }
 
-  public void addEdge(Node source, Node target){
-    if(source == null){
+  public void addEdge(Node source, Node target) {
+    if (source == null) {
       return;
     }
     SparkVertex src = new SparkVertex(source);
@@ -90,5 +88,4 @@ public class IntraproceduralPointerAssignmentGraph {
     graph.addEdge(src, trg, edge);
     log.info("Added {} edge from:{} to:{}", edge.getEdgeType(), source, target);
   }
-
 }

@@ -29,7 +29,9 @@ public abstract class AbstractConstantVisitor<T> implements ConstantVisitor {
   T result;
 
   @Override
-  public void caseBooleanConstant(BooleanConstant v) { defaultCase(v); }
+  public void caseBooleanConstant(BooleanConstant v) {
+    defaultCase(v);
+  }
 
   @Override
   public void caseDoubleConstant(DoubleConstant v) {
@@ -72,8 +74,7 @@ public abstract class AbstractConstantVisitor<T> implements ConstantVisitor {
   }
 
   @Override
-  public void defaultCase(Object v) {
-  }
+  public void defaultCase(Object v) {}
 
   public T getResult() {
     return result;
