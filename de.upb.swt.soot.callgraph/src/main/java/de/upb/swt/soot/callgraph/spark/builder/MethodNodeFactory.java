@@ -138,17 +138,14 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor {
             if(leftOp instanceof JInstanceFieldRef){
               ((JInstanceFieldRef) leftOp).getBase().accept(MethodNodeFactory.this);
               pag.addDereference((VariableNode) getNode());
-              throw new NotImplementedException();
             }
             if(rightOp instanceof JInstanceFieldRef){
               ((JInstanceFieldRef) rightOp).getBase().accept(MethodNodeFactory.this);
               pag.addDereference((VariableNode) getNode());
-              throw new NotImplementedException();
             } else if (rightOp instanceof JStaticFieldRef){
               JStaticFieldRef staticFieldRef = (JStaticFieldRef) rightOp;
               staticFieldRef.getFieldSignature();
               // TODO: SPARK_OPT empties-as-allocs
-
             }
             intraPag.addEdge(source, target);
           }
