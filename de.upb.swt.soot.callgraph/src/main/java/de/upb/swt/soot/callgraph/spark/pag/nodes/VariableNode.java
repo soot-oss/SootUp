@@ -26,16 +26,13 @@ import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.types.Type;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Represents a simple variable node (Green) in the pointer assignment graph.
  * */
 public class VariableNode extends Node {
 
-  // TODO: [kk] need a more precise type, or generics
   protected Object variable;
   private Map<Field, FieldReferenceNode> fields;
 
@@ -43,12 +40,10 @@ public class VariableNode extends Node {
   public VariableNode(Object variable, Type type) {
     this.variable = variable;
     this.type = type;
+    this.fields = new HashMap<>();
   }
 
   public void addField(Field field, FieldReferenceNode fieldNode) {
-    if (fields == null) {
-      fields = new HashMap<>();
-    }
     fields.put(field, fieldNode);
   }
 
