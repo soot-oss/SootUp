@@ -62,6 +62,7 @@ public class IntraproceduralPointerAssignmentGraph {
     } else {
       // TODO: build for native
     }
+    //TODO: addMiscEdges
   }
 
   public DefaultDirectedGraph<SparkVertex, SparkEdge> getGraph() {
@@ -85,8 +86,9 @@ public class IntraproceduralPointerAssignmentGraph {
     graph.addVertex(src);
     graph.addVertex(trg);
     SparkEdgeFactory edgeFactory = new SparkEdgeFactory();
-    graph.addEdge(src, trg, edgeFactory.getEdge(source, target));
-    log.info("Added edge from:{} to:{}", source, target);
+    SparkEdge edge = edgeFactory.getEdge(source, target);
+    graph.addEdge(src, trg, edge);
+    log.info("Added {} edge from:{} to:{}", edge.getEdgeType(), source, target);
   }
 
 }

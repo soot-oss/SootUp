@@ -26,13 +26,27 @@ import org.jgrapht.graph.DefaultEdge;
 
 public class SparkEdge extends DefaultEdge {
   private EdgeType edgeType;
+  private SparkVertex source;
+  private SparkVertex target;
 
-  public SparkEdge(EdgeType edgeType) {
+  public SparkEdge(SparkVertex source, SparkVertex target, EdgeType edgeType) {
+    this.source = source;
+    this.target = target;
     this.edgeType = edgeType;
   }
 
   public EdgeType getEdgeType() {
     return edgeType;
+  }
+
+  @Override
+  public Object getSource() {
+    return source;
+  }
+
+  @Override
+  public Object getTarget() {
+    return target;
   }
 
   @Override

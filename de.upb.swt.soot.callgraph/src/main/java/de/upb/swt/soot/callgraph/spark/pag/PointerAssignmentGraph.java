@@ -25,6 +25,7 @@ package de.upb.swt.soot.callgraph.spark.pag;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import de.upb.swt.soot.callgraph.CallGraph;
+import de.upb.swt.soot.callgraph.spark.Spark;
 import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -37,8 +38,10 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
-import jdk.nashorn.internal.ir.VarNode;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.traverse.DepthFirstIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -60,6 +63,7 @@ public class PointerAssignmentGraph {
   // special edges for implicit flows:
   // - finalize methods
   // - java.lang.Thread start method to run method
+  private static final Logger log = LoggerFactory.getLogger(PointerAssignmentGraph.class);
 
   private final DefaultDirectedGraph<SparkVertex, SparkEdge> graph;
   private CallGraph callGraph;
@@ -73,6 +77,7 @@ public class PointerAssignmentGraph {
   private final Map<Object, GlobalVariableNode> valToGlobalVariableNode = new HashMap<>();
   private final Map<Value, NewInstanceNode> valToNewInstanceNode = new HashMap<>();
   private final GlobalNodeFactory nodeFactory = new GlobalNodeFactory(this);
+  private final SparkEdgeFactory edgeFactory = new SparkEdgeFactory();
   private final List<VariableNode> dereferences = new ArrayList<>();
 
   public PointerAssignmentGraph(View view, CallGraph callGraph) {
@@ -96,13 +101,35 @@ public class PointerAssignmentGraph {
   }
 
   public void addEdge(Node source, Node target) {
-    graph.addEdge(new SparkVertex(source), new SparkVertex(target));
+    SparkEdge edge = edgeFactory.getEdge(source, target);
+    SparkVertex src = new SparkVertex(source);
+    SparkVertex trg = new SparkVertex(target);
+    graph.addVertex(src);
+    graph.addVertex(trg);
+    graph.addEdge(src, trg, edge);
+    log.info("Added {} edge from:{} to:{}", edge.getEdgeType(), source, target);
   }
 
   private void addIntraproceduralPointerAssignmentGraph(
       IntraproceduralPointerAssignmentGraph intraPAG) {
     DefaultDirectedGraph<SparkVertex, SparkEdge> intraGraph = intraPAG.getGraph();
-    // handle intraGraph
+    System.out.println("method:" + intraPAG.getMethod());
+    //printGraph(intraGraph);
+    Iterator<SparkVertex> iter = new DepthFirstIterator<>(intraGraph);
+    // TODO: intraPAG isn't actually a graph?
+    while(iter.hasNext()){
+      SparkVertex source = iter.next();
+      SparkVertex target = iter.next();
+      addEdge(source.node, target.node);
+    }
+  }
+
+  private void printGraph(DefaultDirectedGraph<SparkVertex, SparkEdge> graph){
+    Iterator<SparkVertex> iter = new DepthFirstIterator<>(graph);
+    while(iter.hasNext()){
+      SparkVertex vertex = iter.next();
+      System.out.println(vertex.node);
+    }
   }
 
   public View getView() {
