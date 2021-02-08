@@ -34,6 +34,7 @@ import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
 import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.*;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
+import de.upb.swt.soot.core.jimple.visitor.AbstractJimpleValueVisitor;
 import de.upb.swt.soot.core.jimple.visitor.AbstractStmtVisitor;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -47,8 +48,6 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.lang.reflect.Array;
 
 public class MethodNodeFactory extends AbstractJimpleValueVisitor {
   private SootMethod method;
