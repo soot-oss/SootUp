@@ -3,9 +3,9 @@ package de.upb.swt.soot.callgraph.spark.builder;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.*;
-import de.upb.swt.soot.core.jimple.visitor.JimpleValueVisitor;
+import de.upb.swt.soot.core.jimple.visitor.AbstractConstantVisitor;
 
-public abstract class AbstractJimpleValueVisitor extends AbstractConstantVisitor implements JimpleValueRefVisitor {
+public abstract class AbstractJimpleValueVisitor<T> extends AbstractConstantVisitor<T> implements JimpleValueRefVisitor {
     @Override
     public void caseArrayRef(JArrayRef v) {
         defaultCase(v);

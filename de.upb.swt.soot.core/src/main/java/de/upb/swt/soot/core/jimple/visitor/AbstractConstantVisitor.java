@@ -4,7 +4,7 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2020 Etienne Gagnon, Linghui Luo and others
+ * Copyright (C) 1997-2020 Etienne Gagnon, Linghui Luo, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,17 +22,14 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
-import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
-import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
-import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
-import de.upb.swt.soot.core.jimple.common.constant.MethodHandle;
-import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
-import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
+import de.upb.swt.soot.core.jimple.common.constant.*;
 
-public abstract class AbstractConstantVisitor implements ConstantVisitor {
-  Object result; // FIXME: Why is this an Object? What is this for?
+public abstract class AbstractConstantVisitor<T> implements ConstantVisitor {
+
+  T result;
+
+  @Override
+  public void caseBooleanConstant(BooleanConstant v) { defaultCase(v); }
 
   @Override
   public void caseDoubleConstant(DoubleConstant v) {
@@ -75,13 +72,14 @@ public abstract class AbstractConstantVisitor implements ConstantVisitor {
   }
 
   @Override
-  public void defaultCase(Object v) {}
+  public void defaultCase(Object v) {
+  }
 
-  public Object getResult() {
+  public T getResult() {
     return result;
   }
 
-  public void setResult(Object result) {
+  public void setResult(T result) {
     this.result = result;
   }
 }
