@@ -86,20 +86,19 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor implements Nod
 
   /** Sets the method for which a graph is currently being built. */
   private void setMethod(SootMethod m) {
-    // TODO: cases
     method = m;
     if (!m.isStatic()) {
-      SootClass c = view.getClassOrThrow(m.getDeclaringClassType());
-      // caseThis();
+      view.getClassOrThrow(m.getDeclaringClassType());
+      caseThis();
     }
     for (int i = 0; i < m.getParameterCount(); i++) {
       if (m.getParameterType(i) instanceof ReferenceType) {
-        // caseParm(i);
+        caseParameter(i);
       }
     }
     Type retType = m.getReturnTypeSignature();
     if (retType instanceof ReferenceType) {
-      // caseRet();
+      caseReturn();
     }
   }
 
@@ -381,7 +380,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor implements Nod
         && methodSignature.getParameterTypes().size() == 1) {
       // This is a call to Class.forName
       StringConstant classNameConst = (StringConstant) expr.getArg(0);
-      String constStr = "L" + classNameConst.getValue().replaceAll("\\.", "/") + ";";
+      String constStr = "L" + classNameConst.getValue().replace("\\.", "/") + ";";
       caseClassConstant(new ClassConstant(constStr, null)); // [KK] type not needed in old soot
     }
   }
