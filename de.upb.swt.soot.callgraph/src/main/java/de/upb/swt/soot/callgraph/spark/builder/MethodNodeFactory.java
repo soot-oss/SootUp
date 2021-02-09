@@ -37,6 +37,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.visitor.AbstractJimpleValueVisitor;
 import de.upb.swt.soot.core.jimple.visitor.AbstractStmtVisitor;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ArrayType;
@@ -47,9 +48,10 @@ import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class MethodNodeFactory extends AbstractJimpleValueVisitor implements NodeFactory {
+import java.util.Optional;
+
+public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> implements NodeFactory {
   private SootMethod method;
   private IntraproceduralPointerAssignmentGraph intraPag;
   private PointerAssignmentGraph pag;
@@ -108,7 +110,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor implements Nod
   }
 
   public final Node getNode() {
-    return (Node) getResult();
+    return getResult();
   }
 
   public void processStmt(Stmt stmt) {
@@ -155,7 +157,6 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor implements Nod
             returnStmt.getOp().accept(MethodNodeFactory.this);
             Node returnNode = getNode();
             intraPag.addEdge(returnNode, caseReturn());
-            throw new NotImplementedException();
           }
 
           @Override
@@ -178,19 +179,16 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor implements Nod
           @Override
           public void caseThrowStmt(JThrowStmt throwStmt) {
             throwStmt.getOp().accept(MethodNodeFactory.this);
-            // TODO: mpag.addOutEdge(getNode(), pag.nodeFactory().caseThrow());
-            throw new NotImplementedException();
+            // TODO: Add out edge to intraPag
           }
         });
   }
 
   private boolean canProcess(Stmt stmt) {
-    // TODO: types-for-invoke
+    // TODO: SPARK_OPT types-for-invoke
     if (stmt.containsInvokeExpr()) {
       AbstractInvokeExpr invokeExpr = stmt.getInvokeExpr();
-      if (!isReflectionNewInstance(invokeExpr)) {
-        return false;
-      } else if (!(invokeExpr instanceof JStaticInvokeExpr)) {
+      if (!isReflectionNewInstance(invokeExpr) || !(invokeExpr instanceof JStaticInvokeExpr)){
         return false;
       }
     }
@@ -207,12 +205,12 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor implements Nod
     // TODO: put this in a utility class?
     if (invokeExpr instanceof JVirtualInvokeExpr) {
       JVirtualInvokeExpr virtualInvokeExpr = (JVirtualInvokeExpr) invokeExpr;
-      if (virtualInvokeExpr.getBase().getType() instanceof ReferenceType) {
-        ReferenceType rt = (ReferenceType) virtualInvokeExpr.getBase().getType();
-        if (rt.getClass().getName().equals("java.lang.Class")) {
+      if (virtualInvokeExpr.getBase().getType() instanceof JavaClassType) {
+        JavaClassType rt = (JavaClassType) virtualInvokeExpr.getBase().getType();
+        if (rt.getFullyQualifiedName().equals("java.lang.class")) {
           MethodSignature signature = virtualInvokeExpr.getMethodSignature();
           if (signature.getName().equals("newInstance")
-              && signature.getParameterTypes().size() == 0) {
+              && signature.getParameterTypes().isEmpty()) {
             return true;
           }
         }
@@ -234,15 +232,11 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor implements Nod
   public Node caseParameter(int index) {
     VariableNode node =
         pag.getOrCreateLocalVariableNode(
-            new ImmutablePair<SootMethod, Integer>(method, new Integer(index)),
+            new ImmutablePair<SootMethod, Integer>(method, index),
             method.getParameterType(index),
             method);
     // TODO: setInterProcTarget
     return node;
-  }
-
-  public void casePhiExpr() {
-    throw new NotImplementedException();
   }
 
   public Node caseReturn() {
@@ -259,11 +253,13 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor implements Nod
     return pag.getOrCreateFieldReferenceNode(base, new ArrayElement());
   }
 
+  @Override
   public void caseArrayRef(JArrayRef ref) {
     caseLocal((Local) ref.getBase());
     setResult(caseArray((VariableNode) getNode()));
   }
 
+  @Override
   public void caseCastExpr(JCastExpr castExpr) {
     Pair<JCastExpr, String> castPair = new ImmutablePair<>(castExpr, PointsToAnalysis.CAST_NODE);
     castExpr.getOp().accept(this);
@@ -281,11 +277,18 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor implements Nod
   @Override
   public void caseInstanceFieldRef(JInstanceFieldRef ref) {
     // TODO: SPARK_OPT field-based vta
-    setResult(
-        pag.getOrCreateLocalFieldReferenceNode(
-            ref.getBase(), ref.getBase().getType(), ref.getField(view).get(), method));
+    Optional<SootField> field = ref.getField(view);
+    if(field.isPresent()){
+      setResult(
+              pag.getOrCreateLocalFieldReferenceNode(
+                      ref.getBase(), ref.getBase().getType(), field.get(), method));
+    }else{
+      throw new RuntimeException("Field not present on ref:" + ref);
+    }
+
   }
 
+  @Override
   public void caseLocal(Local local) {
     setResult(pag.getOrCreateLocalVariableNode(local, local.getType(), method));
   }
@@ -296,16 +299,12 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor implements Nod
   }
 
   private boolean isStringBuffer(Type type) {
-    if (!(type instanceof ReferenceType)) {
-      return false;
-    }
-    ReferenceType refType = (ReferenceType) type;
-    String s = refType.toString();
-    if (s.equals("java.lang.StringBuffer")) {
-      return true;
-    }
-    if (s.equals("java.lang.StringBuilder")) {
-      return true;
+    if (type instanceof JavaClassType) {
+      JavaClassType refType = (JavaClassType) type;
+      String fullName = refType.getFullyQualifiedName();
+      if (fullName.equals("java.lang.StringBuffer") || fullName.equals("java.lang.StringBuilder")) {
+        return true;
+      }
     }
     return false;
   }
@@ -321,7 +320,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor implements Nod
     ArrayType type = (ArrayType) expr.getType();
     AllocationNode prevAllocationNode =
         pag.getOrCreateAllocationNode(
-            new ImmutablePair<Expr, Integer>(expr, new Integer(type.getDimension())), type, method);
+            new ImmutablePair<Expr, Integer>(expr, type.getDimension()), type, method);
     VariableNode prevVariableNode =
         pag.getOrCreateLocalVariableNode(prevAllocationNode, prevAllocationNode.getType(), method);
     intraPag.addEdge(prevAllocationNode, prevVariableNode);
@@ -329,14 +328,21 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor implements Nod
     // TODO: do we need to handle elementType?
   }
 
+  @Override
   public void caseParameterRef(JParameterRef ref) {
     setResult(caseParameter(ref.getIndex()));
   }
 
   @Override
   public void caseStaticFieldRef(JStaticFieldRef ref) {
-    setResult(
-        pag.getOrCreateGlobalVariableNode(ref.getField(view), ref.getField(view).get().getType()));
+    Optional<SootField> field = ref.getField(view);
+    if(field.isPresent()){
+      setResult(
+              pag.getOrCreateGlobalVariableNode(ref.getField(view), field.get().getType()));
+    }else{
+      throw new RuntimeException("Field not present on ref:" + ref);
+    }
+
   }
 
   @Override
@@ -349,6 +355,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor implements Nod
     setResult(strConstantLocal);
   }
 
+  @Override
   public void caseThisRef(JThisRef ref) {
     setResult(caseThis());
   }
