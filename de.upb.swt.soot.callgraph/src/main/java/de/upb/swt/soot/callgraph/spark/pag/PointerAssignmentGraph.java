@@ -38,6 +38,8 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import java.util.*;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.traverse.DepthFirstIterator;
 import org.slf4j.Logger;
@@ -111,16 +113,13 @@ public class PointerAssignmentGraph {
 
   private void addIntraproceduralPointerAssignmentGraph(
       IntraproceduralPointerAssignmentGraph intraPAG) {
-    DefaultDirectedGraph<SparkVertex, SparkEdge> intraGraph = intraPAG.getGraph();
-    System.out.println("method:" + intraPAG.getMethod());
-    // printGraph(intraGraph);
-    Iterator<SparkVertex> iter = new DepthFirstIterator<>(intraGraph);
-    // TODO: intraPAG isn't actually a graph?
-    while (iter.hasNext()) {
-      SparkVertex source = iter.next();
-      SparkVertex target = iter.next();
-      addEdge(source.node, target.node);
+    List<Pair<Node, Node>> intraPAGSourceTargetPairs = intraPAG.getSourceTargetPairs();
+    log.info("Added method:{}", intraPAG.getMethod());
+    for(Pair<Node, Node> sourceTargetPair: intraPAGSourceTargetPairs){
+      addEdge(sourceTargetPair.getKey(), sourceTargetPair.getValue());
     }
+
+    //printGraph(graph);
   }
 
   private void printGraph(DefaultDirectedGraph<SparkVertex, SparkEdge> graph) {

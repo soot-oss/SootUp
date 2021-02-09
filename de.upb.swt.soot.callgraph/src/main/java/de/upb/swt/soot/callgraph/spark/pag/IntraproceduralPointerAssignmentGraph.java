@@ -27,9 +27,15 @@ import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class IntraproceduralPointerAssignmentGraph {
 
@@ -37,7 +43,7 @@ public class IntraproceduralPointerAssignmentGraph {
       LoggerFactory.getLogger(IntraproceduralPointerAssignmentGraph.class);
 
   private PointerAssignmentGraph pag;
-  private DefaultDirectedGraph<SparkVertex, SparkEdge> graph;
+  private List<Pair<Node, Node>> sourceTargetPairs; // a (target) = b (source)
   private SootMethod method;
   private MethodNodeFactory nodeFactory;
   private boolean isBuilt = false;
@@ -47,7 +53,7 @@ public class IntraproceduralPointerAssignmentGraph {
     this.pag = pag;
     this.method = method;
     this.nodeFactory = new MethodNodeFactory(this);
-    this.graph = new DefaultDirectedGraph<>(SparkEdge.class);
+    this.sourceTargetPairs = new LinkedList<>();
     build();
   }
 
@@ -63,8 +69,12 @@ public class IntraproceduralPointerAssignmentGraph {
     // TODO: addMiscEdges
   }
 
-  public DefaultDirectedGraph<SparkVertex, SparkEdge> getGraph() {
-    return graph;
+  public List<Pair<Node, Node>> getSourceTargetPairs() {
+    return sourceTargetPairs;
+  }
+
+  public void setSourceTargetPairs(List<Pair<Node, Node>> sourceTargetPairs) {
+    this.sourceTargetPairs = sourceTargetPairs;
   }
 
   public SootMethod getMethod() {
@@ -79,13 +89,7 @@ public class IntraproceduralPointerAssignmentGraph {
     if (source == null) {
       return;
     }
-    SparkVertex src = new SparkVertex(source);
-    SparkVertex trg = new SparkVertex(target);
-    graph.addVertex(src);
-    graph.addVertex(trg);
-    SparkEdgeFactory edgeFactory = new SparkEdgeFactory();
-    SparkEdge edge = edgeFactory.getEdge(source, target);
-    graph.addEdge(src, trg, edge);
-    log.info("Added {} edge from:{} to:{}", edge.getEdgeType(), source, target);
+    Pair<Node, Node> sourceTargetPair = new ImmutablePair<>(source, target);
+    sourceTargetPairs.add(sourceTargetPair);
   }
 }
