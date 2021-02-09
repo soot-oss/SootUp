@@ -33,7 +33,7 @@ import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 
-public class GlobalNodeFactory implements NodeFactory {
+public class GlobalNodeFactory {
 
   private PointerAssignmentGraph pag;
 
@@ -49,18 +49,18 @@ public class GlobalNodeFactory implements NodeFactory {
     this.pag = pag;
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    rtObject = new JavaClassType(OBJECT, identifierFactory.getPackageName(JAVA_LANG));
+    rtObject = new JavaClassType(NodeConstants.OBJECT, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
     this.rtClassLoader =
-        new JavaClassType(CLASS_LOADER, identifierFactory.getPackageName(JAVA_LANG));
-    this.rtString = new JavaClassType(STRING, identifierFactory.getPackageName(JAVA_LANG));
-    this.rtThread = new JavaClassType(THREAD, identifierFactory.getPackageName(JAVA_LANG));
+        new JavaClassType(NodeConstants.CLASS_LOADER, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
+    this.rtString = new JavaClassType(NodeConstants.STRING, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
+    this.rtThread = new JavaClassType(NodeConstants.THREAD, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
     this.rtThreadGroup =
-        new JavaClassType(THREAD_GROUP, identifierFactory.getPackageName(JAVA_LANG));
+        new JavaClassType(NodeConstants.THREAD_GROUP, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
     this.rtThrowable =
-        new JavaClassType(THROWABLE, identifierFactory.getPackageName(JAVA_LANG));
+        new JavaClassType(NodeConstants.THROWABLE, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
     this.rtPrivilegedActionException =
         new JavaClassType(
-            PRIVILEGED_ACTION_EXCEPTION, identifierFactory.getPackageName(JAVA_SECURITY));
+                NodeConstants.PRIVILEGED_ACTION_EXCEPTION, identifierFactory.getPackageName(NodeConstants.JAVA_SECURITY));
   }
 
   public Node caseDefaultClassLoader() {

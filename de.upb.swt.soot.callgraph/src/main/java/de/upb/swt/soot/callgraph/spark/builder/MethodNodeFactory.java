@@ -51,7 +51,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Optional;
 
-public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> implements NodeFactory {
+public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
   private SootMethod method;
   private IntraproceduralPointerAssignmentGraph intraPag;
   private PointerAssignmentGraph pag;
@@ -73,17 +73,17 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> implemen
     setMethod(intraPag.getMethod());
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    rtClass = new JavaClassType(CLASS, identifierFactory.getPackageName(JAVA_LANG));
-    rtObject = new JavaClassType(OBJECT, identifierFactory.getPackageName(JAVA_LANG));
-    rtStringType = new JavaClassType(STRING, identifierFactory.getPackageName(JAVA_LANG));
-    rtHashSet = new JavaClassType(HASH_SET, identifierFactory.getPackageName(JAVA_UTIL));
-    rtHashMap = new JavaClassType(HASH_MAP, identifierFactory.getPackageName(JAVA_UTIL));
-    rtLinkedList = new JavaClassType(LINKED_LIST, identifierFactory.getPackageName(JAVA_UTIL));
+    rtClass = new JavaClassType(NodeConstants.CLASS, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
+    rtObject = new JavaClassType(NodeConstants.OBJECT, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
+    rtStringType = new JavaClassType(NodeConstants.STRING, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
+    rtHashSet = new JavaClassType(NodeConstants.HASH_SET, identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
+    rtHashMap = new JavaClassType(NodeConstants.HASH_MAP, identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
+    rtLinkedList = new JavaClassType(NodeConstants.LINKED_LIST, identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
     rtHashtableEmptyIterator =
-        new JavaClassType(HASH_TABLE_EMPTY_ITERATOR, identifierFactory.getPackageName(JAVA_UTIL));
+        new JavaClassType(NodeConstants.HASH_TABLE_EMPTY_ITERATOR, identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
     rtHashtableEmptyEnumerator =
         new JavaClassType(
-            HASH_TABLE_EMPTY_NUMERATOR, identifierFactory.getPackageName(JAVA_UTIL));
+                NodeConstants.HASH_TABLE_EMPTY_NUMERATOR, identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
   }
 
   /** Sets the method for which a graph is currently being built. */
