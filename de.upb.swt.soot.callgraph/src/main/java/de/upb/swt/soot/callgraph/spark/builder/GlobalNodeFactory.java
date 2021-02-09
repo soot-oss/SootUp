@@ -33,7 +33,7 @@ import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 
-public class GlobalNodeFactory {
+public class GlobalNodeFactory implements NodeFactory {
 
   private PointerAssignmentGraph pag;
 
@@ -49,18 +49,18 @@ public class GlobalNodeFactory {
     this.pag = pag;
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    rtObject = new JavaClassType("Object", identifierFactory.getPackageName("java.lang"));
+    rtObject = new JavaClassType(OBJECT, identifierFactory.getPackageName(JAVA_LANG));
     this.rtClassLoader =
-        new JavaClassType("ClassLoader", identifierFactory.getPackageName("java.lang"));
-    this.rtString = new JavaClassType("String", identifierFactory.getPackageName("java.lang"));
-    this.rtThread = new JavaClassType("Thread", identifierFactory.getPackageName("java.lang"));
+        new JavaClassType(CLASS_LOADER, identifierFactory.getPackageName(JAVA_LANG));
+    this.rtString = new JavaClassType(STRING, identifierFactory.getPackageName(JAVA_LANG));
+    this.rtThread = new JavaClassType(THREAD, identifierFactory.getPackageName(JAVA_LANG));
     this.rtThreadGroup =
-        new JavaClassType("ThreadGroup", identifierFactory.getPackageName("java.lang"));
+        new JavaClassType(THREAD_GROUP, identifierFactory.getPackageName(JAVA_LANG));
     this.rtThrowable =
-        new JavaClassType("Throwable", identifierFactory.getPackageName("java.lang.Throwable"));
+        new JavaClassType(THROWABLE, identifierFactory.getPackageName(JAVA_LANG));
     this.rtPrivilegedActionException =
         new JavaClassType(
-            "PrivilegedActionException", identifierFactory.getPackageName("java.security"));
+            PRIVILEGED_ACTION_EXCEPTION, identifierFactory.getPackageName(JAVA_SECURITY));
   }
 
   public Node caseDefaultClassLoader() {

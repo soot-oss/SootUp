@@ -49,7 +49,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class MethodNodeFactory extends AbstractJimpleValueVisitor {
+public class MethodNodeFactory extends AbstractJimpleValueVisitor implements NodeFactory {
   private SootMethod method;
   private IntraproceduralPointerAssignmentGraph intraPag;
   private PointerAssignmentGraph pag;
@@ -71,17 +71,17 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor {
     setMethod(intraPag.getMethod());
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    rtClass = new JavaClassType("Class", identifierFactory.getPackageName("java.lang"));
-    rtObject = new JavaClassType("Object", identifierFactory.getPackageName("java.lang"));
-    rtStringType = new JavaClassType("String", identifierFactory.getPackageName("java.lang"));
-    rtHashSet = new JavaClassType("HashSet", identifierFactory.getPackageName("java.util"));
-    rtHashMap = new JavaClassType("HashMap", identifierFactory.getPackageName("java.util"));
-    rtLinkedList = new JavaClassType("LinkedList", identifierFactory.getPackageName("java.util"));
+    rtClass = new JavaClassType(CLASS, identifierFactory.getPackageName(JAVA_LANG));
+    rtObject = new JavaClassType(OBJECT, identifierFactory.getPackageName(JAVA_LANG));
+    rtStringType = new JavaClassType(STRING, identifierFactory.getPackageName(JAVA_LANG));
+    rtHashSet = new JavaClassType(HASH_SET, identifierFactory.getPackageName(JAVA_UTIL));
+    rtHashMap = new JavaClassType(HASH_MAP, identifierFactory.getPackageName(JAVA_UTIL));
+    rtLinkedList = new JavaClassType(LINKED_LIST, identifierFactory.getPackageName(JAVA_UTIL));
     rtHashtableEmptyIterator =
-        new JavaClassType("Hashtable$EmptyIterator", identifierFactory.getPackageName("java.util"));
+        new JavaClassType(HASH_TABLE_EMPTY_ITERATOR, identifierFactory.getPackageName(JAVA_UTIL));
     rtHashtableEmptyEnumerator =
         new JavaClassType(
-            "Hashtable$EmptyEnumerator", identifierFactory.getPackageName("java.util"));
+            HASH_TABLE_EMPTY_NUMERATOR, identifierFactory.getPackageName(JAVA_UTIL));
   }
 
   /** Sets the method for which a graph is currently being built. */
