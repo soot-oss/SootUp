@@ -37,6 +37,8 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
+
+import java.text.MessageFormat;
 import java.util.*;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -81,7 +83,7 @@ public class PointerAssignmentGraph {
   private final SparkEdgeFactory edgeFactory = new SparkEdgeFactory();
   private final List<VariableNode> dereferences = new ArrayList<>();
 
-  public PointerAssignmentGraph(View view, CallGraph callGraph) {
+  public PointerAssignmentGraph(View<? extends SootClass> view, CallGraph callGraph) {
     this.view = view;
     this.callGraph = callGraph;
     this.graph = new DefaultDirectedGraph<>(null, null, false);
@@ -90,11 +92,10 @@ public class PointerAssignmentGraph {
 
   private void build() {
     for (SootClass clazz : view.getClasses()) {
-      for (Method method : clazz.getMethods()) {
-        SootMethod sootMethod = (SootMethod) method;
-        if (!sootMethod.isAbstract() && callGraph.containsMethod(sootMethod.getSignature())) {
+      for (SootMethod method : clazz.getMethods()) {
+        if (!method.isAbstract() && callGraph.containsMethod(method.getSignature())) {
           IntraproceduralPointerAssignmentGraph intraPAG =
-              new IntraproceduralPointerAssignmentGraph(this, sootMethod);
+              new IntraproceduralPointerAssignmentGraph(this, method);
           addIntraproceduralPointerAssignmentGraph(intraPAG);
         }
       }
@@ -126,11 +127,11 @@ public class PointerAssignmentGraph {
     Iterator<SparkVertex> iter = new DepthFirstIterator<>(graph);
     while (iter.hasNext()) {
       SparkVertex vertex = iter.next();
-      System.out.println(vertex.node);
+      log.info("SparkVertex:{}", vertex.node);
     }
   }
 
-  public View getView() {
+  public View<? extends SootClass> getView() {
     return view;
   }
 
@@ -146,13 +147,10 @@ public class PointerAssignmentGraph {
         localToNodeMap.put(local, localVariableNode);
         // TODO: addNodeTag()
       } else if (!(localVariableNode.getType().equals(type))) {
-        throw new RuntimeException(
-            "Value "
-                + value
-                + " of type "
-                + type
-                + " previously had type "
-                + localVariableNode.getType());
+        throw new RuntimeException(MessageFormat.format("Value {0} of type {1} previously had type {2}",
+                value,
+                type,
+                localVariableNode.getType()));
       }
       return localVariableNode;
     }
@@ -162,13 +160,10 @@ public class PointerAssignmentGraph {
       valToLocalVariableNode.put(value, localVariableNode);
       // TODO: addNodeTag()
     } else if (!(localVariableNode.getType().equals(type))) {
-      throw new RuntimeException(
-          "Value "
-              + value
-              + " of type "
-              + type
-              + " previously had type "
-              + localVariableNode.getType());
+      throw new RuntimeException(MessageFormat.format("Value {0} of type {1} previously had type {2}",
+              value,
+              type,
+              localVariableNode.getType()));
     }
     return localVariableNode;
   }
@@ -197,13 +192,15 @@ public class PointerAssignmentGraph {
     if (newExpr instanceof JNewExpr) {
       node = valToAllocationNode.get(newExpr);
       if (node == null) {
-        node = new AllocationNode(type, (JNewExpr) newExpr, method);
+        node = new AllocationNode(type, newExpr, method);
         valToAllocationNode.put(newExpr, node);
         newAllocationNodes.add(node);
         addNodeTag(node, null);
       } else if (!node.getType().equals(type)) {
-        throw new RuntimeException(
-            "NewExpr " + newExpr + " of type " + type + " previously had type " + node.getType());
+        throw new RuntimeException(MessageFormat.format("NewExpr {0} of type {1} previously had type {2}",
+                newExpr,
+                type,
+                node.getType()));
       }
     } else {
       node = valToReflectiveAllocationNode.get(newExpr, type);
@@ -225,8 +222,10 @@ public class PointerAssignmentGraph {
       node = new GlobalVariableNode(value, type);
       addNodeTag(node, null);
     } else if (!node.getType().equals(type)) {
-      throw new RuntimeException(
-          "Value " + value + " of type " + type + " previously had type " + node.getType());
+      throw new RuntimeException(MessageFormat.format("Value {0} of type {1} previously had type {2}",
+              value,
+              type,
+              node.getType()));
     }
     return node;
   }
@@ -241,23 +240,23 @@ public class PointerAssignmentGraph {
 
   public AllocationNode getOrCreateClassConstantNode(ClassConstant cc) {
     // TODO: SPARK_OPT types-for-sites vta
-    ClassConstantNode node = (ClassConstantNode) valToAllocationNode.get(cc);
-    if (node == null) {
-      node = new ClassConstantNode(cc);
-      valToAllocationNode.put(cc, node);
-      newAllocationNodes.add(node);
-      addNodeTag(node, null);
-    }
+    return valToAllocationNode.computeIfAbsent(cc, k->createNodeForClassConstant(cc));
+  }
+
+  private ClassConstantNode createNodeForClassConstant(ClassConstant cc){
+    ClassConstantNode node = new ClassConstantNode(cc);
+    newAllocationNodes.add(node);
+    addNodeTag(node, null);
     return node;
   }
 
   public NewInstanceNode getOrCreateNewInstanceNode(Value value, Type type, SootMethod method) {
-    NewInstanceNode node = valToNewInstanceNode.get(value);
-    if (node == null) {
-      node = new NewInstanceNode(type, value);
-      valToNewInstanceNode.put(value, node);
-      addNodeTag(node, method);
-    }
+    return valToNewInstanceNode.computeIfAbsent(value, k->createNodeForNewInstance(value, type, method));
+  }
+
+  private NewInstanceNode createNodeForNewInstance(Value value, Type type, SootMethod method){
+    NewInstanceNode node = new NewInstanceNode(type, value);
+    addNodeTag(node, method);
     return node;
   }
 
@@ -269,4 +268,13 @@ public class PointerAssignmentGraph {
   public GlobalNodeFactory getNodeFactory() {
     return nodeFactory;
   }
+
+  public LocalVariableNode getLocalVariableNode(Object value){
+    // TODO: SPARK_OPTS rta
+    if(value instanceof Local){
+      return localToNodeMap.get(value);
+    }
+    return valToLocalVariableNode.get(value);
+  }
+
 }
