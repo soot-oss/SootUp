@@ -29,25 +29,16 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jgrapht.graph.DefaultDirectedGraph;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class IntraproceduralPointerAssignmentGraph {
 
-  private static final Logger log =
-      LoggerFactory.getLogger(IntraproceduralPointerAssignmentGraph.class);
-
   private PointerAssignmentGraph pag;
   private List<Pair<Node, Node>> sourceTargetPairs; // a (target) = b (source)
   private SootMethod method;
   private MethodNodeFactory nodeFactory;
-  private boolean isBuilt = false;
-  private boolean isAdded = false;
 
   public IntraproceduralPointerAssignmentGraph(PointerAssignmentGraph pag, SootMethod method) {
     this.pag = pag;
