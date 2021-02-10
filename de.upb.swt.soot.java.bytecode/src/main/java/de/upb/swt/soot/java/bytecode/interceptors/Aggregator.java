@@ -104,7 +104,7 @@ public class Aggregator implements BodyInterceptor {
                               // Can't aggregate a field access if passing a definition of a field
                               // with the same name, because they might be aliased
                               for (JFieldRef fieldRef : fieldRefList) {
-                                if (isSameField(((JFieldRef) stmtDef), fieldRef)) {
+                                if (fieldRef.equals((JFieldRef) stmtDef)) {
                                   cantAggr = true;
                                   break;
                                 }
@@ -173,12 +173,5 @@ public class Aggregator implements BodyInterceptor {
     }
 
     builder.commitDeferredStmtGraphChanges();
-  }
-
-  private static boolean isSameField(JFieldRef ref1, JFieldRef ref2) {
-    if (ref1 == ref2) {
-      return true;
-    }
-    return ref1.getFieldSignature().equals(ref2.getFieldSignature());
   }
 }

@@ -50,4 +50,11 @@ public abstract class JFieldRef implements ConcreteRef {
   public Type getType() {
     return fieldSignature.getType();
   }
+
+  public boolean equals(JFieldRef ref) {
+    if (this == ref) {
+      return true;
+    }
+    return this.getFieldSignature().equals(ref.getFieldSignature());
+  }
 }
