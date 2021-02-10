@@ -32,20 +32,19 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
 import de.upb.swt.soot.core.model.Field;
-import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
-
-import java.text.MessageFormat;
-import java.util.*;
-
+import de.upb.swt.soot.java.core.JavaSootClass;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.traverse.DepthFirstIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.text.MessageFormat;
+import java.util.*;
 
 public class PointerAssignmentGraph {
 
@@ -131,8 +130,8 @@ public class PointerAssignmentGraph {
     }
   }
 
-  public View<? extends SootClass> getView() {
-    return view;
+  public View<JavaSootClass> getView() {
+    return (View<JavaSootClass>) view;
   }
 
   public LocalVariableNode getOrCreateLocalVariableNode(

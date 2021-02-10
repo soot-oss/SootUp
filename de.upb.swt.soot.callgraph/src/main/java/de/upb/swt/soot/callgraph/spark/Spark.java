@@ -24,18 +24,23 @@ package de.upb.swt.soot.callgraph.spark;
 
 import de.upb.swt.soot.callgraph.CallGraph;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
+import de.upb.swt.soot.callgraph.spark.pointsto.EmptyPointsToSet;
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
+import de.upb.swt.soot.callgraph.spark.pointsto.PointsToSet;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.views.View;
 
-public class Spark {
-  private View view;
+public class Spark implements PointsToAnalysis {
+  private View<? extends SootClass> view;
   private CallGraph callGraph;
 
   private PointerAssignmentGraph pag;
 
   private PointsToAnalysis analysis;
 
-  public Spark(View view, CallGraph callGraph) {
+  public Spark(View<? extends SootClass> view, CallGraph callGraph) {
     this.view = view;
     this.callGraph = callGraph;
   }
@@ -51,4 +56,26 @@ public class Spark {
   private void buildPointerAssignmentGraph() {
     pag = new PointerAssignmentGraph(view, callGraph);
   }
+
+  private void simplifyPointerAssignmentGraph(){
+
+  }
+
+  @Override
+  public PointsToSet getPointsToSet(Local local) {
+    VariableNode node = pag.getLocalVariableNode(local);
+    if(node == null){
+      return new EmptyPointsToSet();
+    }
+    return node.getPointsToSet();
+  }
+
+  //   /** Returns the set of objects pointed to by variable l. */
+  //  public PointsToSet reachingObjects(Local l) {
+  //    VarNode n = findLocalVarNode(l);
+  //    if (n == null) {
+  //      return EmptyPointsToSet.v();
+  //    }
+  //    return n.getP2Set();
+  //  }
 }
