@@ -311,7 +311,7 @@ public class MutableStmtGraph extends StmtGraph {
    */
   public void removeNode(@Nonnull Stmt node) {
 
-    if (stmtToIdx.keySet().contains(node)) {
+    if (stmtToIdx.containsKey(node)) {
 
       int nodeIdx = getNodeIdx(node);
 
@@ -345,6 +345,8 @@ public class MutableStmtGraph extends StmtGraph {
           }
         }
       }
+    } else {
+      throw new RuntimeException("The node is not contained in the StmtGraph!");
     }
   }
 }
