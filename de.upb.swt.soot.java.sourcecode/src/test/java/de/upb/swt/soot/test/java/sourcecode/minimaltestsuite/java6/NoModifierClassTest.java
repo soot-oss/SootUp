@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 import java.util.*;
 import org.junit.Test;
@@ -19,7 +19,7 @@ public class NoModifierClassTest extends MinimalSourceTestSuiteBase {
 
   @Test
   public void test() {
-    SootClass clazz = loadClass(getDeclaredClassSignature());
+    JavaSootClass clazz = loadClass(getDeclaredClassSignature());
     assertEquals(EnumSet.noneOf(Modifier.class), clazz.getModifiers());
 
     assertTrue(clazz.getMethod(getMethodSignature("private")).get().isPrivate());

@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
  *
  * @author Linghui Luo
  */
-public abstract class AbstractView<T extends SootClass> implements View<T> {
+public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
 
   @Nonnull private final Project<? extends View<T>, T> project;
 

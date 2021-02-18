@@ -133,7 +133,7 @@ class AsmClassSource extends JavaSootClassSource {
     return node.desc + node.typePath + node.typeRef;
   }
 
-  private static List<AnnotationExpr> convertAnnotation(List<? extends AnnotationNode> nodes) {
+  private static List<AnnotationUsage> convertAnnotation(List<? extends AnnotationNode> nodes) {
     if (nodes == null) {
       return Collections.emptyList();
     }
@@ -143,7 +143,7 @@ class AsmClassSource extends JavaSootClassSource {
         .collect(Collectors.toList());
   }
 
-  private static AnnotationExpr convertAnnotation(AnnotationNode node) {
+  private static AnnotationUsage convertAnnotation(AnnotationNode node) {
     if (node == null || node.desc == null) {
       return null;
     }
@@ -154,10 +154,23 @@ class AsmClassSource extends JavaSootClassSource {
         new AnnotationType(
             ClassUtils.getShortClassName(s), new PackageName(ClassUtils.getPackageName(s)));
     // if (node.values == null) {
-    return new AnnotationExpr(annoType, Collections.emptyMap());
+    final AnnotationUsage annotationUsage = new AnnotationUsage(annoType, Collections.emptyMap());
+
+    System.out.println(annotationUsage);
+
+    return annotationUsage;
     //    }
 
     //   return new AnnotationExpr( annoType, node.values  );
+  }
+
+  @Override
+  protected Iterable<AnnotationUsage> resolveAnnotations() {
+
+    System.out.println(convertAnnotation(classNode.invisibleAnnotations));
+
+    // FIXME: [ms] implement
+    return Collections.emptyList();
   }
 
   @Nonnull
@@ -176,8 +189,7 @@ class AsmClassSource extends JavaSootClassSource {
 
   @Nonnull
   public EnumSet<Modifier> resolveModifiers() {
-    EnumSet<Modifier> modifiers = AsmUtil.getModifiers(classNode.access);
-    return modifiers;
+    return AsmUtil.getModifiers(classNode.access);
   }
 
   @Nonnull
@@ -200,6 +212,7 @@ class AsmClassSource extends JavaSootClassSource {
 
   @Nonnull
   public Position resolvePosition() {
+    // TODO [ms]: implement line numbers for bytecode
     return NoPositionInformation.getInstance();
   }
 

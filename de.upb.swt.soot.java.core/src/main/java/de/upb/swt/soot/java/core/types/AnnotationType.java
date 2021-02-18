@@ -58,7 +58,12 @@ public class AnnotationType extends JavaClassType {
    * @param packageName the corresponding package
    */
   public AnnotationType(@Nonnull String annotationName, @Nonnull PackageName packageName) {
-    super("@interface_" + annotationName, packageName);
+    super(annotationName, packageName);
+  }
+
+  @Override
+  public String toString() {
+    return "interface_" + super.toString();
   }
 
   public boolean isMetaAnnotation() {

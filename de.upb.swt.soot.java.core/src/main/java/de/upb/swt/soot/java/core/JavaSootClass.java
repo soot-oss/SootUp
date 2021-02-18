@@ -22,7 +22,6 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 
-import com.google.common.base.Suppliers;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -33,11 +32,10 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class JavaSootClass extends SootClass {
+public class JavaSootClass extends SootClass<JavaSootClassSource> {
 
   public boolean isJavaLibraryClass() {
     return this.classSignature.isBuiltInClass();
@@ -48,12 +46,9 @@ public class JavaSootClass extends SootClass {
     super(classSource, sourceType);
   }
 
-  private final Supplier<Iterable<AnnotationExpr>> lazyAnnotations =
-      Suppliers.memoize(((JavaSootClassSource) classSource)::resolveAnnotations);
-
   @Nonnull
-  public Iterable<AnnotationExpr> getAnnotations() {
-    return lazyAnnotations.get();
+  public Iterable<AnnotationUsage> getAnnotations() {
+    return classSource.resolveAnnotations();
   }
 
   @Nonnull

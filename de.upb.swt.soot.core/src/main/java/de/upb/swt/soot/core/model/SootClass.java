@@ -46,12 +46,12 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
+public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
 
   @Nonnull protected final SourceType sourceType;
   @Nonnull protected final ClassType classSignature;
 
-  public SootClass(@Nonnull SootClassSource classSource, @Nonnull SourceType sourceType) {
+  public SootClass(@Nonnull S classSource, @Nonnull SourceType sourceType) {
     super(classSource);
     this.sourceType = sourceType;
     this.classSignature = classSource.getClassType();
@@ -192,7 +192,7 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
     return lazyModifiers.get();
   }
 
-  private final Supplier<Set<ClassType>> lazyInterfaces =
+  private final Supplier<Set<? extends ClassType>> lazyInterfaces =
       Suppliers.memoize(classSource::resolveInterfaces);
 
   /**
@@ -209,7 +209,7 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
    * Returns a backed Chain of the interfaces that are directly implemented by this class. (see
    * getInterfaceCount())
    */
-  public Set<ClassType> getInterfaces() {
+  public Set<? extends ClassType> getInterfaces() {
     return lazyInterfaces.get();
   }
 
@@ -223,7 +223,7 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
     return false;
   }
 
-  private final Supplier<Optional<ClassType>> lazySuperclass =
+  private final Supplier<Optional<? extends ClassType>> lazySuperclass =
       Suppliers.memoize(classSource::resolveSuperclass);
 
   /**
@@ -239,11 +239,11 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
    * WARNING: interfaces in Java are subclasses of the java.lang.Object class! Returns the
    * superclass of this class. (see hasSuperclass())
    */
-  public Optional<ClassType> getSuperclass() {
+  public Optional<? extends ClassType> getSuperclass() {
     return lazySuperclass.get();
   }
 
-  private final Supplier<Optional<ClassType>> lazyOuterClass =
+  private final Supplier<Optional<? extends ClassType>> lazyOuterClass =
       Suppliers.memoize(classSource::resolveOuterClass);
 
   public boolean hasOuterClass() {
@@ -251,7 +251,7 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
   }
 
   /** This method returns the outer class. */
-  public @Nonnull Optional<ClassType> getOuterClass() {
+  public @Nonnull Optional<? extends ClassType> getOuterClass() {
     return lazyOuterClass.get();
   }
 
@@ -345,7 +345,7 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
   }
 
   @Override
-  public SootClassSource getClassSource() {
+  public S getClassSource() {
     return classSource;
   }
 

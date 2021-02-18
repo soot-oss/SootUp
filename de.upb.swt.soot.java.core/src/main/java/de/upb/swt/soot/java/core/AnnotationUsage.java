@@ -1,17 +1,23 @@
 package de.upb.swt.soot.java.core;
 
-import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.java.core.types.AnnotationType;
 import java.util.Collections;
 import java.util.Map;
 import javax.annotation.Nonnull;
 
-public class AnnotationExpr {
+/**
+ * This class models Annotations
+ *
+ * @author Markus Schmidt
+ */
+public class AnnotationUsage {
 
   @Nonnull private final AnnotationType annotation;
-  @Nonnull private final Map<String, Value> values;
+  @Nonnull private final Map<String, Immediate> values;
 
-  public AnnotationExpr(@Nonnull AnnotationType annotation, @Nonnull Map<String, Value> values) {
+  public AnnotationUsage(
+      @Nonnull AnnotationType annotation, @Nonnull Map<String, Immediate> values) {
     this.annotation = annotation;
     this.values = values;
   }
@@ -22,7 +28,7 @@ public class AnnotationExpr {
   }
 
   @Nonnull
-  public Map<String, Value> getValues() {
+  public Map<String, Immediate> getValues() {
     return Collections.unmodifiableMap(values);
   }
 

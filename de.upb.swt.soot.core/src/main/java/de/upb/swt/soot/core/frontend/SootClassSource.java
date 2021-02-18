@@ -93,21 +93,23 @@ public abstract class SootClassSource<S extends SootClass> extends AbstractClass
    * operation.
    */
   @Nonnull
-  public abstract Set<ClassType> resolveInterfaces();
+  public abstract Set<? extends ClassType> resolveInterfaces();
 
   /**
    * Reads from the source to retrieve its superclass, if present. This may be an expensive
    * operation.
    */
   @Nonnull
-  public abstract Optional<ClassType> resolveSuperclass();
+  public abstract Optional<? extends ClassType> resolveSuperclass();
 
   /**
    * Reads from the source to retrieve its outer class, if this is an inner class. This may be an
    * expensive operation.
+   *
+   * @return
    */
   @Nonnull
-  public abstract Optional<ClassType> resolveOuterClass();
+  public abstract Optional<? extends ClassType> resolveOuterClass();
 
   /**
    * Reads from the source to retrieve its position in the source code. This may be an expensive
