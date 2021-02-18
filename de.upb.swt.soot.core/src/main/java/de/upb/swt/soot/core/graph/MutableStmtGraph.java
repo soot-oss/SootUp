@@ -307,38 +307,28 @@ public class MutableStmtGraph extends StmtGraph {
    * Remove a node from the graph. startingStmt in graph is not supported. The succs and preds after
    * the node removing don't have any connection to each other.
    *
-   * @param node a stmt which is already in the StmtGraph
+   * @param node a stmt to be removed from the StmtGraph
    */
   public void removeNode(@Nonnull Stmt node) {
 
-    int nodeIdx = getNodeIdx(node);
+    final Integer integer = stmtToIdx.get(node);
+    if (integer == null) {
+      return;
+    }
+    final int nodeIdx = integer;
+    // remove node from index map
+    stmtToIdx.remove(node);
 
-    stmtToIdx.remove(node, nodeIdx);
+    // remove node from successor list of nodes predecessors
+    final List<Stmt> preds = predecessors.get(nodeIdx);
+    preds.forEach(pred -> successors.get(getNodeIdx(pred)).remove(node));
+    // invalidate entry for node itself to allow gc
     predecessors.set(nodeIdx, null);
+
+    // remove node from the predecessor list of a nodes successors
+    final List<Stmt> succs = successors.get(nodeIdx);
+    succs.forEach(succ -> predecessors.get(getNodeIdx(succ)).remove(node));
+    // invalidate entry for node itself to allow gc
     successors.set(nodeIdx, null);
-
-    for (List<Stmt> preds : predecessors) {
-      if (preds != null) {
-        Iterator<Stmt> it = preds.iterator();
-        while (it.hasNext()) {
-          Stmt pred = it.next();
-          if (pred == node) {
-            it.remove();
-          }
-        }
-      }
-    }
-
-    for (List<Stmt> succs : successors) {
-      if (succs != null) {
-        Iterator<Stmt> it = succs.iterator();
-        while (it.hasNext()) {
-          Stmt succ = it.next();
-          if (succ == node) {
-            it.remove();
-          }
-        }
-      }
-    }
   }
 }
