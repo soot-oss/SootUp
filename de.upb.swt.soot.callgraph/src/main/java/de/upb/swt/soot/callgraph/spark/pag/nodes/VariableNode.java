@@ -24,6 +24,9 @@ package de.upb.swt.soot.callgraph.spark.pag.nodes;
 
 import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.types.Type;
+
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,5 +52,21 @@ public class VariableNode extends Node {
 
   public FieldReferenceNode getField(Field field) {
     return fields.get(field);
+  }
+
+  public Collection<FieldReferenceNode> getAllFieldReferences(){
+    if(fields == null){
+      return Collections.emptyList();
+    }
+    return fields.values();
+  }
+
+
+  @Override
+  public String toString() {
+    return "VariableNode{" +
+            "variable=" + variable +
+            ", fields=" + fields +
+            '}';
   }
 }

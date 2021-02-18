@@ -22,10 +22,15 @@ package de.upb.swt.soot.callgraph.spark.pag.nodes;
  * #L%
  */
 
+import com.google.common.collect.Sets;
 import de.upb.swt.soot.core.types.Type;
+
+import java.util.Set;
 
 public class Node {
   protected Type type;
+  protected Node replacement;
+  protected Set<Node> pointsToSet;
 
   public Node() {}
 
@@ -36,4 +41,35 @@ public class Node {
   public Type getType() {
     return type;
   }
+
+  public Set<Node> getPointsToSet() {
+    if(pointsToSet!=null){
+      // TODO: replacement
+      return pointsToSet;
+    }
+    // TODO: replacement
+    return Sets.newHashSet();
+  }
+
+  public Set<Node> getOrCreatePointsToSet(){
+    if(pointsToSet!=null){
+      if (replacement!=this){
+        throw new RuntimeException("Node " + this + " has replacement " + replacement + " but has points-to set");
+      }
+      return pointsToSet;
+    }
+    Node rep = getReplacement();
+    if(rep==this){
+      pointsToSet = Sets.newHashSet();
+    }
+    return rep.getOrCreatePointsToSet();
+  }
+
+  public Node getReplacement(){
+    if(replacement!= replacement.replacement){
+      replacement = replacement.getReplacement();
+    }
+    return replacement;
+  }
+
 }
