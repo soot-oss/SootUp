@@ -37,4 +37,5 @@ public class ArrayElement implements Field {
         new JavaClassType("Object", identifierFactory.getPackageName("java.lang"));
     return new FieldSignature(objectType, "element", objectType);
   }
+
 }

@@ -37,4 +37,11 @@ public class NewInstanceNode extends Node {
   public Value getValue() {
     return value;
   }
+
+  @Override
+  public String toString() {
+    return "NewInstanceNode{" +
+            "value=" + value +
+            '}';
+  }
 }

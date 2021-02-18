@@ -42,4 +42,12 @@ public class FieldReferenceNode extends Node {
   public Field getField() {
     return field;
   }
+
+  @Override
+  public String toString() {
+    return "FieldReferenceNode{" +
+            "base=" + base +
+            ", field=" + field +
+            '}';
+  }
 }
