@@ -22,8 +22,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  */
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
-import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
@@ -50,9 +48,10 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
 
     // get all start stmts: startingStmt and handlerStmts
     Deque<Stmt> queue = new ArrayDeque<>();
-    for (Stmt stmt : stmtsInBody) {
-      if (isStartStmt(graph, stmt)) {
-        queue.addLast(stmt);
+    queue.add(graph.getStartingStmt());
+    for (Trap trap : traps) {
+      if (graph.containsNode(trap.getHandlerStmt())) {
+        queue.addLast(trap.getHandlerStmt());
       }
     }
 
@@ -90,20 +89,5 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
     }
 
     unreachableStmts.forEach(stmt -> builder.removeStmt(stmt));
-  }
-
-  /**
-   * Check whether the given stmt is a start stmt: startingStmt or handlerStmt of a trap
-   *
-   * @param graph
-   * @param stmt a stmt in the given BodyBuilder
-   * @return if the given stmt is a start stmt, then return true, otherwise return false.
-   */
-  private boolean isStartStmt(StmtGraph graph, Stmt stmt) {
-    if (stmt == graph.getStartingStmt()) {
-      return true;
-    }
-    return stmt instanceof JIdentityStmt
-        && ((JIdentityStmt) stmt).getRightOp() instanceof JCaughtExceptionRef;
   }
 }
