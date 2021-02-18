@@ -22,17 +22,20 @@ package de.upb.swt.soot.callgraph.spark;
  * #L%
  */
 
+import com.google.common.collect.Sets;
 import de.upb.swt.soot.callgraph.CallGraph;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
-import de.upb.swt.soot.callgraph.spark.pointsto.EmptyPointsToSet;
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
-import de.upb.swt.soot.callgraph.spark.pointsto.PointsToSet;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.views.View;
 
+import java.util.Set;
+
 public class Spark implements PointsToAnalysis {
+
   private View<? extends SootClass> view;
   private CallGraph callGraph;
 
@@ -61,11 +64,13 @@ public class Spark implements PointsToAnalysis {
 
   }
 
+
+
   @Override
-  public PointsToSet getPointsToSet(Local local) {
+  public Set<Node> getPointsToSet(Local local) {
     VariableNode node = pag.getLocalVariableNode(local);
     if(node == null){
-      return new EmptyPointsToSet();
+      return Sets.newHashSet();
     }
     return node.getPointsToSet();
   }

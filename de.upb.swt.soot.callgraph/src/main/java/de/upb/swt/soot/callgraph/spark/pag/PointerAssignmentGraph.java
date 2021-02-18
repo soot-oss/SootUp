@@ -38,13 +38,12 @@ import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.traverse.DepthFirstIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.List;
 
 public class PointerAssignmentGraph {
 
@@ -66,7 +65,7 @@ public class PointerAssignmentGraph {
   // - java.lang.Thread start method to run method
   private static final Logger log = LoggerFactory.getLogger(PointerAssignmentGraph.class);
 
-  private final DefaultDirectedGraph<SparkVertex, SparkEdge> graph;
+  //private final Graph<SparkVertex, SparkEdge> graph;
   private CallGraph callGraph;
   private View<? extends SootClass> view;
 
@@ -81,11 +80,12 @@ public class PointerAssignmentGraph {
   private final GlobalNodeFactory nodeFactory = new GlobalNodeFactory(this);
   private final SparkEdgeFactory edgeFactory = new SparkEdgeFactory();
   private final List<VariableNode> dereferences = new ArrayList<>();
+  private InternalEdges internalEdges = new InternalEdges();
 
   public PointerAssignmentGraph(View<? extends SootClass> view, CallGraph callGraph) {
     this.view = view;
     this.callGraph = callGraph;
-    this.graph = new DefaultDirectedGraph<>(null, null, false);
+    //this.graph = new DirectedAcyclicGraph<>(null, null, false);
     build();
   }
 
@@ -101,34 +101,48 @@ public class PointerAssignmentGraph {
     }
   }
 
+//  public Graph<SparkVertex, SparkEdge> getGraph() {
+//    return graph;
+//  }
+
   public void addEdge(Node source, Node target) {
-    SparkEdge edge = edgeFactory.getEdge(source, target);
-    SparkVertex src = new SparkVertex(source);
-    SparkVertex trg = new SparkVertex(target);
-    graph.addVertex(src);
-    graph.addVertex(trg);
-    graph.addEdge(src, trg, edge);
-    log.info("Added {} edge from:{} to:{}", edge.getEdgeType(), source, target);
+    internalEdges.addEdge(source, target);
+//    SparkEdge edge = edgeFactory.getEdge(source, target);
+//    SparkVertex src = new SparkVertex(source);
+//    SparkVertex trg = new SparkVertex(target);
+//    graph.addVertex(src);
+//    graph.addVertex(trg);
+//    graph.addEdge(src, trg, edge);
+    //log.info("Added {} edge from:{} to:{}", edge.getEdgeType(), source, target);
   }
+
 
   private void addIntraproceduralPointerAssignmentGraph(
       IntraproceduralPointerAssignmentGraph intraPAG) {
     List<Pair<Node, Node>> intraPAGSourceTargetPairs = intraPAG.getSourceTargetPairs();
-    log.info("Added method:{}", intraPAG.getMethod());
+    //log.info("Added method:{}", intraPAG.getMethod());
     for(Pair<Node, Node> sourceTargetPair: intraPAGSourceTargetPairs){
       addEdge(sourceTargetPair.getKey(), sourceTargetPair.getValue());
     }
 
-    //printGraph(graph);
   }
 
-  private void printGraph(DefaultDirectedGraph<SparkVertex, SparkEdge> graph) {
-    Iterator<SparkVertex> iter = new DepthFirstIterator<>(graph);
-    while (iter.hasNext()) {
-      SparkVertex vertex = iter.next();
-      log.info("SparkVertex:{}", vertex.node);
-    }
-  }
+//  public void printGraph() {
+//    JGraphXAdapter<SparkVertex, SparkEdge> graphAdapter =
+//            new JGraphXAdapter<SparkVertex, SparkEdge>(graph);
+//    mxIGraphLayout layout = new mxHierarchicalLayout(graphAdapter);
+//    layout.execute(graphAdapter.getDefaultParent());
+//
+//    BufferedImage image =
+//            mxCellRenderer.createBufferedImage(graphAdapter, null, 2, Color.WHITE, true, null);
+//    File imgFile = new File("src/test/resources/graph.png");
+//    try {
+//      imgFile.createNewFile();
+//      ImageIO.write(image, "PNG", imgFile);
+//    } catch (IOException e) {
+//      e.printStackTrace();
+//    }
+//  }
 
   public View<JavaSootClass> getView() {
     return (View<JavaSootClass>) view;
@@ -179,6 +193,14 @@ public class PointerAssignmentGraph {
       }
     }
     return fieldRef;
+  }
+
+  public AllocationDotField getOrCreateAllocationDotField(AllocationNode allocationNode, Field field){
+    AllocationDotField node = allocationNode.dot(field);
+    if(node == null){
+      node = new AllocationDotField(allocationNode, field);
+    }
+    return node;
   }
 
   private void addNodeTag(Node node, SootMethod m) {
@@ -276,4 +298,43 @@ public class PointerAssignmentGraph {
     return valToLocalVariableNode.get(value);
   }
 
+  public Map<VariableNode, Set<Node>> getSimpleEdges(){
+    return internalEdges.simpleEdges;
+  }
+
+  public Map<AllocationNode, Set<Node>> getAllocationEdges(){
+    return internalEdges.allocationEdges;
+  }
+
+  public Map<VariableNode, Set<Node>> getStoreEdges(){
+    return internalEdges.storeEdges;
+  }
+
+
+
+  /*
+  public Set<VariableNode> getSimpleSources(){
+    return internalEdges.simpleEdges.keySet();
+  }
+
+  public Set<AllocationNode> getAllocationSources(){
+    return internalEdges.allocationEdges.keySet();
+  }
+
+  public Set<VariableNode> getStoreSources(){
+    return internalEdges.storeEdges.keySet();
+  }
+
+  public Set<FieldReferenceNode> getLoadSources(){
+    return internalEdges.loadEdges.keySet();
+  }
+
+  public Set<VariableNode> getNewInstanceSources(){
+    return internalEdges.newInstanceEdges.keySet();
+  }
+
+  public Set<NewInstanceNode> getAssignInstanceSources(){
+    return internalEdges.assignInstanceEdges.keySet();
+  }
+*/
 }

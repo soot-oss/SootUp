@@ -1,6 +1,9 @@
 package de.upb.swt.soot.callgraph.spark.pointsto;
 
+import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.core.jimple.basic.Local;
+
+import java.util.Set;
 
 /*-
  * #%L
@@ -54,5 +57,5 @@ public interface PointsToAnalysis {
       "PRIVILEGED_ACTION_EXCEPTION_LOCAL";
   public static final String PHI_NODE = "PHI_NODE";
 
-  public PointsToSet getPointsToSet(Local local);
+  public Set<Node> getPointsToSet(Local local);
 }
