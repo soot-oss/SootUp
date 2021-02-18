@@ -307,7 +307,7 @@ public class MutableStmtGraph extends StmtGraph {
    * Remove a node from the graph. startingStmt in graph is not supported. The succs and preds after
    * the node removing don't have any connection to each other.
    *
-   * @param node a stmt which is already in the StmtGraph or not in the StmtGraph
+   * @param node a stmt which is already in the StmtGraph
    */
   public void removeNode(@Nonnull Stmt node) {
 
