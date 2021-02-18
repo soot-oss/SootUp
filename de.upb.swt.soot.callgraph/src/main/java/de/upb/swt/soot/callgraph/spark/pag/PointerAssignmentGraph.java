@@ -298,15 +298,15 @@ public class PointerAssignmentGraph {
     return valToLocalVariableNode.get(value);
   }
 
-  public Map<VariableNode, Set<Node>> getSimpleEdges(){
+  public Map<VariableNode, Set<VariableNode>> getSimpleEdges(){
     return internalEdges.simpleEdges;
   }
 
-  public Map<AllocationNode, Set<Node>> getAllocationEdges(){
+  public Map<AllocationNode, Set<VariableNode>> getAllocationEdges(){
     return internalEdges.allocationEdges;
   }
 
-  public Map<VariableNode, Set<Node>> getStoreEdges(){
+  public Map<VariableNode, Set<FieldReferenceNode>> getStoreEdges(){
     return internalEdges.storeEdges;
   }
 

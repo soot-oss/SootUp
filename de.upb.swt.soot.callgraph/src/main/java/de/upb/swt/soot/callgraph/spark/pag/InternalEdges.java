@@ -12,12 +12,12 @@ public class InternalEdges {
     /**
      * n2=n1: an edge from n1 to n2 indicates that n1 is added to the points-to set of n2
       */
-    protected Map<VariableNode, Set<Node>> simpleEdges = new HashMap<>();
-    protected Map<FieldReferenceNode, Set<Node>> loadEdges = new HashMap<>();
-    protected Map<VariableNode, Set<Node>> storeEdges = new HashMap<>();
-    protected Map<AllocationNode, Set<Node>> allocationEdges = new HashMap<>();
-    protected Map<VariableNode, Set<Node>> newInstanceEdges = new HashMap<>();
-    protected Map<NewInstanceNode, Set<Node>> assignInstanceEdges = new HashMap<>();
+    protected Map<VariableNode, Set<VariableNode>> simpleEdges = new HashMap<>();
+    protected Map<FieldReferenceNode, Set<VariableNode>> loadEdges = new HashMap<>();
+    protected Map<VariableNode, Set<FieldReferenceNode>> storeEdges = new HashMap<>();
+    protected Map<AllocationNode, Set<VariableNode>> allocationEdges = new HashMap<>();
+    protected Map<VariableNode, Set<NewInstanceNode>> newInstanceEdges = new HashMap<>();
+    protected Map<NewInstanceNode, Set<VariableNode>> assignInstanceEdges = new HashMap<>();
 
     // TODO: SPARK_OPT simple-edges-bidirectional
     // TODO: Inv edges

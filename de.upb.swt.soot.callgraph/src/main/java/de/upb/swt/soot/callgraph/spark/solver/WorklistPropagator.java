@@ -37,13 +37,13 @@ public class WorklistPropagator implements Propagator {
      * if a source is added for the first time adds it to worklist
      */
     private void handleAllocationNodeSources(){
-        Map<AllocationNode, Set<Node>> allocationEdges = pag.getAllocationEdges();
-        for (Map.Entry<AllocationNode, Set<Node>> entry : allocationEdges.entrySet()) {
+        Map<AllocationNode, Set<VariableNode>> allocationEdges = pag.getAllocationEdges();
+        for (Map.Entry<AllocationNode, Set<VariableNode>> entry : allocationEdges.entrySet()) {
             AllocationNode source = entry.getKey();
-            Set<Node> targets = entry.getValue();
-            for(Node target: targets){
+            Set<VariableNode> targets = entry.getValue();
+            for(VariableNode target: targets){
                 if(target.getOrCreatePointsToSet().add(source)){
-                    variableNodeWorkList.add((VariableNode) target);
+                    variableNodeWorkList.add(target);
                 }
             }
         }
@@ -77,20 +77,19 @@ public class WorklistPropagator implements Propagator {
     }
 
     private void handleSimpleEdges(final VariableNode source) {
-        Set<Node> targets = pag.getSimpleEdges().get(source);
-        for(Node target: targets){
+        Set<VariableNode> targets = pag.getSimpleEdges().get(source);
+        for(VariableNode target: targets){
             if(target.getOrCreatePointsToSet().addAll(source.getPointsToSet())){
-                variableNodeWorkList.add((VariableNode) target);
+                variableNodeWorkList.add(target);
             }
         }
     }
 
     private void handleStoreEdges(final VariableNode source) {
-        Set<Node> targets = pag.getStoreEdges().get(source);
-        for(Node target: targets){
-            final FieldReferenceNode fieldReferenceNode = (FieldReferenceNode) target;
-            final Field field = fieldReferenceNode.getField();
-            Set<Node> basePointsToSet = fieldReferenceNode.getBase().getPointsToSet();
+        Set<FieldReferenceNode> targets = pag.getStoreEdges().get(source);
+        for(FieldReferenceNode target: targets){
+            final Field field = target.getField();
+            Set<Node> basePointsToSet = target.getBase().getPointsToSet();
             for (Node node : basePointsToSet) {
                 AllocationDotField allocDotField = pag.getOrCreateAllocationDotField((AllocationNode) node, field);
                 allocDotField.getPointsToSet().addAll(source.getPointsToSet());
