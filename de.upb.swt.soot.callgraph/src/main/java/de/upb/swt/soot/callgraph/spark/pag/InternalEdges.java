@@ -13,11 +13,22 @@ public class InternalEdges {
      * n2=n1: an edge from n1 to n2 indicates that n1 is added to the points-to set of n2
       */
     protected Map<VariableNode, Set<VariableNode>> simpleEdges = new HashMap<>();
+    protected Map<VariableNode, Set<VariableNode>> simpleEdgesInv = new HashMap<>();
+
     protected Map<FieldReferenceNode, Set<VariableNode>> loadEdges = new HashMap<>();
+    protected Map<VariableNode, Set<FieldReferenceNode>> loadEdgesInv = new HashMap<>();
+
     protected Map<VariableNode, Set<FieldReferenceNode>> storeEdges = new HashMap<>();
+    protected Map<FieldReferenceNode, Set<VariableNode>> storeEdgesInv = new HashMap<>();
+
     protected Map<AllocationNode, Set<VariableNode>> allocationEdges = new HashMap<>();
+    protected Map<VariableNode, Set<AllocationNode>> allocationEdgesInv = new HashMap<>();
+
     protected Map<VariableNode, Set<NewInstanceNode>> newInstanceEdges = new HashMap<>();
+    protected Map<NewInstanceNode, Set<VariableNode>> newInstanceEdgesInv = new HashMap<>();
+
     protected Map<NewInstanceNode, Set<VariableNode>> assignInstanceEdges = new HashMap<>();
+    protected Map<VariableNode, Set<NewInstanceNode>> assignInstanceEdgesInv = new HashMap<>();
 
     // TODO: SPARK_OPT simple-edges-bidirectional
     // TODO: Inv edges
@@ -47,27 +58,45 @@ public class InternalEdges {
     }
 
     public boolean addSimpleEdge(VariableNode source, VariableNode target){
-        return simpleEdges.computeIfAbsent(source, v->new HashSet<>()).add(target);
+        boolean isNew;
+        isNew = simpleEdges.computeIfAbsent(source, v->new HashSet<>()).add(target);
+        isNew |= simpleEdgesInv.computeIfAbsent(target, v->new HashSet<>()).add(source);
+        return isNew;
     }
 
     public boolean addStoreEdge(VariableNode source, FieldReferenceNode target){
-        return storeEdges.computeIfAbsent(source, v->new HashSet<>()).add(target);
+        boolean isNew;
+        isNew = storeEdges.computeIfAbsent(source, v->new HashSet<>()).add(target);
+        isNew |= storeEdgesInv.computeIfAbsent(target, v->new HashSet<>()).add(source);
+        return isNew;
     }
 
     public boolean addLoadEdge(FieldReferenceNode source, VariableNode target){
-        return loadEdges.computeIfAbsent(source, v->new HashSet<>()).add(target);
+        boolean isNew;
+        isNew = loadEdges.computeIfAbsent(source, v->new HashSet<>()).add(target);
+        isNew |= loadEdgesInv.computeIfAbsent(target, v->new HashSet<>()).add(source);
+        return isNew;
     }
 
     public boolean addAllocationEdge(AllocationNode source, VariableNode target){
-        return allocationEdges.computeIfAbsent(source, v->new HashSet<>()).add(target);
+        boolean isNew;
+        isNew = allocationEdges.computeIfAbsent(source, v->new HashSet<>()).add(target);
+        isNew |= allocationEdgesInv.computeIfAbsent(target, v->new HashSet<>()).add(source);
+        return isNew;
     }
 
     public boolean addNewInstanceEdge(VariableNode source, NewInstanceNode target){
-        return newInstanceEdges.computeIfAbsent(source, v->new HashSet<>()).add(target);
+        boolean isNew;
+        isNew = newInstanceEdges.computeIfAbsent(source, v->new HashSet<>()).add(target);
+        isNew |= newInstanceEdgesInv.computeIfAbsent(target, v->new HashSet<>()).add(source);
+        return isNew;
     }
 
     public boolean addAssignInstanceEdge(NewInstanceNode source, VariableNode target){
-        return assignInstanceEdges.computeIfAbsent(source, v->new HashSet<>()).add(target);
+        boolean isNew;
+        isNew = assignInstanceEdges.computeIfAbsent(source, v->new HashSet<>()).add(target);
+        isNew |= assignInstanceEdgesInv.computeIfAbsent(target, v->new HashSet<>()).add(source);
+        return isNew;
     }
 
 

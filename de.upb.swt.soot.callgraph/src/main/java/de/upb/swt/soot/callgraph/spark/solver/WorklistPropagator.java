@@ -1,14 +1,10 @@
 package de.upb.swt.soot.callgraph.spark.solver;
 
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
-import de.upb.swt.soot.callgraph.spark.pag.SparkEdge;
-import de.upb.swt.soot.callgraph.spark.pag.SparkVertex;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.core.model.Field;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jgrapht.traverse.DepthFirstIterator;
-import org.jgrapht.traverse.GraphIterator;
-import org.jgrapht.traverse.TopologicalOrderIterator;
 
 import java.util.*;
 
@@ -102,6 +98,32 @@ public class WorklistPropagator implements Propagator {
                                                  final HashSet<Pair<Node, Node>> loadsToPropagate){
         for(final FieldReferenceNode fieldRef: source.getAllFieldReferences()){
             final Field field = fieldRef.getField();
+
+            Set<VariableNode> storeSources = pag.storeInvLookup(fieldRef);
+            if(!storeSources.isEmpty()){
+                Set<Node> sourcePointsToSet = source.getPointsToSet();
+                for(Node node: sourcePointsToSet){
+                    AllocationDotField allocationDotField = pag.getOrCreateAllocationDotField((AllocationNode) node, field);
+                    for(VariableNode element: storeSources){
+                        Pair<Node, Node> pair = new ImmutablePair<>(element, allocationDotField.getReplacement());
+                        storesToPropagate.add(pair);
+                    }
+                }
+            }
+
+            final Set<VariableNode> loadTargets = pag.loadLookup(fieldRef);
+            if(!loadTargets.isEmpty()){
+                Set<Node> sourcePointsToSet = source.getPointsToSet();
+                for (Node node : sourcePointsToSet) {
+                    AllocationDotField allocationDotField = pag.getOrCreateAllocationDotField((AllocationNode) node, field);
+                    if(allocationDotField != null){
+                        for(Node element: loadTargets){
+                            Pair<Node, Node> pair = new ImmutablePair<>(allocationDotField.getReplacement(), element);
+                            loadsToPropagate.add(pair);
+                        }
+                    }
+                }
+            }
         }
     }
 
