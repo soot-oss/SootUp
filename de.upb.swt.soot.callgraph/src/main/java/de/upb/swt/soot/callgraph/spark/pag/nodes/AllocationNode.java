@@ -22,9 +22,13 @@ package de.upb.swt.soot.callgraph.spark.pag.nodes;
  * #L%
  */
 
+import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.Type;
+
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class AllocationNode extends Node {
@@ -34,7 +38,7 @@ public class AllocationNode extends Node {
    */
   private Object newExpr;
   private SootMethod method;
-  private Set<ConcreteFieldNode> fields;
+  private Map<Field, AllocationDotField> fields;
 
   public AllocationNode(Type type, Object newExpr, SootMethod method) {
     this.type = type;
@@ -50,10 +54,23 @@ public class AllocationNode extends Node {
     return method;
   }
 
-  public void addField(ConcreteFieldNode concreteFieldNode) {
+  public void addField(AllocationDotField allocationDotField, Field field) {
     if (fields == null) {
-      fields = new HashSet<>();
+      fields = new HashMap<>();
     }
-    fields.add(concreteFieldNode);
+    fields.put(field, allocationDotField);
+  }
+
+  public AllocationDotField dot(Field field){
+    return fields == null ? null : fields.get(field);
+  }
+
+  @Override
+  public String toString() {
+    return "AllocationNode{" +
+            "newExpr=" + newExpr +
+            ", method=" + method +
+            ", fields=" + fields +
+            '}';
   }
 }
