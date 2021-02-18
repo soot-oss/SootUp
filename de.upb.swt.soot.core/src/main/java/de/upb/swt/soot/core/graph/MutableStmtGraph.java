@@ -311,22 +311,14 @@ public class MutableStmtGraph extends StmtGraph {
    */
   public void removeNode(@Nonnull Stmt node) {
 
-    if (stmtToIdx.containsKey(node)) {
+    int nodeIdx = getNodeIdx(node);
 
-      int nodeIdx = getNodeIdx(node);
+    stmtToIdx.remove(node, nodeIdx);
+    predecessors.set(nodeIdx, null);
+    successors.set(nodeIdx, null);
 
-      for (Stmt stmt : stmtToIdx.keySet()) {
-        if (stmtToIdx.get(stmt) > nodeIdx) {
-          Integer newIdx = stmtToIdx.get(stmt) - 1;
-          stmtToIdx.replace(stmt, newIdx);
-        }
-      }
-
-      stmtToIdx.remove(node, nodeIdx);
-      predecessors.remove(nodeIdx);
-      successors.remove(nodeIdx);
-
-      for (List<Stmt> preds : predecessors) {
+    for (List<Stmt> preds : predecessors) {
+      if (preds != null) {
         Iterator<Stmt> it = preds.iterator();
         while (it.hasNext()) {
           Stmt pred = it.next();
@@ -335,8 +327,10 @@ public class MutableStmtGraph extends StmtGraph {
           }
         }
       }
+    }
 
-      for (List<Stmt> succs : successors) {
+    for (List<Stmt> succs : successors) {
+      if (succs != null) {
         Iterator<Stmt> it = succs.iterator();
         while (it.hasNext()) {
           Stmt succ = it.next();
@@ -345,8 +339,6 @@ public class MutableStmtGraph extends StmtGraph {
           }
         }
       }
-    } else {
-      throw new RuntimeException("The node is not contained in the StmtGraph!");
     }
   }
 }
