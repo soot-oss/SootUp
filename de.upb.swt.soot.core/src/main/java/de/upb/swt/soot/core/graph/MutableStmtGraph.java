@@ -284,22 +284,18 @@ public class MutableStmtGraph extends StmtGraph {
     stmtToIdx.remove(oldStmt, idx);
     stmtToIdx.put(newStmt, idx);
 
-    List<Stmt> preds = predecessors.get(idx);
-    for (Stmt pred : preds) {
+    for (Stmt pred : predecessors.get(idx)) {
       int predIdx = stmtToIdx.get(pred);
       List<Stmt> succs = successors.get(predIdx);
       int succIdx = succs.indexOf(oldStmt);
       succs.set(succIdx, newStmt);
-      successors.set(predIdx, succs);
     }
 
-    List<Stmt> succs = successors.get(idx);
-    for (Stmt succ : succs) {
+    for (Stmt succ : successors.get(idx)) {
       int succIdx = stmtToIdx.get(succ);
       List<Stmt> predList = predecessors.get(succIdx);
       int predIdx = predList.indexOf(oldStmt);
       predList.set(predIdx, newStmt);
-      predecessors.set(succIdx, predList);
     }
   }
 
