@@ -37,4 +37,6 @@ public abstract class BranchingStmt extends Stmt {
   }
 
   public abstract List<Stmt> getTargetStmts(Body body);
+
+  public abstract int getTargetCount();
 }

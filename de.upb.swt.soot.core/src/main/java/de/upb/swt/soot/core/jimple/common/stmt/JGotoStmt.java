@@ -64,6 +64,11 @@ public class JGotoStmt extends BranchingStmt implements Copyable {
   }
 
   @Override
+  public int getTargetCount() {
+    return 1;
+  }
+
+  @Override
   public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseGotoStmt(this);
   }

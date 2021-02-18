@@ -268,34 +268,42 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   /**
-   * Replace a stmt in StmtGraph with a new stmt
+   * Replace a stmt in StmtGraph with a new stmt and adapts the existing incoming and outgoing flows
+   * to the new stmt
    *
    * @param oldStmt a stmt which is already in the StmtGraph
    * @param newStmt a new stmt which will replace the old stmt
    */
   public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+
+    if (oldStmt.branches()
+        && ((BranchingStmt) oldStmt).getTargetCount()
+            != ((BranchingStmt) newStmt).getTargetCount()) {
+      throw new RuntimeException(
+          "You can only use replaceNode if newStmt has the same amount of branches/outgoing flows.");
+    }
+
     if (oldStmt == startingStmt) {
       startingStmt = newStmt;
     }
-    if (!containsNode(oldStmt)) {
-      throw new RuntimeException("The StmtGraph contains no such oldStmt");
+    final Integer integer = stmtToIdx.get(oldStmt);
+    if (integer == null) {
+      throw new RuntimeException("The StmtGraph does not contain" + oldStmt);
     }
-    int idx = stmtToIdx.get(oldStmt);
+    int idx = integer;
     stmtToIdx.remove(oldStmt, idx);
     stmtToIdx.put(newStmt, idx);
 
     for (Stmt pred : predecessors.get(idx)) {
-      int predIdx = stmtToIdx.get(pred);
-      List<Stmt> succs = successors.get(predIdx);
-      int succIdx = succs.indexOf(oldStmt);
-      succs.set(succIdx, newStmt);
+      List<Stmt> succsList = successors.get(stmtToIdx.get(pred));
+      int succIdx = succsList.indexOf(oldStmt);
+      succsList.set(succIdx, newStmt);
     }
 
     for (Stmt succ : successors.get(idx)) {
-      int succIdx = stmtToIdx.get(succ);
-      List<Stmt> predList = predecessors.get(succIdx);
-      int predIdx = predList.indexOf(oldStmt);
-      predList.set(predIdx, newStmt);
+      List<Stmt> predsList = predecessors.get(stmtToIdx.get(succ));
+      int predIdx = predsList.indexOf(oldStmt);
+      predsList.set(predIdx, newStmt);
     }
   }
 

@@ -163,6 +163,11 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   }
 
   @Override
+  public int getTargetCount() {
+    return getValueCount();
+  }
+
+  @Override
   public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseSwitchStmt(this, o);
   }
