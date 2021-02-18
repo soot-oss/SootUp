@@ -34,10 +34,9 @@ public class SparkEdgeFactory {
 
     if (source instanceof VariableNode) {
       if (target instanceof VariableNode) {
-        return new SparkEdge(
-            new SparkVertex(source), new SparkVertex(target), EdgeType.ASSIGNMENT_EDGE);
+        return new SparkEdge(EdgeType.ASSIGNMENT_EDGE);
       } else if (target instanceof FieldReferenceNode) {
-        return new SparkEdge(new SparkVertex(source), new SparkVertex(target), EdgeType.STORE_EDGE);
+        return new SparkEdge(EdgeType.STORE_EDGE);
       } else if (target instanceof NewInstanceNode) {
         // TODO: NewInstanceEdge
         throw new NotImplementedException();
@@ -45,13 +44,12 @@ public class SparkEdgeFactory {
         throw new RuntimeException("Invalid node type:" + target);
       }
     } else if (source instanceof FieldReferenceNode) {
-      return new SparkEdge(new SparkVertex(source), new SparkVertex(target), EdgeType.LOAD_EDGE);
+      return new SparkEdge(EdgeType.LOAD_EDGE);
     } else if (source instanceof NewInstanceNode) {
       // TODO: assignInstanceEdge
       throw new NotImplementedException();
     } else {
-      return new SparkEdge(
-          new SparkVertex(source), new SparkVertex(target), EdgeType.ALLOCATION_EDGE);
+      return new SparkEdge(EdgeType.ALLOCATION_EDGE);
     }
   }
 }

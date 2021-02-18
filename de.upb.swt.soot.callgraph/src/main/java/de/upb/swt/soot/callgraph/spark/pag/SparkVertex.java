@@ -31,4 +31,16 @@ public class SparkVertex {
   public SparkVertex(@Nonnull Node node) {
     this.node = node;
   }
+
+  @Nonnull
+  public Node getNode() {
+    return node;
+  }
+
+  @Override
+  public String toString() {
+    return "SparkVertex{" +
+            "node=" + node +
+            '}';
+  }
 }
