@@ -43,10 +43,9 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
     Set<Stmt> stmtsInBody = graph.nodes();
     List<Trap> traps = builder.getTraps();
 
-    Set<Stmt> unreachableStmts = new HashSet<>();
     Set<Stmt> reachableStmts = new HashSet<>();
 
-    // get all start stmts: startingStmt and handlerStmts
+    // get all start stmts: startingStmt and handlerStmts(if they in stmtGraph)
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(graph.getStartingStmt());
     for (Trap trap : traps) {
@@ -66,13 +65,13 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
       }
     }
 
-    unreachableStmts =
+    // get all unreachable stmts
+    Set<Stmt> unreachableStmts =
         stmtsInBody.stream()
             .filter(stmt -> !reachableStmts.contains(stmt))
             .collect(Collectors.toSet());
 
     // delete invalid traps
-
     Iterator<Trap> trapIterator = traps.iterator();
 
     while (trapIterator.hasNext()) {
@@ -88,6 +87,7 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
       }
     }
 
+    // delete all unreachable stmts from the current builder
     unreachableStmts.forEach(stmt -> builder.removeStmt(stmt));
   }
 }
