@@ -304,8 +304,8 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   /**
-   * Remove a node from the graph. startingStmt in graph is not supported. The succs and preds after
-   * the node removing don't have any connection to each other.
+   * Remove a node from the graph. The succs and preds after the node removing don't have any
+   * connection to each other. the removal of b in "a->b->c" does NOT connect "a->c"
    *
    * @param node a stmt to be removed from the StmtGraph
    */
@@ -318,6 +318,11 @@ public class MutableStmtGraph extends StmtGraph {
     final int nodeIdx = integer;
     // remove node from index map
     stmtToIdx.remove(node);
+
+    // unset startingstmt if node is currently the startingstmt
+    if (startingStmt == node) {
+      startingStmt = null;
+    }
 
     // remove node from successor list of nodes predecessors
     final List<Stmt> preds = predecessors.get(nodeIdx);
