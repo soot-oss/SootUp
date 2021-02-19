@@ -69,17 +69,23 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
         builder.removeStmt(stmt);
       }
     }
-    builder.commitDeferredStmtGraphChanges();
+    builder.disableAndCommitDeferredStmtGraphChanges();
 
     // cleanup invalid traps
     Iterator<Trap> trapIterator = traps.iterator();
     while (trapIterator.hasNext()) {
       Trap trap = trapIterator.next();
-      if (!reachableStmts.contains(trap.getHandlerStmt())) {
+      // is the Traphandler Stmt (still) in the StmtGraph?
+      if (!graph.containsNode(trap.getHandlerStmt())) {
         trapIterator.remove();
-      } else if (trap.getBeginStmt() == trap.getEndStmt()) {
+      } else
+      // has the trap a valid range? TODO: [ms] why don't we check that (i.e. trap range is empty)
+      // in trap instantiation?
+      if (trap.getBeginStmt() == trap.getEndStmt()) {
         trapIterator.remove();
-        builder.removeStmt(trap.getBeginStmt());
+        for (Stmt trapStmt : trap.getStmts()) {
+          builder.removeStmt(trapStmt);
+        }
       }
     }
   }
