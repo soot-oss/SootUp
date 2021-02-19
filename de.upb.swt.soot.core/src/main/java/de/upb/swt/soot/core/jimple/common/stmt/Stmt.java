@@ -87,6 +87,7 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
    */
   public abstract boolean branches();
 
+  /** Returns the amount of successors the Stmt needs to have in the StmtGraph. */
   public int getSuccessorCount() {
     return 1;
   }
