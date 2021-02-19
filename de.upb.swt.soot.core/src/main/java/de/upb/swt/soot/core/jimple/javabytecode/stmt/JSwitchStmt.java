@@ -163,7 +163,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   }
 
   @Override
-  public int getTargetCount() {
+  public int getSuccessorCount() {
     return getValueCount();
   }
 

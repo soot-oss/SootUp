@@ -87,6 +87,10 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
    */
   public abstract boolean branches();
 
+  public int getSuccessorCount() {
+    return 1;
+  }
+
   public abstract void toString(StmtPrinter up);
 
   /** Used to implement the Switchable construct via OOP */
