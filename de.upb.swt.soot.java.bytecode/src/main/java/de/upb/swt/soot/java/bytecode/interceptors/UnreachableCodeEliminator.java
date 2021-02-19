@@ -39,7 +39,6 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
     StmtGraph graph = builder.getStmtGraph();
-    Set<Stmt> stmtsInBody = graph.nodes();
     List<Trap> traps = builder.getTraps();
 
     // get all valid starting stmts: startingStmt and handlerStmts(if they in stmtGraph)
@@ -64,11 +63,13 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
     }
 
     // remove unreachable stmts from StmtGraph
-    for (Stmt stmt : stmtsInBody) {
+    builder.enableDeferredStmtGraphChanges();
+    for (Stmt stmt : graph.nodes()) {
       if (!reachableStmts.contains(stmt)) {
         builder.removeStmt(stmt);
       }
     }
+    builder.commitDeferredStmtGraphChanges();
 
     // cleanup invalid traps
     Iterator<Trap> trapIterator = traps.iterator();

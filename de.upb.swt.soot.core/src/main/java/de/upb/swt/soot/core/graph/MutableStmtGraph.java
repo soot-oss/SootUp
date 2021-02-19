@@ -111,7 +111,7 @@ public class MutableStmtGraph extends StmtGraph {
     return startingStmt;
   }
 
-  private int addNode(@Nonnull Stmt node) {
+  public int addNode(@Nonnull Stmt node) {
     final int idx = nextFreeId++;
     stmtToIdx.put(node, idx);
     predecessors.add(
