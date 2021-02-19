@@ -80,7 +80,7 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
 
       } else if (trap.getBeginStmt() == trap.getEndStmt()) {
         trapIterator.remove();
-        unreachableStmts.addAll(trap.getStmts());
+        unreachableStmts.add(trap.getBeginStmt());
       }
     }
 
