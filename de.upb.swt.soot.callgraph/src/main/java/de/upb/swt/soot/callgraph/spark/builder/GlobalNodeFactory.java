@@ -49,18 +49,28 @@ public class GlobalNodeFactory {
     this.pag = pag;
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    rtObject = new JavaClassType(NodeConstants.OBJECT, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
+    rtObject =
+        new JavaClassType(
+            NodeConstants.OBJECT, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
     this.rtClassLoader =
-        new JavaClassType(NodeConstants.CLASS_LOADER, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
-    this.rtString = new JavaClassType(NodeConstants.STRING, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
-    this.rtThread = new JavaClassType(NodeConstants.THREAD, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
+        new JavaClassType(
+            NodeConstants.CLASS_LOADER, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
+    this.rtString =
+        new JavaClassType(
+            NodeConstants.STRING, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
+    this.rtThread =
+        new JavaClassType(
+            NodeConstants.THREAD, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
     this.rtThreadGroup =
-        new JavaClassType(NodeConstants.THREAD_GROUP, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
+        new JavaClassType(
+            NodeConstants.THREAD_GROUP, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
     this.rtThrowable =
-        new JavaClassType(NodeConstants.THROWABLE, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
+        new JavaClassType(
+            NodeConstants.THROWABLE, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
     this.rtPrivilegedActionException =
         new JavaClassType(
-                NodeConstants.PRIVILEGED_ACTION_EXCEPTION, identifierFactory.getPackageName(NodeConstants.JAVA_SECURITY));
+            NodeConstants.PRIVILEGED_ACTION_EXCEPTION,
+            identifierFactory.getPackageName(NodeConstants.JAVA_SECURITY));
   }
 
   public Node caseDefaultClassLoader() {

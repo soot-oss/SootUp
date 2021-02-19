@@ -40,8 +40,6 @@ public class NewInstanceNode extends Node {
 
   @Override
   public String toString() {
-    return "NewInstanceNode{" +
-            "value=" + value +
-            '}';
+    return "NewInstanceNode{" + "value=" + value + '}';
   }
 }

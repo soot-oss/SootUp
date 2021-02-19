@@ -31,7 +31,6 @@ import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.views.View;
-
 import java.util.Set;
 
 public class Spark implements PointsToAnalysis {
@@ -60,16 +59,12 @@ public class Spark implements PointsToAnalysis {
     pag = new PointerAssignmentGraph(view, callGraph);
   }
 
-  private void simplifyPointerAssignmentGraph(){
-
-  }
-
-
+  private void simplifyPointerAssignmentGraph() {}
 
   @Override
   public Set<Node> getPointsToSet(Local local) {
     VariableNode node = pag.getLocalVariableNode(local);
-    if(node == null){
+    if (node == null) {
       return Sets.newHashSet();
     }
     return node.getPointsToSet();

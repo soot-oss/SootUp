@@ -2,7 +2,6 @@ package de.upb.swt.soot.callgraph.spark.pointsto;
 
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.core.jimple.basic.Local;
-
 import java.util.Set;
 
 /*-

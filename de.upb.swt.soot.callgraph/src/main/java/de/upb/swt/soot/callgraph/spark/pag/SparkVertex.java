@@ -39,8 +39,6 @@ public class SparkVertex {
 
   @Override
   public String toString() {
-    return "SparkVertex{" +
-            "node=" + node +
-            '}';
+    return "SparkVertex{" + "node=" + node + '}';
   }
 }

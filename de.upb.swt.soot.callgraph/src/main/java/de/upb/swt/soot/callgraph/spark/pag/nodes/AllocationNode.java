@@ -25,11 +25,8 @@ package de.upb.swt.soot.callgraph.spark.pag.nodes;
 import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.Type;
-
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class AllocationNode extends Node {
   /*
@@ -61,16 +58,19 @@ public class AllocationNode extends Node {
     fields.put(field, allocationDotField);
   }
 
-  public AllocationDotField dot(Field field){
+  public AllocationDotField dot(Field field) {
     return fields == null ? null : fields.get(field);
   }
 
   @Override
   public String toString() {
-    return "AllocationNode{" +
-            "newExpr=" + newExpr +
-            ", method=" + method +
-            ", fields=" + fields +
-            '}';
+    return "AllocationNode{"
+        + "newExpr="
+        + newExpr
+        + ", method="
+        + method
+        + ", fields="
+        + fields
+        + '}';
   }
 }

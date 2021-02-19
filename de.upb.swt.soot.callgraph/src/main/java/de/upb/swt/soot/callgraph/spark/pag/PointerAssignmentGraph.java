@@ -37,13 +37,12 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaSootClass;
-import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PointerAssignmentGraph {
 
@@ -65,7 +64,7 @@ public class PointerAssignmentGraph {
   // - java.lang.Thread start method to run method
   private static final Logger log = LoggerFactory.getLogger(PointerAssignmentGraph.class);
 
-  //private final Graph<SparkVertex, SparkEdge> graph;
+  // private final Graph<SparkVertex, SparkEdge> graph;
   private CallGraph callGraph;
   private View<? extends SootClass> view;
 
@@ -85,7 +84,7 @@ public class PointerAssignmentGraph {
   public PointerAssignmentGraph(View<? extends SootClass> view, CallGraph callGraph) {
     this.view = view;
     this.callGraph = callGraph;
-    //this.graph = new DirectedAcyclicGraph<>(null, null, false);
+    // this.graph = new DirectedAcyclicGraph<>(null, null, false);
     build();
   }
 
@@ -101,48 +100,46 @@ public class PointerAssignmentGraph {
     }
   }
 
-//  public Graph<SparkVertex, SparkEdge> getGraph() {
-//    return graph;
-//  }
+  //  public Graph<SparkVertex, SparkEdge> getGraph() {
+  //    return graph;
+  //  }
 
   public void addEdge(Node source, Node target) {
     internalEdges.addEdge(source, target);
-//    SparkEdge edge = edgeFactory.getEdge(source, target);
-//    SparkVertex src = new SparkVertex(source);
-//    SparkVertex trg = new SparkVertex(target);
-//    graph.addVertex(src);
-//    graph.addVertex(trg);
-//    graph.addEdge(src, trg, edge);
-    //log.info("Added {} edge from:{} to:{}", edge.getEdgeType(), source, target);
+    //    SparkEdge edge = edgeFactory.getEdge(source, target);
+    //    SparkVertex src = new SparkVertex(source);
+    //    SparkVertex trg = new SparkVertex(target);
+    //    graph.addVertex(src);
+    //    graph.addVertex(trg);
+    //    graph.addEdge(src, trg, edge);
+    // log.info("Added {} edge from:{} to:{}", edge.getEdgeType(), source, target);
   }
-
 
   private void addIntraproceduralPointerAssignmentGraph(
       IntraproceduralPointerAssignmentGraph intraPAG) {
     List<Pair<Node, Node>> intraPAGSourceTargetPairs = intraPAG.getSourceTargetPairs();
-    //log.info("Added method:{}", intraPAG.getMethod());
-    for(Pair<Node, Node> sourceTargetPair: intraPAGSourceTargetPairs){
+    // log.info("Added method:{}", intraPAG.getMethod());
+    for (Pair<Node, Node> sourceTargetPair : intraPAGSourceTargetPairs) {
       addEdge(sourceTargetPair.getKey(), sourceTargetPair.getValue());
     }
-
   }
 
-//  public void printGraph() {
-//    JGraphXAdapter<SparkVertex, SparkEdge> graphAdapter =
-//            new JGraphXAdapter<SparkVertex, SparkEdge>(graph);
-//    mxIGraphLayout layout = new mxHierarchicalLayout(graphAdapter);
-//    layout.execute(graphAdapter.getDefaultParent());
-//
-//    BufferedImage image =
-//            mxCellRenderer.createBufferedImage(graphAdapter, null, 2, Color.WHITE, true, null);
-//    File imgFile = new File("src/test/resources/graph.png");
-//    try {
-//      imgFile.createNewFile();
-//      ImageIO.write(image, "PNG", imgFile);
-//    } catch (IOException e) {
-//      e.printStackTrace();
-//    }
-//  }
+  //  public void printGraph() {
+  //    JGraphXAdapter<SparkVertex, SparkEdge> graphAdapter =
+  //            new JGraphXAdapter<SparkVertex, SparkEdge>(graph);
+  //    mxIGraphLayout layout = new mxHierarchicalLayout(graphAdapter);
+  //    layout.execute(graphAdapter.getDefaultParent());
+  //
+  //    BufferedImage image =
+  //            mxCellRenderer.createBufferedImage(graphAdapter, null, 2, Color.WHITE, true, null);
+  //    File imgFile = new File("src/test/resources/graph.png");
+  //    try {
+  //      imgFile.createNewFile();
+  //      ImageIO.write(image, "PNG", imgFile);
+  //    } catch (IOException e) {
+  //      e.printStackTrace();
+  //    }
+  //  }
 
   public View<JavaSootClass> getView() {
     return (View<JavaSootClass>) view;
@@ -160,10 +157,10 @@ public class PointerAssignmentGraph {
         localToNodeMap.put(local, localVariableNode);
         // TODO: addNodeTag()
       } else if (!(localVariableNode.getType().equals(type))) {
-        throw new RuntimeException(MessageFormat.format("Value {0} of type {1} previously had type {2}",
-                value,
-                type,
-                localVariableNode.getType()));
+        throw new RuntimeException(
+            MessageFormat.format(
+                "Value {0} of type {1} previously had type {2}",
+                value, type, localVariableNode.getType()));
       }
       return localVariableNode;
     }
@@ -173,10 +170,10 @@ public class PointerAssignmentGraph {
       valToLocalVariableNode.put(value, localVariableNode);
       // TODO: addNodeTag()
     } else if (!(localVariableNode.getType().equals(type))) {
-      throw new RuntimeException(MessageFormat.format("Value {0} of type {1} previously had type {2}",
-              value,
-              type,
-              localVariableNode.getType()));
+      throw new RuntimeException(
+          MessageFormat.format(
+              "Value {0} of type {1} previously had type {2}",
+              value, type, localVariableNode.getType()));
     }
     return localVariableNode;
   }
@@ -195,9 +192,10 @@ public class PointerAssignmentGraph {
     return fieldRef;
   }
 
-  public AllocationDotField getOrCreateAllocationDotField(AllocationNode allocationNode, Field field){
+  public AllocationDotField getOrCreateAllocationDotField(
+      AllocationNode allocationNode, Field field) {
     AllocationDotField node = allocationNode.dot(field);
-    if(node == null){
+    if (node == null) {
       node = new AllocationDotField(allocationNode, field);
     }
     return node;
@@ -218,10 +216,9 @@ public class PointerAssignmentGraph {
         newAllocationNodes.add(node);
         addNodeTag(node, null);
       } else if (!node.getType().equals(type)) {
-        throw new RuntimeException(MessageFormat.format("NewExpr {0} of type {1} previously had type {2}",
-                newExpr,
-                type,
-                node.getType()));
+        throw new RuntimeException(
+            MessageFormat.format(
+                "NewExpr {0} of type {1} previously had type {2}", newExpr, type, node.getType()));
       }
     } else {
       node = valToReflectiveAllocationNode.get(newExpr, type);
@@ -243,10 +240,9 @@ public class PointerAssignmentGraph {
       node = new GlobalVariableNode(value, type);
       addNodeTag(node, null);
     } else if (!node.getType().equals(type)) {
-      throw new RuntimeException(MessageFormat.format("Value {0} of type {1} previously had type {2}",
-              value,
-              type,
-              node.getType()));
+      throw new RuntimeException(
+          MessageFormat.format(
+              "Value {0} of type {1} previously had type {2}", value, type, node.getType()));
     }
     return node;
   }
@@ -261,10 +257,10 @@ public class PointerAssignmentGraph {
 
   public AllocationNode getOrCreateClassConstantNode(ClassConstant cc) {
     // TODO: SPARK_OPT types-for-sites vta
-    return valToAllocationNode.computeIfAbsent(cc, k->createNodeForClassConstant(cc));
+    return valToAllocationNode.computeIfAbsent(cc, k -> createNodeForClassConstant(cc));
   }
 
-  private ClassConstantNode createNodeForClassConstant(ClassConstant cc){
+  private ClassConstantNode createNodeForClassConstant(ClassConstant cc) {
     ClassConstantNode node = new ClassConstantNode(cc);
     newAllocationNodes.add(node);
     addNodeTag(node, null);
@@ -272,10 +268,11 @@ public class PointerAssignmentGraph {
   }
 
   public NewInstanceNode getOrCreateNewInstanceNode(Value value, Type type, SootMethod method) {
-    return valToNewInstanceNode.computeIfAbsent(value, k->createNodeForNewInstance(value, type, method));
+    return valToNewInstanceNode.computeIfAbsent(
+        value, k -> createNodeForNewInstance(value, type, method));
   }
 
-  private NewInstanceNode createNodeForNewInstance(Value value, Type type, SootMethod method){
+  private NewInstanceNode createNodeForNewInstance(Value value, Type type, SootMethod method) {
     NewInstanceNode node = new NewInstanceNode(type, value);
     addNodeTag(node, method);
     return node;
@@ -290,63 +287,62 @@ public class PointerAssignmentGraph {
     return nodeFactory;
   }
 
-  public LocalVariableNode getLocalVariableNode(Object value){
+  public LocalVariableNode getLocalVariableNode(Object value) {
     // TODO: SPARK_OPTS rta
-    if(value instanceof Local){
+    if (value instanceof Local) {
       return localToNodeMap.get(value);
     }
     return valToLocalVariableNode.get(value);
   }
 
-  public Map<VariableNode, Set<VariableNode>> getSimpleEdges(){
+  public Map<VariableNode, Set<VariableNode>> getSimpleEdges() {
     return internalEdges.simpleEdges;
   }
 
-  public Map<AllocationNode, Set<VariableNode>> getAllocationEdges(){
+  public Map<AllocationNode, Set<VariableNode>> getAllocationEdges() {
     return internalEdges.allocationEdges;
   }
 
-  public Map<VariableNode, Set<FieldReferenceNode>> getStoreEdges(){
+  public Map<VariableNode, Set<FieldReferenceNode>> getStoreEdges() {
     return internalEdges.storeEdges;
   }
 
-  public Map<FieldReferenceNode, Set<VariableNode>> getLoadEdges(){
+  public Map<FieldReferenceNode, Set<VariableNode>> getLoadEdges() {
     return internalEdges.loadEdges;
   }
 
-  public Set<VariableNode> storeInvLookup(FieldReferenceNode key){
+  public Set<VariableNode> storeInvLookup(FieldReferenceNode key) {
     // TODO: somethingMerged?
     return internalEdges.storeEdgesInv.get(key);
   }
 
-  public Set<VariableNode> loadLookup(FieldReferenceNode key){
+  public Set<VariableNode> loadLookup(FieldReferenceNode key) {
     return internalEdges.loadEdges.get(key);
   }
 
-
   /*
-  public Set<VariableNode> getSimpleSources(){
-    return internalEdges.simpleEdges.keySet();
-  }
+    public Set<VariableNode> getSimpleSources(){
+      return internalEdges.simpleEdges.keySet();
+    }
 
-  public Set<AllocationNode> getAllocationSources(){
-    return internalEdges.allocationEdges.keySet();
-  }
+    public Set<AllocationNode> getAllocationSources(){
+      return internalEdges.allocationEdges.keySet();
+    }
 
-  public Set<VariableNode> getStoreSources(){
-    return internalEdges.storeEdges.keySet();
-  }
+    public Set<VariableNode> getStoreSources(){
+      return internalEdges.storeEdges.keySet();
+    }
 
-  public Set<FieldReferenceNode> getLoadSources(){
-    return internalEdges.loadEdges.keySet();
-  }
+    public Set<FieldReferenceNode> getLoadSources(){
+      return internalEdges.loadEdges.keySet();
+    }
 
-  public Set<VariableNode> getNewInstanceSources(){
-    return internalEdges.newInstanceEdges.keySet();
-  }
+    public Set<VariableNode> getNewInstanceSources(){
+      return internalEdges.newInstanceEdges.keySet();
+    }
 
-  public Set<NewInstanceNode> getAssignInstanceSources(){
-    return internalEdges.assignInstanceEdges.keySet();
-  }
-*/
+    public Set<NewInstanceNode> getAssignInstanceSources(){
+      return internalEdges.assignInstanceEdges.keySet();
+    }
+  */
 }

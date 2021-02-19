@@ -46,10 +46,9 @@ import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import java.util.Optional;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.Optional;
 
 public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
   private SootMethod method;
@@ -73,17 +72,32 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
     setMethod(intraPag.getMethod());
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    rtClass = new JavaClassType(NodeConstants.CLASS, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
-    rtObject = new JavaClassType(NodeConstants.OBJECT, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
-    rtStringType = new JavaClassType(NodeConstants.STRING, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
-    rtHashSet = new JavaClassType(NodeConstants.HASH_SET, identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
-    rtHashMap = new JavaClassType(NodeConstants.HASH_MAP, identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
-    rtLinkedList = new JavaClassType(NodeConstants.LINKED_LIST, identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
+    rtClass =
+        new JavaClassType(
+            NodeConstants.CLASS, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
+    rtObject =
+        new JavaClassType(
+            NodeConstants.OBJECT, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
+    rtStringType =
+        new JavaClassType(
+            NodeConstants.STRING, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
+    rtHashSet =
+        new JavaClassType(
+            NodeConstants.HASH_SET, identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
+    rtHashMap =
+        new JavaClassType(
+            NodeConstants.HASH_MAP, identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
+    rtLinkedList =
+        new JavaClassType(
+            NodeConstants.LINKED_LIST, identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
     rtHashtableEmptyIterator =
-        new JavaClassType(NodeConstants.HASH_TABLE_EMPTY_ITERATOR, identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
+        new JavaClassType(
+            NodeConstants.HASH_TABLE_EMPTY_ITERATOR,
+            identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
     rtHashtableEmptyEnumerator =
         new JavaClassType(
-                NodeConstants.HASH_TABLE_EMPTY_NUMERATOR, identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
+            NodeConstants.HASH_TABLE_EMPTY_NUMERATOR,
+            identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
   }
 
   /** Sets the method for which a graph is currently being built. */
@@ -188,7 +202,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
     // TODO: SPARK_OPT types-for-invoke
     if (stmt.containsInvokeExpr()) {
       AbstractInvokeExpr invokeExpr = stmt.getInvokeExpr();
-      if (!isReflectionNewInstance(invokeExpr) || !(invokeExpr instanceof JStaticInvokeExpr)){
+      if (!isReflectionNewInstance(invokeExpr) || !(invokeExpr instanceof JStaticInvokeExpr)) {
         return false;
       }
     }
@@ -278,14 +292,13 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
   public void caseInstanceFieldRef(JInstanceFieldRef ref) {
     // TODO: SPARK_OPT field-based vta
     Optional<SootField> field = ref.getField(view);
-    if(field.isPresent()){
+    if (field.isPresent()) {
       setResult(
-              pag.getOrCreateLocalFieldReferenceNode(
-                      ref.getBase(), ref.getBase().getType(), field.get(), method));
-    }else{
+          pag.getOrCreateLocalFieldReferenceNode(
+              ref.getBase(), ref.getBase().getType(), field.get(), method));
+    } else {
       throw new RuntimeException("Field not present on ref:" + ref);
     }
-
   }
 
   @Override
@@ -336,13 +349,11 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
   @Override
   public void caseStaticFieldRef(JStaticFieldRef ref) {
     Optional<SootField> field = ref.getField(view);
-    if(field.isPresent()){
-      setResult(
-              pag.getOrCreateGlobalVariableNode(ref.getField(view), field.get().getType()));
-    }else{
+    if (field.isPresent()) {
+      setResult(pag.getOrCreateGlobalVariableNode(ref.getField(view), field.get().getType()));
+    } else {
       throw new RuntimeException("Field not present on ref:" + ref);
     }
-
   }
 
   @Override

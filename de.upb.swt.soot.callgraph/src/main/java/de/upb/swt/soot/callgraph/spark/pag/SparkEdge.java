@@ -35,7 +35,6 @@ public class SparkEdge extends DefaultEdge {
     return edgeType;
   }
 
-
   @Override
   public String toString() {
     return edgeType.toString();

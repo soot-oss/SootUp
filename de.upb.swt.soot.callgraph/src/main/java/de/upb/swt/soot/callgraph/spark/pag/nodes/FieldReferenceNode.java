@@ -45,9 +45,6 @@ public class FieldReferenceNode extends Node {
 
   @Override
   public String toString() {
-    return "FieldReferenceNode{" +
-            "base=" + base +
-            ", field=" + field +
-            '}';
+    return "FieldReferenceNode{" + "base=" + base + ", field=" + field + '}';
   }
 }
