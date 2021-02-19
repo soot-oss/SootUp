@@ -73,7 +73,6 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
 
     // delete invalid traps
     Iterator<Trap> trapIterator = traps.iterator();
-
     while (trapIterator.hasNext()) {
       Trap trap = trapIterator.next();
       if (!reachableStmts.contains(trap.getHandlerStmt())) {
@@ -81,13 +80,11 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
 
       } else if (trap.getBeginStmt() == trap.getEndStmt()) {
         trapIterator.remove();
-        for (Stmt stmt : trap.getStmts()) {
-          unreachableStmts.add(stmt);
-        }
+        unreachableStmts.addAll(trap.getStmts());
       }
     }
 
     // delete all unreachable stmts from the current builder
-    unreachableStmts.forEach(stmt -> builder.removeStmt(stmt));
+    unreachableStmts.forEach(builder::removeStmt);
   }
 }
