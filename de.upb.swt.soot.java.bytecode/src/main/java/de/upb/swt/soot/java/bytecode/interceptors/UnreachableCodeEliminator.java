@@ -26,7 +26,6 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.*;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -43,9 +42,7 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
     Set<Stmt> stmtsInBody = graph.nodes();
     List<Trap> traps = builder.getTraps();
 
-    Set<Stmt> reachableStmts = new HashSet<>();
-
-    // get all start stmts: startingStmt and handlerStmts(if they in stmtGraph)
+    // get all valid starting stmts: startingStmt and handlerStmts(if they in stmtGraph)
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(graph.getStartingStmt());
     for (Trap trap : traps) {
@@ -54,7 +51,8 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
       }
     }
 
-    // get all reachable stmts
+    // calculate all reachable stmts
+    Set<Stmt> reachableStmts = new HashSet<>();
     while (!queue.isEmpty()) {
       Stmt stmt = queue.removeFirst();
       reachableStmts.add(stmt);
@@ -65,26 +63,23 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
       }
     }
 
-    // get all unreachable stmts
-    Set<Stmt> unreachableStmts =
-        stmtsInBody.stream()
-            .filter(stmt -> !reachableStmts.contains(stmt))
-            .collect(Collectors.toSet());
+    // remove unreachable stmts from StmtGraph
+    for (Stmt stmt : stmtsInBody) {
+      if (!reachableStmts.contains(stmt)) {
+        builder.removeStmt(stmt);
+      }
+    }
 
-    // delete invalid traps
+    // cleanup invalid traps
     Iterator<Trap> trapIterator = traps.iterator();
     while (trapIterator.hasNext()) {
       Trap trap = trapIterator.next();
       if (!reachableStmts.contains(trap.getHandlerStmt())) {
         trapIterator.remove();
-
       } else if (trap.getBeginStmt() == trap.getEndStmt()) {
         trapIterator.remove();
-        unreachableStmts.add(trap.getBeginStmt());
+        builder.removeStmt(trap.getBeginStmt());
       }
     }
-
-    // delete all unreachable stmts from the current builder
-    unreachableStmts.forEach(builder::removeStmt);
   }
 }
