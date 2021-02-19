@@ -270,9 +270,11 @@ public class MutableStmtGraph extends StmtGraph {
    */
   public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
 
-    if (oldStmt.branches()
-        && ((BranchingStmt) oldStmt).getTargetCount()
-            != ((BranchingStmt) newStmt).getTargetCount()) {
+    if (oldStmt.branches() != newStmt.branches()
+        || oldStmt.branches()
+            && newStmt.branches()
+            && ((BranchingStmt) oldStmt).getTargetCount()
+                != ((BranchingStmt) newStmt).getTargetCount()) {
       throw new RuntimeException(
           "You can only use replaceNode if newStmt has the same amount of branches/outgoing flows.");
     }
