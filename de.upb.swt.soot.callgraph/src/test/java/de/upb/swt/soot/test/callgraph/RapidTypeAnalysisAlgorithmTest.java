@@ -7,7 +7,7 @@ import de.upb.swt.soot.callgraph.CallGraph;
 import de.upb.swt.soot.callgraph.RapidTypeAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.views.View;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Collections;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -17,7 +17,7 @@ import org.junit.experimental.categories.Category;
 public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeAnalysisAlgorithm> {
 
   @Override
-  protected RapidTypeAnalysisAlgorithm createAlgorithm(View view, TypeHierarchy typeHierarchy) {
+  protected RapidTypeAnalysisAlgorithm createAlgorithm(JavaView view, TypeHierarchy typeHierarchy) {
     return new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
   }
 

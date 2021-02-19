@@ -190,7 +190,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     final Collection<? extends AbstractClassSource> classSources =
         pathBasedNamespace.getClassSources(getIdentifierFactory());
 
-    View v =
+    JavaView v =
         JavaProject.builder(new JavaLanguage(8))
             .addClassPath(pathBasedNamespace)
             .build()

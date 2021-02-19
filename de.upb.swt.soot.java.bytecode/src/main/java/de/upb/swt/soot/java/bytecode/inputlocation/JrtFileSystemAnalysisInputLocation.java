@@ -32,6 +32,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -59,7 +60,7 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
   private final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
+  public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
       @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
     JavaClassType klassType = (JavaClassType) classType;
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
@@ -71,8 +72,8 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
         klassType, new AsmJavaClassProvider(bodyInterceptors));
   }
 
-  private @Nonnull Optional<AbstractClassSource> getClassSourceInternalForClassPath(
-      @Nonnull JavaClassType classSignature, @Nonnull ClassProvider classProvider) {
+  private @Nonnull Optional<AbstractClassSource<JavaSootClass>> getClassSourceInternalForClassPath(
+      @Nonnull JavaClassType classSignature, @Nonnull ClassProvider<JavaSootClass> classProvider) {
 
     Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
     final Path moduleRoot = theFileSystem.getPath("modules");
@@ -93,8 +94,10 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
     return Optional.empty();
   }
 
-  private @Nonnull Optional<? extends AbstractClassSource> getClassSourceInternalForModule(
-      @Nonnull JavaClassType classSignature, @Nonnull ClassProvider classProvider) {
+  private @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>>
+      getClassSourceInternalForModule(
+          @Nonnull JavaClassType classSignature,
+          @Nonnull ClassProvider<JavaSootClass> classProvider) {
     Preconditions.checkArgument(classSignature.getPackageName() instanceof ModulePackageName);
 
     ModulePackageName modulePackageSignature = (ModulePackageName) classSignature.getPackageName();
@@ -115,7 +118,7 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
 
   // get the factory, which I should use the create the correspond class signatures
   @Override
-  public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
+  public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
@@ -125,10 +128,10 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
         archiveRoot, identifierFactory, new AsmJavaClassProvider(bodyInterceptors));
   }
 
-  protected @Nonnull Collection<? extends AbstractClassSource> walkDirectory(
+  protected @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> walkDirectory(
       @Nonnull Path dirPath,
       @Nonnull IdentifierFactory identifierFactory,
-      ClassProvider classProvider) {
+      @Nonnull ClassProvider<JavaSootClass> classProvider) {
 
     final FileType handledFileType = classProvider.getHandledFileType();
     try {

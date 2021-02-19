@@ -7,7 +7,7 @@ import de.upb.swt.soot.callgraph.CallGraph;
 import de.upb.swt.soot.callgraph.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.views.View;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -25,7 +25,7 @@ public class ClassHierarchyAnalysisAlgorithmTest
 
   @Override
   protected ClassHierarchyAnalysisAlgorithm createAlgorithm(
-      View view, TypeHierarchy typeHierarchy) {
+      JavaView view, TypeHierarchy typeHierarchy) {
     return new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
   }
 

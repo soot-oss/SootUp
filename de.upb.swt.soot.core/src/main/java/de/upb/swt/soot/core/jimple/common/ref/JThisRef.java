@@ -58,7 +58,7 @@ public final class JThisRef implements IdentityRef, Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.identityRef(this);
   }
 
@@ -73,7 +73,7 @@ public final class JThisRef implements IdentityRef, Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((RefVisitor) sw).caseThisRef(this);
   }
 

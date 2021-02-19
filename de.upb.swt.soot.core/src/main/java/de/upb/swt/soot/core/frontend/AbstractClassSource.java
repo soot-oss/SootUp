@@ -22,7 +22,7 @@ package de.upb.swt.soot.core.frontend;
  */
 import com.google.common.base.Objects;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.model.AbstractClass;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.Signature;
 import de.upb.swt.soot.core.types.ClassType;
@@ -36,15 +36,15 @@ import javax.annotation.Nullable;
  * languages). e.g. its connecting a file with source(code) to a {@link Signature} that a {@link
  * View} can resolve.
  */
-public abstract class AbstractClassSource {
+public abstract class AbstractClassSource<T extends SootClass> {
   // TODO: [ms] I dont see the necessity of the AnalysisInputLocation in this class; maybe not even
   // for sourcepath
-  protected final AnalysisInputLocation srcNamespace;
+  protected final AnalysisInputLocation<T> srcNamespace;
   protected final Path sourcePath;
   protected ClassType classSignature;
 
   public AbstractClassSource(
-      @Nonnull AnalysisInputLocation srcNamespace,
+      @Nonnull AnalysisInputLocation<T> srcNamespace,
       @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
     this.srcNamespace = srcNamespace;
@@ -56,8 +56,7 @@ public abstract class AbstractClassSource {
     return classSignature;
   }
 
-  public abstract AbstractClass<? extends AbstractClassSource> buildClass(
-      @Nonnull SourceType sourceType);
+  public abstract T buildClass(@Nonnull SourceType sourceType);
 
   public Path getSourcePath() {
     return sourcePath;
@@ -82,7 +81,7 @@ public abstract class AbstractClassSource {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AbstractClassSource that = (AbstractClassSource) o;
+    AbstractClassSource<T> that = (AbstractClassSource<T>) o;
     return Objects.equal(srcNamespace, that.srcNamespace)
         && Objects.equal(sourcePath, that.sourcePath);
   }

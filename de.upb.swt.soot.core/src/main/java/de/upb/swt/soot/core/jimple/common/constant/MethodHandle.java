@@ -27,6 +27,7 @@ import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
+import javax.annotation.Nonnull;
 
 public class MethodHandle implements Constant {
 
@@ -123,7 +124,7 @@ public class MethodHandle implements Constant {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((ConstantVisitor) sw).caseMethodHandle(this);
   }
 
