@@ -24,11 +24,18 @@ public class WorklistPropagator implements Propagator {
         // handle Allocation Nodes
         handleAllocationNodeSources();
 
+        do {
+            handleVariableNodeSources();
 
+            handleStoreSources();
 
+            handleLoadSources();
+        } while(!variableNodeWorkList.isEmpty());
     }
 
     /**
+     * Propagates new points-to information of node src to all its successors.
+     *
      * adds AllocationNode sources to their targets' points-to sets
      * if a source is added for the first time adds it to worklist
      */
@@ -54,6 +61,10 @@ public class WorklistPropagator implements Propagator {
         }
     }
 
+    /**
+     * Propagates new points-to information of node src to all its successors.
+     * @param source
+     */
     private void handleVariableNodeSource(final VariableNode source){
         if(source.getReplacement() != source){
             throw new RuntimeException("Got bad node " + source + " with rep " + source.getReplacement());
@@ -144,6 +155,71 @@ public class WorklistPropagator implements Propagator {
             if(loadTarget.getPointsToSet().addAll(allocationDotField.getPointsToSet())){
                 variableNodeWorkList.add(loadTarget);
             }
+        }
+    }
+
+    private void handleStoreSources(){
+        Map<VariableNode, Set<FieldReferenceNode>> storeEdges = pag.getStoreEdges();
+        for (Map.Entry<VariableNode, Set<FieldReferenceNode>> entry : storeEdges.entrySet()) {
+            final VariableNode source = (VariableNode) entry.getKey();
+            Set<FieldReferenceNode> targets = entry.getValue();
+            for (FieldReferenceNode target : targets) {
+                Set<Node> targetPointsToSet = target.getBase().getPointsToSet();
+                for (Node node : targetPointsToSet) {
+                    AllocationDotField allocationDotField = pag.getOrCreateAllocationDotField((AllocationNode) node, target.getField());
+                    // TODO: SPARK_OPTS ofcg
+                    allocationDotField.getPointsToSet().addAll(source.getPointsToSet());
+                }
+            }
+        }
+    }
+
+    private void handleLoadSources() {
+        Set<Pair<Set<Node>, Node>> edgesToPropagate = new HashSet<>();
+        Map<FieldReferenceNode, Set<VariableNode>> loadEdges = pag.getLoadEdges();
+        for (Map.Entry<FieldReferenceNode, Set<VariableNode>> entry : loadEdges.entrySet()) {
+            handleFieldReferenceNode(entry.getKey(), edgesToPropagate);
+        }
+        handleEdgesToPropagate(edgesToPropagate);
+    }
+
+    /**
+     * Propagates new points-to information of node src to all its successors.
+     */
+    private void handleFieldReferenceNode(FieldReferenceNode source, final Set<Pair<Set<Node>, Node>> edgesToPropagate) {
+        final Set<VariableNode> loadTargets = pag.getLoadEdges().get(source);
+        if(loadTargets.isEmpty()){
+            return;
+        }
+        final Field field = source.getField();
+
+        Set<Node> basePointsToSet = source.getBase().getPointsToSet();
+        for(Node node: basePointsToSet){
+            AllocationDotField allocationDotField = pag.getOrCreateAllocationDotField((AllocationNode) node, field);
+            if(allocationDotField != null){
+                Set<Node> pointsToSet = allocationDotField.getPointsToSet();
+                if(!pointsToSet.isEmpty()){
+                    for(Node element: loadTargets){
+                        Pair<Set<Node>, Node> pair = new ImmutablePair<>(pointsToSet, element);
+                        edgesToPropagate.add(pair);
+                    }
+                }
+            }
+        }
+    }
+
+    private void handleEdgesToPropagate(Set<Pair<Set<Node>, Node>> edgesToPropagate) {
+        Set<Set> nodesToFlush = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (Pair<Set<Node>, Node> pair : edgesToPropagate) {
+            Set<Node> pointsToSet = pair.getKey();
+            VariableNode loadTarget = (VariableNode) pair.getValue();
+            if(loadTarget.getPointsToSet().addAll(pointsToSet)){
+                variableNodeWorkList.add(loadTarget);
+            }
+            nodesToFlush.add(pointsToSet);
+        }
+        for (Set toFlush : nodesToFlush) {
+            // TODO flushNew only in double set
         }
     }
 
