@@ -70,6 +70,10 @@ public class WorklistPropagator implements Propagator {
 
         // TODO: SPARK_OPTS ofcg
 
+        handleStoresAndLoadsToPropagate(source, storesToPropagate, loadsToPropagate);
+
+        propagateStoresAndLoads(storesToPropagate, loadsToPropagate);
+
     }
 
     private void handleSimpleEdges(final VariableNode source) {
@@ -123,6 +127,22 @@ public class WorklistPropagator implements Propagator {
                         }
                     }
                 }
+            }
+        }
+    }
+
+
+    private void propagateStoresAndLoads(HashSet<Pair<Node, Node>> storesToPropagate, HashSet<Pair<Node, Node>> loadsToPropagate) {
+        for (Pair<Node, Node> pair : storesToPropagate) {
+            VariableNode storeSource = (VariableNode) pair.getKey();
+            AllocationDotField allocationDotField = (AllocationDotField) pair.getValue();
+            allocationDotField.getPointsToSet().addAll(storeSource.getPointsToSet());
+        }
+        for (Pair<Node, Node> pair : loadsToPropagate) {
+            AllocationDotField allocationDotField = (AllocationDotField) pair.getKey();
+            VariableNode loadTarget = (VariableNode) pair.getValue();
+            if(loadTarget.getPointsToSet().addAll(allocationDotField.getPointsToSet())){
+                variableNodeWorkList.add(loadTarget);
             }
         }
     }
