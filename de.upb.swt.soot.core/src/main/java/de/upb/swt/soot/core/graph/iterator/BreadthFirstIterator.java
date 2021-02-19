@@ -43,7 +43,7 @@ public class BreadthFirstIterator extends StmtGraphIterator {
   BreadthFirstIterator(@Nonnull StmtGraph graph, @Nonnull Stmt startingStmt) {
     super(graph);
     addToContainer(startingStmt);
-    alreadyInsertedNodes.add(startingStmt);
+    discovered.add(startingStmt);
   }
 
   @Override

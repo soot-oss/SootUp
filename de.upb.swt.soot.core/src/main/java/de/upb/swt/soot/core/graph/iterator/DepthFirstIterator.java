@@ -42,7 +42,7 @@ public class DepthFirstIterator extends StmtGraphIterator {
   public DepthFirstIterator(StmtGraph graph, Stmt startingStmt) {
     super(graph);
     addToContainer(startingStmt);
-    alreadyInsertedNodes.add(startingStmt);
+    discovered.add(startingStmt);
   }
 
   @Override

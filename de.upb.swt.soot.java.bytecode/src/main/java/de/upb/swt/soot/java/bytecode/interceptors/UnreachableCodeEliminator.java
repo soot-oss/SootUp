@@ -3,7 +3,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2020 Raja Vallée-Rai, Christian Brüggemann
+ * Copyright (C) 1997-2020 Raja Vallée-Rai, Christian Brüggemann, Zun Wang
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -20,16 +20,73 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import java.util.*;
 import javax.annotation.Nonnull;
 
-// https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/scalar/UnreachableCodeEliminator.java
-
+/**
+ * A BodyInterceptor that removes all unreachable stmts from the given Body.
+ *
+ * @author Zun Wang
+ */
 public class UnreachableCodeEliminator implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    // TODO Implement
+
+    StmtGraph graph = builder.getStmtGraph();
+    List<Trap> traps = builder.getTraps();
+
+    // get all valid starting stmts: startingStmt and handlerStmts(if they in stmtGraph)
+    Deque<Stmt> queue = new ArrayDeque<>();
+    queue.add(graph.getStartingStmt());
+    for (Trap trap : traps) {
+      if (graph.containsNode(trap.getHandlerStmt())) {
+        queue.addLast(trap.getHandlerStmt());
+      }
+    }
+
+    // calculate all reachable stmts
+    Set<Stmt> reachableStmts = new HashSet<>();
+    while (!queue.isEmpty()) {
+      Stmt stmt = queue.removeFirst();
+      reachableStmts.add(stmt);
+      for (Stmt succ : graph.successors(stmt)) {
+        if (!reachableStmts.contains(succ)) {
+          queue.addLast(succ);
+        }
+      }
+    }
+
+    // remove unreachable stmts from StmtGraph
+    builder.enableDeferredStmtGraphChanges();
+    for (Stmt stmt : graph.nodes()) {
+      if (!reachableStmts.contains(stmt)) {
+        builder.removeStmt(stmt);
+      }
+    }
+    builder.disableAndCommitDeferredStmtGraphChanges();
+
+    // cleanup invalid traps
+    Iterator<Trap> trapIterator = traps.iterator();
+    while (trapIterator.hasNext()) {
+      Trap trap = trapIterator.next();
+      // is the Traphandler Stmt (still) in the StmtGraph?
+      if (!graph.containsNode(trap.getHandlerStmt())) {
+        trapIterator.remove();
+      } else
+      // has the trap a valid range? TODO: [ms] why don't we check that (i.e. trap range is empty)
+      // in trap instantiation?
+      if (trap.getBeginStmt() == trap.getEndStmt()) {
+        trapIterator.remove();
+        for (Stmt trapStmt : trap.getStmts()) {
+          builder.removeStmt(trapStmt);
+        }
+      }
+    }
   }
 }

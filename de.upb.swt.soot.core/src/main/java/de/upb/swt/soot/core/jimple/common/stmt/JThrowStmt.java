@@ -72,6 +72,11 @@ public final class JThrowStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Override
+  public int getSuccessorCount() {
+    return 0;
+  }
+
+  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseThrowStmt(this, o);
   }
