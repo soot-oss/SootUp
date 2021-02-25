@@ -1,4 +1,6 @@
-package de.upb.swt.soot.test.java.bytecode.interceptors;
+package de.upb.swt.soot.test.core.model;
+
+import static org.junit.Assert.*;
 
 import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
 import de.upb.swt.soot.core.graph.MutableStmtGraph;
@@ -16,8 +18,7 @@ import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import org.junit.Test;
 
 public class ExceptionalStmtGraphTest {
@@ -86,17 +87,69 @@ public class ExceptionalStmtGraphTest {
   public void graphTest() {
     StmtGraph graph = createStmtGraph();
     ExceptionalStmtGraph exceptionalStmtGraph = new ExceptionalStmtGraph(graph);
+    Map<Stmt, List<Stmt>> expectedExceptionalPreds = expectedExceptionalPreds();
+    Map<Stmt, List<Stmt>> expectedExceptionalSuccs = expectedExceptionalSuccs();
 
-    Iterator<Stmt> it = exceptionalStmtGraph.iterator();
+    for (Stmt stmt : expectedExceptionalPreds.keySet()) {
+      assertStmtsListsEquiv(
+          expectedExceptionalPreds.get(stmt), exceptionalStmtGraph.exceptionalPredecessors(stmt));
+      assertStmtsListsEquiv(
+          expectedExceptionalSuccs.get(stmt), exceptionalStmtGraph.exceptionalSuccessors(stmt));
+    }
+  }
+
+  private Map<Stmt, List<Stmt>> expectedExceptionalPreds() {
+
+    Map<Stmt, List<Stmt>> predsMap = new HashMap<>();
+    List<Stmt> preds_0 = ImmutableUtils.immutableList(label1Stmt, label2Stmt, stmtInLabel2);
+    List<Stmt> preds_1 =
+        ImmutableUtils.immutableList(
+            label1Stmt, label2Stmt, stmtInLabel2, label6Stmt, stmtInLabel6, throwStmt, label7Stmt);
+    List<Stmt> preds_2 = ImmutableUtils.immutableList(label4Stmt);
+
+    StmtGraph graph = createStmtGraph();
+    Iterator<Stmt> it = graph.iterator();
     while (it.hasNext()) {
       Stmt stmt = it.next();
-      System.out.println("Stmt: " + stmt);
-      System.out.println("Preds: " + exceptionalStmtGraph.predecessors(stmt));
-      System.out.println("Succs: " + exceptionalStmtGraph.successors(stmt));
-      System.out.println("ExceptionalPreds: " + exceptionalStmtGraph.exceptionalPredecessors(stmt));
-      System.out.println("ExceptionalSuccs: " + exceptionalStmtGraph.exceptionalSuccessors(stmt));
-      System.out.println("---------------------------------------------------");
+      if (stmt == label6Stmt) {
+        predsMap.put(stmt, preds_0);
+      } else if (stmt == label7Stmt) {
+        predsMap.put(stmt, preds_1);
+      } else if (stmt == label9Stmt) {
+        predsMap.put(stmt, preds_2);
+      } else {
+        predsMap.put(stmt, Collections.emptyList());
+      }
     }
+    return predsMap;
+  }
+
+  private Map<Stmt, List<Stmt>> expectedExceptionalSuccs() {
+    Map<Stmt, List<Stmt>> succsMap = new HashMap<>();
+
+    List<Stmt> succs_0 = ImmutableUtils.immutableList(label6Stmt, label7Stmt);
+    List<Stmt> succs_1 = ImmutableUtils.immutableList(label7Stmt);
+    List<Stmt> succs_2 = ImmutableUtils.immutableList(label9Stmt);
+
+    StmtGraph graph = createStmtGraph();
+    Iterator<Stmt> it = graph.iterator();
+    while (it.hasNext()) {
+      Stmt stmt = it.next();
+      if (stmt == label1Stmt || stmt == label2Stmt || stmt == stmtInLabel2) {
+        succsMap.put(stmt, succs_0);
+      } else if (stmt == label6Stmt
+          || stmt == stmtInLabel6
+          || stmt == throwStmt
+          || stmt == label7Stmt) {
+        succsMap.put(stmt, succs_1);
+      } else if (stmt == label4Stmt) {
+        succsMap.put(stmt, succs_2);
+      } else {
+        succsMap.put(stmt, Collections.emptyList());
+      }
+    }
+
+    return succsMap;
   }
 
   private StmtGraph createStmtGraph() {
@@ -108,7 +161,6 @@ public class ExceptionalStmtGraphTest {
     graph.putEdge(stmtInLabel2, label3Stmt);
     graph.putEdge(label3Stmt, label4Stmt);
     graph.putEdge(label4Stmt, label5Stmt);
-    graph.putEdge(label5Stmt, ret);
 
     // trap1
     graph.putEdge(label6Stmt, stmtInLabel6);
@@ -121,7 +173,37 @@ public class ExceptionalStmtGraphTest {
     graph.putEdge(label9Stmt, stmtInLabel9);
     graph.putEdge(stmtInLabel9, ret);
 
+    graph.putEdge(label5Stmt, ret);
     graph.setTraps(traps);
+
     return graph;
+  }
+
+  // assert whether two stmt lists are equal
+  public static void assertStmtsListsEquiv(List<Stmt> expected, List<Stmt> actual) {
+
+    assertNotNull(expected);
+    assertNotNull(actual);
+    if (expected.size() != actual.size()) {
+      System.out.println("Expected size is not equal to actual size: ");
+      System.out.println("expected size of list: " + expected.size());
+      System.out.println("actual size of list: " + actual.size());
+    }
+    assertEquals(expected.size(), actual.size());
+    boolean condition = true;
+    for (Stmt stmt : actual) {
+      int idx = actual.indexOf(stmt);
+      if (!(expected.get(idx) == stmt)) {
+        condition = false;
+        break;
+      }
+    }
+    if (!condition) {
+      System.out.println("expected:");
+      System.out.println(expected);
+      System.out.println("actual:");
+      System.out.println(actual);
+    }
+    assertTrue(condition);
   }
 }
