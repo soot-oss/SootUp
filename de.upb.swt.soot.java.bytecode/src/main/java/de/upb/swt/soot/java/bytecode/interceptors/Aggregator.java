@@ -161,8 +161,11 @@ public class Aggregator implements BodyInterceptor {
                   }
                   if (newStmt != null) {
                     builder.replaceStmt(stmt, newStmt);
-                    JNopStmt nopStmt = new JNopStmt(stmt.getPositionInfo());
-                    builder.replaceStmt(relevantDef, nopStmt);
+                    if (graph.getStartingStmt() == relevantDef) {
+                      Stmt newStartingStmt = builder.getStmtGraph().successors(relevantDef).get(0);
+                      builder.setStartingStmt(newStartingStmt);
+                    }
+                    builder.removeStmt(relevantDef);
                   }
                 }
               }

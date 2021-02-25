@@ -1,7 +1,6 @@
 package de.upb.swt.soot.test.java.bytecode.interceptors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
@@ -31,7 +30,7 @@ public class AggregatorTest {
    *
    * <p>to
    *
-   * <p>nop; b = 7 + 4; return;
+   * <p>b = 7 + 4; return;
    */
   @Test
   public void testAggregation() {
@@ -42,11 +41,10 @@ public class AggregatorTest {
     List<Stmt> originalStmts = testBody.getStmts();
     List<Stmt> processedStmts = processedBody.getStmts();
 
-    assertEquals(originalStmts.size(), processedStmts.size());
-    assertNotEquals(originalStmts.get(0), processedStmts.get(0));
+    assertEquals(originalStmts.size() - 1, processedStmts.size());
     assertEquals("b = a + 4", originalStmts.get(1).toString());
-    assertEquals("b = 7 + 4", processedStmts.get(1).toString());
-    assertEquals(originalStmts.get(2), processedStmts.get(2));
+    assertEquals("b = 7 + 4", processedStmts.get(0).toString());
+    assertEquals(originalStmts.get(2), processedStmts.get(1));
   }
 
   /**
