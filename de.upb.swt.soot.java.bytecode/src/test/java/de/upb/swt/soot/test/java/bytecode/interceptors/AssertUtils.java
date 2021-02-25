@@ -7,6 +7,7 @@ import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import java.util.List;
 import java.util.Set;
 
 /** @author Zun Wang */
@@ -72,6 +73,34 @@ public class AssertUtils {
       }
     }
 
+    if (!condition) {
+      System.out.println("expected:");
+      System.out.println(expected);
+      System.out.println("actual:");
+      System.out.println(actual);
+    }
+    assertTrue(condition);
+  }
+
+  // assert whether two stmt lists are equal
+  public static void assertStmtsListsEquiv(List<Stmt> expected, List<Stmt> actual) {
+
+    assertNotNull(expected);
+    assertNotNull(actual);
+    if (expected.size() != actual.size()) {
+      System.out.println("Expected size is not equal to actual size: ");
+      System.out.println("expected size of list: " + expected.size());
+      System.out.println("actual size of list: " + actual.size());
+    }
+    assertEquals(expected.size(), actual.size());
+    boolean condition = true;
+    for (Stmt stmt : actual) {
+      int idx = actual.indexOf(stmt);
+      if (!(expected.get(idx) == stmt)) {
+        condition = false;
+        break;
+      }
+    }
     if (!condition) {
       System.out.println("expected:");
       System.out.println(expected);
