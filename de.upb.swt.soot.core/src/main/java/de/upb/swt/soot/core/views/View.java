@@ -24,15 +24,13 @@ package de.upb.swt.soot.core.views;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Scope;
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
-import de.upb.swt.soot.core.model.AbstractClass;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -42,18 +40,11 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public interface View {
+public interface View<T extends SootClass> {
 
   /** Return all classes in the view. */
   @Nonnull
-  Collection<? extends AbstractClass<? extends AbstractClassSource>> getClasses();
-
-  /** Return all classes in the view. */
-  // TODO: [ms] necessary?!
-  @Nonnull
-  default Stream<? extends AbstractClass<? extends AbstractClassSource>> getClassesStream() {
-    return getClasses().stream();
-  }
+  Collection<T> getClasses();
 
   /**
    * Return a class with given signature.
@@ -61,8 +52,7 @@ public interface View {
    * @return A class with given signature.
    */
   @Nonnull
-  Optional<? extends AbstractClass<? extends AbstractClassSource>> getClass(
-      @Nonnull ClassType signature);
+  Optional<T> getClass(@Nonnull ClassType signature);
 
   /**
    * Returns the scope if the view is scoped.
@@ -76,33 +66,32 @@ public interface View {
   @Nonnull
   IdentifierFactory getIdentifierFactory();
 
+  @Nonnull
+  default T getClassOrThrow(@Nonnull ClassType classType) {
+    return getClass(classType)
+        .orElseThrow(() -> new ResolveException("Could not find " + classType + " in View."));
+  }
+
   /** @see ModuleDataKey */
-  <T> void putModuleData(@Nonnull ModuleDataKey<T> key, @Nonnull T value);
+  <K> void putModuleData(@Nonnull ModuleDataKey<K> key, @Nonnull K value);
 
   /** @see ModuleDataKey */
   @Nullable
-  <T> T getModuleData(@Nonnull ModuleDataKey<T> key);
+  <K> K getModuleData(@Nonnull ModuleDataKey<K> key);
 
   /**
    * @see java.util.Map#computeIfAbsent(Object, Function)
    * @see ModuleDataKey
    */
-  default <T> T computeModuleDataIfAbsent(@Nonnull ModuleDataKey<T> key, Supplier<T> dataSupplier) {
-    T moduleData = getModuleData(key);
+  default <K> K computeModuleDataIfAbsent(@Nonnull ModuleDataKey<K> key, Supplier<K> dataSupplier) {
+    K moduleData = getModuleData(key);
     if (moduleData != null) {
       return moduleData;
     }
 
-    T computedModuleData = dataSupplier.get();
+    K computedModuleData = dataSupplier.get();
     putModuleData(key, computedModuleData);
     return computedModuleData;
-  }
-
-  @Nonnull
-  default AbstractClass<? extends AbstractClassSource> getClassOrThrow(
-      @Nonnull ClassType classType) {
-    return getClass(classType)
-        .orElseThrow(() -> new ResolveException("Could not find " + classType + " in view"));
   }
 
   /**
@@ -130,9 +119,9 @@ public interface View {
    *   }
    * </pre>
    *
-   * @param <T> The type of the stored and retrieved data that is associated with the key
+   * @param <K> The type of the stored and retrieved data that is associated with the key
    * @author Christian Brüggemann
    */
   @SuppressWarnings("unused") // Used in modules
-  abstract class ModuleDataKey<T> {}
+  abstract class ModuleDataKey<K> {}
 }

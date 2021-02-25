@@ -28,6 +28,7 @@ import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractBinopExpr implements Expr {
 
@@ -97,7 +98,7 @@ public abstract class AbstractBinopExpr implements Expr {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     op1Box.toString(up);
     up.literal(getSymbol());
     op2Box.toString(up);

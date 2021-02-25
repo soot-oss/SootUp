@@ -28,7 +28,7 @@ import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.java.bytecode.frontend.modules.AsmModuleClassSource;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -40,7 +40,7 @@ import org.objectweb.asm.TypePath;
 import org.objectweb.asm.tree.ClassNode;
 
 /** A {@link ClassProvider} capable of handling Java bytecode */
-public class AsmJavaClassProvider implements ClassProvider {
+public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
@@ -49,8 +49,8 @@ public class AsmJavaClassProvider implements ClassProvider {
   }
 
   @Override
-  public AbstractClassSource createClassSource(
-      AnalysisInputLocation srcNamespace, Path sourcePath, ClassType classType) {
+  public AbstractClassSource<JavaSootClass> createClassSource(
+      AnalysisInputLocation<JavaSootClass> srcNamespace, Path sourcePath, ClassType classType) {
     SootClassNode classNode = new SootClassNode();
 
     try {
@@ -62,7 +62,8 @@ public class AsmJavaClassProvider implements ClassProvider {
 
     JavaClassType klassType = (JavaClassType) classType;
     if (klassType.isModuleInfo()) {
-      return new AsmModuleClassSource(srcNamespace, sourcePath, klassType, classNode.module);
+      // TODO: [ms] is this necessary here? check!
+      throw new ResolveException("The module info descriptor is not resolvable!", sourcePath);
     } else {
       return new AsmClassSource(srcNamespace, sourcePath, klassType, classNode);
     }

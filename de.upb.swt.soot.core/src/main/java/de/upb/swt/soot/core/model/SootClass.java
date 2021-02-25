@@ -46,7 +46,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootClass extends AbstractClass<SootClassSource> {
+public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
 
   @Nonnull protected final SourceType sourceType;
   @Nonnull protected final ClassType classSignature;

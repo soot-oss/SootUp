@@ -35,7 +35,7 @@ import javax.annotation.Nonnull;
 
 public final class JStaticFieldRef extends JFieldRef implements Copyable {
 
-  public JStaticFieldRef(FieldSignature fieldSig) {
+  public JStaticFieldRef(@Nonnull FieldSignature fieldSig) {
     super(fieldSig);
   }
 
@@ -45,7 +45,7 @@ public final class JStaticFieldRef extends JFieldRef implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.fieldSignature(getFieldSignature());
   }
 
@@ -65,7 +65,7 @@ public final class JStaticFieldRef extends JFieldRef implements Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((RefVisitor) sw).caseStaticFieldRef(this);
   }
 

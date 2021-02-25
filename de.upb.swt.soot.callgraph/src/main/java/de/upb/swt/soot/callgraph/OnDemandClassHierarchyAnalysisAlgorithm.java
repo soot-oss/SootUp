@@ -22,19 +22,26 @@ package de.upb.swt.soot.callgraph;
  * #L%
  */
 
+import com.google.common.annotations.Beta;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.views.View;
 import java.util.List;
+import javax.annotation.Nonnull;
 
+@Beta
 public class OnDemandClassHierarchyAnalysisAlgorithm extends ClassHierarchyAnalysisAlgorithm {
 
-  public OnDemandClassHierarchyAnalysisAlgorithm(View view, TypeHierarchy hierarchy) {
+  public OnDemandClassHierarchyAnalysisAlgorithm(
+      View<? extends SootClass> view, TypeHierarchy hierarchy) {
     super(view, hierarchy);
   }
 
+  @Nonnull
   @Override
-  public CallGraph initialize(List<MethodSignature> entryPoints) {
+  // FIXME: [ms] nonnull returns null
+  public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
     return null;
   }
 }

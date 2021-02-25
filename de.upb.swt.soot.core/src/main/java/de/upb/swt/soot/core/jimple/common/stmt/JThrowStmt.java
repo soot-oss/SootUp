@@ -50,14 +50,14 @@ public final class JThrowStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.THROW);
     up.literal(" ");
     opBox.toString(up);
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseThrowStmt(this);
   }
 
@@ -69,6 +69,11 @@ public final class JThrowStmt extends AbstractOpStmt implements Copyable {
   @Override
   public boolean branches() {
     return false;
+  }
+
+  @Override
+  public int getSuccessorCount() {
+    return 0;
   }
 
   @Override

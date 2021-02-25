@@ -253,6 +253,7 @@ public class Body implements Copyable {
     return stmts;
   }
 
+  @Nonnull
   public ImmutableStmtGraph getStmtGraph() {
     return cfg;
   }
@@ -358,7 +359,20 @@ public class Body implements Copyable {
   }
 
   /** helps against ConcurrentModificationException; it queues changes until they are committed */
+  // TODO: think about same nodes/flows added AND removed
+  // [ms] use/implement a snapshotiterator instead?
   private static class StmtGraphManipulationQueue {
+
+    @Nonnull private final List<Stmt> nodesToRemove = new ArrayList<>();
+    @Nonnull private final List<Stmt> nodesToAdd = new ArrayList<>();
+
+    void addNode(@Nonnull Stmt node) {
+      nodesToAdd.add(node);
+    }
+
+    void removeNode(@Nonnull Stmt node) {
+      nodesToRemove.add(node);
+    }
 
     // List sizes are a multiple of 2; even: from odd: to of an edge
     @Nonnull private final List<Stmt> flowsToRemove = new ArrayList<>();
@@ -376,7 +390,19 @@ public class Body implements Copyable {
 
     /** return true if there where queued changes */
     boolean commit(MutableStmtGraph graph) {
-      if (!flowsToAdd.isEmpty() || !flowsToRemove.isEmpty()) {
+
+      if (!flowsToAdd.isEmpty()
+          || !flowsToRemove.isEmpty()
+          || !nodesToAdd.isEmpty()
+          || !nodesToRemove.isEmpty()) {
+        for (Stmt stmt : nodesToAdd) {
+          graph.addNode(stmt);
+        }
+
+        for (Stmt stmt : nodesToRemove) {
+          graph.removeNode(stmt);
+        }
+
         Iterator<Stmt> addIt = flowsToAdd.iterator();
         while (addIt.hasNext()) {
           final Stmt from = addIt.next();
@@ -391,12 +417,15 @@ public class Body implements Copyable {
           graph.removeEdge(from, to);
         }
         clear();
+
         return true;
       }
       return false;
     }
 
     public void clear() {
+      nodesToAdd.clear();
+      nodesToRemove.clear();
       flowsToAdd.clear();
       flowsToRemove.clear();
     }
@@ -503,6 +532,18 @@ public class Body implements Copyable {
     @Nonnull
     public BodyBuilder replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
       cfg.replaceNode(oldStmt, newStmt);
+      return this;
+    }
+
+    /** remove the a stmt from the graph and stmt */
+    @Nonnull
+    public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
+      if (changeQueue == null) {
+        cfg.removeNode(stmt);
+        cachedLinearizedStmts = null;
+      } else {
+        changeQueue.removeNode(stmt);
+      }
       return this;
     }
 

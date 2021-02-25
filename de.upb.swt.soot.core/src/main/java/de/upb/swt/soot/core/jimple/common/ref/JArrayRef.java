@@ -109,7 +109,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     baseBox.toString(up);
     up.literal("[");
     indexBox.toString(up);
@@ -147,7 +147,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   }
 
   @Override
-  public void accept(Visitor sw) {
+  public void accept(@Nonnull Visitor sw) {
     ((RefVisitor) sw).caseArrayRef(this);
   }
 
