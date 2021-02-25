@@ -31,9 +31,12 @@ public class Node {
   protected Node replacement;
   protected Set<Node> pointsToSet;
 
-  public Node() {}
+  public Node() {
+    replacement = this;
+  }
 
   public Node(Type type) {
+    replacement = this;
     this.type = type;
   }
 

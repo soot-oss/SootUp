@@ -28,6 +28,8 @@ import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
+import de.upb.swt.soot.callgraph.spark.solver.Propagator;
+import de.upb.swt.soot.callgraph.spark.solver.WorklistPropagator;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.views.View;
@@ -53,6 +55,8 @@ public class Spark implements PointsToAnalysis {
     // Simplify
 
     // Propagate
+    Propagator propagator = new WorklistPropagator(pag);
+    propagator.propagate();
   }
 
   private void buildPointerAssignmentGraph() {

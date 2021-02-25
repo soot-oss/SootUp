@@ -25,13 +25,14 @@ package de.upb.swt.soot.callgraph.spark.solver;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.core.model.Field;
-import java.util.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.*;
+
 /** Propagates points-to sets along pointer assignment graph using a worklist. */
 public class WorklistPropagator implements Propagator {
-  protected final Set<VariableNode> variableNodeWorkList = new TreeSet<VariableNode>();
+  protected final Set<VariableNode> variableNodeWorkList = new HashSet<>();
   private PointerAssignmentGraph pag;
 
   public WorklistPropagator(PointerAssignmentGraph pag) {
@@ -72,9 +73,8 @@ public class WorklistPropagator implements Propagator {
   }
 
   private void handleVariableNodeSources() {
-    Iterator<VariableNode> iter = variableNodeWorkList.iterator();
-    while (iter.hasNext()) {
-      VariableNode source = iter.next();
+    while (!variableNodeWorkList.isEmpty()) {
+      VariableNode source = variableNodeWorkList.iterator().next();
       variableNodeWorkList.remove(source);
       handleVariableNodeSource(source);
     }
@@ -108,6 +108,9 @@ public class WorklistPropagator implements Propagator {
 
   private void handleSimpleEdges(final VariableNode source) {
     Set<VariableNode> targets = pag.getSimpleEdges().get(source);
+    if(targets==null || targets.isEmpty()){
+      return;
+    }
     for (VariableNode target : targets) {
       if (target.getOrCreatePointsToSet().addAll(source.getPointsToSet())) {
         variableNodeWorkList.add(target);
@@ -117,6 +120,9 @@ public class WorklistPropagator implements Propagator {
 
   private void handleStoreEdges(final VariableNode source) {
     Set<FieldReferenceNode> targets = pag.getStoreEdges().get(source);
+    if(targets==null || targets.isEmpty()){
+      return;
+    }
     for (FieldReferenceNode target : targets) {
       final Field field = target.getField();
       Set<Node> basePointsToSet = target.getBase().getPointsToSet();
@@ -186,7 +192,7 @@ public class WorklistPropagator implements Propagator {
   private void handleStoreSources() {
     Map<VariableNode, Set<FieldReferenceNode>> storeEdges = pag.getStoreEdges();
     for (Map.Entry<VariableNode, Set<FieldReferenceNode>> entry : storeEdges.entrySet()) {
-      final VariableNode source = (VariableNode) entry.getKey();
+      final VariableNode source = entry.getKey();
       Set<FieldReferenceNode> targets = entry.getValue();
       for (FieldReferenceNode target : targets) {
         Set<Node> targetPointsToSet = target.getBase().getPointsToSet();
@@ -213,7 +219,7 @@ public class WorklistPropagator implements Propagator {
   private void handleFieldReferenceNode(
       FieldReferenceNode source, final Set<Pair<Set<Node>, Node>> edgesToPropagate) {
     final Set<VariableNode> loadTargets = pag.getLoadEdges().get(source);
-    if (loadTargets.isEmpty()) {
+    if (loadTargets == null || loadTargets.isEmpty()) {
       return;
     }
     final Field field = source.getField();
