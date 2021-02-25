@@ -137,7 +137,7 @@ public class MutableStmtGraph extends StmtGraph {
     return idx;
   }
 
-  private int getNodeIdx(@Nonnull Stmt node) {
+  protected int getNodeIdx(@Nonnull Stmt node) {
     Integer idx = stmtToIdx.get(node);
     if (idx == null) {
       throw new RuntimeException("'" + node + "' is currently not a Node in this StmtGraph.");
