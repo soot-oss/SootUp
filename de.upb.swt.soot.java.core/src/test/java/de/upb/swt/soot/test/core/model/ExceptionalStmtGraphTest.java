@@ -192,8 +192,7 @@ public class ExceptionalStmtGraphTest {
     assertEquals(expected.size(), actual.size());
     boolean condition = true;
     for (Stmt stmt : actual) {
-      int idx = actual.indexOf(stmt);
-      if (!(expected.get(idx) == stmt)) {
+      if (!expected.contains(stmt)) {
         condition = false;
         break;
       }
