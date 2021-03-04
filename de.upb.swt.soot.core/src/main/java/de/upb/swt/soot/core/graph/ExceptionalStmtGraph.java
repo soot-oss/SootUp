@@ -23,7 +23,6 @@ package de.upb.swt.soot.core.graph;
 
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -58,7 +57,7 @@ public class ExceptionalStmtGraph extends MutableStmtGraph {
 
       List<Trap> traps = oriStmtGraph.getTraps();
 
-      //Map: key: a stmt  | value: position num of corresponding stmt
+      // Map: key: a stmt  | value: position num of corresponding stmt
       Map<Stmt, Integer> stmtToPosInBody = getStmtToPosInBody(oriStmtGraph);
 
       // This map is using for collecting predecessors for each handlerStmts
@@ -67,7 +66,7 @@ public class ExceptionalStmtGraph extends MutableStmtGraph {
           .getTraps()
           .forEach(trap -> handlerStmtToPreds.put(trap.getHandlerStmt(), new ArrayList<>()));
 
-      for(Stmt stmt : oriStmtGraph.nodes()){
+      for (Stmt stmt : oriStmtGraph.nodes()) {
         List<Stmt> inferedSuccs = inferExceptionalSuccs(stmt, stmtToPosInBody, traps);
         Integer idx = stmtToIdx.get(stmt);
         exceptionalSuccs.set(idx, inferedSuccs);
@@ -113,13 +112,13 @@ public class ExceptionalStmtGraph extends MutableStmtGraph {
    * Build the map for stmt positions in a StmtGraph
    *
    * @param stmtGraph an instance of StmtGraph
-   * @return a map with key: stmt  value: the corresponding position number
+   * @return a map with key: stmt value: the corresponding position number
    */
-  private Map<Stmt, Integer> getStmtToPosInBody(StmtGraph stmtGraph){
+  private Map<Stmt, Integer> getStmtToPosInBody(StmtGraph stmtGraph) {
     Map<Stmt, Integer> stmtToPos = new HashMap<>();
     Integer pos = 0;
     Iterator<Stmt> it = stmtGraph.iterator();
-    while (it.hasNext()){
+    while (it.hasNext()) {
       Stmt stmt = it.next();
       stmtToPos.put(stmt, pos);
       pos++;
@@ -135,24 +134,24 @@ public class ExceptionalStmtGraph extends MutableStmtGraph {
    * @param posTable a map that maps each stmt to a position num in body
    * @return true if the range of trap1 includes the range of trap2 completely, else false
    */
-  private boolean isInclusive(Trap trap1, Trap trap2, Map<Stmt, Integer> posTable){
-    if(!trap1.getExceptionType().equals(trap2.getExceptionType())){
+  private boolean isInclusive(Trap trap1, Trap trap2, Map<Stmt, Integer> posTable) {
+    if (!trap1.getExceptionType().equals(trap2.getExceptionType())) {
       return false;
     }
     Integer posb1 = posTable.get(trap1.getBeginStmt());
     Integer pose1 = posTable.get(trap1.getEndStmt());
     Integer posb2 = posTable.get(trap2.getBeginStmt());
     Integer pose2 = posTable.get(trap2.getEndStmt());
-    if(posb1==null){
+    if (posb1 == null) {
       throw new RuntimeException(posb1.toString() + " is not contained by pos-table!");
-    }else if(pose1==null){
+    } else if (pose1 == null) {
       throw new RuntimeException(pose1.toString() + " is not contained by pos-table!");
-    }else if(posb2==null){
+    } else if (posb2 == null) {
       throw new RuntimeException(posb2.toString() + " is not contained by pos-table!");
-    }else if(pose2==null){
+    } else if (pose2 == null) {
       throw new RuntimeException(pose2.toString() + " is not contained by pos-table!");
-    }else{
-      if(posb1<posb2 && pose1>pose2){
+    } else {
+      if (posb1 < posb2 && pose1 > pose2) {
         return true;
       }
       return false;
@@ -162,56 +161,58 @@ public class ExceptionalStmtGraph extends MutableStmtGraph {
   /**
    * Using the information of body position for each stmt and the information of traps infer the
    * exceptional successors for a given stmt.
+   *
    * @param stmt a given stmt
-   * @param posTable  a map that maps each stmt to its corresponding position number in the body
-   * @param traps  a given list of traps
+   * @param posTable a map that maps each stmt to its corresponding position number in the body
+   * @param traps a given list of traps
    * @return
    */
-  private List<Stmt> inferExceptionalSuccs(Stmt stmt, Map<Stmt, Integer> posTable, List<Trap> traps){
+  private List<Stmt> inferExceptionalSuccs(
+      Stmt stmt, Map<Stmt, Integer> posTable, List<Trap> traps) {
     List<Stmt> exceptionalSuccs = new ArrayList<>();
     List<Trap> candidates = new ArrayList<>();
     int pos = posTable.get(stmt);
-    //1.step if the stmt in a trap range, then this trap's handlerStmt
-    //is a candidate for exceptional successors of the stmt
-    for(Trap trap : traps){
+    // 1.step if the stmt in a trap range, then this trap's handlerStmt
+    // is a candidate for exceptional successors of the stmt
+    for (Trap trap : traps) {
       int beginPos = posTable.get(trap.getBeginStmt());
       int endPos = posTable.get(trap.getEndStmt());
-      if(pos>=beginPos && pos < endPos){
+      if (pos >= beginPos && pos < endPos) {
         candidates.add(trap);
       }
     }
-    if(candidates.isEmpty()){
+    if (candidates.isEmpty()) {
       return Collections.emptyList();
     }
 
-    //2.step if a trap-candidate includes another trap-candidate completely,
+    // 2.step if a trap-candidate includes another trap-candidate completely,
     // then delete this trap-candidate
     List<Trap> removedTraps = new ArrayList<>();
-    for(Trap candidate : candidates){
-      for(Trap anotherCan : candidates){
-        if(isInclusive(candidate, anotherCan, posTable)){
+    for (Trap candidate : candidates) {
+      for (Trap anotherCan : candidates) {
+        if (isInclusive(candidate, anotherCan, posTable)) {
           removedTraps.add(candidate);
         }
       }
     }
-    if(!removedTraps.isEmpty()){
+    if (!removedTraps.isEmpty()) {
       candidates.retainAll(removedTraps);
     }
 
-    for(Trap trap : candidates){
-      if(!exceptionalSuccs.contains(trap.getHandlerStmt())){
+    for (Trap trap : candidates) {
+      if (!exceptionalSuccs.contains(trap.getHandlerStmt())) {
         exceptionalSuccs.add(trap.getHandlerStmt());
       }
     }
-    //3.step detect chained traps, if a handlerStmt(Succ) is trap's beginStmt,
-    //then handlerStmt of this trap is also a successor.
+    // 3.step detect chained traps, if a handlerStmt(Succ) is trap's beginStmt,
+    // then handlerStmt of this trap is also a successor.
     Deque<Stmt> queue = new ArrayDeque<>(exceptionalSuccs);
-    while (!queue.isEmpty()){
+    while (!queue.isEmpty()) {
       Stmt first = queue.removeFirst();
-      for(Trap t : traps){
-        if(first == t.getBeginStmt()){
+      for (Trap t : traps) {
+        if (first == t.getBeginStmt()) {
           Stmt handlerStmt = t.getHandlerStmt();
-          if(!exceptionalSuccs.contains(handlerStmt)){
+          if (!exceptionalSuccs.contains(handlerStmt)) {
             exceptionalSuccs.add(handlerStmt);
             queue.add(handlerStmt);
           }
