@@ -25,6 +25,7 @@ package de.upb.swt.soot.callgraph.spark;
 import com.google.common.collect.Sets;
 import de.upb.swt.soot.callgraph.CallGraph;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
@@ -32,7 +33,9 @@ import de.upb.swt.soot.callgraph.spark.solver.Propagator;
 import de.upb.swt.soot.callgraph.spark.solver.WorklistPropagator;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.views.View;
+import java.util.HashSet;
 import java.util.Set;
 
 public class Spark implements PointsToAnalysis {
@@ -74,12 +77,25 @@ public class Spark implements PointsToAnalysis {
     return node.getPointsToSet();
   }
 
-  //   /** Returns the set of objects pointed to by variable l. */
-  //  public PointsToSet reachingObjects(Local l) {
-  //    VarNode n = findLocalVarNode(l);
-  //    if (n == null) {
-  //      return EmptyPointsToSet.v();
-  //    }
-  //    return n.getP2Set();
-  //  }
+  public Set<Node> getPointsToSet(Local local, SootField field) {
+    Set<Node> pointsToSetOfLocal = getPointsToSet(local);
+    return getPointsToSet(pointsToSetOfLocal, field);
+  }
+
+  private Set<Node> getPointsToSet(Set<Node> set, final SootField field) {
+    if (field.isStatic()) {
+      throw new RuntimeException("The parameter f must be an *instance* field.");
+    }
+
+    // TODO: SPARK_OPTS field based vta
+    // TODO: propagator alias
+    final Set<Node> result = new HashSet<>();
+    for (Node node : set) {
+      Node allocDotField = ((AllocationNode) node).dot(field);
+      if (allocDotField != null) {
+        result.addAll(allocDotField.getPointsToSet());
+      }
+    }
+    return result;
+  }
 }

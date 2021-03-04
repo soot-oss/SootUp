@@ -25,10 +25,9 @@ package de.upb.swt.soot.callgraph.spark.solver;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.core.model.Field;
+import java.util.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.*;
 
 /** Propagates points-to sets along pointer assignment graph using a worklist. */
 public class WorklistPropagator implements Propagator {
@@ -108,7 +107,7 @@ public class WorklistPropagator implements Propagator {
 
   private void handleSimpleEdges(final VariableNode source) {
     Set<VariableNode> targets = pag.getSimpleEdges().get(source);
-    if(targets==null || targets.isEmpty()){
+    if (targets == null || targets.isEmpty()) {
       return;
     }
     for (VariableNode target : targets) {
@@ -120,7 +119,7 @@ public class WorklistPropagator implements Propagator {
 
   private void handleStoreEdges(final VariableNode source) {
     Set<FieldReferenceNode> targets = pag.getStoreEdges().get(source);
-    if(targets==null || targets.isEmpty()){
+    if (targets == null || targets.isEmpty()) {
       return;
     }
     for (FieldReferenceNode target : targets) {
