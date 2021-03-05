@@ -175,7 +175,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
           @Override
           public void caseThrowStmt(JThrowStmt throwStmt) {
             throwStmt.getOp().accept(MethodNodeFactory.this);
-            // TODO: Add out edge to intraPag
+            intraPag.addOutEdge(getNode(), pag.getNodeFactory().caseThrow());
           }
         });
   }

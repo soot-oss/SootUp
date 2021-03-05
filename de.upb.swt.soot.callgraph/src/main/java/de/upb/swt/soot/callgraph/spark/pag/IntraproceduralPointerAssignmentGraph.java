@@ -122,7 +122,7 @@ public class IntraproceduralPointerAssignmentGraph {
     private void addMiscEdges() {
         List<Pair<Node, Node>> edges = MiscEdgeHandler.getMiscEdge(method, pag.getNodeFactory(), nodeFactory);
         for (Pair<Node, Node> edge : edges) {
-            addInternalEdge(edge.getKey(), edge.getValue());
+            addInEdge(edge.getKey(), edge.getValue());
         }
     }
 
