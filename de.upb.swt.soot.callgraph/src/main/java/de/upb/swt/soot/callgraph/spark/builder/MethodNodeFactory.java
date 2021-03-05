@@ -142,7 +142,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
               staticFieldRef.getFieldSignature();
               // TODO: SPARK_OPT empties-as-allocs
             }
-            intraPag.addEdge(source, target);
+            intraPag.addInternalEdge(source, target);
           }
 
           @Override
@@ -152,7 +152,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
             }
             returnStmt.getOp().accept(MethodNodeFactory.this);
             Node returnNode = getNode();
-            intraPag.addEdge(returnNode, caseReturn());
+            intraPag.addInternalEdge(returnNode, caseReturn());
           }
 
           @Override
@@ -166,7 +166,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
             Node target = getNode();
             rightOp.accept(MethodNodeFactory.this);
             Node source = getNode();
-            intraPag.addEdge(source, target);
+            intraPag.addInternalEdge(source, target);
 
             // TODO: SPARK_OPT library_disabled
 
@@ -261,7 +261,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
     castExpr.getOp().accept(this);
     Node opNode = getNode();
     Node castNode = pag.getOrCreateLocalVariableNode(castPair, castExpr.getType(), method);
-    intraPag.addEdge(opNode, castNode);
+    intraPag.addInternalEdge(opNode, castNode);
     setResult(castNode);
   }
 
@@ -318,7 +318,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
             new ImmutablePair<Expr, Integer>(expr, type.getDimension()), type, method);
     VariableNode prevVariableNode =
         pag.getOrCreateLocalVariableNode(prevAllocationNode, prevAllocationNode.getType(), method);
-    intraPag.addEdge(prevAllocationNode, prevVariableNode);
+    intraPag.addInternalEdge(prevAllocationNode, prevVariableNode);
     setResult(prevAllocationNode);
     // TODO: do we need to handle elementType?
   }
@@ -391,7 +391,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
       NewInstanceNode newInstanceNode = pag.getOrCreateNewInstanceNode(expr, rtObject, method);
       expr.getBase().accept(this);
       Node srcNode = getNode();
-      intraPag.addEdge(srcNode, newInstanceNode);
+      intraPag.addInternalEdge(srcNode, newInstanceNode);
       setResult(newInstanceNode);
     } else {
       throw new RuntimeException("Unhandled case of JVirtualInvokeExpr");

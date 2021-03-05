@@ -30,8 +30,11 @@ import de.upb.swt.soot.core.model.SootMethod;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
+import java.util.ArrayDeque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class IntraproceduralPointerAssignmentGraph {
 
@@ -39,6 +42,10 @@ public class IntraproceduralPointerAssignmentGraph {
     private final List<Pair<Node, Node>> sourceTargetPairs; // a (target) = b (source)
     private final SootMethod method;
     private final MethodNodeFactory nodeFactory;
+    private final Queue<Pair<Node, Node>> internalEdges = new ArrayDeque<>(); // a (target) = b (source)
+    private final Queue<Pair<Node, Node>> inEdges = new ArrayDeque<>();
+    private final Queue<Pair<Node, Node>> outEdges = new ArrayDeque<>();
+    private boolean hasBeenAdded = false;
 
     public IntraproceduralPointerAssignmentGraph(PointerAssignmentGraph pag, SootMethod method) {
         this.pag = pag;
@@ -48,7 +55,7 @@ public class IntraproceduralPointerAssignmentGraph {
         build();
     }
 
-    public void build() {
+    private void build() {
         if (method.isConcrete()) {
             Body body = method.getBody();
             for (Stmt stmt : body.getStmts()) {
@@ -61,8 +68,17 @@ public class IntraproceduralPointerAssignmentGraph {
         addMiscEdges();
     }
 
-    public List<Pair<Node, Node>> getSourceTargetPairs() {
-        return sourceTargetPairs;
+    public void addToPAG(){
+        //TODO: context
+        if(hasBeenAdded){
+            return;
+        }
+        hasBeenAdded = true;
+
+        addToPAG(internalEdges);
+        addToPAG(inEdges);
+        addToPAG(outEdges);
+
     }
 
     public SootMethod getMethod() {
@@ -73,18 +89,40 @@ public class IntraproceduralPointerAssignmentGraph {
         return pag;
     }
 
-    public void addEdge(Node source, Node target) {
-        if (source == null) {
+    public void addInternalEdge(@Nonnull Node source, @Nonnull Node target) {
+       addEdge(internalEdges, source, target);
+    }
+
+    public void addInEdge(@Nonnull Node source, @Nonnull Node target){
+        addEdge(inEdges, source, target);
+    }
+
+    public void addOutEdge(@Nonnull Node source, @Nonnull Node target){
+        addEdge(outEdges, source, target);
+    }
+
+    private void addEdge(Queue<Pair<Node, Node>> edgeQueue, Node source, Node target){
+        if(source==null){
             return;
         }
-        Pair<Node, Node> sourceTargetPair = new ImmutablePair<>(source, target);
-        sourceTargetPairs.add(sourceTargetPair);
+        edgeQueue.add(new ImmutablePair<>(source, target));
+        if(hasBeenAdded){
+            pag.addEdge(source, target);
+        }
+    }
+
+    private void addToPAG(Queue<Pair<Node, Node>> edgeQueue){
+        for (Pair<Node, Node> edge : edgeQueue) {
+            Node source = edge.getKey();
+            Node target = edge.getValue();
+            pag.addEdge(source, target);
+        }
     }
 
     private void addMiscEdges() {
         List<Pair<Node, Node>> edges = MiscEdgeHandler.getMiscEdge(method, pag.getNodeFactory(), nodeFactory);
         for (Pair<Node, Node> edge : edges) {
-            addEdge(edge.getKey(), edge.getValue());
+            addInternalEdge(edge.getKey(), edge.getValue());
         }
     }
 

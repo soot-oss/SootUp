@@ -94,7 +94,7 @@ public class PointerAssignmentGraph {
         if (!method.isAbstract() && callGraph.containsMethod(method.getSignature())) {
           IntraproceduralPointerAssignmentGraph intraPAG =
               new IntraproceduralPointerAssignmentGraph(this, method);
-          addIntraproceduralPointerAssignmentGraph(intraPAG);
+          intraPAG.addToPAG();
         }
       }
     }
@@ -106,40 +106,8 @@ public class PointerAssignmentGraph {
 
   public void addEdge(Node source, Node target) {
     internalEdges.addEdge(source, target);
-    //    SparkEdge edge = edgeFactory.getEdge(source, target);
-    //    SparkVertex src = new SparkVertex(source);
-    //    SparkVertex trg = new SparkVertex(target);
-    //    graph.addVertex(src);
-    //    graph.addVertex(trg);
-    //    graph.addEdge(src, trg, edge);
-    // log.info("Added {} edge from:{} to:{}", edge.getEdgeType(), source, target);
   }
 
-  private void addIntraproceduralPointerAssignmentGraph(
-      IntraproceduralPointerAssignmentGraph intraPAG) {
-    List<Pair<Node, Node>> intraPAGSourceTargetPairs = intraPAG.getSourceTargetPairs();
-    // log.info("Added method:{}", intraPAG.getMethod());
-    for (Pair<Node, Node> sourceTargetPair : intraPAGSourceTargetPairs) {
-      addEdge(sourceTargetPair.getKey(), sourceTargetPair.getValue());
-    }
-  }
-
-  //  public void printGraph() {
-  //    JGraphXAdapter<SparkVertex, SparkEdge> graphAdapter =
-  //            new JGraphXAdapter<SparkVertex, SparkEdge>(graph);
-  //    mxIGraphLayout layout = new mxHierarchicalLayout(graphAdapter);
-  //    layout.execute(graphAdapter.getDefaultParent());
-  //
-  //    BufferedImage image =
-  //            mxCellRenderer.createBufferedImage(graphAdapter, null, 2, Color.WHITE, true, null);
-  //    File imgFile = new File("src/test/resources/graph.png");
-  //    try {
-  //      imgFile.createNewFile();
-  //      ImageIO.write(image, "PNG", imgFile);
-  //    } catch (IOException e) {
-  //      e.printStackTrace();
-  //    }
-  //  }
 
   public View<JavaSootClass> getView() {
     return (View<JavaSootClass>) view;
@@ -320,29 +288,4 @@ public class PointerAssignmentGraph {
     return internalEdges.loadEdges.get(key);
   }
 
-  /*
-    public Set<VariableNode> getSimpleSources(){
-      return internalEdges.simpleEdges.keySet();
-    }
-
-    public Set<AllocationNode> getAllocationSources(){
-      return internalEdges.allocationEdges.keySet();
-    }
-
-    public Set<VariableNode> getStoreSources(){
-      return internalEdges.storeEdges.keySet();
-    }
-
-    public Set<FieldReferenceNode> getLoadSources(){
-      return internalEdges.loadEdges.keySet();
-    }
-
-    public Set<VariableNode> getNewInstanceSources(){
-      return internalEdges.newInstanceEdges.keySet();
-    }
-
-    public Set<NewInstanceNode> getAssignInstanceSources(){
-      return internalEdges.assignInstanceEdges.keySet();
-    }
-  */
 }
