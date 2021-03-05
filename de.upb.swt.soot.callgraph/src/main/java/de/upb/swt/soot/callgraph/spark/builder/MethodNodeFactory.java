@@ -72,32 +72,14 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
     setMethod(intraPag.getMethod());
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    rtClass =
-        new JavaClassType(
-            NodeConstants.CLASS, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
-    rtObject =
-        new JavaClassType(
-            NodeConstants.OBJECT, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
-    rtStringType =
-        new JavaClassType(
-            NodeConstants.STRING, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
-    rtHashSet =
-        new JavaClassType(
-            NodeConstants.HASH_SET, identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
-    rtHashMap =
-        new JavaClassType(
-            NodeConstants.HASH_MAP, identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
-    rtLinkedList =
-        new JavaClassType(
-            NodeConstants.LINKED_LIST, identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
-    rtHashtableEmptyIterator =
-        new JavaClassType(
-            NodeConstants.HASH_TABLE_EMPTY_ITERATOR,
-            identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
-    rtHashtableEmptyEnumerator =
-        new JavaClassType(
-            NodeConstants.HASH_TABLE_EMPTY_NUMERATOR,
-            identifierFactory.getPackageName(NodeConstants.JAVA_UTIL));
+    rtClass = identifierFactory.getClassType(NodeConstants.CLASS);
+    rtObject = identifierFactory.getClassType(NodeConstants.OBJECT);
+    rtStringType = identifierFactory.getClassType(NodeConstants.STRING);
+    rtHashSet = identifierFactory.getClassType(NodeConstants.HASH_SET);
+    rtHashMap = identifierFactory.getClassType(NodeConstants.HASH_MAP);
+    rtLinkedList = identifierFactory.getClassType(NodeConstants.LINKED_LIST);
+    rtHashtableEmptyIterator = identifierFactory.getClassType(NodeConstants.HASH_TABLE_EMPTY_ITERATOR);
+    rtHashtableEmptyEnumerator = identifierFactory.getClassType(NodeConstants.HASH_TABLE_EMPTY_NUMERATOR);
   }
 
   /** Sets the method for which a graph is currently being built. */

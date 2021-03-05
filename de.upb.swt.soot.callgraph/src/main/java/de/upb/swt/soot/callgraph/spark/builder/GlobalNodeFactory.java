@@ -49,28 +49,13 @@ public class GlobalNodeFactory {
     this.pag = pag;
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    rtObject =
-        new JavaClassType(
-            NodeConstants.OBJECT, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
-    this.rtClassLoader =
-        new JavaClassType(
-            NodeConstants.CLASS_LOADER, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
-    this.rtString =
-        new JavaClassType(
-            NodeConstants.STRING, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
-    this.rtThread =
-        new JavaClassType(
-            NodeConstants.THREAD, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
-    this.rtThreadGroup =
-        new JavaClassType(
-            NodeConstants.THREAD_GROUP, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
-    this.rtThrowable =
-        new JavaClassType(
-            NodeConstants.THROWABLE, identifierFactory.getPackageName(NodeConstants.JAVA_LANG));
-    this.rtPrivilegedActionException =
-        new JavaClassType(
-            NodeConstants.PRIVILEGED_ACTION_EXCEPTION,
-            identifierFactory.getPackageName(NodeConstants.JAVA_SECURITY));
+    rtObject = identifierFactory.getClassType(NodeConstants.OBJECT);
+    rtClassLoader = identifierFactory.getClassType(NodeConstants.CLASS_LOADER);
+    rtString = identifierFactory.getClassType(NodeConstants.STRING);
+    rtThread = identifierFactory.getClassType(NodeConstants.THREAD);
+    rtThreadGroup = identifierFactory.getClassType(NodeConstants.THREAD_GROUP);
+    rtThrowable = identifierFactory.getClassType(NodeConstants.THROWABLE);
+    rtPrivilegedActionException = identifierFactory.getClassType(NodeConstants.PRIVILEGED_ACTION_EXCEPTION);
   }
 
   public Node caseDefaultClassLoader() {
