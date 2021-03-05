@@ -130,7 +130,7 @@ public class GlobalNodeFactory {
     AllocationNode stringNode =
         pag.getOrCreateAllocationNode(PointsToAnalysis.STRING_NODE, rtString, null);
     VariableNode stringNodeLocal =
-        pag.getOrCreateGlobalVariableNode(PointsToAnalysis.STRING_ARRAY_NODE_LOCAL, rtString);
+        pag.getOrCreateGlobalVariableNode(PointsToAnalysis.STRING_NODE_LOCAL, rtString);
     pag.addEdge(argv, sanl);
     pag.addEdge(stringNode, stringNodeLocal);
     pag.addEdge(stringNodeLocal, pag.getOrCreateFieldReferenceNode(sanl, new ArrayElement()));
