@@ -22,6 +22,7 @@ package de.upb.swt.soot.callgraph.spark.pag.nodes;
  * #L%
  */
 
+import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
@@ -31,8 +32,8 @@ import de.upb.swt.soot.core.types.Type;
  * with any particular method invocation.
  */
 public class GlobalVariableNode extends VariableNode {
-  public GlobalVariableNode(Object variable, Type type) {
-    super(variable, type);
+  public GlobalVariableNode(PointerAssignmentGraph pag, Object variable, Type type) {
+    super(pag, variable, type);
   }
 
   public String toString() {

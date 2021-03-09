@@ -21,6 +21,7 @@ package de.upb.swt.soot.callgraph.spark.pag.nodes;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.Type;
 
@@ -31,8 +32,8 @@ import de.upb.swt.soot.core.types.Type;
 public class LocalVariableNode extends VariableNode {
   private SootMethod method;
 
-  public LocalVariableNode(Object variable, Type type, SootMethod method) {
-    super(variable, type);
+  public LocalVariableNode(PointerAssignmentGraph pag, Object variable, Type type, SootMethod method) {
+    super(pag, variable, type);
     this.method = method;
   }
 

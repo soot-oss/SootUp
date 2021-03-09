@@ -23,21 +23,25 @@ package de.upb.swt.soot.callgraph.spark.pag.nodes;
  */
 
 import com.google.common.collect.Sets;
+import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.core.types.Type;
 import java.util.Set;
 
 public class Node {
   protected Type type;
   protected Node replacement;
+  protected PointerAssignmentGraph pag;
   protected Set<Node> pointsToSet;
 
   public Node() {
     replacement = this;
   }
 
-  public Node(Type type) {
+  public Node(PointerAssignmentGraph pag, Type type) {
+    // TODO: type manager
     replacement = this;
     this.type = type;
+    this.pag = pag;
   }
 
   public Type getType() {

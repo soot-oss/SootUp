@@ -22,7 +22,45 @@ package de.upb.swt.soot.callgraph.spark.solver;
  * #L%
  */
 
+import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 public class TopologicalSorter {
 
-  public void sort() {}
+  private final PointerAssignmentGraph pag;
+  private boolean ignoreTypes;
+  private int nextFinishNumber = 1;
+  private Set<VariableNode> visited;
+
+  public TopologicalSorter(PointerAssignmentGraph pag, boolean ignoreTypes){
+    this.pag = pag;
+    this.ignoreTypes = ignoreTypes;
+    this.visited = new HashSet<>();
+  }
+
+  public void sort() {
+    for(VariableNode node: pag.getVariableNodes()){
+      dfsVisit(node);
+    }
+  }
+
+  private void dfsVisit(VariableNode node){
+    if(!visited.contains(node)){
+      visited.add(node);
+      Set<VariableNode> successors = pag.getSimpleEdges().get(node);
+      if(successors!=null) {
+        for (VariableNode element : successors) {
+          if (ignoreTypes || true /*TODO: type manager*/) {
+            dfsVisit(element);
+          }
+        }
+      }
+      node.setFinishingNumber(nextFinishNumber++);
+    }
+  }
+
 }

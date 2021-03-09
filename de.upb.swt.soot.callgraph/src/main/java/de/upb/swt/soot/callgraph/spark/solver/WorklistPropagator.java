@@ -31,7 +31,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 /** Propagates points-to sets along pointer assignment graph using a worklist. */
 public class WorklistPropagator implements Propagator {
-  protected final Set<VariableNode> variableNodeWorkList = new HashSet<>();
+  protected final Set<VariableNode> variableNodeWorkList = new TreeSet<>();
   private PointerAssignmentGraph pag;
 
   public WorklistPropagator(PointerAssignmentGraph pag) {
@@ -40,6 +40,8 @@ public class WorklistPropagator implements Propagator {
 
   @Override
   public void propagate() {
+    new TopologicalSorter(pag, false).sort();
+
     // handle Allocation Nodes
     handleAllocationNodeSources();
 
@@ -155,7 +157,7 @@ public class WorklistPropagator implements Propagator {
       }
 
       final Set<VariableNode> loadTargets = pag.loadLookup(fieldRef);
-      if (!loadTargets.isEmpty()) {
+      if (loadTargets!=null && !loadTargets.isEmpty()) {
         Set<Node> sourcePointsToSet = source.getPointsToSet();
         for (Node node : sourcePointsToSet) {
           AllocationDotField allocationDotField =

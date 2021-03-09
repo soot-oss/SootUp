@@ -80,6 +80,8 @@ public class PointerAssignmentGraph {
   private final SparkEdgeFactory edgeFactory = new SparkEdgeFactory();
   private final List<VariableNode> dereferences = new ArrayList<>();
   private InternalEdges internalEdges = new InternalEdges();
+  private final List<VariableNode> variableNodes = new ArrayList<>();
+  private int maxFinishingNumber = 0;
 
   public PointerAssignmentGraph(View<? extends SootClass> view, CallGraph callGraph) {
     this.view = view;
@@ -121,7 +123,7 @@ public class PointerAssignmentGraph {
       // TODO: numbering?
       LocalVariableNode localVariableNode = localToNodeMap.get(local);
       if (localVariableNode == null) {
-        localVariableNode = new LocalVariableNode(value, type, method);
+        localVariableNode = new LocalVariableNode(this, value, type, method);
         localToNodeMap.put(local, localVariableNode);
         // TODO: addNodeTag()
       } else if (!(localVariableNode.getType().equals(type))) {
@@ -134,7 +136,7 @@ public class PointerAssignmentGraph {
     }
     LocalVariableNode localVariableNode = valToLocalVariableNode.get(value);
     if (localVariableNode == null) {
-      localVariableNode = new LocalVariableNode(value, type, method);
+      localVariableNode = new LocalVariableNode(this, value, type, method);
       valToLocalVariableNode.put(value, localVariableNode);
       // TODO: addNodeTag()
     } else if (!(localVariableNode.getType().equals(type))) {
@@ -205,7 +207,7 @@ public class PointerAssignmentGraph {
 
     GlobalVariableNode node = valToGlobalVariableNode.get(value);
     if (node == null) {
-      node = new GlobalVariableNode(value, type);
+      node = new GlobalVariableNode(this, value, type);
       addNodeTag(node, null);
     } else if (!node.getType().equals(type)) {
       throw new RuntimeException(
@@ -241,7 +243,7 @@ public class PointerAssignmentGraph {
   }
 
   private NewInstanceNode createNodeForNewInstance(Value value, Type type, SootMethod method) {
-    NewInstanceNode node = new NewInstanceNode(type, value);
+    NewInstanceNode node = new NewInstanceNode(this, type, value);
     addNodeTag(node, method);
     return node;
   }
@@ -288,4 +290,15 @@ public class PointerAssignmentGraph {
     return internalEdges.loadEdges.get(key);
   }
 
+  public List<VariableNode> getVariableNodes(){
+    return variableNodes;
+  }
+
+  public int getMaxFinishingNumber() {
+    return maxFinishingNumber;
+  }
+
+  public void setMaxFinishingNumber(int maxFinishingNumber) {
+    this.maxFinishingNumber = maxFinishingNumber;
+  }
 }

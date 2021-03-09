@@ -22,6 +22,7 @@ package de.upb.swt.soot.callgraph.spark.pag.nodes;
  * #L%
  */
 
+import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.types.Type;
 
@@ -29,8 +30,8 @@ import de.upb.swt.soot.core.types.Type;
 public class NewInstanceNode extends Node {
   private final Value value;
 
-  public NewInstanceNode(Type type, Value value) {
-    super(type);
+  public NewInstanceNode(PointerAssignmentGraph pag, Type type, Value value) {
+    super(pag, type);
     this.value = value;
   }
 
