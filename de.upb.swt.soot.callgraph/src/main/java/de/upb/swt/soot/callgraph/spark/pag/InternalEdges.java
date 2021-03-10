@@ -54,10 +54,8 @@ public class InternalEdges {
   // TODO: Inv edges
 
   public void addEdge(Node source, Node target) {
-    // TODO: getReplacements
-    if (source == null || target == null) {
-      throw new RuntimeException("Cannot get edge for null nodes");
-    }
+    source = source.getReplacement();
+    target = target.getReplacement();
     if (source instanceof VariableNode) {
       if (target instanceof VariableNode) {
         addSimpleEdge((VariableNode) source, (VariableNode) target);
