@@ -25,9 +25,16 @@ import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-/** @author Zun Wang */
+/**
+ * @author Zun Wang ExceptionalStmtGraph is used to look up exceptional predecessors and successors
+ *     for each stmt. Exceptional Successor of a stmt: If a stmt is in a trap, namely, stmt is
+ *     between the trap's beginStmt(inclusive) and this trap's endStmt(exclusive), then the trap's
+ *     handlerStmt is the exceptional successor of this stmt. Exceptional Predecessors of a
+ *     stmt(handlerStmt): If this handlerStmt is another stmt's successor, then the another stmt is
+ *     predecessor of this hanlderStmt. Exceptional DestinationTrap of a stmt: if the stmt is in a
+ *     trap, then this trap is the destination trap of the stmt.
+ */
 public class ExceptionalStmtGraph extends MutableStmtGraph {
 
   @Nonnull private ArrayList<List<Stmt>> exceptionalPreds = new ArrayList<>();
@@ -66,6 +73,7 @@ public class ExceptionalStmtGraph extends MutableStmtGraph {
           .getTraps()
           .forEach(trap -> handlerStmtToPreds.put(trap.getHandlerStmt(), new ArrayList<>()));
 
+      // set exceptional successors for each stmt
       for (Stmt stmt : oriStmtGraph.nodes()) {
         List<Stmt> inferedSuccs = inferExceptionalSuccs(stmt, stmtToPosInBody, traps);
         Integer idx = stmtToIdx.get(stmt);
@@ -77,6 +85,13 @@ public class ExceptionalStmtGraph extends MutableStmtGraph {
       for (Stmt handlerStmt : handlerStmtToPreds.keySet()) {
         Integer index = stmtToIdx.get(handlerStmt);
         exceptionalPreds.set(index, handlerStmtToPreds.get(handlerStmt));
+      }
+
+      // set exceptional destination-traps for each stmt
+      for (Stmt stmt : oriStmtGraph.nodes()) {
+        List<Trap> inferedDests = inferExceptionalDestinations(stmt, stmtToPosInBody, traps);
+        Integer idx = stmtToIdx.get(stmt);
+        exceptionalDestinationTraps.set(idx, inferedDests);
       }
     }
   }
@@ -101,7 +116,7 @@ public class ExceptionalStmtGraph extends MutableStmtGraph {
     return Collections.unmodifiableList(stmts);
   }
 
-  @Nullable
+  @Nonnull
   public List<Trap> getDestTrap(@Nonnull Stmt stmt) {
     Integer idx = getNodeIdx(stmt);
     List<Trap> traps = exceptionalDestinationTraps.get(idx);
@@ -160,6 +175,47 @@ public class ExceptionalStmtGraph extends MutableStmtGraph {
 
   /**
    * Using the information of body position for each stmt and the information of traps infer the
+   * exceptional destinations for a given stmt.
+   *
+   * @param stmt a given stmt
+   * @param posTable a map that maps each stmt to its corresponding position number in the body
+   * @param traps a given list of traps
+   * @return
+   */
+  private List<Trap> inferExceptionalDestinations(
+      Stmt stmt, Map<Stmt, Integer> posTable, List<Trap> traps) {
+    List<Trap> destinations = new ArrayList<>();
+    int pos = posTable.get(stmt);
+    // 1.step if the stmt in a trap range, then this trap is a candidate for exceptional destination
+    // of the stmt
+    for (Trap trap : traps) {
+      int beginPos = posTable.get(trap.getBeginStmt());
+      int endPos = posTable.get(trap.getEndStmt());
+      if (pos >= beginPos && pos < endPos) {
+        destinations.add(trap);
+      }
+    }
+    if (destinations.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    // 2.step if a trap includes another trap completely, then delete this trap-candidate
+    List<Trap> removedTraps = new ArrayList<>();
+    for (Trap dest : destinations) {
+      for (Trap anotherDest : destinations) {
+        if (isInclusive(dest, anotherDest, posTable)) {
+          removedTraps.add(dest);
+        }
+      }
+    }
+    if (!removedTraps.isEmpty()) {
+      destinations.removeAll(removedTraps);
+    }
+    return destinations;
+  }
+
+  /**
+   * Using the information of body position for each stmt and the information of traps infer the
    * exceptional successors for a given stmt.
    *
    * @param stmt a given stmt
@@ -170,34 +226,13 @@ public class ExceptionalStmtGraph extends MutableStmtGraph {
   private List<Stmt> inferExceptionalSuccs(
       Stmt stmt, Map<Stmt, Integer> posTable, List<Trap> traps) {
     List<Stmt> exceptionalSuccs = new ArrayList<>();
-    List<Trap> candidates = new ArrayList<>();
-    int pos = posTable.get(stmt);
+
     // 1.step if the stmt in a trap range, then this trap's handlerStmt
     // is a candidate for exceptional successors of the stmt
-    for (Trap trap : traps) {
-      int beginPos = posTable.get(trap.getBeginStmt());
-      int endPos = posTable.get(trap.getEndStmt());
-      if (pos >= beginPos && pos < endPos) {
-        candidates.add(trap);
-      }
-    }
-    if (candidates.isEmpty()) {
-      return Collections.emptyList();
-    }
-
     // 2.step if a trap-candidate includes another trap-candidate completely,
     // then delete this trap-candidate
-    List<Trap> removedTraps = new ArrayList<>();
-    for (Trap candidate : candidates) {
-      for (Trap anotherCan : candidates) {
-        if (isInclusive(candidate, anotherCan, posTable)) {
-          removedTraps.add(candidate);
-        }
-      }
-    }
-    if (!removedTraps.isEmpty()) {
-      candidates.retainAll(removedTraps);
-    }
+    // the both steps are done in the method <code>inferExceptionalDestinations</code>
+    List<Trap> candidates = inferExceptionalDestinations(stmt, posTable, traps);
 
     for (Trap trap : candidates) {
       if (!exceptionalSuccs.contains(trap.getHandlerStmt())) {
@@ -219,7 +254,6 @@ public class ExceptionalStmtGraph extends MutableStmtGraph {
         }
       }
     }
-
     return exceptionalSuccs;
   }
 }
