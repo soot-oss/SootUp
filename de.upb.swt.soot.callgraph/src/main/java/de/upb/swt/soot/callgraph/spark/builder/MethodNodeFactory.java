@@ -158,7 +158,10 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
           @Override
           public void caseIdentityStmt(JIdentityStmt identityStmt) {
             if (!(identityStmt.getLeftOp().getType() instanceof ReferenceType)) {
-              return;
+              // TODO: why is Object <init> l0 unknown?
+              if(!identityStmt.getRightOp().getType().toString().equals("java.lang.Object")){
+                return;
+              }
             }
             Value leftOp = identityStmt.getLeftOp();
             Value rightOp = identityStmt.getRightOp();
