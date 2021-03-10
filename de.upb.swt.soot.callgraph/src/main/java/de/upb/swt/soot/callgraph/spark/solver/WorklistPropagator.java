@@ -130,7 +130,7 @@ public class WorklistPropagator implements Propagator {
       for (Node node : basePointsToSet) {
         AllocationDotField allocDotField =
             pag.getOrCreateAllocationDotField((AllocationNode) node, field);
-        allocDotField.getPointsToSet().addAll(source.getPointsToSet());
+        allocDotField.getOrCreatePointsToSet().addAll(source.getPointsToSet());
       }
     }
   }
@@ -179,12 +179,12 @@ public class WorklistPropagator implements Propagator {
     for (Pair<Node, Node> pair : storesToPropagate) {
       VariableNode storeSource = (VariableNode) pair.getKey();
       AllocationDotField allocationDotField = (AllocationDotField) pair.getValue();
-      allocationDotField.getPointsToSet().addAll(storeSource.getPointsToSet());
+      allocationDotField.getOrCreatePointsToSet().addAll(storeSource.getPointsToSet());
     }
     for (Pair<Node, Node> pair : loadsToPropagate) {
       AllocationDotField allocationDotField = (AllocationDotField) pair.getKey();
       VariableNode loadTarget = (VariableNode) pair.getValue();
-      if (loadTarget.getPointsToSet().addAll(allocationDotField.getPointsToSet())) {
+      if (loadTarget.getOrCreatePointsToSet().addAll(allocationDotField.getPointsToSet())) {
         variableNodeWorkList.add(loadTarget);
       }
     }
@@ -196,12 +196,12 @@ public class WorklistPropagator implements Propagator {
       final VariableNode source = entry.getKey();
       Set<FieldReferenceNode> targets = entry.getValue();
       for (FieldReferenceNode target : targets) {
-        Set<Node> targetPointsToSet = target.getBase().getPointsToSet();
+        Set<Node> targetPointsToSet = target.getBase().getOrCreatePointsToSet();
         for (Node node : targetPointsToSet) {
           AllocationDotField allocationDotField =
               pag.getOrCreateAllocationDotField((AllocationNode) node, target.getField());
           // TODO: SPARK_OPTS ofcg
-          allocationDotField.getPointsToSet().addAll(source.getPointsToSet());
+          allocationDotField.getOrCreatePointsToSet().addAll(source.getPointsToSet());
         }
       }
     }
@@ -246,7 +246,7 @@ public class WorklistPropagator implements Propagator {
     for (Pair<Set<Node>, Node> pair : edgesToPropagate) {
       Set<Node> pointsToSet = pair.getKey();
       VariableNode loadTarget = (VariableNode) pair.getValue();
-      if (loadTarget.getPointsToSet().addAll(pointsToSet)) {
+      if (loadTarget.getOrCreatePointsToSet().addAll(pointsToSet)) {
         variableNodeWorkList.add(loadTarget);
       }
       nodesToFlush.add(pointsToSet);
