@@ -78,8 +78,10 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
     rtHashSet = identifierFactory.getClassType(NodeConstants.HASH_SET);
     rtHashMap = identifierFactory.getClassType(NodeConstants.HASH_MAP);
     rtLinkedList = identifierFactory.getClassType(NodeConstants.LINKED_LIST);
-    rtHashtableEmptyIterator = identifierFactory.getClassType(NodeConstants.HASH_TABLE_EMPTY_ITERATOR);
-    rtHashtableEmptyEnumerator = identifierFactory.getClassType(NodeConstants.HASH_TABLE_EMPTY_NUMERATOR);
+    rtHashtableEmptyIterator =
+        identifierFactory.getClassType(NodeConstants.HASH_TABLE_EMPTY_ITERATOR);
+    rtHashtableEmptyEnumerator =
+        identifierFactory.getClassType(NodeConstants.HASH_TABLE_EMPTY_NUMERATOR);
   }
 
   /** Sets the method for which a graph is currently being built. */
@@ -159,7 +161,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
           public void caseIdentityStmt(JIdentityStmt identityStmt) {
             if (!(identityStmt.getLeftOp().getType() instanceof ReferenceType)) {
               // TODO: why is Object <init> l0 unknown?
-              if(!identityStmt.getRightOp().getType().toString().equals("java.lang.Object")){
+              if (!identityStmt.getRightOp().getType().toString().equals("java.lang.Object")) {
                 return;
               }
             }

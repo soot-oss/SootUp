@@ -23,6 +23,8 @@ package de.upb.swt.soot.callgraph;
  */
 
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.Set;
 import javax.annotation.Nonnull;
 
@@ -30,6 +32,9 @@ public interface CallGraph {
 
   @Nonnull
   Set<MethodSignature> getMethodSignatures();
+
+  @Nonnull
+  Set<Pair<MethodSignature, MethodSignature>> getEdges();
 
   @Nonnull
   Set<MethodSignature> callsFrom(@Nonnull MethodSignature sourceMethod);

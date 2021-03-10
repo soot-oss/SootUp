@@ -37,6 +37,7 @@ public final class NodeConstants {
   public static final String THREAD = "java.lang.Thread";
   public static final String THREAD_GROUP = "java.lang.ThreadGroup";
   public static final String THROWABLE = "java.lang.Throwable";
-  public static final String PRIVILEGED_ACTION_EXCEPTION = "java.security.PrivilegedActionException";
+  public static final String PRIVILEGED_ACTION_EXCEPTION =
+      "java.security.PrivilegedActionException";
   public static final String FINALIZER = "java.lang.ref.Finalizer";
 }

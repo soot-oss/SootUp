@@ -157,7 +157,7 @@ public class WorklistPropagator implements Propagator {
       }
 
       final Set<VariableNode> loadTargets = pag.loadLookup(fieldRef);
-      if (loadTargets!=null && !loadTargets.isEmpty()) {
+      if (loadTargets != null && !loadTargets.isEmpty()) {
         Set<Node> sourcePointsToSet = source.getPointsToSet();
         for (Node node : sourcePointsToSet) {
           AllocationDotField allocationDotField =

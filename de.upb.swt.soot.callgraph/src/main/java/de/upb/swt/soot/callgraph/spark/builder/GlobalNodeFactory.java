@@ -31,7 +31,6 @@ import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.types.JavaClassType;
 
 public class GlobalNodeFactory {
 
@@ -55,7 +54,8 @@ public class GlobalNodeFactory {
     rtThread = identifierFactory.getClassType(NodeConstants.THREAD);
     rtThreadGroup = identifierFactory.getClassType(NodeConstants.THREAD_GROUP);
     rtThrowable = identifierFactory.getClassType(NodeConstants.THROWABLE);
-    rtPrivilegedActionException = identifierFactory.getClassType(NodeConstants.PRIVILEGED_ACTION_EXCEPTION);
+    rtPrivilegedActionException =
+        identifierFactory.getClassType(NodeConstants.PRIVILEGED_ACTION_EXCEPTION);
   }
 
   public Node caseDefaultClassLoader() {

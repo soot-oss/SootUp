@@ -25,6 +25,7 @@ package de.upb.swt.soot.callgraph.spark.pag;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import de.upb.swt.soot.callgraph.CallGraph;
+import de.upb.swt.soot.callgraph.GraphBasedCallGraph;
 import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -40,7 +41,6 @@ import de.upb.swt.soot.java.core.JavaSootClass;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,6 +100,14 @@ public class PointerAssignmentGraph {
         }
       }
     }
+
+    handleCallEdges();
+
+  }
+
+  private void handleCallEdges() {
+    GraphBasedCallGraph graphBasedCallGraph = (GraphBasedCallGraph ) callGraph;
+    graphBasedCallGraph.getEdges();
   }
 
   //  public Graph<SparkVertex, SparkEdge> getGraph() {
@@ -109,7 +117,6 @@ public class PointerAssignmentGraph {
   public void addEdge(Node source, Node target) {
     internalEdges.addEdge(source, target);
   }
-
 
   public View<JavaSootClass> getView() {
     return (View<JavaSootClass>) view;
@@ -290,7 +297,7 @@ public class PointerAssignmentGraph {
     return internalEdges.loadEdges.get(key);
   }
 
-  public List<VariableNode> getVariableNodes(){
+  public List<VariableNode> getVariableNodes() {
     return variableNodes;
   }
 

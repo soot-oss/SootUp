@@ -32,7 +32,8 @@ import de.upb.swt.soot.core.types.Type;
 public class LocalVariableNode extends VariableNode {
   private SootMethod method;
 
-  public LocalVariableNode(PointerAssignmentGraph pag, Object variable, Type type, SootMethod method) {
+  public LocalVariableNode(
+      PointerAssignmentGraph pag, Object variable, Type type, SootMethod method) {
     super(pag, variable, type);
     this.method = method;
   }

@@ -22,14 +22,19 @@ package de.upb.swt.soot.callgraph;
  * #L%
  */
 
+import afu.org.checkerframework.checker.igj.qual.I;
 import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.graph.DefaultDirectedGraph;
 
 public final class GraphBasedCallGraph implements MutableCallGraph {
@@ -81,6 +86,19 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   @Override
   public Set<MethodSignature> getMethodSignatures() {
     return signatureToVertex.keySet();
+  }
+
+  @Nonnull
+  @Override
+  public Set<Pair<MethodSignature, MethodSignature>> getEdges(){
+    Set<Pair<MethodSignature, MethodSignature>> edges = new HashSet<>();
+    for (Edge edge : graph.edgeSet()) {
+      Vertex edgeSource = graph.getEdgeSource(edge);
+      Vertex edgeTarget = graph.getEdgeTarget(edge);
+      Pair<MethodSignature, MethodSignature> pair = new ImmutablePair<>(edgeSource.methodSignature, edgeTarget.methodSignature);
+      edges.add(pair);
+    }
+    return edges;
   }
 
   @Nonnull
