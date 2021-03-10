@@ -30,7 +30,8 @@ public class ExceptionalStmtGraphTest {
   JavaClassType classType = factory.getClassType("Test");
   IdentityRef identityRef = JavaJimple.newThisRef(classType);
   JavaClassType refType = factory.getClassType("ref");
-  ClassType exception = factory.getClassType("Exception");
+  ClassType exception1 = factory.getClassType("Exception1");
+  ClassType exception2 = factory.getClassType("Exception2");
   IdentityRef caughtExceptionRef = javaJimple.newCaughtExceptionRef();
 
   // build locals
@@ -39,12 +40,10 @@ public class ExceptionalStmtGraphTest {
   Local l2 = JavaJimple.newLocal("l2", PrimitiveType.getInt());
   Local l3 = JavaJimple.newLocal("l3", PrimitiveType.getInt());
   Local l4 = JavaJimple.newLocal("l4", PrimitiveType.getInt());
-  Local l5 = JavaJimple.newLocal("l5", PrimitiveType.getInt());
   Local stack6 = JavaJimple.newLocal("stack6", refType);
   Local stack7 = JavaJimple.newLocal("stack7", refType);
   Local l8 = JavaJimple.newLocal("l8", PrimitiveType.getInt());
   Local stack9 = JavaJimple.newLocal("stack9", refType);
-  Local l9 = JavaJimple.newLocal("l9", PrimitiveType.getInt());
 
   // build stmts
   // l0 := @this Test
@@ -57,10 +56,8 @@ public class ExceptionalStmtGraphTest {
   Stmt stmtInLabel2 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(3), noStmtPositionInfo);
   // l3 = 3
   Stmt label3Stmt = JavaJimple.newAssignStmt(l3, IntConstant.getInstance(3), noStmtPositionInfo);
-  // l3 = 3
+  // l4 = 4
   Stmt label4Stmt = JavaJimple.newAssignStmt(l4, IntConstant.getInstance(4), noStmtPositionInfo);
-  // l3 = 3
-  Stmt label5Stmt = JavaJimple.newAssignStmt(l5, IntConstant.getInstance(5), noStmtPositionInfo);
   // return
   Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
@@ -72,42 +69,286 @@ public class ExceptionalStmtGraphTest {
   Stmt label7Stmt = JavaJimple.newIdentityStmt(stack7, caughtExceptionRef, noStmtPositionInfo);
   // l8 = 8
   Stmt label8Stmt = JavaJimple.newAssignStmt(l8, IntConstant.getInstance(8), noStmtPositionInfo);
-  Stmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
+  Stmt gotoStmt1 = JavaJimple.newGotoStmt(noStmtPositionInfo);
+  Stmt gotoStmt2 = JavaJimple.newGotoStmt(noStmtPositionInfo);
   Stmt throwStmt = JavaJimple.newThrowStmt(l1, noStmtPositionInfo);
   // stack9 := @caughtexception
   Stmt label9Stmt = JavaJimple.newIdentityStmt(stack9, caughtExceptionRef, noStmtPositionInfo);
-  Stmt stmtInLabel9 = JavaJimple.newAssignStmt(l9, IntConstant.getInstance(9), noStmtPositionInfo);
 
-  JTrap trap1 = new JTrap(exception, label1Stmt, label3Stmt, label6Stmt);
-  JTrap trap2 = new JTrap(exception, label6Stmt, label8Stmt, label7Stmt);
-  JTrap trap3 = new JTrap(exception, label4Stmt, label5Stmt, label9Stmt);
-  List<Trap> traps = ImmutableUtils.immutableList(trap1, trap2, trap3);
+  JTrap trap1 = new JTrap(exception1, label1Stmt, label4Stmt, label6Stmt);
+  JTrap trap2 = new JTrap(exception1, label2Stmt, label3Stmt, label7Stmt);
+  JTrap trap3 = new JTrap(exception2, label2Stmt, label3Stmt, label7Stmt);
+  JTrap trap4 = new JTrap(exception1, label1Stmt, label3Stmt, label6Stmt);
+  JTrap trap5 = new JTrap(exception1, label6Stmt, stmtInLabel6, label7Stmt);
+  JTrap trap6 = new JTrap(exception1, label7Stmt, label8Stmt, label9Stmt);
 
   @Test
-  public void graphTest() {
-    StmtGraph graph = createStmtGraph();
+  public void graphWithNestedTraps_1Test() {
+    StmtGraph graph = createGraphWithNestedTraps_1();
     ExceptionalStmtGraph exceptionalStmtGraph = new ExceptionalStmtGraph(graph);
-    Map<Stmt, List<Stmt>> expectedExceptionalPreds = expectedExceptionalPreds();
-    Map<Stmt, List<Stmt>> expectedExceptionalSuccs = expectedExceptionalSuccs();
+
+    Map<Stmt, List<Stmt>> expectedExceptionalPreds = expectedPredsForGraphWithNestedTraps_1();
+    Map<Stmt, List<Stmt>> expectedExceptionalSuccs = expectedSuccsForGraphWithNestedTraps_1();
+    Map<Stmt, List<Trap>> expectedExceptionalDests = expectedDestsForGraphWithNestedTraps_1();
 
     for (Stmt stmt : expectedExceptionalPreds.keySet()) {
       assertStmtsListsEquiv(
           expectedExceptionalPreds.get(stmt), exceptionalStmtGraph.exceptionalPredecessors(stmt));
       assertStmtsListsEquiv(
           expectedExceptionalSuccs.get(stmt), exceptionalStmtGraph.exceptionalSuccessors(stmt));
+      assertStmtsListsEquiv(
+          expectedExceptionalDests.get(stmt), exceptionalStmtGraph.getDestTrap(stmt));
     }
   }
 
-  private Map<Stmt, List<Stmt>> expectedExceptionalPreds() {
+  @Test
+  public void graphWithNestedTraps_2Test() {
+    StmtGraph graph = createGraphWithNestedTraps_2();
+    ExceptionalStmtGraph exceptionalStmtGraph = new ExceptionalStmtGraph(graph);
+
+    Map<Stmt, List<Stmt>> expectedExceptionalPreds = expectedPredsForGraphWithNestedTraps_2();
+    Map<Stmt, List<Stmt>> expectedExceptionalSuccs = expectedSuccsForGraphWithNestedTraps_2();
+    Map<Stmt, List<Trap>> expectedExceptionalDests = expectedDestsForGraphWithNestedTraps_2();
+
+    for (Stmt stmt : expectedExceptionalPreds.keySet()) {
+      assertStmtsListsEquiv(
+          expectedExceptionalPreds.get(stmt), exceptionalStmtGraph.exceptionalPredecessors(stmt));
+      assertStmtsListsEquiv(
+          expectedExceptionalSuccs.get(stmt), exceptionalStmtGraph.exceptionalSuccessors(stmt));
+      assertStmtsListsEquiv(
+          expectedExceptionalDests.get(stmt), exceptionalStmtGraph.getDestTrap(stmt));
+    }
+  }
+
+  @Test
+  public void graphWithChainedTrapsTest() {
+    StmtGraph graph = createGraphWithChainedTraps();
+    ExceptionalStmtGraph exceptionalStmtGraph = new ExceptionalStmtGraph(graph);
+
+    Map<Stmt, List<Stmt>> expectedExceptionalPreds = expectedPredsForGraphWithChainedTraps();
+    Map<Stmt, List<Stmt>> expectedExceptionalSuccs = expectedSuccsForGraphWithChainedTraps();
+    Map<Stmt, List<Trap>> expectedExceptionalDests = expectedDestsForGraphWithChainedTraps();
+
+    for (Stmt stmt : expectedExceptionalPreds.keySet()) {
+      assertStmtsListsEquiv(
+          expectedExceptionalPreds.get(stmt), exceptionalStmtGraph.exceptionalPredecessors(stmt));
+      assertStmtsListsEquiv(
+          expectedExceptionalSuccs.get(stmt), exceptionalStmtGraph.exceptionalSuccessors(stmt));
+      assertStmtsListsEquiv(
+          expectedExceptionalDests.get(stmt), exceptionalStmtGraph.getDestTrap(stmt));
+    }
+  }
+
+  private StmtGraph createGraphWithNestedTraps_1() {
+    MutableStmtGraph graph = new MutableStmtGraph();
+    graph.setStartingStmt(startingStmt);
+    graph.putEdge(startingStmt, label1Stmt);
+    graph.putEdge(label1Stmt, label2Stmt);
+    graph.putEdge(label2Stmt, stmtInLabel2);
+    graph.putEdge(stmtInLabel2, label3Stmt);
+    graph.putEdge(label3Stmt, label4Stmt);
+
+    // handler block for trap1
+    graph.putEdge(label6Stmt, stmtInLabel6);
+    graph.putEdge(stmtInLabel6, gotoStmt1);
+    graph.putEdge(gotoStmt1, ret);
+    // handler block for trap2
+    graph.putEdge(label7Stmt, label8Stmt);
+    graph.putEdge(label8Stmt, gotoStmt2);
+    graph.putEdge(gotoStmt2, ret);
+
+    graph.putEdge(label4Stmt, ret);
+    List<Trap> traps = ImmutableUtils.immutableList(trap1, trap2);
+    graph.setTraps(traps);
+
+    return graph;
+  }
+
+  private Map<Stmt, List<Stmt>> expectedPredsForGraphWithNestedTraps_1() {
 
     Map<Stmt, List<Stmt>> predsMap = new HashMap<>();
-    List<Stmt> preds_0 = ImmutableUtils.immutableList(label1Stmt, label2Stmt, stmtInLabel2);
-    List<Stmt> preds_1 =
-        ImmutableUtils.immutableList(
-            label1Stmt, label2Stmt, stmtInLabel2, label6Stmt, stmtInLabel6, throwStmt, label7Stmt);
-    List<Stmt> preds_2 = ImmutableUtils.immutableList(label4Stmt);
+    List<Stmt> preds_0 = ImmutableUtils.immutableList(label1Stmt, label3Stmt);
+    List<Stmt> preds_1 = ImmutableUtils.immutableList(label2Stmt, stmtInLabel2);
 
-    StmtGraph graph = createStmtGraph();
+    StmtGraph graph = createGraphWithNestedTraps_1();
+    Iterator<Stmt> it = graph.iterator();
+    while (it.hasNext()) {
+      Stmt stmt = it.next();
+      if (stmt == label6Stmt) {
+        predsMap.put(stmt, preds_0);
+      } else if (stmt == label7Stmt) {
+        predsMap.put(stmt, preds_1);
+      } else {
+        predsMap.put(stmt, Collections.emptyList());
+      }
+    }
+    return predsMap;
+  }
+
+  private Map<Stmt, List<Stmt>> expectedSuccsForGraphWithNestedTraps_1() {
+
+    Map<Stmt, List<Stmt>> succsMap = new HashMap<>();
+    List<Stmt> succs_0 = ImmutableUtils.immutableList(label6Stmt);
+    List<Stmt> succs_1 = ImmutableUtils.immutableList(label7Stmt);
+
+    StmtGraph graph = createGraphWithNestedTraps_1();
+    Iterator<Stmt> it = graph.iterator();
+    while (it.hasNext()) {
+      Stmt stmt = it.next();
+      if (stmt == label1Stmt || stmt == label3Stmt) {
+        succsMap.put(stmt, succs_0);
+      } else if (stmt == label2Stmt || stmt == stmtInLabel2) {
+        succsMap.put(stmt, succs_1);
+      } else {
+        succsMap.put(stmt, Collections.emptyList());
+      }
+    }
+    return succsMap;
+  }
+
+  private Map<Stmt, List<Trap>> expectedDestsForGraphWithNestedTraps_1() {
+
+    Map<Stmt, List<Trap>> destsMap = new HashMap<>();
+    List<Trap> dests_0 = ImmutableUtils.immutableList(trap1);
+    List<Trap> dests_1 = ImmutableUtils.immutableList(trap2);
+
+    StmtGraph graph = createGraphWithNestedTraps_1();
+    Iterator<Stmt> it = graph.iterator();
+    while (it.hasNext()) {
+      Stmt stmt = it.next();
+      if (stmt == label1Stmt || stmt == label3Stmt) {
+        destsMap.put(stmt, dests_0);
+      } else if (stmt == label2Stmt || stmt == stmtInLabel2) {
+        destsMap.put(stmt, dests_1);
+      } else {
+        destsMap.put(stmt, Collections.emptyList());
+      }
+    }
+    return destsMap;
+  }
+
+  private StmtGraph createGraphWithNestedTraps_2() {
+    MutableStmtGraph graph = new MutableStmtGraph();
+    graph.setStartingStmt(startingStmt);
+    graph.putEdge(startingStmt, label1Stmt);
+    graph.putEdge(label1Stmt, label2Stmt);
+    graph.putEdge(label2Stmt, stmtInLabel2);
+    graph.putEdge(stmtInLabel2, label3Stmt);
+    graph.putEdge(label3Stmt, label4Stmt);
+
+    // handler block for trap1
+    graph.putEdge(label6Stmt, stmtInLabel6);
+    graph.putEdge(stmtInLabel6, gotoStmt1);
+    graph.putEdge(gotoStmt1, ret);
+    // handler block for trap3
+    graph.putEdge(label7Stmt, label8Stmt);
+    graph.putEdge(label8Stmt, gotoStmt2);
+    graph.putEdge(gotoStmt2, ret);
+
+    graph.putEdge(label4Stmt, ret);
+    List<Trap> traps = ImmutableUtils.immutableList(trap1, trap3);
+    graph.setTraps(traps);
+
+    return graph;
+  }
+
+  private Map<Stmt, List<Stmt>> expectedPredsForGraphWithNestedTraps_2() {
+
+    Map<Stmt, List<Stmt>> predsMap = new HashMap<>();
+    List<Stmt> preds_0 =
+        ImmutableUtils.immutableList(label1Stmt, label2Stmt, stmtInLabel2, label3Stmt);
+    List<Stmt> preds_1 = ImmutableUtils.immutableList(label2Stmt, stmtInLabel2);
+
+    StmtGraph graph = createGraphWithNestedTraps_1();
+    Iterator<Stmt> it = graph.iterator();
+    while (it.hasNext()) {
+      Stmt stmt = it.next();
+      if (stmt == label6Stmt) {
+        predsMap.put(stmt, preds_0);
+      } else if (stmt == label7Stmt) {
+        predsMap.put(stmt, preds_1);
+      } else {
+        predsMap.put(stmt, Collections.emptyList());
+      }
+    }
+    return predsMap;
+  }
+
+  private Map<Stmt, List<Stmt>> expectedSuccsForGraphWithNestedTraps_2() {
+
+    Map<Stmt, List<Stmt>> succsMap = new HashMap<>();
+    List<Stmt> succs_0 = ImmutableUtils.immutableList(label6Stmt);
+    List<Stmt> succs_1 = ImmutableUtils.immutableList(label6Stmt, label7Stmt);
+
+    StmtGraph graph = createGraphWithNestedTraps_1();
+    Iterator<Stmt> it = graph.iterator();
+    while (it.hasNext()) {
+      Stmt stmt = it.next();
+      if (stmt == label1Stmt || stmt == label3Stmt) {
+        succsMap.put(stmt, succs_0);
+      } else if (stmt == label2Stmt || stmt == stmtInLabel2) {
+        succsMap.put(stmt, succs_1);
+      } else {
+        succsMap.put(stmt, Collections.emptyList());
+      }
+    }
+    return succsMap;
+  }
+
+  private Map<Stmt, List<Trap>> expectedDestsForGraphWithNestedTraps_2() {
+
+    Map<Stmt, List<Trap>> destsMap = new HashMap<>();
+    List<Trap> dests_0 = ImmutableUtils.immutableList(trap1);
+    List<Trap> dests_1 = ImmutableUtils.immutableList(trap1, trap3);
+
+    StmtGraph graph = createGraphWithNestedTraps_1();
+    Iterator<Stmt> it = graph.iterator();
+    while (it.hasNext()) {
+      Stmt stmt = it.next();
+      if (stmt == label1Stmt || stmt == label3Stmt) {
+        destsMap.put(stmt, dests_0);
+      } else if (stmt == label2Stmt || stmt == stmtInLabel2) {
+        destsMap.put(stmt, dests_1);
+      } else {
+        destsMap.put(stmt, Collections.emptyList());
+      }
+    }
+    return destsMap;
+  }
+
+  private StmtGraph createGraphWithChainedTraps() {
+    MutableStmtGraph graph = new MutableStmtGraph();
+    graph.setStartingStmt(startingStmt);
+    graph.putEdge(startingStmt, label1Stmt);
+    graph.putEdge(label1Stmt, label2Stmt);
+    graph.putEdge(label2Stmt, label3Stmt);
+
+    // handler block for trap4
+    graph.putEdge(label6Stmt, stmtInLabel6);
+    graph.putEdge(stmtInLabel6, ret);
+    // handler block for trap5
+    graph.putEdge(label7Stmt, label8Stmt);
+    graph.putEdge(label8Stmt, throwStmt);
+    // handler block for trap6
+    graph.putEdge(label9Stmt, gotoStmt1);
+    graph.putEdge(gotoStmt1, throwStmt);
+
+    graph.putEdge(label3Stmt, ret);
+    List<Trap> traps = ImmutableUtils.immutableList(trap4, trap5, trap6);
+    graph.setTraps(traps);
+
+    return graph;
+  }
+
+  private Map<Stmt, List<Stmt>> expectedPredsForGraphWithChainedTraps() {
+
+    Map<Stmt, List<Stmt>> predsMap = new HashMap<>();
+    List<Stmt> preds_0 = ImmutableUtils.immutableList(label1Stmt, label2Stmt);
+    List<Stmt> preds_1 = ImmutableUtils.immutableList(label1Stmt, label2Stmt, label6Stmt);
+    List<Stmt> preds_2 =
+        ImmutableUtils.immutableList(label1Stmt, label2Stmt, label6Stmt, label7Stmt);
+
+    StmtGraph graph = createGraphWithChainedTraps();
     Iterator<Stmt> it = graph.iterator();
     while (it.hasNext()) {
       Stmt stmt = it.next();
@@ -124,63 +365,56 @@ public class ExceptionalStmtGraphTest {
     return predsMap;
   }
 
-  private Map<Stmt, List<Stmt>> expectedExceptionalSuccs() {
-    Map<Stmt, List<Stmt>> succsMap = new HashMap<>();
+  private Map<Stmt, List<Stmt>> expectedSuccsForGraphWithChainedTraps() {
 
-    List<Stmt> succs_0 = ImmutableUtils.immutableList(label6Stmt, label7Stmt);
-    List<Stmt> succs_1 = ImmutableUtils.immutableList(label7Stmt);
+    Map<Stmt, List<Stmt>> succsMap = new HashMap<>();
+    List<Stmt> succs_0 = ImmutableUtils.immutableList(label6Stmt, label7Stmt, label9Stmt);
+    List<Stmt> succs_1 = ImmutableUtils.immutableList(label7Stmt, label9Stmt);
     List<Stmt> succs_2 = ImmutableUtils.immutableList(label9Stmt);
 
-    StmtGraph graph = createStmtGraph();
+    StmtGraph graph = createGraphWithChainedTraps();
     Iterator<Stmt> it = graph.iterator();
     while (it.hasNext()) {
       Stmt stmt = it.next();
-      if (stmt == label1Stmt || stmt == label2Stmt || stmt == stmtInLabel2) {
+      if (stmt == label1Stmt || stmt == label2Stmt) {
         succsMap.put(stmt, succs_0);
-      } else if (stmt == label6Stmt
-          || stmt == stmtInLabel6
-          || stmt == throwStmt
-          || stmt == label7Stmt) {
+      } else if (stmt == label6Stmt) {
         succsMap.put(stmt, succs_1);
-      } else if (stmt == label4Stmt) {
+      } else if (stmt == label7Stmt) {
         succsMap.put(stmt, succs_2);
       } else {
         succsMap.put(stmt, Collections.emptyList());
       }
     }
-
     return succsMap;
   }
 
-  private StmtGraph createStmtGraph() {
-    MutableStmtGraph graph = new MutableStmtGraph();
-    graph.setStartingStmt(startingStmt);
-    graph.putEdge(startingStmt, label1Stmt);
-    graph.putEdge(label1Stmt, label2Stmt);
-    graph.putEdge(label2Stmt, stmtInLabel2);
-    graph.putEdge(stmtInLabel2, label3Stmt);
-    graph.putEdge(label3Stmt, label4Stmt);
-    graph.putEdge(label4Stmt, label5Stmt);
+  private Map<Stmt, List<Trap>> expectedDestsForGraphWithChainedTraps() {
 
-    // trap1
-    graph.putEdge(label6Stmt, stmtInLabel6);
-    graph.putEdge(stmtInLabel6, throwStmt);
-    // trap2
-    graph.putEdge(label7Stmt, label8Stmt);
-    graph.putEdge(label8Stmt, gotoStmt);
-    graph.putEdge(gotoStmt, throwStmt);
-    // trap3
-    graph.putEdge(label9Stmt, stmtInLabel9);
-    graph.putEdge(stmtInLabel9, ret);
+    Map<Stmt, List<Trap>> destsMap = new HashMap<>();
+    List<Trap> dests_0 = ImmutableUtils.immutableList(trap4);
+    List<Trap> dests_1 = ImmutableUtils.immutableList(trap5);
+    List<Trap> dests_2 = ImmutableUtils.immutableList(trap6);
 
-    graph.putEdge(label5Stmt, ret);
-    graph.setTraps(traps);
-
-    return graph;
+    StmtGraph graph = createGraphWithChainedTraps();
+    Iterator<Stmt> it = graph.iterator();
+    while (it.hasNext()) {
+      Stmt stmt = it.next();
+      if (stmt == label1Stmt || stmt == label2Stmt) {
+        destsMap.put(stmt, dests_0);
+      } else if (stmt == label6Stmt) {
+        destsMap.put(stmt, dests_1);
+      } else if (stmt == label7Stmt) {
+        destsMap.put(stmt, dests_2);
+      } else {
+        destsMap.put(stmt, Collections.emptyList());
+      }
+    }
+    return destsMap;
   }
 
   // assert whether two stmt lists are equal
-  public static void assertStmtsListsEquiv(List<Stmt> expected, List<Stmt> actual) {
+  public static void assertStmtsListsEquiv(List expected, List actual) {
 
     assertNotNull(expected);
     assertNotNull(actual);
@@ -191,8 +425,8 @@ public class ExceptionalStmtGraphTest {
     }
     assertEquals(expected.size(), actual.size());
     boolean condition = true;
-    for (Stmt stmt : actual) {
-      if (!expected.contains(stmt)) {
+    for (Object o : actual) {
+      if (!expected.contains(o)) {
         condition = false;
         break;
       }
