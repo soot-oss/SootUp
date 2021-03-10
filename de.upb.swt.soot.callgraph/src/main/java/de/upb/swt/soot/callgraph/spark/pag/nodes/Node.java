@@ -50,11 +50,17 @@ public class Node {
 
   public Set<Node> getPointsToSet() {
     if (pointsToSet != null) {
-      // TODO: replacement
+      if (replacement != this) {
+        throw new RuntimeException(
+                "Node " + this + " has replacement " + replacement + " but has points-to set");
+      }
       return pointsToSet;
     }
-    // TODO: replacement
-    return Sets.newHashSet();
+    Node rep = getReplacement();
+    if(rep == this){
+      return Sets.newHashSet();
+    }
+    return rep.getPointsToSet();
   }
 
   public Set<Node> getOrCreatePointsToSet() {
