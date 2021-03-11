@@ -59,7 +59,6 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
     Stream<MethodSignature> result = Stream.of(targetMethodSignature);
 
     SootMethod targetMethod =
-        (SootMethod)
             view.getClass(targetMethodSignature.getDeclClassType())
                 .flatMap(clazz -> clazz.getMethod(targetMethodSignature))
                 .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
