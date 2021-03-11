@@ -12,17 +12,16 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
@@ -41,7 +40,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class ViewTypeHierarchyTest {
 
-  private View view;
+  private JavaView view;
   private ViewTypeHierarchy typeHierarchy;
   private JavaClassPathAnalysisInputLocation analysisInputLocation;
 
@@ -61,7 +60,7 @@ public class ViewTypeHierarchyTest {
             .collect(Collectors.joining(File.pathSeparator));
     analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
-    Project p =
+    JavaProject p =
         JavaProject.builder(new JavaLanguage(8)).addClassPath(analysisInputLocation).build();
     view = p.createOnDemandView();
     typeHierarchy = new ViewTypeHierarchy(view);
