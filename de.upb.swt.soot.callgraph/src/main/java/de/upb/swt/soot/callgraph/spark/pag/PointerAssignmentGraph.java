@@ -26,6 +26,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import de.upb.swt.soot.callgraph.MethodUtil;
 import de.upb.swt.soot.callgraph.model.CallGraph;
+import de.upb.swt.soot.callgraph.model.CallGraphEdgeType;
 import de.upb.swt.soot.callgraph.model.CalleeMethodSignature;
 import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
@@ -123,10 +124,21 @@ public class PointerAssignmentGraph {
   }
 
   private void addCallTarget(Pair<MethodSignature, CalleeMethodSignature> edge) {
-    if (!edge.getValue().getEdgeType().passesParameters()) {
+    MethodSignature source = edge.getKey();
+    CalleeMethodSignature target = edge.getValue();
+    CallGraphEdgeType edgeType = target.getEdgeType();
+    if (!edgeType.passesParameters()) {
       return;
     }
-    //IntraproceduralPointerAssignmentGraph srcIntraPag = new IntraproceduralPointerAssignmentGraph(this, edge.getKey());
+    IntraproceduralPointerAssignmentGraph srcIntraPag = new IntraproceduralPointerAssignmentGraph(this, MethodUtil.methodSignatureToMethod(view, source));
+    IntraproceduralPointerAssignmentGraph tgtIntraPag = new IntraproceduralPointerAssignmentGraph(this, MethodUtil.methodSignatureToMethod(view, target));
+    Pair<Node, Node> pval;
+
+    if(edgeType.isExplicit() || edgeType == CallGraphEdgeType.THREAD || edgeType == CallGraphEdgeType.ASYNCTASK){
+      // TODO: incorporate sourceStmt
+      // addCallTarget(srcIntraPag, tgtIntraPag, );
+    }
+
   }
 
   //  public Graph<SparkVertex, SparkEdge> getGraph() {
