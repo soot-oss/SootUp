@@ -109,10 +109,14 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
   private final Supplier<Set<SootField>> _lazyFields =
       Suppliers.memoize(this::lazyFieldInitializer);
 
-  /** Gets the {@link Field fields} of this {@link SootClass} in an immutable set. */
+  /**
+   * Gets the {@link Field fields} of this {@link SootClass} in an immutable set.
+   *
+   * @return
+   */
   @Override
   @Nonnull
-  public Set<SootField> getFields() {
+  public Set<? extends SootField> getFields() {
     return this._lazyFields.get();
   }
 
@@ -149,9 +153,11 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
   /**
    * Attempts to retrieve the methodRef with the given signature, parameters and return type. If no
    * matching method can be found, null is returned.
+   *
+   * @return
    */
   @Nonnull
-  public Optional<SootMethod> getMethod(@Nonnull MethodSignature signature) {
+  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
     return this.getMethods().stream()
         .filter(method -> method.getSignature().equals(signature))
         .findAny();

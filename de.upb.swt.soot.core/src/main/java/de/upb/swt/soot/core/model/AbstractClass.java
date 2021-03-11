@@ -23,10 +23,7 @@ package de.upb.swt.soot.core.model;
  */
 
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.signatures.FieldSignature;
-import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.signatures.MethodSubSignature;
-import de.upb.swt.soot.core.signatures.Signature;
+import de.upb.swt.soot.core.signatures.*;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import java.util.Optional;
@@ -57,25 +54,32 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
   public abstract Type getType();
 
   @Nonnull
-  public Optional<? extends Method> getMethod(@Nonnull MethodSignature signature) {
+  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
     return this.getMethods().stream().filter(m -> m.getSignature().equals(signature)).findAny();
   }
 
   @Nonnull
-  public Optional<? extends Method> getMethod(@Nonnull MethodSubSignature subSignature) {
+  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
     return getMethods().stream()
         .filter(m -> m.getSignature().getSubSignature().equals(subSignature))
         .findAny();
   }
 
   @Nonnull
-  public abstract Set<? extends Method> getMethods();
+  public abstract Set<? extends SootMethod> getMethods();
 
   @Nonnull
-  public Optional<? extends Field> getField(@Nonnull FieldSignature signature) {
+  public Optional<? extends SootField> getField(@Nonnull FieldSignature signature) {
     return this.getFields().stream().filter(f -> f.getSignature().equals(signature)).findAny();
   }
 
   @Nonnull
-  public abstract Set<? extends Field> getFields();
+  public Optional<? extends SootField> getField(@Nonnull FieldSubSignature subSignature) {
+    return this.getFields().stream()
+        .filter(f -> f.getSignature().getSubSignature().equals(subSignature))
+        .findAny();
+  }
+
+  @Nonnull
+  public abstract Set<? extends SootField> getFields();
 }
