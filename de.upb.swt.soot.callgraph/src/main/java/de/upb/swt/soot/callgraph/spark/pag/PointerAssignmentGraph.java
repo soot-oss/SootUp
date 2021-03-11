@@ -123,7 +123,6 @@ public class PointerAssignmentGraph {
   }
 
   private void addCallTarget(Pair<MethodSignature, CalleeMethodSignature> edge) {
-    CallEdgeHandler callEdgeHandler = new CallEdgeHandler(view);
     if (!edge.getValue().getEdgeType().passesParameters()) {
       return;
     }
