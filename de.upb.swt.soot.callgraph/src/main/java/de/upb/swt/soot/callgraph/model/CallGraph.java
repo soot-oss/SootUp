@@ -32,8 +32,9 @@ public interface CallGraph {
   @Nonnull
   Set<MethodSignature> getMethodSignatures();
 
+  // TODO: replace Pair with wrapper edge class
   @Nonnull
-  Set<Pair<MethodSignature, MethodSignature>> getEdges();
+  Set<Pair<MethodSignature, CalleeMethodSignature>> getEdges();
 
   @Nonnull
   Set<MethodSignature> callsFrom(@Nonnull MethodSignature sourceMethod);

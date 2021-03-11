@@ -67,7 +67,13 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   @Override
   public void addCall(
       @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
-    graph.addEdge(vertexOf(sourceMethod), vertexOf(targetMethod), new CallGraphEdge(null));
+    // TODO: would it be better if targetMethod is always CalleeMethodSignature?
+    if(targetMethod instanceof CalleeMethodSignature){
+      graph.addEdge(vertexOf(sourceMethod), vertexOf(targetMethod), new CallGraphEdge(((CalleeMethodSignature)targetMethod).getEdgeType()));
+    } else{
+      graph.addEdge(vertexOf(sourceMethod), vertexOf(targetMethod), new CallGraphEdge(null));
+    }
+
   }
 
   @Nonnull
@@ -78,13 +84,13 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
 
   @Nonnull
   @Override
-  public Set<Pair<MethodSignature, MethodSignature>> getEdges() {
-    Set<Pair<MethodSignature, MethodSignature>> edges = new HashSet<>();
+  public Set<Pair<MethodSignature, CalleeMethodSignature>> getEdges() {
+    Set<Pair<MethodSignature, CalleeMethodSignature>> edges = new HashSet<>();
     for (CallGraphEdge edge : graph.edgeSet()) {
       CallGraphVertex edgeSource = graph.getEdgeSource(edge);
       CallGraphVertex edgeTarget = graph.getEdgeTarget(edge);
-      Pair<MethodSignature, MethodSignature> pair =
-          new ImmutablePair<>(edgeSource.methodSignature, edgeTarget.methodSignature);
+      Pair<MethodSignature, CalleeMethodSignature> pair =
+          new ImmutablePair<>(edgeSource.methodSignature, new CalleeMethodSignature(edgeTarget.methodSignature, edge.getEdgeType()));
       edges.add(pair);
     }
     return edges;

@@ -22,6 +22,7 @@ package de.upb.swt.soot.callgraph.algorithm;
  * #L%
  */
 
+import com.google.common.collect.Sets;
 import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
@@ -70,9 +71,9 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
   @Override
   @Nonnull
-  protected Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
+  protected Set<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
-    Stream<MethodSignature> result = Stream.of(targetMethodSignature);
+    Set<MethodSignature> result = Sets.newHashSet(targetMethodSignature);
 
     if (!chaGraph.containsMethod(method.getSignature())) {
       return result;
@@ -80,7 +81,6 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     collectInstantiatedClassesInMethod(method);
 
     SootMethod targetMethod =
-        (SootMethod)
             view.getClass(targetMethodSignature.getDeclClassType())
                 .flatMap(clazz -> clazz.getMethod(targetMethodSignature))
                 .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
@@ -89,11 +89,10 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return result;
     } else {
-      return Stream.concat(
-          result,
-          MethodDispatchResolver.resolveAbstractDispatchInClasses(
-              view, targetMethodSignature, instantiatedClasses)
-              .stream());
+      Set<MethodSignature> implAndOverrides = MethodDispatchResolver.resolveAbstractDispatchInClasses(
+              view, targetMethodSignature, instantiatedClasses);
+      result.addAll(implAndOverrides);
+      return result;
     }
   }
 }

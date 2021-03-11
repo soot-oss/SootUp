@@ -29,4 +29,5 @@ public interface MutableCallGraph extends CallGraph {
   void addMethod(@Nonnull MethodSignature calledMethod);
 
   void addCall(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod);
+
 }

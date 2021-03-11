@@ -22,6 +22,7 @@ package de.upb.swt.soot.callgraph.algorithm;
  * #L%
  */
 
+import com.google.common.collect.Sets;
 import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
@@ -50,13 +51,13 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
 
   @Override
   @Nonnull
-  protected Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
+  protected Set<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
     if ((invokeExpr instanceof JDynamicInvokeExpr)) {
-      return Stream.empty();
+      return Sets.newHashSet();
     }
 
-    Stream<MethodSignature> result = Stream.of(targetMethodSignature);
+    Set<MethodSignature> result = Sets.newHashSet(targetMethodSignature);
 
     SootMethod targetMethod =
             view.getClass(targetMethodSignature.getDeclClassType())
@@ -67,9 +68,9 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return result;
     } else {
-      return Stream.concat(
-          result,
-          MethodDispatchResolver.resolveAbstractDispatch(view, targetMethodSignature).stream());
+      Set<MethodSignature> implAndOverrides = MethodDispatchResolver.resolveAbstractDispatch(view, targetMethodSignature);
+      result.addAll(implAndOverrides);
+      return result;
     }
   }
 }

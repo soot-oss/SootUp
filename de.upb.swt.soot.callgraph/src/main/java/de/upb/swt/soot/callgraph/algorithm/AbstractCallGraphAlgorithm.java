@@ -22,12 +22,11 @@ package de.upb.swt.soot.callgraph.algorithm;
  * #L%
  */
 
-import de.upb.swt.soot.callgraph.model.CallGraph;
-import de.upb.swt.soot.callgraph.model.GraphBasedCallGraph;
-import de.upb.swt.soot.callgraph.model.MutableCallGraph;
+import de.upb.swt.soot.callgraph.MethodUtil;
+import de.upb.swt.soot.callgraph.model.*;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.frontend.ResolveException;
-import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.SootClass;
@@ -37,10 +36,15 @@ import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import jdk.nashorn.internal.codegen.CompilerConstants;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
@@ -79,7 +83,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       MethodSignature currentMethodSignature = workList.pop();
       if (processed.contains(currentMethodSignature)) continue;
 
-      Stream<MethodSignature> invocationTargets =
+      Stream<CalleeMethodSignature> invocationTargets =
           resolveAllCallsFromSourceMethod(view, currentMethodSignature);
 
       invocationTargets.forEach(
@@ -96,20 +100,38 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   @Nonnull
-  Stream<MethodSignature> resolveAllCallsFromSourceMethod(
+  Stream<CalleeMethodSignature> resolveAllCallsFromSourceMethod(
       View<? extends SootClass> view, MethodSignature sourceMethod) {
-    SootMethod currentMethodCandidate =
-        view.getClass(sourceMethod.getDeclClassType())
-            .flatMap(c -> c.getMethod(sourceMethod))
-            .orElse(null);
+    SootMethod currentMethodCandidate = MethodUtil.methodSignatureToMethod(view, sourceMethod);
     if (currentMethodCandidate == null) return Stream.empty();
 
     if (currentMethodCandidate.hasBody()) {
-      return currentMethodCandidate.getBody().getStmtGraph().nodes().stream()
-          .filter(Stmt::containsInvokeExpr)
-          .flatMap(s -> resolveCall(currentMethodCandidate, s.getInvokeExpr()));
+      Set<CalleeMethodSignature> resolvedCalls = new HashSet<>();
+      Set<Stmt> stmts = currentMethodCandidate.getBody().getStmtGraph().nodes();
+      for (Stmt stmt : stmts) {
+        if(stmt.containsInvokeExpr()){
+          Set<MethodSignature> invokeSet = resolveCall(currentMethodCandidate, stmt.getInvokeExpr());
+          CallGraphEdgeType edgeType = findCallGraphEdgeType(stmt.getInvokeExpr());
+          invokeSet.forEach(e -> resolvedCalls.add(new CalleeMethodSignature(e, edgeType)));
+        }
+      }
+      return resolvedCalls.stream();
     } else {
       return Stream.empty();
+    }
+  }
+
+  private CallGraphEdgeType findCallGraphEdgeType(AbstractInvokeExpr invokeExpr){
+    if (invokeExpr instanceof JVirtualInvokeExpr) {
+      return CallGraphEdgeType.VIRTUAL;
+    } else if (invokeExpr instanceof JSpecialInvokeExpr) {
+      return CallGraphEdgeType.SPECIAL;
+    } else if (invokeExpr instanceof JInterfaceInvokeExpr) {
+      return CallGraphEdgeType.INTERFACE;
+    } else if (invokeExpr instanceof JStaticInvokeExpr) {
+      return CallGraphEdgeType.STATIC;
+    } else {
+      throw new RuntimeException("No such invokeExpr:" + invokeExpr);
     }
   }
 
@@ -187,5 +209,5 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   @Nonnull
-  abstract Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr);
+  abstract Set<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr);
 }
