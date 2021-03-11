@@ -24,8 +24,7 @@ package de.upb.swt.soot.callgraph.spark.pag;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import de.upb.swt.soot.callgraph.CallGraph;
-import de.upb.swt.soot.callgraph.GraphBasedCallGraph;
+import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -35,12 +34,15 @@ import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
 import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,12 +104,32 @@ public class PointerAssignmentGraph {
     }
 
     handleCallEdges();
-
   }
 
   private void handleCallEdges() {
-    GraphBasedCallGraph graphBasedCallGraph = (GraphBasedCallGraph ) callGraph;
-    graphBasedCallGraph.getEdges();
+    Iterator<Pair<MethodSignature, MethodSignature>> iter = callGraph.getEdges().iterator();
+    while (iter.hasNext()) {
+      Pair<MethodSignature, MethodSignature> edge = iter.next();
+      MethodSignature target = edge.getValue();
+      ClassType ct = target.getDeclClassType();
+      SootClass sc = view.getClassOrThrow(ct);
+      if (sc.isConcrete()) {
+        SootMethod tgt = sc.getMethod(target).get();
+        if (tgt.isConcrete() || tgt.isNative()) {
+          IntraproceduralPointerAssignmentGraph intraPAG =
+              new IntraproceduralPointerAssignmentGraph(this, tgt);
+          intraPAG.addToPAG();
+        }
+        addCallTarget(edge);
+      }
+    }
+  }
+
+  private void addCallTarget(Pair<MethodSignature, MethodSignature> edge) {
+    CallEdgeHandler callEdgeHandler = new CallEdgeHandler(view);
+    if(callEdgeHandler.passesParameters(edge)){
+
+    }
   }
 
   //  public Graph<SparkVertex, SparkEdge> getGraph() {
@@ -173,7 +195,7 @@ public class PointerAssignmentGraph {
       AllocationNode allocationNode, Field field) {
     AllocationDotField node = allocationNode.dot(field);
     if (node == null) {
-      node = new AllocationDotField(allocationNode, field);
+      node = new AllocationDotField(this, allocationNode, field);
     }
     return node;
   }
