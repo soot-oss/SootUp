@@ -24,7 +24,9 @@ package de.upb.swt.soot.callgraph.spark.pag;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import de.upb.swt.soot.callgraph.MethodUtil;
 import de.upb.swt.soot.callgraph.model.CallGraph;
+import de.upb.swt.soot.callgraph.model.CalleeMethodSignature;
 import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -107,27 +109,25 @@ public class PointerAssignmentGraph {
   }
 
   private void handleCallEdges() {
-    Iterator<Pair<MethodSignature, MethodSignature>> iter = callGraph.getEdges().iterator();
+    Iterator<Pair<MethodSignature, CalleeMethodSignature>> iter = callGraph.getEdges().iterator();
     while (iter.hasNext()) {
-      Pair<MethodSignature, MethodSignature> edge = iter.next();
-      MethodSignature target = edge.getValue();
-      ClassType ct = target.getDeclClassType();
-      SootClass sc = view.getClassOrThrow(ct);
-      if (sc.isConcrete()) {
-        SootMethod tgt = sc.getMethod(target).get();
+      Pair<MethodSignature, CalleeMethodSignature> edge = iter.next();
+      SootMethod tgt = MethodUtil.methodSignatureToMethod(view, edge.getValue());
         if (tgt.isConcrete() || tgt.isNative()) {
           IntraproceduralPointerAssignmentGraph intraPAG =
               new IntraproceduralPointerAssignmentGraph(this, tgt);
           intraPAG.addToPAG();
         }
         addCallTarget(edge);
-      }
     }
   }
 
-  private void addCallTarget(Pair<MethodSignature, MethodSignature> edge) {
+  private void addCallTarget(Pair<MethodSignature, CalleeMethodSignature> edge) {
     CallEdgeHandler callEdgeHandler = new CallEdgeHandler(view);
-    if (callEdgeHandler.passesParameters(edge)) {}
+    if (!edge.getValue().getEdgeType().passesParameters()) {
+      return;
+    }
+    //IntraproceduralPointerAssignmentGraph srcIntraPag = new IntraproceduralPointerAssignmentGraph(this, edge.getKey());
   }
 
   //  public Graph<SparkVertex, SparkEdge> getGraph() {
