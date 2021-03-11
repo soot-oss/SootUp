@@ -26,6 +26,10 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.Scope;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootField;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -58,6 +62,24 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
   public Optional<Scope> getScope() {
     // TODO Auto-generated methodRef stub
     return null;
+  }
+
+  @Nonnull
+  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
+    final Optional<T> aClass = getClass(signature.getDeclClassType());
+    if (!aClass.isPresent()) {
+      return Optional.empty();
+    }
+    return aClass.get().getMethod(signature);
+  }
+
+  @Nonnull
+  public Optional<? extends SootField> getField(@Nonnull FieldSignature signature) {
+    final Optional<T> aClass = getClass(signature.getDeclClassType());
+    if (!aClass.isPresent()) {
+      return Optional.empty();
+    }
+    return aClass.get().getField(signature);
   }
 
   @Nonnull
