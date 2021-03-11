@@ -1,0 +1,3 @@
+module modservicedefinition {
+    exports myservice;
+}

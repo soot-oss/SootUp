@@ -1,0 +1,3 @@
+module modfib {
+    exports pkgfib;    
+}
