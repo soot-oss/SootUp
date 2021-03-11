@@ -26,8 +26,6 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.Iterables;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.frontend.SootClassSource;
-import de.upb.swt.soot.core.signatures.FieldSubSignature;
-import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
@@ -127,36 +125,12 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
    */
   @Nonnull
   public Optional<? extends SootField> getField(String name) {
-    return this.getFields().stream()
+    return getFields().stream()
         .filter(field -> field.getSignature().getName().equals(name))
         .reduce(
             (l, r) -> {
               throw new RuntimeException("ambiguous field: " + name);
             });
-  }
-
-  /**
-   * Returns the field of this class with the given sub-signature. If such a field does not exist,
-   * null is returned.
-   */
-  @Nonnull
-  public Optional<? extends SootField> getField(@Nonnull FieldSubSignature subSignature) {
-    return this.getFields().stream()
-        .filter(field -> field.getSubSignature().equals(subSignature))
-        .findAny();
-  }
-
-  /**
-   * Attempts to retrieve the methodRef with the given signature, parameters and return type. If no
-   * matching method can be found, null is returned.
-   *
-   * @return
-   */
-  @Nonnull
-  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
-    return this.getMethods().stream()
-        .filter(method -> method.getSignature().equals(signature))
-        .findAny();
   }
 
   /**
@@ -257,7 +231,8 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
   }
 
   /** This method returns the outer class. */
-  public @Nonnull Optional<? extends ClassType> getOuterClass() {
+  @Nonnull
+  public Optional<? extends ClassType> getOuterClass() {
     return lazyOuterClass.get();
   }
 

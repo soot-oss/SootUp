@@ -70,7 +70,7 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
     if (!aClass.isPresent()) {
       return Optional.empty();
     }
-    return aClass.get().getMethod(signature);
+    return aClass.get().getMethod(signature.getSubSignature());
   }
 
   @Nonnull
@@ -79,7 +79,7 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
     if (!aClass.isPresent()) {
       return Optional.empty();
     }
-    return aClass.get().getField(signature);
+    return aClass.get().getField(signature.getSubSignature());
   }
 
   @Nonnull

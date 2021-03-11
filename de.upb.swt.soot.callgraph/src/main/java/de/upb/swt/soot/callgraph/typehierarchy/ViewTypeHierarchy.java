@@ -61,6 +61,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   @Nonnull private final View<? extends SootClass> view;
 
+  /** to allow caching use Typehierarchy.fromView() to get/create the Typehierarchy. */
   public ViewTypeHierarchy(@Nonnull View<? extends SootClass> view) {
     this.view = view;
   }

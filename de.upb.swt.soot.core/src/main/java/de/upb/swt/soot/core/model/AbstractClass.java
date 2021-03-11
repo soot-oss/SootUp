@@ -54,11 +54,6 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
   public abstract Type getType();
 
   @Nonnull
-  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
-    return this.getMethods().stream().filter(m -> m.getSignature().equals(signature)).findAny();
-  }
-
-  @Nonnull
   public Optional<? extends SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
     return getMethods().stream()
         .filter(m -> m.getSignature().getSubSignature().equals(subSignature))
@@ -69,13 +64,8 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
   public abstract Set<? extends SootMethod> getMethods();
 
   @Nonnull
-  public Optional<? extends SootField> getField(@Nonnull FieldSignature signature) {
-    return this.getFields().stream().filter(f -> f.getSignature().equals(signature)).findAny();
-  }
-
-  @Nonnull
   public Optional<? extends SootField> getField(@Nonnull FieldSubSignature subSignature) {
-    return this.getFields().stream()
+    return getFields().stream()
         .filter(f -> f.getSignature().getSubSignature().equals(subSignature))
         .findAny();
   }
