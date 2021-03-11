@@ -1,4 +1,4 @@
-package de.upb.swt.soot.callgraph;
+package de.upb.swt.soot.callgraph.model;
 
 /*-
  * #%L
@@ -23,14 +23,31 @@ package de.upb.swt.soot.callgraph;
  */
 
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.List;
+import java.util.Set;
 import javax.annotation.Nonnull;
+import org.apache.commons.lang3.tuple.Pair;
 
-public interface CallGraphAlgorithm {
-  @Nonnull
-  CallGraph initialize(@Nonnull List<MethodSignature> entryPoints);
+public interface CallGraph {
 
   @Nonnull
-  CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType);
+  Set<MethodSignature> getMethodSignatures();
+
+  @Nonnull
+  Set<Pair<MethodSignature, MethodSignature>> getEdges();
+
+  @Nonnull
+  Set<MethodSignature> callsFrom(@Nonnull MethodSignature sourceMethod);
+
+  @Nonnull
+  Set<MethodSignature> callsTo(@Nonnull MethodSignature targetMethod);
+
+  boolean containsMethod(@Nonnull MethodSignature method);
+
+  boolean containsCall(
+      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod);
+
+  int callCount();
+
+  @Nonnull
+  MutableCallGraph copy();
 }

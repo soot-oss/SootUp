@@ -3,8 +3,8 @@ package de.upb.swt.soot.test.callgraph;
 import static junit.framework.TestCase.*;
 
 import categories.Java8Test;
-import de.upb.swt.soot.callgraph.CallGraph;
-import de.upb.swt.soot.callgraph.RapidTypeAnalysisAlgorithm;
+import de.upb.swt.soot.callgraph.algorithm.RapidTypeAnalysisAlgorithm;
+import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.java.core.views.JavaView;

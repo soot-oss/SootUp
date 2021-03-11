@@ -2,7 +2,8 @@ package de.upb.swt.soot.test.callgraph;
 
 import static junit.framework.TestCase.*;
 
-import de.upb.swt.soot.callgraph.*;
+import de.upb.swt.soot.callgraph.algorithm.AbstractCallGraphAlgorithm;
+import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;

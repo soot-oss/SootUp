@@ -49,6 +49,11 @@ public class AllocationDotField extends Node {
 
   @Override
   public String toString() {
-    return "AllocationDotField{" + "base=" + base.getType() + ", field=" + field.getSignature() + '}';
+    return "AllocationDotField{"
+        + "base="
+        + base.getType()
+        + ", field="
+        + field.getSignature()
+        + '}';
   }
 }

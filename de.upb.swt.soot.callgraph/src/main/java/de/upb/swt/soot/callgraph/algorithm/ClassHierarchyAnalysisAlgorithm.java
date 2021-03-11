@@ -1,4 +1,4 @@
-package de.upb.swt.soot.callgraph;
+package de.upb.swt.soot.callgraph.algorithm;
 
 /*-
  * #%L
@@ -22,6 +22,7 @@ package de.upb.swt.soot.callgraph;
  * #L%
  */
 
+import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;

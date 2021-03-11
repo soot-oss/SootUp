@@ -52,12 +52,12 @@ public class Node {
     if (pointsToSet != null) {
       if (replacement != this) {
         throw new RuntimeException(
-                "Node " + this + " has replacement " + replacement + " but has points-to set");
+            "Node " + this + " has replacement " + replacement + " but has points-to set");
       }
       return pointsToSet;
     }
     Node rep = getReplacement();
-    if(rep == this){
+    if (rep == this) {
       return Sets.newHashSet();
     }
     return rep.getPointsToSet();

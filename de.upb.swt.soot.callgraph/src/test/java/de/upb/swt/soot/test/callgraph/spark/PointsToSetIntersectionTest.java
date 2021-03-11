@@ -4,9 +4,9 @@ import static junit.framework.TestCase.*;
 
 import categories.Java8Test;
 import com.google.common.collect.Sets;
-import de.upb.swt.soot.callgraph.CallGraph;
-import de.upb.swt.soot.callgraph.CallGraphAlgorithm;
-import de.upb.swt.soot.callgraph.ClassHierarchyAnalysisAlgorithm;
+import de.upb.swt.soot.callgraph.algorithm.CallGraphAlgorithm;
+import de.upb.swt.soot.callgraph.algorithm.ClassHierarchyAnalysisAlgorithm;
+import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.spark.Spark;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;

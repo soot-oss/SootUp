@@ -1,4 +1,4 @@
-package de.upb.swt.soot.callgraph;
+package de.upb.swt.soot.callgraph.model;
 
 /*-
  * #%L
@@ -22,7 +22,6 @@ package de.upb.swt.soot.callgraph;
  * #L%
  */
 
-import afu.org.checkerframework.checker.igj.qual.I;
 import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -32,38 +31,27 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.graph.DefaultDirectedGraph;
 
 public final class GraphBasedCallGraph implements MutableCallGraph {
 
-  private static class Vertex {
-    @Nonnull final MethodSignature methodSignature;
-
-    private Vertex(@Nonnull MethodSignature methodSignature) {
-      this.methodSignature = methodSignature;
-    }
-  }
-
-  private static class Edge {}
-
-  @Nonnull private final DefaultDirectedGraph<Vertex, Edge> graph;
-  @Nonnull private final Map<MethodSignature, Vertex> signatureToVertex;
+  @Nonnull private final DefaultDirectedGraph<CallGraphVertex, CallGraphEdge> graph;
+  @Nonnull private final Map<MethodSignature, CallGraphVertex> signatureToVertex;
   // TODO: [ms] typeToVertices is not used in a useful way, yet?
-  @Nonnull private final Map<JavaClassType, Set<Vertex>> typeToVertices;
+  @Nonnull private final Map<JavaClassType, Set<CallGraphVertex>> typeToVertices;
 
-  GraphBasedCallGraph() {
+  public GraphBasedCallGraph() {
     graph = new DefaultDirectedGraph<>(null, null, false);
     signatureToVertex = new HashMap<>();
     typeToVertices = new HashMap<>();
   }
 
   private GraphBasedCallGraph(
-      @Nonnull DefaultDirectedGraph<Vertex, Edge> graph,
-      @Nonnull Map<MethodSignature, Vertex> signatureToVertex,
-      @Nonnull Map<JavaClassType, Set<Vertex>> typeToVertices) {
+      @Nonnull DefaultDirectedGraph<CallGraphVertex, CallGraphEdge> graph,
+      @Nonnull Map<MethodSignature, CallGraphVertex> signatureToVertex,
+      @Nonnull Map<JavaClassType, Set<CallGraphVertex>> typeToVertices) {
     this.graph = graph;
     this.signatureToVertex = signatureToVertex;
     this.typeToVertices = typeToVertices;
@@ -71,7 +59,7 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
 
   @Override
   public void addMethod(@Nonnull MethodSignature calledMethod) {
-    Vertex v = new Vertex(calledMethod);
+    CallGraphVertex v = new CallGraphVertex(calledMethod);
     graph.addVertex(v);
     signatureToVertex.put(calledMethod, v);
   }
@@ -79,7 +67,7 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   @Override
   public void addCall(
       @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
-    graph.addEdge(vertexOf(sourceMethod), vertexOf(targetMethod), new Edge());
+    graph.addEdge(vertexOf(sourceMethod), vertexOf(targetMethod), new CallGraphEdge(null));
   }
 
   @Nonnull
@@ -90,12 +78,13 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
 
   @Nonnull
   @Override
-  public Set<Pair<MethodSignature, MethodSignature>> getEdges(){
+  public Set<Pair<MethodSignature, MethodSignature>> getEdges() {
     Set<Pair<MethodSignature, MethodSignature>> edges = new HashSet<>();
-    for (Edge edge : graph.edgeSet()) {
-      Vertex edgeSource = graph.getEdgeSource(edge);
-      Vertex edgeTarget = graph.getEdgeTarget(edge);
-      Pair<MethodSignature, MethodSignature> pair = new ImmutablePair<>(edgeSource.methodSignature, edgeTarget.methodSignature);
+    for (CallGraphEdge edge : graph.edgeSet()) {
+      CallGraphVertex edgeSource = graph.getEdgeSource(edge);
+      CallGraphVertex edgeTarget = graph.getEdgeTarget(edge);
+      Pair<MethodSignature, MethodSignature> pair =
+          new ImmutablePair<>(edgeSource.methodSignature, edgeTarget.methodSignature);
       edges.add(pair);
     }
     return edges;
@@ -140,14 +129,14 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   @Override
   public MutableCallGraph copy() {
     return new GraphBasedCallGraph(
-        (DefaultDirectedGraph<Vertex, Edge>) graph.clone(),
+        (DefaultDirectedGraph<CallGraphVertex, CallGraphEdge>) graph.clone(),
         new HashMap<>(signatureToVertex),
         new HashMap<>(typeToVertices));
   }
 
   @Nonnull
-  private Vertex vertexOf(@Nonnull MethodSignature method) {
-    Vertex methodVertex = signatureToVertex.get(method);
+  private CallGraphVertex vertexOf(@Nonnull MethodSignature method) {
+    CallGraphVertex methodVertex = signatureToVertex.get(method);
     Preconditions.checkNotNull(methodVertex, "Node for " + method + " has not been added yet");
     return methodVertex;
   }

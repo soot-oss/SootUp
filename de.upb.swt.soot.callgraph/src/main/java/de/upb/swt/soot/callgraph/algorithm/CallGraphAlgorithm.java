@@ -1,10 +1,10 @@
-package de.upb.swt.soot.callgraph;
+package de.upb.swt.soot.callgraph.algorithm;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2020 Christian Brüggemann, Ben Hermann
+ * Copyright (C) 2019-2020 Linghui Luo, Christian Brüggemann, Ben Hermann, Markus Schmidt
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,26 +22,16 @@ package de.upb.swt.soot.callgraph;
  * #L%
  */
 
-import com.google.common.annotations.Beta;
-import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
-import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.views.View;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-@Beta
-public class OnDemandClassHierarchyAnalysisAlgorithm extends ClassHierarchyAnalysisAlgorithm {
-
-  public OnDemandClassHierarchyAnalysisAlgorithm(
-      View<? extends SootClass> view, TypeHierarchy hierarchy) {
-    super(view, hierarchy);
-  }
+public interface CallGraphAlgorithm {
+  @Nonnull
+  CallGraph initialize(@Nonnull List<MethodSignature> entryPoints);
 
   @Nonnull
-  @Override
-  // FIXME: [ms] nonnull returns null
-  public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
-    return null;
-  }
+  CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType);
 }

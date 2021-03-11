@@ -1,4 +1,4 @@
-package de.upb.swt.soot.callgraph;
+package de.upb.swt.soot.callgraph.model;
 
 /*-
  * #%L

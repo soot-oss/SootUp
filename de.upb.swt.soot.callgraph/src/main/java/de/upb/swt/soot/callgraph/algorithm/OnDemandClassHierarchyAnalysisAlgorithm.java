@@ -1,10 +1,10 @@
-package de.upb.swt.soot.callgraph;
+package de.upb.swt.soot.callgraph.algorithm;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2020 Linghui Luo, Christian Brüggemann, Ben Hermann, Markus Schmidt
+ * Copyright (C) 2019-2020 Christian Brüggemann, Ben Hermann
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,33 +22,27 @@ package de.upb.swt.soot.callgraph;
  * #L%
  */
 
+import com.google.common.annotations.Beta;
+import de.upb.swt.soot.callgraph.model.CallGraph;
+import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.Set;
+import de.upb.swt.soot.core.views.View;
+import java.util.List;
 import javax.annotation.Nonnull;
 
-public interface CallGraph {
+@Beta
+public class OnDemandClassHierarchyAnalysisAlgorithm extends ClassHierarchyAnalysisAlgorithm {
+
+  public OnDemandClassHierarchyAnalysisAlgorithm(
+      View<? extends SootClass> view, TypeHierarchy hierarchy) {
+    super(view, hierarchy);
+  }
 
   @Nonnull
-  Set<MethodSignature> getMethodSignatures();
-
-  @Nonnull
-  Set<Pair<MethodSignature, MethodSignature>> getEdges();
-
-  @Nonnull
-  Set<MethodSignature> callsFrom(@Nonnull MethodSignature sourceMethod);
-
-  @Nonnull
-  Set<MethodSignature> callsTo(@Nonnull MethodSignature targetMethod);
-
-  boolean containsMethod(@Nonnull MethodSignature method);
-
-  boolean containsCall(
-      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod);
-
-  int callCount();
-
-  @Nonnull
-  MutableCallGraph copy();
+  @Override
+  // FIXME: [ms] nonnull returns null
+  public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
+    return null;
+  }
 }

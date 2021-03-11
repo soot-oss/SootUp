@@ -23,7 +23,7 @@ package de.upb.swt.soot.callgraph.spark;
  */
 
 import com.google.common.collect.Sets;
-import de.upb.swt.soot.callgraph.CallGraph;
+import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;

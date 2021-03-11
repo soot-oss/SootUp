@@ -127,9 +127,7 @@ public class PointerAssignmentGraph {
 
   private void addCallTarget(Pair<MethodSignature, MethodSignature> edge) {
     CallEdgeHandler callEdgeHandler = new CallEdgeHandler(view);
-    if(callEdgeHandler.passesParameters(edge)){
-
-    }
+    if (callEdgeHandler.passesParameters(edge)) {}
   }
 
   //  public Graph<SparkVertex, SparkEdge> getGraph() {
