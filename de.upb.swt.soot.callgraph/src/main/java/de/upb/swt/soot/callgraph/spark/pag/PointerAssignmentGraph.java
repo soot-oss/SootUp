@@ -130,110 +130,11 @@ public class PointerAssignmentGraph {
               new IntraproceduralPointerAssignmentGraph(this, tgt);
           intraPAG.addToPAG();
         }
-        addCallTarget(edge);
+        CallTargetHandler callTargetHandler = new CallTargetHandler(this);
+        callTargetHandler.addCallTarget(edge);
     }
   }
 
-  private void addCallTarget(Pair<MethodSignature, CalleeMethodSignature> edge) {
-    MethodSignature source = edge.getKey();
-    CalleeMethodSignature target = edge.getValue();
-    CallGraphEdgeType edgeType = target.getEdgeType();
-    if (!edgeType.passesParameters()) {
-      return;
-    }
-    IntraproceduralPointerAssignmentGraph srcIntraPag = new IntraproceduralPointerAssignmentGraph(this, MethodUtil.methodSignatureToMethod(view, source));
-    IntraproceduralPointerAssignmentGraph tgtIntraPag = new IntraproceduralPointerAssignmentGraph(this, MethodUtil.methodSignatureToMethod(view, target));
-    Pair<Node, Node> pval;
-
-    if(edgeType.isExplicit() || edgeType == CallGraphEdgeType.THREAD || edgeType == CallGraphEdgeType.ASYNCTASK){
-      addCallTarget(srcIntraPag, tgtIntraPag, target.getSourceStmt(), edgeType);
-    }
-
-  }
-
-  private void addCallTarget(IntraproceduralPointerAssignmentGraph sourceIntraPag,
-                             IntraproceduralPointerAssignmentGraph targetIntraPag,
-                             Stmt sourceStmt, CallGraphEdgeType edgeType){
-    MethodNodeFactory sourceNodeFactory = sourceIntraPag.getNodeFactory();
-    MethodNodeFactory targetNodeFactory = targetIntraPag.getNodeFactory();
-    AbstractInvokeExpr invokeExpr = sourceStmt.getInvokeExpr();
-
-    handleCallTargetParams(sourceIntraPag, edgeType, sourceNodeFactory, targetNodeFactory, invokeExpr);
-
-    handleCallTargetInstanceInvoke(sourceIntraPag, edgeType, sourceNodeFactory, targetNodeFactory, invokeExpr);
-
-    handleCallTargetAssign(sourceIntraPag, sourceStmt, edgeType, sourceNodeFactory, targetNodeFactory, invokeExpr);
-  }
-
-  private void handleCallTargetParams(IntraproceduralPointerAssignmentGraph sourceIntraPag, CallGraphEdgeType edgeType, MethodNodeFactory sourceNodeFactory, MethodNodeFactory targetNodeFactory, AbstractInvokeExpr invokeExpr) {
-    int numArgs = invokeExpr.getArgCount();
-    for(int i=0; i<numArgs; i++){
-      Value arg = invokeExpr.getArg(i);
-      if(!(arg.getType() instanceof ReferenceType)){
-        continue;
-      }
-      if(arg instanceof NullConstant){
-        continue;
-      }
-      Node argNode = sourceNodeFactory.getNode(arg);
-      //TODO: Parameterize argNode
-      argNode = argNode.getReplacement();
-
-      Node param = targetNodeFactory.caseParameter(i);
-      //TODO: Parameterize param
-      param = param.getReplacement();
-
-      addInterProceduralCallTarget(sourceIntraPag, edgeType, invokeExpr, argNode, param);
-    }
-  }
-
-  private void handleCallTargetInstanceInvoke(IntraproceduralPointerAssignmentGraph sourceIntraPag, CallGraphEdgeType edgeType, MethodNodeFactory sourceNodeFactory, MethodNodeFactory targetNodeFactory, AbstractInvokeExpr invokeExpr) {
-    boolean isVirtualCall = callAssigns.containsKey(invokeExpr);
-    if(invokeExpr instanceof AbstractInstanceInvokeExpr){
-      AbstractInstanceInvokeExpr instanceInvokeExpr = (AbstractInstanceInvokeExpr) invokeExpr;
-
-      Node baseNode = sourceNodeFactory.getNode(instanceInvokeExpr.getBase());
-      // TODO: Parameterize baseNode
-      baseNode = baseNode.getReplacement();
-
-      Node thisRef = targetNodeFactory.caseThis();
-      // TODO: Parameterize thisRef
-      thisRef = thisRef.getReplacement();
-      addInterProceduralCallTarget(sourceIntraPag, edgeType, invokeExpr, baseNode, thisRef);
-      if(isVirtualCall && !virtualCallsToReceivers.containsKey(invokeExpr)){
-        virtualCallsToReceivers.put(invokeExpr, baseNode);
-      }
-    }
-  }
-
-  private void handleCallTargetAssign(IntraproceduralPointerAssignmentGraph sourceIntraPag, Stmt sourceStmt, CallGraphEdgeType edgeType, MethodNodeFactory sourceNodeFactory, MethodNodeFactory targetNodeFactory, AbstractInvokeExpr invokeExpr) {
-    if(sourceStmt instanceof JAssignStmt){
-      Value target = ((JAssignStmt) sourceStmt).getLeftOp();
-      if(target.getType() instanceof ReferenceType && !(target instanceof NullConstant)){
-        Node targetNode = sourceNodeFactory.getNode(target);
-        // TODO: parameterize targetNode
-        targetNode = targetNode.getReplacement();
-
-        Node returnNode = targetNodeFactory.caseReturn();
-        // TODO: parameterize returnNode
-        returnNode = returnNode.getReplacement();
-        addInterProceduralCallTarget(sourceIntraPag, edgeType, invokeExpr, returnNode, targetNode);
-      }
-    }
-  }
-
-  private void addInterProceduralCallTarget(IntraproceduralPointerAssignmentGraph sourceIntraPag, CallGraphEdgeType edgeType, AbstractInvokeExpr invokeExpr, Node sourceNode, Node targetNode) {
-    addEdge(sourceNode, targetNode);
-    Pair<Node, Node> pval = addInterproceduralAssignment(sourceNode, targetNode, edgeType);
-    callAssigns.put(invokeExpr, pval);
-    callToMethod.put(invokeExpr, sourceIntraPag.getMethod());
-  }
-
-  public Pair<Node, Node> addInterproceduralAssignment(Node source, Node target, CallGraphEdgeType edgeType){
-    Pair<Node, Node> val = new ImmutablePair<>(source, target);
-    // TODO: runGeomPTA
-    return val;
-  }
 
   public void addEdge(Node source, Node target) {
     internalEdges.addEdge(source, target);
@@ -428,5 +329,17 @@ public class PointerAssignmentGraph {
 
   public void setMaxFinishingNumber(int maxFinishingNumber) {
     this.maxFinishingNumber = maxFinishingNumber;
+  }
+
+  public Map<AbstractInvokeExpr, Pair<Node, Node>> getCallAssigns() {
+    return callAssigns;
+  }
+
+  public Map<AbstractInvokeExpr, SootMethod> getCallToMethod() {
+    return callToMethod;
+  }
+
+  public Map<AbstractInvokeExpr, Node> getVirtualCallsToReceivers() {
+    return virtualCallsToReceivers;
   }
 }
