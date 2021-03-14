@@ -32,8 +32,10 @@ public class CallTargetHandler {
         if (!edgeType.passesParameters()) {
             return;
         }
-        IntraproceduralPointerAssignmentGraph srcIntraPag = new IntraproceduralPointerAssignmentGraph(pag, MethodUtil.methodSignatureToMethod(pag.getView(), source));
-        IntraproceduralPointerAssignmentGraph tgtIntraPag = new IntraproceduralPointerAssignmentGraph(pag, MethodUtil.methodSignatureToMethod(pag.getView(), target));
+        IntraproceduralPointerAssignmentGraph srcIntraPag = IntraproceduralPointerAssignmentGraph.getInstance(pag,
+                MethodUtil.methodSignatureToMethod(pag.getView(), source));
+        IntraproceduralPointerAssignmentGraph tgtIntraPag = IntraproceduralPointerAssignmentGraph.getInstance(pag,
+                MethodUtil.methodSignatureToMethod(pag.getView(), target.getMethodSignature()));
         Pair<Node, Node> pval;
 
         if(edgeType.isExplicit() || edgeType == CallGraphEdgeType.THREAD || edgeType == CallGraphEdgeType.ASYNCTASK){

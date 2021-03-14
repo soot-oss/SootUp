@@ -7,9 +7,10 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 /**
  * Method Signature with its calling CallGraphEdgeType
  */
-public class CalleeMethodSignature extends MethodSignature {
+public class CalleeMethodSignature {
 
     private CallGraphEdgeType edgeType;
+    private MethodSignature methodSignature;
 
     /**
      * The unit at which the call occurs; may be null for calls not occurring at a specific statement (eg. calls in native
@@ -18,9 +19,13 @@ public class CalleeMethodSignature extends MethodSignature {
     private Stmt sourceStmt;
 
     public CalleeMethodSignature(MethodSignature methodSignature, CallGraphEdgeType edgeType, Stmt sourceStmt){
-        super(methodSignature.getDeclClassType(), methodSignature.getSubSignature());
+        this.methodSignature = methodSignature;
         this.edgeType = edgeType;
         this.sourceStmt = sourceStmt;
+    }
+
+    public MethodSignature getMethodSignature() {
+        return methodSignature;
     }
 
     public CallGraphEdgeType getEdgeType() {

@@ -89,10 +89,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       invocationTargets.forEach(
           t -> {
             if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
-            if (!cg.containsMethod(t)) cg.addMethod(t);
-            if (!cg.containsCall(currentMethodSignature, t)) {
-              cg.addCall(currentMethodSignature, t);
-              workList.push(t);
+            if (!cg.containsMethod(t.getMethodSignature())) cg.addMethod(t.getMethodSignature());
+            if (!cg.containsCall(currentMethodSignature, t.getMethodSignature())) {
+              cg.addCall(currentMethodSignature, t.getMethodSignature(), new CallGraphEdge(t.getEdgeType(), t.getSourceStmt()));
+              workList.push(t.getMethodSignature());
             }
           });
       processed.add(currentMethodSignature);
@@ -201,7 +201,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   clazz.getMethod(overriddenMethodSig.getSubSignature()).get().getSignature();
 
               for (MethodSignature callingMethodSig : updated.callsTo(overriddenMethodSig)) {
-                updated.addCall(callingMethodSig, overridingMethodSig);
+                updated.addCall(callingMethodSig, overridingMethodSig, new CallGraphEdge());
               }
             });
 
