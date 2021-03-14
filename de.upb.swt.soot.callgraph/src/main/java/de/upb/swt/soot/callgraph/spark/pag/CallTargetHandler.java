@@ -13,6 +13,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ReferenceType;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -37,6 +38,23 @@ public class CallTargetHandler {
 
         if(edgeType.isExplicit() || edgeType == CallGraphEdgeType.THREAD || edgeType == CallGraphEdgeType.ASYNCTASK){
             addCallTarget(srcIntraPag, tgtIntraPag, target.getSourceStmt(), edgeType);
+        } else if(edgeType == CallGraphEdgeType.EXECUTOR){
+            // TODO: handle other types of edges
+            throw new NotImplementedException("EdgeType: " + edgeType.toString());
+        } else if(edgeType == CallGraphEdgeType.HANDLER){
+            throw new NotImplementedException("EdgeType: " + edgeType.toString());
+        } else if(edgeType == CallGraphEdgeType.PRIVILEGED){
+            throw new NotImplementedException("EdgeType: " + edgeType.toString());
+        } else if(edgeType == CallGraphEdgeType.FINALIZE){
+            throw new NotImplementedException("EdgeType: " + edgeType.toString());
+        } else if(edgeType == CallGraphEdgeType.NEWINSTANCE){
+            throw new NotImplementedException("EdgeType: " + edgeType.toString());
+        } else if(edgeType == CallGraphEdgeType.REFL_INVOKE){
+            throw new NotImplementedException("EdgeType: " + edgeType.toString());
+        } else if(edgeType == CallGraphEdgeType.REFL_CLASS_NEWINSTANCE || edgeType == CallGraphEdgeType.REFL_CONSTR_NEWINSTANCE){
+            throw new NotImplementedException("EdgeType: " + edgeType.toString());
+        } else {
+            throw new RuntimeException("Unhandled edge " + edgeType);
         }
 
     }

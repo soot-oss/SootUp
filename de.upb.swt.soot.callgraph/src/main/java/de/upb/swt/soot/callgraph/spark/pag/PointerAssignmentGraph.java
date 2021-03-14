@@ -26,36 +26,27 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import de.upb.swt.soot.callgraph.MethodUtil;
 import de.upb.swt.soot.callgraph.model.CallGraph;
-import de.upb.swt.soot.callgraph.model.CallGraphEdgeType;
 import de.upb.swt.soot.callgraph.model.CalleeMethodSignature;
 import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
-import de.upb.swt.soot.callgraph.spark.builder.MethodNodeFactory;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
-import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
-import de.upb.swt.soot.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
-import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaSootClass;
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.List;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.text.MessageFormat;
+import java.util.*;
 
 public class PointerAssignmentGraph {
 
@@ -116,7 +107,6 @@ public class PointerAssignmentGraph {
         }
       }
     }
-
     handleCallEdges();
   }
 
