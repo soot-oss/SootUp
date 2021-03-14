@@ -156,9 +156,8 @@ public class PointerAssignmentGraph {
     MethodNodeFactory sourceNodeFactory = sourceIntraPag.getNodeFactory();
     MethodNodeFactory targetNodeFactory = targetIntraPag.getNodeFactory();
     AbstractInvokeExpr invokeExpr = sourceStmt.getInvokeExpr();
-    boolean isVirtualCall = callAssigns.containsKey(invokeExpr);
     handleCallTargetParams(sourceIntraPag, edgeType, sourceNodeFactory, targetNodeFactory, invokeExpr);
-    handleInstanceInvokeCallTarget(sourceIntraPag, edgeType, sourceNodeFactory, targetNodeFactory, invokeExpr, isVirtualCall);
+    handleInstanceInvokeCallTarget(sourceIntraPag, edgeType, sourceNodeFactory, targetNodeFactory, invokeExpr);
   }
 
   private void handleCallTargetParams(IntraproceduralPointerAssignmentGraph sourceIntraPag, CallGraphEdgeType edgeType, MethodNodeFactory sourceNodeFactory, MethodNodeFactory targetNodeFactory, AbstractInvokeExpr invokeExpr) {
@@ -183,7 +182,7 @@ public class PointerAssignmentGraph {
     }
   }
 
-  private void handleInstanceInvokeCallTarget(IntraproceduralPointerAssignmentGraph sourceIntraPag, CallGraphEdgeType edgeType, MethodNodeFactory sourceNodeFactory, MethodNodeFactory targetNodeFactory, AbstractInvokeExpr invokeExpr, boolean isVirtualCall) {
+  private void handleInstanceInvokeCallTarget(IntraproceduralPointerAssignmentGraph sourceIntraPag, CallGraphEdgeType edgeType, MethodNodeFactory sourceNodeFactory, MethodNodeFactory targetNodeFactory, AbstractInvokeExpr invokeExpr) {
     if(invokeExpr instanceof AbstractInstanceInvokeExpr){
       AbstractInstanceInvokeExpr instanceInvokeExpr = (AbstractInstanceInvokeExpr) invokeExpr;
 
@@ -195,7 +194,7 @@ public class PointerAssignmentGraph {
       // TODO: Parameterize thisRef
       thisRef = thisRef.getReplacement();
       addInterProceduralCallTarget(sourceIntraPag, edgeType, invokeExpr, baseNode, thisRef);
-      if(isVirtualCall && !virtualCallsToReceivers.containsKey(invokeExpr)){
+      if(callAssigns.containsKey(invokeExpr) && !virtualCallsToReceivers.containsKey(invokeExpr)){
         virtualCallsToReceivers.put(invokeExpr, baseNode);
       }
     }
