@@ -125,4 +125,10 @@ public class IntraproceduralPointerAssignmentGraph {
       addInEdge(edge.getKey(), edge.getValue());
     }
   }
+
+  //TODO: parameterize context
+
+  public MethodNodeFactory getNodeFactory() {
+    return nodeFactory;
+  }
 }

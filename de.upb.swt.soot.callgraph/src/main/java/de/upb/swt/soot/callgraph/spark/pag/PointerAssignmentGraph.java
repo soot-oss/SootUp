@@ -29,26 +29,30 @@ import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.model.CallGraphEdgeType;
 import de.upb.swt.soot.callgraph.model.CalleeMethodSignature;
 import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
+import de.upb.swt.soot.callgraph.spark.builder.MethodNodeFactory;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
+import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaSootClass;
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.List;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.text.MessageFormat;
+import java.util.*;
 
 public class PointerAssignmentGraph {
 
@@ -88,6 +92,8 @@ public class PointerAssignmentGraph {
   private InternalEdges internalEdges = new InternalEdges();
   private final List<VariableNode> variableNodes = new ArrayList<>();
   private int maxFinishingNumber = 0;
+  private Map<AbstractInvokeExpr, Pair<Node, Node>> callAssigns = new HashMap<>();
+  private Map<AbstractInvokeExpr, SootMethod> callToMethod = new HashMap<>();
 
   public PointerAssignmentGraph(View<? extends SootClass> view, CallGraph callGraph) {
     this.view = view;
@@ -136,11 +142,52 @@ public class PointerAssignmentGraph {
     Pair<Node, Node> pval;
 
     if(edgeType.isExplicit() || edgeType == CallGraphEdgeType.THREAD || edgeType == CallGraphEdgeType.ASYNCTASK){
-      // addCallTarget(srcIntraPag, tgtIntraPag, );
+      addCallTarget(srcIntraPag, tgtIntraPag, target.getSourceStmt(), edgeType);
     }
 
   }
 
+  private void addCallTarget(IntraproceduralPointerAssignmentGraph sourceIntraPag,
+                             IntraproceduralPointerAssignmentGraph targetIntraPag,
+                             Stmt sourceStmt, CallGraphEdgeType edgeType){
+    MethodNodeFactory sourceNodeFactory = sourceIntraPag.getNodeFactory();
+    MethodNodeFactory targetNodeFactory = targetIntraPag.getNodeFactory();
+    AbstractInvokeExpr invokeExpr = sourceStmt.getInvokeExpr();
+    boolean isVirtualCall = callAssigns.containsKey(invokeExpr);
+    mapCallTargetParams(sourceIntraPag, edgeType, sourceNodeFactory, targetNodeFactory, invokeExpr);
+
+  }
+
+  private void mapCallTargetParams(IntraproceduralPointerAssignmentGraph sourceIntraPag, CallGraphEdgeType edgeType, MethodNodeFactory sourceNodeFactory, MethodNodeFactory targetNodeFactory, AbstractInvokeExpr invokeExpr) {
+    int numArgs = invokeExpr.getArgCount();
+    for(int i=0; i<numArgs; i++){
+      Value arg = invokeExpr.getArg(i);
+      if(!(arg.getType() instanceof ReferenceType)){
+        continue;
+      }
+      if(arg instanceof NullConstant){
+        continue;
+      }
+      Node argNode = sourceNodeFactory.getNode(arg);
+      //TODO: Parameterize argNode
+      argNode = argNode.getReplacement();
+
+      Node param = targetNodeFactory.caseParameter(i);
+      //TODO: Parameterize param
+      param = param.getReplacement();
+
+      addEdge(argNode, param);
+      Pair<Node, Node> pval = addInterproceduralAssignment(argNode, param, edgeType);
+      callAssigns.put(invokeExpr, pval);
+      callToMethod.put(invokeExpr, sourceIntraPag.getMethod());
+    }
+  }
+
+  public Pair<Node, Node> addInterproceduralAssignment(Node source, Node target, CallGraphEdgeType edgeType){
+    Pair<Node, Node> val = new ImmutablePair<>(source, target);
+    // TODO: runGeomPTA
+    return val;
+  }
 
   public void addEdge(Node source, Node target) {
     internalEdges.addEdge(source, target);
