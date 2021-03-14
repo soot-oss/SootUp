@@ -34,6 +34,7 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -135,15 +136,11 @@ public class PointerAssignmentGraph {
     Pair<Node, Node> pval;
 
     if(edgeType.isExplicit() || edgeType == CallGraphEdgeType.THREAD || edgeType == CallGraphEdgeType.ASYNCTASK){
-      // TODO: incorporate sourceStmt
       // addCallTarget(srcIntraPag, tgtIntraPag, );
     }
 
   }
 
-  //  public Graph<SparkVertex, SparkEdge> getGraph() {
-  //    return graph;
-  //  }
 
   public void addEdge(Node source, Node target) {
     internalEdges.addEdge(source, target);

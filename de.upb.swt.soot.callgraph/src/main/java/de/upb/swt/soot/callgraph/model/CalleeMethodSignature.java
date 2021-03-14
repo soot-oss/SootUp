@@ -17,12 +17,17 @@ public class CalleeMethodSignature extends MethodSignature {
      */
     private Stmt sourceStmt;
 
-    public CalleeMethodSignature(MethodSignature methodSignature, CallGraphEdgeType edgeType){
+    public CalleeMethodSignature(MethodSignature methodSignature, CallGraphEdgeType edgeType, Stmt sourceStmt){
         super(methodSignature.getDeclClassType(), methodSignature.getSubSignature());
         this.edgeType = edgeType;
+        this.sourceStmt = sourceStmt;
     }
 
     public CallGraphEdgeType getEdgeType() {
         return edgeType;
+    }
+
+    public Stmt getSourceStmt() {
+        return sourceStmt;
     }
 }

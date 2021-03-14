@@ -22,17 +22,28 @@ package de.upb.swt.soot.callgraph.model;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import org.jgrapht.graph.DefaultEdge;
 
 public class CallGraphEdge extends DefaultEdge {
   private CallGraphEdgeType edgeType;
+  private Stmt sourceStmt;
 
-  public CallGraphEdge(CallGraphEdgeType edgeType) {
+  public CallGraphEdge(){
+
+  }
+
+  public CallGraphEdge(CallGraphEdgeType edgeType, Stmt sourceStmt) {
     this.edgeType = edgeType;
+    this.sourceStmt = sourceStmt;
   }
 
   public CallGraphEdgeType getEdgeType() {
     return edgeType;
+  }
+
+  public Stmt getSourceStmt() {
+    return sourceStmt;
   }
 
   @Override

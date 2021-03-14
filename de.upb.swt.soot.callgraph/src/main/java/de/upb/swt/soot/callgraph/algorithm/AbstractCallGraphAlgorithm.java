@@ -112,7 +112,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         if(stmt.containsInvokeExpr()){
           Set<MethodSignature> invokeSet = resolveCall(currentMethodCandidate, stmt.getInvokeExpr());
           CallGraphEdgeType edgeType = findCallGraphEdgeType(stmt.getInvokeExpr());
-          invokeSet.forEach(e -> resolvedCalls.add(new CalleeMethodSignature(e, edgeType)));
+          invokeSet.forEach(e -> resolvedCalls.add(new CalleeMethodSignature(e, edgeType, stmt)));
         }
       }
       return resolvedCalls.stream();

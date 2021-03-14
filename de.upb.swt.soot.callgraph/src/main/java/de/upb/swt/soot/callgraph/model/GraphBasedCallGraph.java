@@ -69,9 +69,9 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
       @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
     // TODO: would it be better if targetMethod is always CalleeMethodSignature?
     if(targetMethod instanceof CalleeMethodSignature){
-      graph.addEdge(vertexOf(sourceMethod), vertexOf(targetMethod), new CallGraphEdge(((CalleeMethodSignature)targetMethod).getEdgeType()));
+      graph.addEdge(vertexOf(sourceMethod), vertexOf(targetMethod), new CallGraphEdge(((CalleeMethodSignature)targetMethod).getEdgeType(), ((CalleeMethodSignature) targetMethod).getSourceStmt()));
     } else{
-      graph.addEdge(vertexOf(sourceMethod), vertexOf(targetMethod), new CallGraphEdge(null));
+      graph.addEdge(vertexOf(sourceMethod), vertexOf(targetMethod), new CallGraphEdge());
     }
 
   }
@@ -90,7 +90,7 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
       CallGraphVertex edgeSource = graph.getEdgeSource(edge);
       CallGraphVertex edgeTarget = graph.getEdgeTarget(edge);
       Pair<MethodSignature, CalleeMethodSignature> pair =
-          new ImmutablePair<>(edgeSource.methodSignature, new CalleeMethodSignature(edgeTarget.methodSignature, edge.getEdgeType()));
+          new ImmutablePair<>(edgeSource.methodSignature, new CalleeMethodSignature(edgeTarget.methodSignature, edge.getEdgeType(), edge.getSourceStmt()));
       edges.add(pair);
     }
     return edges;
