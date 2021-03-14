@@ -89,6 +89,8 @@ public class PointerAssignmentGraph {
   private Map<AbstractInvokeExpr, Pair<Node, Node>> callAssigns = new HashMap<>();
   private Map<AbstractInvokeExpr, SootMethod> callToMethod = new HashMap<>();
   private Map<AbstractInvokeExpr, Node> virtualCallsToReceivers = new HashMap<>();
+  private Map<SootMethod, IntraproceduralPointerAssignmentGraph> methodToIntraPag = new HashMap<>();
+  private Set<IntraproceduralPointerAssignmentGraph> addedIntraPags = new HashSet<>();
 
   public PointerAssignmentGraph(View<? extends SootClass> view, CallGraph callGraph) {
     this.view = view;
@@ -102,7 +104,7 @@ public class PointerAssignmentGraph {
       for (SootMethod method : clazz.getMethods()) {
         if (!method.isAbstract() && callGraph.containsMethod(method.getSignature())) {
           IntraproceduralPointerAssignmentGraph intraPAG =
-              new IntraproceduralPointerAssignmentGraph(this, method);
+              IntraproceduralPointerAssignmentGraph.getInstance(this, method);
           intraPAG.addToPAG();
         }
       }
@@ -114,10 +116,10 @@ public class PointerAssignmentGraph {
     Iterator<Pair<MethodSignature, CalleeMethodSignature>> iter = callGraph.getEdges().iterator();
     while (iter.hasNext()) {
       Pair<MethodSignature, CalleeMethodSignature> edge = iter.next();
-      SootMethod tgt = MethodUtil.methodSignatureToMethod(view, edge.getValue());
+      SootMethod tgt = MethodUtil.methodSignatureToMethod(view, edge.getValue().getMethodSignature());
         if (tgt.isConcrete() || tgt.isNative()) {
           IntraproceduralPointerAssignmentGraph intraPAG =
-              new IntraproceduralPointerAssignmentGraph(this, tgt);
+              IntraproceduralPointerAssignmentGraph.getInstance(this, tgt);
           intraPAG.addToPAG();
         }
         CallTargetHandler callTargetHandler = new CallTargetHandler(this);
@@ -331,5 +333,13 @@ public class PointerAssignmentGraph {
 
   public Map<AbstractInvokeExpr, Node> getVirtualCallsToReceivers() {
     return virtualCallsToReceivers;
+  }
+
+  public Set<IntraproceduralPointerAssignmentGraph> getAddedIntraPags() {
+    return addedIntraPags;
+  }
+
+  public Map<SootMethod, IntraproceduralPointerAssignmentGraph> getMethodToIntraPag() {
+    return methodToIntraPag;
   }
 }
