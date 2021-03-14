@@ -126,7 +126,11 @@ public class IntraproceduralPointerAssignmentGraph {
     }
   }
 
-  //TODO: parameterize context
+
+  public Node parameterize(Node node){
+    //TODO: parameterize context
+    return node;
+  }
 
   public MethodNodeFactory getNodeFactory() {
     return nodeFactory;

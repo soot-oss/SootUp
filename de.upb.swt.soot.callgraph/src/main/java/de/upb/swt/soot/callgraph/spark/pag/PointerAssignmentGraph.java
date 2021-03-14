@@ -35,6 +35,7 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -46,13 +47,14 @@ import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.List;
+
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.text.MessageFormat;
-import java.util.*;
 
 public class PointerAssignmentGraph {
 
@@ -94,6 +96,7 @@ public class PointerAssignmentGraph {
   private int maxFinishingNumber = 0;
   private Map<AbstractInvokeExpr, Pair<Node, Node>> callAssigns = new HashMap<>();
   private Map<AbstractInvokeExpr, SootMethod> callToMethod = new HashMap<>();
+  private Map<AbstractInvokeExpr, Node> virtualCallsToReceivers = new HashMap<>();
 
   public PointerAssignmentGraph(View<? extends SootClass> view, CallGraph callGraph) {
     this.view = view;
@@ -154,11 +157,11 @@ public class PointerAssignmentGraph {
     MethodNodeFactory targetNodeFactory = targetIntraPag.getNodeFactory();
     AbstractInvokeExpr invokeExpr = sourceStmt.getInvokeExpr();
     boolean isVirtualCall = callAssigns.containsKey(invokeExpr);
-    mapCallTargetParams(sourceIntraPag, edgeType, sourceNodeFactory, targetNodeFactory, invokeExpr);
-
+    handleCallTargetParams(sourceIntraPag, edgeType, sourceNodeFactory, targetNodeFactory, invokeExpr);
+    handleInstanceInvokeCallTarget(sourceIntraPag, edgeType, sourceNodeFactory, targetNodeFactory, invokeExpr, isVirtualCall);
   }
 
-  private void mapCallTargetParams(IntraproceduralPointerAssignmentGraph sourceIntraPag, CallGraphEdgeType edgeType, MethodNodeFactory sourceNodeFactory, MethodNodeFactory targetNodeFactory, AbstractInvokeExpr invokeExpr) {
+  private void handleCallTargetParams(IntraproceduralPointerAssignmentGraph sourceIntraPag, CallGraphEdgeType edgeType, MethodNodeFactory sourceNodeFactory, MethodNodeFactory targetNodeFactory, AbstractInvokeExpr invokeExpr) {
     int numArgs = invokeExpr.getArgCount();
     for(int i=0; i<numArgs; i++){
       Value arg = invokeExpr.getArg(i);
@@ -176,11 +179,33 @@ public class PointerAssignmentGraph {
       //TODO: Parameterize param
       param = param.getReplacement();
 
-      addEdge(argNode, param);
-      Pair<Node, Node> pval = addInterproceduralAssignment(argNode, param, edgeType);
-      callAssigns.put(invokeExpr, pval);
-      callToMethod.put(invokeExpr, sourceIntraPag.getMethod());
+      addInterProceduralCallTarget(sourceIntraPag, edgeType, invokeExpr, argNode, param);
     }
+  }
+
+  private void handleInstanceInvokeCallTarget(IntraproceduralPointerAssignmentGraph sourceIntraPag, CallGraphEdgeType edgeType, MethodNodeFactory sourceNodeFactory, MethodNodeFactory targetNodeFactory, AbstractInvokeExpr invokeExpr, boolean isVirtualCall) {
+    if(invokeExpr instanceof AbstractInstanceInvokeExpr){
+      AbstractInstanceInvokeExpr instanceInvokeExpr = (AbstractInstanceInvokeExpr) invokeExpr;
+
+      Node baseNode = sourceNodeFactory.getNode(instanceInvokeExpr.getBase());
+      // TODO: Parameterize baseNode
+      baseNode = baseNode.getReplacement();
+
+      Node thisRef = targetNodeFactory.caseThis();
+      // TODO: Parameterize thisRef
+      thisRef = thisRef.getReplacement();
+      addInterProceduralCallTarget(sourceIntraPag, edgeType, invokeExpr, baseNode, thisRef);
+      if(isVirtualCall && !virtualCallsToReceivers.containsKey(invokeExpr)){
+        virtualCallsToReceivers.put(invokeExpr, baseNode);
+      }
+    }
+  }
+
+  private void addInterProceduralCallTarget(IntraproceduralPointerAssignmentGraph sourceIntraPag, CallGraphEdgeType edgeType, AbstractInvokeExpr invokeExpr, Node argNode, Node param) {
+    addEdge(argNode, param);
+    Pair<Node, Node> pval = addInterproceduralAssignment(argNode, param, edgeType);
+    callAssigns.put(invokeExpr, pval);
+    callToMethod.put(invokeExpr, sourceIntraPag.getMethod());
   }
 
   public Pair<Node, Node> addInterproceduralAssignment(Node source, Node target, CallGraphEdgeType edgeType){
