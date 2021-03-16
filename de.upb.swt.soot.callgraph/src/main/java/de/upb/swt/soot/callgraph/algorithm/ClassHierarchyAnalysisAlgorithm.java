@@ -33,7 +33,6 @@ import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.views.View;
 import java.util.*;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
@@ -60,15 +59,16 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
     Set<MethodSignature> result = Sets.newHashSet(targetMethodSignature);
 
     SootMethod targetMethod =
-            view.getClass(targetMethodSignature.getDeclClassType())
-                .flatMap(clazz -> clazz.getMethod(targetMethodSignature))
-                .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
+        view.getClass(targetMethodSignature.getDeclClassType())
+            .flatMap(clazz -> clazz.getMethod(targetMethodSignature))
+            .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
 
     if (Modifier.isStatic(targetMethod.getModifiers())
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return result;
     } else {
-      Set<MethodSignature> implAndOverrides = MethodDispatchResolver.resolveAbstractDispatch(view, targetMethodSignature);
+      Set<MethodSignature> implAndOverrides =
+          MethodDispatchResolver.resolveAbstractDispatch(view, targetMethodSignature);
       result.addAll(implAndOverrides);
       return result;
     }

@@ -41,12 +41,11 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import java.text.MessageFormat;
+import java.util.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.text.MessageFormat;
-import java.util.*;
 
 public class PointerAssignmentGraph {
 
@@ -116,17 +115,17 @@ public class PointerAssignmentGraph {
     Iterator<Pair<MethodSignature, CalleeMethodSignature>> iter = callGraph.getEdges().iterator();
     while (iter.hasNext()) {
       Pair<MethodSignature, CalleeMethodSignature> edge = iter.next();
-      SootMethod tgt = MethodUtil.methodSignatureToMethod(view, edge.getValue().getMethodSignature());
-        if (tgt.isConcrete() || tgt.isNative()) {
-          IntraproceduralPointerAssignmentGraph intraPAG =
-              IntraproceduralPointerAssignmentGraph.getInstance(this, tgt);
-          intraPAG.addToPAG();
-        }
-        CallTargetHandler callTargetHandler = new CallTargetHandler(this);
-        callTargetHandler.addCallTarget(edge);
+      SootMethod tgt =
+          MethodUtil.methodSignatureToMethod(view, edge.getValue().getMethodSignature());
+      if (tgt.isConcrete() || tgt.isNative()) {
+        IntraproceduralPointerAssignmentGraph intraPAG =
+            IntraproceduralPointerAssignmentGraph.getInstance(this, tgt);
+        intraPAG.addToPAG();
+      }
+      CallTargetHandler callTargetHandler = new CallTargetHandler(this);
+      callTargetHandler.addCallTarget(edge);
     }
   }
-
 
   public void addEdge(Node source, Node target) {
     internalEdges.addEdge(source, target);

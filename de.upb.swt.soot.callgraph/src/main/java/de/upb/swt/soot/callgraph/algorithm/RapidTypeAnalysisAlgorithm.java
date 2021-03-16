@@ -33,7 +33,6 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
@@ -81,15 +80,16 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     collectInstantiatedClassesInMethod(method);
 
     SootMethod targetMethod =
-            view.getClass(targetMethodSignature.getDeclClassType())
-                .flatMap(clazz -> clazz.getMethod(targetMethodSignature))
-                .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
+        view.getClass(targetMethodSignature.getDeclClassType())
+            .flatMap(clazz -> clazz.getMethod(targetMethodSignature))
+            .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
 
     if (Modifier.isStatic(targetMethod.getModifiers())
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return result;
     } else {
-      Set<MethodSignature> implAndOverrides = MethodDispatchResolver.resolveAbstractDispatchInClasses(
+      Set<MethodSignature> implAndOverrides =
+          MethodDispatchResolver.resolveAbstractDispatchInClasses(
               view, targetMethodSignature, instantiatedClasses);
       result.addAll(implAndOverrides);
       return result;

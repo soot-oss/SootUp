@@ -36,15 +36,10 @@ import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import jdk.nashorn.internal.codegen.CompilerConstants;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
@@ -91,7 +86,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
             if (!cg.containsMethod(t.getMethodSignature())) cg.addMethod(t.getMethodSignature());
             if (!cg.containsCall(currentMethodSignature, t.getMethodSignature())) {
-              cg.addCall(currentMethodSignature, t.getMethodSignature(), new CallGraphEdge(t.getEdgeType(), t.getSourceStmt()));
+              cg.addCall(
+                  currentMethodSignature,
+                  t.getMethodSignature(),
+                  new CallGraphEdge(t.getEdgeType(), t.getSourceStmt()));
               workList.push(t.getMethodSignature());
             }
           });
@@ -109,8 +107,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       Set<CalleeMethodSignature> resolvedCalls = new HashSet<>();
       Set<Stmt> stmts = currentMethodCandidate.getBody().getStmtGraph().nodes();
       for (Stmt stmt : stmts) {
-        if(stmt.containsInvokeExpr()){
-          Set<MethodSignature> invokeSet = resolveCall(currentMethodCandidate, stmt.getInvokeExpr());
+        if (stmt.containsInvokeExpr()) {
+          Set<MethodSignature> invokeSet =
+              resolveCall(currentMethodCandidate, stmt.getInvokeExpr());
           CallGraphEdgeType edgeType = findCallGraphEdgeType(stmt.getInvokeExpr());
           invokeSet.forEach(e -> resolvedCalls.add(new CalleeMethodSignature(e, edgeType, stmt)));
         }
@@ -121,7 +120,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
   }
 
-  private CallGraphEdgeType findCallGraphEdgeType(AbstractInvokeExpr invokeExpr){
+  private CallGraphEdgeType findCallGraphEdgeType(AbstractInvokeExpr invokeExpr) {
     if (invokeExpr instanceof JVirtualInvokeExpr) {
       return CallGraphEdgeType.VIRTUAL;
     } else if (invokeExpr instanceof JSpecialInvokeExpr) {

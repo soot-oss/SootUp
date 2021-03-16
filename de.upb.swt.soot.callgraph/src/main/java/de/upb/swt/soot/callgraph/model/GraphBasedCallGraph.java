@@ -66,8 +66,10 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
 
   @Override
   public void addCall(
-      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod, @Nonnull CallGraphEdge edge) {
-      graph.addEdge(vertexOf(sourceMethod), vertexOf(targetMethod), edge);
+      @Nonnull MethodSignature sourceMethod,
+      @Nonnull MethodSignature targetMethod,
+      @Nonnull CallGraphEdge edge) {
+    graph.addEdge(vertexOf(sourceMethod), vertexOf(targetMethod), edge);
   }
 
   @Nonnull
@@ -84,7 +86,10 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
       CallGraphVertex edgeSource = graph.getEdgeSource(edge);
       CallGraphVertex edgeTarget = graph.getEdgeTarget(edge);
       Pair<MethodSignature, CalleeMethodSignature> pair =
-          new ImmutablePair<>(edgeSource.methodSignature, new CalleeMethodSignature(edgeTarget.methodSignature, edge.getEdgeType(), edge.getSourceStmt()));
+          new ImmutablePair<>(
+              edgeSource.methodSignature,
+              new CalleeMethodSignature(
+                  edgeTarget.methodSignature, edge.getEdgeType(), edge.getSourceStmt()));
       edges.add(pair);
     }
     return edges;

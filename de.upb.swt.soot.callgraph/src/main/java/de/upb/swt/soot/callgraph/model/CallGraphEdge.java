@@ -29,7 +29,7 @@ public class CallGraphEdge extends DefaultEdge {
   private CallGraphEdgeType edgeType;
   private Stmt sourceStmt;
 
-  public CallGraphEdge(){}
+  public CallGraphEdge() {}
 
   public CallGraphEdge(CallGraphEdgeType edgeType, Stmt sourceStmt) {
     this.edgeType = edgeType;
