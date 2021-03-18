@@ -1,15 +1,14 @@
 package de.upb.swt.soot.test.java.bytecode.interceptors;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.bytecode.interceptors.LocalSplitter;
@@ -38,6 +37,7 @@ public class LocalSplitterTest {
   Local l0 = JavaJimple.newLocal("l0", intType);
   Local l1 = JavaJimple.newLocal("l1", intType);
   Local l2 = JavaJimple.newLocal("l2", intType);
+  Local l3 = JavaJimple.newLocal("l3", intType);
   Local stack3 = JavaJimple.newLocal("stack3", intType);
   Local stack4 = JavaJimple.newLocal("stack4", intType);
   Local l1hash1 = JavaJimple.newLocal("l1#1", intType);
@@ -46,6 +46,9 @@ public class LocalSplitterTest {
   Local l2hash2 = JavaJimple.newLocal("l2#2", intType);
   Local l2hash4 = JavaJimple.newLocal("l2#4", intType);
 
+  ClassType exception = factory.getClassType("Exception");
+  JavaJimple javaJimple = JavaJimple.getInstance();
+  IdentityRef caughtExceptionRef = javaJimple.newCaughtExceptionRef();
   Stmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
 
   /**
@@ -183,6 +186,53 @@ public class LocalSplitterTest {
 
     // check newBody's stmtGraph
     AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
+  }
+
+  /**
+   * for(int i = 0; i < 10; i++){ i = i + 1 } transform:
+   *
+   * <pre>
+   *    l0 := @this Test
+   *    l1 = 0
+   *    l1 = 1
+   *    l2 = 2
+   *    return
+   *    $stack3 := @caughtexception
+   *    l3 = l1
+   *    goto return
+   * </pre>
+   *
+   * to:
+   *
+   * <pre>
+   *    l0 := @this Test
+   *    l1#1 = 0
+   *    l1#2 = 1
+   *    l2 = 2
+   *    return
+   *    $stack3 := @caughtexception
+   *    l3 = l1#2
+   *    goto return
+   * </pre>
+   */
+  @Test
+  public void testLocalSplitterInTraps() {
+
+    Body body = createTrapBody();
+    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
+    LocalSplitter localSplitter = new LocalSplitter();
+    localSplitter.interceptBody(builder);
+    Iterator<Stmt> it = builder.getStmtGraph().iterator();
+    while (it.hasNext()) {
+      System.out.println(it.next().toString());
+    }
+    // Body expectedBody = createExpectedMuiltilocalsBody();
+
+    // check newBody's locals
+    // AssertUtils.assertLocalsEquiv(expectedBody, builder.build());
+
+    // check newBody's stmtGraph
+    // AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
   }
 
   /** bodycreater for BinaryBranches */
@@ -461,6 +511,48 @@ public class LocalSplitterTest {
     // build position
     Position position = NoPositionInformation.getInstance();
     builder.setPosition(position);
+
+    return builder.build();
+  }
+
+  private Body createTrapBody() {
+    Body.BodyBuilder builder = Body.builder();
+    builder.setMethodSignature(methodSignature);
+
+    // build set locals
+    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
+
+    builder.setLocals(locals);
+
+    Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(0), noStmtPositionInfo);
+    Stmt stmt2 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noStmtPositionInfo);
+    Stmt stmt3 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(2), noStmtPositionInfo);
+    Stmt stmt4 = JavaJimple.newIdentityStmt(stack3, caughtExceptionRef, noStmtPositionInfo);
+    Stmt stmt5 = JavaJimple.newAssignStmt(l3, l1, noStmtPositionInfo);
+    Stmt stmt6 = JavaJimple.newGotoStmt(noStmtPositionInfo);
+    Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
+
+    // set graph
+    builder.addFlow(startingStmt, stmt1);
+    builder.addFlow(stmt1, stmt2);
+    builder.addFlow(stmt2, stmt3);
+    builder.addFlow(stmt3, ret);
+    builder.addFlow(stmt4, stmt5);
+    builder.addFlow(stmt5, stmt6);
+    builder.addFlow(stmt6, ret);
+
+    // build startingStmt
+    builder.setStartingStmt(startingStmt);
+
+    // build position
+    Position position = NoPositionInformation.getInstance();
+    builder.setPosition(position);
+
+    // build trap
+    JTrap trap = new JTrap(exception, stmt1, stmt3, stmt4);
+    List<Trap> traps = new ArrayList<>();
+    traps.add(trap);
+    builder.setTraps(traps);
 
     return builder.build();
   }
