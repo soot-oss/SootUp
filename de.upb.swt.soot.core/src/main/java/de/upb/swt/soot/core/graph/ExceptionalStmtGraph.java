@@ -136,23 +136,25 @@ public class ExceptionalStmtGraph extends MutableStmtGraph {
 
     int idx = stmtToIdx.get(newStmt);
 
-    for (Stmt exceptSucc : exceptionalSuccs.get(idx)) {
-      Integer exceptSuccIdx = stmtToIdx.get(exceptSucc);
-      exceptionalPreds.get(exceptSuccIdx).remove(oldStmt);
-      exceptionalPreds.get(exceptSuccIdx).add(newStmt);
-    }
+    if (!exceptionalSuccs.isEmpty()) {
+      for (Stmt exceptSucc : exceptionalSuccs.get(idx)) {
+        Integer exceptSuccIdx = stmtToIdx.get(exceptSucc);
+        exceptionalPreds.get(exceptSuccIdx).remove(oldStmt);
+        exceptionalPreds.get(exceptSuccIdx).add(newStmt);
+      }
 
-    for (Trap trap : getTraps()) {
-      if (trap.getBeginStmt() == newStmt || trap.getEndStmt() == newStmt) {
-        int hIdx = stmtToIdx.get(trap.getHandlerStmt());
-        for (Stmt exceptPred : exceptionalPreds.get(hIdx)) {
-          int exceptPredIdx = stmtToIdx.get(exceptPred);
-          List<Trap> dests = exceptionalDestinationTraps.get(exceptPredIdx);
-          for (Trap dest : dests) {
-            if (dest.getHandlerStmt() == trap.getHandlerStmt()
-                && (dest.getBeginStmt() == oldStmt || dest.getEndStmt() == oldStmt)) {
-              exceptionalDestinationTraps.get(exceptPredIdx).remove(dest);
-              exceptionalDestinationTraps.get(exceptPredIdx).add(dest);
+      for (Trap trap : getTraps()) {
+        if (trap.getBeginStmt() == newStmt || trap.getEndStmt() == newStmt) {
+          int hIdx = stmtToIdx.get(trap.getHandlerStmt());
+          for (Stmt exceptPred : exceptionalPreds.get(hIdx)) {
+            int exceptPredIdx = stmtToIdx.get(exceptPred);
+            List<Trap> dests = exceptionalDestinationTraps.get(exceptPredIdx);
+            for (Trap dest : dests) {
+              if (dest.getHandlerStmt() == trap.getHandlerStmt()
+                  && (dest.getBeginStmt() == oldStmt || dest.getEndStmt() == oldStmt)) {
+                exceptionalDestinationTraps.get(exceptPredIdx).remove(dest);
+                exceptionalDestinationTraps.get(exceptPredIdx).add(trap);
+              }
             }
           }
         }

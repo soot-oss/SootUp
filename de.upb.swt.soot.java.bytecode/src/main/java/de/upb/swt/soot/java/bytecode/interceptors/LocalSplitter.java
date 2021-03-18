@@ -108,127 +108,126 @@ public class LocalSplitter implements BodyInterceptor {
       // Remove the first(visited) Stmt in visitList, to avoid visiting a Stmt twice.
       Stmt visitedStmt = visitList.remove(0);
 
-      // At first Check the definition(left side) of the visited Stmt
-      if ((!visitedStmt.getDefs().isEmpty()) && visitedStmt.getDefs().get(0) instanceof Local) {
+      // At first Check the definition(left side) of the visitedStmt is a local which must be split:
+      if ((!visitedStmt.getDefs().isEmpty())
+          && visitedStmt.getDefs().get(0) instanceof Local
+          && toSplitLocals.contains(visitedStmt.getDefs().get(0))) {
+        // then assign a new name to the oriLocal to get a new local which is called newLocal
         Local oriLocal = (Local) visitedStmt.getDefs().get(0);
-        // If definition of the visited Stmt is a local which must be split:
-        if (toSplitLocals.contains(oriLocal)) {
-          // then assign a new name to the oriLocal to get a new local which is called newLocal
-          Local newLocal = oriLocal.withName(oriLocal.getName() + "#" + localIndex);
-          newLocals.add(newLocal);
-          localIndex++;
-          // create a new Stmt whose definition is replaced with the newLocal,
-          Stmt newVisitedStmt = BodyUtils.withNewDef(visitedStmt, newLocal);
-          // replace the visited Stmt in the StmtGraph with the new Stmt,
-          builder.replaceStmt(visitedStmt, newVisitedStmt);
-          exceptionalGraph.replaceNode(visitedStmt, newVisitedStmt);
-          // replace the corresponding Stmt in traps and visitList with the new Stmt.
-          adaptTraps(builder, visitedStmt, newVisitedStmt);
-          adaptVisitList(visitList, visitedStmt, newVisitedStmt);
+        Local newLocal = oriLocal.withName(oriLocal.getName() + "#" + localIndex);
+        newLocals.add(newLocal);
+        localIndex++;
+        // create a new Stmt whose definition is replaced with the newLocal,
+        Stmt newVisitedStmt = BodyUtils.withNewDef(visitedStmt, newLocal);
+        // replace the visited Stmt in the StmtGraph with the new Stmt,
+        builder.replaceStmt(visitedStmt, newVisitedStmt);
+        exceptionalGraph.replaceNode(visitedStmt, newVisitedStmt);
+        // replace the corresponding Stmt in traps and visitList with the new Stmt.
+        adaptTraps(builder, visitedStmt, newVisitedStmt);
+        adaptVisitList(visitList, visitedStmt, newVisitedStmt);
 
-          // Build the forwardsQueue which is used to iterate all Stmts before the orilocal is
-          // defined again.
-          // The direction of iteration is from root of the StmtGraph to the leaves. So the
-          // successors of the new Stmt are added into the forwardsQueue.
-          Deque<Stmt> forwardsQueue =
-              new ArrayDeque<>(builder.getStmtGraph().successors(newVisitedStmt));
-          // Create the visitedUsesStmt to store the visited Stmt for the forwardsQueue, to avoid, a
-          // Stmt is added twice into the forwardQueue.
-          Set<Stmt> visitedUsesStmt = new HashSet<>();
+        // Build the forwardsQueue which is used to iterate all Stmts before the orilocal is
+        // defined again.
+        // The direction of iteration is from root of the StmtGraph to the leaves. So the
+        // successors of the new Stmt are added into the forwardsQueue.
+        Deque<Stmt> forwardsQueue =
+            new ArrayDeque<>(builder.getStmtGraph().successors(newVisitedStmt));
+        // Create the visitedUsesStmt to store the visited Stmt for the forwardsQueue, to avoid, a
+        // Stmt is added twice into the forwardQueue.
+        Set<Stmt> visitedUsesStmt = new HashSet<>();
 
-          // Start to iterate the forwardsQueue:
-          while (!forwardsQueue.isEmpty()) {
-            // Remove the head from the forwardsQueue:
-            Stmt head = forwardsQueue.remove();
-            visitedUsesStmt.add(head);
+        // Start to iterate the forwardsQueue:
+        while (!forwardsQueue.isEmpty()) {
+          // Remove the head from the forwardsQueue:
+          Stmt head = forwardsQueue.remove();
+          visitedUsesStmt.add(head);
 
-            // 1.case: if useList of head contains oriLocal, then replace the oriLocal with
-            // newLocal.
-            if (head.getUses().contains(oriLocal)) {
-              Stmt newHead = BodyUtils.withNewUse(head, oriLocal, newLocal);
-              builder.replaceStmt(head, newHead);
-              exceptionalGraph.replaceNode(head, newHead);
-              adaptTraps(builder, head, newHead);
-              adaptVisitList(visitList, head, newHead);
-              // if head doesn't define the the oriLocal again, then add all successors which are
-              // not in forwardsQueue and visitedUsesStmt, into the forwardsQueue.
-              if (newHead.getDefs().isEmpty() || !newHead.getDefs().get(0).equivTo(oriLocal)) {
-                for (Stmt succ : builder.getStmtGraph().successors(newHead)) {
-                  if (!visitedUsesStmt.contains(succ) && !forwardsQueue.contains(succ)) {
-                    forwardsQueue.addLast(succ);
-                  }
+          // 1.case: if useList of head contains oriLocal, then replace the oriLocal with
+          // newLocal.
+          if (head.getUses().contains(oriLocal)) {
+            Stmt newHead = BodyUtils.withNewUse(head, oriLocal, newLocal);
+            builder.replaceStmt(head, newHead);
+            exceptionalGraph.replaceNode(head, newHead);
+            adaptTraps(builder, head, newHead);
+            adaptVisitList(visitList, head, newHead);
+            // if head doesn't define the the oriLocal again, then add all successors which are
+            // not in forwardsQueue and visitedUsesStmt, into the forwardsQueue.
+            if (newHead.getDefs().isEmpty() || !newHead.getDefs().get(0).equivTo(oriLocal)) {
+              for (Stmt succ : builder.getStmtGraph().successors(newHead)) {
+                if (!visitedUsesStmt.contains(succ) && !forwardsQueue.contains(succ)) {
+                  forwardsQueue.addLast(succ);
                 }
               }
             }
+          }
 
-            // 2.case: if useList of head contains the modified orilocal, so a conflict maybe arise,
-            // then trace the StmtGraph backwards to resolve the conflict.
-            else if (hasModifiedUse(head, oriLocal)) {
+          // 2.case: if useList of head contains the modified orilocal, so a conflict maybe arise,
+          // then trace the StmtGraph backwards to resolve the conflict.
+          else if (hasModifiedUse(head, oriLocal)) {
 
-              Local modifiedLocal = getModifiedUse(head, oriLocal);
-              // if modifed name is not same as the newLocal's name then -> conflict arises -> trace
-              // backwards
-              if (!modifiedLocal.getName().equals(newLocal.getName())) {
-                localIndex--;
+            Local modifiedLocal = getModifiedUse(head, oriLocal);
+            // if modifed name is not same as the newLocal's name then -> conflict arises -> trace
+            // backwards
+            if (!modifiedLocal.getName().equals(newLocal.getName())) {
+              localIndex--;
 
-                // Build the backwardsQueue which is used to iterate all Stmts between head and the
-                // Stmts which define the oriLocal in last time.
-                // The direction of iteration is from leave of the StmtGraph to the root. So the
-                // predecessors of head are added into the BackwardsQueue.
-                Deque<Stmt> backwardsQueue =
-                    new ArrayDeque<>(builder.getStmtGraph().predecessors(head));
+              // Build the backwardsQueue which is used to iterate all Stmts between head and the
+              // Stmts which define the oriLocal in last time.
+              // The direction of iteration is from leave of the StmtGraph to the root. So the
+              // predecessors of head are added into the BackwardsQueue.
+              Deque<Stmt> backwardsQueue =
+                  new ArrayDeque<>(builder.getStmtGraph().predecessors(head));
 
-                // Start to iterator the backwardQueue:
-                while (!backwardsQueue.isEmpty()) {
-                  // Remove the first Stmt of backwardQueue, and name it as backStmt.
-                  Stmt backStmt = backwardsQueue.remove();
+              // Start to iterator the backwardQueue:
+              while (!backwardsQueue.isEmpty()) {
+                // Remove the first Stmt of backwardQueue, and name it as backStmt.
+                Stmt backStmt = backwardsQueue.remove();
 
-                  // 2.1 case: if backStmt's definition is the modified and has a higher
-                  // local-name-index than the modifiedLocal of head
-                  // then replace the definition of backStmt with the modifiedLocal of head, and
-                  // remove the corresponding Local(definition of backStmt) from the set: newLocals
-                  if (hasModifiedDef(backStmt, oriLocal)) {
-                    if (hasHigherLocalName((Local) backStmt.getDefs().get(0), modifiedLocal)) {
-                      Stmt newBackStmt = BodyUtils.withNewDef(backStmt, modifiedLocal);
-                      builder.replaceStmt(backStmt, newBackStmt);
-                      exceptionalGraph.replaceNode(backStmt, newBackStmt);
-                      adaptTraps(builder, backStmt, newBackStmt);
-                      adaptVisitList(visitList, backStmt, newBackStmt);
-                      newLocals.remove(newLocal);
-                    }
+                // 2.1 case: if backStmt's definition is the modified and has a higher
+                // local-name-index than the modifiedLocal of head
+                // then replace the definition of backStmt with the modifiedLocal of head, and
+                // remove the corresponding Local(definition of backStmt) from the set: newLocals
+                if (hasModifiedDef(backStmt, oriLocal)) {
+                  if (hasHigherLocalName((Local) backStmt.getDefs().get(0), modifiedLocal)) {
+                    Stmt newBackStmt = BodyUtils.withNewDef(backStmt, modifiedLocal);
+                    builder.replaceStmt(backStmt, newBackStmt);
+                    exceptionalGraph.replaceNode(backStmt, newBackStmt);
+                    adaptTraps(builder, backStmt, newBackStmt);
+                    adaptVisitList(visitList, backStmt, newBackStmt);
+                    newLocals.remove(newLocal);
                   }
-                  // 2.2 case: if backStmt's useList contains the modified oriLocal, and this
-                  // modified oriLocal has a higher local-name-index that the modifiedLocal of head
-                  // then replace the corresponding use of backStmt with modifiedLocal of head, and
-                  // add all predecessors of the backStmt into the backwardsQueue.
-                  else if (hasModifiedUse(backStmt, oriLocal)) {
-                    Local modifiedUse = getModifiedUse(backStmt, oriLocal);
-                    if (hasHigherLocalName(modifiedUse, modifiedLocal)) {
-                      Stmt newBackStmt = BodyUtils.withNewUse(backStmt, modifiedUse, modifiedLocal);
-                      builder.replaceStmt(backStmt, newBackStmt);
-                      exceptionalGraph.replaceNode(backStmt, newBackStmt);
-                      adaptTraps(builder, backStmt, newBackStmt);
-                      adaptVisitList(visitList, backStmt, newBackStmt);
-                      backwardsQueue.addAll(builder.getStmtGraph().predecessors(newBackStmt));
-                    }
+                }
+                // 2.2 case: if backStmt's useList contains the modified oriLocal, and this
+                // modified oriLocal has a higher local-name-index that the modifiedLocal of head
+                // then replace the corresponding use of backStmt with modifiedLocal of head, and
+                // add all predecessors of the backStmt into the backwardsQueue.
+                else if (hasModifiedUse(backStmt, oriLocal)) {
+                  Local modifiedUse = getModifiedUse(backStmt, oriLocal);
+                  if (hasHigherLocalName(modifiedUse, modifiedLocal)) {
+                    Stmt newBackStmt = BodyUtils.withNewUse(backStmt, modifiedUse, modifiedLocal);
+                    builder.replaceStmt(backStmt, newBackStmt);
+                    exceptionalGraph.replaceNode(backStmt, newBackStmt);
+                    adaptTraps(builder, backStmt, newBackStmt);
+                    adaptVisitList(visitList, backStmt, newBackStmt);
+                    backwardsQueue.addAll(builder.getStmtGraph().predecessors(newBackStmt));
                   }
-                  // 2.3 case: if there's no relationship between backStmt's definition/useList and
-                  // oriLocal, then add all predecessors of the backStmt into the backwardsQueue.
-                  else {
-                    backwardsQueue.addAll(builder.getStmtGraph().predecessors(backStmt));
-                  }
+                }
+                // 2.3 case: if there's no relationship between backStmt's definition/useList and
+                // oriLocal, then add all predecessors of the backStmt into the backwardsQueue.
+                else {
+                  backwardsQueue.addAll(builder.getStmtGraph().predecessors(backStmt));
                 }
               }
             }
-            // 3.case: if uselist of head contains neither orilocal nor the modified orilocal,
-            // then add all successors of head which are not in forwardsQueue and visitedUsesStmt,
-            // into the forwardsQueue.
-            else {
-              if (head.getDefs().isEmpty() || !head.getDefs().get(0).equivTo(oriLocal)) {
-                for (Stmt succ : builder.getStmtGraph().successors(head)) {
-                  if (!visitedUsesStmt.contains(succ) && !forwardsQueue.contains(succ)) {
-                    forwardsQueue.addLast(succ);
-                  }
+          }
+          // 3.case: if uselist of head contains neither orilocal nor the modified orilocal,
+          // then add all successors of head which are not in forwardsQueue and visitedUsesStmt,
+          // into the forwardsQueue.
+          else {
+            if (head.getDefs().isEmpty() || !head.getDefs().get(0).equivTo(oriLocal)) {
+              for (Stmt succ : builder.getStmtGraph().successors(head)) {
+                if (!visitedUsesStmt.contains(succ) && !forwardsQueue.contains(succ)) {
+                  forwardsQueue.addLast(succ);
                 }
               }
             }

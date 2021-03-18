@@ -222,17 +222,14 @@ public class LocalSplitterTest {
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     LocalSplitter localSplitter = new LocalSplitter();
     localSplitter.interceptBody(builder);
-    Iterator<Stmt> it = builder.getStmtGraph().iterator();
-    while (it.hasNext()) {
-      System.out.println(it.next().toString());
-    }
-    // Body expectedBody = createExpectedMuiltilocalsBody();
+
+    Body expectedBody = createExpectedTrapBody();
 
     // check newBody's locals
-    // AssertUtils.assertLocalsEquiv(expectedBody, builder.build());
+    AssertUtils.assertLocalsEquiv(expectedBody, builder.build());
 
     // check newBody's stmtGraph
-    // AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
+    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
   }
 
   /** bodycreater for BinaryBranches */
@@ -520,7 +517,7 @@ public class LocalSplitterTest {
     builder.setMethodSignature(methodSignature);
 
     // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
+    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, stack3, l3);
 
     builder.setLocals(locals);
 
@@ -529,6 +526,48 @@ public class LocalSplitterTest {
     Stmt stmt3 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(2), noStmtPositionInfo);
     Stmt stmt4 = JavaJimple.newIdentityStmt(stack3, caughtExceptionRef, noStmtPositionInfo);
     Stmt stmt5 = JavaJimple.newAssignStmt(l3, l1, noStmtPositionInfo);
+    Stmt stmt6 = JavaJimple.newGotoStmt(noStmtPositionInfo);
+    Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
+
+    // set graph
+    builder.addFlow(startingStmt, stmt1);
+    builder.addFlow(stmt1, stmt2);
+    builder.addFlow(stmt2, stmt3);
+    builder.addFlow(stmt3, ret);
+    builder.addFlow(stmt4, stmt5);
+    builder.addFlow(stmt5, stmt6);
+    builder.addFlow(stmt6, ret);
+
+    // build startingStmt
+    builder.setStartingStmt(startingStmt);
+
+    // build position
+    Position position = NoPositionInformation.getInstance();
+    builder.setPosition(position);
+
+    // build trap
+    JTrap trap = new JTrap(exception, stmt1, stmt3, stmt4);
+    List<Trap> traps = new ArrayList<>();
+    traps.add(trap);
+    builder.setTraps(traps);
+
+    return builder.build();
+  }
+
+  private Body createExpectedTrapBody() {
+    Body.BodyBuilder builder = Body.builder();
+    builder.setMethodSignature(methodSignature);
+
+    // build set locals
+    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3, stack3, l1hash1, l1hash2);
+
+    builder.setLocals(locals);
+
+    Stmt stmt1 = JavaJimple.newAssignStmt(l1hash1, IntConstant.getInstance(0), noStmtPositionInfo);
+    Stmt stmt2 = JavaJimple.newAssignStmt(l1hash2, IntConstant.getInstance(1), noStmtPositionInfo);
+    Stmt stmt3 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(2), noStmtPositionInfo);
+    Stmt stmt4 = JavaJimple.newIdentityStmt(stack3, caughtExceptionRef, noStmtPositionInfo);
+    Stmt stmt5 = JavaJimple.newAssignStmt(l3, l1hash2, noStmtPositionInfo);
     Stmt stmt6 = JavaJimple.newGotoStmt(noStmtPositionInfo);
     Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
