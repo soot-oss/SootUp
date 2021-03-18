@@ -124,6 +124,43 @@ public class ExceptionalStmtGraph extends MutableStmtGraph {
   }
 
   /**
+   * Replaced stmt is never a hanlderStmt of a Trap.
+   *
+   * @param oldStmt a stmt which is already in the StmtGraph
+   * @param newStmt a new stmt which will replace the old stmt
+   */
+  @Override
+  public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+
+    super.replaceNode(oldStmt, newStmt);
+
+    int idx = stmtToIdx.get(newStmt);
+
+    for (Stmt exceptSucc : exceptionalSuccs.get(idx)) {
+      Integer exceptSuccIdx = stmtToIdx.get(exceptSucc);
+      exceptionalPreds.get(exceptSuccIdx).remove(oldStmt);
+      exceptionalPreds.get(exceptSuccIdx).add(newStmt);
+    }
+
+    for (Trap trap : getTraps()) {
+      if (trap.getBeginStmt() == newStmt || trap.getEndStmt() == newStmt) {
+        int hIdx = stmtToIdx.get(trap.getHandlerStmt());
+        for (Stmt exceptPred : exceptionalPreds.get(hIdx)) {
+          int exceptPredIdx = stmtToIdx.get(exceptPred);
+          List<Trap> dests = exceptionalDestinationTraps.get(exceptPredIdx);
+          for (Trap dest : dests) {
+            if (dest.getHandlerStmt() == trap.getHandlerStmt()
+                && (dest.getBeginStmt() == oldStmt || dest.getEndStmt() == oldStmt)) {
+              exceptionalDestinationTraps.get(exceptPredIdx).remove(dest);
+              exceptionalDestinationTraps.get(exceptPredIdx).add(dest);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * Build the map for stmt positions in a StmtGraph
    *
    * @param stmtGraph an instance of StmtGraph
