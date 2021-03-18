@@ -24,6 +24,8 @@ import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.ReplaceUseStmtVisitor;
 import java.util.*;
@@ -142,5 +144,22 @@ public class BodyUtils {
     ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(oldUse, newUse);
     oldStmt.accept(visitor);
     return visitor.getNewStmt();
+  }
+
+  /**
+   * Use newDef to replace the definition in oldStmt.
+   *
+   * @param oldStmt a Stmt whose def is to be replaced.
+   * @param newDef a Local to replace definition Local of oldStmt.
+   * @return a new Stmt with newDef
+   */
+  @Nonnull
+  public static Stmt withNewDef(@Nonnull Stmt oldStmt, @Nonnull Local newDef) {
+    if (oldStmt instanceof JAssignStmt) {
+      return ((JAssignStmt) oldStmt).withVariable(newDef);
+    } else if (oldStmt instanceof JIdentityStmt) {
+      return ((JIdentityStmt) oldStmt).withLocal(newDef);
+    }
+    throw new RuntimeException("The given stmt must be JAssignStmt or JIdentityStmt!");
   }
 }
