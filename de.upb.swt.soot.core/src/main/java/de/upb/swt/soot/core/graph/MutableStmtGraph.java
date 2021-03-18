@@ -20,6 +20,7 @@ package de.upb.swt.soot.core.graph;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
@@ -296,6 +297,35 @@ public class MutableStmtGraph extends StmtGraph {
       List<Stmt> predsList = predecessors.get(stmtToIdx.get(succ));
       int predIdx = predsList.indexOf(oldStmt);
       predsList.set(predIdx, newStmt);
+    }
+
+    boolean trapIsChanged = false;
+    List<Trap> newTraps = new ArrayList<>();
+    if (!getTraps().isEmpty()) {
+      for (Trap trap : getTraps()) {
+        if (oldStmt == trap.getBeginStmt()) {
+          Trap newTrap =
+              new JTrap(trap.getExceptionType(), newStmt, trap.getEndStmt(), trap.getHandlerStmt());
+          newTraps.add(newTrap);
+          trapIsChanged = true;
+        } else if (oldStmt == trap.getEndStmt()) {
+          Trap newTrap =
+              new JTrap(
+                  trap.getExceptionType(), trap.getBeginStmt(), newStmt, trap.getHandlerStmt());
+          newTraps.add(newTrap);
+          trapIsChanged = true;
+        } else if (oldStmt == trap.getHandlerStmt()) {
+          Trap newTrap =
+              new JTrap(trap.getExceptionType(), trap.getBeginStmt(), trap.getEndStmt(), newStmt);
+          newTraps.add(newTrap);
+          trapIsChanged = true;
+        } else {
+          newTraps.add(trap);
+        }
+      }
+    }
+    if (trapIsChanged) {
+      setTraps(newTraps);
     }
   }
 
