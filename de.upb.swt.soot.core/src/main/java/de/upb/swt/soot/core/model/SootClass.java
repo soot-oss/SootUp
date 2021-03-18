@@ -27,7 +27,6 @@ import com.google.common.collect.Iterables;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
-import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
@@ -130,8 +129,8 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
    * than one field with the given name. Returns null if no field with the given name exists.
    */
   @Nonnull
-  public Optional<SootField> getField(String name) {
-    return this.getFields().stream()
+  public Optional<? extends SootField> getField(String name) {
+    return getFields().stream()
         .filter(field -> field.getSignature().getName().equals(name))
         .reduce(
             (l, r) -> {
@@ -144,22 +143,9 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
    * null is returned.
    */
   @Nonnull
-  public Optional<SootField> getField(@Nonnull FieldSubSignature subSignature) {
-    return this.getFields().stream()
+  public Optional<? extends SootField> getField(@Nonnull FieldSubSignature subSignature) {
+    return getFields().stream()
         .filter(field -> field.getSubSignature().equals(subSignature))
-        .findAny();
-  }
-
-  /**
-   * Attempts to retrieve the methodRef with the given signature, parameters and return type. If no
-   * matching method can be found, null is returned.
-   *
-   * @return
-   */
-  @Nonnull
-  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
-    return this.getMethods().stream()
-        .filter(method -> method.getSignature().equals(signature))
         .findAny();
   }
 
