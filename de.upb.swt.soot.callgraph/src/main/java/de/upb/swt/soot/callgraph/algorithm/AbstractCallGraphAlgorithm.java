@@ -110,7 +110,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         if (stmt.containsInvokeExpr()) {
           Set<MethodSignature> invokeSet =
               resolveCall(currentMethodCandidate, stmt.getInvokeExpr());
-          CallGraphEdgeType edgeType = findCallGraphEdgeType(stmt.getInvokeExpr());
+          CallGraphEdgeType edgeType = MethodUtil.findCallGraphEdgeType(stmt.getInvokeExpr());
           invokeSet.forEach(e -> resolvedCalls.add(new CalleeMethodSignature(e, edgeType, stmt)));
         }
       }
@@ -120,19 +120,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
   }
 
-  private CallGraphEdgeType findCallGraphEdgeType(AbstractInvokeExpr invokeExpr) {
-    if (invokeExpr instanceof JVirtualInvokeExpr) {
-      return CallGraphEdgeType.VIRTUAL;
-    } else if (invokeExpr instanceof JSpecialInvokeExpr) {
-      return CallGraphEdgeType.SPECIAL;
-    } else if (invokeExpr instanceof JInterfaceInvokeExpr) {
-      return CallGraphEdgeType.INTERFACE;
-    } else if (invokeExpr instanceof JStaticInvokeExpr) {
-      return CallGraphEdgeType.STATIC;
-    } else {
-      throw new RuntimeException("No such invokeExpr:" + invokeExpr);
-    }
-  }
 
   /** finds the given method signature in class's superclasses */
   final <T extends Method> T findMethodInHierarchy(

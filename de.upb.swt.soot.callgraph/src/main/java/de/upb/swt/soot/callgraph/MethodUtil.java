@@ -21,6 +21,8 @@ package de.upb.swt.soot.callgraph;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.callgraph.model.CallGraphEdgeType;
+import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -28,7 +30,7 @@ import de.upb.swt.soot.core.views.View;
 import javax.annotation.Nullable;
 
 public class MethodUtil {
-
+  // TODO: replace this with the method in View after merging to develop
   @Nullable
   public static SootMethod methodSignatureToMethod(
       View<? extends SootClass> view, MethodSignature methodSignature) {
@@ -37,5 +39,19 @@ public class MethodUtil {
             .flatMap(c -> c.getMethod(methodSignature))
             .orElse(null);
     return currentMethodCandidate;
+  }
+
+  public static CallGraphEdgeType findCallGraphEdgeType(AbstractInvokeExpr invokeExpr) {
+    if (invokeExpr instanceof JVirtualInvokeExpr) {
+      return CallGraphEdgeType.VIRTUAL;
+    } else if (invokeExpr instanceof JSpecialInvokeExpr) {
+      return CallGraphEdgeType.SPECIAL;
+    } else if (invokeExpr instanceof JInterfaceInvokeExpr) {
+      return CallGraphEdgeType.INTERFACE;
+    } else if (invokeExpr instanceof JStaticInvokeExpr) {
+      return CallGraphEdgeType.STATIC;
+    } else {
+      throw new RuntimeException("No such invokeExpr:" + invokeExpr);
+    }
   }
 }

@@ -32,9 +32,12 @@ import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Field;
+import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -43,6 +46,8 @@ import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import java.text.MessageFormat;
 import java.util.*;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,11 +113,27 @@ public class PointerAssignmentGraph {
         }
       }
     }
-    handleCallEdges();
+    Set<Pair<MethodSignature,CalleeMethodSignature>> callEdges = getCallEdges();
+    handleCallEdges(callEdges);
   }
 
-  private void handleCallEdges() {
-    Iterator<Pair<MethodSignature, CalleeMethodSignature>> iter = callGraph.getEdges().iterator();
+  private Set<Pair<MethodSignature,CalleeMethodSignature>> getCallEdges(){
+    Set<MethodSignature> methodSigs = callGraph.getMethodSignatures();
+    Set<Pair<MethodSignature,CalleeMethodSignature>> callEdges = new HashSet<>();
+    for(MethodSignature caller : methodSigs){
+      SootMethod method = MethodUtil.methodSignatureToMethod(view, caller);
+      for(Stmt s: method.getBody().getStmts()){
+        if(s.containsInvokeExpr()){
+          CalleeMethodSignature callee = new CalleeMethodSignature(s.getInvokeExpr().getMethodSignature(), MethodUtil.findCallGraphEdgeType(s.getInvokeExpr()), s);
+          callEdges.add(new ImmutablePair<>(caller, callee));
+        }
+      }
+    }
+    return callEdges;
+  }
+
+  private void handleCallEdges(Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges) {
+    Iterator<Pair<MethodSignature, CalleeMethodSignature>> iter = callEdges.iterator();
     while (iter.hasNext()) {
       Pair<MethodSignature, CalleeMethodSignature> edge = iter.next();
       SootMethod tgt =
