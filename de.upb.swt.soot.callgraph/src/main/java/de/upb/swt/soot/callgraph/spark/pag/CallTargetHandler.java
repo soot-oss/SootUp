@@ -94,12 +94,12 @@ public class CallTargetHandler {
     MethodNodeFactory sourceNodeFactory = sourceIntraPag.getNodeFactory();
     MethodNodeFactory targetNodeFactory = targetIntraPag.getNodeFactory();
     AbstractInvokeExpr invokeExpr = sourceStmt.getInvokeExpr();
-
+    boolean isVirtualCall = pag.getCallAssigns().containsKey(invokeExpr);
     handleCallTargetParams(
         sourceIntraPag, edgeType, sourceNodeFactory, targetNodeFactory, invokeExpr);
 
     handleCallTargetInstanceInvoke(
-        sourceIntraPag, edgeType, sourceNodeFactory, targetNodeFactory, invokeExpr);
+        sourceIntraPag, edgeType, sourceNodeFactory, targetNodeFactory, invokeExpr, isVirtualCall);
 
     handleCallTargetAssign(
         sourceIntraPag, sourceStmt, edgeType, sourceNodeFactory, targetNodeFactory, invokeExpr);
@@ -137,8 +137,7 @@ public class CallTargetHandler {
       CallGraphEdgeType edgeType,
       MethodNodeFactory sourceNodeFactory,
       MethodNodeFactory targetNodeFactory,
-      AbstractInvokeExpr invokeExpr) {
-    boolean isVirtualCall = pag.getCallAssigns().containsKey(invokeExpr);
+      AbstractInvokeExpr invokeExpr, boolean isVirtualCall) {
     if (invokeExpr instanceof AbstractInstanceInvokeExpr) {
       AbstractInstanceInvokeExpr instanceInvokeExpr = (AbstractInstanceInvokeExpr) invokeExpr;
 
