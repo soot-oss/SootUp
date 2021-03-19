@@ -109,31 +109,11 @@ public class PointerAssignmentGraph {
         }
       }
     }
-    Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = getCallEdges();
-    handleCallEdges(callEdges);
+    handleCallEdges();
   }
 
-  private Set<Pair<MethodSignature, CalleeMethodSignature>> getCallEdges() {
-    Set<MethodSignature> methodSigs = callGraph.getMethodSignatures();
-    Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = new HashSet<>();
-    for (MethodSignature caller : methodSigs) {
-      SootMethod method = MethodUtil.methodSignatureToMethod(view, caller);
-      for (Stmt s : method.getBody().getStmts()) {
-        if (s.containsInvokeExpr()) {
-          CalleeMethodSignature callee =
-              new CalleeMethodSignature(
-                  s.getInvokeExpr().getMethodSignature(),
-                  MethodUtil.findCallGraphEdgeType(s.getInvokeExpr()),
-                  s);
-          callEdges.add(new ImmutablePair<>(caller, callee));
-        }
-      }
-    }
-    return callEdges;
-  }
-
-  private void handleCallEdges(Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges) {
-    Iterator<Pair<MethodSignature, CalleeMethodSignature>> iter = callEdges.iterator();
+  private void handleCallEdges() {
+    Iterator<Pair<MethodSignature, CalleeMethodSignature>> iter = getCallEdges().iterator();
     while (iter.hasNext()) {
       Pair<MethodSignature, CalleeMethodSignature> edge = iter.next();
       SootMethod tgt =
@@ -146,6 +126,25 @@ public class PointerAssignmentGraph {
       CallTargetHandler callTargetHandler = new CallTargetHandler(this);
       callTargetHandler.addCallTarget(edge);
     }
+  }
+
+  private Set<Pair<MethodSignature, CalleeMethodSignature>> getCallEdges() {
+    Set<MethodSignature> methodSigs = callGraph.getMethodSignatures();
+    Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = new HashSet<>();
+    for (MethodSignature caller : methodSigs) {
+      SootMethod method = MethodUtil.methodSignatureToMethod(view, caller);
+      for (Stmt s : method.getBody().getStmts()) {
+        if (s.containsInvokeExpr()) {
+          CalleeMethodSignature callee =
+                  new CalleeMethodSignature(
+                          s.getInvokeExpr().getMethodSignature(),
+                          MethodUtil.findCallGraphEdgeType(s.getInvokeExpr()),
+                          s);
+          callEdges.add(new ImmutablePair<>(caller, callee));
+        }
+      }
+    }
+    return callEdges;
   }
 
   public void addEdge(Node source, Node target) {

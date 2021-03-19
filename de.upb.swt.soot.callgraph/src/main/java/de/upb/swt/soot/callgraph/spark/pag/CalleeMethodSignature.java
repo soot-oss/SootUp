@@ -24,7 +24,7 @@ package de.upb.swt.soot.callgraph.spark.pag;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 
-/** Method Signature with its calling CallGraphEdgeType */
+/** Method Signature with its calling CallGraphEdgeType and sourceStmt that invokes the call */
 public class CalleeMethodSignature {
 
   private CallGraphEdgeType edgeType;
