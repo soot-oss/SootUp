@@ -25,16 +25,11 @@ package de.upb.swt.soot.callgraph.model;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import java.util.Set;
 import javax.annotation.Nonnull;
-import org.apache.commons.lang3.tuple.Pair;
 
 public interface CallGraph {
 
   @Nonnull
   Set<MethodSignature> getMethodSignatures();
-
-  // TODO: replace Pair with wrapper edge class
-  @Nonnull
-  Set<Pair<MethodSignature, CalleeMethodSignature>> getEdges();
 
   @Nonnull
   Set<MethodSignature> callsFrom(@Nonnull MethodSignature sourceMethod);

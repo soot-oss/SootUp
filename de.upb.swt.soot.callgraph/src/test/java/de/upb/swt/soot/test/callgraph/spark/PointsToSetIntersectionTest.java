@@ -118,9 +118,9 @@ public class PointsToSetIntersectionTest {
     Set<Node> c2ItemPointsTo = spark.getPointsToSet(c2, containerItem);
     Set<Node> c3ItemPointsTo = spark.getPointsToSet(c3, containerItem);
 
-    assertTrue(c1ItemPointsTo.size()==2);
-    assertTrue(c2ItemPointsTo.size()==2);
-    assertTrue(c3ItemPointsTo.size()==2);
+    assertTrue(c1ItemPointsTo.size() == 2);
+    assertTrue(c2ItemPointsTo.size() == 2);
+    assertTrue(c3ItemPointsTo.size() == 2);
 
     assertFalse(Sets.intersection(c1ItemPointsTo, c2ItemPointsTo).isEmpty());
     assertFalse(Sets.intersection(c1ItemPointsTo, c3ItemPointsTo).isEmpty());

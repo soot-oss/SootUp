@@ -26,13 +26,10 @@ import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.graph.DefaultDirectedGraph;
 
 public final class GraphBasedCallGraph implements MutableCallGraph {
@@ -76,23 +73,6 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   @Override
   public Set<MethodSignature> getMethodSignatures() {
     return signatureToVertex.keySet();
-  }
-
-  @Nonnull
-  @Override
-  public Set<Pair<MethodSignature, CalleeMethodSignature>> getEdges() {
-    Set<Pair<MethodSignature, CalleeMethodSignature>> edges = new HashSet<>();
-    for (CallGraphEdge edge : graph.edgeSet()) {
-      CallGraphVertex edgeSource = graph.getEdgeSource(edge);
-      CallGraphVertex edgeTarget = graph.getEdgeTarget(edge);
-      Pair<MethodSignature, CalleeMethodSignature> pair =
-          new ImmutablePair<>(
-              edgeSource.methodSignature,
-              new CalleeMethodSignature(
-                  edgeTarget.methodSignature, edge.getEdgeType(), edge.getSourceStmt()));
-      edges.add(pair);
-    }
-    return edges;
   }
 
   @Nonnull
