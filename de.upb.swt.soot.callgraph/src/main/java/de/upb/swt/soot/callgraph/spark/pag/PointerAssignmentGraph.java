@@ -26,7 +26,6 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import de.upb.swt.soot.callgraph.MethodUtil;
 import de.upb.swt.soot.callgraph.model.CallGraph;
-import de.upb.swt.soot.callgraph.model.CalleeMethodSignature;
 import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.core.jimple.basic.Local;

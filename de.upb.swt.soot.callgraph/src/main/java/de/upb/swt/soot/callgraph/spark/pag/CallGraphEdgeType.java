@@ -1,4 +1,4 @@
-package de.upb.swt.soot.callgraph.model;
+package de.upb.swt.soot.callgraph.spark.pag;
 
 /*-
  * #%L

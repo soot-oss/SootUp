@@ -24,6 +24,7 @@ package de.upb.swt.soot.callgraph.algorithm;
 
 import de.upb.swt.soot.callgraph.MethodUtil;
 import de.upb.swt.soot.callgraph.model.*;
+import de.upb.swt.soot.callgraph.spark.pag.CallGraphEdgeType;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.common.expr.*;
@@ -78,19 +79,16 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       MethodSignature currentMethodSignature = workList.pop();
       if (processed.contains(currentMethodSignature)) continue;
 
-      Stream<CalleeMethodSignature> invocationTargets =
+      Stream<MethodSignature> invocationTargets =
           resolveAllCallsFromSourceMethod(view, currentMethodSignature);
 
       invocationTargets.forEach(
           t -> {
             if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
-            if (!cg.containsMethod(t.getMethodSignature())) cg.addMethod(t.getMethodSignature());
-            if (!cg.containsCall(currentMethodSignature, t.getMethodSignature())) {
-              cg.addCall(
-                  currentMethodSignature,
-                  t.getMethodSignature(),
-                  new CallGraphEdge(t.getEdgeType(), t.getSourceStmt()));
-              workList.push(t.getMethodSignature());
+            if (!cg.containsMethod(t)) cg.addMethod(t);
+            if (!cg.containsCall(currentMethodSignature, t)) {
+              cg.addCall(currentMethodSignature, t);
+              workList.push(t);
             }
           });
       processed.add(currentMethodSignature);
@@ -98,20 +96,20 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   @Nonnull
-  Stream<CalleeMethodSignature> resolveAllCallsFromSourceMethod(
+  Stream<MethodSignature> resolveAllCallsFromSourceMethod(
       View<? extends SootClass> view, MethodSignature sourceMethod) {
     SootMethod currentMethodCandidate = MethodUtil.methodSignatureToMethod(view, sourceMethod);
     if (currentMethodCandidate == null) return Stream.empty();
 
     if (currentMethodCandidate.hasBody()) {
-      Set<CalleeMethodSignature> resolvedCalls = new HashSet<>();
+      Set<MethodSignature> resolvedCalls = new HashSet<>();
       Set<Stmt> stmts = currentMethodCandidate.getBody().getStmtGraph().nodes();
       for (Stmt stmt : stmts) {
         if (stmt.containsInvokeExpr()) {
           Set<MethodSignature> invokeSet =
               resolveCall(currentMethodCandidate, stmt.getInvokeExpr());
           CallGraphEdgeType edgeType = MethodUtil.findCallGraphEdgeType(stmt.getInvokeExpr());
-          invokeSet.forEach(e -> resolvedCalls.add(new CalleeMethodSignature(e, edgeType, stmt)));
+          invokeSet.forEach(e -> resolvedCalls.add(e));
         }
       }
       return resolvedCalls.stream();
@@ -186,7 +184,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   clazz.getMethod(overriddenMethodSig.getSubSignature()).get().getSignature();
 
               for (MethodSignature callingMethodSig : updated.callsTo(overriddenMethodSig)) {
-                updated.addCall(callingMethodSig, overridingMethodSig, new CallGraphEdge());
+                updated.addCall(callingMethodSig, overridingMethodSig);
               }
             });
 

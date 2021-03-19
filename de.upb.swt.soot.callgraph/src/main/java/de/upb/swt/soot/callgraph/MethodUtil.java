@@ -21,7 +21,7 @@ package de.upb.swt.soot.callgraph;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.callgraph.model.CallGraphEdgeType;
+import de.upb.swt.soot.callgraph.spark.pag.CallGraphEdgeType;
 import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;

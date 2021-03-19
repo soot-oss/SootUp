@@ -22,8 +22,6 @@ package de.upb.swt.soot.callgraph.spark.pag;
  * #L%
  */
 import de.upb.swt.soot.callgraph.MethodUtil;
-import de.upb.swt.soot.callgraph.model.CallGraphEdgeType;
-import de.upb.swt.soot.callgraph.model.CalleeMethodSignature;
 import de.upb.swt.soot.callgraph.spark.builder.MethodNodeFactory;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.core.jimple.basic.Value;
