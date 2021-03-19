@@ -137,7 +137,8 @@ public class CallTargetHandler {
       CallGraphEdgeType edgeType,
       MethodNodeFactory sourceNodeFactory,
       MethodNodeFactory targetNodeFactory,
-      AbstractInvokeExpr invokeExpr, boolean isVirtualCall) {
+      AbstractInvokeExpr invokeExpr,
+      boolean isVirtualCall) {
     if (invokeExpr instanceof AbstractInstanceInvokeExpr) {
       AbstractInstanceInvokeExpr instanceInvokeExpr = (AbstractInstanceInvokeExpr) invokeExpr;
 

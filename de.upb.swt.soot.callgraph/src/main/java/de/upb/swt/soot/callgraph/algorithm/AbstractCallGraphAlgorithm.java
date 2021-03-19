@@ -120,7 +120,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
   }
 
-
   /** finds the given method signature in class's superclasses */
   final <T extends Method> T findMethodInHierarchy(
       @Nonnull View<? extends SootClass> view, @Nonnull MethodSignature sig) {
