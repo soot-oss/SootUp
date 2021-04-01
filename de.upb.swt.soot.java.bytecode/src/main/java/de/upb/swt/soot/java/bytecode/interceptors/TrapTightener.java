@@ -27,6 +27,8 @@ import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.*;
@@ -41,8 +43,7 @@ public class TrapTightener implements BodyInterceptor {
     ExceptionalStmtGraph exceptionalGraph = new ExceptionalStmtGraph(graph);
     List<Stmt> stmtsInPrintOrder = builder.getStmts();
 
-    // TODO: not finished
-    Set<Stmt> monitoredStmts = monitoredStmts();
+    Set<Stmt> monitoredStmts = monitoredStmts(exceptionalGraph);
     List<Trap> traps = builder.getTraps();
     List<Trap> newTraps = new ArrayList<>();
     for (Trap trap : traps) {
@@ -108,9 +109,55 @@ public class TrapTightener implements BodyInterceptor {
     builder.setTraps(newTraps);
   }
 
-  private Set<Stmt> monitoredStmts() {
-    HashMap<Stmt, List<Stmt>> monitoredStmtsMap = new HashMap<>();
-    return monitoredStmtsMap.keySet();
+  /**
+   * Find out all monitored stmts from a given exceptional graph, collect them into a list
+   *
+   * @param graph a given exceptionalStmtGraph
+   * @return a list of monitored stmts
+   */
+  private Set<Stmt> monitoredStmts(ExceptionalStmtGraph graph) {
+    Set<Stmt> monitoredStmts = new HashSet<>();
+    Deque<Stmt> queue = new ArrayDeque<>();
+    queue.add(graph.getStartingStmt());
+    Set<Stmt> visitedStmts = new HashSet<>();
+
+    while (!queue.isEmpty()) {
+      Stmt stmt = queue.removeFirst();
+      visitedStmts.add(stmt);
+      // enter a monitored block
+      if (stmt instanceof JEnterMonitorStmt) {
+        Deque<Stmt> monitoredQueue = new ArrayDeque();
+        monitoredQueue.add(stmt);
+        while (!monitoredQueue.isEmpty()) {
+          Stmt monitorStmt = monitoredQueue.removeFirst();
+          monitoredStmts.add(monitorStmt);
+          visitedStmts.add(monitorStmt);
+          if (!(monitorStmt instanceof JExitMonitorStmt)) {
+            for (Stmt succ : getMixSuccessors(graph, monitorStmt)) {
+              if (!visitedStmts.contains(succ)) {
+                monitoredQueue.add(succ);
+              }
+            }
+          } else {
+            queue.addAll(getMixSuccessors(graph, monitorStmt));
+          }
+        }
+      }
+    }
+    return monitoredStmts;
+  }
+
+  /**
+   * Collect all successors (normal and exceptional) of a given stmt into a list.
+   *
+   * @param graph a ExceptionalStmtGraph
+   * @param stmt is a stmt in the given graph
+   * @return a list of successors(normal+exceptional) of the given stmt
+   */
+  private List<Stmt> getMixSuccessors(ExceptionalStmtGraph graph, Stmt stmt) {
+    List<Stmt> succs = graph.successors(stmt);
+    succs.addAll(graph.exceptionalSuccessors(stmt));
+    return succs;
   }
 
   /**
