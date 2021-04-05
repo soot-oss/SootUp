@@ -469,7 +469,8 @@ public class Body implements Copyable {
     @Nullable private List<Stmt> cachedLinearizedStmts = null;
 
     BodyBuilder() {
-      cfg = new MutableStmtGraph(); ecfg = new MutableExceptionalStmtGraph();
+      cfg = new MutableStmtGraph();
+      ecfg = new MutableExceptionalStmtGraph();
     }
 
     BodyBuilder(@Nonnull Body body, @Nonnull Set<Modifier> modifiers) {
@@ -488,7 +489,9 @@ public class Body implements Copyable {
     }
 
     @Nonnull
-    public ExceptionalStmtGraph getExcetptionalGraph(){return ecfg.unmodifiableStmtGraph(); }
+    public ExceptionalStmtGraph getExcetptionalGraph() {
+      return ecfg.unmodifiableStmtGraph();
+    }
 
     @Nonnull
     public List<Stmt> getStmts() {
@@ -539,7 +542,8 @@ public class Body implements Copyable {
     }
 
     @Nonnull
-    public BodyBuilder replaceStmtInExceptionalStmtGraph(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt){
+    public BodyBuilder replaceStmtInExceptionalStmtGraph(
+        @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
       ecfg.replaceNode(oldStmt, newStmt);
       return this;
     }

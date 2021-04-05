@@ -128,7 +128,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
     return new ExceptionalStmtGraph(this);
   }
 
-  public void removeDestination(@Nonnull Stmt stmt){
+  public void removeDestination(@Nonnull Stmt stmt) {
     Integer idx = getNodeIdx(stmt);
     exceptionalDestinationTraps.set(idx, Collections.emptyList());
   }
@@ -171,7 +171,6 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
       }
     }
   }
-
 
   /**
    * Build the map for stmt positions in a StmtGraph
