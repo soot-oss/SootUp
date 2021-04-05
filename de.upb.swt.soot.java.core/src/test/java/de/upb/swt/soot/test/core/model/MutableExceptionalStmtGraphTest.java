@@ -2,7 +2,7 @@ package de.upb.swt.soot.test.core.model;
 
 import static org.junit.Assert.*;
 
-import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
+import de.upb.swt.soot.core.graph.MutableExceptionalStmtGraph;
 import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.JTrap;
@@ -21,7 +21,7 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
 import org.junit.Test;
 
-public class ExceptionalStmtGraphTest {
+public class MutableExceptionalStmtGraphTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
@@ -85,7 +85,7 @@ public class ExceptionalStmtGraphTest {
   @Test
   public void graphWithNestedTraps_1Test() {
     StmtGraph graph = createGraphWithNestedTraps_1();
-    ExceptionalStmtGraph exceptionalStmtGraph = new ExceptionalStmtGraph(graph);
+    MutableExceptionalStmtGraph exceptionalStmtGraph = new MutableExceptionalStmtGraph(graph);
 
     Map<Stmt, List<Stmt>> expectedExceptionalPreds = expectedPredsForGraphWithNestedTraps_1();
     Map<Stmt, List<Stmt>> expectedExceptionalSuccs = expectedSuccsForGraphWithNestedTraps_1();
@@ -97,14 +97,14 @@ public class ExceptionalStmtGraphTest {
       assertStmtsListsEquiv(
           expectedExceptionalSuccs.get(stmt), exceptionalStmtGraph.exceptionalSuccessors(stmt));
       assertStmtsListsEquiv(
-          expectedExceptionalDests.get(stmt), exceptionalStmtGraph.getDestTrap(stmt));
+          expectedExceptionalDests.get(stmt), exceptionalStmtGraph.getDestTraps(stmt));
     }
   }
 
   @Test
   public void graphWithNestedTraps_2Test() {
     StmtGraph graph = createGraphWithNestedTraps_2();
-    ExceptionalStmtGraph exceptionalStmtGraph = new ExceptionalStmtGraph(graph);
+    MutableExceptionalStmtGraph exceptionalStmtGraph = new MutableExceptionalStmtGraph(graph);
 
     Map<Stmt, List<Stmt>> expectedExceptionalPreds = expectedPredsForGraphWithNestedTraps_2();
     Map<Stmt, List<Stmt>> expectedExceptionalSuccs = expectedSuccsForGraphWithNestedTraps_2();
@@ -116,14 +116,14 @@ public class ExceptionalStmtGraphTest {
       assertStmtsListsEquiv(
           expectedExceptionalSuccs.get(stmt), exceptionalStmtGraph.exceptionalSuccessors(stmt));
       assertStmtsListsEquiv(
-          expectedExceptionalDests.get(stmt), exceptionalStmtGraph.getDestTrap(stmt));
+          expectedExceptionalDests.get(stmt), exceptionalStmtGraph.getDestTraps(stmt));
     }
   }
 
   @Test
   public void graphWithChainedTrapsTest() {
     StmtGraph graph = createGraphWithChainedTraps();
-    ExceptionalStmtGraph exceptionalStmtGraph = new ExceptionalStmtGraph(graph);
+    MutableExceptionalStmtGraph exceptionalStmtGraph = new MutableExceptionalStmtGraph(graph);
 
     Map<Stmt, List<Stmt>> expectedExceptionalPreds = expectedPredsForGraphWithChainedTraps();
     Map<Stmt, List<Stmt>> expectedExceptionalSuccs = expectedSuccsForGraphWithChainedTraps();
@@ -135,7 +135,7 @@ public class ExceptionalStmtGraphTest {
       assertStmtsListsEquiv(
           expectedExceptionalSuccs.get(stmt), exceptionalStmtGraph.exceptionalSuccessors(stmt));
       assertStmtsListsEquiv(
-          expectedExceptionalDests.get(stmt), exceptionalStmtGraph.getDestTrap(stmt));
+          expectedExceptionalDests.get(stmt), exceptionalStmtGraph.getDestTraps(stmt));
     }
   }
 
