@@ -55,6 +55,8 @@ public class Body implements Copyable {
   /** The stmts for this Body. */
   @Nonnull private final ImmutableStmtGraph cfg;
 
+  @Nonnull private final ExceptionalStmtGraph ecfg;
+
   /** The Position Information in the Source for this Body. */
   @Nonnull private final Position position;
 
@@ -84,10 +86,12 @@ public class Body implements Copyable {
       @Nonnull MethodSignature methodSignature,
       @Nonnull Set<Local> locals,
       @Nonnull StmtGraph stmtGraph,
+      @Nonnull ExceptionalStmtGraph exceptionalStmtGraph,
       @Nonnull Position position) {
     this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
     this.cfg = ImmutableStmtGraph.copyOf(stmtGraph);
+    this.ecfg = exceptionalStmtGraph;
     this.position = position;
     // FIXME: [JMP] Virtual method call in constructor
     checkInit();
@@ -256,6 +260,11 @@ public class Body implements Copyable {
     return cfg;
   }
 
+  @Nonnull
+  public ExceptionalStmtGraph getExceptionalStmtGraph() {
+    return ecfg;
+  }
+
   private void checkInit() {
     runValidation(new CheckInitValidator());
   }
@@ -353,7 +362,8 @@ public class Body implements Copyable {
 
   @Nonnull
   public Body withLocals(@Nonnull Set<Local> locals) {
-    return new Body(getMethodSignature(), locals, getStmtGraph(), getPosition());
+    return new Body(
+        getMethodSignature(), locals, getStmtGraph(), getExceptionalStmtGraph(), getPosition());
   }
 
   /** helps against ConcurrentModificationException; it queues changes until they are committed */
@@ -672,7 +682,7 @@ public class Body implements Copyable {
         throw new RuntimeException("StmtGraph of " + methodSig + " is invalid.", e);
       }
 
-      return new Body(methodSig, locals, cfg, position);
+      return new Body(methodSig, locals, cfg, ecfg.unmodifiableStmtGraph(), position);
     }
 
     public Set<Modifier> getModifiers() {
