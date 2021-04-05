@@ -23,9 +23,7 @@ package de.upb.swt.soot.core.model;
  */
 
 import com.google.common.collect.Lists;
-import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
-import de.upb.swt.soot.core.graph.MutableStmtGraph;
-import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.graph.*;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
@@ -464,13 +462,14 @@ public class Body implements Copyable {
 
     @Nullable private Position position = null;
     @Nonnull private final MutableStmtGraph cfg;
+    @Nonnull private final MutableExceptionalStmtGraph ecfg;
     @Nullable private MethodSignature methodSig = null;
 
     @Nullable private StmtGraphManipulationQueue changeQueue = null;
     @Nullable private List<Stmt> cachedLinearizedStmts = null;
 
     BodyBuilder() {
-      cfg = new MutableStmtGraph();
+      cfg = new MutableStmtGraph(); ecfg = new MutableExceptionalStmtGraph();
     }
 
     BodyBuilder(@Nonnull Body body, @Nonnull Set<Modifier> modifiers) {
@@ -479,6 +478,7 @@ public class Body implements Copyable {
       setLocals(body.getLocals());
       setPosition(body.getPosition());
       cfg = new MutableStmtGraph(body.getStmtGraph());
+      ecfg = new MutableExceptionalStmtGraph(body.getStmtGraph());
       setTraps(body.getTraps());
     }
 
@@ -486,6 +486,9 @@ public class Body implements Copyable {
     public StmtGraph getStmtGraph() {
       return cfg.unmodifiableStmtGraph();
     }
+
+    @Nonnull
+    public ExceptionalStmtGraph getExcetptionalGraph(){return ecfg.unmodifiableStmtGraph(); }
 
     @Nonnull
     public List<Stmt> getStmts() {
@@ -532,6 +535,12 @@ public class Body implements Copyable {
     @Nonnull
     public BodyBuilder replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
       cfg.replaceNode(oldStmt, newStmt);
+      return this;
+    }
+
+    @Nonnull
+    public BodyBuilder replaceStmtInExceptionalStmtGraph(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt){
+      ecfg.replaceNode(oldStmt, newStmt);
       return this;
     }
 

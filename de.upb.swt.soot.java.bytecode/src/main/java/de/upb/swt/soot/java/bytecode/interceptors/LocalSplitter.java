@@ -23,6 +23,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  */
 
 import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
+import de.upb.swt.soot.core.graph.MutableExceptionalStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -89,7 +90,7 @@ public class LocalSplitter implements BodyInterceptor {
     }
 
     StmtGraph graph = builder.getStmtGraph();
-    ExceptionalStmtGraph exceptionalGraph = new ExceptionalStmtGraph(graph);
+    ExceptionalStmtGraph exceptionalGraph = builder.getExcetptionalGraph();
 
     // Create a new Local-Set for the modified new body.
     Set<Local> newLocals = new LinkedHashSet<>(builder.getLocals());
@@ -121,7 +122,7 @@ public class LocalSplitter implements BodyInterceptor {
         Stmt newVisitedStmt = BodyUtils.withNewDef(visitedStmt, newLocal);
         // replace the visited Stmt in the StmtGraph with the new Stmt,
         builder.replaceStmt(visitedStmt, newVisitedStmt);
-        exceptionalGraph.replaceNode(visitedStmt, newVisitedStmt);
+        builder.replaceStmtInExceptionalStmtGraph(visitedStmt, newVisitedStmt);
         // replace the corresponding Stmt in traps and visitList with the new Stmt.
         adaptTraps(builder, visitedStmt, newVisitedStmt);
         adaptVisitList(visitList, visitedStmt, newVisitedStmt);
@@ -147,7 +148,7 @@ public class LocalSplitter implements BodyInterceptor {
           if (head.getUses().contains(oriLocal)) {
             Stmt newHead = BodyUtils.withNewUse(head, oriLocal, newLocal);
             builder.replaceStmt(head, newHead);
-            exceptionalGraph.replaceNode(head, newHead);
+            builder.replaceStmtInExceptionalStmtGraph(head, newHead);
             adaptTraps(builder, head, newHead);
             adaptVisitList(visitList, head, newHead);
             // if head doesn't define the the oriLocal again, then add all successors which are
@@ -191,7 +192,7 @@ public class LocalSplitter implements BodyInterceptor {
                   if (hasHigherLocalName((Local) backStmt.getDefs().get(0), modifiedLocal)) {
                     Stmt newBackStmt = BodyUtils.withNewDef(backStmt, modifiedLocal);
                     builder.replaceStmt(backStmt, newBackStmt);
-                    exceptionalGraph.replaceNode(backStmt, newBackStmt);
+                    builder.replaceStmtInExceptionalStmtGraph(backStmt, newBackStmt);
                     adaptTraps(builder, backStmt, newBackStmt);
                     adaptVisitList(visitList, backStmt, newBackStmt);
                     newLocals.remove(newLocal);
@@ -206,7 +207,7 @@ public class LocalSplitter implements BodyInterceptor {
                   if (hasHigherLocalName(modifiedUse, modifiedLocal)) {
                     Stmt newBackStmt = BodyUtils.withNewUse(backStmt, modifiedUse, modifiedLocal);
                     builder.replaceStmt(backStmt, newBackStmt);
-                    exceptionalGraph.replaceNode(backStmt, newBackStmt);
+                    builder.replaceStmtInExceptionalStmtGraph(backStmt, newBackStmt);
                     adaptTraps(builder, backStmt, newBackStmt);
                     adaptVisitList(visitList, backStmt, newBackStmt);
                     backwardsQueue.addAll(builder.getStmtGraph().predecessors(newBackStmt));
@@ -256,7 +257,7 @@ public class LocalSplitter implements BodyInterceptor {
             for (Stmt handlerStmt : handlerStmts) {
               List<Stmt> preds = exceptionalGraph.exceptionalPredecessors(handlerStmt);
               for (Stmt pred : preds) {
-                List<Trap> dests = exceptionalGraph.getDestTrap(pred);
+                List<Trap> dests = exceptionalGraph.getDestTraps(pred);
                 List<Stmt> destHandlerStmts = new ArrayList<>();
                 dests.forEach(dest -> destHandlerStmts.add(dest.getHandlerStmt()));
                 if (destHandlerStmts.contains(handlerStmt)) {
@@ -277,7 +278,7 @@ public class LocalSplitter implements BodyInterceptor {
             // 4.step
             Stmt newVisitedStmt = BodyUtils.withNewUse(visitedStmt, oriL, lastChange);
             builder.replaceStmt(visitedStmt, newVisitedStmt);
-            exceptionalGraph.replaceNode(visitedStmt, newVisitedStmt);
+            builder.replaceStmtInExceptionalStmtGraph(visitedStmt, newVisitedStmt);
             adaptTraps(builder, visitedStmt, newVisitedStmt);
             adaptVisitList(visitList, visitedStmt, newVisitedStmt);
           }
