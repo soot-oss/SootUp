@@ -571,6 +571,14 @@ public class Body implements Copyable {
     }
 
     @Nonnull
+    public BodyBuilder removeDestinations(@Nonnull Stmt stmt) {
+      if (ecfg.containsNode(stmt)) {
+        ecfg.removeDestinations(stmt);
+      }
+      return this;
+    }
+
+    @Nonnull
     public List<Trap> getTraps() {
       return cfg.getTraps();
     }

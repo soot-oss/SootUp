@@ -128,9 +128,20 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
     return new ExceptionalStmtGraph(this);
   }
 
-  public void removeDestination(@Nonnull Stmt stmt) {
+  /**
+   * Set the destinationsTrap of the given stmt as empty list
+   *
+   * @param stmt a given stmt
+   */
+  public void removeDestinations(@Nonnull Stmt stmt) {
     Integer idx = getNodeIdx(stmt);
+    List<Trap> dests = exceptionalDestinationTraps.get(idx);
     exceptionalDestinationTraps.set(idx, Collections.emptyList());
+    exceptionalSuccs.set(idx, Collections.emptyList());
+    for (Trap trap : dests) {
+      Integer i = getNodeIdx(trap.getHandlerStmt());
+      exceptionalPreds.get(i).remove(stmt);
+    }
   }
 
   /**
