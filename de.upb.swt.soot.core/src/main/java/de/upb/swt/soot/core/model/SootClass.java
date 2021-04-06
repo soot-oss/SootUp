@@ -92,7 +92,7 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
   }
 
   @Nonnull
-  private final Supplier<Set<SootMethod>> _lazyMethods =
+  private final Supplier<Set<? extends SootMethod>> _lazyMethods =
       Suppliers.memoize(this::lazyMethodInitializer);
 
   /** Gets the {@link Method methods} of this {@link SootClass} in an immutable set. */

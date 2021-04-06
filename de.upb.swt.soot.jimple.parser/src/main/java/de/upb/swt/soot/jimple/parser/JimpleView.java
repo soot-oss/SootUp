@@ -1,5 +1,6 @@
 package de.upb.swt.soot.jimple.parser;
 
+import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
@@ -32,7 +33,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   private volatile boolean isFullyResolved = false;
 
   @Nonnull
-  protected Function<AnalysisInputLocation<SootClass>, ClassLoadingOptions>
+  protected Function<AnalysisInputLocation<SootClass<?>>, ClassLoadingOptions>
       classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link de.upb.swt.soot.java.core.views.JavaView} class. */
@@ -48,9 +49,9 @@ public class JimpleView extends AbstractView<SootClass<?>> {
    *     options.
    */
   public JimpleView(
-      @Nonnull JimpleProject project,
+      @Nonnull Project<JimpleView, ?> project,
       @Nonnull
-          Function<AnalysisInputLocation<SootClass>, ClassLoadingOptions>
+          Function<AnalysisInputLocation<SootClass<?>>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
@@ -75,13 +76,13 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   }
 
   @Nonnull
-  Optional<SootClass> getAbstractClass(@Nonnull ClassType type) {
+  Optional<SootClass<?>> getAbstractClass(@Nonnull ClassType type) {
     SootClass<?> cachedClass = cache.get(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
 
-    final List<AbstractClassSource<SootClass>> foundClassSources =
+    final List<AbstractClassSource<SootClass<?>>> foundClassSources =
         getProject().getInputLocations().stream()
             .map(
                 location -> {
@@ -115,8 +116,8 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   }
 
   @Nonnull
-  private synchronized Optional<SootClass> buildClassFrom(
-      AbstractClassSource<SootClass> classSource) {
+  private synchronized Optional<SootClass<?>> buildClassFrom(
+      AbstractClassSource<SootClass<?>> classSource) {
     SootClass<?> theClass =
         cache.computeIfAbsent(
             classSource.getClassType(),

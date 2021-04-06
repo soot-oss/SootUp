@@ -41,18 +41,18 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
-  @Nonnull protected final View<? extends SootClass> view;
+  @Nonnull protected final View<? extends SootClass<?>> view;
   @Nonnull protected final TypeHierarchy typeHierarchy;
 
   protected AbstractCallGraphAlgorithm(
-      @Nonnull View<? extends SootClass> view, @Nonnull TypeHierarchy typeHierarchy) {
+      @Nonnull View<? extends SootClass<?>> view, @Nonnull TypeHierarchy typeHierarchy) {
     this.view = view;
     this.typeHierarchy = typeHierarchy;
   }
 
   @Nonnull
   final CallGraph constructCompleteCallGraph(
-      View<? extends SootClass> view, List<MethodSignature> entryPoints) {
+      View<? extends SootClass<?>> view, List<MethodSignature> entryPoints) {
     MutableCallGraph cg = new GraphBasedCallGraph();
 
     Deque<MethodSignature> workList = new ArrayDeque<>(entryPoints);
@@ -94,7 +94,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   @Nonnull
   Stream<MethodSignature> resolveAllCallsFromSourceMethod(
-      View<? extends SootClass> view, MethodSignature sourceMethod) {
+      View<? extends SootClass<?>> view, MethodSignature sourceMethod) {
     SootMethod currentMethodCandidate =
         view.getClass(sourceMethod.getDeclClassType())
             .flatMap(c -> c.getMethod(sourceMethod))
@@ -139,7 +139,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   public CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType) {
     MutableCallGraph updated = oldCallGraph.copy();
 
-    SootClass clazz = view.getClassOrThrow(classType);
+    SootClass<?> clazz = view.getClassOrThrow(classType);
     Set<MethodSignature> newMethodSignatures =
         clazz.getMethods().stream().map(Method::getSignature).collect(Collectors.toSet());
 
@@ -160,7 +160,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
     Set<MethodSubSignature> newMethodSubSigs =
         newMethodSignatures.stream()
-            .map(methodSignature -> methodSignature.getSubSignature())
+            .map(MethodSignature::getSubSignature)
             .collect(Collectors.toSet());
 
     superTypes
