@@ -23,7 +23,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  */
 
 import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
-import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -39,15 +38,16 @@ public class TrapTightener implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    StmtGraph graph = builder.getStmtGraph();
-    ExceptionalStmtGraph exceptionalGraph = new ExceptionalStmtGraph(graph);
+    ExceptionalStmtGraph exceptionalGraph = builder.getExcetptionalGraph();
     List<Stmt> stmtsInPrintOrder = builder.getStmts();
 
     Set<Stmt> monitoredStmts = monitoredStmts(exceptionalGraph);
+    // System.out.println(monitoredStmts);
     List<Trap> traps = builder.getTraps();
     List<Trap> newTraps = new ArrayList<>();
     for (Trap trap : traps) {
-      boolean isCatchAll = trap.getExceptionType().getClassName().equals("java.lang.Throwable");
+      boolean isCatchAll =
+          trap.getExceptionType().getFullyQualifiedName().equals("java.lang.Throwable");
 
       // determine the initial trap-scope
       Stmt trapBegin = trap.getBeginStmt();
@@ -142,6 +142,8 @@ public class TrapTightener implements BodyInterceptor {
             queue.addAll(getMixSuccessors(graph, monitorStmt));
           }
         }
+      } else {
+        queue.addAll(getMixSuccessors(graph, stmt));
       }
     }
     return monitoredStmts;
@@ -155,7 +157,7 @@ public class TrapTightener implements BodyInterceptor {
    * @return a list of successors(normal+exceptional) of the given stmt
    */
   private List<Stmt> getMixSuccessors(ExceptionalStmtGraph graph, Stmt stmt) {
-    List<Stmt> succs = graph.successors(stmt);
+    List<Stmt> succs = new ArrayList<>(graph.successors(stmt));
     succs.addAll(graph.exceptionalSuccessors(stmt));
     return succs;
   }
@@ -170,7 +172,7 @@ public class TrapTightener implements BodyInterceptor {
    *     return false
    */
   private boolean mightThrow(ExceptionalStmtGraph graph, Stmt stmt, Trap trap) {
-    for (Trap dest : graph.getDestTrap(stmt)) {
+    for (Trap dest : graph.getDestTraps(stmt)) {
       if (dest == trap) {
         return true;
       }
