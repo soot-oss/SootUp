@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import com.google.common.collect.Lists;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import java.util.List;
@@ -72,7 +73,6 @@ public class AssertUtils {
         break;
       }
     }
-
     if (!condition) {
       System.out.println("expected:");
       System.out.println(expected);
@@ -106,6 +106,49 @@ public class AssertUtils {
       System.out.println(expected);
       System.out.println("actual:");
       System.out.println(actual);
+    }
+    assertTrue(condition);
+  }
+
+  // assert whether two trap lists are equal
+  public static void assertTrapsEquiv(List<Trap> expected, List<Trap> actual) {
+
+    assertNotNull(expected);
+    assertNotNull(actual);
+    if (expected.size() != actual.size()) {
+      System.out.println("Expected size is not equal to actual size: ");
+      System.out.println("expected size of list: " + expected.size());
+      System.out.println("actual size of list: " + actual.size());
+    }
+    assertEquals(expected.size(), actual.size());
+    boolean condition = true;
+    for (Trap trap : actual) {
+      boolean hasSameTrap = false;
+      Stmt beginStmt = trap.getBeginStmt();
+      Stmt endStmt = trap.getEndStmt();
+      Stmt hanlderStmt = trap.getHandlerStmt();
+      for (Trap anTrap : expected) {
+        if (anTrap.getBeginStmt() == beginStmt
+            && anTrap.getEndStmt() == endStmt
+            && anTrap.getHandlerStmt() == hanlderStmt) {
+          hasSameTrap = true;
+          break;
+        }
+      }
+      if (!hasSameTrap) {
+        condition = false;
+        break;
+      }
+    }
+    if (!condition) {
+      System.out.println("expected:");
+      for (Trap trap : expected) {
+        System.out.println("    " + trap);
+      }
+      System.out.println("actual:");
+      for (Trap trap : actual) {
+        System.out.println("    " + trap);
+      }
     }
     assertTrue(condition);
   }
