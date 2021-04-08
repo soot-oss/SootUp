@@ -44,7 +44,7 @@ public class PointsToSetIntersectionTest {
   @Before
   public void setUp() {
     String className = "Test1";
-    String walaClassPath = "src/test/resources/spark/Basic";
+    String walaClassPath = "src/test/resources/spark/basic";
 
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
     if (version > 1.8) {
