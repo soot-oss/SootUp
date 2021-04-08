@@ -68,7 +68,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * workList</code> and processed as well. <code>cg</code> is updated accordingly.
    */
   final void processWorkList(
-      View<? extends SootClass> view,
+      View<? extends SootClass<?>> view,
       Deque<MethodSignature> workList,
       Set<MethodSignature> processed,
       MutableCallGraph cg) {
