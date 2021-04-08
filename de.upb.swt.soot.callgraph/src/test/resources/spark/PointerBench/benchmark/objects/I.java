@@ -1,4 +1,4 @@
-package objects;
+package benchmark.objects;
 
 public interface I {
 	// G and H implement I

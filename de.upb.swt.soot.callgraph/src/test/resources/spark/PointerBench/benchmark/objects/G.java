@@ -1,4 +1,4 @@
-package objects;
+package benchmark.objects;
 
 public class G implements I {
 	// G and H implement I

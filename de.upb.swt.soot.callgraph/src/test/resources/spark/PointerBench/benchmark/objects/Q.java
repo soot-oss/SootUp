@@ -1,4 +1,4 @@
-package objects;
+package benchmark.objects;
 
 public class Q {
 	// Class P extends class Q

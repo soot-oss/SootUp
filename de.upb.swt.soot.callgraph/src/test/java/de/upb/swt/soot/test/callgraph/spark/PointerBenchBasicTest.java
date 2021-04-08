@@ -39,7 +39,7 @@ public class PointerBenchBasicTest {
 
     @Before
     public void setUp() {
-        String className = "Branching1";
+        String className = "basic.Branching1";
         String walaClassPath = "src/test/resources/spark/PointerBench";
 
         double version = Double.parseDouble(System.getProperty("java.specification.version"));
@@ -84,12 +84,12 @@ public class PointerBenchBasicTest {
     @Test
     public void testBranching1() {
         Map<Integer, Local> lineNumberToInt = getLineNumberToLocalMap(targetMethod, "int");
-        Map<Integer, Local> lineNumberToA = getLineNumberToLocalMap(targetMethod, "objects.A");
+        Map<Integer, Local> lineNumberToA = getLineNumberToLocalMap(targetMethod, "benchmark.objects.A");
 
-        Local i = lineNumberToInt.get(6);
+        Local i = lineNumberToInt.get(19);
 
-        Local a = lineNumberToA.get(8);
-        Local b = lineNumberToA.get(9);
+        Local a = lineNumberToA.get(22);
+        Local b = lineNumberToA.get(24);
 
         Set<Node> iPointsTo = spark.getPointsToSet(i);
         Set<Node> aPointsTo = spark.getPointsToSet(a);
