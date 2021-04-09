@@ -37,9 +37,9 @@ import javax.annotation.Nonnull;
  */
 public class MutableExceptionalStmtGraph extends MutableStmtGraph {
 
-  @Nonnull private ArrayList<List<Stmt>> exceptionalPreds = new ArrayList<>();
-  @Nonnull private ArrayList<List<Stmt>> exceptionalSuccs = new ArrayList<>();
-  @Nonnull private ArrayList<List<Trap>> exceptionalDestinationTraps = new ArrayList<>();
+  @Nonnull private final ArrayList<List<Stmt>> exceptionalPreds = new ArrayList<>();
+  @Nonnull private final ArrayList<List<Stmt>> exceptionalSuccs = new ArrayList<>();
+  @Nonnull private final ArrayList<List<Trap>> exceptionalDestinationTraps = new ArrayList<>();
 
   /** creates an empty instance of ExceptionalStmtGraph */
   public MutableExceptionalStmtGraph() {
@@ -51,16 +51,17 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
     super(oriStmtGraph);
     setTraps(oriStmtGraph.getTraps());
 
+    // initialize exceptionalPreds and exceptionalSuccs
+    int size = oriStmtGraph.nodes().size();
+
+    for (int i = 0; i < size; i++) {
+      exceptionalPreds.add(Collections.emptyList());
+      exceptionalSuccs.add(Collections.emptyList());
+      exceptionalDestinationTraps.add(Collections.emptyList());
+    }
+
     // if there're traps, then infer every stmt's exceptional succs
     if (!oriStmtGraph.getTraps().isEmpty()) {
-      int size = oriStmtGraph.nodes().size();
-
-      // initialize exceptionalPreds and exceptionalSuccs
-      for (int i = 0; i < size; i++) {
-        exceptionalPreds.add(Collections.emptyList());
-        exceptionalSuccs.add(Collections.emptyList());
-        exceptionalDestinationTraps.add(Collections.emptyList());
-      }
 
       List<Trap> traps = oriStmtGraph.getTraps();
 

@@ -3,7 +3,7 @@ package de.upb.swt.soot.core.graph;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2020 Zun Wang
+ * Copyright (C) 2021 Zun Wang
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -24,79 +24,29 @@ package de.upb.swt.soot.core.graph;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.List;
-import java.util.Set;
 import javax.annotation.Nonnull;
 
-/** @author Zun Wang */
-public final class ExceptionalStmtGraph extends StmtGraph {
+public final class ExceptionalStmtGraph extends ForwardingStmtGraph {
 
-  @Nonnull private final MutableExceptionalStmtGraph exceptionalStmtGraph;
+  @Nonnull private final MutableExceptionalStmtGraph stmtGraph;
 
-  public ExceptionalStmtGraph(@Nonnull MutableExceptionalStmtGraph graph) {
-    this.exceptionalStmtGraph = graph;
-  }
-
-  @Override
-  public Stmt getStartingStmt() {
-    return exceptionalStmtGraph.getStartingStmt();
-  }
-
-  @Nonnull
-  @Override
-  public Set<Stmt> nodes() {
-    return exceptionalStmtGraph.nodes();
-  }
-
-  @Override
-  public boolean containsNode(@Nonnull Stmt stmt) {
-    return exceptionalStmtGraph.containsNode(stmt);
-  }
-
-  @Nonnull
-  @Override
-  public List<Stmt> predecessors(@Nonnull Stmt stmt) {
-    return exceptionalStmtGraph.predecessors(stmt);
+  public ExceptionalStmtGraph(@Nonnull MutableExceptionalStmtGraph stmtGraph) {
+    super(stmtGraph);
+    this.stmtGraph = stmtGraph;
   }
 
   @Nonnull
   public List<Stmt> exceptionalPredecessors(@Nonnull Stmt stmt) {
-    return exceptionalStmtGraph.exceptionalPredecessors(stmt);
-  }
-
-  @Nonnull
-  @Override
-  public List<Stmt> successors(@Nonnull Stmt stmt) {
-    return exceptionalStmtGraph.successors(stmt);
+    return stmtGraph.exceptionalPredecessors(stmt);
   }
 
   @Nonnull
   public List<Stmt> exceptionalSuccessors(@Nonnull Stmt stmt) {
-    return exceptionalStmtGraph.exceptionalSuccessors(stmt);
+    return stmtGraph.exceptionalSuccessors(stmt);
   }
 
   @Nonnull
   public List<Trap> getDestTraps(@Nonnull Stmt stmt) {
-    return exceptionalStmtGraph.getDestTraps(stmt);
-  }
-
-  @Override
-  public int inDegree(@Nonnull Stmt stmt) {
-    return exceptionalStmtGraph.degree(stmt);
-  }
-
-  @Override
-  public int outDegree(@Nonnull Stmt stmt) {
-    return exceptionalStmtGraph.outDegree(stmt);
-  }
-
-  @Override
-  public boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target) {
-    return exceptionalStmtGraph.hasEdgeConnecting(source, target);
-  }
-
-  @Nonnull
-  @Override
-  public List<Trap> getTraps() {
-    return exceptionalStmtGraph.getTraps();
+    return stmtGraph.getDestTraps(stmt);
   }
 }
