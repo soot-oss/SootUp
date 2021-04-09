@@ -37,9 +37,7 @@ public class PointerBenchBasicTest {
     private Spark spark;
     private SootMethod targetMethod;
 
-    @Before
-    public void setUp() {
-        String className = "basic.Branching1";
+    public void setUp(String className) {
         String walaClassPath = "src/test/resources/spark/PointerBench";
 
         double version = Double.parseDouble(System.getProperty("java.specification.version"));
@@ -82,7 +80,27 @@ public class PointerBenchBasicTest {
     }
 
     @Test
+    public void testSimpleAlias1() {
+        setUp("basic.SimpleAlias1");
+        Map<Integer, Local> lineNumberToA = getLineNumberToLocalMap(targetMethod, "benchmark.objects.A");
+
+        Local a = lineNumberToA.get(21);
+        Local b = lineNumberToA.get(23);
+
+        Set<Node> aPointsTo = spark.getPointsToSet(a);
+        Set<Node> bPointsTo = spark.getPointsToSet(b);
+
+        // a must point to 1 object
+        assertTrue(aPointsTo.size()==1);
+        // b must point to 1 object
+        assertTrue(bPointsTo.size()==1);
+        // a and b must point to same set of objects
+        assertTrue(aPointsTo.equals(bPointsTo));
+    }
+
+    @Test
     public void testBranching1() {
+        setUp("basic.Branching1");
         Map<Integer, Local> lineNumberToInt = getLineNumberToLocalMap(targetMethod, "int");
         Map<Integer, Local> lineNumberToA = getLineNumberToLocalMap(targetMethod, "benchmark.objects.A");
 
