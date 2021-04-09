@@ -29,7 +29,7 @@ public class ReturnValue3 {
     A b = id(a);
     B x = b.f;
     B y = a.f;
-    Benchmark.test("x",
-        "{allocId:1, mayAlias:[x], notMayAlias:[a,b,y], mustAlias:[x], notMustAlias:[a,b,y]}");
+//    Benchmark.test("x",
+//        "{allocId:1, mayAlias:[x], notMayAlias:[a,b,y], mustAlias:[x], notMustAlias:[a,b,y]}");
   }
 }

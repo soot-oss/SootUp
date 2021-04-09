@@ -34,8 +34,8 @@ public class Interprocedural2 {
 
     B x = a.f;
     B y = b.f;
-    Benchmark
-        .test("x",
-            "{allocId:1, mayAlias:[x,y], notMayAlias:[a,b,m2], mustAlias:[x,y], notMustAlias:[a,b,m2]}");
+//    Benchmark
+//        .test("x",
+//            "{allocId:1, mayAlias:[x,y], notMayAlias:[a,b,m2], mustAlias:[x,y], notMustAlias:[a,b,m2]}");
   }
 }

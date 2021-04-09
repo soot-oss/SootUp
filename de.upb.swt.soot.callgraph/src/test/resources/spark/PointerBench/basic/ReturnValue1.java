@@ -24,7 +24,7 @@ public class ReturnValue1 {
     Benchmark.alloc(1);
     A a = new A();
     A b = id(a);
-    Benchmark.test("b",
-        "{allocId:1, mayAlias:[a,b], notMayAlias:[], mustAlias:[a,b], notMustAlias:[]}");
+//    Benchmark.test("b",
+//        "{allocId:1, mayAlias:[a,b], notMayAlias:[], mustAlias:[a,b], notMustAlias:[]}");
   }
 }

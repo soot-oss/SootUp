@@ -36,9 +36,9 @@ public class Loops2 {
 
     N o = node.next;
     N p = node.next.next;
-    Benchmark.test("node",
-        "{allocId:1, mayAlias:[node], notMayAlias:[i,o,p], mustAlias:[node], notMustAlias:[p]},"
-            + "{allocId:2, mayAlias:[o], notMayAlias:[node], mustAlias:[o], notMustAlias:[p]}");
+//    Benchmark.test("node",
+//        "{allocId:1, mayAlias:[node], notMayAlias:[i,o,p], mustAlias:[node], notMustAlias:[p]},"
+//            + "{allocId:2, mayAlias:[o], notMayAlias:[node], mustAlias:[o], notMustAlias:[p]}");
   }
 
   public static void main(String[] args) {

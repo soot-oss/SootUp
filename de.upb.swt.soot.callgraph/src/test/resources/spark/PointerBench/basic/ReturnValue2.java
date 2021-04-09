@@ -27,7 +27,7 @@ public class ReturnValue2 {
     A a = new A();
     ReturnValue2 rv2 = new ReturnValue2();
     A b = rv2.id(a);
-    Benchmark.test("b",
-        "{allocId:1, mayAlias:[a,b], notMayAlias:[rv2], mustAlias:[a,b], notMustAlias:[rv2]}");
+//    Benchmark.test("b",
+//        "{allocId:1, mayAlias:[a,b], notMayAlias:[rv2], mustAlias:[a,b], notMustAlias:[rv2]}");
   }
 }

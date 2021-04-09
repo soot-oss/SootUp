@@ -21,7 +21,7 @@ public class SimpleAlias1 {
     A a = new A();
 
     A b = a;
-    Benchmark.test("b",
-        "{allocId:1, mayAlias:[a,b], notMayAlias:[], mustAlias:[a,b], notMustAlias:[]}");
+//    Benchmark.test("b",
+//        "{allocId:1, mayAlias:[a,b], notMayAlias:[], mustAlias:[a,b], notMustAlias:[]}");
   }
 }

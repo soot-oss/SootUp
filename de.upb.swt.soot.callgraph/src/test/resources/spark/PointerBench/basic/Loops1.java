@@ -37,9 +37,9 @@ public class Loops1 {
     N p = node.next.next;
     N q = node.next.next.next;
 
-    Benchmark
-        .test("node",
-            "{allocId:1, mayAlias:[node], notMayAlias:[i,o,p,q], mustAlias:[node], notMustAlias:[i,o,p,q]}");
+//    Benchmark
+//        .test("node",
+//            "{allocId:1, mayAlias:[node], notMayAlias:[i,o,p,q], mustAlias:[node], notMustAlias:[i,o,p,q]}");
   }
 
   public static void main(String[] args) {

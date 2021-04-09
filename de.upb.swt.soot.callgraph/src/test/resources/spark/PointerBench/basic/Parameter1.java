@@ -17,8 +17,8 @@ public class Parameter1 {
 
   public static void test(A x) {
     A b = x;
-    Benchmark.test("b",
-        "{allocId:1, mayAlias:[b,x], notMayAlias:[], mustAlias:[b,x], notMustAlias:[]}");
+//    Benchmark.test("b",
+//        "{allocId:1, mayAlias:[b,x], notMayAlias:[], mustAlias:[b,x], notMustAlias:[]}");
   }
 
   public static void main(String[] args) {
