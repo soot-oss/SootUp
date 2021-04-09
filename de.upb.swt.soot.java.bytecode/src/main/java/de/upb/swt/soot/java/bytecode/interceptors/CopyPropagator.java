@@ -43,11 +43,11 @@ public class CopyPropagator implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    for (Stmt stmt : builder.getStmtGraph()) {
+    for (Stmt stmt : builder.getExceptionalGraph()) {
       for (Value use : stmt.getUses()) {
         if (use instanceof Local) {
           List<Stmt> defsOfUse =
-              BodyUtils.getDefsForLocalUse(builder.getStmtGraph(), (Local) use, stmt);
+              BodyUtils.getDefsForLocalUse(builder.getExceptionalGraph(), (Local) use, stmt);
 
           if (isPropagable(defsOfUse)) {
             AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);

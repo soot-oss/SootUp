@@ -60,7 +60,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     // eliminateOnlyStackLocals: locals which are: nulltype or not referencing a field
     // TODO[MN]: config parameter
     boolean eliminateOnlyStackLocals = false;
-    StmtGraph stmtGraph = builder.getStmtGraph();
+    StmtGraph stmtGraph = builder.getExceptionalGraph();
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
 

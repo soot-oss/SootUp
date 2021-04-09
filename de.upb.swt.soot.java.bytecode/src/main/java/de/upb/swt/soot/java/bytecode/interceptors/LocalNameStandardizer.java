@@ -42,7 +42,7 @@ public class LocalNameStandardizer implements BodyInterceptor {
     // Get the order of all Locals' occurrences and store them into a map
     Map<Local, Integer> localToFirstOccurrence = new HashMap<>();
     int defsCount = 0;
-    for (Stmt stmt : builder.getStmtGraph()) {
+    for (Stmt stmt : builder.getExceptionalGraph()) {
       Local def = null;
       if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
         def = (Local) stmt.getDefs().get(0);

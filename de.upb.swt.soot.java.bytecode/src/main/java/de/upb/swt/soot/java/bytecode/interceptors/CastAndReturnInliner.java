@@ -66,7 +66,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
-    StmtGraph originalGraph = builder.getStmtGraph();
+    StmtGraph originalGraph = builder.getExceptionalGraph();
 
     builder.enableDeferredStmtGraphChanges();
     for (Stmt stmt : originalGraph.nodes()) {
