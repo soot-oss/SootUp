@@ -146,11 +146,35 @@ public class PointerBenchBasicTest {
         Set<Node> xPointsTo = spark.getPointsToSet(x);
         Set<Node> bPointsTo = spark.getPointsToSet(b);
 
-        // a must point to 1 object
+        // x must point to 1 object
         assertTrue(xPointsTo.size()==1);
         // b must point to 1 object
         assertTrue(bPointsTo.size()==1);
-        // a and b must point to same set of objects
+        // x and b must point to same set of objects
+        assertTrue(xPointsTo.equals(bPointsTo));
+    }
+
+    @Test
+    public void testParameter2() {
+        setUp("basic.Parameter2");
+        MethodSignature targetMethodSig =
+                identifierFactory.getMethodSignature(
+                        "test", mainClassSignature, "void", Collections.singletonList("benchmark.objects.A"));
+        SootMethod targetMethod = getTargetMethod(targetMethodSig);
+        List<Local> params = new ArrayList<>();
+        Map<Integer, Local> lineNumberToA = getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", params);
+
+        Local x = params.get(0);
+        Local b = lineNumberToA.get(21);
+
+        Set<Node> xPointsTo = spark.getPointsToSet(x);
+        Set<Node> bPointsTo = spark.getPointsToSet(b);
+
+        // x must point to 1 object
+        assertTrue(xPointsTo.size()==1);
+        // b must point to 1 object
+        assertTrue(bPointsTo.size()==1);
+        // x and b must point to same set of objects
         assertTrue(xPointsTo.equals(bPointsTo));
     }
 
