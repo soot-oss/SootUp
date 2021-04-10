@@ -49,7 +49,7 @@ public class UnusedLocalEliminator implements BodyInterceptor {
     Set<Local> locals = new LinkedHashSet<>();
 
     // Traverse statements copying all used uses and defs
-    for (Stmt stmt : builder.getExceptionalGraph()) {
+    for (Stmt stmt : builder.getStmtGraph()) {
       for (Value value : stmt.getUsesAndDefs()) {
         if (value instanceof Local) {
           Local local = (Local) value;

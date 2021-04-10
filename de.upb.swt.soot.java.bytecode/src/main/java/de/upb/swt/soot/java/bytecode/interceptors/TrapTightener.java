@@ -38,7 +38,7 @@ public class TrapTightener implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    ExceptionalStmtGraph exceptionalGraph = builder.getExceptionalGraph();
+    ExceptionalStmtGraph exceptionalGraph = builder.getStmtGraph();
     List<Stmt> stmtsInPrintOrder = builder.getStmts();
 
     Set<Stmt> monitoredStmts = monitoredStmts(exceptionalGraph);

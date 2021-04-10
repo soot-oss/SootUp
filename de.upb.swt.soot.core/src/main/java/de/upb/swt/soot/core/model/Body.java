@@ -480,7 +480,7 @@ public class Body implements Copyable {
     }
 
     @Nonnull
-    public ExceptionalStmtGraph getExceptionalGraph() {
+    public ExceptionalStmtGraph getStmtGraph() {
       return ecfg.unmodifiableStmtGraph();
     }
 

@@ -38,7 +38,7 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
-    StmtGraph graph = builder.getExceptionalGraph();
+    StmtGraph graph = builder.getStmtGraph();
     List<Trap> traps = builder.getTraps();
 
     // get all valid starting stmts: startingStmt and handlerStmts(if they in stmtGraph)

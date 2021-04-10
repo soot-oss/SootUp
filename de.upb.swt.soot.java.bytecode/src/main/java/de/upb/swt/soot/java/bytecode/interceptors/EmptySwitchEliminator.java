@@ -42,7 +42,7 @@ public class EmptySwitchEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     // Iterate all stmts in the body
-    Iterator<Stmt> stmts = builder.getExceptionalGraph().iterator();
+    Iterator<Stmt> stmts = builder.getStmtGraph().iterator();
 
     while (stmts.hasNext()) {
       Stmt stmt = stmts.next();

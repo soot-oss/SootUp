@@ -88,7 +88,7 @@ public class LocalSplitter implements BodyInterceptor {
       }
     }
 
-    ExceptionalStmtGraph graph = builder.getExceptionalGraph();
+    ExceptionalStmtGraph graph = builder.getStmtGraph();
 
     // Create a new Local-Set for the modified new body.
     Set<Local> newLocals = new LinkedHashSet<>(builder.getLocals());
@@ -283,7 +283,7 @@ public class LocalSplitter implements BodyInterceptor {
    */
   private void adaptTraps(
       @Nonnull BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-    List<Trap> traps = new ArrayList<>(builder.getExceptionalGraph().getTraps());
+    List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
     for (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) {
       Trap trap = iterator.next();
       JTrap jtrap = (JTrap) trap;
@@ -414,7 +414,7 @@ public class LocalSplitter implements BodyInterceptor {
 
     Set<Stmt> handlerStmts = new HashSet<>();
 
-    StmtGraph graph = bodyBuilder.getExceptionalGraph();
+    StmtGraph graph = bodyBuilder.getStmtGraph();
 
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(stmt);
