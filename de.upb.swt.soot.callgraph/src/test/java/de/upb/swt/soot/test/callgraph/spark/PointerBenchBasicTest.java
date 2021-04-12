@@ -73,6 +73,13 @@ public class PointerBenchBasicTest {
         return targetOpt.get();
     }
 
+    private SootMethod getTargetMethodFromClass(MethodSignature targetMethodSig, JavaClassType classSig) {
+        SootClass mainClass = (SootClass) view.getClass(classSig).get();
+        Optional<SootMethod> targetOpt = mainClass.getMethod(targetMethodSig);
+        assertTrue(targetOpt.isPresent());
+        return targetOpt.get();
+    }
+
     @Test
     public void testSimpleAlias1() {
         setUp("basic.SimpleAlias1");
@@ -327,6 +334,79 @@ public class PointerBenchBasicTest {
                                 Sets.intersection(bPointsTo, yPointsTo)).isEmpty());
         // x and y.f in id() must point to a common object
         assertFalse(Sets.intersection(xPointsTo, yDotFPointsTo).isEmpty());
+    }
+
+    @Test
+    public void testLoops1() {
+        setUp("basic.Loops1");
+        MethodSignature targetMethodSig =
+                identifierFactory.getMethodSignature(
+                        "test", mainClassSignature, "void", Collections.emptyList());
+        SootMethod targetMethod = getTargetMethod(targetMethodSig);
+        Map<Integer, Local> lineNumberToN = getLineNumberToLocalMap(targetMethod, "basic.Loops1$N", new ArrayList<>());
+        Map<Integer, Local> lineNumberToInt = getLineNumberToLocalMap(targetMethod, "int", new ArrayList<>());
+
+        Local node = lineNumberToN.get(28);
+        Local i = lineNumberToInt.get(30);
+        Local o = lineNumberToN.get(36);
+        Local p = lineNumberToN.get(37);
+        Local q = lineNumberToN.get(38);
+
+
+        Set<Node> nodePointsTo = spark.getPointsToSet(node);
+        Set<Node> iPointsTo = spark.getPointsToSet(i);
+        Set<Node> oPointsTo = spark.getPointsToSet(o);
+        Set<Node> pPointsTo = spark.getPointsToSet(p);
+        Set<Node> qPointsTo = spark.getPointsToSet(q);
+
+        // node and o must not point to a common object
+        assertTrue(Sets.intersection(nodePointsTo, oPointsTo).isEmpty());
+        // node and p must not point to a common object
+        assertTrue(Sets.intersection(nodePointsTo, pPointsTo).isEmpty());
+        // node and q must not point to a common object
+        assertTrue(Sets.intersection(nodePointsTo, qPointsTo).isEmpty());
+        // node and i must not point to a common object
+        assertTrue(Sets.intersection(nodePointsTo, iPointsTo).isEmpty());
+    }
+
+    @Test
+    public void testLoops2() {
+        setUp("basic.Loops2");
+        MethodSignature targetMethodSig =
+                identifierFactory.getMethodSignature(
+                        "test", mainClassSignature, "void", Collections.emptyList());
+        SootMethod targetMethod = getTargetMethod(targetMethodSig);
+
+        JavaClassType NClassSignature = identifierFactory.getClassType("basic.Loops2$N");
+        MethodSignature NMethodSig =
+                identifierFactory.getMethodSignature(
+                        "<init>", NClassSignature, "void", Collections.emptyList());
+        SootMethod NMethod = getTargetMethodFromClass(NMethodSig, NClassSignature);
+
+        Map<Integer, Local> lineNumberToN = getLineNumberToLocalMap(targetMethod, "basic.Loops2$N", new ArrayList<>());
+        Map<Integer, Local> lineNumberToInt = getLineNumberToLocalMap(targetMethod, "int", new ArrayList<>());
+        Map<Integer, Local> lineNumberToNinN = getLineNumberToLocalMap(NMethod, "basic.Loops2$N", new ArrayList<>());
+
+        Local nextInN = lineNumberToNinN.get(23);
+        Local node = lineNumberToN.get(29);
+        Local i = lineNumberToInt.get(31);
+        Local o = lineNumberToN.get(37);
+        Local p = lineNumberToN.get(38);
+
+        Set<Node> nextInNPointsTo = spark.getPointsToSet(nextInN);
+        Set<Node> nodePointsTo = spark.getPointsToSet(node);
+        Set<Node> iPointsTo = spark.getPointsToSet(i);
+        Set<Node> oPointsTo = spark.getPointsToSet(o);
+        Set<Node> pPointsTo = spark.getPointsToSet(p);
+
+        // node and o must not point to same set of objects
+        assertFalse(nodePointsTo.equals(oPointsTo));
+        // node and p must not point to same set of objects
+        assertFalse(nodePointsTo.equals(pPointsTo));
+        // node and i must not point to a common object
+        assertTrue(Sets.intersection(nodePointsTo, iPointsTo).isEmpty());
+        // node.next and o must point to the same set of objects
+        assertTrue(oPointsTo.equals(nextInNPointsTo));
     }
 
     private Map<Integer, Local> getLineNumberToLocalMap(SootMethod sootMethod, String typeName, List<Local> params) {
