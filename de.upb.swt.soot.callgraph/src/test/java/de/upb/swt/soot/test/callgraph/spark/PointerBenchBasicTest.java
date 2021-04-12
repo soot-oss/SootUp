@@ -409,6 +409,39 @@ public class PointerBenchBasicTest {
         assertTrue(oPointsTo.equals(nextInNPointsTo));
     }
 
+    @Test
+    public void testRecursion1() {
+        setUp("basic.Recursion1");
+        MethodSignature targetMethodSig =
+                identifierFactory.getMethodSignature(
+                        "test", mainClassSignature, "void", Collections.emptyList());
+        SootMethod targetMethod = getTargetMethod(targetMethodSig);
+
+
+        Map<Integer, Local> lineNumberToN = getLineNumberToLocalMap(targetMethod, "basic.Recursion1$N", new ArrayList<>());
+
+        Local node = lineNumberToN.get(39);
+        Local n = lineNumberToN.get(42);
+        Local o = lineNumberToN.get(44);
+        Local p = lineNumberToN.get(45);
+        Local q = lineNumberToN.get(46);
+
+        Set<Node> nodePointsTo = spark.getPointsToSet(node);
+        Set<Node> nPointsTo = spark.getPointsToSet(n);
+        Set<Node> oPointsTo = spark.getPointsToSet(o);
+        Set<Node> pPointsTo = spark.getPointsToSet(p);
+        Set<Node> qPointsTo = spark.getPointsToSet(q);
+
+        // node and n must point to same set of objects
+        assertTrue(nodePointsTo.equals(nPointsTo));
+        // node and o must not point to same set of objects
+        assertTrue(Sets.intersection(nodePointsTo, oPointsTo).isEmpty());
+        // node and p must not point to same set of objects
+        assertTrue(Sets.intersection(nodePointsTo, pPointsTo).isEmpty());
+        // node and q must not point to same set of objects
+        assertTrue(Sets.intersection(nodePointsTo, qPointsTo).isEmpty());
+    }
+
     private Map<Integer, Local> getLineNumberToLocalMap(SootMethod sootMethod, String typeName, List<Local> params) {
         final ImmutableStmtGraph stmtGraph = sootMethod.getBody().getStmtGraph();
         Map<Integer, Local> res = new HashMap<>();
