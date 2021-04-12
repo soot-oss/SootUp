@@ -209,6 +209,43 @@ public class PointerBenchBasicTest {
 
     }
 
+    @Test
+    public void testInterprocedural2() {
+        setUp("basic.Interprocedural2");
+        MethodSignature targetMethodSig =
+                identifierFactory.getMethodSignature(
+                        "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+        SootMethod targetMethod = getTargetMethod(targetMethodSig);
+        Map<Integer, Local> lineNumberToA = getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
+        Map<Integer, Local> lineNumberToB = getLineNumberToLocalMap(targetMethod, "benchmark.objects.B", new ArrayList<>());
+        Map<Integer, Local> lineNumberToInterprocedural2 = getLineNumberToLocalMap(targetMethod, "basic.Interprocedural2", new ArrayList<>());
+
+        Local a = lineNumberToA.get(27);
+        Local b = lineNumberToA.get(28);
+        Local bDotF = lineNumberToB.get(31);
+        Local m2 = lineNumberToInterprocedural2.get(32);
+        Local x = lineNumberToB.get(35);
+        Local y = lineNumberToB.get(36);
+
+
+        Set<Node> aPointsTo = spark.getPointsToSet(a);
+        Set<Node> bPointsTo = spark.getPointsToSet(b);
+        Set<Node> bDotFPointsTo = spark.getPointsToSet(bDotF);
+        Set<Node> m2PointsTo = spark.getPointsToSet(m2);
+        Set<Node> xPointsTo = spark.getPointsToSet(x);
+        Set<Node> yPointsTo = spark.getPointsToSet(y);
+
+        // b.f and a must not point to a common object
+        assertTrue(Sets.intersection(bDotFPointsTo, aPointsTo).isEmpty());
+        // b.f and b must not point to a common object
+        assertTrue(Sets.intersection(bDotFPointsTo, bPointsTo).isEmpty());
+        // b.f and m2 must not point to a common object
+        assertTrue(Sets.intersection(bDotFPointsTo, m2PointsTo).isEmpty());
+        // x and y must point to same set of objects
+        assertTrue(xPointsTo.equals(yPointsTo));
+
+    }
+
     private Map<Integer, Local> getLineNumberToLocalMap(SootMethod sootMethod, String typeName, List<Local> params) {
         final ImmutableStmtGraph stmtGraph = sootMethod.getBody().getStmtGraph();
         Map<Integer, Local> res = new HashMap<>();
