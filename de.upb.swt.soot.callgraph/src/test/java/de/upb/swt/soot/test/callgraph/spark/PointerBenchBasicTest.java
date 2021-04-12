@@ -178,6 +178,37 @@ public class PointerBenchBasicTest {
         assertTrue(xPointsTo.equals(bPointsTo));
     }
 
+    @Test
+    public void testInterprocedural1() {
+        setUp("basic.Interprocedural1");
+        MethodSignature targetMethodSig =
+                identifierFactory.getMethodSignature(
+                        "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+        SootMethod targetMethod = getTargetMethod(targetMethodSig);
+        Map<Integer, Local> lineNumberToA = getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
+        Map<Integer, Local> lineNumberToB = getLineNumberToLocalMap(targetMethod, "benchmark.objects.B", new ArrayList<>());
+
+        Local a = lineNumberToA.get(25);
+        Local b = lineNumberToA.get(26);
+        Local bDotF = lineNumberToB.get(29);
+        Local x = lineNumberToB.get(32);
+        Local y = lineNumberToB.get(33);
+
+        Set<Node> aPointsTo = spark.getPointsToSet(a);
+        Set<Node> bPointsTo = spark.getPointsToSet(b);
+        Set<Node> bDotFPointsTo = spark.getPointsToSet(bDotF);
+        Set<Node> xPointsTo = spark.getPointsToSet(x);
+        Set<Node> yPointsTo = spark.getPointsToSet(y);
+
+        // b.f and a must not point to a common object
+        assertTrue(Sets.intersection(bDotFPointsTo, aPointsTo).isEmpty());
+        // b.f and b must not point to a common object
+        assertTrue(Sets.intersection(bDotFPointsTo, bPointsTo).isEmpty());
+        // x and y must point to same set of objects
+        assertTrue(xPointsTo.equals(yPointsTo));
+
+    }
+
     private Map<Integer, Local> getLineNumberToLocalMap(SootMethod sootMethod, String typeName, List<Local> params) {
         final ImmutableStmtGraph stmtGraph = sootMethod.getBody().getStmtGraph();
         Map<Integer, Local> res = new HashMap<>();
