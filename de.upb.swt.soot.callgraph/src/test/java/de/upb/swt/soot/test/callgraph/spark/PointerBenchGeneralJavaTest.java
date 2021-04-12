@@ -246,6 +246,25 @@ public class PointerBenchGeneralJavaTest {
         assertTrue(xPointsTo.isEmpty());
     }
 
+    @Test
+    public void testException1() {
+        setUp("generalJava.Exception1");
+        MethodSignature targetMethodSig =
+                identifierFactory.getMethodSignature(
+                        "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+        SootMethod targetMethod = getTargetMethod(targetMethodSig);
+        Map<Integer, Local> lineNumberToA = getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
+
+        Local a = lineNumberToA.get(21);
+        Local b = lineNumberToA.get(22);
+
+        Set<Node> aPointsTo = spark.getPointsToSet(a);
+        Set<Node> bPointsTo = spark.getPointsToSet(b);
+
+        // a and b must point to a common object
+        assertFalse(Sets.intersection(aPointsTo, bPointsTo).isEmpty());
+    }
+
     private Map<Integer, Local> getLineNumberToLocalMap(SootMethod sootMethod, String typeName, List<Local> params) {
         final ImmutableStmtGraph stmtGraph = sootMethod.getBody().getStmtGraph();
         Map<Integer, Local> res = new HashMap<>();
