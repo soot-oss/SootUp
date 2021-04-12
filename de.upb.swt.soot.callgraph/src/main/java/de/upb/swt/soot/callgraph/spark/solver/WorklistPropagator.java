@@ -143,7 +143,7 @@ public class WorklistPropagator implements Propagator {
       final Field field = fieldRef.getField();
 
       Set<VariableNode> storeSources = pag.storeInvLookup(fieldRef);
-      if (!storeSources.isEmpty()) {
+      if (storeSources!=null && !storeSources.isEmpty()) {
         Set<Node> sourcePointsToSet = source.getPointsToSet();
         for (Node node : sourcePointsToSet) {
           AllocationDotField allocationDotField =
