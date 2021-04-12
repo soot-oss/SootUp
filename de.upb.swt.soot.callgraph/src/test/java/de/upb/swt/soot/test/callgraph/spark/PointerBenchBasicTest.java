@@ -246,6 +246,52 @@ public class PointerBenchBasicTest {
 
     }
 
+    @Test
+    public void testReturnValue1() {
+        setUp("basic.ReturnValue1");
+        MethodSignature targetMethodSig =
+                identifierFactory.getMethodSignature(
+                        "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+        SootMethod targetMethod = getTargetMethod(targetMethodSig);
+        Map<Integer, Local> lineNumberToA = getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
+
+        Local a = lineNumberToA.get(25);
+        Local b = lineNumberToA.get(26);
+
+
+        Set<Node> aPointsTo = spark.getPointsToSet(a);
+        Set<Node> bPointsTo = spark.getPointsToSet(b);
+
+        // a and b must point to same set of objects
+        assertTrue(aPointsTo.equals(bPointsTo));
+
+    }
+
+    @Test
+    public void testReturnValue2() {
+        setUp("basic.ReturnValue2");
+        MethodSignature targetMethodSig =
+                identifierFactory.getMethodSignature(
+                        "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+        SootMethod targetMethod = getTargetMethod(targetMethodSig);
+        Map<Integer, Local> lineNumberToA = getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
+        Map<Integer, Local> lineNumberToReturnValue2 = getLineNumberToLocalMap(targetMethod, "basic.ReturnValue2", new ArrayList<>());
+
+        Local a = lineNumberToA.get(27);
+        Local rv2 = lineNumberToReturnValue2.get(28);
+        Local b = lineNumberToA.get(29);
+
+
+        Set<Node> aPointsTo = spark.getPointsToSet(a);
+        Set<Node> bPointsTo = spark.getPointsToSet(b);
+        Set<Node> rv2PointsTo = spark.getPointsToSet(rv2);
+
+        // a and b must point to same set of objects
+        assertTrue(aPointsTo.equals(bPointsTo));
+        // a and rv2 must not have a common object
+        assertTrue(Sets.intersection(aPointsTo, rv2PointsTo).isEmpty());
+    }
+
     private Map<Integer, Local> getLineNumberToLocalMap(SootMethod sootMethod, String typeName, List<Local> params) {
         final ImmutableStmtGraph stmtGraph = sootMethod.getBody().getStmtGraph();
         Map<Integer, Local> res = new HashMap<>();
