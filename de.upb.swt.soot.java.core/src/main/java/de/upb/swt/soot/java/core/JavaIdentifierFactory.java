@@ -35,6 +35,7 @@ import de.upb.swt.soot.core.types.NullType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -171,6 +172,12 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   public ArrayType getArrayType(Type baseType, int dim) {
     return new ArrayType(baseType, dim);
+  }
+
+  public AnnotationType getAnnotationType(final String fullyQualifiedClassName) {
+    String className = ClassUtils.getShortClassName(fullyQualifiedClassName);
+    String packageName = ClassUtils.getPackageName(fullyQualifiedClassName);
+    return new AnnotationType(className, getPackageName(packageName));
   }
 
   @Override

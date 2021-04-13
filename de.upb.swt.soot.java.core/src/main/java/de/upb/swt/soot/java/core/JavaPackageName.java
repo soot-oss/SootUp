@@ -64,7 +64,8 @@ public class JavaPackageName extends PackageName {
       Optional<JavaSootClass> sc =
           view.getClass(
               JavaIdentifierFactory.getInstance().getClassType(PACKAGE_INFO, packageName));
-      annotations = sc.isPresent() ? (sc.get()).getAnnotations() : Collections.emptyList();
+      annotations =
+          sc.isPresent() ? (sc.get()).getAnnotations(Optional.of(view)) : Collections.emptyList();
     }
     return annotations;
   }

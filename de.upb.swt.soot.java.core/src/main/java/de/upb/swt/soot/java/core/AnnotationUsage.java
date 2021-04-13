@@ -1,9 +1,11 @@
 package de.upb.swt.soot.java.core;
 
 import de.upb.swt.soot.core.jimple.basic.Immediate;
+import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.java.core.types.AnnotationType;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 
 /**
@@ -14,10 +16,10 @@ import javax.annotation.Nonnull;
 public class AnnotationUsage {
 
   @Nonnull private final AnnotationType annotation;
-  @Nonnull private final Map<String, Immediate> values;
+  @Nonnull private final Map<String, Constant> values;
 
   public AnnotationUsage(
-      @Nonnull AnnotationType annotation, @Nonnull Map<String, Immediate> values) {
+      @Nonnull AnnotationType annotation, @Nonnull Map<String, Constant> values) {
     this.annotation = annotation;
     this.values = values;
   }
@@ -41,5 +43,22 @@ public class AnnotationUsage {
       sb.setCharAt(sb.length() - 1, ')');
     }
     return sb.toString();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    AnnotationUsage that = (AnnotationUsage) o;
+    return annotation.equals(that.annotation) && values.equals(that.values);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(annotation, values);
   }
 }

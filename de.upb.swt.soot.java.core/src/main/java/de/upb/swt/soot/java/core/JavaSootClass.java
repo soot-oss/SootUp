@@ -28,10 +28,15 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.java.core.views.JavaView;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -46,9 +51,39 @@ public class JavaSootClass extends SootClass<JavaSootClassSource> {
     super(classSource, sourceType);
   }
 
+  /**
+   * Get all annotations on this class. If provided with a View, will also resolve all inherited
+   * annotations from super classes.
+   *
+   * @param view
+   * @return
+   */
   @Nonnull
-  public Iterable<AnnotationUsage> getAnnotations() {
-    return classSource.resolveAnnotations();
+  public Iterable<AnnotationUsage> getAnnotations(@Nonnull Optional<JavaView> view) {
+    List<AnnotationUsage> annotationUsages = new ArrayList<>();
+
+    if (view.isPresent()) {
+      JavaView javaView = view.get();
+      if (this.getSuperclass().isPresent()) {
+
+        ClassType superClass = this.getSuperclass().get();
+
+        if (javaView.getClass(superClass).isPresent()) {
+          JavaSootClass superJavaSootClass = javaView.getClass(superClass).get();
+
+          Collection<AnnotationUsage> annos =
+              StreamSupport.stream(superJavaSootClass.getAnnotations(view).spliterator(), false)
+                  .filter(annotationUsage -> annotationUsage.getAnnotation().isInherited(view))
+                  .collect(Collectors.toList());
+
+          annotationUsages.addAll(annos);
+        }
+      }
+    }
+
+    classSource.resolveAnnotations().forEach(annotationUsages::add);
+
+    return annotationUsages;
   }
 
   @Nonnull

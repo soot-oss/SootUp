@@ -27,9 +27,12 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 
 /**
@@ -41,14 +44,41 @@ import javax.annotation.Nonnull;
 // TODO:[ms] move to a better place?
 public class AnnotationType extends JavaClassType {
 
+  public void setInherited(boolean inherited) {
+    isInherited = inherited;
+  }
+
+  private Boolean isInherited = null;
+
+  /**
+   * Returns whether this annotation has the meta annotation Inherited. Needs to be called at least
+   * once with a JavaView for each annotation.
+   *
+   * @param viewOptional
+   * @return
+   */
+  public boolean isInherited(Optional<JavaView> viewOptional) {
+    if (isInherited == null) {
+      if (!viewOptional.isPresent()) {
+        throw new IllegalArgumentException(
+            "JavaView needs to be supplied at least once for the annotationType");
+      }
+      JavaView jv = viewOptional.get();
+      JavaSootClass jsc = jv.getClass(this).get();
+
+      isInherited =
+          StreamSupport.stream(jsc.getAnnotations(viewOptional).spliterator(), false)
+              .anyMatch(
+                  annotationUsage ->
+                      annotationUsage.getAnnotation().getClassName().equals("Inherited"));
+    }
+
+    return isInherited;
+  }
+
   final Set<String> metaAnnotationNames =
       new HashSet<>(
-          Arrays.asList(
-              "@interface_Retention",
-              "@interface_Documented",
-              "@interface_Target",
-              "@interface_Inherited",
-              "@interface_Repeatable"));
+          Arrays.asList("@Retention", "@Documented", "@Target", "@Inherited", "@Repeatable"));
 
   /**
    * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
@@ -61,9 +91,10 @@ public class AnnotationType extends JavaClassType {
     super(annotationName, packageName);
   }
 
-  @Override
-  public String toString() {
-    return "interface_" + super.toString();
+  public AnnotationType(
+      @Nonnull String annotationName, @Nonnull PackageName packageName, boolean isInherited) {
+    super(annotationName, packageName);
+    this.isInherited = isInherited;
   }
 
   public boolean isMetaAnnotation() {
