@@ -229,6 +229,51 @@ public class PointerBenchCornerCasesTest {
         assertTrue(Sets.intersection(bPointsTo, Sets.intersection(aPointsTo, cPointsTo)).isEmpty());
     }
 
+    @Test
+    public void testStrongUpdate1() {
+        setUp("cornerCases.StrongUpdate1");
+        MethodSignature targetMethodSig =
+                identifierFactory.getMethodSignature(
+                        "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+        SootMethod targetMethod = getTargetMethod(targetMethodSig);
+        Map<Integer, Local> lineNumberToA = getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
+        Map<Integer, Local> lineNumberToB = getLineNumberToLocalMap(targetMethod, "benchmark.objects.B", new ArrayList<>());
+
+        Local a = lineNumberToA.get(21);
+        Local b = lineNumberToA.get(22);
+        Local y = lineNumberToB.get(25);
+        Local x = lineNumberToB.get(26);
+
+        Set<Node> bPointsTo = spark.getPointsToSet(b);
+        Set<Node> aPointsTo = spark.getPointsToSet(a);
+        Set<Node> xPointsTo = spark.getPointsToSet(x);
+        Set<Node> yPointsTo = spark.getPointsToSet(y);
+
+        // x and y must point to  common object
+        assertTrue(xPointsTo.equals(yPointsTo));
+    }
+
+    @Test
+    public void testStrongUpdate2() {
+        setUp("cornerCases.StrongUpdate2");
+        MethodSignature targetMethodSig =
+                identifierFactory.getMethodSignature(
+                        "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+        SootMethod targetMethod = getTargetMethod(targetMethodSig);
+        Map<Integer, Local> lineNumberToA = getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
+        Map<Integer, Local> lineNumberToB = getLineNumberToLocalMap(targetMethod, "benchmark.objects.B", new ArrayList<>());
+
+        Local x = lineNumberToB.get(23);
+        Local aDotF = lineNumberToB.get(25);
+        Local y = lineNumberToB.get(26);
+
+        Set<Node> aDotFPointsTo = spark.getPointsToSet(aDotF);
+        Set<Node> yPointsTo = spark.getPointsToSet(y);
+
+        // a.f and y must point to  common object
+        assertTrue(yPointsTo.containsAll(aDotFPointsTo));
+    }
+
 
     private Map<Integer, Local> getLineNumberToLocalMap(SootMethod sootMethod, String typeName, List<Local> params) {
         final ImmutableStmtGraph stmtGraph = sootMethod.getBody().getStmtGraph();
