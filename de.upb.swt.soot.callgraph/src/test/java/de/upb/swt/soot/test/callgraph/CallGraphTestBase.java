@@ -54,7 +54,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
         identifierFactory.getMethodSignature(
             "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
 
-    SootClass sc = view.getClass(mainClassSignature).get();
+    SootClass<?> sc = view.getClass(mainClassSignature).get();
     Optional<SootMethod> m = (Optional<SootMethod>) sc.getMethod(mainMethodSignature);
     assertTrue(mainMethodSignature + " not found in classloader", m.isPresent());
 
