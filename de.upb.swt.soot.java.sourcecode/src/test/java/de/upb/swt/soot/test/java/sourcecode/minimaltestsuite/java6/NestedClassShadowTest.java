@@ -30,7 +30,7 @@ public class NestedClassShadowTest extends MinimalSourceTestSuiteBase {
   JavaClassType nestedClass =
       identifierFactory.getClassType(
           getClassName(customTestWatcher.getClassPath()) + "$NestedClass");
-  SootClass<?>  sootNestedClass = loadClass(nestedClass);
+  SootClass<?> sootNestedClass = loadClass(nestedClass);
 
   /** Test: OuterClass of NestedClass is NestedClassShadow */
   @Test

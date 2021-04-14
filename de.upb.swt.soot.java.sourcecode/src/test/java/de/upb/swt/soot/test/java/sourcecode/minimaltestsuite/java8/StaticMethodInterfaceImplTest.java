@@ -72,7 +72,7 @@ public class StaticMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
     assertJimpleStmts(staticMethod, expectedBodyStmts1());
     assertTrue(staticMethod.isStatic() && staticMethod.getName().equals("initStatic"));
 
-    SootClass<?>  sootClass = loadClass(getDeclaredClassSignature());
+    SootClass<?> sootClass = loadClass(getDeclaredClassSignature());
     assertTrue(
         sootClass.getInterfaces().stream()
             .anyMatch(

@@ -77,7 +77,7 @@ public class DefaultMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
     assertJimpleStmts(loadMethod(getMethodSignature()), expectedBodyStmts());
     assertJimpleStmts(loadMethod(getDefaultMethodSignature()), expectedBodyStmts1());
 
-    SootClass<?>  clazz = loadClass(getDeclaredClassSignature());
+    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
     assertTrue(
         clazz.getInterfaces().stream()
             .anyMatch(
