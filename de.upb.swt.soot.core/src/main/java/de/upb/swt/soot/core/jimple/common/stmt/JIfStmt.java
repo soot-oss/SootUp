@@ -100,6 +100,11 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
   }
 
   @Override
+  public int getSuccessorCount() {
+    return 2;
+  }
+
+  @Override
   @Nonnull
   public List<Value> getUses() {
     List<Value> list = new ArrayList<>(getCondition().getUses());

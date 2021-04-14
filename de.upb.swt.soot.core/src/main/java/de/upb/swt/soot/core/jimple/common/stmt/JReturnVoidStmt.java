@@ -64,6 +64,11 @@ public final class JReturnVoidStmt extends Stmt implements Copyable {
   }
 
   @Override
+  public int getSuccessorCount() {
+    return 0;
+  }
+
+  @Override
   public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseReturnVoidStmt(this, o);
   }
