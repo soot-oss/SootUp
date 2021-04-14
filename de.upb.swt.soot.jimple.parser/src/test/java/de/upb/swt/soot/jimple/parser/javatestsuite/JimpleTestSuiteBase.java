@@ -30,7 +30,8 @@ public abstract class JimpleTestSuiteBase {
 
   @Before
   public void setup() {
-    AnalysisInputLocation<? extends SootClass<?>> inputLocation = new JimpleAnalysisInputLocation(Paths.get(baseDir));
+    AnalysisInputLocation<? extends SootClass<?>> inputLocation =
+        new JimpleAnalysisInputLocation(Paths.get(baseDir));
     view = new JimpleProject(inputLocation).createOnDemandView();
   }
 
