@@ -1817,7 +1817,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           JavaJimple.newLocal(
               "l" + iloc,
               UnknownType.getInstance(),
-              AsmUtil.createAnnotationUsage(invisibleParameterAnnotations[i]));
+              AsmUtil.createAnnotationUsage(
+                  invisibleParameterAnnotations == null ? null : invisibleParameterAnnotations[i]));
       locals.put(iloc, local);
 
       emitStmt(

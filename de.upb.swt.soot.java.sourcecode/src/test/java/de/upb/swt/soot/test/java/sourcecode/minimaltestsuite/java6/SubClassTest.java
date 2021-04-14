@@ -79,7 +79,7 @@ public class SubClassTest extends MinimalSourceTestSuiteBase {
     assertJimpleStmts(method, expectedBodyStmts());
     method = loadMethod(getMethodSignature1());
     assertJimpleStmts(method, expectedBodyStmts1());
-    SootClass sootClass = loadClass(getDeclaredClassSignature());
+    SootClass<?>  sootClass = loadClass(getDeclaredClassSignature());
     assertTrue(sootClass.getSuperclass().get().getClassName().equals("SuperClass"));
   }
 }
