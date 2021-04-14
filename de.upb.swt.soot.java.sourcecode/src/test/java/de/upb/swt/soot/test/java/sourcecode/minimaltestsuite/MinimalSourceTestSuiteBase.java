@@ -129,7 +129,7 @@ public abstract class MinimalSourceTestSuiteBase {
 
   public SootMethod loadMethod(MethodSignature methodSignature) {
     SootClass clazz = loadClass(methodSignature.getDeclClassType());
-    Optional<SootMethod> m = clazz.getMethod(methodSignature);
+    Optional<SootMethod> m = clazz.getMethod(methodSignature.getSubSignature());
     assertTrue("No matching method signature found", m.isPresent());
     return m.get();
   }

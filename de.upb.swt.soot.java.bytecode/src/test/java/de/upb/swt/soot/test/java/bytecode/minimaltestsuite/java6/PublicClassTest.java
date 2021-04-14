@@ -27,19 +27,19 @@ public class PublicClassTest extends MinimalBytecodeTestSuiteBase {
     assertEquals(EnumSet.of(Modifier.PUBLIC, Modifier.SYNCHRONIZED), clazz.getModifiers());
 
     SootMethod method;
-    method = clazz.getMethod(getMethodSignature("private")).get();
+    method = clazz.getMethod(getMethodSignature("private").getSubSignature()).get();
     assertTrue(method.isPrivate());
     assertJimpleStmts(method, expectedBodyStmts());
 
-    method = clazz.getMethod(getMethodSignature("protected")).get();
+    method = clazz.getMethod(getMethodSignature("protected").getSubSignature()).get();
     assertTrue(method.isProtected());
     assertJimpleStmts(method, expectedBodyStmts());
 
-    method = clazz.getMethod(getMethodSignature("public")).get();
+    method = clazz.getMethod(getMethodSignature("public").getSubSignature()).get();
     assertTrue(method.isPublic());
     assertJimpleStmts(method, expectedBodyStmts());
 
-    method = clazz.getMethod(getMethodSignature("noModifier")).get();
+    method = clazz.getMethod(getMethodSignature("noModifier").getSubSignature()).get();
     assertTrue(method.getModifiers().isEmpty());
     assertJimpleStmts(method, expectedBodyStmts());
   }

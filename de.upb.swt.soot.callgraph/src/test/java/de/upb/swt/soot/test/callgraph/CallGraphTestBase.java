@@ -55,7 +55,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
 
     SootClass sc = (SootClass) view.getClass(mainClassSignature).get();
-    Optional<SootMethod> m = sc.getMethod(mainMethodSignature);
+    Optional<SootMethod> m = sc.getMethod(mainMethodSignature.getSubSignature());
     assertTrue(mainMethodSignature + " not found in classloader", m.isPresent());
 
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);

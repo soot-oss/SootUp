@@ -79,10 +79,9 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     collectInstantiatedClassesInMethod(method);
 
     SootMethod targetMethod =
-        (SootMethod)
-            view.getClass(targetMethodSignature.getDeclClassType())
-                .flatMap(clazz -> clazz.getMethod(targetMethodSignature))
-                .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
+        view.getClass(targetMethodSignature.getDeclClassType())
+            .flatMap(clazz -> clazz.getMethod(targetMethodSignature.getSubSignature()))
+            .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
 
     if (Modifier.isStatic(targetMethod.getModifiers())
         || (invokeExpr instanceof JSpecialInvokeExpr)) {

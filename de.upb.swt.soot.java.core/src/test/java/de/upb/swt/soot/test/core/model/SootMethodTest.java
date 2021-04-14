@@ -96,7 +96,7 @@ public class SootMethodTest {
 
     assertTrue(
         mainClass
-            .getMethod(methodSignature)
+            .getMethod(methodSignature.getSubSignature())
             .orElseThrow(() -> new RuntimeException("Failed getting method " + methodSignature))
             .hasBody());
   }
