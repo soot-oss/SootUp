@@ -24,7 +24,6 @@ package de.upb.swt.soot.java.core;
 
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
-import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
@@ -123,12 +122,6 @@ public class JavaSootClass extends SootClass<JavaSootClassSource> {
 
   @Nonnull
   @Override
-  public Optional<JavaSootMethod> getMethod(@Nonnull MethodSignature signature) {
-    return (Optional<JavaSootMethod>) super.getMethod(signature);
-  }
-
-  @Nonnull
-  @Override
   public Optional<JavaSootMethod> getMethod(
       @Nonnull String name, @Nonnull Iterable<? extends Type> parameterTypes) {
     return (Optional<JavaSootMethod>) super.getMethod(name, parameterTypes);
@@ -142,7 +135,7 @@ public class JavaSootClass extends SootClass<JavaSootClassSource> {
 
   @Override
   public JavaSootClassSource getClassSource() {
-    return (JavaSootClassSource) super.getClassSource();
+    return super.getClassSource();
   }
 
   // Convenience withers that delegate to an OverridingClassSource

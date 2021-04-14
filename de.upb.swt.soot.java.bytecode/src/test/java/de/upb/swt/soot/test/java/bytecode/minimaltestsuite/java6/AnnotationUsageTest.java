@@ -114,7 +114,8 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
                       "someMethod",
                       sootClass.getType(),
                       "void",
-                      Arrays.asList("int", "boolean", "int", "boolean")));
+                      Arrays.asList("int", "boolean", "int", "boolean"))
+                  .getSubSignature());
       assertTrue(someMethod.isPresent());
 
       assertEquals(
@@ -189,7 +190,8 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
                       "someMethod",
                       sootClass.getType(),
                       "void",
-                      Arrays.asList("int", "boolean", "int", "boolean")));
+                      Arrays.asList("int", "boolean", "int", "boolean"))
+                  .getSubSignature());
       assertTrue(someMethod.isPresent());
       Body body = someMethod.get().getBody();
       assert body != null;

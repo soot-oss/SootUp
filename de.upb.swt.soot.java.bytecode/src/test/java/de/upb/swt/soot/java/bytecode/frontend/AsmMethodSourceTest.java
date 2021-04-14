@@ -3,6 +3,7 @@ package de.upb.swt.soot.java.bytecode.frontend;
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.*;
 
+import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -13,11 +14,15 @@ import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Arrays;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category(Java8Test.class)
 public class AsmMethodSourceTest {
 
   @Test
+  @Ignore("TODO")
   public void testFix_StackUnderrun_convertPutFieldInsn_init() {
 
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
@@ -48,7 +53,7 @@ public class AsmMethodSourceTest {
 
     final SootClass<?> abstractClass = view.getClass(mainClassSignature).get();
 
-    final SootMethod method = abstractClass.getMethod(mainMethodSignature).get();
+    final SootMethod method = abstractClass.getMethod(mainMethodSignature.getSubSignature()).get();
     method.getBody().getStmts();
   }
 }
