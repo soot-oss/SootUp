@@ -20,9 +20,9 @@ public class AbstractClassTest extends JimpleTestSuiteBase {
 
   @Test
   public void test() {
-    SootClass clazz = loadClass(getDeclaredClassSignature());
+    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
     // The SuperClass is the abstract one
-    SootClass superClazz = loadClass(clazz.getSuperclass().get());
+    SootClass<?> superClazz = loadClass(clazz.getSuperclass().get());
     assertTrue(superClazz.isAbstract());
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
