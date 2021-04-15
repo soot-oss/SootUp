@@ -22,9 +22,11 @@ package de.upb.swt.soot.java.bytecode.frontend.modules;
  */
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.frontend.AsmUtil;
+import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.ModuleModifier;
+import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -56,8 +58,8 @@ public class AsmModuleSource extends JavaModuleInfo {
   }
 
   @Override
-  public String getModuleName() {
-    return this.module.name;
+  public ModuleSignature getModuleSignature() {
+    return JavaModuleIdentifierFactory.getModuleSignature(module.name);
   }
 
   @Override

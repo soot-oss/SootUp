@@ -23,6 +23,7 @@ package de.upb.swt.soot.java.core;
  */
 
 import de.upb.swt.soot.core.model.*;
+import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
 import javax.annotation.Nonnull;
@@ -35,7 +36,7 @@ public abstract class JavaModuleInfo {
     this.isAutomaticModule = isAutomaticModule;
   }
 
-  public abstract String getModuleName();
+  public abstract ModuleSignature getModuleSignature();
 
   public abstract Collection<ModuleReference> requires();
 
@@ -52,8 +53,8 @@ public abstract class JavaModuleInfo {
   public static JavaModuleInfo getUnnamedModule() {
     return new JavaModuleInfo(true) {
       @Override
-      public String getModuleName() {
-        return "";
+      public ModuleSignature getModuleSignature() {
+        return JavaModuleIdentifierFactory.getModuleSignature("");
       }
 
       @Override

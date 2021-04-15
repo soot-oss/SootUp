@@ -6,7 +6,7 @@ import de.upb.swt.soot.java.bytecode.inputlocation.JavaModulePathAnalysisInputLo
 import de.upb.swt.soot.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
 import de.upb.swt.soot.java.core.*;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
-import de.upb.swt.soot.java.core.signatures.ModuleSignature;
+import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaModuleView;
 import java.util.Optional;
@@ -14,22 +14,77 @@ import org.junit.Test;
 
 public class JavaModuleViewTest {
 
-  private String testPath = "../shared-test-resources/jigsaw-examples/";
+  private final String testPath = "../shared-test-resources/jigsaw-examples/";
 
   @Test
-  public void testClassFromJavaBase() {
+  public void testGeneralClassReceivalFromModule() {
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
             .addModulePath(new JrtFileSystemAnalysisInputLocation())
             .build();
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    ModuleSignature startModule = JavaModuleIdentifierFactory.getModuleSignature("java.base");
     JavaClassType targetClass =
-        JavaIdentifierFactory.getInstance().getClassType("String", "java.lang");
-    Optional<JavaSootClass> aClass = view.getClass(startModule, targetClass);
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
 
-    JavaModuleInfo moduleDescriptor = view.getModuleDescriptor(startModule);
+    JavaClassType notExistingClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Panty", "java.lang", "java.base");
+    assertFalse(view.getClass(notExistingClass).isPresent());
+
+    JavaClassType notExistingPackage =
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.kurz", "java.base");
+    assertFalse(view.getClass(notExistingPackage).isPresent());
+
+    JavaClassType notExistingModule =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("String", "java.lang", "non.existent");
+    assertFalse(view.getClass(notExistingModule).isPresent());
+
+    JavaModuleInfo moduleDescriptor =
+        view.getModuleDescriptor(
+            ((ModulePackageName) targetClass.getPackageName()).getModuleSignature());
+    assertNotNull(moduleDescriptor);
+  }
+
+  @Test
+  public void testJarModule() {
+    JavaProject p =
+        JavaProject.builder(new JavaLanguage(9))
+            .addModulePath(new JavaModulePathAnalysisInputLocation(testPath + "uses-provides/jar/"))
+            .build();
+
+    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+
+    JavaClassType targetClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
+    assertTrue(aClass.isPresent());
+
+    JavaModuleInfo moduleDescriptor =
+        view.getModuleDescriptor(
+            ((ModulePackageName) targetClass.getPackageName()).getModuleSignature());
+    assertNotNull(moduleDescriptor);
+  }
+
+  @Test
+  public void testExplodedModule() {
+    JavaProject p =
+        JavaProject.builder(new JavaLanguage(9))
+            .addModulePath(
+                new JavaModulePathAnalysisInputLocation(
+                    testPath + "uses-provides/exploded_module/"))
+            .build();
+
+    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaClassType targetClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
+    assertTrue(aClass.isPresent());
+
+    JavaModuleInfo moduleDescriptor =
+        view.getModuleDescriptor(
+            ((ModulePackageName) targetClass.getPackageName()).getModuleSignature());
     assertNotNull(moduleDescriptor);
   }
 
@@ -42,10 +97,10 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    ModuleSignature startModule = JavaModuleIdentifierFactory.getModuleSignature("java.base");
+
     JavaClassType targetClass =
-        JavaIdentifierFactory.getInstance().getClassType("java.base", "java.lang.String");
-    Optional<JavaSootClass> aClass = view.getClass(startModule, targetClass);
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
   }
 
@@ -58,10 +113,10 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    ModuleSignature startModule = JavaModuleIdentifierFactory.getModuleSignature("java.base");
+
     JavaClassType targetClass =
-        JavaIdentifierFactory.getInstance().getClassType("java.base", "java.lang.String");
-    Optional<JavaSootClass> aClass = view.getClass(startModule, targetClass);
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
   }
 
@@ -74,10 +129,10 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    ModuleSignature startModule = JavaModuleIdentifierFactory.getModuleSignature("java.base");
+
     JavaClassType targetClass =
-        JavaIdentifierFactory.getInstance().getClassType("java.base", "java.lang.String");
-    Optional<JavaSootClass> aClass = view.getClass(startModule, targetClass);
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
   }
 
@@ -90,10 +145,10 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    ModuleSignature startModule = JavaModuleIdentifierFactory.getModuleSignature("java.base");
+
     JavaClassType targetClass =
-        JavaIdentifierFactory.getInstance().getClassType("java.base", "java.lang.String");
-    Optional<JavaSootClass> aClass = view.getClass(startModule, targetClass);
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
   }
 
@@ -106,10 +161,10 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    ModuleSignature startModule = JavaModuleIdentifierFactory.getModuleSignature("java.base");
+
     JavaClassType targetClass =
-        JavaIdentifierFactory.getInstance().getClassType("java.base", "java.lang.String");
-    Optional<JavaSootClass> aClass = view.getClass(startModule, targetClass);
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
   }
 
@@ -123,10 +178,10 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    ModuleSignature startModule = JavaModuleIdentifierFactory.getModuleSignature("java.base");
+
     JavaClassType targetClass =
-        JavaIdentifierFactory.getInstance().getClassType("java.base", "java.lang.String");
-    Optional<JavaSootClass> aClass = view.getClass(startModule, targetClass);
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
   }
 
@@ -142,10 +197,10 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    ModuleSignature startModule = JavaModuleIdentifierFactory.getModuleSignature("java.base");
+
     JavaClassType targetClass =
-        JavaIdentifierFactory.getInstance().getClassType("java.base", "java.lang.String");
-    Optional<JavaSootClass> aClass = view.getClass(startModule, targetClass);
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
   }
 
@@ -158,10 +213,10 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    ModuleSignature startModule = JavaModuleIdentifierFactory.getModuleSignature("java.base");
+
     JavaClassType targetClass =
-        JavaIdentifierFactory.getInstance().getClassType("java.base", "java.lang.String");
-    Optional<JavaSootClass> aClass = view.getClass(startModule, targetClass);
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
   }
 
@@ -174,10 +229,10 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    ModuleSignature startModule = JavaModuleIdentifierFactory.getModuleSignature("java.base");
+
     JavaClassType targetClass =
-        JavaIdentifierFactory.getInstance().getClassType("java.base", "java.lang.String");
-    Optional<JavaSootClass> aClass = view.getClass(startModule, targetClass);
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
   }
 
@@ -191,10 +246,10 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    ModuleSignature startModule = JavaModuleIdentifierFactory.getModuleSignature("java.base");
+
     JavaClassType targetClass =
-        JavaIdentifierFactory.getInstance().getClassType("java.base", "java.lang.String");
-    Optional<JavaSootClass> aClass = view.getClass(startModule, targetClass);
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
   }
 
@@ -207,10 +262,10 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    ModuleSignature startModule = JavaModuleIdentifierFactory.getModuleSignature("java.base");
+
     JavaClassType targetClass =
-        JavaIdentifierFactory.getInstance().getClassType("java.base", "java.lang.String");
-    Optional<JavaSootClass> aClass = view.getClass(startModule, targetClass);
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
   }
 
@@ -224,10 +279,10 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    ModuleSignature startModule = JavaModuleIdentifierFactory.getModuleSignature("java.base");
+
     JavaClassType targetClass =
-        JavaIdentifierFactory.getInstance().getClassType("java.base", "java.lang.String");
-    Optional<JavaSootClass> aClass = view.getClass(startModule, targetClass);
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
   }
 
@@ -242,10 +297,10 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    ModuleSignature startModule = JavaModuleIdentifierFactory.getModuleSignature("java.base");
+
     JavaClassType targetClass =
-        JavaIdentifierFactory.getInstance().getClassType("java.base", "java.lang.String");
-    Optional<JavaSootClass> aClass = view.getClass(startModule, targetClass);
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
   }
 
@@ -260,10 +315,10 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    ModuleSignature startModule = JavaModuleIdentifierFactory.getModuleSignature("java.base");
+
     JavaClassType targetClass =
-        JavaIdentifierFactory.getInstance().getClassType("java.base", "java.lang.String");
-    Optional<JavaSootClass> aClass = view.getClass(startModule, targetClass);
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
   }
 
@@ -277,10 +332,10 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    ModuleSignature startModule = JavaModuleIdentifierFactory.getModuleSignature("java.base");
+
     JavaClassType targetClass =
-        JavaIdentifierFactory.getInstance().getClassType("java.base", "java.lang.String");
-    Optional<JavaSootClass> aClass = view.getClass(startModule, targetClass);
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
   }
 }

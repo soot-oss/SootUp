@@ -25,9 +25,11 @@ package de.upb.swt.soot.java.core.views;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
+import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
@@ -67,13 +69,26 @@ public class JavaModuleView extends JavaView {
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
+    moduleDependencyGraph.put(unnamedModule.getModuleSignature(), unnamedModule);
   }
 
   @Nonnull
   public synchronized Optional<JavaSootClass> getClass(
-      @Nonnull ModuleSignature startModule, @Nonnull JavaClassType type) {
-    Optional<JavaSootClass> aClass = super.getClass(type);
+      @Nonnull ModulePackageName entryPackage, @Nonnull JavaClassType type) {
+    // TODO: implement Accessibility checks here and
 
+    return getClass(type);
+  }
+
+  @Nonnull
+  public synchronized Optional<JavaSootClass> getClass(@Nonnull JavaClassType type) {
+
+    PackageName packageName = type.getPackageName();
+    if (packageName instanceof ModulePackageName) {
+      ((ModulePackageName) packageName).getModuleSignature();
+    }
+
+    Optional<JavaSootClass> aClass = super.getClass(type);
     if (aClass.isPresent()) {
 
       aClass.get().getClassSource().getSourcePath();
@@ -87,6 +102,10 @@ public class JavaModuleView extends JavaView {
   @Nonnull
   public synchronized Optional<JavaSootClass> getClasses(
       @Nonnull ClassType scope, @Nonnull ClassType type) {
+
+    if (type.getPackageName() instanceof ModulePackageName) {
+      // use ModulePackageName instead of startModule
+    }
 
     // TODO: [ms] implement getting all classes for that scope
     return super.getClass(type);
