@@ -41,6 +41,7 @@ public class JavaPackageName extends PackageName {
    * @param packageName the package's name
    */
   public JavaPackageName(@Nonnull String packageName) {
+    //noinspection ConstantConditions
     this(packageName, null);
   }
 
@@ -64,7 +65,7 @@ public class JavaPackageName extends PackageName {
       Optional<JavaSootClass> sc =
           view.getClass(
               JavaIdentifierFactory.getInstance().getClassType(PACKAGE_INFO, packageName));
-      annotations = sc.isPresent() ? (sc.get()).getAnnotations() : Collections.emptyList();
+      annotations = sc.map(JavaSootClass::getAnnotations).orElse(Collections.emptyList());
     }
     return annotations;
   }

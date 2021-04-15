@@ -1,20 +1,19 @@
 package de.upb.swt.soot.test.java.bytecode.inputlocation;
 
+import static org.junit.Assert.fail;
+
 import categories.Java9Test;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
-import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Collection;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
 @Category(Java9Test.class)
-// TODO: [ms] unignore when JavaModules are implemented
-@Ignore("implement JavaModules")
 public class JrtFileSystemNamespaceTest extends AnalysisInputLocationTest {
 
   @Test
@@ -25,11 +24,10 @@ public class JrtFileSystemNamespaceTest extends AnalysisInputLocationTest {
   }
 
   @Test
-  // FIXME [AD] find out why this test is slow > 1 sec
   public void getClassSourceModule() {
     JrtFileSystemAnalysisInputLocation ns = new JrtFileSystemAnalysisInputLocation();
     final JavaClassType sig =
-        ModuleIdentifierFactory.getInstance().getClassType("System", "java.lang", "java.base");
+        JavaModuleIdentifierFactory.getInstance().getClassType("System", "java.lang", "java.base");
     testClassReceival(ns, sig, 1);
   }
 
@@ -42,6 +40,7 @@ public class JrtFileSystemNamespaceTest extends AnalysisInputLocationTest {
   @Test
   public void getClassSourcesModulePath() {
     JrtFileSystemAnalysisInputLocation ns = new JrtFileSystemAnalysisInputLocation();
+    fail("implement");
   }
 
   @Test

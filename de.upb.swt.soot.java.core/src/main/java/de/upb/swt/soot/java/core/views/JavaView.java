@@ -56,7 +56,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
       classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link JavaView} class. */
-  public JavaView(@Nonnull Project<JavaView, JavaSootClass> project) {
+  public JavaView(@Nonnull Project<? extends JavaView, JavaSootClass> project) {
     this(project, analysisInputLocation -> null);
   }
 
@@ -68,7 +68,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
    *     options.
    */
   public JavaView(
-      @Nonnull Project<JavaView, JavaSootClass> project,
+      @Nonnull Project<? extends JavaView, JavaSootClass> project,
       @Nonnull
           Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {

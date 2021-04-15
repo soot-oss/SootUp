@@ -29,6 +29,7 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
+import de.upb.swt.soot.java.core.views.JavaModuleView;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,7 +55,7 @@ public class JavaProject extends Project<JavaView, JavaSootClass> {
   @Nonnull
   @Override
   public JavaView createOnDemandView() {
-    return new JavaView(this);
+    return getLanguage().getVersion() < 9 ? new JavaView(this) : new JavaModuleView(this);
   }
 
   @Nonnull
@@ -63,7 +64,9 @@ public class JavaProject extends Project<JavaView, JavaSootClass> {
       @Nonnull
           Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
-    return new JavaView(this, classLoadingOptionsSpecifier);
+    return getLanguage().getVersion() < 9
+        ? new JavaView(this, classLoadingOptionsSpecifier)
+        : new JavaModuleView(this, classLoadingOptionsSpecifier);
   }
 
   @Nonnull
@@ -93,6 +96,7 @@ public class JavaProject extends Project<JavaView, JavaSootClass> {
   public static class JavaProjectBuilder {
     private final List<AnalysisInputLocation<JavaSootClass>> analysisInputLocations =
         new ArrayList<>();
+
     private SourceTypeSpecifier sourceTypeSpecifier = DefaultSourceTypeSpecifier.getInstance();
     private final JavaLanguage language;
 
@@ -121,17 +125,16 @@ public class JavaProject extends Project<JavaView, JavaSootClass> {
     }
 
     @Nonnull
-    JavaProjectBuilder addModulePath(
+    public JavaProjectBuilder addModulePath(
         Collection<AnalysisInputLocation<JavaSootClass>> analysisInputLocation) {
-      // TODO [ms]: java modules
-      this.analysisInputLocations.addAll(analysisInputLocation);
+      analysisInputLocations.addAll(analysisInputLocation);
       return this;
     }
 
     @Nonnull
-    JavaProjectBuilder addModulePath(AnalysisInputLocation<JavaSootClass> analysisInputLocation) {
-      // TODO [ms]: java modules
-      this.analysisInputLocations.add(analysisInputLocation);
+    public JavaProjectBuilder addModulePath(
+        AnalysisInputLocation<JavaSootClass> analysisInputLocation) {
+      analysisInputLocations.add(analysisInputLocation);
       return this;
     }
 

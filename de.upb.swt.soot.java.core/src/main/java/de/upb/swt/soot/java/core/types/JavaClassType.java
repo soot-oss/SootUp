@@ -27,7 +27,7 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -122,7 +122,7 @@ public class JavaClassType extends ClassType {
   }
 
   public boolean isModuleInfo() {
-    return this.className.equals(ModuleIdentifierFactory.MODULE_INFO_CLASS.className);
+    return this.className.equals(JavaModuleIdentifierFactory.MODULE_INFO_CLASS.className);
   }
 
   /** The simple class name. */

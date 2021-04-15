@@ -10,14 +10,11 @@ import de.upb.swt.soot.java.bytecode.inputlocation.ModuleFinder;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import java.util.Collection;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar update on 16.04.2020 */
 @Category(Java9Test.class)
-// TODO: [ms] unignore when modules are supported
-@Ignore
 public class ModuleFinderTest extends AnalysisInputLocationTest {
 
   @Test

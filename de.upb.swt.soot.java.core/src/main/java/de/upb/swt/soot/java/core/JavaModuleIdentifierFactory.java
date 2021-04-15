@@ -22,24 +22,24 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 
-import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
-public final class ModuleIdentifierFactory extends JavaIdentifierFactory {
+public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
 
   public static final JavaClassType MODULE_INFO_CLASS =
       new JavaClassType("module-info", PackageName.DEFAULT_PACKAGE);
 
   private static final Map<String, ModuleSignature> modules = new HashMap<>();
 
-  private static final ModuleIdentifierFactory INSTANCE = new ModuleIdentifierFactory();
+  private static final JavaModuleIdentifierFactory INSTANCE = new JavaModuleIdentifierFactory();
 
-  public static ModuleIdentifierFactory getInstance() {
+  public static JavaModuleIdentifierFactory getInstance() {
     return INSTANCE;
   }
 
@@ -89,8 +89,7 @@ public final class ModuleIdentifierFactory extends JavaIdentifierFactory {
    * @throws NullPointerException if the given module name is null. Use the empty string to denote
    *     the unnamed module.
    */
-  public static ModuleSignature getModuleSignature(final String moduleName) {
-    Preconditions.checkNotNull(moduleName);
+  public static ModuleSignature getModuleSignature(@Nonnull final String moduleName) {
     ModuleSignature moduleSignature = modules.get(moduleName);
     if (moduleSignature == null) {
       moduleSignature = new ModuleSignature(moduleName);
@@ -100,7 +99,7 @@ public final class ModuleIdentifierFactory extends JavaIdentifierFactory {
   }
 
   @Override
-  public ModulePackageName getPackageName(final String packageName) {
+  public ModulePackageName getPackageName(@Nonnull final String packageName) {
     return getPackageSignature(packageName, ModuleSignature.UNNAMED_MODULE.getModuleName());
   }
 
@@ -115,9 +114,8 @@ public final class ModuleIdentifierFactory extends JavaIdentifierFactory {
    * @throws NullPointerException if the given module name or package name is null. Use the empty
    *     string to denote the unnamed module or the default package.
    */
-  public ModulePackageName getPackageSignature(final String packageName, final String moduleName) {
-    Preconditions.checkNotNull(moduleName);
-    Preconditions.checkNotNull(packageName);
+  public ModulePackageName getPackageSignature(
+      @Nonnull final String packageName, @Nonnull final String moduleName) {
     String fqId = moduleName + "." + packageName;
     ModulePackageName packageSignature = (ModulePackageName) packages.get(fqId);
     if (packageSignature == null) {

@@ -21,14 +21,14 @@ package de.upb.swt.soot.java.bytecode.frontend.modules;
  * #L%
  */
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.java.bytecode.frontend.AsmUtil;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
+import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.ModuleModifier;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import org.objectweb.asm.tree.ModuleExportNode;
@@ -42,17 +42,16 @@ public class AsmModuleSource extends JavaModuleInfo {
   private final ModuleNode module;
 
   /*
-   * hint: [ms] AD resolved a module via: AsmUtil.initAsmClassSource(sourcePath, classNode); classNode.module
+   * TODO: [ms] AD resolved a module via: AsmUtil.initAsmClassSource(sourcePath, classNode); classNode.module
    * */
   public AsmModuleSource(
-      AnalysisInputLocation srcNamespace,
+      AnalysisInputLocation<JavaSootClass> srcNamespace,
       Path sourcePath,
       JavaClassType classSignature,
       @Nonnull ModuleNode moduleNode) {
 
     // FIXME: [ms] determine whether it is an automatic module
     super(false);
-
     this.module = moduleNode;
   }
 
@@ -73,7 +72,7 @@ public class AsmModuleSource extends JavaModuleInfo {
         // moduleRequireNode.version);
         JavaModuleInfo.ModuleReference reference =
             new JavaModuleInfo.ModuleReference(
-                classSignature, AsmUtil.getModifiers(moduleRequireNode.access));
+                classSignature, AsmUtil.getModuleModifiers(moduleRequireNode.access));
         requieres.add(reference);
       }
     }
@@ -95,7 +94,7 @@ public class AsmModuleSource extends JavaModuleInfo {
       // sootModuleInfo.addExport(exportNode.packaze, exportNode.access, modules);
       JavaModuleInfo.PackageReference reference =
           new JavaModuleInfo.PackageReference(
-              exportNode.packaze, AsmUtil.getModifiers(exportNode.access), modules);
+              exportNode.packaze, AsmUtil.getModuleModifiers(exportNode.access), modules);
       exports.add(reference);
     }
     return exports;
@@ -116,14 +115,13 @@ public class AsmModuleSource extends JavaModuleInfo {
 
       JavaModuleInfo.PackageReference reference =
           new JavaModuleInfo.PackageReference(
-              moduleOpenNode.packaze, AsmUtil.getModifiers(moduleOpenNode.access), modules);
+              moduleOpenNode.packaze, AsmUtil.getModuleModifiers(moduleOpenNode.access), modules);
       opens.add(reference);
     }
 
     return opens;
   }
 
-  // FIXME: does not look right here
   @Override
   public Collection<JavaClassType> provides() {
     ArrayList<JavaClassType> providers = new ArrayList<>();
@@ -145,7 +143,7 @@ public class AsmModuleSource extends JavaModuleInfo {
   @Override
   public Collection<JavaClassType> uses() {
     ArrayList<JavaClassType> uses = new ArrayList<>();
-    // add provides
+    // add uses
     for (String usedService : module.uses) {
       JavaClassType serviceSignature = AsmUtil.asmIDToSignature(usedService);
       uses.add(serviceSignature);
@@ -155,8 +153,7 @@ public class AsmModuleSource extends JavaModuleInfo {
   }
 
   @Override
-  public Set<Modifier> resolveModifiers() {
-    EnumSet<Modifier> modifiers = AsmUtil.getModifiers(module.access);
-    return modifiers;
+  public Set<ModuleModifier> resolveModifiers() {
+    return AsmUtil.getModuleModifiers(module.access);
   }
 }

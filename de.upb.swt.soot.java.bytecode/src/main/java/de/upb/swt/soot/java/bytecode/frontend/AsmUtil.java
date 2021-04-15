@@ -20,11 +20,13 @@ package de.upb.swt.soot.java.bytecode.frontend;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.ModuleModifier;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,8 +40,10 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.util.Printer;
 import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceMethodVisitor;
@@ -57,8 +61,7 @@ public final class AsmUtil {
    * @param classNode The node to initialize
    */
   protected static void initAsmClassSource(
-      @Nonnull Path classSource, @Nonnull AsmJavaClassProvider.SootClassNode classNode)
-      throws IOException {
+      @Nonnull Path classSource, @Nonnull ClassVisitor classNode) throws IOException {
     try (InputStream sourceFileInputStream = Files.newInputStream(classSource)) {
       ClassReader clsr = new ClassReader(sourceFileInputStream);
 
@@ -95,6 +98,18 @@ public final class AsmUtil {
 
     // add all modifiers for which (access & ABSTRACT) =! 0
     for (Modifier modifier : Modifier.values()) {
+      if ((access & modifier.getBytecode()) != 0) {
+        modifierEnumSet.add(modifier);
+      }
+    }
+    return modifierEnumSet;
+  }
+
+  public static EnumSet<ModuleModifier> getModuleModifiers(int access) {
+    EnumSet<ModuleModifier> modifierEnumSet = EnumSet.noneOf(ModuleModifier.class);
+
+    // add all modifiers for which (access & ABSTRACT) =! 0
+    for (ModuleModifier modifier : ModuleModifier.values()) {
       if ((access & modifier.getBytecode()) != 0) {
         modifierEnumSet.add(modifier);
       }
@@ -269,5 +284,18 @@ public final class AsmUtil {
     return Arrays.stream(sw.toString().split("\n"))
         .filter(line -> !line.trim().isEmpty())
         .reduce("", String::concat);
+  }
+
+  @Nonnull
+  public static ClassNode getModuleDescriptor(Path moduleInfoFile) {
+    ClassNode moduleDescriptor;
+    try (InputStream sourceFileInputStream = Files.newInputStream(moduleInfoFile)) {
+      ClassReader clsr = new ClassReader(sourceFileInputStream);
+      moduleDescriptor = new ClassNode(AsmUtil.SUPPORTED_ASM_OPCODE);
+      clsr.accept(moduleDescriptor, ClassReader.SKIP_FRAMES);
+    } catch (IOException e) {
+      throw new ResolveException("Error loading the module-descriptor", moduleInfoFile, e);
+    }
+    return moduleDescriptor;
   }
 }

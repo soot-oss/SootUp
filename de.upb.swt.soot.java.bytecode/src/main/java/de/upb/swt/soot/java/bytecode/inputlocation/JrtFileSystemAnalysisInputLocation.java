@@ -20,10 +20,12 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.FileType;
@@ -32,8 +34,8 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaSootClass;
-import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
@@ -88,7 +90,7 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      throw new ResolveException("Error loading a module", moduleRoot, e);
     }
 
     return Optional.empty();
@@ -150,7 +152,7 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
                                   identifierFactory)))))
           .collect(Collectors.toList());
     } catch (IOException e) {
-      throw new IllegalArgumentException(e);
+      throw new ResolveException("Error loading a module", dirPath, e);
     }
   }
 
@@ -188,7 +190,7 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
     // else use the module system and create fully class signature
     JavaClassType sig = (JavaClassType) identifierFactory.fromPath(filename);
 
-    if (identifierFactory instanceof ModuleIdentifierFactory) {
+    if (identifierFactory instanceof JavaModuleIdentifierFactory) {
       // FIXME: adann clean this up!
       // String filename = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
       // int index = filename.lastIndexOf('.');
@@ -199,7 +201,7 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
       // String classname = FilenameUtils.removeExtension(packageFileName.getFileName().toString());
       //
 
-      return ((ModuleIdentifierFactory) identifierFactory)
+      return ((JavaModuleIdentifierFactory) identifierFactory)
           .getClassType(
               sig.getClassName(), sig.getPackageName().getPackageName(), moduleDir.toString());
     }

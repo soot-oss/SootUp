@@ -22,20 +22,14 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 
-import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import javax.annotation.Nonnull;
 
 public abstract class JavaModuleInfo {
 
-  // FIXME: [AD] how to create automatic modules
-  private boolean isAutomaticModule;
-  private EnumSet<Modifier> modifiers;
-  private String moduleName;
+  private final boolean isAutomaticModule;
 
   public JavaModuleInfo(boolean isAutomaticModule) {
     this.isAutomaticModule = isAutomaticModule;
@@ -53,43 +47,82 @@ public abstract class JavaModuleInfo {
 
   public abstract Collection<JavaClassType> uses();
 
-  public abstract Set<Modifier> resolveModifiers();
+  public abstract Set<ModuleModifier> resolveModifiers();
+
+  public static JavaModuleInfo getUnnamedModule() {
+    return new JavaModuleInfo(true) {
+      @Override
+      public String getModuleName() {
+        return "";
+      }
+
+      @Override
+      public Collection<ModuleReference> requires() {
+        return Collections.emptyList();
+      }
+
+      @Override
+      public Collection<PackageReference> exports() {
+        return Collections.emptyList();
+      }
+
+      @Override
+      public Collection<PackageReference> opens() {
+        return Collections.emptyList();
+      }
+
+      @Override
+      public Collection<JavaClassType> provides() {
+        return Collections.emptyList();
+      }
+
+      @Override
+      public Collection<JavaClassType> uses() {
+        return Collections.emptyList();
+      }
+
+      @Override
+      public Set<ModuleModifier> resolveModifiers() {
+        return Collections.emptySet();
+      }
+    };
+  }
 
   public static class ModuleReference {
 
-    private JavaClassType moduleInfo;
-    private EnumSet<Modifier> modifiers;
-    private SootClassSource classSource;
+    @Nonnull private final JavaClassType moduleInfo;
+    @Nonnull private final EnumSet<ModuleModifier> modifiers;
 
-    public ModuleReference(JavaClassType moduleInfo, EnumSet<Modifier> accessModifier) {
+    public ModuleReference(
+        @Nonnull JavaClassType moduleInfo, @Nonnull EnumSet<ModuleModifier> accessModifier) {
       this.moduleInfo = moduleInfo;
       this.modifiers = accessModifier;
     }
   }
 
   public static class PackageReference {
-    private String packageName;
-    private EnumSet<Modifier> modifers;
-    private Set<JavaClassType> targetModules;
+    @Nonnull private String packageName;
+    @Nonnull private EnumSet<ModuleModifier> modifers;
+    @Nonnull private Set<JavaClassType> targetModules;
 
     public PackageReference(
-        String packageName, EnumSet<Modifier> modifier, Collection<JavaClassType> targetModules) {
+        @Nonnull String packageName,
+        @Nonnull EnumSet<ModuleModifier> modifier,
+        @Nonnull Collection<JavaClassType> targetModules) {
       this.packageName = packageName;
       this.modifers = modifier;
       this.targetModules = new HashSet<>(targetModules);
     }
 
-    // e.g. hash by packagename?
-
     public boolean isPublic() {
       return this.targetModules.isEmpty();
     }
 
-    public boolean exportedTo(JavaModuleInfo moduleInfo) {
+    public boolean exportedTo(@Nonnull JavaModuleInfo moduleInfo) {
       if (isPublic()) {
         return true;
       }
-      // FIXME: [AD] check for automatic modules ?
+      // TODO: [AD] check for automatic modules ?
       return targetModules.contains(moduleInfo);
     }
   }
