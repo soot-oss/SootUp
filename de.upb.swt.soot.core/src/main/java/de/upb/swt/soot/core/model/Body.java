@@ -532,13 +532,6 @@ public class Body implements Copyable {
       return this;
     }
 
-    @Nonnull
-    public BodyBuilder replaceStmtInExceptionalStmtGraph(
-        @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-      ecfg.replaceNode(oldStmt, newStmt);
-      return this;
-    }
-
     /** remove the a stmt from the graph and stmt */
     @Nonnull
     public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
