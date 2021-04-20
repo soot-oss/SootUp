@@ -203,8 +203,11 @@ public class JimpleConverterUtil {
               int charPositionInLine,
               String msg,
               RecognitionException e) {
+
             throw new ResolveException(
-                "Jimple Syntaxerror: " + msg, path, new Position(line, charPositionInLine, -1, -1));
+                "Jimple SyntaxError: " + msg,
+                path,
+                new Position(line - 1, charPositionInLine, line - 1, Integer.MAX_VALUE));
           }
         });
 
@@ -223,7 +226,9 @@ public class JimpleConverterUtil {
               String msg,
               RecognitionException e) {
             throw new ResolveException(
-                "Jimple Syntaxerror: " + msg, path, new Position(line, charPositionInLine, -1, -1));
+                "Jimple SyntaxError: " + msg,
+                path,
+                new Position(line - 1, charPositionInLine, line - 1, Integer.MAX_VALUE));
           }
         });
     return parser;
