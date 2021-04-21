@@ -27,23 +27,20 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
+import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of the {@link AnalysisInputLocation} interface for the Java modulepath. Handles
@@ -55,8 +52,6 @@ import org.slf4j.LoggerFactory;
  *     href=http://docs.oracle.com/javase/9/docs/api/java/lang/module/ModuleFinder.html#of-java.nio.file.Path...->ModuleFinder</a>
  */
 public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInputLocation {
-  private static final @Nonnull Logger logger =
-      LoggerFactory.getLogger(JavaModulePathAnalysisInputLocation.class);
 
   @Nonnull private final String modulePath;
 
@@ -79,12 +74,11 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
         identifierFactory instanceof JavaModuleIdentifierFactory,
         "Factory must be a ModuleSignatureFactory");
 
-    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
     ModuleFinder moduleFinder =
-        new ModuleFinder(new AsmJavaClassProvider(bodyInterceptors), modulePath);
+        new ModuleFinder(
+            new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()), modulePath);
     Set<AbstractClassSource<JavaSootClass>> found = new HashSet<>();
-    Collection<String> availableModules = moduleFinder.discoverAllModules();
-    for (String module : availableModules) {
+    for (ModuleSignature module : moduleFinder.discoverAllModules()) {
       AnalysisInputLocation<JavaSootClass> inputLocation = moduleFinder.discoverModule(module);
       IdentifierFactory identifierFactoryWrapper = identifierFactory;
       if (inputLocation == null) {
@@ -107,18 +101,16 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
   public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
       @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
     JavaClassType klassType = (JavaClassType) classType;
-    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
 
-    String modulename =
-        ((ModulePackageName) klassType.getPackageName()).getModuleSignature().getModuleName();
-    // lookup the ns for the class provider from the cache and use him...
-    AnalysisInputLocation inputLocation =
-        new ModuleFinder(new AsmJavaClassProvider(bodyInterceptors), modulePath)
+    ModuleSignature modulename =
+        ((ModulePackageName) klassType.getPackageName()).getModuleSignature();
+    // lookup the ns for the class provider from the cache
+    AnalysisInputLocation<JavaSootClass> inputLocation =
+        new ModuleFinder(
+                new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()), modulePath)
             .discoverModule(modulename);
 
     if (inputLocation == null) {
-      // throw new ResolveException("No InputLocation found for class " + klassType,
-      // Paths.get(modulePath));
       return Optional.empty();
     }
     return inputLocation.getClassSource(klassType);
@@ -127,11 +119,11 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
   private static class IdentifierFactoryWrapper extends JavaModuleIdentifierFactory {
 
     private final IdentifierFactory factory;
-    private final String moduleName;
+    private final ModuleSignature moduleSignature;
 
-    private IdentifierFactoryWrapper(IdentifierFactory factory, String moduleName) {
+    private IdentifierFactoryWrapper(IdentifierFactory factory, ModuleSignature moduleSignature) {
       this.factory = factory;
-      this.moduleName = moduleName;
+      this.moduleSignature = moduleSignature;
     }
 
     @Override
@@ -147,7 +139,8 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
           className = fullyQualifiedName.substring(index);
           packageName = fullyQualifiedName.substring(0, index);
         }
-        return moduleSignatureFactory.getClassType(className, packageName, this.moduleName);
+        return moduleSignatureFactory.getClassType(
+            className, packageName, moduleSignature.getModuleName());
       }
       return (JavaClassType) factory.fromPath(file);
     }

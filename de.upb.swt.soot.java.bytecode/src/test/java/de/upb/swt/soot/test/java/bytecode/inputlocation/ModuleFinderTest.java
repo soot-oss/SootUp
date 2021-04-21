@@ -1,5 +1,6 @@
 package de.upb.swt.soot.test.java.bytecode.inputlocation;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
@@ -9,6 +10,9 @@ import de.upb.swt.soot.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLoc
 import de.upb.swt.soot.java.bytecode.inputlocation.ModuleFinder;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
+import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import java.util.Collection;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -18,38 +22,50 @@ import org.junit.experimental.categories.Category;
 public class ModuleFinderTest extends AnalysisInputLocationTest {
 
   @Test
-  public void discoverModule() {
-    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), warFile);
-    Collection<String> modules = moduleFinder.discoverAllModules();
-    String computedModuleName = "dummyWarApp";
-    assertTrue(modules.contains(computedModuleName));
+  public void discoverModuleJavaBase() {
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), war.toString());
+    AnalysisInputLocation<JavaSootClass> inputLocation =
+        moduleFinder.discoverModule(JavaModuleIdentifierFactory.getModuleSignature("java.base"));
+    assertTrue(inputLocation instanceof JrtFileSystemAnalysisInputLocation);
+    assertTrue(
+        inputLocation
+            .getClassSource(getIdentifierFactory().getClassType("String", "java.lang"))
+            .isPresent());
   }
 
   @Test
-  public void discoverModule2() {
-    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), warFile);
-    AnalysisInputLocation inputLocation = moduleFinder.discoverModule("dummyWarApp");
+  public void discoverModuleByName() {
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), war.toString());
+    AnalysisInputLocation<JavaSootClass> inputLocation =
+        moduleFinder.discoverModule(JavaModuleIdentifierFactory.getModuleSignature("dummyWarApp"));
     assertTrue(inputLocation instanceof PathBasedAnalysisInputLocation);
   }
 
   @Test
-  public void discoverModule3() {
-    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), warFile);
-    AnalysisInputLocation inputLocation = moduleFinder.discoverModule("java.base");
-    assertTrue(inputLocation instanceof JrtFileSystemAnalysisInputLocation);
+  public void discoverModuleInAllModules() {
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), war.toString());
+    Collection<ModuleSignature> modules = moduleFinder.discoverAllModules();
+    String computedModuleName = "dummyWarApp";
+    assertTrue(
+        modules.contains(JavaModuleIdentifierFactory.getModuleSignature(computedModuleName)));
   }
 
-  // TODO: Test name generation for automaticModules (Java9)
-  //  String jarName = "foo-1.2.3-SNAPSHOT.jar"; -> foo
-  //  String jarName = "foo-bar.jar"; --> foo.bar
-
   @Test
-  public void modularJar() {
+  public void testModuleJar() {
     ModuleFinder moduleFinder =
         new ModuleFinder(
             new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors()),
             "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/");
-    Collection<String> discoveredModules = moduleFinder.discoverAllModules();
-    assertTrue(discoveredModules.contains("de.upb.mod"));
+    Collection<ModuleSignature> discoveredModules = moduleFinder.discoverAllModules();
+    System.out.println(discoveredModules);
+
+    assertTrue(
+        discoveredModules.contains(JavaModuleIdentifierFactory.getModuleSignature("de.upb.mod")));
+  }
+
+  @Test
+  public void testAutomaticModuleNaming() {
+    assertEquals("foo.bar", ModuleFinder.createModuleNameForAutomaticModule("foo-bar.jar"));
+    assertEquals("foo", ModuleFinder.createModuleNameForAutomaticModule("foo-1.2.3-SNAPSHOT.jar"));
   }
 }

@@ -10,6 +10,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -45,47 +46,32 @@ import org.junit.Before;
 public abstract class AnalysisInputLocationTest {
 
   final Path war = Paths.get("../shared-test-resources/java-warApp/dummyWarApp.war");
-  final String warFile = war.toString();
-
   final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
-  final String jarFile = jar.toString();
 
-  private IdentifierFactory identifierFactory;
-  private ClassProvider classProvider;
+  private ClassProvider<JavaSootClass> classProvider;
 
   @Before
   public void setUp() {
-    identifierFactory = JavaIdentifierFactory.getInstance();
     classProvider = new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors());
   }
 
   protected IdentifierFactory getIdentifierFactory() {
-    return identifierFactory;
+    return JavaIdentifierFactory.getInstance();
   }
 
-  protected ClassProvider getClassProvider() {
+  protected ClassProvider<JavaSootClass> getClassProvider() {
     return classProvider;
   }
 
-  protected void testClassReceival(AnalysisInputLocation ns, ClassType sig, int minClassesFound) {
-    testClassReceival(ns, sig, minClassesFound, -1);
-  }
-
   protected void testClassReceival(
-      AnalysisInputLocation inputLocation,
-      ClassType sig,
-      int minClassesFound,
-      int maxClassesFound) {
+      AnalysisInputLocation<JavaSootClass> ns, ClassType sig, int minClassesFound) {
 
-    final Optional<? extends AbstractClassSource> clazz = inputLocation.getClassSource(sig);
+    final Optional<? extends AbstractClassSource<JavaSootClass>> clazz = ns.getClassSource(sig);
     clazz.ifPresent(abstractClassSource -> assertEquals(sig, abstractClassSource.getClassType()));
 
     final Collection<? extends AbstractClassSource> classSources =
-        inputLocation.getClassSources(getIdentifierFactory());
+        ns.getClassSources(getIdentifierFactory());
 
     assertTrue(classSources.size() >= minClassesFound);
-    if (maxClassesFound != -1) {
-      assertTrue(classSources.size() <= maxClassesFound);
-    }
   }
 }

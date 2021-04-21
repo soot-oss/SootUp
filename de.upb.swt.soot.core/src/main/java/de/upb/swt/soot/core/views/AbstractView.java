@@ -30,6 +30,8 @@ import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.signatures.PackageName;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -62,6 +64,18 @@ public abstract class AbstractView<T extends SootClass> implements View<T> {
   public Optional<Scope> getScope() {
     // TODO Auto-generated methodRef stub
     return null;
+  }
+
+  /** resolve and check for accessibility of the class from a given package */
+  @Nonnull
+  public synchronized Optional<T> getClass(
+      @Nonnull PackageName entryPackage, @Nonnull ClassType type) {
+    Optional<T> aClass = getClass(type);
+    /*if (aClass.isPresent() && AccessUtil.isAccessible(entryPackage, aClass.get()) ) {
+      return Optional.empty();
+    }
+    */
+    return aClass;
   }
 
   @Nonnull

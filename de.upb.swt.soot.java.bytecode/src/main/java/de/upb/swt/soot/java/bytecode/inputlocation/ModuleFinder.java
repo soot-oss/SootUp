@@ -27,6 +27,7 @@ import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmUtil;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -61,7 +62,7 @@ public class ModuleFinder {
   @Nonnull private final ClassProvider<JavaSootClass> classProvider;
   // associate a module name with the input location, that represents the module
   @Nonnull
-  private final Map<String, AnalysisInputLocation<JavaSootClass>> moduleInputLocation =
+  private final Map<ModuleSignature, AnalysisInputLocation<JavaSootClass>> moduleInputLocation =
       new HashMap<>();
 
   private int next = 0;
@@ -97,7 +98,8 @@ public class ModuleFinder {
    * @param moduleName the module name
    * @return the input location that resolves classes contained in the module
    */
-  public @Nullable AnalysisInputLocation<JavaSootClass> discoverModule(@Nonnull String moduleName) {
+  @Nullable
+  public AnalysisInputLocation<JavaSootClass> discoverModule(@Nonnull ModuleSignature moduleName) {
     AnalysisInputLocation<JavaSootClass> inputLocationForModule =
         moduleInputLocation.get(moduleName);
     if (inputLocationForModule != null) {
@@ -120,7 +122,8 @@ public class ModuleFinder {
    *
    * @return the names of all modules found
    */
-  public @Nonnull Collection<String> discoverAllModules() {
+  @Nonnull
+  public Collection<ModuleSignature> discoverAllModules() {
 
     while (this.next < this.modulePathEntries.size()) {
       Path path = modulePathEntries.get(next);
@@ -191,8 +194,9 @@ public class ModuleFinder {
     }
 
     ClassNode moduleDescriptor = AsmUtil.getModuleDescriptor(moduleInfoFile);
-    String moduleName = moduleDescriptor.module.name;
-    moduleInputLocation.put(moduleName, inputLocation);
+    ModuleSignature moduleSig =
+        JavaModuleIdentifierFactory.getModuleSignature(moduleDescriptor.module.name);
+    moduleInputLocation.put(moduleSig, inputLocation);
   }
 
   /**
@@ -211,18 +215,21 @@ public class ModuleFinder {
               JavaModuleIdentifierFactory.MODULE_INFO_CLASS.toPath(
                   classProvider.getHandledFileType(), zipFileSystem));
 
+      if (Files.exists(mi)) {
+        ClassNode moduleDescriptor = AsmUtil.getModuleDescriptor(mi);
+        moduleInputLocation.put(
+            JavaModuleIdentifierFactory.getModuleSignature(moduleDescriptor.module.name),
+            inputLocation);
+      } else {
+        // no module-info: treat it as automatic module i.e. create module name from the jar file
+        moduleInputLocation.put(
+            JavaModuleIdentifierFactory.getModuleSignature(
+                createModuleNameForAutomaticModule(jar.getFileName().toString())),
+            inputLocation);
+      }
+
     } catch (IOException e) {
       throw new ResolveException("Error resolving module descriptor in a Jar", jar, e);
-    }
-
-    if (Files.exists(mi)) {
-      ClassNode moduleDescriptor = AsmUtil.getModuleDescriptor(mi);
-      String moduleName = moduleDescriptor.module.name;
-      moduleInputLocation.put(moduleName, inputLocation);
-    } else {
-      // no module-info: treat it as automatic module i.e. create module name from the jar file
-      String moduleName = createModuleNameForAutomaticModule(jar.getFileName().toString());
-      moduleInputLocation.put(moduleName, inputLocation);
     }
   }
 
@@ -233,7 +240,8 @@ public class ModuleFinder {
    * @param filename the name of the jar file
    * @return the name of the automatic module
    */
-  private @Nonnull String createModuleNameForAutomaticModule(@Nonnull String filename) {
+  @Nonnull
+  public static String createModuleNameForAutomaticModule(@Nonnull String filename) {
     int i = filename.lastIndexOf(File.separator);
     if (i != -1) {
       filename = filename.substring(i + 1);

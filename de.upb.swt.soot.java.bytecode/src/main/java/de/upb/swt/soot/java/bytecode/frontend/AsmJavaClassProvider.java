@@ -62,8 +62,8 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
 
     JavaClassType klassType = (JavaClassType) classType;
     if (klassType.isModuleInfo()) {
-      // TODO: [ms] is this necessary here? check!
-      throw new ResolveException("The module info descriptor is not resolvable!", sourcePath);
+      throw new ResolveException(
+          "The module info descriptor is not resolvable as ClassSource!", sourcePath);
     } else {
       return new AsmClassSource(srcNamespace, sourcePath, klassType, classNode);
     }

@@ -37,6 +37,7 @@ import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
+import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
 import java.net.URI;
@@ -59,7 +60,7 @@ import javax.annotation.Nonnull;
  */
 public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInputLocation {
 
-  private final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
+  private static final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
@@ -138,7 +139,11 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
     final FileType handledFileType = classProvider.getHandledFileType();
     try {
       return Files.walk(dirPath)
-          .filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
+          .filter(
+              filePath ->
+                  PathUtils.hasExtension(filePath, handledFileType)
+                      && filePath.endsWith(
+                          JavaModuleIdentifierFactory.MODULE_INFO_CLASS.toString()))
           .flatMap(
               p ->
                   StreamUtils.optionalToStream(
@@ -161,15 +166,17 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
    *
    * @return Collection of found module names.
    */
-  public @Nonnull Collection<String> discoverModules() {
+  @Nonnull
+  public Collection<ModuleSignature> discoverModules() {
     final Path moduleRoot = theFileSystem.getPath("modules");
-    List<String> foundModules = new ArrayList<>();
+    List<ModuleSignature> foundModules = new ArrayList<>();
 
     try (DirectoryStream<Path> stream = Files.newDirectoryStream(moduleRoot)) {
       {
+        JavaModuleIdentifierFactory instance = JavaModuleIdentifierFactory.getInstance();
         for (Path entry : stream) {
           if (Files.isDirectory(entry)) {
-            foundModules.add(entry.subpath(1, 2).toString());
+            foundModules.add(instance.getModuleSignature(entry.subpath(1, 2).toString()));
           }
         }
       }
@@ -180,10 +187,10 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
   }
 
   // TODO: originally, I could create a ModuleSingatre in any case, however, then
-  // every signature factory needs a methodRef create from path
+  // every signature factory needs a method signature created from path
   // however, I cannot think of a general way for java 9 modules anyway....
   // how to create the module name if we have a jar file..., or a multi jar, or the jrt file system
-  // nevertheless, one general methodRef for all signatures seems reasonable
+  // nevertheless, one general method Signature for all signatures seems reasonable
   private @Nonnull JavaClassType fromPath(
       final Path filename, final Path moduleDir, final IdentifierFactory identifierFactory) {
 

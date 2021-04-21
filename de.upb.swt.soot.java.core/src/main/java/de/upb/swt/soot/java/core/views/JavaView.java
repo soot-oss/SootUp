@@ -27,11 +27,9 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.AbstractView;
 import de.upb.swt.soot.java.core.JavaSootClass;
-import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -83,18 +81,6 @@ public class JavaView extends AbstractView<JavaSootClass> {
   public synchronized Collection<JavaSootClass> getClasses() {
     resolveAll();
     return cache.values();
-  }
-
-  /** resolve and check for accessibility of the class from a given package */
-  @Nonnull
-  public synchronized Optional<JavaSootClass> getClass(
-      @Nonnull PackageName entryPackage, @Nonnull JavaClassType type) {
-    Optional<JavaSootClass> aClass = getClass(type);
-    /*if (aClass.isPresent() && AccessUtil.isAccessible(entryPackage, aClass.get()) ) {
-      return Optional.empty();
-    }
-    */
-    return aClass;
   }
 
   @Override
