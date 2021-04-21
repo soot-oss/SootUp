@@ -173,15 +173,15 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
 
     try (DirectoryStream<Path> stream = Files.newDirectoryStream(moduleRoot)) {
       {
-        JavaModuleIdentifierFactory instance = JavaModuleIdentifierFactory.getInstance();
         for (Path entry : stream) {
           if (Files.isDirectory(entry)) {
-            foundModules.add(instance.getModuleSignature(entry.subpath(1, 2).toString()));
+            foundModules.add(
+                JavaModuleIdentifierFactory.getModuleSignature(entry.subpath(1, 2).toString()));
           }
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      throw new ResolveException("Error while discovering Modules", moduleRoot, e);
     }
     return foundModules;
   }
@@ -198,16 +198,6 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
     JavaClassType sig = (JavaClassType) identifierFactory.fromPath(filename);
 
     if (identifierFactory instanceof JavaModuleIdentifierFactory) {
-      // FIXME: adann clean this up!
-      // String filename = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
-      // int index = filename.lastIndexOf('.');
-      // Path parentDir = filename.subpath(0, 2);
-      // Path packageFileName = parentDir.relativize(filename);
-      // // get the package
-      // String packagename = packageFileName.toString().replace('/', '.');
-      // String classname = FilenameUtils.removeExtension(packageFileName.getFileName().toString());
-      //
-
       return ((JavaModuleIdentifierFactory) identifierFactory)
           .getClassType(
               sig.getClassName(), sig.getPackageName().getPackageName(), moduleDir.toString());

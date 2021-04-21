@@ -1,7 +1,6 @@
 package de.upb.swt.soot.test.java.bytecode.inputlocation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import categories.Java9Test;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
@@ -26,6 +25,7 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
     ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), war.toString());
     AnalysisInputLocation<JavaSootClass> inputLocation =
         moduleFinder.discoverModule(JavaModuleIdentifierFactory.getModuleSignature("java.base"));
+    assertNotNull(inputLocation);
     assertTrue(inputLocation instanceof JrtFileSystemAnalysisInputLocation);
     assertTrue(
         inputLocation
@@ -45,9 +45,7 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
   public void discoverModuleInAllModules() {
     ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), war.toString());
     Collection<ModuleSignature> modules = moduleFinder.discoverAllModules();
-    String computedModuleName = "dummyWarApp";
-    assertTrue(
-        modules.contains(JavaModuleIdentifierFactory.getModuleSignature(computedModuleName)));
+    assertTrue(modules.contains(JavaModuleIdentifierFactory.getModuleSignature("dummyWarApp")));
   }
 
   @Test
@@ -57,10 +55,19 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
             new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors()),
             "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/");
     Collection<ModuleSignature> discoveredModules = moduleFinder.discoverAllModules();
-    System.out.println(discoveredModules);
-
     assertTrue(
         discoveredModules.contains(JavaModuleIdentifierFactory.getModuleSignature("de.upb.mod")));
+  }
+
+  @Test
+  public void testModuleExploded() {
+    ModuleFinder moduleFinder =
+        new ModuleFinder(
+            new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors()),
+            "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/");
+    Collection<ModuleSignature> discoveredModules = moduleFinder.discoverAllModules();
+    assertTrue(
+        discoveredModules.contains(JavaModuleIdentifierFactory.getModuleSignature("fancyMod")));
   }
 
   @Test

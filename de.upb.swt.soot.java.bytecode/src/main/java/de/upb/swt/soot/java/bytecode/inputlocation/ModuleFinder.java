@@ -69,8 +69,6 @@ public class ModuleFinder {
 
   @Nonnull private final List<Path> modulePathEntries;
 
-  @Nonnull private final JrtFileSystemAnalysisInputLocation jrtFileSystemNamespace;
-
   /**
    * Helper Class to discover modules in a given module path.
    *
@@ -83,10 +81,12 @@ public class ModuleFinder {
     this.modulePathEntries =
         JavaClassPathAnalysisInputLocation.explode(modulePath).collect(Collectors.toList());
     // add the input location for the jrt virtual file system
-    jrtFileSystemNamespace = new JrtFileSystemAnalysisInputLocation();
+    JrtFileSystemAnalysisInputLocation jrtFileSystemNamespace =
+        new JrtFileSystemAnalysisInputLocation();
 
     // discover all system's modules
-    // TODO: [ms] is it really necessary?
+    // TODO: [ms] is it really necessary to load java.base as default on startup? i.e. do it on
+    // demand
     jrtFileSystemNamespace
         .discoverModules()
         .forEach(m -> moduleInputLocation.put(m, jrtFileSystemNamespace));
@@ -105,6 +105,7 @@ public class ModuleFinder {
     if (inputLocationForModule != null) {
       return inputLocationForModule;
     }
+
     while (this.next < this.modulePathEntries.size()) {
       Path path = modulePathEntries.get(next);
       discoverModulesIn(path);

@@ -72,7 +72,9 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
    *     string to denote the unnamed module or the default package.
    */
   public JavaClassType getClassType(
-      final String className, final String packageName, final String moduleName) {
+      final @Nonnull String className,
+      final @Nonnull String packageName,
+      final @Nonnull String moduleName) {
     PackageName packageIdentifier = getPackageSignature(packageName, moduleName);
     return new JavaClassType(className, packageIdentifier);
   }

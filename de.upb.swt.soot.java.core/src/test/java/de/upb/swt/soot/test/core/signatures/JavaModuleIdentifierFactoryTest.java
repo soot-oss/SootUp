@@ -3,7 +3,6 @@ package de.upb.swt.soot.test.core.signatures;
 import static org.junit.Assert.*;
 
 import categories.Java9Test;
-import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
@@ -98,18 +97,6 @@ public class JavaModuleIdentifierFactoryTest extends IdentifierFactoryTest {
     boolean sameObject =
         packageSignature1.getModuleSignature() == packageSignature2.getModuleSignature();
     assertFalse(sameObject);
-  }
-
-  @Test(expected = NullPointerException.class)
-  public void checkNullModule() {
-    JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
-    ModulePackageName packageSignature = identifierFactory.getPackageSignature("myPackage", null);
-  }
-
-  @Test(expected = NullPointerException.class)
-  public void checkNullModule2() {
-    JavaModuleIdentifierFactory typeFactory = JavaModuleIdentifierFactory.getInstance();
-    ClassType classSignature = typeFactory.getClassType("A", "mypackage", null);
   }
 
   @Test

@@ -21,39 +21,39 @@ public class JrtFileSystemNamespaceTest extends AnalysisInputLocationTest {
 
   @Test
   public void getClassSource() {
-    JrtFileSystemAnalysisInputLocation ns = new JrtFileSystemAnalysisInputLocation();
+    JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
     final ClassType sig = getIdentifierFactory().getClassType("java.lang.System");
-    testClassReceival(ns, sig, 1);
+    testClassReceival(inputLocation, sig, 1);
   }
 
   @Test
   public void getClassSourcesClasspath() {
-    JrtFileSystemAnalysisInputLocation ns = new JrtFileSystemAnalysisInputLocation();
+    JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
     Collection<? extends AbstractClassSource<JavaSootClass>> classSources =
-        ns.getClassSources(getIdentifierFactory());
+        inputLocation.getClassSources(getIdentifierFactory());
 
     final ClassType sig = getIdentifierFactory().getClassType("java.lang.System");
-    testClassReceival(ns, sig, 1);
+    testClassReceival(inputLocation, sig, 1);
   }
 
   @Test
   public void getClassSourceModule() {
-    JrtFileSystemAnalysisInputLocation ns = new JrtFileSystemAnalysisInputLocation();
+    JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
     final JavaClassType sig =
         JavaModuleIdentifierFactory.getInstance().getClassType("System", "java.lang", "java.base");
-    testClassReceival(ns, sig, 1);
+    testClassReceival(inputLocation, sig, 1);
   }
 
   @Test
   public void getClassSourcesModulePath() {
-    JrtFileSystemAnalysisInputLocation ns = new JrtFileSystemAnalysisInputLocation();
+    JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
     fail("implement");
   }
 
   @Test
   public void discoverModules() {
-    JrtFileSystemAnalysisInputLocation ns = new JrtFileSystemAnalysisInputLocation();
-    Collection<ModuleSignature> modules = ns.discoverModules();
+    JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
+    Collection<ModuleSignature> modules = inputLocation.discoverModules();
     assertTrue(modules.size() > 65);
   }
 }
