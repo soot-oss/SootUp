@@ -23,13 +23,91 @@ package de.upb.swt.soot.callgraph.spark.solver;
  */
 
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
+import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
+/**
+ * Collapses VarNodes (green) forming strongly-connected components in the pointer assignment graph.
+ */
 public class SCCCollapser {
   private PointerAssignmentGraph pag;
+  private boolean ignoreTypes;
+  private HashSet<VariableNode> visited;
+  private int numCollapsed = 0;
+  private TypeHierarchy typeHierarchy;
 
-  public SCCCollapser(PointerAssignmentGraph pag) {
+  public SCCCollapser(PointerAssignmentGraph pag, boolean ignoreTypes) {
     this.pag = pag;
+    this.ignoreTypes = ignoreTypes;
+    typeHierarchy = pag.getTypeHierarchy();
+    visited = new HashSet<>();
   }
 
-  public void collapse() {}
+  public void collapse() {
+    new TopologicalSorter(pag, ignoreTypes).sort();
+    TreeSet<VariableNode> set = new TreeSet<>();
+    set.addAll(pag.getVariableNodes());
+    for(VariableNode v: set){
+      dfsVisit(v, v);
+    }
+    visited = null;
+  }
+
+  final protected void dfsVisit(VariableNode v, VariableNode rootOfSCC){
+    if(visited.contains(v)){
+      return;
+    }
+    visited.add(v);
+    Set<VariableNode> succs = pag.simpleInvLookup(v);
+    for(Node element: succs){
+      if(ignoreTypes || typeHierarchy.canCast(element.getType(), v.getType())){
+        dfsVisit((VariableNode) element, rootOfSCC);
+      }
+    }
+    if(v!=rootOfSCC){
+      if(!ignoreTypes){
+        if(typeHierarchy.canCast(v.getType(), rootOfSCC.getType())
+        && typeHierarchy.canCast(rootOfSCC.getType(), v.getType())){
+          rootOfSCC.mergeWith(v);
+          numCollapsed++;
+        }
+      } else {
+        if(typeHierarchy.canCast(v.getType(), rootOfSCC.getType())){
+          rootOfSCC.mergeWith(v);
+        } else if(typeHierarchy.canCast(rootOfSCC.getType(), v.getType())){
+          v.mergeWith(rootOfSCC);
+        } else {
+          rootOfSCC.getReplacement().setType(null);
+          Set<Node> set = rootOfSCC.getPointsToSet();
+          if(set!=null){
+            // TODO: set.setType null
+          }
+          rootOfSCC.mergeWith(v);
+        }
+        numCollapsed++;
+      }
+    }
+  }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

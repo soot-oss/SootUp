@@ -37,6 +37,7 @@ public class VariableNode extends Node implements Comparable {
   protected Object variable;
   protected Map<Field, FieldReferenceNode> fields;
   protected int finishingNumber = 0;
+  private boolean isInterProcTarget = false;
 
   public VariableNode(PointerAssignmentGraph pag, Object variable, Type type) {
     super(pag, type);
@@ -92,5 +93,20 @@ public class VariableNode extends Node implements Comparable {
     if (number > pag.getMaxFinishingNumber()) {
       pag.setMaxFinishingNumber(number);
     }
+  }
+  /**
+   * Designates this node as the potential target of a interprocedural assignment edge which may be added during on-the-fly
+   * call graph updating.
+   */
+  public void setInterProcTarget() {
+    isInterProcTarget = true;
+  }
+
+  /**
+   * Returns true if this node is the potential target of a interprocedural assignment edge which may be added during
+   * on-the-fly call graph updating.
+   */
+  public boolean isInterProcTarget() {
+    return isInterProcTarget;
   }
 }

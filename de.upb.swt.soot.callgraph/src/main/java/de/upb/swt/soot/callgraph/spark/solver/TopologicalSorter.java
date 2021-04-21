@@ -52,7 +52,7 @@ public class TopologicalSorter {
       Set<VariableNode> successors = pag.getSimpleEdges().get(node);
       if (successors != null) {
         for (VariableNode element : successors) {
-          if (ignoreTypes || true /*TODO: type manager*/) {
+          if (ignoreTypes || pag.getTypeHierarchy().canCast(node.getType(), element.getType())) {
             dfsVisit(element);
           }
         }

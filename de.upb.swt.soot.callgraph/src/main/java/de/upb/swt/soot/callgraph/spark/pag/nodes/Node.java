@@ -84,4 +84,33 @@ public class Node {
     }
     return replacement;
   }
+
+  public void mergeWith(Node other) {
+    if (other.replacement != other) {
+      throw new RuntimeException("replacement cannot be the same object");
+    }
+    Node myRep = getReplacement();
+    if (other == myRep) {
+      return;
+    }
+    other.replacement = myRep;
+    if (other.pointsToSet != pointsToSet && other.pointsToSet != null && !other.pointsToSet.isEmpty()) {
+      if (myRep.pointsToSet == null || myRep.pointsToSet.isEmpty()) {
+        myRep.pointsToSet = other.pointsToSet;
+      } else {
+        myRep.pointsToSet.addAll(other.pointsToSet);
+      }
+    }
+    other.pointsToSet = null;
+    pag.mergedWith(myRep, other);
+    if ((other instanceof VariableNode) && (myRep instanceof VariableNode) && ((VariableNode) other).isInterProcTarget()) {
+      ((VariableNode) myRep).setInterProcTarget();
+    }
+  }
+
+  public void setType(Type type){
+    // TODO: type hierarchy isUnresolved(type)
+    this.type = type;
+  }
+
 }

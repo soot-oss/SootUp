@@ -322,4 +322,12 @@ public class ViewTypeHierarchyTest {
         "Collection[] should be a subtype of Object[]",
         typeHierarchy.isSubtype(objectArrayDim1Type, collectionArrayDim1Type));
   }
+
+  @Test
+  public void canCast(){
+    IdentifierFactory factory = view.getIdentifierFactory();
+    assertFalse(typeHierarchy.canCast(factory.getClassType("java.lang.Object"), factory.getClassType("java.lang.String")));
+    assertTrue(typeHierarchy.canCast(factory.getClassType("java.lang.String"), factory.getClassType("java.lang.Object")));
+  }
+
 }

@@ -77,6 +77,14 @@ public class Spark implements PointsToAnalysis {
     return node.getPointsToSet();
   }
 
+  public Set<Node> getPointsToSet(Object value) {
+    VariableNode node = pag.getLocalVariableNode(value);
+    if (node == null) {
+      return Sets.newHashSet();
+    }
+    return node.getPointsToSet();
+  }
+
   public Set<Node> getPointsToSet(Local local, SootField field) {
     Set<Node> pointsToSetOfLocal = getPointsToSet(local);
     return getPointsToSet(pointsToSetOfLocal, field);

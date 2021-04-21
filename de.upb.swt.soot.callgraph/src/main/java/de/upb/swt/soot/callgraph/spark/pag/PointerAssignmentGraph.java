@@ -23,11 +23,14 @@ package de.upb.swt.soot.callgraph.spark.pag;
  */
 
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import de.upb.swt.soot.callgraph.MethodUtil;
 import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
+import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
+import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
@@ -91,10 +94,13 @@ public class PointerAssignmentGraph {
   private Map<AbstractInvokeExpr, Node> virtualCallsToReceivers = new HashMap<>();
   private Map<SootMethod, IntraproceduralPointerAssignmentGraph> methodToIntraPag = new HashMap<>();
   private Set<IntraproceduralPointerAssignmentGraph> addedIntraPags = new HashSet<>();
+  private TypeHierarchy typeHierarchy;
+  private boolean somethingMerged = false;
 
   public PointerAssignmentGraph(View<? extends SootClass> view, CallGraph callGraph) {
     this.view = view;
     this.callGraph = callGraph;
+    this.typeHierarchy = new ViewTypeHierarchy(view);
     // this.graph = new DirectedAcyclicGraph<>(null, null, false);
     build();
   }
@@ -326,8 +332,165 @@ public class PointerAssignmentGraph {
     return internalEdges.storeEdgesInv.get(key);
   }
 
+  public Set<VariableNode> simpleInvLookup(VariableNode key){
+    return internalEdges.simpleEdgesInv.get(key);
+  }
+
   public Set<VariableNode> loadLookup(FieldReferenceNode key) {
     return internalEdges.loadEdges.get(key);
+  }
+
+  public Set<FieldReferenceNode> loadInvLookup(VariableNode key) {
+    return internalEdges.loadEdgesInv.get(key);
+  }
+
+  public Set<VariableNode> allocLookup(AllocationNode key){
+    return internalEdges.allocationEdges.get(key);
+  }
+
+  public Set<AllocationNode> allocInvLookup(VariableNode key){
+    return internalEdges.allocationEdgesInv.get(key);
+  }
+
+
+  /**
+   * to notify PAG that n2 has been merged into n1
+   *
+   */
+  public void mergedWith(Node n1, Node n2){
+    if(n1.equals(n2)){
+      throw new RuntimeException("merged nodes cannot be the same");
+    }
+    somethingMerged = true;
+    //TODO: notify ofcg
+
+    Map[] edgeMaps = {internalEdges.simpleEdges, internalEdges.allocationEdges, internalEdges.storeEdges, internalEdges.loadEdges,
+    internalEdges.simpleEdgesInv, internalEdges.allocationEdgesInv, internalEdges.storeEdgesInv, internalEdges.loadEdgesInv};
+    for (Map<Node, Set<Node>> m : edgeMaps) {
+      if(!m.keySet().contains(n2)){
+        continue;
+      }
+      //Pair<Set<Node>, Set<Node>> setPair = new ImmutablePair<>(m.get(n1), m.get(n2));
+      Set<Node> set1 = m.get(n1);
+      Set<Node> set2 = m.get(n2);
+
+      if(set1.isEmpty()){
+        if(set2!=null){
+          m.put(n1, set2);
+        }
+      } else if(set2.isEmpty()){
+        // nothing needed
+      } else if(set1 instanceof HashSet){
+        if(set2 instanceof HashSet){
+          set1.addAll(set2);
+        } else{
+          for(Node node: set2){
+            set1.add(node);
+          }
+        }
+      } else if(set2 instanceof HashSet){
+        for(Node node: set1){
+          set2.add(node);
+        }
+        m.put(n1, set2);
+      } else if(set1.size()*set2.size()<1000){
+        Node[] ret = new Node[set1.size()+set2.size()];
+        System.arraycopy(set1, 0, ret, 0, set1.size());
+        int j = set1.size();
+        outer: for(Node rep: set2){
+          for(int k=0; k<j; k++){
+            if(rep == ret[k]){
+              continue outer;
+            }
+          }
+          ret[j++] = rep;
+        }
+        Node[] newArray = new Node[j];
+        System.arraycopy(ret, 0, newArray, 0, j);
+        m.put(n1, Sets.newHashSet(ret = newArray));
+      } else{
+        HashSet<Node> s = new HashSet<>(set1.size()+set2.size());
+        s.addAll(set1);
+        s.addAll(set2);
+        m.put(n1, s);
+      }
+      m.remove(n2);
+    }
+  }
+
+  public void cleanUpMerges(){
+    lookupInMap(internalEdges.simpleEdges);
+    lookupInMap(internalEdges.allocationEdges);
+    lookupInMap(internalEdges.storeEdges);
+    lookupInMap(internalEdges.loadEdges);
+    lookupInMap(internalEdges.simpleEdgesInv);
+    lookupInMap(internalEdges.allocationEdgesInv);
+    lookupInMap(internalEdges.storeEdgesInv);
+    lookupInMap(internalEdges.loadEdgesInv);
+    somethingMerged=false;
+  }
+
+  private <K, N extends Node> void lookupInMap(Map<K, Set<N>> map) {
+    for (K key : map.keySet()) {
+      lookup(map, key);
+    }
+  }
+
+  protected final static Node[] EMPTY_NODE_ARRAY = new Node[0];
+
+  protected <K,N extends Node> Node[] lookup(Map<K, Set<N>> m, K key) {
+    Set<N> valueList = m.get(key);
+    if (valueList == null) {
+      return EMPTY_NODE_ARRAY;
+    }
+
+    m.put(key, valueList);
+
+    Node[] ret = (Node[]) valueList.toArray();
+    if (somethingMerged) {
+      for (int i = 0; i < ret.length; i++) {
+        Node reti = ret[i];
+        Node rep = reti.getReplacement();
+        if (rep != reti || rep == key) {
+          Set<Node> s;
+          if (ret.length <= 75) {
+            int j = i;
+            outer: for (; i < ret.length; i++) {
+              reti = ret[i];
+              rep = reti.getReplacement();
+              if (rep == key) {
+                continue;
+              }
+              for (int k = 0; k < j; k++) {
+                if (rep == ret[k]) {
+                  continue outer;
+                }
+              }
+              ret[j++] = rep;
+            }
+            Node[] newArray = new Node[j];
+            System.arraycopy(ret, 0, newArray, 0, j);
+            ret = newArray;
+            m.put(key, Sets.newHashSet((N[]) newArray));
+          } else {
+            s = new HashSet<>(ret.length * 2);
+            for (int j = 0; j < i; j++) {
+              s.add(ret[j]);
+            }
+            for (int j = i; j < ret.length; j++) {
+              rep = ret[j].getReplacement();
+              if (rep != key) {
+                s.add(rep);
+              }
+            }
+            ret = s.toArray(EMPTY_NODE_ARRAY);
+            m.put(key, (Set<N>) s);
+          }
+          break;
+        }
+      }
+    }
+    return ret;
   }
 
   public List<VariableNode> getVariableNodes() {
@@ -360,5 +523,9 @@ public class PointerAssignmentGraph {
 
   public Map<SootMethod, IntraproceduralPointerAssignmentGraph> getMethodToIntraPag() {
     return methodToIntraPag;
+  }
+
+  public TypeHierarchy getTypeHierarchy(){
+    return typeHierarchy;
   }
 }
