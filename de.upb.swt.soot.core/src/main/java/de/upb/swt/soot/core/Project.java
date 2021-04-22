@@ -22,10 +22,8 @@ package de.upb.swt.soot.core;
  * #L%
  */
 
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.views.View;
 import java.util.ArrayList;
@@ -42,9 +40,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public abstract class Project<
-    V extends View<? extends AbstractClass<? extends AbstractClassSource<? extends SootClass>>>,
-    S extends SootClass> {
+public abstract class Project<V extends View<? extends SootClass>, S extends SootClass> {
 
   @Nonnull
   private final IdentifierFactory identifierFactory; // THINK:[ms] is this really necessary?

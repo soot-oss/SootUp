@@ -22,18 +22,25 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 
-import com.google.common.base.Suppliers;
 import de.upb.swt.soot.core.model.*;
+import de.upb.swt.soot.core.signatures.FieldSubSignature;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.java.core.views.JavaView;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class JavaSootClass extends SootClass {
+public class JavaSootClass extends SootClass<JavaSootClassSource> {
 
   public boolean isJavaLibraryClass() {
     return this.classSignature.isBuiltInClass();
@@ -44,12 +51,82 @@ public class JavaSootClass extends SootClass {
     super(classSource, sourceType);
   }
 
-  private final Supplier<Iterable<AnnotationType>> lazyAnnotations =
-      Suppliers.memoize(((JavaSootClassSource) classSource)::resolveAnnotations);
+  /**
+   * Get all annotations on this class. If provided with a View, will also resolve all inherited
+   * annotations from super classes.
+   *
+   * @param view
+   * @return
+   */
+  @Nonnull
+  public Iterable<AnnotationUsage> getAnnotations(@Nonnull Optional<JavaView> view) {
+    List<AnnotationUsage> annotationUsages = new ArrayList<>();
+
+    if (view.isPresent()) {
+      JavaView javaView = view.get();
+      if (this.getSuperclass().isPresent()) {
+
+        ClassType superClass = this.getSuperclass().get();
+
+        if (javaView.getClass(superClass).isPresent()) {
+          JavaSootClass superJavaSootClass = javaView.getClass(superClass).get();
+
+          Collection<AnnotationUsage> annos =
+              StreamSupport.stream(superJavaSootClass.getAnnotations(view).spliterator(), false)
+                  .filter(annotationUsage -> annotationUsage.getAnnotation().isInherited(view))
+                  .collect(Collectors.toList());
+
+          annotationUsages.addAll(annos);
+        }
+      }
+    }
+
+    classSource.resolveAnnotations().forEach(annotationUsages::add);
+
+    return annotationUsages;
+  }
 
   @Nonnull
-  public Iterable<AnnotationType> getAnnotations() {
-    return lazyAnnotations.get();
+  @Override
+  public Set<JavaSootMethod> getMethods() {
+    return (Set<JavaSootMethod>) super.getMethods();
+  }
+
+  @Nonnull
+  @Override
+  public Set<JavaSootField> getFields() {
+    return (Set<JavaSootField>) super.getFields();
+  }
+
+  @Nonnull
+  @Override
+  public Optional<JavaSootField> getField(String name) {
+    return (Optional<JavaSootField>) super.getField(name);
+  }
+
+  @Nonnull
+  @Override
+  public Optional<JavaSootField> getField(@Nonnull FieldSubSignature subSignature) {
+    return (Optional<JavaSootField>) super.getField(subSignature);
+  }
+
+  @Nonnull
+  @Override
+  public Optional<JavaSootMethod> getMethod(@Nonnull MethodSignature signature) {
+    return (Optional<JavaSootMethod>) super.getMethod(signature);
+  }
+
+  @Nonnull
+  @Override
+  public Optional<JavaSootMethod> getMethod(
+      @Nonnull String name, @Nonnull Iterable<? extends Type> parameterTypes) {
+    return (Optional<JavaSootMethod>) super.getMethod(name, parameterTypes);
+  }
+
+  @Nonnull
+  @Override
+  public Optional<JavaSootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
+    return (Optional<JavaSootMethod>) super.getMethod(subSignature);
   }
 
   @Override

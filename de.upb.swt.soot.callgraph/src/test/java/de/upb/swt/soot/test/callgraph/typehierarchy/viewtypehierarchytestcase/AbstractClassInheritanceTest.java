@@ -19,7 +19,7 @@ import org.junit.experimental.categories.Category;
 public class AbstractClassInheritanceTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {
-    SootClass sootClass =
+    SootClass<?> sootClass =
         customTestWatcher
             .getView()
             .getClass(
@@ -29,7 +29,7 @@ public class AbstractClassInheritanceTest extends JavaTypeHierarchyTestBase {
                     .getClassType(customTestWatcher.getClassName()))
             .get();
     assertTrue(sootClass.hasSuperclass());
-    SootClass superClass =
+    SootClass<?> superClass =
         customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
     assertTrue(superClass.isAbstract());
 

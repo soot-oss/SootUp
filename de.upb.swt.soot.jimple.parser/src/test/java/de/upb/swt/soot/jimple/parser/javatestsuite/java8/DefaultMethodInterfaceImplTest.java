@@ -37,7 +37,7 @@ public class DefaultMethodInterfaceImplTest extends JimpleTestSuiteBase {
     assertJimpleStmts(method, expectedBodyStmts());
     method = loadMethod(getDefaultMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts1());
-    SootClass clazz = loadClass(getDeclaredClassSignature());
+    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
     assertTrue(
         clazz.getInterfaces().stream()
             .anyMatch(

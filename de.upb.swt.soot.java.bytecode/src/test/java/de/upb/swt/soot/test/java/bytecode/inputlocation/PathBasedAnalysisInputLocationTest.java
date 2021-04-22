@@ -98,7 +98,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     ClassType utilsClassSignature = p.getIdentifierFactory().getClassType("Employee", "ds");
 
     // Resolve signature to `SootClass`
-    SootClass utilsClass = view.getClass(utilsClassSignature).get();
+    SootClass<?> utilsClass = view.getClass(utilsClassSignature).get();
 
     // Parse sub-signature for "setEmpSalary" method
     MethodSubSignature optionalToStreamMethodSubSignature =
@@ -110,7 +110,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     // Print method
     assertTrue("setEmpSalary".equalsIgnoreCase(foundMethod.getName()));
-    assertEquals("void", foundMethod.getReturnTypeSignature().toString());
+    assertEquals("void", foundMethod.getReturnType().toString());
     assertEquals(1, foundMethod.getParameterCount());
     assertTrue(
         foundMethod.getParameterTypes().stream()
@@ -127,7 +127,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     ClassType classSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
 
     // Build a soot class
-    SootClass c =
+    SootClass<?> c =
         new SootClass(
             new OverridingJavaClassSource(
                 new EagerInputLocation(),
@@ -169,6 +169,8 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                         .build()),
                 null,
                 EnumSet.of(Modifier.PUBLIC),
+                Collections.emptyList(),
+                Collections.emptyList(),
                 Collections.emptyList()),
             SourceType.Application);
 

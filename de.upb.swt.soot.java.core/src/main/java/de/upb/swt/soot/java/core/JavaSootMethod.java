@@ -37,14 +37,14 @@ import javax.annotation.Nonnull;
 public class JavaSootMethod extends SootMethod {
   @Nonnull protected static final String CONSTRUCTOR_NAME = "<init>";
   @Nonnull protected static final String STATIC_INITIALIZER_NAME = "<clinit>";
-  @Nonnull private final Iterable<AnnotationType> annotations;
+  @Nonnull private final Iterable<AnnotationUsage> annotations;
 
   public JavaSootMethod(
       @Nonnull BodySource source,
       @Nonnull MethodSignature methodSignature,
       @Nonnull Iterable<Modifier> modifiers,
       @Nonnull Iterable<ClassType> thrownExceptions,
-      @Nonnull Iterable<AnnotationType> annotations,
+      @Nonnull Iterable<AnnotationUsage> annotations,
       @Nonnull Position position) {
     super(source, methodSignature, modifiers, thrownExceptions, position);
     this.annotations = annotations;
@@ -64,7 +64,7 @@ public class JavaSootMethod extends SootMethod {
   }
 
   @Nonnull
-  public Iterable<AnnotationType> getAnnotations() {
+  public Iterable<AnnotationUsage> getAnnotations() {
     return annotations;
   }
 
@@ -113,7 +113,7 @@ public class JavaSootMethod extends SootMethod {
   }
 
   @Nonnull
-  public JavaSootMethod withAnnotations(@Nonnull Iterable<AnnotationType> annotations) {
+  public JavaSootMethod withAnnotations(@Nonnull Iterable<AnnotationUsage> annotations) {
     return new JavaSootMethod(
         bodySource,
         getSignature(),
@@ -141,7 +141,7 @@ public class JavaSootMethod extends SootMethod {
   }
 
   public interface AnnotationOrSignatureStep extends MethodSourceStep {
-    BuildStep withAnnotation(@Nonnull Iterable<AnnotationType> annotations);
+    BuildStep withAnnotation(@Nonnull Iterable<AnnotationUsage> annotations);
   }
 
   /**
@@ -152,16 +152,16 @@ public class JavaSootMethod extends SootMethod {
   public static class JavaSootMethodBuilder extends SootMethodBuilder
       implements AnnotationOrSignatureStep {
 
-    private Iterable<AnnotationType> annotations = null;
+    private Iterable<AnnotationUsage> annotations = null;
 
     @Nonnull
-    public Iterable<AnnotationType> getAnnotations() {
+    public Iterable<AnnotationUsage> getAnnotations() {
       return annotations != null ? annotations : Collections.emptyList();
     }
 
     @Override
     @Nonnull
-    public BuildStep withAnnotation(@Nonnull Iterable<AnnotationType> annotations) {
+    public BuildStep withAnnotation(@Nonnull Iterable<AnnotationUsage> annotations) {
       this.annotations = annotations;
       return this;
     }

@@ -26,18 +26,18 @@ import javax.annotation.Nonnull;
 
 // TODO: [ms] rethink of that view per language structure -> this could be the base implementation
 // for View if we really need different views in the future?
-public class JimpleView extends AbstractView<SootClass> {
+public class JimpleView extends AbstractView<SootClass<?>> {
 
-  @Nonnull private final Map<ClassType, SootClass> cache = new HashMap<>();
+  @Nonnull private final Map<ClassType, SootClass<?>> cache = new HashMap<>();
 
   private volatile boolean isFullyResolved = false;
 
   @Nonnull
-  protected Function<AnalysisInputLocation<SootClass>, ClassLoadingOptions>
+  protected Function<AnalysisInputLocation<SootClass<?>>, ClassLoadingOptions>
       classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link de.upb.swt.soot.java.core.views.JavaView} class. */
-  public JimpleView(@Nonnull Project project) {
+  public JimpleView(@Nonnull JimpleProject project) {
     this(project, analysisInputLocation -> null);
   }
 
@@ -49,9 +49,9 @@ public class JimpleView extends AbstractView<SootClass> {
    *     options.
    */
   public JimpleView(
-      @Nonnull Project project,
+      @Nonnull Project<JimpleView, ?> project,
       @Nonnull
-          Function<AnalysisInputLocation<SootClass>, ClassLoadingOptions>
+          Function<AnalysisInputLocation<SootClass<?>>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
@@ -59,30 +59,30 @@ public class JimpleView extends AbstractView<SootClass> {
 
   @Override
   @Nonnull
-  public synchronized Collection<SootClass> getClasses() {
+  public synchronized Collection<SootClass<?>> getClasses() {
     return getAbstractClassSources();
   }
 
   @Nonnull
-  synchronized Collection<SootClass> getAbstractClassSources() {
+  synchronized Collection<SootClass<?>> getAbstractClassSources() {
     resolveAll();
     return cache.values();
   }
 
   @Override
   @Nonnull
-  public synchronized Optional<SootClass> getClass(@Nonnull ClassType type) {
-    return getAbstractClass(type).map(clazz -> (SootClass) clazz);
+  public synchronized Optional<SootClass<?>> getClass(@Nonnull ClassType type) {
+    return getAbstractClass(type);
   }
 
   @Nonnull
-  Optional<SootClass> getAbstractClass(@Nonnull ClassType type) {
-    SootClass cachedClass = cache.get(type);
+  Optional<SootClass<?>> getAbstractClass(@Nonnull ClassType type) {
+    SootClass<?> cachedClass = cache.get(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
 
-    final List<AbstractClassSource<SootClass>> foundClassSources =
+    final List<AbstractClassSource<SootClass<?>>> foundClassSources =
         getProject().getInputLocations().stream()
             .map(
                 location -> {
@@ -116,9 +116,9 @@ public class JimpleView extends AbstractView<SootClass> {
   }
 
   @Nonnull
-  private synchronized Optional<SootClass> buildClassFrom(
-      AbstractClassSource<SootClass> classSource) {
-    SootClass theClass =
+  private synchronized Optional<SootClass<?>> buildClassFrom(
+      AbstractClassSource<SootClass<?>> classSource) {
+    SootClass<?> theClass =
         cache.computeIfAbsent(
             classSource.getClassType(),
             type ->

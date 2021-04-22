@@ -174,8 +174,7 @@ grammar Jimple;
 
   stmt :
     assignments |
-    IF bool_expr goto_stmt |
-    goto_stmt |
+    (IF bool_expr)? goto_stmt |
     invoke_expr |
     RETURN immediate? |
     SWITCH L_PAREN immediate R_PAREN L_BRACE case_stmt+ R_BRACE |

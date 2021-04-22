@@ -107,8 +107,8 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     return !isAbstract() && !isNative();
   }
 
-  public Type getReturnTypeSignature() {
-    return this.getSignature().getType();
+  public Type getReturnType() {
+    return getSignature().getType();
   }
 
   /** Returns the number of parameters taken by this method. */
@@ -175,7 +175,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
    * Returns the declaration of this method, as used at the top of textual body representations
    * (before the {}'s containing the code for representation.)
    */
-  public void toString(StmtPrinter printer) {
+  public void toString(@Nonnull StmtPrinter printer) {
 
     // print modifiers
     final Set<Modifier> modifiers = getModifiers();

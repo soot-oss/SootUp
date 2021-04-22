@@ -27,7 +27,7 @@ public class InterfaceImplClassTest extends MinimalBytecodeTestSuiteBase {
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
-    SootClass clazz = loadClass(getDeclaredClassSignature());
+    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
     assertTrue(
         clazz.getInterfaces().stream()
             .anyMatch(

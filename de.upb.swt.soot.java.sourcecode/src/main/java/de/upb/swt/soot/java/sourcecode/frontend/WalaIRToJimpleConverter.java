@@ -61,6 +61,7 @@ import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.*;
+import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.net.URL;
@@ -208,8 +209,9 @@ public class WalaIRToJimpleConverter {
         sootMethods,
         convertPosition(position),
         modifiers,
-        Collections.emptyList() // TODO:[ms] implement annotations
-        );
+        Collections.emptyList(), // TODO:[ms] implement annotations
+        Collections.emptyList(), // TODO:[ms] implement methodannotations
+        Collections.emptyList()); // TODO:[ms] implement fieldannotations
   }
 
   /**

@@ -33,7 +33,7 @@ public class SubClassTest extends MinimalBytecodeTestSuiteBase {
   public void testSuperClassStmts() {
     SootMethod m = loadMethod(getMethodSignature1());
     assertJimpleStmts(m, expectedBodyStmts1());
-    SootClass sootClass = loadClass(getDeclaredClassSignature());
+    SootClass<?> sootClass = loadClass(getDeclaredClassSignature());
     assertTrue(sootClass.getSuperclass().get().getClassName().equals("SuperClass"));
   }
 
