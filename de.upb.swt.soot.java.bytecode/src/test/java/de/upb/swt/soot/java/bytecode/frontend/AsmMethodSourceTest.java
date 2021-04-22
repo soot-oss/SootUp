@@ -46,7 +46,7 @@ public class AsmMethodSourceTest {
                 Arrays.asList(
                     "java.util.concurrent.Executor", "javax.management.MBeanNotificationInfo[]"));
 
-    final SootClass abstractClass = view.getClass(mainClassSignature).get();
+    final SootClass<?> abstractClass = view.getClass(mainClassSignature).get();
 
     final SootMethod method = abstractClass.getMethod(mainMethodSignature).get();
     method.getBody().getStmts();

@@ -38,7 +38,7 @@ public class DeclareFieldTest extends MinimalBytecodeTestSuiteBase {
     assertJimpleStmts(method, expectedBodyStmts());
     method = loadMethod(getStaticMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts1());
-    SootClass clazz = loadClass(getDeclaredClassSignature());
+    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(

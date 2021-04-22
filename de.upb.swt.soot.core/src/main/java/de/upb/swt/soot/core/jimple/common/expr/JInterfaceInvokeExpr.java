@@ -66,7 +66,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseInterfaceInvokeExpr(this, o);
   }
 

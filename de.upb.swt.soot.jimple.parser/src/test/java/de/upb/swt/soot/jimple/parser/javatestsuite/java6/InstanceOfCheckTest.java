@@ -26,7 +26,7 @@ public class InstanceOfCheckTest extends JimpleTestSuiteBase {
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
-    SootClass sootClass = loadClass(getDeclaredClassSignature());
+    SootClass<?> sootClass = loadClass(getDeclaredClassSignature());
     if (sootClass.getSuperclass().isPresent()) {
       assertEquals("InstanceOfCheckSuper", sootClass.getSuperclass().get().getClassName());
     }

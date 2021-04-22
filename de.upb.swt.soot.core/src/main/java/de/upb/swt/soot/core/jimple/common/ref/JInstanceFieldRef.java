@@ -91,7 +91,7 @@ public final class JInstanceFieldRef extends JFieldRef implements Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseInstanceFieldRef(this, o);
   }
 
