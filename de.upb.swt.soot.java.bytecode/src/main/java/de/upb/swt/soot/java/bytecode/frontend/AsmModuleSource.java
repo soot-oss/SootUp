@@ -21,10 +21,8 @@ package de.upb.swt.soot.java.bytecode.frontend;
  * #L%
  */
 import de.upb.swt.soot.core.frontend.ResolveException;
-import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
-import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.ModuleModifier;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -43,8 +41,7 @@ public class AsmModuleSource extends JavaModuleInfo {
 
   private final ModuleNode module;
 
-  public AsmModuleSource(
-      @Nonnull AnalysisInputLocation<JavaSootClass> srcNamespace, @Nonnull Path sourcePath) {
+  public AsmModuleSource(@Nonnull Path sourcePath) {
 
     // if it is an automatic module there is no module-info
     super(false);

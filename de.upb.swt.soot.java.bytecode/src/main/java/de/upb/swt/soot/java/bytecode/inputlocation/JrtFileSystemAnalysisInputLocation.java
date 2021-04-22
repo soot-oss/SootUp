@@ -60,6 +60,7 @@ import javax.annotation.Nonnull;
 public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInputLocation {
 
   private static final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
+  Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
@@ -67,10 +68,9 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
     JavaClassType klassType = (JavaClassType) classType;
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
     if (klassType.getPackageName() instanceof ModulePackageName) {
-      return this.getClassSourceInternalForModule(
-          klassType, new AsmJavaClassProvider(bodyInterceptors));
+      return getClassSourceInternalForModule(klassType, new AsmJavaClassProvider(bodyInterceptors));
     }
-    return this.getClassSourceInternalForClassPath(
+    return getClassSourceInternalForClassPath(
         klassType, new AsmJavaClassProvider(bodyInterceptors));
   }
 
@@ -126,18 +126,11 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
 
     final Path archiveRoot = theFileSystem.getPath("modules");
-    return walkDirectory(
-        archiveRoot, identifierFactory, new AsmJavaClassProvider(bodyInterceptors));
-  }
-
-  protected @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> walkDirectory(
-      @Nonnull Path dirPath,
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull ClassProvider<JavaSootClass> classProvider) {
+    ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
 
     final FileType handledFileType = classProvider.getHandledFileType();
     try {
-      return Files.walk(dirPath)
+      return Files.walk(archiveRoot)
           .filter(
               filePath ->
                   PathUtils.hasExtension(filePath, handledFileType)
@@ -150,17 +143,15 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
                           classProvider.createClassSource(
                               this,
                               p,
-                              this.fromPath(
+                              fromPath(
                                   p.subpath(2, p.getNameCount()),
                                   p.subpath(1, 2),
                                   identifierFactory)))))
           .collect(Collectors.toList());
     } catch (IOException e) {
-      throw new ResolveException("Error loading a module", dirPath, e);
+      throw new ResolveException("Error loading a module", archiveRoot, e);
     }
   }
-
-  HashMap<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
 
   /**
    * Discover and return all modules contained in the jrt filesystem.
@@ -182,7 +173,7 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
             Path moduleInfo =
                 entry.resolve(JavaModuleIdentifierFactory.MODULE_INFO_CLASS + ".class");
             if (Files.exists(moduleInfo)) {
-              moduleInfoMap.put(moduleSignature, new AsmModuleSource(this, moduleInfo));
+              moduleInfoMap.put(moduleSignature, new AsmModuleSource(moduleInfo));
             }
           }
         }

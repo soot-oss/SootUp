@@ -4,11 +4,9 @@ import static org.junit.Assert.*;
 
 import categories.Java9Test;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.inputlocation.ModuleFinder;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
-import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
@@ -22,7 +20,7 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
 
   @Test
   public void discoverModuleJavaBase() {
-    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), war.toString());
+    ModuleFinder moduleFinder = new ModuleFinder(war.toString());
     AnalysisInputLocation<JavaSootClass> inputLocation =
         moduleFinder.discoverModule(JavaModuleIdentifierFactory.getModuleSignature("java.base"));
     assertNotNull(inputLocation);
@@ -35,7 +33,7 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
 
   @Test
   public void discoverModuleByName() {
-    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), war.toString());
+    ModuleFinder moduleFinder = new ModuleFinder(war.toString());
     AnalysisInputLocation<JavaSootClass> inputLocation =
         moduleFinder.discoverModule(JavaModuleIdentifierFactory.getModuleSignature("dummyWarApp"));
     assertTrue(inputLocation instanceof PathBasedAnalysisInputLocation);
@@ -43,7 +41,7 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
 
   @Test
   public void discoverModuleInAllModules() {
-    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), war.toString());
+    ModuleFinder moduleFinder = new ModuleFinder(war.toString());
     Collection<ModuleSignature> modules = moduleFinder.discoverAllModules();
     assertTrue(modules.contains(JavaModuleIdentifierFactory.getModuleSignature("dummyWarApp")));
   }
@@ -51,9 +49,7 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
   @Test
   public void testModuleJar() {
     ModuleFinder moduleFinder =
-        new ModuleFinder(
-            new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors()),
-            "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/");
+        new ModuleFinder("../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/");
     Collection<ModuleSignature> discoveredModules = moduleFinder.discoverAllModules();
     assertTrue(
         discoveredModules.contains(JavaModuleIdentifierFactory.getModuleSignature("de.upb.mod")));
@@ -62,9 +58,7 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
   @Test
   public void testModuleExploded() {
     ModuleFinder moduleFinder =
-        new ModuleFinder(
-            new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors()),
-            "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/");
+        new ModuleFinder("../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/");
     Collection<ModuleSignature> discoveredModules = moduleFinder.discoverAllModules();
     assertTrue(
         discoveredModules.contains(JavaModuleIdentifierFactory.getModuleSignature("fancyMod")));

@@ -20,12 +20,14 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.util.PathUtils;
+import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.frontend.AsmUtil;
+import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import java.io.File;
@@ -59,7 +61,7 @@ import org.objectweb.asm.tree.ClassNode;
  * @author Andreas Dann on 28.06.18
  */
 public class ModuleFinder {
-  @Nonnull private final ClassProvider<JavaSootClass> classProvider;
+
   // associate a module name with the input location, that represents the module
   @Nonnull
   private final Map<ModuleSignature, AnalysisInputLocation<JavaSootClass>> moduleInputLocation =
@@ -68,28 +70,22 @@ public class ModuleFinder {
   private int next = 0;
 
   @Nonnull private final List<Path> modulePathEntries;
+  private final AsmJavaClassProvider classProvider =
+      new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors());
 
   /**
    * Helper Class to discover modules in a given module path.
    *
-   * @param classProvider the class provider for resolving found classes
    * @param modulePath the module path
    */
-  public ModuleFinder(
-      @Nonnull ClassProvider<JavaSootClass> classProvider, @Nonnull String modulePath) {
-    this.classProvider = classProvider;
+  public ModuleFinder(@Nonnull String modulePath) {
     this.modulePathEntries =
         JavaClassPathAnalysisInputLocation.explode(modulePath).collect(Collectors.toList());
-    // add the input location for the jrt virtual file system
-    JrtFileSystemAnalysisInputLocation jrtFileSystemNamespace =
-        new JrtFileSystemAnalysisInputLocation();
+  }
 
-    // discover all system's modules
-    // TODO: [ms] is it really necessary to load java.base as default on startup? i.e. do it on
-    // demand
-    jrtFileSystemNamespace
-        .discoverModules()
-        .forEach(m -> moduleInputLocation.put(m, jrtFileSystemNamespace));
+  public JavaModuleInfo getModuleInfo(ModuleSignature sig) {
+    // FIXME
+    return null;
   }
 
   /**
@@ -100,13 +96,25 @@ public class ModuleFinder {
    */
   @Nullable
   public AnalysisInputLocation<JavaSootClass> discoverModule(@Nonnull ModuleSignature moduleName) {
+
+    // discover all system's modules if they are not loaded already
+    if (moduleInputLocation.isEmpty()) {
+      JrtFileSystemAnalysisInputLocation jrtFileSystemNamespace =
+          new JrtFileSystemAnalysisInputLocation();
+      jrtFileSystemNamespace
+          .discoverModules()
+          .forEach(m -> moduleInputLocation.put(m, jrtFileSystemNamespace));
+    }
+
+    // check if module is cached
     AnalysisInputLocation<JavaSootClass> inputLocationForModule =
         moduleInputLocation.get(moduleName);
     if (inputLocationForModule != null) {
       return inputLocationForModule;
     }
 
-    while (this.next < this.modulePathEntries.size()) {
+    // load directly from modulePath if found
+    while (next < modulePathEntries.size()) {
       Path path = modulePathEntries.get(next);
       discoverModulesIn(path);
       next++;
@@ -126,7 +134,7 @@ public class ModuleFinder {
   @Nonnull
   public Collection<ModuleSignature> discoverAllModules() {
 
-    while (this.next < this.modulePathEntries.size()) {
+    while (next < modulePathEntries.size()) {
       Path path = modulePathEntries.get(next);
       discoverModulesIn(path);
       next++;
@@ -222,7 +230,7 @@ public class ModuleFinder {
             JavaModuleIdentifierFactory.getModuleSignature(moduleDescriptor.module.name),
             inputLocation);
       } else {
-        // no module-info: treat it as automatic module i.e. create module name from the jar file
+        // no module-info: its an automatic module i.e. create module name from the jar file
         moduleInputLocation.put(
             JavaModuleIdentifierFactory.getModuleSignature(
                 createModuleNameForAutomaticModule(jar.getFileName().toString())),

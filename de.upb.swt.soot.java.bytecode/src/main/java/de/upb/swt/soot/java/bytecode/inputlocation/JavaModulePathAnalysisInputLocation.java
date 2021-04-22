@@ -28,8 +28,8 @@ import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.types.*;
-import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
@@ -54,6 +54,7 @@ import org.apache.commons.io.FilenameUtils;
 public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInputLocation {
 
   @Nonnull private final String modulePath;
+  @Nonnull private final ModuleFinder moduleFinder;
 
   /**
    * Creates a {@link JavaModulePathAnalysisInputLocation} which locates classes in the given module
@@ -64,6 +65,12 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
    */
   public JavaModulePathAnalysisInputLocation(@Nonnull String modulePath) {
     this.modulePath = modulePath;
+    moduleFinder = new ModuleFinder(modulePath);
+  }
+
+  @Nonnull
+  public JavaModuleInfo getModuleInfo(ModuleSignature sig) {
+    return moduleFinder.getModuleInfo(sig);
   }
 
   @Override
@@ -74,9 +81,7 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
         identifierFactory instanceof JavaModuleIdentifierFactory,
         "Factory must be a ModuleSignatureFactory");
 
-    ModuleFinder moduleFinder =
-        new ModuleFinder(
-            new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()), modulePath);
+    // new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors())
     Set<AbstractClassSource<JavaSootClass>> found = new HashSet<>();
     for (ModuleSignature module : moduleFinder.discoverAllModules()) {
       AnalysisInputLocation<JavaSootClass> inputLocation = moduleFinder.discoverModule(module);
@@ -105,10 +110,7 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
     ModuleSignature modulename =
         ((ModulePackageName) klassType.getPackageName()).getModuleSignature();
     // lookup the ns for the class provider from the cache
-    AnalysisInputLocation<JavaSootClass> inputLocation =
-        new ModuleFinder(
-                new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()), modulePath)
-            .discoverModule(modulename);
+    AnalysisInputLocation<JavaSootClass> inputLocation = moduleFinder.discoverModule(modulename);
 
     if (inputLocation == null) {
       return Optional.empty();
