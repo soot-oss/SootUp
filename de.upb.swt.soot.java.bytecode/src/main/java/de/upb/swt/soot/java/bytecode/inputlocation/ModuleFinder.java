@@ -32,7 +32,6 @@ import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -252,15 +251,14 @@ public class ModuleFinder {
    */
   @Nonnull
   public static String createModuleNameForAutomaticModule(@Nonnull Path path) {
-    // check if Automatic-Module-Name header exists in /MANIFEST.MF and use that name
+    // check if Automatic-Module-Name header exists in manifest file and use it if exists
     try {
       JarFile jar = new JarFile(path.toFile());
 
       String file = "META-INF/MANIFEST.MF";
       JarEntry entry = (JarEntry) jar.getEntry(file);
       if (entry != null) {
-        InputStream input = jar.getInputStream(entry);
-        Manifest manifest = new Manifest(input);
+        Manifest manifest = new Manifest(jar.getInputStream(entry));
         Attributes attr = manifest.getMainAttributes();
 
         String amn = attr.getValue("Automatic-Module-Name");

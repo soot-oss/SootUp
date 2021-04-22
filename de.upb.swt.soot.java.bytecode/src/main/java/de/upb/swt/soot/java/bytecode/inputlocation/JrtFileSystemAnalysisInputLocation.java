@@ -62,6 +62,7 @@ public class JrtFileSystemAnalysisInputLocation
 
   private static final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
   Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
+  boolean isResolved = false;
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
@@ -147,28 +148,31 @@ public class JrtFileSystemAnalysisInputLocation
    */
   @Nonnull
   public Collection<ModuleSignature> discoverModules() {
-    final Path moduleRoot = theFileSystem.getPath("modules");
-    List<ModuleSignature> foundModules = new ArrayList<>();
-
-    try (DirectoryStream<Path> stream = Files.newDirectoryStream(moduleRoot)) {
-      {
-        for (Path entry : stream) {
-          if (Files.isDirectory(entry)) {
-            ModuleSignature moduleSignature =
-                JavaModuleIdentifierFactory.getModuleSignature(entry.subpath(1, 2).toString());
-            foundModules.add(moduleSignature);
-            Path moduleInfo =
-                entry.resolve(JavaModuleIdentifierFactory.MODULE_INFO_CLASS + ".class");
-            if (Files.exists(moduleInfo)) {
-              moduleInfoMap.put(moduleSignature, new AsmModuleSource(moduleInfo));
+    if (!isResolved) {
+      final Path moduleRoot = theFileSystem.getPath("modules");
+      try (DirectoryStream<Path> stream = Files.newDirectoryStream(moduleRoot)) {
+        {
+          for (Path entry : stream) {
+            if (Files.isDirectory(entry)) {
+              ModuleSignature moduleSignature =
+                  JavaModuleIdentifierFactory.getModuleSignature(entry.subpath(1, 2).toString());
+              Path moduleInfo =
+                  entry.resolve(JavaModuleIdentifierFactory.MODULE_INFO_CLASS + ".class");
+              if (Files.exists(moduleInfo)) {
+                moduleInfoMap.put(moduleSignature, new AsmModuleSource(moduleInfo));
+              } else {
+                moduleInfoMap.put(
+                    moduleSignature, JavaModuleInfo.createAutomaticModuleInfo(moduleSignature));
+              }
             }
           }
         }
+      } catch (IOException e) {
+        throw new ResolveException("Error while discovering modules", moduleRoot, e);
       }
-    } catch (IOException e) {
-      throw new ResolveException("Error while discovering modules", moduleRoot, e);
+      isResolved = true;
     }
-    return foundModules;
+    return moduleInfoMap.keySet();
   }
 
   // TODO: originally, I could create a ModuleSingatre in any case, however, then
@@ -195,7 +199,7 @@ public class JrtFileSystemAnalysisInputLocation
   @Nonnull
   @Override
   public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
-    if (moduleInfoMap.isEmpty()) {
+    if (!isResolved) {
       discoverModules();
     }
     return Optional.ofNullable(moduleInfoMap.get(sig));
