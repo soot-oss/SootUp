@@ -34,7 +34,9 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.bytecode.frontend.AsmModuleSource;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
@@ -46,10 +48,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
@@ -161,6 +160,8 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
     }
   }
 
+  HashMap<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
+
   /**
    * Discover and return all modules contained in the jrt filesystem.
    *
@@ -175,13 +176,19 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
       {
         for (Path entry : stream) {
           if (Files.isDirectory(entry)) {
-            foundModules.add(
-                JavaModuleIdentifierFactory.getModuleSignature(entry.subpath(1, 2).toString()));
+            ModuleSignature moduleSignature =
+                JavaModuleIdentifierFactory.getModuleSignature(entry.subpath(1, 2).toString());
+            foundModules.add(moduleSignature);
+            Path moduleInfo =
+                entry.resolve(JavaModuleIdentifierFactory.MODULE_INFO_CLASS + ".class");
+            if (Files.exists(moduleInfo)) {
+              moduleInfoMap.put(moduleSignature, new AsmModuleSource(this, moduleInfo));
+            }
           }
         }
       }
     } catch (IOException e) {
-      throw new ResolveException("Error while discovering Modules", moduleRoot, e);
+      throw new ResolveException("Error while discovering modules", moduleRoot, e);
     }
     return foundModules;
   }

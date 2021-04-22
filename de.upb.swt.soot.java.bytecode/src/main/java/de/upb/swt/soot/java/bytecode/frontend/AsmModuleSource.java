@@ -1,4 +1,4 @@
-package de.upb.swt.soot.java.bytecode.frontend.modules;
+package de.upb.swt.soot.java.bytecode.frontend;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -20,41 +20,46 @@ package de.upb.swt.soot.java.bytecode.frontend.modules;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.java.bytecode.frontend.AsmUtil;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.ModuleModifier;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import javax.annotation.Nonnull;
-import org.objectweb.asm.tree.ModuleExportNode;
-import org.objectweb.asm.tree.ModuleNode;
-import org.objectweb.asm.tree.ModuleOpenNode;
-import org.objectweb.asm.tree.ModuleProvideNode;
-import org.objectweb.asm.tree.ModuleRequireNode;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.*;
 
 public class AsmModuleSource extends JavaModuleInfo {
 
   private final ModuleNode module;
 
-  /*
-   * TODO: [ms] AD resolved a module via: AsmUtil.initAsmClassSource(sourcePath, classNode); classNode.module
-   * */
   public AsmModuleSource(
-      AnalysisInputLocation<JavaSootClass> srcNamespace,
-      Path sourcePath,
-      JavaClassType classSignature,
-      @Nonnull ModuleNode moduleNode) {
+      @Nonnull AnalysisInputLocation<JavaSootClass> srcNamespace, @Nonnull Path sourcePath) {
 
-    // FIXME: [ms] determine whether it is an automatic module
+    // if it is an automatic module there is no module-info
     super(false);
-    this.module = moduleNode;
+
+    try (InputStream sourceFileInputStream = Files.newInputStream(sourcePath)) {
+      ClassReader clsr = new ClassReader(sourceFileInputStream);
+
+      ClassNode classNode = new ClassNode(AsmUtil.SUPPORTED_ASM_OPCODE);
+      clsr.accept(classNode, ClassReader.SKIP_FRAMES);
+
+      module = classNode.module;
+
+    } catch (IOException e) {
+      throw new ResolveException("can not parse module-info!", sourcePath, e);
+    }
   }
 
   @Override
@@ -78,7 +83,7 @@ public class AsmModuleSource extends JavaModuleInfo {
         requieres.add(reference);
       }
     }
-    return null;
+    return requieres;
   }
 
   @Override

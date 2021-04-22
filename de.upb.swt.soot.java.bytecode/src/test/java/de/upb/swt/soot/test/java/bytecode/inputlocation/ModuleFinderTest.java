@@ -16,7 +16,7 @@ import java.util.Collection;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author Kaustubh Kelkar update on 16.04.2020 */
+/** @author Kaustubh Kelkar */
 @Category(Java9Test.class)
 public class ModuleFinderTest extends AnalysisInputLocationTest {
 
