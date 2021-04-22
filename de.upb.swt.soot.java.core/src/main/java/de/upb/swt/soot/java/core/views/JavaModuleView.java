@@ -43,9 +43,8 @@ import javax.annotation.Nonnull;
  */
 public class JavaModuleView extends JavaView {
 
-  @Nonnull final JavaModuleInfo unnamedModule = JavaModuleInfo.getUnnamedModule();
-
-  @Nonnull final HashMap<ModuleSignature, JavaModuleInfo> moduleDependencyGraph = new HashMap<>();
+  @Nonnull final JavaModuleInfo unnamedModule = JavaModuleInfo.getUnnamedModuleInfo();
+  @Nonnull final HashMap<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
 
   @Nonnull
   protected Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
@@ -69,7 +68,11 @@ public class JavaModuleView extends JavaView {
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
-    moduleDependencyGraph.put(unnamedModule.getModuleSignature(), unnamedModule);
+    moduleInfoMap.put(unnamedModule.getModuleSignature(), unnamedModule);
+
+    // FIXME: [ms] store them differently so that we can access the
+    // project.getInputLocations().stream().filter( inputLocation -> inputLocation instanceof
+    // JavaMod)
   }
 
   @Nonnull
@@ -112,6 +115,6 @@ public class JavaModuleView extends JavaView {
   }
 
   public JavaModuleInfo getModuleDescriptor(ModuleSignature moduleSignature) {
-    return moduleDependencyGraph.get(moduleSignature);
+    return moduleInfoMap.get(moduleSignature);
   }
 }

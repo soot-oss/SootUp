@@ -22,7 +22,6 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 
-import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
@@ -50,7 +49,51 @@ public abstract class JavaModuleInfo {
 
   public abstract Set<ModuleModifier> resolveModifiers();
 
-  public static JavaModuleInfo getUnnamedModule() {
+  // adapt properties
+  public static JavaModuleInfo createAutomaticModuleInfo(@Nonnull ModuleSignature moduleName) {
+
+    return new JavaModuleInfo(true) {
+      @Override
+      public ModuleSignature getModuleSignature() {
+        return moduleName;
+      }
+
+      @Override
+      public Collection<ModuleReference> requires() {
+        // TODO: can read all other modules and the unnamed module (modules on the classpath)
+        return Collections.emptyList();
+      }
+
+      @Override
+      public Collection<PackageReference> exports() {
+        // TODO: all Packages are exported
+        return Collections.emptyList();
+      }
+
+      @Override
+      public Collection<PackageReference> opens() {
+        // TODO: all Packages are open
+        return Collections.emptyList();
+      }
+
+      @Override
+      public Collection<JavaClassType> provides() {
+        return Collections.emptyList();
+      }
+
+      @Override
+      public Collection<JavaClassType> uses() {
+        return Collections.emptyList();
+      }
+
+      @Override
+      public Set<ModuleModifier> resolveModifiers() {
+        return Collections.emptySet();
+      }
+    };
+  }
+
+  public static JavaModuleInfo getUnnamedModuleInfo() {
     return new JavaModuleInfo(true) {
       @Override
       public ModuleSignature getModuleSignature() {
@@ -99,6 +142,16 @@ public abstract class JavaModuleInfo {
       this.moduleInfo = moduleInfo;
       this.modifiers = accessModifier;
     }
+
+    @Nonnull
+    public EnumSet<ModuleModifier> getModifiers() {
+      return modifiers;
+    }
+
+    @Nonnull
+    public JavaClassType getModuleInfo() {
+      return moduleInfo;
+    }
   }
 
   public static class PackageReference {
@@ -125,6 +178,16 @@ public abstract class JavaModuleInfo {
       }
       // TODO: [AD] check for automatic modules ?
       return targetModules.contains(moduleInfo);
+    }
+
+    @Nonnull
+    public String getPackageName() {
+      return packageName;
+    }
+
+    @Nonnull
+    public EnumSet<ModuleModifier> getModifiers() {
+      return modifers;
     }
   }
 

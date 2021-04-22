@@ -53,7 +53,6 @@ import org.apache.commons.io.FilenameUtils;
  */
 public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInputLocation {
 
-  @Nonnull private final String modulePath;
   @Nonnull private final ModuleFinder moduleFinder;
 
   /**
@@ -64,7 +63,6 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
    *     SootClassSource}es for the files found on the class path
    */
   public JavaModulePathAnalysisInputLocation(@Nonnull String modulePath) {
-    this.modulePath = modulePath;
     moduleFinder = new ModuleFinder(modulePath);
   }
 
@@ -74,7 +72,8 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
   }
 
   @Override
-  public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+  @Nonnull
+  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
     Preconditions.checkArgument(
@@ -103,7 +102,8 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
   }
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+  @Nonnull
+  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
       @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
     JavaClassType klassType = (JavaClassType) classType;
 
@@ -129,7 +129,8 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
     }
 
     @Override
-    public @Nonnull JavaClassType fromPath(@Nonnull Path file) {
+    @Nonnull
+    public JavaClassType fromPath(@Nonnull Path file) {
       if (factory instanceof JavaModuleIdentifierFactory) {
         JavaModuleIdentifierFactory moduleSignatureFactory = (JavaModuleIdentifierFactory) factory;
         String fullyQualifiedName =

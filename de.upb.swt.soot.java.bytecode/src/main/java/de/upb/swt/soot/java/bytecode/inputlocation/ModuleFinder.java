@@ -24,7 +24,7 @@ import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
-import de.upb.swt.soot.java.bytecode.frontend.AsmUtil;
+import de.upb.swt.soot.java.bytecode.frontend.AsmModuleSource;
 import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
@@ -32,24 +32,23 @@ import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
+import java.io.InputStream;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.objectweb.asm.tree.ClassNode;
 
 /**
  * Discovers all modules in a given module path. For automatic modules, names are generated.
@@ -67,9 +66,13 @@ public class ModuleFinder {
   private final Map<ModuleSignature, AnalysisInputLocation<JavaSootClass>> moduleInputLocation =
       new HashMap<>();
 
+  Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
+
   private int next = 0;
 
   @Nonnull private final List<Path> modulePathEntries;
+
+  @Nonnull
   private final AsmJavaClassProvider classProvider =
       new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors());
 
@@ -97,7 +100,8 @@ public class ModuleFinder {
   @Nullable
   public AnalysisInputLocation<JavaSootClass> discoverModule(@Nonnull ModuleSignature moduleName) {
 
-    // discover all system's modules if they are not loaded already
+    // discover all system's modules if they are not loaded already as they are always existing in
+    // java
     if (moduleInputLocation.isEmpty()) {
       JrtFileSystemAnalysisInputLocation jrtFileSystemNamespace =
           new JrtFileSystemAnalysisInputLocation();
@@ -113,11 +117,9 @@ public class ModuleFinder {
       return inputLocationForModule;
     }
 
-    // load directly from modulePath if found
+    // search iterative on the remaining entries of the modulePath for the module
     while (next < modulePathEntries.size()) {
-      Path path = modulePathEntries.get(next);
-      discoverModulesIn(path);
-      next++;
+      discoverModulesIn(modulePathEntries.get(next++));
       inputLocationForModule = moduleInputLocation.get(moduleName);
       if (inputLocationForModule != null) {
         return inputLocationForModule;
@@ -135,9 +137,7 @@ public class ModuleFinder {
   public Collection<ModuleSignature> discoverAllModules() {
 
     while (next < modulePathEntries.size()) {
-      Path path = modulePathEntries.get(next);
-      discoverModulesIn(path);
-      next++;
+      discoverModulesIn(modulePathEntries.get(next++));
     }
     return Collections.unmodifiableCollection(moduleInputLocation.keySet());
   }
@@ -202,10 +202,9 @@ public class ModuleFinder {
       return;
     }
 
-    ClassNode moduleDescriptor = AsmUtil.getModuleDescriptor(moduleInfoFile);
-    ModuleSignature moduleSig =
-        JavaModuleIdentifierFactory.getModuleSignature(moduleDescriptor.module.name);
-    moduleInputLocation.put(moduleSig, inputLocation);
+    JavaModuleInfo moduleInfo = new AsmModuleSource(moduleInfoFile);
+    moduleInfoMap.put(moduleInfo.getModuleSignature(), moduleInfo);
+    moduleInputLocation.put(moduleInfo.getModuleSignature(), inputLocation);
   }
 
   /**
@@ -225,16 +224,16 @@ public class ModuleFinder {
                   classProvider.getHandledFileType(), zipFileSystem));
 
       if (Files.exists(mi)) {
-        ClassNode moduleDescriptor = AsmUtil.getModuleDescriptor(mi);
-        moduleInputLocation.put(
-            JavaModuleIdentifierFactory.getModuleSignature(moduleDescriptor.module.name),
-            inputLocation);
+        JavaModuleInfo moduleInfo = new AsmModuleSource(mi);
+        moduleInfoMap.put(moduleInfo.getModuleSignature(), moduleInfo);
+        moduleInputLocation.put(moduleInfo.getModuleSignature(), inputLocation);
       } else {
         // no module-info: its an automatic module i.e. create module name from the jar file
-        moduleInputLocation.put(
-            JavaModuleIdentifierFactory.getModuleSignature(
-                createModuleNameForAutomaticModule(jar.getFileName().toString())),
-            inputLocation);
+        ModuleSignature moduleSignature =
+            JavaModuleIdentifierFactory.getModuleSignature(createModuleNameForAutomaticModule(jar));
+        moduleInputLocation.put(moduleSignature, inputLocation);
+        moduleInfoMap.put(
+            moduleSignature, JavaModuleInfo.createAutomaticModuleInfo(moduleSignature));
       }
 
     } catch (IOException e) {
@@ -246,11 +245,32 @@ public class ModuleFinder {
    * Creates a name for an automatic module based on the name of a jar file. The implementation is
    * consistent with parsing module names in the JDK 9.
    *
-   * @param filename the name of the jar file
+   * @param path to the jar file
    * @return the name of the automatic module
    */
   @Nonnull
-  public static String createModuleNameForAutomaticModule(@Nonnull String filename) {
+  public static String createModuleNameForAutomaticModule(@Nonnull Path path) {
+    // check if Automatic-Module-Name header exists in /MANIFEST.MF and use that name
+    try {
+      JarFile jar = new JarFile(path.toFile());
+
+      String file = "MANIFEST.MF";
+      JarEntry entry = (JarEntry) jar.getEntry(file);
+      if (entry != null) {
+        InputStream input = jar.getInputStream(entry);
+        Manifest manifest = new Manifest(input);
+        Attributes attr = manifest.getMainAttributes();
+
+        String amn = attr.getValue("Automatic-Module-Name");
+        if (amn != null) {
+          return amn;
+        }
+      }
+    } catch (IOException ignored) {
+    }
+
+    String filename = path.getFileName().toString();
+
     int i = filename.lastIndexOf(File.separator);
     if (i != -1) {
       filename = filename.substring(i + 1);

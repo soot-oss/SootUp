@@ -10,6 +10,7 @@ import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocatio
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
+import java.nio.file.Paths;
 import java.util.Collection;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -66,7 +67,10 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
 
   @Test
   public void testAutomaticModuleNaming() {
-    assertEquals("foo.bar", ModuleFinder.createModuleNameForAutomaticModule("foo-bar.jar"));
-    assertEquals("foo", ModuleFinder.createModuleNameForAutomaticModule("foo-1.2.3-SNAPSHOT.jar"));
+    assertEquals(
+        "foo.bar", ModuleFinder.createModuleNameForAutomaticModule(Paths.get("foo-bar.jar")));
+    assertEquals(
+        "foo",
+        ModuleFinder.createModuleNameForAutomaticModule(Paths.get("foo-1.2.3-SNAPSHOT.jar")));
   }
 }
