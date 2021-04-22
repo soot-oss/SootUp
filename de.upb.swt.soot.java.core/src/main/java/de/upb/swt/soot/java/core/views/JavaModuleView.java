@@ -27,6 +27,7 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.java.core.JavaModuleAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
@@ -34,6 +35,7 @@ import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -45,6 +47,7 @@ public class JavaModuleView extends JavaView {
 
   @Nonnull final JavaModuleInfo unnamedModule = JavaModuleInfo.getUnnamedModuleInfo();
   @Nonnull final HashMap<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
+  @Nonnull final List<JavaModuleAnalysisInputLocation> moduleInputLocations;
 
   @Nonnull
   protected Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
@@ -70,9 +73,22 @@ public class JavaModuleView extends JavaView {
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
     moduleInfoMap.put(unnamedModule.getModuleSignature(), unnamedModule);
 
-    // FIXME: [ms] store them differently so that we can access the
-    // project.getInputLocations().stream().filter( inputLocation -> inputLocation instanceof
-    // JavaMod)
+    // store module input locations differently so that we can access the JavaModuleInfo
+    moduleInputLocations =
+        project.getInputLocations().stream()
+            .filter(inputLocation -> inputLocation instanceof JavaModuleAnalysisInputLocation)
+            .map(inputLocation -> (JavaModuleAnalysisInputLocation) inputLocation)
+            .collect(Collectors.toList());
+  }
+
+  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
+    for (JavaModuleAnalysisInputLocation inputLocation : moduleInputLocations) {
+      Optional<JavaModuleInfo> moduleInfo = inputLocation.getModuleInfo(sig);
+      if (moduleInfo.isPresent()) {
+        return moduleInfo;
+      }
+    }
+    return Optional.empty();
   }
 
   @Nonnull

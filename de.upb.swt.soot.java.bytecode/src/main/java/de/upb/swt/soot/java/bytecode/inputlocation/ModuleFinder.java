@@ -35,11 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -86,9 +82,8 @@ public class ModuleFinder {
         JavaClassPathAnalysisInputLocation.explode(modulePath).collect(Collectors.toList());
   }
 
-  public JavaModuleInfo getModuleInfo(ModuleSignature sig) {
-    // FIXME
-    return null;
+  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
+    return Optional.ofNullable(moduleInfoMap.get(sig));
   }
 
   /**

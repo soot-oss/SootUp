@@ -28,6 +28,7 @@ import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.types.*;
+import de.upb.swt.soot.java.core.JavaModuleAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.JavaSootClass;
@@ -51,7 +52,8 @@ import org.apache.commons.io.FilenameUtils;
  * @see <a
  *     href=http://docs.oracle.com/javase/9/docs/api/java/lang/module/ModuleFinder.html#of-java.nio.file.Path...->ModuleFinder</a>
  */
-public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInputLocation {
+public class JavaModulePathAnalysisInputLocation
+    implements BytecodeAnalysisInputLocation, JavaModuleAnalysisInputLocation {
 
   @Nonnull private final ModuleFinder moduleFinder;
 
@@ -67,7 +69,7 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
   }
 
   @Nonnull
-  public JavaModuleInfo getModuleInfo(ModuleSignature sig) {
+  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
     return moduleFinder.getModuleInfo(sig);
   }
 
