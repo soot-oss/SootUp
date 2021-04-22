@@ -12,7 +12,9 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author Kaustubh Kelkar */
+/**
+ * @author Kaustubh Kelkar, Bastian Haverkamp
+ */
 @Category(Java8Test.class)
 public class MethodAcceptingLamExprTest extends JimpleTestSuiteBase {
 

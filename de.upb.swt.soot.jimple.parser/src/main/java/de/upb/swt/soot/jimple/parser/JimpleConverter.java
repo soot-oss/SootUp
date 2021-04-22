@@ -614,7 +614,7 @@ public class JimpleConverter {
             List<Immediate> bootstrapArgs = getArgList(ctx.staticargs);
 
             return Jimple.newDynamicInvokeExpr(
-                methodRef, bootstrapArgs, bootstrapMethodRef, Collections.emptyList());
+                methodRef, bootstrapArgs, bootstrapMethodRef, getArgList(ctx.dyn_args));
           }
           throw new ResolveException(
               "Malformed Invoke Expression.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));
