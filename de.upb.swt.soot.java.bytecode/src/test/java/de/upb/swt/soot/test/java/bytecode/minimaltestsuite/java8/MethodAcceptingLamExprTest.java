@@ -12,9 +12,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/**
- * @author Kaustubh Kelkar, Bastian Haverkamp
- */
+/** @author Kaustubh Kelkar, Bastian Haverkamp */
 @Category(Java8Test.class)
 public class MethodAcceptingLamExprTest extends MinimalBytecodeTestSuiteBase {
 
