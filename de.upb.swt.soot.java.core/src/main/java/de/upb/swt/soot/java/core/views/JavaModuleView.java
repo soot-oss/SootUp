@@ -27,9 +27,9 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.java.core.JavaModuleAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.ModuleInfoAnalysisInputLocation;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -47,7 +47,7 @@ public class JavaModuleView extends JavaView {
 
   @Nonnull final JavaModuleInfo unnamedModule = JavaModuleInfo.getUnnamedModuleInfo();
   @Nonnull final HashMap<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
-  @Nonnull final List<JavaModuleAnalysisInputLocation> moduleInputLocations;
+  @Nonnull final List<ModuleInfoAnalysisInputLocation> moduleInputLocations;
 
   @Nonnull
   protected Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
@@ -76,16 +76,22 @@ public class JavaModuleView extends JavaView {
     // store module input locations differently so that we can access the JavaModuleInfo
     moduleInputLocations =
         project.getInputLocations().stream()
-            .filter(inputLocation -> inputLocation instanceof JavaModuleAnalysisInputLocation)
-            .map(inputLocation -> (JavaModuleAnalysisInputLocation) inputLocation)
+            .filter(inputLocation -> inputLocation instanceof ModuleInfoAnalysisInputLocation)
+            .map(inputLocation -> (ModuleInfoAnalysisInputLocation) inputLocation)
             .collect(Collectors.toList());
   }
 
   public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
-    for (JavaModuleAnalysisInputLocation inputLocation : moduleInputLocations) {
-      Optional<JavaModuleInfo> moduleInfo = inputLocation.getModuleInfo(sig);
-      if (moduleInfo.isPresent()) {
-        return moduleInfo;
+    JavaModuleInfo moduleInfo = moduleInfoMap.get(sig);
+    if (moduleInfo != null) {
+      return Optional.of(moduleInfo);
+    }
+
+    for (ModuleInfoAnalysisInputLocation inputLocation : moduleInputLocations) {
+      Optional<JavaModuleInfo> moduleInfoOpt = inputLocation.getModuleInfo(sig);
+      if (moduleInfoOpt.isPresent()) {
+        moduleInfoMap.put(sig, moduleInfoOpt.get());
+        return moduleInfoOpt;
       }
     }
     return Optional.empty();
@@ -128,9 +134,5 @@ public class JavaModuleView extends JavaView {
 
     // TODO: [ms] implement getting all classes for that scope
     return super.getClass(type);
-  }
-
-  public JavaModuleInfo getModuleDescriptor(ModuleSignature moduleSignature) {
-    return moduleInfoMap.get(moduleSignature);
   }
 }

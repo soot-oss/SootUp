@@ -37,6 +37,7 @@ import de.upb.swt.soot.java.bytecode.frontend.AsmModuleSource;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.ModuleInfoAnalysisInputLocation;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -56,7 +57,8 @@ import javax.annotation.Nonnull;
  *
  * @author Andreas Dann created on 06.06.18
  */
-public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInputLocation {
+public class JrtFileSystemAnalysisInputLocation
+    implements BytecodeAnalysisInputLocation, ModuleInfoAnalysisInputLocation {
 
   private static final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
   Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
@@ -67,12 +69,13 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
     JavaClassType klassType = (JavaClassType) classType;
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
     ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
+    Path filepath = klassType.toPath(classProvider.getHandledFileType(), theFileSystem);
 
+    // parse a module
     if (klassType.getPackageName() instanceof ModulePackageName) {
 
       ModulePackageName modulePackageSignature = (ModulePackageName) klassType.getPackageName();
 
-      Path filepath = klassType.toPath(classProvider.getHandledFileType(), theFileSystem);
       final Path module =
           theFileSystem.getPath(
               "modules", modulePackageSignature.getModuleSignature().getModuleName());
@@ -84,7 +87,6 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
       }
     }
 
-    Path filepath = klassType.toPath(classProvider.getHandledFileType(), theFileSystem);
     final Path moduleRoot = theFileSystem.getPath("modules");
     try (DirectoryStream<Path> stream = Files.newDirectoryStream(moduleRoot)) {
       {
@@ -188,5 +190,14 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
 
     // if we are using the normal signature factory, than trim the module from the path
     return sig;
+  }
+
+  @Nonnull
+  @Override
+  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
+    if (moduleInfoMap.isEmpty()) {
+      discoverModules();
+    }
+    return Optional.ofNullable(moduleInfoMap.get(sig));
   }
 }

@@ -72,6 +72,10 @@ public class ModuleFinder {
   private final AsmJavaClassProvider classProvider =
       new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors());
 
+  public boolean isFullyResolved() {
+    return next == modulePathEntries.size();
+  }
+
   /**
    * Helper Class to discover modules in a given module path.
    *
@@ -83,6 +87,9 @@ public class ModuleFinder {
   }
 
   public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
+    if (!isFullyResolved()) {
+      discoverAllModules();
+    }
     return Optional.ofNullable(moduleInfoMap.get(sig));
   }
 
@@ -203,7 +210,7 @@ public class ModuleFinder {
   }
 
   /**
-   * Creates a module definition and the namesapce for either a modular jar or an automatic module.
+   * Creates a module definition and the namespace for either a modular jar or an automatic module.
    *
    * @param jar the jar file
    */

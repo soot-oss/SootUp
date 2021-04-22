@@ -41,10 +41,9 @@ public class JavaModuleViewTest {
             .getClassType("String", "java.lang", "non.existent");
     assertFalse(view.getClass(notExistingModule).isPresent());
 
-    JavaModuleInfo moduleDescriptor =
-        view.getModuleDescriptor(
-            ((ModulePackageName) targetClass.getPackageName()).getModuleSignature());
-    assertNotNull(moduleDescriptor);
+    Optional<JavaModuleInfo> moduleDescriptor =
+        view.getModuleInfo(((ModulePackageName) targetClass.getPackageName()).getModuleSignature());
+    assertTrue(moduleDescriptor.isPresent());
   }
 
   @Test
@@ -61,9 +60,8 @@ public class JavaModuleViewTest {
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
 
-    JavaModuleInfo moduleDescriptor =
-        view.getModuleDescriptor(
-            ((ModulePackageName) targetClass.getPackageName()).getModuleSignature());
+    Optional<JavaModuleInfo> moduleDescriptor =
+        view.getModuleInfo(((ModulePackageName) targetClass.getPackageName()).getModuleSignature());
     assertNotNull(moduleDescriptor);
   }
 
@@ -82,9 +80,8 @@ public class JavaModuleViewTest {
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
 
-    JavaModuleInfo moduleDescriptor =
-        view.getModuleDescriptor(
-            ((ModulePackageName) targetClass.getPackageName()).getModuleSignature());
+    Optional<JavaModuleInfo> moduleDescriptor =
+        view.getModuleInfo(((ModulePackageName) targetClass.getPackageName()).getModuleSignature());
     assertNotNull(moduleDescriptor);
   }
 
