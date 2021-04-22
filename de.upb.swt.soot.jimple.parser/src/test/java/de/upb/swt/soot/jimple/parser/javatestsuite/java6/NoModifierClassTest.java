@@ -16,7 +16,7 @@ public class NoModifierClassTest extends JimpleTestSuiteBase {
 
   @Test
   public void test() {
-    SootClass clazz = loadClass(getDeclaredClassSignature());
+    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
     // TODO SYNCHRONIZED modifier  does not work
     // assertEquals(EnumSet.noneOf(Modifier.class), clazz.getModifiers());
     assertTrue(clazz.getMethod(getMethodSignature("private")).get().isPrivate());

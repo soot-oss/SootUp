@@ -20,6 +20,7 @@ package de.upb.swt.soot.java.bytecode.frontend;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import static org.objectweb.asm.tree.AbstractInsnNode.FIELD_INSN;
 import static org.objectweb.asm.tree.AbstractInsnNode.FRAME;
 import static org.objectweb.asm.tree.AbstractInsnNode.IINC_INSN;
@@ -90,6 +91,7 @@ import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.jimple.basic.JavaLocal;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
@@ -124,7 +126,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   /* -state fields- */
   private int nextLocal;
-  private Map<Integer, Local> locals;
+  private Map<Integer, JavaLocal> locals;
   private LinkedListMultimap<Stmt, LabelNode> stmtsThatBranchToLabel;
   private Map<AbstractInsnNode, Stmt> InsnToStmt;
 
@@ -233,12 +235,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @Nonnull
-  private Local getOrCreateLocal(int idx) {
+  private JavaLocal getOrCreateLocal(int idx) {
     if (idx >= maxLocals) {
       throw new IllegalArgumentException("Invalid local index: " + idx);
     }
-    Integer i = idx;
-    Local local = locals.get(i);
+    JavaLocal local = locals.get(idx);
     if (local == null) {
       String name;
       if (localVariables != null) {
@@ -256,9 +257,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       } else {
         name = "l" + idx;
       }
-      // TODO: [ms] implement annotations for Locals here as third parameter in JavaJimple.newLocal(
-      local = Jimple.newLocal(name, UnknownType.getInstance());
-      locals.put(i, local);
+      local = JavaJimple.newLocal(name, UnknownType.getInstance(), Collections.emptyList());
+      locals.put(idx, local);
     }
     return local;
   }
@@ -294,9 +294,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Nonnull
   Local newStackLocal() {
     int idx = nextLocal++;
-    // TODO: [ms] implement annotations for Locals here as third parameter ->
-    // JavaJimple.newLocal(...)
-    Local l = Jimple.newLocal("$stack" + idx, UnknownType.getInstance());
+    JavaLocal l =
+        JavaJimple.newLocal("$stack" + idx, UnknownType.getInstance(), Collections.emptyList());
     locals.put(idx, l);
     return l;
   }
@@ -1810,8 +1809,18 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               l, Jimple.newThisRef(declaringClass), StmtPositionInfo.createNoStmtPositionInfo()));
     }
     int nrp = 0;
-    for (Type parameterType : methodSignature.getParameterTypes()) {
-      Local local = getOrCreateLocal(iloc);
+    for (int i = 0; i < methodSignature.getParameterTypes().size(); i++) {
+      Type parameterType = methodSignature.getParameterTypes().get(i);
+      // check assumption: parameterlocals do not exist yet -> create with annotation
+
+      JavaLocal local =
+          JavaJimple.newLocal(
+              "l" + iloc,
+              UnknownType.getInstance(),
+              AsmUtil.createAnnotationUsage(
+                  invisibleParameterAnnotations == null ? null : invisibleParameterAnnotations[i]));
+      locals.put(iloc, local);
+
       emitStmt(
           Jimple.newIdentityStmt(
               local,

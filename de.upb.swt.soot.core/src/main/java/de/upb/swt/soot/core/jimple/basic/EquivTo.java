@@ -47,6 +47,8 @@ package de.upb.swt.soot.core.jimple.basic;
  * #L%
  */
 
+import javax.annotation.Nonnull;
+
 /**
  * An alternate equivalence relation between objects, not necessarily compliant with the contract
  * defined by {@link Object#equals(Object)}. The standard interpretation will be structural
@@ -74,5 +76,5 @@ public interface EquivTo {
   int equivHashCode();
 
   /** Returns true if this object is equivalent to o according to the given comparator. */
-  boolean equivTo(Object o, JimpleComparator comparator);
+  boolean equivTo(Object o, @Nonnull JimpleComparator comparator);
 }

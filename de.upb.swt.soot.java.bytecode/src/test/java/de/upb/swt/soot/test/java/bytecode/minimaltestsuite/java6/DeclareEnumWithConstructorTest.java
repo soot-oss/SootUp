@@ -3,10 +3,11 @@ package de.upb.swt.soot.test.java.bytecode.minimaltestsuite.java6;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.JavaSootMethod;
 import de.upb.swt.soot.test.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import java.util.Collections;
 import java.util.List;
@@ -67,13 +68,13 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
 
     sootMethod = loadMethod(getEnumGetValueSignature());
     assertJimpleStmts(sootMethod, expectedGetValueStmts());
-    SootClass sootClass =
+    JavaSootClass sootClass =
         loadClass(
             JavaIdentifierFactory.getInstance()
                 .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$Number"));
     assertTrue(sootClass.isEnum());
 
-    final Set<SootMethod> methods = sootClass.getMethods();
+    final Set<JavaSootMethod> methods = sootClass.getMethods();
     assertTrue(methods.stream().anyMatch(m -> m.getSignature().getName().equals("getValue")));
   }
 

@@ -38,7 +38,7 @@ public class StaticMethodInterfaceImplTest extends JimpleTestSuiteBase {
     SootMethod staticMethod = loadMethod(getStaticMethodSignature());
     assertJimpleStmts(staticMethod, expectedBodyStmts1());
     assertTrue(staticMethod.isStatic() && staticMethod.getName().equals("initStatic"));
-    SootClass sootClass = loadClass(getDeclaredClassSignature());
+    SootClass<?> sootClass = loadClass(getDeclaredClassSignature());
     assertTrue(
         sootClass.getInterfaces().stream()
             .anyMatch(

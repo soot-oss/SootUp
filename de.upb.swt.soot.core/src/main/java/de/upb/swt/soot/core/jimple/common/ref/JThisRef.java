@@ -43,7 +43,7 @@ public final class JThisRef implements IdentityRef, Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseThisRef(this, o);
   }
 

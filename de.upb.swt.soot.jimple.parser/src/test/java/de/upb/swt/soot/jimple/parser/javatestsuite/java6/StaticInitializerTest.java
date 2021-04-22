@@ -31,7 +31,7 @@ public class StaticInitializerTest extends JimpleTestSuiteBase {
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
-    SootClass clazz = loadClass(getDeclaredClassSignature());
+    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
 
     assertTrue(
         clazz.getFields().stream()

@@ -34,7 +34,7 @@ import javax.annotation.Nonnull;
 public class OnDemandClassHierarchyAnalysisAlgorithm extends ClassHierarchyAnalysisAlgorithm {
 
   public OnDemandClassHierarchyAnalysisAlgorithm(
-      View<? extends SootClass> view, TypeHierarchy hierarchy) {
+      View<? extends SootClass<?>> view, TypeHierarchy hierarchy) {
     super(view, hierarchy);
   }
 

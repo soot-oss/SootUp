@@ -67,7 +67,7 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Copya
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseIdentityStmt(this, o);
   }
 

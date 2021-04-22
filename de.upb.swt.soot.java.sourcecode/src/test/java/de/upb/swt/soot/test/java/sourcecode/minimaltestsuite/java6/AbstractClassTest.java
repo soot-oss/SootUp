@@ -20,8 +20,9 @@ public class AbstractClassTest extends MinimalSourceTestSuiteBase {
 
   @Test
   public void test() {
-    SootClass clazz = loadClass(getDeclaredClassSignature());
+    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
     // The SuperClass is the abstract one
+    System.out.println(clazz.getSuperclass());
     SootClass superClazz = loadClass(clazz.getSuperclass().get());
     assertTrue(superClazz.isAbstract());
     SootMethod method = loadMethod(getMethodSignature());
