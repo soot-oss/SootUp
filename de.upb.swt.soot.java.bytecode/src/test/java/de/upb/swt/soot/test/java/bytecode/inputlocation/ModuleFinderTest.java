@@ -73,4 +73,21 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
         "foo",
         ModuleFinder.createModuleNameForAutomaticModule(Paths.get("foo-1.2.3-SNAPSHOT.jar")));
   }
+
+  @Test
+  public void testAutomaticModuleNamingViaManifest() {
+
+    ModuleFinder moduleFinder =
+        new ModuleFinder(
+            "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/automaticModuleWithManifest");
+
+    assertNotNull(
+        moduleFinder.discoverModule(
+            JavaModuleIdentifierFactory.getModuleSignature(
+                "automaticmoduleWithNamingViaManifestModuleName")));
+
+    assertNull(
+        moduleFinder.discoverModule(
+            JavaModuleIdentifierFactory.getModuleSignature("AutomaticmoduleWithManifest")));
+  }
 }

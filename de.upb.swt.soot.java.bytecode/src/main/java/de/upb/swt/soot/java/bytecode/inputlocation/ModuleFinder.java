@@ -256,7 +256,7 @@ public class ModuleFinder {
     try {
       JarFile jar = new JarFile(path.toFile());
 
-      String file = "MANIFEST.MF";
+      String file = "META-INF/MANIFEST.MF";
       JarEntry entry = (JarEntry) jar.getEntry(file);
       if (entry != null) {
         InputStream input = jar.getInputStream(entry);
