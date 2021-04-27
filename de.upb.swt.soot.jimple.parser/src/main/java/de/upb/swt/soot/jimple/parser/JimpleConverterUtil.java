@@ -131,7 +131,7 @@ public class JimpleConverterUtil {
     Type type = getType(typeCtx.getText());
     String methodname = Jimple.unescape(method_nameCtx.getText());
     List<Type> params = getTypeList(ctx.type_list());
-    return identifierFactory.getMethodSubSignature(methodname, params, type);
+    return identifierFactory.getMethodSubSignature(methodname, type, params);
   }
 
   public FieldSignature getFieldSignature(JimpleParser.Field_signatureContext ctx) {
