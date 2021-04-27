@@ -228,10 +228,9 @@ public class JimpleComparator {
         JEqExpr jeq1 = (JEqExpr) abe;
         JEqExpr jeq2 = (JEqExpr) obj;
 
-        return (
-            jeq1.getOp1().equivTo(jeq2.getOp1()) && jeq1.getOp2().equivTo(jeq2.getOp2()) ||
-            (jeq1.getOp1().equivTo(jeq2.getOp2()) && jeq1.getOp2().equivTo(jeq2.getOp1()))
-        ) && jeq1.getSymbol().equals(jeq2.getSymbol());
+        return (jeq1.getOp1().equivTo(jeq2.getOp1()) && jeq1.getOp2().equivTo(jeq2.getOp2())
+                || (jeq1.getOp1().equivTo(jeq2.getOp2()) && jeq1.getOp2().equivTo(jeq2.getOp1())))
+            && jeq1.getSymbol().equals(jeq2.getSymbol());
       }
 
       // JGtExpr/JLtExpr (1<2 <=> 2>1)
@@ -259,8 +258,6 @@ public class JimpleComparator {
 
         return (jgt.getOp1().equivTo(jlt.getOp2()) && jgt.getOp2().equivTo(jlt.getOp1()));
       }
-
-
 
       return obj.getOp1().equivTo(abe.getOp1(), this)
           && obj.getOp2().equivTo(abe.getOp2(), this)
