@@ -234,6 +234,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return bodyBuilder.build();
   }
 
+  @Override
+  public Object resolveDefaultValue() {
+    return this.annotationDefault;
+  }
+
   @Nonnull
   private JavaLocal getOrCreateLocal(int idx) {
     if (idx >= maxLocals) {

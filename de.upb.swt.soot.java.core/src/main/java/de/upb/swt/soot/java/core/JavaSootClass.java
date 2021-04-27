@@ -83,6 +83,8 @@ public class JavaSootClass extends SootClass<JavaSootClassSource> {
 
     classSource.resolveAnnotations().forEach(annotationUsages::add);
 
+    annotationUsages.forEach(e -> e.getAnnotation().getDefaultValues(view));
+
     return annotationUsages;
   }
 

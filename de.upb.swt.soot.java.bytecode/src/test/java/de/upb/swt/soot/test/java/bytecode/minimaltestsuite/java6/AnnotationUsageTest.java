@@ -3,6 +3,7 @@ package de.upb.swt.soot.test.java.bytecode.minimaltestsuite.java6;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
@@ -22,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import javax.annotation.Nonnull;
 import org.junit.Test;
 
 public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
@@ -61,7 +63,43 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
         Collections.singletonList(
             new AnnotationUsage(
                 new AnnotationType("OnField", new PackageName(""), false), annotationParamMap)),
-        agent.get().getAnnotations());
+        agent.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())));
+  }
+
+  @Test
+  public void testDefaultValues() {
+    /*
+     * Use a Stub class for annotation usage, so default values are not resolved against the AnnotationType, which would make the test useless.
+     * Default values are already contained in every other test, but as they are implicit, they are the same for expected and actual test result
+     * This test just makes sure, that default values are correctly resolved. The logic is the same for fields, methods or classes, so this test suffices.
+     */
+
+    JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
+    final Optional<JavaSootField> agent = sootClass.getField("agent");
+    assertTrue(agent.isPresent());
+
+    class AnnotationUsageStub extends AnnotationUsage {
+
+      public AnnotationUsageStub(@Nonnull AnnotationType annotation) {
+        super(annotation, Collections.emptyMap());
+      }
+
+      @Override
+      public Map<String, Immediate> getValuesWithDefaults() {
+        Map<String, Immediate> map = new HashMap<>();
+
+        map.put("isRipe", JavaJimple.getInstance().newStringConstant("true"));
+        map.put("sthNew", IntConstant.getInstance(789));
+
+        return map;
+      }
+    }
+
+    assertEquals(
+        Collections.singletonList(
+                new AnnotationUsageStub(new AnnotationType("OnField", new PackageName(""), false)))
+            .toString(),
+        agent.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())).toString());
   }
 
   @Test

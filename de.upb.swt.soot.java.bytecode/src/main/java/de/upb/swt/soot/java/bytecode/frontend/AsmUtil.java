@@ -26,7 +26,9 @@ import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.AnnotationUsage;
+import de.upb.swt.soot.java.core.ConstantUtil;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
 import java.io.InputStream;
@@ -311,11 +313,10 @@ public final class AsmUtil {
 
       if (!isRepeatableAnnotation) {
 
-        annotationUsages.add(
-            new AnnotationUsage(
-                JavaIdentifierFactory.getInstance()
-                    .getAnnotationType(AsmUtil.toQualifiedName(e.desc)),
-                paramMap));
+        AnnotationType at =
+            JavaIdentifierFactory.getInstance().getAnnotationType(AsmUtil.toQualifiedName(e.desc));
+
+        annotationUsages.add(new AnnotationUsage(at, paramMap));
       }
     }
 

@@ -23,13 +23,19 @@ package de.upb.swt.soot.java.core.types;
  */
 
 import de.upb.swt.soot.core.IdentifierFactory;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.java.core.ConstantUtil;
+import de.upb.swt.soot.java.core.JavaAnnotationSootMethod;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.JavaSootMethod;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.StreamSupport;
@@ -38,7 +44,7 @@ import javax.annotation.Nonnull;
 /**
  * This class represents Java Annotations (JSR-175).
  *
- * @author Markus Schmidt
+ * @author Markus Schmidt, Bastian Haverkamp
  */
 
 // TODO:[ms] move to a better place?
@@ -49,13 +55,46 @@ public class AnnotationType extends JavaClassType {
   }
 
   private Boolean isInherited = null;
+  private Map<String, Immediate> defaultValues = null;
+
+  /**
+   * Returns default values of annotation parameters. Needs to be called at least once with a
+   * JavaView (per annotationtype). A mapping of string -> NullConstant means, that there is no
+   * default value for this parameter method (it needs to be declared on annotation use!)
+   *
+   * @param viewOptional view to resolve annotation soot class of AnnotationType
+   * @return default values of all parameters of this annotation
+   */
+  public Map<String, Immediate> getDefaultValues(Optional<JavaView> viewOptional) {
+    if (defaultValues == null) {
+      defaultValues = new HashMap<>();
+      if (viewOptional.isPresent()) {
+        JavaView jv = viewOptional.get();
+        if (!jv.getClass(this).isPresent()) {
+          throw new RuntimeException("Class of annotation not in view");
+        }
+
+        JavaSootClass jsc = jv.getClass(this).get();
+
+        for (JavaSootMethod jsm : jsc.getMethods()) {
+          JavaAnnotationSootMethod jasm = (JavaAnnotationSootMethod) jsm;
+          defaultValues.put(jasm.getName(), ConstantUtil.fromObject(jasm.getDefaultValue()));
+        }
+      } else {
+        throw new IllegalArgumentException(
+            "getDefaultMethods needs to be called at least once with a view for each annotation type.");
+      }
+    }
+
+    return defaultValues;
+  }
 
   /**
    * Returns whether this annotation has the meta annotation Inherited. Needs to be called at least
    * once with a JavaView for each annotation.
    *
-   * @param viewOptional
-   * @return
+   * @param viewOptional view to resolve annotation soot class of AnnotationType
+   * @return whether annotation has @Inherited meta annotation
    */
   public boolean isInherited(Optional<JavaView> viewOptional) {
     if (isInherited == null) {
@@ -64,6 +103,9 @@ public class AnnotationType extends JavaClassType {
             "JavaView needs to be supplied at least once for the annotationType");
       }
       JavaView jv = viewOptional.get();
+      if (!jv.getClass(this).isPresent()) {
+        throw new RuntimeException("Class of annotation not in view");
+      }
       JavaSootClass jsc = jv.getClass(this).get();
 
       isInherited =
