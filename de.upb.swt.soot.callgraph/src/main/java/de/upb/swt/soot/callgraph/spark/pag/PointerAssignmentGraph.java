@@ -327,6 +327,14 @@ public class PointerAssignmentGraph {
     return internalEdges.loadEdges;
   }
 
+  public Map<VariableNode, Set<NewInstanceNode>> getNewInstanceEdges(){
+    return internalEdges.newInstanceEdges;
+  }
+
+  public Map<NewInstanceNode, Set<VariableNode>> getAssignInstanceEdges(){
+    return internalEdges.assignInstanceEdges;
+  }
+
   public Set<VariableNode> storeInvLookup(FieldReferenceNode key) {
     // TODO: somethingMerged?
     return internalEdges.storeEdgesInv.get(key);
