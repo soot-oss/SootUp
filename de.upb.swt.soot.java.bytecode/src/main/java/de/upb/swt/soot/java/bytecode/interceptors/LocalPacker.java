@@ -20,6 +20,9 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import com.sun.media.jfxmedia.events.BufferListener;
+import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -33,16 +36,18 @@ public class LocalPacker implements BodyInterceptor {
 
   @Override
   @Nonnull
+  //Todo: type instead of group
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     /** local : Type */
-    Map<Local, Object> localToGroup = new HashMap<>();
+    Map<Local, Type> localToGroup = new HashMap<>();
     /** Type : numOfColor */
-    Map<Object, Integer> groupToColorCount = new HashMap<>();
+    Map<Type, Integer> groupToColorCount = new HashMap<>();
     /** Local : ColorNum */
     // local with same type have different color.
     Map<Local, Integer> localToColor = new HashMap<>();
     /** Local, newLocal */
     Map<Local, Local> localToNewLocal = new HashMap<>();
+
 
     for (Local l : builder.getLocals()) {
       Type g = l.getType();
@@ -54,11 +59,17 @@ public class LocalPacker implements BodyInterceptor {
       }
     }
 
+    System.out.println(localToGroup);
+    System.out.println(groupToColorCount);
+    System.out.println(localToColor);
+
+    // Assign each local which is IdentityStmt's def a color
+    // Locals with same Type has always different color
     for (Stmt s : builder.getStmts()) {
       if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getLeftOp() instanceof Local) {
         Local l = (Local) ((JIdentityStmt) s).getLeftOp();
 
-        Object group = localToGroup.get(l);
+        Type group = localToGroup.get(l);
         int count = groupToColorCount.get(group).intValue();
 
         localToColor.put(l, new Integer(count));
@@ -68,6 +79,12 @@ public class LocalPacker implements BodyInterceptor {
         groupToColorCount.put(group, new Integer(count));
       }
     }
+    System.out.println(localToGroup);
+    System.out.println(groupToColorCount);
+    System.out.println(localToColor);
+
+    Map<Local, Set<Local>> localToInterferings = buildLocalInterferenceMap(builder);
+    System.out.println(localToInterferings);
 
     List<Local> originalLocals = new ArrayList<>(builder.getLocals());
     Map<GroupIntPair, Local> groupIntToLocal = new HashMap<>();
@@ -98,9 +115,57 @@ public class LocalPacker implements BodyInterceptor {
       localToNewLocal.put(original, newLocal);
     }
 
-    System.out.println(localToGroup);
-    System.out.println(groupToColorCount);
-    System.out.println(localToColor);
+    //System.out.println(localToGroup);
+    //System.out.println(groupToColorCount);
+    //System.out.println(localToColor);
+  }
+
+  /**
+   * Find interference-local for each local from the given BodyBuilder.
+   * Two locals "l1" and "l2" interfere each other, iff "l1" is alive before a successor of a stmt which defines "l2", vice versa.
+   * @param builder a given BodyBuilder
+   * @return a Map that maps local to a set of interference-locals
+   */
+  private Map<Local, Set<Local>> buildLocalInterferenceMap(Body.BodyBuilder builder){
+    //Maps local to its interfering locals
+    Map<Local, Set<Local>> localToLocals = new HashMap<>();
+    StmtGraph graph = builder.getStmtGraph();
+    LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(graph);
+
+    for(Stmt stmt : builder.getStmts()){
+      if(!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local){
+
+        Local def = (Local) stmt.getDefs().get(0);
+
+        Set<Local> aliveLocals = new HashSet<>();
+        for(Stmt succ : graph.successors(stmt)){
+          aliveLocals.addAll(analyser.getLiveLocalsBeforeStmt(succ));
+        }
+
+        for(Local aliveLocal : aliveLocals){
+          if(aliveLocal.getType().equals(def.getType())){
+             //set interference for both locals: aliveLocal, def
+             if(localToLocals.containsKey(def)){
+               localToLocals.get(def).add(aliveLocal);
+             }else{
+               Set<Local> locals = new HashSet<>();
+               locals.add(aliveLocal);
+               localToLocals.put(def, locals);
+             }
+
+            if(localToLocals.containsKey(aliveLocal)){
+              localToLocals.get(aliveLocal).add(def);
+            }else{
+              Set<Local> locals = new HashSet<>();
+              locals.add(def);
+              localToLocals.put(aliveLocal, locals);
+            }
+          }
+        }
+
+      }
+    }
+    return localToLocals;
   }
 
   public class GroupIntPair {
@@ -130,4 +195,28 @@ public class LocalPacker implements BodyInterceptor {
       return this.group + ": " + this.x;
     }
   }
+
+
+
+  public class ColorAssigner {
+
+    private final Body.BodyBuilder builder;
+    private final Map<Local, Type> localToGroup;
+    private final Map<Type, Integer> groupToColorCount;
+    private final Map<Local, Integer> localToColor;
+
+    public ColorAssigner(Body.BodyBuilder builder, Map<Local, Type> localToGroup, Map<Type, Integer> groupToColorCount, Map<Local, Integer> localToColor){
+        this.builder = builder;
+        this.localToGroup = localToGroup;
+        this.groupToColorCount = groupToColorCount;
+        this.localToColor = localToColor;
+    }
+
+    public void assignColorsToLocals(){
+
+      ExceptionalStmtGraph exceptionalStmtGraph = builder.getStmtGraph();
+      LocalLivenessAnalyser livenessAnalyser = new LocalLivenessAnalyser(exceptionalStmtGraph);
+    }
+  }
+
 }
