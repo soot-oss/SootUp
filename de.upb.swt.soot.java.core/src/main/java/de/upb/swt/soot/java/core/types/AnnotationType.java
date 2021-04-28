@@ -70,6 +70,12 @@ public class AnnotationType extends JavaClassType {
       defaultValues = new HashMap<>();
       if (viewOptional.isPresent()) {
         JavaView jv = viewOptional.get();
+
+        // meta annotations are not in the view
+        if (this.isMetaAnnotation()) {
+          return defaultValues;
+        }
+
         if (!jv.getClass(this).isPresent()) {
           throw new RuntimeException("Class of annotation not in view");
         }
@@ -120,7 +126,7 @@ public class AnnotationType extends JavaClassType {
 
   final Set<String> metaAnnotationNames =
       new HashSet<>(
-          Arrays.asList("@Retention", "@Documented", "@Target", "@Inherited", "@Repeatable"));
+          Arrays.asList("Retention", "Documented", "Target", "Inherited", "Repeatable"));
 
   /**
    * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
