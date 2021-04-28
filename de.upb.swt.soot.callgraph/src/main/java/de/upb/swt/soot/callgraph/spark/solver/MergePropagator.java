@@ -43,7 +43,7 @@ public class MergePropagator implements Propagator{
 
             for(FieldReferenceNode source: pag.getLoadEdges().keySet()){
                 if(source!=source.getReplacement()){
-                    throw new RuntimeException("load source must be equal to its replacement")
+                    throw new RuntimeException("load source must be equal to its replacement");
                 }
                 Set<VariableNode> targets = pag.getLoadEdges().get(source);
                 for (VariableNode target : targets) {
