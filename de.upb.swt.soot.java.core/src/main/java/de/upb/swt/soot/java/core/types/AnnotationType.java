@@ -125,8 +125,7 @@ public class AnnotationType extends JavaClassType {
   }
 
   final Set<String> metaAnnotationNames =
-      new HashSet<>(
-          Arrays.asList("Retention", "Documented", "Target", "Inherited", "Repeatable"));
+      new HashSet<>(Arrays.asList("Retention", "Documented", "Target", "Inherited", "Repeatable"));
 
   /**
    * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
