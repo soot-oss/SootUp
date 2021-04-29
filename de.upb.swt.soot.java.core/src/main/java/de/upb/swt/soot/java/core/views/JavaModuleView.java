@@ -100,7 +100,7 @@ public class JavaModuleView extends JavaView {
   }
 
   private boolean isPackageExportedByModule(
-      ModuleSignature moduleSignature, PackageName packageName) {
+      ModuleSignature moduleSignature, ModulePackageName packageName) {
     Optional<JavaModuleInfo> moduleInfo = getModuleInfo(moduleSignature);
     if (!moduleInfo.isPresent()) {
       throw new ResolveException("ModuleDescriptor not available.");
@@ -108,7 +108,8 @@ public class JavaModuleView extends JavaView {
     return isPackageExportedByModule(moduleInfo.get(), packageName);
   }
 
-  private boolean isPackageExportedByModule(JavaModuleInfo moduleInfo, PackageName packageName) {
+  private boolean isPackageExportedByModule(
+      JavaModuleInfo moduleInfo, ModulePackageName packageName) {
 
     if (moduleInfo.isAutomaticModule()) {
       // TODO: [ms] check deeper if package even exists in this automatic module?
@@ -125,7 +126,12 @@ public class JavaModuleView extends JavaView {
         exports.stream()
             .filter(packageReference -> packageReference.getPackageName().equals(packageName))
             .findAny();
-    return any.isPresent();
+
+    if (any.isPresent()) {
+      return any.get().exportedTo(packageName.getModuleSignature());
+    }
+
+    return false;
   }
 
   @Nonnull
@@ -210,7 +216,7 @@ public class JavaModuleView extends JavaView {
               return packageName instanceof ModulePackageName
                   && isPackageExportedByModule(
                       ((ModulePackageName) packageName).getModuleSignature(),
-                      type.getPackageName());
+                      (ModulePackageName) type.getPackageName());
             })
         .limit(1)
         .map(Optional::get)

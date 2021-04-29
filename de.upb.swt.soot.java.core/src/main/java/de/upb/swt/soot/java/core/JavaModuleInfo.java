@@ -175,12 +175,11 @@ public abstract class JavaModuleInfo {
       return this.targetModules.isEmpty();
     }
 
-    public boolean exportedTo(@Nonnull JavaModuleInfo moduleInfo) {
+    public boolean exportedTo(@Nonnull ModuleSignature moduleSignature) {
       if (isPublic()) {
         return true;
       }
-      // TODO: [AD] check for automatic modules ?
-      return targetModules.contains(moduleInfo);
+      return targetModules.contains(moduleSignature);
     }
 
     @Nonnull
