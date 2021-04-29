@@ -101,9 +101,6 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
   public List<Stmt> exceptionalPredecessors(@Nonnull Stmt stmt) {
     Integer idx = getNodeIdx(stmt);
     List<Stmt> stmts = exceptionalPreds.get(idx);
-    if (stmts == null) {
-      return Collections.emptyList();
-    }
     return Collections.unmodifiableList(stmts);
   }
 
@@ -111,9 +108,6 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
   public List<Stmt> exceptionalSuccessors(@Nonnull Stmt stmt) {
     Integer idx = getNodeIdx(stmt);
     List<Stmt> stmts = exceptionalSuccs.get(idx);
-    if (stmts == null) {
-      return Collections.emptyList();
-    }
     return Collections.unmodifiableList(stmts);
   }
 
