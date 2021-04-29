@@ -38,7 +38,41 @@ public class LocalPacker implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
     Map<Local, Integer> localToColor = assignLocalsColor(builder);
+    //map each color to a new color
+    Map<Local, Local> localToNewLocal = new HashMap<>();
+    List<Local> originalLocals = new ArrayList<>(builder.getLocals());
 
+    Map<TypeColorPair, Local> typeColorToLocal = new HashMap<>();
+    Set<String> usedLocalNames = new HashSet<>();
+    Set<Local> newLocals = new HashSet<>();
+    for (Local original : originalLocals) {
+      Type type = original.getType();
+      int color = localToColor.get(original);
+      TypeColorPair pair = new TypeColorPair(type, color);
+
+      Local newLocal;
+
+      if (typeColorToLocal.containsKey(pair)) {
+        newLocal = typeColorToLocal.get(pair);
+      } else {
+        newLocal = original;
+        // If local's name contains "#", '#' and the part behind it should be deleted
+        int signIndex = newLocal.getName().indexOf("#");
+        if (signIndex != -1) {
+          String newName = newLocal.getName().substring(0, signIndex);
+          if (usedLocalNames.add(newName)) {
+            newLocal = newLocal.withName(newName);
+          }else{
+
+          }
+        }
+        typeColorToLocal.put(pair, newLocal);
+
+      }
+      newLocals.add(newLocal);
+      localToNewLocal.put(original, newLocal);
+    }
+    builder.setLocals(newLocals);
   }
 
   /**
