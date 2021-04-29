@@ -23,7 +23,7 @@ public class DeclareEnumWithConstructorTest extends JimpleTestSuiteBase {
                 .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$Number"));
     assertTrue(sc.isEnum());
 
-    final Set<SootMethod> methods = sc.getMethods();
+    final Set<SootMethod> methods = (Set<SootMethod>) sc.getMethods();
     assertTrue(methods.stream().anyMatch(m -> m.getSignature().getName().equals("getValue")));
   }
 }

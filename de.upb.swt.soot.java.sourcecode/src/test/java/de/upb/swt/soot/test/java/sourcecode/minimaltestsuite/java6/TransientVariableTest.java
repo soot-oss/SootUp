@@ -22,7 +22,7 @@ public class TransientVariableTest extends MinimalSourceTestSuiteBase {
 
   @Ignore
   public void testTransientVar() {
-    SootClass clazz = loadClass(getDeclaredClassSignature());
+    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(

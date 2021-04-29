@@ -24,7 +24,7 @@ package de.upb.swt.soot.java.core.jimple.basic;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.java.core.AnnotationType;
+import de.upb.swt.soot.java.core.AnnotationUsage;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
@@ -33,7 +33,7 @@ public class JavaLocal extends Local {
   // TODO: [ms] add to JavaJimple
   // TODO: [ms] make use of this class in both Java Frontends
 
-  @Nonnull private final Iterable<AnnotationType> annotations;
+  @Nonnull private final Iterable<AnnotationUsage> annotations;
 
   /**
    * Constructs a JimpleLocal of the given name and type.
@@ -42,13 +42,13 @@ public class JavaLocal extends Local {
    * @param type
    */
   public JavaLocal(
-      @Nonnull String name, @Nonnull Type type, @Nonnull Iterable<AnnotationType> annotations) {
+      @Nonnull String name, @Nonnull Type type, @Nonnull Iterable<AnnotationUsage> annotations) {
     super(name, type);
     this.annotations = annotations;
   }
 
   @Nonnull
-  public Iterable<AnnotationType> getAnnotations() {
+  public Iterable<AnnotationUsage> getAnnotations() {
     return annotations;
   }
 
@@ -73,7 +73,7 @@ public class JavaLocal extends Local {
   }
 
   @Nonnull
-  public Local withAnnotations(@Nonnull Iterable<AnnotationType> annotations) {
+  public Local withAnnotations(@Nonnull Iterable<AnnotationUsage> annotations) {
     return new JavaLocal(getName(), getType(), annotations);
   }
 }
