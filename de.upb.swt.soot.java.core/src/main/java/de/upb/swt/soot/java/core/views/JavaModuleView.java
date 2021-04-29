@@ -24,6 +24,7 @@ package de.upb.swt.soot.java.core.views;
 
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.signatures.PackageName;
@@ -98,6 +99,15 @@ public class JavaModuleView extends JavaView {
     return Optional.empty();
   }
 
+  private boolean isPackageExportedByModule(
+      ModuleSignature moduleSignature, PackageName packageName) {
+    Optional<JavaModuleInfo> moduleInfo = getModuleInfo(moduleSignature);
+    if (!moduleInfo.isPresent()) {
+      throw new ResolveException("ModuleDescriptor not available.");
+    }
+    return isPackageExportedByModule(moduleInfo.get(), packageName);
+  }
+
   private boolean isPackageExportedByModule(JavaModuleInfo moduleInfo, PackageName packageName) {
 
     if (moduleInfo.isAutomaticModule()) {
@@ -135,22 +145,7 @@ public class JavaModuleView extends JavaView {
 
       // find type in all exported packages of modules on module path
       final List<AbstractClassSource<JavaSootClass>> foundClassSources =
-          getProject().getInputLocations().stream()
-              .filter(inputLocation -> inputLocation instanceof ModuleInfoAnalysisInputLocation)
-              .map(
-                  location -> {
-                    ClassLoadingOptions classLoadingOptions =
-                        classLoadingOptionsSpecifier.apply(location);
-                    if (classLoadingOptions != null) {
-                      return location.getClassSource(type, classLoadingOptions);
-                    } else {
-                      return location.getClassSource(type);
-                    }
-                  })
-              .filter(Optional::isPresent)
-              .limit(1)
-              .map(Optional::get)
-              .collect(Collectors.toList());
+          getAbstractClassSourcesForModules(type);
 
       if (!foundClassSources.isEmpty()) {
 
@@ -168,22 +163,7 @@ public class JavaModuleView extends JavaView {
 
         // find the class in exported packages of modules
         final List<AbstractClassSource<JavaSootClass>> foundClassSources =
-            getProject().getInputLocations().stream()
-                .filter(inputLocation -> inputLocation instanceof ModuleInfoAnalysisInputLocation)
-                .map(
-                    location -> {
-                      ClassLoadingOptions classLoadingOptions =
-                          classLoadingOptionsSpecifier.apply(location);
-                      if (classLoadingOptions != null) {
-                        return location.getClassSource(type, classLoadingOptions);
-                      } else {
-                        return location.getClassSource(type);
-                      }
-                    })
-                .filter(Optional::isPresent)
-                .limit(1)
-                .map(Optional::get)
-                .collect(Collectors.toList());
+            getAbstractClassSourcesForModules(type);
 
         if (!foundClassSources.isEmpty()) {
           return buildClassFrom(foundClassSources.get(0));
@@ -194,25 +174,8 @@ public class JavaModuleView extends JavaView {
         }
       } else {
         // explicit module
-
-        // find the class in exported packages of modules
         final List<AbstractClassSource<JavaSootClass>> foundClassSources =
-            getProject().getInputLocations().stream()
-                .filter(inputLocation -> inputLocation instanceof ModuleInfoAnalysisInputLocation)
-                .map(
-                    location -> {
-                      ClassLoadingOptions classLoadingOptions =
-                          classLoadingOptionsSpecifier.apply(location);
-                      if (classLoadingOptions != null) {
-                        return location.getClassSource(type, classLoadingOptions);
-                      } else {
-                        return location.getClassSource(type);
-                      }
-                    })
-                .filter(Optional::isPresent)
-                .limit(1)
-                .map(Optional::get)
-                .collect(Collectors.toList());
+            getAbstractClassSourcesForModules(type);
 
         if (!foundClassSources.isEmpty()) {
           return buildClassFrom(foundClassSources.get(0));
@@ -224,14 +187,44 @@ public class JavaModuleView extends JavaView {
   }
 
   @Nonnull
+  private List<AbstractClassSource<JavaSootClass>> getAbstractClassSourcesForModules(
+      @Nonnull JavaClassType type) {
+    // find the class in exported packages of modules
+    return getProject().getInputLocations().stream()
+        .filter(inputLocation -> inputLocation instanceof ModuleInfoAnalysisInputLocation)
+        .map(
+            location -> {
+              ClassLoadingOptions classLoadingOptions =
+                  classLoadingOptionsSpecifier.apply(location);
+              if (classLoadingOptions != null) {
+                return location.getClassSource(type, classLoadingOptions);
+              } else {
+                return location.getClassSource(type);
+              }
+            })
+        .filter(Optional::isPresent)
+        .filter(
+            cs -> {
+              PackageName packageName = cs.get().getClassType().getPackageName();
+              return packageName instanceof ModulePackageName
+                  && isPackageExportedByModule(
+                      ((ModulePackageName) packageName).getModuleSignature(),
+                      type.getPackageName());
+            })
+        .limit(1)
+        .map(Optional::get)
+        .collect(Collectors.toList());
+  }
+
+  @Nonnull
   public synchronized Optional<JavaSootClass> getClasses(
       @Nonnull ModuleSignature startModuleSignature, @Nonnull ClassType type) {
 
     if (type.getPackageName() instanceof ModulePackageName) {
-      // use ModulePackageName instead of startModule
+      // TODO: [ms] implement getting all classes that are visible from the startModuleSignature
+
     }
 
-    // TODO: [ms] implement getting all classes that are visible from the startModuleSignature
     return super.getClass(type);
   }
 }
