@@ -22,6 +22,7 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -62,20 +63,23 @@ public abstract class JavaModuleInfo {
 
       @Override
       public Collection<ModuleReference> requires() {
-        // TODO: can read all other modules and the unnamed module (modules on the classpath)
-        return Collections.emptyList();
+        // can read all other modules and the unnamed module (modules on the classpath)
+        throw new ResolveException(
+            "All modules can be required from the automatic module. Handle that seperately.");
       }
 
       @Override
       public Collection<PackageReference> exports() {
-        // TODO: all Packages are exported
-        return Collections.emptyList();
+        // all Packages are exported
+        throw new ResolveException(
+            "All Packages are exported in the automatic module. Handle that seperately.");
       }
 
       @Override
       public Collection<PackageReference> opens() {
-        // TODO: all Packages are open
-        return Collections.emptyList();
+        // all Packages are open
+        throw new ResolveException(
+            "All Packages are open in the automatic module. Handle that seperately.");
       }
 
       @Override
@@ -152,7 +156,7 @@ public abstract class JavaModuleInfo {
     }
 
     @Nonnull
-    public JavaClassType getModuleInfo() {
+    public JavaClassType getModuleInfoType() {
       return moduleInfo;
     }
   }
@@ -168,11 +172,12 @@ public abstract class JavaModuleInfo {
         @Nonnull Collection<JavaClassType> targetModules) {
       this.packageName = packageName;
       this.modifers = modifier;
-      this.targetModules = new HashSet<>(targetModules);
+      this.targetModules =
+          targetModules.isEmpty() ? Collections.emptySet() : new HashSet<>(targetModules);
     }
 
     public boolean isPublic() {
-      return this.targetModules.isEmpty();
+      return targetModules.isEmpty();
     }
 
     public boolean exportedTo(@Nonnull ModuleSignature moduleSignature) {
