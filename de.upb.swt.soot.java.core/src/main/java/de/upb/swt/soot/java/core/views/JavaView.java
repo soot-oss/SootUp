@@ -130,7 +130,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
   }
 
   @Nonnull
-  private synchronized Optional<JavaSootClass> buildClassFrom(
+  protected synchronized Optional<JavaSootClass> buildClassFrom(
       AbstractClassSource<JavaSootClass> classSource) {
     JavaSootClass theClass =
         cache.computeIfAbsent(

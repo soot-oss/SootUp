@@ -23,6 +23,7 @@ package de.upb.swt.soot.java.core.views;
  */
 
 import de.upb.swt.soot.core.Project;
+import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.signatures.PackageName;
@@ -97,42 +98,140 @@ public class JavaModuleView extends JavaView {
     return Optional.empty();
   }
 
-  @Nonnull
-  public synchronized Optional<JavaSootClass> getClass(
-      @Nonnull ModulePackageName entryPackage, @Nonnull JavaClassType type) {
-    // TODO: implement Accessibility checks here and
+  private boolean isPackageExportedByModule(JavaModuleInfo moduleInfo, PackageName packageName) {
 
-    return getClass(type);
+    if (moduleInfo.isAutomaticModule()) {
+      // TODO: [ms] check deeper if package even exists in this automatic module?
+      return true;
+    }
+
+    if (moduleInfo.equals(JavaModuleInfo.getUnnamedModuleInfo())) {
+      // TODO: [ms] check deeper if package even exists there?
+      return true;
+    }
+
+    Collection<JavaModuleInfo.PackageReference> exports = moduleInfo.exports();
+    Optional<JavaModuleInfo.PackageReference> any =
+        exports.stream()
+            .filter(packageReference -> packageReference.getPackageName().equals(packageName))
+            .findAny();
+    return any.isPresent();
   }
 
   @Nonnull
-  public synchronized Optional<JavaSootClass> getClass(@Nonnull JavaClassType type) {
+  public synchronized Optional<JavaSootClass> getClass(
+      @Nonnull ModulePackageName entryPackage, @Nonnull JavaClassType type) {
 
-    PackageName packageName = type.getPackageName();
-    if (packageName instanceof ModulePackageName) {
-      ((ModulePackageName) packageName).getModuleSignature();
+    // TODO: check exported
+
+    Optional<JavaModuleInfo> startOpt = getModuleInfo(entryPackage.getModuleSignature());
+    if (!startOpt.isPresent()) {
+      return Optional.empty();
     }
 
-    Optional<JavaSootClass> aClass = super.getClass(type);
-    if (aClass.isPresent()) {
+    JavaModuleInfo start = startOpt.get();
+    if (start.equals(JavaModuleInfo.getUnnamedModuleInfo())) {
+      // unnamed module
 
-      aClass.get().getClassSource().getSourcePath();
-      // FIXME [ms] get info from modulefinder/javamoduleview
-      // moduleDependencyGraph.putIfAbsent(startModule, md );
+      // find type in all exported packages of modules on module path
+      final List<AbstractClassSource<JavaSootClass>> foundClassSources =
+          getProject().getInputLocations().stream()
+              .filter(inputLocation -> inputLocation instanceof ModuleInfoAnalysisInputLocation)
+              .map(
+                  location -> {
+                    ClassLoadingOptions classLoadingOptions =
+                        classLoadingOptionsSpecifier.apply(location);
+                    if (classLoadingOptions != null) {
+                      return location.getClassSource(type, classLoadingOptions);
+                    } else {
+                      return location.getClassSource(type);
+                    }
+                  })
+              .filter(Optional::isPresent)
+              .limit(1)
+              .map(Optional::get)
+              .collect(Collectors.toList());
+
+      if (!foundClassSources.isEmpty()) {
+
+        return buildClassFrom(foundClassSources.get(0));
+      } else {
+        // search in unnamed module itself
+        return super.getClass(type);
+      }
+
+    } else {
+      // named module
+
+      if (start.isAutomaticModule()) {
+        // automatic module can read every exported package of an explicit module
+
+        // find the class in exported packages of modules
+        final List<AbstractClassSource<JavaSootClass>> foundClassSources =
+            getProject().getInputLocations().stream()
+                .filter(inputLocation -> inputLocation instanceof ModuleInfoAnalysisInputLocation)
+                .map(
+                    location -> {
+                      ClassLoadingOptions classLoadingOptions =
+                          classLoadingOptionsSpecifier.apply(location);
+                      if (classLoadingOptions != null) {
+                        return location.getClassSource(type, classLoadingOptions);
+                      } else {
+                        return location.getClassSource(type);
+                      }
+                    })
+                .filter(Optional::isPresent)
+                .limit(1)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        if (!foundClassSources.isEmpty()) {
+          return buildClassFrom(foundClassSources.get(0));
+        } else {
+          // automatic module can access the unnamed module -> find in classpath (as if modules do
+          // not exist)
+          return super.getClass(type);
+        }
+      } else {
+        // explicit module
+
+        // find the class in exported packages of modules
+        final List<AbstractClassSource<JavaSootClass>> foundClassSources =
+            getProject().getInputLocations().stream()
+                .filter(inputLocation -> inputLocation instanceof ModuleInfoAnalysisInputLocation)
+                .map(
+                    location -> {
+                      ClassLoadingOptions classLoadingOptions =
+                          classLoadingOptionsSpecifier.apply(location);
+                      if (classLoadingOptions != null) {
+                        return location.getClassSource(type, classLoadingOptions);
+                      } else {
+                        return location.getClassSource(type);
+                      }
+                    })
+                .filter(Optional::isPresent)
+                .limit(1)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        if (!foundClassSources.isEmpty()) {
+          return buildClassFrom(foundClassSources.get(0));
+        } else {
+          return Optional.empty();
+        }
+      }
     }
-
-    return aClass;
   }
 
   @Nonnull
   public synchronized Optional<JavaSootClass> getClasses(
-      @Nonnull ClassType scope, @Nonnull ClassType type) {
+      @Nonnull ModuleSignature startModuleSignature, @Nonnull ClassType type) {
 
     if (type.getPackageName() instanceof ModulePackageName) {
       // use ModulePackageName instead of startModule
     }
 
-    // TODO: [ms] implement getting all classes for that scope
+    // TODO: [ms] implement getting all classes that are visible from the startModuleSignature
     return super.getClass(type);
   }
 }

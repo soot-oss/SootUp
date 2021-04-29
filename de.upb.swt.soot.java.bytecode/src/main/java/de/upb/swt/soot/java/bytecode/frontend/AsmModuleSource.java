@@ -43,7 +43,7 @@ public class AsmModuleSource extends JavaModuleInfo {
 
   public AsmModuleSource(@Nonnull Path sourcePath) {
 
-    // if it is an automatic module there is no module-info
+    // if it would be an automatic module there would be no module-info.class
     super(false);
 
     try (InputStream sourceFileInputStream = Files.newInputStream(sourcePath)) {
@@ -55,7 +55,7 @@ public class AsmModuleSource extends JavaModuleInfo {
       module = classNode.module;
 
     } catch (IOException e) {
-      throw new ResolveException("can not parse module-info!", sourcePath, e);
+      throw new ResolveException("Can not parse the module descriptor file!", sourcePath, e);
     }
   }
 

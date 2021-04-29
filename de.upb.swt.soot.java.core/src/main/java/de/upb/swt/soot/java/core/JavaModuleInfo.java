@@ -22,6 +22,7 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 
+import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
@@ -49,7 +50,8 @@ public abstract class JavaModuleInfo {
 
   public abstract Set<ModuleModifier> resolveModifiers();
 
-  // adapt properties
+  /** Represents the automatic module (e.g. a jar without a module-descriptor on the module path) */
+  // TODO: adapt properties?
   public static JavaModuleInfo createAutomaticModuleInfo(@Nonnull ModuleSignature moduleName) {
 
     return new JavaModuleInfo(true) {
@@ -93,6 +95,7 @@ public abstract class JavaModuleInfo {
     };
   }
 
+  /** Represents all Packages from the Classpath */
   public static JavaModuleInfo getUnnamedModuleInfo() {
     return new JavaModuleInfo(true) {
       @Override
@@ -155,7 +158,7 @@ public abstract class JavaModuleInfo {
   }
 
   public static class PackageReference {
-    @Nonnull private String packageName;
+    @Nonnull private PackageName packageName;
     @Nonnull private EnumSet<ModuleModifier> modifers;
     @Nonnull private Set<JavaClassType> targetModules;
 
@@ -163,7 +166,8 @@ public abstract class JavaModuleInfo {
         @Nonnull String packageName,
         @Nonnull EnumSet<ModuleModifier> modifier,
         @Nonnull Collection<JavaClassType> targetModules) {
-      this.packageName = packageName;
+      // TODO: get via Identifierfactory
+      this.packageName = new PackageName(packageName);
       this.modifers = modifier;
       this.targetModules = new HashSet<>(targetModules);
     }
@@ -181,7 +185,7 @@ public abstract class JavaModuleInfo {
     }
 
     @Nonnull
-    public String getPackageName() {
+    public PackageName getPackageName() {
       return packageName;
     }
 

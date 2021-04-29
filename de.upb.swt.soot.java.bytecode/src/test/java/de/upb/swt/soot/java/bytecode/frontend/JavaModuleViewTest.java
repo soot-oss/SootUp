@@ -16,6 +16,8 @@ public class JavaModuleViewTest {
 
   private final String testPath = "../shared-test-resources/jigsaw-examples/";
 
+  // TODO: test an aggregator module (no own content just dependencies to modules)
+
   @Test
   public void testGeneralClassReceivalFromModule() {
     JavaProject p =
@@ -99,6 +101,7 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
+    fail("test module descriptor/rights");
   }
 
   @Test
@@ -115,6 +118,7 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
+    fail("test module descriptor/rights");
   }
 
   @Test
@@ -131,6 +135,7 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
+    fail("test module descriptor/rights");
   }
 
   @Test
@@ -147,6 +152,7 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
+    fail("test module descriptor/rights");
   }
 
   @Test
@@ -163,6 +169,7 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
+    fail("test module descriptor/rights");
   }
 
   @Test
@@ -180,6 +187,7 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
+    fail("test module descriptor/rights");
   }
 
   @Test
@@ -199,6 +207,7 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
+    fail("test module descriptor/rights");
   }
 
   @Test
@@ -215,6 +224,7 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
+    fail("test module descriptor/rights");
   }
 
   @Test
@@ -231,6 +241,7 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
+    fail("test module descriptor/rights");
   }
 
   @Test
@@ -248,6 +259,7 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
+    fail("test module descriptor/rights");
   }
 
   @Test
@@ -264,6 +276,7 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
+    fail("test module descriptor/rights");
   }
 
   @Test
@@ -281,6 +294,7 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
+    fail("test module descriptor/rights");
   }
 
   @Test
@@ -299,6 +313,7 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
+    fail("test module descriptor/rights");
   }
 
   @Test
@@ -317,6 +332,7 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
+    fail("test module descriptor/rights");
   }
 
   @Test
@@ -334,5 +350,6 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
+    fail("test module descriptor/rights");
   }
 }

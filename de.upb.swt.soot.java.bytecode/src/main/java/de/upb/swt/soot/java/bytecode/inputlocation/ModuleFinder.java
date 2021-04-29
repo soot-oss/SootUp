@@ -225,6 +225,7 @@ public class ModuleFinder {
                   classProvider.getHandledFileType(), zipFileSystem));
 
       if (Files.exists(mi)) {
+        // hint: performance - i guess we can load the JavaModuleInfo on demand
         JavaModuleInfo moduleInfo = new AsmModuleSource(mi);
         moduleInfoMap.put(moduleInfo.getModuleSignature(), moduleInfo);
         moduleInputLocation.put(moduleInfo.getModuleSignature(), inputLocation);

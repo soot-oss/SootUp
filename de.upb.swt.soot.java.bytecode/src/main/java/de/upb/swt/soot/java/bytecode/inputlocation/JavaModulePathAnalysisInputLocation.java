@@ -120,6 +120,8 @@ public class JavaModulePathAnalysisInputLocation
     return inputLocation.getClassSource(klassType);
   }
 
+  // TODO: [ms] make it publically available as this is a general use case to enhance the
+  // IdentifierFactory with a given moduleSignature..
   private static class IdentifierFactoryWrapper extends JavaModuleIdentifierFactory {
 
     private final IdentifierFactory factory;
