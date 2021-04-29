@@ -20,8 +20,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import com.sun.media.jfxmedia.events.BufferListener;
-import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
@@ -32,93 +30,91 @@ import de.upb.swt.soot.core.types.Type;
 import java.util.*;
 import javax.annotation.Nonnull;
 
+/**@author ZunWang**/
 public class LocalPacker implements BodyInterceptor {
 
   @Override
   @Nonnull
-  //Todo: type instead of group
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    /** local : Type */
-    Map<Local, Type> localToGroup = new HashMap<>();
-    /** Type : numOfColor */
-    Map<Type, Integer> groupToColorCount = new HashMap<>();
-    /** Local : ColorNum */
-    // local with same type have different color.
+
+    Map<Local, Integer> localToColor = assignLocalsColor(builder);
+
+  }
+
+  /**
+   * Assign each local from a Bodybuilder a color
+   * @param builder
+   * @return a Map that maps local to a integer color
+   */
+  private Map<Local, Integer> assignLocalsColor(Body.BodyBuilder builder){
     Map<Local, Integer> localToColor = new HashMap<>();
-    /** Local, newLocal */
-    Map<Local, Local> localToNewLocal = new HashMap<>();
 
-
-    for (Local l : builder.getLocals()) {
-      Type g = l.getType();
-
-      localToGroup.put(l, g);
-
-      if (!groupToColorCount.containsKey(g)) {
-        groupToColorCount.put(g, 0);
+    //initial typeToColorCount, ColorCount is also the next free color for corresponding Type.
+    Map<Type, Integer> typeToColorCount = new HashMap<>();
+    for(Local local: builder.getLocals()){
+      Type type = local.getType();
+      if(!typeToColorCount.containsKey(type)){
+         typeToColorCount.put(type, 0);
       }
     }
-
-    System.out.println(localToGroup);
-    System.out.println(groupToColorCount);
-    System.out.println(localToColor);
-
-    // Assign each local which is IdentityStmt's def a color
-    // Locals with same Type has always different color
-    for (Stmt s : builder.getStmts()) {
-      if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getLeftOp() instanceof Local) {
-        Local l = (Local) ((JIdentityStmt) s).getLeftOp();
-
-        Type group = localToGroup.get(l);
-        int count = groupToColorCount.get(group).intValue();
-
-        localToColor.put(l, new Integer(count));
-
-        count++;
-
-        groupToColorCount.put(group, new Integer(count));
+    //assign each parameter local a color (local from IdentityStmt)
+    for (Stmt stmt : builder.getStmts()) {
+      if (stmt instanceof JIdentityStmt){
+        if (((JIdentityStmt) stmt).getLeftOp() instanceof Local) {
+          Local l = (Local) ((JIdentityStmt) stmt).getLeftOp();
+          Type type = l.getType();
+          int count = typeToColorCount.get(type);
+          localToColor.put(l, count);
+          count++;
+          typeToColorCount.put(type, count);
+        }
+      }else{
+        break;
       }
     }
-    System.out.println(localToGroup);
-    System.out.println(groupToColorCount);
-    System.out.println(localToColor);
+    //Sort locals according to their number of interference-locals, local with more interferences < local with less interferences
+    Map<Local, Set<Local>> localInterferenceMap = buildLocalInterferenceMap(builder);
+    List<Local> sortedLocals = new ArrayList<>(builder.getLocals());
+    Collections.sort(sortedLocals, (o1, o2) -> {
+      int num1 = localInterferenceMap.containsKey(o1) ? localInterferenceMap.get(o1).size() : 0;
+      int num2 = localInterferenceMap.containsKey(o2) ? localInterferenceMap.get(o2).size() : 0;
+      return num2 - num1;
+    });
 
-    Map<Local, Set<Local>> localToInterferings = buildLocalInterferenceMap(builder);
-    System.out.println(localToInterferings);
-
-    List<Local> originalLocals = new ArrayList<>(builder.getLocals());
-    Map<GroupIntPair, Local> groupIntToLocal = new HashMap<>();
-    Set<String> usedLocalNames = new HashSet<>();
-
-    for (Local original : originalLocals) {
-      Object group = localToGroup.get(original);
-      int color = localToColor.get(original);
-      GroupIntPair pair = new GroupIntPair(group, color);
-
-      Local newLocal;
-
-      if (groupIntToLocal.containsKey(pair)) {
-        newLocal = groupIntToLocal.get(pair);
-      } else {
-        newLocal = original.withType((Type) group);
-
-        // If we have a split local, let's find a better name for it
-        int signIndex = newLocal.getName().indexOf("#");
-        if (signIndex != -1) {
-          String newName = newLocal.getName().substring(0, signIndex);
-          if (usedLocalNames.add(newName)) {
-            newLocal = newLocal.withName(newName);
+    //assign color
+    for(Local local : sortedLocals){
+      if(!localToColor.containsKey(local)){
+        Type type = local.getType();
+        int colorCount = typeToColorCount.get(type);
+        // determine which colors are unavailable for this local
+        Set<Local> interferences = new HashSet<>();
+        BitSet unavailableColors = new BitSet(colorCount);
+        if(localInterferenceMap.containsKey(local)){
+          interferences = localInterferenceMap.get(local);
+          for(Local interference : interferences){
+            if(localToColor.containsKey(interference)) {
+              unavailableColors.set(localToColor.get(interference));
+            }
           }
         }
-        groupIntToLocal.put(pair, newLocal);
+        int assignedColor = -1;
+        for(int i= 0; i < colorCount; i++){
+          if(!unavailableColors.get(i)){
+            assignedColor = i;
+            break;
+          }
+        }
+        if (assignedColor < 0) {
+          colorCount++;
+          assignedColor = colorCount;
+          typeToColorCount.put(type, colorCount);
+        }
+        localToColor.put(local, assignedColor);
       }
-      localToNewLocal.put(original, newLocal);
     }
-
-    //System.out.println(localToGroup);
-    //System.out.println(groupToColorCount);
-    //System.out.println(localToColor);
+    return localToColor;
   }
+
 
   /**
    * Find interference-local for each local from the given BodyBuilder.
@@ -168,54 +164,22 @@ public class LocalPacker implements BodyInterceptor {
     return localToLocals;
   }
 
-  public class GroupIntPair {
-    public Object group;
-    public int x;
+  private class TypeColorPair {
+    public Type type;
+    public int color;
 
-    public GroupIntPair(Object group, int x) {
-      this.group = group;
-      this.x = x;
+    public TypeColorPair(Type type, int color) {
+      this.type = type;
+      this.color = color;
     }
 
     public boolean equals(Object other) {
-      if (other instanceof GroupIntPair) {
-        return ((GroupIntPair) other).group.equals(this.group)
-            && ((GroupIntPair) other).x == this.x;
+      if (other instanceof TypeColorPair) {
+        return ((TypeColorPair) other).type.equals(this.type)
+            && ((TypeColorPair) other).color == this.color;
       } else {
         return false;
       }
-    }
-
-    public int hashCode() {
-      return group.hashCode() + 1013 * x;
-    }
-
-    @Override
-    public String toString() {
-      return this.group + ": " + this.x;
-    }
-  }
-
-
-
-  public class ColorAssigner {
-
-    private final Body.BodyBuilder builder;
-    private final Map<Local, Type> localToGroup;
-    private final Map<Type, Integer> groupToColorCount;
-    private final Map<Local, Integer> localToColor;
-
-    public ColorAssigner(Body.BodyBuilder builder, Map<Local, Type> localToGroup, Map<Type, Integer> groupToColorCount, Map<Local, Integer> localToColor){
-        this.builder = builder;
-        this.localToGroup = localToGroup;
-        this.groupToColorCount = groupToColorCount;
-        this.localToColor = localToColor;
-    }
-
-    public void assignColorsToLocals(){
-
-      ExceptionalStmtGraph exceptionalStmtGraph = builder.getStmtGraph();
-      LocalLivenessAnalyser livenessAnalyser = new LocalLivenessAnalyser(exceptionalStmtGraph);
     }
   }
 
