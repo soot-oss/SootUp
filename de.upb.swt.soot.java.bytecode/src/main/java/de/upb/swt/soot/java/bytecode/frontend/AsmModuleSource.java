@@ -98,7 +98,9 @@ public class AsmModuleSource extends JavaModuleInfo {
       // sootModuleInfo.addExport(exportNode.packaze, exportNode.access, modules);
       JavaModuleInfo.PackageReference reference =
           new JavaModuleInfo.PackageReference(
-              exportNode.packaze, AsmUtil.getModuleModifiers(exportNode.access), modules);
+              JavaModuleIdentifierFactory.getInstance().getPackageName(exportNode.packaze),
+              AsmUtil.getModuleModifiers(exportNode.access),
+              modules);
       exports.add(reference);
     }
     return exports;
@@ -119,7 +121,9 @@ public class AsmModuleSource extends JavaModuleInfo {
 
       JavaModuleInfo.PackageReference reference =
           new JavaModuleInfo.PackageReference(
-              moduleOpenNode.packaze, AsmUtil.getModuleModifiers(moduleOpenNode.access), modules);
+              JavaModuleIdentifierFactory.getInstance().getPackageName(moduleOpenNode.packaze),
+              AsmUtil.getModuleModifiers(moduleOpenNode.access),
+              modules);
       opens.add(reference);
     }
 

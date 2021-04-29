@@ -132,8 +132,6 @@ public class JavaModuleView extends JavaView {
   public synchronized Optional<JavaSootClass> getClass(
       @Nonnull ModulePackageName entryPackage, @Nonnull JavaClassType type) {
 
-    // TODO: check exported
-
     Optional<JavaModuleInfo> startOpt = getModuleInfo(entryPackage.getModuleSignature());
     if (!startOpt.isPresent()) {
       return Optional.empty();
@@ -152,6 +150,8 @@ public class JavaModuleView extends JavaView {
         return buildClassFrom(foundClassSources.get(0));
       } else {
         // search in unnamed module itself
+        // TODO: check if the correct IdentifierFactory (for Modules) is used to set a reference to
+        // the unnamed module
         return super.getClass(type);
       }
 
@@ -189,6 +189,7 @@ public class JavaModuleView extends JavaView {
   @Nonnull
   private List<AbstractClassSource<JavaSootClass>> getAbstractClassSourcesForModules(
       @Nonnull JavaClassType type) {
+
     // find the class in exported packages of modules
     return getProject().getInputLocations().stream()
         .filter(inputLocation -> inputLocation instanceof ModuleInfoAnalysisInputLocation)

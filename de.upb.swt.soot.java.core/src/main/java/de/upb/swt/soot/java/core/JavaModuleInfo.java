@@ -163,11 +163,10 @@ public abstract class JavaModuleInfo {
     @Nonnull private Set<JavaClassType> targetModules;
 
     public PackageReference(
-        @Nonnull String packageName,
+        @Nonnull PackageName packageName,
         @Nonnull EnumSet<ModuleModifier> modifier,
         @Nonnull Collection<JavaClassType> targetModules) {
-      // TODO: get via Identifierfactory
-      this.packageName = new PackageName(packageName);
+      this.packageName = packageName;
       this.modifers = modifier;
       this.targetModules = new HashSet<>(targetModules);
     }
