@@ -14,6 +14,7 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
+import de.upb.swt.soot.java.bytecode.interceptors.LocalPacker;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -38,7 +39,7 @@ public class LocalPackerTest {
   IdentityRef identityRef = JavaJimple.newThisRef(classType);
 
   IdentityRef identityRef0 = JavaJimple.newParameterRef(intType, 0);
-  IdentityRef identityRef1 = JavaJimple.newParameterRef(doubleType, 1);
+  IdentityRef identityRef1 = JavaJimple.newParameterRef(intType, 1);
 
   // build locals
   Local l0 = JavaJimple.newLocal("l0", classType);
@@ -73,10 +74,10 @@ public class LocalPackerTest {
   public void testLocalPacker() {
     Body body = createBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
-    // System.out.println(body);
+    System.out.println(body);
 
-    // LocalPacker localPacker = new LocalPacker();
-    // localPacker.interceptBody(builder);
+    LocalPacker localPacker = new LocalPacker();
+    localPacker.interceptBody(builder);
   }
 
   private Body createBody() {

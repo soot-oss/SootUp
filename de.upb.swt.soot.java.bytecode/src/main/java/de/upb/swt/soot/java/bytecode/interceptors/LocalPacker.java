@@ -30,7 +30,7 @@ import de.upb.swt.soot.core.types.Type;
 import java.util.*;
 import javax.annotation.Nonnull;
 
-/**@author ZunWang**/
+/** @author ZunWang* */
 public class LocalPacker implements BodyInterceptor {
 
   @Override
@@ -38,7 +38,7 @@ public class LocalPacker implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
     Map<Local, Integer> localToColor = assignLocalsColor(builder);
-    //map each color to a new color
+    // map each color to a new color
     Map<Local, Local> localToNewLocal = new HashMap<>();
     List<Local> originalLocals = new ArrayList<>(builder.getLocals());
 
@@ -62,38 +62,40 @@ public class LocalPacker implements BodyInterceptor {
           String newName = newLocal.getName().substring(0, signIndex);
           if (usedLocalNames.add(newName)) {
             newLocal = newLocal.withName(newName);
-          }else{
-
+          } else {
+            // TODO: think a better local name strategy
           }
         }
         typeColorToLocal.put(pair, newLocal);
-
       }
       newLocals.add(newLocal);
       localToNewLocal.put(original, newLocal);
     }
     builder.setLocals(newLocals);
+
+    // TODO: newLocals instead of original Locals in for all stmts
   }
 
   /**
    * Assign each local from a Bodybuilder a color
+   *
    * @param builder
    * @return a Map that maps local to a integer color
    */
-  private Map<Local, Integer> assignLocalsColor(Body.BodyBuilder builder){
+  private Map<Local, Integer> assignLocalsColor(Body.BodyBuilder builder) {
     Map<Local, Integer> localToColor = new HashMap<>();
 
-    //initial typeToColorCount, ColorCount is also the next free color for corresponding Type.
+    // initial typeToColorCount, ColorCount is also the next free color for corresponding Type.
     Map<Type, Integer> typeToColorCount = new HashMap<>();
-    for(Local local: builder.getLocals()){
+    for (Local local : builder.getLocals()) {
       Type type = local.getType();
-      if(!typeToColorCount.containsKey(type)){
-         typeToColorCount.put(type, 0);
+      if (!typeToColorCount.containsKey(type)) {
+        typeToColorCount.put(type, 0);
       }
     }
-    //assign each parameter local a color (local from IdentityStmt)
+    // assign each parameter local a color (local from IdentityStmt)
     for (Stmt stmt : builder.getStmts()) {
-      if (stmt instanceof JIdentityStmt){
+      if (stmt instanceof JIdentityStmt) {
         if (((JIdentityStmt) stmt).getLeftOp() instanceof Local) {
           Local l = (Local) ((JIdentityStmt) stmt).getLeftOp();
           Type type = l.getType();
@@ -102,38 +104,41 @@ public class LocalPacker implements BodyInterceptor {
           count++;
           typeToColorCount.put(type, count);
         }
-      }else{
+      } else {
         break;
       }
     }
-    //Sort locals according to their number of interference-locals, local with more interferences < local with less interferences
+    // Sort locals according to their number of interference-locals, local with more interferences <
+    // local with less interferences
     Map<Local, Set<Local>> localInterferenceMap = buildLocalInterferenceMap(builder);
     List<Local> sortedLocals = new ArrayList<>(builder.getLocals());
-    Collections.sort(sortedLocals, (o1, o2) -> {
-      int num1 = localInterferenceMap.containsKey(o1) ? localInterferenceMap.get(o1).size() : 0;
-      int num2 = localInterferenceMap.containsKey(o2) ? localInterferenceMap.get(o2).size() : 0;
-      return num2 - num1;
-    });
+    Collections.sort(
+        sortedLocals,
+        (o1, o2) -> {
+          int num1 = localInterferenceMap.containsKey(o1) ? localInterferenceMap.get(o1).size() : 0;
+          int num2 = localInterferenceMap.containsKey(o2) ? localInterferenceMap.get(o2).size() : 0;
+          return num2 - num1;
+        });
 
-    //assign color
-    for(Local local : sortedLocals){
-      if(!localToColor.containsKey(local)){
+    // assign color
+    for (Local local : sortedLocals) {
+      if (!localToColor.containsKey(local)) {
         Type type = local.getType();
         int colorCount = typeToColorCount.get(type);
         // determine which colors are unavailable for this local
         Set<Local> interferences = new HashSet<>();
         BitSet unavailableColors = new BitSet(colorCount);
-        if(localInterferenceMap.containsKey(local)){
+        if (localInterferenceMap.containsKey(local)) {
           interferences = localInterferenceMap.get(local);
-          for(Local interference : interferences){
-            if(localToColor.containsKey(interference)) {
+          for (Local interference : interferences) {
+            if (localToColor.containsKey(interference)) {
               unavailableColors.set(localToColor.get(interference));
             }
           }
         }
         int assignedColor = -1;
-        for(int i= 0; i < colorCount; i++){
-          if(!unavailableColors.get(i)){
+        for (int i = 0; i < colorCount; i++) {
+          if (!unavailableColors.get(i)) {
             assignedColor = i;
             break;
           }
@@ -149,50 +154,50 @@ public class LocalPacker implements BodyInterceptor {
     return localToColor;
   }
 
-
   /**
-   * Find interference-local for each local from the given BodyBuilder.
-   * Two locals "l1" and "l2" interfere each other, iff "l1" is alive before a successor of a stmt which defines "l2", vice versa.
+   * Find interference-local for each local from the given BodyBuilder. Two locals "l1" and "l2"
+   * interfere each other, iff "l1" is alive before a successor of a stmt which defines "l2", vice
+   * versa.
+   *
    * @param builder a given BodyBuilder
    * @return a Map that maps local to a set of interference-locals
    */
-  private Map<Local, Set<Local>> buildLocalInterferenceMap(Body.BodyBuilder builder){
-    //Maps local to its interfering locals
+  private Map<Local, Set<Local>> buildLocalInterferenceMap(Body.BodyBuilder builder) {
+    // Maps local to its interfering locals
     Map<Local, Set<Local>> localToLocals = new HashMap<>();
     StmtGraph graph = builder.getStmtGraph();
     LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(graph);
 
-    for(Stmt stmt : builder.getStmts()){
-      if(!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local){
+    for (Stmt stmt : builder.getStmts()) {
+      if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
 
         Local def = (Local) stmt.getDefs().get(0);
 
         Set<Local> aliveLocals = new HashSet<>();
-        for(Stmt succ : graph.successors(stmt)){
+        for (Stmt succ : graph.successors(stmt)) {
           aliveLocals.addAll(analyser.getLiveLocalsBeforeStmt(succ));
         }
 
-        for(Local aliveLocal : aliveLocals){
-          if(aliveLocal.getType().equals(def.getType())){
-             //set interference for both locals: aliveLocal, def
-             if(localToLocals.containsKey(def)){
-               localToLocals.get(def).add(aliveLocal);
-             }else{
-               Set<Local> locals = new HashSet<>();
-               locals.add(aliveLocal);
-               localToLocals.put(def, locals);
-             }
+        for (Local aliveLocal : aliveLocals) {
+          if (aliveLocal.getType().equals(def.getType())) {
+            // set interference for both locals: aliveLocal, def
+            if (localToLocals.containsKey(def)) {
+              localToLocals.get(def).add(aliveLocal);
+            } else {
+              Set<Local> locals = new HashSet<>();
+              locals.add(aliveLocal);
+              localToLocals.put(def, locals);
+            }
 
-            if(localToLocals.containsKey(aliveLocal)){
+            if (localToLocals.containsKey(aliveLocal)) {
               localToLocals.get(aliveLocal).add(def);
-            }else{
+            } else {
               Set<Local> locals = new HashSet<>();
               locals.add(def);
               localToLocals.put(aliveLocal, locals);
             }
           }
         }
-
       }
     }
     return localToLocals;
@@ -216,5 +221,4 @@ public class LocalPacker implements BodyInterceptor {
       }
     }
   }
-
 }
