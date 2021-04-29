@@ -203,8 +203,11 @@ public class JimpleConverterUtil {
               int charPositionInLine,
               String msg,
               RecognitionException e) {
+
             throw new ResolveException(
-                "Jimple Syntaxerror: " + msg, path, new Position(line, charPositionInLine, -1, -1));
+                "Jimple SyntaxError: " + msg,
+                path,
+                new Position(line - 1, charPositionInLine, line - 1, Integer.MAX_VALUE));
           }
         });
 
@@ -222,8 +225,28 @@ public class JimpleConverterUtil {
               int charPositionInLine,
               String msg,
               RecognitionException e) {
-            throw new ResolveException(
-                "Jimple Syntaxerror: " + msg, path, new Position(line, charPositionInLine, -1, -1));
+
+            Position position;
+            if (e != null) {
+              if (e.getCause() instanceof NoViableAltException) {
+                Token start = ((NoViableAltException) e.getCause()).getStartToken();
+                position =
+                    new Position(
+                        start.getLine() - 1,
+                        start.getCharPositionInLine(),
+                        charPositionInLine - 1,
+                        Integer.MAX_VALUE);
+              } else {
+                // hint: not precise if erroneous input spans across multiple lines!
+                int sizeOfBad = e.getCtx().getText().length();
+                int firstCol = Math.max(charPositionInLine - sizeOfBad, 0);
+                position = new Position(line - 1, firstCol, line - 1, Integer.MAX_VALUE);
+              }
+            } else {
+              position = new Position(line - 1, charPositionInLine, line - 1, Integer.MAX_VALUE);
+            }
+
+            throw new ResolveException("Jimple SyntaxError: " + msg, path, position);
           }
         });
     return parser;
