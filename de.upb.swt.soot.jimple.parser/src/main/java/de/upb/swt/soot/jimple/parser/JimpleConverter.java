@@ -614,7 +614,7 @@ public class JimpleConverter {
             List<Immediate> bootstrapArgs = getArgList(ctx.staticargs);
 
             return Jimple.newDynamicInvokeExpr(
-                methodRef, bootstrapArgs, bootstrapMethodRef, arglist);
+                methodRef, bootstrapArgs, bootstrapMethodRef, getArgList(ctx.dyn_args));
           }
           throw new ResolveException(
               "Malformed Invoke Expression.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));
@@ -663,7 +663,7 @@ public class JimpleConverter {
             return JavaJimple.getInstance()
                 .newMethodType(
                     typeList,
-                    identifierFactory.getType(ctx.method_subsignature().method_name().getText()));
+                    identifierFactory.getType(ctx.method_subsignature().type().getText()));
           }
           throw new ResolveException(
               "Unknown Constant.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));

@@ -1,0 +1,57 @@
+public synchronized class MethodAcceptingLamExpr extends java.lang.Object
+{
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: MethodAcceptingLamExpr;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void lambdaAsParamMethod()
+    {
+        unknown $stack2, l1, $stack3, $stack4, $stack5, $stack6, $stack7, $stack8, l0;
+
+
+        l0 := @this: MethodAcceptingLamExpr;
+
+        $stack2 = dynamicinvoke calcPercentage <Percentage ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(methodtype: double __METHODTYPE__(double), handle: <MethodAcceptingLamExpr: double lambda$lambdaAsParamMethod$0(double)>, methodtype: double __METHODTYPE__(double));
+
+        l1 = $stack2;
+
+        $stack4 = <java.lang.System: java.io.PrintStream out>;
+
+        $stack3 = new java.lang.StringBuilder;
+
+        specialinvoke $stack3.<java.lang.StringBuilder: void <init>()>();
+
+        $stack5 = virtualinvoke $stack3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Percentage : ");
+
+        $stack6 = interfaceinvoke l1.<Percentage: double calcPercentage(double)>(45.0);
+
+        $stack7 = virtualinvoke $stack5.<java.lang.StringBuilder: java.lang.StringBuilder append(double)>($stack6);
+
+        $stack8 = virtualinvoke $stack7.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $stack4.<java.io.PrintStream: void println(java.lang.String)>($stack8);
+
+        return;
+    }
+
+    private static double lambda$lambdaAsParamMethod$0(double)
+    {
+        unknown l0, $stack2;
+
+
+        l0 := @parameter0: double;
+
+        $stack2 = l0 / 100.0;
+
+        return $stack2;
+    }
+}
+
