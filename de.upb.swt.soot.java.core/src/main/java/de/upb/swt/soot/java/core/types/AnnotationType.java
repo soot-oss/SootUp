@@ -91,7 +91,7 @@ public class AnnotationType extends JavaClassType {
             "getDefaultMethods needs to be called at least once with a view for each annotation type.");
       }
     }
-    
+
     return defaultValues;
   }
 
