@@ -20,7 +20,6 @@ package de.upb.swt.soot.java.bytecode.frontend;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
@@ -28,6 +27,7 @@ import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.AnnotationUsage;
 import de.upb.swt.soot.java.core.ConstantUtil;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
@@ -287,9 +287,7 @@ public final class AsmUtil {
     List<AnnotationUsage> annotationUsages = new ArrayList<>();
     for (AnnotationNode e : invisibleParameterAnnotation) {
 
-      Map<String, Constant> paramMap = new HashMap<>();
-
-      boolean isRepeatableAnnotation = false;
+      Map<String, Object> paramMap = new HashMap<>();
 
       if (e.values != null) {
         for (int j = 0; j < e.values.size(); j++) {
@@ -298,26 +296,26 @@ public final class AsmUtil {
 
           // repeatable annotations will have annotations (as a ArrayList) as value!
           if (annotationValue instanceof ArrayList) {
-            isRepeatableAnnotation = true;
 
             final ArrayList<AnnotationNode> annotationValueList =
                 (ArrayList<AnnotationNode>) annotationValue;
 
-            createAnnotationUsage(annotationValueList).forEach(annotationUsages::add);
-
+            paramMap.put(annotationName, createAnnotationUsage(annotationValueList));
           } else {
-            paramMap.put(annotationName, ConstantUtil.fromObject(annotationValue));
+            if (annotationValue instanceof org.objectweb.asm.Type) {
+              org.objectweb.asm.Type typ = (org.objectweb.asm.Type) annotationValue;
+              paramMap.put(
+                  annotationName, JavaJimple.getInstance().newClassConstant(typ.toString()));
+            } else {
+              paramMap.put(annotationName, ConstantUtil.fromObject(annotationValue));
+            }
           }
         }
       }
 
-      if (!isRepeatableAnnotation) {
-
-        AnnotationType at =
-            JavaIdentifierFactory.getInstance().getAnnotationType(AsmUtil.toQualifiedName(e.desc));
-
-        annotationUsages.add(new AnnotationUsage(at, paramMap));
-      }
+      AnnotationType at =
+          JavaIdentifierFactory.getInstance().getAnnotationType(AsmUtil.toQualifiedName(e.desc));
+      annotationUsages.add(new AnnotationUsage(at, paramMap));
     }
 
     return annotationUsages;

@@ -1,9 +1,8 @@
 package de.upb.swt.soot.java.core;
 
-import de.upb.swt.soot.core.jimple.basic.Immediate;
-import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.java.core.types.AnnotationType;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,11 +16,10 @@ import javax.annotation.Nonnull;
 public class AnnotationUsage {
 
   @Nonnull private final AnnotationType annotation;
-  @Nonnull private final Map<String, Constant> values;
-  private Map<String, Immediate> valuesWithDefaults;
+  @Nonnull private final Map<String, Object> values;
+  private Map<String, Object> valuesWithDefaults;
 
-  public AnnotationUsage(
-      @Nonnull AnnotationType annotation, @Nonnull Map<String, Constant> values) {
+  public AnnotationUsage(@Nonnull AnnotationType annotation, @Nonnull Map<String, Object> values) {
     this.annotation = annotation;
     this.values = values;
   }
@@ -32,14 +30,14 @@ public class AnnotationUsage {
   }
 
   @Nonnull
-  public Map<String, Immediate> getValues() {
+  public Map<String, Object> getValues() {
     return Collections.unmodifiableMap(values);
   }
 
   @Nonnull
-  public Map<String, Immediate> getValuesWithDefaults() {
+  public Map<String, Object> getValuesWithDefaults() {
     if (valuesWithDefaults == null) {
-      valuesWithDefaults = annotation.getDefaultValues(Optional.empty());
+      valuesWithDefaults = new HashMap<>(annotation.getDefaultValues(Optional.empty()));
       values.forEach((k, v) -> valuesWithDefaults.put(k, v));
     }
 
@@ -66,7 +64,8 @@ public class AnnotationUsage {
       return false;
     }
     AnnotationUsage that = (AnnotationUsage) o;
-    return annotation.equals(that.annotation) && values.equals(that.values);
+
+    return annotation.equals(that.annotation) && this.values.equals(that.values);
   }
 
   @Override

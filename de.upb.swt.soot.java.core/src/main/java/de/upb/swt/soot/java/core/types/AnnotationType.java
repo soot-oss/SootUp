@@ -23,11 +23,9 @@ package de.upb.swt.soot.java.core.types;
  */
 
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.VoidType;
-import de.upb.swt.soot.java.core.ConstantUtil;
 import de.upb.swt.soot.java.core.JavaAnnotationSootMethod;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.JavaSootMethod;
@@ -36,6 +34,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.StreamSupport;
@@ -55,7 +54,7 @@ public class AnnotationType extends JavaClassType {
   }
 
   private Boolean isInherited = null;
-  private Map<String, Immediate> defaultValues = null;
+  private Map<String, Object> defaultValues = null;
 
   /**
    * Returns default values of annotation parameters. Needs to be called at least once with a
@@ -65,7 +64,7 @@ public class AnnotationType extends JavaClassType {
    * @param viewOptional view to resolve annotation soot class of AnnotationType
    * @return default values of all parameters of this annotation
    */
-  public Map<String, Immediate> getDefaultValues(Optional<JavaView> viewOptional) {
+  public Map<String, Object> getDefaultValues(Optional<JavaView> viewOptional) {
     if (defaultValues == null) {
       defaultValues = new HashMap<>();
       if (viewOptional.isPresent()) {
@@ -84,14 +83,15 @@ public class AnnotationType extends JavaClassType {
 
         for (JavaSootMethod jsm : jsc.getMethods()) {
           JavaAnnotationSootMethod jasm = (JavaAnnotationSootMethod) jsm;
-          defaultValues.put(jasm.getName(), ConstantUtil.fromObject(jasm.getDefaultValue()));
+          Object defaultVal = jasm.getDefaultValue();
+          defaultValues.put(jasm.getName(), defaultVal);
         }
       } else {
         throw new IllegalArgumentException(
             "getDefaultMethods needs to be called at least once with a view for each annotation type.");
       }
     }
-
+    
     return defaultValues;
   }
 
@@ -180,5 +180,26 @@ public class AnnotationType extends JavaClassType {
     }
 
     return true;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    AnnotationType that = (AnnotationType) o;
+
+    return this.getFullyQualifiedName().equals(that.getFullyQualifiedName());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), isInherited, defaultValues);
   }
 }

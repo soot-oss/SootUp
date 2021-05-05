@@ -90,6 +90,7 @@ import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.java.core.ConstantUtil;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.jimple.basic.JavaLocal;
 import de.upb.swt.soot.java.core.language.JavaJimple;
@@ -236,7 +237,21 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Override
   public Object resolveDefaultValue() {
-    return this.annotationDefault;
+
+    return resolveAnnotationsInDefaultValue(this.annotationDefault);
+  }
+
+  private Object resolveAnnotationsInDefaultValue(Object a) {
+    if (a instanceof AnnotationNode) {
+      return AsmUtil.createAnnotationUsage(Collections.singletonList((AnnotationNode) a));
+    }
+
+    if (a instanceof ArrayList) {
+      List<Object> list = new ArrayList<>();
+      ((ArrayList) a).forEach(e -> list.add(resolveAnnotationsInDefaultValue(e)));
+      return list;
+    }
+    return ConstantUtil.fromObject(a);
   }
 
   @Nonnull

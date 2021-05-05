@@ -63,6 +63,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   /** Caches the created PackageNames for packages. */
   final Map<String, PackageName> packages = new HashMap<>();
 
+  /** Chaches annotation types */
+  final Map<String, AnnotationType> annotationTypes = new HashMap<>();
+
   public static JavaIdentifierFactory getInstance() {
     return INSTANCE;
   }
@@ -177,7 +180,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   public AnnotationType getAnnotationType(final String fullyQualifiedClassName) {
     String className = ClassUtils.getShortClassName(fullyQualifiedClassName);
     String packageName = ClassUtils.getPackageName(fullyQualifiedClassName);
-    return new AnnotationType(className, getPackageName(packageName));
+
+    return annotationTypes.computeIfAbsent(
+        className + packageName, (k) -> new AnnotationType(className, getPackageName(packageName)));
   }
 
   @Override

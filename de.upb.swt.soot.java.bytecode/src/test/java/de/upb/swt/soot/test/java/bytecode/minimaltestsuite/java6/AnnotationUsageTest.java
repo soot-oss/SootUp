@@ -3,9 +3,7 @@ package de.upb.swt.soot.test.java.bytecode.minimaltestsuite.java6;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
-import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.signatures.PackageName;
@@ -35,7 +33,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     // ElementType.ANNOTATION_TYPE can be applied to an annotation type.
     JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
 
-    Map<String, Constant> annotationParamMap = new HashMap<>();
+    Map<String, Object> annotationParamMap = new HashMap<>();
     annotationParamMap.put("sthBlue", IntConstant.getInstance(42));
     annotationParamMap.put("author", JavaJimple.getInstance().newStringConstant("GeorgeLucas"));
 
@@ -56,7 +54,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     final Optional<JavaSootField> agent = sootClass.getField("agent");
     assertTrue(agent.isPresent());
 
-    Map<String, Constant> annotationParamMap = new HashMap<>();
+    Map<String, Object> annotationParamMap = new HashMap<>();
     annotationParamMap.put("isRipe", JavaJimple.getInstance().newStringConstant("true"));
 
     assertEquals(
@@ -85,8 +83,8 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
       }
 
       @Override
-      public Map<String, Immediate> getValuesWithDefaults() {
-        Map<String, Immediate> map = new HashMap<>();
+      public Map<String, Object> getValuesWithDefaults() {
+        Map<String, Object> map = new HashMap<>();
 
         map.put("isRipe", JavaJimple.getInstance().newStringConstant("true"));
         map.put("sthNew", IntConstant.getInstance(789));
@@ -105,6 +103,8 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
   @Test
   public void testAnnotationOnMethod() {
     // ElementType.METHOD can be applied to a method-level annotation.
+    AnnotationType at0 = this.identifierFactory.getAnnotationType("OnMethod");
+
     {
       JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
       final Optional<JavaSootMethod> someMethod =
@@ -118,34 +118,59 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
       assertTrue(someMethod.isPresent());
 
       assertEquals(
-          Collections.singletonList(
-              new AnnotationUsage(
-                  new AnnotationType("OnMethod", new PackageName(""), false),
-                  Collections.emptyMap())),
-          someMethod.get().getAnnotations());
+          Collections.singletonList(new AnnotationUsage(at0, Collections.emptyMap())),
+          someMethod.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())));
     }
 
-    // ElementType.CONSTRUCTOR can be applied to a constructor.
+    // repeatable by repeating
+    {
+      JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
+      final Optional<JavaSootMethod> someMethod =
+          sootClass.getMethod("anotherMethod", Collections.emptyList());
+      assertTrue(someMethod.isPresent());
+
+      AnnotationType at = this.identifierFactory.getAnnotationType("OnMethodRepeatable");
+      AnnotationType at2 = this.identifierFactory.getAnnotationType("OnMethodRepeatables");
+
+      Map<String, Object> annotationParamMap = new HashMap<>();
+
+      AnnotationUsage anno1 =
+          new AnnotationUsage(
+              at, Collections.singletonMap("countOnMe", IntConstant.getInstance(1)));
+      AnnotationUsage anno2 =
+          new AnnotationUsage(
+              at, Collections.singletonMap("countOnMe", IntConstant.getInstance(2)));
+
+      annotationParamMap.put("value", Arrays.asList(anno1, anno2));
+
+      assertEquals(
+          Collections.singletonList(new AnnotationUsage(at2, annotationParamMap)),
+          someMethod.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())));
+    }
+
+    // repeatable by using container
     {
       JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
       final Optional<JavaSootMethod> someMethod =
           sootClass.getMethod("<init>", Collections.emptyList());
       assertTrue(someMethod.isPresent());
 
-      Map<String, Constant> annotationParamMap = new HashMap<>();
-      annotationParamMap.put("countOnMe", IntConstant.getInstance(1));
-      Map<String, Constant> annotationParamMap2 = new HashMap<>();
-      annotationParamMap2.put("countOnMe", IntConstant.getInstance(2));
+      AnnotationType at = this.identifierFactory.getAnnotationType("OnMethodRepeatable");
+      AnnotationType at2 = this.identifierFactory.getAnnotationType("OnMethodRepeatables");
+
+      Map<String, Object> annotationParamMap = new HashMap<>();
+      annotationParamMap.put(
+          "containerValue", JavaJimple.getInstance().newStringConstant("betterValue"));
+
+      AnnotationUsage anno1 =
+          new AnnotationUsage(
+              at, Collections.singletonMap("countOnMe", IntConstant.getInstance(42)));
+
+      annotationParamMap.put("value", Collections.singletonList(anno1));
 
       assertEquals(
-          Arrays.asList(
-              new AnnotationUsage(
-                  new AnnotationType("OnMethodRepeatable", new PackageName(""), false),
-                  annotationParamMap),
-              new AnnotationUsage(
-                  new AnnotationType("OnMethodRepeatable", new PackageName(""), false),
-                  annotationParamMap2)),
-          someMethod.get().getAnnotations());
+          Collections.singletonList(new AnnotationUsage(at2, annotationParamMap)),
+          someMethod.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())));
     }
   }
 
@@ -189,7 +214,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
 
       parameterLocal = (JavaLocal) body.getParameterLocal(3);
       // boolean with annotation with custom value
-      Map<String, Constant> annotationParamMap = new HashMap<>();
+      Map<String, Object> annotationParamMap = new HashMap<>();
       annotationParamMap.put("isBigDuck", BooleanConstant.getTrue());
       assertEquals(
           Collections.singletonList(

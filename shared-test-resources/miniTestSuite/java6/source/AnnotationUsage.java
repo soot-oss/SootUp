@@ -38,7 +38,8 @@ import java.lang.annotation.Inherited;
 }
 
 @interface OnMethodRepeatables{
-  OnMethodRepeatable[] value();
+  String containerValue() default "defaultValue";
+  OnMethodRepeatable[] value() default {@OnMethodRepeatable(countOnMe = 1337)};
 }
 
 @NonInheritableOnClass
@@ -48,10 +49,17 @@ public class AnnotationUsage{
   @OnField(isRipe = "true")
   private Object agent;
 
-  @OnMethodRepeatable(countOnMe = 1)
-  @OnMethodRepeatable(countOnMe = 2)
+  @OnMethodRepeatables(containerValue = "betterValue", value = {
+      @OnMethodRepeatable(countOnMe = 42)
+  })
   public AnnotationUsage(){
     // constructor
+  }
+
+  @OnMethodRepeatable(countOnMe=1)
+  @OnMethodRepeatable(countOnMe=2)
+  public void anotherMethod() {
+
   }
 
   @OnMethod
