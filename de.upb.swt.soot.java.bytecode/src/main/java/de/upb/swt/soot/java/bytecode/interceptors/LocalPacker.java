@@ -253,7 +253,7 @@ public class LocalPacker implements BodyInterceptor {
   }
 
   /**
-   * Replace corresponding oldStmt with newStmt in BodyBuilder and visitList
+   * Replace corresponding oldStmt with newStmt in BodyBuilder
    *
    * @param builder
    * @param oldStmt
