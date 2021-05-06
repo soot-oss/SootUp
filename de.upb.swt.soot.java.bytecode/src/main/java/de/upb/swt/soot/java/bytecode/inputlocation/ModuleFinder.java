@@ -119,7 +119,7 @@ public class ModuleFinder {
     }
 
     // search iterative on the remaining entries of the modulePath for the module
-    while (next < modulePathEntries.size()) {
+    while (!isFullyResolved()) {
       discoverModulesIn(modulePathEntries.get(next++));
       inputLocationForModule = moduleInputLocation.get(moduleName);
       if (inputLocationForModule != null) {
@@ -137,7 +137,7 @@ public class ModuleFinder {
   @Nonnull
   public Collection<ModuleSignature> discoverAllModules() {
 
-    while (next < modulePathEntries.size()) {
+    while (!isFullyResolved()) {
       discoverModulesIn(modulePathEntries.get(next++));
     }
     return Collections.unmodifiableCollection(moduleInputLocation.keySet());

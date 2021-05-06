@@ -24,6 +24,7 @@ package de.upb.swt.soot.java.core;
 
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.signatures.PackageName;
+import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
@@ -141,11 +142,11 @@ public abstract class JavaModuleInfo {
 
   public static class ModuleReference {
 
-    @Nonnull private final JavaClassType moduleInfo;
+    @Nonnull private final ModuleSignature moduleInfo;
     @Nonnull private final EnumSet<ModuleModifier> modifiers;
 
     public ModuleReference(
-        @Nonnull JavaClassType moduleInfo, @Nonnull EnumSet<ModuleModifier> accessModifier) {
+        @Nonnull ModuleSignature moduleInfo, @Nonnull EnumSet<ModuleModifier> accessModifier) {
       this.moduleInfo = moduleInfo;
       this.modifiers = accessModifier;
     }
@@ -156,20 +157,20 @@ public abstract class JavaModuleInfo {
     }
 
     @Nonnull
-    public JavaClassType getModuleInfoType() {
+    public ModuleSignature getModuleSignature() {
       return moduleInfo;
     }
   }
 
   public static class PackageReference {
-    @Nonnull private PackageName packageName;
+    @Nonnull private ModulePackageName packageName;
     @Nonnull private EnumSet<ModuleModifier> modifers;
-    @Nonnull private Set<JavaClassType> targetModules;
+    @Nonnull private Set<ModuleSignature> targetModules;
 
     public PackageReference(
-        @Nonnull PackageName packageName,
+        @Nonnull ModulePackageName packageName,
         @Nonnull EnumSet<ModuleModifier> modifier,
-        @Nonnull Collection<JavaClassType> targetModules) {
+        @Nonnull Collection<ModuleSignature> targetModules) {
       this.packageName = packageName;
       this.modifers = modifier;
       this.targetModules =

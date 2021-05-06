@@ -32,6 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import org.objectweb.asm.ClassReader;
@@ -66,39 +67,36 @@ public class AsmModuleSource extends JavaModuleInfo {
 
   @Override
   public Collection<JavaModuleInfo.ModuleReference> requires() {
-    ArrayList<JavaModuleInfo.ModuleReference> requieres = new ArrayList<>();
+    ArrayList<JavaModuleInfo.ModuleReference> requires = new ArrayList<>();
 
     // add requies
     for (ModuleRequireNode moduleRequireNode : module.requires) {
-      JavaClassType classSignature = AsmUtil.asmIDToSignature(moduleRequireNode.module);
-      if (classSignature.isModuleInfo()) {
-        // sootModuleInfo.addRequire(sootClassOptional.get(), moduleRequireNode.access,
-        // moduleRequireNode.version);
-        JavaModuleInfo.ModuleReference reference =
-            new JavaModuleInfo.ModuleReference(
-                classSignature, AsmUtil.getModuleModifiers(moduleRequireNode.access));
-        requieres.add(reference);
-      }
+      ModuleSignature moduleSignature =
+          JavaModuleIdentifierFactory.getModuleSignature(moduleRequireNode.module);
+      JavaModuleInfo.ModuleReference reference =
+          new JavaModuleInfo.ModuleReference(
+              moduleSignature, AsmUtil.getModuleModifiers(moduleRequireNode.access));
+      requires.add(reference);
     }
-    return requieres;
+    return requires;
   }
 
   @Override
   public Collection<JavaModuleInfo.PackageReference> exports() {
     ArrayList<JavaModuleInfo.PackageReference> exports = new ArrayList<>();
+    if (module.exports == null) {
+      return Collections.emptyList();
+    }
+
+    JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
     for (ModuleExportNode exportNode : module.exports) {
-      Iterable<JavaClassType> optionals = AsmUtil.asmIdToSignature(exportNode.modules);
-      ArrayList<JavaClassType> modules = new ArrayList<>();
-      for (JavaClassType sootClassOptional : optionals) {
-        if (sootClassOptional.isModuleInfo()) {
-          modules.add(sootClassOptional);
-        }
+      ArrayList<ModuleSignature> modules = new ArrayList<>();
+      for (String moduleName : exportNode.modules) {
+        modules.add(JavaModuleIdentifierFactory.getModuleSignature(moduleName));
       }
-      // FIXME: create constructs here
-      // sootModuleInfo.addExport(exportNode.packaze, exportNode.access, modules);
       JavaModuleInfo.PackageReference reference =
           new JavaModuleInfo.PackageReference(
-              JavaModuleIdentifierFactory.getInstance().getPackageName(exportNode.packaze),
+              identifierFactory.getPackageName(exportNode.packaze),
               AsmUtil.getModuleModifiers(exportNode.access),
               modules);
       exports.add(reference);
@@ -109,8 +107,8 @@ public class AsmModuleSource extends JavaModuleInfo {
   @Override
   public Collection<JavaModuleInfo.PackageReference> opens() {
     ArrayList<JavaModuleInfo.PackageReference> opens = new ArrayList<>();
-    /// add opens
-    for (ModuleOpenNode moduleOpenNode : module.opens) {
+    /// FIXME add opens
+    /*for (ModuleOpenNode moduleOpenNode : module.opens) {
       Iterable<JavaClassType> optionals = AsmUtil.asmIdToSignature(moduleOpenNode.modules);
       ArrayList<JavaClassType> modules = new ArrayList<>();
       for (JavaClassType sootClassOptional : optionals) {
@@ -126,7 +124,7 @@ public class AsmModuleSource extends JavaModuleInfo {
               modules);
       opens.add(reference);
     }
-
+    */
     return opens;
   }
 

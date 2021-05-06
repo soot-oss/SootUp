@@ -9,6 +9,7 @@ import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaModuleView;
+import java.util.Collection;
 import java.util.Optional;
 import org.junit.Test;
 
@@ -123,19 +124,125 @@ public class JavaModuleViewTest {
 
   @Test
   public void testRequiresExport() {
-    // TODO: adapt
+
+    // requires: modmain -> modb -> modc
+    // transitive: all to java.base
+
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(new JavaModulePathAnalysisInputLocation(testPath + "requires_exports"))
+            .addModulePath(
+                new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
-    JavaClassType targetClass =
+    ModulePackageName modMain =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgmain", "modmain");
+    ModulePackageName modB =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgb", "modb");
+    ModulePackageName modC =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgc", "modc");
+
+    // ModMain
+    Optional<JavaModuleInfo> moduleInfoMain = view.getModuleInfo(modMain.getModuleSignature());
+    assertTrue(moduleInfoMain.isPresent());
+    Collection<JavaModuleInfo.ModuleReference> requiresOfMain = moduleInfoMain.get().requires();
+    assertTrue(
+        requiresOfMain.stream()
+            .anyMatch(reqs -> reqs.getModuleSignature().equals(modB.getModuleSignature())));
+
+    JavaClassType targetClassMain =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+    Optional<JavaSootClass> aClassMain = view.getClass(modMain, targetClassMain);
+    assertTrue(aClassMain.isPresent());
+
+    // ModB
+    Optional<JavaModuleInfo> moduleInfoB = view.getModuleInfo(modB.getModuleSignature());
+    assertTrue(moduleInfoB.isPresent());
+    Collection<JavaModuleInfo.ModuleReference> requiresOfB = moduleInfoB.get().requires();
+    assertTrue(
+        requiresOfB.stream()
+            .anyMatch(reqs -> reqs.getModuleSignature().equals(modC.getModuleSignature())));
+
+    JavaClassType targetClassB =
+        JavaModuleIdentifierFactory.getInstance().getClassType("B", "pkgb", "modb");
+    Optional<JavaSootClass> aClassB = view.getClass(modB, targetClassB);
+    assertTrue(aClassB.isPresent());
+    assertTrue(view.getClass(modMain, targetClassB).isPresent());
+
+    // ModC
+    JavaClassType targetClassC =
+        JavaModuleIdentifierFactory.getInstance().getClassType("C", "pkgc", "modc");
+    Optional<JavaSootClass> aClassC = view.getClass(modC, targetClassC);
+    assertTrue(aClassC.isPresent());
+
+    // test transitive
+    JavaClassType targetClassFromJavaBase =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
-    Optional<JavaSootClass> aClass = view.getClass(targetClass);
-    assertTrue(aClass.isPresent());
-    fail("test module descriptor/rights");
+    Optional<JavaSootClass> aClassJavaBase = view.getClass(modMain, targetClassFromJavaBase);
+    assertTrue(aClassJavaBase.isPresent());
+  }
+
+  @Test
+  public void testRequiresTransitiveExport() {
+
+    // requires: modmain -> modb -> modc
+    // transitive: all to java.base
+
+    JavaProject p =
+        JavaProject.builder(new JavaLanguage(9))
+            .addModulePath(
+                new JavaModulePathAnalysisInputLocation(
+                    testPath + "requires_exports_requires-transitive_exports-to/jar"))
+            .build();
+
+    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+
+    ModulePackageName modMain =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgmain", "modmain");
+    ModulePackageName modB =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgb", "modb");
+    ModulePackageName modC =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgc", "modc");
+
+    // ModMain
+    Optional<JavaModuleInfo> moduleInfoMain = view.getModuleInfo(modMain.getModuleSignature());
+    assertTrue(moduleInfoMain.isPresent());
+    Collection<JavaModuleInfo.ModuleReference> requiresOfMain = moduleInfoMain.get().requires();
+    assertTrue(
+        requiresOfMain.stream()
+            .anyMatch(reqs -> reqs.getModuleSignature().equals(modB.getModuleSignature())));
+
+    JavaClassType targetClassMain =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+    Optional<JavaSootClass> aClassMain = view.getClass(modMain, targetClassMain);
+    assertTrue(aClassMain.isPresent());
+
+    // ModB
+    Optional<JavaModuleInfo> moduleInfoB = view.getModuleInfo(modB.getModuleSignature());
+    assertTrue(moduleInfoB.isPresent());
+    Collection<JavaModuleInfo.ModuleReference> requiresOfB = moduleInfoB.get().requires();
+    assertTrue(
+        requiresOfB.stream()
+            .anyMatch(reqs -> reqs.getModuleSignature().equals(modC.getModuleSignature())));
+
+    JavaClassType targetClassB =
+        JavaModuleIdentifierFactory.getInstance().getClassType("B", "pkgb", "modb");
+    Optional<JavaSootClass> aClassB = view.getClass(modB, targetClassB);
+    assertTrue(aClassB.isPresent());
+    assertTrue(view.getClass(modMain, targetClassB).isPresent());
+
+    // ModC
+    JavaClassType targetClassC =
+        JavaModuleIdentifierFactory.getInstance().getClassType("C", "pkgc", "modc");
+    Optional<JavaSootClass> aClassC = view.getClass(modC, targetClassC);
+    assertTrue(aClassC.isPresent());
+
+    // test
+    JavaClassType targetClassFromJavaBase =
+        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+    Optional<JavaSootClass> aClassJavaBase = view.getClass(modMain, targetClassFromJavaBase);
+    assertTrue(aClassJavaBase.isPresent());
   }
 
   @Test

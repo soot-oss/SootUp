@@ -29,6 +29,7 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.ModuleInfoAnalysisInputLocation;
@@ -38,6 +39,7 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -50,6 +52,9 @@ public class JavaModuleView extends JavaView {
   @Nonnull final JavaModuleInfo unnamedModule = JavaModuleInfo.getUnnamedModuleInfo();
   @Nonnull final HashMap<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
   @Nonnull final List<ModuleInfoAnalysisInputLocation> moduleInputLocations;
+
+  static final ModuleSignature javaBaseSig =
+      JavaModuleIdentifierFactory.getInstance().getModuleSignature("java.base");
 
   @Nonnull
   protected Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
@@ -138,13 +143,16 @@ public class JavaModuleView extends JavaView {
       return Optional.empty();
     }
 
-    JavaModuleInfo start = startOpt.get();
-    if (start.equals(JavaModuleInfo.getUnnamedModuleInfo())) {
+    JavaModuleInfo moduleInfo = startOpt.get();
+    if (moduleInfo.equals(JavaModuleInfo.getUnnamedModuleInfo())) {
       // unnamed module
 
       // find type in all exported packages of modules on module path
       final List<AbstractClassSource<JavaSootClass>> foundClassSources =
-          getAbstractClassSourcesForModules(type);
+          getAbstractClassSourcesForModules(type)
+              .limit(1)
+              .map(Optional::get)
+              .collect(Collectors.toList());
 
       if (!foundClassSources.isEmpty()) {
 
@@ -159,24 +167,47 @@ public class JavaModuleView extends JavaView {
     } else {
       // named module
 
-      if (start.isAutomaticModule()) {
+      if (moduleInfo.isAutomaticModule()) {
         // automatic module can read every exported package of an explicit module
 
         // find the class in exported packages of modules
         final List<AbstractClassSource<JavaSootClass>> foundClassSources =
-            getAbstractClassSourcesForModules(type);
+            getAbstractClassSourcesForModules(type)
+                .limit(1)
+                .map(Optional::get)
+                .collect(Collectors.toList());
 
         if (!foundClassSources.isEmpty()) {
           return buildClassFrom(foundClassSources.get(0));
         } else {
-          // automatic module can access the unnamed module -> find in classpath (as if modules do
+          // automatic module can access the unnamed module -> try to find in classpath (as if
+          // modules do
           // not exist)
           return super.getClass(type);
         }
       } else {
+        boolean targetIsSamePackage =
+            type.getPackageName() instanceof ModulePackageName
+                && ((ModulePackageName) type.getPackageName()).getModuleSignature()
+                    == entryPackage.getModuleSignature();
         // explicit module
         final List<AbstractClassSource<JavaSootClass>> foundClassSources =
-            getAbstractClassSourcesForModules(type);
+            getAbstractClassSourcesForModules(type)
+                .map(Optional::get)
+                // TODO: check implicit java.base from NON AsmModuleSurces
+                .filter(
+                    sc ->
+                        targetIsSamePackage
+                            || moduleInfo.requires().stream()
+                                .anyMatch(
+                                    req ->
+                                        req.getModuleSignature()
+                                            .equals(
+                                                ((ModulePackageName)
+                                                        sc.getClassType().getPackageName())
+                                                    .getModuleSignature())))
+                .limit(1)
+                .collect(Collectors.toList());
 
         if (!foundClassSources.isEmpty()) {
           return buildClassFrom(foundClassSources.get(0));
@@ -188,8 +219,8 @@ public class JavaModuleView extends JavaView {
   }
 
   @Nonnull
-  private List<AbstractClassSource<JavaSootClass>> getAbstractClassSourcesForModules(
-      @Nonnull JavaClassType type) {
+  private Stream<Optional<? extends AbstractClassSource<JavaSootClass>>>
+      getAbstractClassSourcesForModules(@Nonnull JavaClassType type) {
 
     // find the class in exported packages of modules
     return getProject().getInputLocations().stream()
@@ -209,13 +240,10 @@ public class JavaModuleView extends JavaView {
             cs -> {
               PackageName packageName = cs.get().getClassType().getPackageName();
               return packageName instanceof ModulePackageName
-                  && isPackageExportedByModule(
-                      ((ModulePackageName) packageName).getModuleSignature(),
-                      (ModulePackageName) type.getPackageName());
-            })
-        .limit(1)
-        .map(Optional::get)
-        .collect(Collectors.toList());
+              /*                && isPackageExportedByModule(
+              ((ModulePackageName) packageName).getModuleSignature(),
+              (ModulePackageName) type.getPackageName())*/ ;
+            });
   }
 
   @Nonnull
