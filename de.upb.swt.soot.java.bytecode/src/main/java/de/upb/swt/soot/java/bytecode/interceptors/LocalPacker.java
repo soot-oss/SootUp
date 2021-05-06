@@ -21,16 +21,20 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #L%
  */
 import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.BodyUtils;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.Type;
 import java.util.*;
 import javax.annotation.Nonnull;
 
-/** @author ZunWang* */
+/** @author Zun Wang * */
 public class LocalPacker implements BodyInterceptor {
 
   @Override
@@ -38,13 +42,14 @@ public class LocalPacker implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
     Map<Local, Integer> localToColor = assignLocalsColor(builder);
-    // map each color to a new color
+    // map each original local to a new local
     Map<Local, Local> localToNewLocal = new HashMap<>();
+    // map each new local to corresponding list of original local
+    Map<Local, List<Local>> newLocalToLocals = new HashMap<>();
     List<Local> originalLocals = new ArrayList<>(builder.getLocals());
 
     Map<TypeColorPair, Local> typeColorToLocal = new HashMap<>();
-    Set<String> usedLocalNames = new HashSet<>();
-    Set<Local> newLocals = new HashSet<>();
+    int localIndex = 0;
     for (Local original : originalLocals) {
       Type type = original.getType();
       int color = localToColor.get(original);
@@ -55,29 +60,74 @@ public class LocalPacker implements BodyInterceptor {
       if (typeColorToLocal.containsKey(pair)) {
         newLocal = typeColorToLocal.get(pair);
       } else {
-        newLocal = original;
-        // If local's name contains "#", '#' and the part behind it should be deleted
-        int signIndex = newLocal.getName().indexOf("#");
-        if (signIndex != -1) {
-          String newName = newLocal.getName().substring(0, signIndex);
-          if (usedLocalNames.add(newName)) {
-            newLocal = newLocal.withName(newName);
-          } else {
-            // TODO: think a better local name strategy
+        String name = original.getName();
+        int i = 0;
+        for (; i < name.length(); i++) {
+          if (Character.isDigit(name.charAt(i))) {
+            break;
           }
         }
+        String newName = name.substring(0, i) + '*' + localIndex;
+        localIndex++;
+        newLocal = original.withName(newName);
+
         typeColorToLocal.put(pair, newLocal);
       }
-      newLocals.add(newLocal);
       localToNewLocal.put(original, newLocal);
+      if (!newLocalToLocals.containsKey(newLocal)) {
+        newLocalToLocals.put(newLocal, new ArrayList<>());
+      }
+      newLocalToLocals.get(newLocal).add(original);
+    }
+
+    // Correct a reasonable name for each new local and change them in BodyBuilder
+    // store all new locals with reasonable name, if a local is not in newLoals, means that it
+    // doesn't has reasonable name
+    Set<Local> newLocals = new LinkedHashSet<>();
+    for (Stmt stmt : builder.getStmts()) {
+      Stmt newStmt = stmt;
+      for (Value use : stmt.getUses()) {
+        if (use instanceof Local) {
+          Local newLocal = localToNewLocal.get(use);
+          // assign a reasonable name
+          if (!newLocals.contains(newLocal)) {
+            int starPos = newLocal.getName().indexOf('*');
+            String reasonableName = newLocal.getName().substring(0, starPos) + newLocals.size();
+            List<Local> oriLocals = newLocalToLocals.get(newLocal);
+            newLocal = newLocal.withName(reasonableName);
+            newLocals.add(newLocal);
+            for (Local ori : oriLocals) {
+              localToNewLocal.put(ori, newLocal);
+            }
+          }
+          newStmt = BodyUtils.withNewUse(newStmt, use, newLocal);
+        }
+      }
+      if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
+        Local def = (Local) stmt.getDefs().get(0);
+        Local newLocal = localToNewLocal.get(def);
+        // assign a reasonable name
+        if (!newLocals.contains(newLocal)) {
+          int starPos = newLocal.getName().indexOf('*');
+          String reasonableName = newLocal.getName().substring(0, starPos) + newLocals.size();
+          List<Local> oriLocals = newLocalToLocals.get(newLocal);
+          newLocal = newLocal.withName(reasonableName);
+          newLocals.add(newLocal);
+          for (Local ori : oriLocals) {
+            localToNewLocal.put(ori, newLocal);
+          }
+        }
+        newStmt = BodyUtils.withNewDef(newStmt, newLocal);
+      }
+      if (!stmt.equals(newStmt)) {
+        replaceStmtInBuilder(builder, stmt, newStmt);
+      }
     }
     builder.setLocals(newLocals);
-
-    // TODO: newLocals instead of original Locals in for all stmts
   }
 
   /**
-   * Assign each local from a Bodybuilder a color
+   * Assign each local from a Bodybuilder a integer color
    *
    * @param builder
    * @return a Map that maps local to a integer color
@@ -126,10 +176,9 @@ public class LocalPacker implements BodyInterceptor {
         Type type = local.getType();
         int colorCount = typeToColorCount.get(type);
         // determine which colors are unavailable for this local
-        Set<Local> interferences = new HashSet<>();
         BitSet unavailableColors = new BitSet(colorCount);
         if (localInterferenceMap.containsKey(local)) {
-          interferences = localInterferenceMap.get(local);
+          Set<Local> interferences = localInterferenceMap.get(local);
           for (Local interference : interferences) {
             if (localToColor.containsKey(interference)) {
               unavailableColors.set(localToColor.get(interference));
@@ -179,7 +228,7 @@ public class LocalPacker implements BodyInterceptor {
         }
 
         for (Local aliveLocal : aliveLocals) {
-          if (aliveLocal.getType().equals(def.getType())) {
+          if (aliveLocal != def && aliveLocal.getType().equals(def.getType())) {
             // set interference for both locals: aliveLocal, def
             if (localToLocals.containsKey(def)) {
               localToLocals.get(def).add(aliveLocal);
@@ -203,6 +252,41 @@ public class LocalPacker implements BodyInterceptor {
     return localToLocals;
   }
 
+  /**
+   * Replace corresponding oldStmt with newStmt in BodyBuilder and visitList
+   *
+   * @param builder
+   * @param oldStmt
+   * @param newStmt
+   */
+  private void replaceStmtInBuilder(Body.BodyBuilder builder, Stmt oldStmt, Stmt newStmt) {
+    builder.replaceStmt(oldStmt, newStmt);
+    adaptTraps(builder, oldStmt, newStmt);
+  }
+  /**
+   * Fit the modified stmt in Traps
+   *
+   * @param builder a bodybuilder, use it to modify Trap
+   * @param oldStmt a Stmt which maybe a beginStmt or endStmt in a Trap
+   * @param newStmt a modified stmt to replace the oldStmt.
+   */
+  private void adaptTraps(
+      @Nonnull Body.BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+    List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
+    for (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) {
+      Trap trap = iterator.next();
+      JTrap jtrap = (JTrap) trap;
+      if (oldStmt.equivTo(trap.getBeginStmt())) {
+        Trap newTrap = jtrap.withBeginStmt(newStmt);
+        iterator.set(newTrap);
+      } else if (oldStmt.equivTo(trap.getEndStmt())) {
+        Trap newTrap = jtrap.withEndStmt(newStmt);
+        iterator.set(newTrap);
+      }
+    }
+    builder.setTraps(traps);
+  }
+
   private class TypeColorPair {
     public Type type;
     public int color;
@@ -210,6 +294,10 @@ public class LocalPacker implements BodyInterceptor {
     public TypeColorPair(Type type, int color) {
       this.type = type;
       this.color = color;
+    }
+
+    public int hashCode() {
+      return type.hashCode() + 1013 * color;
     }
 
     public boolean equals(Object other) {
