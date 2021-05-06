@@ -2,7 +2,6 @@ package de.upb.swt.soot.test.java.bytecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.assertEquals;
 
-import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.java.core.AnnotationUsage;
@@ -21,7 +20,7 @@ public class AnnotationUsageInheritedTest extends MinimalBytecodeTestSuiteBase {
   @Test
   public void testInheritedAnnotationOnClass() {
     JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
-    Map<String, Constant> annotationParamMap = new HashMap<>();
+    Map<String, Object> annotationParamMap = new HashMap<>();
 
     annotationParamMap.put("sthBlue", IntConstant.getInstance(42));
     annotationParamMap.put("author", JavaJimple.getInstance().newStringConstant("GeorgeLucas"));

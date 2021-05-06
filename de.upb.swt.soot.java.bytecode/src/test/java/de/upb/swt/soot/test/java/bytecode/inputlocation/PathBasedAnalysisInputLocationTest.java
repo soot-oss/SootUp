@@ -154,6 +154,11 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                               }
 
                               @Override
+                              public Object resolveDefaultValue() {
+                                return null;
+                              }
+
+                              @Override
                               @Nonnull
                               public MethodSignature getSignature() {
                                 return JavaIdentifierFactory.getInstance()
