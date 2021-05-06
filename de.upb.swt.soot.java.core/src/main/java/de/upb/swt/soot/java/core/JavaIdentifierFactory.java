@@ -387,8 +387,8 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   public MethodSubSignature getMethodSubSignature(
       @Nonnull String name,
-      @Nonnull Iterable<? extends Type> parameterSignatures,
-      @Nonnull Type returnType) {
+      @Nonnull Type returnType,
+      @Nonnull Iterable<? extends Type> parameterSignatures) {
     return new MethodSubSignature(name, parameterSignatures, returnType);
   }
 
@@ -472,7 +472,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
                 .map(typeName -> getType(typeName))
                 .collect(Collectors.toList());
 
-    return getMethodSubSignature(methodName, argsList, getType(returnName));
+    return getMethodSubSignature(methodName, getType(returnName), argsList);
   }
 
   @Nonnull
