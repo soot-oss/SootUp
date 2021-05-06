@@ -4,7 +4,6 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -34,7 +33,6 @@ public class LocalPackerTest {
 
   JavaClassType classType = factory.getClassType("Test");
   JavaClassType intType = factory.getClassType("int");
-  JavaClassType doubleType = factory.getClassType("double");
 
   IdentityRef identityRef = JavaJimple.newThisRef(classType);
 
@@ -48,8 +46,8 @@ public class LocalPackerTest {
   Local l2 = JavaJimple.newLocal("l2", intType);
   Local l2hash2 = JavaJimple.newLocal("l2#2", intType);
   Local l3 = JavaJimple.newLocal("l3", intType);
-  Local l1hash3 = JavaJimple.newLocal("l1#3", intType);
-  Local l2hash4 = JavaJimple.newLocal("l2#4", intType);
+  Local l2hash3 = JavaJimple.newLocal("l2#3", intType);
+  Local l1hash4 = JavaJimple.newLocal("l1#4", intType);
   Local l1hash5 = JavaJimple.newLocal("l1#5", intType);
 
   // build stmts
@@ -57,12 +55,11 @@ public class LocalPackerTest {
   Stmt identityStmt0 = JavaJimple.newIdentityStmt(l1hash1, identityRef0, noStmtPositionInfo);
   Stmt identityStmt1 = JavaJimple.newIdentityStmt(l2hash2, identityRef1, noStmtPositionInfo);
   Stmt stmt1 = JavaJimple.newAssignStmt(l3, IntConstant.getInstance(10), noStmtPositionInfo);
-  Stmt stmt2 = JavaJimple.newAssignStmt(l1hash3, IntConstant.getInstance(1), noStmtPositionInfo);
-  Stmt stmt3 =
-      JavaJimple.newAssignStmt(l2hash4, DoubleConstant.getInstance(2.0), noStmtPositionInfo);
+  Stmt stmt2 = JavaJimple.newAssignStmt(l2hash3, l3, noStmtPositionInfo);
+  Stmt stmt3 = JavaJimple.newAssignStmt(l1hash4, IntConstant.getInstance(0), noStmtPositionInfo);
   Stmt stmt4 =
       JavaJimple.newAssignStmt(
-          l1hash5, JavaJimple.newAddExpr(l1hash3, IntConstant.getInstance(1)), noStmtPositionInfo);
+          l1hash5, JavaJimple.newAddExpr(l1hash4, IntConstant.getInstance(1)), noStmtPositionInfo);
   Stmt stmt5 =
       JavaJimple.newAssignStmt(
           l1hash5, JavaJimple.newAddExpr(l1hash5, IntConstant.getInstance(1)), noStmtPositionInfo);
@@ -70,14 +67,32 @@ public class LocalPackerTest {
   Stmt gt = JavaJimple.newGotoStmt(noStmtPositionInfo);
   Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
+  Stmt eidentityStmt0 = JavaJimple.newIdentityStmt(l1, identityRef0, noStmtPositionInfo);
+  Stmt eidentityStmt1 = JavaJimple.newIdentityStmt(l2, identityRef1, noStmtPositionInfo);
+  Stmt estmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(10), noStmtPositionInfo);
+  Stmt estmt2 = JavaJimple.newAssignStmt(l2, l1, noStmtPositionInfo);
+  Stmt estmt3 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(0), noStmtPositionInfo);
+  Stmt estmt4 =
+      JavaJimple.newAssignStmt(
+          l2, JavaJimple.newAddExpr(l2, IntConstant.getInstance(1)), noStmtPositionInfo);
+  Stmt estmt5 =
+      JavaJimple.newAssignStmt(
+          l2, JavaJimple.newAddExpr(l2, IntConstant.getInstance(1)), noStmtPositionInfo);
+  Stmt estmt6 = JavaJimple.newIfStmt(JavaJimple.newGtExpr(l2, l1), noStmtPositionInfo);
+
   @Test
   public void testLocalPacker() {
     Body body = createBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
-    System.out.println(body);
 
     LocalPacker localPacker = new LocalPacker();
     localPacker.interceptBody(builder);
+    body = builder.build();
+
+    Body expectedBody = createExpectedBody();
+
+    AssertUtils.assertLocalsEquiv(expectedBody, body);
+    AssertUtils.assertStmtGraphEquiv(expectedBody, body);
   }
 
   private Body createBody() {
@@ -93,7 +108,7 @@ public class LocalPackerTest {
 
     // build set locals
     Set<Local> locals =
-        ImmutableUtils.immutableSet(l0, l1, l2, l3, l1hash1, l2hash2, l1hash3, l2hash4, l1hash5);
+        ImmutableUtils.immutableSet(l0, l1, l2, l3, l1hash1, l2hash2, l2hash3, l1hash4, l1hash5);
     builder.setLocals(locals);
 
     // build stmtGraph
@@ -108,6 +123,43 @@ public class LocalPackerTest {
     builder.addFlow(stmt6, gt);
     builder.addFlow(gt, stmt5);
     builder.addFlow(stmt6, ret);
+
+    builder.setStartingStmt(startingStmt);
+
+    // build position
+    Position position = NoPositionInformation.getInstance();
+    builder.setPosition(position);
+
+    return builder.build();
+  }
+
+  private Body createExpectedBody() {
+
+    Body.BodyBuilder builder = Body.builder();
+
+    List<Type> parameters = new ArrayList<>();
+    parameters.add(intType);
+    // parameters.add(doubleType);
+    MethodSignature methodSignature =
+        new MethodSignature(classType, "test", parameters, VoidType.getInstance());
+    builder.setMethodSignature(methodSignature);
+
+    // build set locals
+    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2);
+    builder.setLocals(locals);
+
+    // build stmtGraph
+    builder.addFlow(startingStmt, eidentityStmt0);
+    builder.addFlow(eidentityStmt0, eidentityStmt1);
+    builder.addFlow(eidentityStmt1, estmt1);
+    builder.addFlow(estmt1, estmt2);
+    builder.addFlow(estmt2, estmt3);
+    builder.addFlow(estmt3, estmt4);
+    builder.addFlow(estmt4, estmt5);
+    builder.addFlow(estmt5, estmt6);
+    builder.addFlow(estmt6, gt);
+    builder.addFlow(gt, estmt5);
+    builder.addFlow(estmt6, ret);
 
     builder.setStartingStmt(startingStmt);
 
