@@ -1,9 +1,10 @@
-package de.upb.swt.soot.core.frontend;
+package de.upb.swt.soot.java.core;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1999-2020 Patrick Lam, Christian Brüggemann and others
+ * Copyright (C) 2021 Bastian Haverkamp
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,26 +22,24 @@ package de.upb.swt.soot.core.frontend;
  * #L%
  */
 
-import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.signatures.MethodSignature;
-import java.io.IOException;
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.model.SourceType;
+import de.upb.swt.soot.core.types.ClassType;
+import java.nio.file.Path;
 import javax.annotation.Nonnull;
 
-/** A class which knows how to produce Body's for SootMethods. */
-public interface BodySource {
+public abstract class JavaAnnotationSootClassSource extends JavaSootClassSource {
 
-  /**
-   * Returns a filled-out body for the given SootMethod. This may be an expensive operation.
-   *
-   * @param modifiers The collection of modifiers
-   */
+  public JavaAnnotationSootClassSource(
+      @Nonnull AnalysisInputLocation<JavaSootClass> srcNamespace,
+      @Nonnull ClassType classSignature,
+      @Nonnull Path sourcePath) {
+    super(srcNamespace, classSignature, sourcePath);
+  }
+
+  @Override
   @Nonnull
-  Body resolveBody(@Nonnull Iterable<Modifier> modifiers) throws ResolveException, IOException;
-
-  /** @return returns default value of method */
-  Object resolveDefaultValue();
-
-  @Nonnull
-  MethodSignature getSignature();
+  public JavaAnnotationSootClass buildClass(@Nonnull SourceType sourceType) {
+    return new JavaAnnotationSootClass(this, sourceType);
+  }
 }
