@@ -80,16 +80,59 @@ public class LocalPackerTest {
           l2, JavaJimple.newAddExpr(l2, IntConstant.getInstance(1)), noStmtPositionInfo);
   Stmt estmt6 = JavaJimple.newIfStmt(JavaJimple.newGtExpr(l2, l1), noStmtPositionInfo);
 
+  /**
+   *
+   *
+   * <pre>
+   *    Test l0;
+   *    int l1, l2, l3, l1#1, l2#2, l2#3, l1#4, l1#5
+   *
+   *    l0 := @this Test
+   *    l1#1 := @parameter0: int;
+   *    l2#2 := @parameter1: int;
+   *    l3 = 10;
+   *    l2#3 = l3;
+   *    l1#4 = 0;
+   *    l1#5 = l1#4 + 1;
+   *  label1:
+   *    if l1#5 > l3 goto label2;
+   *    goto label1;
+   *  label2:
+   *    return;
+   * </pre>
+   *
+   * to:
+   *
+   * <pre>
+   *    Test l0;
+   *    int l1, l2;
+   *
+   *    l0 := @this: Test;
+   *    l1 := @parameter0: int;
+   *    l2 := @parameter1: int;
+   *    l1 = 10;
+   *    l2 = l1;
+   *    l2 = 0;
+   *    l2 = l2 + 1;
+   *  label1:
+   *    l2 = l2 + 1;
+   *    if l2 > l1 goto label2;
+   *  label2:
+   *     return;
+   * </pre>
+   */
   @Test
   public void testLocalPacker() {
     Body body = createBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
+    System.out.println(body);
     LocalPacker localPacker = new LocalPacker();
     localPacker.interceptBody(builder);
     body = builder.build();
 
     Body expectedBody = createExpectedBody();
+    System.out.println(expectedBody);
 
     AssertUtils.assertLocalsEquiv(expectedBody, body);
     AssertUtils.assertStmtGraphEquiv(expectedBody, body);
