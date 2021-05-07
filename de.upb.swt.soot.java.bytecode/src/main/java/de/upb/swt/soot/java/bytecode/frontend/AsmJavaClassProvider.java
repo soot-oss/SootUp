@@ -29,6 +29,7 @@ import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -63,6 +64,10 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
       // TODO: [ms] is this necessary here? check!
       throw new ResolveException("The module info descriptor is not resolvable!", sourcePath);
     } else {
+      if (klassType instanceof AnnotationType) {
+        return new AsmAnnotationClassSource(srcNamespace, sourcePath, klassType, classNode);
+      }
+
       return new AsmClassSource(srcNamespace, sourcePath, klassType, classNode);
     }
   }

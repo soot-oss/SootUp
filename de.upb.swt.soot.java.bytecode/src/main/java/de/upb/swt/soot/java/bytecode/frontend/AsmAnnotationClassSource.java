@@ -4,7 +4,7 @@ package de.upb.swt.soot.java.bytecode.frontend;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2020 Raja Vallée-Rai, Christian Brüggemann, Markus Schmidt and others
+ * Copyright (C) 2021 Raja Vallée-Rai, Christian Brüggemann, Markus Schmidt, Bastian Haverkamp and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -34,22 +34,36 @@ import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.java.core.*;
+import de.upb.swt.soot.java.core.AnnotationUsage;
+import de.upb.swt.soot.java.core.JavaAnnotationSootClassSource;
+import de.upb.swt.soot.java.core.JavaAnnotationSootMethod;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.JavaSootField;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.AnnotationNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.MethodNode;
 
-/** A ClassSource that reads from Java bytecode */
-class AsmClassSource extends JavaSootClassSource {
+public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
 
-  @Nonnull private final ClassNode classNode;
+  @Nonnull protected final ClassNode classNode;
 
-  public AsmClassSource(
+  public AsmAnnotationClassSource(
       AnalysisInputLocation<JavaSootClass> inputLocation,
       Path sourcePath,
       JavaClassType javaClassType,
@@ -79,7 +93,14 @@ class AsmClassSource extends JavaSootClassSource {
         .collect(Collectors.toSet());
   }
 
-  private static Stream<JavaSootMethod> resolveMethods(
+  @Nonnull
+  public Collection<? extends SootMethod> resolveMethods() throws ResolveException {
+    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+    return resolveMethods(classNode.methods, identifierFactory, classSignature)
+        .collect(Collectors.toSet());
+  }
+
+  private static Stream<JavaAnnotationSootMethod> resolveMethods(
       List<MethodNode> methodNodes, IdentifierFactory signatureFactory, ClassType cs) {
     return methodNodes.stream()
         .map(
@@ -99,7 +120,8 @@ class AsmClassSource extends JavaSootClassSource {
                   signatureFactory.getMethodSignature(methodName, cs, retType, sigTypes);
 
               // TODO: position/line numbers if possible
-              return new JavaSootMethod(
+
+              return new JavaAnnotationSootMethod(
                   asmClassClassSourceContent,
                   methodSignature,
                   modifiers,
@@ -107,10 +129,6 @@ class AsmClassSource extends JavaSootClassSource {
                   convertAnnotation(methodSource.invisibleAnnotations),
                   NoPositionInformation.getInstance());
             });
-  }
-
-  private static String convertAnnotation(TypeAnnotationNode node) {
-    return node.desc + node.typePath + node.typeRef;
   }
 
   protected static List<AnnotationUsage> convertAnnotation(List<AnnotationNode> nodes) {
@@ -143,13 +161,6 @@ class AsmClassSource extends JavaSootClassSource {
             : Collections.emptyList());
 
     return convertAnnotation(annotationNodes);
-  }
-
-  @Nonnull
-  public Collection<? extends SootMethod> resolveMethods() throws ResolveException {
-    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    return resolveMethods(classNode.methods, identifierFactory, classSignature)
-        .collect(Collectors.toSet());
   }
 
   @Override

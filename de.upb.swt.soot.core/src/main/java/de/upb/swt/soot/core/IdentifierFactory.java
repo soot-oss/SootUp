@@ -138,8 +138,8 @@ public interface IdentifierFactory {
   @Nonnull
   MethodSubSignature getMethodSubSignature(
       @Nonnull String name,
-      @Nonnull Iterable<? extends Type> parameterSignatures,
-      @Nonnull Type returnType);
+      @Nonnull Type returnType,
+      @Nonnull Iterable<? extends Type> parameterSignatures);
 
   /**
    * Parses the method sub signature.

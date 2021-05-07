@@ -83,18 +83,29 @@ public class JavaSootClass extends SootClass<JavaSootClassSource> {
 
     classSource.resolveAnnotations().forEach(annotationUsages::add);
 
+    annotationUsages.forEach(e -> e.getAnnotation().getDefaultValues(view));
+
+    for (AnnotationUsage annotationUsage : annotationUsages) {
+      for (Object value : annotationUsage.getValuesWithDefaults().values()) {
+        if (value instanceof ArrayList) {
+          ((ArrayList<AnnotationUsage>) value)
+              .forEach(au -> au.getAnnotation().getDefaultValues(view));
+        }
+      }
+    }
+
     return annotationUsages;
   }
 
   @Nonnull
   @Override
-  public Set<JavaSootMethod> getMethods() {
+  public Set<? extends JavaSootMethod> getMethods() {
     return (Set<JavaSootMethod>) super.getMethods();
   }
 
   @Nonnull
   @Override
-  public Set<JavaSootField> getFields() {
+  public Set<? extends SootField> getFields() {
     return (Set<JavaSootField>) super.getFields();
   }
 
