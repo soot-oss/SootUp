@@ -73,6 +73,11 @@ public class OverridingBodySource implements BodySource {
     return body != null ? body : delegate.resolveBody(modifiers);
   }
 
+  @Override
+  public Object resolveDefaultValue() {
+    return delegate.resolveDefaultValue();
+  }
+
   @Nonnull
   @Override
   public MethodSignature getSignature() {

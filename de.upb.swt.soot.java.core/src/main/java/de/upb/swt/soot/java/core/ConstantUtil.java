@@ -1,4 +1,4 @@
-package de.upb.swt.soot.java.bytecode.frontend;
+package de.upb.swt.soot.java.core;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -30,7 +30,7 @@ import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 
 public class ConstantUtil {
-  static Constant fromObject(Object obj) {
+  public static Constant fromObject(Object obj) {
     if (obj == null) {
       return NullConstant.getInstance();
     }

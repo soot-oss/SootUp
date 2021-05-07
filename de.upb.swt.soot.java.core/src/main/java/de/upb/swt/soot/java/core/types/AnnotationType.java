@@ -26,10 +26,15 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.java.core.JavaAnnotationSootMethod;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.JavaSootMethod;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.StreamSupport;
@@ -38,7 +43,7 @@ import javax.annotation.Nonnull;
 /**
  * This class represents Java Annotations (JSR-175).
  *
- * @author Markus Schmidt
+ * @author Markus Schmidt, Bastian Haverkamp
  */
 
 // TODO:[ms] move to a better place?
@@ -49,13 +54,53 @@ public class AnnotationType extends JavaClassType {
   }
 
   private Boolean isInherited = null;
+  private Map<String, Object> defaultValues = null;
+
+  /**
+   * Returns default values of annotation parameters. Needs to be called at least once with a
+   * JavaView (per annotationtype). A mapping of string -> NullConstant means, that there is no
+   * default value for this parameter method (it needs to be declared on annotation use!)
+   *
+   * @param viewOptional view to resolve annotation soot class of AnnotationType
+   * @return default values of all parameters of this annotation
+   */
+  public Map<String, Object> getDefaultValues(Optional<JavaView> viewOptional) {
+    if (defaultValues == null) {
+      defaultValues = new HashMap<>();
+      if (viewOptional.isPresent()) {
+        JavaView jv = viewOptional.get();
+
+        // meta annotations are not in the view
+        if (this.isMetaAnnotation()) {
+          return defaultValues;
+        }
+
+        if (!jv.getClass(this).isPresent()) {
+          throw new RuntimeException("Class of annotation not in view");
+        }
+
+        JavaSootClass jsc = jv.getClass(this).get();
+
+        for (JavaSootMethod jsm : jsc.getMethods()) {
+          JavaAnnotationSootMethod jasm = (JavaAnnotationSootMethod) jsm;
+          Object defaultVal = jasm.getDefaultValue();
+          defaultValues.put(jasm.getName(), defaultVal);
+        }
+      } else {
+        throw new IllegalArgumentException(
+            "getDefaultMethods needs to be called at least once with a view for each annotation type.");
+      }
+    }
+
+    return defaultValues;
+  }
 
   /**
    * Returns whether this annotation has the meta annotation Inherited. Needs to be called at least
    * once with a JavaView for each annotation.
    *
-   * @param viewOptional
-   * @return
+   * @param viewOptional view to resolve annotation soot class of AnnotationType
+   * @return whether annotation has @Inherited meta annotation
    */
   public boolean isInherited(Optional<JavaView> viewOptional) {
     if (isInherited == null) {
@@ -64,6 +109,9 @@ public class AnnotationType extends JavaClassType {
             "JavaView needs to be supplied at least once for the annotationType");
       }
       JavaView jv = viewOptional.get();
+      if (!jv.getClass(this).isPresent()) {
+        throw new RuntimeException("Class of annotation not in view");
+      }
       JavaSootClass jsc = jv.getClass(this).get();
 
       isInherited =
@@ -77,8 +125,7 @@ public class AnnotationType extends JavaClassType {
   }
 
   final Set<String> metaAnnotationNames =
-      new HashSet<>(
-          Arrays.asList("@Retention", "@Documented", "@Target", "@Inherited", "@Repeatable"));
+      new HashSet<>(Arrays.asList("Retention", "Documented", "Target", "Inherited", "Repeatable"));
 
   /**
    * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
@@ -133,5 +180,26 @@ public class AnnotationType extends JavaClassType {
     }
 
     return true;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    AnnotationType that = (AnnotationType) o;
+
+    return this.getFullyQualifiedName().equals(that.getFullyQualifiedName());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), isInherited, defaultValues);
   }
 }
