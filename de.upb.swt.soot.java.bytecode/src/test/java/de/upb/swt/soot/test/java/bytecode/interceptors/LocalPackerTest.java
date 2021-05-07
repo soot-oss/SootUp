@@ -126,13 +126,11 @@ public class LocalPackerTest {
     Body body = createBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
-    System.out.println(body);
     LocalPacker localPacker = new LocalPacker();
     localPacker.interceptBody(builder);
     body = builder.build();
 
     Body expectedBody = createExpectedBody();
-    System.out.println(expectedBody);
 
     AssertUtils.assertLocalsEquiv(expectedBody, body);
     AssertUtils.assertStmtGraphEquiv(expectedBody, body);
