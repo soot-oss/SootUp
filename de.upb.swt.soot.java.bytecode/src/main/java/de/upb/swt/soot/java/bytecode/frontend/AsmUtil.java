@@ -53,7 +53,7 @@ public final class AsmUtil {
 
   private AsmUtil() {}
 
-  public static final int SUPPORTED_ASM_OPCODE = Opcodes.ASM7;
+  public static final int SUPPORTED_ASM_OPCODE = Opcodes.ASM9;
 
   /**
    * Initializes a class node.
