@@ -24,20 +24,19 @@ package de.upb.swt.soot.callgraph.spark;
 
 import com.google.common.collect.Sets;
 import de.upb.swt.soot.callgraph.model.CallGraph;
+import de.upb.swt.soot.callgraph.spark.builder.PropagatorEnum;
 import de.upb.swt.soot.callgraph.spark.builder.SparkOptions;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
-import de.upb.swt.soot.callgraph.spark.solver.EBBCollapser;
-import de.upb.swt.soot.callgraph.spark.solver.Propagator;
-import de.upb.swt.soot.callgraph.spark.solver.SCCCollapser;
-import de.upb.swt.soot.callgraph.spark.solver.WorklistPropagator;
+import de.upb.swt.soot.callgraph.spark.solver.*;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.views.View;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -65,8 +64,7 @@ public class Spark implements PointsToAnalysis {
     collapsePointerAssigmentGraph();
 
     // Propagate
-    Propagator propagator = new WorklistPropagator(pag);
-    propagator.propagate();
+    propagatePointerAssignmentGraph();
 
     // TODO: VTA cg
   }
@@ -84,6 +82,34 @@ public class Spark implements PointsToAnalysis {
     }
     // old soot had if (true || opts.simplify_sccs() || opts.vta() || opts.simplify_offline())
     //pag.cleanUpMerges();
+  }
+
+  private void propagatePointerAssignmentGraph(){
+    Propagator propagator = null;
+    switch (options.getPropagator()){
+      case ITER:
+        propagator = new IterationPropagator(pag);
+        break;
+      case WORKLIST:
+        propagator = new WorklistPropagator(pag);
+        break;
+      case CYCLE:
+        propagator = new CyclePropagator(pag);
+        break;
+      case MERGE:
+        propagator = new MergePropagator(pag);
+        break;
+      case ALIAS:
+        propagator = new AliasPropagator(pag);
+      case NONE:
+        break;
+      default:
+        throw new RuntimeException("Propagator not defined");
+    }
+
+    if(propagator!=null){
+      propagator.propagate();
+    }
   }
 
   private void simplifyPointerAssignmentGraph() {}
@@ -105,12 +131,16 @@ public class Spark implements PointsToAnalysis {
     return node.getPointsToSet();
   }
 
+
   public Set<Node> getPointsToSet(Local local, SootField field) {
     Set<Node> pointsToSetOfLocal = getPointsToSet(local);
     return getPointsToSet(pointsToSetOfLocal, field);
   }
 
-  private Set<Node> getPointsToSet(Set<Node> set, final SootField field) {
+  /**
+   * Returns the set of objects pointed to by instance field f of the objects in the PointsToSet s.
+   */
+  public Set<Node> getPointsToSet(Set<Node> set, final SootField field) {
     if (field.isStatic()) {
       throw new RuntimeException("The parameter f must be an *instance* field.");
     }
@@ -123,6 +153,10 @@ public class Spark implements PointsToAnalysis {
       return node.getPointsToSet();
     }
     // TODO: propagator alias
+    if(options.getPropagator() == PropagatorEnum.ALIAS){
+      throw new RuntimeException("The alias edge propagator does not compute points-to information for instance fields!"
+              + "Use a different propagator.");
+    }
     final Set<Node> result = new HashSet<>();
     for (Node node : set) {
       Node allocDotField = ((AllocationNode) node).dot(field);
@@ -214,6 +248,10 @@ public class Spark implements PointsToAnalysis {
 
     public void ignoreTypesForSCCS(boolean ignoreTypesForSCCS) {
       options.setIgnoreTypesForSCCS(ignoreTypesForSCCS);
+    }
+
+    public void propagator(PropagatorEnum propagator){
+      options.setPropagator(propagator);
     }
 
     public Spark build(){
