@@ -4,7 +4,7 @@ public class SparkOptions {
 
     private boolean ignoreTypes = false;
     private boolean vta = false; // SparkTransformer ContextInsensitiveBuilder MethodNodeFactory PAG
-    private boolean rta = false; // PAG
+    private boolean rta = false;
     private boolean fieldBased = false;
     private boolean typesForSites = false; // PAG
     private boolean mergeStringBuffer = true; // MethodNodeFactory

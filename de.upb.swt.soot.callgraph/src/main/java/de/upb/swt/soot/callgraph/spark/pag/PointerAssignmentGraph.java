@@ -28,6 +28,7 @@ import com.google.common.collect.Table;
 import de.upb.swt.soot.callgraph.MethodUtil;
 import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
+import de.upb.swt.soot.callgraph.spark.builder.NodeConstants;
 import de.upb.swt.soot.callgraph.spark.builder.SparkOptions;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
@@ -44,6 +45,7 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaSootClass;
 
 import java.io.ObjectInputStream;
@@ -89,7 +91,7 @@ public class PointerAssignmentGraph {
   private final GlobalNodeFactory nodeFactory = new GlobalNodeFactory(this);
   private final SparkEdgeFactory edgeFactory = new SparkEdgeFactory();
   private final List<VariableNode> dereferences = new ArrayList<>();
-  private InternalEdges internalEdges = new InternalEdges();
+  private InternalEdges internalEdges;
   private final List<VariableNode> variableNodes = new ArrayList<>();
   private int maxFinishingNumber = 0;
   private Map<AbstractInvokeExpr, Pair<Node, Node>> callAssigns = new HashMap<>();
@@ -105,6 +107,7 @@ public class PointerAssignmentGraph {
     this.view = view;
     this.callGraph = callGraph;
     this.sparkOptions = sparkOptions;
+    this.internalEdges = new InternalEdges(this.sparkOptions);
     if(sparkOptions.isIgnoreTypes()){
       this.typeHierarchy = new ViewTypeHierarchy(view);
     }
@@ -169,7 +172,11 @@ public class PointerAssignmentGraph {
 
   public LocalVariableNode getOrCreateLocalVariableNode(
       Object value, Type type, SootMethod method) {
-    // TODO: SPARK_OPTS RTA
+    if(sparkOptions.isRta()){
+      value = null;
+      type = JavaIdentifierFactory.getInstance().getType(NodeConstants.OBJECT);
+      method = null;
+    }
     if (value instanceof Local) {
       Local local = (Local) value;
       // TODO: numbering?
@@ -255,8 +262,10 @@ public class PointerAssignmentGraph {
   }
 
   public GlobalVariableNode getOrCreateGlobalVariableNode(Object value, Type type) {
-    // TODO: SPARK_OPTS rta
-
+    if(sparkOptions.isRta()){
+      value = null;
+      type = JavaIdentifierFactory.getInstance().getType(NodeConstants.OBJECT);
+    }
     GlobalVariableNode node = valToGlobalVariableNode.get(value);
     if (node == null) {
       node = new GlobalVariableNode(this, value, type);

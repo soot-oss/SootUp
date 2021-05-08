@@ -22,6 +22,8 @@ package de.upb.swt.soot.callgraph.spark.pag;
  * #L%
  */
 
+import de.upb.swt.soot.callgraph.spark.Spark;
+import de.upb.swt.soot.callgraph.spark.builder.SparkOptions;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,6 +31,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class InternalEdges {
+
+  private SparkOptions sparkOptions;
 
   /** n2=n1: an edge from n1 to n2 indicates that n1 is added to the points-to set of n2 */
   protected Map<VariableNode, Set<VariableNode>> simpleEdges = new HashMap<>();
@@ -49,6 +53,10 @@ public class InternalEdges {
 
   protected Map<NewInstanceNode, Set<VariableNode>> assignInstanceEdges = new HashMap<>();
   protected Map<VariableNode, Set<NewInstanceNode>> assignInstanceEdgesInv = new HashMap<>();
+
+  public InternalEdges(SparkOptions sparkOptions){
+    this.sparkOptions = sparkOptions;
+  }
 
   // TODO: SPARK_OPT simple-edges-bidirectional
   // TODO: Inv edges
@@ -83,17 +91,23 @@ public class InternalEdges {
   }
 
   public boolean addStoreEdge(VariableNode source, FieldReferenceNode target) {
-    boolean isNew;
-    isNew = storeEdges.computeIfAbsent(source, v -> new HashSet<>()).add(target);
-    isNew |= storeEdgesInv.computeIfAbsent(target, v -> new HashSet<>()).add(source);
-    return isNew;
+    if(!sparkOptions.isRta()){
+      boolean isNew;
+      isNew = storeEdges.computeIfAbsent(source, v -> new HashSet<>()).add(target);
+      isNew |= storeEdgesInv.computeIfAbsent(target, v -> new HashSet<>()).add(source);
+      return isNew;
+    }
+    return false;
   }
 
   public boolean addLoadEdge(FieldReferenceNode source, VariableNode target) {
-    boolean isNew;
-    isNew = loadEdges.computeIfAbsent(source, v -> new HashSet<>()).add(target);
-    isNew |= loadEdgesInv.computeIfAbsent(target, v -> new HashSet<>()).add(source);
-    return isNew;
+    if(!sparkOptions.isRta()) {
+      boolean isNew;
+      isNew = loadEdges.computeIfAbsent(source, v -> new HashSet<>()).add(target);
+      isNew |= loadEdgesInv.computeIfAbsent(target, v -> new HashSet<>()).add(source);
+      return isNew;
+    }
+    return false;
   }
 
   public boolean addAllocationEdge(AllocationNode source, VariableNode target) {
@@ -104,16 +118,22 @@ public class InternalEdges {
   }
 
   public boolean addNewInstanceEdge(VariableNode source, NewInstanceNode target) {
-    boolean isNew;
-    isNew = newInstanceEdges.computeIfAbsent(source, v -> new HashSet<>()).add(target);
-    isNew |= newInstanceEdgesInv.computeIfAbsent(target, v -> new HashSet<>()).add(source);
-    return isNew;
+    if(!sparkOptions.isRta()) {
+      boolean isNew;
+      isNew = newInstanceEdges.computeIfAbsent(source, v -> new HashSet<>()).add(target);
+      isNew |= newInstanceEdgesInv.computeIfAbsent(target, v -> new HashSet<>()).add(source);
+      return isNew;
+    }
+    return false;
   }
 
   public boolean addAssignInstanceEdge(NewInstanceNode source, VariableNode target) {
-    boolean isNew;
-    isNew = assignInstanceEdges.computeIfAbsent(source, v -> new HashSet<>()).add(target);
-    isNew |= assignInstanceEdgesInv.computeIfAbsent(target, v -> new HashSet<>()).add(source);
-    return isNew;
+    if(!sparkOptions.isRta()){
+      boolean isNew;
+      isNew = assignInstanceEdges.computeIfAbsent(source, v -> new HashSet<>()).add(target);
+      isNew |= assignInstanceEdgesInv.computeIfAbsent(target, v -> new HashSet<>()).add(source);
+      return isNew;
+    }
+    return false;
   }
 }
