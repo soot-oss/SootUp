@@ -30,7 +30,9 @@ import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
+import de.upb.swt.soot.callgraph.spark.solver.EBBCollapser;
 import de.upb.swt.soot.callgraph.spark.solver.Propagator;
+import de.upb.swt.soot.callgraph.spark.solver.SCCCollapser;
 import de.upb.swt.soot.callgraph.spark.solver.WorklistPropagator;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.SootClass;
@@ -58,15 +60,30 @@ public class Spark implements PointsToAnalysis {
   public void analyze() {
     // Build PAG
     buildPointerAssignmentGraph();
+
     // Simplify
+    collapsePointerAssigmentGraph();
 
     // Propagate
     Propagator propagator = new WorklistPropagator(pag);
     propagator.propagate();
+
+    // TODO: VTA cg
   }
 
   private void buildPointerAssignmentGraph() {
     pag = new PointerAssignmentGraph(view, callGraph, options);
+  }
+
+  private void collapsePointerAssigmentGraph(){
+    if((options.isSimplifySCCS() && !options.isOnFlyCG()) || options.isVta()){
+      new SCCCollapser(pag, options.isIgnoreTypesForSCCS()).collapse();
+    }
+    if(options.isSimplifyOffline() && !options.isOnFlyCG()){
+      new EBBCollapser(pag).collapse();
+    }
+    // old soot had if (true || opts.simplify_sccs() || opts.vta() || opts.simplify_offline())
+    //pag.cleanUpMerges();
   }
 
   private void simplifyPointerAssignmentGraph() {}

@@ -22,24 +22,25 @@ package de.upb.swt.soot.callgraph.spark.pag.nodes;
  * #L%
  */
 
+import de.upb.swt.soot.callgraph.spark.builder.NodeConstants;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 
 /** Represents an allocation site node the represents a known java.lang.Class object. */
 public class ClassConstantNode extends AllocationNode {
-  public String toString() {
-    return "ClassConstantNode " + getNewExpr();
+  public ClassConstantNode(ClassConstant cc) {
+    super(
+        JavaIdentifierFactory.getInstance().getClassType(NodeConstants.CLASS),
+        cc,
+        null);
   }
 
   public ClassConstant getClassConstant() {
     return (ClassConstant) getNewExpr();
   }
-
-  public ClassConstantNode(ClassConstant cc) {
-    super(
-        new JavaClassType("Class", JavaIdentifierFactory.getInstance().getPackageName("java.lang")),
-        cc,
-        null);
+  public String toString() {
+    return "ClassConstantNode " + getNewExpr();
   }
+
 }

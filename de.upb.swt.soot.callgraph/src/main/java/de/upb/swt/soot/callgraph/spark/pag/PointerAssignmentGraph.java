@@ -36,6 +36,7 @@ import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
+import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -107,7 +108,7 @@ public class PointerAssignmentGraph {
     this.view = view;
     this.callGraph = callGraph;
     this.sparkOptions = sparkOptions;
-    if(sparkOptions.isIgnoreTypes()){
+    if(!sparkOptions.isIgnoreTypes()){
       this.typeHierarchy = new ViewTypeHierarchy(view);
     }
     this.internalEdges = new InternalEdges(this.sparkOptions, this.typeHierarchy);
@@ -236,9 +237,12 @@ public class PointerAssignmentGraph {
 
   public AllocationNode getOrCreateAllocationNode(Object newExpr, Type type, SootMethod method) {
     // TODO: SPARK_OPT types-for-sites
-    AllocationNode node;
+    if(sparkOptions.isTypesForSites() || sparkOptions.isVta()){
+      newExpr = type;
+    }
+
+    AllocationNode node = valToAllocationNode.get(newExpr);
     if (newExpr instanceof JNewExpr) {
-      node = valToAllocationNode.get(newExpr);
       if (node == null) {
         node = new AllocationNode(type, newExpr, method);
         valToAllocationNode.put(newExpr, node);
@@ -286,8 +290,26 @@ public class PointerAssignmentGraph {
     return node;
   }
 
+  public AllocationNode getOrCreateStringConstantNode(String s){
+    if(sparkOptions.isTypesForSites() || sparkOptions.isVta()){
+      return getOrCreateAllocationNode(JavaIdentifierFactory.getInstance().getType(NodeConstants.STRING), JavaIdentifierFactory.getInstance().getType(NodeConstants.STRING), null);
+    }
+    return valToAllocationNode.computeIfAbsent(s, k -> createNodeForStringConstant(s));
+  }
+
+  private StringConstantNode createNodeForStringConstant(String s){
+    StringConstantNode node = new StringConstantNode(s);
+    newAllocationNodes.add(node);
+    addNodeTag(node, null);
+    return node;
+  }
+
+
   public AllocationNode getOrCreateClassConstantNode(ClassConstant cc) {
     // TODO: SPARK_OPT types-for-sites vta
+    if(sparkOptions.isTypesForSites() || sparkOptions.isVta()){
+      return getOrCreateAllocationNode(JavaIdentifierFactory.getInstance().getType(NodeConstants.CLASS), JavaIdentifierFactory.getInstance().getType(NodeConstants.CLASS), null);
+    }
     return valToAllocationNode.computeIfAbsent(cc, k -> createNodeForClassConstant(cc));
   }
 
@@ -557,7 +579,7 @@ public class PointerAssignmentGraph {
   }
 
   public TypeHierarchy getTypeHierarchy(){
-    if(typeHierarchy==null){
+    if(typeHierarchy==null && sparkOptions.isIgnoreTypes()){
       throw new RuntimeException("Can't use TypeHierarchy when \"ignore-types\" is set to true");
     }
     return typeHierarchy;

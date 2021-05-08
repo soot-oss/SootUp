@@ -348,9 +348,12 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
 
   @Override
   public void caseStringConstant(StringConstant sc) {
-    // TODO: SPARK_OPT string-constant
-    AllocationNode strConstant =
-        pag.getOrCreateAllocationNode(PointsToAnalysis.STRING_NODE, rtStringType, null);
+    AllocationNode strConstant;
+    if(pag.getSparkOptions().isStringConstants() || (sc.getValue().length()>0 && sc.getValue().charAt(0) == '[')){
+      strConstant = pag.getOrCreateStringConstantNode(sc.getValue());
+    }else{
+      strConstant = pag.getOrCreateAllocationNode(PointsToAnalysis.STRING_NODE, rtStringType, null);
+    }
     VariableNode strConstantLocal = pag.getOrCreateGlobalVariableNode(strConstant, rtStringType);
     pag.addEdge(strConstant, strConstantLocal);
     setResult(strConstantLocal);

@@ -3,12 +3,12 @@ package de.upb.swt.soot.callgraph.spark.builder;
 public class SparkOptions {
 
     private boolean ignoreTypes = false;
-    private boolean vta = false; // SparkTransformer ContextInsensitiveBuilder MethodNodeFactory PAG
+    private boolean vta = false;
     private boolean rta = false;
     private boolean fieldBased = false;
     private boolean typesForSites = false; // PAG
     private boolean mergeStringBuffer = true; // MethodNodeFactory
-    private boolean stringConstants = false; // MethodNodeFactory
+    private boolean stringConstants = false;
     private boolean simulateNatives = true; // ContextInsensitiveBuilder MethodPAG
     private boolean emptiesAsAllocs = false; // MethodNodeFactory
     private boolean simpleEdgesBidirectional = false; // PAG
