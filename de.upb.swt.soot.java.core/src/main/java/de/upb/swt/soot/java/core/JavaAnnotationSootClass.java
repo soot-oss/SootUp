@@ -1,9 +1,10 @@
-package de.upb.swt.soot.core.graph;
+package de.upb.swt.soot.java.core;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2021 Zun Wang
+ * Copyright (C) 2021 Bastian Haverkamp
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,32 +22,20 @@ package de.upb.swt.soot.core.graph;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import java.util.*;
+import de.upb.swt.soot.core.model.SourceType;
+import java.util.Set;
 import javax.annotation.Nonnull;
 
-public final class ExceptionalStmtGraph extends ForwardingStmtGraph {
+public class JavaAnnotationSootClass extends JavaSootClass {
 
-  @Nonnull private final MutableExceptionalStmtGraph stmtGraph;
-
-  public ExceptionalStmtGraph(@Nonnull MutableExceptionalStmtGraph stmtGraph) {
-    super(stmtGraph);
-    this.stmtGraph = stmtGraph;
+  public JavaAnnotationSootClass(JavaSootClassSource classSource, SourceType sourceType) {
+    super(classSource, sourceType);
+    getMethods().forEach(JavaAnnotationSootMethod::getDefaultValue);
   }
 
   @Nonnull
-  public List<Stmt> exceptionalPredecessors(@Nonnull Stmt stmt) {
-    return stmtGraph.exceptionalPredecessors(stmt);
-  }
-
-  @Nonnull
-  public List<Stmt> exceptionalSuccessors(@Nonnull Stmt stmt) {
-    return stmtGraph.exceptionalSuccessors(stmt);
-  }
-
-  @Nonnull
-  public List<Trap> getDestTraps(@Nonnull Stmt stmt) {
-    return stmtGraph.getDestTraps(stmt);
+  @Override
+  public Set<JavaAnnotationSootMethod> getMethods() {
+    return (Set<JavaAnnotationSootMethod>) super.getMethods();
   }
 }

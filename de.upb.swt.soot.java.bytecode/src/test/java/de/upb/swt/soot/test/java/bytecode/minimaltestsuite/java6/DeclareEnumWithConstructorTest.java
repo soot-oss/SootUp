@@ -74,7 +74,7 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
                 .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$Number"));
     assertTrue(sootClass.isEnum());
 
-    final Set<JavaSootMethod> methods = sootClass.getMethods();
+    final Set<? extends JavaSootMethod> methods = sootClass.getMethods();
     assertTrue(methods.stream().anyMatch(m -> m.getSignature().getName().equals("getValue")));
   }
 

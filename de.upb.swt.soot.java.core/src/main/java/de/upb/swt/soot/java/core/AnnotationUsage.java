@@ -1,11 +1,11 @@
 package de.upb.swt.soot.java.core;
 
-import de.upb.swt.soot.core.jimple.basic.Immediate;
-import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.java.core.types.AnnotationType;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 
 /**
@@ -16,10 +16,10 @@ import javax.annotation.Nonnull;
 public class AnnotationUsage {
 
   @Nonnull private final AnnotationType annotation;
-  @Nonnull private final Map<String, Constant> values;
+  @Nonnull private final Map<String, Object> values;
+  private Map<String, Object> valuesWithDefaults;
 
-  public AnnotationUsage(
-      @Nonnull AnnotationType annotation, @Nonnull Map<String, Constant> values) {
+  public AnnotationUsage(@Nonnull AnnotationType annotation, @Nonnull Map<String, Object> values) {
     this.annotation = annotation;
     this.values = values;
   }
@@ -30,16 +30,26 @@ public class AnnotationUsage {
   }
 
   @Nonnull
-  public Map<String, Immediate> getValues() {
+  public Map<String, Object> getValues() {
     return Collections.unmodifiableMap(values);
+  }
+
+  @Nonnull
+  public Map<String, Object> getValuesWithDefaults() {
+    if (valuesWithDefaults == null) {
+      valuesWithDefaults = new HashMap<>(annotation.getDefaultValues(Optional.empty()));
+      values.forEach((k, v) -> valuesWithDefaults.put(k, v));
+    }
+
+    return Collections.unmodifiableMap(valuesWithDefaults);
   }
 
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("@").append(annotation);
-    if (!values.isEmpty()) {
+    if (!getValuesWithDefaults().isEmpty()) {
       sb.append("(");
-      values.forEach((k, v) -> sb.append(k).append("=").append(v).append(","));
+      getValuesWithDefaults().forEach((k, v) -> sb.append(k).append("=").append(v).append(","));
       sb.setCharAt(sb.length() - 1, ')');
     }
     return sb.toString();
@@ -54,7 +64,8 @@ public class AnnotationUsage {
       return false;
     }
     AnnotationUsage that = (AnnotationUsage) o;
-    return annotation.equals(that.annotation) && values.equals(that.values);
+
+    return annotation.equals(that.annotation) && this.values.equals(that.values);
   }
 
   @Override

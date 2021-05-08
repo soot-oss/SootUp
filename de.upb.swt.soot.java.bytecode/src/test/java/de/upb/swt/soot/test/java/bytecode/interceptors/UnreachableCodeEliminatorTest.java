@@ -93,11 +93,10 @@ public class UnreachableCodeEliminatorTest {
     eliminator.interceptBody(builder);
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret);
-    AssertUtils.assertStmtsSetEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
+    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
   }
 
   @Test
-
   /**
    * Test the Body with unreachable trap l0:= @this Test -> l1 = 1 -> return
    *
@@ -135,7 +134,7 @@ public class UnreachableCodeEliminatorTest {
     assertEquals(0, builder.getTraps().size());
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret);
-    AssertUtils.assertStmtsSetEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
+    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
   }
 
   @Test
@@ -177,6 +176,6 @@ public class UnreachableCodeEliminatorTest {
     assertEquals(0, builder.getTraps().size());
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret);
-    AssertUtils.assertStmtsSetEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
+    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
   }
 }

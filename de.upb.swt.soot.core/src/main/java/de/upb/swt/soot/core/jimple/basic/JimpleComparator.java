@@ -28,9 +28,14 @@ import de.upb.swt.soot.core.jimple.common.expr.AbstractBinopExpr;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JDynamicInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JEqExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JGeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JGtExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JInstanceOfExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JInterfaceInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JLeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JLengthExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JLtExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNegExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNewArrayExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
@@ -217,6 +222,43 @@ public class JimpleComparator {
   public boolean caseAbstractBinopExpr(AbstractBinopExpr obj, Object o) {
     if (o instanceof AbstractBinopExpr) {
       AbstractBinopExpr abe = (AbstractBinopExpr) o;
+
+      // JEqExpr (1=2 <=> 2=1)
+      if (obj instanceof JEqExpr && o instanceof JEqExpr) {
+        JEqExpr jeq1 = (JEqExpr) abe;
+        JEqExpr jeq2 = (JEqExpr) obj;
+
+        return (jeq1.getOp1().equivTo(jeq2.getOp1()) && jeq1.getOp2().equivTo(jeq2.getOp2())
+                || (jeq1.getOp1().equivTo(jeq2.getOp2()) && jeq1.getOp2().equivTo(jeq2.getOp1())))
+            && jeq1.getSymbol().equals(jeq2.getSymbol());
+      }
+
+      // JGtExpr/JLtExpr (1<2 <=> 2>1)
+      if (obj instanceof JGtExpr && o instanceof JLtExpr) {
+        JGtExpr jgt = (JGtExpr) obj;
+        JLtExpr jlt = (JLtExpr) o;
+
+        return (jgt.getOp1().equivTo(jlt.getOp2()) && jgt.getOp2().equivTo(jlt.getOp1()));
+      } else if (o instanceof JGtExpr && obj instanceof JLtExpr) {
+        JGtExpr jgt = (JGtExpr) o;
+        JLtExpr jlt = (JLtExpr) obj;
+
+        return (jgt.getOp1().equivTo(jlt.getOp2()) && jgt.getOp2().equivTo(jlt.getOp1()));
+      }
+
+      // JGeExpr/JLeExpr (1<=2 <=> 2=>1)
+      if (obj instanceof JGeExpr && o instanceof JLeExpr) {
+        JGeExpr jgt = (JGeExpr) obj;
+        JLeExpr jlt = (JLeExpr) o;
+
+        return (jgt.getOp1().equivTo(jlt.getOp2()) && jgt.getOp2().equivTo(jlt.getOp1()));
+      } else if (o instanceof JGeExpr && obj instanceof JLeExpr) {
+        JGeExpr jgt = (JGeExpr) o;
+        JLeExpr jlt = (JLeExpr) obj;
+
+        return (jgt.getOp1().equivTo(jlt.getOp2()) && jgt.getOp2().equivTo(jlt.getOp1()));
+      }
+
       return obj.getOp1().equivTo(abe.getOp1(), this)
           && obj.getOp2().equivTo(abe.getOp2(), this)
           && obj.getSymbol().equals(abe.getSymbol());

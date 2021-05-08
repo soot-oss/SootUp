@@ -246,9 +246,9 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
     @Nonnull
     public MethodSubSignature getMethodSubSignature(
         @Nonnull String name,
-        @Nonnull Iterable<? extends Type> parameterSignatures,
-        @Nonnull Type returnType) {
-      return factory.getMethodSubSignature(name, parameterSignatures, returnType);
+        @Nonnull Type returnType,
+        @Nonnull Iterable<? extends Type> parameterSignatures) {
+      return factory.getMethodSubSignature(name, returnType, parameterSignatures);
     }
 
     @Override

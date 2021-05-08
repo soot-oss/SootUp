@@ -55,8 +55,8 @@ public class AssertUtils {
     assertTrue(condition);
   }
 
-  // assert whether two stmtsset contain the same stmts
-  public static void assertStmtsSetEquiv(Set<Stmt> expected, Set<Stmt> actual) {
+  // assert whether two sets contain the same objects
+  public static void assertSetsEquiv(Set expected, Set actual) {
 
     assertNotNull(expected);
     assertNotNull(actual);
@@ -67,8 +67,8 @@ public class AssertUtils {
     }
     assertEquals(expected.size(), actual.size());
     boolean condition = true;
-    for (Stmt stmt : actual) {
-      if (!expected.contains(stmt)) {
+    for (Object o : actual) {
+      if (!expected.contains(o)) {
         condition = false;
         break;
       }
