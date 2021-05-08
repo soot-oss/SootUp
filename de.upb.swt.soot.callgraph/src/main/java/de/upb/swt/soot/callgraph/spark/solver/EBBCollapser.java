@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * Collapses nodes that are members of simple trees (EBBs) in the pointer assignment graph.
  */
-public class EBBCollapser {
+public class EBBCollapser implements Collapser {
     private PointerAssignmentGraph pag;
     private int numCollapsed = 0;
 

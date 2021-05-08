@@ -34,7 +34,7 @@ import java.util.TreeSet;
 /**
  * Collapses VarNodes (green) forming strongly-connected components in the pointer assignment graph.
  */
-public class SCCCollapser {
+public class SCCCollapser implements Collapser {
   private PointerAssignmentGraph pag;
   private boolean ignoreTypes;
   private HashSet<VariableNode> visited;
