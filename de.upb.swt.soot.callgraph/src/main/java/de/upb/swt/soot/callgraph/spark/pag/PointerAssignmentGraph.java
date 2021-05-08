@@ -107,10 +107,10 @@ public class PointerAssignmentGraph {
     this.view = view;
     this.callGraph = callGraph;
     this.sparkOptions = sparkOptions;
-    this.internalEdges = new InternalEdges(this.sparkOptions);
     if(sparkOptions.isIgnoreTypes()){
       this.typeHierarchy = new ViewTypeHierarchy(view);
     }
+    this.internalEdges = new InternalEdges(this.sparkOptions, this.typeHierarchy);
     build();
   }
 

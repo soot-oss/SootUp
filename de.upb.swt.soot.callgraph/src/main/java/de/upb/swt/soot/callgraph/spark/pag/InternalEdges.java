@@ -22,9 +22,10 @@ package de.upb.swt.soot.callgraph.spark.pag;
  * #L%
  */
 
-import de.upb.swt.soot.callgraph.spark.Spark;
 import de.upb.swt.soot.callgraph.spark.builder.SparkOptions;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
+import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,6 +34,7 @@ import java.util.Set;
 public class InternalEdges {
 
   private SparkOptions sparkOptions;
+  private TypeHierarchy typeHierarchy;
 
   /** n2=n1: an edge from n1 to n2 indicates that n1 is added to the points-to set of n2 */
   protected Map<VariableNode, Set<VariableNode>> simpleEdges = new HashMap<>();
@@ -54,8 +56,9 @@ public class InternalEdges {
   protected Map<NewInstanceNode, Set<VariableNode>> assignInstanceEdges = new HashMap<>();
   protected Map<VariableNode, Set<NewInstanceNode>> assignInstanceEdgesInv = new HashMap<>();
 
-  public InternalEdges(SparkOptions sparkOptions){
+  public InternalEdges(SparkOptions sparkOptions, TypeHierarchy typeHierarchy){
     this.sparkOptions = sparkOptions;
+    this.typeHierarchy = typeHierarchy;
   }
 
   // TODO: SPARK_OPT simple-edges-bidirectional
@@ -111,10 +114,13 @@ public class InternalEdges {
   }
 
   public boolean addAllocationEdge(AllocationNode source, VariableNode target) {
-    boolean isNew;
-    isNew = allocationEdges.computeIfAbsent(source, v -> new HashSet<>()).add(target);
-    isNew |= allocationEdgesInv.computeIfAbsent(target, v -> new HashSet<>()).add(source);
-    return isNew;
+    if(typeHierarchy ==null || target.getType() == null || typeHierarchy.canCast(source.getType(), target.getType())){
+      boolean isNew;
+      isNew = allocationEdges.computeIfAbsent(source, v -> new HashSet<>()).add(target);
+      isNew |= allocationEdgesInv.computeIfAbsent(target, v -> new HashSet<>()).add(source);
+      return isNew;
+    }
+    return false;
   }
 
   public boolean addNewInstanceEdge(VariableNode source, NewInstanceNode target) {
