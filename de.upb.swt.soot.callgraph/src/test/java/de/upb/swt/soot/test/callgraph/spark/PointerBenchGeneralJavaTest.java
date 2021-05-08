@@ -61,7 +61,7 @@ public class PointerBenchGeneralJavaTest {
         final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
         CallGraphAlgorithm algorithm = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
         CallGraph callGraph = algorithm.initialize(Collections.singletonList(mainMethodSignature));
-        spark = new Spark(view, callGraph);
+        spark = new Spark.Builder(view, callGraph).build();
         spark.analyze();
     }
 
