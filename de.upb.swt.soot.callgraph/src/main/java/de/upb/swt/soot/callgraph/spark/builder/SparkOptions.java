@@ -1,8 +1,5 @@
 package de.upb.swt.soot.callgraph.spark.builder;
 
-import de.upb.swt.soot.callgraph.spark.solver.Propagator;
-import de.upb.swt.soot.callgraph.spark.solver.WorklistPropagator;
-
 public class SparkOptions {
 
     private boolean ignoreTypes = false;
@@ -15,7 +12,7 @@ public class SparkOptions {
     private boolean simulateNatives = true; // ContextInsensitiveBuilder MethodPAG
     private boolean emptiesAsAllocs = false; // MethodNodeFactory
     private boolean simpleEdgesBidirectional = false; // PAG
-    private boolean onFlyCFG = true; // SparkTransformer ContextInsBuilder PAG
+    private boolean onFlyCG = true; // SparkTransformer ContextInsBuilder PAG
     private boolean simplifyOffline = false; // SparkTransformer
     private boolean simplifySCCS = false; // SparkTransformer
     private boolean ignoreTypesForSCCS = false; // SparkTransormer
@@ -103,12 +100,12 @@ public class SparkOptions {
         this.simpleEdgesBidirectional = simpleEdgesBidirectional;
     }
 
-    public boolean isOnFlyCFG() {
-        return onFlyCFG;
+    public boolean isOnFlyCG() {
+        return onFlyCG;
     }
 
-    public void setOnFlyCFG(boolean onFlyCFG) {
-        this.onFlyCFG = onFlyCFG;
+    public void setOnFlyCG(boolean onFlyCG) {
+        this.onFlyCG = onFlyCG;
     }
 
     public boolean isSimplifyOffline() {
@@ -133,5 +130,11 @@ public class SparkOptions {
 
     public void setIgnoreTypesForSCCS(boolean ignoreTypesForSCCS) {
         this.ignoreTypesForSCCS = ignoreTypesForSCCS;
+    }
+
+    public void validate() {
+        if(rta && onFlyCG){
+            throw new RuntimeException("Incompatible options rta=true and on-fly-cg=true");
+        }
     }
 }

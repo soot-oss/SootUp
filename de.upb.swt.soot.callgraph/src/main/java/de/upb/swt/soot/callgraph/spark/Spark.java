@@ -184,7 +184,7 @@ public class Spark implements PointsToAnalysis {
     }
 
     public void onFlyCFG(boolean onFlyCFG) {
-      options.setOnFlyCFG(onFlyCFG);
+      options.setOnFlyCG(onFlyCFG);
     }
 
     public void simplifyOffline(boolean simplifyOffline) {
@@ -200,6 +200,7 @@ public class Spark implements PointsToAnalysis {
     }
 
     public Spark build(){
+      options.validate();
       return new Spark(view, callGraph, options);
     }
 
