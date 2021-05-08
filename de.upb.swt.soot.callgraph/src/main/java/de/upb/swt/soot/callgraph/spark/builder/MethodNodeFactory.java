@@ -142,7 +142,31 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
             } else if (rightOp instanceof JStaticFieldRef) {
               JStaticFieldRef staticFieldRef = (JStaticFieldRef) rightOp;
               staticFieldRef.getFieldSignature();
-              // TODO: SPARK_OPT empties-as-allocs
+              if(pag.getSparkOptions().isEmptiesAsAllocs()){
+                String className = staticFieldRef.getFieldSignature().getDeclClassType().getClassName();
+                if(className.equals("java.util.Collections")){
+                  // if (s.name().equals("EMPTY_SET")) {
+                  //                src = pag.makeAllocNode(rtHashSet, rtHashSet, method);
+                  //              } else if (s.name().equals("EMPTY_MAP")) {
+                  //                src = pag.makeAllocNode(rtHashMap, rtHashMap, method);
+                  //              } else if (s.name().equals("EMPTY_LIST")) {
+                  //                src = pag.makeAllocNode(rtLinkedList, rtLinkedList, method);
+                  //              }
+                  if(staticFieldRef.getFieldSignature().getName().equals("EMPTY_SET")){
+                    source = pag.getOrCreateAllocationNode(rtHashSet, rtHashSet, method);
+                  } else if(staticFieldRef.getFieldSignature().getName().equals("EMPTY_MAP")){
+                    source = pag.getOrCreateAllocationNode(rtHashMap, rtHashMap, method);
+                  } else if(staticFieldRef.getFieldSignature().getName().equals("EMPTY_LIST")){
+                    source = pag.getOrCreateAllocationNode(rtLinkedList, rtLinkedList, method);
+                  }
+                } else if(className.equals("java.util.Hashtable")){
+                  if(staticFieldRef.getFieldSignature().getName().equals("emptyIterator")){
+                    source = pag.getOrCreateAllocationNode(rtHashtableEmptyIterator, rtHashtableEmptyIterator, method);
+                  } else if(staticFieldRef.getFieldSignature().getName().equals("emptyEnumerator")){
+                    source = pag.getOrCreateAllocationNode(rtHashtableEmptyEnumerator, rtHashtableEmptyEnumerator, method);
+                  }
+                }
+              }
             }
             intraPag.addInternalEdge(source, target);
           }

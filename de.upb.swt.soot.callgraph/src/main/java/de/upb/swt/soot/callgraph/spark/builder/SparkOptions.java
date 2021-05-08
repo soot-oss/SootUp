@@ -9,8 +9,8 @@ public class SparkOptions {
     private boolean typesForSites = false;
     private boolean mergeStringBuffer = true;
     private boolean stringConstants = false;
-    private boolean simulateNatives = true; // ContextInsensitiveBuilder MethodPAG
-    private boolean emptiesAsAllocs = false; // MethodNodeFactory
+    private boolean simulateNatives = true; // TODO: ContextInsensitiveBuilder MethodPAG
+    private boolean emptiesAsAllocs = false;
     private boolean simpleEdgesBidirectional = false; // PAG
     private boolean onFlyCG = true; // SparkTransformer ContextInsBuilder PAG
     private boolean simplifyOffline = false; // SparkTransformer
