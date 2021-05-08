@@ -236,7 +236,6 @@ public class PointerAssignmentGraph {
   }
 
   public AllocationNode getOrCreateAllocationNode(Object newExpr, Type type, SootMethod method) {
-    // TODO: SPARK_OPT types-for-sites
     if(sparkOptions.isTypesForSites() || sparkOptions.isVta()){
       newExpr = type;
     }
@@ -306,7 +305,6 @@ public class PointerAssignmentGraph {
 
 
   public AllocationNode getOrCreateClassConstantNode(ClassConstant cc) {
-    // TODO: SPARK_OPT types-for-sites vta
     if(sparkOptions.isTypesForSites() || sparkOptions.isVta()){
       return getOrCreateAllocationNode(JavaIdentifierFactory.getInstance().getType(NodeConstants.CLASS), JavaIdentifierFactory.getInstance().getType(NodeConstants.CLASS), null);
     }

@@ -314,7 +314,9 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
 
   @Override
   public void caseNewExpr(JNewExpr expr) {
-    // TODO: SPARK_OPT merge-stringbuffer
+    if(pag.getSparkOptions().isMergeStringBuffer() && isStringBuffer(expr.getType())){
+      setResult(pag.getOrCreateAllocationNode(expr.getType(), expr.getType(), null));
+    }
     setResult(pag.getOrCreateAllocationNode(expr, expr.getType(), method));
   }
 

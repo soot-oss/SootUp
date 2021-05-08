@@ -6,8 +6,8 @@ public class SparkOptions {
     private boolean vta = false;
     private boolean rta = false;
     private boolean fieldBased = false;
-    private boolean typesForSites = false; // PAG
-    private boolean mergeStringBuffer = true; // MethodNodeFactory
+    private boolean typesForSites = false;
+    private boolean mergeStringBuffer = true;
     private boolean stringConstants = false;
     private boolean simulateNatives = true; // ContextInsensitiveBuilder MethodPAG
     private boolean emptiesAsAllocs = false; // MethodNodeFactory
