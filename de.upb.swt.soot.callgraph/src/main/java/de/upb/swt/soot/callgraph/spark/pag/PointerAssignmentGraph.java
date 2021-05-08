@@ -28,6 +28,7 @@ import com.google.common.collect.Table;
 import de.upb.swt.soot.callgraph.MethodUtil;
 import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
+import de.upb.swt.soot.callgraph.spark.builder.SparkOptions;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
@@ -96,12 +97,15 @@ public class PointerAssignmentGraph {
   private Set<IntraproceduralPointerAssignmentGraph> addedIntraPags = new HashSet<>();
   private TypeHierarchy typeHierarchy;
   private boolean somethingMerged = false;
+  private SparkOptions sparkOptions;
 
-  public PointerAssignmentGraph(View<? extends SootClass> view, CallGraph callGraph) {
+  public PointerAssignmentGraph(View<? extends SootClass> view, CallGraph callGraph, SparkOptions sparkOptions) {
     this.view = view;
     this.callGraph = callGraph;
-    this.typeHierarchy = new ViewTypeHierarchy(view);
-    // this.graph = new DirectedAcyclicGraph<>(null, null, false);
+    this.sparkOptions = sparkOptions;
+    if(sparkOptions.isIgnoreTypes()){
+      this.typeHierarchy = new ViewTypeHierarchy(view);
+    }
     build();
   }
 
@@ -534,6 +538,9 @@ public class PointerAssignmentGraph {
   }
 
   public TypeHierarchy getTypeHierarchy(){
+    if(typeHierarchy==null){
+      throw new RuntimeException("Can't use TypeHierarchy when \"ignore-types\" is set to true");
+    }
     return typeHierarchy;
   }
 }

@@ -66,7 +66,7 @@ public class Spark implements PointsToAnalysis {
   }
 
   private void buildPointerAssignmentGraph() {
-    pag = new PointerAssignmentGraph(view, callGraph);
+    pag = new PointerAssignmentGraph(view, callGraph, options);
   }
 
   private void simplifyPointerAssignmentGraph() {}
