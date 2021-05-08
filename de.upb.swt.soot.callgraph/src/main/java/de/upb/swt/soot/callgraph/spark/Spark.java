@@ -24,6 +24,7 @@ package de.upb.swt.soot.callgraph.spark;
 
 import com.google.common.collect.Sets;
 import de.upb.swt.soot.callgraph.model.CallGraph;
+import de.upb.swt.soot.callgraph.spark.builder.SparkOptions;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
@@ -42,14 +43,16 @@ public class Spark implements PointsToAnalysis {
 
   private View<? extends SootClass> view;
   private CallGraph callGraph;
+  private SparkOptions options;
 
   private PointerAssignmentGraph pag;
 
   private PointsToAnalysis analysis;
 
-  public Spark(View<? extends SootClass> view, CallGraph callGraph) {
+  private Spark(View<? extends SootClass> view, CallGraph callGraph, SparkOptions options) {
     this.view = view;
     this.callGraph = callGraph;
+    this.options = options;
   }
 
   public void analyze() {
@@ -106,4 +109,94 @@ public class Spark implements PointsToAnalysis {
     }
     return result;
   }
+
+  public static class Builder {
+
+    private SparkOptions options;
+
+    private View<? extends SootClass> view;
+    private CallGraph callGraph;
+
+
+    // VTA: Setting VTA to true has the effect of setting:
+    // - field-based,
+    // - types-for-sites,
+    // - simplify-sccs to true,
+    // - on-fly-cg to false, to simulate Variable Type Analysis,
+
+    // RTA: Setting RTA to true sets
+    // - types-for-sites to true,
+    // - causes Spark to use a single points-to set for all variables
+
+    public Builder(View<? extends SootClass> view, CallGraph callGraph) {
+      this.view = view;
+      this.callGraph = callGraph;
+      options = new SparkOptions();
+    }
+
+    public void ignoreTypes(boolean ignoreTypes) {
+      options.setIgnoreTypes(ignoreTypes);
+    }
+
+
+    public void vta(boolean vta) {
+      options.setVta(vta);
+    }
+
+
+    public void rta(boolean rta) {
+      options.setRta(rta);
+    }
+
+
+    public void fieldBased(boolean fieldBased) {
+      options.setFieldBased(fieldBased);
+    }
+
+    public void typesForSites(boolean typesForSites) {
+      options.setTypesForSites(typesForSites);
+    }
+
+    public void mergeStringBuffer(boolean mergeStringBuffer) {
+      options.setMergeStringBuffer(mergeStringBuffer);
+    }
+
+    public void stringConstants(boolean stringConstants) {
+      options.setStringConstants(stringConstants);
+    }
+
+    public void simulateNatives(boolean simulateNatives) {
+      options.setSimulateNatives(simulateNatives);
+    }
+
+    public void emptiesAsAllocs(boolean emptiesAsAllocs) {
+      options.setEmptiesAsAllocs(emptiesAsAllocs);
+    }
+
+    public void simpleEdgesBidirectional(boolean simpleEdgesBidirectional) {
+      options.setSimpleEdgesBidirectional(simpleEdgesBidirectional);
+    }
+
+    public void onFlyCFG(boolean onFlyCFG) {
+      options.setOnFlyCFG(onFlyCFG);
+    }
+
+    public void simplifyOffline(boolean simplifyOffline) {
+      options.setSimplifyOffline(simplifyOffline);
+    }
+
+    public void simplifySCCS(boolean simplifySCCS) {
+      options.setSimplifySCCS(simplifySCCS);
+    }
+
+    public void ignoreTypesForSCCS(boolean ignoreTypesForSCCS) {
+      options.setIgnoreTypesForSCCS(ignoreTypesForSCCS);
+    }
+
+    public Spark build(){
+      return new Spark(view, callGraph, options);
+    }
+
+  }
+
 }
