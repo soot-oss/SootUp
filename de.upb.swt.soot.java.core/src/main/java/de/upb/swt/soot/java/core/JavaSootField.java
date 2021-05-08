@@ -26,7 +26,9 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Collections;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 
 public class JavaSootField extends SootField {
@@ -51,7 +53,8 @@ public class JavaSootField extends SootField {
   }
 
   @Nonnull
-  public Iterable<AnnotationUsage> getAnnotations() {
+  public Iterable<AnnotationUsage> getAnnotations(@Nonnull Optional<JavaView> view) {
+    annotations.forEach(e -> e.getAnnotation().getDefaultValues(view));
     return annotations;
   }
 

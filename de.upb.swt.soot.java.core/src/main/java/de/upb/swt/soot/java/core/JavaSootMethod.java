@@ -30,7 +30,10 @@ import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.java.core.views.JavaView;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 
@@ -64,8 +67,24 @@ public class JavaSootMethod extends SootMethod {
   }
 
   @Nonnull
-  public Iterable<AnnotationUsage> getAnnotations() {
+  public Iterable<AnnotationUsage> getAnnotations(@Nonnull Optional<JavaView> view) {
+    annotations.forEach(e -> e.getAnnotation().getDefaultValues(view));
+
+    resolveDefaultsForAnnotationTypes(view, annotations);
+
     return annotations;
+  }
+
+  private void resolveDefaultsForAnnotationTypes(
+      @Nonnull Optional<JavaView> view, Iterable<AnnotationUsage> annotationUsages) {
+    for (AnnotationUsage annotationUsage : annotationUsages) {
+      annotationUsage.getAnnotation().getDefaultValues(view);
+      for (Object value : annotationUsage.getValuesWithDefaults().values()) {
+        if (value instanceof ArrayList) {
+          resolveDefaultsForAnnotationTypes(view, (ArrayList<AnnotationUsage>) value);
+        }
+      }
+    }
   }
 
   @Nonnull
@@ -77,7 +96,7 @@ public class JavaSootMethod extends SootMethod {
         getSignature(),
         getModifiers(),
         exceptions,
-        getAnnotations(),
+        getAnnotations(Optional.empty()),
         getPosition());
   }
 
@@ -85,7 +104,12 @@ public class JavaSootMethod extends SootMethod {
   @Override
   public JavaSootMethod withSource(@Nonnull BodySource source) {
     return new JavaSootMethod(
-        source, getSignature(), getModifiers(), exceptions, getAnnotations(), getPosition());
+        source,
+        getSignature(),
+        getModifiers(),
+        exceptions,
+        getAnnotations(Optional.empty()),
+        getPosition());
   }
 
   @Nonnull
@@ -96,7 +120,7 @@ public class JavaSootMethod extends SootMethod {
         getSignature(),
         modifiers,
         getExceptionSignatures(),
-        getAnnotations(),
+        getAnnotations(Optional.empty()),
         getPosition());
   }
 
@@ -108,7 +132,7 @@ public class JavaSootMethod extends SootMethod {
         getSignature(),
         getModifiers(),
         thrownExceptions,
-        getAnnotations(),
+        getAnnotations(Optional.empty()),
         getPosition());
   }
 
@@ -131,7 +155,7 @@ public class JavaSootMethod extends SootMethod {
         getSignature(),
         getModifiers(),
         exceptions,
-        getAnnotations(),
+        getAnnotations(Optional.empty()),
         getPosition());
   }
 
