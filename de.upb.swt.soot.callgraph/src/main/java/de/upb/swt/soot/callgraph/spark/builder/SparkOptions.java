@@ -5,10 +5,10 @@ import de.upb.swt.soot.callgraph.spark.solver.WorklistPropagator;
 
 public class SparkOptions {
 
-    private boolean ignoreTypes = false; // PAG
+    private boolean ignoreTypes = false;
     private boolean vta = false; // SparkTransformer ContextInsensitiveBuilder MethodNodeFactory PAG
     private boolean rta = false; // PAG
-    private boolean fieldBased = false; // MethodNodeFactory PAG
+    private boolean fieldBased = false;
     private boolean typesForSites = false; // PAG
     private boolean mergeStringBuffer = true; // MethodNodeFactory
     private boolean stringConstants = false; // MethodNodeFactory

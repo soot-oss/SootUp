@@ -98,7 +98,13 @@ public class Spark implements PointsToAnalysis {
       throw new RuntimeException("The parameter f must be an *instance* field.");
     }
 
-    // TODO: SPARK_OPTS field based vta
+    if(options.isFieldBased() || options.isVta()){
+      VariableNode node = pag.getGlobalVariableNode(field);
+      if(node == null){
+        return Sets.newHashSet();
+      }
+      return node.getPointsToSet();
+    }
     // TODO: propagator alias
     final Set<Node> result = new HashSet<>();
     for (Node node : set) {

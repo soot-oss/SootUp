@@ -277,12 +277,15 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
 
   @Override
   public void caseInstanceFieldRef(JInstanceFieldRef ref) {
-    // TODO: SPARK_OPT field-based vta
     Optional<SootField> field = ref.getField(view);
     if (field.isPresent()) {
-      setResult(
-          pag.getOrCreateLocalFieldReferenceNode(
-              ref.getBase(), ref.getBase().getType(), field.get(), method));
+      if(pag.getSparkOptions().isFieldBased() || pag.getSparkOptions().isVta()){
+        setResult(pag.getOrCreateGlobalVariableNode(field.get(), field.get().getType()));
+      } else {
+        setResult(
+                pag.getOrCreateLocalFieldReferenceNode(
+                        ref.getBase(), ref.getBase().getType(), field.get(), method));
+      }
     } else {
       throw new RuntimeException("Field not present on ref:" + ref);
     }

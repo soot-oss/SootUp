@@ -45,6 +45,8 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaSootClass;
+
+import java.io.ObjectInputStream;
 import java.text.MessageFormat;
 import java.util.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -307,9 +309,17 @@ public class PointerAssignmentGraph {
     return nodeFactory;
   }
 
+  public GlobalVariableNode getGlobalVariableNode(Object value){
+    if(sparkOptions.isRta()){
+      value = null;
+    }
+    return valToGlobalVariableNode.get(value);
+  }
+
   public LocalVariableNode getLocalVariableNode(Object value) {
-    // TODO: SPARK_OPTS rta
-    if (value instanceof Local) {
+    if(sparkOptions.isRta()){
+      value = null;
+    } else if (value instanceof Local) {
       return localToNodeMap.get(value);
     }
     return valToLocalVariableNode.get(value);
@@ -543,4 +553,9 @@ public class PointerAssignmentGraph {
     }
     return typeHierarchy;
   }
+
+  public SparkOptions getSparkOptions(){
+    return sparkOptions;
+  }
+
 }
