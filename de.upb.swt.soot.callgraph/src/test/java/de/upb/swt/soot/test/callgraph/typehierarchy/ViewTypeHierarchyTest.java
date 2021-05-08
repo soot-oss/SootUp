@@ -324,10 +324,13 @@ public class ViewTypeHierarchyTest {
   }
 
   @Test
-  public void canCast(){
+  public void canCast() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    assertFalse(typeHierarchy.canCast(factory.getClassType("java.lang.Object"), factory.getClassType("java.lang.String")));
-    assertTrue(typeHierarchy.canCast(factory.getClassType("java.lang.String"), factory.getClassType("java.lang.Object")));
+    assertFalse(
+        typeHierarchy.canCast(
+            factory.getClassType("java.lang.Object"), factory.getClassType("java.lang.String")));
+    assertTrue(
+        typeHierarchy.canCast(
+            factory.getClassType("java.lang.String"), factory.getClassType("java.lang.Object")));
   }
-
 }

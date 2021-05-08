@@ -95,16 +95,16 @@ public class VariableNode extends Node implements Comparable {
     }
   }
   /**
-   * Designates this node as the potential target of a interprocedural assignment edge which may be added during on-the-fly
-   * call graph updating.
+   * Designates this node as the potential target of a interprocedural assignment edge which may be
+   * added during on-the-fly call graph updating.
    */
   public void setInterProcTarget() {
     isInterProcTarget = true;
   }
 
   /**
-   * Returns true if this node is the potential target of a interprocedural assignment edge which may be added during
-   * on-the-fly call graph updating.
+   * Returns true if this node is the potential target of a interprocedural assignment edge which
+   * may be added during on-the-fly call graph updating.
    */
   public boolean isInterProcTarget() {
     return isInterProcTarget;

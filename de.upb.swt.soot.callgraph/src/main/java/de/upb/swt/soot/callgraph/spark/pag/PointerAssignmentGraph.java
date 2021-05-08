@@ -36,7 +36,6 @@ import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
-import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -48,8 +47,6 @@ import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaSootClass;
-
-import java.io.ObjectInputStream;
 import java.text.MessageFormat;
 import java.util.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -104,11 +101,12 @@ public class PointerAssignmentGraph {
   private boolean somethingMerged = false;
   private SparkOptions sparkOptions;
 
-  public PointerAssignmentGraph(View<? extends SootClass> view, CallGraph callGraph, SparkOptions sparkOptions) {
+  public PointerAssignmentGraph(
+      View<? extends SootClass> view, CallGraph callGraph, SparkOptions sparkOptions) {
     this.view = view;
     this.callGraph = callGraph;
     this.sparkOptions = sparkOptions;
-    if(!sparkOptions.isIgnoreTypes()){
+    if (!sparkOptions.isIgnoreTypes()) {
       this.typeHierarchy = new ViewTypeHierarchy(view);
     }
     this.internalEdges = new InternalEdges(this.sparkOptions, this.typeHierarchy);
@@ -152,10 +150,10 @@ public class PointerAssignmentGraph {
       for (Stmt s : method.getBody().getStmts()) {
         if (s.containsInvokeExpr()) {
           CalleeMethodSignature callee =
-                  new CalleeMethodSignature(
-                          s.getInvokeExpr().getMethodSignature(),
-                          MethodUtil.findCallGraphEdgeType(s.getInvokeExpr()),
-                          s);
+              new CalleeMethodSignature(
+                  s.getInvokeExpr().getMethodSignature(),
+                  MethodUtil.findCallGraphEdgeType(s.getInvokeExpr()),
+                  s);
           callEdges.add(new ImmutablePair<>(caller, callee));
         }
       }
@@ -173,7 +171,7 @@ public class PointerAssignmentGraph {
 
   public LocalVariableNode getOrCreateLocalVariableNode(
       Object value, Type type, SootMethod method) {
-    if(sparkOptions.isRta()){
+    if (sparkOptions.isRta()) {
       value = null;
       type = JavaIdentifierFactory.getInstance().getType(NodeConstants.OBJECT);
       method = null;
@@ -236,7 +234,7 @@ public class PointerAssignmentGraph {
   }
 
   public AllocationNode getOrCreateAllocationNode(Object newExpr, Type type, SootMethod method) {
-    if(sparkOptions.isTypesForSites() || sparkOptions.isVta()){
+    if (sparkOptions.isTypesForSites() || sparkOptions.isVta()) {
       newExpr = type;
     }
 
@@ -265,7 +263,7 @@ public class PointerAssignmentGraph {
   }
 
   public GlobalVariableNode getOrCreateGlobalVariableNode(Object value, Type type) {
-    if(sparkOptions.isRta()){
+    if (sparkOptions.isRta()) {
       value = null;
       type = JavaIdentifierFactory.getInstance().getType(NodeConstants.OBJECT);
     }
@@ -289,24 +287,29 @@ public class PointerAssignmentGraph {
     return node;
   }
 
-  public AllocationNode getOrCreateStringConstantNode(String s){
-    if(sparkOptions.isTypesForSites() || sparkOptions.isVta()){
-      return getOrCreateAllocationNode(JavaIdentifierFactory.getInstance().getType(NodeConstants.STRING), JavaIdentifierFactory.getInstance().getType(NodeConstants.STRING), null);
+  public AllocationNode getOrCreateStringConstantNode(String s) {
+    if (sparkOptions.isTypesForSites() || sparkOptions.isVta()) {
+      return getOrCreateAllocationNode(
+          JavaIdentifierFactory.getInstance().getType(NodeConstants.STRING),
+          JavaIdentifierFactory.getInstance().getType(NodeConstants.STRING),
+          null);
     }
     return valToAllocationNode.computeIfAbsent(s, k -> createNodeForStringConstant(s));
   }
 
-  private StringConstantNode createNodeForStringConstant(String s){
+  private StringConstantNode createNodeForStringConstant(String s) {
     StringConstantNode node = new StringConstantNode(s);
     newAllocationNodes.add(node);
     addNodeTag(node, null);
     return node;
   }
 
-
   public AllocationNode getOrCreateClassConstantNode(ClassConstant cc) {
-    if(sparkOptions.isTypesForSites() || sparkOptions.isVta()){
-      return getOrCreateAllocationNode(JavaIdentifierFactory.getInstance().getType(NodeConstants.CLASS), JavaIdentifierFactory.getInstance().getType(NodeConstants.CLASS), null);
+    if (sparkOptions.isTypesForSites() || sparkOptions.isVta()) {
+      return getOrCreateAllocationNode(
+          JavaIdentifierFactory.getInstance().getType(NodeConstants.CLASS),
+          JavaIdentifierFactory.getInstance().getType(NodeConstants.CLASS),
+          null);
     }
     return valToAllocationNode.computeIfAbsent(cc, k -> createNodeForClassConstant(cc));
   }
@@ -338,15 +341,15 @@ public class PointerAssignmentGraph {
     return nodeFactory;
   }
 
-  public GlobalVariableNode getGlobalVariableNode(Object value){
-    if(sparkOptions.isRta()){
+  public GlobalVariableNode getGlobalVariableNode(Object value) {
+    if (sparkOptions.isRta()) {
       value = null;
     }
     return valToGlobalVariableNode.get(value);
   }
 
   public LocalVariableNode getLocalVariableNode(Object value) {
-    if(sparkOptions.isRta()){
+    if (sparkOptions.isRta()) {
       value = null;
     } else if (value instanceof Local) {
       return localToNodeMap.get(value);
@@ -370,11 +373,11 @@ public class PointerAssignmentGraph {
     return internalEdges.loadEdges;
   }
 
-  public Map<VariableNode, Set<NewInstanceNode>> getNewInstanceEdges(){
+  public Map<VariableNode, Set<NewInstanceNode>> getNewInstanceEdges() {
     return internalEdges.newInstanceEdges;
   }
 
-  public Map<NewInstanceNode, Set<VariableNode>> getAssignInstanceEdges(){
+  public Map<NewInstanceNode, Set<VariableNode>> getAssignInstanceEdges() {
     return internalEdges.assignInstanceEdges;
   }
 
@@ -383,7 +386,7 @@ public class PointerAssignmentGraph {
     return internalEdges.storeEdgesInv.get(key);
   }
 
-  public Set<VariableNode> simpleInvLookup(VariableNode key){
+  public Set<VariableNode> simpleInvLookup(VariableNode key) {
     return internalEdges.simpleEdgesInv.get(key);
   }
 
@@ -395,62 +398,67 @@ public class PointerAssignmentGraph {
     return internalEdges.loadEdgesInv.get(key);
   }
 
-  public Set<VariableNode> allocLookup(AllocationNode key){
+  public Set<VariableNode> allocLookup(AllocationNode key) {
     return internalEdges.allocationEdges.get(key);
   }
 
-  public Set<AllocationNode> allocInvLookup(VariableNode key){
+  public Set<AllocationNode> allocInvLookup(VariableNode key) {
     return internalEdges.allocationEdgesInv.get(key);
   }
 
-
-  /**
-   * to notify PAG that n2 has been merged into n1
-   *
-   */
-  public void mergedWith(Node n1, Node n2){
-    if(n1.equals(n2)){
+  /** to notify PAG that n2 has been merged into n1 */
+  public void mergedWith(Node n1, Node n2) {
+    if (n1.equals(n2)) {
       throw new RuntimeException("merged nodes cannot be the same");
     }
     somethingMerged = true;
-    //TODO: notify ofcg
+    // TODO: notify ofcg
 
-    Map[] edgeMaps = {internalEdges.simpleEdges, internalEdges.allocationEdges, internalEdges.storeEdges, internalEdges.loadEdges,
-    internalEdges.simpleEdgesInv, internalEdges.allocationEdgesInv, internalEdges.storeEdgesInv, internalEdges.loadEdgesInv};
+    Map[] edgeMaps = {
+      internalEdges.simpleEdges,
+      internalEdges.allocationEdges,
+      internalEdges.storeEdges,
+      internalEdges.loadEdges,
+      internalEdges.simpleEdgesInv,
+      internalEdges.allocationEdgesInv,
+      internalEdges.storeEdgesInv,
+      internalEdges.loadEdgesInv
+    };
     for (Map<Node, Set<Node>> m : edgeMaps) {
-      if(!m.keySet().contains(n2)){
+      if (!m.keySet().contains(n2)) {
         continue;
       }
-      //Pair<Set<Node>, Set<Node>> setPair = new ImmutablePair<>(m.get(n1), m.get(n2));
+      // Pair<Set<Node>, Set<Node>> setPair = new ImmutablePair<>(m.get(n1), m.get(n2));
       Set<Node> set1 = m.get(n1);
       Set<Node> set2 = m.get(n2);
 
-      if(set1.isEmpty()){
-        if(set2!=null){
+      if (set1.isEmpty()) {
+        if (set2 != null) {
           m.put(n1, set2);
         }
-      } else if(set2.isEmpty()){
+      } else if (set2.isEmpty()) {
         // nothing needed
-      } else if(set1 instanceof HashSet){
-        if(set2 instanceof HashSet){
+      } else if (set1 instanceof HashSet) {
+        if (set2 instanceof HashSet) {
           set1.addAll(set2);
-        } else{
-          for(Node node: set2){
+        } else {
+          for (Node node : set2) {
             set1.add(node);
           }
         }
-      } else if(set2 instanceof HashSet){
-        for(Node node: set1){
+      } else if (set2 instanceof HashSet) {
+        for (Node node : set1) {
           set2.add(node);
         }
         m.put(n1, set2);
-      } else if(set1.size()*set2.size()<1000){
-        Node[] ret = new Node[set1.size()+set2.size()];
+      } else if (set1.size() * set2.size() < 1000) {
+        Node[] ret = new Node[set1.size() + set2.size()];
         System.arraycopy(set1, 0, ret, 0, set1.size());
         int j = set1.size();
-        outer: for(Node rep: set2){
-          for(int k=0; k<j; k++){
-            if(rep == ret[k]){
+        outer:
+        for (Node rep : set2) {
+          for (int k = 0; k < j; k++) {
+            if (rep == ret[k]) {
               continue outer;
             }
           }
@@ -459,8 +467,8 @@ public class PointerAssignmentGraph {
         Node[] newArray = new Node[j];
         System.arraycopy(ret, 0, newArray, 0, j);
         m.put(n1, Sets.newHashSet(ret = newArray));
-      } else{
-        HashSet<Node> s = new HashSet<>(set1.size()+set2.size());
+      } else {
+        HashSet<Node> s = new HashSet<>(set1.size() + set2.size());
         s.addAll(set1);
         s.addAll(set2);
         m.put(n1, s);
@@ -469,7 +477,7 @@ public class PointerAssignmentGraph {
     }
   }
 
-  public void cleanUpMerges(){
+  public void cleanUpMerges() {
     lookupInMap(internalEdges.simpleEdges);
     lookupInMap(internalEdges.allocationEdges);
     lookupInMap(internalEdges.storeEdges);
@@ -478,7 +486,7 @@ public class PointerAssignmentGraph {
     lookupInMap(internalEdges.allocationEdgesInv);
     lookupInMap(internalEdges.storeEdgesInv);
     lookupInMap(internalEdges.loadEdgesInv);
-    somethingMerged=false;
+    somethingMerged = false;
   }
 
   private <K, N extends Node> void lookupInMap(Map<K, Set<N>> map) {
@@ -487,9 +495,9 @@ public class PointerAssignmentGraph {
     }
   }
 
-  protected final static Node[] EMPTY_NODE_ARRAY = new Node[0];
+  protected static final Node[] EMPTY_NODE_ARRAY = new Node[0];
 
-  protected <K,N extends Node> Node[] lookup(Map<K, Set<N>> m, K key) {
+  protected <K, N extends Node> Node[] lookup(Map<K, Set<N>> m, K key) {
     Set<N> valueList = m.get(key);
     if (valueList == null) {
       return EMPTY_NODE_ARRAY;
@@ -506,7 +514,8 @@ public class PointerAssignmentGraph {
           Set<Node> s;
           if (ret.length <= 75) {
             int j = i;
-            outer: for (; i < ret.length; i++) {
+            outer:
+            for (; i < ret.length; i++) {
               reti = ret[i];
               rep = reti.getReplacement();
               if (rep == key) {
@@ -576,15 +585,14 @@ public class PointerAssignmentGraph {
     return methodToIntraPag;
   }
 
-  public TypeHierarchy getTypeHierarchy(){
-    if(typeHierarchy==null && sparkOptions.isIgnoreTypes()){
+  public TypeHierarchy getTypeHierarchy() {
+    if (typeHierarchy == null && sparkOptions.isIgnoreTypes()) {
       throw new RuntimeException("Can't use TypeHierarchy when \"ignore-types\" is set to true");
     }
     return typeHierarchy;
   }
 
-  public SparkOptions getSparkOptions(){
+  public SparkOptions getSparkOptions() {
     return sparkOptions;
   }
-
 }

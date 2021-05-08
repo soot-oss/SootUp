@@ -142,9 +142,10 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
             } else if (rightOp instanceof JStaticFieldRef) {
               JStaticFieldRef staticFieldRef = (JStaticFieldRef) rightOp;
               staticFieldRef.getFieldSignature();
-              if(pag.getSparkOptions().isEmptiesAsAllocs()){
-                String className = staticFieldRef.getFieldSignature().getDeclClassType().getClassName();
-                if(className.equals("java.util.Collections")){
+              if (pag.getSparkOptions().isEmptiesAsAllocs()) {
+                String className =
+                    staticFieldRef.getFieldSignature().getDeclClassType().getClassName();
+                if (className.equals("java.util.Collections")) {
                   // if (s.name().equals("EMPTY_SET")) {
                   //                src = pag.makeAllocNode(rtHashSet, rtHashSet, method);
                   //              } else if (s.name().equals("EMPTY_MAP")) {
@@ -152,18 +153,25 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
                   //              } else if (s.name().equals("EMPTY_LIST")) {
                   //                src = pag.makeAllocNode(rtLinkedList, rtLinkedList, method);
                   //              }
-                  if(staticFieldRef.getFieldSignature().getName().equals("EMPTY_SET")){
+                  if (staticFieldRef.getFieldSignature().getName().equals("EMPTY_SET")) {
                     source = pag.getOrCreateAllocationNode(rtHashSet, rtHashSet, method);
-                  } else if(staticFieldRef.getFieldSignature().getName().equals("EMPTY_MAP")){
+                  } else if (staticFieldRef.getFieldSignature().getName().equals("EMPTY_MAP")) {
                     source = pag.getOrCreateAllocationNode(rtHashMap, rtHashMap, method);
-                  } else if(staticFieldRef.getFieldSignature().getName().equals("EMPTY_LIST")){
+                  } else if (staticFieldRef.getFieldSignature().getName().equals("EMPTY_LIST")) {
                     source = pag.getOrCreateAllocationNode(rtLinkedList, rtLinkedList, method);
                   }
-                } else if(className.equals("java.util.Hashtable")){
-                  if(staticFieldRef.getFieldSignature().getName().equals("emptyIterator")){
-                    source = pag.getOrCreateAllocationNode(rtHashtableEmptyIterator, rtHashtableEmptyIterator, method);
-                  } else if(staticFieldRef.getFieldSignature().getName().equals("emptyEnumerator")){
-                    source = pag.getOrCreateAllocationNode(rtHashtableEmptyEnumerator, rtHashtableEmptyEnumerator, method);
+                } else if (className.equals("java.util.Hashtable")) {
+                  if (staticFieldRef.getFieldSignature().getName().equals("emptyIterator")) {
+                    source =
+                        pag.getOrCreateAllocationNode(
+                            rtHashtableEmptyIterator, rtHashtableEmptyIterator, method);
+                  } else if (staticFieldRef
+                      .getFieldSignature()
+                      .getName()
+                      .equals("emptyEnumerator")) {
+                    source =
+                        pag.getOrCreateAllocationNode(
+                            rtHashtableEmptyEnumerator, rtHashtableEmptyEnumerator, method);
                   }
                 }
               }
@@ -303,12 +311,12 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
   public void caseInstanceFieldRef(JInstanceFieldRef ref) {
     Optional<SootField> field = ref.getField(view);
     if (field.isPresent()) {
-      if(pag.getSparkOptions().isFieldBased() || pag.getSparkOptions().isVta()){
+      if (pag.getSparkOptions().isFieldBased() || pag.getSparkOptions().isVta()) {
         setResult(pag.getOrCreateGlobalVariableNode(field.get(), field.get().getType()));
       } else {
         setResult(
-                pag.getOrCreateLocalFieldReferenceNode(
-                        ref.getBase(), ref.getBase().getType(), field.get(), method));
+            pag.getOrCreateLocalFieldReferenceNode(
+                ref.getBase(), ref.getBase().getType(), field.get(), method));
       }
     } else {
       throw new RuntimeException("Field not present on ref:" + ref);
@@ -338,7 +346,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
 
   @Override
   public void caseNewExpr(JNewExpr expr) {
-    if(pag.getSparkOptions().isMergeStringBuffer() && isStringBuffer(expr.getType())){
+    if (pag.getSparkOptions().isMergeStringBuffer() && isStringBuffer(expr.getType())) {
       setResult(pag.getOrCreateAllocationNode(expr.getType(), expr.getType(), null));
     }
     setResult(pag.getOrCreateAllocationNode(expr, expr.getType(), method));
@@ -375,9 +383,10 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
   @Override
   public void caseStringConstant(StringConstant sc) {
     AllocationNode strConstant;
-    if(pag.getSparkOptions().isStringConstants() || (sc.getValue().length()>0 && sc.getValue().charAt(0) == '[')){
+    if (pag.getSparkOptions().isStringConstants()
+        || (sc.getValue().length() > 0 && sc.getValue().charAt(0) == '[')) {
       strConstant = pag.getOrCreateStringConstantNode(sc.getValue());
-    }else{
+    } else {
       strConstant = pag.getOrCreateAllocationNode(PointsToAnalysis.STRING_NODE, rtStringType, null);
     }
     VariableNode strConstantLocal = pag.getOrCreateGlobalVariableNode(strConstant, rtStringType);

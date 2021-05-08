@@ -94,7 +94,9 @@ public class Node {
       return;
     }
     other.replacement = myRep;
-    if (other.pointsToSet != pointsToSet && other.pointsToSet != null && !other.pointsToSet.isEmpty()) {
+    if (other.pointsToSet != pointsToSet
+        && other.pointsToSet != null
+        && !other.pointsToSet.isEmpty()) {
       if (myRep.pointsToSet == null || myRep.pointsToSet.isEmpty()) {
         myRep.pointsToSet = other.pointsToSet;
       } else {
@@ -103,14 +105,15 @@ public class Node {
     }
     other.pointsToSet = null;
     pag.mergedWith(myRep, other);
-    if ((other instanceof VariableNode) && (myRep instanceof VariableNode) && ((VariableNode) other).isInterProcTarget()) {
+    if ((other instanceof VariableNode)
+        && (myRep instanceof VariableNode)
+        && ((VariableNode) other).isInterProcTarget()) {
       ((VariableNode) myRep).setInterProcTarget();
     }
   }
 
-  public void setType(Type type){
+  public void setType(Type type) {
     // TODO: type hierarchy isUnresolved(type)
     this.type = type;
   }
-
 }

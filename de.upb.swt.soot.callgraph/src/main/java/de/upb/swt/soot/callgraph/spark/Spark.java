@@ -36,7 +36,6 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.views.View;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -73,20 +72,20 @@ public class Spark implements PointsToAnalysis {
     pag = new PointerAssignmentGraph(view, callGraph, options);
   }
 
-  private void collapsePointerAssigmentGraph(){
-    if((options.isSimplifySCCS() && !options.isOnFlyCG()) || options.isVta()){
+  private void collapsePointerAssigmentGraph() {
+    if ((options.isSimplifySCCS() && !options.isOnFlyCG()) || options.isVta()) {
       new SCCCollapser(pag, options.isIgnoreTypesForSCCS()).collapse();
     }
-    if(options.isSimplifyOffline() && !options.isOnFlyCG()){
+    if (options.isSimplifyOffline() && !options.isOnFlyCG()) {
       new EBBCollapser(pag).collapse();
     }
     // old soot had if (true || opts.simplify_sccs() || opts.vta() || opts.simplify_offline())
-    //pag.cleanUpMerges();
+    // pag.cleanUpMerges();
   }
 
-  private void propagatePointerAssignmentGraph(){
+  private void propagatePointerAssignmentGraph() {
     Propagator propagator = null;
-    switch (options.getPropagator()){
+    switch (options.getPropagator()) {
       case ITER:
         propagator = new IterationPropagator(pag);
         break;
@@ -107,7 +106,7 @@ public class Spark implements PointsToAnalysis {
         throw new RuntimeException("Propagator not defined");
     }
 
-    if(propagator!=null){
+    if (propagator != null) {
       propagator.propagate();
     }
   }
@@ -131,7 +130,6 @@ public class Spark implements PointsToAnalysis {
     return node.getPointsToSet();
   }
 
-
   public Set<Node> getPointsToSet(Local local, SootField field) {
     Set<Node> pointsToSetOfLocal = getPointsToSet(local);
     return getPointsToSet(pointsToSetOfLocal, field);
@@ -145,16 +143,17 @@ public class Spark implements PointsToAnalysis {
       throw new RuntimeException("The parameter f must be an *instance* field.");
     }
 
-    if(options.isFieldBased() || options.isVta()){
+    if (options.isFieldBased() || options.isVta()) {
       VariableNode node = pag.getGlobalVariableNode(field);
-      if(node == null){
+      if (node == null) {
         return Sets.newHashSet();
       }
       return node.getPointsToSet();
     }
     // TODO: propagator alias
-    if(options.getPropagator() == PropagatorEnum.ALIAS){
-      throw new RuntimeException("The alias edge propagator does not compute points-to information for instance fields!"
+    if (options.getPropagator() == PropagatorEnum.ALIAS) {
+      throw new RuntimeException(
+          "The alias edge propagator does not compute points-to information for instance fields!"
               + "Use a different propagator.");
     }
     final Set<Node> result = new HashSet<>();
@@ -173,7 +172,6 @@ public class Spark implements PointsToAnalysis {
 
     private View<? extends SootClass> view;
     private CallGraph callGraph;
-
 
     // VTA: Setting VTA to true has the effect of setting:
     // - field-based,
@@ -195,16 +193,13 @@ public class Spark implements PointsToAnalysis {
       options.setIgnoreTypes(ignoreTypes);
     }
 
-
     public void vta(boolean vta) {
       options.setVta(vta);
     }
 
-
     public void rta(boolean rta) {
       options.setRta(rta);
     }
-
 
     public void fieldBased(boolean fieldBased) {
       options.setFieldBased(fieldBased);
@@ -250,15 +245,13 @@ public class Spark implements PointsToAnalysis {
       options.setIgnoreTypesForSCCS(ignoreTypesForSCCS);
     }
 
-    public void propagator(PropagatorEnum propagator){
+    public void propagator(PropagatorEnum propagator) {
       options.setPropagator(propagator);
     }
 
-    public Spark build(){
+    public Spark build() {
       options.validate();
       return new Spark(view, callGraph, options);
     }
-
   }
-
 }
