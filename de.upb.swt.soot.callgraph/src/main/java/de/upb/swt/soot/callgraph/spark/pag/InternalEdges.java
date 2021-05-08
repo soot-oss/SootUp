@@ -90,6 +90,11 @@ public class InternalEdges {
     boolean isNew;
     isNew = simpleEdges.computeIfAbsent(source, v -> new HashSet<>()).add(target);
     isNew |= simpleEdgesInv.computeIfAbsent(target, v -> new HashSet<>()).add(source);
+
+    if(sparkOptions.isSimpleEdgesBidirectional()){
+      isNew = simpleEdges.computeIfAbsent(target, v -> new HashSet<>()).add(source);
+      isNew |= simpleEdgesInv.computeIfAbsent(source, v -> new HashSet<>()).add(target);
+    }
     return isNew;
   }
 
