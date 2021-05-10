@@ -472,42 +472,73 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Ignore("to implement")
+  @Test
   public void testAccessUnnamedModuleFromAutomaticModule() {
-    // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
             .addModulePath(
                 new JavaModulePathAnalysisInputLocation(
-                    testPath + "module_access-from-automatic-module"))
+                    testPath + "unnamed-module_access-from-automatic-module/jar/modmain.auto.jar"))
+            .addClassPath(
+                new JavaClassPathAnalysisInputLocation(
+                    testPath + "unnamed-module_access-from-automatic-module/jar/cpa.jar"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
-    JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
-    Optional<JavaSootClass> aClass = view.getClass(targetClass);
-    assertTrue(aClass.isPresent());
-    fail("test module descriptor/rights");
+    JavaClassType mainClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain.auto");
+    assertTrue(view.getClass(mainClass).isPresent());
+
+    JavaClassType aClass = JavaModuleIdentifierFactory.getInstance().getClassType("A", "pkga", "");
+    assertTrue(view.getClass(aClass).isPresent());
+
+    assertTrue(view.getClass(mainClass.getPackageName(), aClass).isPresent());
+    assertTrue(view.getClass(aClass.getPackageName(), mainClass).isPresent());
   }
 
-  @Ignore("to implement")
+  @Test
   public void testAccessUnnamedModuleFromModule() {
-    // TODO: adapt
+
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
             .addModulePath(
                 new JavaModulePathAnalysisInputLocation(
-                    testPath + "module_access-from-explicit-module"))
+                    testPath + "unnamed-module_access-from-explicit-module/jar/modb.jar"))
+            .addModulePath(
+                new JavaModulePathAnalysisInputLocation(
+                    testPath + "unnamed-module_access-from-explicit-module/jar/modmain.jar"))
+            .addClassPath(
+                new JavaClassPathAnalysisInputLocation(
+                    testPath + "unnamed-module_access-from-explicit-module/jar/cpb.jar"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
-    JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
-    Optional<JavaSootClass> aClass = view.getClass(targetClass);
-    assertTrue(aClass.isPresent());
-    fail("test module descriptor/rights");
+    ModulePackageName cpb =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgb", "");
+    JavaModuleInfo moduleInfo_cpb = view.getModuleInfo(cpb.getModuleSignature()).get();
+    assertTrue(moduleInfo_cpb.isUnnamedModule());
+
+    ModulePackageName pkgbModb =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgb", "modb");
+    JavaModuleInfo moduleInfo_pkgbModb = view.getModuleInfo(pkgbModb.getModuleSignature()).get();
+    System.out.println(moduleInfo_pkgbModb);
+    assertFalse(moduleInfo_pkgbModb.isUnnamedModule());
+
+    ModulePackageName modmain =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgcpmain", "modmain");
+    JavaModuleInfo moduleInfo_cpmain = view.getModuleInfo(modmain.getModuleSignature()).get();
+    assertFalse(moduleInfo_cpmain.isUnnamedModule());
+
+    JavaClassType BFromClasspath =
+        JavaModuleIdentifierFactory.getInstance().getClassType("BFromClasspath", "pkgb", "");
+    assertTrue(view.getClass(BFromClasspath).isPresent());
+    assertFalse(view.getClass(modmain, BFromClasspath).isPresent());
+
+    // TODO: check & test: compile and run option: "ALL-UNNAMED" which opens access from the named
+    // module to the unnamed module
+
   }
 
   @Test
