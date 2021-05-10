@@ -23,7 +23,7 @@ package de.upb.swt.soot.core.graph;
 
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import java.util.List;
+import java.util.*;
 import javax.annotation.Nonnull;
 
 public final class ExceptionalStmtGraph extends ForwardingStmtGraph {
