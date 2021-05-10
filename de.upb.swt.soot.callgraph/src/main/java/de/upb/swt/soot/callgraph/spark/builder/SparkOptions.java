@@ -33,7 +33,7 @@ public class SparkOptions {
   private boolean simulateNatives = true; // TODO: ContextInsensitiveBuilder MethodPAG
   private boolean emptiesAsAllocs = false;
   private boolean simpleEdgesBidirectional = false;
-  private boolean onFlyCG = true; // TODO: SparkTransformer ContextInsBuilder PAG
+  private boolean onFlyCG = false; // TODO: SparkTransformer ContextInsBuilder PAG
   private boolean simplifyOffline = false;
   private boolean simplifySCCS = false;
   private boolean ignoreTypesForSCCS = false;
