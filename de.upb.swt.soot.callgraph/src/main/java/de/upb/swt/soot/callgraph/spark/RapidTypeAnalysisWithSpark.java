@@ -1,6 +1,8 @@
-package de.upb.swt.soot.callgraph.algorithm;
+package de.upb.swt.soot.callgraph.spark;
 
 import com.google.common.collect.Sets;
+import de.upb.swt.soot.callgraph.algorithm.AbstractCallGraphAlgorithm;
+import de.upb.swt.soot.callgraph.algorithm.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
@@ -88,5 +90,7 @@ public class RapidTypeAnalysisWithSpark extends AbstractCallGraphAlgorithm {
                 .map(s -> s.get())
                 .forEach(instantiatedClasses::add);
     }
+
+
 
 }

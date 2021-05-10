@@ -26,6 +26,7 @@ import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,6 +34,8 @@ import javax.annotation.Nonnull;
 import org.jgrapht.graph.DefaultDirectedGraph;
 
 public final class GraphBasedCallGraph implements MutableCallGraph {
+
+  private List<MethodSignature> entryPoints;
 
   private static class Vertex {
     @Nonnull final MethodSignature methodSignature;
@@ -49,10 +52,11 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   // TODO: [ms] typeToVertices is not used in a useful way, yet?
   @Nonnull private final Map<JavaClassType, Set<Vertex>> typeToVertices;
 
-  public GraphBasedCallGraph() {
+  public GraphBasedCallGraph(List<MethodSignature> entryPoints) {
     graph = new DefaultDirectedGraph<>(null, null, false);
     signatureToVertex = new HashMap<>();
     typeToVertices = new HashMap<>();
+    this.entryPoints = entryPoints;
   }
 
   private GraphBasedCallGraph(
@@ -158,4 +162,13 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
     }
     return sb.toString();
   }
+
+  public void setEntyPoints(List<MethodSignature> entyPoints){
+    this.entryPoints = entyPoints;
+  }
+
+  public List<MethodSignature> getEntryPoints(){
+    return entryPoints;
+  }
+
 }

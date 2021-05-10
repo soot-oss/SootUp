@@ -23,6 +23,7 @@ package de.upb.swt.soot.callgraph.spark;
  */
 
 import com.google.common.collect.Sets;
+import de.upb.swt.soot.callgraph.algorithm.CallGraphAlgorithm;
 import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.spark.builder.PropagatorEnum;
 import de.upb.swt.soot.callgraph.spark.builder.SparkOptions;
@@ -32,10 +33,12 @@ import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
 import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
 import de.upb.swt.soot.callgraph.spark.solver.*;
+import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.views.View;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -66,6 +69,17 @@ public class Spark implements PointsToAnalysis {
     propagatePointerAssignmentGraph();
 
     // TODO: VTA cg
+    refineCallGraph();
+  }
+
+  private void refineCallGraph() {
+    if(options.isVta()){
+
+    } else if(options.isRta()){
+      CallGraphAlgorithm cga = new RapidTypeAnalysisWithSpark(view, new ViewTypeHierarchy(view), callGraph, pag);
+      CallGraph refinedCallGraph = cga.initialize(callGraph.getEntryPoints());
+      this.callGraph = refinedCallGraph;
+    }
   }
 
   private void buildPointerAssignmentGraph() {
@@ -110,8 +124,6 @@ public class Spark implements PointsToAnalysis {
       propagator.propagate();
     }
   }
-
-  private void simplifyPointerAssignmentGraph() {}
 
   @Override
   public Set<Node> getPointsToSet(Local local) {
@@ -166,6 +178,10 @@ public class Spark implements PointsToAnalysis {
     return result;
   }
 
+  public CallGraph getCallGraph(){
+    return callGraph;
+  }
+
   public static class Builder {
 
     private SparkOptions options;
@@ -189,64 +205,79 @@ public class Spark implements PointsToAnalysis {
       options = new SparkOptions();
     }
 
-    public void ignoreTypes(boolean ignoreTypes) {
+    public Builder ignoreTypes(boolean ignoreTypes) {
       options.setIgnoreTypes(ignoreTypes);
+      return this;
     }
 
-    public void vta(boolean vta) {
+    public Builder vta(boolean vta) {
       options.setVta(vta);
+      return this;
     }
 
-    public void rta(boolean rta) {
+    public Builder rta(boolean rta) {
       options.setRta(rta);
+      return this;
     }
 
-    public void fieldBased(boolean fieldBased) {
+    public Builder fieldBased(boolean fieldBased) {
       options.setFieldBased(fieldBased);
+      return this;
     }
 
-    public void typesForSites(boolean typesForSites) {
+    public Builder typesForSites(boolean typesForSites) {
       options.setTypesForSites(typesForSites);
+      return this;
     }
 
-    public void mergeStringBuffer(boolean mergeStringBuffer) {
+    public Builder mergeStringBuffer(boolean mergeStringBuffer) {
       options.setMergeStringBuffer(mergeStringBuffer);
+      return this;
     }
 
-    public void stringConstants(boolean stringConstants) {
+    public Builder stringConstants(boolean stringConstants) {
       options.setStringConstants(stringConstants);
+      return this;
     }
 
-    public void simulateNatives(boolean simulateNatives) {
+    public Builder simulateNatives(boolean simulateNatives) {
       options.setSimulateNatives(simulateNatives);
+      return this;
     }
 
-    public void emptiesAsAllocs(boolean emptiesAsAllocs) {
+    public Builder emptiesAsAllocs(boolean emptiesAsAllocs) {
       options.setEmptiesAsAllocs(emptiesAsAllocs);
+      return this;
     }
 
-    public void simpleEdgesBidirectional(boolean simpleEdgesBidirectional) {
+    public Builder simpleEdgesBidirectional(boolean simpleEdgesBidirectional) {
       options.setSimpleEdgesBidirectional(simpleEdgesBidirectional);
+      return this;
     }
 
-    public void onFlyCFG(boolean onFlyCFG) {
+    public Builder onFlyCFG(boolean onFlyCFG) {
       options.setOnFlyCG(onFlyCFG);
+      return this;
     }
 
-    public void simplifyOffline(boolean simplifyOffline) {
+    public Builder simplifyOffline(boolean simplifyOffline) {
       options.setSimplifyOffline(simplifyOffline);
+      return this;
     }
 
-    public void simplifySCCS(boolean simplifySCCS) {
+    public Builder simplifySCCS(boolean simplifySCCS) {
       options.setSimplifySCCS(simplifySCCS);
+      return this;
     }
 
-    public void ignoreTypesForSCCS(boolean ignoreTypesForSCCS) {
+    public Builder ignoreTypesForSCCS(boolean ignoreTypesForSCCS) {
       options.setIgnoreTypesForSCCS(ignoreTypesForSCCS);
+      return this;
     }
 
-    public void propagator(PropagatorEnum propagator) {
+    public Builder propagator(PropagatorEnum propagator) {
       options.setPropagator(propagator);
+      return this;
     }
 
     public Spark build() {

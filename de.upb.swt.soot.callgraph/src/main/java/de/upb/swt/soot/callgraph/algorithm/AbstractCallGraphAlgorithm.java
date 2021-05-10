@@ -54,11 +54,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   @Nonnull
-  final CallGraph constructCompleteCallGraph(
+  protected final CallGraph constructCompleteCallGraph(
       View<? extends SootClass> view, List<MethodSignature> entryPoints) {
-    MutableCallGraph cg = new GraphBasedCallGraph();
+    MutableCallGraph cg = new GraphBasedCallGraph(entryPoints);
 
-    Deque<MethodSignature> workList = new ArrayDeque<>(entryPoints);
+    Deque<MethodSignature> workList = new ArrayDeque<>(cg.getEntryPoints());
     Set<MethodSignature> processed = new HashSet<>();
 
     processWorkList(view, workList, processed, cg);
@@ -119,7 +119,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /** finds the given method signature in class's superclasses */
-  final <T extends Method> T findMethodInHierarchy(
+  protected final <T extends Method> T findMethodInHierarchy(
       @Nonnull View<? extends SootClass> view, @Nonnull MethodSignature sig) {
     SootClass sc = view.getClass(sig.getDeclClassType()).get();
     Optional<ClassType> optSuperclass = sc.getSuperclass();
@@ -192,5 +192,5 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   @Nonnull
-  abstract Set<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr);
+  protected abstract Set<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr);
 }

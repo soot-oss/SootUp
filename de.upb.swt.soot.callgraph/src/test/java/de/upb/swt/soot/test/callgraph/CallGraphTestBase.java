@@ -32,7 +32,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   protected abstract T createAlgorithm(JavaView view, TypeHierarchy typeHierarchy);
 
-  CallGraph loadCallGraph(String testDirectory, String className) {
+  protected CallGraph loadCallGraph(String testDirectory, String className) {
     String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
 
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
