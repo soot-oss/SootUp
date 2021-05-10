@@ -65,7 +65,7 @@ public final class JNewArrayExpr implements Expr, Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseNewArrayExpr(this, o);
   }
 

@@ -27,6 +27,7 @@ import com.google.common.collect.Iterables;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
@@ -45,12 +46,12 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
+public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
 
   @Nonnull protected final SourceType sourceType;
   @Nonnull protected final ClassType classSignature;
 
-  public SootClass(@Nonnull SootClassSource classSource, @Nonnull SourceType sourceType) {
+  public SootClass(@Nonnull S classSource, @Nonnull SourceType sourceType) {
     super(classSource);
     this.sourceType = sourceType;
     this.classSignature = classSource.getClassType();
@@ -61,14 +62,12 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
   @Nonnull public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
   @Nonnull
-  private Set<SootField> lazyFieldInitializer() {
-    Set<SootField> fields;
+  private Set<? extends SootField> lazyFieldInitializer() {
+    Set<? extends SootField> fields;
 
     try {
       fields = ImmutableUtils.immutableSetOf(this.classSource.resolveFields());
     } catch (ResolveException e) {
-      fields = ImmutableUtils.emptyImmutableSet();
-
       // TODO: [JMP] Exception handling
       e.printStackTrace();
       throw new IllegalStateException(e);
@@ -84,8 +83,6 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
     try {
       methods = ImmutableUtils.immutableSetOf(this.classSource.resolveMethods());
     } catch (ResolveException e) {
-      methods = ImmutableUtils.emptyImmutableSet();
-
       // TODO: [JMP] Exception handling
       e.printStackTrace();
       throw new IllegalStateException(e);
@@ -95,24 +92,20 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
   }
 
   @Nonnull
-  private final Supplier<Set<SootMethod>> _lazyMethods =
+  private final Supplier<Set<? extends SootMethod>> _lazyMethods =
       Suppliers.memoize(this::lazyMethodInitializer);
 
   /** Gets the {@link Method methods} of this {@link SootClass} in an immutable set. */
   @Nonnull
-  public Set<SootMethod> getMethods() {
+  public Set<? extends SootMethod> getMethods() {
     return this._lazyMethods.get();
   }
 
   @Nonnull
-  private final Supplier<Set<SootField>> _lazyFields =
+  private final Supplier<Set<? extends SootField>> _lazyFields =
       Suppliers.memoize(this::lazyFieldInitializer);
 
-  /**
-   * Gets the {@link Field fields} of this {@link SootClass} in an immutable set.
-   *
-   * @return
-   */
+  /** Gets the {@link Field fields} of this {@link SootClass} in an immutable set. */
   @Override
   @Nonnull
   public Set<? extends SootField> getFields() {
@@ -150,11 +143,23 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
   }
 
   /**
+   * Attempts to retrieve the methodRef with the given signature, parameters and return type. If no
+   * matching method can be found, null is returned.
+   */
+  @Nonnull
+  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
+    return this.getMethods().stream()
+        .filter(method -> method.getSignature().equals(signature))
+        .findAny();
+  }
+
+  /**
    * Attempts to retrieve the method with the given name and parameters. This method may throw an
    * AmbiguousMethodException if there is more than one method with the given name and parameter.
    */
   @Nonnull
-  public Optional<SootMethod> getMethod(String name, Iterable<? extends Type> parameterTypes) {
+  public Optional<? extends SootMethod> getMethod(
+      String name, Iterable<? extends Type> parameterTypes) {
     return this.getMethods().stream()
         .filter(
             method ->
@@ -172,7 +177,7 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
    * method with the given is found, null is returned.
    */
   @Nonnull
-  public Optional<SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
+  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
     return this.getMethods().stream()
         .filter(method -> method.getSubSignature().equals(subSignature))
         .findAny();
@@ -187,7 +192,7 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
     return lazyModifiers.get();
   }
 
-  private final Supplier<Set<ClassType>> lazyInterfaces =
+  private final Supplier<Set<? extends ClassType>> lazyInterfaces =
       Suppliers.memoize(classSource::resolveInterfaces);
 
   /**
@@ -204,7 +209,7 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
    * Returns a backed Chain of the interfaces that are directly implemented by this class. (see
    * getInterfaceCount())
    */
-  public Set<ClassType> getInterfaces() {
+  public Set<? extends ClassType> getInterfaces() {
     return lazyInterfaces.get();
   }
 
@@ -218,7 +223,7 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
     return false;
   }
 
-  private final Supplier<Optional<ClassType>> lazySuperclass =
+  private final Supplier<Optional<? extends ClassType>> lazySuperclass =
       Suppliers.memoize(classSource::resolveSuperclass);
 
   /**
@@ -234,11 +239,11 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
    * WARNING: interfaces in Java are subclasses of the java.lang.Object class! Returns the
    * superclass of this class. (see hasSuperclass())
    */
-  public Optional<ClassType> getSuperclass() {
+  public Optional<? extends ClassType> getSuperclass() {
     return lazySuperclass.get();
   }
 
-  private final Supplier<Optional<ClassType>> lazyOuterClass =
+  private final Supplier<Optional<? extends ClassType>> lazyOuterClass =
       Suppliers.memoize(classSource::resolveOuterClass);
 
   public boolean hasOuterClass() {
@@ -246,7 +251,7 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
   }
 
   /** This method returns the outer class. */
-  public @Nonnull Optional<ClassType> getOuterClass() {
+  public @Nonnull Optional<? extends ClassType> getOuterClass() {
     return lazyOuterClass.get();
   }
 
@@ -340,7 +345,7 @@ public class SootClass extends AbstractClass<SootClassSource<SootClass>> {
   }
 
   @Override
-  public SootClassSource getClassSource() {
+  public S getClassSource() {
     return classSource;
   }
 

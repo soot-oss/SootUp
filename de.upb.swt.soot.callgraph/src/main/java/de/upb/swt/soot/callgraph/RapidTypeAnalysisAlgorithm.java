@@ -60,7 +60,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
     // add also found classes' super classes
     instantiated.stream()
-        .map(s -> (SootClass) view.getClass(s).get())
+        .map(s -> (SootClass<?>) view.getClass(s).get())
         .map(s -> s.getSuperclass())
         .filter(s -> s.isPresent())
         .map(s -> s.get())

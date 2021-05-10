@@ -55,7 +55,7 @@ public final class JParameterRef implements IdentityRef, Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseParameterRef(this, o);
   }
 
@@ -91,7 +91,11 @@ public final class JParameterRef implements IdentityRef, Copyable {
     return paramType;
   }
 
-  /** Used with RefSwitch. */
+  /**
+   * Used with RefSwitch.
+   *
+   * @param sw
+   */
   @Override
   public void accept(@Nonnull Visitor sw) {
     ((RefVisitor) sw).caseParameterRef(this);

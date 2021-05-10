@@ -30,7 +30,7 @@ public class LocalClassShadowTest extends MinimalSourceTestSuiteBase {
   JavaClassType localClass =
       identifierFactory.getClassType(
           getClassName(customTestWatcher.getClassPath()) + "1$LocalClass");
-  SootClass sootLocalClass = loadClass(localClass);
+  SootClass<?> sootLocalClass = loadClass(localClass);
 
   /** Test: OuterClass of LocalClass is LocalClassShadow */
   @Test

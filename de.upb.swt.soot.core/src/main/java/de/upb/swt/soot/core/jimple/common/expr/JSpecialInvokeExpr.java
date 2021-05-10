@@ -42,7 +42,7 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr impleme
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseSpecialInvokeExpr(this, o);
   }
 

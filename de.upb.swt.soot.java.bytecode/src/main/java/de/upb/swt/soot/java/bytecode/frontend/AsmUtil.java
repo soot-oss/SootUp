@@ -25,8 +25,12 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.java.core.AnnotationUsage;
+import de.upb.swt.soot.java.core.ConstantUtil;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.ModuleModifier;
+import de.upb.swt.soot.java.core.language.JavaJimple;
+import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,6 +47,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.util.Printer;
 import org.objectweb.asm.util.Textifier;
@@ -52,7 +57,7 @@ public final class AsmUtil {
 
   private AsmUtil() {}
 
-  public static final int SUPPORTED_ASM_OPCODE = Opcodes.ASM7;
+  public static final int SUPPORTED_ASM_OPCODE = Opcodes.ASM9;
 
   /**
    * Initializes a class node.
@@ -117,13 +122,35 @@ public final class AsmUtil {
     return modifierEnumSet;
   }
 
+  @Nonnull
+  public static Collection<JavaClassType> asmIdToSignature(
+      @Nullable Iterable<String> asmClassNames) {
+    if (asmClassNames == null) {
+      return Collections.emptyList();
+    }
+
+    return StreamSupport.stream(asmClassNames.spliterator(), false)
+        .map(AsmUtil::asmIDToSignature)
+        .collect(Collectors.toList());
+  }
+
+  @Nullable
+  public static JavaClassType asmIDToSignature(@Nonnull String asmClassName) {
+    // TODO: [ms] incorporate? -> see toJimpleClassType
+    if (asmClassName.isEmpty()) {
+      return null;
+    }
+    return JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(asmClassName));
+  }
+
+  // TODO: [bh] rename this
   /**
    * Converts a type descriptor to a Jimple reference type.
    *
    * @param desc the descriptor.
    * @return the reference type.
    */
-  public static Type toJimpleClassType(String desc) {
+  public static Type toJimpleClassType(@Nonnull String desc) {
     return desc.charAt(0) == '['
         ? toJimpleType(desc)
         : JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(desc));
@@ -254,26 +281,6 @@ public final class AsmUtil {
     return types;
   }
 
-  @Nonnull
-  public static Collection<JavaClassType> asmIdToSignature(
-      @Nullable Iterable<String> asmClassNames) {
-    if (asmClassNames == null) {
-      return Collections.emptyList();
-    }
-
-    return StreamSupport.stream(asmClassNames.spliterator(), false)
-        .map(AsmUtil::asmIDToSignature)
-        .collect(Collectors.toList());
-  }
-
-  @Nullable
-  public static JavaClassType asmIDToSignature(@Nonnull String asmClassName) {
-    if (asmClassName.isEmpty()) {
-      return null;
-    }
-    return JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(asmClassName));
-  }
-
   public static String toString(AbstractInsnNode insn) {
     Printer printer = new Textifier();
     TraceMethodVisitor mp = new TraceMethodVisitor(printer);
@@ -284,6 +291,49 @@ public final class AsmUtil {
     return Arrays.stream(sw.toString().split("\n"))
         .filter(line -> !line.trim().isEmpty())
         .reduce("", String::concat);
+  }
+
+  public static Iterable<AnnotationUsage> createAnnotationUsage(
+      List<AnnotationNode> invisibleParameterAnnotation) {
+    if (invisibleParameterAnnotation == null) {
+      return Collections.emptyList();
+    }
+
+    List<AnnotationUsage> annotationUsages = new ArrayList<>();
+    for (AnnotationNode e : invisibleParameterAnnotation) {
+
+      Map<String, Object> paramMap = new HashMap<>();
+
+      if (e.values != null) {
+        for (int j = 0; j < e.values.size(); j++) {
+          final String annotationName = (String) e.values.get(j);
+          final Object annotationValue = e.values.get(++j);
+
+          // repeatable annotations will have annotations (as a ArrayList) as value!
+          if (annotationValue instanceof ArrayList) {
+
+            final ArrayList<AnnotationNode> annotationValueList =
+                (ArrayList<AnnotationNode>) annotationValue;
+
+            paramMap.put(annotationName, createAnnotationUsage(annotationValueList));
+          } else {
+            if (annotationValue instanceof org.objectweb.asm.Type) {
+              org.objectweb.asm.Type typ = (org.objectweb.asm.Type) annotationValue;
+              paramMap.put(
+                  annotationName, JavaJimple.getInstance().newClassConstant(typ.toString()));
+            } else {
+              paramMap.put(annotationName, ConstantUtil.fromObject(annotationValue));
+            }
+          }
+        }
+      }
+
+      AnnotationType at =
+          JavaIdentifierFactory.getInstance().getAnnotationType(AsmUtil.toQualifiedName(e.desc));
+      annotationUsages.add(new AnnotationUsage(at, paramMap));
+    }
+
+    return annotationUsages;
   }
 
   @Nonnull

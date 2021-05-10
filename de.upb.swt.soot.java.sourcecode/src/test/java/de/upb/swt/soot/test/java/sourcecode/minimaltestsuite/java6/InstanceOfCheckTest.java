@@ -24,7 +24,7 @@ public class InstanceOfCheckTest extends MinimalSourceTestSuiteBase {
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
-    SootClass sootClass = loadClass(getDeclaredClassSignature());
+    SootClass<?> sootClass = loadClass(getDeclaredClassSignature());
     assertTrue(sootClass.getSuperclass().get().getClassName().equals("InstanceOfCheckSuper"));
   }
 

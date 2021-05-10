@@ -19,6 +19,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.JavaSootClassSource;
+import de.upb.swt.soot.java.core.JavaSootMethod;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.util.Arrays;
@@ -57,7 +58,7 @@ public class WitherTest {
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature(
             "addDouble", declareClassSig, "double", Arrays.asList("double", "float"));
-    Optional<SootMethod> m = sootClass.getMethod(methodSignature.getSubSignature());
+    Optional<JavaSootMethod> m = sootClass.getMethod(methodSignature.getSubSignature());
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -87,7 +88,7 @@ public class WitherTest {
 
     JavaSootClass newSootClass = sootClass.withReplacedMethod(method, method.withBody(body));
 
-    Optional<SootMethod> newMethod =
+    Optional<JavaSootMethod> newMethod =
         newSootClass.getMethod(method.getSignature().getSubSignature());
     assertTrue(newMethod.isPresent());
     Body newBody = newMethod.get().getBody();

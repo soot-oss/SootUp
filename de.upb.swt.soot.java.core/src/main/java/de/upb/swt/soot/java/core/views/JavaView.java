@@ -29,7 +29,10 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.AbstractView;
+import de.upb.swt.soot.java.core.AnnotationUsage;
+import de.upb.swt.soot.java.core.JavaAnnotationSootClass;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.types.AnnotationType;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -131,12 +134,18 @@ public class JavaView extends AbstractView<JavaSootClass> {
 
   @Nonnull
   protected synchronized Optional<JavaSootClass> buildClassFrom(
-      AbstractClassSource<JavaSootClass> classSource) {
+      AbstractClassSource<? extends JavaSootClass> classSource) {
     JavaSootClass theClass =
         cache.computeIfAbsent(
             classSource.getClassType(),
             type ->
                 classSource.buildClass(getProject().getSourceTypeSpecifier().sourceTypeFor(type)));
+
+    if (theClass.getType() instanceof AnnotationType) {
+      JavaAnnotationSootClass jasc = (JavaAnnotationSootClass) theClass;
+      jasc.getAnnotations(Optional.of(this)).forEach(AnnotationUsage::getValuesWithDefaults);
+    }
+
     return Optional.of(theClass);
   }
 

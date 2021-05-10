@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
 public class ImmutableStmtGraph extends StmtGraph {
 
   @Nonnull
-  private final Map<Stmt, Integer>
+  protected final Map<Stmt, Integer>
       nodeToIndex; // maps a Stmt to its elementIndex in successors[] and predecessors[]
 
   @Nonnull

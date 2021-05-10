@@ -28,7 +28,7 @@ public class PrivateMethodInterfaceImplTest extends JimpleTestSuiteBase {
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
-    SootClass sootClass = loadClass(getDeclaredClassSignature());
+    SootClass<?> sootClass = loadClass(getDeclaredClassSignature());
     assertTrue(
         sootClass.getInterfaces().stream()
             .anyMatch(

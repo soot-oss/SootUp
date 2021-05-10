@@ -38,7 +38,7 @@ public interface Constant extends Immediate {
   }
 
   @Override
-  default boolean equivTo(Object o, JimpleComparator comparator) {
+  default boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseConstant(this, o);
   }
 

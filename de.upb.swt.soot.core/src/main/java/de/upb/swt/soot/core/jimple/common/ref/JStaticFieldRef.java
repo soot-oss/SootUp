@@ -55,7 +55,7 @@ public final class JStaticFieldRef extends JFieldRef implements Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseStaticFieldRef(this, o);
   }
 

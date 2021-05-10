@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 public class JavaPackageName extends PackageName {
 
   // if null: information is not loaded
-  @Nullable private Iterable<AnnotationType> annotations;
+  @Nullable private Iterable<AnnotationUsage> annotations;
 
   /**
    * Internal: Constructs a Package Signature of a Java package. Instances should only be created by
@@ -53,19 +53,20 @@ public class JavaPackageName extends PackageName {
    * @param packageName the package's name
    */
   public JavaPackageName(
-      @Nonnull String packageName, @Nonnull Iterable<AnnotationType> annotations) {
+      @Nonnull String packageName, @Nonnull Iterable<AnnotationUsage> annotations) {
     super(packageName);
     this.annotations = annotations;
   }
 
   @Nonnull
-  public Iterable<AnnotationType> getAnnotations(
+  public Iterable<AnnotationUsage> getAnnotations(
       @Nonnull JavaView view, @Nonnull String packageName) {
     if (annotations == null) {
       Optional<JavaSootClass> sc =
           view.getClass(
               JavaIdentifierFactory.getInstance().getClassType(PACKAGE_INFO, packageName));
-      annotations = sc.map(JavaSootClass::getAnnotations).orElse(Collections.emptyList());
+      annotations =
+          sc.isPresent() ? (sc.get()).getAnnotations(Optional.of(view)) : Collections.emptyList();
     }
     return annotations;
   }

@@ -40,10 +40,9 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.*;
 
 /** A ClassSource that reads from Java bytecode */
 class AsmClassSource extends JavaSootClassSource {
@@ -70,11 +69,11 @@ class AsmClassSource extends JavaSootClassSource {
                   signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
               EnumSet<Modifier> modifiers = AsmUtil.getModifiers(fieldNode.access);
 
-              // FIXME: implement support for annotation; add Position info
+              // TODO: add Position info
               return new JavaSootField(
                   fieldSignature,
                   modifiers,
-                  Collections.emptyList(),
+                  convertAnnotation(fieldNode.invisibleAnnotations),
                   NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());
@@ -99,19 +98,55 @@ class AsmClassSource extends JavaSootClassSource {
               MethodSignature methodSignature =
                   signatureFactory.getMethodSignature(methodName, cs, retType, sigTypes);
 
-              // FIXME: implement support for annotation; position/line numbers if possible
+              // TODO: position/line numbers if possible
               return new JavaSootMethod(
                   asmClassClassSourceContent,
                   methodSignature,
                   modifiers,
                   exceptions,
-                  Collections.emptyList(),
+                  convertAnnotation(methodSource.invisibleAnnotations),
                   NoPositionInformation.getInstance());
             });
   }
 
+  private static String convertAnnotation(TypeAnnotationNode node) {
+    return node.desc + node.typePath + node.typeRef;
+  }
+
+  protected static List<AnnotationUsage> convertAnnotation(List<AnnotationNode> nodes) {
+    if (nodes == null) {
+      return Collections.emptyList();
+    }
+    return StreamSupport.stream(AsmUtil.createAnnotationUsage(nodes).spliterator(), false)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  protected Iterable<AnnotationUsage> resolveAnnotations() {
+    List<AnnotationNode> annotationNodes = new ArrayList<>();
+
+    annotationNodes.addAll(
+        classNode.visibleAnnotations != null
+            ? classNode.visibleAnnotations
+            : Collections.emptyList());
+    annotationNodes.addAll(
+        classNode.visibleTypeAnnotations != null
+            ? classNode.visibleTypeAnnotations
+            : Collections.emptyList());
+    annotationNodes.addAll(
+        classNode.invisibleAnnotations != null
+            ? classNode.invisibleAnnotations
+            : Collections.emptyList());
+    annotationNodes.addAll(
+        classNode.invisibleTypeAnnotations != null
+            ? classNode.invisibleTypeAnnotations
+            : Collections.emptyList());
+
+    return convertAnnotation(annotationNodes);
+  }
+
   @Nonnull
-  public Collection<SootMethod> resolveMethods() throws ResolveException {
+  public Collection<? extends SootMethod> resolveMethods() throws ResolveException {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveMethods(classNode.methods, identifierFactory, classSignature)
         .collect(Collectors.toSet());
@@ -130,12 +165,12 @@ class AsmClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public Set<ClassType> resolveInterfaces() {
+  public Set<? extends ClassType> resolveInterfaces() {
     return new HashSet<>(AsmUtil.asmIdToSignature(classNode.interfaces));
   }
 
   @Nonnull
-  public Optional<ClassType> resolveSuperclass() {
+  public Optional<? extends ClassType> resolveSuperclass() {
     if (classNode.superName == null) {
       return Optional.empty();
     }
@@ -143,38 +178,18 @@ class AsmClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public Optional<ClassType> resolveOuterClass() {
+  public Optional<? extends ClassType> resolveOuterClass() {
     return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.outerClass));
   }
 
   @Nonnull
   public Position resolvePosition() {
+    // TODO [ms]: implement line numbers for bytecode
     return NoPositionInformation.getInstance();
   }
 
   @Override
   public String toString() {
     return getSourcePath().toString();
-  }
-
-  @Nonnull
-  @Override
-  public Iterable<AnnotationType> resolveAnnotations() {
-    // TODO [ms] implement
-    return null;
-  }
-
-  @Nonnull
-  @Override
-  public Iterable<AnnotationType> resolveMethodAnnotations() {
-    // TODO [ms] implement
-    return null;
-  }
-
-  @Nonnull
-  @Override
-  public Iterable<AnnotationType> resolveFieldAnnotations() {
-    // TODO [ms] implement
-    return null;
   }
 }

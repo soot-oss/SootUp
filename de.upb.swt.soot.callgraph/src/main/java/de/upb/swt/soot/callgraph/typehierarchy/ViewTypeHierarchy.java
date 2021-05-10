@@ -294,7 +294,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   private static void addSootClassToGraph(
-      SootClass sootClass, Map<ClassType, Vertex> typeToVertex, Graph<Vertex, Edge> graph) {
+      SootClass<?> sootClass, Map<ClassType, Vertex> typeToVertex, Graph<Vertex, Edge> graph) {
     if (sootClass.isInterface()) {
       Vertex vertex =
           typeToVertex.computeIfAbsent(
@@ -343,7 +343,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   @Nonnull
-  private SootClass sootClassFor(@Nonnull ClassType classType) {
+  private SootClass<?> sootClassFor(@Nonnull ClassType classType) {
     return view.getClassOrThrow(classType);
   }
 

@@ -174,8 +174,7 @@ grammar Jimple;
 
   stmt :
     assignments |
-    IF bool_expr goto_stmt |
-    goto_stmt |
+    (IF bool_expr)? goto_stmt |
     invoke_expr |
     RETURN immediate? |
     SWITCH L_PAREN immediate R_PAREN L_BRACE case_stmt+ R_BRACE |
@@ -225,7 +224,7 @@ grammar Jimple;
   invoke_expr :
     /*nonstatic*/ nonstaticinvoke=NONSTATIC_INVOKE local_name=identifier DOT method_signature L_PAREN arg_list? R_PAREN |
     /*static*/    staticinvoke=STATICINVOKE method_signature L_PAREN arg_list? R_PAREN |
-    /*dynamic*/   dynamicinvoke=DYNAMICINVOKE name=identifier CMPLT unnamed_method_name=type L_PAREN parameter_list=type_list? R_PAREN CMPGT L_PAREN dyn_args=arg_list? R_PAREN
+    /*dynamic*/   dynamicinvoke=DYNAMICINVOKE unnamed_method_name=identifier CMPLT name=type L_PAREN parameter_list=type_list? R_PAREN CMPGT L_PAREN dyn_args=arg_list? R_PAREN
                                                                                               bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
 
   binop_expr :

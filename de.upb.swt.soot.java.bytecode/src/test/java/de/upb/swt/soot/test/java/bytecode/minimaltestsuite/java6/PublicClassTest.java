@@ -23,7 +23,7 @@ public class PublicClassTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
   public void test() {
-    SootClass clazz = loadClass(getDeclaredClassSignature());
+    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
     assertEquals(EnumSet.of(Modifier.PUBLIC, Modifier.SYNCHRONIZED), clazz.getModifiers());
 
     SootMethod method;

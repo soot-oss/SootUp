@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import categories.Java8Test;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
@@ -15,6 +14,7 @@ import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLoc
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.JavaSootMethod;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
@@ -123,15 +123,15 @@ public abstract class MinimalBytecodeTestSuiteBase {
     return identifierFactory.getClassType(getClassName(customTestWatcher.classPath));
   }
 
-  public SootClass loadClass(ClassType clazz) {
+  public JavaSootClass loadClass(ClassType clazz) {
     Optional<JavaSootClass> cs = customTestWatcher.getJavaView().getClass(clazz);
     assertTrue("No matching class signature found", cs.isPresent());
     return cs.get();
   }
 
-  public SootMethod loadMethod(MethodSignature methodSignature) {
-    SootClass clazz = loadClass(methodSignature.getDeclClassType());
-    Optional<SootMethod> m = clazz.getMethod(methodSignature.getSubSignature());
+  public JavaSootMethod loadMethod(MethodSignature methodSignature) {
+    JavaSootClass clazz = loadClass(methodSignature.getDeclClassType());
+    Optional<JavaSootMethod> m = clazz.getMethod(methodSignature.getSubSignature());
     assertTrue("No matching method signature found", m.isPresent());
     return m.get();
   }

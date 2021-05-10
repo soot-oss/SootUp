@@ -38,6 +38,7 @@ public class WalaClassLoaderTestUtils {
     // class.
     return WalaJavaClassProvider.getClassSource(signature.getDeclClassType())
         .map(cs -> new SootClass(cs, SourceType.Application))
-        .flatMap(sootClass -> sootClass.getMethod(signature.getSubSignature()));
+        .flatMap(
+            sootClass -> sootClass.getMethod((Optional<SootMethod>) signature.getSubSignature()));
   }
 }

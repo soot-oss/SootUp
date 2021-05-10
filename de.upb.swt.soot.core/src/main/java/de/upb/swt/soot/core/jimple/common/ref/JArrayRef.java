@@ -93,7 +93,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseArrayRef(this, o);
   }
 

@@ -4,7 +4,7 @@ package de.upb.swt.soot.java.core;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2020 Markus Schmidt
+ * Copyright (C) 2021 Bastian Haverkamp
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,27 +22,24 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 
-import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.java.core.types.JavaClassType;
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.model.SourceType;
+import de.upb.swt.soot.core.types.ClassType;
+import java.nio.file.Path;
+import javax.annotation.Nonnull;
 
-/**
- * This class represents Java Annotations (JSR-175).
- *
- * @author Markus Schmidt
- */
+public abstract class JavaAnnotationSootClassSource extends JavaSootClassSource {
 
-// TODO:[ms] move to a better place?
-public class AnnotationType extends JavaClassType {
+  public JavaAnnotationSootClassSource(
+      @Nonnull AnalysisInputLocation<JavaSootClass> srcNamespace,
+      @Nonnull ClassType classSignature,
+      @Nonnull Path sourcePath) {
+    super(srcNamespace, classSignature, sourcePath);
+  }
 
-  /**
-   * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
-   * {@link IdentifierFactory}
-   *
-   * @param annotationName the simple name of the class, e.g., ClassA NOT my.package.ClassA
-   * @param packageName the corresponding package
-   */
-  public AnnotationType(String annotationName, PackageName packageName) {
-    super("@interface" + annotationName, packageName);
+  @Override
+  @Nonnull
+  public JavaAnnotationSootClass buildClass(@Nonnull SourceType sourceType) {
+    return new JavaAnnotationSootClass(this, sourceType);
   }
 }
