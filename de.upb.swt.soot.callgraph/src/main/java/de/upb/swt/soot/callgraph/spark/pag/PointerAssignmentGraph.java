@@ -49,6 +49,8 @@ import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -147,7 +149,7 @@ public class PointerAssignmentGraph {
     Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = new HashSet<>();
     for (MethodSignature caller : methodSigs) {
       SootMethod method = MethodUtil.methodSignatureToMethod(view, caller);
-      for (Stmt s : method.getBody().getStmts()) {
+      for (Stmt s : method.getBody().getStmtGraph().nodes()) {
         if (s.containsInvokeExpr()) {
           CalleeMethodSignature callee =
               new CalleeMethodSignature(
@@ -260,6 +262,10 @@ public class PointerAssignmentGraph {
       }
     }
     return node;
+  }
+
+  public List<AllocationNode> getAllocationNodes(SootMethod method){
+    return valToAllocationNode.values().stream().filter(n -> n.getMethod().equals(method)).collect(Collectors.toList());
   }
 
   public GlobalVariableNode getOrCreateGlobalVariableNode(Object value, Type type) {

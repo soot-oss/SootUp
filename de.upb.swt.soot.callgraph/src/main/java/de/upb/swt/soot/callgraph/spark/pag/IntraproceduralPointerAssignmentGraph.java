@@ -67,15 +67,14 @@ public class IntraproceduralPointerAssignmentGraph {
       return;
     }
     isBuilt = true;
-    if (method.isConcrete()) {
+    if (method.isConcrete() && method.hasBody()) {
       Body body = method.getBody();
-      for (Stmt stmt : body.getStmts()) {
+      for (Stmt stmt : body.getStmtGraph().nodes()) {
         nodeFactory.processStmt(stmt);
       }
     } else {
       // TODO: build for native
     }
-    // TODO: addMiscEdges
     addMiscEdges();
   }
 
