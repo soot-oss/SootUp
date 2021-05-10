@@ -33,7 +33,6 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class PointsToSetIntersectionTest {
 
-  private String testDirectory, className;
   private JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   private JavaClassType mainClassSignature;
   private MethodSignature mainMethodSignature;
