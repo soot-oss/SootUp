@@ -117,38 +117,88 @@ public class JavaModuleViewTest {
     assertNotNull(moduleDescriptor);
   }
 
-  @Ignore("to implement")
+  @Test
   public void testAnnotation() {
-    // TODO: adapt
+    // modmain -> modb -> mod.annotations
+    // transitive: modmain -> mod.annotations
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(new JavaModulePathAnalysisInputLocation(testPath + "annotations"))
+            .addModulePath(new JavaModulePathAnalysisInputLocation(testPath + "annotations/jar"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
-    JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
-    Optional<JavaSootClass> aClass = view.getClass(targetClass);
-    assertTrue(aClass.isPresent());
-    fail("test module descriptor/rights");
+    ModulePackageName modMain =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgmain", "modmain");
+    ModulePackageName modB =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgb", "modb");
+    ModulePackageName modAnnotations =
+        JavaModuleIdentifierFactory.getInstance()
+            .getPackageSignature("pkgannotations", "mod.annotations");
+
+    assertTrue(view.getModuleInfo(modMain.getModuleSignature()).isPresent());
+    assertTrue(view.getModuleInfo(modB.getModuleSignature()).isPresent());
+    assertTrue(view.getModuleInfo(modAnnotations.getModuleSignature()).isPresent());
+
+    JavaClassType ctAnno =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("CompileTimeAnnotation", "pkgannotations", "mod.annotations");
+    JavaClassType customAnno =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("ReallyCoolModule", "pkgannotations", "mod.annotations");
+    JavaClassType rtAnno =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("RunTimeAnnotation", "pkgannotations", "mod.annotations");
+
+    assertTrue(view.getClass(ctAnno).isPresent());
+    assertTrue(view.getClass(customAnno).isPresent());
+    assertTrue(view.getClass(rtAnno).isPresent());
+
+    assertTrue(view.getClass(modAnnotations, ctAnno).isPresent());
+    assertTrue(view.getClass(modB, ctAnno).isPresent());
+    assertTrue(view.getClass(modMain, ctAnno).isPresent());
   }
 
-  @Ignore("to implement")
+  @Test
   public void testRequiresStatic() {
-    // TODO: adapt
+    // modmain -> modb -> modc
+    // static trans: modmain -> modc [via modb]
+
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(new JavaModulePathAnalysisInputLocation(testPath + "requires-static"))
+            .addModulePath(
+                new JavaModulePathAnalysisInputLocation(testPath + "requires-static/jar"))
+            .addClassPath(new JrtFileSystemAnalysisInputLocation())
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
+    ModulePackageName modMain =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgmain", "modmain");
+    ModulePackageName modB =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgb", "modb");
+    ModulePackageName modC =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgc", "modc");
+
+    assertTrue(view.getModuleInfo(modMain.getModuleSignature()).isPresent());
+    assertTrue(view.getModuleInfo(modB.getModuleSignature()).isPresent());
+    assertTrue(view.getModuleInfo(modC.getModuleSignature()).isPresent());
+
+    JavaClassType cClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("C", "pkgc", "modc");
+
+    assertTrue(view.getClass(cClass).isPresent());
+
+    assertTrue(view.getClass(modC, cClass).isPresent());
+    assertTrue(view.getClass(modB, cClass).isPresent());
+    assertTrue(view.getClass(modMain, cClass).isPresent());
+
     JavaClassType targetClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
-    Optional<JavaSootClass> aClass = view.getClass(targetClass);
-    assertTrue(aClass.isPresent());
-    fail("test module descriptor/rights");
+    assertTrue(view.getClass(targetClass).isPresent());
+    assertTrue(view.getClass(modMain, targetClass).isPresent());
+    assertTrue(view.getClass(modB, targetClass).isPresent());
+    assertTrue(view.getClass(modC, targetClass).isPresent());
   }
 
   @Test
@@ -183,11 +233,6 @@ public class JavaModuleViewTest {
         requiresOfMain.stream()
             .anyMatch(reqs -> reqs.getModuleSignature().equals(modB.getModuleSignature())));
 
-    System.out.println("found modules:" + view.getModules());
-    System.out.println(moduleInfoMain.get());
-    System.out.println(moduleInfoB.get());
-    System.out.println(view.getModuleInfo(modC.getModuleSignature()).get());
-
     JavaClassType targetClassMain =
         JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
     assertTrue(view.getClass(modMain, targetClassMain).isPresent());
@@ -207,13 +252,6 @@ public class JavaModuleViewTest {
     JavaClassType targetClassC =
         JavaModuleIdentifierFactory.getInstance().getClassType("C", "pkgc", "modc");
     assertTrue(view.getClass(modC, targetClassC).isPresent());
-
-    /* TODO: test elsewhere
-    // test transitive
-    JavaClassType targetClassFromJavaBase =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
-    assertTrue(view.getClass(modMain, targetClassFromJavaBase).isPresent());
-     */
   }
 
   @Test
@@ -380,6 +418,7 @@ public class JavaModuleViewTest {
 
   @Ignore("to implement")
   public void testSplitpackageAutomaticModules() {
+    // A module must not requires 2 or more modules, which have/export the same package
     // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
@@ -398,6 +437,7 @@ public class JavaModuleViewTest {
 
   @Ignore("to implement")
   public void testSplitpackage() {
+    // A module must not requires 2 or more modules, which have/export the same package
     // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))

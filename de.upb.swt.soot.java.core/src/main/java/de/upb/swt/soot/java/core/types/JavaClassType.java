@@ -28,6 +28,7 @@ import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -138,7 +139,11 @@ public class JavaClassType extends ClassType {
   }
 
   public boolean isBuiltInClass() {
-    // TODO: [ms] for java9 modules library check modules instead of that heuristic
+    PackageName packageName = getPackageName();
+    if (packageName instanceof ModulePackageName) {
+      // if java modules (>= java9) are used: its the case when the module is java.base
+      return ((ModulePackageName) packageName).getModuleSignature().toString().equals("java.base");
+    }
     return LIBRARY_CLASS_PATTERN.matcher(getClassName()).find();
   }
 }
