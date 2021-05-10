@@ -112,7 +112,7 @@ public class RapidTypeAnalysisWithSpark extends AbstractCallGraphAlgorithm {
         .map(s -> (SootClass) view.getClass(s).get())
         .map(s -> s.getSuperclass())
         .filter(s -> s.isPresent())
-        .map(s -> s.get())
+        .map(s -> (ClassType) s.get())
         .forEach(instantiatedClasses::add);
   }
 }

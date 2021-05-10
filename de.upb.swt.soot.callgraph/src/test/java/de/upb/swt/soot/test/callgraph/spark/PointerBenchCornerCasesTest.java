@@ -98,7 +98,7 @@ public class PointerBenchCornerCasesTest {
 
     JavaClassType type = identifierFactory.getClassType("benchmark.objects.A");
     SootClass sc = (SootClass) view.getClass(type).get();
-    SootField field = sc.getField("f").get();
+    SootField field = (SootField) sc.getField("f").get();
 
     Set<Node> aFieldPointsTo = spark.getPointsToSet(a, field);
     Set<Node> bFieldPointsTo = spark.getPointsToSet(b, field);

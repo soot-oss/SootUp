@@ -112,7 +112,7 @@ public class PointsToSetIntersectionTest {
 
     JavaClassType containerClassSig = identifierFactory.getClassType("Container");
     SootClass containerSC = (SootClass) view.getClass(containerClassSig).get();
-    SootField containerItem = containerSC.getField("item").get();
+    SootField containerItem = (SootField) containerSC.getField("item").get();
 
     Set<Node> c1ItemPointsTo = spark.getPointsToSet(c1, containerItem);
     Set<Node> c2ItemPointsTo = spark.getPointsToSet(c2, containerItem);

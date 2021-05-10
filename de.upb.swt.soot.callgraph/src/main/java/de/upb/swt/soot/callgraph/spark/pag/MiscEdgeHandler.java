@@ -47,7 +47,7 @@ public class MiscEdgeHandler {
   private static final ArrayType strArrayType = identifierFactory.getArrayType(strType, 1);
   private static final MethodSubSignature mainSubSignature =
       identifierFactory.getMethodSubSignature(
-          "main", Collections.singleton(strArrayType), VoidType.getInstance());
+          "main", VoidType.getInstance(), Collections.singleton(strArrayType));
   private static final MethodSignature threadInitSignature =
       identifierFactory.getMethodSignature(
           "<init>",

@@ -54,7 +54,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   @Nonnull
-  final CallGraph constructCompleteCallGraph(
+  protected final CallGraph constructCompleteCallGraph(
       View<? extends SootClass<?>> view, List<MethodSignature> entryPoints) {
     MutableCallGraph cg = new GraphBasedCallGraph(entryPoints);
 

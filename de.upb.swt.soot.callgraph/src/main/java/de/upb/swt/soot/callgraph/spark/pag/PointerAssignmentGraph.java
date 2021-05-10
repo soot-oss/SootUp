@@ -116,7 +116,7 @@ public class PointerAssignmentGraph {
 
   private void build() {
     for (SootClass clazz : view.getClasses()) {
-      for (SootMethod method : clazz.getMethods()) {
+      for (SootMethod method : (Set<SootMethod>) clazz.getMethods()) {
         if (!method.isAbstract() && callGraph.containsMethod(method.getSignature())) {
           IntraproceduralPointerAssignmentGraph intraPAG =
               IntraproceduralPointerAssignmentGraph.getInstance(this, method);

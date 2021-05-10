@@ -35,9 +35,10 @@ public class MethodUtil {
   public static SootMethod methodSignatureToMethod(
       View<? extends SootClass> view, MethodSignature methodSignature) {
     SootMethod currentMethodCandidate =
-        view.getClass(methodSignature.getDeclClassType())
-            .flatMap(c -> c.getMethod(methodSignature))
-            .orElse(null);
+        (SootMethod)
+            view.getClass(methodSignature.getDeclClassType())
+                .flatMap(c -> c.getMethod(methodSignature))
+                .orElse(null);
     return currentMethodCandidate;
   }
 

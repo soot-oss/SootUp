@@ -96,7 +96,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
         caseParameter(i);
       }
     }
-    Type retType = m.getReturnTypeSignature();
+    Type retType = m.getReturnType();
     if (retType instanceof ReferenceType) {
       caseReturn();
     }
@@ -269,7 +269,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
     VariableNode node =
         pag.getOrCreateLocalVariableNode(
             new ImmutablePair<SootMethod, String>(method, PointsToAnalysis.RETURN_NODE),
-            method.getReturnTypeSignature(),
+            method.getReturnType(),
             method);
     // TODO: setInterProcTarget
     return node;
