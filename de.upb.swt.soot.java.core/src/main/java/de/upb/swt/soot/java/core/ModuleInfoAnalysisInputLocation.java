@@ -2,6 +2,7 @@ package de.upb.swt.soot.java.core;
 
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import java.util.Optional;
+import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
@@ -12,4 +13,7 @@ import javax.annotation.Nonnull;
 public interface ModuleInfoAnalysisInputLocation {
   @Nonnull
   Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig);
+
+  @Nonnull
+  Set<ModuleSignature> getModules();
 }

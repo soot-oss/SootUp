@@ -160,6 +160,11 @@ public abstract class JavaModuleInfo {
     public ModuleSignature getModuleSignature() {
       return moduleInfo;
     }
+
+    @Override
+    public String toString() {
+      return modifiers + " " + moduleInfo;
+    }
   }
 
   public static class PackageReference {
@@ -182,9 +187,13 @@ public abstract class JavaModuleInfo {
     }
 
     public boolean exportedTo(@Nonnull ModuleSignature moduleSignature) {
-      if (isPublic()) {
+
+      if (targetModules.isEmpty()) {
+        // no specific list is given so this package is exported to all packages that are interested
+        // in it.
         return true;
       }
+
       return targetModules.contains(moduleSignature);
     }
 
@@ -197,9 +206,31 @@ public abstract class JavaModuleInfo {
     public EnumSet<ModuleModifier> getModifiers() {
       return modifers;
     }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder();
+      sb.append(modifers).append(" ").append(packageName);
+      if (!targetModules.isEmpty()) {
+        sb.append(" to ").append(targetModules);
+      }
+      return sb.toString();
+    }
   }
 
   public boolean isAutomaticModule() {
     return isAutomaticModule;
+  }
+
+  @Override
+  public String toString() {
+    return getModuleSignature()
+        + " ("
+        + isAutomaticModule
+        + ")"
+        + " exports"
+        + exports()
+        + " requires"
+        + requires();
   }
 }

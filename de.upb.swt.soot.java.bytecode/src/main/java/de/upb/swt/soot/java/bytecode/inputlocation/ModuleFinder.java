@@ -92,6 +92,13 @@ public class ModuleFinder {
     return Optional.ofNullable(moduleInfoMap.get(sig));
   }
 
+  public Set<ModuleSignature> getModules() {
+    if (!isFullyResolved()) {
+      discoverAllModules();
+    }
+    return Collections.unmodifiableSet(moduleInfoMap.keySet());
+  }
+
   /**
    * Returns the input location that manages the module.
    *

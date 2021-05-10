@@ -73,6 +73,11 @@ public class JavaModulePathAnalysisInputLocation
     return moduleFinder.getModuleInfo(sig);
   }
 
+  @Nonnull
+  public Set<ModuleSignature> getModules() {
+    return moduleFinder.getModules();
+  }
+
   @Override
   @Nonnull
   public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(

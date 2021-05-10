@@ -29,10 +29,7 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
-import de.upb.swt.soot.java.core.JavaModuleInfo;
-import de.upb.swt.soot.java.core.JavaSootClass;
-import de.upb.swt.soot.java.core.ModuleInfoAnalysisInputLocation;
+import de.upb.swt.soot.java.core.*;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -49,12 +46,8 @@ import javax.annotation.Nonnull;
  */
 public class JavaModuleView extends JavaView {
 
-  @Nonnull final JavaModuleInfo unnamedModule = JavaModuleInfo.getUnnamedModuleInfo();
   @Nonnull final HashMap<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
   @Nonnull final List<ModuleInfoAnalysisInputLocation> moduleInputLocations;
-
-  static final ModuleSignature javaBaseSig =
-      JavaModuleIdentifierFactory.getInstance().getModuleSignature("java.base");
 
   @Nonnull
   protected Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
@@ -78,7 +71,8 @@ public class JavaModuleView extends JavaView {
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
-    moduleInfoMap.put(unnamedModule.getModuleSignature(), unnamedModule);
+    JavaModuleInfo unnamedModuleInfo = JavaModuleInfo.getUnnamedModuleInfo();
+    moduleInfoMap.put(unnamedModuleInfo.getModuleSignature(), unnamedModuleInfo);
 
     // store module input locations differently so that we can access the JavaModuleInfo
     moduleInputLocations =
@@ -104,8 +98,17 @@ public class JavaModuleView extends JavaView {
     return Optional.empty();
   }
 
-  private boolean isPackageExportedByModule(
+  /**
+   * returns true if packageName is exported by module of moduleSignature or if it is a package of
+   * the very same module
+   */
+  private boolean isPackageDirectlyAccessibleByModule(
       ModuleSignature moduleSignature, ModulePackageName packageName) {
+
+    if (packageName.getModuleSignature().equals(moduleSignature)) {
+      return true;
+    }
+
     Optional<JavaModuleInfo> moduleInfoOpt = getModuleInfo(moduleSignature);
     if (!moduleInfoOpt.isPresent()) {
       throw new ResolveException("ModuleDescriptor not available.");
@@ -113,25 +116,22 @@ public class JavaModuleView extends JavaView {
     JavaModuleInfo moduleInfo = moduleInfoOpt.get();
 
     if (moduleInfo.isAutomaticModule()) {
-      // TODO: [ms] check deeper if package even exists in this automatic module?
+      // does not check if the package even exists in the automatic module!
       return true;
     }
 
     if (moduleInfo.equals(JavaModuleInfo.getUnnamedModuleInfo())) {
-      // TODO: [ms] check deeper if package even exists there?
+      // does not check if the package even exists!
       return true;
     }
 
     Collection<JavaModuleInfo.PackageReference> exports = moduleInfo.exports();
-    Optional<JavaModuleInfo.PackageReference> any =
+    Optional<JavaModuleInfo.PackageReference> filteredExportedPackages =
         exports.stream()
             .filter(packageReference -> packageReference.getPackageName().equals(packageName))
+            .filter(pr -> pr.exportedTo(packageName.getModuleSignature()))
             .findAny();
-
-    if (any.isPresent()) {
-      return any.get().exportedTo(packageName.getModuleSignature());
-    }
-    return false;
+    return filteredExportedPackages.isPresent();
   }
 
   @Nonnull
@@ -205,7 +205,10 @@ public class JavaModuleView extends JavaView {
                                             .equals(
                                                 ((ModulePackageName)
                                                         sc.getClassType().getPackageName())
-                                                    .getModuleSignature())))
+                                                    .getModuleSignature()))
+                    /* || isTransitiveRequires(  moduleInfo, ((ModulePackageName)
+                    sc.getClassType().getPackageName())
+                    .getModuleSignature()) */ )
                 .limit(1)
                 .collect(Collectors.toList());
 
@@ -216,6 +219,31 @@ public class JavaModuleView extends JavaView {
         }
       }
     }
+  }
+
+  // TODO: expensive! cache results.. maybe union-find for transitive hull?
+  private boolean isTransitiveRequires(
+      JavaModuleInfo entryModuleInfo, ModuleSignature moduleSignature) {
+
+    Optional<JavaModuleInfo> moduleInfoOpt = getModuleInfo(moduleSignature);
+
+    if (!moduleInfoOpt.isPresent()) {
+      return false;
+    }
+    JavaModuleInfo moduleInfo = moduleInfoOpt.get();
+
+    if (moduleInfo.equals(entryModuleInfo)) {
+      return true;
+    }
+
+    for (JavaModuleInfo.ModuleReference require : moduleInfo.requires()) {
+
+      if (require.getModifiers().contains(ModuleModifier.REQUIRES_TRANSITIVE)) {
+        return isTransitiveRequires(moduleInfo, require.getModuleSignature());
+      }
+    }
+
+    return false;
   }
 
   @Nonnull
@@ -240,10 +268,19 @@ public class JavaModuleView extends JavaView {
             cs -> {
               PackageName packageName = cs.get().getClassType().getPackageName();
               return packageName instanceof ModulePackageName
-              /*                && isPackageExportedByModule(
-              ((ModulePackageName) packageName).getModuleSignature(),
-              (ModulePackageName) type.getPackageName())*/ ;
+                  && isPackageDirectlyAccessibleByModule(
+                      ((ModulePackageName) packageName).getModuleSignature(),
+                      (ModulePackageName) type.getPackageName());
             });
+  }
+
+  @Nonnull
+  public Set<ModuleSignature> getModules() {
+    Set<ModuleSignature> modules = new HashSet<>();
+    for (ModuleInfoAnalysisInputLocation moduleInputLocation : moduleInputLocations) {
+      modules.addAll(moduleInputLocation.getModules());
+    }
+    return modules;
   }
 
   @Nonnull

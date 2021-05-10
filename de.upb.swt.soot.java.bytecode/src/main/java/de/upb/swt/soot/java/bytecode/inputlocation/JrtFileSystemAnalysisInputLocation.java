@@ -204,4 +204,10 @@ public class JrtFileSystemAnalysisInputLocation
     }
     return Optional.ofNullable(moduleInfoMap.get(sig));
   }
+
+  @Nonnull
+  @Override
+  public Set<ModuleSignature> getModules() {
+    return Collections.unmodifiableSet(moduleInfoMap.keySet());
+  }
 }
