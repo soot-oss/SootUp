@@ -68,4 +68,12 @@ public class ModulePackageName extends JavaPackageName {
   public ModuleSignature getModuleSignature() {
     return moduleSignature;
   }
+
+  /*
+    FIXME: used in toPath in resolving..
+    @Override
+    public String toString() {
+      return getModuleSignature()+"/"+getPackageName();
+    }
+  */
 }

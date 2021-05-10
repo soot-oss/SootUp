@@ -97,7 +97,8 @@ public class AsmModuleSource extends JavaModuleInfo {
       }
       JavaModuleInfo.PackageReference reference =
           new JavaModuleInfo.PackageReference(
-              identifierFactory.getPackageName(exportNode.packaze),
+              identifierFactory.getPackageSignature(
+                  exportNode.packaze.replace('/', '.'), getModuleSignature().toString()),
               AsmUtil.getModuleModifiers(exportNode.access),
               modules);
       exports.add(reference);
@@ -107,30 +108,32 @@ public class AsmModuleSource extends JavaModuleInfo {
 
   @Override
   public Collection<JavaModuleInfo.PackageReference> opens() {
+    if (module.exports == null) {
+      return Collections.emptyList();
+    }
     ArrayList<JavaModuleInfo.PackageReference> opens = new ArrayList<>();
-    /// FIXME add opens
-    /*for (ModuleOpenNode moduleOpenNode : module.opens) {
-      Iterable<JavaClassType> optionals = AsmUtil.asmIdToSignature(moduleOpenNode.modules);
-      ArrayList<JavaClassType> modules = new ArrayList<>();
-      for (JavaClassType sootClassOptional : optionals) {
-        if (sootClassOptional.isModuleInfo()) {
-          modules.add(sootClassOptional);
-        }
+    JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
+    for (ModuleOpenNode openNode : module.opens) {
+      ArrayList<ModuleSignature> modules = new ArrayList<>();
+      for (String moduleName : openNode.modules) {
+        modules.add(JavaModuleIdentifierFactory.getModuleSignature(moduleName));
       }
-
       JavaModuleInfo.PackageReference reference =
           new JavaModuleInfo.PackageReference(
-              JavaModuleIdentifierFactory.getInstance().getPackageName(moduleOpenNode.packaze),
-              AsmUtil.getModuleModifiers(moduleOpenNode.access),
+              identifierFactory.getPackageSignature(
+                  openNode.packaze.replace('/', '.'), getModuleSignature().toString()),
+              AsmUtil.getModuleModifiers(openNode.access),
               modules);
       opens.add(reference);
     }
-    */
     return opens;
   }
 
   @Override
   public Collection<JavaClassType> provides() {
+    if (module.provides == null) {
+      return Collections.emptyList();
+    }
     ArrayList<JavaClassType> providers = new ArrayList<>();
     // add provides
     for (ModuleProvideNode moduleProvideNode : module.provides) {
@@ -149,6 +152,9 @@ public class AsmModuleSource extends JavaModuleInfo {
 
   @Override
   public Collection<JavaClassType> uses() {
+    if (module.uses == null) {
+      return Collections.emptyList();
+    }
     ArrayList<JavaClassType> uses = new ArrayList<>();
     // add uses
     for (String usedService : module.uses) {

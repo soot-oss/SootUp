@@ -101,8 +101,8 @@ public class JavaModuleView extends JavaView {
   }
 
   /**
-   * returns true if packageName is exported by module of moduleSignature or if it is a package of
-   * the very same module
+   * returns true if packageName is exported by module from packageName (to moduleSignature) r if it
+   * is a package of the very same module
    */
   private boolean isPackageVisibleToModule(
       ModuleSignature moduleSignature, ModulePackageName packageName) {
@@ -112,7 +112,7 @@ public class JavaModuleView extends JavaView {
       return true;
     }
 
-    Optional<JavaModuleInfo> moduleInfoOpt = getModuleInfo(moduleSignature);
+    Optional<JavaModuleInfo> moduleInfoOpt = getModuleInfo(packageName.getModuleSignature());
     if (!moduleInfoOpt.isPresent()) {
       throw new ResolveException("ModuleDescriptor not available.");
     }
@@ -196,12 +196,12 @@ public class JavaModuleView extends JavaView {
     }
 
     JavaModuleInfo moduleInfo = startOpt.get();
-    if (moduleInfo.equals(getUnnamedModuleInfo())) {
+    if (moduleInfo.isUnnamedModule()) {
       // unnamed module
 
-      // find type in all exported packages of modules on module path
+      // find type in all exported packages of modules on module path first
       final List<AbstractClassSource<JavaSootClass>> foundClassSources =
-          getAbstractClassSourcesForModules(type)
+          getAbstractClassSourcesForModules(entryPackage.getModuleSignature(), type)
               .limit(1)
               .map(Optional::get)
               .collect(Collectors.toList());
@@ -210,7 +210,7 @@ public class JavaModuleView extends JavaView {
 
         return buildClassFrom(foundClassSources.get(0));
       } else {
-        // search in unnamed module itself
+        // if not already found: search in unnamed module itself
         return super.getClass(type);
       }
 
@@ -222,7 +222,7 @@ public class JavaModuleView extends JavaView {
 
         // find the class in exported packages of modules
         final List<AbstractClassSource<JavaSootClass>> foundClassSources =
-            getAbstractClassSourcesForModules(type)
+            getAbstractClassSourcesForModules(entryPackage.getModuleSignature(), type)
                 .limit(1)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -231,39 +231,40 @@ public class JavaModuleView extends JavaView {
           return buildClassFrom(foundClassSources.get(0));
         } else {
           // automatic module can access the unnamed module -> try to find in classpath (as if
-          // modules do
-          // not exist)
+          // modules do not exist)
           return super.getClass(type);
         }
       } else {
         // explicit module
-
         boolean targetIsFromSameModule =
             type.getPackageName() instanceof ModulePackageName
                 && ((ModulePackageName) type.getPackageName()).getModuleSignature()
                     == entryPackage.getModuleSignature();
+
         final Optional<? extends AbstractClassSource<JavaSootClass>> foundClassSources =
-            getAbstractClassSourcesForModules(type)
+            getAbstractClassSourcesForModules(entryPackage.getModuleSignature(), type)
                 .map(Optional::get)
                 .filter(
-                    sc ->
-                        targetIsFromSameModule
-                            ||
-                            // does the current module have a reads relation to the target module
-                            moduleInfo.requires().stream()
-                                .anyMatch(
-                                    req ->
-                                        req.getModuleSignature()
-                                            .equals(
-                                                ((ModulePackageName)
-                                                        sc.getClassType().getPackageName())
-                                                    .getModuleSignature()))
-
-                            // or is it accessible via a transitive relation
-                            || isTransitiveRequires(
-                                moduleInfo,
-                                ((ModulePackageName) sc.getClassType().getPackageName())
-                                    .getModuleSignature()))
+                    sc -> {
+                      if (targetIsFromSameModule) {
+                        return true;
+                      }
+                      // does the current module have a reads relation to the target module
+                      if (moduleInfo.requires().stream()
+                          .anyMatch(
+                              req ->
+                                  req.getModuleSignature()
+                                      .equals(
+                                          ((ModulePackageName) sc.getClassType().getPackageName())
+                                              .getModuleSignature()))) {
+                        return true;
+                      }
+                      // or is it accessible via a transitive relation
+                      return isTransitiveRequires(
+                          moduleInfo,
+                          ((ModulePackageName) sc.getClassType().getPackageName())
+                              .getModuleSignature());
+                    })
                 .findAny();
 
         if (foundClassSources.isPresent()) {
@@ -314,11 +315,10 @@ public class JavaModuleView extends JavaView {
 
   @Nonnull
   private Stream<Optional<? extends AbstractClassSource<JavaSootClass>>>
-      getAbstractClassSourcesForModules(@Nonnull JavaClassType type) {
+      getAbstractClassSourcesForModules(ModuleSignature moduleSig, @Nonnull JavaClassType type) {
 
     // find the class in exported packages of modules
-    return getProject().getInputLocations().stream()
-        .filter(inputLocation -> inputLocation instanceof ModuleInfoAnalysisInputLocation)
+    return moduleInputLocations.stream()
         .map(
             location -> {
               ClassLoadingOptions classLoadingOptions =
@@ -333,11 +333,7 @@ public class JavaModuleView extends JavaView {
         .filter(
             cs -> {
               // check if the package is exported by or living in the same module
-              PackageName packageName = cs.get().getClassType().getPackageName();
-              return packageName instanceof ModulePackageName
-                  && isPackageVisibleToModule(
-                      ((ModulePackageName) packageName).getModuleSignature(),
-                      (ModulePackageName) type.getPackageName());
+              return isPackageVisibleToModule(moduleSig, (ModulePackageName) type.getPackageName());
             });
   }
 
