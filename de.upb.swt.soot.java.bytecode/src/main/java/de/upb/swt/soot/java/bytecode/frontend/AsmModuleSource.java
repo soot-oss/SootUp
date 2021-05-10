@@ -67,9 +67,11 @@ public class AsmModuleSource extends JavaModuleInfo {
 
   @Override
   public Collection<JavaModuleInfo.ModuleReference> requires() {
+    if (module.requires == null) {
+      return Collections.emptyList();
+    }
     ArrayList<JavaModuleInfo.ModuleReference> requires = new ArrayList<>();
-
-    // add requies
+    // add requires
     for (ModuleRequireNode moduleRequireNode : module.requires) {
       ModuleSignature moduleSignature =
           JavaModuleIdentifierFactory.getModuleSignature(moduleRequireNode.module);
@@ -83,11 +85,10 @@ public class AsmModuleSource extends JavaModuleInfo {
 
   @Override
   public Collection<JavaModuleInfo.PackageReference> exports() {
-    ArrayList<JavaModuleInfo.PackageReference> exports = new ArrayList<>();
     if (module.exports == null) {
       return Collections.emptyList();
     }
-
+    ArrayList<JavaModuleInfo.PackageReference> exports = new ArrayList<>();
     JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
     for (ModuleExportNode exportNode : module.exports) {
       ArrayList<ModuleSignature> modules = new ArrayList<>();

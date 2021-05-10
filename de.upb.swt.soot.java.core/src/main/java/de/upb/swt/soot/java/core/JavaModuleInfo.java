@@ -189,7 +189,8 @@ public abstract class JavaModuleInfo {
     public boolean exportedTo(@Nonnull ModuleSignature moduleSignature) {
 
       if (targetModules.isEmpty()) {
-        // no specific list is given so this package is exported to all packages that are interested
+        // no specific list of modules is given so this package is exported to all packages that are
+        // interested
         // in it.
         return true;
       }

@@ -2,6 +2,7 @@ package de.upb.swt.soot.java.bytecode.frontend;
 
 import static org.junit.Assert.*;
 
+import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaModulePathAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
 import de.upb.swt.soot.java.core.*;
@@ -11,6 +12,7 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaModuleView;
 import java.util.Collection;
 import java.util.Optional;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class JavaModuleViewTest {
@@ -47,6 +49,33 @@ public class JavaModuleViewTest {
     Optional<JavaModuleInfo> moduleDescriptor =
         view.getModuleInfo(((ModulePackageName) targetClass.getPackageName()).getModuleSignature());
     assertTrue(moduleDescriptor.isPresent());
+  }
+
+  @Test
+  public void testUnnamedModule() {
+
+    JavaProject p =
+        JavaProject.builder(new JavaLanguage(9))
+            .addClassPath(
+                new JavaClassPathAnalysisInputLocation(
+                    "../shared-test-resources/miniTestSuite/java6/binary/"))
+            .build();
+    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+
+    JavaClassType targetClass = JavaModuleIdentifierFactory.getInstance().getClassType("A", "", "");
+    Optional<JavaSootClass> aClass = view.getClass(targetClass);
+    assertTrue(aClass.isPresent());
+    assertSame(
+        ((ModulePackageName) aClass.get().getType().getPackageName()).getModuleSignature(),
+        JavaModuleInfo.getUnnamedModuleInfo().getModuleSignature());
+
+    JavaClassType targetClassWOModuleSig =
+        JavaModuleIdentifierFactory.getInstance().getClassType("A", "");
+    Optional<JavaSootClass> bClass = view.getClass(targetClassWOModuleSig);
+    assertTrue(bClass.isPresent());
+    assertSame(
+        ((ModulePackageName) bClass.get().getType().getPackageName()).getModuleSignature(),
+        JavaModuleInfo.getUnnamedModuleInfo().getModuleSignature());
   }
 
   @Test
@@ -88,7 +117,7 @@ public class JavaModuleViewTest {
     assertNotNull(moduleDescriptor);
   }
 
-  @Test
+  @Ignore("to implement")
   public void testAnnotation() {
     // TODO: adapt
     JavaProject p =
@@ -105,7 +134,7 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Test
+  @Ignore("to implement")
   public void testRequiresStatic() {
     // TODO: adapt
     JavaProject p =
@@ -179,10 +208,12 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("C", "pkgc", "modc");
     assertTrue(view.getClass(modC, targetClassC).isPresent());
 
+    /* TODO: test elsewhere
     // test transitive
     JavaClassType targetClassFromJavaBase =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     assertTrue(view.getClass(modMain, targetClassFromJavaBase).isPresent());
+     */
   }
 
   @Test
@@ -196,6 +227,7 @@ public class JavaModuleViewTest {
             .addModulePath(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "requires_exports_requires-transitive_exports-to/jar"))
+            .addModulePath(new JrtFileSystemAnalysisInputLocation())
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
@@ -226,17 +258,21 @@ public class JavaModuleViewTest {
     // A -> C
     assertTrue(view.getClass(modA, targetClassC).isPresent());
 
-    // test transitive: modmain -> modc
-    JavaClassType targetClassTransitive =
-        JavaModuleIdentifierFactory.getInstance().getClassType("A1", "pkga", "moda");
-    assertTrue(view.getClass(modMain, targetClassTransitive).isPresent());
+    // modmain -> moda
+    JavaClassType mainToAClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("A1", "pkga1", "moda");
+    assertTrue(view.getClass(modA, mainToAClass).isPresent());
+    assertTrue(view.getClass(modMain, mainToAClass).isPresent());
+
+    // transitive: modmain -> modc
+    assertTrue(view.getClass(modMain, targetClassC).isPresent());
 
     JavaClassType targetClassFromJavaBase =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     assertTrue(view.getClass(modMain, targetClassFromJavaBase).isPresent());
   }
 
-  @Test
+  @Ignore
   public void testReflection() {
     // TODO: adapt
     JavaProject p =
@@ -253,7 +289,7 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Test
+  @Ignore("to implement")
   public void testUsesProvide() {
     // TODO: adapt
     JavaProject p =
@@ -270,7 +306,7 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Test
+  @Ignore
   public void testUsesProvideInClient() {
     // TODO: adapt
     JavaProject p =
@@ -288,7 +324,7 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Test
+  @Ignore("to implement")
   public void testDerivedPrivatePackageProtected() {
     // derived_private-package-protected
     // TODO: adapt
@@ -308,7 +344,7 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Test
+  @Ignore("to implement")
   public void testExceptions() {
     // TODO: adapt
     JavaProject p =
@@ -325,7 +361,7 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Test
+  @Ignore("to implement")
   public void testInterfaceCallback() {
     // TODO: adapt
     JavaProject p =
@@ -342,7 +378,7 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Test
+  @Ignore("to implement")
   public void testSplitpackageAutomaticModules() {
     // TODO: adapt
     JavaProject p =
@@ -360,7 +396,7 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Test
+  @Ignore("to implement")
   public void testSplitpackage() {
     // TODO: adapt
     JavaProject p =
@@ -377,7 +413,7 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Test
+  @Ignore("to implement")
   public void testHiddenMain() {
     // i.e. main is in non exported package
     // TODO: adapt
@@ -395,7 +431,7 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Test
+  @Ignore("to implement")
   public void testAccessUnnamedModuleFromAutomaticModule() {
     // TODO: adapt
     JavaProject p =
@@ -414,7 +450,7 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Test
+  @Ignore("to implement")
   public void testAccessUnnamedModuleFromModule() {
     // TODO: adapt
     JavaProject p =
@@ -433,7 +469,7 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Test
+  @Ignore("to implement")
   public void testAccessModuleFromUnnamedModule() {
     // TODO: adapt
     JavaProject p =

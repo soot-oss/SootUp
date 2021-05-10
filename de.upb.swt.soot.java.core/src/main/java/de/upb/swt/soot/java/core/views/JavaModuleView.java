@@ -22,6 +22,8 @@ package de.upb.swt.soot.java.core.views;
  * #L%
  */
 
+import static de.upb.swt.soot.java.core.JavaModuleInfo.*;
+
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
@@ -71,7 +73,7 @@ public class JavaModuleView extends JavaView {
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
-    JavaModuleInfo unnamedModuleInfo = JavaModuleInfo.getUnnamedModuleInfo();
+    JavaModuleInfo unnamedModuleInfo = getUnnamedModuleInfo();
     moduleInfoMap.put(unnamedModuleInfo.getModuleSignature(), unnamedModuleInfo);
 
     // store module input locations differently so that we can access the JavaModuleInfo
@@ -102,9 +104,10 @@ public class JavaModuleView extends JavaView {
    * returns true if packageName is exported by module of moduleSignature or if it is a package of
    * the very same module
    */
-  private boolean isPackageDirectlyAccessibleByModule(
+  private boolean isPackageVisibleToModule(
       ModuleSignature moduleSignature, ModulePackageName packageName) {
 
+    // is package in the same module? then no export is needed to access it
     if (packageName.getModuleSignature().equals(moduleSignature)) {
       return true;
     }
@@ -115,18 +118,23 @@ public class JavaModuleView extends JavaView {
     }
     JavaModuleInfo moduleInfo = moduleInfoOpt.get();
 
+    // is the package exported by its module?
     if (moduleInfo.isAutomaticModule()) {
+      // an automatic module exports all its packages
       // does not check if the package even exists in the automatic module!
       return true;
     }
 
-    if (moduleInfo.equals(JavaModuleInfo.getUnnamedModuleInfo())) {
-      // does not check if the package even exists!
+    // is the package exported by its module?
+    if (moduleInfo == getUnnamedModuleInfo()) {
+      // the unnamed module exports all its packages
+      // does not check if the package exists in the unnamed module!
       return true;
     }
 
-    Collection<JavaModuleInfo.PackageReference> exports = moduleInfo.exports();
-    Optional<JavaModuleInfo.PackageReference> filteredExportedPackages =
+    // is the package exported by its module?
+    Collection<PackageReference> exports = moduleInfo.exports();
+    Optional<PackageReference> filteredExportedPackages =
         exports.stream()
             .filter(packageReference -> packageReference.getPackageName().equals(packageName))
             .filter(pr -> pr.exportedTo(packageName.getModuleSignature()))
@@ -144,7 +152,7 @@ public class JavaModuleView extends JavaView {
     }
 
     JavaModuleInfo moduleInfo = startOpt.get();
-    if (moduleInfo.equals(JavaModuleInfo.getUnnamedModuleInfo())) {
+    if (moduleInfo.equals(getUnnamedModuleInfo())) {
       // unnamed module
 
       // find type in all exported packages of modules on module path
@@ -186,19 +194,21 @@ public class JavaModuleView extends JavaView {
           return super.getClass(type);
         }
       } else {
-        boolean targetIsSamePackage =
+        // explicit module
+
+        boolean targetIsFromSameModule =
             type.getPackageName() instanceof ModulePackageName
                 && ((ModulePackageName) type.getPackageName()).getModuleSignature()
                     == entryPackage.getModuleSignature();
-        // explicit module
-        final List<AbstractClassSource<JavaSootClass>> foundClassSources =
+        final Optional<? extends AbstractClassSource<JavaSootClass>> foundClassSources =
             getAbstractClassSourcesForModules(type)
                 .map(Optional::get)
-                // TODO: check implicit java.base from NON AsmModuleSurces
                 .filter(
                     sc ->
-                        targetIsSamePackage
-                            || moduleInfo.requires().stream()
+                        targetIsFromSameModule
+                            ||
+                            // does the current module have a reads relation to the target module
+                            moduleInfo.requires().stream()
                                 .anyMatch(
                                     req ->
                                         req.getModuleSignature()
@@ -206,14 +216,16 @@ public class JavaModuleView extends JavaView {
                                                 ((ModulePackageName)
                                                         sc.getClassType().getPackageName())
                                                     .getModuleSignature()))
-                    /* || isTransitiveRequires(  moduleInfo, ((ModulePackageName)
-                    sc.getClassType().getPackageName())
-                    .getModuleSignature()) */ )
-                .limit(1)
-                .collect(Collectors.toList());
 
-        if (!foundClassSources.isEmpty()) {
-          return buildClassFrom(foundClassSources.get(0));
+                            // or is it accessible via a transitive relation
+                            || isTransitiveRequires(
+                                moduleInfo,
+                                ((ModulePackageName) sc.getClassType().getPackageName())
+                                    .getModuleSignature()))
+                .findAny();
+
+        if (foundClassSources.isPresent()) {
+          return buildClassFrom(foundClassSources.get());
         } else {
           return Optional.empty();
         }
@@ -222,24 +234,36 @@ public class JavaModuleView extends JavaView {
   }
 
   // TODO: expensive! cache results.. maybe union-find for transitive hull?
+
+  // find a transitive relation from entryModuleInfo to moduleSignature
   private boolean isTransitiveRequires(
       JavaModuleInfo entryModuleInfo, ModuleSignature moduleSignature) {
 
-    Optional<JavaModuleInfo> moduleInfoOpt = getModuleInfo(moduleSignature);
+    Set<ModuleSignature> visited = new HashSet<>();
+    visited.add(entryModuleInfo.getModuleSignature());
 
-    if (!moduleInfoOpt.isPresent()) {
-      return false;
-    }
-    JavaModuleInfo moduleInfo = moduleInfoOpt.get();
+    Deque<ModuleSignature> stack = new ArrayDeque<>();
+    stack.add(entryModuleInfo.getModuleSignature());
 
-    if (moduleInfo.equals(entryModuleInfo)) {
-      return true;
-    }
+    while (!stack.isEmpty()) {
+      Optional<JavaModuleInfo> moduleInfoOpt = getModuleInfo(stack.pop());
+      if (!moduleInfoOpt.isPresent()) {
+        continue;
+      }
+      JavaModuleInfo moduleInfo = moduleInfoOpt.get();
 
-    for (JavaModuleInfo.ModuleReference require : moduleInfo.requires()) {
-
-      if (require.getModifiers().contains(ModuleModifier.REQUIRES_TRANSITIVE)) {
-        return isTransitiveRequires(moduleInfo, require.getModuleSignature());
+      for (ModuleReference require : moduleInfo.requires()) {
+        ModuleSignature currentModuleSig = require.getModuleSignature();
+        if (currentModuleSig.equals(moduleSignature)) {
+          return true;
+        } else {
+          // TODO: check more specific? e.g. for ModuleModifier.REQUIRES_TRANSITIVE ||
+          // require.getModifiers().contains(ModuleModifier.REQUIRES_MANDATED
+          if (!visited.contains(currentModuleSig)) {
+            stack.add(currentModuleSig);
+          }
+        }
+        visited.add(currentModuleSig);
       }
     }
 
@@ -266,9 +290,10 @@ public class JavaModuleView extends JavaView {
         .filter(Optional::isPresent)
         .filter(
             cs -> {
+              // check if the package is exported by or living in the same module
               PackageName packageName = cs.get().getClassType().getPackageName();
               return packageName instanceof ModulePackageName
-                  && isPackageDirectlyAccessibleByModule(
+                  && isPackageVisibleToModule(
                       ((ModulePackageName) packageName).getModuleSignature(),
                       (ModulePackageName) type.getPackageName());
             });

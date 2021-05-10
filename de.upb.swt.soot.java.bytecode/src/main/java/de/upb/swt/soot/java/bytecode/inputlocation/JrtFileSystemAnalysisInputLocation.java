@@ -208,6 +208,9 @@ public class JrtFileSystemAnalysisInputLocation
   @Nonnull
   @Override
   public Set<ModuleSignature> getModules() {
+    if (!isResolved) {
+      discoverModules();
+    }
     return Collections.unmodifiableSet(moduleInfoMap.keySet());
   }
 }
