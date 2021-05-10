@@ -2,6 +2,7 @@ package de.upb.swt.soot.java.bytecode.frontend;
 
 import static org.junit.Assert.*;
 
+import categories.Java9Test;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaModulePathAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
@@ -14,12 +15,12 @@ import java.util.Collection;
 import java.util.Optional;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category(Java9Test.class)
 public class JavaModuleViewTest {
 
   private final String testPath = "../shared-test-resources/jigsaw-examples/";
-
-  // TODO: test an aggregator module (no own content just dependencies to modules)
 
   @Test
   public void testGeneralClassReceivalFromModule() {
