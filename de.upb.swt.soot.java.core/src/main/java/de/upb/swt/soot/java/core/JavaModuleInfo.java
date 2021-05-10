@@ -137,6 +137,16 @@ public abstract class JavaModuleInfo {
       public Set<ModuleModifier> resolveModifiers() {
         return Collections.emptySet();
       }
+
+      @Override
+      public boolean isUnnamedModule() {
+        return true;
+      }
+
+      @Override
+      public String toString() {
+        return "<unnamed>" + super.toString();
+      }
     };
   }
 
@@ -224,7 +234,7 @@ public abstract class JavaModuleInfo {
   }
 
   public boolean isUnnamedModule() {
-    return this == JavaModuleInfo.getUnnamedModuleInfo();
+    return false;
   }
 
   @Override

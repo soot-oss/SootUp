@@ -102,25 +102,23 @@ public class JavaView extends AbstractView<JavaSootClass> {
   @Nonnull
   protected Optional<? extends AbstractClassSource<JavaSootClass>> getAbstractClass(
       @Nonnull ClassType type) {
-    final Optional<? extends AbstractClassSource<JavaSootClass>> foundClassSources =
-        getProject().getInputLocations().stream()
-            .map(
-                location -> {
-                  ClassLoadingOptions classLoadingOptions =
-                      classLoadingOptionsSpecifier.apply(location);
-                  if (classLoadingOptions != null) {
-                    return location.getClassSource(type, classLoadingOptions);
-                  } else {
-                    return location.getClassSource(type);
-                  }
-                })
-            .filter(Optional::isPresent)
-            // like javas behaviour: if multiple matching Classes(ClassTypes) are found on the
-            // classpath the first is returned (see splitpackage)
-            .limit(1)
-            .map(Optional::get)
-            .findAny();
-    return foundClassSources;
+    return getProject().getInputLocations().stream()
+        .map(
+            location -> {
+              ClassLoadingOptions classLoadingOptions =
+                  classLoadingOptionsSpecifier.apply(location);
+              if (classLoadingOptions != null) {
+                return location.getClassSource(type, classLoadingOptions);
+              } else {
+                return location.getClassSource(type);
+              }
+            })
+        .filter(Optional::isPresent)
+        // like javas behaviour: if multiple matching Classes(ClassTypes) are found on the
+        // classpath the first is returned (see splitpackage)
+        .limit(1)
+        .map(Optional::get)
+        .findAny();
   }
 
   @Nonnull

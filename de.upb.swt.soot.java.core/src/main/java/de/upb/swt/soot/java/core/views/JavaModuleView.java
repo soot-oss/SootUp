@@ -30,6 +30,7 @@ import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.signatures.PackageName;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.*;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
@@ -139,6 +140,50 @@ public class JavaModuleView extends JavaView {
             .filter(pr -> pr.exportedTo(packageName.getModuleSignature()))
             .findAny();
     return filteredExportedPackages.isPresent();
+  }
+
+  @Override
+  @Nonnull
+  protected Optional<? extends AbstractClassSource<JavaSootClass>> getAbstractClass(
+      @Nonnull ClassType type) {
+
+    // search at first in modules for a class and second on the classpath
+    PackageName packageName = type.getPackageName();
+    if (packageName instanceof ModulePackageName) {
+
+      // is not unnamed module?
+      if (!((ModulePackageName) packageName).getModuleSignature().toString().equals("")) {
+
+        Optional<? extends AbstractClassSource<JavaSootClass>> cs =
+            getProject().getInputLocations().stream()
+                .filter(
+                    inputLocation -> !(inputLocation instanceof ModuleInfoAnalysisInputLocation))
+                .map(
+                    location -> {
+                      ClassLoadingOptions classLoadingOptions =
+                          classLoadingOptionsSpecifier.apply(location);
+                      if (classLoadingOptions != null) {
+                        return location.getClassSource(type, classLoadingOptions);
+                      } else {
+                        return location.getClassSource(type);
+                      }
+                    })
+                .filter(Optional::isPresent)
+                // like javas behaviour: if multiple matching Classes(ClassTypes) are found on the
+                // classpath the first is returned (see splitpackage)
+                .limit(1)
+                .map(Optional::get)
+                .findAny();
+
+        if (cs.isPresent()) {
+          return cs;
+        }
+      }
+    }
+
+    // hint: performance: super.getAbstractClass searches in modules again (where at this point no
+    // class was found already)
+    return super.getAbstractClass(type);
   }
 
   @Nonnull
@@ -297,7 +342,7 @@ public class JavaModuleView extends JavaView {
   }
 
   @Nonnull
-  public Set<ModuleSignature> getModules() {
+  public Set<ModuleSignature> getNamedModules() {
     Set<ModuleSignature> modules = new HashSet<>();
     for (ModuleInfoAnalysisInputLocation moduleInputLocation : moduleInputLocations) {
       modules.addAll(moduleInputLocation.getModules());

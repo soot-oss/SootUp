@@ -510,21 +510,88 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Ignore("to implement")
+  @Test
   public void testAccessModuleFromUnnamedModule() {
-    // TODO: adapt
+    // TODO: check what happens if modulepath == classpath
+
+    //  if module class "covers" a class on classpath (i.e. in unnamed module) the one on module
+    // path is taken
+
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
             .addModulePath(
-                new JavaModulePathAnalysisInputLocation(testPath + "module_accessing_module_path"))
+                new JavaModulePathAnalysisInputLocation(
+                    testPath + "unnamed-module_accessing-module-path/jar/modb.jar"))
+            .addClassPath(
+                new JavaClassPathAnalysisInputLocation(
+                    testPath + "unnamed-module_accessing-module-path/jar/cpb.jar"))
+            .addClassPath(
+                new JavaClassPathAnalysisInputLocation(
+                    testPath + "unnamed-module_accessing-module-path/jar/cpmain.jar"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
-    JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
-    Optional<JavaSootClass> aClass = view.getClass(targetClass);
-    assertTrue(aClass.isPresent());
-    fail("test module descriptor/rights");
+    System.out.println(view.getNamedModules());
+
+    ModulePackageName pkgbModb =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgb", "modb");
+    JavaModuleInfo moduleInfo_pkgbModb = view.getModuleInfo(pkgbModb.getModuleSignature()).get();
+    System.out.println(moduleInfo_pkgbModb);
+    assertFalse(moduleInfo_pkgbModb.isUnnamedModule());
+
+    ModulePackageName cpb =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgb", "");
+    JavaModuleInfo moduleInfo_cpb = view.getModuleInfo(cpb.getModuleSignature()).get();
+    assertTrue(moduleInfo_cpb.isUnnamedModule());
+
+    ModulePackageName cpmain =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgcpmain", "");
+    JavaModuleInfo moduleInfo_cpmain = view.getModuleInfo(cpmain.getModuleSignature()).get();
+    assertTrue(moduleInfo_cpmain.isUnnamedModule());
+
+    JavaClassType main =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgcpmain", "");
+    assertTrue(view.getClass(main).isPresent());
+    assertTrue(view.getClass(cpmain, main).isPresent());
+    assertTrue(view.getClass(cpb, main).isPresent());
+    assertFalse(view.getClass(pkgbModb, main).isPresent());
+
+    JavaClassType BOnClasspath =
+        JavaModuleIdentifierFactory.getInstance().getClassType("BFromClasspath", "pkgboncp", "");
+    assertTrue(view.getClass(BOnClasspath).isPresent());
+    assertTrue(view.getClass(cpb, BOnClasspath).isPresent());
+    assertTrue(view.getClass(cpmain, BOnClasspath).isPresent());
+    assertFalse(view.getClass(pkgbModb, BOnClasspath).isPresent());
+
+    JavaClassType BFromClasspath =
+        JavaModuleIdentifierFactory.getInstance().getClassType("BFromClasspath", "pkgb", "");
+    assertTrue(view.getClass(BFromClasspath).isPresent());
+    assertTrue(view.getClass(cpb, BFromClasspath).isPresent());
+    assertTrue(view.getClass(cpmain, BFromClasspath).isPresent());
+    assertFalse(view.getClass(pkgbModb, BFromClasspath).isPresent());
+
+    JavaClassType BFromModule =
+        JavaModuleIdentifierFactory.getInstance().getClassType("BFromModule", "pkgb", "modb");
+    assertTrue(view.getClass(BFromModule).isPresent());
+    assertTrue(view.getClass(pkgbModb, BFromModule).isPresent());
+    assertTrue(view.getClass(cpb, BFromModule).isPresent());
+    assertTrue(view.getClass(cpmain, BFromModule).isPresent());
+
+    JavaClassType BModuleB =
+        JavaModuleIdentifierFactory.getInstance().getClassType("B", "pkgb", "modb");
+    assertTrue(view.getClass(BModuleB).isPresent());
+    assertTrue(view.getClass(pkgbModb, BModuleB).isPresent());
+    assertFalse(view.getClass(cpb, BModuleB).isPresent());
+    assertFalse(view.getClass(cpmain, BModuleB).isPresent());
+
+    JavaClassType BFromModuleButInternal =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("BFromModuleButInternal", "pkgbinternal", "modb");
+    assertTrue(view.getClass(BFromModuleButInternal).isPresent());
+    assertFalse(view.getClass(pkgbModb, BFromModuleButInternal).isPresent());
+    assertFalse(
+        "unnamed module can only access exported packages!",
+        view.getClass(cpb, BFromModuleButInternal).isPresent());
   }
 }
