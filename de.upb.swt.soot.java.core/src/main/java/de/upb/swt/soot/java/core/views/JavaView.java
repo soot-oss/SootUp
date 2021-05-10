@@ -24,7 +24,6 @@ package de.upb.swt.soot.java.core.views;
 
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.types.ClassType;
@@ -35,11 +34,9 @@ import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.types.AnnotationType;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -89,17 +86,23 @@ public class JavaView extends AbstractView<JavaSootClass> {
   @Override
   @Nonnull
   public synchronized Optional<JavaSootClass> getClass(@Nonnull ClassType type) {
-    return getAbstractClass(type);
-  }
-
-  @Nonnull
-  Optional<JavaSootClass> getAbstractClass(@Nonnull ClassType type) {
     JavaSootClass cachedClass = cache.get(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
 
-    final List<AbstractClassSource<JavaSootClass>> foundClassSources =
+    Optional<? extends AbstractClassSource<JavaSootClass>> abstractClass = getAbstractClass(type);
+    if (!abstractClass.isPresent()) {
+      return Optional.empty();
+    }
+
+    return buildClassFrom(abstractClass.get());
+  }
+
+  @Nonnull
+  protected Optional<? extends AbstractClassSource<JavaSootClass>> getAbstractClass(
+      @Nonnull ClassType type) {
+    final Optional<? extends AbstractClassSource<JavaSootClass>> foundClassSources =
         getProject().getInputLocations().stream()
             .map(
                 location -> {
@@ -112,24 +115,12 @@ public class JavaView extends AbstractView<JavaSootClass> {
                   }
                 })
             .filter(Optional::isPresent)
-            .limit(2)
+            // like javas behaviour: if multiple matching Classes(ClassTypes) are found on the
+            // classpath the first is returned (see splitpackage)
+            .limit(1)
             .map(Optional::get)
-            .collect(Collectors.toList());
-
-    if (foundClassSources.size() < 1) {
-      return Optional.empty();
-    } else if (foundClassSources.size() > 1) {
-      throw new ResolveException(
-          "Multiple class candidates for \""
-              + type
-              + "\" found in the given AnalysisInputLocations. Soot can't decide which AnalysisInputLocation it should refer to for this Type.\n"
-              + "The candidates are "
-              + foundClassSources.stream()
-                  .map(cs -> cs.getSourcePath().toString())
-                  .collect(Collectors.joining(",")),
-          foundClassSources.get(0).getSourcePath());
-    }
-    return buildClassFrom(foundClassSources.get(0));
+            .findAny();
+    return foundClassSources;
   }
 
   @Nonnull
