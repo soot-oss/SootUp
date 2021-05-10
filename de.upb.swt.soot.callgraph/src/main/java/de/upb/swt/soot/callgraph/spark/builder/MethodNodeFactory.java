@@ -146,13 +146,6 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
                 String className =
                     staticFieldRef.getFieldSignature().getDeclClassType().getClassName();
                 if (className.equals("java.util.Collections")) {
-                  // if (s.name().equals("EMPTY_SET")) {
-                  //                src = pag.makeAllocNode(rtHashSet, rtHashSet, method);
-                  //              } else if (s.name().equals("EMPTY_MAP")) {
-                  //                src = pag.makeAllocNode(rtHashMap, rtHashMap, method);
-                  //              } else if (s.name().equals("EMPTY_LIST")) {
-                  //                src = pag.makeAllocNode(rtLinkedList, rtLinkedList, method);
-                  //              }
                   if (staticFieldRef.getFieldSignature().getName().equals("EMPTY_SET")) {
                     source = pag.getOrCreateAllocationNode(rtHashSet, rtHashSet, method);
                   } else if (staticFieldRef.getFieldSignature().getName().equals("EMPTY_MAP")) {
