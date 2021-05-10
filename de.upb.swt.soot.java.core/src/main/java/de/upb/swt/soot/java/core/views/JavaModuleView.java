@@ -297,18 +297,23 @@ public class JavaModuleView extends JavaView {
       }
       JavaModuleInfo moduleInfo = moduleInfoOpt.get();
 
+      if (moduleInfo.isAutomaticModule()) {
+        // automatic module can read everything but its not forwarding transitivity!
+        continue;
+      }
+
       for (ModuleReference require : moduleInfo.requires()) {
-        ModuleSignature currentModuleSig = require.getModuleSignature();
-        if (currentModuleSig.equals(moduleSignature)) {
+        ModuleSignature requireModuleSig = require.getModuleSignature();
+        if (moduleSignature.equals(requireModuleSig)) {
           return true;
         } else {
           // TODO: check more specific? e.g. for ModuleModifier.REQUIRES_TRANSITIVE ||
           // require.getModifiers().contains(ModuleModifier.REQUIRES_MANDATED
-          if (!visited.contains(currentModuleSig)) {
-            stack.add(currentModuleSig);
+          if (!visited.contains(requireModuleSig)) {
+            stack.add(requireModuleSig);
           }
         }
-        visited.add(currentModuleSig);
+        visited.add(requireModuleSig);
       }
     }
 
