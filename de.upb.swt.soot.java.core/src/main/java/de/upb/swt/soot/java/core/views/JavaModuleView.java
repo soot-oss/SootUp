@@ -151,13 +151,11 @@ public class JavaModuleView extends JavaView {
     PackageName packageName = type.getPackageName();
     if (packageName instanceof ModulePackageName) {
 
-      // is not unnamed module?
-      if (!((ModulePackageName) packageName).getModuleSignature().toString().equals("")) {
-
+      // target Class is is not unnamed module?
+      if (!((ModulePackageName) packageName).getModuleSignature().isUnnamedModule()) {
+        // target is inside a module -> load from module
         Optional<? extends AbstractClassSource<JavaSootClass>> cs =
-            getProject().getInputLocations().stream()
-                .filter(
-                    inputLocation -> !(inputLocation instanceof ModuleInfoAnalysisInputLocation))
+            moduleInputLocations.stream()
                 .map(
                     location -> {
                       ClassLoadingOptions classLoadingOptions =
@@ -169,9 +167,6 @@ public class JavaModuleView extends JavaView {
                       }
                     })
                 .filter(Optional::isPresent)
-                // like javas behaviour: if multiple matching Classes(ClassTypes) are found on the
-                // classpath the first is returned (see splitpackage)
-                .limit(1)
                 .map(Optional::get)
                 .findAny();
 
@@ -210,8 +205,13 @@ public class JavaModuleView extends JavaView {
 
         return buildClassFrom(foundClassSources.get(0));
       } else {
-        // if not already found: search in unnamed module itself
-        return super.getClass(type);
+        PackageName packageName = type.getPackageName();
+        if (packageName instanceof ModulePackageName
+            && ((ModulePackageName) packageName).getModuleSignature().isUnnamedModule()) {
+          // if not already found on module path AND the target class is in unnamed module: search
+          // in unnamed module itself
+          return getClass(type);
+        }
       }
 
     } else {
@@ -274,6 +274,8 @@ public class JavaModuleView extends JavaView {
         }
       }
     }
+
+    return Optional.empty();
   }
 
   // find a transitive relation from entryModuleInfo to moduleSignature

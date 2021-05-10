@@ -75,4 +75,8 @@ public class ModuleSignature implements Signature {
   public String getModuleName() {
     return moduleName;
   }
+
+  public boolean isUnnamedModule() {
+    return moduleName.isEmpty();
+  }
 }

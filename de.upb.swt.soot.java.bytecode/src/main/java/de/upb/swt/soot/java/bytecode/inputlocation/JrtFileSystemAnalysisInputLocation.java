@@ -30,7 +30,6 @@ import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.frontend.AsmModuleSource;
@@ -106,24 +105,22 @@ public class JrtFileSystemAnalysisInputLocation
     return Optional.empty();
   }
 
-  // get the factory, which I should use the create the correspond class signatures
   @Override
   public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
-    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
 
-    final Path archiveRoot = theFileSystem.getPath("modules");
+    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
     ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
 
+    final Path archiveRoot = theFileSystem.getPath("modules");
     final FileType handledFileType = classProvider.getHandledFileType();
     try {
       return Files.walk(archiveRoot)
           .filter(
               filePath ->
-                  PathUtils.hasExtension(filePath, handledFileType)
-                      && filePath.endsWith(
-                          JavaModuleIdentifierFactory.MODULE_INFO_CLASS.toString()))
+                  !filePath.endsWith(
+                      JavaModuleIdentifierFactory.MODULE_INFO_CLASS.toString() + handledFileType))
           .flatMap(
               p ->
                   StreamUtils.optionalToStream(

@@ -510,7 +510,7 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Ignore
+  @Test
   public void testAccessModuleFromUnnamedModule() {
     // TODO: check what happens if modulepath == classpath
 
@@ -531,8 +531,6 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-
-    System.out.println(view.getNamedModules());
 
     ModulePackageName pkgbModb =
         JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgb", "modb");
@@ -588,8 +586,8 @@ public class JavaModuleViewTest {
     JavaClassType BFromModuleButInternal =
         JavaModuleIdentifierFactory.getInstance()
             .getClassType("BFromModuleButInternal", "pkgbinternal", "modb");
-    // assertTrue(view.getClass(BFromModuleButInternal).isPresent());
-    // assertTrue(view.getClass(pkgbModb, BFromModuleButInternal).isPresent());
+    assertTrue(view.getClass(BFromModuleButInternal).isPresent());
+    assertTrue(view.getClass(pkgbModb, BFromModuleButInternal).isPresent());
     assertFalse(
         "unnamed module can only access exported packages!",
         view.getClass(cpmain, BFromModuleButInternal).isPresent());
