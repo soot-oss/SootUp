@@ -38,7 +38,6 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.views.View;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -73,10 +72,14 @@ public class Spark implements PointsToAnalysis {
   }
 
   private void refineCallGraph() {
-    if(options.isVta()){
-
-    } else if(options.isRta()){
-      CallGraphAlgorithm cga = new RapidTypeAnalysisWithSpark(view, new ViewTypeHierarchy(view), callGraph, pag);
+    if (options.isVta()) {
+      CallGraphAlgorithm cga =
+          new VariableTypeAnalysisWithSpark(view, new ViewTypeHierarchy(view), callGraph, pag);
+      CallGraph refinedCallGraph = cga.initialize(callGraph.getEntryPoints());
+      this.callGraph = refinedCallGraph;
+    } else if (options.isRta()) {
+      CallGraphAlgorithm cga =
+          new RapidTypeAnalysisWithSpark(view, new ViewTypeHierarchy(view), callGraph, pag);
       CallGraph refinedCallGraph = cga.initialize(callGraph.getEntryPoints());
       this.callGraph = refinedCallGraph;
     }
@@ -178,7 +181,7 @@ public class Spark implements PointsToAnalysis {
     return result;
   }
 
-  public CallGraph getCallGraph(){
+  public CallGraph getCallGraph() {
     return callGraph;
   }
 
@@ -212,6 +215,12 @@ public class Spark implements PointsToAnalysis {
 
     public Builder vta(boolean vta) {
       options.setVta(vta);
+      if (vta) {
+        options.setTypesForSites(true);
+        options.setFieldBased(true);
+        options.setSimplifySCCS(true);
+        options.setOnFlyCG(false);
+      }
       return this;
     }
 

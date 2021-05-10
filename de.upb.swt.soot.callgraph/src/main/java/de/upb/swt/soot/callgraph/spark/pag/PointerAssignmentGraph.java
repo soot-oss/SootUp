@@ -50,7 +50,6 @@ import de.upb.swt.soot.java.core.JavaSootClass;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -264,8 +263,17 @@ public class PointerAssignmentGraph {
     return node;
   }
 
-  public List<AllocationNode> getAllocationNodes(SootMethod method){
-    return valToAllocationNode.values().stream().filter(n -> n.getMethod().equals(method)).collect(Collectors.toList());
+  public List<AllocationNode> getAllocationNodes(SootMethod method) {
+    return valToAllocationNode.values().stream()
+        .filter(n -> n.getMethod() != null && n.getMethod().equals(method))
+        .collect(Collectors.toList());
+  }
+
+  public List<AllocationNode> getAssignedAllocationNodes(SootMethod method) {
+
+    return getAllocationEdges().keySet().stream()
+        .filter(n -> n.getMethod() != null && n.getMethod().equals(method))
+        .collect(Collectors.toList());
   }
 
   public GlobalVariableNode getOrCreateGlobalVariableNode(Object value, Type type) {

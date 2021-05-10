@@ -23,7 +23,6 @@ package de.upb.swt.soot.callgraph.model;
  */
 
 import de.upb.swt.soot.core.signatures.MethodSignature;
-
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;

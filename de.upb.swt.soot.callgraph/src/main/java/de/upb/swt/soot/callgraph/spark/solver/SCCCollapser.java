@@ -63,9 +63,11 @@ public class SCCCollapser implements Collapser {
     }
     visited.add(v);
     Set<VariableNode> succs = pag.simpleInvLookup(v);
-    for (Node element : succs) {
-      if (ignoreTypes || typeHierarchy.canCast(element.getType(), v.getType())) {
-        dfsVisit((VariableNode) element, rootOfSCC);
+    if (succs != null && !succs.isEmpty()) {
+      for (Node element : succs) {
+        if (ignoreTypes || typeHierarchy.canCast(element.getType(), v.getType())) {
+          dfsVisit((VariableNode) element, rootOfSCC);
+        }
       }
     }
     if (v != rootOfSCC) {

@@ -163,12 +163,11 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
     return sb.toString();
   }
 
-  public void setEntyPoints(List<MethodSignature> entyPoints){
+  public void setEntyPoints(List<MethodSignature> entyPoints) {
     this.entryPoints = entyPoints;
   }
 
-  public List<MethodSignature> getEntryPoints(){
+  public List<MethodSignature> getEntryPoints() {
     return entryPoints;
   }
-
 }

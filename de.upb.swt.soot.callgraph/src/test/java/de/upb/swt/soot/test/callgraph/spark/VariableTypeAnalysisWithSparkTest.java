@@ -6,8 +6,8 @@ import categories.Java8Test;
 import de.upb.swt.soot.callgraph.algorithm.CallGraphAlgorithm;
 import de.upb.swt.soot.callgraph.algorithm.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.model.CallGraph;
-import de.upb.swt.soot.callgraph.spark.RapidTypeAnalysisWithSpark;
 import de.upb.swt.soot.callgraph.spark.Spark;
+import de.upb.swt.soot.callgraph.spark.VariableTypeAnalysisWithSpark;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;
@@ -27,13 +27,15 @@ import org.junit.experimental.categories.Category;
 
 /** @author Kadiray Karakaya */
 @Category(Java8Test.class)
-public class RapidTypeAnalysisWithSparkTest extends CallGraphTestBase<RapidTypeAnalysisWithSpark> {
+public class VariableTypeAnalysisWithSparkTest
+    extends CallGraphTestBase<VariableTypeAnalysisWithSpark> {
 
   JavaView view;
   TypeHierarchy typeHierarchy;
 
   @Override
-  protected RapidTypeAnalysisWithSpark createAlgorithm(JavaView view, TypeHierarchy typeHierarchy) {
+  protected VariableTypeAnalysisWithSpark createAlgorithm(
+      JavaView view, TypeHierarchy typeHierarchy) {
     this.view = view;
     this.typeHierarchy = typeHierarchy;
     return null;
@@ -72,14 +74,14 @@ public class RapidTypeAnalysisWithSparkTest extends CallGraphTestBase<RapidTypeA
 
     CallGraphAlgorithm algorithm = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
     CallGraph callGraph = algorithm.initialize(Collections.singletonList(mainMethodSignature));
-    Spark spark = new Spark.Builder(view, callGraph).rta(true).build();
+    Spark spark = new Spark.Builder(view, callGraph).vta(true).build();
     spark.analyze();
     return spark.getCallGraph();
   }
 
   @Test
   public void testMiscExample1() {
-    /** We expect constructors for B, C and E We expect A.print(), B.print(), C.print() */
+    /** We expect constructors for B and C We expect A.print(), B.print(), C.print() */
     CallGraph cg = loadCallGraph("Misc", "example1.Example");
 
     MethodSignature constructorB =
@@ -93,13 +95,6 @@ public class RapidTypeAnalysisWithSparkTest extends CallGraphTestBase<RapidTypeA
         identifierFactory.getMethodSignature(
             "<init>",
             identifierFactory.getClassType("example1.C"),
-            "void",
-            Collections.emptyList());
-
-    MethodSignature constructorE =
-        identifierFactory.getMethodSignature(
-            "<init>",
-            identifierFactory.getClassType("example1.E"),
             "void",
             Collections.emptyList());
 
@@ -131,37 +126,28 @@ public class RapidTypeAnalysisWithSparkTest extends CallGraphTestBase<RapidTypeA
             "void",
             Collections.singletonList("java.lang.Object"));
 
-    MethodSignature methodE =
-        identifierFactory.getMethodSignature(
-            "print",
-            identifierFactory.getClassType("example1.E"),
-            "void",
-            Collections.singletonList("java.lang.Object"));
-
     assertTrue(cg.containsCall(mainMethodSignature, constructorB));
     assertTrue(cg.containsCall(mainMethodSignature, constructorC));
-    assertTrue(cg.containsCall(mainMethodSignature, constructorE));
 
     assertTrue(cg.containsCall(mainMethodSignature, methodA));
     assertTrue(cg.containsCall(mainMethodSignature, methodB));
     assertTrue(cg.containsCall(mainMethodSignature, methodC));
-    assertTrue(cg.containsCall(mainMethodSignature, methodE));
     assertFalse(cg.containsMethod(methodD));
 
     assertEquals(7, cg.callsFrom(mainMethodSignature).size());
+    // TODO: why does body assign New E() to a variable?
+
+    cg.callsFrom(mainMethodSignature).forEach(System.out::println);
 
     assertEquals(2, cg.callsTo(constructorB).size());
     assertEquals(1, cg.callsTo(constructorC).size());
-    assertEquals(1, cg.callsTo(constructorE).size());
     assertEquals(1, cg.callsTo(methodA).size());
     assertEquals(1, cg.callsTo(methodB).size());
     assertEquals(1, cg.callsTo(methodC).size());
-    assertEquals(1, cg.callsTo(methodE).size());
 
     assertEquals(0, cg.callsFrom(methodA).size());
     assertEquals(0, cg.callsFrom(methodB).size());
     assertEquals(0, cg.callsFrom(methodC).size());
-    assertEquals(0, cg.callsFrom(methodE).size());
   }
 
   @Ignore

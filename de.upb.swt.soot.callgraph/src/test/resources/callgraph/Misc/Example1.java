@@ -6,6 +6,8 @@ class Example {
     A objB = new B();
     A objC = new C();
 
+    new E();
+
     objB.print(objC);
   }
 }
@@ -24,4 +26,8 @@ class C extends B {
 
 class D extends A {
   public void print(Object o) { }
+}
+
+class E extends A {
+  public void print(Object o)
 }
