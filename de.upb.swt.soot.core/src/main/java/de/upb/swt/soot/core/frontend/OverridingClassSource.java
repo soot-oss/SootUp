@@ -152,7 +152,7 @@ public class OverridingClassSource extends SootClassSource {
 
   @Nonnull
   @Override
-  public Optional<ClassType> resolveOuterClass() {
+  public Optional<? extends ClassType> resolveOuterClass() {
     return overriddenOuterClass != null ? overriddenOuterClass : delegate.resolveOuterClass();
   }
 

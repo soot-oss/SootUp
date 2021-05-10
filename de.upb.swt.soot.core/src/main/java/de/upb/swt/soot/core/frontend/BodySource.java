@@ -38,6 +38,9 @@ public interface BodySource {
   @Nonnull
   Body resolveBody(@Nonnull Iterable<Modifier> modifiers) throws ResolveException, IOException;
 
+  /** @return returns default value of method */
+  Object resolveDefaultValue();
+
   @Nonnull
   MethodSignature getSignature();
 }

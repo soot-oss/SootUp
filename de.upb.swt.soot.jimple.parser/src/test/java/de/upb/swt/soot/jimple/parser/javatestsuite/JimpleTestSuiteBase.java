@@ -9,11 +9,11 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.Utils;
-import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.jimple.parser.JimpleAnalysisInputLocation;
 import de.upb.swt.soot.jimple.parser.JimpleProject;
+import de.upb.swt.soot.jimple.parser.JimpleView;
 import de.upb.swt.soot.jimple.parser.categories.Java8Test;
 import java.nio.file.Paths;
 import java.util.*;
@@ -26,16 +26,17 @@ public abstract class JimpleTestSuiteBase {
 
   static final String baseDir = "src/test/java/resources/jimple/";
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-  private View view;
+  private JimpleView view;
 
   @Before
   public void setup() {
-    AnalysisInputLocation inputLocation = new JimpleAnalysisInputLocation(Paths.get(baseDir));
+    AnalysisInputLocation<? extends SootClass<?>> inputLocation =
+        new JimpleAnalysisInputLocation(Paths.get(baseDir));
     view = new JimpleProject(inputLocation).createOnDemandView();
   }
 
   /**
-   * @returns the name of the parent directory - assuming the directory structure is only one level
+   * @return the name of the parent directory - assuming the directory structure is only one level
    *     deep
    */
   public static String getTestDirectoryName(String classOfPath) {
@@ -63,23 +64,22 @@ public abstract class JimpleTestSuiteBase {
     return identifierFactory.getClassType(deriveClassName(this.getClass().getSimpleName()));
   }
 
-  public SootClass loadClass(ClassType clazz) {
+  public SootClass<?> loadClass(ClassType clazz) {
 
-    Optional<SootClass> cs = (Optional<SootClass>) view.getClass(clazz);
+    Optional<SootClass<?>> cs = view.getClass(clazz);
     assertTrue("no matching class for " + clazz + " found", cs.isPresent());
     return cs.get();
   }
 
   public SootMethod loadMethod(MethodSignature methodSignature) {
-    SootClass clazz = loadClass(methodSignature.getDeclClassType());
-    Optional<SootMethod> m = clazz.getMethod(methodSignature);
+    SootClass<?> clazz = loadClass(methodSignature.getDeclClassType());
+    Optional<? extends SootMethod> m = clazz.getMethod(methodSignature);
     if (!m.isPresent()) {
       System.out.println("existing methods:");
-      clazz.getMethods().forEach(meth -> System.out.println(meth));
+      clazz.getMethods().forEach(System.out::println);
     }
     assertTrue("No matching method for " + methodSignature + " found", m.isPresent());
-    SootMethod method = m.get();
-    return method;
+    return m.get();
   }
 
   public void assertJimpleStmts(SootMethod method, List<String> expectedStmts) {

@@ -20,6 +20,7 @@ package de.upb.swt.soot.core.graph;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
@@ -111,14 +112,8 @@ public class MutableStmtGraph extends StmtGraph {
     return startingStmt;
   }
 
-  private int addNode(@Nonnull Stmt node) {
+  public int addNode(@Nonnull Stmt node) {
     final int idx = nextFreeId++;
-    if (node == null) {
-      System.out.println("node is null in addNode:");
-      for (StackTraceElement element : (new Throwable()).getStackTrace()) {
-        System.out.println(element);
-      }
-    }
     stmtToIdx.put(node, idx);
     predecessors.add(
         new ArrayList<>(1)); // [ms] hint: wastes an entry if its a TrapHandler or the first Stmt
@@ -143,21 +138,7 @@ public class MutableStmtGraph extends StmtGraph {
     return idx;
   }
 
-  private void removeNode(@Nonnull Stmt node) {
-    final int nodeIdx = getNodeIdx(node);
-    stmtToIdx.remove(node);
-
-    // cleanup edges
-    final List<Stmt> preds = predecessors.get(nodeIdx);
-    preds.forEach(pred -> successors.get(getNodeIdx(pred)).remove(node));
-    predecessors.set(nodeIdx, null); // invalidate entry
-
-    final List<Stmt> succs = successors.get(nodeIdx);
-    succs.forEach(succ -> predecessors.get(getNodeIdx(succ)).remove(node));
-    successors.set(nodeIdx, null); // invalidate entry
-  }
-
-  private int getNodeIdx(@Nonnull Stmt node) {
+  protected int getNodeIdx(@Nonnull Stmt node) {
     Integer idx = stmtToIdx.get(node);
     if (idx == null) {
       throw new RuntimeException("'" + node + "' is currently not a Node in this StmtGraph.");
@@ -282,38 +263,103 @@ public class MutableStmtGraph extends StmtGraph {
   }
 
   /**
-   * Replace a stmt in StmtGraph with a new stmt
+   * Replace a stmt in StmtGraph with a new stmt and adapts the existing incoming and outgoing flows
+   * to the new stmt
    *
    * @param oldStmt a stmt which is already in the StmtGraph
    * @param newStmt a new stmt which will replace the old stmt
    */
   public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+
+    if (oldStmt.getSuccessorCount() != newStmt.getSuccessorCount()) {
+      throw new RuntimeException(
+          "You can only use replaceNode if newStmt has the same amount of branches/outgoing flows.");
+    }
+
     if (oldStmt == startingStmt) {
       startingStmt = newStmt;
     }
-    if (!containsNode(oldStmt)) {
-      throw new RuntimeException("The StmtGraph contains no such oldStmt");
+    final Integer integer = stmtToIdx.get(oldStmt);
+    if (integer == null) {
+      throw new RuntimeException("The StmtGraph does not contain" + oldStmt);
     }
-    int idx = stmtToIdx.get(oldStmt);
+    int idx = integer;
     stmtToIdx.remove(oldStmt, idx);
     stmtToIdx.put(newStmt, idx);
 
-    List<Stmt> preds = predecessors.get(idx);
-    for (Stmt pred : preds) {
-      int predIdx = stmtToIdx.get(pred);
-      List<Stmt> succs = successors.get(predIdx);
-      int succIdx = succs.indexOf(oldStmt);
-      succs.set(succIdx, newStmt);
-      successors.set(predIdx, succs);
+    for (Stmt pred : predecessors.get(idx)) {
+      List<Stmt> succsList = successors.get(stmtToIdx.get(pred));
+      int succIdx = succsList.indexOf(oldStmt);
+      succsList.set(succIdx, newStmt);
     }
 
-    List<Stmt> succs = successors.get(idx);
-    for (Stmt succ : succs) {
-      int succIdx = stmtToIdx.get(succ);
-      List<Stmt> predList = predecessors.get(succIdx);
-      int predIdx = predList.indexOf(oldStmt);
-      predList.set(predIdx, newStmt);
-      predecessors.set(succIdx, predList);
+    for (Stmt succ : successors.get(idx)) {
+      List<Stmt> predsList = predecessors.get(stmtToIdx.get(succ));
+      int predIdx = predsList.indexOf(oldStmt);
+      predsList.set(predIdx, newStmt);
     }
+
+    boolean trapIsChanged = false;
+    List<Trap> newTraps = new ArrayList<>();
+    if (!getTraps().isEmpty()) {
+      for (Trap trap : getTraps()) {
+        if (oldStmt == trap.getBeginStmt()) {
+          Trap newTrap =
+              new JTrap(trap.getExceptionType(), newStmt, trap.getEndStmt(), trap.getHandlerStmt());
+          newTraps.add(newTrap);
+          trapIsChanged = true;
+        } else if (oldStmt == trap.getEndStmt()) {
+          Trap newTrap =
+              new JTrap(
+                  trap.getExceptionType(), trap.getBeginStmt(), newStmt, trap.getHandlerStmt());
+          newTraps.add(newTrap);
+          trapIsChanged = true;
+        } else if (oldStmt == trap.getHandlerStmt()) {
+          Trap newTrap =
+              new JTrap(trap.getExceptionType(), trap.getBeginStmt(), trap.getEndStmt(), newStmt);
+          newTraps.add(newTrap);
+          trapIsChanged = true;
+        } else {
+          newTraps.add(trap);
+        }
+      }
+    }
+    if (trapIsChanged) {
+      setTraps(newTraps);
+    }
+  }
+
+  /**
+   * Remove a node from the graph. The succs and preds after the node removing don't have any
+   * connection to each other. the removal of b in "a->b->c" does NOT connect "a->c"
+   *
+   * @param node a stmt to be removed from the StmtGraph
+   */
+  public void removeNode(@Nonnull Stmt node) {
+
+    final Integer integer = stmtToIdx.get(node);
+    if (integer == null) {
+      return;
+    }
+    final int nodeIdx = integer;
+    // remove node from index map
+    stmtToIdx.remove(node);
+
+    // unset startingstmt if node is currently the startingstmt
+    if (startingStmt == node) {
+      startingStmt = null;
+    }
+
+    // remove node from successor list of nodes predecessors
+    final List<Stmt> preds = predecessors.get(nodeIdx);
+    preds.forEach(pred -> successors.get(getNodeIdx(pred)).remove(node));
+    // invalidate entry for node itself to allow gc
+    predecessors.set(nodeIdx, null);
+
+    // remove node from the predecessor list of a nodes successors
+    final List<Stmt> succs = successors.get(nodeIdx);
+    succs.forEach(succ -> predecessors.get(getNodeIdx(succ)).remove(node));
+    // invalidate entry for node itself to allow gc
+    successors.set(nodeIdx, null);
   }
 }

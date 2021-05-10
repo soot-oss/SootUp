@@ -35,6 +35,7 @@ import de.upb.swt.soot.core.types.NullType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -61,6 +62,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
   /** Caches the created PackageNames for packages. */
   final Map<String, PackageName> packages = new HashMap<>();
+
+  /** Chaches annotation types */
+  final Map<String, AnnotationType> annotationTypes = new HashMap<>();
 
   public static JavaIdentifierFactory getInstance() {
     return INSTANCE;
@@ -171,6 +175,14 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   public ArrayType getArrayType(Type baseType, int dim) {
     return new ArrayType(baseType, dim);
+  }
+
+  public AnnotationType getAnnotationType(final String fullyQualifiedClassName) {
+    String className = ClassUtils.getShortClassName(fullyQualifiedClassName);
+    String packageName = ClassUtils.getPackageName(fullyQualifiedClassName);
+
+    return annotationTypes.computeIfAbsent(
+        className + packageName, (k) -> new AnnotationType(className, getPackageName(packageName)));
   }
 
   @Override
@@ -375,8 +387,8 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   public MethodSubSignature getMethodSubSignature(
       @Nonnull String name,
-      @Nonnull Iterable<? extends Type> parameterSignatures,
-      @Nonnull Type returnType) {
+      @Nonnull Type returnType,
+      @Nonnull Iterable<? extends Type> parameterSignatures) {
     return new MethodSubSignature(name, parameterSignatures, returnType);
   }
 
@@ -460,7 +472,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
                 .map(typeName -> getType(typeName))
                 .collect(Collectors.toList());
 
-    return getMethodSubSignature(methodName, argsList, getType(returnName));
+    return getMethodSubSignature(methodName, getType(returnName), argsList);
   }
 
   @Nonnull

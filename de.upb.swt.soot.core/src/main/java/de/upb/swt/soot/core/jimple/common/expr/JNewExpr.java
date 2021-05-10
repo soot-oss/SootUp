@@ -45,7 +45,7 @@ public final class JNewExpr implements Expr, Copyable {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseNewExpr(this, o);
   }
 

@@ -26,12 +26,14 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Collections;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 
 public class JavaSootField extends SootField {
 
-  @Nonnull private final Iterable<AnnotationType> annotations;
+  @Nonnull private final Iterable<AnnotationUsage> annotations;
 
   /**
    * Constructs a Soot field with the given name, type and modifiers.
@@ -44,19 +46,20 @@ public class JavaSootField extends SootField {
   public JavaSootField(
       @Nonnull FieldSignature signature,
       @Nonnull Iterable<Modifier> modifiers,
-      @Nonnull Iterable<AnnotationType> annotations,
+      @Nonnull Iterable<AnnotationUsage> annotations,
       Position position) {
     super(signature, modifiers, position);
     this.annotations = annotations;
   }
 
   @Nonnull
-  public Iterable<AnnotationType> getAnnotations() {
+  public Iterable<AnnotationUsage> getAnnotations(@Nonnull Optional<JavaView> view) {
+    annotations.forEach(e -> e.getAnnotation().getDefaultValues(view));
     return annotations;
   }
 
   @Nonnull
-  public JavaSootField withAnnotations(@Nonnull Iterable<AnnotationType> annotations) {
+  public JavaSootField withAnnotations(@Nonnull Iterable<AnnotationUsage> annotations) {
     return new JavaSootField(getSignature(), getModifiers(), annotations, getPosition());
   }
 
@@ -66,7 +69,7 @@ public class JavaSootField extends SootField {
   }
 
   public interface AnnotationOrSignatureStep extends SignatureStep {
-    BuildStep withAnnotation(Iterable<AnnotationType> annotations);
+    BuildStep withAnnotation(Iterable<AnnotationUsage> annotations);
   }
 
   /**
@@ -77,16 +80,16 @@ public class JavaSootField extends SootField {
   public static class JavaSootFieldBuilder extends SootFieldBuilder
       implements AnnotationOrSignatureStep {
 
-    private Iterable<AnnotationType> annotations = null;
+    private Iterable<AnnotationUsage> annotations = null;
 
     @Nonnull
-    public Iterable<AnnotationType> getAnnotations() {
+    public Iterable<AnnotationUsage> getAnnotations() {
       return annotations != null ? annotations : Collections.emptyList();
     }
 
     @Override
     @Nonnull
-    public BuildStep withAnnotation(Iterable<AnnotationType> annotations) {
+    public BuildStep withAnnotation(Iterable<AnnotationUsage> annotations) {
       this.annotations = annotations;
       return this;
     }

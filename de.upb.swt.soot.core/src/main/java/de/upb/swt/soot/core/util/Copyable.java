@@ -22,6 +22,8 @@ package de.upb.swt.soot.core.util;
  * #L%
  */
 
+// TODO: [ms] Copyable makes no sense anymore as all stmts are immutable
+
 /**
  * Marker interface for final classes that are immutable and can be copied. For instance:
  *

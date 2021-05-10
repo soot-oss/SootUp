@@ -74,7 +74,7 @@ public abstract class AbstractBinopExpr implements Expr {
   }
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseAbstractBinopExpr(this, o);
   }
 
@@ -103,4 +103,8 @@ public abstract class AbstractBinopExpr implements Expr {
     up.literal(getSymbol());
     op2Box.toString(up);
   }
+
+  public abstract AbstractBinopExpr withOp1(Value value);
+
+  public abstract AbstractBinopExpr withOp2(Value value);
 }

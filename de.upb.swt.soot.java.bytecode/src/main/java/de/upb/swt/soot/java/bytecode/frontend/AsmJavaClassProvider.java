@@ -29,14 +29,13 @@ import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import javax.annotation.Nonnull;
-import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.TypePath;
 import org.objectweb.asm.tree.ClassNode;
 
 /** A {@link ClassProvider} capable of handling Java bytecode */
@@ -65,6 +64,10 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
       // TODO: [ms] is this necessary here? check!
       throw new ResolveException("The module info descriptor is not resolvable!", sourcePath);
     } else {
+      if (klassType instanceof AnnotationType) {
+        return new AsmAnnotationClassSource(srcNamespace, sourcePath, klassType, classNode);
+      }
+
       return new AsmClassSource(srcNamespace, sourcePath, klassType, classNode);
     }
   }
@@ -79,21 +82,6 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
 
     SootClassNode() {
       super(AsmUtil.SUPPORTED_ASM_OPCODE);
-    }
-
-    @Override
-    public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-      // TODO: [ms] entrypoint for Annotations
-      // https://asm.ow2.io/javadoc/org/objectweb/asm/ClassVisitor.html
-      return super.visitAnnotation(descriptor, visible);
-    }
-
-    @Override
-    public AnnotationVisitor visitTypeAnnotation(
-        int typeRef, TypePath typePath, String descriptor, boolean visible) {
-      // TODO: [ms] entrypoint for Annotation : "Visits an annotation on a type in the class
-      // signature."
-      return super.visitTypeAnnotation(typeRef, typePath, descriptor, visible);
     }
 
     @Override

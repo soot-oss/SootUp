@@ -64,7 +64,7 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   /** Test: "ClassInheritanceWithAdditionalMethod" has additional method. */
   @Test
   public void ClassInheritanceClassHasAdditionalMethod() {
-    SootClass sootClass =
+    SootClass<?> sootClass =
         customTestWatcher
             .getView()
             .getClass(
@@ -73,11 +73,11 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
                     .getIdentifierFactory()
                     .getClassType(customTestWatcher.getClassName()))
             .get();
-    SootClass superClass =
+    SootClass<?> superClass =
         customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
 
-    Set<SootMethod> methodsSetOfSootClass = sootClass.getMethods();
-    Set<SootMethod> methodsSetOfSuperClass = superClass.getMethods();
+    Set<SootMethod> methodsSetOfSootClass = (Set<SootMethod>) sootClass.getMethods();
+    Set<SootMethod> methodsSetOfSuperClass = (Set<SootMethod>) superClass.getMethods();
 
     Set<MethodSubSignature> methodSignaturesOfSootClass =
         methodsSetOfSootClass.stream()

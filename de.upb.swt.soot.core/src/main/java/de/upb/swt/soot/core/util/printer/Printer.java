@@ -123,6 +123,18 @@ public class Printer {
 
     // Print class name + modifiers
     {
+
+      /* FIXME: [ms] create own printer per language
+            // if( cl instanceof JavaSootClass)
+            {
+              // print annotation:
+              Iterable<AnnotationType> annotationIt = cl.getAnnotations().iterator();
+              while (annotationIt.hasNext()) {
+                printer.literal("// @" + annotationIt.next() + ";");
+              }
+            }
+      */
+
       EnumSet<Modifier> modifiers = EnumSet.copyOf(cl.getModifiers());
       // remove unwanted modifier combinations
       if (cl.isInterface() && Modifier.isAbstract(modifiers)) {

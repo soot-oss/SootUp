@@ -29,7 +29,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import java.nio.file.Path;
 import javax.annotation.Nonnull;
 
-public abstract class JavaSootClassSource extends SootClassSource {
+public abstract class JavaSootClassSource extends SootClassSource<JavaSootClass> {
 
   public JavaSootClassSource(
       @Nonnull AnalysisInputLocation<JavaSootClass> srcNamespace,
@@ -38,20 +38,15 @@ public abstract class JavaSootClassSource extends SootClassSource {
     super(srcNamespace, classSignature, sourcePath);
   }
 
+  protected abstract Iterable<AnnotationUsage> resolveAnnotations();
+
   @Override
   @Nonnull
   public JavaSootClass buildClass(@Nonnull SourceType sourceType) {
     return new JavaSootClass(this, sourceType);
   }
 
-  protected JavaSootClassSource(SootClassSource delegate) {
+  protected JavaSootClassSource(SootClassSource<JavaSootClass> delegate) {
     super(delegate);
   }
-
-  public abstract Iterable<AnnotationType> resolveAnnotations();
-
-  public abstract Iterable<AnnotationType> resolveMethodAnnotations();
-
-  // TODO: [ms] maybe move to a better place?
-  public abstract Iterable<AnnotationType> resolveFieldAnnotations();
 }
