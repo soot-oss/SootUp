@@ -141,8 +141,10 @@ public class JavaClassType extends ClassType {
   public boolean isBuiltInClass() {
     PackageName packageName = getPackageName();
     if (packageName instanceof ModulePackageName) {
-      // if java modules (>= java9) are used: its the case when the module is java.base
-      return ((ModulePackageName) packageName).getModuleSignature().toString().equals("java.base");
+      // if java modules (>= java9) are used: use JrtFileSystem for explicit.. otherwise use the
+      // following heuristic
+      String moduleName = ((ModulePackageName) packageName).getModuleSignature().toString();
+      return moduleName.startsWith("java.") || moduleName.startsWith("jdk.");
     }
     return LIBRARY_CLASS_PATTERN.matcher(getClassName()).find();
   }

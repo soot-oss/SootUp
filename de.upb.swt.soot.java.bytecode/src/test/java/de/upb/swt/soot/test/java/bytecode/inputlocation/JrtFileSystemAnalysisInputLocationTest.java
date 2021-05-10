@@ -11,6 +11,7 @@ import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import java.util.Collection;
 import java.util.Optional;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -31,7 +32,8 @@ public class JrtFileSystemAnalysisInputLocationTest {
   }
 
   @Test
-  public void getClassSourceModule() {
+  @Ignore
+  public void getClassSources() {
     JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
     final ClassType sig1 =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
@@ -50,5 +52,10 @@ public class JrtFileSystemAnalysisInputLocationTest {
     JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
     Collection<ModuleSignature> modules = inputLocation.discoverModules();
     assertTrue(modules.size() > 65);
+    System.out.println(modules);
+    assertTrue(modules.contains(JavaModuleIdentifierFactory.getModuleSignature("java.base")));
+    assertTrue(modules.contains(JavaModuleIdentifierFactory.getModuleSignature("java.se")));
+    assertTrue(modules.contains(JavaModuleIdentifierFactory.getModuleSignature("jdk.javadoc")));
+    assertTrue(modules.contains(JavaModuleIdentifierFactory.getModuleSignature("jdk.charsets")));
   }
 }
