@@ -30,7 +30,6 @@ import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.*;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
@@ -126,7 +125,7 @@ public class JavaModuleView extends JavaView {
     }
 
     // is the package exported by its module?
-    if (moduleInfo == getUnnamedModuleInfo()) {
+    if (moduleInfo.isUnnamedModule()) {
       // the unnamed module exports all its packages
       // does not check if the package exists in the unnamed module!
       return true;
@@ -167,8 +166,6 @@ public class JavaModuleView extends JavaView {
         return buildClassFrom(foundClassSources.get(0));
       } else {
         // search in unnamed module itself
-        // TODO: check if the correct IdentifierFactory (for Modules) is used to set a reference to
-        // the unnamed module
         return super.getClass(type);
       }
 
@@ -233,11 +230,11 @@ public class JavaModuleView extends JavaView {
     }
   }
 
-  // TODO: expensive! cache results.. maybe union-find for transitive hull?
-
   // find a transitive relation from entryModuleInfo to moduleSignature
   private boolean isTransitiveRequires(
       JavaModuleInfo entryModuleInfo, ModuleSignature moduleSignature) {
+
+    // TODO: expensive! cache results.. maybe union-find for transitive hull?
 
     Set<ModuleSignature> visited = new HashSet<>();
     visited.add(entryModuleInfo.getModuleSignature());
@@ -308,15 +305,50 @@ public class JavaModuleView extends JavaView {
     return modules;
   }
 
+  /*
+  /**
+   * retrieves all visible classes starting from a module
+   * * /
   @Nonnull
-  public synchronized Optional<JavaSootClass> getClasses(
-      @Nonnull ModuleSignature startModuleSignature, @Nonnull ClassType type) {
+  public synchronized Collection<JavaSootClass> getClasses(
+          @Nonnull ModuleSignature startModuleSignature, @Nonnull ClassType type) {
 
-    if (type.getPackageName() instanceof ModulePackageName) {
-      // TODO: [ms] implement getting all classes that are visible from the startModuleSignature
+    Optional<JavaModuleInfo> moduleInfoOpt = getModuleInfo(startModuleSignature);
 
+    if (!moduleInfoOpt.isPresent()) {
+      // bad
+      return Collections.emptyList();
     }
 
-    return super.getClass(type);
+    JavaModuleInfo moduleInfo = moduleInfoOpt.get();
+    if( moduleInfo.isUnnamedModule() ){
+      return super.getClasses();
+    }else {
+      if (moduleInfo.isAutomaticModule()) {
+
+        return getProject().getInputLocations().stream()
+                .filter(inputLocation -> inputLocation instanceof ModuleInfoAnalysisInputLocation)
+                .map(
+                        location -> {
+                          ClassLoadingOptions classLoadingOptions =
+                                  classLoadingOptionsSpecifier.apply(location);
+                          if (classLoadingOptions != null) {
+                            return location.getClassSource(type, classLoadingOptions);
+                          } else {
+                            return location.getClassSource(type);
+                          }
+                        })
+                .filter(Optional::isPresent).map( cs -> buildClassFrom(cs.get()) )
+                .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+
+      }else{
+        // explicit module
+       return super.getClass(type);
+
+      }
+    }
+
+
   }
+  */
 }

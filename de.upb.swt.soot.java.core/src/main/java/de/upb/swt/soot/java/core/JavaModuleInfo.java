@@ -223,6 +223,10 @@ public abstract class JavaModuleInfo {
     return isAutomaticModule;
   }
 
+  public boolean isUnnamedModule() {
+    return this == JavaModuleInfo.getUnnamedModuleInfo();
+  }
+
   @Override
   public String toString() {
     return getModuleSignature()
