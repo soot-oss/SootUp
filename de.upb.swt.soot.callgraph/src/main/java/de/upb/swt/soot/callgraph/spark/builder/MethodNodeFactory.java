@@ -64,6 +64,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
   protected final ReferenceType rtLinkedList;
   protected final ReferenceType rtHashtableEmptyIterator;
   protected final ReferenceType rtHashtableEmptyEnumerator;
+  private final ArrayElement arrayElementInstance = new ArrayElement();
 
   public MethodNodeFactory(IntraproceduralPointerAssignmentGraph intraPag) {
     this.intraPag = intraPag;
@@ -276,7 +277,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
   }
 
   public Node caseArray(VariableNode base) {
-    return pag.getOrCreateFieldReferenceNode(base, new ArrayElement());
+    return pag.getOrCreateFieldReferenceNode(base, arrayElementInstance);
   }
 
   @Override
