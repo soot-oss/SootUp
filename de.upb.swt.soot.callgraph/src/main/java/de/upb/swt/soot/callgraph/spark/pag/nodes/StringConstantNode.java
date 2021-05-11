@@ -35,6 +35,7 @@ public class StringConstantNode extends AllocationNode {
     return (String) getNewExpr();
   }
 
+  @Override
   public String toString() {
     return "StringConstantNode " + getNewExpr();
   }

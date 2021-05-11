@@ -73,9 +73,7 @@ public class PointerAssignmentGraph {
   // special edges for implicit flows:
   // - finalize methods
   // - java.lang.Thread start method to run method
-  private static final Logger log = LoggerFactory.getLogger(PointerAssignmentGraph.class);
 
-  // private final Graph<SparkVertex, SparkEdge> graph;
   private CallGraph callGraph;
   private View<? extends SootClass> view;
 
@@ -88,7 +86,6 @@ public class PointerAssignmentGraph {
   private final Map<Object, GlobalVariableNode> valToGlobalVariableNode = new HashMap<>();
   private final Map<Value, NewInstanceNode> valToNewInstanceNode = new HashMap<>();
   private final GlobalNodeFactory nodeFactory = new GlobalNodeFactory(this);
-  private final SparkEdgeFactory edgeFactory = new SparkEdgeFactory();
   private final List<VariableNode> dereferences = new ArrayList<>();
   private InternalEdges internalEdges;
   private final List<VariableNode> variableNodes = new ArrayList<>();
@@ -115,8 +112,8 @@ public class PointerAssignmentGraph {
   }
 
   private void build() {
-    for (SootClass clazz : view.getClasses()) {
-      for (SootMethod method : (Set<SootMethod>) clazz.getMethods()) {
+    for (SootClass<?> clazz : view.getClasses()) {
+      for (SootMethod method : clazz.getMethods()) {
         if (!method.isAbstract() && callGraph.containsMethod(method.getSignature())) {
           IntraproceduralPointerAssignmentGraph intraPAG =
               IntraproceduralPointerAssignmentGraph.getInstance(this, method);
@@ -444,7 +441,7 @@ public class PointerAssignmentGraph {
       if (!m.keySet().contains(n2)) {
         continue;
       }
-      // Pair<Set<Node>, Set<Node>> setPair = new ImmutablePair<>(m.get(n1), m.get(n2));
+
       Set<Node> set1 = m.get(n1);
       Set<Node> set2 = m.get(n2);
 
@@ -482,7 +479,7 @@ public class PointerAssignmentGraph {
         }
         Node[] newArray = new Node[j];
         System.arraycopy(ret, 0, newArray, 0, j);
-        m.put(n1, Sets.newHashSet(ret = newArray));
+        m.put(n1, Sets.newHashSet(newArray));
       } else {
         HashSet<Node> s = new HashSet<>(set1.size() + set2.size());
         s.addAll(set1);
@@ -521,7 +518,7 @@ public class PointerAssignmentGraph {
 
     m.put(key, valueList);
 
-    Node[] ret = (Node[]) valueList.toArray();
+    Node[] ret = (Node[]) valueList.toArray(new Node[0]);
     if (somethingMerged) {
       for (int i = 0; i < ret.length; i++) {
         Node reti = ret[i];

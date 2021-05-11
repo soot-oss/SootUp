@@ -64,12 +64,16 @@ public class SCCCollapser implements Collapser {
     visited.add(v);
     Set<VariableNode> succs = pag.simpleInvLookup(v);
     if (succs != null && !succs.isEmpty()) {
-      for (Node element : succs) {
+      for (VariableNode element : succs) {
         if (ignoreTypes || typeHierarchy.canCast(element.getType(), v.getType())) {
-          dfsVisit((VariableNode) element, rootOfSCC);
+          dfsVisit(element, rootOfSCC);
         }
       }
     }
+    handleVariableNotRootOfSCC(v, rootOfSCC);
+  }
+
+  private void handleVariableNotRootOfSCC(VariableNode v, VariableNode rootOfSCC) {
     if (v != rootOfSCC) {
       if (!ignoreTypes) {
         if (typeHierarchy.canCast(v.getType(), rootOfSCC.getType())
@@ -78,20 +82,24 @@ public class SCCCollapser implements Collapser {
           numCollapsed++;
         }
       } else {
-        if (typeHierarchy.canCast(v.getType(), rootOfSCC.getType())) {
-          rootOfSCC.mergeWith(v);
-        } else if (typeHierarchy.canCast(rootOfSCC.getType(), v.getType())) {
-          v.mergeWith(rootOfSCC);
-        } else {
-          rootOfSCC.getReplacement().setType(null);
-          Set<Node> set = rootOfSCC.getPointsToSet();
-          if (set != null) {
-            // TODO: set.setType null
-          }
-          rootOfSCC.mergeWith(v);
-        }
-        numCollapsed++;
+        handleIgnoreTypes(v, rootOfSCC);
       }
     }
+  }
+
+  private void handleIgnoreTypes(VariableNode v, VariableNode rootOfSCC) {
+    if (typeHierarchy.canCast(v.getType(), rootOfSCC.getType())) {
+      rootOfSCC.mergeWith(v);
+    } else if (typeHierarchy.canCast(rootOfSCC.getType(), v.getType())) {
+      v.mergeWith(rootOfSCC);
+    } else {
+      rootOfSCC.getReplacement().setType(null);
+      Set<Node> set = rootOfSCC.getPointsToSet();
+      if (set != null) {
+        // TODO: set.setType null
+      }
+      rootOfSCC.mergeWith(v);
+    }
+    numCollapsed++;
   }
 }

@@ -62,7 +62,6 @@ public class CallTargetHandler {
         IntraproceduralPointerAssignmentGraph.getInstance(pag, sourceMethod);
     IntraproceduralPointerAssignmentGraph tgtIntraPag =
         IntraproceduralPointerAssignmentGraph.getInstance(pag, targetMethod);
-    Pair<Node, Node> pval;
 
     if (edgeType.isExplicit()
         || edgeType == CallGraphEdgeType.THREAD
@@ -188,15 +187,8 @@ public class CallTargetHandler {
       Node sourceNode,
       Node targetNode) {
     pag.addEdge(sourceNode, targetNode);
-    Pair<Node, Node> pval = addInterproceduralAssignment(sourceNode, targetNode, edgeType);
-    pag.getCallAssigns().put(invokeExpr, pval);
+    Pair<Node, Node> pair = new ImmutablePair<>(sourceNode, targetNode);
+    pag.getCallAssigns().put(invokeExpr, pair);
     pag.getCallToMethod().put(invokeExpr, sourceIntraPag.getMethod());
-  }
-
-  public Pair<Node, Node> addInterproceduralAssignment(
-      Node source, Node target, CallGraphEdgeType edgeType) {
-    Pair<Node, Node> val = new ImmutablePair<>(source, target);
-    // TODO: runGeomPTA
-    return val;
   }
 }

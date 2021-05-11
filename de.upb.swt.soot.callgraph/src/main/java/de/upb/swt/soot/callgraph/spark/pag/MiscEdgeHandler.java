@@ -41,39 +41,45 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class MiscEdgeHandler {
 
+  private MiscEdgeHandler(){
+
+  }
+
   private static final JavaIdentifierFactory identifierFactory =
       JavaIdentifierFactory.getInstance();
   private static final JavaClassType strType = identifierFactory.getClassType(NodeConstants.STRING);
   private static final ArrayType strArrayType = identifierFactory.getArrayType(strType, 1);
+  private static final String INIT = "<init>";
+  private static final String VOID = "void";
   private static final MethodSubSignature mainSubSignature =
       identifierFactory.getMethodSubSignature(
           "main", VoidType.getInstance(), Collections.singleton(strArrayType));
   private static final MethodSignature threadInitSignature =
       identifierFactory.getMethodSignature(
-          "<init>",
+              INIT,
           NodeConstants.THREAD,
-          "void",
+          VOID,
           Arrays.asList(NodeConstants.THREAD_GROUP, NodeConstants.STRING));
   private static final MethodSignature finalizerInitSignature =
       identifierFactory.getMethodSignature(
-          "<init>", NodeConstants.FINALIZER, "void", Arrays.asList(NodeConstants.OBJECT));
+              INIT, NodeConstants.FINALIZER, VOID, Arrays.asList(NodeConstants.OBJECT));
   private static final MethodSignature finalizerRunFinalizerSignature =
       identifierFactory.getMethodSignature(
-          "runFinalizer", NodeConstants.FINALIZER, "void", Collections.emptyList());
+          "runFinalizer", NodeConstants.FINALIZER, VOID, Collections.emptyList());
   private static final MethodSignature finalizerAccess100Signature =
       identifierFactory.getMethodSignature(
-          "access$100", NodeConstants.FINALIZER, "void", Arrays.asList(NodeConstants.OBJECT));
+          "access$100", NodeConstants.FINALIZER, VOID, Arrays.asList(NodeConstants.OBJECT));
   private static final MethodSignature classLoaderInitSignature =
       identifierFactory.getMethodSignature(
-          "<init>", NodeConstants.CLASS_LOADER, "void", Collections.emptyList());
+              INIT, NodeConstants.CLASS_LOADER, VOID, Collections.emptyList());
   private static final MethodSignature threadExitSignature =
       identifierFactory.getMethodSignature(
-          "exit", NodeConstants.THREAD, "void", Collections.emptyList());
+          "exit", NodeConstants.THREAD, VOID, Collections.emptyList());
   private static final MethodSignature privilegedActionExInitSignature =
       identifierFactory.getMethodSignature(
-          "<init>",
+              INIT,
           NodeConstants.PRIVILEGED_ACTION_EXCEPTION,
-          "void",
+          VOID,
           Arrays.asList(NodeConstants.EXCEPTION));
 
   public static List<Pair<Node, Node>> getMiscEdge(

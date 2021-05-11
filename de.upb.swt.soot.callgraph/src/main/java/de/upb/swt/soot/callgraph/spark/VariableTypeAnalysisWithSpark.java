@@ -34,6 +34,7 @@ import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.swt.soot.core.model.Modifier;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
@@ -51,7 +52,7 @@ public class VariableTypeAnalysisWithSpark extends AbstractCallGraphAlgorithm {
   @Nonnull private PointerAssignmentGraph pag;
 
   public VariableTypeAnalysisWithSpark(
-      @Nonnull View view,
+      @Nonnull View<? extends SootClass<?>> view,
       @Nonnull TypeHierarchy typeHierarchy,
       CallGraph chaGraph,
       PointerAssignmentGraph pag) {

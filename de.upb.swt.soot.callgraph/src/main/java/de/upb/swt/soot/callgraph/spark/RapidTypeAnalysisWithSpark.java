@@ -41,6 +41,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
 
@@ -51,7 +52,7 @@ public class RapidTypeAnalysisWithSpark extends AbstractCallGraphAlgorithm {
   @Nonnull private PointerAssignmentGraph pag;
 
   public RapidTypeAnalysisWithSpark(
-      @Nonnull View view,
+      @Nonnull View<? extends SootClass<?>> view,
       @Nonnull TypeHierarchy typeHierarchy,
       CallGraph chaGraph,
       PointerAssignmentGraph pag) {
@@ -110,8 +111,8 @@ public class RapidTypeAnalysisWithSpark extends AbstractCallGraphAlgorithm {
     // add also found classes' super classes
     instantiated.stream()
         .map(s -> (SootClass) view.getClass(s).get())
-        .map(s -> s.getSuperclass())
-        .filter(s -> s.isPresent())
+        .map(SootClass::getSuperclass)
+        .filter(Optional::isPresent)
         .map(s -> (ClassType) s.get())
         .forEach(instantiatedClasses::add);
   }

@@ -1,4 +1,4 @@
-package de.upb.swt.soot.callgraph.spark.pointsto;
+package de.upb.swt.soot.callgraph.spark;
 
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -58,5 +58,4 @@ public interface PointsToAnalysis {
 
   public Set<Node> getPointsToSet(Local local);
 
-  //  public Set<Node> getPointsToSet(Local local, Field field);
 }

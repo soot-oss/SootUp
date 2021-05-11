@@ -45,37 +45,44 @@ public class MergePropagator implements Propagator {
   public void propagate() {
     new TopologicalSorter(pag, false).sort();
     for (AllocationNode source : pag.getAllocationEdges().keySet()) {
-      handleAllocNode((AllocationNode) source);
+      handleAllocNode(source);
     }
 
     do {
-      int iter = 0;
       while (!varNodeWorkList.isEmpty()) {
         VariableNode src = varNodeWorkList.iterator().next();
         varNodeWorkList.remove(src);
         handleVariableNode(src);
       }
 
-      for (VariableNode source : pag.getStoreEdges().keySet()) {
-        Set<FieldReferenceNode> storeTargets = pag.getStoreEdges().get(source);
-        for (FieldReferenceNode fr : storeTargets) {
-          fr.getOrCreatePointsToSet().addAll(source.getPointsToSet());
-        }
-      }
+      handleStoreEdges();
 
-      for (FieldReferenceNode source : pag.getLoadEdges().keySet()) {
-        if (source != source.getReplacement()) {
-          throw new RuntimeException("load source must be equal to its replacement");
-        }
-        Set<VariableNode> targets = pag.getLoadEdges().get(source);
-        for (VariableNode target : targets) {
-          if (target.getOrCreatePointsToSet().addAll(source.getPointsToSet())) {
-            varNodeWorkList.add(target);
-          }
-        }
-      }
+      handleLoadEdges();
 
     } while (!varNodeWorkList.isEmpty());
+  }
+
+  private void handleLoadEdges() {
+    for (FieldReferenceNode source : pag.getLoadEdges().keySet()) {
+      if (source != source.getReplacement()) {
+        throw new RuntimeException("load source must be equal to its replacement");
+      }
+      Set<VariableNode> targets = pag.getLoadEdges().get(source);
+      for (VariableNode target : targets) {
+        if (target.getOrCreatePointsToSet().addAll(source.getPointsToSet())) {
+          varNodeWorkList.add(target);
+        }
+      }
+    }
+  }
+
+  private void handleStoreEdges() {
+    for (VariableNode source : pag.getStoreEdges().keySet()) {
+      Set<FieldReferenceNode> storeTargets = pag.getStoreEdges().get(source);
+      for (FieldReferenceNode fr : storeTargets) {
+        fr.getOrCreatePointsToSet().addAll(source.getPointsToSet());
+      }
+    }
   }
 
   private void handleAllocNode(AllocationNode source) {

@@ -26,13 +26,10 @@ import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.types.Type;
 import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /** Represents a simple variable node (Green) in the pointer assignment graph. */
-public class VariableNode extends Node implements Comparable {
+public class VariableNode extends Node implements Comparable<VariableNode> {
 
   protected Object variable;
   protected Map<Field, FieldReferenceNode> fields;
@@ -75,8 +72,7 @@ public class VariableNode extends Node implements Comparable {
   }
 
   @Override
-  public int compareTo(Object o) {
-    VariableNode other = (VariableNode) o;
+  public int compareTo(VariableNode other) {
     if (other.finishingNumber == finishingNumber && other != this) {
       throw new RuntimeException(
           MessageFormat.format(
@@ -86,6 +82,22 @@ public class VariableNode extends Node implements Comparable {
               this, this.finishingNumber, other, other.finishingNumber));
     }
     return other.finishingNumber - this.finishingNumber;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    VariableNode that = (VariableNode) o;
+    return finishingNumber == that.finishingNumber &&
+            isInterProcTarget == that.isInterProcTarget &&
+            Objects.equals(variable, that.variable) &&
+            Objects.equals(fields, that.fields);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(variable, fields, finishingNumber, isInterProcTarget);
   }
 
   public void setFinishingNumber(int number) {

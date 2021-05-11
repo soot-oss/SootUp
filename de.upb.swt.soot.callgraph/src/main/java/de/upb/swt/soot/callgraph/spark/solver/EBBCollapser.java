@@ -55,8 +55,8 @@ public class EBBCollapser implements Collapser {
       VariableNode firstSucc = null;
       for (VariableNode succ : entry.getValue()) {
         if (pag.allocInvLookup(succ).size() > 1
-            || pag.loadInvLookup(succ).size() > 0
-            || pag.simpleInvLookup(succ).size() > 0) {
+            || !pag.loadInvLookup(succ).isEmpty()
+            || !pag.simpleInvLookup(succ).isEmpty()) {
           // TODO: ofcg
           continue;
         }
@@ -85,8 +85,8 @@ public class EBBCollapser implements Collapser {
         for (VariableNode succ : entry.getValue()) {
           Type sType = succ.getType();
           if (!typeHierarchy.canCast(nType, sType)
-              || pag.allocInvLookup(succ).size() > 0
-              || pag.loadInvLookup(succ).size() > 0
+              || !pag.allocInvLookup(succ).isEmpty()
+              || !pag.loadInvLookup(succ).isEmpty()
               || pag.simpleInvLookup(succ).size() > 1) {
             // TODO: ocfg
             continue;
@@ -107,29 +107,33 @@ public class EBBCollapser implements Collapser {
       Type nType = n.getType();
       Node firstSucc = null;
       Map<Type, VariableNode> typeToSucc = new HashMap<>();
-      for (VariableNode succ : entry.getValue()) {
-        Type sType = succ.getType();
-        if (pag.allocInvLookup(succ).size() > 0
-            || pag.loadInvLookup(succ).size() > 1
-            || pag.simpleInvLookup(succ).size() > 0) {
-          // TODO: ofcg
-          continue;
-        }
-        if (typeHierarchy.canCast(nType, sType)) {
-          if (firstSucc == null) {
-            firstSucc = succ;
-          } else {
-            firstSucc.mergeWith(succ);
-            numCollapsed++;
-          }
+      handleVariableNodes(typeHierarchy, entry, nType, firstSucc, typeToSucc);
+    }
+  }
+
+  private void handleVariableNodes(TypeHierarchy typeHierarchy, Map.Entry<FieldReferenceNode, Set<VariableNode>> entry, Type nType, Node firstSucc, Map<Type, VariableNode> typeToSucc) {
+    for (VariableNode succ : entry.getValue()) {
+      Type sType = succ.getType();
+      if (pag.allocInvLookup(succ).isEmpty()
+          || !pag.loadInvLookup(succ).isEmpty()
+          || !pag.simpleInvLookup(succ).isEmpty()) {
+        // TODO: ofcg
+        continue;
+      }
+      if (typeHierarchy.canCast(nType, sType)) {
+        if (firstSucc == null) {
+          firstSucc = succ;
         } else {
-          VariableNode rep = typeToSucc.get(succ.getType());
-          if (rep == null) {
-            typeToSucc.put(succ.getType(), succ);
-          } else {
-            rep.mergeWith(succ);
-            numCollapsed++;
-          }
+          firstSucc.mergeWith(succ);
+          numCollapsed++;
+        }
+      } else {
+        VariableNode rep = typeToSucc.get(succ.getType());
+        if (rep == null) {
+          typeToSucc.put(succ.getType(), succ);
+        } else {
+          rep.mergeWith(succ);
+          numCollapsed++;
         }
       }
     }

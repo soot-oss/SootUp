@@ -60,9 +60,6 @@ public class InternalEdges {
     this.typeHierarchy = typeHierarchy;
   }
 
-  // TODO: SPARK_OPT simple-edges-bidirectional
-  // TODO: Inv edges
-
   public void addEdge(Node source, Node target) {
     source = source.getReplacement();
     target = target.getReplacement();

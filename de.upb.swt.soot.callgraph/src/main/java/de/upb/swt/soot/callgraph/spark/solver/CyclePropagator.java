@@ -32,5 +32,7 @@ public class CyclePropagator implements Propagator {
   }
 
   @Override
-  public void propagate() {}
+  public void propagate() {
+    throw new UnsupportedOperationException();
+  }
 }

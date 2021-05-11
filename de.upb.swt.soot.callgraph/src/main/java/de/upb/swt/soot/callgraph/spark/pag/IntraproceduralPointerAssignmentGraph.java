@@ -28,7 +28,6 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
 import java.util.ArrayDeque;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import javax.annotation.Nonnull;
@@ -38,7 +37,6 @@ import org.apache.commons.lang3.tuple.Pair;
 public class IntraproceduralPointerAssignmentGraph {
 
   private final PointerAssignmentGraph pag;
-  private final List<Pair<Node, Node>> sourceTargetPairs; // a (target) = b (source)
   private final SootMethod method;
   private final MethodNodeFactory nodeFactory;
   private final Queue<Pair<Node, Node>> internalEdges =
@@ -52,7 +50,6 @@ public class IntraproceduralPointerAssignmentGraph {
     this.pag = pag;
     this.method = method;
     this.nodeFactory = new MethodNodeFactory(this);
-    this.sourceTargetPairs = new LinkedList<>();
     build();
   }
 

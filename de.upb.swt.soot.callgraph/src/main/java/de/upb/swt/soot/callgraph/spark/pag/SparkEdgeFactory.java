@@ -23,7 +23,6 @@ package de.upb.swt.soot.callgraph.spark.pag;
  */
 
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class SparkEdgeFactory {
 
@@ -39,7 +38,7 @@ public class SparkEdgeFactory {
         return new SparkEdge(EdgeType.STORE_EDGE);
       } else if (target instanceof NewInstanceNode) {
         // TODO: NewInstanceEdge
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
       } else {
         throw new RuntimeException("Invalid node type:" + target);
       }
@@ -47,7 +46,7 @@ public class SparkEdgeFactory {
       return new SparkEdge(EdgeType.LOAD_EDGE);
     } else if (source instanceof NewInstanceNode) {
       // TODO: assignInstanceEdge
-      throw new NotImplementedException();
+      throw new UnsupportedOperationException();
     } else {
       return new SparkEdge(EdgeType.ALLOCATION_EDGE);
     }

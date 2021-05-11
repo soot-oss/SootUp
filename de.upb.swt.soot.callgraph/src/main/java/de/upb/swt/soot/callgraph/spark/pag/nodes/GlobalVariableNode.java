@@ -36,6 +36,7 @@ public class GlobalVariableNode extends VariableNode {
     super(pag, variable, type);
   }
 
+  @Override
   public String toString() {
     return "GlobalVarNode " + variable;
   }

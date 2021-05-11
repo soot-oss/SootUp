@@ -31,7 +31,6 @@ import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
-import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
 import de.upb.swt.soot.callgraph.spark.solver.*;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -43,15 +42,13 @@ import java.util.Set;
 
 public class Spark implements PointsToAnalysis {
 
-  private View<? extends SootClass> view;
+  private View<? extends SootClass<?>> view;
   private CallGraph callGraph;
   private SparkOptions options;
 
   private PointerAssignmentGraph pag;
 
-  private PointsToAnalysis analysis;
-
-  private Spark(View<? extends SootClass> view, CallGraph callGraph, SparkOptions options) {
+  private Spark(View<? extends SootClass<?>> view, CallGraph callGraph, SparkOptions options) {
     this.view = view;
     this.callGraph = callGraph;
     this.options = options;
@@ -67,7 +64,6 @@ public class Spark implements PointsToAnalysis {
     // Propagate
     propagatePointerAssignmentGraph();
 
-    // TODO: VTA cg
     refineCallGraph();
   }
 
@@ -96,8 +92,6 @@ public class Spark implements PointsToAnalysis {
     if (options.isSimplifyOffline() && !options.isOnFlyCG()) {
       new EBBCollapser(pag).collapse();
     }
-    // old soot had if (true || opts.simplify_sccs() || opts.vta() || opts.simplify_offline())
-    // pag.cleanUpMerges();
   }
 
   private void propagatePointerAssignmentGraph() {
@@ -117,6 +111,7 @@ public class Spark implements PointsToAnalysis {
         break;
       case ALIAS:
         propagator = new AliasPropagator(pag);
+        break;
       case NONE:
         break;
       default:
@@ -165,7 +160,7 @@ public class Spark implements PointsToAnalysis {
       }
       return node.getPointsToSet();
     }
-    // TODO: propagator alias
+
     if (options.getPropagator() == PropagatorEnum.ALIAS) {
       throw new RuntimeException(
           "The alias edge propagator does not compute points-to information for instance fields!"
@@ -189,7 +184,7 @@ public class Spark implements PointsToAnalysis {
 
     private SparkOptions options;
 
-    private View<? extends SootClass> view;
+    private View<? extends SootClass<?>> view;
     private CallGraph callGraph;
 
     // VTA: Setting VTA to true has the effect of setting:
@@ -202,7 +197,7 @@ public class Spark implements PointsToAnalysis {
     // - types-for-sites to true,
     // - causes Spark to use a single points-to set for all variables
 
-    public Builder(View<? extends SootClass> view, CallGraph callGraph) {
+    public Builder(View<? extends SootClass<?>> view, CallGraph callGraph) {
       this.view = view;
       this.callGraph = callGraph;
       options = new SparkOptions();

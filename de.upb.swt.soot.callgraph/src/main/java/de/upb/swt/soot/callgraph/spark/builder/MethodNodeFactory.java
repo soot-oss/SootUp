@@ -25,7 +25,7 @@ package de.upb.swt.soot.callgraph.spark.builder;
 import de.upb.swt.soot.callgraph.spark.pag.IntraproceduralPointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
-import de.upb.swt.soot.callgraph.spark.pointsto.PointsToAnalysis;
+import de.upb.swt.soot.callgraph.spark.PointsToAnalysis;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
@@ -141,34 +141,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
               ((JInstanceFieldRef) rightOp).getBase().accept(MethodNodeFactory.this);
               pag.addDereference((VariableNode) getNode());
             } else if (rightOp instanceof JStaticFieldRef) {
-              JStaticFieldRef staticFieldRef = (JStaticFieldRef) rightOp;
-              staticFieldRef.getFieldSignature();
-              if (pag.getSparkOptions().isEmptiesAsAllocs()) {
-                String className =
-                    staticFieldRef.getFieldSignature().getDeclClassType().getClassName();
-                if (className.equals("java.util.Collections")) {
-                  if (staticFieldRef.getFieldSignature().getName().equals("EMPTY_SET")) {
-                    source = pag.getOrCreateAllocationNode(rtHashSet, rtHashSet, method);
-                  } else if (staticFieldRef.getFieldSignature().getName().equals("EMPTY_MAP")) {
-                    source = pag.getOrCreateAllocationNode(rtHashMap, rtHashMap, method);
-                  } else if (staticFieldRef.getFieldSignature().getName().equals("EMPTY_LIST")) {
-                    source = pag.getOrCreateAllocationNode(rtLinkedList, rtLinkedList, method);
-                  }
-                } else if (className.equals("java.util.Hashtable")) {
-                  if (staticFieldRef.getFieldSignature().getName().equals("emptyIterator")) {
-                    source =
-                        pag.getOrCreateAllocationNode(
-                            rtHashtableEmptyIterator, rtHashtableEmptyIterator, method);
-                  } else if (staticFieldRef
-                      .getFieldSignature()
-                      .getName()
-                      .equals("emptyEnumerator")) {
-                    source =
-                        pag.getOrCreateAllocationNode(
-                            rtHashtableEmptyEnumerator, rtHashtableEmptyEnumerator, method);
-                  }
-                }
-              }
+              source = handleStaticField((JStaticFieldRef) rightOp, source);
             }
             intraPag.addInternalEdge(source, target);
           }
@@ -185,11 +158,9 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
 
           @Override
           public void caseIdentityStmt(JIdentityStmt identityStmt) {
-            if (!(identityStmt.getLeftOp().getType() instanceof ReferenceType)) {
-              // TODO: why is Object <init> l0 unknown?
-              if (!identityStmt.getRightOp().getType().toString().equals("java.lang.Object")) {
+            if (!(identityStmt.getLeftOp().getType() instanceof ReferenceType) &&
+                    !identityStmt.getRightOp().getType().toString().equals("java.lang.Object")) {
                 return;
-              }
             }
             Value leftOp = identityStmt.getLeftOp();
             Value rightOp = identityStmt.getRightOp();
@@ -211,6 +182,38 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
         });
   }
 
+  private Node handleStaticField(JStaticFieldRef rightOp, Node source) {
+    JStaticFieldRef staticFieldRef = rightOp;
+    staticFieldRef.getFieldSignature();
+    if (pag.getSparkOptions().isEmptiesAsAllocs()) {
+      String className =
+          staticFieldRef.getFieldSignature().getDeclClassType().getClassName();
+      if (className.equals("java.util.Collections")) {
+        if (staticFieldRef.getFieldSignature().getName().equals("EMPTY_SET")) {
+          source = pag.getOrCreateAllocationNode(rtHashSet, rtHashSet, method);
+        } else if (staticFieldRef.getFieldSignature().getName().equals("EMPTY_MAP")) {
+          source = pag.getOrCreateAllocationNode(rtHashMap, rtHashMap, method);
+        } else if (staticFieldRef.getFieldSignature().getName().equals("EMPTY_LIST")) {
+          source = pag.getOrCreateAllocationNode(rtLinkedList, rtLinkedList, method);
+        }
+      } else if (className.equals("java.util.Hashtable")) {
+        if (staticFieldRef.getFieldSignature().getName().equals("emptyIterator")) {
+          source =
+              pag.getOrCreateAllocationNode(
+                  rtHashtableEmptyIterator, rtHashtableEmptyIterator, method);
+        } else if (staticFieldRef
+            .getFieldSignature()
+            .getName()
+            .equals("emptyEnumerator")) {
+          source =
+              pag.getOrCreateAllocationNode(
+                  rtHashtableEmptyEnumerator, rtHashtableEmptyEnumerator, method);
+        }
+      }
+    }
+    return source;
+  }
+
   private boolean canProcess(Stmt stmt) {
     // TODO: SPARK_OPT types-for-invoke
     if (stmt.containsInvokeExpr()) {
@@ -229,7 +232,6 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
    * @return
    */
   private boolean isReflectionNewInstance(AbstractInvokeExpr invokeExpr) {
-    // TODO: put this in a utility class?
     if (invokeExpr instanceof JVirtualInvokeExpr) {
       JVirtualInvokeExpr virtualInvokeExpr = (JVirtualInvokeExpr) invokeExpr;
       if (virtualInvokeExpr.getBase().getType() instanceof JavaClassType) {
