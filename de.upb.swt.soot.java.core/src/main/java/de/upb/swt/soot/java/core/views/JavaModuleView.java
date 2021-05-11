@@ -307,8 +307,6 @@ public class JavaModuleView extends JavaView {
         if (moduleSignature.equals(requireModuleSig)) {
           return true;
         } else {
-          // TODO: check more specific? e.g. for ModuleModifier.REQUIRES_TRANSITIVE ||
-          // require.getModifiers().contains(ModuleModifier.REQUIRES_MANDATED
           if (!visited.contains(requireModuleSig)) {
             stack.add(requireModuleSig);
           }

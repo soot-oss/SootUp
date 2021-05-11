@@ -3,6 +3,7 @@ package de.upb.swt.soot.java.bytecode.frontend;
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.*;
 
+import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -15,7 +16,9 @@ import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Arrays;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category(Java8Test.class)
 public class AsmMethodSourceTest {
 
   @Ignore // FIXME

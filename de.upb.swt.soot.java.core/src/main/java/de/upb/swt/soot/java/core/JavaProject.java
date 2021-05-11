@@ -113,6 +113,13 @@ public class JavaProject extends Project<JavaView, JavaSootClass> {
     @Nonnull
     public JavaProjectBuilder addClassPath(
         Collection<AnalysisInputLocation<JavaSootClass>> analysisInputLocations) {
+      // not really necessary as the distinction is currently handled via the type of
+      // inputlocation..
+      if (analysisInputLocations.stream()
+          .anyMatch(inputLocation -> inputLocation instanceof ModuleInfoAnalysisInputLocation)) {
+        throw new IllegalArgumentException(
+            "There is a ModuleInfoAnalysisInputLocation on the ClassPath.");
+      }
       this.analysisInputLocations.addAll(analysisInputLocations);
       return this;
     }
@@ -120,6 +127,12 @@ public class JavaProject extends Project<JavaView, JavaSootClass> {
     @Nonnull
     public JavaProjectBuilder addClassPath(
         AnalysisInputLocation<JavaSootClass> analysisInputLocation) {
+      // not really necessary as the distinction is currently handled via the type of
+      // inputlocation..
+      if (analysisInputLocation instanceof ModuleInfoAnalysisInputLocation) {
+        throw new IllegalArgumentException(
+            "There is a ModuleInfoAnalysisInputLocation on the ClassPath.");
+      }
       this.analysisInputLocations.add(analysisInputLocation);
       return this;
     }

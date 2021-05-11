@@ -166,7 +166,7 @@ public class AsmModuleSource extends JavaModuleInfo {
   }
 
   @Override
-  public Set<ModuleModifier> resolveModifiers() {
+  public Set<ModuleModifier> getModifiers() {
     return AsmUtil.getModuleModifiers(module.access);
   }
 }

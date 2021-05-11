@@ -417,26 +417,44 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Ignore("to implement")
+  @Test
   public void testSplitpackageAutomaticModules() {
-    // A module must not requires 2 or more modules, which have/export the same package
-    // TODO: adapt
+    // A module must not require 2 or more modules, which have/export the same package
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
             .addModulePath(
-                new JavaModulePathAnalysisInputLocation(testPath + "splitpackage_automatic-module"))
+                new JavaModulePathAnalysisInputLocation(
+                    testPath + "splitpackage_automatic-modules/jar"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
-    JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
-    Optional<JavaSootClass> aClass = view.getClass(targetClass);
-    assertTrue(aClass.isPresent());
-    fail("test module descriptor/rights");
+    assertEquals(3, view.getNamedModules().size());
+
+    ModulePackageName modmain =
+        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgmain", "modmain");
+    JavaClassType mainClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+    assertTrue(view.getClass(mainClass).isPresent());
+
+    JavaClassType v1Class =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("Version1", "pkgsplitted", "modauto1");
+    assertTrue(view.getClass(v1Class).isPresent());
+
+    JavaClassType v2Class =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("Version2", "pkgsplitted", "modauto2");
+    assertTrue(view.getClass(v2Class).isPresent());
+
+    assertTrue(view.getClass(modmain, v2Class).isPresent());
+    assertTrue(view.getClass(modmain, v2Class).isPresent());
+
+    fail("thats not how it goes");
   }
 
   @Ignore("to implement")
+  @Test
   public void testSplitpackage() {
     // A module must not requires 2 or more modules, which have/export the same package
     // TODO: adapt

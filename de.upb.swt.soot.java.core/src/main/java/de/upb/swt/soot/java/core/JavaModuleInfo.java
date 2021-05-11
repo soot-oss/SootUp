@@ -50,10 +50,11 @@ public abstract class JavaModuleInfo {
 
   public abstract Collection<JavaClassType> uses();
 
-  public abstract Set<ModuleModifier> resolveModifiers();
+  public Set<ModuleModifier> getModifiers() {
+    return Collections.emptySet();
+  }
 
   /** Represents the automatic module (e.g. a jar without a module-descriptor on the module path) */
-  // TODO: adapt properties?
   public static JavaModuleInfo createAutomaticModuleInfo(@Nonnull ModuleSignature moduleName) {
 
     return new JavaModuleInfo(true) {
@@ -66,21 +67,21 @@ public abstract class JavaModuleInfo {
       public Collection<ModuleReference> requires() {
         // can read all other modules and the unnamed module (modules on the classpath)
         throw new ResolveException(
-            "All modules can be required from the automatic module. Handle that seperately.");
+            "All modules can be required from the automatic module. Handle it seperately.");
       }
 
       @Override
       public Collection<PackageReference> exports() {
         // all Packages are exported
         throw new ResolveException(
-            "All Packages are exported in the automatic module. Handle that seperately.");
+            "All Packages are exported in the automatic module. Handle it seperately.");
       }
 
       @Override
       public Collection<PackageReference> opens() {
         // all Packages are open
         throw new ResolveException(
-            "All Packages are open in the automatic module. Handle that seperately.");
+            "All Packages are open in the automatic module. Handle it seperately.");
       }
 
       @Override
@@ -91,11 +92,6 @@ public abstract class JavaModuleInfo {
       @Override
       public Collection<JavaClassType> uses() {
         return Collections.emptyList();
-      }
-
-      @Override
-      public Set<ModuleModifier> resolveModifiers() {
-        return Collections.emptySet();
       }
     };
   }
@@ -131,11 +127,6 @@ public abstract class JavaModuleInfo {
       @Override
       public Collection<JavaClassType> uses() {
         return Collections.emptyList();
-      }
-
-      @Override
-      public Set<ModuleModifier> resolveModifiers() {
-        return Collections.emptySet();
       }
 
       @Override
@@ -178,9 +169,9 @@ public abstract class JavaModuleInfo {
   }
 
   public static class PackageReference {
-    @Nonnull private ModulePackageName packageName;
-    @Nonnull private EnumSet<ModuleModifier> modifers;
-    @Nonnull private Set<ModuleSignature> targetModules;
+    @Nonnull private final ModulePackageName packageName;
+    @Nonnull private final EnumSet<ModuleModifier> modifers;
+    @Nonnull private final Set<ModuleSignature> targetModules;
 
     public PackageReference(
         @Nonnull ModulePackageName packageName,
@@ -200,8 +191,7 @@ public abstract class JavaModuleInfo {
 
       if (targetModules.isEmpty()) {
         // no specific list of modules is given so this package is exported to all packages that are
-        // interested
-        // in it.
+        // interested in it.
         return true;
       }
 
@@ -239,13 +229,13 @@ public abstract class JavaModuleInfo {
 
   @Override
   public String toString() {
-    return getModuleSignature()
-        + " ("
-        + isAutomaticModule
-        + ")"
-        + " exports"
-        + exports()
-        + " requires"
-        + requires();
+    StringBuilder sb = new StringBuilder();
+    sb.append(getModuleSignature());
+    if (isAutomaticModule) {
+      sb.append("auto");
+    }
+    sb.append(" exports").append(exports());
+    sb.append(" requires").append(requires());
+    return sb.toString();
   }
 }
