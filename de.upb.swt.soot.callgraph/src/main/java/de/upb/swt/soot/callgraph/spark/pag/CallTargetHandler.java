@@ -30,6 +30,7 @@ import de.upb.swt.soot.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ReferenceType;
 import org.apache.commons.lang3.NotImplementedException;
@@ -51,12 +52,16 @@ public class CallTargetHandler {
     if (!edgeType.passesParameters()) {
       return;
     }
+    SootMethod sourceMethod = MethodUtil.methodSignatureToMethod(pag.getView(), source);
+    SootMethod targetMethod =
+        MethodUtil.methodSignatureToMethod(pag.getView(), target.getMethodSignature());
+    if (sourceMethod == null || targetMethod == null) {
+      return;
+    }
     IntraproceduralPointerAssignmentGraph srcIntraPag =
-        IntraproceduralPointerAssignmentGraph.getInstance(
-            pag, MethodUtil.methodSignatureToMethod(pag.getView(), source));
+        IntraproceduralPointerAssignmentGraph.getInstance(pag, sourceMethod);
     IntraproceduralPointerAssignmentGraph tgtIntraPag =
-        IntraproceduralPointerAssignmentGraph.getInstance(
-            pag, MethodUtil.methodSignatureToMethod(pag.getView(), target.getMethodSignature()));
+        IntraproceduralPointerAssignmentGraph.getInstance(pag, targetMethod);
     Pair<Node, Node> pval;
 
     if (edgeType.isExplicit()

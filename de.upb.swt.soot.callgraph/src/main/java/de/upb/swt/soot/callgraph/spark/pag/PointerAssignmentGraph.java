@@ -133,7 +133,7 @@ public class PointerAssignmentGraph {
       Pair<MethodSignature, CalleeMethodSignature> edge = iter.next();
       SootMethod tgt =
           MethodUtil.methodSignatureToMethod(view, edge.getValue().getMethodSignature());
-      if (tgt.isConcrete() || tgt.isNative()) {
+      if (tgt != null && (tgt.isConcrete() || tgt.isNative())) {
         IntraproceduralPointerAssignmentGraph intraPAG =
             IntraproceduralPointerAssignmentGraph.getInstance(this, tgt);
         intraPAG.addToPAG();
@@ -148,14 +148,16 @@ public class PointerAssignmentGraph {
     Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = new HashSet<>();
     for (MethodSignature caller : methodSigs) {
       SootMethod method = MethodUtil.methodSignatureToMethod(view, caller);
-      for (Stmt s : method.getBody().getStmtGraph().nodes()) {
-        if (s.containsInvokeExpr()) {
-          CalleeMethodSignature callee =
-              new CalleeMethodSignature(
-                  s.getInvokeExpr().getMethodSignature(),
-                  MethodUtil.findCallGraphEdgeType(s.getInvokeExpr()),
-                  s);
-          callEdges.add(new ImmutablePair<>(caller, callee));
+      if (method != null && method.hasBody()) {
+        for (Stmt s : method.getBody().getStmtGraph().nodes()) {
+          if (s.containsInvokeExpr()) {
+            CalleeMethodSignature callee =
+                new CalleeMethodSignature(
+                    s.getInvokeExpr().getMethodSignature(),
+                    MethodUtil.findCallGraphEdgeType(s.getInvokeExpr()),
+                    s);
+            callEdges.add(new ImmutablePair<>(caller, callee));
+          }
         }
       }
     }

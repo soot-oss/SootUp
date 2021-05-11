@@ -16,12 +16,10 @@ import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.views.View;
@@ -32,6 +30,7 @@ import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.util.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class PointerBenchCollectionsTest {
@@ -101,7 +100,7 @@ public class PointerBenchCollectionsTest {
       AllocationNode alloc = (AllocationNode) node;
       Map<Field, AllocationDotField> fields = alloc.getFields();
       for (AllocationDotField field : fields.values()) {
-        if(field.getPointsToSet()!=null){
+        if (field.getPointsToSet() != null) {
           arrayFieldPointsTo.addAll(field.getPointsToSet());
         }
       }
@@ -116,6 +115,117 @@ public class PointerBenchCollectionsTest {
     assertFalse(Sets.intersection(bPointsTo, cPointsTo).isEmpty());
   }
 
+  @Ignore
+  public void testList1() {
+    // TODO: fix stack underrun
+    setUp("collections.List1");
+    MethodSignature targetMethodSig =
+        identifierFactory.getMethodSignature(
+            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+    SootMethod targetMethod = getTargetMethod(targetMethodSig);
+    Map<Integer, Local> lineNumberToA =
+        getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
+    Map<Integer, Local> lineNumberToArrayList =
+        getLineNumberToLocalMap(targetMethod, "java.util.ArrayList", new ArrayList<>());
+
+    Local list = lineNumberToArrayList.get(22);
+    Local a = lineNumberToA.get(23);
+    Local b = lineNumberToA.get(25);
+
+    Set<Node> listPointsTo = spark.getPointsToSet(list);
+
+    Set<Node> aPointsTo = spark.getPointsToSet(a);
+    Set<Node> bPointsTo = spark.getPointsToSet(b);
+
+    // a and list must not point to a common object
+    assertTrue(Sets.intersection(aPointsTo, listPointsTo).isEmpty());
+    // c and b must point to a common object
+    assertFalse(Sets.intersection(bPointsTo, aPointsTo).isEmpty());
+  }
+
+  @Ignore
+  public void testList2() {
+    // TODO: fix type mismatch
+    setUp("collections.List2");
+    MethodSignature targetMethodSig =
+        identifierFactory.getMethodSignature(
+            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+    SootMethod targetMethod = getTargetMethod(targetMethodSig);
+    Map<Integer, Local> lineNumberToA =
+        getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
+    Map<Integer, Local> lineNumberToLinkedList =
+        getLineNumberToLocalMap(targetMethod, "java.util.LinkedList", new ArrayList<>());
+
+    Local list = lineNumberToLinkedList.get(22);
+    Local a = lineNumberToA.get(23);
+    Local b = lineNumberToA.get(25);
+    Local c = lineNumberToA.get(28);
+
+    Set<Node> listPointsTo = spark.getPointsToSet(list);
+
+    Set<Node> aPointsTo = spark.getPointsToSet(a);
+    Set<Node> bPointsTo = spark.getPointsToSet(b);
+    Set<Node> cPointsTo = spark.getPointsToSet(c);
+
+    // a and list must not point to a common object
+    assertTrue(Sets.intersection(aPointsTo, listPointsTo).isEmpty());
+  }
+
+  @Ignore
+  public void testMap1() {
+    // TODO: fix stack underrun
+    setUp("collections.Map1");
+    MethodSignature targetMethodSig =
+        identifierFactory.getMethodSignature(
+            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+    SootMethod targetMethod = getTargetMethod(targetMethodSig);
+    Map<Integer, Local> lineNumberToA =
+        getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
+    Map<Integer, Local> lineNumberToHashMap =
+        getLineNumberToLocalMap(targetMethod, "java.util.HashMap", new ArrayList<>());
+
+    Local map = lineNumberToHashMap.get(22);
+    Local a = lineNumberToA.get(23);
+    Local b = lineNumberToA.get(25);
+    Local c = lineNumberToA.get(28);
+
+    Set<Node> mapPointsTo = spark.getPointsToSet(map);
+
+    Set<Node> aPointsTo = spark.getPointsToSet(a);
+    Set<Node> bPointsTo = spark.getPointsToSet(b);
+    Set<Node> cPointsTo = spark.getPointsToSet(c);
+
+    // a and list must not point to a common object
+    assertTrue(Sets.intersection(aPointsTo, mapPointsTo).isEmpty());
+  }
+
+  @Ignore
+  public void testSet1() {
+    // TODO: fix Multiple un-equal stacks
+    setUp("collections.Set1");
+    MethodSignature targetMethodSig =
+        identifierFactory.getMethodSignature(
+            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+    SootMethod targetMethod = getTargetMethod(targetMethodSig);
+    Map<Integer, Local> lineNumberToA =
+        getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
+    Map<Integer, Local> lineNumberToHashSet =
+        getLineNumberToLocalMap(targetMethod, "java.util.HashSet", new ArrayList<>());
+
+    Local set = lineNumberToHashSet.get(22);
+    Local a = lineNumberToA.get(23);
+    Local b = lineNumberToA.get(26);
+    Local c = lineNumberToA.get(24);
+
+    Set<Node> setPointsTo = spark.getPointsToSet(set);
+
+    Set<Node> aPointsTo = spark.getPointsToSet(a);
+    Set<Node> bPointsTo = spark.getPointsToSet(b);
+    Set<Node> cPointsTo = spark.getPointsToSet(c);
+
+    // a and list must not point to a common object
+    assertTrue(Sets.intersection(aPointsTo, setPointsTo).isEmpty());
+  }
 
   private Map<Integer, Local> getLineNumberToLocalMap(
       SootMethod sootMethod, String typeName, List<Local> params) {
@@ -134,22 +244,6 @@ public class PointerBenchCollectionsTest {
             }
           }
           res.put(line, (Local) def);
-        }
-      }
-    }
-    return res;
-  }
-
-  private Map<Integer, JArrayRef> getLineNumberToArrayRefMap(
-      SootMethod sootMethod, String typeName) {
-    final ImmutableStmtGraph stmtGraph = sootMethod.getBody().getStmtGraph();
-    Map<Integer, JArrayRef> res = new HashMap<>();
-    for (Stmt stmt : stmtGraph) {
-      int line = stmt.getPositionInfo().getStmtPosition().getFirstLine();
-      List<Value> defs = stmt.getDefs();
-      for (Value def : defs) {
-        if (def.getType().toString().equals(typeName) && def instanceof JArrayRef) {
-          res.put(line, (JArrayRef) def);
         }
       }
     }

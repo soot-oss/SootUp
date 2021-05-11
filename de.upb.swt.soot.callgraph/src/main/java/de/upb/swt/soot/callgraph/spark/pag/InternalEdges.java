@@ -120,7 +120,8 @@ public class InternalEdges {
   public boolean addAllocationEdge(AllocationNode source, VariableNode target) {
     if (typeHierarchy == null
         || target.getType() == null
-        || (source.getType().equals(target.getType()) || typeHierarchy.canCast(source.getType(), target.getType()))) {
+        || (source.getType().equals(target.getType())
+            || typeHierarchy.canCast(source.getType(), target.getType()))) {
       boolean isNew;
       isNew = allocationEdges.computeIfAbsent(source, v -> new HashSet<>()).add(target);
       isNew |= allocationEdgesInv.computeIfAbsent(target, v -> new HashSet<>()).add(source);

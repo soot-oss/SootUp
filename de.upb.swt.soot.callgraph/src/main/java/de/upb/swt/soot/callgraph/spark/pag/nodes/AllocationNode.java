@@ -74,8 +74,7 @@ public class AllocationNode extends Node {
         + '}';
   }
 
-  public Map<Field, AllocationDotField> getFields(){
+  public Map<Field, AllocationDotField> getFields() {
     return fields;
   }
-
 }
