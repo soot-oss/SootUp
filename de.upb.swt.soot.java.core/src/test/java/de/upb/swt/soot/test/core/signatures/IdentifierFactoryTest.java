@@ -333,43 +333,59 @@ public class IdentifierFactoryTest {
 
     Type byteSig = typeFactory.getType("byte");
     assertSame(byteSig, PrimitiveType.getByte());
-    assertSame("byte", byteSig.toString());
+    assertEquals("byte", byteSig.toString());
+    assertFalse(byteSig instanceof ClassType);
 
-    Type shortSig = typeFactory.getType("SHORT");
+    Type ByteSig = typeFactory.getType("Byte");
+    assertEquals("Byte", ByteSig.toString());
+    assertNotEquals(ByteSig, PrimitiveType.getByte());
+    assertTrue(ByteSig instanceof ClassType);
+
+    Type shortSig = typeFactory.getType("short");
     assertSame(shortSig, PrimitiveType.getShort());
-    assertSame("short", shortSig.toString());
+    assertEquals("short", shortSig.toString());
 
     Type intSig = typeFactory.getType("int");
     assertSame(intSig, PrimitiveType.getInt());
-    assertSame("int", intSig.toString());
+    assertEquals("int", intSig.toString());
 
-    Type longSig = typeFactory.getType("loNg");
+    Type IntSig = typeFactory.getType("Int");
+    assertNotEquals(IntSig, PrimitiveType.getInt());
+    assertEquals("Int", IntSig.toString());
+    assertTrue(IntSig instanceof ClassType);
+
+    Type longSig = typeFactory.getType("long");
     assertSame(longSig, PrimitiveType.getLong());
-    assertSame("long", longSig.toString());
+    assertEquals("long", longSig.toString());
 
-    Type floatSig = typeFactory.getType("floAt");
+    Type floatSig = typeFactory.getType("float");
     assertSame(floatSig, PrimitiveType.getFloat());
-    assertSame("float", floatSig.toString());
+    assertEquals("float", floatSig.toString());
 
-    Type doubleSig = typeFactory.getType("doUble");
+    Type doubleSig = typeFactory.getType("double");
     assertSame(doubleSig, PrimitiveType.getDouble());
-    assertSame("double", doubleSig.toString());
+    assertEquals("double", doubleSig.toString());
 
-    Type charSig = typeFactory.getType("chaR");
+    Type charSig = typeFactory.getType("char");
     assertSame(charSig, PrimitiveType.getChar());
-    assertSame("char", charSig.toString());
+    assertEquals("char", charSig.toString());
 
     Type boolSig = typeFactory.getType("boolean");
     assertSame(boolSig, PrimitiveType.getBoolean());
-    assertSame("boolean", boolSig.toString());
+    assertEquals("boolean", boolSig.toString());
 
-    Type nullSig = typeFactory.getType("nuLl");
+    Type BoolSig = typeFactory.getType("Boolean");
+    assertEquals("Boolean", BoolSig.toString());
+    assertNotEquals(BoolSig, PrimitiveType.getBoolean());
+    assertTrue(BoolSig instanceof ClassType);
+
+    Type nullSig = typeFactory.getType("null");
     assertSame(nullSig, NullType.getInstance());
-    assertSame("null", nullSig.toString());
+    assertEquals("null", nullSig.toString());
 
     Type voidSig = typeFactory.getType("void");
     assertSame(voidSig, VoidType.getInstance());
-    assertSame("void", voidSig.toString());
+    assertEquals("void", voidSig.toString());
   }
 
   @Test(expected = IllegalArgumentException.class)

@@ -1,7 +1,6 @@
 package de.upb.swt.soot.java.bytecode.frontend;
 
 import static junit.framework.TestCase.fail;
-import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootClass;

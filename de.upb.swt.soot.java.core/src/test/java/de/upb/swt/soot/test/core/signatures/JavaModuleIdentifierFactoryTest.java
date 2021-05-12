@@ -43,19 +43,13 @@ public class JavaModuleIdentifierFactoryTest extends IdentifierFactoryTest {
     assertSame(packageName1.getModuleSignature(), ModuleSignature.UNNAMED_MODULE);
   }
 
-  // @Test
-  // public void dispatchTest() {
-  // IdentifierFactory identifierFactory = new ModuleIdentifierFactory();
-  // ClassSignature classSignature1 = identifierFactory.getClassSignature("module-info","","myMod");
-  // assertTrue(classSignature1 instanceof ClassSignature);
-  // }
-
   @Test
   public void getPackageSignatureNamedModule() {
     JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
     ModulePackageName packageName1 = identifierFactory.getPackageSignature("java.lang", "myModule");
     assertTrue(packageName1 instanceof ModulePackageName);
     assertNotSame(packageName1.getModuleSignature(), ModuleSignature.UNNAMED_MODULE);
+    assertEquals(packageName1.getModuleSignature().toString(), "myModule");
   }
 
   @Test
@@ -65,8 +59,7 @@ public class JavaModuleIdentifierFactoryTest extends IdentifierFactoryTest {
         identifierFactory.getPackageSignature("java.lang", "myModule");
     ModulePackageName packageSignature2 =
         identifierFactory.getPackageSignature("java.lang.invoke", "myModule");
-    boolean sameObject = packageSignature1 == packageSignature2;
-    assertFalse(sameObject);
+    assertNotSame(packageSignature1, packageSignature2);
   }
 
   @Test
@@ -77,12 +70,8 @@ public class JavaModuleIdentifierFactoryTest extends IdentifierFactoryTest {
     ModulePackageName packageSignature2 =
         identifierFactory.getPackageSignature("java.lang", "myModule");
 
-    boolean samePackage = packageSignature1 == packageSignature2;
-    assertTrue(samePackage);
-
-    boolean sameModuleObject =
-        packageSignature1.getModuleSignature() == packageSignature2.getModuleSignature();
-    assertTrue(sameModuleObject);
+    assertSame(packageSignature1, packageSignature2);
+    assertSame(packageSignature1.getModuleSignature(), packageSignature2.getModuleSignature());
   }
 
   @Test
@@ -92,11 +81,12 @@ public class JavaModuleIdentifierFactoryTest extends IdentifierFactoryTest {
         identifierFactory.getPackageSignature("java.lang", "myModule1");
     ModulePackageName packageSignature2 =
         identifierFactory.getPackageSignature("java.lang", "myModule2");
-    boolean samePackage = packageSignature1 == packageSignature2;
-    assertFalse(samePackage);
-    boolean sameObject =
-        packageSignature1.getModuleSignature() == packageSignature2.getModuleSignature();
-    assertFalse(sameObject);
+
+    assertNotSame(packageSignature1, packageSignature2);
+    assertNotSame(packageSignature1.getModuleSignature(), packageSignature2.getModuleSignature());
+
+    assertSame(packageSignature1.getPackageName(), packageSignature2.getPackageName());
+    assertNotEquals(packageSignature1, packageSignature2);
   }
 
   @Test

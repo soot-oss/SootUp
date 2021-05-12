@@ -38,7 +38,7 @@ public class JrtFileSystemAnalysisInputLocationTest {
     final ClassType sig1 =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     final ClassType sig2 =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+        JavaModuleIdentifierFactory.getInstance().getClassType("System", "java.lang", "java.base");
 
     final Collection<? extends AbstractClassSource<?>> classSources =
         inputLocation.getClassSources(JavaModuleIdentifierFactory.getInstance());
