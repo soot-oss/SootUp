@@ -31,7 +31,7 @@ public class AsmMethodSourceTest {
 
     JavaProject javaProject =
         JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(
+            .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))
             .build();

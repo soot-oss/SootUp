@@ -298,7 +298,7 @@ public class JavaModuleView extends JavaView {
       JavaModuleInfo moduleInfo = moduleInfoOpt.get();
 
       if (moduleInfo.isAutomaticModule()) {
-        // automatic module can read everything but its not forwarding transitivity!
+        // automatic module can read everything but its not forwarding require transitive!
         continue;
       }
 
@@ -350,51 +350,4 @@ public class JavaModuleView extends JavaView {
     }
     return modules;
   }
-
-  /*
-  /**
-   * retrieves all visible classes starting from a module
-   * * /
-  @Nonnull
-  public synchronized Collection<JavaSootClass> getClasses(
-          @Nonnull ModuleSignature startModuleSignature, @Nonnull ClassType type) {
-
-    Optional<JavaModuleInfo> moduleInfoOpt = getModuleInfo(startModuleSignature);
-
-    if (!moduleInfoOpt.isPresent()) {
-      // bad
-      return Collections.emptyList();
-    }
-
-    JavaModuleInfo moduleInfo = moduleInfoOpt.get();
-    if( moduleInfo.isUnnamedModule() ){
-      return super.getClasses();
-    }else {
-      if (moduleInfo.isAutomaticModule()) {
-
-        return getProject().getInputLocations().stream()
-                .filter(inputLocation -> inputLocation instanceof ModuleInfoAnalysisInputLocation)
-                .map(
-                        location -> {
-                          ClassLoadingOptions classLoadingOptions =
-                                  classLoadingOptionsSpecifier.apply(location);
-                          if (classLoadingOptions != null) {
-                            return location.getClassSource(type, classLoadingOptions);
-                          } else {
-                            return location.getClassSource(type);
-                          }
-                        })
-                .filter(Optional::isPresent).map( cs -> buildClassFrom(cs.get()) )
-                .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
-
-      }else{
-        // explicit module
-       return super.getClass(type);
-
-      }
-    }
-
-
-  }
-  */
 }

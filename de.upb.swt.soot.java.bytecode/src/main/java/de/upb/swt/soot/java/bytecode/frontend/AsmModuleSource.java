@@ -97,7 +97,7 @@ public class AsmModuleSource extends JavaModuleInfo {
       }
       JavaModuleInfo.PackageReference reference =
           new JavaModuleInfo.PackageReference(
-              identifierFactory.getPackageSignature(
+              identifierFactory.getPackageName(
                   exportNode.packaze.replace('/', '.'), getModuleSignature().toString()),
               AsmUtil.getModuleModifiers(exportNode.access),
               modules);
@@ -120,7 +120,7 @@ public class AsmModuleSource extends JavaModuleInfo {
       }
       JavaModuleInfo.PackageReference reference =
           new JavaModuleInfo.PackageReference(
-              identifierFactory.getPackageSignature(
+              identifierFactory.getPackageName(
                   openNode.packaze.replace('/', '.'), getModuleSignature().toString()),
               AsmUtil.getModuleModifiers(openNode.access),
               modules);

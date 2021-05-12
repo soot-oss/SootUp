@@ -92,7 +92,7 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
       final @Nonnull String className,
       final @Nonnull String packageName,
       final @Nonnull String moduleName) {
-    PackageName packageIdentifier = getPackageSignature(packageName, moduleName);
+    PackageName packageIdentifier = getPackageName(packageName, moduleName);
     return new JavaClassType(className, packageIdentifier);
   }
 
@@ -119,7 +119,7 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
 
   @Override
   public ModulePackageName getPackageName(@Nonnull final String packageName) {
-    return getPackageSignature(packageName, ModuleSignature.UNNAMED_MODULE.getModuleName());
+    return getPackageName(packageName, ModuleSignature.UNNAMED_MODULE.getModuleName());
   }
 
   /**
@@ -133,7 +133,7 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
    * @throws NullPointerException if the given module name or package name is null. Use the empty
    *     string to denote the unnamed module or the default package.
    */
-  public ModulePackageName getPackageSignature(
+  public ModulePackageName getPackageName(
       @Nonnull final String packageName, @Nonnull final String moduleName) {
     String fqId = moduleName + "." + packageName;
     ModulePackageName packageSignature = (ModulePackageName) packages.get(fqId);

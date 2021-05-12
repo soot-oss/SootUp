@@ -22,6 +22,7 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 
+import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.Scope;
 import de.upb.swt.soot.core.SourceTypeSpecifier;
@@ -32,7 +33,6 @@ import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaModuleView;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
@@ -111,43 +111,17 @@ public class JavaProject extends Project<JavaView, JavaSootClass> {
     }
 
     @Nonnull
-    public JavaProjectBuilder addClassPath(
-        Collection<AnalysisInputLocation<JavaSootClass>> analysisInputLocations) {
-      // not really necessary as the distinction is currently handled via the type of
-      // inputlocation..
-      if (analysisInputLocations.stream()
-          .anyMatch(inputLocation -> inputLocation instanceof ModuleInfoAnalysisInputLocation)) {
-        throw new IllegalArgumentException(
-            "There is a ModuleInfoAnalysisInputLocation on the ClassPath.");
-      }
-      this.analysisInputLocations.addAll(analysisInputLocations);
-      return this;
-    }
-
-    @Nonnull
-    public JavaProjectBuilder addClassPath(
+    public JavaProjectBuilder addInputLocation(
         AnalysisInputLocation<JavaSootClass> analysisInputLocation) {
-      // not really necessary as the distinction is currently handled via the type of
-      // inputlocation..
-      if (analysisInputLocation instanceof ModuleInfoAnalysisInputLocation) {
-        throw new IllegalArgumentException(
-            "There is a ModuleInfoAnalysisInputLocation on the ClassPath.");
-      }
       this.analysisInputLocations.add(analysisInputLocation);
       return this;
     }
 
     @Nonnull
-    public JavaProjectBuilder addModulePath(
-        Collection<AnalysisInputLocation<JavaSootClass>> analysisInputLocation) {
-      analysisInputLocations.addAll(analysisInputLocation);
-      return this;
-    }
-
-    @Nonnull
-    public JavaProjectBuilder addModulePath(
-        AnalysisInputLocation<JavaSootClass> analysisInputLocation) {
-      analysisInputLocations.add(analysisInputLocation);
+    public JavaProjectBuilder addInputLocation(
+        ModuleInfoAnalysisInputLocation analysisInputLocation) {
+      Preconditions.checkArgument(language.getVersion() > 8);
+      this.analysisInputLocations.add(analysisInputLocation);
       return this;
     }
 

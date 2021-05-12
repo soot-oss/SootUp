@@ -88,7 +88,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     // Create a project
     JavaProject p =
         JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(new JavaClassPathAnalysisInputLocation(warFile))
+            .addInputLocation(new JavaClassPathAnalysisInputLocation(warFile))
             .build();
 
     // Get the view
@@ -199,7 +199,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     JavaView v =
         JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(pathBasedNamespace)
+            .addInputLocation(pathBasedNamespace)
             .build()
             .createOnDemandView();
     // test some standard jre classes

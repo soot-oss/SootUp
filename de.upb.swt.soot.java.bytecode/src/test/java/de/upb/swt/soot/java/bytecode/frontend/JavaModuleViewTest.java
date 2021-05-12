@@ -26,7 +26,7 @@ public class JavaModuleViewTest {
   public void testGeneralClassReceivalFromModule() {
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(new JrtFileSystemAnalysisInputLocation())
+            .addInputLocation(new JrtFileSystemAnalysisInputLocation())
             .build();
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
     JavaClassType targetClass =
@@ -57,7 +57,7 @@ public class JavaModuleViewTest {
 
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addClassPath(
+            .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     "../shared-test-resources/miniTestSuite/java6/binary/"))
             .build();
@@ -83,7 +83,8 @@ public class JavaModuleViewTest {
   public void testJarModule() {
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(new JavaModulePathAnalysisInputLocation(testPath + "uses-provides/jar/"))
+            .addInputLocation(
+                new JavaModulePathAnalysisInputLocation(testPath + "uses-provides/jar/"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
@@ -102,7 +103,7 @@ public class JavaModuleViewTest {
   public void testExplodedModule() {
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(
+            .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "uses-provides/exploded_module/"))
             .build();
@@ -124,18 +125,18 @@ public class JavaModuleViewTest {
     // transitive: modmain -> mod.annotations
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(new JavaModulePathAnalysisInputLocation(testPath + "annotations/jar"))
+            .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "annotations/jar"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
     ModulePackageName modMain =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgmain", "modmain");
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
     ModulePackageName modB =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgb", "modb");
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "modb");
     ModulePackageName modAnnotations =
         JavaModuleIdentifierFactory.getInstance()
-            .getPackageSignature("pkgannotations", "mod.annotations");
+            .getPackageName("pkgannotations", "mod.annotations");
 
     assertTrue(view.getModuleInfo(modMain.getModuleSignature()).isPresent());
     assertTrue(view.getModuleInfo(modB.getModuleSignature()).isPresent());
@@ -167,19 +168,19 @@ public class JavaModuleViewTest {
 
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(
+            .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(testPath + "requires-static/jar"))
-            .addClassPath(new JrtFileSystemAnalysisInputLocation())
+            .addInputLocation(new JrtFileSystemAnalysisInputLocation())
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
     ModulePackageName modMain =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgmain", "modmain");
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
     ModulePackageName modB =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgb", "modb");
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "modb");
     ModulePackageName modC =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgc", "modc");
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgc", "modc");
 
     assertTrue(view.getModuleInfo(modMain.getModuleSignature()).isPresent());
     assertTrue(view.getModuleInfo(modB.getModuleSignature()).isPresent());
@@ -210,18 +211,18 @@ public class JavaModuleViewTest {
 
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(
+            .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
     ModulePackageName modMain =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgmain", "modmain");
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
     ModulePackageName modB =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgb", "modb");
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "modb");
     ModulePackageName modC =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgc", "modc");
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgc", "modc");
 
     Optional<JavaModuleInfo> moduleInfoMain = view.getModuleInfo(modMain.getModuleSignature());
     assertTrue(moduleInfoMain.isPresent());
@@ -263,20 +264,20 @@ public class JavaModuleViewTest {
 
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(
+            .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "requires_exports_requires-transitive_exports-to/jar"))
-            .addModulePath(new JrtFileSystemAnalysisInputLocation())
+            .addInputLocation(new JrtFileSystemAnalysisInputLocation())
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
     ModulePackageName modMain =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgmain", "modmain");
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
     ModulePackageName modA =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkga", "moda");
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkga", "moda");
     ModulePackageName modC =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgc", "modc");
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgc", "modc");
 
     // ModMain
     Optional<JavaModuleInfo> moduleInfoMain = view.getModuleInfo(modMain.getModuleSignature());
@@ -316,7 +317,7 @@ public class JavaModuleViewTest {
     // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(new JavaModulePathAnalysisInputLocation(testPath + "reflection"))
+            .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "reflection"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
@@ -333,7 +334,7 @@ public class JavaModuleViewTest {
     // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(new JavaModulePathAnalysisInputLocation(testPath + "uses-provides"))
+            .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "uses-provides"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
@@ -350,7 +351,7 @@ public class JavaModuleViewTest {
     // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(
+            .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(testPath + "uses-provides_uses-in-client"))
             .build();
 
@@ -369,7 +370,7 @@ public class JavaModuleViewTest {
     // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(
+            .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "derived_private-package-protected"))
             .build();
@@ -388,7 +389,7 @@ public class JavaModuleViewTest {
     // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(new JavaModulePathAnalysisInputLocation(testPath + "exceptions"))
+            .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "exceptions"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
@@ -405,7 +406,8 @@ public class JavaModuleViewTest {
     // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(new JavaModulePathAnalysisInputLocation(testPath + "interface-callback"))
+            .addInputLocation(
+                new JavaModulePathAnalysisInputLocation(testPath + "interface-callback"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
@@ -418,11 +420,12 @@ public class JavaModuleViewTest {
   }
 
   @Test
+  @Ignore
   public void testSplitpackageAutomaticModules() {
     // A module must not require 2 or more modules, which have/export the same package
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(
+            .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "splitpackage_automatic-modules/jar"))
             .build();
@@ -432,7 +435,7 @@ public class JavaModuleViewTest {
     assertEquals(3, view.getNamedModules().size());
 
     ModulePackageName modmain =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgmain", "modmain");
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
     JavaClassType mainClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
     assertTrue(view.getClass(mainClass).isPresent());
@@ -460,7 +463,7 @@ public class JavaModuleViewTest {
     // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(new JavaModulePathAnalysisInputLocation(testPath + "splitpackage"))
+            .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "splitpackage"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
@@ -478,7 +481,7 @@ public class JavaModuleViewTest {
     // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(new JavaModulePathAnalysisInputLocation(testPath + "hiddenmain"))
+            .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "hiddenmain"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
@@ -494,10 +497,10 @@ public class JavaModuleViewTest {
   public void testAccessUnnamedModuleFromAutomaticModule() {
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(
+            .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "unnamed-module_access-from-automatic-module/jar/modmain.auto.jar"))
-            .addClassPath(
+            .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     testPath + "unnamed-module_access-from-automatic-module/jar/cpa.jar"))
             .build();
@@ -520,32 +523,31 @@ public class JavaModuleViewTest {
 
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(
+            .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "unnamed-module_access-from-explicit-module/jar/modb.jar"))
-            .addModulePath(
+            .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "unnamed-module_access-from-explicit-module/jar/modmain.jar"))
-            .addClassPath(
+            .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     testPath + "unnamed-module_access-from-explicit-module/jar/cpb.jar"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
-    ModulePackageName cpb =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgb", "");
+    ModulePackageName cpb = JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "");
     JavaModuleInfo moduleInfo_cpb = view.getModuleInfo(cpb.getModuleSignature()).get();
     assertTrue(moduleInfo_cpb.isUnnamedModule());
 
     ModulePackageName pkgbModb =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgb", "modb");
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "modb");
     JavaModuleInfo moduleInfo_pkgbModb = view.getModuleInfo(pkgbModb.getModuleSignature()).get();
     System.out.println(moduleInfo_pkgbModb);
     assertFalse(moduleInfo_pkgbModb.isUnnamedModule());
 
     ModulePackageName modmain =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgcpmain", "modmain");
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgcpmain", "modmain");
     JavaModuleInfo moduleInfo_cpmain = view.getModuleInfo(modmain.getModuleSignature()).get();
     assertFalse(moduleInfo_cpmain.isUnnamedModule());
 
@@ -568,13 +570,13 @@ public class JavaModuleViewTest {
 
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addModulePath(
+            .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "unnamed-module_accessing-module-path/jar/modb.jar"))
-            .addClassPath(
+            .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     testPath + "unnamed-module_accessing-module-path/jar/cpb.jar"))
-            .addClassPath(
+            .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     testPath + "unnamed-module_accessing-module-path/jar/cpmain.jar"))
             .build();
@@ -582,18 +584,17 @@ public class JavaModuleViewTest {
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
     ModulePackageName pkgbModb =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgb", "modb");
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "modb");
     JavaModuleInfo moduleInfo_pkgbModb = view.getModuleInfo(pkgbModb.getModuleSignature()).get();
     System.out.println(moduleInfo_pkgbModb);
     assertFalse(moduleInfo_pkgbModb.isUnnamedModule());
 
-    ModulePackageName cpb =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgb", "");
+    ModulePackageName cpb = JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "");
     JavaModuleInfo moduleInfo_cpb = view.getModuleInfo(cpb.getModuleSignature()).get();
     assertTrue(moduleInfo_cpb.isUnnamedModule());
 
     ModulePackageName cpmain =
-        JavaModuleIdentifierFactory.getInstance().getPackageSignature("pkgcpmain", "");
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgcpmain", "");
     JavaModuleInfo moduleInfo_cpmain = view.getModuleInfo(cpmain.getModuleSignature()).get();
     assertTrue(moduleInfo_cpmain.isUnnamedModule());
 

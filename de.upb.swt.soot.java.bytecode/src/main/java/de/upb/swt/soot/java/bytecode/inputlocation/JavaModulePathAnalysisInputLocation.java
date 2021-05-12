@@ -87,8 +87,8 @@ public class JavaModulePathAnalysisInputLocation
 
     // new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors())
     Set<AbstractClassSource<JavaSootClass>> found = new HashSet<>();
-    for (ModuleSignature module : moduleFinder.discoverAllModules()) {
-      AnalysisInputLocation<JavaSootClass> inputLocation = moduleFinder.discoverModule(module);
+    for (ModuleSignature module : moduleFinder.getAllModules()) {
+      AnalysisInputLocation<JavaSootClass> inputLocation = moduleFinder.getModule(module);
       JavaModuleIdentifierFactory identifierFactoryWrapper =
           (JavaModuleIdentifierFactory) identifierFactory;
       if (inputLocation == null) {
@@ -116,7 +116,7 @@ public class JavaModulePathAnalysisInputLocation
     ModuleSignature modulename =
         ((ModulePackageName) klassType.getPackageName()).getModuleSignature();
     // lookup the ns for the class provider from the cache
-    AnalysisInputLocation<JavaSootClass> inputLocation = moduleFinder.discoverModule(modulename);
+    AnalysisInputLocation<JavaSootClass> inputLocation = moduleFinder.getModule(modulename);
 
     if (inputLocation == null) {
       return Optional.empty();

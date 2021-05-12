@@ -87,14 +87,14 @@ public class ModuleFinder {
 
   public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
     if (!isFullyResolved()) {
-      discoverAllModules();
+      getAllModules();
     }
     return Optional.ofNullable(moduleInfoMap.get(sig));
   }
 
   public Set<ModuleSignature> getModules() {
     if (!isFullyResolved()) {
-      discoverAllModules();
+      getAllModules();
     }
     return Collections.unmodifiableSet(moduleInfoMap.keySet());
   }
@@ -106,7 +106,7 @@ public class ModuleFinder {
    * @return the input location that resolves classes contained in the module
    */
   @Nullable
-  public AnalysisInputLocation<JavaSootClass> discoverModule(@Nonnull ModuleSignature moduleName) {
+  public AnalysisInputLocation<JavaSootClass> getModule(@Nonnull ModuleSignature moduleName) {
 
     // discover all system's modules if they are not loaded already as they are always existing in
     // java
@@ -142,7 +142,7 @@ public class ModuleFinder {
    * @return the names of all modules found
    */
   @Nonnull
-  public Collection<ModuleSignature> discoverAllModules() {
+  public Collection<ModuleSignature> getAllModules() {
 
     while (!isFullyResolved()) {
       discoverModulesIn(modulePathEntries.get(next++));
