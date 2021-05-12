@@ -35,13 +35,11 @@ import de.upb.swt.soot.java.core.ModuleInfoAnalysisInputLocation;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * An implementation of the {@link AnalysisInputLocation} interface for the Java modulepath. Handles
@@ -91,16 +89,17 @@ public class JavaModulePathAnalysisInputLocation
     Set<AbstractClassSource<JavaSootClass>> found = new HashSet<>();
     for (ModuleSignature module : moduleFinder.discoverAllModules()) {
       AnalysisInputLocation<JavaSootClass> inputLocation = moduleFinder.discoverModule(module);
-      IdentifierFactory identifierFactoryWrapper = identifierFactory;
+      JavaModuleIdentifierFactory identifierFactoryWrapper =
+          (JavaModuleIdentifierFactory) identifierFactory;
       if (inputLocation == null) {
         continue;
       }
-      if (!(inputLocation instanceof JrtFileSystemAnalysisInputLocation)) {
+      if (!(inputLocation instanceof JavaModulePathAnalysisInputLocation)) {
         /*
          * we need a wrapper to create correct types for the found classes, all other ignore modules by default, or have
          * no clue about modules.
          */
-        identifierFactoryWrapper = new IdentifierFactoryWrapper(identifierFactoryWrapper, module);
+        identifierFactoryWrapper = JavaModuleIdentifierFactory.getInstance(module);
       }
       found.addAll(inputLocation.getClassSources(identifierFactoryWrapper));
     }
@@ -123,38 +122,5 @@ public class JavaModulePathAnalysisInputLocation
       return Optional.empty();
     }
     return inputLocation.getClassSource(klassType);
-  }
-
-  // TODO: [ms] make it publically available as this is a general use case to enhance the
-  // IdentifierFactory with a given moduleSignature..
-  private static class IdentifierFactoryWrapper extends JavaModuleIdentifierFactory {
-
-    private final IdentifierFactory factory;
-    private final ModuleSignature moduleSignature;
-
-    private IdentifierFactoryWrapper(IdentifierFactory factory, ModuleSignature moduleSignature) {
-      this.factory = factory;
-      this.moduleSignature = moduleSignature;
-    }
-
-    @Override
-    @Nonnull
-    public JavaClassType fromPath(@Nonnull Path file) {
-      if (factory instanceof JavaModuleIdentifierFactory) {
-        JavaModuleIdentifierFactory moduleSignatureFactory = (JavaModuleIdentifierFactory) factory;
-        String fullyQualifiedName =
-            FilenameUtils.removeExtension(file.toString()).replace('/', '.');
-        String packageName = "";
-        int index = fullyQualifiedName.lastIndexOf(".");
-        String className = fullyQualifiedName;
-        if (index > 0) {
-          className = fullyQualifiedName.substring(index);
-          packageName = fullyQualifiedName.substring(0, index);
-        }
-        return moduleSignatureFactory.getClassType(
-            className, packageName, moduleSignature.getModuleName());
-      }
-      return (JavaClassType) factory.fromPath(file);
-    }
   }
 }

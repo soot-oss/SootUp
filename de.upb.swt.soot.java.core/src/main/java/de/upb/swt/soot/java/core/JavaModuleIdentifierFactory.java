@@ -26,9 +26,11 @@ import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
+import org.apache.commons.io.FilenameUtils;
 
 public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
 
@@ -41,6 +43,21 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
 
   public static JavaModuleIdentifierFactory getInstance() {
     return INSTANCE;
+  }
+
+  public static JavaModuleIdentifierFactory getInstance(@Nonnull String module) {
+    return getInstance(getModuleSignature(module));
+  }
+
+  private static final Map<ModuleSignature, JavaModuleIdentifierFactory>
+      moduleIdentifierFactoryWrapper = new HashMap<>();
+
+  public static JavaModuleIdentifierFactory getInstance(@Nonnull ModuleSignature moduleSignature) {
+    return moduleIdentifierFactoryWrapper.computeIfAbsent(
+        moduleSignature,
+        methodSignature -> {
+          return new IdentifierFactoryWrapper(moduleSignature);
+        });
   }
 
   static {
@@ -126,5 +143,28 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
       packages.put(fqId, packageSignature);
     }
     return packageSignature;
+  }
+
+  private static class IdentifierFactoryWrapper extends JavaModuleIdentifierFactory {
+
+    @Nonnull private final ModuleSignature moduleSignature;
+
+    private IdentifierFactoryWrapper(@Nonnull ModuleSignature moduleSignature) {
+      this.moduleSignature = moduleSignature;
+    }
+
+    @Override
+    @Nonnull
+    public JavaClassType fromPath(@Nonnull Path file) {
+      String fullyQualifiedName = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
+      String packageName = "";
+      int index = fullyQualifiedName.lastIndexOf(".");
+      String className = fullyQualifiedName;
+      if (index > 0) {
+        className = fullyQualifiedName.substring(index);
+        packageName = fullyQualifiedName.substring(0, index);
+      }
+      return getClassType(className, packageName, moduleSignature.getModuleName());
+    }
   }
 }
