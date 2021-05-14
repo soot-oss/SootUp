@@ -4,24 +4,23 @@ class SwitchExprWithoutBreak {
     String s = "";
 
     // new arrow syntax, will not fall through
-    s += switch (k) {
+    s = switch (k) {
       case 1 -> "single";
       case 2, 3 -> "double";
       default -> "somethingElse";
     };
 
     // new arrow syntax + code block with new yield statement
-    s += switch (k) {
-      case 1  -> {
-        int temp = k + 5;
-        yield temp;
+    s = switch (k) {
+      case 1 -> {
+        yield "single";
       }
       case 2, 3 -> "double";
       default -> "somethingElse";
     };
 
     // old syntax with new yield statement
-    s += switch(k) {
+    s = switch(k) {
       case 1:
         yield "no fall through";
       case 2,3:
