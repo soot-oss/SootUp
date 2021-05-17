@@ -29,18 +29,22 @@ import org.antlr.v4.runtime.*;
 
 public class JimpleConverter {
 
-  final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-  private JimpleConverterUtil util;
-  private Path path;
+  @Nonnull final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+  @Nonnull private JimpleConverterUtil util;
+  @Nonnull private Path path;
 
   public OverridingClassSource run(
-      CharStream charStream, AnalysisInputLocation<?> inputlocation, Path sourcePath) {
+      @Nonnull CharStream charStream,
+      @Nonnull AnalysisInputLocation<?> inputlocation,
+      @Nonnull Path sourcePath) {
     return run(
         JimpleConverterUtil.createJimpleParser(charStream, sourcePath), inputlocation, sourcePath);
   }
 
   public OverridingClassSource run(
-      JimpleParser parser, AnalysisInputLocation<?> inputlocation, Path sourcePath) {
+      @Nonnull JimpleParser parser,
+      @Nonnull AnalysisInputLocation<?> inputlocation,
+      @Nonnull Path sourcePath) {
 
     path = sourcePath;
     util = new JimpleConverterUtil(sourcePath);
