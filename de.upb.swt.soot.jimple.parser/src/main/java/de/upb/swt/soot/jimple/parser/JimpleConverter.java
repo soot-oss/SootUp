@@ -34,7 +34,7 @@ public class JimpleConverter {
   private Path path;
 
   public OverridingClassSource run(
-      CharStream charStream, AnalysisInputLocation inputlocation, Path sourcePath) {
+      CharStream charStream, AnalysisInputLocation<?> inputlocation, Path sourcePath) {
     path = sourcePath;
     util = new JimpleConverterUtil(sourcePath);
 

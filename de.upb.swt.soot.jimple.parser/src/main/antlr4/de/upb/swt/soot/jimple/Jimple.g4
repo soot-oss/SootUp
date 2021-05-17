@@ -5,7 +5,7 @@ grammar Jimple;
  */
 
   LINE_COMMENT : '//' ~('\n'|'\r')* ->skip;
-  LONG_COMMENT : '/*' ~('*')* '*'+ ( ~('*' | '/')* ~('*')* '*'+)* '/' -> skip;
+  LONG_COMMENT : '/*' ~('*')* '*'+ ( ~('*' | '/')* ~('*')* '*'+)*? '/' -> skip;
 
   HYPHEN: ('"' | '\'');
   STRING_CONSTANT : HYPHEN STRING_CHAR* HYPHEN;

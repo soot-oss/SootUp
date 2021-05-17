@@ -1,37 +1,39 @@
 package de.upb.swt.soot.jimple.parser;
 
 import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
-import de.upb.swt.soot.core.util.printer.Printer;
+import de.upb.swt.soot.core.signatures.MethodSubSignature;
+import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.jimple.JimpleParser;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.file.Paths;
+import java.util.Collections;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class JimpleConverterTest {
 
-  void checkJimpleClass(CharStream cs) {
+  SootClass<?> checkJimpleClass(CharStream cs) throws ResolveException {
 
     JimpleConverter jimpleVisitor = new JimpleConverter();
     final OverridingClassSource scs = jimpleVisitor.run(cs, null, Paths.get(""));
+    final SootClass<?> sc = new SootClass<>(scs, SourceType.Application);
+
+    /* print for debugging:
     StringWriter output = new StringWriter();
     Printer p = new Printer();
-    final SootClass sc = new SootClass(scs, SourceType.Application);
     p.printTo(sc, new PrintWriter(output));
-
     System.out.println(output);
+    */
+
+    return sc;
   }
 
   @Test
@@ -250,9 +252,25 @@ public class JimpleConverterTest {
     checkJimpleClass(cs);
   }
 
-  @Ignore
   @Test
-  // TODO: [ms] fix g4 file to allow a comment there
+  public void testNonGreeedyCommentEverywhere() {
+    CharStream cs =
+        CharStreams.fromString(
+            "public class BigTable extends Table \n {"
+                + " public void <init>(){} \n"
+                + "/* FirstComment */"
+                + "private void another(){} \n"
+                + "/* SecondComment */"
+                + "} \n");
+
+    SootClass<?> sc = checkJimpleClass(cs);
+    assertTrue(
+        sc.getMethod(
+                new MethodSubSignature("another", Collections.emptyList(), VoidType.getInstance()))
+            .isPresent());
+  }
+
+  @Test
   public void testLongCommentEverywhere() {
     CharStream cs =
         CharStreams.fromString(
@@ -313,7 +331,6 @@ public class JimpleConverterTest {
                 + "    }\n"
                 + "  }\n"
                 + "\n");
-    System.out.println(cs);
 
     checkJimpleClass(cs);
   }
@@ -335,7 +352,6 @@ public class JimpleConverterTest {
                 + "    }\n"
                 + "  }\n"
                 + "\n");
-    System.out.println(cs);
 
     checkJimpleClass(cs);
 
