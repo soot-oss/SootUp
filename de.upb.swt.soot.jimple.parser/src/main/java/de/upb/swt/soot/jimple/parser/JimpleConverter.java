@@ -35,14 +35,16 @@ public class JimpleConverter {
 
   public OverridingClassSource run(
       CharStream charStream, AnalysisInputLocation<?> inputlocation, Path sourcePath) {
+    return run(
+        JimpleConverterUtil.createJimpleParser(charStream, sourcePath), inputlocation, sourcePath);
+  }
+
+  public OverridingClassSource run(
+      JimpleParser parser, AnalysisInputLocation<?> inputlocation, Path sourcePath) {
+
     path = sourcePath;
     util = new JimpleConverterUtil(sourcePath);
 
-    if (charStream.size() == 0) {
-      throw new ResolveException("Empty File to parse.", sourcePath);
-    }
-
-    JimpleParser parser = JimpleConverterUtil.createJimpleParser(charStream, sourcePath);
     ClassVisitor classVisitor = new ClassVisitor();
     classVisitor.visit(parser.file());
 
