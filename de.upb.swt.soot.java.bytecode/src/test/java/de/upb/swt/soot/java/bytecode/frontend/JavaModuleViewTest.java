@@ -387,6 +387,7 @@ public class JavaModuleViewTest {
   @Ignore("to implement")
   public void testExceptions() {
     // TODO: adapt
+
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
             .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "exceptions"))
@@ -481,13 +482,13 @@ public class JavaModuleViewTest {
     // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "hiddenmain"))
+            .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "hiddenmain/jar"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
     JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
     fail("test module descriptor/rights");
