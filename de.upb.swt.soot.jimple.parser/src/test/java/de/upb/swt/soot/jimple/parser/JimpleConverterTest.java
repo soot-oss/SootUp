@@ -541,4 +541,34 @@ public class JimpleConverterTest {
             "public annotation interface android.support.'annotation'.SomeAnnotation extends java.lang.Object implements java.lang.'annotation'.Annotation\n {}");
     checkJimpleClass(cs);
   }
+
+  @Test(expected = RuntimeException.class)
+  public void testWholefile() {
+    CharStream cs =
+        CharStreams.fromString(
+            "import Medium.Table; \n"
+                + "public class BigTable extends Table \n {"
+                + " public void <init>(){} \n"
+                + "private void another(){} \n"
+                + "} \n"
+                + "bla bla \n"
+                + "\n");
+    checkJimpleClass(cs);
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void testFileMultipleClasses() {
+    CharStream cs =
+        CharStreams.fromString(
+            "import Medium.Table; \n"
+                + "public class BigTable extends Table \n {"
+                + " public void <init>(){} \n"
+                + "private void another(){} \n"
+                + "} \n"
+                + "public class AnotherTable extends Table \n {"
+                + " public void <init>(){} \n"
+                + "private void anotherChair(){} \n"
+                + "} \n");
+    checkJimpleClass(cs);
+  }
 }

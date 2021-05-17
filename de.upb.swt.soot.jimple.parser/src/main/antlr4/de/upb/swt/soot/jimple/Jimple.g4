@@ -111,7 +111,7 @@ grammar Jimple;
   BLANK :
     [ \t\r\n] ->skip;
 
-  CATCHALL_ERRORTOKEN : . ;
+  UNKNOWN : . ;
 
  /*
   * Parser Rules
