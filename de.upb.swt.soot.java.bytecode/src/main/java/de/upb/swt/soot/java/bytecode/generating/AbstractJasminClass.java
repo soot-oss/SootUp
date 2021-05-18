@@ -22,7 +22,6 @@ package de.upb.swt.soot.java.bytecode.generating;
  * #L%
  */
 
-import com.google.common.graph.ElementOrder;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
 import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
@@ -93,7 +92,7 @@ public abstract class AbstractJasminClass {
   }
 
   public static String jasminDescriptorOf(Type type) {
-    TypeVisitor sw;
+    TypeVisitor<String> sw;
 
     type.apply(
         sw =
@@ -163,7 +162,7 @@ public abstract class AbstractJasminClass {
               }
 
               @Override
-              public void caseDefault(ElementOrder.Type t) {
+              public void caseDefault(Type t) {
                 // TODO [ms] ?
 
               }
