@@ -34,6 +34,7 @@ public final class JCmpgExpr extends AbstractIntBinopExpr implements Copyable {
     super(op1, op2);
   }
 
+  @Nonnull
   @Override
   public final String getSymbol() {
     return " " + Jimple.CMPG + " ";

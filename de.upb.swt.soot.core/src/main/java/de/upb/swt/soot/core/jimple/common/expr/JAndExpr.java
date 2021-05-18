@@ -34,6 +34,7 @@ public final class JAndExpr extends AbstractIntLongBinopExpr implements Copyable
     super(op1, op2);
   }
 
+  @Nonnull
   @Override
   public final String getSymbol() {
     return " & ";

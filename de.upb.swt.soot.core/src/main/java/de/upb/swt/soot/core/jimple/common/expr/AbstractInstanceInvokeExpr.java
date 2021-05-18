@@ -32,10 +32,10 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
 
-  private final ValueBox baseBox;
+  @Nonnull private final ValueBox baseBox;
 
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
-  private Value base;
+  // TODO: [ZW] new attribute: later if ValueBox is deleted, then add "final" to it.
+  @Nonnull private final Value base;
 
   AbstractInstanceInvokeExpr(
       @Nonnull ValueBox baseBox, @Nonnull MethodSignature methodSig, @Nonnull ValueBox[] argBoxes) {
@@ -45,10 +45,12 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
     this.base = baseBox.getValue();
   }
 
+  @Nonnull
   public Value getBase() {
     return baseBox.getValue();
   }
 
+  @Nonnull
   public ValueBox getBaseBox() {
     return baseBox;
   }

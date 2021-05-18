@@ -37,12 +37,12 @@ import javax.annotation.Nullable;
 
 public abstract class AbstractInvokeExpr implements Expr {
 
-  private final MethodSignature methodSignature;
-  private final ValueBox[] argBoxes;
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
-  private Value[] args;
+  @Nonnull private final MethodSignature methodSignature;
+  @Nullable private final ValueBox[] argBoxes;
+  // TODO: [ZW] new attribute: later if ValueBox is deleted, then add "final" to it.
+  @Nonnull private final Value[] args;
 
-  protected AbstractInvokeExpr(MethodSignature method, ValueBox[] argBoxes) {
+  protected AbstractInvokeExpr(@Nonnull MethodSignature method, @Nonnull ValueBox[] argBoxes) {
     this.methodSignature = method;
     this.argBoxes = argBoxes.length == 0 ? null : argBoxes;
 
@@ -50,6 +50,7 @@ public abstract class AbstractInvokeExpr implements Expr {
     this.args = Arrays.stream(argBoxes).map(ValueBox::getValue).toArray(Value[]::new);
   }
 
+  @Nonnull
   public MethodSignature getMethodSignature() {
     return this.methodSignature;
   }

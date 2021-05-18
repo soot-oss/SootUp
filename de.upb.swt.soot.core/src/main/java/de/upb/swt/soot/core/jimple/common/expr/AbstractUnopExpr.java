@@ -29,29 +29,31 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public abstract class AbstractUnopExpr implements Expr {
-  private final ValueBox opBox;
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
-  private Value op;
+  @Nonnull private final ValueBox opBox;
+  // TODO: [ZW] new attribute: later if ValueBox is deleted, then add "final" to it.
+  @Nonnull private final Value op;
 
-  AbstractUnopExpr(ValueBox opBox) {
+  AbstractUnopExpr(@Nonnull ValueBox opBox) {
     this.opBox = opBox;
     // new attribute: later if ValueBox is deleted, then fit the constructor.
     this.op = opBox.getValue();
   }
 
+  @Nonnull
   public Value getOp() {
     return opBox.getValue();
   }
 
+  @Nonnull
   public ValueBox getOpBox() {
     return opBox;
   }
 
   @Override
-  public final @Nonnull List<Value> getUses() {
+  @Nonnull
+  public List<Value> getUses() {
     List<Value> list = new ArrayList<>(op.getUses());
     list.add(op);
-
     return list;
   }
 }

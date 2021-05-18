@@ -36,6 +36,7 @@ public final class JUshrExpr extends AbstractIntLongBinopExpr implements Copyabl
     super(op1, op2);
   }
 
+  @Nonnull
   @Override
   public final String getSymbol() {
     return " >>> ";

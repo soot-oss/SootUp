@@ -34,6 +34,7 @@ public final class JSubExpr extends AbstractFloatBinopExpr implements Copyable {
     super(op1, op2);
   }
 
+  @Nonnull
   @Override
   public final String getSymbol() {
     return " - ";

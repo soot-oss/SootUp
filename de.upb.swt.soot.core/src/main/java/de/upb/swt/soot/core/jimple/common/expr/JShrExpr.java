@@ -37,6 +37,7 @@ public final class JShrExpr extends AbstractIntLongBinopExpr implements Copyable
     super(op1, op2);
   }
 
+  @Nonnull
   @Override
   public String getSymbol() {
     return " >> ";

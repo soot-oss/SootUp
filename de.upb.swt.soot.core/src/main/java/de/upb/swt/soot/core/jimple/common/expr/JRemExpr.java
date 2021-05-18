@@ -34,6 +34,7 @@ public final class JRemExpr extends AbstractFloatBinopExpr implements Copyable {
     super(op1, op2);
   }
 
+  @Nonnull
   @Override
   public String getSymbol() {
     return " % ";
