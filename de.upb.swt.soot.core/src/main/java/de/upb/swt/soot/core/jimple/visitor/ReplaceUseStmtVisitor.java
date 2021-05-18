@@ -72,8 +72,8 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
       ReplaceUseRefVisitor refVisitor = new ReplaceUseRefVisitor(oldUse, newUse);
       ((Ref) rValue).accept(refVisitor);
-      if (!refVisitor.getNewRef().equivTo(rValue)) {
-        newRValue = refVisitor.getNewRef();
+      if (!refVisitor.getResult().equivTo(rValue)) {
+        newRValue = refVisitor.getResult();
       }
 
     } else if (rValue instanceof Expr) {

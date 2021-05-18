@@ -33,11 +33,10 @@ import javax.annotation.Nonnull;
  *
  * @author Zun Wang
  */
-public class ReplaceUseRefVisitor extends AbstractRefVisitor {
+public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
 
   Value oldUse;
   Value newUse;
-  Ref newRef;
 
   public ReplaceUseRefVisitor(@Nonnull Value oldUse, @Nonnull Value newUse) {
     this.oldUse = oldUse;
@@ -52,7 +51,7 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
   @Override
   public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef ref) {
     if (newUse instanceof Local && ref.getBase().equivTo(oldUse)) {
-      newRef = ref.withBase(newUse);
+      setResult(ref.withBase(newUse));
     } else {
       defaultCase(ref);
     }
@@ -61,9 +60,9 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
   @Override
   public void caseArrayRef(@Nonnull JArrayRef ref) {
     if (newUse instanceof Local && ref.getBase().equivTo(oldUse)) {
-      newRef = ref.withBase(newUse);
+      setResult(ref.withBase(newUse));
     } else if (newUse instanceof Immediate && ref.getIndex().equivTo(oldUse)) {
-      newRef = ref.withIndex(newUse);
+      setResult(ref.withIndex(newUse));
     } else {
       defaultCase(ref);
     }
@@ -86,11 +85,6 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
 
   @Override
   public void defaultCase(@Nonnull Ref ref) {
-    newRef = ref;
-  }
-
-  @Nonnull
-  public Ref getNewRef() {
-    return newRef;
+    setResult(ref);
   }
 }
