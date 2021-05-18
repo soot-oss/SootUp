@@ -42,7 +42,9 @@ public interface TypeVisitor {
   void caseDoubleType(PrimitiveType t);
 
   void caseFloatType(PrimitiveType t);
+
   void caseArrayType(ArrayType t);
+
   void caseClassType(ClassType t);
 
   void caseNullType(NullType t);
@@ -52,5 +54,4 @@ public interface TypeVisitor {
   void caseUnknownType(UnknownType t);
 
   void caseDefault(Type t);
-
 }

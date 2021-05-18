@@ -27,7 +27,6 @@ import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;

@@ -25,7 +25,6 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;

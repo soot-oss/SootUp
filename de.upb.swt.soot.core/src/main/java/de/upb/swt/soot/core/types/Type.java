@@ -23,7 +23,6 @@ package de.upb.swt.soot.core.types;
  */
 
 import de.upb.swt.soot.core.jimple.visitor.TypeVisitor;
-
 import javax.annotation.Nonnull;
 
 /** Represents the signature of a Java type, e.g., a class, a primitive type, void, or null. */

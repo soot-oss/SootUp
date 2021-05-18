@@ -46,5 +46,4 @@ public interface ConstantVisitor extends Visitor {
   void caseMethodType(MethodType methodType);
 
   void defaultCase(Constant constant);
-
 }

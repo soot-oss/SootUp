@@ -25,7 +25,6 @@ package de.upb.swt.soot.core.jimple.common.ref;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.RefVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;

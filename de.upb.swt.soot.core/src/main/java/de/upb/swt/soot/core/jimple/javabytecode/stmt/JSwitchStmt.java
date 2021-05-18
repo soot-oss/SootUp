@@ -28,7 +28,6 @@ import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;

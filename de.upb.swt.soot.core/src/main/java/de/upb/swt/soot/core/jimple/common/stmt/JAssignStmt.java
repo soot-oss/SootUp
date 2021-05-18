@@ -27,7 +27,6 @@ import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;

@@ -507,11 +507,6 @@ public abstract class Jimple {
     return new JIfStmt(condition, posInfo);
   }
 
-  /** Constructs a IfStmt(Condition, UnitBox) grammar chunk. */
-  public static JIfStmt newIfStmt(Value condition, StmtPositionInfo posInfo) {
-    return new JIfStmt(condition, posInfo);
-  }
-
   /** Constructs a IdentityStmt(Local, IdentityRef) grammar chunk. */
   public static JIdentityStmt newIdentityStmt(
       Local local, IdentityRef identityRef, StmtPositionInfo posInfo) {
@@ -591,7 +586,7 @@ public abstract class Jimple {
     return new IdentityRefBox(value);
   }
 
-  public static ValueBox newConditionExprBox(Value condition) {
+  public static ValueBox newConditionExprBox(AbstractConditionExpr condition) {
     return new ConditionExprBox(condition);
   }
 

@@ -24,7 +24,6 @@ package de.upb.swt.soot.core.jimple.basic;
 
 import de.upb.swt.soot.core.jimple.visitor.Acceptor;
 import de.upb.swt.soot.core.jimple.visitor.ValueVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.types.Type;
