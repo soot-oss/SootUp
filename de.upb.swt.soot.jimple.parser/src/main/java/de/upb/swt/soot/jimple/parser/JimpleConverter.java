@@ -451,8 +451,9 @@ public class JimpleConverter {
                 }
 
               } else if (ctx.IF() != null) {
-                final Stmt stmt =
-                    Jimple.newIfStmt(valueVisitor.visitBool_expr(ctx.bool_expr()), pos);
+                AbstractConditionExpr value =
+                    (AbstractConditionExpr) valueVisitor.visitBool_expr(ctx.bool_expr());
+                final Stmt stmt = Jimple.newIfStmt(value, pos);
                 unresolvedBranches.put(
                     stmt, Collections.singletonList(ctx.goto_stmt().label_name.getText()));
                 return stmt;
@@ -722,6 +723,19 @@ public class JimpleConverter {
               "Unknown BinOp: " + binopctx.getText(),
               path,
               JimpleConverterUtil.buildPositionFromCtx(ctx));
+        }
+
+        @Override
+        public Value visitBool_expr(JimpleParser.Bool_exprContext ctx) {
+          Value value = super.visitBool_expr(ctx);
+          if (!(value instanceof AbstractConditionExpr)) {
+            throw new ResolveException(
+                "This is not a boolean expression",
+                path,
+                JimpleConverterUtil.buildPositionFromCtx(ctx));
+          }
+
+          return value;
         }
 
         @Override

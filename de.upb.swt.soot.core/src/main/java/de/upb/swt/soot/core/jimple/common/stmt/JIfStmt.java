@@ -28,6 +28,7 @@ import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
+import de.upb.swt.soot.core.jimple.common.expr.Expr;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.Copyable;
@@ -45,7 +46,7 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
 
   private final ValueBox conditionBox;
 
-  public JIfStmt(Value condition, StmtPositionInfo positionInfo) {
+  public JIfStmt(AbstractConditionExpr condition, StmtPositionInfo positionInfo) {
     this(Jimple.newConditionExprBox(condition), positionInfo);
   }
 
@@ -79,8 +80,8 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
     stmtPrinter.stmtRef(getTarget(stmtPrinter.getBody()), true);
   }
 
-  public Value getCondition() {
-    return conditionBox.getValue();
+  public Expr getCondition() {
+    return (Expr) conditionBox.getValue();
   }
 
   public ValueBox getConditionBox() {

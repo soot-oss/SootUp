@@ -23,7 +23,6 @@ package de.upb.swt.soot.core.jimple.basic;
  */
 
 import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
-import de.upb.swt.soot.core.jimple.common.expr.Expr;
 
 /**
  * Contains an expression used as a conditional.
