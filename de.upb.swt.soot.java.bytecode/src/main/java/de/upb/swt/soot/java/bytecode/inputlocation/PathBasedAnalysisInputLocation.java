@@ -20,6 +20,9 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.jar.Attributes;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -74,11 +77,12 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
    * differs between directories, archives (and possibly network path's in the future).
    *
    * @param path The path to search in
+   * @param javaVersion target version to analyze a multi-release jar
    * @return A {@link PathBasedAnalysisInputLocation} implementation dependent on the given {@link
    *     Path}'s FileSystem
    */
   public static @Nonnull PathBasedAnalysisInputLocation createForClassContainer(
-      @Nonnull Path path) {
+      @Nonnull Path path, int javaVersion) {
 
     if (Files.isDirectory(path)) {
       return new DirectoryBasedAnalysisInputLocation(path);
@@ -86,11 +90,40 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       if (PathUtils.hasExtension(path, FileType.WAR)) {
         return new WarArchiveAnalysisInputLocation(path);
       }
+
+      // check if mainfest contains multi release flag
+      if (isMultiReleaseJar(path)) {
+        return new MultiReleaseJarAnalysisInputLocation(path, javaVersion);
+      }
       return new ArchiveBasedAnalysisInputLocation(path);
     } else {
       throw new IllegalArgumentException(
           "Path has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
     }
+  }
+
+  private static boolean isMultiReleaseJar(Path path) {
+    try {
+      FileInputStream inputStream = new FileInputStream(path.toFile());
+      JarInputStream jarStream = new JarInputStream(inputStream);
+      Manifest mf = jarStream.getManifest();
+
+      if (mf == null) {
+        return false;
+      }
+
+      Attributes attributes = mf.getMainAttributes();
+
+      String value = attributes.getValue("Multi-Release");
+
+      return Boolean.TRUE.equals(Boolean.valueOf(value));
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return false;
   }
 
   @Nonnull
@@ -154,12 +187,105 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
   }
 
+  private static class MultiReleaseJarAnalysisInputLocation
+      extends ArchiveBasedAnalysisInputLocation {
+
+    private final int javaVersion;
+
+    private MultiReleaseJarAnalysisInputLocation(@Nonnull Path path, int javaVersion) {
+      super(path);
+      this.javaVersion = javaVersion;
+    }
+
+    @Override
+    @Nonnull
+    protected Optional<? extends AbstractClassSource<JavaSootClass>> getClassSourceInternal(
+        @Nonnull JavaClassType signature,
+        @Nonnull Path path,
+        @Nonnull ClassProvider<JavaSootClass> classProvider) {
+
+      int[] availableVersions = {};
+
+      try {
+        availableVersions =
+            Files.list(path.getFileSystem().getPath("/META-INF/versions/"))
+                .map(
+                    dir ->
+                        dir.getFileName()
+                            .toString()
+                            .substring(0, dir.getFileName().toString().length() - 1))
+                .mapToInt(Integer::new)
+                .sorted()
+                .toArray();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+      // return best match
+      for (int i = availableVersions.length - 1; i >= 0; i--) {
+        if (availableVersions[i] > this.javaVersion) continue;
+
+        final Path versionRoot =
+            path.getFileSystem().getPath("/META-INF/versions/" + availableVersions[i] + "/");
+
+        Path pathToClass =
+            versionRoot.resolve(
+                signature.toPath(classProvider.getHandledFileType(), path.getFileSystem()));
+
+        if (Files.exists(pathToClass)) {
+          return Optional.of(classProvider.createClassSource(this, pathToClass, signature));
+        }
+      }
+
+      // return base class instead
+      Path pathToClass =
+          path.resolve(signature.toPath(classProvider.getHandledFileType(), path.getFileSystem()));
+
+      if (!Files.exists(pathToClass)) {
+        return Optional.empty();
+      }
+
+      return Optional.of(classProvider.createClassSource(this, pathToClass, signature));
+    }
+
+    @Override
+    public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+        @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
+      try {
+        FileSystem fs = fileSystemCache.get(path);
+        final Path archiveRoot = fs.getPath("/");
+
+        return getClassSourceInternal(
+            (JavaClassType) type,
+            archiveRoot,
+            new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()));
+      } catch (ExecutionException e) {
+        throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
+      }
+    }
+
+    @Override
+    public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+        @Nonnull IdentifierFactory identifierFactory,
+        @Nonnull ClassLoadingOptions classLoadingOptions) {
+      try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
+        final Path archiveRoot = fs.getPath("/");
+        return walkDirectory(
+            archiveRoot,
+            identifierFactory,
+            new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()));
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
   private static class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
     // We cache the FileSystem instances as their creation is expensive.
     // The Guava Cache is thread-safe (see JavaDoc of LoadingCache) hence this
     // cache can be safely shared in a static variable.
-    private static final LoadingCache<Path, FileSystem> fileSystemCache =
+    protected static final LoadingCache<Path, FileSystem> fileSystemCache =
         CacheBuilder.newBuilder()
             .removalListener(
                 (RemovalNotification<Path, FileSystem> removalNotification) -> {

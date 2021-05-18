@@ -49,6 +49,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -60,9 +61,95 @@ import org.junit.experimental.categories.Category;
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test
+  public void multiReleaseJar() {
+    PathBasedAnalysisInputLocation mrjLocation =
+        PathBasedAnalysisInputLocation.createForClassContainer(mrj, 10);
+
+    final ClassType classType = getIdentifierFactory().getClassType("Utility");
+    final ClassType classType2 = getIdentifierFactory().getClassType("Main");
+
+    // for java10
+    Assert.assertEquals(
+        "/META-INF/versions/9/Utility.class",
+        mrjLocation.getClassSource(classType).get().getSourcePath().toString());
+    Assert.assertEquals(
+        "/Main.class", mrjLocation.getClassSource(classType2).get().getSourcePath().toString());
+
+    // assert that method is correctly resolved
+    Assert.assertTrue(
+        mrjLocation
+            .getClassSource(classType)
+            .get()
+            .buildClass(SourceType.Application)
+            .getMethod(
+                getIdentifierFactory()
+                    .getMethodSubSignature(
+                        "printVersion",
+                        getIdentifierFactory().getType("void"),
+                        Collections.emptyList()))
+            .get()
+            .getBody()
+            .toString()
+            .contains("java 9"));
+
+    // for java 9
+    mrjLocation = PathBasedAnalysisInputLocation.createForClassContainer(mrj, 9);
+    Assert.assertEquals(
+        "/META-INF/versions/9/Utility.class",
+        mrjLocation.getClassSource(classType).get().getSourcePath().toString());
+    Assert.assertEquals(
+        "/Main.class", mrjLocation.getClassSource(classType2).get().getSourcePath().toString());
+
+    // for java 8
+    mrjLocation = PathBasedAnalysisInputLocation.createForClassContainer(mrj, 8);
+    Assert.assertEquals(
+        "/Utility.class", mrjLocation.getClassSource(classType).get().getSourcePath().toString());
+    Assert.assertEquals(
+        "/Main.class", mrjLocation.getClassSource(classType2).get().getSourcePath().toString());
+    // assert that method is correctly resolved to base
+    Assert.assertTrue(
+        mrjLocation
+            .getClassSource(classType)
+            .get()
+            .buildClass(SourceType.Application)
+            .getMethod(
+                getIdentifierFactory()
+                    .getMethodSubSignature(
+                        "printVersion",
+                        getIdentifierFactory().getType("void"),
+                        Collections.emptyList()))
+            .get()
+            .getBody()
+            .toString()
+            .contains("java 8"));
+
+    // for unknown java version
+    mrjLocation = PathBasedAnalysisInputLocation.createForClassContainer(mrj, -1);
+    Assert.assertEquals(
+        "/Utility.class", mrjLocation.getClassSource(classType).get().getSourcePath().toString());
+    Assert.assertEquals(
+        "/Main.class", mrjLocation.getClassSource(classType2).get().getSourcePath().toString());
+
+    // for max int
+    mrjLocation = PathBasedAnalysisInputLocation.createForClassContainer(mrj, Integer.MAX_VALUE);
+    Assert.assertEquals(
+        "/META-INF/versions/9/Utility.class",
+        mrjLocation.getClassSource(classType).get().getSourcePath().toString());
+    Assert.assertEquals(
+        "/Main.class", mrjLocation.getClassSource(classType2).get().getSourcePath().toString());
+
+    // for min int
+    mrjLocation = PathBasedAnalysisInputLocation.createForClassContainer(mrj, Integer.MIN_VALUE);
+    Assert.assertEquals(
+        "/Utility.class", mrjLocation.getClassSource(classType).get().getSourcePath().toString());
+    Assert.assertEquals(
+        "/Main.class", mrjLocation.getClassSource(classType2).get().getSourcePath().toString());
+  }
+
+  @Test
   public void testJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.createForClassContainer(jar);
+        PathBasedAnalysisInputLocation.createForClassContainer(jar, -1);
 
     final ClassType class1 = getIdentifierFactory().getClassType("Employee", "ds");
     final ClassType mainClass = getIdentifierFactory().getClassType("MiniApp");
@@ -73,7 +160,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testWar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.createForClassContainer(war);
+        PathBasedAnalysisInputLocation.createForClassContainer(war, -1);
     final ClassType warClass1 = getIdentifierFactory().getClassType("SimpleWarRead");
     testClassReceival(pathBasedNamespace, warClass1, 2);
   }
@@ -192,7 +279,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   public void testRuntimeJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(
-            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"));
+            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), -1);
 
     final Collection<? extends AbstractClassSource> classSources =
         pathBasedNamespace.getClassSources(getIdentifierFactory());

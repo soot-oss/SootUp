@@ -143,7 +143,7 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
   private @Nonnull Optional<AnalysisInputLocation<JavaSootClass>> inputLocationForPath(
       @Nonnull Path path) {
     if (Files.exists(path) && (Files.isDirectory(path) || PathUtils.isArchive(path))) {
-      return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path));
+      return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path, -1));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
       return Optional.empty();

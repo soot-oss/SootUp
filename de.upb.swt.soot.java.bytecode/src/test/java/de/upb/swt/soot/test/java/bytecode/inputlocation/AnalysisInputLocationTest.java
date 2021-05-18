@@ -50,6 +50,9 @@ public abstract class AnalysisInputLocationTest {
   final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
   final String jarFile = jar.toString();
 
+  final Path mrj = Paths.get("../shared-test-resources/multi-release-jar/mrjar.jar");
+  final String mrjFile = mrj.toString();
+
   private IdentifierFactory identifierFactory;
   private ClassProvider classProvider;
 
