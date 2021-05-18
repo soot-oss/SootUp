@@ -25,21 +25,21 @@ package de.upb.swt.soot.core.jimple.visitor;
 import de.upb.swt.soot.core.jimple.common.constant.*;
 
 public interface ConstantVisitor extends Visitor {
-  void caseBooleanConstant(BooleanConstant v);
+  void caseBooleanConstant(BooleanConstant constant);
 
-  void caseDoubleConstant(DoubleConstant v);
+  void caseDoubleConstant(DoubleConstant constant);
 
-  void caseFloatConstant(FloatConstant v);
+  void caseFloatConstant(FloatConstant constant);
 
-  void caseIntConstant(IntConstant v);
+  void caseIntConstant(IntConstant constant);
 
-  void caseLongConstant(LongConstant v);
+  void caseLongConstant(LongConstant constant);
 
-  void caseNullConstant(NullConstant v);
+  void caseNullConstant(NullConstant constant);
 
-  void caseStringConstant(StringConstant v);
+  void caseStringConstant(StringConstant constant);
 
-  void caseClassConstant(ClassConstant v);
+  void caseClassConstant(ClassConstant constant);
 
   void caseMethodHandle(MethodHandle handle);
 

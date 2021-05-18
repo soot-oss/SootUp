@@ -26,17 +26,17 @@ import de.upb.swt.soot.core.jimple.common.ref.*;
 
 public interface RefVisitor extends Visitor {
 
-  void caseStaticFieldRef(JStaticFieldRef v);
+  void caseStaticFieldRef(JStaticFieldRef ref);
 
-  void caseInstanceFieldRef(JInstanceFieldRef v);
+  void caseInstanceFieldRef(JInstanceFieldRef ref);
 
-  void caseArrayRef(JArrayRef v);
+  void caseArrayRef(JArrayRef ref);
 
-  void caseParameterRef(JParameterRef v);
+  void caseParameterRef(JParameterRef ref);
 
-  void caseCaughtExceptionRef(JCaughtExceptionRef v);
+  void caseCaughtExceptionRef(JCaughtExceptionRef ref);
 
-  void caseThisRef(JThisRef v);
+  void caseThisRef(JThisRef ref);
 
-  void defaultCase(Ref obj);
+  void defaultCase(Ref ref);
 }

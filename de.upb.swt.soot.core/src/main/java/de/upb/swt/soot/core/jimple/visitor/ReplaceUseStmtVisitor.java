@@ -54,8 +54,8 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
     Expr invokeExpr = stmt.getInvokeExpr();
     ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor(oldUse, newUse);
     invokeExpr.accept(exprVisitor);
-    if (!exprVisitor.getNewExpr().equivTo(invokeExpr)) {
-      setResult(stmt.withInvokeExpr(exprVisitor.getNewExpr()));
+    if (!exprVisitor.getResult().equivTo(invokeExpr)) {
+      setResult(stmt.withInvokeExpr(exprVisitor.getResult()));
     } else {
       defaultCase(stmt);
     }
@@ -80,8 +80,8 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
       ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor(oldUse, newUse);
       ((Expr) rValue).accept(exprVisitor);
-      if (!exprVisitor.getNewExpr().equivTo(rValue)) {
-        newRValue = exprVisitor.getNewExpr();
+      if (!exprVisitor.getResult().equivTo(rValue)) {
+        newRValue = exprVisitor.getResult();
       }
     }
     if (newRValue != null) {
@@ -119,8 +119,8 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
     Expr condition = (Expr) stmt.getCondition();
     ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor(oldUse, newUse);
     condition.accept(exprVisitor);
-    if (!exprVisitor.getNewExpr().equivTo(condition)) {
-      setResult(stmt.withCondition((AbstractConditionExpr) exprVisitor.getNewExpr()));
+    if (!exprVisitor.getResult().equivTo(condition)) {
+      setResult(stmt.withCondition((AbstractConditionExpr) exprVisitor.getResult()));
     } else {
       defaultCase(stmt);
     }

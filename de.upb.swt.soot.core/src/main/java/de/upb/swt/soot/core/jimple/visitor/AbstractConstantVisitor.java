@@ -29,38 +29,38 @@ public abstract class AbstractConstantVisitor<V> extends AbstractVisitor<V>
     implements ConstantVisitor {
 
   @Override
-  public void caseDoubleConstant(@Nonnull DoubleConstant v) {
-    defaultCase(v);
+  public void caseDoubleConstant(@Nonnull DoubleConstant constant) {
+    defaultCase(constant);
   }
 
   @Override
-  public void caseFloatConstant(@Nonnull FloatConstant v) {
-    defaultCase(v);
+  public void caseFloatConstant(@Nonnull FloatConstant constant) {
+    defaultCase(constant);
   }
 
   @Override
-  public void caseIntConstant(@Nonnull IntConstant v) {
-    defaultCase(v);
+  public void caseIntConstant(@Nonnull IntConstant constant) {
+    defaultCase(constant);
   }
 
   @Override
-  public void caseLongConstant(@Nonnull LongConstant v) {
-    defaultCase(v);
+  public void caseLongConstant(@Nonnull LongConstant constant) {
+    defaultCase(constant);
   }
 
   @Override
-  public void caseNullConstant(@Nonnull NullConstant v) {
-    defaultCase(v);
+  public void caseNullConstant(@Nonnull NullConstant constant) {
+    defaultCase(constant);
   }
 
   @Override
-  public void caseStringConstant(@Nonnull StringConstant v) {
-    defaultCase(v);
+  public void caseStringConstant(@Nonnull StringConstant constant) {
+    defaultCase(constant);
   }
 
   @Override
-  public void caseClassConstant(@Nonnull ClassConstant v) {
-    defaultCase(v);
+  public void caseClassConstant(@Nonnull ClassConstant constant) {
+    defaultCase(constant);
   }
 
   @Override

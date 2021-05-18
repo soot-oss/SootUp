@@ -45,48 +45,48 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
   }
 
   @Override
-  public void caseStaticFieldRef(@Nonnull JStaticFieldRef v) {
-    defaultCase(v);
+  public void caseStaticFieldRef(@Nonnull JStaticFieldRef ref) {
+    defaultCase(ref);
   }
 
   @Override
-  public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef v) {
-    if (newUse instanceof Local && v.getBase().equivTo(oldUse)) {
-      newRef = v.withBase(newUse);
+  public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef ref) {
+    if (newUse instanceof Local && ref.getBase().equivTo(oldUse)) {
+      newRef = ref.withBase(newUse);
     } else {
-      defaultCase(v);
+      defaultCase(ref);
     }
   }
 
   @Override
-  public void caseArrayRef(@Nonnull JArrayRef v) {
-    if (newUse instanceof Local && v.getBase().equivTo(oldUse)) {
-      newRef = v.withBase(newUse);
-    } else if (newUse instanceof Immediate && v.getIndex().equivTo(oldUse)) {
-      newRef = v.withIndex(newUse);
+  public void caseArrayRef(@Nonnull JArrayRef ref) {
+    if (newUse instanceof Local && ref.getBase().equivTo(oldUse)) {
+      newRef = ref.withBase(newUse);
+    } else if (newUse instanceof Immediate && ref.getIndex().equivTo(oldUse)) {
+      newRef = ref.withIndex(newUse);
     } else {
-      defaultCase(v);
+      defaultCase(ref);
     }
   }
 
   @Override
-  public void caseParameterRef(@Nonnull JParameterRef v) {
-    defaultCase(v);
+  public void caseParameterRef(@Nonnull JParameterRef ref) {
+    defaultCase(ref);
   }
 
   @Override
-  public void caseCaughtExceptionRef(@Nonnull JCaughtExceptionRef v) {
-    defaultCase(v);
+  public void caseCaughtExceptionRef(@Nonnull JCaughtExceptionRef ref) {
+    defaultCase(ref);
   }
 
   @Override
-  public void caseThisRef(@Nonnull JThisRef v) {
-    defaultCase(v);
+  public void caseThisRef(@Nonnull JThisRef ref) {
+    defaultCase(ref);
   }
 
   @Override
-  public void defaultCase(@Nonnull Ref v) {
-    newRef = v;
+  public void defaultCase(@Nonnull Ref ref) {
+    newRef = ref;
   }
 
   @Nonnull

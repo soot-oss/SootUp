@@ -27,35 +27,35 @@ import de.upb.swt.soot.core.jimple.common.ref.*;
 public abstract class AbstractRefVisitor<V> extends AbstractVisitor<V> implements RefVisitor {
 
   @Override
-  public void caseStaticFieldRef(JStaticFieldRef v) {
-    defaultCase(v);
+  public void caseStaticFieldRef(JStaticFieldRef ref) {
+    defaultCase(ref);
   }
 
   @Override
-  public void caseInstanceFieldRef(JInstanceFieldRef v) {
-    defaultCase(v);
+  public void caseInstanceFieldRef(JInstanceFieldRef ref) {
+    defaultCase(ref);
   }
 
   @Override
-  public void caseArrayRef(JArrayRef v) {
-    defaultCase(v);
+  public void caseArrayRef(JArrayRef ref) {
+    defaultCase(ref);
   }
 
   @Override
-  public void caseParameterRef(JParameterRef v) {
-    defaultCase(v);
+  public void caseParameterRef(JParameterRef ref) {
+    defaultCase(ref);
   }
 
   @Override
-  public void caseCaughtExceptionRef(JCaughtExceptionRef v) {
-    defaultCase(v);
+  public void caseCaughtExceptionRef(JCaughtExceptionRef ref) {
+    defaultCase(ref);
   }
 
   @Override
-  public void caseThisRef(JThisRef v) {
-    defaultCase(v);
+  public void caseThisRef(JThisRef ref) {
+    defaultCase(ref);
   }
 
   @Override
-  public void defaultCase(Ref v) {}
+  public void defaultCase(Ref ref) {}
 }
