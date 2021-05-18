@@ -85,7 +85,7 @@ public class ArrayType extends ReferenceType {
   }
 
   @Override
-  void accept(@Nonnull TypeVisitor ts) {
-    ts.caseArrayType(this);
+  void accept(@Nonnull TypeVisitor tv) {
+    tv.caseArrayType(this);
   }
 }

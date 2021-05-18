@@ -27,5 +27,5 @@ import javax.annotation.Nonnull;
 
 /** Represents the signature of a Java type, e.g., a class, a primitive type, void, or null. */
 public abstract class Type {
-  abstract void accept(@Nonnull TypeVisitor ts);
+  abstract void accept(@Nonnull TypeVisitor tv);
 }

@@ -157,8 +157,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor ts) {
-      ts.caseByteType(this);
+    void accept(@Nonnull TypeVisitor tv) {
+      tv.caseByteType(this);
     }
   }
 
@@ -168,8 +168,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor ts) {
-      ts.caseShortType(this);
+    void accept(@Nonnull TypeVisitor tv) {
+      tv.caseShortType(this);
     }
   }
 
@@ -179,8 +179,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor ts) {
-      ts.caseIntType(this);
+    void accept(@Nonnull TypeVisitor tv) {
+      tv.caseIntType(this);
     }
   }
 
@@ -191,8 +191,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor ts) {
-      ts.caseDoubleType(this);
+    void accept(@Nonnull TypeVisitor tv) {
+      tv.caseDoubleType(this);
     }
   }
 
@@ -203,8 +203,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor ts) {
-      ts.caseLongType(this);
+    void accept(@Nonnull TypeVisitor tv) {
+      tv.caseLongType(this);
     }
   }
 
@@ -215,8 +215,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor ts) {
-      ts.caseFloatType(this);
+    void accept(@Nonnull TypeVisitor tv) {
+      tv.caseFloatType(this);
     }
   }
 
@@ -226,8 +226,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor ts) {
-      ts.caseCharType(this);
+    void accept(@Nonnull TypeVisitor tv) {
+      tv.caseCharType(this);
     }
   }
 
@@ -237,8 +237,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor ts) {
-      ts.caseBooleanType(this);
+    void accept(@Nonnull TypeVisitor tv) {
+      tv.caseBooleanType(this);
     }
   }
 }
