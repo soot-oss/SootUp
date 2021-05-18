@@ -30,6 +30,7 @@ package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -102,16 +103,16 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
     sw.caseInterfaceInvokeExpr(this);
   }
 
-  // Value base, MethodSignature method, List<? extends Value> args
-
   @Nonnull
-  public JInterfaceInvokeExpr withBase(Value base) {
+  @Override
+  public JInterfaceInvokeExpr withBase(Local base) {
     return new JInterfaceInvokeExpr(base, getMethodSignature(), getArgs());
   }
 
   @Nonnull
-  public JInterfaceInvokeExpr Method(MethodSignature method) {
-    return new JInterfaceInvokeExpr(getBase(), method, getArgs());
+  @Override
+  public JInterfaceInvokeExpr withMethodSignature(MethodSignature methodSignature) {
+    return new JInterfaceInvokeExpr(getBase(), methodSignature, getArgs());
   }
 
   @Nonnull

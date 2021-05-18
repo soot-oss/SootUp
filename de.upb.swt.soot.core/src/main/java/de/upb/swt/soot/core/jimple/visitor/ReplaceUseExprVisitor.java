@@ -386,7 +386,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
     }
   }
 
-  @Override // args[] is Immediate[]
+  @Override
   public void caseStaticInvokeExpr(@Nonnull JStaticInvokeExpr expr) {
     if (newUse instanceof Immediate) {
       boolean isChanged = false;
@@ -455,9 +455,22 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
     }
   }
 
-  @Override // base is Local
-  // args[] is Immediate[]
+  @Override
   public void caseSpecialInvokeExpr(@Nonnull JSpecialInvokeExpr expr) {
+    instanceInvokeExpr(expr);
+  }
+
+  @Override
+  public void caseVirtualInvokeExpr(@Nonnull JVirtualInvokeExpr expr) {
+    instanceInvokeExpr(expr);
+  }
+
+  @Override
+  public void caseInterfaceInvokeExpr(@Nonnull JInterfaceInvokeExpr expr) {
+    instanceInvokeExpr(expr);
+  }
+
+  private void instanceInvokeExpr(@Nonnull AbstractInstanceInvokeExpr expr) {
     boolean isChanged = false;
     if (newUse instanceof Immediate) {
       List<Value> newArgs = new ArrayList<>(expr.getArgs());
@@ -478,66 +491,6 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
         setResult(((JSpecialInvokeExpr) getResult()).withBase((Local) newUse));
       } else {
         setResult(expr.withBase((Local) newUse));
-        isChanged = true;
-      }
-    }
-    if (!isChanged) {
-      defaultCaseExpr(expr);
-    }
-  }
-
-  @Override
-  public void caseVirtualInvokeExpr(@Nonnull JVirtualInvokeExpr expr) {
-    boolean isChanged = false;
-    if (newUse instanceof Immediate) {
-      List<Value> newArgs = new ArrayList<>(expr.getArgs());
-      int index = 0;
-      for (Value arg : expr.getArgs()) {
-        if (arg.equivTo(oldUse)) {
-          newArgs.set(index, newUse);
-          isChanged = true;
-        }
-        index++;
-      }
-      if (isChanged) {
-        setResult(expr.withArgs(newArgs));
-      }
-    }
-    if (newUse instanceof Local && expr.getBase().equivTo(oldUse)) {
-      if (isChanged) {
-        setResult(((JSpecialInvokeExpr) getResult()).withBase((Local) newUse));
-      } else {
-        setResult(expr.withBase(newUse));
-        isChanged = true;
-      }
-    }
-    if (!isChanged) {
-      defaultCaseExpr(expr);
-    }
-  }
-
-  @Override
-  public void caseInterfaceInvokeExpr(@Nonnull JInterfaceInvokeExpr expr) {
-    boolean isChanged = false;
-    if (newUse instanceof Immediate) {
-      List<Value> newArgs = new ArrayList<>(expr.getArgs());
-      int index = 0;
-      for (Value arg : expr.getArgs()) {
-        if (arg.equivTo(oldUse)) {
-          newArgs.set(index, newUse);
-          isChanged = true;
-        }
-        index++;
-      }
-      if (isChanged) {
-        setResult(expr.withArgs(newArgs));
-      }
-    }
-    if (newUse instanceof Local && expr.getBase().equivTo(oldUse)) {
-      if (isChanged) {
-        setResult(((JSpecialInvokeExpr) getResult()).withBase((Local) newUse));
-      } else {
-        setResult(expr.withBase(newUse));
         isChanged = true;
       }
     }

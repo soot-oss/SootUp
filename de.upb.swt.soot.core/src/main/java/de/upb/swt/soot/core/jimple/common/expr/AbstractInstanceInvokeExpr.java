@@ -22,11 +22,13 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
 
@@ -72,4 +74,13 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   public int equivHashCode() {
     return baseBox.getValue().equivHashCode() * 101 + getMethodSignature().hashCode() * 17;
   }
+
+  @Nonnull
+  public abstract AbstractInvokeExpr withBase(Local base);
+
+  @Nonnull
+  public abstract AbstractInvokeExpr withMethodSignature(MethodSignature methodSignature);
+
+  @Nonnull
+  public abstract AbstractInvokeExpr withArgs(List<? extends Value> args);
 }

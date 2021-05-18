@@ -79,16 +79,19 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr impleme
     sw.caseSpecialInvokeExpr(this);
   }
 
+  @Override
   @Nonnull
   public JSpecialInvokeExpr withBase(Local base) {
     return new JSpecialInvokeExpr(base, getMethodSignature(), getArgs());
   }
 
+  @Override
   @Nonnull
   public JSpecialInvokeExpr withMethodSignature(MethodSignature methodSignature) {
     return new JSpecialInvokeExpr((Local) getBase(), methodSignature, getArgs());
   }
 
+  @Override
   @Nonnull
   public JSpecialInvokeExpr withArgs(List<? extends Value> args) {
     return new JSpecialInvokeExpr((Local) getBase(), getMethodSignature(), args);
