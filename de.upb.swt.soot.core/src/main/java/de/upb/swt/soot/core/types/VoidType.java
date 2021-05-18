@@ -41,4 +41,9 @@ public class VoidType extends Type {
   public String toString() {
     return "void";
   }
+
+  @Override
+  <V> V accept(@Nonnull TypeSwitch<V> ts) {
+    return ts.caseVoidType(INSTANCE);
+  }
 }

@@ -41,4 +41,9 @@ public class NullType extends ReferenceType {
   public String toString() {
     return "null";
   }
+
+  @Override
+  <V> V accept(@Nonnull TypeSwitch<V> ts) {
+    return ts.caseNullType(this);
+  }
 }

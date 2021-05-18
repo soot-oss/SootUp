@@ -45,4 +45,9 @@ public class UnknownType extends Type {
   public String toString() {
     return "unknown";
   }
+
+  @Override
+  <V> V accept(@Nonnull TypeSwitch<V> ts) {
+    return ts.caseUnknownType(this);
+  }
 }

@@ -24,6 +24,7 @@ package de.upb.swt.soot.core.types;
 
 import com.google.common.base.Objects;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
+import javax.annotation.Nonnull;
 
 /**
  * Represents the type of an array, e.g. <code>int[]</code>, <code>Object[]</code> or <code>
@@ -80,5 +81,10 @@ public class ArrayType extends ReferenceType {
 
   public int getDimension() {
     return dimension;
+  }
+
+  @Override
+  <V> V accept(@Nonnull TypeSwitch<V> ts) {
+    return ts.caseArrayType(this);
   }
 }

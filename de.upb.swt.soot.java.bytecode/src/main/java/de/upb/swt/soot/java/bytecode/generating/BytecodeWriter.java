@@ -34,6 +34,7 @@ public class BytecodeWriter {
   private static byte[] generateByteCode(SootClass<?> sc) {
 
     ClassWriter cw = new ClassWriter(0);
+    /* implement that way.. or via jasmin?
     cw.visit(
         V1_5,
         ACC_PUBLIC + ACC_ABSTRACT + ACC_INTERFACE,
@@ -50,6 +51,7 @@ public class BytecodeWriter {
     cw.visitMethod(ACC_PUBLIC + ACC_ABSTRACT, "compareTo", "(Ljava/lang/Object;)I", null, null)
         .visitEnd();
     cw.visitEnd();
+     */
 
     return cw.toByteArray();
   }

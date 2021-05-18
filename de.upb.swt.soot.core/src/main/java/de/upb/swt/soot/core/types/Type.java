@@ -22,5 +22,9 @@ package de.upb.swt.soot.core.types;
  * #L%
  */
 
+import javax.annotation.Nonnull;
+
 /** Represents the signature of a Java type, e.g., a class, a primitive type, void, or null. */
-public abstract class Type {}
+public abstract class Type {
+  abstract <V> V accept(@Nonnull TypeSwitch<V> ts);
+}
