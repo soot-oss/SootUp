@@ -22,12 +22,11 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
-import afu.org.checkerframework.checker.nullness.qual.Nullable;
 import de.upb.swt.soot.core.jimple.common.constant.*;
 import javax.annotation.Nonnull;
 
-public abstract class AbstractConstantVisitor<V> implements ConstantVisitor {
-  private V result;
+public abstract class AbstractConstantVisitor<V> extends AbstractVisitor<V>
+    implements ConstantVisitor {
 
   @Override
   public void caseDoubleConstant(@Nonnull DoubleConstant v) {
@@ -71,13 +70,4 @@ public abstract class AbstractConstantVisitor<V> implements ConstantVisitor {
 
   @Override
   public void defaultCase(@Nonnull Constant v) {}
-
-  protected void setResult(V result) {
-    this.result = result;
-  }
-
-  @Nullable
-  public V getResult() {
-    return result;
-  }
 }

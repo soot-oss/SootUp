@@ -2,8 +2,8 @@ package de.upb.swt.soot.core.jimple.visitor;
 
 import de.upb.swt.soot.core.types.*;
 
-public abstract class AbstractTypeVisitor<V> implements TypeVisitor {
-  private V result;
+/** @author Markus Schmidt */
+public abstract class AbstractTypeVisitor<V> extends AbstractVisitor<V> implements TypeVisitor {
 
   @Override
   public void caseBooleanType(PrimitiveType t) {
@@ -72,12 +72,4 @@ public abstract class AbstractTypeVisitor<V> implements TypeVisitor {
 
   @Override
   public void caseDefault(Type t) {}
-
-  public V getResult() {
-    return result;
-  }
-
-  protected void setResult(V result) {
-    this.result = result;
-  }
 }

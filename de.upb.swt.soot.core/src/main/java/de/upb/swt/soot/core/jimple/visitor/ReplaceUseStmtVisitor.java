@@ -116,7 +116,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   }
 
   public void caseIfStmt(@Nonnull JIfStmt stmt) {
-    Expr condition = stmt.getCondition();
+    Expr condition = (Expr) stmt.getCondition();
     ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor(oldUse, newUse);
     condition.accept(exprVisitor);
     if (!exprVisitor.getNewExpr().equivTo(condition)) {

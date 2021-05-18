@@ -25,8 +25,7 @@ package de.upb.swt.soot.core.jimple.visitor;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
 
-public abstract class AbstractStmtVisitor<V> implements StmtVisitor {
-  private V result;
+public abstract class AbstractStmtVisitor<V> extends AbstractVisitor<V> implements StmtVisitor {
 
   @Override
   public void caseBreakpointStmt(JBreakpointStmt stmt) {
@@ -100,12 +99,4 @@ public abstract class AbstractStmtVisitor<V> implements StmtVisitor {
 
   @Override
   public void defaultCase(Stmt stmt) {}
-
-  protected void setResult(V result) {
-    this.result = result;
-  }
-
-  public V getResult() {
-    return result;
-  }
 }
