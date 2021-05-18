@@ -31,7 +31,7 @@ import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
  */
 public class ConditionExprBox extends ValueBox {
 
-  public ConditionExprBox(AbstractConditionExpr value) {
+  public ConditionExprBox(Value value) {
     super(value);
   }
 

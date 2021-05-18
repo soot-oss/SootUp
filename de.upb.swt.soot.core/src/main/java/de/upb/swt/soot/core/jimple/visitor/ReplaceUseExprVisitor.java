@@ -392,14 +392,12 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       boolean isChanged = false;
       List<Value> newArgs = new ArrayList<>(expr.getArgs());
       int index = 0;
-      if (!expr.getArgs().isEmpty()) {
-        for (Value arg : expr.getArgs()) {
-          if (arg.equivTo(oldUse)) {
-            newArgs.set(index, newUse);
-            isChanged = true;
-          }
-          index++;
+      for (Value arg : expr.getArgs()) {
+        if (arg.equivTo(oldUse)) {
+          newArgs.set(index, newUse);
+          isChanged = true;
         }
+        index++;
       }
       if (isChanged) {
         setResult(expr.withArgs(newArgs));
@@ -417,14 +415,12 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       boolean isChanged = false;
       List<Value> newArgs = new ArrayList<>(expr.getArgs());
       int index = 0;
-      if (!expr.getArgs().isEmpty()) {
-        for (Value arg : expr.getArgs()) {
-          if (arg.equivTo(oldUse)) {
-            newArgs.set(index, newUse);
-            isChanged = true;
-          }
-          index++;
+      for (Value arg : expr.getArgs()) {
+        if (arg.equivTo(oldUse)) {
+          newArgs.set(index, newUse);
+          isChanged = true;
         }
+        index++;
       }
       if (isChanged) {
         setResult(expr.withMethodArgs(newArgs));
@@ -442,14 +438,12 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       boolean isChanged = false;
       List<Value> newArgs = new ArrayList<>(expr.getSizes());
       int index = 0;
-      if (!expr.getSizes().isEmpty()) {
-        for (Value arg : expr.getSizes()) {
-          if (arg.equivTo(oldUse)) {
-            newArgs.set(index, newUse);
-            isChanged = true;
-          }
-          index++;
+      for (Value arg : expr.getSizes()) {
+        if (arg.equivTo(oldUse)) {
+          newArgs.set(index, newUse);
+          isChanged = true;
         }
+        index++;
       }
       if (isChanged) {
         setResult(expr.withSizes(newArgs));
@@ -468,14 +462,12 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
     if (newUse instanceof Immediate) {
       List<Value> newArgs = new ArrayList<>(expr.getArgs());
       int index = 0;
-      if (!expr.getArgs().isEmpty()) {
-        for (Value arg : expr.getArgs()) {
-          if (arg.equivTo(oldUse)) {
-            newArgs.set(index, newUse);
-            isChanged = true;
-          }
-          index++;
+      for (Value arg : expr.getArgs()) {
+        if (arg.equivTo(oldUse)) {
+          newArgs.set(index, newUse);
+          isChanged = true;
         }
+        index++;
       }
       if (isChanged) {
         setResult(expr.withArgs(newArgs));
@@ -500,14 +492,12 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
     if (newUse instanceof Immediate) {
       List<Value> newArgs = new ArrayList<>(expr.getArgs());
       int index = 0;
-      if (!expr.getArgs().isEmpty()) {
-        for (Value arg : expr.getArgs()) {
-          if (arg.equivTo(oldUse)) {
-            newArgs.set(index, newUse);
-            isChanged = true;
-          }
-          index++;
+      for (Value arg : expr.getArgs()) {
+        if (arg.equivTo(oldUse)) {
+          newArgs.set(index, newUse);
+          isChanged = true;
         }
+        index++;
       }
       if (isChanged) {
         setResult(expr.withArgs(newArgs));
@@ -532,14 +522,12 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
     if (newUse instanceof Immediate) {
       List<Value> newArgs = new ArrayList<>(expr.getArgs());
       int index = 0;
-      if (!expr.getArgs().isEmpty()) {
-        for (Value arg : expr.getArgs()) {
-          if (arg.equivTo(oldUse)) {
-            newArgs.set(index, newUse);
-            isChanged = true;
-          }
-          index++;
+      for (Value arg : expr.getArgs()) {
+        if (arg.equivTo(oldUse)) {
+          newArgs.set(index, newUse);
+          isChanged = true;
         }
+        index++;
       }
       if (isChanged) {
         setResult(expr.withArgs(newArgs));
