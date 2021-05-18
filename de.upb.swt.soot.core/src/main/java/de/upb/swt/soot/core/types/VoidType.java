@@ -45,6 +45,6 @@ public class VoidType extends Type {
 
   @Override
   void accept(@Nonnull TypeVisitor ts) {
-    ts.caseVoidType(INSTANCE);
+    ts.caseVoidType(this);
   }
 }

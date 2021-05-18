@@ -6,70 +6,70 @@ import de.upb.swt.soot.core.types.*;
 public abstract class AbstractTypeVisitor<V> extends AbstractVisitor<V> implements TypeVisitor {
 
   @Override
-  public void caseBooleanType(PrimitiveType t) {
-    defaultCaseType(t);
+  public void caseBooleanType(PrimitiveType type) {
+    defaultCaseType(type);
   }
 
   @Override
-  public void caseByteType(PrimitiveType t) {
-    defaultCaseType(t);
+  public void caseByteType(PrimitiveType type) {
+    defaultCaseType(type);
   }
 
   @Override
-  public void caseCharType(PrimitiveType t) {
-    defaultCaseType(t);
+  public void caseCharType(PrimitiveType type) {
+    defaultCaseType(type);
   }
 
   @Override
-  public void caseShortType(PrimitiveType t) {
-    defaultCaseType(t);
+  public void caseShortType(PrimitiveType type) {
+    defaultCaseType(type);
   }
 
   @Override
-  public void caseIntType(PrimitiveType t) {
-    defaultCaseType(t);
+  public void caseIntType(PrimitiveType type) {
+    defaultCaseType(type);
   }
 
   @Override
-  public void caseLongType(PrimitiveType t) {
-    defaultCaseType(t);
+  public void caseLongType(PrimitiveType type) {
+    defaultCaseType(type);
   }
 
   @Override
-  public void caseDoubleType(PrimitiveType t) {
-    defaultCaseType(t);
+  public void caseDoubleType(PrimitiveType type) {
+    defaultCaseType(type);
   }
 
   @Override
-  public void caseFloatType(PrimitiveType t) {
-    defaultCaseType(t);
+  public void caseFloatType(PrimitiveType type) {
+    defaultCaseType(type);
   }
 
   @Override
-  public void caseArrayType(ArrayType t) {
-    defaultCaseType(t);
+  public void caseArrayType(ArrayType type) {
+    defaultCaseType(type);
   }
 
   @Override
-  public void caseClassType(ClassType t) {
-    defaultCaseType(t);
+  public void caseClassType(ClassType type) {
+    defaultCaseType(type);
   }
 
   @Override
-  public void caseNullType(NullType t) {
-    defaultCaseType(t);
+  public void caseNullType(NullType type) {
+    defaultCaseType(type);
   }
 
   @Override
-  public void caseVoidType(VoidType t) {
-    defaultCaseType(t);
+  public void caseVoidType(VoidType type) {
+    defaultCaseType(type);
   }
 
   @Override
-  public void caseUnknownType(UnknownType t) {
-    defaultCaseType(t);
+  public void caseUnknownType(UnknownType type) {
+    defaultCaseType(type);
   }
 
   @Override
-  public void defaultCaseType(Type t) {}
+  public void defaultCaseType(Type type) {}
 }

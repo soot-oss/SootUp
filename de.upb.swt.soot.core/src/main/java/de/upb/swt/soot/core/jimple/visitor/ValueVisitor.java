@@ -22,5 +22,4 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
-
 public interface ValueVisitor extends ImmediateVisitor, ExprVisitor, RefVisitor {}
