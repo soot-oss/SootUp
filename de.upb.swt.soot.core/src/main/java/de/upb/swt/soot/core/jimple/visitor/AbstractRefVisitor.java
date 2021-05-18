@@ -23,10 +23,8 @@ package de.upb.swt.soot.core.jimple.visitor;
  */
 
 import de.upb.swt.soot.core.jimple.common.ref.*;
-import javax.annotation.Nullable;
 
-public abstract class AbstractRefVisitor<V> implements RefVisitor {
-  private V result;
+public abstract class AbstractRefVisitor<V> extends AbstractVisitor<V> implements RefVisitor {
 
   @Override
   public void caseStaticFieldRef(JStaticFieldRef v) {
@@ -60,13 +58,4 @@ public abstract class AbstractRefVisitor<V> implements RefVisitor {
 
   @Override
   public void defaultCase(Ref v) {}
-
-  protected void setResult(V result) {
-    this.result = result;
-  }
-
-  @Nullable
-  public V getResult() {
-    return result;
-  }
 }
