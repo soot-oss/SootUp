@@ -43,6 +43,18 @@ public class JimpleConverterTest {
     checkJimpleClass(cs);
   }
 
+  @Test(expected = ResolveException.class)
+  public void parseEmptyFile() {
+    CharStream cs = CharStreams.fromString("");
+    checkJimpleClass(cs);
+  }
+
+  @Test(expected = ResolveException.class)
+  public void parseNonJimpleFile() {
+    CharStream cs = CharStreams.fromString("Hello World!");
+    checkJimpleClass(cs);
+  }
+
   @Test
   public void parseEmptyClass() {
     CharStream cs =
