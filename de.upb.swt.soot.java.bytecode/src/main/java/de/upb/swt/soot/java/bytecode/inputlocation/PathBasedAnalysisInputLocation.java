@@ -247,37 +247,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
 
       return Optional.of(classProvider.createClassSource(this, pathToClass, signature));
     }
-
-    @Override
-    public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-        @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
-      try {
-        FileSystem fs = fileSystemCache.get(path);
-        final Path archiveRoot = fs.getPath("/");
-
-        return getClassSourceInternal(
-            (JavaClassType) type,
-            archiveRoot,
-            new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()));
-      } catch (ExecutionException e) {
-        throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
-      }
-    }
-
-    @Override
-    public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull IdentifierFactory identifierFactory,
-        @Nonnull ClassLoadingOptions classLoadingOptions) {
-      try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
-        final Path archiveRoot = fs.getPath("/");
-        return walkDirectory(
-            archiveRoot,
-            identifierFactory,
-            new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()));
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
   }
 
   private static class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
