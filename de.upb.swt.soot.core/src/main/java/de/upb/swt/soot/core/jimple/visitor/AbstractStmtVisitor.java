@@ -22,19 +22,11 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JInvokeStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
 
-public abstract class AbstractStmtVisitor implements StmtVisitor {
-  Object result;
+public abstract class AbstractStmtVisitor<V> implements StmtVisitor {
+  private V result;
 
   @Override
   public void caseBreakpointStmt(JBreakpointStmt stmt) {
@@ -107,13 +99,13 @@ public abstract class AbstractStmtVisitor implements StmtVisitor {
   }
 
   @Override
-  public void defaultCase(Object obj) {}
+  public void defaultCase(Stmt stmt) {}
 
-  public void setResult(Object result) {
+  protected void setResult(V result) {
     this.result = result;
   }
 
-  public Object getResult() {
+  public V getResult() {
     return result;
   }
 }

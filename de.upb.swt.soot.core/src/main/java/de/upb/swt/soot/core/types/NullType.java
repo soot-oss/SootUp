@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.types;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.visitor.TypeVisitor;
 import javax.annotation.Nonnull;
 
 /** Represents a signature for a <code>null</code>-reference. */
@@ -40,5 +41,10 @@ public class NullType extends ReferenceType {
   @Nonnull
   public String toString() {
     return "null";
+  }
+
+  @Override
+  void accept(@Nonnull TypeVisitor ts) {
+    ts.caseNullType(this);
   }
 }

@@ -25,7 +25,6 @@ package de.upb.swt.soot.core.jimple.common.ref;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.RefVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -95,10 +94,11 @@ public final class JParameterRef implements IdentityRef, Copyable {
    * Used with RefSwitch.
    *
    * @param sw
+   * @return
    */
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((RefVisitor) sw).caseParameterRef(this);
+  public void accept(@Nonnull RefVisitor sw) {
+    sw.caseParameterRef(this);
   }
 
   @Nonnull

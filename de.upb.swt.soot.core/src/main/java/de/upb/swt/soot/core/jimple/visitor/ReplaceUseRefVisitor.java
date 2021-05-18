@@ -44,13 +44,11 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
     this.newUse = newUse;
   }
 
-  @Nonnull
   @Override
   public void caseStaticFieldRef(@Nonnull JStaticFieldRef v) {
     defaultCase(v);
   }
 
-  @Nonnull
   @Override
   public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef v) {
     if (newUse instanceof Local && v.getBase().equivTo(oldUse)) {
@@ -60,7 +58,6 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
     }
   }
 
-  @Nonnull
   @Override
   public void caseArrayRef(@Nonnull JArrayRef v) {
     if (newUse instanceof Local && v.getBase().equivTo(oldUse)) {
@@ -72,28 +69,24 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
     }
   }
 
-  @Nonnull
   @Override
   public void caseParameterRef(@Nonnull JParameterRef v) {
     defaultCase(v);
   }
 
-  @Nonnull
   @Override
   public void caseCaughtExceptionRef(@Nonnull JCaughtExceptionRef v) {
     defaultCase(v);
   }
 
-  @Nonnull
   @Override
   public void caseThisRef(@Nonnull JThisRef v) {
     defaultCase(v);
   }
 
-  @Nonnull
   @Override
-  public void defaultCase(@Nonnull Object obj) {
-    newRef = (Ref) obj;
+  public void defaultCase(@Nonnull Ref v) {
+    newRef = v;
   }
 
   @Nonnull

@@ -650,7 +650,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
 
   @Nonnull
   @Override
-  public void defaultCase(@Nonnull Object v) {
+  public void defaultCase(@Nonnull Expr v) {
     newExpr = (Expr) v;
   }
 }

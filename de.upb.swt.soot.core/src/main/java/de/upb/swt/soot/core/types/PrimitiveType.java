@@ -23,27 +23,28 @@ package de.upb.swt.soot.core.types;
  */
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
+import de.upb.swt.soot.core.jimple.visitor.TypeVisitor;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
 /** Represents Java's primitive types. */
-public class PrimitiveType extends Type {
+public abstract class PrimitiveType extends Type {
 
-  @Nonnull private static final PrimitiveType BYTE_TYPE = new PrimitiveType("byte");
+  @Nonnull private static final PrimitiveType BYTE_TYPE = new ByteType();
 
-  @Nonnull private static final PrimitiveType SHORT_TYPE = new PrimitiveType("short");
+  @Nonnull private static final PrimitiveType SHORT_TYPE = new ShortType();
 
-  @Nonnull private static final PrimitiveType INT_TYPE = new PrimitiveType("int");
+  @Nonnull private static final PrimitiveType INT_TYPE = new IntType();
 
-  @Nonnull private static final PrimitiveType LONG_TYPE = new PrimitiveType("long");
+  @Nonnull private static final PrimitiveType LONG_TYPE = new LongType();
 
-  @Nonnull private static final PrimitiveType FLOAT_TYPE = new PrimitiveType("float");
+  @Nonnull private static final PrimitiveType FLOAT_TYPE = new FloatType();
 
-  @Nonnull private static final PrimitiveType DOUBLE_TYPE = new PrimitiveType("double");
+  @Nonnull private static final PrimitiveType DOUBLE_TYPE = new DoubleType();
 
-  @Nonnull private static final PrimitiveType CHAR_TYPE = new PrimitiveType("char");
+  @Nonnull private static final PrimitiveType CHAR_TYPE = new CharType();
 
-  @Nonnull private static final PrimitiveType BOOLEAN_TYPE = new PrimitiveType("boolean");
+  @Nonnull private static final PrimitiveType BOOLEAN_TYPE = new BooleanType();
 
   @Nonnull
   private static final ImmutableMap<String, PrimitiveType> CACHED_SIGNATURES =
@@ -103,11 +104,11 @@ public class PrimitiveType extends Type {
   }
 
   public static boolean isIntLikeType(Type t) {
-    return t.equals(PrimitiveType.getInt())
-        || t.equals(PrimitiveType.getByte())
-        || t.equals(PrimitiveType.getShort())
-        || t.equals(PrimitiveType.getChar())
-        || t.equals(PrimitiveType.getBoolean());
+    return t == PrimitiveType.getInt()
+        || t == PrimitiveType.getByte()
+        || t == PrimitiveType.getShort()
+        || t == PrimitiveType.getChar()
+        || t == PrimitiveType.getBoolean();
   }
 
   @Nonnull
@@ -148,5 +149,96 @@ public class PrimitiveType extends Type {
   @Nonnull
   public static PrimitiveType getBoolean() {
     return BOOLEAN_TYPE;
+  }
+
+  private static class ByteType extends PrimitiveType {
+    private ByteType() {
+      super("byte");
+    }
+
+    @Override
+    void accept(@Nonnull TypeVisitor ts) {
+      ts.caseByteType(this);
+    }
+  }
+
+  private static class ShortType extends PrimitiveType {
+    private ShortType() {
+      super("byte");
+    }
+
+    @Override
+    void accept(@Nonnull TypeVisitor ts) {
+      ts.caseShortType(this);
+    }
+  }
+
+  private static class IntType extends PrimitiveType {
+    public IntType() {
+      super("int");
+    }
+
+    @Override
+    void accept(@Nonnull TypeVisitor ts) {
+      ts.caseIntType(this);
+    }
+  }
+
+  private static class DoubleType extends PrimitiveType {
+
+    private DoubleType() {
+      super("double");
+    }
+
+    @Override
+    void accept(@Nonnull TypeVisitor ts) {
+      ts.caseDoubleType(this);
+    }
+  }
+
+  private static class LongType extends PrimitiveType {
+
+    private LongType() {
+      super("long");
+    }
+
+    @Override
+    void accept(@Nonnull TypeVisitor ts) {
+      ts.caseLongType(this);
+    }
+  }
+
+  private static class FloatType extends PrimitiveType {
+
+    private FloatType() {
+      super("float");
+    }
+
+    @Override
+    void accept(@Nonnull TypeVisitor ts) {
+      ts.caseFloatType(this);
+    }
+  }
+
+  private static class CharType extends PrimitiveType {
+    public CharType() {
+      super("char");
+    }
+
+    @Override
+    void accept(@Nonnull TypeVisitor ts) {
+      ts.caseCharType(this);
+    }
+  }
+
+  private static class BooleanType extends PrimitiveType {
+    private BooleanType() {
+      super("boolean");
+    }
+
+    @Override
+    void accept(@Nonnull TypeVisitor ts) {
+      ts.caseBooleanType(this);
+    }
   }
 }

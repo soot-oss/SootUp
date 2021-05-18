@@ -24,8 +24,8 @@ package de.upb.swt.soot.core.jimple.visitor;
 
 import de.upb.swt.soot.core.jimple.common.expr.*;
 
-public abstract class AbstractExprVisitor implements ExprVisitor {
-  Object result;
+public abstract class AbstractExprVisitor<V> implements ExprVisitor {
+  private V result;
 
   @Override
   public void caseAddExpr(JAddExpr v) {
@@ -188,13 +188,13 @@ public abstract class AbstractExprVisitor implements ExprVisitor {
   }
 
   @Override
-  public void defaultCase(Object obj) {}
+  public void defaultCase(Expr v) {}
 
-  public void setResult(Object result) {
+  protected void setResult(V result) {
     this.result = result;
   }
 
-  public Object getResult() {
+  public V getResult() {
     return result;
   }
 }

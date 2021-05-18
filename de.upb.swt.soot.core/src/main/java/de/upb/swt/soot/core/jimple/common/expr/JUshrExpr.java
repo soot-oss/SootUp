@@ -24,7 +24,6 @@ package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
@@ -43,8 +42,8 @@ public final class JUshrExpr extends AbstractIntLongBinopExpr implements Copyabl
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseUshrExpr(this);
+  public void accept(@Nonnull ExprVisitor sw) {
+    sw.caseUshrExpr(this);
   }
 
   @Override

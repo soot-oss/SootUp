@@ -22,66 +22,62 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
-import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
-import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
-import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
-import de.upb.swt.soot.core.jimple.common.constant.MethodHandle;
-import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
-import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
+import afu.org.checkerframework.checker.nullness.qual.Nullable;
+import de.upb.swt.soot.core.jimple.common.constant.*;
+import javax.annotation.Nonnull;
 
-public abstract class AbstractConstantVisitor implements ConstantVisitor {
-  Object result; // FIXME: Why is this an Object? What is this for?
+public abstract class AbstractConstantVisitor<V> implements ConstantVisitor {
+  private V result;
 
   @Override
-  public void caseDoubleConstant(DoubleConstant v) {
+  public void caseDoubleConstant(@Nonnull DoubleConstant v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseFloatConstant(FloatConstant v) {
+  public void caseFloatConstant(@Nonnull FloatConstant v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseIntConstant(IntConstant v) {
+  public void caseIntConstant(@Nonnull IntConstant v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseLongConstant(LongConstant v) {
+  public void caseLongConstant(@Nonnull LongConstant v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseNullConstant(NullConstant v) {
+  public void caseNullConstant(@Nonnull NullConstant v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseStringConstant(StringConstant v) {
+  public void caseStringConstant(@Nonnull StringConstant v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseClassConstant(ClassConstant v) {
+  public void caseClassConstant(@Nonnull ClassConstant v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseMethodHandle(MethodHandle v) {
+  public void caseMethodHandle(@Nonnull MethodHandle v) {
     defaultCase(v);
   }
 
   @Override
-  public void defaultCase(Object v) {}
+  public void defaultCase(@Nonnull Constant v) {}
 
-  public Object getResult() {
-    return result;
-  }
-
-  public void setResult(Object result) {
+  protected void setResult(V result) {
     this.result = result;
+  }
+
+  @Nullable
+  public V getResult() {
+    return result;
   }
 }

@@ -22,8 +22,8 @@ package de.upb.swt.soot.core.jimple.basic;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.visitor.JimpleValueVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
+import de.upb.swt.soot.core.jimple.visitor.Acceptor;
+import de.upb.swt.soot.core.jimple.visitor.ValueVisitor;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.types.Type;
@@ -41,7 +41,7 @@ import javax.annotation.Nonnull;
  *
  * @author Linghui Luo
  */
-public class Local implements Immediate, Copyable {
+public class Local implements Immediate, Copyable, Acceptor<ValueVisitor> {
 
   @Nonnull private final String name;
   @Nonnull private final Type type;
@@ -118,8 +118,8 @@ public class Local implements Immediate, Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((JimpleValueVisitor) sw).caseLocal(this);
+  public void accept(@Nonnull ValueVisitor sw) {
+    sw.caseLocal(this);
   }
 
   @Nonnull

@@ -23,7 +23,6 @@ package de.upb.swt.soot.core.jimple.common.constant;
  */
 
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import javax.annotation.Nonnull;
@@ -74,8 +73,8 @@ public class BooleanConstant
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ConstantVisitor) sw).caseBooleanConstant(this);
+  public void accept(@Nonnull ConstantVisitor sw) {
+    sw.caseBooleanConstant(this);
   }
 
   @Nonnull

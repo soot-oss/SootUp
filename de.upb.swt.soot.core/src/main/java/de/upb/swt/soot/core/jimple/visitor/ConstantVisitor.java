@@ -22,15 +22,7 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
-import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
-import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
-import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
-import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
-import de.upb.swt.soot.core.jimple.common.constant.MethodHandle;
-import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
-import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
+import de.upb.swt.soot.core.jimple.common.constant.*;
 
 public interface ConstantVisitor extends Visitor {
   void caseBooleanConstant(BooleanConstant v);
@@ -51,5 +43,7 @@ public interface ConstantVisitor extends Visitor {
 
   void caseMethodHandle(MethodHandle handle);
 
-  void defaultCase(Object object);
+  void caseMethodType(MethodType methodType);
+
+  void defaultCase(Constant constant);
 }
