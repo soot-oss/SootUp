@@ -22,8 +22,5 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.Local;
 
-public interface ValueVisitor extends ConstantVisitor, ExprVisitor, RefVisitor {
-  void caseLocal(Local local);
-}
+public interface ValueVisitor extends ImmediateVisitor, ExprVisitor, RefVisitor {}

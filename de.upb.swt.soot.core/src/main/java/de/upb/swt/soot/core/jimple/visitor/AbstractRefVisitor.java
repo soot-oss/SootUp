@@ -28,34 +28,34 @@ public abstract class AbstractRefVisitor<V> extends AbstractVisitor<V> implement
 
   @Override
   public void caseStaticFieldRef(JStaticFieldRef ref) {
-    defaultCase(ref);
+    defaultCaseRef(ref);
   }
 
   @Override
   public void caseInstanceFieldRef(JInstanceFieldRef ref) {
-    defaultCase(ref);
+    defaultCaseRef(ref);
   }
 
   @Override
   public void caseArrayRef(JArrayRef ref) {
-    defaultCase(ref);
+    defaultCaseRef(ref);
   }
 
   @Override
   public void caseParameterRef(JParameterRef ref) {
-    defaultCase(ref);
+    defaultCaseRef(ref);
   }
 
   @Override
   public void caseCaughtExceptionRef(JCaughtExceptionRef ref) {
-    defaultCase(ref);
+    defaultCaseRef(ref);
   }
 
   @Override
   public void caseThisRef(JThisRef ref) {
-    defaultCase(ref);
+    defaultCaseRef(ref);
   }
 
   @Override
-  public void defaultCase(Ref ref) {}
+  public void defaultCaseRef(Ref ref) {}
 }

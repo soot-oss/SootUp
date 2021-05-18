@@ -52,5 +52,5 @@ public interface TypeVisitor {
 
   void caseUnknownType(UnknownType t);
 
-  void caseDefault(Type t);
+  void defaultCaseType(Type t);
 }

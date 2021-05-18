@@ -29,74 +29,74 @@ public abstract class AbstractStmtVisitor<V> extends AbstractVisitor<V> implemen
 
   @Override
   public void caseBreakpointStmt(JBreakpointStmt stmt) {
-    defaultCase(stmt);
+    defaultCaseStmt(stmt);
   }
 
   @Override
   public void caseInvokeStmt(JInvokeStmt stmt) {
-    defaultCase(stmt);
+    defaultCaseStmt(stmt);
   }
 
   @Override
   public void caseAssignStmt(JAssignStmt stmt) {
-    defaultCase(stmt);
+    defaultCaseStmt(stmt);
   }
 
   @Override
   public void caseIdentityStmt(JIdentityStmt stmt) {
-    defaultCase(stmt);
+    defaultCaseStmt(stmt);
   }
 
   @Override
   public void caseEnterMonitorStmt(JEnterMonitorStmt stmt) {
-    defaultCase(stmt);
+    defaultCaseStmt(stmt);
   }
 
   @Override
   public void caseExitMonitorStmt(JExitMonitorStmt stmt) {
-    defaultCase(stmt);
+    defaultCaseStmt(stmt);
   }
 
   @Override
   public void caseGotoStmt(JGotoStmt stmt) {
-    defaultCase(stmt);
+    defaultCaseStmt(stmt);
   }
 
   @Override
   public void caseIfStmt(JIfStmt stmt) {
-    defaultCase(stmt);
+    defaultCaseStmt(stmt);
   }
 
   @Override
   public void caseNopStmt(JNopStmt stmt) {
-    defaultCase(stmt);
+    defaultCaseStmt(stmt);
   }
 
   @Override
   public void caseRetStmt(JRetStmt stmt) {
-    defaultCase(stmt);
+    defaultCaseStmt(stmt);
   }
 
   @Override
   public void caseReturnStmt(JReturnStmt stmt) {
-    defaultCase(stmt);
+    defaultCaseStmt(stmt);
   }
 
   @Override
   public void caseReturnVoidStmt(JReturnVoidStmt stmt) {
-    defaultCase(stmt);
+    defaultCaseStmt(stmt);
   }
 
   @Override
   public void caseSwitchStmt(JSwitchStmt stmt) {
-    defaultCase(stmt);
+    defaultCaseStmt(stmt);
   }
 
   @Override
   public void caseThrowStmt(JThrowStmt stmt) {
-    defaultCase(stmt);
+    defaultCaseStmt(stmt);
   }
 
   @Override
-  public void defaultCase(Stmt stmt) {}
+  public void defaultCaseStmt(Stmt stmt) {}
 }

@@ -90,5 +90,5 @@ public interface ExprVisitor extends Visitor {
 
   void caseNegExpr(JNegExpr expr);
 
-  void defaultCase(Expr expr);
+  void defaultCaseExpr(Expr expr);
 }

@@ -56,10 +56,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -73,10 +73,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -90,10 +90,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -107,10 +107,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -124,10 +124,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -141,10 +141,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -158,10 +158,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -175,10 +175,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -192,10 +192,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -209,10 +209,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -226,10 +226,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -243,10 +243,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -260,10 +260,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -277,10 +277,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -294,10 +294,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -311,10 +311,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -328,10 +328,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -345,10 +345,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -362,10 +362,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -379,10 +379,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       } else if (expr.getOp2().equivTo(oldUse)) {
         setResult(expr.withOp2(newUse));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -402,10 +402,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       if (isChanged) {
         setResult(expr.withArgs(newArgs));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -425,10 +425,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       if (isChanged) {
         setResult(expr.withMethodArgs(newArgs));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -448,10 +448,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       if (isChanged) {
         setResult(expr.withSizes(newArgs));
       } else {
-        defaultCase(expr);
+        defaultCaseExpr(expr);
       }
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -482,7 +482,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       }
     }
     if (!isChanged) {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -512,7 +512,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       }
     }
     if (!isChanged) {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -542,7 +542,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       }
     }
     if (!isChanged) {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -551,7 +551,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
     if (newUse instanceof Immediate && expr.getOp().equivTo(oldUse)) {
       setResult(expr.withOp(newUse));
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -560,7 +560,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
     if (newUse instanceof Immediate && expr.getOp().equivTo(oldUse)) {
       setResult(expr.withOp(newUse));
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -569,7 +569,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
     if (newUse instanceof Immediate && expr.getSize().equivTo(oldUse)) {
       setResult(expr.withSize(newUse));
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -578,7 +578,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
     if (newUse instanceof Immediate && expr.getOp().equivTo(oldUse)) {
       setResult(expr.withOp(newUse));
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
@@ -587,17 +587,17 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
     if (newUse instanceof Immediate && expr.getOp().equivTo(oldUse)) {
       setResult(expr.withOp(newUse));
     } else {
-      defaultCase(expr);
+      defaultCaseExpr(expr);
     }
   }
 
   @Override
   public void caseNewExpr(JNewExpr expr) {
-    defaultCase(expr);
+    defaultCaseExpr(expr);
   }
 
   @Override
-  public void defaultCase(@Nonnull Expr expr) {
+  public void defaultCaseExpr(@Nonnull Expr expr) {
     setResult(expr);
   }
 }

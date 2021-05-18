@@ -60,5 +60,5 @@ public interface StmtVisitor extends Visitor {
 
   void caseThrowStmt(JThrowStmt stmt);
 
-  void defaultCase(Stmt stmt);
+  void defaultCaseStmt(Stmt stmt);
 }

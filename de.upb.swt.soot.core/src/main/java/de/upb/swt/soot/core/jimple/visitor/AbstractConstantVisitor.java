@@ -25,49 +25,58 @@ package de.upb.swt.soot.core.jimple.visitor;
 import de.upb.swt.soot.core.jimple.common.constant.*;
 import javax.annotation.Nonnull;
 
-public abstract class AbstractConstantVisitor<V> extends AbstractVisitor<V>
-    implements ConstantVisitor {
+public class AbstractConstantVisitor<V> extends AbstractVisitor<V> implements ConstantVisitor {
+
+  @Override
+  public void caseBooleanConstant(BooleanConstant constant) {
+    defaultCaseConstant(constant);
+  }
 
   @Override
   public void caseDoubleConstant(@Nonnull DoubleConstant constant) {
-    defaultCase(constant);
+    defaultCaseConstant(constant);
   }
 
   @Override
   public void caseFloatConstant(@Nonnull FloatConstant constant) {
-    defaultCase(constant);
+    defaultCaseConstant(constant);
   }
 
   @Override
   public void caseIntConstant(@Nonnull IntConstant constant) {
-    defaultCase(constant);
+    defaultCaseConstant(constant);
   }
 
   @Override
   public void caseLongConstant(@Nonnull LongConstant constant) {
-    defaultCase(constant);
+    defaultCaseConstant(constant);
   }
 
   @Override
   public void caseNullConstant(@Nonnull NullConstant constant) {
-    defaultCase(constant);
+    defaultCaseConstant(constant);
   }
 
   @Override
   public void caseStringConstant(@Nonnull StringConstant constant) {
-    defaultCase(constant);
+    defaultCaseConstant(constant);
   }
 
   @Override
   public void caseClassConstant(@Nonnull ClassConstant constant) {
-    defaultCase(constant);
+    defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseMethodHandle(@Nonnull MethodHandle v) {
-    defaultCase(v);
+  public void caseMethodHandle(@Nonnull MethodHandle handle) {
+    defaultCaseConstant(handle);
   }
 
   @Override
-  public void defaultCase(@Nonnull Constant v) {}
+  public void caseMethodType(MethodType methodType) {
+    defaultCaseConstant(methodType);
+  }
+
+  @Override
+  public void defaultCaseConstant(@Nonnull Constant constant) {}
 }
