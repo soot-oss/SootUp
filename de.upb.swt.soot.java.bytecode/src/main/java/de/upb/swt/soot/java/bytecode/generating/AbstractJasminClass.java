@@ -22,10 +22,12 @@ package de.upb.swt.soot.java.bytecode.generating;
  * #L%
  */
 
+import com.google.common.graph.ElementOrder;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
 import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.visitor.TypeVisitor;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -91,11 +93,11 @@ public abstract class AbstractJasminClass {
   }
 
   public static String jasminDescriptorOf(Type type) {
-    TypeSwitch sw;
+    TypeVisitor sw;
 
     type.apply(
         sw =
-            new TypeSwitch() {
+            new TypeVisitor() {
               public void caseBooleanType(PrimitiveType t) {
                 setResult("Z");
               }
@@ -142,12 +144,28 @@ public abstract class AbstractJasminClass {
                 setResult(sb.toString() + jasminDescriptorOf(t.getBaseType()));
               }
 
-              public void caseRefType(ClassType t) {
+              @Override
+              public void caseNullType(NullType t) {
+                // TODO [ms] ?
+              }
+
+              public void caseClassType(ClassType t) {
                 setResult("L" + t.getClassName().replace('.', '/') + ";");
               }
 
               public void caseVoidType(VoidType t) {
                 setResult("V");
+              }
+
+              @Override
+              public void caseUnknownType(UnknownType t) {
+                throw new RuntimeException("can not convert unknown type to bytecode!");
+              }
+
+              @Override
+              public void caseDefault(ElementOrder.Type t) {
+                // TODO [ms] ?
+
               }
             });
 
