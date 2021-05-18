@@ -113,15 +113,20 @@ public final class JNewArrayExpr implements Expr, Copyable {
     return sizeBox.getValue();
   }
 
-  /** Returns a list of type Value, contains a list of values with size */
+  /**
+   * Returns a list of type Value, contains a list of values with size
+   *
+   * @return
+   */
   @Override
-  public final List<Value> getUses() {
+  public final @Nonnull List<Value> getUses() {
     List<Value> uses = new ArrayList<>(size.getUses());
     uses.add(size);
     return uses;
   }
 
   /** Returns an instance of ArrayType(). */
+  @Nonnull
   @Override
   public Type getType() {
     return simplify(baseType, identifierFactory);

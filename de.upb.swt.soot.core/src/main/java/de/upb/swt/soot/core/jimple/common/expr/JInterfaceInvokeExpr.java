@@ -105,18 +105,19 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
 
   @Nonnull
   @Override
-  public JInterfaceInvokeExpr withBase(Local base) {
+  public JInterfaceInvokeExpr withBase(@Nonnull Local base) {
     return new JInterfaceInvokeExpr(base, getMethodSignature(), getArgs());
   }
 
   @Nonnull
   @Override
-  public JInterfaceInvokeExpr withMethodSignature(MethodSignature methodSignature) {
+  public JInterfaceInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature) {
     return new JInterfaceInvokeExpr(getBase(), methodSignature, getArgs());
   }
 
   @Nonnull
-  public JInterfaceInvokeExpr withArgs(List<? extends Value> args) {
+  @Override
+  public JInterfaceInvokeExpr withArgs(@Nonnull List<? extends Value> args) {
     return new JInterfaceInvokeExpr(getBase(), getMethodSignature(), args);
   }
 }

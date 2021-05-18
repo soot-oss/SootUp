@@ -42,6 +42,7 @@ public class MethodType implements Constant, Copyable {
     this.type = type;
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return type;

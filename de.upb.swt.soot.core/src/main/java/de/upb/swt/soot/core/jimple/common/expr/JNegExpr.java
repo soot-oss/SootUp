@@ -63,6 +63,7 @@ public final class JNegExpr extends AbstractUnopExpr implements Copyable {
     getOpBox().toString(up);
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     Value op = getOp();

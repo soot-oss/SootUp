@@ -82,13 +82,14 @@ public final class JCastExpr implements Expr, Copyable {
   }
 
   @Override
-  public final List<Value> getUses() {
+  public final @Nonnull List<Value> getUses() {
     List<Value> list = new ArrayList<>(op.getUses());
     list.add(op);
 
     return list;
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return type;

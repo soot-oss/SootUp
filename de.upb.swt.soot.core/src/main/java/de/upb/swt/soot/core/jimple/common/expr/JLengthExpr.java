@@ -61,6 +61,7 @@ public final class JLengthExpr extends AbstractUnopExpr implements Copyable {
     getOpBox().toString(up);
   }
 
+  @Nonnull
   @Override
   public PrimitiveType getType() {
     return PrimitiveType.getInt();

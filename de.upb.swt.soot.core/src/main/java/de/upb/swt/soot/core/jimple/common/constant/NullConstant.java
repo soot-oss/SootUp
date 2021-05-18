@@ -48,6 +48,7 @@ public class NullConstant implements Constant {
     return 982;
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return NullType.getInstance();

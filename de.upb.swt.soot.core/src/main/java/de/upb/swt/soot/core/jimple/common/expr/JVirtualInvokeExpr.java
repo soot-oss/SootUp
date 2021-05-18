@@ -80,19 +80,19 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr impleme
 
   @Override
   @Nonnull
-  public JVirtualInvokeExpr withBase(Local base) {
+  public JVirtualInvokeExpr withBase(@Nonnull Local base) {
     return new JVirtualInvokeExpr(base, getMethodSignature(), getArgs());
   }
 
   @Override
   @Nonnull
-  public JVirtualInvokeExpr withMethodSignature(MethodSignature methodSignature) {
+  public JVirtualInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature) {
     return new JVirtualInvokeExpr(getBase(), methodSignature, getArgs());
   }
 
   @Override
   @Nonnull
-  public JVirtualInvokeExpr withArgs(List<? extends Value> args) {
+  public JVirtualInvokeExpr withArgs(@Nonnull List<? extends Value> args) {
     return new JVirtualInvokeExpr(getBase(), getMethodSignature(), args);
   }
 }

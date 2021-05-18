@@ -113,6 +113,7 @@ public class MethodHandle implements Constant {
     return "handle: " + methodSignature;
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return type;

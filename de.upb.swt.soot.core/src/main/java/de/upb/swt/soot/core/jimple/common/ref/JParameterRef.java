@@ -80,11 +80,12 @@ public final class JParameterRef implements IdentityRef, Copyable {
   }
 
   @Override
-  public final List<Value> getUses() {
+  public final @Nonnull List<Value> getUses() {
     return Collections.emptyList();
   }
 
   /** Returns the type of this ParameterRef. */
+  @Nonnull
   @Override
   public Type getType() {
     return paramType;

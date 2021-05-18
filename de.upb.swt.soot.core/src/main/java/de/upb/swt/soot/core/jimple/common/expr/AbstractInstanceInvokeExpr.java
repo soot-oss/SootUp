@@ -37,7 +37,8 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   // new attribute: later if ValueBox is deleted, then add "final" to it.
   private Value base;
 
-  AbstractInstanceInvokeExpr(ValueBox baseBox, MethodSignature methodSig, ValueBox[] argBoxes) {
+  AbstractInstanceInvokeExpr(
+      @Nonnull ValueBox baseBox, @Nonnull MethodSignature methodSig, @Nonnull ValueBox[] argBoxes) {
     super(methodSig, argBoxes);
     this.baseBox = baseBox;
     // new attribute: later if ValueBox is deleted, then fit the constructor.
@@ -53,6 +54,7 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
+  @Nonnull
   public List<Value> getUses() {
     List<Value> list = new ArrayList<>();
 
@@ -76,11 +78,11 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Nonnull
-  public abstract AbstractInvokeExpr withBase(Local base);
+  public abstract AbstractInvokeExpr withBase(@Nonnull Local base);
 
   @Nonnull
-  public abstract AbstractInvokeExpr withMethodSignature(MethodSignature methodSignature);
+  public abstract AbstractInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature);
 
   @Nonnull
-  public abstract AbstractInvokeExpr withArgs(List<? extends Value> args);
+  public abstract AbstractInvokeExpr withArgs(@Nonnull List<? extends Value> args);
 }

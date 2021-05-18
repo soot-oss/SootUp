@@ -170,6 +170,7 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
     }
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return PrimitiveType.getDouble();
