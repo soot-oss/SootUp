@@ -305,8 +305,8 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#accept(de.upb.soot.jimple.visitor.Visitor)
    */
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseAssignStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseAssignStmt(this);
   }
 
   @Override

@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.types;
  */
 
 import com.google.common.base.Objects;
+import de.upb.swt.soot.core.jimple.visitor.TypeVisitor;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
@@ -84,7 +85,7 @@ public class ArrayType extends ReferenceType {
   }
 
   @Override
-  <V> V accept(@Nonnull TypeSwitch<V> ts) {
-    return ts.caseArrayType(this);
+  void accept(@Nonnull TypeVisitor ts) {
+    ts.caseArrayType(this);
   }
 }

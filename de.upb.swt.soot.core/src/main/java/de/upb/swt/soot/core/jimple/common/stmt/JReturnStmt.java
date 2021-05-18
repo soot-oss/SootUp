@@ -54,8 +54,8 @@ public final class JReturnStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseReturnStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseReturnStmt(this);
   }
 
   @Override

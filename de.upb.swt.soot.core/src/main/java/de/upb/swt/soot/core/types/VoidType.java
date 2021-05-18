@@ -22,6 +22,8 @@ package de.upb.swt.soot.core.types;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.visitor.TypeVisitor;
+
 import javax.annotation.Nonnull;
 
 /** Represents Java's 'void' type as methods return's type. */
@@ -43,7 +45,7 @@ public class VoidType extends Type {
   }
 
   @Override
-  <V> V accept(@Nonnull TypeSwitch<V> ts) {
-    return ts.caseVoidType(INSTANCE);
+  void accept(@Nonnull TypeVisitor ts) {
+    ts.caseVoidType(INSTANCE);
   }
 }

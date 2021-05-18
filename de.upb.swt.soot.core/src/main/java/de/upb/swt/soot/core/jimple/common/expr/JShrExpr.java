@@ -44,8 +44,8 @@ public final class JShrExpr extends AbstractIntLongBinopExpr implements Copyable
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseShrExpr(this);
+  public void accept(@Nonnull ExprVisitor sw) {
+    sw.caseShrExpr(this);
   }
 
   @Override

@@ -57,8 +57,8 @@ public final class JThrowStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseThrowStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseThrowStmt(this);
   }
 
   @Override

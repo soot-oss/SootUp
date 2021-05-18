@@ -96,8 +96,8 @@ public final class JCastExpr implements Expr, Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseCastExpr(this);
+  public void accept(@Nonnull ExprVisitor sw) {
+    sw.caseCastExpr(this);
   }
 
   @Nonnull

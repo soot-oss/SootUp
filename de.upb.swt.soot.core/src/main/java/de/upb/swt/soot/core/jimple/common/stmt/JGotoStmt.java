@@ -69,8 +69,8 @@ public class JGotoStmt extends BranchingStmt implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseGotoStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseGotoStmt(this);
   }
 
   @Override

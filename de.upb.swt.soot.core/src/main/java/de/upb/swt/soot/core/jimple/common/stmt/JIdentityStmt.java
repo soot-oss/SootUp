@@ -58,8 +58,8 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Copya
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseIdentityStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseIdentityStmt(this);
   }
 
   public Type getType() {

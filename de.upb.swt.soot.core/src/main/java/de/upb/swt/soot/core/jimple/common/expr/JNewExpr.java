@@ -78,8 +78,8 @@ public final class JNewExpr implements Expr, Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseNewExpr(this);
+  public void accept(@Nonnull ExprVisitor sw) {
+    sw.caseNewExpr(this);
   }
 
   @Nonnull

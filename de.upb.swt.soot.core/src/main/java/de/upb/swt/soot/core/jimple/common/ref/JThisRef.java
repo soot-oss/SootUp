@@ -73,8 +73,8 @@ public final class JThisRef implements IdentityRef, Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((RefVisitor) sw).caseThisRef(this);
+  public void accept(@Nonnull RefVisitor sw) {
+    sw.caseThisRef(this);
   }
 
   @Nonnull

@@ -22,17 +22,10 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
-import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
-import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
-import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
-import de.upb.swt.soot.core.jimple.common.constant.MethodHandle;
-import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
-import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
+import de.upb.swt.soot.core.jimple.common.constant.*;
 
-public abstract class AbstractConstantVisitor implements ConstantVisitor {
-  Object result; // FIXME: Why is this an Object? What is this for?
+public abstract class AbstractConstantVisitor<V> implements ConstantVisitor {
+  V result;
 
   @Override
   public void caseDoubleConstant(DoubleConstant v) {
@@ -75,13 +68,13 @@ public abstract class AbstractConstantVisitor implements ConstantVisitor {
   }
 
   @Override
-  public void defaultCase(Object v) {}
+  public void defaultCase(Constant v) {}
 
-  public Object getResult() {
+  public V getResult() {
     return result;
   }
 
-  public void setResult(Object result) {
+  protected void setResult(V result) {
     this.result = result;
   }
 }

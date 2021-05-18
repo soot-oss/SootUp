@@ -102,8 +102,8 @@ public final class JInstanceOfExpr implements Expr, Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseInstanceOfExpr(this);
+  public void accept(@Nonnull ExprVisitor sw) {
+    sw.caseInstanceOfExpr(this);
   }
 
   @Nonnull

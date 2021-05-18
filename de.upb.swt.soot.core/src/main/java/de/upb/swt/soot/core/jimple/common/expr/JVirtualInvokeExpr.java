@@ -74,8 +74,8 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr impleme
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseVirtualInvokeExpr(this);
+  public void accept(@Nonnull ExprVisitor sw) {
+    sw.caseVirtualInvokeExpr(this);
   }
 
   @Nonnull

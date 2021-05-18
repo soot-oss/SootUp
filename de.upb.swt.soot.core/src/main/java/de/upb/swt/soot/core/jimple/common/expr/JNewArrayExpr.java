@@ -129,8 +129,8 @@ public final class JNewArrayExpr implements Expr, Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseNewArrayExpr(this);
+  public void accept(@Nonnull ExprVisitor sw) {
+    sw.caseNewArrayExpr(this);
   }
 
   @Nonnull

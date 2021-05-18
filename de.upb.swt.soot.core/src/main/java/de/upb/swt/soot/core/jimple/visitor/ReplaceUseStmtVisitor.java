@@ -57,7 +57,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
   @Nonnull
   @Override
   public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
-    Value invokeExpr = stmt.getInvokeExpr();
+    Expr invokeExpr = stmt.getInvokeExpr();
     ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor(oldUse, newUse);
     invokeExpr.accept(exprVisitor);
     if (!exprVisitor.getNewExpr().equivTo(invokeExpr)) {
@@ -79,7 +79,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
     } else if (rValue instanceof Ref) {
 
       ReplaceUseRefVisitor refVisitor = new ReplaceUseRefVisitor(oldUse, newUse);
-      rValue.accept(refVisitor);
+      ((Ref) rValue).accept(refVisitor);
       if (!refVisitor.getNewRef().equivTo(rValue)) {
         newRValue = refVisitor.getNewRef();
       }
@@ -87,7 +87,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
     } else if (rValue instanceof Expr) {
 
       ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor(oldUse, newUse);
-      rValue.accept(exprVisitor);
+      ((Expr) rValue).accept(exprVisitor);
       if (!exprVisitor.getNewExpr().equivTo(rValue)) {
         newRValue = exprVisitor.getNewExpr();
       }
@@ -134,7 +134,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
   @Nonnull
   @Override
   public void caseIfStmt(@Nonnull JIfStmt stmt) {
-    Value condition = stmt.getCondition();
+    Expr condition = stmt.getCondition();
     ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor(oldUse, newUse);
     condition.accept(exprVisitor);
     if (!exprVisitor.getNewExpr().equivTo(condition)) {

@@ -27,6 +27,7 @@ import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.visitor.Acceptor;
+import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -35,7 +36,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-public abstract class Stmt implements EquivTo, Acceptor, Copyable {
+public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
 
   protected final StmtPositionInfo positionInfo;
 
@@ -93,13 +94,6 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
   }
 
   public abstract void toString(@Nonnull StmtPrinter up);
-
-  /**
-   * Used to implement the Switchable construct via OOP
-   *
-   * @param sw
-   */
-  public void accept(@Nonnull Visitor sw) {}
 
   public boolean containsInvokeExpr() {
     return false;

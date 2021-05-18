@@ -58,8 +58,8 @@ public final class JEnterMonitorStmt extends AbstractOpStmt implements Copyable 
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseEnterMonitorStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseEnterMonitorStmt(this);
   }
 
   @Override

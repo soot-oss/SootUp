@@ -23,10 +23,7 @@ package de.upb.swt.soot.core.jimple.visitor;
  */
 
 import com.google.common.graph.ElementOrder.Type;
-import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.types.NullType;
-import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.core.types.*;
 
 public interface TypeVisitor {
 
@@ -45,16 +42,15 @@ public interface TypeVisitor {
   void caseDoubleType(PrimitiveType t);
 
   void caseFloatType(PrimitiveType t);
-
-  void caseArrayType(PrimitiveType t);
-
-  void caseRefType(ClassType t);
+  void caseArrayType(ArrayType t);
+  void caseClassType(ClassType t);
 
   void caseNullType(NullType t);
 
-  void caseUnknownType(/*UnknownType t*/ );
-
   void caseVoidType(VoidType t);
 
+  void caseUnknownType(UnknownType t);
+
   void caseDefault(Type t);
+
 }

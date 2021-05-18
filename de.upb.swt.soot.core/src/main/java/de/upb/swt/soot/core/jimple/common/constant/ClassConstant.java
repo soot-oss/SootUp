@@ -177,8 +177,8 @@ public class ClassConstant implements Constant {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ConstantVisitor) sw).caseClassConstant(this);
+  public void accept(@Nonnull ConstantVisitor sw) {
+    sw.caseClassConstant(this);
   }
 
   @Override

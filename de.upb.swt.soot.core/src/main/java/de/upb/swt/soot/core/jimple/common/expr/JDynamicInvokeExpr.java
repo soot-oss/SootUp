@@ -176,8 +176,8 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseDynamicInvokeExpr(this);
+  public void accept(@Nonnull ExprVisitor sw) {
+    sw.caseDynamicInvokeExpr(this);
   }
 
   /** Returns a list containing elements of type ValueBox. */

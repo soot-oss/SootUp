@@ -49,8 +49,8 @@ public final class JReturnVoidStmt extends Stmt implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseReturnVoidStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseReturnVoidStmt(this);
   }
 
   @Override

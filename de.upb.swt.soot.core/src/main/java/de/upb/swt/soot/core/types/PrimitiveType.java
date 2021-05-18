@@ -23,6 +23,8 @@ package de.upb.swt.soot.core.types;
  */
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
+import de.upb.swt.soot.core.jimple.visitor.TypeVisitor;
+
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
@@ -156,8 +158,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    <V> V accept(@Nonnull TypeSwitch<V> ts) {
-      return ts.caseByteType(this);
+     void accept(@Nonnull TypeVisitor ts) {
+      ts.caseByteType(this);
     }
   }
 
@@ -167,8 +169,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    <V> V accept(@Nonnull TypeSwitch<V> ts) {
-      return ts.caseShortType(this);
+     void accept(@Nonnull TypeVisitor ts) {
+      ts.caseShortType(this);
     }
   }
 
@@ -178,8 +180,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    <V> V accept(@Nonnull TypeSwitch<V> ts) {
-      return ts.caseShortType(this);
+     void accept(@Nonnull TypeVisitor ts) {
+      ts.caseIntType(this);
     }
   }
 
@@ -190,8 +192,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    <V> V accept(@Nonnull TypeSwitch<V> ts) {
-      return ts.caseDoubleType(this);
+     void accept(@Nonnull TypeVisitor ts) {
+      ts.caseDoubleType(this);
     }
   }
 
@@ -202,8 +204,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    <V> V accept(@Nonnull TypeSwitch<V> ts) {
-      return ts.caseLongType(this);
+     void accept(@Nonnull TypeVisitor ts) {
+      ts.caseLongType(this);
     }
   }
 
@@ -214,8 +216,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    <V> V accept(@Nonnull TypeSwitch<V> ts) {
-      return ts.caseFloatType(this);
+     void accept(@Nonnull TypeVisitor ts) {
+      ts.caseFloatType(this);
     }
   }
 
@@ -225,8 +227,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    <V> V accept(@Nonnull TypeSwitch<V> ts) {
-      return ts.caseCharType(this);
+     void accept(@Nonnull TypeVisitor ts) {
+      ts.caseCharType(this);
     }
   }
 
@@ -236,8 +238,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    <V> V accept(@Nonnull TypeSwitch<V> ts) {
-      return ts.caseBooleanType(this);
+     void accept(@Nonnull TypeVisitor ts) {
+      ts.caseBooleanType(this);
     }
   }
 }

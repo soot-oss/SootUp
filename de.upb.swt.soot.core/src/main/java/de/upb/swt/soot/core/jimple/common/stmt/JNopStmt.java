@@ -49,8 +49,8 @@ public final class JNopStmt extends Stmt implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseNopStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseNopStmt(this);
   }
 
   @Override

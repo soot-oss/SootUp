@@ -41,8 +41,8 @@ public final class JDivExpr extends AbstractFloatBinopExpr implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseDivExpr(this);
+  public void accept(@Nonnull ExprVisitor sw) {
+    sw.caseDivExpr(this);
   }
 
   @Nonnull

@@ -138,8 +138,8 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseSwitchStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseSwitchStmt(this);
   }
 
   /** Amount of labels +1 for default handler */

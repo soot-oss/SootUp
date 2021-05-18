@@ -49,8 +49,8 @@ public final class JBreakpointStmt extends Stmt implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseBreakpointStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseBreakpointStmt(this);
   }
 
   @Override

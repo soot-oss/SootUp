@@ -68,8 +68,8 @@ public final class JLengthExpr extends AbstractUnopExpr implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseLengthExpr(this);
+  public void accept(@Nonnull ExprVisitor sw) {
+    sw.caseLengthExpr(this);
   }
 
   @Nonnull

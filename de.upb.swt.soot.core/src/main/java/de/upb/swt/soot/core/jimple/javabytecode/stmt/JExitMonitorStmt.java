@@ -58,8 +58,8 @@ public final class JExitMonitorStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseExitMonitorStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseExitMonitorStmt(this);
   }
 
   @Override

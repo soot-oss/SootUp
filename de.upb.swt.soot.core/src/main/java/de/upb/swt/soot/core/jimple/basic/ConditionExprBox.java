@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.jimple.basic;
  */
 
 import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
+import de.upb.swt.soot.core.jimple.common.expr.Expr;
 
 /**
  * Contains an expression used as a conditional.
@@ -31,7 +32,7 @@ import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
  */
 public class ConditionExprBox extends ValueBox {
 
-  public ConditionExprBox(Value value) {
+  public ConditionExprBox(AbstractConditionExpr value) {
     super(value);
   }
 

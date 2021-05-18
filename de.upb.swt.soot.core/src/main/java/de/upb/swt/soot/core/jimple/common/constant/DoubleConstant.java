@@ -177,8 +177,8 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ConstantVisitor) sw).caseDoubleConstant(this);
+  public void accept(@Nonnull ConstantVisitor sw) {
+    sw.caseDoubleConstant(this);
   }
 
   /**

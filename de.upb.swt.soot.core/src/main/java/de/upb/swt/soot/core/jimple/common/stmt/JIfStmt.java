@@ -113,8 +113,8 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseIfStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseIfStmt(this);
   }
 
   @Override

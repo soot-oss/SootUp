@@ -73,8 +73,8 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copya
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseStaticInvokeExpr(this);
+  public void accept(@Nonnull ExprVisitor sw) {
+    sw.caseStaticInvokeExpr(this);
   }
 
   @Nonnull

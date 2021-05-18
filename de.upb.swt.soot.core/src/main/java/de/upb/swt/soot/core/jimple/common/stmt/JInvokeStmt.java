@@ -87,8 +87,8 @@ public final class JInvokeStmt extends Stmt implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseInvokeStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseInvokeStmt(this);
   }
 
   @Override
