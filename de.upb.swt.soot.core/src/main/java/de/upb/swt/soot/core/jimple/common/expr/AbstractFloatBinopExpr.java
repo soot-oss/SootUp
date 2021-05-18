@@ -28,6 +28,7 @@ import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
 
@@ -39,6 +40,7 @@ public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
     super(op1Box, op2Box);
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     Value op1 = getOp1();

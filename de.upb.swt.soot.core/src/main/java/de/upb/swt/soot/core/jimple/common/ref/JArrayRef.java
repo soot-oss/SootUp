@@ -132,7 +132,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   }
 
   @Override
-  public List<Value> getUses() {
+  public @Nonnull List<Value> getUses() {
     List<Value> list = new ArrayList<>(base.getUses());
     list.add(base);
     list.addAll(index.getUses());
@@ -140,6 +140,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
     return list;
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return determineType(identifierFactory);

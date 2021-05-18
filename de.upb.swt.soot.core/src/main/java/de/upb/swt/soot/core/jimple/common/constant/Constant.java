@@ -35,7 +35,7 @@ import javax.annotation.Nonnull;
 public interface Constant extends Immediate, Acceptor<ConstantVisitor> {
 
   @Override
-  default List<Value> getUses() {
+  default @Nonnull List<Value> getUses() {
     return Collections.emptyList();
   }
 

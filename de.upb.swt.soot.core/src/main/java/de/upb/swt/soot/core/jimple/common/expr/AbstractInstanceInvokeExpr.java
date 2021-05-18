@@ -53,7 +53,7 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  public List<Value> getUses() {
+  public @Nonnull List<Value> getUses() {
     List<Value> list = new ArrayList<>();
 
     // getArgs in super class must be modified (not yet)

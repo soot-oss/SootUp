@@ -163,6 +163,7 @@ public class FloatConstant implements RealConstant<FloatConstant> {
     }
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return PrimitiveType.getFloat();

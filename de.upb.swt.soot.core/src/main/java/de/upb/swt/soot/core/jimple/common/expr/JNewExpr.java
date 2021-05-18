@@ -66,13 +66,14 @@ public final class JNewExpr implements Expr, Copyable {
     up.typeSignature(type);
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return type;
   }
 
   @Override
-  public List<Value> getUses() {
+  public @Nonnull List<Value> getUses() {
     return Collections.emptyList();
   }
 

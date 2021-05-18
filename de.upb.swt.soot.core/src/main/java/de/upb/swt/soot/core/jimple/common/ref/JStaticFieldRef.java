@@ -49,7 +49,7 @@ public final class JStaticFieldRef extends JFieldRef implements Copyable {
   }
 
   @Override
-  public List<Value> getUses() {
+  public @Nonnull List<Value> getUses() {
     return Collections.emptyList();
   }
 

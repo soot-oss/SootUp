@@ -78,7 +78,7 @@ public final class JInstanceFieldRef extends JFieldRef implements Copyable {
   }
 
   @Override
-  public final List<Value> getUses() {
+  public final @Nonnull List<Value> getUses() {
     List<Value> list = new ArrayList<>(base.getUses());
     list.add(base);
     return list;

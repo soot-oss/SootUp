@@ -176,6 +176,7 @@ public class LongConstant implements ShiftableConstant<LongConstant> {
     return value + "L";
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return PrimitiveType.getLong();

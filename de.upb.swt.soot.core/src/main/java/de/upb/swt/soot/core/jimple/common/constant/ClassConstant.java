@@ -170,6 +170,7 @@ public class ClassConstant implements Constant {
     return value;
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return type;

@@ -26,6 +26,7 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractUnopExpr implements Expr {
   private final ValueBox opBox;
@@ -47,7 +48,7 @@ public abstract class AbstractUnopExpr implements Expr {
   }
 
   @Override
-  public final List<Value> getUses() {
+  public final @Nonnull List<Value> getUses() {
     List<Value> list = new ArrayList<>(op.getUses());
     list.add(op);
 

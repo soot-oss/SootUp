@@ -46,6 +46,7 @@ public final class JUshrExpr extends AbstractIntLongBinopExpr implements Copyabl
     sw.caseUshrExpr(this);
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     Value op1 = getOp1();

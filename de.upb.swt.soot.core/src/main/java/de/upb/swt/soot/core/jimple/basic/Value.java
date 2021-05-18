@@ -41,9 +41,11 @@ public interface Value extends EquivTo {
    *
    * @return
    */
+  @Nonnull
   List<Value> getUses();
 
   /** Returns the Soot type of this Value. */
+  @Nonnull
   Type getType();
 
   void toString(@Nonnull StmtPrinter up);

@@ -164,6 +164,7 @@ public class IntConstant implements ShiftableConstant<IntConstant> {
     return Integer.toString(value);
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return PrimitiveType.getInt();

@@ -47,6 +47,7 @@ public final class JShrExpr extends AbstractIntLongBinopExpr implements Copyable
     sw.caseShrExpr(this);
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     Value op1 = getOp1();

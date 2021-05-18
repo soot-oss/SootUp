@@ -49,6 +49,7 @@ public class StringConstant implements Constant {
     return value.hashCode();
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return type;

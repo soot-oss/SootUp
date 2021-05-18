@@ -67,6 +67,7 @@ public class BooleanConstant
     return FALSE;
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return PrimitiveType.getBoolean();

@@ -62,10 +62,11 @@ public final class JThisRef implements IdentityRef, Copyable {
   }
 
   @Override
-  public final List<Value> getUses() {
+  public final @Nonnull List<Value> getUses() {
     return Collections.emptyList();
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return thisType;

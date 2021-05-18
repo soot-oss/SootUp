@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class AbstractInvokeExpr implements Expr {
@@ -77,13 +78,14 @@ public abstract class AbstractInvokeExpr implements Expr {
     return argBoxes[index];
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return methodSignature.getType();
   }
 
   @Override
-  public List<Value> getUses() {
+  public @Nonnull List<Value> getUses() {
     if (args == null) {
       return Collections.emptyList();
     }

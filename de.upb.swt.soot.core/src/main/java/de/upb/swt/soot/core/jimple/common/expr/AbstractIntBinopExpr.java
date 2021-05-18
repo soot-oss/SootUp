@@ -26,6 +26,7 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractIntBinopExpr extends AbstractBinopExpr {
 
@@ -33,6 +34,7 @@ public abstract class AbstractIntBinopExpr extends AbstractBinopExpr {
     super(Jimple.newArgBox(op1), Jimple.newArgBox(op2));
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return PrimitiveType.getInt();
