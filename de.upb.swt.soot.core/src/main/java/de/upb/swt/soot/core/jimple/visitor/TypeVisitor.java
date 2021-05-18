@@ -22,7 +22,6 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
-import com.google.common.graph.ElementOrder.Type;
 import de.upb.swt.soot.core.types.*;
 
 public interface TypeVisitor {
