@@ -38,5 +38,5 @@ public interface RefVisitor extends Visitor {
 
   void caseThisRef(JThisRef v);
 
-  void defaultCase(Object obj);
+  void defaultCase(Ref obj);
 }

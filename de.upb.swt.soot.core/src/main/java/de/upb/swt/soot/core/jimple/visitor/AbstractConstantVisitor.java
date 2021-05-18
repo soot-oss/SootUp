@@ -22,59 +22,62 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
+import afu.org.checkerframework.checker.nullness.qual.Nullable;
 import de.upb.swt.soot.core.jimple.common.constant.*;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractConstantVisitor<V> implements ConstantVisitor {
-  V result;
+  private V result;
 
   @Override
-  public void caseDoubleConstant(DoubleConstant v) {
+  public void caseDoubleConstant(@Nonnull DoubleConstant v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseFloatConstant(FloatConstant v) {
+  public void caseFloatConstant(@Nonnull FloatConstant v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseIntConstant(IntConstant v) {
+  public void caseIntConstant(@Nonnull IntConstant v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseLongConstant(LongConstant v) {
+  public void caseLongConstant(@Nonnull LongConstant v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseNullConstant(NullConstant v) {
+  public void caseNullConstant(@Nonnull NullConstant v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseStringConstant(StringConstant v) {
+  public void caseStringConstant(@Nonnull StringConstant v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseClassConstant(ClassConstant v) {
+  public void caseClassConstant(@Nonnull ClassConstant v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseMethodHandle(MethodHandle v) {
+  public void caseMethodHandle(@Nonnull MethodHandle v) {
     defaultCase(v);
   }
 
   @Override
-  public void defaultCase(Constant v) {}
-
-  public V getResult() {
-    return result;
-  }
+  public void defaultCase(@Nonnull Constant v) {}
 
   protected void setResult(V result) {
     this.result = result;
+  }
+
+  @Nullable
+  public V getResult() {
+    return result;
   }
 }
