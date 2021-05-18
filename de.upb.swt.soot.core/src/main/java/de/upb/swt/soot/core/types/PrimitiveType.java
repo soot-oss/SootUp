@@ -164,7 +164,7 @@ public abstract class PrimitiveType extends Type {
 
   private static class ShortType extends PrimitiveType {
     private ShortType() {
-      super("byte");
+      super("short");
     }
 
     @Override
