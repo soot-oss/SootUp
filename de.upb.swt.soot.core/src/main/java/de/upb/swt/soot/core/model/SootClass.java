@@ -55,10 +55,6 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
     this.classSignature = classSource.getClassType();
   }
 
-  // TODO: [JMP] Create type signature for this dummy type and move it closer to
-  // its usage.
-  @Nonnull public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
-
   @Nonnull
   private Set<? extends SootField> lazyFieldInitializer() {
     Set<? extends SootField> fields;

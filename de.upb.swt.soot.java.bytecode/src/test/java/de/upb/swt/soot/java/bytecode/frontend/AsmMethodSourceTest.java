@@ -14,7 +14,6 @@ import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Arrays;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -22,7 +21,6 @@ import org.junit.experimental.categories.Category;
 public class AsmMethodSourceTest {
 
   @Test
-  @Ignore("TODO")
   public void testFix_StackUnderrun_convertPutFieldInsn_init() {
 
     double version = Double.parseDouble(System.getProperty("java.specification.version"));

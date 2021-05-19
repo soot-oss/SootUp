@@ -45,7 +45,6 @@ public class JavaSootClass extends SootClass<JavaSootClassSource> {
     return this.classSignature.isBuiltInClass();
   }
 
-  @Nonnull
   public JavaSootClass(JavaSootClassSource classSource, SourceType sourceType) {
     super(classSource, sourceType);
   }
