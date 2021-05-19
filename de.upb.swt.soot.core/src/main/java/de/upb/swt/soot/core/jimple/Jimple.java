@@ -335,7 +335,7 @@ public abstract class Jimple {
     return new JNewArrayExpr(type, size, getIdentifierFactory());
   }
 
-  public JPhiExpr newPhiExpr(LinkedHashSet<Local> args, Map<Local, Stmt> argToPred) {
+  public static JPhiExpr newPhiExpr(LinkedHashSet<Local> args, Map<Local, Stmt> argToPred) {
     return new JPhiExpr(args, argToPred);
   }
 
