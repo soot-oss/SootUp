@@ -20,7 +20,7 @@ import org.junit.Test;
 
 public class JimpleConverterTest {
 
-  SootClass<?> checkJimpleClass(CharStream cs) throws ResolveException {
+  SootClass checkJimpleClass(CharStream cs) throws ResolveException {
 
     JimpleConverter jimpleVisitor = new JimpleConverter();
     final OverridingClassSource scs = jimpleVisitor.run(cs, null, Paths.get(""));
@@ -578,7 +578,7 @@ public class JimpleConverterTest {
       CharStream cs =
           CharStreams.fromString("public class 'annotation interface' extends java.lang.Object {}");
       SootClass<?> sc = checkJimpleClass(cs);
-      assertEquals("some.pckg.class", sc.getClassSource().getClassType().toString());
+      assertEquals("annotation interface", sc.getClassSource().getClassType().toString());
     }
 
     {

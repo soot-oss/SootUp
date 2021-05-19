@@ -117,7 +117,7 @@ grammar Jimple;
   * Parser Rules
   */
   identifier:
-    IDENTIFIER | STRING_CONSTANT;
+    STRING_CONSTANT | STRING_CONSTANT . IDENTIFIER | IDENTIFIER ;
 
   integer_constant :
     (PLUS|MINUS)? (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
