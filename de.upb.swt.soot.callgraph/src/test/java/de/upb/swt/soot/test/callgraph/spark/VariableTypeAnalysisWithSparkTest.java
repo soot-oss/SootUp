@@ -137,8 +137,6 @@ public class VariableTypeAnalysisWithSparkTest
     assertEquals(7, cg.callsFrom(mainMethodSignature).size());
     // TODO: why does body assign New E() to a variable?
 
-    cg.callsFrom(mainMethodSignature).forEach(System.out::println);
-
     assertEquals(2, cg.callsTo(constructorB).size());
     assertEquals(1, cg.callsTo(constructorC).size());
     assertEquals(1, cg.callsTo(methodA).size());
