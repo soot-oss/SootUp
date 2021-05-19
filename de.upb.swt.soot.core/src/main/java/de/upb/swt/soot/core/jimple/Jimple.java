@@ -105,6 +105,7 @@ public abstract class Jimple {
   public static final String WITH = "with";
   public static final String TRUE = "true";
   public static final String FALSE = "false";
+  public static final String PHI = "phi";
 
   /**
    * Returns a list of keywords for Jimple. This list has to be in sync with the tokens for the
@@ -162,7 +163,8 @@ public abstract class Jimple {
             TO,
             WITH,
             TRUE,
-            FALSE);
+            FALSE,
+            PHI);
     return l;
   }
 
@@ -331,6 +333,10 @@ public abstract class Jimple {
   /** Constructs a NewArrayExpr(Type, Immediate) grammar chunk. */
   public JNewArrayExpr newNewArrayExpr(Type type, Immediate size) {
     return new JNewArrayExpr(type, size, getIdentifierFactory());
+  }
+
+  public JPhiExpr newPhiExpr(LinkedHashSet<Local> args, Map<Local, Stmt> argToPred) {
+    return new JPhiExpr(args, argToPred);
   }
 
   /** Constructs a NewStaticInvokeExpr(ArrayType, List of Immediate) grammar chunk. */
