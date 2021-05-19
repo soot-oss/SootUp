@@ -6,19 +6,22 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
+import de.upb.swt.soot.core.jimple.common.expr.JPhiExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.ReplaceUseExprVisitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -30,6 +33,7 @@ public class ReplaceUseExprVisitorTest {
   JavaClassType intType = factory.getClassType("int");
   JavaClassType testClass = factory.getClassType("TestClass");
   JavaClassType voidType = factory.getClassType("void");
+  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
 
   Local op1 = JavaJimple.newLocal("op1", intType);
   Local op2 = JavaJimple.newLocal("op2", intType);
@@ -40,6 +44,11 @@ public class ReplaceUseExprVisitorTest {
   Local arg2 = JavaJimple.newLocal("arg2", intType);
   Local arg3 = JavaJimple.newLocal("arg3", intType);
   Local newArg = JavaJimple.newLocal("argn", intType);
+
+  Stmt stmt1 = Jimple.newAssignStmt(arg1, IntConstant.getInstance(0), noStmtPositionInfo);
+  Stmt stmt2 = Jimple.newAssignStmt(arg2, IntConstant.getInstance(0), noStmtPositionInfo);
+  Stmt stmt3 = Jimple.newAssignStmt(arg3, IntConstant.getInstance(0), noStmtPositionInfo);
+  Stmt stmtPhi = Jimple.newAssignStmt(newArg, IntConstant.getInstance(0), noStmtPositionInfo);
 
   MethodSignature methodeWithOutParas =
       new MethodSignature(testClass, "invokeExpr", Collections.emptyList(), voidType);
@@ -198,5 +207,57 @@ public class ReplaceUseExprVisitorTest {
     lengthExpr = Jimple.newLengthExpr(op2);
     lengthExpr.accept(visitor);
     assertTrue(visitor.getNewExpr().equivTo(lengthExpr));
+  }
+
+  /** Test use replacing in case JPhiExpr. */
+  @Test
+  public void testPhiExpr() {
+
+    ReplaceUseExprVisitor visitor = new ReplaceUseExprVisitor(arg2, newArg, stmtPhi);
+
+    Set<Local> argsSet = ImmutableUtils.immutableSet(arg1, arg2, arg3);
+    LinkedHashSet<Local> args = new LinkedHashSet<>(argsSet);
+    Map<Local, Stmt> argToPred = new HashMap<>();
+    argToPred.put(arg1, stmt1);
+    argToPred.put(arg2, stmt2);
+    argToPred.put(arg3, stmt3);
+    Expr expr = Jimple.newPhiExpr(args, argToPred);
+
+    expr.accept(visitor);
+    JPhiExpr newExpr = (JPhiExpr) visitor.getNewExpr();
+
+    List<Local> expectedArgs = ImmutableUtils.immutableList(arg1, newArg, arg3);
+    List<Stmt> expectedPreds = ImmutableUtils.immutableList(stmt1, stmtPhi, stmt3);
+
+    assertListsEquiv(expectedArgs, new ArrayList<>(newExpr.getArgs()));
+    assertListsEquiv(expectedPreds, newExpr.getPreds());
+  }
+
+  // assert whether two lists are equal
+  public void assertListsEquiv(List expected, List actual) {
+
+    assertNotNull(expected);
+    assertNotNull(actual);
+    if (expected.size() != actual.size()) {
+      System.out.println("Expected size is not equal to actual size: ");
+      System.out.println("expected size of list: " + expected.size());
+      System.out.println("actual size of list: " + actual.size());
+    }
+    assertEquals(expected.size(), actual.size());
+    boolean condition = true;
+    for (Object o : actual) {
+      int idx = actual.indexOf(o);
+      if (!(expected.get(idx) == o)) {
+        condition = false;
+        break;
+      }
+    }
+    if (!condition) {
+      System.out.println("expected:");
+      System.out.println(expected);
+      System.out.println("actual:");
+      System.out.println(actual);
+    }
+    assertTrue(condition);
   }
 }
