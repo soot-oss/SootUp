@@ -120,7 +120,7 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
    * than one field with the given name. Returns null if no field with the given name exists.
    */
   @Nonnull
-  public Optional<? extends SootField> getField(String name) {
+  public Optional<? extends SootField> getField(@Nonnull String name) {
     return getFields().stream()
         .filter(field -> field.getSignature().getName().equals(name))
         .reduce(
@@ -135,7 +135,7 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
    */
   @Nonnull
   public Optional<? extends SootMethod> getMethod(
-      String name, Iterable<? extends Type> parameterTypes) {
+      @Nonnull String name, @Nonnull Iterable<? extends Type> parameterTypes) {
     return this.getMethods().stream()
         .filter(
             method ->
@@ -190,7 +190,7 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
   }
 
   /** Does this class directly implement the given interface? (see getInterfaceCount()) */
-  public boolean implementsInterface(ClassType classSignature) {
+  public boolean implementsInterface(@Nonnull ClassType classSignature) {
     for (ClassType sc : getInterfaces()) {
       if (sc.equals(classSignature)) {
         return true;
@@ -333,12 +333,12 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
   }
 
   @Nonnull
-  public SootClass withClassSource(SootClassSource classSource) {
-    return new SootClass(classSource, sourceType);
+  public SootClass<S> withClassSource(S classSource) {
+    return new SootClass<S>(classSource, sourceType);
   }
 
   @Nonnull
-  public SootClass withSourceType(SourceType sourceType) {
-    return new SootClass(classSource, sourceType);
+  public SootClass<S> withSourceType(SourceType sourceType) {
+    return new SootClass<S>(classSource, sourceType);
   }
 }
