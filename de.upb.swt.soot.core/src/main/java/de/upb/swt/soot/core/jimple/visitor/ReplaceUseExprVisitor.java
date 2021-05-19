@@ -27,8 +27,8 @@ import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.*;
-import java.util.ArrayList;
-import java.util.List;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import java.util.*;
 import javax.annotation.Nonnull;
 
 /**
@@ -40,11 +40,18 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
 
   Value oldUse;
   Value newUse;
+  Stmt phiPred = null;
   Expr newExpr;
 
   public ReplaceUseExprVisitor(Value oldUse, Value newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
+  }
+  /* This constructor is for PhiExpr. The phiPred is predecessor of the newUse.*/
+  public ReplaceUseExprVisitor(Value oldUse, Value newUse, Stmt phiPred) {
+    this.oldUse = oldUse;
+    this.newUse = newUse;
+    this.phiPred = phiPred;
   }
 
   @Nonnull
@@ -632,6 +639,34 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
   public void caseNegExpr(@Nonnull JNegExpr v) {
     if (newUse instanceof Immediate && v.getOp().equivTo(oldUse)) {
       newExpr = v.withOp(newUse);
+    } else {
+      defaultCase(v);
+    }
+  }
+
+  @Override
+  public void casePhiExpr(JPhiExpr v) {
+    if (this.phiPred != null
+        && newUse instanceof Local
+        && v.getArgs().contains(oldUse)
+        && newUse.getType().equals(v.getType())
+        && !v.getArgs().contains(newUse)) {
+      List<Local> argsList = new ArrayList<>(v.getArgs());
+      int index = argsList.indexOf(oldUse);
+      argsList.set(index, (Local) newUse);
+      LinkedHashSet<Local> newArgs = new LinkedHashSet<>(argsList);
+      v = v.withArgs(newArgs);
+
+      Map<Local, Stmt> newArgToPred = new HashMap<>();
+      List<Stmt> preds = v.getPreds();
+      for (int i = 0; i < v.getArgsSize(); i++) {
+        if (i == index) {
+          newArgToPred.put((Local) newUse, phiPred);
+        } else {
+          newArgToPred.put(argsList.get(i), preds.get(i));
+        }
+      }
+      newExpr = v.withArgToPredMap(newArgToPred);
     } else {
       defaultCase(v);
     }
