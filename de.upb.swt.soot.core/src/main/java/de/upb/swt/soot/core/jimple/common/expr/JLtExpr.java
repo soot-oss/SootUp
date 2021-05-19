@@ -41,8 +41,8 @@ public final class JLtExpr extends AbstractConditionExpr implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor sw) {
-    sw.caseLtExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseLtExpr(this);
   }
 
   @Nonnull

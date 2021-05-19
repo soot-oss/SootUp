@@ -82,7 +82,7 @@ public class MethodType implements Constant, Copyable {
   }
 
   @Override
-  public void accept(@Nonnull ConstantVisitor sw) {
-    sw.caseMethodType(this);
+  public void accept(@Nonnull ConstantVisitor v) {
+    v.caseMethodType(this);
   }
 }

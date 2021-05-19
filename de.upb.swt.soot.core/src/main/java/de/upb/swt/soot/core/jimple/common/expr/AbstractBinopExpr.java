@@ -103,8 +103,8 @@ public abstract class AbstractBinopExpr implements Expr {
   }
 
   @Nonnull
-  public abstract AbstractBinopExpr withOp1(Value value);
+  public abstract AbstractBinopExpr withOp1(@Nonnull Value value);
 
   @Nonnull
-  public abstract AbstractBinopExpr withOp2(Value value);
+  public abstract AbstractBinopExpr withOp2(@Nonnull Value value);
 }

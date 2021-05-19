@@ -74,8 +74,8 @@ public class BooleanConstant
   }
 
   @Override
-  public void accept(@Nonnull ConstantVisitor sw) {
-    sw.caseBooleanConstant(this);
+  public void accept(@Nonnull ConstantVisitor v) {
+    v.caseBooleanConstant(this);
   }
 
   @Nonnull

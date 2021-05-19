@@ -55,8 +55,8 @@ public class NullConstant implements Constant {
   }
 
   @Override
-  public void accept(@Nonnull ConstantVisitor sw) {
-    sw.caseNullConstant(this);
+  public void accept(@Nonnull ConstantVisitor v) {
+    v.caseNullConstant(this);
   }
 
   @Override

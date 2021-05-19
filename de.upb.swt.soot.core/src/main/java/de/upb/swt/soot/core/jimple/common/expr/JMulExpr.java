@@ -41,8 +41,8 @@ public final class JMulExpr extends AbstractFloatBinopExpr implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor sw) {
-    sw.caseMulExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseMulExpr(this);
   }
 
   @Nonnull

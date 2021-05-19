@@ -85,8 +85,8 @@ public final class JInstanceFieldRef extends JFieldRef implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull RefVisitor sw) {
-    sw.caseInstanceFieldRef(this);
+  public void accept(@Nonnull RefVisitor v) {
+    v.caseInstanceFieldRef(this);
   }
 
   @Override

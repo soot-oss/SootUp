@@ -154,8 +154,8 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor sw) {
-    sw.caseNewMultiArrayExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseNewMultiArrayExpr(this);
   }
 
   @Nonnull

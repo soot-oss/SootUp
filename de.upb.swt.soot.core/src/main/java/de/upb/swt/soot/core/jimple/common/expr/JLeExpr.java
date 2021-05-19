@@ -41,8 +41,8 @@ public final class JLeExpr extends AbstractConditionExpr implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor sw) {
-    sw.caseLeExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseLeExpr(this);
   }
 
   @Nonnull

@@ -41,8 +41,8 @@ public final class JGtExpr extends AbstractConditionExpr implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor sw) {
-    sw.caseGtExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseGtExpr(this);
   }
 
   @Nonnull

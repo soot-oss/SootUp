@@ -56,8 +56,8 @@ public class StringConstant implements Constant {
   }
 
   @Override
-  public void accept(@Nonnull ConstantVisitor sw) {
-    sw.caseStringConstant(this);
+  public void accept(@Nonnull ConstantVisitor v) {
+    v.caseStringConstant(this);
   }
 
   @Override

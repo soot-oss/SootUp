@@ -183,8 +183,8 @@ public class LongConstant implements ShiftableConstant<LongConstant> {
   }
 
   @Override
-  public void accept(@Nonnull ConstantVisitor sw) {
-    sw.caseLongConstant(this);
+  public void accept(@Nonnull ConstantVisitor v) {
+    v.caseLongConstant(this);
   }
 
   public long getValue() {

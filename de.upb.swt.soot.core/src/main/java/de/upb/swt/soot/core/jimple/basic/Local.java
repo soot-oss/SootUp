@@ -118,8 +118,8 @@ public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
   }
 
   @Override
-  public void accept(@Nonnull ImmediateVisitor sw) {
-    sw.caseLocal(this);
+  public void accept(@Nonnull ImmediateVisitor v) {
+    v.caseLocal(this);
   }
 
   @Nonnull

@@ -65,8 +65,8 @@ public final class JStaticFieldRef extends JFieldRef implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull RefVisitor sw) {
-    sw.caseStaticFieldRef(this);
+  public void accept(@Nonnull RefVisitor v) {
+    v.caseStaticFieldRef(this);
   }
 
   @Nonnull

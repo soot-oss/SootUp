@@ -157,8 +157,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor tv) {
-      tv.caseByteType(this);
+    void accept(@Nonnull TypeVisitor v) {
+      v.caseByteType(this);
     }
   }
 
@@ -168,8 +168,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor tv) {
-      tv.caseShortType(this);
+    void accept(@Nonnull TypeVisitor v) {
+      v.caseShortType(this);
     }
   }
 
@@ -179,8 +179,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor tv) {
-      tv.caseIntType(this);
+    void accept(@Nonnull TypeVisitor v) {
+      v.caseIntType(this);
     }
   }
 
@@ -191,8 +191,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor tv) {
-      tv.caseDoubleType(this);
+    void accept(@Nonnull TypeVisitor v) {
+      v.caseDoubleType(this);
     }
   }
 
@@ -203,8 +203,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor tv) {
-      tv.caseLongType(this);
+    void accept(@Nonnull TypeVisitor v) {
+      v.caseLongType(this);
     }
   }
 
@@ -215,8 +215,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor tv) {
-      tv.caseFloatType(this);
+    void accept(@Nonnull TypeVisitor v) {
+      v.caseFloatType(this);
     }
   }
 
@@ -226,8 +226,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor tv) {
-      tv.caseCharType(this);
+    void accept(@Nonnull TypeVisitor v) {
+      v.caseCharType(this);
     }
   }
 
@@ -237,8 +237,8 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor tv) {
-      tv.caseBooleanType(this);
+    void accept(@Nonnull TypeVisitor v) {
+      v.caseBooleanType(this);
     }
   }
 }

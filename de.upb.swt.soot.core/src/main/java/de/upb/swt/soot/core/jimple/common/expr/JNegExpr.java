@@ -86,8 +86,8 @@ public final class JNegExpr extends AbstractUnopExpr implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor sw) {
-    sw.caseNegExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseNegExpr(this);
   }
 
   @Nonnull
