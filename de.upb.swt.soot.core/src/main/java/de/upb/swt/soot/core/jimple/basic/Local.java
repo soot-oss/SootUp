@@ -108,7 +108,8 @@ public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
   }
 
   @Override
-  public final @Nonnull List<Value> getUses() {
+  @Nonnull
+  public final List<Value> getUses() {
     return Collections.emptyList();
   }
 

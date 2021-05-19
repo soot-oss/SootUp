@@ -138,7 +138,8 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
   }
 
   @Override
-  public final @Nonnull List<Value> getUses() {
+  @Nonnull
+  public final List<Value> getUses() {
     List<Value> list = new ArrayList<>();
     Collections.addAll(list, sizes);
     for (Value size : sizes) {

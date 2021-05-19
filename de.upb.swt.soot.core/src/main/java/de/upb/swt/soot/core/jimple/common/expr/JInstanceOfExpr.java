@@ -85,7 +85,8 @@ public final class JInstanceOfExpr implements Expr, Copyable {
   }
 
   @Override
-  public final @Nonnull List<Value> getUses() {
+  @Nonnull
+  public final List<Value> getUses() {
     List<Value> list = new ArrayList<>(op.getUses());
     list.add(op);
     return list;

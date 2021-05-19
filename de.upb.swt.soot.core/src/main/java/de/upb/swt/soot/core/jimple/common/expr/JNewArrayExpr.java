@@ -119,7 +119,8 @@ public final class JNewArrayExpr implements Expr, Copyable {
    * @return
    */
   @Override
-  public final @Nonnull List<Value> getUses() {
+  @Nonnull
+  public final List<Value> getUses() {
     List<Value> uses = new ArrayList<>(size.getUses());
     uses.add(size);
     return uses;

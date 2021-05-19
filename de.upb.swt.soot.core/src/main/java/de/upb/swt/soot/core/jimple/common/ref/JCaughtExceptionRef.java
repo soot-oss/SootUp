@@ -62,7 +62,8 @@ public final class JCaughtExceptionRef implements IdentityRef, Copyable {
   }
 
   @Override
-  public final @Nonnull List<Value> getUses() {
+  @Nonnull
+  public final List<Value> getUses() {
     return Collections.emptyList();
   }
 
