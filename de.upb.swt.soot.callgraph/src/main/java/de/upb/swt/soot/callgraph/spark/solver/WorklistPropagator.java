@@ -150,7 +150,11 @@ public class WorklistPropagator implements Propagator {
     }
   }
 
-  private void handleLoadTargets(VariableNode source, HashSet<Pair<Node, Node>> loadsToPropagate, Field field, Set<VariableNode> loadTargets) {
+  private void handleLoadTargets(
+      VariableNode source,
+      HashSet<Pair<Node, Node>> loadsToPropagate,
+      Field field,
+      Set<VariableNode> loadTargets) {
     if (loadTargets != null && !loadTargets.isEmpty()) {
       Set<Node> sourcePointsToSet = source.getPointsToSet();
       for (Node node : sourcePointsToSet) {
@@ -167,15 +171,18 @@ public class WorklistPropagator implements Propagator {
     }
   }
 
-  private void handleStoreSources(VariableNode source, HashSet<Pair<Node, Node>> storesToPropagate, Field field, Set<VariableNode> storeSources) {
+  private void handleStoreSources(
+      VariableNode source,
+      HashSet<Pair<Node, Node>> storesToPropagate,
+      Field field,
+      Set<VariableNode> storeSources) {
     if (storeSources != null && !storeSources.isEmpty()) {
       Set<Node> sourcePointsToSet = source.getPointsToSet();
       for (Node node : sourcePointsToSet) {
         AllocationDotField allocationDotField =
             pag.getOrCreateAllocationDotField((AllocationNode) node, field);
         for (VariableNode element : storeSources) {
-          Pair<Node, Node> pair =
-              new ImmutablePair<>(element, allocationDotField.getReplacement());
+          Pair<Node, Node> pair = new ImmutablePair<>(element, allocationDotField.getReplacement());
           storesToPropagate.add(pair);
         }
       }

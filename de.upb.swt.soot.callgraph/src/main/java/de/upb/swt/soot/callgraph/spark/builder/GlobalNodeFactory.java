@@ -22,12 +22,12 @@ package de.upb.swt.soot.callgraph.spark.builder;
  * #L%
  */
 
+import de.upb.swt.soot.callgraph.spark.PointsToAnalysis;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.ArrayElement;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
-import de.upb.swt.soot.callgraph.spark.PointsToAnalysis;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;

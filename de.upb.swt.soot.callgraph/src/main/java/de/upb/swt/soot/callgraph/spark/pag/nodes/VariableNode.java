@@ -89,10 +89,10 @@ public class VariableNode extends Node implements Comparable<VariableNode> {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     VariableNode that = (VariableNode) o;
-    return finishingNumber == that.finishingNumber &&
-            isInterProcTarget == that.isInterProcTarget &&
-            Objects.equals(variable, that.variable) &&
-            Objects.equals(fields, that.fields);
+    return finishingNumber == that.finishingNumber
+        && isInterProcTarget == that.isInterProcTarget
+        && Objects.equals(variable, that.variable)
+        && Objects.equals(fields, that.fields);
   }
 
   @Override

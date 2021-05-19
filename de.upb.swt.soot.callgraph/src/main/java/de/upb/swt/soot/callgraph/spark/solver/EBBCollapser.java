@@ -111,7 +111,12 @@ public class EBBCollapser implements Collapser {
     }
   }
 
-  private void handleVariableNodes(TypeHierarchy typeHierarchy, Map.Entry<FieldReferenceNode, Set<VariableNode>> entry, Type nType, Node firstSucc, Map<Type, VariableNode> typeToSucc) {
+  private void handleVariableNodes(
+      TypeHierarchy typeHierarchy,
+      Map.Entry<FieldReferenceNode, Set<VariableNode>> entry,
+      Type nType,
+      Node firstSucc,
+      Map<Type, VariableNode> typeToSucc) {
     for (VariableNode succ : entry.getValue()) {
       Type sType = succ.getType();
       if (pag.allocInvLookup(succ).isEmpty()

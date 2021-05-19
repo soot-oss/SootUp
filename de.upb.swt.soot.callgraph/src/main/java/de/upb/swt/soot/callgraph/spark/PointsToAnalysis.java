@@ -57,5 +57,4 @@ public interface PointsToAnalysis {
   public static final String PHI_NODE = "PHI_NODE";
 
   public Set<Node> getPointsToSet(Local local);
-
 }

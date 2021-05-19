@@ -41,9 +41,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class MiscEdgeHandler {
 
-  private MiscEdgeHandler(){
-
-  }
+  private MiscEdgeHandler() {}
 
   private static final JavaIdentifierFactory identifierFactory =
       JavaIdentifierFactory.getInstance();
@@ -56,13 +54,13 @@ public class MiscEdgeHandler {
           "main", VoidType.getInstance(), Collections.singleton(strArrayType));
   private static final MethodSignature threadInitSignature =
       identifierFactory.getMethodSignature(
-              INIT,
+          INIT,
           NodeConstants.THREAD,
           VOID,
           Arrays.asList(NodeConstants.THREAD_GROUP, NodeConstants.STRING));
   private static final MethodSignature finalizerInitSignature =
       identifierFactory.getMethodSignature(
-              INIT, NodeConstants.FINALIZER, VOID, Arrays.asList(NodeConstants.OBJECT));
+          INIT, NodeConstants.FINALIZER, VOID, Arrays.asList(NodeConstants.OBJECT));
   private static final MethodSignature finalizerRunFinalizerSignature =
       identifierFactory.getMethodSignature(
           "runFinalizer", NodeConstants.FINALIZER, VOID, Collections.emptyList());
@@ -71,13 +69,13 @@ public class MiscEdgeHandler {
           "access$100", NodeConstants.FINALIZER, VOID, Arrays.asList(NodeConstants.OBJECT));
   private static final MethodSignature classLoaderInitSignature =
       identifierFactory.getMethodSignature(
-              INIT, NodeConstants.CLASS_LOADER, VOID, Collections.emptyList());
+          INIT, NodeConstants.CLASS_LOADER, VOID, Collections.emptyList());
   private static final MethodSignature threadExitSignature =
       identifierFactory.getMethodSignature(
           "exit", NodeConstants.THREAD, VOID, Collections.emptyList());
   private static final MethodSignature privilegedActionExInitSignature =
       identifierFactory.getMethodSignature(
-              INIT,
+          INIT,
           NodeConstants.PRIVILEGED_ACTION_EXCEPTION,
           VOID,
           Arrays.asList(NodeConstants.EXCEPTION));
