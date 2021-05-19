@@ -89,7 +89,8 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
         methodArgs);
   }
 
-  public @Nonnull MethodSignature getBootstrapMethodSignature() {
+  @Nonnull
+  public MethodSignature getBootstrapMethodSignature() {
     return this.bootstrapMethodSignature;
   }
 

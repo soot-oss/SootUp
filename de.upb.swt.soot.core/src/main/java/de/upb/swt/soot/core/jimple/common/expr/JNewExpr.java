@@ -73,7 +73,8 @@ public final class JNewExpr implements Expr, Copyable {
   }
 
   @Override
-  public @Nonnull List<Value> getUses() {
+  @Nonnull
+  public List<Value> getUses() {
     return Collections.emptyList();
   }
 

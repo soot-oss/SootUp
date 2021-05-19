@@ -132,7 +132,8 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   }
 
   @Override
-  public @Nonnull List<Value> getUses() {
+  @Nonnull
+  public List<Value> getUses() {
     List<Value> list = new ArrayList<>(base.getUses());
     list.add(base);
     list.addAll(index.getUses());

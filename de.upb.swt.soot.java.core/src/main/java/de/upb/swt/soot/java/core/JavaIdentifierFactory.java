@@ -168,7 +168,8 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   }
 
   @Override
-  public @Nonnull Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName) {
+  @Nonnull
+  public Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName) {
     return PrimitiveType.find(typeName);
   }
 

@@ -86,7 +86,8 @@ public abstract class AbstractInvokeExpr implements Expr {
   }
 
   @Override
-  public @Nonnull List<Value> getUses() {
+  @Nonnull
+  public List<Value> getUses() {
     if (args == null) {
       return Collections.emptyList();
     }
