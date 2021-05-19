@@ -548,10 +548,56 @@ public class JimpleConverterTest {
 
   @Test
   public void testSingleQuoteEscapeSeq() {
-    CharStream cs =
-        CharStreams.fromString(
-            "public annotation interface android.support.'annotation'.SomeAnnotation extends java.lang.Object implements java.lang.'annotation'.Annotation\n {}");
-    checkJimpleClass(cs);
+
+    // old kind of escaping -> every part i.e. between the dot which needed escaping was escaped
+    {
+      CharStream cs =
+          CharStreams.fromString("public class escaped.'class' extends java.lang.Object {}");
+      SootClass<?> sc = checkJimpleClass(cs);
+      assertEquals("escaped.class", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      CharStream cs =
+          CharStreams.fromString("public class 'class'.is.escaped extends java.lang.Object {}");
+      SootClass<?> sc = checkJimpleClass(cs);
+      assertEquals("class.is.escaped", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // escaped word (pckg) which was unnecessarily escaped by the rules of old soot
+      CharStream cs =
+          CharStreams.fromString(
+              "public class some.'pckg'.'class'.More extends java.lang.Object {}");
+      SootClass<?> sc = checkJimpleClass(cs);
+      assertEquals("some.pckg.class.More", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // current escaping
+      CharStream cs =
+          CharStreams.fromString("public class 'annotation interface' extends java.lang.Object {}");
+      SootClass<?> sc = checkJimpleClass(cs);
+      assertEquals("some.pckg.class", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // no escaping needed as "class" is not considered a token if its nested into more
+      CharStream cs =
+          CharStreams.fromString("public class some.pckg.class extends java.lang.Object \n {}");
+      SootClass<?> sc = checkJimpleClass(cs);
+      assertEquals("some.pckg.class", sc.getClassSource().getClassType().toString());
+    }
+
+    try {
+      // missing escaping (i.e. class is a token which needs it!)
+      CharStream cs =
+          CharStreams.fromString(
+              "public class class extends java.lang.Object implements java.lang.'annotation'.Annotation\n {}");
+      SootClass<?> sc = checkJimpleClass(cs);
+      fail("escaping is needed");
+    } catch (Exception ignored) {
+    }
   }
 
   @Test(expected = RuntimeException.class)
