@@ -35,7 +35,7 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.*;
 import javax.annotation.Nonnull;
 
-/**@Zun Wang*/
+/** @Zun Wang */
 public final class JPhiExpr implements Expr, Copyable {
 
   private final Local[] args;
