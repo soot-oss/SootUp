@@ -23,7 +23,6 @@ package de.upb.swt.soot.java.core;
  */
 
 import de.upb.swt.soot.core.frontend.ResolveException;
-import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -199,7 +198,7 @@ public abstract class JavaModuleInfo {
     }
 
     @Nonnull
-    public PackageName getPackageName() {
+    public ModulePackageName getPackageName() {
       return packageName;
     }
 

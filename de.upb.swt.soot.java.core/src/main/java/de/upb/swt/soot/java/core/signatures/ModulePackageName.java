@@ -70,7 +70,7 @@ public class ModulePackageName extends JavaPackageName {
   }
 
   /*
-    FIXME: used in toPath in resolving..
+    FIXME: argh.. its used in JavaClassType.toPath in resolving..
     @Override
     public String toString() {
       return getModuleSignature()+"/"+getPackageName();

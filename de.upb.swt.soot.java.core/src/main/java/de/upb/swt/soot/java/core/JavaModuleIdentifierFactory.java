@@ -22,15 +22,18 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 
-import de.upb.swt.soot.core.signatures.PackageName;
+import de.upb.swt.soot.core.signatures.*;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
+import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ClassUtils;
 
 public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
 
@@ -54,10 +57,7 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
 
   public static JavaModuleIdentifierFactory getInstance(@Nonnull ModuleSignature moduleSignature) {
     return moduleIdentifierFactoryWrapper.computeIfAbsent(
-        moduleSignature,
-        methodSignature -> {
-          return new IdentifierFactoryWrapper(moduleSignature);
-        });
+        moduleSignature, methodSignature -> new IdentifierFactoryWrapper(moduleSignature));
   }
 
   static {
@@ -74,6 +74,26 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
   @Override
   public JavaClassType getClassType(final String className, final String packageName) {
     return getClassType(className, packageName, ModuleSignature.UNNAMED_MODULE.getModuleName());
+  }
+
+  @Override
+  public JavaClassType getClassType(String fullyQualyfiedClassNameWithModule) {
+
+    int moduleSplit = fullyQualyfiedClassNameWithModule.indexOf('/');
+    String moduleName = null;
+    if (moduleSplit >= 0) {
+      moduleName = fullyQualyfiedClassNameWithModule.substring(0, moduleSplit);
+      fullyQualyfiedClassNameWithModule =
+          fullyQualyfiedClassNameWithModule.substring(moduleSplit + 1);
+    }
+
+    String className = ClassUtils.getShortClassName(fullyQualyfiedClassNameWithModule);
+    String packageName = ClassUtils.getPackageName(fullyQualyfiedClassNameWithModule);
+    if (moduleName == null) {
+      return getClassType(className, packageName);
+    } else {
+      return getClassType(className, packageName, moduleName);
+    }
   }
 
   /**
@@ -93,6 +113,14 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
       final @Nonnull String packageName,
       final @Nonnull String moduleName) {
     PackageName packageIdentifier = getPackageName(packageName, moduleName);
+    return new JavaClassType(className, packageIdentifier);
+  }
+
+  public JavaClassType getClassType(
+      final @Nonnull String className,
+      final @Nonnull String packageName,
+      final @Nonnull ModuleSignature moduleSignature) {
+    PackageName packageIdentifier = getPackageName(packageName, moduleSignature);
     return new JavaClassType(className, packageIdentifier);
   }
 
@@ -145,12 +173,61 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
     return packageSignature;
   }
 
+  public ModulePackageName getPackageName(
+      @Nonnull final String packageName, @Nonnull final ModuleSignature moduleSignature) {
+    String fqId = moduleSignature.getModuleName() + "." + packageName;
+    ModulePackageName packageSignature = (ModulePackageName) packages.get(fqId);
+    if (packageSignature == null) {
+      packageSignature = new ModulePackageName(packageName, moduleSignature);
+      packages.put(fqId, packageSignature);
+    }
+    return packageSignature;
+  }
+
+  /** Wrapper which refers to a given ModuleSignature when building stuff */
   private static class IdentifierFactoryWrapper extends JavaModuleIdentifierFactory {
 
     @Nonnull private final ModuleSignature moduleSignature;
 
     private IdentifierFactoryWrapper(@Nonnull ModuleSignature moduleSignature) {
       this.moduleSignature = moduleSignature;
+    }
+
+    @Override
+    public JavaClassType getClassType(String fullyQualifiedClassName) {
+      String className = ClassUtils.getShortClassName(fullyQualifiedClassName);
+      String packageName = ClassUtils.getPackageName(fullyQualifiedClassName);
+      return getClassType(className, packageName, moduleSignature);
+    }
+
+    @Override
+    public AnnotationType getAnnotationType(String fullyQualifiedClassName) {
+      // TODO: implement for modules
+      return super.getAnnotationType(fullyQualifiedClassName);
+    }
+
+    @Override
+    public MethodSignature getMethodSignature(
+        String methodName,
+        String fullyQualifiedNameDeclClass,
+        String fqReturnType,
+        List<String> parameters) {
+      return super.getMethodSignature(
+          methodName, fullyQualifiedNameDeclClass, fqReturnType, parameters);
+    }
+
+    @Nonnull
+    @Override
+    public MethodSignature parseMethodSignature(@Nonnull String methodSignature) {
+      // TODO: implement for modules
+      return super.parseMethodSignature(methodSignature);
+    }
+
+    @Nonnull
+    @Override
+    public FieldSignature parseFieldSignature(@Nonnull String fieldSignature) {
+      // TODO: implement for modules
+      return super.parseFieldSignature(fieldSignature);
     }
 
     @Override
@@ -164,7 +241,7 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
         className = fullyQualifiedName.substring(index);
         packageName = fullyQualifiedName.substring(0, index);
       }
-      return getClassType(className, packageName, moduleSignature.getModuleName());
+      return getClassType(className, packageName, moduleSignature);
     }
   }
 }
