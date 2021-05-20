@@ -18,6 +18,7 @@
 *.war
 !shared-test-resources/java-miniapps/MiniApp.jar
 !shared-test-resources/java-warApp/dummyWarApp.war
+!shared-test-resources/multi-release-jar/mrjar.jar
 *.ear
 *.zip
 *.tar.gz
