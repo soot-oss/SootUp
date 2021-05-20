@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
@@ -20,13 +21,11 @@ import org.junit.Test;
 
 public class JimpleConverterTest {
 
-  SootClass<?> parseJimpleClass(CharStream cs) throws ResolveException {
-
+  private SootClass<?> parseJimpleClass(CharStream cs) throws ResolveException {
     JimpleConverter jimpleVisitor = new JimpleConverter();
-    final OverridingClassSource scs = jimpleVisitor.run(cs, null, Paths.get(""));
-    final SootClass<?> sc = new SootClass<>(scs, SourceType.Application);
-
-    return sc;
+    final OverridingClassSource scs =
+        jimpleVisitor.run(cs, new EagerInputLocation<>(), Paths.get(""));
+    return new SootClass<>(scs, SourceType.Application);
   }
 
   @Test
