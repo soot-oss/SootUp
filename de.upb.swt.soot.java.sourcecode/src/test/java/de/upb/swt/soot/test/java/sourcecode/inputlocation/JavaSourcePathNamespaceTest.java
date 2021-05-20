@@ -12,10 +12,15 @@ import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import de.upb.swt.soot.java.core.views.JavaView;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -27,23 +32,26 @@ public class JavaSourcePathNamespaceTest {
   public void testGetClassSource() {
     String srcDir = "../shared-test-resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
-    AnalysisInputLocation inputLocation =
+    AnalysisInputLocation<JavaSootClass> inputLocation =
         new JavaSourcePathAnalysisInputLocation(
             ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
-    Optional<? extends AbstractClassSource> classSourceOptional =
-        inputLocation.getClassSource(type);
-    assertTrue(classSourceOptional.isPresent());
-    AbstractClassSource classSource = classSourceOptional.get();
+    final JavaProject project =
+        JavaProject.builder(new JavaLanguage(8)).addClassPath(inputLocation).build();
+    final JavaView view = project.createOnDemandView();
+
+    Optional<JavaSootClass> clazz = view.getClass(type);
+    assertTrue(clazz.isPresent());
+    AbstractClassSource<JavaSootClass> classSource = clazz.get().getClassSource();
 
     assertEquals(type, classSource.getClassType());
 
-    AbstractClassSource content = classSource;
+    AbstractClassSource<JavaSootClass> content = classSource;
     assertNotNull(content);
     assertTrue(content instanceof SootClassSource);
-    assertEquals(3, ((SootClassSource) content).resolveMethods().size());
-    assertEquals(0, ((SootClassSource) content).resolveFields().size());
+    assertEquals(3, ((SootClassSource<JavaSootClass>) content).resolveMethods().size());
+    assertEquals(0, ((SootClassSource<JavaSootClass>) content).resolveFields().size());
   }
 
   @Ignore
@@ -55,8 +63,13 @@ public class JavaSourcePathNamespaceTest {
             ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
 
     JavaIdentifierFactory defaultFactories = JavaIdentifierFactory.getInstance();
+
+    final JavaProject project =
+        JavaProject.builder(new JavaLanguage(8)).addClassPath(inputLocation).build();
+    final JavaView view = project.createOnDemandView();
+
     Collection<? extends AbstractClassSource> classSources =
-        inputLocation.getClassSources(defaultFactories);
+        view.getClasses().stream().map(jsc -> jsc.getClassSource()).collect(Collectors.toList());
 
     ClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
     Optional<ClassType> optionalFoundType =

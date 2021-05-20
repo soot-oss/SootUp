@@ -5,6 +5,7 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /** @author Markus Schmidt */
-public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
+public class JimpleAnalysisInputLocation implements AnalysisInputLocation<SootClass<?>> {
   final Path path;
 
   public JimpleAnalysisInputLocation(@Nonnull Path path) {
@@ -28,10 +29,10 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   }
 
   @Nonnull
-  Collection<? extends AbstractClassSource> walkDirectory(
+  Collection<? extends AbstractClassSource<SootClass<?>>> walkDirectory(
       @Nonnull Path dirPath,
       @Nonnull IdentifierFactory factory,
-      @Nonnull ClassProvider classProvider) {
+      @Nonnull ClassProvider<SootClass<?>> classProvider) {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
       return Files.walk(dirPath)
@@ -48,14 +49,14 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   }
 
   @Override
-  public @Nonnull Collection<? extends AbstractClassSource<?>> getClassSources(
+  public @Nonnull Collection<? extends AbstractClassSource<SootClass<?>>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
     return walkDirectory(
         path, identifierFactory, new JimpleClassProvider(view.getBodyInterceptors()));
   }
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource<?>> getClassSource(
+  public @Nonnull Optional<? extends AbstractClassSource<SootClass<?>>> getClassSource(
       @Nonnull ClassType type, @Nonnull View<?> view) {
     final JimpleClassProvider classProvider = new JimpleClassProvider(view.getBodyInterceptors());
 

@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
  * @see <a
  *     href=http://docs.oracle.com/javase/9/docs/api/java/lang/module/ModuleFinder.html#of-java.nio.file.Path...->ModuleFinder</a>
  */
-public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInputLocation {
+public class JavaModulePathAnalysisInputLocation implements AnalysisInputLocation<JavaSootClass> {
   private static final @Nonnull Logger logger =
       LoggerFactory.getLogger(JavaModulePathAnalysisInputLocation.class);
 

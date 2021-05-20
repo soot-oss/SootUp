@@ -59,12 +59,14 @@ public class JimpleView extends AbstractView<SootClass<?>> {
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
   }
 
+  @Nonnull
   public List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation<SootClass<?>> clazz) {
     return classLoadingOptionsSpecifier.apply(clazz) != null
         ? classLoadingOptionsSpecifier.apply(clazz).getBodyInterceptors()
         : getBodyInterceptors();
   }
 
+  @Nonnull
   public List<BodyInterceptor> getBodyInterceptors() {
     return Collections.emptyList();
   }

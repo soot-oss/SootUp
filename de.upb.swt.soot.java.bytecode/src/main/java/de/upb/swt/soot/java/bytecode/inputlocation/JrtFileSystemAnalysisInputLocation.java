@@ -55,7 +55,7 @@ import javax.annotation.Nonnull;
  *
  * @author Andreas Dann created on 06.06.18
  */
-public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInputLocation {
+public class JrtFileSystemAnalysisInputLocation implements AnalysisInputLocation<JavaSootClass> {
 
   private final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 

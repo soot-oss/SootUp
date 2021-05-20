@@ -7,6 +7,7 @@ import com.google.common.cache.RemovalNotification;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
@@ -68,7 +69,8 @@ import org.xml.sax.SAXException;
  * @author Manuel Benz created on 22.05.18
  * @author Kaustubh Kelkar updated on 30.07.2020
  */
-public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysisInputLocation {
+public abstract class PathBasedAnalysisInputLocation
+    implements AnalysisInputLocation<JavaSootClass> {
   protected final Path path;
 
   private PathBasedAnalysisInputLocation(@Nonnull Path path) {

@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 import org.antlr.v4.runtime.CharStreams;
 
 /** @author Markus Schmidt */
-public class JimpleClassProvider implements ClassProvider<SootClass> {
+public class JimpleClassProvider implements ClassProvider<SootClass<?>> {
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
@@ -23,8 +23,10 @@ public class JimpleClassProvider implements ClassProvider<SootClass> {
   }
 
   @Override
-  public AbstractClassSource<SootClass> createClassSource(
-      AnalysisInputLocation<SootClass> inputlocation, Path sourcePath, ClassType classSignature) {
+  public AbstractClassSource<SootClass<?>> createClassSource(
+      AnalysisInputLocation<SootClass<?>> inputlocation,
+      Path sourcePath,
+      ClassType classSignature) {
 
     try {
       final JimpleConverter jimpleConverter = new JimpleConverter();

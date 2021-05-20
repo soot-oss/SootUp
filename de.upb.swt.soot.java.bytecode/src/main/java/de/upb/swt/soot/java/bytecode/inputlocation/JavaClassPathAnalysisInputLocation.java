@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Manuel Benz created on 22.05.18
  * @author Kaustubh Kelkar updated on 20.07.2020
  */
-public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInputLocation {
+public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation<JavaSootClass> {
   private static final @Nonnull Logger logger =
       LoggerFactory.getLogger(JavaClassPathAnalysisInputLocation.class);
   private static final @Nonnull String WILDCARD_CHAR = "*";

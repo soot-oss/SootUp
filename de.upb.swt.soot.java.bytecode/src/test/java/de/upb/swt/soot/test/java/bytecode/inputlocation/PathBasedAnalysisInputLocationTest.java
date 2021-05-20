@@ -94,9 +94,6 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
             .build();
     final JavaView view_max = project_max.createOnDemandView();
 
-    // TODO refactor to:
-    // view_10.getClass(classType)
-
     // for java10
     Assert.assertEquals(
         "/META-INF/versions/9/Utility.class",
@@ -182,7 +179,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   }
 
   @Test
-  /** TODO fixme */
+  /** TODO [bh] this test was not doing anything, the class is not found */
   @Ignore
   public void testWar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
