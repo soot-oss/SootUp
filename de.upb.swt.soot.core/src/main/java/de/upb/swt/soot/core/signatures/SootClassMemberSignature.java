@@ -34,21 +34,21 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public abstract class SootClassMemberSignature implements Signature {
+public abstract class SootClassMemberSignature<V extends SootClassMemberSubSignature>
+    implements Signature {
 
   /** The signature of the declaring class. */
   @Nonnull private final ClassType declClassSignature;
 
-  @Nonnull private final SootClassMemberSubSignature subSignature;
+  @Nonnull private final V subSignature;
 
-  public SootClassMemberSignature(
-      @Nonnull ClassType klass, @Nonnull SootClassMemberSubSignature subSignature) {
+  public SootClassMemberSignature(@Nonnull ClassType klass, @Nonnull V subSignature) {
     this.declClassSignature = klass;
     this.subSignature = subSignature;
   }
 
   @Nonnull
-  public SootClassMemberSubSignature getSubSignature() {
+  public V getSubSignature() {
     return subSignature;
   }
 
@@ -74,7 +74,8 @@ public abstract class SootClassMemberSignature implements Signature {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    SootClassMemberSignature that = (SootClassMemberSignature) o;
+
+    SootClassMemberSignature<V> that = (SootClassMemberSignature) o;
     return Objects.equal(declClassSignature, that.declClassSignature)
         && Objects.equal(subSignature, that.subSignature);
   }

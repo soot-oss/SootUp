@@ -35,7 +35,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootField extends SootClassMember<FieldSignature> implements Field {
+public class SootField extends SootClassMember<FieldSubSignature, FieldSignature> implements Field {
 
   /** Constructs a Soot field with the given name, type and modifiers. */
   public SootField(

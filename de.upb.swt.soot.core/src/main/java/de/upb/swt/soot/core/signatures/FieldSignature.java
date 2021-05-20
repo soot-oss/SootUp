@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class FieldSignature extends SootClassMemberSignature {
+public class FieldSignature extends SootClassMemberSignature<FieldSubSignature> {
 
   @Nonnull private final FieldSubSignature subSignature;
 

@@ -36,6 +36,7 @@ import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.Collections;
 import java.util.Iterator;
@@ -48,12 +49,13 @@ import javax.annotation.Nullable;
 /**
  * Soot's counterpart of the source language's method concept. Soot representation of a Java method.
  * Can be declared to belong to a SootClass. Does not contain the actual code, which belongs to a
- * Body. The getBody() method points to the currently-active body.
+ * Body.
  *
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootMethod extends SootClassMember<MethodSignature> implements Method, Copyable {
+public class SootMethod extends SootClassMember<MethodSubSignature, MethodSignature>
+    implements Method, Copyable {
 
   /**
    * An array of parameter types taken by this <code>SootMethod</code> object, in declaration order.
@@ -80,17 +82,22 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     this.exceptions = ImmutableUtils.immutableListOf(thrownExceptions);
   }
 
-  @Nullable
+  @Nonnull
   private Body lazyBodyInitializer() {
-    if (!isConcrete()) return null;
+    if (!isConcrete()) {
+      throw new ResolveException(
+          "There is no corresponding body if the method is not concrete i.e."
+              + getSignature()
+              + " is abstract or native.",
+          Paths.get(""));
+    }
+    ;
 
     Body body;
     try {
       body = bodySource.resolveBody(getModifiers());
     } catch (ResolveException | IOException e) {
-      body = null;
-      // TODO: [JMP] Exception handling
-      e.printStackTrace();
+      throw new ResolveException("Could not resolve a corresponding body", Paths.get(""), e);
     }
 
     return body;
@@ -129,14 +136,14 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   private final @Nonnull Supplier<Body> _lazyBody = Suppliers.memoize(this::lazyBodyInitializer);
 
   /** Retrieves the active body for this method. */
-  @Nullable
+  @Nonnull
   public Body getBody() {
-    return this._lazyBody.get(); // TODO: [JMP] Refactor to return `.getAsOptional()`
+    return this._lazyBody.get();
   }
 
-  /** Returns true if this method has an active body. */
+  /** Returns true if this method has a body. */
   public boolean hasBody() {
-    return this.getBody() != null;
+    return isConcrete();
   }
 
   @Nonnull

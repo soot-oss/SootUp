@@ -37,7 +37,8 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public abstract class SootClassMember<S extends SootClassMemberSignature> {
+public abstract class SootClassMember<
+    U extends SootClassMemberSubSignature, S extends SootClassMemberSignature<U>> {
 
   @Nonnull private final S signature;
   @Nonnull private final ImmutableSet<Modifier> modifiers;
@@ -110,13 +111,14 @@ public abstract class SootClassMember<S extends SootClassMemberSignature> {
   }
 
   @Nonnull
-  public SootClassMemberSubSignature getSubSignature() {
+  public U getSubSignature() {
     return signature.getSubSignature();
   }
 
   @Nonnull
   public String getName() {
-    return this.signature.getName();
+
+    return signature.getName();
   }
 
   @Nonnull
