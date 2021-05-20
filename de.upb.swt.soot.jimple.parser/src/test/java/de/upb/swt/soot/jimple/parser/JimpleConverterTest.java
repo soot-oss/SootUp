@@ -11,6 +11,7 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.core.util.StringTools;
 import de.upb.swt.soot.jimple.JimpleParser;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -590,6 +591,81 @@ public class JimpleConverterTest {
       fail("escaping is needed");
     } catch (Exception ignored) {
     }
+
+    {
+      // inside quotes
+      CharStream cs =
+          CharStreams.fromString(
+              "public class \"\\'some.pckg.ClassObj\\'\" extends java.lang.Object \n {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("'some.pckg.ClassObj'", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // testing escaped string things
+      CharStream cs =
+          CharStreams.fromString(
+              "public class 'some.'.pckg.'.ClassObj' extends java.lang.Object \n {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("some..pckg..ClassObj", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // testing escaped string things
+      CharStream cs =
+          CharStreams.fromString(
+              "public class \"some.\\'.pckg.\\'.ClassObj\" extends java.lang.Object \n {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("some.'.pckg.'.ClassObj", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      assertEquals("'class'", Jimple.unescape("\"'class'\""));
+      CharStream cs =
+          CharStreams.fromString(
+              "public class \"'notescapedquotesinstring'\" extends java.lang.Object \n {}");
+      try {
+        SootClass<?> sc = parseJimpleClass(cs);
+        fail("quotes in string are not escaped");
+      } catch (Exception ignore) {
+      }
+    }
+
+    {
+
+      // escaped quotes in escaped sequence
+      CharStream cs =
+          CharStreams.fromString("public class \"\\'class\\'\" extends java.lang.Object \n {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+
+      assertEquals("'class'", Jimple.unescape("\"\\'class\\'\""));
+      assertEquals("'class'", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // different escape start /end symbol
+      try {
+        CharStream cs =
+            CharStreams.fromString("public class \"class' extends java.lang.Object \n {}");
+        SootClass<?> sc = parseJimpleClass(cs);
+        fail("start and end quote do not match.");
+      } catch (Exception ignore) {
+      }
+    }
+
+    assertEquals("\\", StringTools.getUnEscapedStringOf("\\\\"));
+    assertEquals("\"", StringTools.getUnEscapedStringOf("\\\""));
+    assertEquals("'", StringTools.getUnEscapedStringOf("\\'"));
+    assertEquals("\"'", StringTools.getUnEscapedStringOf("\"\\'"));
+
+    assertEquals("'class'", Jimple.unescape("\"'class'\""));
+    assertEquals("'class'", Jimple.unescape("\"\\'class\\'\""));
+    assertEquals("'class'", Jimple.unescape("\\'class\\'"));
+
+    // necessary inner escaping
+    assertEquals("\"class\"", Jimple.unescape("\"\\\"class\\\"\""));
+    // unnecessary inner escaping
+    assertEquals("'class'", Jimple.unescape("\"'class'\""));
   }
 
   @Test(expected = RuntimeException.class)
