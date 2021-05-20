@@ -26,13 +26,6 @@ public class JimpleConverterTest {
     final OverridingClassSource scs = jimpleVisitor.run(cs, null, Paths.get(""));
     final SootClass<?> sc = new SootClass<>(scs, SourceType.Application);
 
-    /* print for debugging:
-    StringWriter output = new StringWriter();
-    Printer p = new Printer();
-    p.printTo(sc, new PrintWriter(output));
-    System.out.println(output);
-    */
-
     return sc;
   }
 
