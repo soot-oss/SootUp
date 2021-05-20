@@ -20,32 +20,11 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaSootClass;
-import java.util.Collection;
-import java.util.Optional;
-import javax.annotation.Nonnull;
 
 /**
  * An {@link AnalysisInputLocation} containing Java bytecode. Supplies default {@link
  * de.upb.swt.soot.core.inputlocation.ClassLoadingOptions} from {@link BytecodeClassLoadingOptions}.
  */
-public interface BytecodeAnalysisInputLocation extends AnalysisInputLocation<JavaSootClass> {
-
-  @Nonnull
-  @Override
-  default Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType type) {
-    return getClassSource(type, BytecodeClassLoadingOptions.Default);
-  }
-
-  @Nonnull
-  @Override
-  default Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory) {
-    return getClassSources(identifierFactory, BytecodeClassLoadingOptions.Default);
-  }
-}
+public interface BytecodeAnalysisInputLocation extends AnalysisInputLocation<JavaSootClass> {}

@@ -25,12 +25,12 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
+import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
@@ -61,9 +61,9 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull ClassType classType, @Nonnull View<?> view) {
     JavaClassType klassType = (JavaClassType) classType;
-    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
+    List<BodyInterceptor> bodyInterceptors = view.getBodyInterceptors();
     if (klassType.getPackageName() instanceof ModulePackageName) {
       return this.getClassSourceInternalForModule(
           klassType, new AsmJavaClassProvider(bodyInterceptors));
@@ -119,9 +119,8 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
   // get the factory, which I should use the create the correspond class signatures
   @Override
   public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull ClassLoadingOptions classLoadingOptions) {
-    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
+      @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
+    List<BodyInterceptor> bodyInterceptors = view.getBodyInterceptors();
 
     final Path archiveRoot = theFileSystem.getPath("modules");
     return walkDirectory(

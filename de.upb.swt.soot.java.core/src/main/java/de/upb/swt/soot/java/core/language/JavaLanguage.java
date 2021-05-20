@@ -43,12 +43,20 @@ public class JavaLanguage extends Language {
   /** The use java modules. */
   private final boolean useJavaModules;
 
+  public int getVersion() {
+    return version;
+  }
+
+  /** The version number. */
+  private final int version;
+
   /**
    * Instantiates a new java language with given version e.g 8 or 9
    *
    * @param version the version
    */
   public JavaLanguage(int version) {
+    this.version = version;
     if (version <= 8) {
       identifierFactory = JavaIdentifierFactory.getInstance();
       useJavaModules = false;

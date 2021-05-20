@@ -10,6 +10,9 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -80,11 +83,15 @@ public abstract class AnalysisInputLocationTest {
       int minClassesFound,
       int maxClassesFound) {
 
-    final Optional<? extends AbstractClassSource> clazz = inputLocation.getClassSource(sig);
-    clazz.ifPresent(abstractClassSource -> assertEquals(sig, abstractClassSource.getClassType()));
+    final JavaProject project =
+        JavaProject.builder(new JavaLanguage(8)).addClassPath(inputLocation).build();
+    final JavaView view = project.createOnDemandView();
+
+    final Optional<AbstractClassSource> clazz = inputLocation.getClassSource(sig, view);
+    assertEquals(sig, clazz.get().getClassType());
 
     final Collection<? extends AbstractClassSource> classSources =
-        inputLocation.getClassSources(getIdentifierFactory());
+        inputLocation.getClassSources(getIdentifierFactory(), view);
 
     assertTrue(classSources.size() >= minClassesFound);
     if (maxClassesFound != -1) {

@@ -27,7 +27,6 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
@@ -36,6 +35,7 @@ import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.*;
+import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
@@ -80,13 +80,12 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
 
   @Override
   public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
     Preconditions.checkArgument(
         identifierFactory instanceof ModuleIdentifierFactory,
         "Factory must be a ModuleSignatureFactory");
 
-    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
+    List<BodyInterceptor> bodyInterceptors = view.getBodyInterceptors();
     ModuleFinder moduleFinder =
         new ModuleFinder(new AsmJavaClassProvider(bodyInterceptors), modulePath);
     Set<AbstractClassSource<JavaSootClass>> found = new HashSet<>();
@@ -104,7 +103,7 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
          */
         identifierFactoryWrapper = new IdentifierFactoryWrapper(identifierFactoryWrapper, module);
       }
-      found.addAll(inputLocation.getClassSources(identifierFactoryWrapper));
+      found.addAll(inputLocation.getClassSources(identifierFactoryWrapper, view));
     }
 
     return found;
@@ -112,9 +111,9 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull ClassType classType, @Nonnull View<?> view) {
     JavaClassType klassType = (JavaClassType) classType;
-    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
+    List<BodyInterceptor> bodyInterceptors = view.getBodyInterceptors();
 
     String modulename =
         ((ModulePackageName) klassType.getPackageName()).getModuleSignature().getModuleName();
@@ -131,7 +130,7 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
         return Optional.empty();
       }
     }
-    return inputLocation.getClassSource(klassType);
+    return inputLocation.getClassSource(klassType, view);
   }
 
   private static class IdentifierFactoryWrapper implements IdentifierFactory {

@@ -27,6 +27,7 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.AbstractView;
 import de.upb.swt.soot.java.core.AnnotationUsage;
@@ -34,6 +35,7 @@ import de.upb.swt.soot.java.core.JavaAnnotationSootClass;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.types.AnnotationType;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +81,22 @@ public class JavaView extends AbstractView<JavaSootClass> {
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
   }
 
+  @Nonnull
+  @Override
+  public List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation<JavaSootClass> clazz) {
+    return this.classLoadingOptionsSpecifier.apply(clazz) != null
+        ? this.classLoadingOptionsSpecifier.apply(clazz).getBodyInterceptors()
+        : getBodyInterceptors();
+  }
+
+  @Nonnull
+  @Override
+  public List<BodyInterceptor> getBodyInterceptors() {
+    // TODO add default interceptors from
+    // de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
+    return Collections.emptyList();
+  }
+
   @Override
   @Nonnull
   public synchronized Collection<JavaSootClass> getClasses() {
@@ -101,16 +119,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
 
     final List<AbstractClassSource<JavaSootClass>> foundClassSources =
         getProject().getInputLocations().stream()
-            .map(
-                location -> {
-                  ClassLoadingOptions classLoadingOptions =
-                      classLoadingOptionsSpecifier.apply(location);
-                  if (classLoadingOptions != null) {
-                    return location.getClassSource(type, classLoadingOptions);
-                  } else {
-                    return location.getClassSource(type);
-                  }
-                })
+            .map(location -> location.getClassSource(type, this))
             .filter(Optional::isPresent)
             .limit(2)
             .map(Optional::get)
@@ -156,16 +165,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
 
     getProject().getInputLocations().stream()
         .flatMap(
-            location -> {
-              ClassLoadingOptions classLoadingOptions =
-                  classLoadingOptionsSpecifier.apply(location);
-              if (classLoadingOptions != null) {
-                return location.getClassSources(getIdentifierFactory(), classLoadingOptions)
-                    .stream();
-              } else {
-                return location.getClassSources(getIdentifierFactory()).stream();
-              }
-            })
+            location -> location.getClassSources(getIdentifierFactory(), this).stream())
         .forEach(this::buildClassFrom);
     isFullyResolved = true;
   }

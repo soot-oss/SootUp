@@ -24,6 +24,7 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.views.View;
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -50,31 +51,13 @@ public interface AnalysisInputLocation<T extends SootClass> {
    * @return The source entry for that class.
    */
   @Nonnull
-  Optional<? extends AbstractClassSource<T>> getClassSource(@Nonnull ClassType type);
-
-  /**
-   * Scan the input location and create ClassSources for every compilation / interpretation unit.
-   */
-  // TODO [ms] does that paramter make any sense
-  @Nonnull
-  Collection<? extends AbstractClassSource<T>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory);
-
-  /**
-   * Create or find a class source for a given type.
-   *
-   * @param type The type of the class to be found.
-   * @return The source entry for that class.
-   */
-  @Nonnull
   Optional<? extends AbstractClassSource<T>> getClassSource(
-      @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions);
+      @Nonnull ClassType type, @Nonnull View<?> view);
 
   /**
    * Scan the input location and create ClassSources for every compilation / interpretation unit.
    */
   @Nonnull
   Collection<? extends AbstractClassSource<T>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull ClassLoadingOptions classLoadingOptions);
+      @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view);
 }

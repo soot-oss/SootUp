@@ -3,8 +3,12 @@ package de.upb.swt.soot.test.java.bytecode.inputlocation;
 import categories.Java9Test;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
+import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Collection;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -36,7 +40,10 @@ public class JrtFileSystemNamespaceTest extends AnalysisInputLocationTest {
   @Test
   public void getClassSourcesClasspath() {
     JrtFileSystemAnalysisInputLocation ns = new JrtFileSystemAnalysisInputLocation();
-    ns.getClassSources(getIdentifierFactory());
+    final JavaProject project = JavaProject.builder(new JavaLanguage(8)).addClassPath(ns).build();
+    final JavaView view = project.createFullView();
+
+    view.getClasses().stream().map(JavaSootClass::getClassSource);
   }
 
   @Test

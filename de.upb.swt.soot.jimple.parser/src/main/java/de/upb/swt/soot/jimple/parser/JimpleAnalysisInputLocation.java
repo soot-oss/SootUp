@@ -4,12 +4,11 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.inputlocation.EmptyClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
+import de.upb.swt.soot.core.views.View;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -48,34 +47,17 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
     }
   }
 
-  @Nonnull
   @Override
-  public Collection<? extends AbstractClassSource> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory) {
-    return getClassSources(identifierFactory, EmptyClassLoadingOptions.Default);
-  }
-
-  @Override
-  public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull ClassLoadingOptions classLoadingOptions) {
+  public @Nonnull Collection<? extends AbstractClassSource<?>> getClassSources(
+      @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
     return walkDirectory(
-        path,
-        identifierFactory,
-        new JimpleClassProvider(classLoadingOptions.getBodyInterceptors()));
-  }
-
-  @Nonnull
-  @Override
-  public Optional<? extends AbstractClassSource> getClassSource(@Nonnull ClassType type) {
-    return getClassSource(type, EmptyClassLoadingOptions.Default);
+        path, identifierFactory, new JimpleClassProvider(view.getBodyInterceptors()));
   }
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
-    final JimpleClassProvider classProvider =
-        new JimpleClassProvider(classLoadingOptions.getBodyInterceptors());
+  public @Nonnull Optional<? extends AbstractClassSource<?>> getClassSource(
+      @Nonnull ClassType type, @Nonnull View<?> view) {
+    final JimpleClassProvider classProvider = new JimpleClassProvider(view.getBodyInterceptors());
 
     final String ext = classProvider.getHandledFileType().toString().toLowerCase();
 

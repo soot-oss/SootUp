@@ -7,14 +7,17 @@ import com.google.common.cache.RemovalNotification;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
-import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
+import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -82,7 +85,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
    *     Path}'s FileSystem
    */
   public static @Nonnull PathBasedAnalysisInputLocation createForClassContainer(
-      @Nonnull Path path, int javaVersion) {
+      @Nonnull Path path) {
 
     if (Files.isDirectory(path)) {
       return new DirectoryBasedAnalysisInputLocation(path);
@@ -93,7 +96,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
 
       // check if mainfest contains multi release flag
       if (isMultiReleaseJar(path)) {
-        return new MultiReleaseJarAnalysisInputLocation(path, javaVersion);
+        return new MultiReleaseJarAnalysisInputLocation(path);
       }
       return new ArchiveBasedAnalysisInputLocation(path);
     } else {
@@ -169,40 +172,32 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
 
     @Override
     public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull IdentifierFactory identifierFactory,
-        @Nonnull ClassLoadingOptions classLoadingOptions) {
+        @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
       return walkDirectory(
-          path,
-          identifierFactory,
-          new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()));
+          path, identifierFactory, new AsmJavaClassProvider(view.getBodyInterceptors()));
     }
 
     @Override
     public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-        @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
+        @Nonnull ClassType type, @Nonnull View<?> view) {
       return getClassSourceInternal(
-          (JavaClassType) type,
-          path,
-          new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()));
+          (JavaClassType) type, path, new AsmJavaClassProvider(view.getBodyInterceptors()));
     }
   }
 
   private static class MultiReleaseJarAnalysisInputLocation
       extends ArchiveBasedAnalysisInputLocation {
 
-    private final int javaVersion;
-
-    private MultiReleaseJarAnalysisInputLocation(@Nonnull Path path, int javaVersion) {
+    private MultiReleaseJarAnalysisInputLocation(@Nonnull Path path) {
       super(path);
-      this.javaVersion = javaVersion;
     }
 
-    @Override
     @Nonnull
     protected Optional<? extends AbstractClassSource<JavaSootClass>> getClassSourceInternal(
         @Nonnull JavaClassType signature,
         @Nonnull Path path,
-        @Nonnull ClassProvider<JavaSootClass> classProvider) {
+        @Nonnull ClassProvider<JavaSootClass> classProvider,
+        @Nonnull View<?> view) {
 
       int[] availableVersions = {};
 
@@ -221,9 +216,14 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         e.printStackTrace();
       }
 
+      JavaView javaView = (JavaView) view;
+      JavaProject javaProject = (JavaProject) javaView.getProject();
+      int javaVersion = ((JavaLanguage) javaProject.getLanguage()).getVersion();
+
       // return best match
       for (int i = availableVersions.length - 1; i >= 0; i--) {
-        if (availableVersions[i] > this.javaVersion) continue;
+
+        if (availableVersions[i] > javaVersion) continue;
 
         final Path versionRoot =
             path.getFileSystem().getPath("/META-INF/versions/" + availableVersions[i] + "/");
@@ -246,6 +246,22 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       }
 
       return Optional.of(classProvider.createClassSource(this, pathToClass, signature));
+    }
+
+    @Override
+    public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+        @Nonnull ClassType type, @Nonnull View<?> view) {
+      try {
+        FileSystem fs = fileSystemCache.get(path);
+        final Path archiveRoot = fs.getPath("/");
+        return getClassSourceInternal(
+            (JavaClassType) type,
+            archiveRoot,
+            new AsmJavaClassProvider(view.getBodyInterceptors()),
+            view);
+      } catch (ExecutionException e) {
+        throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
+      }
     }
   }
 
@@ -282,14 +298,14 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
 
     @Override
     public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-        @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
+        @Nonnull ClassType type, @Nonnull View<?> view) {
       try {
         FileSystem fs = fileSystemCache.get(path);
         final Path archiveRoot = fs.getPath("/");
         return getClassSourceInternal(
             (JavaClassType) type,
             archiveRoot,
-            new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()));
+            new AsmJavaClassProvider(view.getBodyInterceptors()));
       } catch (ExecutionException e) {
         throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
       }
@@ -297,14 +313,11 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
 
     @Override
     public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull IdentifierFactory identifierFactory,
-        @Nonnull ClassLoadingOptions classLoadingOptions) {
+        @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path archiveRoot = fs.getPath("/");
         return walkDirectory(
-            archiveRoot,
-            identifierFactory,
-            new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()));
+            archiveRoot, identifierFactory, new AsmJavaClassProvider(view.getBodyInterceptors()));
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -333,8 +346,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     @Override
     @Nonnull
     public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull IdentifierFactory identifierFactory,
-        @Nonnull ClassLoadingOptions classLoadingOptions) {
+        @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
       List<AbstractClassSource<JavaSootClass>> foundClasses = new ArrayList<>();
 
       try {
@@ -347,8 +359,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
           final ArchiveBasedAnalysisInputLocation archiveBasedAnalysisInputLocation =
               new ArchiveBasedAnalysisInputLocation(jarPath);
           foundClasses.addAll(
-              archiveBasedAnalysisInputLocation.getClassSources(
-                  identifierFactory, classLoadingOptions));
+              archiveBasedAnalysisInputLocation.getClassSources(identifierFactory, view));
         }
       } catch (IOException e) {
         throw new RuntimeException(e);
@@ -359,7 +370,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     @Override
     @Nonnull
     public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-        @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
+        @Nonnull ClassType type, @Nonnull View<?> view) {
 
       try {
         jarsFromPath =
@@ -371,7 +382,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
           final ArchiveBasedAnalysisInputLocation archiveBasedAnalysisInputLocation =
               new ArchiveBasedAnalysisInputLocation(jarPath);
           final Optional<? extends AbstractClassSource<JavaSootClass>> classSource =
-              archiveBasedAnalysisInputLocation.getClassSource(type, classLoadingOptions);
+              archiveBasedAnalysisInputLocation.getClassSource(type, view);
           if (classSource.isPresent()) {
             return classSource;
           }

@@ -184,7 +184,7 @@ public class ModuleFinder {
   private void buildModuleForExplodedModule(@Nonnull Path dir) throws ResolveException {
     // create the input location for this module dir
     PathBasedAnalysisInputLocation inputLocation =
-        PathBasedAnalysisInputLocation.createForClassContainer(dir, -1);
+        PathBasedAnalysisInputLocation.createForClassContainer(dir);
 
     Path moduleInfoFile =
         dir.resolve(
@@ -214,7 +214,7 @@ public class ModuleFinder {
    */
   private void buildModuleForJar(@Nonnull Path jar) {
     PathBasedAnalysisInputLocation inputLocation =
-        PathBasedAnalysisInputLocation.createForClassContainer(jar, -1);
+        PathBasedAnalysisInputLocation.createForClassContainer(jar);
     Optional<AsmModuleSource> moduleInfoFile = Optional.empty();
     try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");
