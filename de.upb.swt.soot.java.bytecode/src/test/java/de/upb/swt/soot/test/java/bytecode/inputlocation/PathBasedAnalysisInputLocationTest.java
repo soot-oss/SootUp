@@ -61,8 +61,10 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
   @Test
   public void multiReleaseJar() {
-    final ClassType classType = getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
-    final ClassType classType2 = getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
+    final ClassType classType =
+        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
+    final ClassType classType2 =
+        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
 
     final JavaProject project_min =
         JavaProject.builder(new JavaLanguage(Integer.MIN_VALUE))
@@ -101,7 +103,6 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     Assert.assertEquals(
         "/de/upb/swt/multirelease/Main.class",
         view_10.getClass(classType2).get().getClassSource().getSourcePath().toString());
-
 
     // assert that method is correctly resolved
     Assert.assertTrue(
