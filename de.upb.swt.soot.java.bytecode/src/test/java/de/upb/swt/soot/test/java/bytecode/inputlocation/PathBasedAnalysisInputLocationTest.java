@@ -61,8 +61,8 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
   @Test
   public void multiReleaseJar() {
-    final ClassType classType = getIdentifierFactory().getClassType("Utility");
-    final ClassType classType2 = getIdentifierFactory().getClassType("Main");
+    final ClassType classType = getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
+    final ClassType classType2 = getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
 
     final JavaProject project_min =
         JavaProject.builder(new JavaLanguage(Integer.MIN_VALUE))
@@ -96,13 +96,13 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     // for java10
     Assert.assertEquals(
-        "/META-INF/versions/9/Utility.class",
+        "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
         view_10.getClass(classType).get().getClassSource().getSourcePath().toString());
     Assert.assertEquals(
-        "/Main.class",
+        "/de/upb/swt/multirelease/Main.class",
         view_10.getClass(classType2).get().getClassSource().getSourcePath().toString());
 
-    view_10.getClass(classType).get().getMethods().forEach(m -> System.out.println(m.getBody()));
+
     // assert that method is correctly resolved
     Assert.assertTrue(
         view_10
@@ -121,18 +121,18 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     // for java 9
     Assert.assertEquals(
-        "/META-INF/versions/9/Utility.class",
+        "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
         view_9.getClass(classType).get().getClassSource().getSourcePath().toString());
     Assert.assertEquals(
-        "/Main.class",
+        "/de/upb/swt/multirelease/Main.class",
         view_9.getClass(classType2).get().getClassSource().getSourcePath().toString());
 
     // for java 8
     Assert.assertEquals(
-        "/Utility.class",
+        "/de/upb/swt/multirelease/Utility.class",
         view_8.getClass(classType).get().getClassSource().getSourcePath().toString());
     Assert.assertEquals(
-        "/Main.class",
+        "/de/upb/swt/multirelease/Main.class",
         view_8.getClass(classType2).get().getClassSource().getSourcePath().toString());
     // assert that method is correctly resolved to base
     Assert.assertTrue(
@@ -152,18 +152,18 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     // for max int
     Assert.assertEquals(
-        "/META-INF/versions/9/Utility.class",
+        "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
         view_max.getClass(classType).get().getClassSource().getSourcePath().toString());
     Assert.assertEquals(
-        "/Main.class",
+        "/de/upb/swt/multirelease/Main.class",
         view_max.getClass(classType2).get().getClassSource().getSourcePath().toString());
 
     // for min int
     Assert.assertEquals(
-        "/Utility.class",
+        "/de/upb/swt/multirelease/Utility.class",
         view_min.getClass(classType).get().getClassSource().getSourcePath().toString());
     Assert.assertEquals(
-        "/Main.class",
+        "/de/upb/swt/multirelease/Main.class",
         view_min.getClass(classType2).get().getClassSource().getSourcePath().toString());
   }
 
