@@ -32,6 +32,9 @@ import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.ImmutableUtils;
+import de.upb.swt.soot.core.util.printer.Printer;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -297,6 +300,15 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
     return classSignature.toString();
   }
 
+  /** Returns the serialized Jimple of this SootClass as String */
+  @Nonnull
+  public String print() {
+    StringWriter output = new StringWriter();
+    Printer p = new Printer();
+    p.printTo(this, new PrintWriter(output));
+    return output.toString();
+  }
+
   /** Returns true if this class is an application class. */
   public boolean isApplicationClass() {
     return sourceType.equals(SourceType.Application);
@@ -356,12 +368,12 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
   }
 
   @Nonnull
-  public SootClass withClassSource(SootClassSource classSource) {
-    return new SootClass(classSource, sourceType);
+  public SootClass<S> withClassSource(@Nonnull S classSource) {
+    return new SootClass<>(classSource, sourceType);
   }
 
   @Nonnull
-  public SootClass withSourceType(SourceType sourceType) {
-    return new SootClass(classSource, sourceType);
+  public SootClass<S> withSourceType(@Nonnull SourceType sourceType) {
+    return new SootClass<>(classSource, sourceType);
   }
 }
