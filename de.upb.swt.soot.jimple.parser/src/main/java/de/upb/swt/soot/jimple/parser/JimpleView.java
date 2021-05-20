@@ -96,8 +96,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
 
     final List<AbstractClassSource<SootClass<?>>> foundClassSources =
         getProject().getInputLocations().stream()
-            .map(
-                location -> location.getClassSource(type, this))
+            .map(location -> location.getClassSource(type, this))
             .filter(Optional::isPresent)
             .limit(2)
             .map(Optional::get)
