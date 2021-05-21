@@ -84,7 +84,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     primitiveTypeMap.put(
         PrimitiveType.ByteType.getInstance().getName(), PrimitiveType.ByteType.getInstance());
     primitiveTypeMap.put(
-        PrimitiveType.BooleanType.getInstance().getName(), PrimitiveType.IntType.getInstance());
+        PrimitiveType.BooleanType.getInstance().getName(), PrimitiveType.BooleanType.getInstance());
     primitiveTypeMap.put(
         PrimitiveType.DoubleType.getInstance().getName(), PrimitiveType.DoubleType.getInstance());
     primitiveTypeMap.put(

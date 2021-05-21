@@ -50,8 +50,7 @@ public class IdentifierFactoryTest {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     PackageName packageName1 = identifierFactory.getPackageName("java.lang");
     PackageName packageName2 = identifierFactory.getPackageName("java.lang");
-    boolean sameObject = packageName1 == packageName2;
-    assertTrue(sameObject);
+    assertSame(packageName1, packageName2);
   }
 
   @Test
@@ -59,8 +58,7 @@ public class IdentifierFactoryTest {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     PackageName packageName1 = identifierFactory.getPackageName("java.lang");
     PackageName packageName2 = identifierFactory.getPackageName("java.lang");
-    boolean sameObject = packageName1.equals(packageName2);
-    assertTrue(sameObject);
+    assertEquals(packageName1, packageName2);
   }
 
   @Test
@@ -68,8 +66,7 @@ public class IdentifierFactoryTest {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     PackageName packageName1 = identifierFactory.getPackageName("java.lang");
     PackageName packageName2 = identifierFactory.getPackageName("java.lang");
-    boolean sameObject = packageName1.equals(null);
-    assertFalse(sameObject);
+    assertEquals(packageName1, packageName2);
   }
 
   @Test
@@ -79,8 +76,7 @@ public class IdentifierFactoryTest {
     JavaClassType classSignature2 = typeFactory.getClassType("System", "java.lang");
     PackageName packageName1 = classSignature1.getPackageName();
     PackageName packageName2 = classSignature2.getPackageName();
-    boolean sameObject = packageName1.equals(packageName2);
-    assertTrue(sameObject);
+    assertEquals(packageName1, packageName2);
   }
 
   @Test
@@ -88,8 +84,7 @@ public class IdentifierFactoryTest {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     PackageName packageName1 = identifierFactory.getPackageName("java.lang");
     PackageName packageName2 = identifierFactory.getPackageName("java.lang.invoke");
-    boolean sameObject = packageName1 == packageName2;
-    assertFalse(sameObject);
+    assertNotSame(packageName1, packageName2);
   }
 
   @Test
@@ -98,8 +93,7 @@ public class IdentifierFactoryTest {
     ClassType classSignature1 = typeFactory.getClassType("System", "java.lang");
     ClassType classSignature2 = typeFactory.getClassType("System", "java.lang");
     // Class Signatures are unique but not their package
-    boolean sameObject = classSignature1 == classSignature2;
-    assertFalse(sameObject);
+    assertNotSame(classSignature1, classSignature2);
   }
 
   @Test
@@ -116,8 +110,7 @@ public class IdentifierFactoryTest {
     JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
     ClassType classSignature1 = typeFactory.getClassType("System", "java.lang");
     // Class Signatures are unique but not their package
-    boolean sameObject = classSignature1.equals(classSignature1);
-    assertTrue(sameObject);
+    assertEquals(classSignature1, classSignature1);
   }
 
   @Test
@@ -126,8 +119,7 @@ public class IdentifierFactoryTest {
     ClassType classSignature1 = typeFactory.getClassType("System", "java.lang");
     ClassType classSignature2 = null;
     // Class Signatures are unique but not their package
-    boolean sameObject = classSignature1.equals(classSignature2);
-    assertFalse(sameObject);
+    assertNotEquals(classSignature1, classSignature2);
   }
 
   @Test
@@ -162,14 +154,11 @@ public class IdentifierFactoryTest {
     JavaClassType classSignature1 = typeFactory.getClassType("A", "");
     JavaClassType classSignature2 = typeFactory.getClassType("A");
     // Class Signatures are unique but not their package
-    boolean sameObject = classSignature1 == classSignature2;
-    assertFalse(sameObject);
+    assertNotSame(classSignature1, classSignature2);
 
-    boolean samePackageSignatureObject =
-        classSignature1.getPackageName() == classSignature2.getPackageName();
-    assertTrue(samePackageSignatureObject);
+    assertSame(classSignature1.getPackageName(), classSignature2.getPackageName());
+
     String className = "A";
-
     assertEquals(classSignature1.toString(), className);
     assertEquals(classSignature2.toString(), className);
   }
@@ -180,8 +169,7 @@ public class IdentifierFactoryTest {
     ClassType classSignature1 = typeFactory.getClassType("java.lang.System");
     ClassType classSignature2 = typeFactory.getClassType("System", "java.lang");
     // Class Signatures are unique but not their package
-    boolean sameObject = classSignature1 == classSignature2;
-    assertFalse(sameObject);
+    assertNotSame(classSignature1, classSignature2);
   }
 
   @Test
@@ -190,8 +178,7 @@ public class IdentifierFactoryTest {
     JavaClassType classSignature1 = typeFactory.getClassType("java.lang.System$MyClass");
     JavaClassType classSignature2 = typeFactory.getClassType("System$MyClass", "java.lang");
     // Class Signatures are unique but not their package
-    boolean sameObject = classSignature1 == classSignature2;
-    assertFalse(sameObject);
+    assertNotSame(classSignature1, classSignature2);
     assertEquals(classSignature1, classSignature2);
   }
 
@@ -201,9 +188,7 @@ public class IdentifierFactoryTest {
     JavaClassType classSignature1 = typeFactory.getClassType("System", "java.lang");
     JavaClassType classSignature2 = typeFactory.getClassType("System", "java.lang");
     // Class Signatures are unique but not their package
-    boolean samePackageSignature =
-        classSignature1.getPackageName() == classSignature2.getPackageName();
-    assertTrue(samePackageSignature);
+    assertSame(classSignature1.getPackageName(), classSignature2.getPackageName());
 
     // but they are equal
     assertEquals(classSignature1, classSignature2);
@@ -243,7 +228,6 @@ public class IdentifierFactoryTest {
   @Test
   public void getMethodSignatureString2() {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
 
     List<String> parameters = Collections.singletonList("java.lang.Class");
 
@@ -266,10 +250,9 @@ public class IdentifierFactoryTest {
   @Test
   public void getMethodSignatureString4() {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
 
     List<String> parameters = Collections.emptyList();
-    ClassType classSignature = typeFactory.getClassType("java.lang.System");
+    ClassType classSignature = identifierFactory.getClassType("java.lang.System");
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature("foo", classSignature, "void", parameters);
     assertEquals("<java.lang.System: void foo()>", methodSignature.toString());
@@ -279,8 +262,7 @@ public class IdentifierFactoryTest {
   @Test
   public void getFieldSignature() {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
-    ClassType classSignature = typeFactory.getClassType("java.lang.System");
+    ClassType classSignature = identifierFactory.getClassType("java.lang.System");
     FieldSignature fieldSignature =
         identifierFactory.getFieldSignature("foo", classSignature, "int");
     assertEquals("<java.lang.System: int foo>" + "", fieldSignature.toString());
@@ -289,7 +271,6 @@ public class IdentifierFactoryTest {
   @Test
   public void compMethodSignature2() {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
 
     List<String> parameters = new ArrayList<>();
 
@@ -306,7 +287,6 @@ public class IdentifierFactoryTest {
   @Test
   public void compMethodSignature1() {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
 
     List<String> parameters = Collections.emptyList();
 
@@ -333,43 +313,59 @@ public class IdentifierFactoryTest {
 
     Type byteSig = typeFactory.getType("byte");
     assertSame(byteSig, PrimitiveType.getByte());
-    assertSame("byte", byteSig.toString());
+    assertEquals("byte", byteSig.toString());
+    assertFalse(byteSig instanceof ClassType);
 
-    Type shortSig = typeFactory.getType("SHORT");
+    Type ByteSig = typeFactory.getType("Byte");
+    assertEquals("Byte", ByteSig.toString());
+    assertNotEquals(ByteSig, PrimitiveType.getByte());
+    assertTrue(ByteSig instanceof ClassType);
+
+    Type shortSig = typeFactory.getType("short");
     assertSame(shortSig, PrimitiveType.getShort());
-    assertSame("short", shortSig.toString());
+    assertEquals("short", shortSig.toString());
 
     Type intSig = typeFactory.getType("int");
     assertSame(intSig, PrimitiveType.getInt());
-    assertSame("int", intSig.toString());
+    assertEquals("int", intSig.toString());
 
-    Type longSig = typeFactory.getType("loNg");
+    Type IntSig = typeFactory.getType("Int");
+    assertNotEquals(IntSig, PrimitiveType.getInt());
+    assertEquals("Int", IntSig.toString());
+    assertTrue(IntSig instanceof ClassType);
+
+    Type longSig = typeFactory.getType("long");
     assertSame(longSig, PrimitiveType.getLong());
-    assertSame("long", longSig.toString());
+    assertEquals("long", longSig.toString());
 
-    Type floatSig = typeFactory.getType("floAt");
+    Type floatSig = typeFactory.getType("float");
     assertSame(floatSig, PrimitiveType.getFloat());
-    assertSame("float", floatSig.toString());
+    assertEquals("float", floatSig.toString());
 
-    Type doubleSig = typeFactory.getType("doUble");
+    Type doubleSig = typeFactory.getType("double");
     assertSame(doubleSig, PrimitiveType.getDouble());
-    assertSame("double", doubleSig.toString());
+    assertEquals("double", doubleSig.toString());
 
-    Type charSig = typeFactory.getType("chaR");
+    Type charSig = typeFactory.getType("char");
     assertSame(charSig, PrimitiveType.getChar());
-    assertSame("char", charSig.toString());
+    assertEquals("char", charSig.toString());
 
     Type boolSig = typeFactory.getType("boolean");
     assertSame(boolSig, PrimitiveType.getBoolean());
-    assertSame("boolean", boolSig.toString());
+    assertEquals("boolean", boolSig.toString());
 
-    Type nullSig = typeFactory.getType("nuLl");
+    Type BoolSig = typeFactory.getType("Boolean");
+    assertEquals("Boolean", BoolSig.toString());
+    assertNotEquals(BoolSig, PrimitiveType.getBoolean());
+    assertTrue(BoolSig instanceof ClassType);
+
+    Type nullSig = typeFactory.getType("null");
     assertSame(nullSig, NullType.getInstance());
-    assertSame("null", nullSig.toString());
+    assertEquals("null", nullSig.toString());
 
     Type voidSig = typeFactory.getType("void");
     assertSame(voidSig, VoidType.getInstance());
-    assertSame("void", voidSig.toString());
+    assertEquals("void", voidSig.toString());
   }
 
   @Test(expected = IllegalArgumentException.class)
