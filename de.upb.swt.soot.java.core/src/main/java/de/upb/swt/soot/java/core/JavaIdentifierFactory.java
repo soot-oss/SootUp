@@ -132,14 +132,13 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   public Type getType(final String typeDesc) {
     int len = typeDesc.length();
-    int idx = 0;
     StringBuilder stringBuilder = new StringBuilder();
     int nrDims = 0;
     int closed = 0;
 
     // check if this is an array type ...
-    while (idx != len) {
-      char c = typeDesc.charAt(idx++);
+    for (int i = 0; i < len; i++) {
+      char c = typeDesc.charAt(i);
       switch (c) {
         case '[':
           ++nrDims;
