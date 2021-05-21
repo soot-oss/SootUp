@@ -158,12 +158,8 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
     String typeName = stringBuilder.toString();
 
-    // FIXME: [JMP] Is lower case correct here? 'Int' is not the same as 'int', because 'Int' is a
-    // reference type.
-    String typeNameLowerCase = typeName.toLowerCase();
     Type ret;
-
-    switch (typeNameLowerCase) {
+    switch (typeName) {
       case "null":
         ret = NullType.getInstance();
         break;
@@ -172,7 +168,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
         break;
       default:
         ret =
-            getPrimitiveType(typeNameLowerCase)
+            getPrimitiveType(typeName)
                 .map(obj -> (Type) obj)
                 .orElseGet(() -> getClassType(typeName));
     }
