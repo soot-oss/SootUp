@@ -6,42 +6,42 @@ import de.upb.swt.soot.core.types.*;
 public abstract class AbstractTypeVisitor<V> extends AbstractVisitor<V> implements TypeVisitor {
 
   @Override
-  public void caseBooleanType(PrimitiveType type) {
+  public void caseBooleanType(PrimitiveType.BooleanType type) {
     defaultCaseType(type);
   }
 
   @Override
-  public void caseByteType(PrimitiveType type) {
+  public void caseByteType(PrimitiveType.ByteType type) {
     defaultCaseType(type);
   }
 
   @Override
-  public void caseCharType(PrimitiveType type) {
+  public void caseCharType(PrimitiveType.CharType type) {
     defaultCaseType(type);
   }
 
   @Override
-  public void caseShortType(PrimitiveType type) {
+  public void caseShortType(PrimitiveType.ShortType type) {
     defaultCaseType(type);
   }
 
   @Override
-  public void caseIntType(PrimitiveType type) {
+  public void caseIntType(PrimitiveType.IntType type) {
     defaultCaseType(type);
   }
 
   @Override
-  public void caseLongType(PrimitiveType type) {
+  public void caseLongType(PrimitiveType.LongType type) {
     defaultCaseType(type);
   }
 
   @Override
-  public void caseDoubleType(PrimitiveType type) {
+  public void caseDoubleType(PrimitiveType.DoubleType type) {
     defaultCaseType(type);
   }
 
   @Override
-  public void caseFloatType(PrimitiveType type) {
+  public void caseFloatType(PrimitiveType.FloatType type) {
     defaultCaseType(type);
   }
 

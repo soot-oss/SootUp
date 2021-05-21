@@ -151,93 +151,93 @@ public abstract class PrimitiveType extends Type {
     return BOOLEAN_TYPE;
   }
 
-  private static class ByteType extends PrimitiveType {
+  public static class ByteType extends PrimitiveType {
     private ByteType() {
       super("byte");
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor v) {
+    public void accept(@Nonnull TypeVisitor v) {
       v.caseByteType(this);
     }
   }
 
-  private static class ShortType extends PrimitiveType {
+  public static class ShortType extends PrimitiveType {
     private ShortType() {
       super("short");
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor v) {
+    public void accept(@Nonnull TypeVisitor v) {
       v.caseShortType(this);
     }
   }
 
-  private static class IntType extends PrimitiveType {
+  public static class IntType extends PrimitiveType {
     public IntType() {
       super("int");
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor v) {
+    public void accept(@Nonnull TypeVisitor v) {
       v.caseIntType(this);
     }
   }
 
-  private static class DoubleType extends PrimitiveType {
+  public static class DoubleType extends PrimitiveType {
 
     private DoubleType() {
       super("double");
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor v) {
+    public void accept(@Nonnull TypeVisitor v) {
       v.caseDoubleType(this);
     }
   }
 
-  private static class LongType extends PrimitiveType {
+  public static class LongType extends PrimitiveType {
 
     private LongType() {
       super("long");
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor v) {
+    public void accept(@Nonnull TypeVisitor v) {
       v.caseLongType(this);
     }
   }
 
-  private static class FloatType extends PrimitiveType {
+  public static class FloatType extends PrimitiveType {
 
     private FloatType() {
       super("float");
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor v) {
+    public void accept(@Nonnull TypeVisitor v) {
       v.caseFloatType(this);
     }
   }
 
-  private static class CharType extends PrimitiveType {
-    public CharType() {
+  public static class CharType extends PrimitiveType {
+    private CharType() {
       super("char");
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor v) {
+    public void accept(@Nonnull TypeVisitor v) {
       v.caseCharType(this);
     }
   }
 
-  private static class BooleanType extends PrimitiveType {
+  public static class BooleanType extends PrimitiveType {
     private BooleanType() {
       super("boolean");
     }
 
     @Override
-    void accept(@Nonnull TypeVisitor v) {
+    public void accept(@Nonnull TypeVisitor v) {
       v.caseBooleanType(this);
     }
   }
