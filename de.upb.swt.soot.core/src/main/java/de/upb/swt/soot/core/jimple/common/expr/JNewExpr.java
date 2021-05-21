@@ -27,8 +27,8 @@ import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.ReferenceType;
-import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.Collections;
@@ -38,9 +38,9 @@ import javax.annotation.Nonnull;
 /** An expression that creates a new instance of a class. */
 public final class JNewExpr implements Expr, Copyable {
 
-  private final ReferenceType type;
+  @Nonnull private final ClassType type;
 
-  public JNewExpr(ReferenceType type) {
+  public JNewExpr(@Nonnull ClassType type) {
     this.type = type;
   }
 
@@ -68,7 +68,7 @@ public final class JNewExpr implements Expr, Copyable {
   }
 
   @Override
-  public Type getType() {
+  public ReferenceType getType() {
     return type;
   }
 
@@ -83,7 +83,7 @@ public final class JNewExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public JNewExpr withType(ReferenceType type) {
+  public JNewExpr withType(@Nonnull ClassType type) {
     return new JNewExpr(type);
   }
 }

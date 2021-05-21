@@ -86,7 +86,6 @@ import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.core.types.VoidType;
@@ -1504,7 +1503,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       Type t = AsmUtil.toJimpleClassType(insn.desc);
       Value val;
       if (op == NEW) {
-        val = Jimple.newNewExpr((ReferenceType) t);
+        val = Jimple.newNewExpr((ClassType) t);
       } else {
         Operand op1 = operandStack.popImmediate();
         Immediate v1 = (Immediate) op1.stackOrValue();

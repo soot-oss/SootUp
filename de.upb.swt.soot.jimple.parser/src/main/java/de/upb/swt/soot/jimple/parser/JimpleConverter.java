@@ -507,7 +507,7 @@ public class JimpleConverter {
                   path,
                   JimpleConverterUtil.buildPositionFromCtx(ctx));
             }
-            return Jimple.newNewExpr((ReferenceType) type);
+            return Jimple.newNewExpr((ClassType) type);
           } else if (ctx.NEWARRAY() != null) {
             final Type type = util.getType(ctx.array_type.getText());
             if (type instanceof VoidType || type instanceof NullType) {
