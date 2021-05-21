@@ -56,13 +56,13 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Nonnull private static final JavaIdentifierFactory INSTANCE = new JavaIdentifierFactory();
 
   /** Caches the created PackageNames for packages. */
-  @Nonnull private final Map<String, PackageName> packages = new HashMap<>();
+  @Nonnull protected final Map<String, PackageName> packages = new HashMap<>();
 
   /** Chaches annotation types */
-  @Nonnull private final Map<String, AnnotationType> annotationTypes = new HashMap<>();
+  @Nonnull protected final Map<String, AnnotationType> annotationTypes = new HashMap<>();
 
   @Nonnull
-  private final Map<String, PrimitiveType> primitiveTypeMap = Maps.newHashMapWithExpectedSize(8);
+  protected final Map<String, PrimitiveType> primitiveTypeMap = Maps.newHashMapWithExpectedSize(8);
 
   public static JavaIdentifierFactory getInstance() {
     return INSTANCE;
