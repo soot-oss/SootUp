@@ -49,6 +49,6 @@ public class UnknownType extends Type {
 
   @Override
   public void accept(@Nonnull TypeVisitor v) {
-    v.caseUnknownType(this);
+    v.caseUnknownType();
   }
 }

@@ -43,7 +43,7 @@ public abstract class ClassType extends ReferenceType implements Signature {
 
   @Override
   public void accept(@Nonnull TypeVisitor v) {
-    v.caseClassType(this);
+    v.caseClassType();
   }
 
   @Override

@@ -1,76 +1,75 @@
 package de.upb.swt.soot.core.jimple.visitor;
 
 import de.upb.swt.soot.core.types.*;
-import javax.annotation.Nonnull;
 
 /** @author Markus Schmidt */
 public abstract class AbstractTypeVisitor<V> extends AbstractVisitor<V> implements TypeVisitor {
 
   @Override
-  public void caseBooleanType(@Nonnull PrimitiveType.BooleanType type) {
-    defaultCaseType(type);
+  public void caseBooleanType() {
+    defaultCaseType();
   }
 
   @Override
-  public void caseByteType(@Nonnull PrimitiveType.ByteType type) {
-    defaultCaseType(type);
+  public void caseByteType() {
+    defaultCaseType();
   }
 
   @Override
-  public void caseCharType(@Nonnull PrimitiveType.CharType type) {
-    defaultCaseType(type);
+  public void caseCharType() {
+    defaultCaseType();
   }
 
   @Override
-  public void caseShortType(@Nonnull PrimitiveType.ShortType type) {
-    defaultCaseType(type);
+  public void caseShortType() {
+    defaultCaseType();
   }
 
   @Override
-  public void caseIntType(@Nonnull PrimitiveType.IntType type) {
-    defaultCaseType(type);
+  public void caseIntType() {
+    defaultCaseType();
   }
 
   @Override
-  public void caseLongType(@Nonnull PrimitiveType.LongType type) {
-    defaultCaseType(type);
+  public void caseLongType() {
+    defaultCaseType();
   }
 
   @Override
-  public void caseDoubleType(@Nonnull PrimitiveType.DoubleType type) {
-    defaultCaseType(type);
+  public void caseDoubleType() {
+    defaultCaseType();
   }
 
   @Override
-  public void caseFloatType(@Nonnull PrimitiveType.FloatType type) {
-    defaultCaseType(type);
+  public void caseFloatType() {
+    defaultCaseType();
   }
 
   @Override
-  public void caseArrayType(@Nonnull ArrayType type) {
-    defaultCaseType(type);
+  public void caseArrayType() {
+    defaultCaseType();
   }
 
   @Override
-  public void caseClassType(@Nonnull ClassType type) {
-    defaultCaseType(type);
+  public void caseClassType() {
+    defaultCaseType();
   }
 
   @Override
-  public void caseNullType(@Nonnull NullType type) {
-    defaultCaseType(type);
+  public void caseNullType() {
+    defaultCaseType();
   }
 
   @Override
-  public void caseVoidType(@Nonnull VoidType type) {
-    defaultCaseType(type);
+  public void caseVoidType() {
+    defaultCaseType();
   }
 
   @Override
-  public void caseUnknownType(@Nonnull UnknownType type) {
-    defaultCaseType(type);
+  public void caseUnknownType() {
+    defaultCaseType();
   }
 
   @Override
-  public void defaultCaseType(@Nonnull Type type) {}
+  public void defaultCaseType() {}
 }

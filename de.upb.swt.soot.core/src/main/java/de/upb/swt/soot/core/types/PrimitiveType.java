@@ -117,7 +117,7 @@ public abstract class PrimitiveType extends Type {
 
     @Override
     public void accept(@Nonnull TypeVisitor v) {
-      v.caseByteType(this);
+      v.caseByteType();
     }
   }
 
@@ -134,7 +134,7 @@ public abstract class PrimitiveType extends Type {
 
     @Override
     public void accept(@Nonnull TypeVisitor v) {
-      v.caseShortType(this);
+      v.caseShortType();
     }
   }
 
@@ -151,7 +151,7 @@ public abstract class PrimitiveType extends Type {
 
     @Override
     public void accept(@Nonnull TypeVisitor v) {
-      v.caseIntType(this);
+      v.caseIntType();
     }
   }
 
@@ -168,7 +168,7 @@ public abstract class PrimitiveType extends Type {
 
     @Override
     public void accept(@Nonnull TypeVisitor v) {
-      v.caseDoubleType(this);
+      v.caseDoubleType();
     }
   }
 
@@ -185,7 +185,7 @@ public abstract class PrimitiveType extends Type {
 
     @Override
     public void accept(@Nonnull TypeVisitor v) {
-      v.caseLongType(this);
+      v.caseLongType();
     }
   }
 
@@ -202,7 +202,7 @@ public abstract class PrimitiveType extends Type {
 
     @Override
     public void accept(@Nonnull TypeVisitor v) {
-      v.caseFloatType(this);
+      v.caseFloatType();
     }
   }
 
@@ -219,7 +219,7 @@ public abstract class PrimitiveType extends Type {
 
     @Override
     public void accept(@Nonnull TypeVisitor v) {
-      v.caseCharType(this);
+      v.caseCharType();
     }
   }
 
@@ -236,7 +236,7 @@ public abstract class PrimitiveType extends Type {
 
     @Override
     public void accept(@Nonnull TypeVisitor v) {
-      v.caseBooleanType(this);
+      v.caseBooleanType();
     }
   }
 }

@@ -26,31 +26,31 @@ import de.upb.swt.soot.core.types.*;
 
 public interface TypeVisitor extends Visitor {
 
-  void caseBooleanType(PrimitiveType.BooleanType type);
+  void caseBooleanType();
 
-  void caseByteType(PrimitiveType.ByteType type);
+  void caseByteType();
 
-  void caseCharType(PrimitiveType.CharType type);
+  void caseCharType();
 
-  void caseShortType(PrimitiveType.ShortType type);
+  void caseShortType();
 
-  void caseIntType(PrimitiveType.IntType type);
+  void caseIntType();
 
-  void caseLongType(PrimitiveType.LongType type);
+  void caseLongType();
 
-  void caseDoubleType(PrimitiveType.DoubleType type);
+  void caseDoubleType();
 
-  void caseFloatType(PrimitiveType.FloatType type);
+  void caseFloatType();
 
-  void caseArrayType(ArrayType type);
+  void caseArrayType();
 
-  void caseClassType(ClassType type);
+  void caseClassType();
 
-  void caseNullType(NullType type);
+  void caseNullType();
 
-  void caseVoidType(VoidType type);
+  void caseVoidType();
 
-  void caseUnknownType(UnknownType type);
+  void caseUnknownType();
 
-  void defaultCaseType(Type type);
+  void defaultCaseType();
 }
