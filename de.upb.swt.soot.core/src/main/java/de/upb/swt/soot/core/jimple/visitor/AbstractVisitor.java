@@ -6,7 +6,7 @@ package de.upb.swt.soot.core.jimple.visitor;
  *
  * @author Markus Schmidt
  */
-public class AbstractVisitor<V> implements Visitor {
+public abstract class AbstractVisitor<V> implements Visitor {
 
   private V result;
 

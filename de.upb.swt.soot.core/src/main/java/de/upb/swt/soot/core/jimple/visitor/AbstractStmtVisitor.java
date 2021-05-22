@@ -24,79 +24,80 @@ package de.upb.swt.soot.core.jimple.visitor;
 
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractStmtVisitor<V> extends AbstractVisitor<V> implements StmtVisitor {
 
   @Override
-  public void caseBreakpointStmt(JBreakpointStmt stmt) {
+  public void caseBreakpointStmt(@Nonnull JBreakpointStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseInvokeStmt(JInvokeStmt stmt) {
+  public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseAssignStmt(JAssignStmt stmt) {
+  public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseIdentityStmt(JIdentityStmt stmt) {
+  public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseEnterMonitorStmt(JEnterMonitorStmt stmt) {
+  public void caseEnterMonitorStmt(@Nonnull JEnterMonitorStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseExitMonitorStmt(JExitMonitorStmt stmt) {
+  public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseGotoStmt(JGotoStmt stmt) {
+  public void caseGotoStmt(@Nonnull JGotoStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseIfStmt(JIfStmt stmt) {
+  public void caseIfStmt(@Nonnull JIfStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseNopStmt(JNopStmt stmt) {
+  public void caseNopStmt(@Nonnull JNopStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseRetStmt(JRetStmt stmt) {
+  public void caseRetStmt(@Nonnull JRetStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseReturnStmt(JReturnStmt stmt) {
+  public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseReturnVoidStmt(JReturnVoidStmt stmt) {
+  public void caseReturnVoidStmt(@Nonnull JReturnVoidStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseSwitchStmt(JSwitchStmt stmt) {
+  public void caseSwitchStmt(@Nonnull JSwitchStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseThrowStmt(JThrowStmt stmt) {
+  public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void defaultCaseStmt(Stmt stmt) {}
+  public void defaultCaseStmt(@Nonnull Stmt stmt) {}
 }

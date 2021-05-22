@@ -9,7 +9,7 @@ public class AbstractImmediateVisitor<V> extends AbstractConstantVisitor<V>
     implements ImmediateVisitor {
 
   @Override
-  public void caseLocal(Local local) {
+  public void caseLocal(@Nonnull Local local) {
     defaultCaseImmediate(local);
   }
 
@@ -18,5 +18,5 @@ public class AbstractImmediateVisitor<V> extends AbstractConstantVisitor<V>
     defaultCaseImmediate(constant);
   }
 
-  private void defaultCaseImmediate(Immediate immediate) {}
+  private void defaultCaseImmediate(@Nonnull Immediate immediate) {}
 }

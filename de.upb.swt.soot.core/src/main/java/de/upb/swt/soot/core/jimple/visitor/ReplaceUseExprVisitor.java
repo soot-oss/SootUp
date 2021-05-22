@@ -545,7 +545,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
   }
 
   @Override
-  public void caseNewExpr(JNewExpr expr) {
+  public void caseNewExpr(@Nonnull JNewExpr expr) {
     defaultCaseExpr(expr);
   }
 

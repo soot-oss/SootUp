@@ -28,5 +28,6 @@ package de.upb.swt.soot.core.jimple.visitor;
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
+
 /** Basic interface used in the implementation of the Visitor design pattern. */
 public interface Visitor {}
