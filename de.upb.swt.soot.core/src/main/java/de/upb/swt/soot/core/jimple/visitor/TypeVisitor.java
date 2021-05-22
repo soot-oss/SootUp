@@ -24,7 +24,7 @@ package de.upb.swt.soot.core.jimple.visitor;
 
 import de.upb.swt.soot.core.types.*;
 
-public interface TypeVisitor {
+public interface TypeVisitor extends Visitor {
 
   void caseBooleanType(PrimitiveType.BooleanType type);
 
