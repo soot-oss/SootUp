@@ -270,5 +270,6 @@ public abstract class AbstractValueVisitor<V> extends AbstractVisitor<V> impleme
     defaultCaseValue(local);
   }
 
+  @Override
   public void defaultCaseValue(@Nonnull Value v) {}
 }

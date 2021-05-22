@@ -58,8 +58,7 @@ public interface Value extends EquivTo {
     // [ms] find a way without casting and instanceof..
     if (this instanceof Local) {
       ((Local) this).accept((ImmediateVisitor) v);
-    }
-    if (this instanceof Expr) {
+    } else if (this instanceof Expr) {
       ((Expr) this).accept((ExprVisitor) v);
     } else if (this instanceof Constant) {
       ((Constant) this).accept((ConstantVisitor) v);

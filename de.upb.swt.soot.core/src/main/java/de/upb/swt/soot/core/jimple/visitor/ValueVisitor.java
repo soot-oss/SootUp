@@ -22,4 +22,10 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
-public interface ValueVisitor extends ImmediateVisitor, ExprVisitor, RefVisitor {}
+import de.upb.swt.soot.core.jimple.basic.Value;
+import javax.annotation.Nonnull;
+
+public interface ValueVisitor extends ImmediateVisitor, ExprVisitor, RefVisitor {
+
+  void defaultCaseValue(@Nonnull Value v);
+}
