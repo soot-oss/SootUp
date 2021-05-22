@@ -44,7 +44,7 @@ public class NullType extends ReferenceType {
   }
 
   @Override
-  void accept(@Nonnull TypeVisitor v) {
+  public void accept(@Nonnull TypeVisitor v) {
     v.caseNullType(this);
   }
 }
