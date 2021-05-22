@@ -22,6 +22,10 @@ package de.upb.swt.soot.core.jimple.basic;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.common.constant.Constant;
+import de.upb.swt.soot.core.jimple.common.expr.Expr;
+import de.upb.swt.soot.core.jimple.common.ref.Ref;
+import de.upb.swt.soot.core.jimple.visitor.*;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.List;
@@ -49,4 +53,20 @@ public interface Value extends EquivTo {
   Type getType();
 
   void toString(@Nonnull StmtPrinter up);
+
+  default void accept(@Nonnull ValueVisitor v) {
+    // [ms] find a way without casting and instanceof..
+    if (this instanceof Local) {
+      ((Local) this).accept((ImmediateVisitor) v);
+    }
+    if (this instanceof Expr) {
+      ((Expr) this).accept((ExprVisitor) v);
+    } else if (this instanceof Constant) {
+      ((Constant) this).accept((ConstantVisitor) v);
+    } else if (this instanceof Ref) {
+      ((Ref) this).accept((RefVisitor) v);
+    } else {
+      throw new RuntimeException("Unknown type of Value to switch on.");
+    }
+  }
 }
