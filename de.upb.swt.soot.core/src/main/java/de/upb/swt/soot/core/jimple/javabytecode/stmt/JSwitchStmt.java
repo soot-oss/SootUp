@@ -73,15 +73,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
               + ").");
     }
 
-    values = new ArrayList<>();
-    int i;
-    // "<=" is not possible; possible overflow would wrap i resulting in an infinite loop
-    for (i = lowIndex; i < highIndex; i++) {
-      values.add(IntConstant.getInstance(i));
-    }
-    if (i == highIndex) {
-      values.add(IntConstant.getInstance(i));
-    }
+    values = new ImmutableSequenceList(lowIndex, highIndex);
   }
 
   /** Constructs a new JSwitchStmt. lookupValues should be a list of IntConst s. */
@@ -254,5 +246,211 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   @Nonnull
   public JSwitchStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JSwitchStmt(getKey(), getValues(), positionInfo);
+  }
+
+  private static class ImmutableSequenceList implements List<IntConstant> {
+    private final int from;
+    private final int to;
+
+    ImmutableSequenceList(int from, int to) {
+      this.from = from;
+      this.to = to;
+    }
+
+    @Override
+    public int size() {
+      return to - from + 1;
+    }
+
+    @Override
+    public boolean isEmpty() {
+      return size() == 0;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+      if (o instanceof IntConstant) {
+        int value = ((IntConstant) o).getValue();
+        return value >= from && value <= to;
+      }
+      return false;
+    }
+
+    @Nonnull
+    @Override
+    public Iterator<IntConstant> iterator() {
+      return listIterator();
+    }
+
+    @Nonnull
+    @Override
+    public Object[] toArray() {
+      Object[] intConstants = new IntConstant[from - to];
+      // this allows the full range of ints as cases otherwise there can be an overflow..
+      int i;
+      for (i = from; i < to; i++) {
+        intConstants[i] = IntConstant.getInstance(i);
+      }
+      intConstants[to] = IntConstant.getInstance(to);
+      return intConstants;
+    }
+
+    @Nonnull
+    @Override
+    public <T> T[] toArray(@Nonnull T[] ts) {
+      T[] intConstants = (T[]) new Object[from - to + 1];
+
+      // this allows the full range of ints as cases otherwise there can be an overflow..
+      int i;
+      for (i = from; i < to; i++) {
+        intConstants[i] = (T) IntConstant.getInstance(i);
+      }
+      intConstants[to] = (T) IntConstant.getInstance(to);
+      return intConstants;
+    }
+
+    @Override
+    public boolean add(IntConstant constant) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean remove(Object o) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> collection) {
+      for (Object o : collection) {
+        if (!contains(o)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    @Override
+    public boolean addAll(@Nonnull Collection<? extends IntConstant> collection) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean addAll(int i, @Nonnull Collection<? extends IntConstant> collection) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removeAll(@Nonnull Collection<?> collection) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean retainAll(@Nonnull Collection<?> collection) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void clear() {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public IntConstant get(int i) {
+      // do we need to check bounds too?
+      return IntConstant.getInstance(i);
+    }
+
+    @Override
+    public IntConstant set(int i, IntConstant constant) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void add(int i, IntConstant constant) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public IntConstant remove(int i) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int indexOf(Object o) {
+      if (!contains(o)) {
+        return -1;
+      }
+      return ((IntConstant) o).getValue() - from;
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+      return indexOf(o);
+    }
+
+    @Nonnull
+    @Override
+    public ListIterator<IntConstant> listIterator() {
+      return listIterator(0);
+    }
+
+    @Nonnull
+    @Override
+    public ListIterator<IntConstant> listIterator(int i) {
+      return new ListIterator<IntConstant>() {
+        int it = from + i;
+
+        @Override
+        public boolean hasNext() {
+          return it <= to;
+        }
+
+        @Override
+        public IntConstant next() {
+          return IntConstant.getInstance(it++);
+        }
+
+        @Override
+        public boolean hasPrevious() {
+          return from <= it;
+        }
+
+        @Override
+        public IntConstant previous() {
+          return IntConstant.getInstance(it--);
+        }
+
+        @Override
+        public int nextIndex() {
+          return it + 1;
+        }
+
+        @Override
+        public int previousIndex() {
+          return it - 1;
+        }
+
+        @Override
+        public void remove() {
+          throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void set(IntConstant constant) {
+          throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void add(IntConstant constant) {
+          throw new UnsupportedOperationException();
+        }
+      };
+    }
+
+    @Nonnull
+    @Override
+    public List<IntConstant> subList(int i, int i1) {
+      return new ImmutableSequenceList(i, i1);
+    }
   }
 }
