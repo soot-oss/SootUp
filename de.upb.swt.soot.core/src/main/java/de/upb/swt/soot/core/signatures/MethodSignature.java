@@ -32,10 +32,10 @@ import javax.annotation.Nonnull;
 public class MethodSignature extends SootClassMemberSignature<MethodSubSignature> {
 
   public MethodSignature(
-      ClassType declaringClassSignature,
-      String methodName,
-      Iterable<Type> parameters,
-      Type fqReturnType) {
+      @Nonnull ClassType declaringClassSignature,
+      @Nonnull String methodName,
+      @Nonnull Iterable<Type> parameters,
+      @Nonnull Type fqReturnType) {
     this(declaringClassSignature, new MethodSubSignature(methodName, parameters, fqReturnType));
   }
 
@@ -49,16 +49,6 @@ public class MethodSignature extends SootClassMemberSignature<MethodSubSignature
   public MethodSignature(
       final @Nonnull ClassType declaringClass, final @Nonnull MethodSubSignature subSignature) {
     super(declaringClass, subSignature);
-
-    this.subSignature = subSignature;
-  }
-
-  private final @Nonnull MethodSubSignature subSignature;
-
-  @Override
-  @Nonnull
-  public MethodSubSignature getSubSignature() {
-    return subSignature;
   }
 
   /** The method's parameters' signatures. */

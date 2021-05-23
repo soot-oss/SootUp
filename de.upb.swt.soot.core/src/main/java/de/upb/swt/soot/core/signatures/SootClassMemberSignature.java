@@ -75,7 +75,7 @@ public abstract class SootClassMemberSignature<V extends SootClassMemberSubSigna
       return false;
     }
 
-    SootClassMemberSignature<V> that = (SootClassMemberSignature) o;
+    SootClassMemberSignature<V> that = (SootClassMemberSignature<V>) o;
     return Objects.equal(declClassSignature, that.declClassSignature)
         && Objects.equal(subSignature, that.subSignature);
   }

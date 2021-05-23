@@ -34,8 +34,6 @@ import javax.annotation.Nonnull;
  */
 public class FieldSignature extends SootClassMemberSignature<FieldSubSignature> {
 
-  @Nonnull private final FieldSubSignature subSignature;
-
   public FieldSignature(final ClassType declaringClass, final String name, final Type type) {
     this(declaringClass, new FieldSubSignature(name, type));
   }
@@ -43,12 +41,5 @@ public class FieldSignature extends SootClassMemberSignature<FieldSubSignature> 
   public FieldSignature(
       @Nonnull ClassType declaringClass, @Nonnull FieldSubSignature subSignature) {
     super(declaringClass, subSignature);
-    this.subSignature = subSignature;
-  }
-
-  @Override
-  @Nonnull
-  public FieldSubSignature getSubSignature() {
-    return subSignature;
   }
 }
