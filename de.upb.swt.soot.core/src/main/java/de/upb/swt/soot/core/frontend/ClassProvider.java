@@ -33,11 +33,13 @@ import java.nio.file.Path;
  *
  * @author Manuel Benz
  */
-public interface ClassProvider<T extends SootClass> {
+public interface ClassProvider<T extends SootClass<?>> {
 
   // TODO: [ms] check necessity for AnalysisInputLocation AND Path?
   AbstractClassSource<T> createClassSource(
-      AnalysisInputLocation<T> inputLocation, Path sourcePath, ClassType classSignature);
+      AnalysisInputLocation<? extends SootClass<?>> inputLocation,
+      Path sourcePath,
+      ClassType classSignature);
 
   /** Returns the file type that is handled by this provider, e.g. class, jimple, java */
   FileType getHandledFileType();

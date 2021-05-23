@@ -20,6 +20,7 @@ package de.upb.swt.soot.core.inputlocation;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.SootClass;
@@ -42,7 +43,7 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public interface AnalysisInputLocation<T extends SootClass> {
+public interface AnalysisInputLocation<T extends SootClass<?>> {
   /**
    * Create or find a class source for a given type.
    *
@@ -50,14 +51,15 @@ public interface AnalysisInputLocation<T extends SootClass> {
    * @return The source entry for that class.
    */
   @Nonnull
-  Optional<? extends AbstractClassSource<T>> getClassSource(@Nonnull ClassType type);
+  Optional<? extends AbstractClassSource<? extends SootClass<?>>> getClassSource(
+      @Nonnull ClassType type);
 
   /**
    * Scan the input location and create ClassSources for every compilation / interpretation unit.
    */
   // TODO [ms] does that paramter make any sense
   @Nonnull
-  Collection<? extends AbstractClassSource<T>> getClassSources(
+  Collection<? extends AbstractClassSource<? extends SootClass<?>>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory);
 
   /**
@@ -67,14 +69,14 @@ public interface AnalysisInputLocation<T extends SootClass> {
    * @return The source entry for that class.
    */
   @Nonnull
-  Optional<? extends AbstractClassSource<T>> getClassSource(
+  Optional<? extends AbstractClassSource<? extends SootClass<?>>> getClassSource(
       @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions);
 
   /**
    * Scan the input location and create ClassSources for every compilation / interpretation unit.
    */
   @Nonnull
-  Collection<? extends AbstractClassSource<T>> getClassSources(
+  Collection<? extends AbstractClassSource<? extends SootClass<?>>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions);
 }

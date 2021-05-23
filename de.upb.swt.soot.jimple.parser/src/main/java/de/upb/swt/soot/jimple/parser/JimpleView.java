@@ -8,6 +8,7 @@ import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.AbstractView;
+import de.upb.swt.soot.core.views.View;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -33,7 +35,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   private volatile boolean isFullyResolved = false;
 
   @Nonnull
-  protected Function<AnalysisInputLocation<SootClass<?>>, ClassLoadingOptions>
+  protected Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
       classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link de.upb.swt.soot.java.core.views.JavaView} class. */
@@ -49,9 +51,9 @@ public class JimpleView extends AbstractView<SootClass<?>> {
    *     options.
    */
   public JimpleView(
-      @Nonnull Project<JimpleView, ?> project,
+      @Nonnull Project<SootClass<?>, ? extends View<SootClass<?>>> project,
       @Nonnull
-          Function<AnalysisInputLocation<SootClass<?>>, ClassLoadingOptions>
+          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
@@ -88,10 +90,13 @@ public class JimpleView extends AbstractView<SootClass<?>> {
                 location -> {
                   ClassLoadingOptions classLoadingOptions =
                       classLoadingOptionsSpecifier.apply(location);
+
                   if (classLoadingOptions != null) {
-                    return location.getClassSource(type, classLoadingOptions);
+                    return (Optional<AbstractClassSource<SootClass<?>>>)
+                        location.getClassSource(type, classLoadingOptions);
                   } else {
-                    return location.getClassSource(type);
+                    return (Optional<AbstractClassSource<SootClass<?>>>)
+                        location.getClassSource(type);
                   }
                 })
             .filter(Optional::isPresent)
@@ -137,10 +142,13 @@ public class JimpleView extends AbstractView<SootClass<?>> {
               ClassLoadingOptions classLoadingOptions =
                   classLoadingOptionsSpecifier.apply(location);
               if (classLoadingOptions != null) {
-                return location.getClassSources(getIdentifierFactory(), classLoadingOptions)
-                    .stream();
+                Collection<? extends AbstractClassSource<? extends SootClass<?>>> classSources =
+                    location.getClassSources(getIdentifierFactory(), classLoadingOptions);
+                return (Stream<AbstractClassSource<SootClass<?>>>) classSources.stream();
               } else {
-                return location.getClassSources(getIdentifierFactory()).stream();
+                Collection<? extends AbstractClassSource<? extends SootClass<?>>> classSources =
+                    location.getClassSources(getIdentifierFactory());
+                return (Stream<AbstractClassSource<SootClass<?>>>) classSources.stream();
               }
             })
         .forEach(this::buildClassFrom);

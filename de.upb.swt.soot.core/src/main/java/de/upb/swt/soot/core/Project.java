@@ -40,12 +40,11 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public abstract class Project<V extends View<? extends SootClass>, S extends SootClass> {
+public abstract class Project<S extends SootClass<?>, V extends View<S>> {
 
-  @Nonnull
-  private final IdentifierFactory identifierFactory; // THINK:[ms] is this really necessary?
+  @Nonnull private final IdentifierFactory identifierFactory;
 
-  @Nonnull private final List<AnalysisInputLocation<S>> inputLocations;
+  @Nonnull private final List<AnalysisInputLocation<? extends SootClass<?>>> inputLocations;
   @Nonnull private final SourceTypeSpecifier sourceTypeSpecifier;
   @Nonnull private final Language language;
   /**
@@ -57,7 +56,7 @@ public abstract class Project<V extends View<? extends SootClass>, S extends Soo
    */
   public Project(
       @Nonnull Language language,
-      @Nonnull AnalysisInputLocation<S> inputLocation,
+      @Nonnull AnalysisInputLocation<? extends SootClass<?>> inputLocation,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     this(
         language,
@@ -76,11 +75,11 @@ public abstract class Project<V extends View<? extends SootClass>, S extends Soo
    */
   public Project(
       @Nonnull Language language,
-      @Nonnull List<AnalysisInputLocation<S>> inputLocations,
+      @Nonnull List<AnalysisInputLocation<? extends SootClass<?>>> inputLocations,
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     this.language = language;
-    List<AnalysisInputLocation<S>> unmodifiableInputLocations =
+    List<AnalysisInputLocation<? extends SootClass<?>>> unmodifiableInputLocations =
         Collections.unmodifiableList(new ArrayList<>(inputLocations));
 
     if (unmodifiableInputLocations.isEmpty()) {
@@ -92,9 +91,13 @@ public abstract class Project<V extends View<? extends SootClass>, S extends Soo
     this.identifierFactory = identifierFactory;
   }
 
-  /** Gets the inputLocations. */
+  /**
+   * Gets the inputLocations.
+   *
+   * @return
+   */
   @Nonnull
-  public List<AnalysisInputLocation<S>> getInputLocations() {
+  public List<AnalysisInputLocation<? extends SootClass<?>>> getInputLocations() {
     return inputLocations;
   }
 
@@ -133,7 +136,8 @@ public abstract class Project<V extends View<? extends SootClass>, S extends Soo
   @Nonnull
   public abstract V createOnDemandView(
       @Nonnull
-          Function<AnalysisInputLocation<S>, ClassLoadingOptions> classLoadingOptionsSpecifier);
+          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier);
 
   /**
    * Returns a partial view on the code based on the provided scope and all input locations in the

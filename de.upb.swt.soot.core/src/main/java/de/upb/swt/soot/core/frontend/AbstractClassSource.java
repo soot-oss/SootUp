@@ -36,15 +36,15 @@ import javax.annotation.Nullable;
  * languages). e.g. its connecting a file with source(code) to a {@link Signature} that a {@link
  * View} can resolve.
  */
-public abstract class AbstractClassSource<T extends SootClass> {
-  // TODO: [ms] I dont see the necessity of the AnalysisInputLocation in this class; maybe not even
-  // for sourcepath
-  protected final AnalysisInputLocation<T> srcNamespace;
+public abstract class AbstractClassSource<T extends SootClass<?>> {
+
+  // TODO: [ms] I dont see the necessity of the AnalysisInputLocation in this class?
+  protected final AnalysisInputLocation<? extends SootClass<?>> srcNamespace;
   protected final Path sourcePath;
   protected ClassType classSignature;
 
   public AbstractClassSource(
-      @Nonnull AnalysisInputLocation<T> srcNamespace,
+      @Nonnull AnalysisInputLocation<? extends SootClass<?>> srcNamespace,
       @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
     this.srcNamespace = srcNamespace;
@@ -81,7 +81,8 @@ public abstract class AbstractClassSource<T extends SootClass> {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AbstractClassSource<T> that = (AbstractClassSource<T>) o;
+    AbstractClassSource<? extends SootClass<?>> that =
+        (AbstractClassSource<? extends SootClass<?>>) o;
     return Objects.equal(srcNamespace, that.srcNamespace)
         && Objects.equal(sourcePath, that.sourcePath);
   }

@@ -27,6 +27,7 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.AbstractView;
 import de.upb.swt.soot.java.core.AnnotationUsage;
@@ -40,6 +41,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -55,11 +57,11 @@ public class JavaView extends AbstractView<JavaSootClass> {
   private volatile boolean isFullyResolved = false;
 
   @Nonnull
-  protected Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
+  protected Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
       classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link JavaView} class. */
-  public JavaView(@Nonnull Project<JavaView, JavaSootClass> project) {
+  public JavaView(@Nonnull Project<JavaSootClass, JavaView> project) {
     this(project, analysisInputLocation -> null);
   }
 
@@ -71,9 +73,9 @@ public class JavaView extends AbstractView<JavaSootClass> {
    *     options.
    */
   public JavaView(
-      @Nonnull Project<JavaView, JavaSootClass> project,
+      @Nonnull Project<JavaSootClass, JavaView> project,
       @Nonnull
-          Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
+          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
@@ -99,16 +101,18 @@ public class JavaView extends AbstractView<JavaSootClass> {
       return Optional.of(cachedClass);
     }
 
-    final List<AbstractClassSource<JavaSootClass>> foundClassSources =
+    final List<AbstractClassSource<? extends SootClass>> foundClassSources =
         getProject().getInputLocations().stream()
             .map(
                 location -> {
                   ClassLoadingOptions classLoadingOptions =
                       classLoadingOptionsSpecifier.apply(location);
                   if (classLoadingOptions != null) {
-                    return location.getClassSource(type, classLoadingOptions);
+                    return (Optional<AbstractClassSource<SootClass<?>>>)
+                        location.getClassSource(type, classLoadingOptions);
                   } else {
-                    return location.getClassSource(type);
+                    return (Optional<AbstractClassSource<SootClass<?>>>)
+                        location.getClassSource(type);
                   }
                 })
             .filter(Optional::isPresent)
@@ -134,12 +138,14 @@ public class JavaView extends AbstractView<JavaSootClass> {
 
   @Nonnull
   private synchronized Optional<JavaSootClass> buildClassFrom(
-      AbstractClassSource<? extends JavaSootClass> classSource) {
+      AbstractClassSource<? extends SootClass<?>> classSource) {
     JavaSootClass theClass =
         cache.computeIfAbsent(
             classSource.getClassType(),
             type ->
-                classSource.buildClass(getProject().getSourceTypeSpecifier().sourceTypeFor(type)));
+                (JavaSootClass)
+                    classSource.buildClass(
+                        getProject().getSourceTypeSpecifier().sourceTypeFor(type)));
 
     if (theClass.getType() instanceof AnnotationType) {
       JavaAnnotationSootClass jasc = (JavaAnnotationSootClass) theClass;
@@ -160,10 +166,11 @@ public class JavaView extends AbstractView<JavaSootClass> {
               ClassLoadingOptions classLoadingOptions =
                   classLoadingOptionsSpecifier.apply(location);
               if (classLoadingOptions != null) {
-                return location.getClassSources(getIdentifierFactory(), classLoadingOptions)
-                    .stream();
+                return (Stream<AbstractClassSource<SootClass<?>>>)
+                    location.getClassSources(getIdentifierFactory(), classLoadingOptions).stream();
               } else {
-                return location.getClassSources(getIdentifierFactory()).stream();
+                return (Stream<AbstractClassSource<SootClass<?>>>)
+                    location.getClassSources(getIdentifierFactory()).stream();
               }
             })
         .forEach(this::buildClassFrom);

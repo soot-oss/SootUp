@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
  *
  * @author Markus Schmidt
  */
-public class EagerInputLocation<S extends SootClass> implements AnalysisInputLocation<S> {
+public class EagerInputLocation<S extends SootClass<?>> implements AnalysisInputLocation<S> {
 
   @Nonnull private final Map<ClassType, ? extends AbstractClassSource<S>> map;
 

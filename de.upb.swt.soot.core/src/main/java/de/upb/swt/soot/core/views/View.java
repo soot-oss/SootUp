@@ -40,7 +40,7 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public interface View<T extends SootClass> {
+public interface View<T extends SootClass<?>> {
 
   /** Return all classes in the view. */
   @Nonnull
