@@ -91,16 +91,13 @@ public class SootMethod extends SootClassMember<MethodSubSignature, MethodSignat
               + " is abstract or native.",
           Paths.get(""));
     }
-    ;
 
-    Body body;
     try {
-      body = bodySource.resolveBody(getModifiers());
+      return bodySource.resolveBody(getModifiers());
     } catch (ResolveException | IOException e) {
-      throw new ResolveException("Could not resolve a corresponding body", Paths.get(""), e);
+      throw new ResolveException(
+          "Could not resolve a corresponding body for " + getSignature(), Paths.get(""), e);
     }
-
-    return body;
   }
 
   @Nonnull
@@ -114,6 +111,7 @@ public class SootMethod extends SootClassMember<MethodSubSignature, MethodSignat
     return !isAbstract() && !isNative();
   }
 
+  @Nonnull
   public Type getReturnType() {
     return getSignature().getType();
   }
@@ -124,16 +122,18 @@ public class SootMethod extends SootClassMember<MethodSubSignature, MethodSignat
   }
 
   /** Gets the type of the <i>n</i>th parameter of this method. */
+  @Nonnull
   public Type getParameterType(int n) {
     return parameterTypes.get(n);
   }
 
   /** Returns a read-only list of the parameter types of this method. */
+  @Nonnull
   public List<Type> getParameterTypes() {
     return parameterTypes;
   }
 
-  private final @Nonnull Supplier<Body> _lazyBody = Suppliers.memoize(this::lazyBodyInitializer);
+  @Nonnull private final Supplier<Body> _lazyBody = Suppliers.memoize(this::lazyBodyInitializer);
 
   /** Retrieves the active body for this method. */
   @Nonnull
@@ -373,7 +373,8 @@ public class SootMethod extends SootClassMember<MethodSubSignature, MethodSignat
     @Override
     @Nonnull
     public SootMethod build() {
-      // nonnull is enforced by stepwise builder pattern
+      // nonnull is enforced by stepwise builder pattern - at least if s.o. doesn't force a null
+      // value as parameter
       return new SootMethod(
           getSource(), getSignature(), getModifiers(), getThrownExceptions(), position);
     }
