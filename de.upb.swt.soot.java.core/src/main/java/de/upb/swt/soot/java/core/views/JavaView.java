@@ -27,7 +27,6 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.AbstractView;
 import de.upb.swt.soot.java.core.AnnotationUsage;
@@ -100,7 +99,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
       return Optional.of(cachedClass);
     }
 
-    final List<AbstractClassSource<? extends SootClass<?>>> foundClassSources =
+    final List<AbstractClassSource<? extends JavaSootClass>> foundClassSources =
         getProject().getInputLocations().stream()
             .map(
                 location -> {
@@ -135,7 +134,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
 
   @Nonnull
   private synchronized Optional<JavaSootClass> buildClassFrom(
-      AbstractClassSource<? extends SootClass<?>> classSource) {
+      AbstractClassSource<? extends JavaSootClass> classSource) {
     JavaSootClass theClass =
         cache.computeIfAbsent(
             classSource.getClassType(),
