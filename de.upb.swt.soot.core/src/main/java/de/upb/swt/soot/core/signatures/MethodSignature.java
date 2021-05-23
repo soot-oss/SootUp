@@ -47,7 +47,7 @@ public class MethodSignature extends SootClassMemberSignature<MethodSubSignature
    * @param subSignature the sub-signature
    */
   public MethodSignature(
-      final @Nonnull ClassType declaringClass, final @Nonnull MethodSubSignature subSignature) {
+      @Nonnull ClassType declaringClass, @Nonnull MethodSubSignature subSignature) {
     super(declaringClass, subSignature);
   }
 

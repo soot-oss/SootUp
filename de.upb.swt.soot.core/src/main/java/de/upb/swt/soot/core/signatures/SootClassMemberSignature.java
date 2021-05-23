@@ -58,10 +58,12 @@ public abstract class SootClassMemberSignature<V extends SootClassMemberSubSigna
     return declClassSignature;
   }
 
+  @Nonnull
   public Type getType() {
     return subSignature.getType();
   }
 
+  @Nonnull
   public String getName() {
     return subSignature.getName();
   }
@@ -86,6 +88,7 @@ public abstract class SootClassMemberSignature<V extends SootClassMemberSubSigna
   }
 
   @Override
+  @Nonnull
   public String toString() {
     return "<" + declClassSignature + ": " + getSubSignature() + '>';
   }
