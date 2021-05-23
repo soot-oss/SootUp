@@ -84,22 +84,6 @@ public class VariableNode extends Node implements Comparable<VariableNode> {
     return other.finishingNumber - this.finishingNumber;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    VariableNode that = (VariableNode) o;
-    return finishingNumber == that.finishingNumber
-        && isInterProcTarget == that.isInterProcTarget
-        && Objects.equals(variable, that.variable)
-        && Objects.equals(fields, that.fields);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(variable, fields, finishingNumber, isInterProcTarget);
-  }
-
   public void setFinishingNumber(int number) {
     finishingNumber = number;
     if (number > pag.getMaxFinishingNumber()) {
