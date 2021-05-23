@@ -49,7 +49,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
+public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extends AbstractClass<S> {
 
   @Nonnull protected final SourceType sourceType;
   @Nonnull protected final ClassType classSignature;

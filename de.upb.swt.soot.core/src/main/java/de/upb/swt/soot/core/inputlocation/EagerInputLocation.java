@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.inputlocation;
 import com.google.common.collect.ImmutableMap;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
@@ -37,9 +38,10 @@ import javax.annotation.Nullable;
  *
  * @author Markus Schmidt
  */
-public class EagerInputLocation<S extends SootClass<?>> implements AnalysisInputLocation<S> {
+public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>>>
+    implements AnalysisInputLocation<S> {
 
-  @Nonnull private final Map<ClassType, ? extends AbstractClassSource<S>> map;
+  @Nonnull private final Map<ClassType, ? extends SootClassSource<S>> map;
 
   /**
    * not useful for retrieval of classes via view. // FIXME: circular dependency on sootclass <->
@@ -49,13 +51,13 @@ public class EagerInputLocation<S extends SootClass<?>> implements AnalysisInput
     map = Collections.emptyMap();
   }
 
-  public EagerInputLocation(@Nonnull Map<ClassType, ? extends AbstractClassSource<S>> map) {
+  public EagerInputLocation(@Nonnull Map<ClassType, ? extends SootClassSource<S>> map) {
     this.map = ImmutableMap.copyOf(map);
   }
 
   @Nonnull
   @Override
-  public Optional<? extends AbstractClassSource<S>> getClassSource(@Nonnull ClassType type) {
+  public Optional<? extends SootClassSource<S>> getClassSource(@Nonnull ClassType type) {
     return Optional.ofNullable(map.get(type));
   }
 

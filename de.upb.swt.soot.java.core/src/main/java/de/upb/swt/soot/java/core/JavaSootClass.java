@@ -46,7 +46,6 @@ public class JavaSootClass extends SootClass<JavaSootClassSource> {
     return this.classSignature.isBuiltInClass();
   }
 
-  @Nonnull
   public JavaSootClass(JavaSootClassSource classSource, SourceType sourceType) {
     super(classSource, sourceType);
   }
@@ -100,13 +99,13 @@ public class JavaSootClass extends SootClass<JavaSootClassSource> {
   @Nonnull
   @Override
   public Set<? extends JavaSootMethod> getMethods() {
-    return (Set<JavaSootMethod>) super.getMethods();
+    return (Set<? extends JavaSootMethod>) super.getMethods();
   }
 
   @Nonnull
   @Override
-  public Set<? extends SootField> getFields() {
-    return (Set<JavaSootField>) super.getFields();
+  public Set<? extends JavaSootField> getFields() {
+    return (Set<? extends JavaSootField>) super.getFields();
   }
 
   @Nonnull

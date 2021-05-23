@@ -3,10 +3,12 @@ package de.upb.swt.soot.jimple.parser;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.EmptyClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.FileType;
+import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
@@ -23,7 +25,8 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /** @author Markus Schmidt */
-public class JimpleAnalysisInputLocation implements AnalysisInputLocation<SootClass<?>> {
+public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClassSource<T>>>
+    implements AnalysisInputLocation<T> {
   final Path path;
 
   public JimpleAnalysisInputLocation(@Nonnull Path path) {
@@ -31,7 +34,7 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation<SootCl
   }
 
   @Nonnull
-  List<AbstractClassSource<? extends SootClass<?>>> walkDirectory(
+  List<AbstractClassSource<? extends AbstractClass<?>>> walkDirectory(
       @Nonnull Path dirPath,
       @Nonnull IdentifierFactory factory,
       @Nonnull ClassProvider<? extends SootClass<?>> classProvider) {
@@ -52,13 +55,14 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation<SootCl
 
   @Nonnull
   @Override
-  public Collection<? extends AbstractClassSource<? extends SootClass<?>>> getClassSources(
+  public Collection<? extends SootClassSource<T>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory) {
     return getClassSources(identifierFactory, EmptyClassLoadingOptions.Default);
   }
 
   @Override
-  public @Nonnull Collection<? extends AbstractClassSource<? extends SootClass<?>>> getClassSources(
+  @Nonnull
+  public Collection<? extends SootClassSource<T>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
     return walkDirectory(
@@ -69,16 +73,16 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation<SootCl
 
   @Nonnull
   @Override
-  public Optional<? extends AbstractClassSource<SootClass<?>>> getClassSource(
-      @Nonnull ClassType type) {
+  public Optional<? extends SootClassSource<T>> getClassSource(@Nonnull ClassType type) {
     return getClassSource(type, EmptyClassLoadingOptions.Default);
   }
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource<SootClass<?>>> getClassSource(
+  @Nonnull
+  public Optional<? extends SootClassSource<T>> getClassSource(
       @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
-    final JimpleClassProvider classProvider =
-        new JimpleClassProvider(classLoadingOptions.getBodyInterceptors());
+    final JimpleClassProvider<T> classProvider =
+        new JimpleClassProvider<>(classLoadingOptions.getBodyInterceptors());
 
     final String ext = classProvider.getHandledFileType().toString().toLowerCase();
 

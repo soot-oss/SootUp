@@ -42,7 +42,8 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public abstract class SootClassSource<S extends SootClass<?>> extends AbstractClassSource<S> {
+public abstract class SootClassSource<S extends SootClass<? extends SootClassSource<S>>>
+    extends AbstractClassSource<S> {
 
   /**
    * Creates and a {@link SootClassSource} for a specific source file. The file should be passed as

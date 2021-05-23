@@ -23,7 +23,6 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import java.util.Collection;
@@ -38,14 +37,14 @@ public interface BytecodeAnalysisInputLocation extends AnalysisInputLocation<Jav
 
   @Nonnull
   @Override
-  default Optional<? extends AbstractClassSource<? extends SootClass<?>>> getClassSource(
+  default Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
       @Nonnull ClassType type) {
     return getClassSource(type, BytecodeClassLoadingOptions.Default);
   }
 
   @Nonnull
   @Override
-  default Collection<? extends AbstractClassSource<? extends SootClass<?>>> getClassSources(
+  default Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory) {
     return getClassSources(identifierFactory, BytecodeClassLoadingOptions.Default);
   }

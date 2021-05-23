@@ -2,6 +2,7 @@ package de.upb.swt.soot.jimple.parser;
 
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.model.SootClass;
@@ -14,8 +15,10 @@ import javax.annotation.Nonnull;
 import org.antlr.v4.runtime.CharStreams;
 
 /** @author Markus Schmidt */
-public class JimpleClassProvider implements ClassProvider<SootClass<?>> {
+public class JimpleClassProvider<T extends SootClass<? extends SootClassSource<T>>>
+    implements ClassProvider<T> {
 
+  // TODO: implement applying BodyInterceptors
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
   public JimpleClassProvider(@Nonnull List<BodyInterceptor> bodyInterceptors) {
@@ -23,7 +26,7 @@ public class JimpleClassProvider implements ClassProvider<SootClass<?>> {
   }
 
   @Override
-  public AbstractClassSource<SootClass<?>> createClassSource(
+  public AbstractClassSource<T> createClassSource(
       AnalysisInputLocation<? extends SootClass<?>> inputlocation,
       Path sourcePath,
       ClassType classSignature) {

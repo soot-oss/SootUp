@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.inputlocation;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
+import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
@@ -43,7 +44,7 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public interface AnalysisInputLocation<T extends SootClass<?>> {
+public interface AnalysisInputLocation<T extends AbstractClass<? extends AbstractClassSource<T>>> {
   /**
    * Create or find a class source for a given type.
    *
@@ -51,15 +52,14 @@ public interface AnalysisInputLocation<T extends SootClass<?>> {
    * @return The source entry for that class.
    */
   @Nonnull
-  Optional<? extends AbstractClassSource<? extends SootClass<?>>> getClassSource(
-      @Nonnull ClassType type);
+  Optional<? extends AbstractClassSource<T>> getClassSource(@Nonnull ClassType type);
 
   /**
    * Scan the input location and create ClassSources for every compilation / interpretation unit.
    */
   // TODO [ms] does that paramter make any sense
   @Nonnull
-  Collection<? extends AbstractClassSource<? extends SootClass<?>>> getClassSources(
+  Collection<? extends AbstractClassSource<T>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory);
 
   /**
@@ -69,14 +69,16 @@ public interface AnalysisInputLocation<T extends SootClass<?>> {
    * @return The source entry for that class.
    */
   @Nonnull
-  Optional<? extends AbstractClassSource<? extends SootClass<?>>> getClassSource(
+  Optional<? extends AbstractClassSource<T>> getClassSource(
       @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions);
 
   /**
    * Scan the input location and create ClassSources for every compilation / interpretation unit.
+   *
+   * @return
    */
   @Nonnull
-  Collection<? extends AbstractClassSource<? extends SootClass<?>>> getClassSources(
+  Collection<? extends AbstractClassSource<T>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions);
 }

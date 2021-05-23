@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -101,18 +100,16 @@ public class JavaView extends AbstractView<JavaSootClass> {
       return Optional.of(cachedClass);
     }
 
-    final List<AbstractClassSource<? extends SootClass>> foundClassSources =
+    final List<AbstractClassSource<? extends SootClass<?>>> foundClassSources =
         getProject().getInputLocations().stream()
             .map(
                 location -> {
                   ClassLoadingOptions classLoadingOptions =
                       classLoadingOptionsSpecifier.apply(location);
                   if (classLoadingOptions != null) {
-                    return (Optional<AbstractClassSource<SootClass<?>>>)
-                        location.getClassSource(type, classLoadingOptions);
+                    return location.getClassSource(type, classLoadingOptions);
                   } else {
-                    return (Optional<AbstractClassSource<SootClass<?>>>)
-                        location.getClassSource(type);
+                    return location.getClassSource(type);
                   }
                 })
             .filter(Optional::isPresent)
@@ -166,11 +163,10 @@ public class JavaView extends AbstractView<JavaSootClass> {
               ClassLoadingOptions classLoadingOptions =
                   classLoadingOptionsSpecifier.apply(location);
               if (classLoadingOptions != null) {
-                return (Stream<AbstractClassSource<SootClass<?>>>)
-                    location.getClassSources(getIdentifierFactory(), classLoadingOptions).stream();
+                return location.getClassSources(getIdentifierFactory(), classLoadingOptions)
+                    .stream();
               } else {
-                return (Stream<AbstractClassSource<SootClass<?>>>)
-                    location.getClassSources(getIdentifierFactory()).stream();
+                return location.getClassSources(getIdentifierFactory()).stream();
               }
             })
         .forEach(this::buildClassFrom);
