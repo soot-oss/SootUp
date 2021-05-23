@@ -65,10 +65,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
   public Collection<? extends SootClassSource<T>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
-    return walkDirectory(
-        path,
-        identifierFactory,
-        new JimpleClassProvider(classLoadingOptions.getBodyInterceptors()));
+    return walkDirectory(path, identifierFactory, new JimpleClassProvider(classLoadingOptions));
   }
 
   @Nonnull
@@ -81,8 +78,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
   @Nonnull
   public Optional<? extends SootClassSource<T>> getClassSource(
       @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
-    final JimpleClassProvider<T> classProvider =
-        new JimpleClassProvider<>(classLoadingOptions.getBodyInterceptors());
+    final JimpleClassProvider<T> classProvider = new JimpleClassProvider<>(classLoadingOptions);
 
     final String ext = classProvider.getHandledFileType().toString().toLowerCase();
 

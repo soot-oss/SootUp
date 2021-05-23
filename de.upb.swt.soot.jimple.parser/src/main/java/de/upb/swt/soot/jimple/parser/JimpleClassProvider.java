@@ -3,13 +3,12 @@ package de.upb.swt.soot.jimple.parser;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import javax.annotation.Nonnull;
 import org.antlr.v4.runtime.CharStreams;
 
@@ -17,11 +16,10 @@ import org.antlr.v4.runtime.CharStreams;
 public class JimpleClassProvider<T extends SootClass<? extends SootClassSource<T>>>
     implements ClassProvider<T> {
 
-  // TODO: implement applying BodyInterceptors
-  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+  @Nonnull private final ClassLoadingOptions classLoadingOptions;
 
-  public JimpleClassProvider(@Nonnull List<BodyInterceptor> bodyInterceptors) {
-    this.bodyInterceptors = bodyInterceptors;
+  public JimpleClassProvider(@Nonnull ClassLoadingOptions classLoadingOptions) {
+    this.classLoadingOptions = classLoadingOptions;
   }
 
   @Override
@@ -32,7 +30,8 @@ public class JimpleClassProvider<T extends SootClass<? extends SootClassSource<T
 
     try {
       final JimpleConverter jimpleConverter = new JimpleConverter();
-      return jimpleConverter.run(CharStreams.fromPath(sourcePath), inputlocation, sourcePath);
+      return jimpleConverter.run(
+          CharStreams.fromPath(sourcePath), inputlocation, sourcePath, classLoadingOptions);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

@@ -2,7 +2,6 @@ package de.upb.swt.soot.jimple.parser.javatestsuite;
 
 import static org.junit.Assert.*;
 
-import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -30,9 +29,9 @@ public abstract class JimpleTestSuiteBase {
 
   @Before
   public void setup() {
-    AnalysisInputLocation<SootClass<?>> inputLocation =
-        new JimpleAnalysisInputLocation(Paths.get(baseDir));
-    view = new JimpleProject(inputLocation).createOnDemandView();
+    view =
+        new JimpleProject(new JimpleAnalysisInputLocation<>(Paths.get(baseDir)))
+            .createOnDemandView();
   }
 
   /**
