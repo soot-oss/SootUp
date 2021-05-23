@@ -47,7 +47,7 @@ class AsmClassSource extends JavaSootClassSource {
   @Nonnull private final ClassNode classNode;
 
   public AsmClassSource(
-      AnalysisInputLocation<? extends SootClass> inputLocation,
+      AnalysisInputLocation<? extends SootClass<?>> inputLocation,
       Path sourcePath,
       JavaClassType javaClassType,
       @Nonnull ClassNode classNode) {

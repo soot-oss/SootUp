@@ -1,6 +1,5 @@
 package de.upb.swt.soot.jimple.parser;
 
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
@@ -26,7 +25,7 @@ public class JimpleClassProvider<T extends SootClass<? extends SootClassSource<T
   }
 
   @Override
-  public AbstractClassSource<T> createClassSource(
+  public SootClassSource<T> createClassSource(
       AnalysisInputLocation<? extends SootClass<?>> inputlocation,
       Path sourcePath,
       ClassType classSignature) {

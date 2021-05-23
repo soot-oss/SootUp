@@ -135,10 +135,10 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
 
     @Override
-    public @Nonnull @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>>
-        getClassSources(
-            @Nonnull IdentifierFactory identifierFactory,
-            @Nonnull ClassLoadingOptions classLoadingOptions) {
+    @Nonnull
+    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+        @Nonnull IdentifierFactory identifierFactory,
+        @Nonnull ClassLoadingOptions classLoadingOptions) {
       return walkDirectory(
           path,
           identifierFactory,
@@ -146,7 +146,8 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
 
     @Override
-    public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+    @Nonnull
+    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
         @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
       return getClassSourceInternal(
           (JavaClassType) type,
@@ -202,10 +203,10 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
 
     @Override
-    public @Nonnull @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>>
-        getClassSources(
-            @Nonnull IdentifierFactory identifierFactory,
-            @Nonnull ClassLoadingOptions classLoadingOptions) {
+    @Nonnull
+    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+        @Nonnull IdentifierFactory identifierFactory,
+        @Nonnull ClassLoadingOptions classLoadingOptions) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path archiveRoot = fs.getPath("/");
         return walkDirectory(
@@ -239,7 +240,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
 
     @Override
     @Nonnull
-    public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
         @Nonnull IdentifierFactory identifierFactory,
         @Nonnull ClassLoadingOptions classLoadingOptions) {
       List<AbstractClassSource<JavaSootClass>> foundClasses = new ArrayList<>();

@@ -20,10 +20,10 @@ package de.upb.swt.soot.java.sourcecode.inputlocation;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
-import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.types.ClassType;
@@ -85,7 +85,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
 
   @Nonnull
   @Override
-  public @Nonnull Optional<? extends SootClassSource<JavaSootClass>> getClassSource(
+  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
       @Nonnull ClassType type) {
     return getClassSource(type, SourcecodeClassLoadingOptions.Default);
   }
@@ -98,7 +98,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
 
   @Override
   @Nonnull
-  public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
     return classProvider.getClassSources();

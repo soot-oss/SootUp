@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -84,7 +83,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
       return Optional.of(cachedClass);
     }
 
-    final List<AbstractClassSource<SootClass<?>>> foundClassSources =
+    final List<? extends AbstractClassSource<? extends SootClass<?>>> foundClassSources =
         getProject().getInputLocations().stream()
             .map(
                 location -> {
@@ -92,11 +91,9 @@ public class JimpleView extends AbstractView<SootClass<?>> {
                       classLoadingOptionsSpecifier.apply(location);
 
                   if (classLoadingOptions != null) {
-                    return (Optional<AbstractClassSource<SootClass<?>>>)
-                        location.getClassSource(type, classLoadingOptions);
+                    return location.getClassSource(type, classLoadingOptions);
                   } else {
-                    return (Optional<AbstractClassSource<SootClass<?>>>)
-                        location.getClassSource(type);
+                    return location.getClassSource(type);
                   }
                 })
             .filter(Optional::isPresent)
@@ -122,7 +119,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
 
   @Nonnull
   private synchronized Optional<SootClass<?>> buildClassFrom(
-      AbstractClassSource<SootClass<?>> classSource) {
+      AbstractClassSource<? extends SootClass<?>> classSource) {
     SootClass<?> theClass =
         cache.computeIfAbsent(
             classSource.getClassType(),
@@ -144,11 +141,11 @@ public class JimpleView extends AbstractView<SootClass<?>> {
               if (classLoadingOptions != null) {
                 Collection<? extends AbstractClassSource<? extends SootClass<?>>> classSources =
                     location.getClassSources(getIdentifierFactory(), classLoadingOptions);
-                return (Stream<AbstractClassSource<SootClass<?>>>) classSources.stream();
+                return classSources.stream();
               } else {
                 Collection<? extends AbstractClassSource<? extends SootClass<?>>> classSources =
                     location.getClassSources(getIdentifierFactory());
-                return (Stream<AbstractClassSource<SootClass<?>>>) classSources.stream();
+                return classSources.stream();
               }
             })
         .forEach(this::buildClassFrom);

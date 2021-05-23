@@ -118,7 +118,8 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
 
   // get the factory, which I should use the create the correspond class signatures
   @Override
-  public @Nonnull @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+  @Nonnull
+  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
