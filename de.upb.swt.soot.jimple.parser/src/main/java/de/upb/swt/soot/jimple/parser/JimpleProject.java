@@ -12,11 +12,8 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class JimpleProject extends Project<JimpleView, SootClass<?>> {
 
-  public JimpleProject(@Nonnull AnalysisInputLocation<? extends SootClass<?>> inputLocation) {
-    super(
-        JimpleLanguage.getInstance(),
-        (AnalysisInputLocation<SootClass<?>>) inputLocation,
-        DefaultSourceTypeSpecifier.getInstance());
+  public JimpleProject(@Nonnull AnalysisInputLocation<SootClass<?>> inputLocation) {
+    super(JimpleLanguage.getInstance(), inputLocation, DefaultSourceTypeSpecifier.getInstance());
   }
 
   public JimpleProject(@Nonnull List<AnalysisInputLocation<SootClass<?>>> inputLocation) {
