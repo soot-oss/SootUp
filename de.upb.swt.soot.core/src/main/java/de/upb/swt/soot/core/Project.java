@@ -44,7 +44,7 @@ public abstract class Project<S extends SootClass<?>, V extends View<S>> {
 
   @Nonnull private final IdentifierFactory identifierFactory;
 
-  @Nonnull private final List<AnalysisInputLocation<? extends SootClass<?>>> inputLocations;
+  @Nonnull private final List<AnalysisInputLocation<? extends S>> inputLocations;
   @Nonnull private final SourceTypeSpecifier sourceTypeSpecifier;
   @Nonnull private final Language language;
   /**
@@ -56,7 +56,7 @@ public abstract class Project<S extends SootClass<?>, V extends View<S>> {
    */
   public Project(
       @Nonnull Language language,
-      @Nonnull AnalysisInputLocation<? extends SootClass<?>> inputLocation,
+      @Nonnull AnalysisInputLocation<? extends S> inputLocation,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     this(
         language,
@@ -75,11 +75,11 @@ public abstract class Project<S extends SootClass<?>, V extends View<S>> {
    */
   public Project(
       @Nonnull Language language,
-      @Nonnull List<AnalysisInputLocation<? extends SootClass<?>>> inputLocations,
+      @Nonnull List<AnalysisInputLocation<? extends S>> inputLocations,
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     this.language = language;
-    List<AnalysisInputLocation<? extends SootClass<?>>> unmodifiableInputLocations =
+    List<AnalysisInputLocation<? extends S>> unmodifiableInputLocations =
         Collections.unmodifiableList(new ArrayList<>(inputLocations));
 
     if (unmodifiableInputLocations.isEmpty()) {
@@ -97,7 +97,7 @@ public abstract class Project<S extends SootClass<?>, V extends View<S>> {
    * @return
    */
   @Nonnull
-  public List<AnalysisInputLocation<? extends SootClass<?>>> getInputLocations() {
+  public List<AnalysisInputLocation<? extends S>> getInputLocations() {
     return inputLocations;
   }
 
@@ -136,7 +136,7 @@ public abstract class Project<S extends SootClass<?>, V extends View<S>> {
   @Nonnull
   public abstract V createOnDemandView(
       @Nonnull
-          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
+          Function<AnalysisInputLocation<? extends S>, ClassLoadingOptions>
               classLoadingOptionsSpecifier);
 
   /**

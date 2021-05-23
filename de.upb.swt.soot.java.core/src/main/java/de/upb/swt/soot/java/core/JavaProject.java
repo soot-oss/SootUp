@@ -28,7 +28,6 @@ import de.upb.swt.soot.core.SourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.ArrayList;
@@ -47,7 +46,7 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
 
   public JavaProject(
       JavaLanguage language,
-      @Nonnull List<AnalysisInputLocation<? extends SootClass<?>>> inputLocations,
+      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     super(language, inputLocations, JavaIdentifierFactory.getInstance(), sourceTypeSpecifier);
   }
@@ -62,7 +61,7 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
   @Override
   public JavaView createOnDemandView(
       @Nonnull
-          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
     return new JavaView(this, classLoadingOptionsSpecifier);
   }
@@ -92,7 +91,7 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
   }
 
   public static class JavaProjectBuilder {
-    private final List<AnalysisInputLocation<? extends SootClass<?>>> analysisInputLocations =
+    private final List<AnalysisInputLocation<? extends JavaSootClass>> analysisInputLocations =
         new ArrayList<>();
     private SourceTypeSpecifier sourceTypeSpecifier = DefaultSourceTypeSpecifier.getInstance();
     private final JavaLanguage language;

@@ -56,7 +56,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
   private volatile boolean isFullyResolved = false;
 
   @Nonnull
-  protected Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
+  protected Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
       classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link JavaView} class. */
@@ -74,7 +74,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
   public JavaView(
       @Nonnull Project<JavaSootClass, JavaView> project,
       @Nonnull
-          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
