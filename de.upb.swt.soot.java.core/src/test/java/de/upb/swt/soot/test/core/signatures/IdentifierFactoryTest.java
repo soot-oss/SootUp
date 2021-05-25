@@ -58,25 +58,18 @@ public class IdentifierFactoryTest {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     PackageName packageName1 = identifierFactory.getPackageName("java.lang");
     PackageName packageName2 = identifierFactory.getPackageName("java.lang");
-    assertEquals(packageName1, packageName2);
+    assertNotEquals(packageName1, null);
+    assertSame(packageName1, packageName2);
   }
 
   @Test
-  public void eqPackageSignature2() {
-    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    PackageName packageName1 = identifierFactory.getPackageName("java.lang");
-    PackageName packageName2 = identifierFactory.getPackageName("java.lang");
-    assertEquals(packageName1, packageName2);
-  }
-
-  @Test
-  public void eqPackageSignature3() {
+  public void eqPackageSignatureViaClassType() {
     JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
     JavaClassType classSignature1 = typeFactory.getClassType("System", "java.lang");
     JavaClassType classSignature2 = typeFactory.getClassType("System", "java.lang");
     PackageName packageName1 = classSignature1.getPackageName();
     PackageName packageName2 = classSignature2.getPackageName();
-    assertEquals(packageName1, packageName2);
+    assertSame(packageName1, packageName2);
   }
 
   @Test
