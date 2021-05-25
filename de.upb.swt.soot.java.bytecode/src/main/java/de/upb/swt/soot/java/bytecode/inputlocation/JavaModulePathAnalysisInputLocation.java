@@ -36,9 +36,10 @@ import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -83,28 +84,49 @@ public class JavaModulePathAnalysisInputLocation
       @Nonnull ClassLoadingOptions classLoadingOptions) {
     Preconditions.checkArgument(
         identifierFactory instanceof JavaModuleIdentifierFactory,
-        "Factory must be a ModuleSignatureFactory");
+        "Factory must be a JavaModuleSignatureFactory");
 
-    // new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors())
-    Set<AbstractClassSource<JavaSootClass>> found = new HashSet<>();
-    for (ModuleSignature module : moduleFinder.getAllModules()) {
-      AnalysisInputLocation<JavaSootClass> inputLocation = moduleFinder.getModule(module);
-      JavaModuleIdentifierFactory identifierFactoryWrapper =
-          (JavaModuleIdentifierFactory) identifierFactory;
-      if (inputLocation == null) {
-        continue;
-      }
-      if (!(inputLocation instanceof JavaModulePathAnalysisInputLocation)) {
-        /*
-         * we need a wrapper to create correct types for the found classes, all other ignore modules by default, or have
-         * no clue about modules.
-         */
-        identifierFactoryWrapper = JavaModuleIdentifierFactory.getInstance(module);
-      }
-      found.addAll(inputLocation.getClassSources(identifierFactoryWrapper));
+    Collection<ModuleSignature> allModules = moduleFinder.getAllModules();
+    return allModules.stream()
+        .flatMap(
+            sig ->
+                getClassSourcesInternal(
+                    sig, (JavaModuleIdentifierFactory) identifierFactory, classLoadingOptions))
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public Collection<? extends AbstractClassSource<JavaSootClass>> getModulesClassSources(
+      @Nonnull ModuleSignature moduleSignature,
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
+    Preconditions.checkArgument(
+        identifierFactory instanceof JavaModuleIdentifierFactory,
+        "Factory must be a JavaModuleSignatureFactory");
+    return getClassSourcesInternal(
+            moduleSignature, (JavaModuleIdentifierFactory) identifierFactory, classLoadingOptions)
+        .collect(Collectors.toList());
+  }
+
+  protected Stream<? extends AbstractClassSource<JavaSootClass>> getClassSourcesInternal(
+      @Nonnull ModuleSignature moduleSignature,
+      @Nonnull JavaModuleIdentifierFactory identifierFactory,
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
+
+    AnalysisInputLocation<JavaSootClass> inputLocation = moduleFinder.getModule(moduleSignature);
+    if (inputLocation == null) {
+      return Stream.empty();
     }
 
-    return found;
+    if (!(inputLocation instanceof JavaModulePathAnalysisInputLocation)) {
+      /*
+       * we need a wrapper to create correct types for the found classes, all other ignore modules by default, or have
+       * no clue about modules.
+       */
+      identifierFactory = JavaModuleIdentifierFactory.getInstance(moduleSignature);
+    }
+
+    return inputLocation.getClassSources(identifierFactory, classLoadingOptions).stream();
   }
 
   @Override
@@ -115,7 +137,7 @@ public class JavaModulePathAnalysisInputLocation
 
     ModuleSignature modulename =
         ((ModulePackageName) klassType.getPackageName()).getModuleSignature();
-    // lookup the ns for the class provider from the cache
+    // get inputlocation from cache
     AnalysisInputLocation<JavaSootClass> inputLocation = moduleFinder.getModule(modulename);
 
     if (inputLocation == null) {

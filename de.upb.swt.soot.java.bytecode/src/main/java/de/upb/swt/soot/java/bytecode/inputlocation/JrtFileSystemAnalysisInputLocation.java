@@ -48,6 +48,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -105,50 +106,66 @@ public class JrtFileSystemAnalysisInputLocation
     return Optional.empty();
   }
 
+  /** Retreive CLassSources of a module specified by methodSignature */
   @Override
-  public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+  public Collection<? extends AbstractClassSource<JavaSootClass>> getModulesClassSources(
+      @Nonnull ModuleSignature moduleSignature,
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
+    return getClassSourcesInternal(moduleSignature, identifierFactory, classLoadingOptions)
+        .collect(Collectors.toList());
+  }
+
+  @Nonnull
+  protected Stream<AbstractClassSource<JavaSootClass>> getClassSourcesInternal(
+      @Nonnull ModuleSignature moduleSignature,
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
 
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
     ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
 
-    Collection<ModuleSignature> moduleSignatures = discoverModules();
     String moduleInfoFilename =
         JavaModuleIdentifierFactory.MODULE_INFO_CLASS
             + "."
             + classProvider.getHandledFileType().getExtension();
 
-    return moduleSignatures.stream()
-        .flatMap(
-            sig -> {
-              final Path archiveRoot = theFileSystem.getPath("modules", sig.getModuleName());
-              try {
+    final Path archiveRoot = theFileSystem.getPath("modules", moduleSignature.getModuleName());
+    try {
 
-                return Files.walk(archiveRoot)
-                    .filter(
-                        filePath ->
-                            !Files.isDirectory(filePath)
-                                && filePath
-                                    .toString()
-                                    .endsWith(classProvider.getHandledFileType().getExtension())
-                                && !filePath.toString().endsWith(moduleInfoFilename))
-                    .flatMap(
-                        p -> {
-                          return StreamUtils.optionalToStream(
-                              Optional.of(
-                                  classProvider.createClassSource(
-                                      this,
-                                      p,
-                                      fromPath(
-                                          p.subpath(2, p.getNameCount()),
-                                          p.subpath(1, 2),
-                                          identifierFactory))));
-                        });
-              } catch (IOException e) {
-                throw new ResolveException("Error loading module " + sig, archiveRoot, e);
-              }
-            })
+      return Files.walk(archiveRoot)
+          .filter(
+              filePath ->
+                  !Files.isDirectory(filePath)
+                      && filePath
+                          .toString()
+                          .endsWith(classProvider.getHandledFileType().getExtension())
+                      && !filePath.toString().endsWith(moduleInfoFilename))
+          .flatMap(
+              p -> {
+                return StreamUtils.optionalToStream(
+                    Optional.of(
+                        classProvider.createClassSource(
+                            this,
+                            p,
+                            fromPath(
+                                p.subpath(2, p.getNameCount()),
+                                p.subpath(1, 2),
+                                identifierFactory))));
+              });
+    } catch (IOException e) {
+      throw new ResolveException("Error loading module " + moduleSignature, archiveRoot, e);
+    }
+  }
+
+  @Override
+  public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
+
+    Collection<ModuleSignature> moduleSignatures = discoverModules();
+    return moduleSignatures.stream()
+        .flatMap(sig -> getClassSourcesInternal(sig, identifierFactory, classLoadingOptions))
         .collect(Collectors.toList());
   }
 

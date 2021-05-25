@@ -77,6 +77,12 @@ public class JavaModuleViewTest {
     assertSame(
         ((ModulePackageName) bClass.get().getType().getPackageName()).getModuleSignature(),
         JavaModuleInfo.getUnnamedModuleInfo().getModuleSignature());
+
+    Collection<JavaSootClass> classes =
+        view.getModuleClasses(JavaModuleInfo.getUnnamedModuleInfo().getModuleSignature());
+    assertTrue(
+        classes.size() > 110
+            && classes.size() < 150); // ~amount of files/testcases in the refered directory
   }
 
   @Test
@@ -477,6 +483,15 @@ public class JavaModuleViewTest {
 
     assertTrue(view.getClass(mainClass.getPackageName(), aClass).isPresent());
     assertTrue(view.getClass(aClass.getPackageName(), mainClass).isPresent());
+
+    assertEquals(
+        1,
+        view.getModuleClasses(((ModulePackageName) mainClass.getPackageName()).getModuleSignature())
+            .size());
+    assertEquals(
+        1,
+        view.getModuleClasses(((ModulePackageName) aClass.getPackageName()).getModuleSignature())
+            .size());
   }
 
   @Test
@@ -504,7 +519,7 @@ public class JavaModuleViewTest {
     ModulePackageName pkgbModb =
         JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "modb");
     JavaModuleInfo moduleInfo_pkgbModb = view.getModuleInfo(pkgbModb.getModuleSignature()).get();
-    System.out.println(moduleInfo_pkgbModb);
+
     assertFalse(moduleInfo_pkgbModb.isUnnamedModule());
 
     ModulePackageName modmain =
@@ -516,6 +531,11 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("BFromClasspath", "pkgb", "");
     assertTrue(view.getClass(BFromClasspath).isPresent());
     assertFalse(view.getClass(modmain, BFromClasspath).isPresent());
+
+    assertEquals(1, view.getModuleClasses(modmain.getModuleSignature()).size());
+    assertEquals(
+        3,
+        view.getModuleClasses(JavaModuleInfo.getUnnamedModuleInfo().getModuleSignature()).size());
 
     // TODO: check & test: compile and run option: "ALL-UNNAMED" which opens access from the named
     // module to the unnamed module

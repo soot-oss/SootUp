@@ -29,6 +29,7 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
+import de.upb.swt.soot.core.inputlocation.EmptyClassLoadingOptions;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.*;
@@ -56,7 +57,7 @@ public class JavaModuleView extends JavaView {
       classLoadingOptionsSpecifier;
 
   public JavaModuleView(@Nonnull Project<? extends JavaView, JavaSootClass> project) {
-    this(project, analysisInputLocation -> null);
+    this(project, analysisInputLocation -> EmptyClassLoadingOptions.Default);
   }
 
   /**
@@ -82,6 +83,11 @@ public class JavaModuleView extends JavaView {
             .filter(inputLocation -> inputLocation instanceof ModuleInfoAnalysisInputLocation)
             .map(inputLocation -> (ModuleInfoAnalysisInputLocation) inputLocation)
             .collect(Collectors.toList());
+  }
+
+  @Override
+  public JavaModuleIdentifierFactory getIdentifierFactory() {
+    return JavaModuleIdentifierFactory.getInstance();
   }
 
   public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
@@ -137,7 +143,7 @@ public class JavaModuleView extends JavaView {
     Optional<PackageReference> filteredExportedPackages =
         exports.stream()
             .filter(packageReference -> packageReference.getPackageName().equals(packageName))
-            .filter(pr -> pr.exportedTo(packageName.getModuleSignature()))
+            .filter(pr -> pr.appliesTo(packageName.getModuleSignature()))
             .findAny();
     return filteredExportedPackages.isPresent();
   }
@@ -298,7 +304,7 @@ public class JavaModuleView extends JavaView {
       JavaModuleInfo moduleInfo = moduleInfoOpt.get();
 
       if (moduleInfo.isAutomaticModule()) {
-        // automatic module can read everything but its not forwarding require transitive!
+        // automatic module can read everything but its not "forwarding" require transitive!
         continue;
       }
 
@@ -317,6 +323,127 @@ public class JavaModuleView extends JavaView {
 
     return false;
   }
+
+  /** return the classes which belong to the moduleSignature */
+  @Nonnull
+  public synchronized Collection<JavaSootClass> getModuleClasses(
+      @Nonnull ModuleSignature moduleSignature) {
+
+    Optional<JavaModuleInfo> startOpt = getModuleInfo(moduleSignature);
+    if (!startOpt.isPresent()) {
+      return Collections.emptyList();
+    }
+
+    Stream<? extends AbstractClassSource<JavaSootClass>> stream;
+    JavaModuleInfo moduleInfo = startOpt.get();
+    if (moduleInfo.isUnnamedModule()) {
+      // unnamed module
+      stream =
+          getProject().getInputLocations().stream()
+              .filter(input -> !(input instanceof ModuleInfoAnalysisInputLocation))
+              .flatMap(
+                  input -> {
+                    return input
+                        .getClassSources(
+                            getIdentifierFactory(), classLoadingOptionsSpecifier.apply(input))
+                        .stream();
+                  });
+
+    } else {
+      // named module
+      if (moduleInfo.isAutomaticModule()) {
+        // the automatic module
+
+        stream =
+            getProject().getInputLocations().stream()
+                .flatMap(
+                    input -> {
+                      if (input instanceof ModuleInfoAnalysisInputLocation) {
+                        // modulepath
+                        return ((ModuleInfoAnalysisInputLocation) input)
+                                .getModulesClassSources(
+                                    moduleSignature,
+                                    getIdentifierFactory(),
+                                    classLoadingOptionsSpecifier.apply(input))
+                                .stream();
+                      } else {
+                        // classpath
+                        return input.getClassSources(getIdentifierFactory()).stream()
+                            .filter(
+                                cs ->
+                                    moduleSignature.equals(
+                                        ((ModulePackageName) cs.getClassType().getPackageName())
+                                            .getModuleSignature()));
+                      }
+                    });
+
+      } else {
+        // explicit module
+        stream =
+            moduleInputLocations.stream()
+                .flatMap(
+                    input ->
+                        input
+                            .getModulesClassSources(
+                                moduleSignature,
+                                getIdentifierFactory(),
+                                classLoadingOptionsSpecifier.apply(input))
+                            .stream());
+      }
+    }
+    return stream
+        .map(this::buildClassFrom)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .collect(Collectors.toList());
+  }
+
+  /*
+      @Nonnull
+      public synchronized Collection<JavaSootClass> getTransitiveClasses(@Nonnull ModuleSignature moduleSignature) {
+
+          Optional<JavaModuleInfo> startOpt = getModuleInfo(moduleSignature);
+          if (!startOpt.isPresent()) {
+              return Collections.emptyList();
+          }
+
+          Stream<? extends AbstractClassSource<JavaSootClass>> stream;
+          JavaModuleInfo moduleInfo = startOpt.get();
+          if (moduleInfo.isUnnamedModule()) {
+              // unnamed module -> access to all (non)modules
+
+              stream = getProject().getInputLocations().stream().flatMap(input -> input.getClassSources(getIdentifierFactory()).stream());
+              // FIXME: needs generics PR to be merged: uncomment stream = Stream.concat( super.getClasses().stream(), stream);
+
+          } else {
+              // named module
+
+              if (moduleInfo.isAutomaticModule()) {
+                  // automatic module can read every exported package of an explicit module and the unnamed module
+
+                  stream = getProject().getInputLocations().stream().flatMap(input ->
+                  {
+                      if (input instanceof ModuleInfoAnalysisInputLocation) {
+                          // modulepath
+                          return input.getClassSources(getIdentifierFactory()).stream(); // .filter(cs -> isTransitiveRequires(moduleInfo, ((ModulePackageName) cs.getClassType().getPackageName()).getModuleSignature()));
+                      } else {
+                          // classpath
+                          return input.getClassSources(getIdentifierFactory()).stream();
+                      }
+                  });
+
+              } else {
+                  // explicit module
+
+                  stream = moduleInputLocations.stream().flatMap(input ->
+                          input.getClassSources(getIdentifierFactory()).stream().filter(cs -> isTransitiveRequires(moduleInfo, ((ModulePackageName) cs.getClassType().getPackageName()).getModuleSignature())));
+
+              }
+          }
+
+          return stream.map(this::buildClassFrom).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+      }
+  */
 
   @Nonnull
   private Stream<Optional<? extends AbstractClassSource<JavaSootClass>>>

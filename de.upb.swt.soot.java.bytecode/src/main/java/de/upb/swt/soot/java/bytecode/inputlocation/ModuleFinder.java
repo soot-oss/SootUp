@@ -111,6 +111,7 @@ public class ModuleFinder {
     // discover all system's modules if they are not loaded already as they are always existing in
     // java
     if (moduleInputLocation.isEmpty()) {
+
       JrtFileSystemAnalysisInputLocation jrtFileSystemNamespace =
           new JrtFileSystemAnalysisInputLocation();
       jrtFileSystemNamespace

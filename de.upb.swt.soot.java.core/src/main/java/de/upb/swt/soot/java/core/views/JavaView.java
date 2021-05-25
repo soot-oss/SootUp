@@ -26,6 +26,7 @@ import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
+import de.upb.swt.soot.core.inputlocation.EmptyClassLoadingOptions;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.AbstractView;
 import de.upb.swt.soot.java.core.AnnotationUsage;
@@ -57,7 +58,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
 
   /** Creates a new instance of the {@link JavaView} class. */
   public JavaView(@Nonnull Project<? extends JavaView, JavaSootClass> project) {
-    this(project, analysisInputLocation -> null);
+    this(project, analysisInputLocation -> EmptyClassLoadingOptions.Default);
   }
 
   /**
