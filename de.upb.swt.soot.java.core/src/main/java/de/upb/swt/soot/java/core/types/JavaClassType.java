@@ -105,7 +105,9 @@ public class JavaClassType extends ClassType {
     String packageNameStr = packageName.toString();
     if (!packageNameStr.isEmpty()) {
       sb.append(packageName);
-      sb.append('.');
+      if (!packageName.getPackageName().isEmpty()) {
+        sb.append('.');
+      }
     }
     sb.append(className);
     return sb.toString();

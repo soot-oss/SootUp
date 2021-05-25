@@ -25,7 +25,6 @@ package de.upb.swt.soot.java.core;
 import de.upb.swt.soot.core.signatures.*;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
-import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -195,15 +194,19 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
 
     @Override
     public JavaClassType getClassType(String fullyQualifiedClassName) {
+      int moduleSplitPos = fullyQualifiedClassName.indexOf('/');
+      ModuleSignature moduleSig;
+      if (moduleSplitPos >= 0) {
+        String moduleName = fullyQualifiedClassName.substring(0, moduleSplitPos);
+        fullyQualifiedClassName = fullyQualifiedClassName.substring(moduleSplitPos + 1);
+        moduleSig = getModuleSignature(moduleName);
+      } else {
+        moduleSig = moduleSignature;
+      }
+
       String className = ClassUtils.getShortClassName(fullyQualifiedClassName);
       String packageName = ClassUtils.getPackageName(fullyQualifiedClassName);
-      return getClassType(className, packageName, moduleSignature);
-    }
-
-    @Override
-    public AnnotationType getAnnotationType(String fullyQualifiedClassName) {
-      // TODO: implement for modules
-      return super.getAnnotationType(fullyQualifiedClassName);
+      return getClassType(className, packageName, moduleSig);
     }
 
     @Override

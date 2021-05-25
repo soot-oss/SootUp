@@ -73,9 +73,14 @@ public class ModulePackageName extends JavaPackageName {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     String moduleSignatureStr = getModuleSignature().toString();
+    String pckgStr = getPackageName();
     if (!moduleSignatureStr.isEmpty()) {
       sb.append(moduleSignatureStr).append("/");
     }
-    return sb.append(getPackageName()).toString();
+    if (!pckgStr.isEmpty()) {
+      sb.append(pckgStr);
+    }
+
+    return sb.toString();
   }
 }

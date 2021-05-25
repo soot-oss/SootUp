@@ -119,11 +119,67 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
         JavaModuleIdentifierFactory.getInstance().parseMethodSignature(methodSignatureString);
     assertEquals(methodSignatureString, methodSignature.toString());
 
+    String fieldsSigStr = "<java.base/java.lang.String: char[] value>";
+    FieldSignature fieldSignature =
+        JavaModuleIdentifierFactory.getInstance().parseFieldSignature(fieldsSigStr);
+    assertEquals(fieldsSigStr, fieldSignature.toString());
+  }
+
+  @Test
+  public void wrapper_test() {
+
+    ModuleSignature baseSig = JavaModuleIdentifierFactory.getModuleSignature("java.base");
+    JavaModuleIdentifierFactory wrapper = JavaModuleIdentifierFactory.getInstance(baseSig);
+    assertEquals(
+        "java.base/fruit.red.Strawberry", wrapper.getClassType("fruit.red.Strawberry").toString());
+    assertEquals(
+        "food.fruit/fruit.red.Apple",
+        wrapper.getClassType("food.fruit/fruit.red.Apple").toString());
+
     {
-      String fieldsSigStr = "<java.base/java.lang.String: char[] value>";
-      FieldSignature fieldSignature =
-          JavaModuleIdentifierFactory.getInstance().parseFieldSignature(fieldsSigStr);
-      assertEquals(fieldsSigStr, fieldSignature.toString());
+      // not the "real" sig from java.lang.String
+      String methodSignatureString = "<java.base/java.lang.String: boolean startsWith(String)>";
+      MethodSignature methodSignature = wrapper.parseMethodSignature(methodSignatureString);
+      assertEquals(
+          "<java.base/java.lang.String: boolean startsWith(java.base/String)>",
+          methodSignature.toString());
+    }
+
+    {
+      // w/O moduleSig
+      String methodSignatureString = "<java.lang.String: boolean startsWith(java.lang.String)>";
+      MethodSignature methodSignature = wrapper.parseMethodSignature(methodSignatureString);
+      assertEquals(
+          "<java.base/java.lang.String: boolean startsWith(java.base/java.lang.String)>",
+          methodSignature.toString());
+    }
+
+    {
+      // full
+      String methodSignatureString =
+          "<java.base/java.lang.String: boolean startsWith(java.base/java.lang.String)>";
+      MethodSignature methodSignature = wrapper.parseMethodSignature(methodSignatureString);
+      assertEquals(
+          "<java.base/java.lang.String: boolean startsWith(java.base/java.lang.String)>",
+          methodSignature.toString());
+    }
+
+    {
+      // unnamed module w package
+      String methodSignatureString =
+          "<java.base/java.lang.String: boolean startsWith(/java.lang.String)>";
+      MethodSignature methodSignature = wrapper.parseMethodSignature(methodSignatureString);
+      assertEquals(
+          "<java.base/java.lang.String: boolean startsWith(java.lang.String)>",
+          methodSignature.toString());
+    }
+
+    {
+      // unnamed module w/o packag
+      String methodSignatureString = "<java.base/java.lang.String: boolean startsWith(/String)>";
+      MethodSignature methodSignature = wrapper.parseMethodSignature(methodSignatureString);
+      assertEquals(
+          "<java.base/java.lang.String: boolean startsWith(String)>", methodSignature.toString());
     }
   }
 }
