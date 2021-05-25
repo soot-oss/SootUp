@@ -210,12 +210,6 @@ public class Spark implements PointsToAnalysis {
 
     public Builder vta(boolean vta) {
       options.setVta(vta);
-      if (vta) {
-        options.setTypesForSites(true);
-        options.setFieldBased(true);
-        options.setSimplifySCCS(true);
-        options.setOnFlyCG(false);
-      }
       return this;
     }
 

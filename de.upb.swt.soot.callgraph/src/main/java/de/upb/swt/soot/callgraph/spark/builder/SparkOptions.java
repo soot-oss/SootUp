@@ -68,6 +68,12 @@ public class SparkOptions {
 
   public void setVta(boolean vta) {
     this.vta = vta;
+    if (vta) {
+      typesForSites = true;
+      fieldBased = true;
+      simplifySCCS = true;
+      onFlyCG = false;
+    }
   }
 
   /**
