@@ -50,6 +50,15 @@ public class JavaModuleViewTest {
     Optional<JavaModuleInfo> moduleDescriptor =
         view.getModuleInfo(((ModulePackageName) targetClass.getPackageName()).getModuleSignature());
     assertTrue(moduleDescriptor.isPresent());
+
+    int size =
+        view.getModuleClasses(
+                ((ModulePackageName) targetClass.getPackageName()).getModuleSignature())
+            .size();
+    assertTrue(
+        "actual: " + size,
+        size > 5500
+            && size < 6500); // ~amount of java.base classes -> depends on java implementation..
   }
 
   @Test

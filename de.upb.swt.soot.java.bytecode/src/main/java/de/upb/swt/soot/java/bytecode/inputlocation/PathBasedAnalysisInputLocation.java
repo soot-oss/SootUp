@@ -206,7 +206,8 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
 
     @Override
-    public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+    @Nonnull
+    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
         @Nonnull IdentifierFactory identifierFactory,
         @Nonnull ClassLoadingOptions classLoadingOptions) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
