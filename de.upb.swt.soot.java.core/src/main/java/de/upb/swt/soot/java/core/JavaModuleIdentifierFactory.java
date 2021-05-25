@@ -216,20 +216,6 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
           methodName, fullyQualifiedNameDeclClass, fqReturnType, parameters);
     }
 
-    @Nonnull
-    @Override
-    public MethodSignature parseMethodSignature(@Nonnull String methodSignature) {
-      // TODO: implement for modules
-      return super.parseMethodSignature(methodSignature);
-    }
-
-    @Nonnull
-    @Override
-    public FieldSignature parseFieldSignature(@Nonnull String fieldSignature) {
-      // TODO: implement for modules
-      return super.parseFieldSignature(fieldSignature);
-    }
-
     @Override
     @Nonnull
     public JavaClassType fromPath(@Nonnull Path file) {

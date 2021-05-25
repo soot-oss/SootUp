@@ -144,6 +144,8 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
     Type ret;
     switch (typeName) {
+      case "":
+        throw new IllegalArgumentException("Invalid! Typedescriptor is empty.");
       case "null":
         ret = NullType.getInstance();
         break;

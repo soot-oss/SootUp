@@ -32,6 +32,7 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.File;
 import java.nio.file.Path;
@@ -43,7 +44,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class IdentifierFactoryTest {
+public class JavaIdentifierFactoryTest {
 
   @Test
   public void getSamePackageSignature() {
@@ -405,5 +406,14 @@ public class IdentifierFactoryTest {
     assertTrue(classSignature2 instanceof ArrayType);
     assertEquals(((ArrayType) classSignature2).getDimension(), 1);
     assertEquals(((ArrayType) classSignature2).getBaseType(), base);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testParse() {
+    // not ok!
+    String fieldsSigStr = "<java.base/java.lang.String: [] value>";
+    FieldSignature fieldSignature =
+        JavaModuleIdentifierFactory.getInstance().parseFieldSignature(fieldsSigStr);
+    assertEquals(fieldsSigStr, fieldSignature.toString());
   }
 }

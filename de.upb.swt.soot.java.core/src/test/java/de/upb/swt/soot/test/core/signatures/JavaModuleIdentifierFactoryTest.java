@@ -3,6 +3,8 @@ package de.upb.swt.soot.test.core.signatures;
 import static org.junit.Assert.*;
 
 import categories.Java9Test;
+import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
@@ -33,13 +35,12 @@ import org.junit.experimental.categories.Category;
  */
 
 @Category(Java9Test.class)
-public class JavaModuleIdentifierFactoryTest extends IdentifierFactoryTest {
+public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
 
   @Test
   public void getPackageSignatureUnnamedModule() {
     JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
     ModulePackageName packageName1 = identifierFactory.getPackageName("java.lang");
-    assertTrue(packageName1 instanceof ModulePackageName);
     assertSame(packageName1.getModuleSignature(), ModuleSignature.UNNAMED_MODULE);
   }
 
@@ -47,7 +48,6 @@ public class JavaModuleIdentifierFactoryTest extends IdentifierFactoryTest {
   public void getPackageSignatureNamedModule() {
     JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
     ModulePackageName packageName1 = identifierFactory.getPackageName("java.lang", "myModule");
-    assertTrue(packageName1 instanceof ModulePackageName);
     assertNotSame(packageName1.getModuleSignature(), ModuleSignature.UNNAMED_MODULE);
     assertEquals(packageName1.getModuleSignature().toString(), "myModule");
   }
@@ -110,5 +110,20 @@ public class JavaModuleIdentifierFactoryTest extends IdentifierFactoryTest {
     assertNotEquals(signature.hashCode(), signature2.hashCode());
     assertEquals(signature2.toString(), "javafx.base");
     assertNotEquals(signature2.toString(), signature.toString());
+  }
+
+  @Test
+  public void parseMethodnFieldSig() {
+    String methodSignatureString = "<java.base/java.lang.String: boolean startsWith(String)>";
+    MethodSignature methodSignature =
+        JavaModuleIdentifierFactory.getInstance().parseMethodSignature(methodSignatureString);
+    assertEquals(methodSignatureString, methodSignature.toString());
+
+    {
+      String fieldsSigStr = "<java.base/java.lang.String: char[] value>";
+      FieldSignature fieldSignature =
+          JavaModuleIdentifierFactory.getInstance().parseFieldSignature(fieldsSigStr);
+      assertEquals(fieldsSigStr, fieldSignature.toString());
+    }
   }
 }

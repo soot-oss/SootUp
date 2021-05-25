@@ -161,14 +161,14 @@ public class JrtFileSystemAnalysisInputLocation
   public Collection<ModuleSignature> discoverModules() {
     if (!isResolved) {
       final Path moduleRoot = theFileSystem.getPath("modules");
+      final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_CLASS + ".class";
       try (DirectoryStream<Path> stream = Files.newDirectoryStream(moduleRoot)) {
         {
           for (Path entry : stream) {
             if (Files.isDirectory(entry)) {
               ModuleSignature moduleSignature =
                   JavaModuleIdentifierFactory.getModuleSignature(entry.subpath(1, 2).toString());
-              Path moduleInfo =
-                  entry.resolve(JavaModuleIdentifierFactory.MODULE_INFO_CLASS + ".class");
+              Path moduleInfo = entry.resolve(moduleInfoFilename);
               if (Files.exists(moduleInfo)) {
                 moduleInfoMap.put(moduleSignature, new AsmModuleSource(moduleInfo));
               } else {

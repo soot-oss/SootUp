@@ -101,7 +101,14 @@ public class JavaClassType extends ClassType {
 
   @Override
   public String toString() {
-    return getFullyQualifiedName();
+    StringBuilder sb = new StringBuilder();
+    String packageNameStr = packageName.toString();
+    if (!packageNameStr.isEmpty()) {
+      sb.append(packageName);
+      sb.append('.');
+    }
+    sb.append(className);
+    return sb.toString();
   }
 
   public Path toPath(FileType fileType) {
