@@ -27,7 +27,6 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.StreamUtils;
@@ -114,35 +113,43 @@ public class JrtFileSystemAnalysisInputLocation
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
     ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
 
-    final Path archiveRoot = theFileSystem.getPath("modules/");
-    final FileType handledFileType = classProvider.getHandledFileType();
-    try {
+    Collection<ModuleSignature> moduleSignatures = discoverModules();
+    String moduleInfoFilename =
+        JavaModuleIdentifierFactory.MODULE_INFO_CLASS
+            + "."
+            + classProvider.getHandledFileType().getExtension();
 
-      discoverModules();
-      //      moduleInfoMap.values().stream().forEach( moduleInfo -> moduleInfo.get);
+    return moduleSignatures.stream()
+        .flatMap(
+            sig -> {
+              final Path archiveRoot = theFileSystem.getPath("modules", sig.getModuleName());
+              try {
 
-      // FIXME WIP
-
-      return Files.walk(archiveRoot)
-          .filter(
-              filePath ->
-                  !filePath.endsWith(
-                      JavaModuleIdentifierFactory.MODULE_INFO_CLASS.toString() + handledFileType))
-          .flatMap(
-              p ->
-                  StreamUtils.optionalToStream(
-                      Optional.of(
-                          classProvider.createClassSource(
-                              this,
-                              p,
-                              fromPath(
-                                  p.subpath(2, p.getNameCount()),
-                                  p.subpath(1, 2),
-                                  identifierFactory)))))
-          .collect(Collectors.toList());
-    } catch (IOException e) {
-      throw new ResolveException("Error loading a module", archiveRoot, e);
-    }
+                return Files.walk(archiveRoot)
+                    .filter(
+                        filePath ->
+                            !Files.isDirectory(filePath)
+                                && filePath
+                                    .toString()
+                                    .endsWith(classProvider.getHandledFileType().getExtension())
+                                && !filePath.toString().endsWith(moduleInfoFilename))
+                    .flatMap(
+                        p -> {
+                          return StreamUtils.optionalToStream(
+                              Optional.of(
+                                  classProvider.createClassSource(
+                                      this,
+                                      p,
+                                      fromPath(
+                                          p.subpath(2, p.getNameCount()),
+                                          p.subpath(1, 2),
+                                          identifierFactory))));
+                        });
+              } catch (IOException e) {
+                throw new ResolveException("Error loading module " + sig, archiveRoot, e);
+              }
+            })
+        .collect(Collectors.toList());
   }
 
   /**

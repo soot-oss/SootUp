@@ -14,7 +14,7 @@ import java.util.Optional;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author Kaustubh Kelkar */
+/** @author Andreas Dann, Markus Schmidt */
 @Category(Java9Test.class)
 public class JrtFileSystemAnalysisInputLocationTest {
 
@@ -32,6 +32,7 @@ public class JrtFileSystemAnalysisInputLocationTest {
 
   @Test
   public void getClassSources() {
+    // hint: quite expensive as it loads **all** Runtime modules!
     JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
     final ClassType sig1 =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
@@ -40,7 +41,7 @@ public class JrtFileSystemAnalysisInputLocationTest {
 
     final Collection<? extends AbstractClassSource<?>> classSources =
         inputLocation.getClassSources(JavaModuleIdentifierFactory.getInstance());
-    assertTrue(classSources.size() > 1);
+    assertTrue(classSources.size() > 30000);
     assertTrue(classSources.stream().anyMatch(cs -> cs.getClassType().equals(sig1)));
     assertTrue(classSources.stream().anyMatch(cs -> cs.getClassType().equals(sig2)));
   }
