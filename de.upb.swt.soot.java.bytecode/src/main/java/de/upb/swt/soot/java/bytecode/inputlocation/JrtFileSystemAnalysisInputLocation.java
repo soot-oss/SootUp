@@ -71,7 +71,7 @@ public class JrtFileSystemAnalysisInputLocation
     ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
     Path filepath = klassType.toPath(classProvider.getHandledFileType(), theFileSystem);
 
-    // parse a module
+    // parse as module
     if (klassType.getPackageName() instanceof ModulePackageName) {
 
       ModulePackageName modulePackageSignature = (ModulePackageName) klassType.getPackageName();
@@ -87,6 +87,7 @@ public class JrtFileSystemAnalysisInputLocation
       }
     }
 
+    // module information does not exist in Signature -> search for class
     final Path moduleRoot = theFileSystem.getPath("modules");
     try (DirectoryStream<Path> stream = Files.newDirectoryStream(moduleRoot)) {
       {
@@ -113,9 +114,15 @@ public class JrtFileSystemAnalysisInputLocation
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
     ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
 
-    final Path archiveRoot = theFileSystem.getPath("modules");
+    final Path archiveRoot = theFileSystem.getPath("modules/");
     final FileType handledFileType = classProvider.getHandledFileType();
     try {
+
+      discoverModules();
+      //      moduleInfoMap.values().stream().forEach( moduleInfo -> moduleInfo.get);
+
+      // FIXME WIP
+
       return Files.walk(archiveRoot)
           .filter(
               filePath ->

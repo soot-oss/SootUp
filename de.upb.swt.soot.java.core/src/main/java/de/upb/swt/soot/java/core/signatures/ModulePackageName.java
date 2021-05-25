@@ -69,11 +69,8 @@ public class ModulePackageName extends JavaPackageName {
     return moduleSignature;
   }
 
-  /*
-    FIXME: argh.. its used in JavaClassType.toPath in resolving..
-    @Override
-    public String toString() {
-      return getModuleSignature()+"/"+getPackageName();
-    }
-  */
+  @Override
+  public String toString() {
+    return getModuleSignature() + "/" + getPackageName();
+  }
 }

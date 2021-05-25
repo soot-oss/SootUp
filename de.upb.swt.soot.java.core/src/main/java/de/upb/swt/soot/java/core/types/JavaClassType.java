@@ -92,7 +92,7 @@ public class JavaClassType extends ClassType {
   public String getFullyQualifiedName() {
     StringBuilder sb = new StringBuilder();
     if (!packageName.getPackageName().isEmpty()) {
-      sb.append(packageName);
+      sb.append(packageName.getPackageName());
       sb.append('.');
     }
     sb.append(className);
