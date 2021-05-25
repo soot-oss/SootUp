@@ -67,6 +67,17 @@ public class Spark implements PointsToAnalysis {
     refineCallGraph();
   }
 
+  /**
+   * Refine the initial {@link CallGraph} using the points-to information from the {@link
+   * PointerAssignmentGraph}. Refinement options:
+   *
+   * <ol>
+   *   <li>RTA: Improve the precision of initial CHA-based CallGraph by considering the new object
+   *       allocations
+   *   <li>VTA: Improve the precision of initial CHA-based CallGraph by considering the new object
+   *       allocations that are assigned to a certain variable
+   * </ol>
+   */
   private void refineCallGraph() {
     if (options.isVta()) {
       CallGraphAlgorithm cga =

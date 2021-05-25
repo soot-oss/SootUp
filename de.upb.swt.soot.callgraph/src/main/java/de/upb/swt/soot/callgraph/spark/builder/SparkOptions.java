@@ -1,5 +1,8 @@
 package de.upb.swt.soot.callgraph.spark.builder;
 
+import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
+import de.upb.swt.soot.callgraph.spark.solver.Propagator;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -40,18 +43,22 @@ public class SparkOptions {
 
   PropagatorEnum propagator = PropagatorEnum.WORKLIST;
 
+  public boolean isIgnoreTypes() {
+    return ignoreTypes;
+  }
+
   /**
    * Ignore Types Entirely -- Make Spark completely ignore declared types of variables.
    *
    * <p>When this option is set to true, all parts of Spark completely ignore declared types of
    * variables and casts.
    */
-  public boolean isIgnoreTypes() {
-    return ignoreTypes;
-  }
-
   public void setIgnoreTypes(boolean ignoreTypes) {
     this.ignoreTypes = ignoreTypes;
+  }
+
+  public boolean isVta() {
+    return vta;
   }
 
   /**
@@ -62,10 +69,6 @@ public class SparkOptions {
    * our OOPSLA 2000 paper. Note that the algorithm differs from the original VTA in that it handles
    * array elements more precisely.
    */
-  public boolean isVta() {
-    return vta;
-  }
-
   public void setVta(boolean vta) {
     this.vta = vta;
     if (vta) {
@@ -76,18 +79,22 @@ public class SparkOptions {
     }
   }
 
+  public boolean isRta() {
+    return rta;
+  }
+
   /**
    * RTA -- Emulate Rapid Type Analysis.
    *
    * <p>Setting RTA to true sets types-for-sites to true, and causes Spark to use a single points-to
    * set for all variables, giving Rapid Type Analysis.
    */
-  public boolean isRta() {
-    return rta;
-  }
-
   public void setRta(boolean rta) {
     this.rta = rta;
+  }
+
+  public boolean isFieldBased() {
+    return fieldBased;
   }
 
   /**
@@ -98,12 +105,12 @@ public class SparkOptions {
    * field-based analysis. Otherwise, fields are represented by field reference (Red) nodes, and the
    * objects that they belong to are distinguished, giving a field-sensitive analysis.
    */
-  public boolean isFieldBased() {
-    return fieldBased;
-  }
-
   public void setFieldBased(boolean fieldBased) {
     this.fieldBased = fieldBased;
+  }
+
+  public boolean isTypesForSites() {
+    return typesForSites;
   }
 
   /**
@@ -112,12 +119,12 @@ public class SparkOptions {
    * <p>When this option is set to true, types rather than allocation sites are used as the elements
    * of the points-to sets.
    */
-  public boolean isTypesForSites() {
-    return typesForSites;
-  }
-
   public void setTypesForSites(boolean typesForSites) {
     this.typesForSites = typesForSites;
+  }
+
+  public boolean isMergeStringBuffer() {
+    return mergeStringBuffer;
   }
 
   /**
@@ -126,12 +133,12 @@ public class SparkOptions {
    * <p>When this option is set to true, all allocation sites creating java.lang.StringBuffer
    * objects are grouped together as a single allocation site.
    */
-  public boolean isMergeStringBuffer() {
-    return mergeStringBuffer;
-  }
-
   public void setMergeStringBuffer(boolean mergeStringBuffer) {
     this.mergeStringBuffer = mergeStringBuffer;
+  }
+
+  public boolean isStringConstants() {
+    return stringConstants;
   }
 
   /**
@@ -142,12 +149,12 @@ public class SparkOptions {
    * together into a single string constant node. Setting this option to true causes all string
    * constants to be propagated individually.
    */
-  public boolean isStringConstants() {
-    return stringConstants;
-  }
-
   public void setStringConstants(boolean stringConstants) {
     this.stringConstants = stringConstants;
+  }
+
+  public boolean isSimulateNatives() {
+    return simulateNatives;
   }
 
   /**
@@ -156,12 +163,12 @@ public class SparkOptions {
    * <p>When this option is set to true, the effects of native methods in the standard Java class
    * library are simulated.
    */
-  public boolean isSimulateNatives() {
-    return simulateNatives;
-  }
-
   public void setSimulateNatives(boolean simulateNatives) {
     this.simulateNatives = simulateNatives;
+  }
+
+  public boolean isEmptiesAsAllocs() {
+    return emptiesAsAllocs;
   }
 
   /**
@@ -173,12 +180,12 @@ public class SparkOptions {
    * enables subsequent analyses to differentiate different uses of Java's immutable empty
    * collections.
    */
-  public boolean isEmptiesAsAllocs() {
-    return emptiesAsAllocs;
-  }
-
   public void setEmptiesAsAllocs(boolean emptiesAsAllocs) {
     this.emptiesAsAllocs = emptiesAsAllocs;
+  }
+
+  public boolean isSimpleEdgesBidirectional() {
+    return simpleEdgesBidirectional;
   }
 
   /**
@@ -187,12 +194,12 @@ public class SparkOptions {
    * <p>When this option is set to true, all edges connecting variable (Green) nodes are made
    * bidirectional, as in Steensgaard's analysis.
    */
-  public boolean isSimpleEdgesBidirectional() {
-    return simpleEdgesBidirectional;
-  }
-
   public void setSimpleEdgesBidirectional(boolean simpleEdgesBidirectional) {
     this.simpleEdgesBidirectional = simpleEdgesBidirectional;
+  }
+
+  public boolean isOnFlyCG() {
+    return onFlyCG;
   }
 
   /**
@@ -201,12 +208,12 @@ public class SparkOptions {
    * <p>When this option is set to true, the call graph is computed on-the-fly as points-to
    * information is computed. Otherwise, an initial CHA approximation to the call graph is used.
    */
-  public boolean isOnFlyCG() {
-    return onFlyCG;
-  }
-
   public void setOnFlyCG(boolean onFlyCG) {
     this.onFlyCG = onFlyCG;
+  }
+
+  public boolean isSimplifyOffline() {
+    return simplifyOffline;
   }
 
   /**
@@ -215,12 +222,12 @@ public class SparkOptions {
    * <p>When this option is set to true, variable (Green) nodes which form single-entry subgraphs
    * (so they must have the same points-to set) are merged before propagation begins.
    */
-  public boolean isSimplifyOffline() {
-    return simplifyOffline;
-  }
-
   public void setSimplifyOffline(boolean simplifyOffline) {
     this.simplifyOffline = simplifyOffline;
+  }
+
+  public boolean isSimplifySCCS() {
+    return simplifySCCS;
   }
 
   /**
@@ -229,12 +236,12 @@ public class SparkOptions {
    * <p>When this option is set to true, variable (Green) nodes which form strongly-connected
    * components (so they must have the same points-to set) are merged before propagation begins.
    */
-  public boolean isSimplifySCCS() {
-    return simplifySCCS;
-  }
-
   public void setSimplifySCCS(boolean simplifySCCS) {
     this.simplifySCCS = simplifySCCS;
+  }
+
+  public boolean isIgnoreTypesForSCCS() {
+    return ignoreTypesForSCCS;
   }
 
   /**
@@ -246,10 +253,6 @@ public class SparkOptions {
    * edges connecting nodes of the same type are considered when detecting SCCs. This option has no
    * effect unless simplify-sccs is true.
    */
-  public boolean isIgnoreTypesForSCCS() {
-    return ignoreTypesForSCCS;
-  }
-
   public void setIgnoreTypesForSCCS(boolean ignoreTypesForSCCS) {
     this.ignoreTypesForSCCS = ignoreTypesForSCCS;
   }
@@ -258,6 +261,11 @@ public class SparkOptions {
     return propagator;
   }
 
+  /**
+   * Set the {@link Propagator} that will be used to propagate {@link PointerAssignmentGraph}
+   *
+   * @param propagator
+   */
   public void setPropagator(PropagatorEnum propagator) {
     this.propagator = propagator;
   }
