@@ -20,6 +20,7 @@ package de.upb.swt.soot.java.bytecode.frontend;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import com.google.common.base.Suppliers;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
@@ -34,26 +35,32 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.*;
 
 public class AsmModuleSource extends JavaModuleInfo {
 
-  private final ModuleNode module;
+  @Nonnull private final Path sourcePath;
+  @Nonnull private final Supplier<ModuleNode> _lazyModule = Suppliers.memoize(this::_lazyModule);
 
   public AsmModuleSource(@Nonnull Path sourcePath) {
 
     // if it would be an automatic module there would be no module-info.class
     super(false);
+    this.sourcePath = sourcePath;
+  }
 
+  // make loading lazy
+  private ModuleNode _lazyModule() {
     try (InputStream sourceFileInputStream = Files.newInputStream(sourcePath)) {
       ClassReader clsr = new ClassReader(sourceFileInputStream);
 
       ClassNode classNode = new ClassNode(AsmUtil.SUPPORTED_ASM_OPCODE);
       clsr.accept(classNode, ClassReader.SKIP_FRAMES);
 
-      module = classNode.module;
+      return classNode.module;
 
     } catch (IOException e) {
       throw new ResolveException("Can not parse the module descriptor file!", sourcePath, e);
@@ -62,11 +69,12 @@ public class AsmModuleSource extends JavaModuleInfo {
 
   @Override
   public ModuleSignature getModuleSignature() {
-    return JavaModuleIdentifierFactory.getModuleSignature(module.name);
+    return JavaModuleIdentifierFactory.getModuleSignature(_lazyModule.get().name);
   }
 
   @Override
   public Collection<JavaModuleInfo.ModuleReference> requires() {
+    ModuleNode module = _lazyModule.get();
     if (module.requires == null) {
       return Collections.emptyList();
     }
@@ -85,6 +93,7 @@ public class AsmModuleSource extends JavaModuleInfo {
 
   @Override
   public Collection<JavaModuleInfo.PackageReference> exports() {
+    ModuleNode module = _lazyModule.get();
     if (module.exports == null) {
       return Collections.emptyList();
     }
@@ -108,6 +117,7 @@ public class AsmModuleSource extends JavaModuleInfo {
 
   @Override
   public Collection<JavaModuleInfo.PackageReference> opens() {
+    ModuleNode module = _lazyModule.get();
     if (module.exports == null) {
       return Collections.emptyList();
     }
@@ -131,6 +141,7 @@ public class AsmModuleSource extends JavaModuleInfo {
 
   @Override
   public Collection<JavaClassType> provides() {
+    ModuleNode module = _lazyModule.get();
     if (module.provides == null) {
       return Collections.emptyList();
     }
@@ -152,6 +163,7 @@ public class AsmModuleSource extends JavaModuleInfo {
 
   @Override
   public Collection<JavaClassType> uses() {
+    ModuleNode module = _lazyModule.get();
     if (module.uses == null) {
       return Collections.emptyList();
     }
@@ -167,6 +179,7 @@ public class AsmModuleSource extends JavaModuleInfo {
 
   @Override
   public Set<ModuleModifier> getModifiers() {
+    ModuleNode module = _lazyModule.get();
     return AsmUtil.getModuleModifiers(module.access);
   }
 }
