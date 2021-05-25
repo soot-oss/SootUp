@@ -71,8 +71,8 @@ public class ModuleFinder {
   private final AsmJavaClassProvider classProvider =
       new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors());
 
-  public boolean isFullyResolved() {
-    return next == modulePathEntries.size();
+  public boolean hasMoretoResolve() {
+    return next != modulePathEntries.size();
   }
 
   /**
@@ -86,14 +86,14 @@ public class ModuleFinder {
   }
 
   public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
-    if (!isFullyResolved()) {
+    if (hasMoretoResolve()) {
       getAllModules();
     }
     return Optional.ofNullable(moduleInfoMap.get(sig));
   }
 
   public Set<ModuleSignature> getModules() {
-    if (!isFullyResolved()) {
+    if (hasMoretoResolve()) {
       getAllModules();
     }
     return Collections.unmodifiableSet(moduleInfoMap.keySet());
@@ -126,7 +126,7 @@ public class ModuleFinder {
     }
 
     // search iterative on the remaining entries of the modulePath for the module
-    while (!isFullyResolved()) {
+    while (hasMoretoResolve()) {
       discoverModulesIn(modulePathEntries.get(next++));
       inputLocationForModule = moduleInputLocation.get(moduleName);
       if (inputLocationForModule != null) {
@@ -144,7 +144,7 @@ public class ModuleFinder {
   @Nonnull
   public Collection<ModuleSignature> getAllModules() {
 
-    while (!isFullyResolved()) {
+    while (hasMoretoResolve()) {
       discoverModulesIn(modulePathEntries.get(next++));
     }
     return Collections.unmodifiableCollection(moduleInputLocation.keySet());

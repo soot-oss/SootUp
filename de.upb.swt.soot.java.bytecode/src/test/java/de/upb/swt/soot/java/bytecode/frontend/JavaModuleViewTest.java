@@ -80,46 +80,6 @@ public class JavaModuleViewTest {
   }
 
   @Test
-  public void testJarModule() {
-    JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
-            .addInputLocation(
-                new JavaModulePathAnalysisInputLocation(testPath + "uses-provides/jar/"))
-            .build();
-
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-
-    JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
-    Optional<JavaSootClass> aClass = view.getClass(targetClass);
-    assertTrue(aClass.isPresent());
-
-    Optional<JavaModuleInfo> moduleDescriptor =
-        view.getModuleInfo(((ModulePackageName) targetClass.getPackageName()).getModuleSignature());
-    assertNotNull(moduleDescriptor);
-  }
-
-  @Test
-  public void testExplodedModule() {
-    JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
-            .addInputLocation(
-                new JavaModulePathAnalysisInputLocation(
-                    testPath + "uses-provides/exploded_module/"))
-            .build();
-
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-    JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
-    Optional<JavaSootClass> aClass = view.getClass(targetClass);
-    assertTrue(aClass.isPresent());
-
-    Optional<JavaModuleInfo> moduleDescriptor =
-        view.getModuleInfo(((ModulePackageName) targetClass.getPackageName()).getModuleSignature());
-    assertNotNull(moduleDescriptor);
-  }
-
-  @Test
   public void testAnnotation() {
     // modmain -> modb -> mod.annotations
     // transitive: modmain -> mod.annotations
