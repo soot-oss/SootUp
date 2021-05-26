@@ -79,7 +79,8 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
   }
 
   @Override
-  public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+  @Nonnull
+  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
     Preconditions.checkArgument(
@@ -111,7 +112,8 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
   }
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+  @Nonnull
+  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
       @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
     JavaClassType klassType = (JavaClassType) classType;
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
@@ -145,32 +147,38 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
     }
 
     @Override
-    public @Nonnull ClassType getClassType(@Nonnull String className, @Nonnull String packageName) {
+    @Nonnull
+    public ClassType getClassType(@Nonnull String className, @Nonnull String packageName) {
       return factory.getClassType(className, packageName);
     }
 
     @Override
-    public @Nonnull ClassType getClassType(@Nonnull String fullyQualifiedClassName) {
+    @Nonnull
+    public ClassType getClassType(@Nonnull String fullyQualifiedClassName) {
       return factory.getClassType(fullyQualifiedClassName);
     }
 
     @Override
-    public @Nonnull Type getType(@Nonnull String typeName) {
+    @Nonnull
+    public Type getType(@Nonnull String typeName) {
       return factory.getType(typeName);
     }
 
     @Override
-    public @Nonnull Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName) {
+    @Nonnull
+    public Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName) {
       return factory.getPrimitiveType(typeName);
     }
 
     @Override
-    public @Nonnull ArrayType getArrayType(@Nonnull Type baseType, int dim) {
+    @Nonnull
+    public ArrayType getArrayType(@Nonnull Type baseType, int dim) {
       return factory.getArrayType(baseType, dim);
     }
 
     @Override
-    public @Nonnull ClassType fromPath(@Nonnull Path file) {
+    @Nonnull
+    public ClassType fromPath(@Nonnull Path file) {
       if (factory instanceof ModuleIdentifierFactory) {
         ModuleIdentifierFactory moduleSignatureFactory = (ModuleIdentifierFactory) factory;
         String fullyQualifiedName =

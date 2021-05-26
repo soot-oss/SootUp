@@ -29,7 +29,6 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
@@ -87,8 +86,8 @@ public final class JInvokeStmt extends Stmt implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseInvokeStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseInvokeStmt(this);
   }
 
   @Override

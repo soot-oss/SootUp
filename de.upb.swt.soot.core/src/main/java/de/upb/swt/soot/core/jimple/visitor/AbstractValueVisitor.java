@@ -1,31 +1,69 @@
 package de.upb.swt.soot.core.jimple.visitor;
 
-/*-
- * #%L
- * Soot - a J*va Optimization Framework
- * %%
- * Copyright (C) 1997-2020 Etienne Gagnon, Linghui Luo, Zun Wang
- * %%
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 2.1 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Lesser Public License for more details.
- *
- * You should have received a copy of the GNU General Lesser Public
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/lgpl-2.1.html>.
- * #L%
- */
-
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.constant.*;
 import de.upb.swt.soot.core.jimple.common.expr.*;
+import de.upb.swt.soot.core.jimple.common.ref.*;
 import javax.annotation.Nonnull;
 
-public abstract class AbstractExprVisitor<V> extends AbstractVisitor<V> implements ExprVisitor {
+/** @author Markus Schmidt */
+public abstract class AbstractValueVisitor<V> extends AbstractVisitor<V> implements ValueVisitor {
+
+  @Override
+  public void caseBooleanConstant(@Nonnull BooleanConstant constant) {
+    defaultCaseConstant(constant);
+  }
+
+  @Override
+  public void caseDoubleConstant(@Nonnull DoubleConstant constant) {
+    defaultCaseConstant(constant);
+  }
+
+  @Override
+  public void caseFloatConstant(@Nonnull FloatConstant constant) {
+    defaultCaseConstant(constant);
+  }
+
+  @Override
+  public void caseIntConstant(@Nonnull IntConstant constant) {
+    defaultCaseConstant(constant);
+  }
+
+  @Override
+  public void caseLongConstant(@Nonnull LongConstant constant) {
+    defaultCaseConstant(constant);
+  }
+
+  @Override
+  public void caseNullConstant(@Nonnull NullConstant constant) {
+    defaultCaseConstant(constant);
+  }
+
+  @Override
+  public void caseStringConstant(@Nonnull StringConstant constant) {
+    defaultCaseConstant(constant);
+  }
+
+  @Override
+  public void caseClassConstant(@Nonnull ClassConstant constant) {
+    defaultCaseConstant(constant);
+  }
+
+  @Override
+  public void caseMethodHandle(@Nonnull MethodHandle v) {
+    defaultCaseConstant(v);
+  }
+
+  @Override
+  public void caseMethodType(@Nonnull MethodType v) {
+    defaultCaseConstant(v);
+  }
+
+  @Override
+  public void defaultCaseConstant(@Nonnull Constant v) {
+    defaultCaseValue(v);
+  }
 
   @Override
   public void caseAddExpr(@Nonnull JAddExpr expr) {
@@ -128,11 +166,6 @@ public abstract class AbstractExprVisitor<V> extends AbstractVisitor<V> implemen
   }
 
   @Override
-  public void caseStaticInvokeExpr(@Nonnull JStaticInvokeExpr expr) {
-    defaultCaseExpr(expr);
-  }
-
-  @Override
   public void caseSpecialInvokeExpr(@Nonnull JSpecialInvokeExpr expr) {
     defaultCaseExpr(expr);
   }
@@ -144,6 +177,11 @@ public abstract class AbstractExprVisitor<V> extends AbstractVisitor<V> implemen
 
   @Override
   public void caseInterfaceInvokeExpr(@Nonnull JInterfaceInvokeExpr expr) {
+    defaultCaseExpr(expr);
+  }
+
+  @Override
+  public void caseStaticInvokeExpr(@Nonnull JStaticInvokeExpr expr) {
     defaultCaseExpr(expr);
   }
 
@@ -188,5 +226,50 @@ public abstract class AbstractExprVisitor<V> extends AbstractVisitor<V> implemen
   }
 
   @Override
-  public void defaultCaseExpr(@Nonnull Expr expr) {}
+  public void defaultCaseExpr(@Nonnull Expr expr) {
+    defaultCaseValue(expr);
+  }
+
+  @Override
+  public void caseStaticFieldRef(@Nonnull JStaticFieldRef ref) {
+    defaultCaseRef(ref);
+  }
+
+  @Override
+  public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef ref) {
+    defaultCaseRef(ref);
+  }
+
+  @Override
+  public void caseArrayRef(@Nonnull JArrayRef ref) {
+    defaultCaseRef(ref);
+  }
+
+  @Override
+  public void caseParameterRef(@Nonnull JParameterRef ref) {
+    defaultCaseRef(ref);
+  }
+
+  @Override
+  public void caseCaughtExceptionRef(@Nonnull JCaughtExceptionRef ref) {
+    defaultCaseRef(ref);
+  }
+
+  @Override
+  public void caseThisRef(@Nonnull JThisRef ref) {
+    defaultCaseRef(ref);
+  }
+
+  @Override
+  public void defaultCaseRef(@Nonnull Ref ref) {
+    defaultCaseValue(ref);
+  }
+
+  @Override
+  public void caseLocal(@Nonnull Local local) {
+    defaultCaseValue(local);
+  }
+
+  @Override
+  public void defaultCaseValue(@Nonnull Value v) {}
 }

@@ -26,7 +26,6 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -73,8 +72,8 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copya
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseStaticInvokeExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseStaticInvokeExpr(this);
   }
 
   @Nonnull

@@ -24,7 +24,6 @@ package de.upb.swt.soot.core.jimple.common.constant;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
 import javax.annotation.Nonnull;
 
@@ -50,14 +49,15 @@ public class StringConstant implements Constant {
     return value.hashCode();
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return type;
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ConstantVisitor) sw).caseStringConstant(this);
+  public void accept(@Nonnull ConstantVisitor v) {
+    v.caseStringConstant(this);
   }
 
   @Override

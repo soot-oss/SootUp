@@ -53,7 +53,7 @@ public class ReplaceUseExprVisitorTest {
     // replace op1 with newOp1
     Expr addExpr = JavaJimple.newAddExpr(op1, op2);
     addExpr.accept(visitor);
-    Expr newExpr = visitor.getNewExpr();
+    Expr newExpr = visitor.getResult();
 
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newOp);
@@ -63,7 +63,7 @@ public class ReplaceUseExprVisitorTest {
     // replace op1 and op1 with newOp1
     addExpr = JavaJimple.newAddExpr(op1, op1);
     addExpr.accept(visitor);
-    newExpr = visitor.getNewExpr();
+    newExpr = visitor.getResult();
 
     expectedUses.set(1, newOp);
     assertTrue(newExpr.getUses().equals(expectedUses));
@@ -71,7 +71,7 @@ public class ReplaceUseExprVisitorTest {
     // there's no matched op in Expr
     addExpr = JavaJimple.newAddExpr(op2, op2);
     addExpr.accept(visitor);
-    newExpr = visitor.getNewExpr();
+    newExpr = visitor.getResult();
     assertTrue(newExpr.equivTo(addExpr));
   }
 
@@ -98,7 +98,7 @@ public class ReplaceUseExprVisitorTest {
     // replace arg1 in args with newArg
     Expr invokeExpr = new JStaticInvokeExpr(method, args);
     invokeExpr.accept(visitor);
-    Expr newInvokeExpr = visitor.getNewExpr();
+    Expr newInvokeExpr = visitor.getResult();
 
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newArg);
@@ -110,7 +110,7 @@ public class ReplaceUseExprVisitorTest {
     args.set(2, arg1);
     invokeExpr = new JStaticInvokeExpr(method, args);
     invokeExpr.accept(visitor);
-    newInvokeExpr = visitor.getNewExpr();
+    newInvokeExpr = visitor.getResult();
 
     expectedUses.set(2, newArg);
     assertTrue(newInvokeExpr.getUses().equals(expectedUses));
@@ -118,7 +118,7 @@ public class ReplaceUseExprVisitorTest {
     // There's no matched arg in args
     invokeExpr = new JStaticInvokeExpr(methodeWithOutParas, Collections.emptyList());
     invokeExpr.accept(visitor);
-    assertTrue(visitor.getNewExpr().equivTo(invokeExpr));
+    assertTrue(visitor.getResult().equivTo(invokeExpr));
   }
 
   /** Test use replacing in case InstanceInvokeExpr. JSpecialInvokeExpr is as an example. */
@@ -141,7 +141,7 @@ public class ReplaceUseExprVisitorTest {
     // replace arg1 in case and args with newArg
     Expr invokeExpr = new JSpecialInvokeExpr(arg1, method, args);
     invokeExpr.accept(visitor);
-    Expr newInvokeExpr = visitor.getNewExpr();
+    Expr newInvokeExpr = visitor.getResult();
 
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newArg);
@@ -154,7 +154,7 @@ public class ReplaceUseExprVisitorTest {
     args.set(2, arg1);
     invokeExpr = new JSpecialInvokeExpr(base, method, args);
     invokeExpr.accept(visitor);
-    newInvokeExpr = visitor.getNewExpr();
+    newInvokeExpr = visitor.getResult();
 
     expectedUses.set(2, newArg);
     expectedUses.set(3, base);
@@ -164,7 +164,7 @@ public class ReplaceUseExprVisitorTest {
     // replace arg1=base with newArg
     invokeExpr = new JSpecialInvokeExpr(arg1, methodeWithOutParas, Collections.emptyList());
     invokeExpr.accept(visitor);
-    newInvokeExpr = visitor.getNewExpr();
+    newInvokeExpr = visitor.getResult();
     expectedUses.clear();
     expectedUses.add(newArg);
     assertTrue(newInvokeExpr.getUses().equals(expectedUses));
@@ -172,7 +172,7 @@ public class ReplaceUseExprVisitorTest {
     // There's no matched arg in args, no matched base
     invokeExpr = new JSpecialInvokeExpr(base, methodeWithOutParas, Collections.emptyList());
     invokeExpr.accept(visitor);
-    newInvokeExpr = visitor.getNewExpr();
+    newInvokeExpr = visitor.getResult();
     assertTrue(newInvokeExpr.equivTo(invokeExpr));
   }
 
@@ -188,7 +188,7 @@ public class ReplaceUseExprVisitorTest {
     // replace op1 with newOp1
     Expr lengthExpr = Jimple.newLengthExpr(op1);
     lengthExpr.accept(visitor);
-    Expr newExpr = visitor.getNewExpr();
+    Expr newExpr = visitor.getResult();
 
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newOp);
@@ -197,6 +197,6 @@ public class ReplaceUseExprVisitorTest {
     // There's no matched op
     lengthExpr = Jimple.newLengthExpr(op2);
     lengthExpr.accept(visitor);
-    assertTrue(visitor.getNewExpr().equivTo(lengthExpr));
+    assertTrue(visitor.getResult().equivTo(lengthExpr));
   }
 }

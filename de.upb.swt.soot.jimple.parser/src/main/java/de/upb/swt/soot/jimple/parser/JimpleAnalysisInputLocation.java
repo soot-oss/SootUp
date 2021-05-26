@@ -56,7 +56,8 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   }
 
   @Override
-  public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
+  @Nonnull
+  public Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
     return walkDirectory(
@@ -72,7 +73,8 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   }
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
+  @Nonnull
+  public Optional<? extends AbstractClassSource> getClassSource(
       @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
     final JimpleClassProvider classProvider =
         new JimpleClassProvider(classLoadingOptions.getBodyInterceptors());

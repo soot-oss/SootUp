@@ -23,10 +23,11 @@ package de.upb.swt.soot.core.jimple.common.expr;
  */
 
 import de.upb.swt.soot.core.jimple.basic.Value;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractConditionExpr extends AbstractIntBinopExpr {
 
-  AbstractConditionExpr(Value op1, Value op2) {
+  AbstractConditionExpr(@Nonnull Value op1, @Nonnull Value op2) {
     super(op1, op2);
   }
 }
