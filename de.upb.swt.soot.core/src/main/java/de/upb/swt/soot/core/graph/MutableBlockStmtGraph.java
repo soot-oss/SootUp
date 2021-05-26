@@ -11,8 +11,11 @@ public class MutableBlockStmtGraph implements StmtGraph {
   @Nonnull private MutableBasicBlock startingBlock = new MutableBasicBlock();
 
   @Nonnull private final Map<Stmt, MutableBasicBlock> stmtsToBlock = new HashMap<>();
+  @Nonnull private final List<Trap> traps;
 
-  public MutableBlockStmtGraph() {}
+  public MutableBlockStmtGraph(@Nonnull List<Trap> traps) {
+    this.traps = traps;
+  }
 
   @Nonnull
   Collection<? extends BasicBlock> getBlocks() {
@@ -78,12 +81,52 @@ public class MutableBlockStmtGraph implements StmtGraph {
     MutableBasicBlock blockOfRemovedStmt = stmtsToBlock.remove(stmt);
     blockOfRemovedStmt.removeStmt(stmt);
 
-    // TODO: is it intuitive to remove connections to the BasicBlock?
-    if (stmt == blockOfRemovedStmt.getHead()) {}
+    // TODO: is it intuitive to remove connections to the BasicBlock? (if we cant merge the blocks)
+    if (stmt == blockOfRemovedStmt.getHead()) {
 
-    // remove outgoing connections if stmts is the tail
-    if (stmt == blockOfRemovedStmt.getTail()) {
-      blockOfRemovedStmt.clearSuccessorBlocks();
+      if (blockOfRemovedStmt.getStmts().size() > 0) {
+        // merge previous block if possible i.e. no branchingstmt as tail && same traps
+        if (blockOfRemovedStmt.getPredecessors().size() == 1) {
+          MutableBasicBlock singlePreviousBlock = blockOfRemovedStmt.getPredecessors().get(0);
+          if (!singlePreviousBlock.getTail().branches()) {
+            if (singlePreviousBlock.getTraps().equals(blockOfRemovedStmt.getTraps())) {
+              blockOfRemovedStmt
+                  .getStmts()
+                  .forEach(
+                      k -> {
+                        singlePreviousBlock.addStmt(k);
+                        stmtsToBlock.put(k, blockOfRemovedStmt);
+                      });
+            }
+          }
+        }
+      }
+
+      // remove outgoing connections if stmts is the tail
+      if (stmt == blockOfRemovedStmt.getTail()) {
+
+        if (!stmt.branches()) {
+          if (blockOfRemovedStmt.getStmts().size() > 0
+              && blockOfRemovedStmt.getSuccessors().size() == 1) {
+            // merge previous block if possible i.e. no branchingstmt as tail && same traps && no
+            // other predesccorblocks
+            MutableBasicBlock singleSuccessorBlock = blockOfRemovedStmt.getSuccessors().get(0);
+            if (singleSuccessorBlock.getPredecessors().size() == 1) {
+              if (singleSuccessorBlock.getTraps().equals(blockOfRemovedStmt.getTraps())) {
+                singleSuccessorBlock
+                    .getStmts()
+                    .forEach(
+                        k -> {
+                          blockOfRemovedStmt.addStmt(k);
+                          stmtsToBlock.put(k, blockOfRemovedStmt);
+                        });
+              }
+            }
+          }
+        } else {
+          blockOfRemovedStmt.clearSuccessorBlocks();
+        }
+      }
     }
   }
 
@@ -218,6 +261,6 @@ public class MutableBlockStmtGraph implements StmtGraph {
   @Override
   public List<Trap> getTraps() {
     // FIXME: implement.. collect from BasicBlocks? or use own List?
-    throw new UnsupportedOperationException("not yet implemented.");
+    return traps;
   }
 }

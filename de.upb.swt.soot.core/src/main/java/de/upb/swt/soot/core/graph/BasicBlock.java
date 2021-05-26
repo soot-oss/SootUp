@@ -130,7 +130,6 @@ class MutableBasicBlock implements BasicBlock {
     return traps;
   }
 
-  @Nonnull
   /**
    * splits a BasicBlock into first|second
    *
@@ -139,6 +138,7 @@ class MutableBasicBlock implements BasicBlock {
    *     splitStmt is the tail of the first BasicBlock
    * @return second half with splitStmt as the head of the second BasicBlock
    */
+  @Nonnull
   public MutableBasicBlock splitBlock(@Nonnull Stmt splitStmt, boolean shouldBeNewHead) {
     MutableBasicBlock secondBlock = new MutableBasicBlock();
     secondBlock.addPredecessorBlock(this);
