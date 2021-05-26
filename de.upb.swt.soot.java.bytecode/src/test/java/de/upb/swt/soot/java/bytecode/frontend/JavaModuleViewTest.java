@@ -363,12 +363,30 @@ public class JavaModuleViewTest {
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
-    JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
-    Optional<JavaSootClass> aClass = view.getClass(targetClass);
-    assertTrue(aClass.isPresent());
+    JavaClassType mainModmainSig =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+    Optional<JavaSootClass> mainModmainClass = view.getClass(mainModmainSig);
+    assertTrue(mainModmainClass.isPresent());
 
-    fail("test module descriptor/rights");
+    JavaClassType serviceImplSig =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("ServiceImpl", "com.service.impl", "modservice.impl.com");
+    Optional<JavaSootClass> serviceImplClass = view.getClass(serviceImplSig);
+    assertTrue(serviceImplClass.isPresent());
+
+    JavaClassType serviceImplNetSig =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("ServiceImpl", "net.service.impl", "modservice.impl.net");
+    Optional<JavaSootClass> serviceImplNetClass = view.getClass(serviceImplNetSig);
+    assertTrue(serviceImplNetClass.isPresent());
+
+    JavaClassType serviceDefSig =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("IService", "myservice", "modservicedefinition");
+    Optional<JavaSootClass> serviceDefClass = view.getClass(serviceDefSig);
+    assertTrue(serviceDefClass.isPresent());
+
+    view.getModuleInfo(((ModulePackageName) mainModmainSig.getPackageName()).getModuleSignature());
   }
 
   @Ignore
@@ -394,7 +412,6 @@ public class JavaModuleViewTest {
   @Ignore("to implement")
   @Test
   public void testDerivedPrivatePackageProtected() {
-    // derived_private-package-protected
     // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
@@ -607,8 +624,6 @@ public class JavaModuleViewTest {
 
   @Test
   public void testAccessModuleFromUnnamedModule() {
-    // TODO: check what happens if modulepath == classpath
-
     //  if module class "covers" a class on classpath (i.e. in unnamed module) the one on module
     // path is taken
 
@@ -688,5 +703,23 @@ public class JavaModuleViewTest {
     assertFalse(
         "unnamed module can only access exported packages!",
         view.getClass(cpb, BFromModuleButInternal).isPresent());
+  }
+
+  @Test
+  @Ignore
+  public void testModulePathEqualsClassPath() {
+    // TODO: check what happens if modulepath == classpath
+  }
+
+  @Test
+  @Ignore
+  public void testEqualPackageNamesInInputLocations() {
+    // TODO: implement test
+  }
+
+  @Test
+  @Ignore
+  public void testEqualModuleSignaturesInInputLocations() {
+    // TODO: implement test
   }
 }
