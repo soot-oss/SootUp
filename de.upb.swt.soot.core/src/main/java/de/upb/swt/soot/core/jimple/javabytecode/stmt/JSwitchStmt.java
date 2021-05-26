@@ -267,7 +267,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
 
     @Override
     public boolean isEmpty() {
-      return size() == 0;
+      return size() <= 0;
     }
 
     @Override
