@@ -37,7 +37,7 @@ public class Block {
     private final Body body;
     private final Stmt head;
     private final Stmt tail;
-    private final List<Stmt> blockStmts = new ArrayList<>();
+    private final List<Stmt> blockStmts;
     private final int blockLength;
 
     public Block(Stmt head, Stmt tail, Body body){
@@ -54,14 +54,32 @@ public class Block {
         this.body = body;
         int num = 0;
         Stmt stmt = head;
+        blockStmts = new ArrayList<>();
         while(stmt!=tail){
             blockStmts.add(stmt);
             num++;
-            stmt = graph.successors(stmt).get(0);
+            List<Stmt> succs = graph.successors(stmt);
+            if(succs.size()==1){
+                stmt = succs.get(0);
+            }else{
+                StringBuilder builder = new StringBuilder();
+                succs.forEach(succ ->builder.append(succ.toString() + " "));
+                throw new RuntimeException("These successors " + builder.toString() + " should be in different blocks!");
+            }
         }
         blockStmts.add(tail);
         blockLength = num + 1;
     }
+
+    public Block(Stmt head, Stmt tail, List<Stmt> blockStmts, Body body){
+        this.body = body;
+        this.head = head;
+        this.tail = tail;
+        this.blockStmts = blockStmts;
+        this.blockLength = blockStmts.size();
+    }
+
+
 
     public Body getBody(){
         return this.body;
@@ -83,6 +101,13 @@ public class Block {
         return this.blockLength;
     }
 
+    public boolean isInBlock(Stmt stmt){
+        if(this.blockStmts.contains(stmt)){
+            return true;
+        }
+        return false;
+    }
+
     public String toString(){
         StringBuilder builder  = new StringBuilder();
         builder.append("[");
@@ -92,5 +117,31 @@ public class Block {
         builder.delete(1,2);
         builder.replace(builder.length()-1, builder.length(), " ]");
         return builder.toString();
+    }
+
+    public boolean equals(Object o){
+        if(o==this){
+            return true;
+        }
+        if(!(o instanceof Block)){
+            return false;
+        }
+        Block block = (Block) o;
+        if(this.head != block.head){
+            return false;
+        }
+        if(this.tail != block.tail){
+            return false;
+        }
+        if(!this.body.equals(block.getBody())){
+            return false;
+        }
+        if(this.blockLength != block.getBlockLength()){
+            return false;
+        }
+        for(int i=0; i < blockLength; i++){
+            return (this.blockStmts.get(i) == block.getBlockStmts().get(i));
+        }
+        return true;
     }
 }
