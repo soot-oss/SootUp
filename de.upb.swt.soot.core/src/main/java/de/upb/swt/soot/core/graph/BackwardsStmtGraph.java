@@ -26,30 +26,11 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
 import javax.annotation.Nonnull;
 
-/** @auther Zun Wang */
-public class BackwardsStmtGraph extends StmtGraphImpl {
-
-  @Nonnull private final ArrayList<List<Stmt>> predecessors = new ArrayList<>();
-  @Nonnull private final ArrayList<List<Stmt>> successors = new ArrayList<>();
-  @Nonnull private final List<Stmt> startingStmts = new ArrayList<>();
-  @Nonnull private final Map<Stmt, Integer> stmtToIdx = new HashMap<>();
-  @Nonnull private final List<Trap> traps;
+/** @author Zun Wang */
+public class BackwardsStmtGraph extends ForwardingStmtGraph {
 
   public BackwardsStmtGraph(@Nonnull StmtGraph stmtGraph) {
-    Set<Stmt> nodes = stmtGraph.nodes();
-    int idx = 0;
-    for (Stmt node : nodes) {
-      stmtToIdx.put(node, idx);
-      List<Stmt> preds = stmtGraph.predecessors(node);
-      this.successors.add(preds);
-      List<Stmt> succs = stmtGraph.successors(node);
-      this.predecessors.add(succs);
-      if (succs.isEmpty()) {
-        this.startingStmts.add(node);
-      }
-      idx++;
-    }
-    this.traps = stmtGraph.getTraps();
+    super(stmtGraph);
   }
 
   @Override
@@ -59,69 +40,50 @@ public class BackwardsStmtGraph extends StmtGraphImpl {
 
   @Nonnull
   public List<Stmt> getStartingStmts() {
-    return this.startingStmts;
+    return backingGraph.getTails();
   }
 
   @Nonnull
   @Override
   public Set<Stmt> nodes() {
-    return Collections.unmodifiableSet(stmtToIdx.keySet());
+    return Collections.unmodifiableSet(backingGraph.nodes());
   }
 
   @Override
   public boolean containsNode(@Nonnull Stmt node) {
-    return stmtToIdx.containsKey(node);
+    return backingGraph.containsNode(node);
   }
 
   @Nonnull
   @Override
   public List<Stmt> predecessors(@Nonnull Stmt node) {
-    if (!this.containsNode(node)) {
-      throw new RuntimeException(
-          "The stmt " + node.toString() + "is not in this BackwardingStmtGraph");
-    }
-    int idx = stmtToIdx.get(node);
-    List<Stmt> stmts = predecessors.get(idx);
-
-    return Collections.unmodifiableList(stmts);
+    return successors(node);
   }
 
   @Nonnull
   @Override
   public List<Stmt> successors(@Nonnull Stmt node) {
-    if (!this.containsNode(node)) {
-      throw new RuntimeException(
-          "The stmt " + node.toString() + "is not in this BackwardingStmtGraph");
-    }
-    int idx = stmtToIdx.get(node);
-    List<Stmt> stmts = successors.get(idx);
-
-    return Collections.unmodifiableList(stmts);
+    return predecessors(node);
   }
 
   @Override
   public int inDegree(@Nonnull Stmt node) {
-    return this.predecessors(node).size();
+    return backingGraph.outDegree(node);
   }
 
   @Override
   public int outDegree(@Nonnull Stmt node) {
-    return this.successors(node).size();
+    return backingGraph.inDegree(node);
   }
 
   @Override
   public boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target) {
-    List<Stmt> stmts = this.successors(source);
-    if (!this.containsNode(target)) {
-      throw new RuntimeException(
-          "The stmt " + target.toString() + "is not in this BackwardingStmtGraph");
-    }
-    return stmts.contains(target);
+    return backingGraph.hasEdgeConnecting(target, source);
   }
 
   @Nonnull
   @Override
   public List<Trap> getTraps() {
-    return this.traps;
+    return backingGraph.getTraps();
   }
 }

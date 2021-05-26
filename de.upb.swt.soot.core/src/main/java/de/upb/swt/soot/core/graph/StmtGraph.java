@@ -56,7 +56,7 @@ public interface StmtGraph extends Iterable<Stmt> {
    * JThrowStmt)
    */
   @Nonnull
-  default Collection<Stmt> getTails() {
+  default List<Stmt> getTails() {
     return nodes().stream().filter(stmt -> outDegree(stmt) == 0).collect(Collectors.toList());
   }
 
