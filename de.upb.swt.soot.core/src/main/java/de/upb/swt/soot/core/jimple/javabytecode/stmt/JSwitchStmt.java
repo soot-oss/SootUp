@@ -22,6 +22,9 @@ package de.upb.swt.soot.core.jimple.javabytecode.stmt;
  * #L%
  */
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
@@ -73,7 +76,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
               + ").");
     }
 
-    values = new ImmutableSequenceList(lowIndex, highIndex);
+    values = new ImmutableAscendingSequenceList(lowIndex, highIndex);
   }
 
   /** Constructs a new JSwitchStmt. lookupValues should be a list of IntConst s. */
@@ -248,13 +251,14 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     return new JSwitchStmt(getKey(), getValues(), positionInfo);
   }
 
-  private static class ImmutableSequenceList implements List<IntConstant> {
+  /** Memory saving List<> implementation for tableswitch */
+  private static class ImmutableAscendingSequenceList implements List<IntConstant> {
     private final int from;
     private final int to;
 
-    ImmutableSequenceList(int from, int to) {
-      this.from = from;
-      this.to = to;
+    ImmutableAscendingSequenceList(int from, int to) {
+      this.from = min(from, to);
+      this.to = max(to, from);
     }
 
     @Override
@@ -285,27 +289,20 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     @Nonnull
     @Override
     public Object[] toArray() {
-      Object[] intConstants = new IntConstant[from - to];
-      // this allows the full range of ints as cases otherwise there can be an overflow..
-      int i;
-      for (i = from; i < to; i++) {
-        intConstants[i] = IntConstant.getInstance(i);
+      Object[] intConstants = new IntConstant[to - from + 1];
+      for (int i = 0; i < size(); i++) {
+        intConstants[i] = IntConstant.getInstance(from + i);
       }
-      intConstants[to] = IntConstant.getInstance(to);
       return intConstants;
     }
 
     @Nonnull
     @Override
     public <T> T[] toArray(@Nonnull T[] ts) {
-      T[] intConstants = (T[]) new Object[from - to + 1];
-
-      // this allows the full range of ints as cases otherwise there can be an overflow..
-      int i;
-      for (i = from; i < to; i++) {
-        intConstants[i] = (T) IntConstant.getInstance(i);
+      T[] intConstants = (T[]) new Object[to - from + 1];
+      for (int i = 0; i < size(); i++) {
+        intConstants[i] = (T) IntConstant.getInstance(from + i);
       }
-      intConstants[to] = (T) IntConstant.getInstance(to);
       return intConstants;
     }
 
@@ -356,8 +353,11 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
 
     @Override
     public IntConstant get(int i) {
-      // do we need to check bounds too?
-      return IntConstant.getInstance(i);
+      if (!(0 <= i && size() > i)) {
+        throw new IndexOutOfBoundsException(
+            "" + (i) + "  is out of range [ 0 , " + (size() - 1) + " ]");
+      }
+      return IntConstant.getInstance(from + i);
     }
 
     @Override
@@ -385,6 +385,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
 
     @Override
     public int lastIndexOf(Object o) {
+      // as IntConstant values are unique
       return indexOf(o);
     }
 
@@ -398,26 +399,32 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     @Override
     public ListIterator<IntConstant> listIterator(int i) {
       return new ListIterator<IntConstant>() {
-        int it = from + i;
+        int it = from + i - 1;
 
         @Override
         public boolean hasNext() {
-          return it <= to;
+          return it < to;
         }
 
         @Override
         public IntConstant next() {
-          return IntConstant.getInstance(it++);
+          if (!hasNext()) {
+            throw new IndexOutOfBoundsException("There are no more elements.");
+          }
+          return IntConstant.getInstance(++it);
         }
 
         @Override
         public boolean hasPrevious() {
-          return from <= it;
+          return it > from;
         }
 
         @Override
         public IntConstant previous() {
-          return IntConstant.getInstance(it--);
+          if (!hasPrevious()) {
+            throw new IndexOutOfBoundsException("There are no more elements.");
+          }
+          return IntConstant.getInstance(--it);
         }
 
         @Override
@@ -450,7 +457,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     @Nonnull
     @Override
     public List<IntConstant> subList(int i, int i1) {
-      return new ImmutableSequenceList(i, i1);
+      return new ImmutableAscendingSequenceList(i, i1);
     }
   }
 }
