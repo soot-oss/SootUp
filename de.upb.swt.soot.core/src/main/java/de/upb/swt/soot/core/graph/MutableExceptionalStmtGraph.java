@@ -99,23 +99,22 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
 
   @Nonnull
   public List<Stmt> exceptionalPredecessors(@Nonnull Stmt stmt) {
-    Integer idx = getNodeIdx(stmt);
+    int idx = getNodeIdx(stmt);
     List<Stmt> stmts = exceptionalPreds.get(idx);
     return Collections.unmodifiableList(stmts);
   }
 
   @Nonnull
   public List<Stmt> exceptionalSuccessors(@Nonnull Stmt stmt) {
-    Integer idx = getNodeIdx(stmt);
+    int idx = getNodeIdx(stmt);
     List<Stmt> stmts = exceptionalSuccs.get(idx);
     return Collections.unmodifiableList(stmts);
   }
 
   @Nonnull
   public List<Trap> getDestTraps(@Nonnull Stmt stmt) {
-    Integer idx = getNodeIdx(stmt);
-    List<Trap> traps = exceptionalDestinationTraps.get(idx);
-    return traps;
+    int idx = getNodeIdx(stmt);
+    return exceptionalDestinationTraps.get(idx);
   }
 
   @Override
@@ -129,12 +128,12 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
    * @param stmt a given stmt
    */
   public void removeDestinations(@Nonnull Stmt stmt) {
-    Integer idx = getNodeIdx(stmt);
+    int idx = getNodeIdx(stmt);
     List<Trap> dests = exceptionalDestinationTraps.get(idx);
     exceptionalDestinationTraps.set(idx, Collections.emptyList());
     exceptionalSuccs.set(idx, Collections.emptyList());
     for (Trap trap : dests) {
-      Integer i = getNodeIdx(trap.getHandlerStmt());
+      int i = getNodeIdx(trap.getHandlerStmt());
       exceptionalPreds.get(i).remove(stmt);
     }
   }
@@ -187,9 +186,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
   private Map<Stmt, Integer> getStmtToPosInBody(StmtGraph stmtGraph) {
     Map<Stmt, Integer> stmtToPos = new HashMap<>();
     Integer pos = 0;
-    Iterator<Stmt> it = stmtGraph.iterator();
-    while (it.hasNext()) {
-      Stmt stmt = it.next();
+    for (Stmt stmt : stmtGraph) {
       stmtToPos.put(stmt, pos);
       pos++;
     }
@@ -213,13 +210,13 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
     Integer posb2 = posTable.get(trap2.getBeginStmt());
     Integer pose2 = posTable.get(trap2.getEndStmt());
     if (posb1 == null) {
-      throw new RuntimeException(posb1.toString() + " is not contained by pos-table!");
+      throw new RuntimeException(trap1.getBeginStmt() + " is not contained by pos-table!");
     } else if (pose1 == null) {
-      throw new RuntimeException(pose1.toString() + " is not contained by pos-table!");
+      throw new RuntimeException(trap1.getEndStmt() + " is not contained by pos-table!");
     } else if (posb2 == null) {
-      throw new RuntimeException(posb2.toString() + " is not contained by pos-table!");
+      throw new RuntimeException(trap2.getBeginStmt() + " is not contained by pos-table!");
     } else if (pose2 == null) {
-      throw new RuntimeException(pose2.toString() + " is not contained by pos-table!");
+      throw new RuntimeException(trap2.getEndStmt() + " is not contained by pos-table!");
     } else {
       if (posb1 < posb2 && pose1 > pose2) {
         return true;

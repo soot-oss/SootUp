@@ -37,7 +37,7 @@ public class AssertUtils {
     StmtGraph actual_SG = actual.getStmtGraph();
     assertNotNull(expected_SG);
     assertNotNull(actual_SG);
-    final boolean condition = expected_SG.equivTo(actual_SG);
+    final boolean condition = expected_SG.equals(actual_SG);
     if (!condition) {
       System.out.println("expected:");
       System.out.println(Lists.newArrayList(expected_SG.iterator()));

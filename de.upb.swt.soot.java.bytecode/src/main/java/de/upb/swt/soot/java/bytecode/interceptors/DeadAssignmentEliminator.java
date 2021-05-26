@@ -109,6 +109,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
             && (!eliminateOnlyStackLocals
                 || ((Local) lhs).getName().startsWith("$")
                 || lhs.getType() instanceof NullType)) {
+          // FIXME: [ms] inspection says right side of && is always true
           isEssential = false;
 
           if (!containsInvoke) {
@@ -140,7 +141,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
             if (rhs instanceof JInstanceFieldRef) {
               JInstanceFieldRef instanceFieldRef = (JInstanceFieldRef) rhs;
               if (!isStatic && thisLocal == null) {
-                thisLocal = stmtGraph.getThisLocal();
+                thisLocal = Body.getThisLocal(stmtGraph);
               }
 
               // Any JInstanceFieldRef may have side effects, unless the base is reading from 'this'

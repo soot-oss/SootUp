@@ -93,6 +93,21 @@ public class Body implements Copyable {
   }
 
   /**
+   * Returns the LHS of the first identity stmt assigning from \@this.
+   *
+   * @return The this local
+   */
+  public static Local getThisLocal(StmtGraph stmtGraph) {
+    for (Stmt stmt : stmtGraph.nodes()) {
+      if (stmt instanceof JIdentityStmt
+          && ((JIdentityStmt) stmt).getRightOp() instanceof JThisRef) {
+        return (Local) ((JIdentityStmt) stmt).getLeftOp();
+      }
+    }
+    throw new RuntimeException("couldn't find *this* assignment");
+  }
+
+  /**
    * Returns the MethodSignature associated with this Body.
    *
    * @return the method that owns this body.

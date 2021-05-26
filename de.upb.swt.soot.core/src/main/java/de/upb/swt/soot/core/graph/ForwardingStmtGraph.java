@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
  *
  * @author Markus Schmidt
  */
-public class ForwardingStmtGraph extends StmtGraph {
+public class ForwardingStmtGraph extends StmtGraphImpl {
 
   @Nonnull private final StmtGraph backingGraph;
 

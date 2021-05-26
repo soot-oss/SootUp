@@ -58,6 +58,7 @@ public class Aggregator implements BodyInterceptor {
         Value lhs = assignStmt.getLeftOp();
         if (lhs instanceof Local) {
           Local lhsLocal = (Local) lhs;
+          // FIXME[ms]: inspection says: always trues
           if (!(onlyStackVars && !lhsLocal.getName().startsWith("$"))) {
             for (Value val : assignStmt.getUses()) {
               if (val instanceof Local) {

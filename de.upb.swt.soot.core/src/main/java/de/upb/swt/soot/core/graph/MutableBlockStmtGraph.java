@@ -6,7 +6,7 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class MutableBlockStmtGraph extends StmtGraph {
+public class MutableBlockStmtGraph implements StmtGraph {
 
   @Nonnull private MutableBasicBlock startingBlock = new MutableBasicBlock();
 

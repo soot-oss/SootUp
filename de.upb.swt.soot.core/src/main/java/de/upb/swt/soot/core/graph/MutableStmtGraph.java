@@ -51,7 +51,7 @@ import javax.annotation.Nullable;
  */
 
 // TODO: [ms] FIXME: zero or one stmts in body
-public class MutableStmtGraph extends StmtGraph {
+public class MutableStmtGraph extends StmtGraphImpl {
 
   @Nonnull protected final ArrayList<List<Stmt>> predecessors;
   @Nonnull protected final ArrayList<List<Stmt>> successors;

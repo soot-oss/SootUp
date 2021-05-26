@@ -27,7 +27,7 @@ import java.util.*;
 import javax.annotation.Nonnull;
 
 /** @auther Zun Wang */
-public class BackwardsStmtGraph extends StmtGraph {
+public class BackwardsStmtGraph extends StmtGraphImpl {
 
   @Nonnull private final ArrayList<List<Stmt>> predecessors = new ArrayList<>();
   @Nonnull private final ArrayList<List<Stmt>> successors = new ArrayList<>();
