@@ -49,7 +49,6 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraphImpl {
   /** creates a mutable copy(!) of originalStmtGraph with exceptional info */
   public MutableExceptionalStmtGraph(@Nonnull StmtGraph oriStmtGraph) {
     super(oriStmtGraph);
-    setTraps(oriStmtGraph.getTraps());
 
     // initialize exceptionalPreds and exceptionalSuccs
     int size = oriStmtGraph.nodes().size();

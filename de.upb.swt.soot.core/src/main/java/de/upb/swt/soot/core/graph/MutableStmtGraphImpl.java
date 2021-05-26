@@ -57,18 +57,20 @@ public class MutableStmtGraphImpl extends StmtGraphImpl implements MutableStmtGr
   private int nextFreeId = 0;
 
   @Nullable protected Stmt startingStmt;
-  @Nonnull protected List<Trap> traps = Collections.emptyList();
+  @Nonnull protected List<Trap> traps;
 
   /** creates an empty instance of MutableStmtGraph */
   public MutableStmtGraphImpl() {
     predecessors = new ArrayList<>();
     successors = new ArrayList<>();
     stmtToIdx = new HashMap<>();
+    traps = Collections.emptyList();
   }
 
   /** creates a mutable copy(!) of originalStmtGraph */
   public MutableStmtGraphImpl(@Nonnull StmtGraph originalStmtGraph) {
     setStartingStmt(originalStmtGraph.getStartingStmt());
+    traps = originalStmtGraph.getTraps();
 
     final Set<Stmt> nodes = originalStmtGraph.nodes();
     final int nodeSize = nodes.size();
