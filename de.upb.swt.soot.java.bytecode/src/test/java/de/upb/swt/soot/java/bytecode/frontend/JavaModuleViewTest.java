@@ -287,29 +287,78 @@ public class JavaModuleViewTest {
     assertTrue(view.getClass(modMain, targetClassFromJavaBase).isPresent());
   }
 
-  @Ignore
+  @Test
   public void testReflection() {
-    // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "reflection"))
+            .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "reflection/jar"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
-    JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
-    Optional<JavaSootClass> aClass = view.getClass(targetClass);
-    assertTrue(aClass.isPresent());
-    fail("test module descriptor/rights");
+    JavaClassType mainClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+    Optional<JavaSootClass> mainClassOpt = view.getClass(mainClass);
+    assertTrue(mainClassOpt.isPresent());
+
+    JavaClassType bClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("B", "pkgb", "modb");
+    Optional<JavaSootClass> bClassOpt = view.getClass(bClass);
+    assertTrue(bClassOpt.isPresent());
+
+    JavaClassType b1Class =
+        JavaModuleIdentifierFactory.getInstance().getClassType("B1", "pkgb1", "modb");
+    Optional<JavaSootClass> b1ClassOpt = view.getClass(b1Class);
+    assertTrue(b1ClassOpt.isPresent());
+
+    JavaClassType biClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("InternalB", "pkgbinternal", "modb");
+    Optional<JavaSootClass> biClassOpt = view.getClass(biClass);
+    assertTrue(biClassOpt.isPresent());
+
+    Optional<JavaModuleInfo> moduleInfoOpt =
+        view.getModuleInfo(((ModulePackageName) bClass.getPackageName()).getModuleSignature());
+    assertTrue(moduleInfoOpt.isPresent());
+    // is it open
+    assertTrue(
+        moduleInfoOpt.get().opens().stream()
+            .filter(pckg -> pckg.getPackageName() == bClass.getPackageName())
+            .anyMatch(
+                o ->
+                    o.appliesTo(
+                        ((ModulePackageName) mainClass.getPackageName()).getModuleSignature())));
+    assertFalse(
+        moduleInfoOpt.get().opens().stream()
+            .filter(pckg -> pckg.getPackageName() == b1Class.getPackageName())
+            .anyMatch(
+                o ->
+                    o.appliesTo(
+                        ((ModulePackageName) mainClass.getPackageName()).getModuleSignature())));
+    assertTrue(
+        moduleInfoOpt.get().opens().stream()
+            .filter(pckg -> pckg.getPackageName() == biClass.getPackageName())
+            .anyMatch(
+                o ->
+                    o.appliesTo(
+                        ((ModulePackageName) mainClass.getPackageName()).getModuleSignature())));
+
+    // even if a module can access itself this returns false as this implicit rule is not explicitly
+    // stated in the module-descriptor
+    assertFalse(
+        moduleInfoOpt.get().opens().stream()
+            .filter(pckg -> pckg.getPackageName() == b1Class.getPackageName())
+            .anyMatch(
+                o ->
+                    o.appliesTo(
+                        ((ModulePackageName) mainClass.getPackageName()).getModuleSignature())));
   }
 
-  @Ignore("to implement")
+  @Test
   public void testUsesProvide() {
-    // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "uses-provides"))
+            .addInputLocation(
+                new JavaModulePathAnalysisInputLocation(testPath + "uses-provides/jar"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
@@ -318,16 +367,19 @@ public class JavaModuleViewTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
+
     fail("test module descriptor/rights");
   }
 
   @Ignore
+  @Test
   public void testUsesProvideInClient() {
     // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
             .addInputLocation(
-                new JavaModulePathAnalysisInputLocation(testPath + "uses-provides_uses-in-client"))
+                new JavaModulePathAnalysisInputLocation(
+                    testPath + "uses-provides_uses-in-client/jar"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
@@ -340,6 +392,7 @@ public class JavaModuleViewTest {
   }
 
   @Ignore("to implement")
+  @Test
   public void testDerivedPrivatePackageProtected() {
     // derived_private-package-protected
     // TODO: adapt
@@ -347,7 +400,7 @@ public class JavaModuleViewTest {
         JavaProject.builder(new JavaLanguage(9))
             .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
-                    testPath + "derived_private-package-protected"))
+                    testPath + "derived_private-package-protected/jar"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
@@ -365,7 +418,7 @@ public class JavaModuleViewTest {
 
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
-            .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "exceptions"))
+            .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "exceptions/jar"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
@@ -378,12 +431,13 @@ public class JavaModuleViewTest {
   }
 
   @Ignore("to implement")
+  @Test
   public void testInterfaceCallback() {
     // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
             .addInputLocation(
-                new JavaModulePathAnalysisInputLocation(testPath + "interface-callback"))
+                new JavaModulePathAnalysisInputLocation(testPath + "interface-callback/jar"))
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();

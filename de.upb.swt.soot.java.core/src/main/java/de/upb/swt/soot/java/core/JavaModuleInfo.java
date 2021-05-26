@@ -31,32 +31,54 @@ import javax.annotation.Nonnull;
 
 public abstract class JavaModuleInfo {
 
-  private final boolean isAutomaticModule;
-
-  public JavaModuleInfo(boolean isAutomaticModule) {
-    this.isAutomaticModule = isAutomaticModule;
-  }
+  public JavaModuleInfo() {}
 
   public abstract ModuleSignature getModuleSignature();
-
-  public abstract Collection<ModuleReference> requires();
-
-  public abstract Collection<PackageReference> exports();
-
-  public abstract Collection<PackageReference> opens();
-
-  public abstract Collection<JavaClassType> provides();
-
-  public abstract Collection<JavaClassType> uses();
 
   public Set<ModuleModifier> getModifiers() {
     return Collections.emptySet();
   }
 
+  // dependencies to other modules
+  public abstract Collection<ModuleReference> requires();
+
+  // exported packages
+  public abstract Collection<PackageReference> exports();
+
+  // permission for reflection
+  public abstract Collection<PackageReference> opens();
+
+  // interface providing
+  public abstract Collection<JavaClassType> provides();
+
+  // interface usage
+  public abstract Collection<JavaClassType> uses();
+
+  public abstract boolean isAutomaticModule();
+
+  public boolean isUnnamedModule() {
+    return false;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(getModuleSignature()).append(' ');
+    if (isAutomaticModule()) {
+      sb.append("auto ");
+    }
+    sb.append("requires ").append(requires());
+    sb.append("exports ").append(exports());
+    sb.append("opens ").append(opens());
+    sb.append("uses ").append(uses());
+    sb.append("provides ").append(provides());
+    return sb.toString();
+  }
+
   /** Represents the automatic module (e.g. a jar without a module-descriptor on the module path) */
   public static JavaModuleInfo createAutomaticModuleInfo(@Nonnull ModuleSignature moduleName) {
 
-    return new JavaModuleInfo(true) {
+    return new JavaModuleInfo() {
       @Override
       public ModuleSignature getModuleSignature() {
         return moduleName;
@@ -66,38 +88,45 @@ public abstract class JavaModuleInfo {
       public Collection<ModuleReference> requires() {
         // can read all other modules and the unnamed module (modules on the classpath)
         throw new ResolveException(
-            "All modules can be required from the automatic module. Handle it seperately.");
+            "All modules can be required from the automatic module. Handle it separately.");
       }
 
       @Override
       public Collection<PackageReference> exports() {
         // all Packages are exported
         throw new ResolveException(
-            "All Packages are exported in the automatic module. Handle it seperately.");
+            "All Packages are exported in the automatic module. Handle it separately.");
       }
 
       @Override
       public Collection<PackageReference> opens() {
         // all Packages are open
         throw new ResolveException(
-            "All Packages are open in the automatic module. Handle it seperately.");
+            "All Packages are open in the automatic module. Handle it separately.");
       }
 
       @Override
       public Collection<JavaClassType> provides() {
-        return Collections.emptyList();
+        throw new ResolveException(
+            "All Packages are open in the automatic module. Handle it separately.");
       }
 
       @Override
       public Collection<JavaClassType> uses() {
-        return Collections.emptyList();
+        throw new ResolveException(
+            "All Packages are open in the automatic module. Handle it separately.");
+      }
+
+      @Override
+      public boolean isAutomaticModule() {
+        return true;
       }
     };
   }
 
   /** Represents all Packages from the Classpath */
   public static JavaModuleInfo getUnnamedModuleInfo() {
-    return new JavaModuleInfo(true) {
+    return new JavaModuleInfo() {
       @Override
       public ModuleSignature getModuleSignature() {
         return JavaModuleIdentifierFactory.getModuleSignature("");
@@ -126,6 +155,11 @@ public abstract class JavaModuleInfo {
       @Override
       public Collection<JavaClassType> uses() {
         return Collections.emptyList();
+      }
+
+      @Override
+      public boolean isAutomaticModule() {
+        return true;
       }
 
       @Override
@@ -182,16 +216,12 @@ public abstract class JavaModuleInfo {
           targetModules.isEmpty() ? Collections.emptySet() : new HashSet<>(targetModules);
     }
 
-    public boolean isPublic() {
-      return targetModules.isEmpty();
-    }
-
+    /** does not return true in case of self reference (which is usually implicitly allowed). */
     public boolean appliesTo(@Nonnull ModuleSignature moduleSignature) {
 
       if (targetModules.isEmpty()) {
         // no specific list of modules is given so this package is exported|opened|.. to all
-        // packages that are
-        // interested in it.
+        // packages that are interested in it.
         return true;
       }
 
@@ -211,31 +241,11 @@ public abstract class JavaModuleInfo {
     @Override
     public String toString() {
       StringBuilder sb = new StringBuilder();
-      sb.append(modifers).append(" ").append(packageName);
+      sb.append(modifers).append(' ').append(packageName);
       if (!targetModules.isEmpty()) {
         sb.append(" to ").append(targetModules);
       }
       return sb.toString();
     }
-  }
-
-  public boolean isAutomaticModule() {
-    return isAutomaticModule;
-  }
-
-  public boolean isUnnamedModule() {
-    return false;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(getModuleSignature());
-    if (isAutomaticModule) {
-      sb.append("auto");
-    }
-    sb.append(" exports").append(exports());
-    sb.append(" requires").append(requires());
-    return sb.toString();
   }
 }

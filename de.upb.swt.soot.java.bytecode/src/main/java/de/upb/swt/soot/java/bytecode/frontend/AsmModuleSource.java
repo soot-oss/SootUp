@@ -48,7 +48,7 @@ public class AsmModuleSource extends JavaModuleInfo {
   public AsmModuleSource(@Nonnull Path sourcePath) {
 
     // if it would be an automatic module there would be no module-info.class
-    super(false);
+    super();
     this.sourcePath = sourcePath;
   }
 
@@ -78,7 +78,7 @@ public class AsmModuleSource extends JavaModuleInfo {
     if (module.requires == null) {
       return Collections.emptyList();
     }
-    ArrayList<JavaModuleInfo.ModuleReference> requires = new ArrayList<>();
+    ArrayList<JavaModuleInfo.ModuleReference> requires = new ArrayList<>(module.requires.size());
     // add requires
     for (ModuleRequireNode moduleRequireNode : module.requires) {
       ModuleSignature moduleSignature =
@@ -97,10 +97,10 @@ public class AsmModuleSource extends JavaModuleInfo {
     if (module.exports == null) {
       return Collections.emptyList();
     }
-    ArrayList<JavaModuleInfo.PackageReference> exports = new ArrayList<>();
+    ArrayList<JavaModuleInfo.PackageReference> exports = new ArrayList<>(module.exports.size());
     JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
     for (ModuleExportNode exportNode : module.exports) {
-      ArrayList<ModuleSignature> modules = new ArrayList<>();
+      ArrayList<ModuleSignature> modules = new ArrayList<>(exportNode.modules.size());
       for (String moduleName : exportNode.modules) {
         modules.add(JavaModuleIdentifierFactory.getModuleSignature(moduleName));
       }
@@ -121,10 +121,10 @@ public class AsmModuleSource extends JavaModuleInfo {
     if (module.exports == null) {
       return Collections.emptyList();
     }
-    ArrayList<JavaModuleInfo.PackageReference> opens = new ArrayList<>();
+    ArrayList<JavaModuleInfo.PackageReference> opens = new ArrayList<>(module.opens.size());
     JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
     for (ModuleOpenNode openNode : module.opens) {
-      ArrayList<ModuleSignature> modules = new ArrayList<>();
+      ArrayList<ModuleSignature> modules = new ArrayList<>(openNode.modules.size());
       for (String moduleName : openNode.modules) {
         modules.add(JavaModuleIdentifierFactory.getModuleSignature(moduleName));
       }
@@ -145,7 +145,7 @@ public class AsmModuleSource extends JavaModuleInfo {
     if (module.provides == null) {
       return Collections.emptyList();
     }
-    ArrayList<JavaClassType> providers = new ArrayList<>();
+    ArrayList<JavaClassType> providers = new ArrayList<>(module.provides.size());
     // add provides
     for (ModuleProvideNode moduleProvideNode : module.provides) {
       JavaClassType serviceSignature = AsmUtil.asmIDToSignature(moduleProvideNode.service);
@@ -167,7 +167,7 @@ public class AsmModuleSource extends JavaModuleInfo {
     if (module.uses == null) {
       return Collections.emptyList();
     }
-    ArrayList<JavaClassType> uses = new ArrayList<>();
+    ArrayList<JavaClassType> uses = new ArrayList<>(module.uses.size());
     // add uses
     for (String usedService : module.uses) {
       JavaClassType serviceSignature = AsmUtil.asmIDToSignature(usedService);
@@ -175,6 +175,11 @@ public class AsmModuleSource extends JavaModuleInfo {
     }
 
     return uses;
+  }
+
+  @Override
+  public boolean isAutomaticModule() {
+    return false;
   }
 
   @Override
