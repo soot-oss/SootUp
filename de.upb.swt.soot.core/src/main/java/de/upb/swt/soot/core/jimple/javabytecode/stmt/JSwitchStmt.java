@@ -455,8 +455,8 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
 
     @Nonnull
     @Override
-    public List<IntConstant> subList(int i, int i1) {
-      return new ImmutableAscendingSequenceList(i, i1);
+    public List<IntConstant> subList(int startIdx, int endIdx) {
+      return new ImmutableAscendingSequenceList(from + startIdx, from + endIdx);
     }
   }
 }

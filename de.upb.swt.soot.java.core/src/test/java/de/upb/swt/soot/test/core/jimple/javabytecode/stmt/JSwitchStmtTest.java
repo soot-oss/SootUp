@@ -195,6 +195,23 @@ public class JSwitchStmtTest {
     } catch (IndexOutOfBoundsException ignored) {
     }
     assertEquals(IntConstant.getInstance(3), listIt.previous());
+
+    List<IntConstant> sublist = values.subList(1, 3);
+    assertEquals(3, sublist.size());
+    assertEquals(IntConstant.getInstance(2), sublist.get(0));
+    assertEquals(IntConstant.getInstance(3), sublist.get(1));
+    assertEquals(IntConstant.getInstance(4), sublist.get(2));
+    try {
+      sublist.get(3);
+      fail("should be outoufbounds");
+    } catch (IndexOutOfBoundsException ignored) {
+    }
+
+    try {
+      sublist.clear();
+      fail("should be unsupported");
+    } catch (UnsupportedOperationException ignored) {
+    }
   }
 
   @Test
