@@ -11,6 +11,7 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.core.util.StringTools;
 import de.upb.swt.soot.jimple.JimpleParser;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -540,10 +541,131 @@ public class JimpleConverterTest {
 
   @Test
   public void testSingleQuoteEscapeSeq() {
-    CharStream cs =
-        CharStreams.fromString(
-            "public annotation interface android.support.'annotation'.SomeAnnotation extends java.lang.Object implements java.lang.'annotation'.Annotation\n {}");
-    parseJimpleClass(cs);
+
+    // old kind of escaping -> every part i.e. between the dot which needed escaping was escaped
+    {
+      CharStream cs =
+          CharStreams.fromString("public class escaped.'class' extends java.lang.Object {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("escaped.class", sc.getClassSource().getClassType().toString());
+    }
+    // old kind of escaping: at the beginning
+    {
+      CharStream cs =
+          CharStreams.fromString("public class 'class'.is.escaped extends java.lang.Object {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("class.is.escaped", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // escaped word (pckg) which was unnecessarily escaped by the rules of old soot
+      CharStream cs =
+          CharStreams.fromString(
+              "public class some.'pckg'.'class'.More extends java.lang.Object {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("some.pckg.class.More", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // current escaping
+      CharStream cs =
+          CharStreams.fromString("public class 'annotation interface' extends java.lang.Object {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("annotation interface", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // no escaping needed as "class" is not considered a token if its nested into more
+      CharStream cs =
+          CharStreams.fromString("public class some.pckg.class extends java.lang.Object \n {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("some.pckg.class", sc.getClassSource().getClassType().toString());
+    }
+
+    try {
+      // missing escaping (i.e. class is a token which needs it!)
+      CharStream cs =
+          CharStreams.fromString(
+              "public class class extends java.lang.Object implements java.lang.'annotation'.Annotation\n {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      fail("escaping is needed");
+    } catch (Exception ignored) {
+    }
+
+    {
+      // inside quotes
+      CharStream cs =
+          CharStreams.fromString(
+              "public class \"\\'some.pckg.ClassObj\\'\" extends java.lang.Object \n {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("'some.pckg.ClassObj'", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // testing escaped string things
+      CharStream cs =
+          CharStreams.fromString(
+              "public class 'some.'.pckg.'.ClassObj' extends java.lang.Object \n {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("some..pckg..ClassObj", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // testing escaped string things
+      CharStream cs =
+          CharStreams.fromString(
+              "public class \"some.\\'.pckg.\\'.ClassObj\" extends java.lang.Object \n {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("some.'.pckg.'.ClassObj", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      assertEquals("'class'", Jimple.unescape("\"'class'\""));
+      CharStream cs =
+          CharStreams.fromString(
+              "public class \"'notescapedquotesinstring'\" extends java.lang.Object \n {}");
+      try {
+        SootClass<?> sc = parseJimpleClass(cs);
+        fail("quotes in string are not escaped");
+      } catch (Exception ignore) {
+      }
+    }
+
+    {
+
+      // escaped quotes in escaped sequence
+      CharStream cs =
+          CharStreams.fromString("public class \"\\'class\\'\" extends java.lang.Object \n {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+
+      assertEquals("'class'", Jimple.unescape("\"\\'class\\'\""));
+      assertEquals("'class'", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // different escape start /end symbol
+      try {
+        CharStream cs =
+            CharStreams.fromString("public class \"class' extends java.lang.Object \n {}");
+        SootClass<?> sc = parseJimpleClass(cs);
+        fail("start and end quote do not match.");
+      } catch (Exception ignore) {
+      }
+    }
+
+    assertEquals("\\", StringTools.getUnEscapedStringOf("\\\\"));
+    assertEquals("\"", StringTools.getUnEscapedStringOf("\\\""));
+    assertEquals("'", StringTools.getUnEscapedStringOf("\\'"));
+    assertEquals("\"'", StringTools.getUnEscapedStringOf("\"\\'"));
+
+    assertEquals("'class'", Jimple.unescape("\"'class'\""));
+    assertEquals("'class'", Jimple.unescape("\"\\'class\\'\""));
+    assertEquals("'class'", Jimple.unescape("\\'class\\'"));
+
+    // necessary inner escaping
+    assertEquals("\"class\"", Jimple.unescape("\"\\\"class\\\"\""));
+    // unnecessary inner escaping
+    assertEquals("'class'", Jimple.unescape("\"'class'\""));
   }
 
   @Test(expected = RuntimeException.class)
