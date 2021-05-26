@@ -6,43 +6,59 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class MutableBlockStmtGraph implements StmtGraph {
+public class MutableBlockStmtGraph implements MutableStmtGraph {
 
   @Nonnull private MutableBasicBlock startingBlock = new MutableBasicBlock();
 
   @Nonnull private final Map<Stmt, MutableBasicBlock> stmtsToBlock = new HashMap<>();
-  @Nonnull private final List<Trap> traps;
+  private List<Trap> traps = null;
 
-  public MutableBlockStmtGraph(@Nonnull List<Trap> traps) {
-    this.traps = traps;
-  }
+  public MutableBlockStmtGraph() {}
 
   @Nonnull
   Collection<? extends BasicBlock> getBlocks() {
     return stmtsToBlock.values();
   }
 
-  public MutableBasicBlock addStmt(@Nonnull Stmt stmt) {
+  @Override
+  public void addNode(@Nonnull Stmt node) {
+    addNodeInternal(node);
+  }
+
+  protected MutableBasicBlock addNodeInternal(@Nonnull Stmt stmt) {
     MutableBasicBlock block = new MutableBasicBlock();
-    addStmt(stmt, block);
+    addNodeInternal(stmt, block);
     return block;
   }
 
-  public void addStmt(@Nonnull Stmt stmt, @Nonnull MutableBasicBlock block) {
+  protected void addNodeInternal(@Nonnull Stmt stmt, @Nonnull MutableBasicBlock block) {
     stmtsToBlock.put(stmt, block);
   }
 
-  public void addFlow(@Nonnull Stmt stmtA, @Nonnull Stmt stmtB) {
+  public void removeNode(@Nonnull Stmt stmt) {
+    MutableBasicBlock blockOfRemovedStmt = stmtsToBlock.remove(stmt);
+    blockOfRemovedStmt.removeStmt(stmt);
+    removeBorderEdgesInternal(stmt, blockOfRemovedStmt);
+  }
+
+  @Override
+  public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+    // TODO: [ms] implement it smart
+    removeNode(oldStmt);
+    addNode(newStmt);
+  }
+
+  public void putEdge(@Nonnull Stmt stmtA, @Nonnull Stmt stmtB) {
 
     MutableBasicBlock blockA = stmtsToBlock.get(stmtA);
     MutableBasicBlock blockB = stmtsToBlock.get(stmtB);
 
     if (blockA == null) {
       // stmtA<->blockA is is not in the graph -> create
-      blockA = addStmt(stmtA);
+      blockA = addNodeInternal(stmtA);
     } else if (blockA.getTail() != stmtA) {
       // StmtA is not at the end of its current BasicBlock -> needs split
-      MutableBasicBlock newBlock = blockA.splitBlock(stmtA, false);
+      MutableBasicBlock newBlock = blockA.splitBlockLinked(stmtA, false);
       newBlock.getStmts().forEach(stmt -> stmtsToBlock.put(stmt, newBlock));
       blockA = newBlock;
     }
@@ -60,7 +76,7 @@ public class MutableBlockStmtGraph implements StmtGraph {
         stmtsToBlock.put(stmtB, blockB);
       } else {
         // stmtB is not at the beginning -> split Block so that stmtA is head of second Block
-        MutableBasicBlock newBlock = blockB.splitBlock(stmtB, true);
+        MutableBasicBlock newBlock = blockB.splitBlockLinked(stmtB, true);
         newBlock.getStmts().forEach(stmt -> stmtsToBlock.put(stmt, newBlock));
         blockA.addSuccessorBlock(newBlock);
         newBlock.addPredecessorBlock(newBlock);
@@ -68,7 +84,7 @@ public class MutableBlockStmtGraph implements StmtGraph {
     } else {
       // nonbranchingstmt can live in the same block
       if (blockB == null) {
-        blockB = addStmt(stmtB);
+        blockB = addNodeInternal(stmtB);
       }
 
       blockA.addStmt(stmtB);
@@ -77,61 +93,92 @@ public class MutableBlockStmtGraph implements StmtGraph {
     System.out.println("added");
   }
 
-  public void removeStmt(@Nonnull Stmt stmt) {
-    MutableBasicBlock blockOfRemovedStmt = stmtsToBlock.remove(stmt);
-    blockOfRemovedStmt.removeStmt(stmt);
+  @Override
+  public void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
+    MutableBasicBlock blockOfFrom = stmtsToBlock.get(from);
+    removeEdgeInternal(from, to, blockOfFrom);
+  }
 
+  protected void removeEdgeInternal(
+      @Nonnull Stmt from, @Nonnull Stmt to, @Nonnull MutableBasicBlock blockOfFrom) {
+    removeBorderEdgesInternal(from, blockOfFrom);
+
+    // not tail or head
+    if (!(from == blockOfFrom.getTail() || from == blockOfFrom.getHead())) {
+      // divide block and dont link them
+      MutableBasicBlock blockOfTo = stmtsToBlock.get(to);
+      if (blockOfFrom != blockOfTo) {
+        throw new IllegalStateException();
+      }
+
+      int fromIdx = blockOfFrom.getStmts().indexOf(from);
+      if (blockOfFrom.getStmts().get(fromIdx + 1) == to) {
+        MutableBasicBlock newBlock = blockOfFrom.splitBlockUnlinked(from, to);
+        newBlock.getStmts().forEach(s -> stmtsToBlock.put(s, newBlock));
+      }
+    }
+  }
+
+  protected void removeBorderEdgesInternal(
+      @Nonnull Stmt from, @Nonnull MutableBasicBlock blockOfFrom) {
     // TODO: is it intuitive to remove connections to the BasicBlock? (if we cant merge the blocks)
-    if (stmt == blockOfRemovedStmt.getHead()) {
+    if (from == blockOfFrom.getHead()) {
 
-      if (blockOfRemovedStmt.getStmts().size() > 0) {
+      if (blockOfFrom.getStmts().size() > 0) {
         // merge previous block if possible i.e. no branchingstmt as tail && same traps
-        if (blockOfRemovedStmt.getPredecessors().size() == 1) {
-          MutableBasicBlock singlePreviousBlock = blockOfRemovedStmt.getPredecessors().get(0);
+        if (blockOfFrom.getPredecessors().size() == 1) {
+          MutableBasicBlock singlePreviousBlock = blockOfFrom.getPredecessors().get(0);
           if (!singlePreviousBlock.getTail().branches()) {
-            if (singlePreviousBlock.getTraps().equals(blockOfRemovedStmt.getTraps())) {
-              blockOfRemovedStmt
+            if (singlePreviousBlock.getTraps().equals(blockOfFrom.getTraps())) {
+              blockOfFrom
                   .getStmts()
                   .forEach(
                       k -> {
                         singlePreviousBlock.addStmt(k);
-                        stmtsToBlock.put(k, blockOfRemovedStmt);
+                        stmtsToBlock.put(k, blockOfFrom);
                       });
             }
           }
         }
       }
+    }
 
-      // remove outgoing connections if stmts is the tail
-      if (stmt == blockOfRemovedStmt.getTail()) {
+    // remove outgoing connections if stmts is the tail
+    if (from == blockOfFrom.getTail()) {
 
-        if (!stmt.branches()) {
-          if (blockOfRemovedStmt.getStmts().size() > 0
-              && blockOfRemovedStmt.getSuccessors().size() == 1) {
-            // merge previous block if possible i.e. no branchingstmt as tail && same traps && no
-            // other predesccorblocks
-            MutableBasicBlock singleSuccessorBlock = blockOfRemovedStmt.getSuccessors().get(0);
-            if (singleSuccessorBlock.getPredecessors().size() == 1) {
-              if (singleSuccessorBlock.getTraps().equals(blockOfRemovedStmt.getTraps())) {
-                singleSuccessorBlock
-                    .getStmts()
-                    .forEach(
-                        k -> {
-                          blockOfRemovedStmt.addStmt(k);
-                          stmtsToBlock.put(k, blockOfRemovedStmt);
-                        });
-              }
+      if (!from.branches()) {
+        if (blockOfFrom.getStmts().size() > 0 && blockOfFrom.getSuccessors().size() == 1) {
+          // merge previous block if possible i.e. no branchingstmt as tail && same traps && no
+          // other predesccorblocks
+          MutableBasicBlock singleSuccessorBlock = blockOfFrom.getSuccessors().get(0);
+          if (singleSuccessorBlock.getPredecessors().size() == 1
+              && singleSuccessorBlock.getPredecessors().get(0) == blockOfFrom) {
+            if (singleSuccessorBlock.getTraps().equals(blockOfFrom.getTraps())) {
+              singleSuccessorBlock
+                  .getStmts()
+                  .forEach(
+                      k -> {
+                        blockOfFrom.addStmt(k);
+                        stmtsToBlock.put(k, blockOfFrom);
+                      });
             }
           }
-        } else {
-          blockOfRemovedStmt.clearSuccessorBlocks();
         }
+      } else {
+        blockOfFrom.clearSuccessorBlocks();
       }
     }
   }
 
-  public void replaceStmt(@Nonnull Stmt stmtA, @Nonnull Stmt stmtB) {
-    throw new UnsupportedOperationException("Not yet implemented!");
+  @Override
+  public void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets) {
+    // FIXME [ms] implement smart
+    MutableBasicBlock fromBlock = stmtsToBlock.get(from);
+    if (fromBlock == null) {
+      throw new IllegalArgumentException("Stmt does not exist in this graph.");
+    }
+    successors(from).forEach(succ -> removeEdge(from, succ));
+    targets.forEach(to -> putEdge(from, to));
   }
 
   @Nullable
@@ -140,12 +187,18 @@ public class MutableBlockStmtGraph implements StmtGraph {
     return startingBlock.getHead();
   }
 
+  @Nonnull
+  @Override
+  public StmtGraph unmodifiableStmtGraph() {
+    return new ForwardingStmtGraph(this);
+  }
+
   public void setStartingStmt(@Nonnull Stmt startingStmt) {
     MutableBasicBlock startingBlock = stmtsToBlock.get(startingStmt);
     if (startingBlock != null) {
       this.startingBlock = startingBlock;
     } else {
-      this.startingBlock = addStmt(startingStmt);
+      this.startingBlock = addNodeInternal(startingStmt);
       ;
     }
   }
@@ -257,10 +310,18 @@ public class MutableBlockStmtGraph implements StmtGraph {
     }
   }
 
+  @Override
+  public void setTraps(@Nonnull List<Trap> traps) {
+    // TODO: implement
+  }
+
   @Nonnull
   @Override
   public List<Trap> getTraps() {
     // FIXME: implement.. collect from BasicBlocks? or use own List?
+    if (traps == null) {
+      Collections.emptyList();
+    }
     return traps;
   }
 }

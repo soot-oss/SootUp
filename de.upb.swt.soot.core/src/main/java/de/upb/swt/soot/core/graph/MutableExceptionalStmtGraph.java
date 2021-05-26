@@ -35,7 +35,7 @@ import javax.annotation.Nonnull;
  *     predecessor of this hanlderStmt. Exceptional DestinationTrap of a stmt: if the stmt is in a
  *     trap, then this trap is the destination trap of the stmt.
  */
-public class MutableExceptionalStmtGraph extends MutableStmtGraph {
+public class MutableExceptionalStmtGraph extends MutableStmtGraphImpl {
 
   @Nonnull private final ArrayList<List<Stmt>> exceptionalPreds = new ArrayList<>();
   @Nonnull private final ArrayList<List<Stmt>> exceptionalSuccs = new ArrayList<>();
@@ -117,6 +117,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
     return exceptionalDestinationTraps.get(idx);
   }
 
+  @Nonnull
   @Override
   public ExceptionalStmtGraph unmodifiableStmtGraph() {
     return new ExceptionalStmtGraph(this);

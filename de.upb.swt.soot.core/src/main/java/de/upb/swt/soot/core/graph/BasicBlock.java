@@ -130,30 +130,19 @@ class MutableBasicBlock implements BasicBlock {
     return traps;
   }
 
-  /**
-   * splits a BasicBlock into first|second
-   *
-   * @oaram splitStmt the stmt which determines where to split the BasicBlock
-   * @param shouldBeNewHead if true: splitStmt is the Head of the second BasicBlock if false
-   *     splitStmt is the tail of the first BasicBlock
-   * @return second half with splitStmt as the head of the second BasicBlock
-   */
-  @Nonnull
-  public MutableBasicBlock splitBlock(@Nonnull Stmt splitStmt, boolean shouldBeNewHead) {
-    MutableBasicBlock secondBlock = new MutableBasicBlock();
-    secondBlock.addPredecessorBlock(this);
-    successorBlocks.forEach(secondBlock::addSuccessorBlock);
-    successorBlocks.clear();
-    successorBlocks.add(secondBlock);
-
-    int splitIdx = stmts.indexOf(splitStmt);
+  public MutableBasicBlock splitBlockUnlinked(@Nonnull Stmt newTail, @Nonnull Stmt newHead) {
+    int splitIdx = stmts.indexOf(newTail);
     if (splitIdx < 0) {
       throw new IllegalArgumentException("Stmt is not contained in this Block.");
     }
-
-    if (!shouldBeNewHead) {
-      splitIdx++;
+    if (stmts.get(splitIdx + 1) != newHead) {
+      throw new IllegalArgumentException("Those Stmts are not connected.");
     }
+    return splitBlockUnlinked(splitIdx);
+  }
+
+  protected MutableBasicBlock splitBlockUnlinked(int splitIdx) {
+    MutableBasicBlock secondBlock = new MutableBasicBlock();
 
     // move stmts from current/ first into new second block
     secondBlock.setStmts(new ArrayList<>(stmts.size() - splitIdx + 1));
@@ -164,6 +153,34 @@ class MutableBasicBlock implements BasicBlock {
     // copy traps
     secondBlock.addTraps(getTraps());
 
+    return secondBlock;
+  }
+
+  /**
+   * splits a BasicBlock into first|second
+   *
+   * @param shouldBeNewHead if true: splitStmt is the Head of the second BasicBlock if false
+   *     splitStmt is the tail of the first BasicBlock
+   * @return second half with splitStmt as the head of the second BasicBlock
+   * @oaram splitStmt the stmt which determines where to split the BasicBlock
+   */
+  @Nonnull
+  public MutableBasicBlock splitBlockLinked(@Nonnull Stmt splitStmt, boolean shouldBeNewHead) {
+
+    int splitIdx = stmts.indexOf(splitStmt);
+    if (splitIdx < 0) {
+      throw new IllegalArgumentException("Stmt is not contained in this Block.");
+    }
+
+    if (!shouldBeNewHead) {
+      splitIdx++;
+    }
+
+    MutableBasicBlock secondBlock = splitBlockUnlinked(splitIdx);
+    secondBlock.addPredecessorBlock(this);
+    successorBlocks.forEach(secondBlock::addSuccessorBlock);
+    successorBlocks.clear();
+    successorBlocks.add(secondBlock);
     return secondBlock;
   }
 
