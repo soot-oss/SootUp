@@ -109,7 +109,7 @@ public class JavaSootClass extends SootClass<JavaSootClassSource> {
 
   @Nonnull
   @Override
-  public Optional<JavaSootField> getField(String name) {
+  public Optional<JavaSootField> getField(@Nonnull String name) {
     return (Optional<JavaSootField>) super.getField(name);
   }
 
@@ -132,6 +132,7 @@ public class JavaSootClass extends SootClass<JavaSootClassSource> {
     return (Optional<JavaSootMethod>) super.getMethod(subSignature);
   }
 
+  @Nonnull
   @Override
   public JavaSootClassSource getClassSource() {
     return super.getClassSource();
