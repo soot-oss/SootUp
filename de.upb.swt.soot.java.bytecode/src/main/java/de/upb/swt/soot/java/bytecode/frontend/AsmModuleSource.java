@@ -118,7 +118,7 @@ public class AsmModuleSource extends JavaModuleInfo {
   @Override
   public Collection<JavaModuleInfo.PackageReference> opens() {
     ModuleNode module = _lazyModule.get();
-    if (module.exports == null) {
+    if (module.opens == null) {
       return Collections.emptyList();
     }
     ArrayList<JavaModuleInfo.PackageReference> opens = new ArrayList<>(module.opens.size());
