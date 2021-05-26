@@ -24,9 +24,9 @@ package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -74,22 +74,25 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr impleme
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseVirtualInvokeExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseVirtualInvokeExpr(this);
   }
 
+  @Override
   @Nonnull
-  public JVirtualInvokeExpr withBase(Value base) {
+  public JVirtualInvokeExpr withBase(@Nonnull Local base) {
     return new JVirtualInvokeExpr(base, getMethodSignature(), getArgs());
   }
 
+  @Override
   @Nonnull
-  public JVirtualInvokeExpr withMethodSignature(MethodSignature methodSignature) {
+  public JVirtualInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature) {
     return new JVirtualInvokeExpr(getBase(), methodSignature, getArgs());
   }
 
+  @Override
   @Nonnull
-  public JVirtualInvokeExpr withArgs(List<? extends Value> args) {
+  public JVirtualInvokeExpr withArgs(@Nonnull List<? extends Value> args) {
     return new JVirtualInvokeExpr(getBase(), getMethodSignature(), args);
   }
 }

@@ -22,35 +22,41 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
 
-  private final ValueBox baseBox;
+  @Nonnull private final ValueBox baseBox;
 
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
-  private Value base;
+  // TODO: [ZW] new attribute: later if ValueBox is deleted, then add "final" to it.
+  @Nonnull private final Value base;
 
-  AbstractInstanceInvokeExpr(ValueBox baseBox, MethodSignature methodSig, ValueBox[] argBoxes) {
+  AbstractInstanceInvokeExpr(
+      @Nonnull ValueBox baseBox, @Nonnull MethodSignature methodSig, @Nonnull ValueBox[] argBoxes) {
     super(methodSig, argBoxes);
     this.baseBox = baseBox;
     // new attribute: later if ValueBox is deleted, then fit the constructor.
     this.base = baseBox.getValue();
   }
 
+  @Nonnull
   public Value getBase() {
     return baseBox.getValue();
   }
 
+  @Nonnull
   public ValueBox getBaseBox() {
     return baseBox;
   }
 
   @Override
+  @Nonnull
   public List<Value> getUses() {
     List<Value> list = new ArrayList<>();
 
@@ -72,4 +78,13 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   public int equivHashCode() {
     return baseBox.getValue().equivHashCode() * 101 + getMethodSignature().hashCode() * 17;
   }
+
+  @Nonnull
+  public abstract AbstractInvokeExpr withBase(@Nonnull Local base);
+
+  @Nonnull
+  public abstract AbstractInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature);
+
+  @Nonnull
+  public abstract AbstractInvokeExpr withArgs(@Nonnull List<? extends Value> args);
 }

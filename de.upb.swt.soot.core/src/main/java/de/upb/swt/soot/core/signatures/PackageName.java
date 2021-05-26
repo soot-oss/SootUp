@@ -50,7 +50,8 @@ public class PackageName {
   }
 
   /** The name of the package. */
-  public @Nonnull String getPackageName() {
+  @Nonnull
+  public String getPackageName() {
     return packageName;
   }
 

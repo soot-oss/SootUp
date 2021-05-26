@@ -47,7 +47,8 @@ public enum FileType {
     this.extension = fileExtension;
   }
 
-  public @Nonnull String getExtension() {
+  @Nonnull
+  public String getExtension() {
     return extension;
   }
 }

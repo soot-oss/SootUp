@@ -24,7 +24,6 @@ package de.upb.swt.soot.core.jimple.common.constant;
 
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
 import javax.annotation.Nonnull;
@@ -114,6 +113,7 @@ public class MethodHandle implements Constant {
     return "handle: " + methodSignature;
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return type;
@@ -124,8 +124,8 @@ public class MethodHandle implements Constant {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ConstantVisitor) sw).caseMethodHandle(this);
+  public void accept(@Nonnull ConstantVisitor v) {
+    v.caseMethodHandle(this);
   }
 
   @Override

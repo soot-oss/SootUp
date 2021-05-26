@@ -49,6 +49,7 @@ public abstract class JFieldRef implements ConcreteRef {
     return fieldSignature;
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return fieldSignature.getType();
