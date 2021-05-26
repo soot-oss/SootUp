@@ -61,7 +61,7 @@ public class ModuleFinder {
   private final Map<ModuleSignature, AnalysisInputLocation<JavaSootClass>> moduleInputLocation =
       new HashMap<>();
 
-  Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
+  @Nonnull private final Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
 
   private int next = 0;
 
@@ -71,8 +71,8 @@ public class ModuleFinder {
   private final AsmJavaClassProvider classProvider =
       new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors());
 
-  public boolean hasMoretoResolve() {
-    return next != modulePathEntries.size();
+  public boolean hasMoreToResolve() {
+    return next < modulePathEntries.size();
   }
 
   /**
@@ -85,15 +85,17 @@ public class ModuleFinder {
         JavaClassPathAnalysisInputLocation.explode(modulePath).collect(Collectors.toList());
   }
 
+  @Nonnull
   public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
-    if (hasMoretoResolve()) {
+    if (hasMoreToResolve()) {
       getAllModules();
     }
     return Optional.ofNullable(moduleInfoMap.get(sig));
   }
 
+  @Nonnull
   public Set<ModuleSignature> getModules() {
-    if (hasMoretoResolve()) {
+    if (hasMoreToResolve()) {
       getAllModules();
     }
     return Collections.unmodifiableSet(moduleInfoMap.keySet());
@@ -127,7 +129,7 @@ public class ModuleFinder {
     }
 
     // search iterative on the remaining entries of the modulePath for the module
-    while (hasMoretoResolve()) {
+    while (hasMoreToResolve()) {
       discoverModulesIn(modulePathEntries.get(next++));
       inputLocationForModule = moduleInputLocation.get(moduleName);
       if (inputLocationForModule != null) {
@@ -145,7 +147,7 @@ public class ModuleFinder {
   @Nonnull
   public Collection<ModuleSignature> getAllModules() {
 
-    while (hasMoretoResolve()) {
+    while (hasMoreToResolve()) {
       discoverModulesIn(modulePathEntries.get(next++));
     }
     return Collections.unmodifiableCollection(moduleInputLocation.keySet());
@@ -212,8 +214,12 @@ public class ModuleFinder {
     }
 
     JavaModuleInfo moduleInfo = new AsmModuleSource(moduleInfoFile);
-    moduleInfoMap.put(moduleInfo.getModuleSignature(), moduleInfo);
+    JavaModuleInfo oldValue = moduleInfoMap.put(moduleInfo.getModuleSignature(), moduleInfo);
     moduleInputLocation.put(moduleInfo.getModuleSignature(), inputLocation);
+    if (oldValue != null) {
+      throw new IllegalStateException(
+          moduleInfo.getModuleSignature().toString() + " has multiple occurences.");
+    }
   }
 
   /**
