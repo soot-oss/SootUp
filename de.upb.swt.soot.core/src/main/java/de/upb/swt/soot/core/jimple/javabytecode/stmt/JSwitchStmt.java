@@ -22,8 +22,6 @@ package de.upb.swt.soot.core.jimple.javabytecode.stmt;
  * #L%
  */
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
@@ -45,12 +43,10 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
 
   private final ValueBox keyBox;
   private List<IntConstant> values;
-  private final boolean isTableSwitch;
 
   private JSwitchStmt(
       boolean isTableSwitch, @Nonnull StmtPositionInfo positionInfo, @Nonnull ValueBox keyBox) {
     super(positionInfo);
-    this.isTableSwitch = isTableSwitch;
     this.keyBox = keyBox;
   }
 
@@ -95,7 +91,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   }
 
   public boolean isTableSwitch() {
-    return isTableSwitch;
+    return values instanceof JSwitchStmt.ImmutableAscendingSequenceList;
   }
 
   @Nonnull
@@ -256,8 +252,8 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     private final int to;
 
     ImmutableAscendingSequenceList(int from, int to) {
-      this.from = min(from, to);
-      this.to = max(to, from);
+      this.from = from;
+      this.to = to;
     }
 
     @Override
