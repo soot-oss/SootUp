@@ -22,8 +22,10 @@ package de.upb.swt.soot.core.types;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.visitor.TypeVisitor;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.signatures.Signature;
+import javax.annotation.Nonnull;
 
 /**
  * Represents the signature of a Class
@@ -38,6 +40,11 @@ public abstract class ClassType extends ReferenceType implements Signature {
   public abstract String getClassName();
 
   public abstract PackageName getPackageName();
+
+  @Override
+  public void accept(@Nonnull TypeVisitor v) {
+    v.caseClassType();
+  }
 
   @Override
   public boolean equals(Object o) {

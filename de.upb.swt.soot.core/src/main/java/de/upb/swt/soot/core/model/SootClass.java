@@ -254,7 +254,8 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
   }
 
   /** This method returns the outer class. */
-  public @Nonnull Optional<? extends ClassType> getOuterClass() {
+  @Nonnull
+  public Optional<? extends ClassType> getOuterClass() {
     return lazyOuterClass.get();
   }
 

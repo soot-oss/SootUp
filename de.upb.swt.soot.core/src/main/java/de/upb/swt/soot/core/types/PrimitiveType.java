@@ -21,42 +21,12 @@ package de.upb.swt.soot.core.types;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableMap;
-import java.util.Optional;
+
+import de.upb.swt.soot.core.jimple.visitor.TypeVisitor;
 import javax.annotation.Nonnull;
 
 /** Represents Java's primitive types. */
-public class PrimitiveType extends Type {
-
-  @Nonnull private static final PrimitiveType BYTE_TYPE = new PrimitiveType("byte");
-
-  @Nonnull private static final PrimitiveType SHORT_TYPE = new PrimitiveType("short");
-
-  @Nonnull private static final PrimitiveType INT_TYPE = new PrimitiveType("int");
-
-  @Nonnull private static final PrimitiveType LONG_TYPE = new PrimitiveType("long");
-
-  @Nonnull private static final PrimitiveType FLOAT_TYPE = new PrimitiveType("float");
-
-  @Nonnull private static final PrimitiveType DOUBLE_TYPE = new PrimitiveType("double");
-
-  @Nonnull private static final PrimitiveType CHAR_TYPE = new PrimitiveType("char");
-
-  @Nonnull private static final PrimitiveType BOOLEAN_TYPE = new PrimitiveType("boolean");
-
-  @Nonnull
-  private static final ImmutableMap<String, PrimitiveType> CACHED_SIGNATURES =
-      ImmutableMap.<String, PrimitiveType>builder()
-          .put(BYTE_TYPE.getName(), BYTE_TYPE)
-          .put(SHORT_TYPE.getName(), SHORT_TYPE)
-          .put(INT_TYPE.getName(), INT_TYPE)
-          .put(LONG_TYPE.getName(), LONG_TYPE)
-          .put(FLOAT_TYPE.getName(), FLOAT_TYPE)
-          .put(DOUBLE_TYPE.getName(), DOUBLE_TYPE)
-          .put(CHAR_TYPE.getName(), CHAR_TYPE)
-          .put(BOOLEAN_TYPE.getName(), BOOLEAN_TYPE)
-          .build();
+public abstract class PrimitiveType extends Type {
 
   /**
    * Signatures of primitive types are unique and should not be created from the outside, thus the
@@ -86,67 +56,187 @@ public class PrimitiveType extends Type {
     return name;
   }
 
-  @Nonnull
-  public static ImmutableCollection<PrimitiveType> all() {
-    return CACHED_SIGNATURES.values();
-  }
-
-  @Nonnull
-  public static PrimitiveType of(@Nonnull String name) {
-    return find(name)
-        .orElseThrow(() -> new IllegalArgumentException("Name of primitive type not found."));
-  }
-
-  @Nonnull
-  public static Optional<PrimitiveType> find(@Nonnull String name) {
-    return Optional.ofNullable(CACHED_SIGNATURES.get(name));
-  }
-
   public static boolean isIntLikeType(Type t) {
-    return t.equals(PrimitiveType.getInt())
-        || t.equals(PrimitiveType.getByte())
-        || t.equals(PrimitiveType.getShort())
-        || t.equals(PrimitiveType.getChar())
-        || t.equals(PrimitiveType.getBoolean());
+    return t == PrimitiveType.IntType.getInstance()
+        || t == PrimitiveType.ByteType.getInstance()
+        || t == PrimitiveType.ShortType.getInstance()
+        || t == PrimitiveType.CharType.getInstance()
+        || t == PrimitiveType.BooleanType.getInstance();
   }
 
   @Nonnull
-  public static PrimitiveType getByte() {
-    return BYTE_TYPE;
+  public static ByteType getByte() {
+    return ByteType.getInstance();
   }
 
   @Nonnull
-  public static PrimitiveType getShort() {
-    return SHORT_TYPE;
+  public static ShortType getShort() {
+    return ShortType.getInstance();
   }
 
   @Nonnull
-  public static PrimitiveType getInt() {
-    return INT_TYPE;
+  public static IntType getInt() {
+    return IntType.getInstance();
   }
 
   @Nonnull
-  public static PrimitiveType getLong() {
-    return LONG_TYPE;
+  public static LongType getLong() {
+    return LongType.getInstance();
   }
 
   @Nonnull
-  public static PrimitiveType getFloat() {
-    return FLOAT_TYPE;
+  public static FloatType getFloat() {
+    return FloatType.getInstance();
   }
 
   @Nonnull
-  public static PrimitiveType getDouble() {
-    return DOUBLE_TYPE;
+  public static DoubleType getDouble() {
+    return DoubleType.getInstance();
   }
 
   @Nonnull
-  public static PrimitiveType getChar() {
-    return CHAR_TYPE;
+  public static CharType getChar() {
+    return CharType.getInstance();
   }
 
   @Nonnull
-  public static PrimitiveType getBoolean() {
-    return BOOLEAN_TYPE;
+  public static BooleanType getBoolean() {
+    return BooleanType.getInstance();
+  }
+
+  public static class ByteType extends PrimitiveType {
+    private static final ByteType INSTANCE = new ByteType();
+
+    private ByteType() {
+      super("byte");
+    }
+
+    public static ByteType getInstance() {
+      return INSTANCE;
+    }
+
+    @Override
+    public void accept(@Nonnull TypeVisitor v) {
+      v.caseByteType();
+    }
+  }
+
+  public static class ShortType extends PrimitiveType {
+    private static final ShortType INSTANCE = new ShortType();
+
+    private ShortType() {
+      super("short");
+    }
+
+    public static ShortType getInstance() {
+      return INSTANCE;
+    }
+
+    @Override
+    public void accept(@Nonnull TypeVisitor v) {
+      v.caseShortType();
+    }
+  }
+
+  public static class IntType extends PrimitiveType {
+    private static final IntType INSTANCE = new IntType();
+
+    public IntType() {
+      super("int");
+    }
+
+    public static IntType getInstance() {
+      return INSTANCE;
+    }
+
+    @Override
+    public void accept(@Nonnull TypeVisitor v) {
+      v.caseIntType();
+    }
+  }
+
+  public static class DoubleType extends PrimitiveType {
+    private static final DoubleType INSTANCE = new DoubleType();
+
+    private DoubleType() {
+      super("double");
+    }
+
+    public static DoubleType getInstance() {
+      return INSTANCE;
+    }
+
+    @Override
+    public void accept(@Nonnull TypeVisitor v) {
+      v.caseDoubleType();
+    }
+  }
+
+  public static class LongType extends PrimitiveType {
+    private static final LongType INSTANCE = new LongType();
+
+    private LongType() {
+      super("long");
+    }
+
+    public static LongType getInstance() {
+      return INSTANCE;
+    }
+
+    @Override
+    public void accept(@Nonnull TypeVisitor v) {
+      v.caseLongType();
+    }
+  }
+
+  public static class FloatType extends PrimitiveType {
+    private static final FloatType INSTANCE = new FloatType();
+
+    private FloatType() {
+      super("float");
+    }
+
+    public static FloatType getInstance() {
+      return INSTANCE;
+    }
+
+    @Override
+    public void accept(@Nonnull TypeVisitor v) {
+      v.caseFloatType();
+    }
+  }
+
+  public static class CharType extends PrimitiveType {
+    private static final CharType INSTANCE = new CharType();
+
+    private CharType() {
+      super("char");
+    }
+
+    public static CharType getInstance() {
+      return INSTANCE;
+    }
+
+    @Override
+    public void accept(@Nonnull TypeVisitor v) {
+      v.caseCharType();
+    }
+  }
+
+  public static class BooleanType extends PrimitiveType {
+    private static final BooleanType INSTANCE = new BooleanType();
+
+    private BooleanType() {
+      super("boolean");
+    }
+
+    public static BooleanType getInstance() {
+      return INSTANCE;
+    }
+
+    @Override
+    public void accept(@Nonnull TypeVisitor v) {
+      v.caseBooleanType();
+    }
   }
 }

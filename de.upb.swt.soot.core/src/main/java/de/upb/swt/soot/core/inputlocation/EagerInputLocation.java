@@ -67,7 +67,8 @@ public class EagerInputLocation<S extends SootClass> implements AnalysisInputLoc
   }
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource<S>> getClassSource(
+  @Nonnull
+  public Optional<? extends AbstractClassSource<S>> getClassSource(
       @Nonnull ClassType type, @Nullable ClassLoadingOptions classLoadingOptions) {
     // FIXME: add classloadingoptions
     return Optional.ofNullable(map.get(type));

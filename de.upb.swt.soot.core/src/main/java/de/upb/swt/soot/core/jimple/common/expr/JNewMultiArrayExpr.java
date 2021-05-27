@@ -27,7 +27,6 @@ import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
@@ -139,6 +138,7 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
   }
 
   @Override
+  @Nonnull
   public final List<Value> getUses() {
     List<Value> list = new ArrayList<>();
     Collections.addAll(list, sizes);
@@ -148,14 +148,15 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
     return list;
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return baseType;
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseNewMultiArrayExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseNewMultiArrayExpr(this);
   }
 
   @Nonnull
