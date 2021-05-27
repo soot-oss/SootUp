@@ -22,8 +22,6 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
-package de.upb.swt.soot.core.jimple.common.expr;
-
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -32,7 +30,7 @@ import javax.annotation.Nonnull;
 /** An expression that divides a number by another. */
 public final class JDivExpr extends AbstractFloatBinopExpr implements Copyable {
 
-  public JDivExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JDivExpr(@Nonnull Value op1, @Nonnull Value op2) {
     super(op1, op2);
   }
 
@@ -48,12 +46,12 @@ public final class JDivExpr extends AbstractFloatBinopExpr implements Copyable {
   }
 
   @Nonnull
-  public JDivExpr withOp1(@Nonnull Immediate op1) {
-    return new JDivExpr(op1, (Immediate) getOp2());
+  public JDivExpr withOp1(@Nonnull Value op1) {
+    return new JDivExpr(op1, getOp2());
   }
 
   @Nonnull
-  public JDivExpr withOp2(@Nonnull Immediate op2) {
-    return new JDivExpr((Immediate) getOp1(), op2);
+  public JDivExpr withOp2(@Nonnull Value op2) {
+    return new JDivExpr(getOp1(), op2);
   }
 }

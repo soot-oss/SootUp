@@ -22,8 +22,6 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
-
-package de.upb.swt.soot.core.jimple.common.expr;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -32,7 +30,7 @@ import javax.annotation.Nonnull;
 /** An expression that checks whether operand 1 > operand 2. */
 public final class JGtExpr extends AbstractConditionExpr implements Copyable {
 
-  public JGtExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JGtExpr(@Nonnull Value op1, @Nonnull Value op2) {
     super(op1, op2);
   }
 
@@ -43,17 +41,17 @@ public final class JGtExpr extends AbstractConditionExpr implements Copyable {
   }
 
   @Override
-    v.caseGtExpr(this);
   public void accept(@Nonnull ExprVisitor v) {
+    v.caseGtExpr(this);
   }
 
   @Nonnull
-  public JGtExpr withOp1(@Nonnull Immediate op1) {
-    return new JGtExpr(op1, (Immediate) getOp2());
+  public JGtExpr withOp1(@Nonnull Value op1) {
+    return new JGtExpr(op1, getOp2());
   }
 
   @Nonnull
-  public JGtExpr withOp2(@Nonnull Immediate op2) {
-    return new JGtExpr((Immediate) getOp1(), op2);
+  public JGtExpr withOp2(@Nonnull Value op2) {
+    return new JGtExpr(getOp1(), op2);
   }
 }

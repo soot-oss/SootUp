@@ -23,7 +23,6 @@ package de.upb.swt.soot.core.jimple.common.expr;
  */
 
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -38,8 +37,8 @@ import javax.annotation.Nonnull;
 public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
   public JSpecialInvokeExpr(
-      @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
-    super(base, method, args);
+      @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<? extends Value> args) {
+    super(base, method, args.toArray(new Value[args.size()]));
   }
 
   @Override

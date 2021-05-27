@@ -22,14 +22,12 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
-package de.upb.swt.soot.core.jimple.common.expr;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
-import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +37,7 @@ import javax.annotation.Nonnull;
 public final class JNewMultiArrayExpr implements Expr, Copyable {
 
   private final ArrayType baseType;
-  private final List<Immediate> sizes;
+  private final List<Value> sizes;
 
   /**
    * Initiates a JNewMultiArrayExpr.
@@ -47,9 +45,9 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
    * @param type the type of the array
    * @param sizes the sizes
    */
-  public JNewMultiArrayExpr(@Nonnull ArrayType type, @Nonnull List<Immediate> sizes) {
+  public JNewMultiArrayExpr(@Nonnull ArrayType type, @Nonnull List<Value> sizes) {
     this.baseType = type;
-    this.sizes = ImmutableUtils.immutableListOf(sizes);
+    this.sizes = sizes;
   }
 
   @Override
@@ -114,7 +112,7 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
   }
 
   /** Returns a list of Values. */
-  public List<Immediate> getSizes() {
+  public List<Value> getSizes() {
     return sizes;
   }
 
@@ -146,7 +144,7 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public JNewMultiArrayExpr withSizes(@Nonnull List<Immediate> sizes) {
+  public JNewMultiArrayExpr withSizes(@Nonnull List<Value> sizes) {
     return new JNewMultiArrayExpr(baseType, sizes);
   }
 }

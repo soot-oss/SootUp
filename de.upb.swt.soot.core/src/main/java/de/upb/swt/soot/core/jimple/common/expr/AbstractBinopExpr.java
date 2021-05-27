@@ -31,21 +31,21 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractBinopExpr implements Expr {
 
-  @Nonnull private final Immediate op1;
-  @Nonnull private final Immediate op2;
+  @Nonnull private final Value op1;
+  @Nonnull private final Value op2;
 
-  AbstractBinopExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  AbstractBinopExpr(@Nonnull Value op1, @Nonnull Value op2) {
     this.op1 = op1;
     this.op2 = op2;
   }
 
   @Nonnull
-  public Immediate getOp1() {
+  public Value getOp1() {
     return op1;
   }
 
   @Nonnull
-  public Immediate getOp2() {
+  public Value getOp2() {
     return op2;
   }
 

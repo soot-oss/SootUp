@@ -21,10 +21,6 @@ package de.upb.swt.soot.core.jimple.common.stmt;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-
-package de.upb.swt.soot.core.jimple.common.stmt;
-
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -101,7 +97,7 @@ public final class JInvokeStmt extends Stmt implements Copyable {
   }
 
   @Nonnull
-  public JInvokeStmt withInvokeExpr(Value invokeExpr) {
+  public JInvokeStmt withInvokeExpr(AbstractInvokeExpr invokeExpr) {
     return new JInvokeStmt(invokeExpr, getPositionInfo());
   }
 

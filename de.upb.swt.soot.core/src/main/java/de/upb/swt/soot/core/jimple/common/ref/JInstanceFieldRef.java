@@ -26,9 +26,6 @@ package de.upb.swt.soot.core.jimple.common.ref;
  * @version 1.0
  */
 
-package de.upb.swt.soot.core.jimple.common.ref;
-
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;

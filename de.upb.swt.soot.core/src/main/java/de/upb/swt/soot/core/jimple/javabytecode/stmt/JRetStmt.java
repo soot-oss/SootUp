@@ -35,9 +35,9 @@ import javax.annotation.Nonnull;
 /** Represents the deprecated JVM <code>ret</code> statement */
 public final class JRetStmt extends Stmt implements Copyable {
 
-  @Nonnull private final Immediate stmtAddress;
+  @Nonnull private final Value stmtAddress;
 
-  public JRetStmt(@Nonnull Immediate stmtAddress, @Nonnull StmtPositionInfo positionInfo) {
+  public JRetStmt(@Nonnull Value stmtAddress, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.stmtAddress = stmtAddress;
   }
@@ -55,7 +55,7 @@ public final class JRetStmt extends Stmt implements Copyable {
   }
 
   @Nonnull
-  public Immediate getStmtAddress() {
+  public Value getStmtAddress() {
     return stmtAddress;
   }
 
@@ -94,7 +94,7 @@ public final class JRetStmt extends Stmt implements Copyable {
   }
 
   @Nonnull
-  public JRetStmt withStmtAddress(@Nonnull Immediate stmtAddress) {
+  public JRetStmt withStmtAddress(@Nonnull Value stmtAddress) {
     return new JRetStmt(stmtAddress, getPositionInfo());
   }
 

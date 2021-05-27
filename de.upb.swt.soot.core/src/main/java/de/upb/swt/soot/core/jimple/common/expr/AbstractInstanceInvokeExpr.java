@@ -24,8 +24,6 @@ package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +34,7 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   @Nonnull private final Local base;
 
   AbstractInstanceInvokeExpr(
-      @Nonnull Local base, @Nonnull MethodSignature methodSig, @Nonnull List<Immediate> args) {
+      @Nonnull Local base, @Nonnull MethodSignature methodSig, @Nonnull Value[] args) {
     super(methodSig, args);
     this.base = base;
   }
@@ -61,11 +59,6 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
     list.addAll(base.getUses());
     list.add(base);
     return list;
-  }
-
-  @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseInstanceInvokeExpr(this);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */

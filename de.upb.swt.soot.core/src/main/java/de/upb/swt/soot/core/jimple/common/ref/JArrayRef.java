@@ -23,8 +23,8 @@ package de.upb.swt.soot.core.jimple.common.ref;
  */
 
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.RefVisitor;
 import de.upb.swt.soot.core.types.ArrayType;
@@ -40,11 +40,11 @@ import javax.annotation.Nonnull;
 public final class JArrayRef implements ConcreteRef, Copyable {
 
   private final Local base;
-  private final Immediate index;
+  private final Value index;
   private final IdentifierFactory identifierFactory;
 
   public JArrayRef(
-      @Nonnull Local base, @Nonnull Immediate index, @Nonnull IdentifierFactory identifierFactory) {
+      @Nonnull Local base, @Nonnull Value index, @Nonnull IdentifierFactory identifierFactory) {
     this.base = base;
     this.index = index;
     this.identifierFactory = identifierFactory;
@@ -109,7 +109,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   }
 
   @Nonnull
-  public Immediate getIndex() {
+  public Value getIndex() {
     return index;
   }
 
@@ -123,7 +123,6 @@ public final class JArrayRef implements ConcreteRef, Copyable {
     return list;
   }
 
-  @Nonnull
   @Override
   @Nonnull
   public Type getType() {
@@ -141,7 +140,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   }
 
   @Nonnull
-  public JArrayRef withIndex(@Nonnull Immediate index) {
+  public JArrayRef withIndex(@Nonnull Value index) {
     return new JArrayRef(getBase(), index, identifierFactory);
   }
 }

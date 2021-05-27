@@ -59,8 +59,8 @@ public abstract class AbstractDefinitionStmt extends Stmt {
   @Nonnull
   public final List<Value> getUses() {
     List<Value> list = new ArrayList<>(leftOp.getUses());
-    list.add(rightBox.getValue());
-    list.addAll(rightBox.getValue().getUses());
+    list.add(rightOp);
+    list.addAll(rightOp.getUses());
     return list;
   }
 

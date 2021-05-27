@@ -22,31 +22,29 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
-package de.upb.swt.soot.core.jimple.common.expr;
-
-import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
 public abstract class AbstractInvokeExpr implements Expr {
 
   @Nonnull private final MethodSignature methodSignature;
-  @Nonnull private final List<Immediate> args;
+  @Nonnull private final Value[] args;
 
-  protected AbstractInvokeExpr(@Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
+  protected AbstractInvokeExpr(@Nonnull MethodSignature method, @Nonnull Value[] args) {
     this.methodSignature = method;
-    for (Immediate arg : args) {
+    for (Value arg : args) {
       if (arg == null) {
         throw new IllegalArgumentException("arg may not be null");
       }
     }
-    this.args = ImmutableUtils.immutableListOf(args);
+    this.args = args;
   }
 
   @Nonnull
@@ -54,19 +52,20 @@ public abstract class AbstractInvokeExpr implements Expr {
     return this.methodSignature;
   }
 
-  public Immediate getArg(@Nonnull int index) {
-    return args.get(index);
+  public Value getArg(@Nonnull int index) {
+    return args[index];
   }
 
   /** Returns a list of arguments. */
-  public List<Immediate> getArgs() {
-    return args;
+  public List<Value> getArgs() {
+    return Collections.unmodifiableList(Arrays.asList(args));
   }
 
   public int getArgCount() {
-    return args.size();
+    return args == null ? 0 : args.length;
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return methodSignature.getType();
@@ -75,32 +74,35 @@ public abstract class AbstractInvokeExpr implements Expr {
   @Override
   @Nonnull
   public List<Value> getUses() {
-    List<Value> list = new ArrayList<>(args.size());
-    list.addAll(args);
-    for (Immediate arg : args) {
+    if (args == null) {
+      return Collections.emptyList();
+    }
+    List<Value> list = new ArrayList<>(getArgCount());
+    Collections.addAll(list, args);
+    for (Value arg : args) {
       list.addAll(arg.getUses());
     }
     return list;
   }
 
   protected void argsToString(@Nonnull StringBuilder builder) {
-    final int len = args.size();
+    final int len = getArgCount();
     if (0 < len) {
-      builder.append(args.get(0).toString());
+      builder.append(args[0].toString());
       for (int i = 1; i < len; i++) {
         builder.append(", ");
-        builder.append(args.get(i).toString());
+        builder.append(args[i].toString());
       }
     }
   }
 
   protected void argsToPrinter(@Nonnull StmtPrinter up) {
-    final int len = args.size();
+    final int len = getArgCount();
     if (0 < len) {
-      args.get(0).toString(up);
+      args[0].toString(up);
       for (int i = 1; i < len; i++) {
         up.literal(", ");
-        args.get(i).toString(up);
+        args[i].toString(up);
       }
     }
   }

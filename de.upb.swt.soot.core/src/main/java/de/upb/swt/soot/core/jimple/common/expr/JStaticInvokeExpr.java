@@ -23,8 +23,8 @@ package de.upb.swt.soot.core.jimple.common.expr;
  */
 
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
+import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Copyable;
@@ -36,8 +36,8 @@ import javax.annotation.Nonnull;
 public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copyable {
 
   /** Stores the values to the args array. */
-  public JStaticInvokeExpr(@Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
-    super(method, args);
+  public JStaticInvokeExpr(@Nonnull MethodSignature method, @Nonnull List<Value> args) {
+    super(method, args.toArray(new Value[args.size()]));
   }
 
   @Override
@@ -82,7 +82,7 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copya
   }
 
   @Nonnull
-  public JStaticInvokeExpr withArgs(@Nonnull List<Immediate> args) {
+  public JStaticInvokeExpr withArgs(@Nonnull List<Value> args) {
     return new JStaticInvokeExpr(getMethodSignature(), args);
   }
 }

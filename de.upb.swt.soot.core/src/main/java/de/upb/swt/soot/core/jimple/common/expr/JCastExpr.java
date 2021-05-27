@@ -22,9 +22,6 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
-package de.upb.swt.soot.core.jimple.common.expr;
-
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
@@ -41,7 +38,7 @@ public final class JCastExpr implements Expr, Copyable {
   private final Value op;
   private final Type type;
 
-  public JCastExpr(@Nonnull Immediate op, @Nonnull Type type) {
+  public JCastExpr(@Nonnull Value op, @Nonnull Type type) {
     this.op = op;
     this.type = type;
   }
@@ -95,12 +92,12 @@ public final class JCastExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public JCastExpr withOp(@Nonnull Immediate op) {
+  public JCastExpr withOp(@Nonnull Value op) {
     return new JCastExpr(op, type);
   }
 
   @Nonnull
   public JCastExpr withType(@Nonnull Type type) {
-    return new JCastExpr((Immediate) getOp(), type);
+    return new JCastExpr(getOp(), type);
   }
 }

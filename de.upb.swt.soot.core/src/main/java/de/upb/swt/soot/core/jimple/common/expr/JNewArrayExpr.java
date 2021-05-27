@@ -24,7 +24,6 @@ package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
@@ -40,13 +39,11 @@ import javax.annotation.Nonnull;
 public final class JNewArrayExpr implements Expr, Copyable {
 
   @Nonnull private final Type baseType;
-  @Nonnull private final Immediate size;
+  @Nonnull private final Value size;
   @Nonnull private final IdentifierFactory identifierFactory;
 
   public JNewArrayExpr(
-      @Nonnull Type baseType,
-      @Nonnull Immediate size,
-      @Nonnull IdentifierFactory identifierFactory) {
+      @Nonnull Type baseType, @Nonnull Value size, @Nonnull IdentifierFactory identifierFactory) {
     this.baseType = baseType;
     this.size = size;
     this.identifierFactory = identifierFactory;
@@ -97,12 +94,8 @@ public final class JNewArrayExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public Immediate getSize() {
-    return size;
-  }
-
   public Value getSize() {
-    return sizeBox.getValue();
+    return size;
   }
 
   /**
@@ -113,7 +106,7 @@ public final class JNewArrayExpr implements Expr, Copyable {
   @Override
   @Nonnull
   public final List<Value> getUses() {
-    final Immediate size = this.size;
+    final Value size = this.size;
     List<Value> uses = new ArrayList<>(size.getUses());
     uses.add(size);
     return uses;
@@ -122,7 +115,6 @@ public final class JNewArrayExpr implements Expr, Copyable {
   /** Returns an instance of ArrayType(). */
   @Nonnull
   @Override
-  @Nonnull
   public Type getType() {
     return simplify(baseType, identifierFactory);
   }
@@ -138,7 +130,7 @@ public final class JNewArrayExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public JNewArrayExpr withSize(@Nonnull Immediate size) {
+  public JNewArrayExpr withSize(@Nonnull Value size) {
     return new JNewArrayExpr(baseType, size, identifierFactory);
   }
 }
