@@ -23,8 +23,8 @@ package de.upb.swt.soot.core.jimple.common.expr;
  */
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Copyable;
@@ -35,9 +35,9 @@ import javax.annotation.Nonnull;
 /** An expression that invokes a static method. */
 public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copyable {
 
-  /** Stores the values of new ImmediateBox to the argBoxes array. */
-  public JStaticInvokeExpr(MethodSignature method, List<? extends Value> args) {
-    super(method, ValueBoxUtils.toValueBoxes(args));
+  /** Stores the values to the args array. */
+  public JStaticInvokeExpr(@Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
+    super(method, args);
   }
 
   @Override
@@ -55,7 +55,7 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copya
   public String toString() {
     StringBuilder builder = new StringBuilder();
     builder.append(Jimple.STATICINVOKE).append(" ").append(getMethodSignature()).append("(");
-    argBoxesToString(builder);
+    argsToString(builder);
     builder.append(")");
     return builder.toString();
   }
@@ -67,7 +67,7 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copya
     up.literal(" ");
     up.methodSignature(getMethodSignature());
     up.literal("(");
-    argBoxesToPrinter(up);
+    argsToPrinter(up);
     up.literal(")");
   }
 
@@ -77,12 +77,12 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copya
   }
 
   @Nonnull
-  public JStaticInvokeExpr withMethodSignature(MethodSignature methodSignature) {
+  public JStaticInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature) {
     return new JStaticInvokeExpr(methodSignature, getArgs());
   }
 
   @Nonnull
-  public JStaticInvokeExpr withArgs(List<? extends Value> args) {
+  public JStaticInvokeExpr withArgs(@Nonnull List<Immediate> args) {
     return new JStaticInvokeExpr(getMethodSignature(), args);
   }
 }

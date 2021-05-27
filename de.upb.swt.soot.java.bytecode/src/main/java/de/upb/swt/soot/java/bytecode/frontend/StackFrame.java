@@ -24,7 +24,6 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -42,7 +41,7 @@ final class StackFrame {
 
   @Nullable private Operand[] out;
   @Nullable private Local[] inStackLocals;
-  @Nullable private ValueBox[] boxes;
+  @Nullable private Value[] boxes;
   @Nonnull private final ArrayList<Operand[]> in = new ArrayList<>(1);
   @Nonnull private final AsmMethodSource src;
 
@@ -73,11 +72,11 @@ final class StackFrame {
   }
 
   /**
-   * Sets the value boxes corresponding to the operands used by this frame.
+   * Sets the values corresponding to the operands used by this frame.
    *
    * @param boxes the boxes.
    */
-  void setBoxes(@Nonnull ValueBox... boxes) {
+  void setValues(Value... boxes) {
     this.boxes = boxes;
   }
 
@@ -119,9 +118,10 @@ final class StackFrame {
           // check for self/identity assignments
           if (stack != rvalue) {
             JAssignStmt as =
-                Jimple.newAssignStmt(stack, rvalue, StmtPositionInfo.createNoStmtPositionInfo());
+                Jimple.newAssignStmt(
+                    stack, newOp.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
             src.mergeStmts(newOp.insn, as);
-            newOp.addBox(as.getRightOpBox());
+            newOp.addValue(as.getRightOp());
           }
         }
       } else {
@@ -138,13 +138,13 @@ final class StackFrame {
           }
         }
         /* add assign statement for prevOp */
-        ValueBox box = boxes == null ? null : boxes[i];
+        Value box = boxes == null ? null : boxes[i];
         for (int j = 0; j != nrIn; j++) {
           Operand prevOp = in.get(j)[i];
           if (prevOp.stack == stack) {
             continue;
           }
-          prevOp.removeBox(box);
+          prevOp.removeValue(box);
           if (prevOp.stack == null) {
             prevOp.stack = stack;
             JAssignStmt as =
@@ -156,9 +156,12 @@ final class StackFrame {
             AbstractDefinitionStmt as =
                 (AbstractDefinitionStmt)
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
-            ValueBox lvb = as.getLeftOpBox();
-            assert lvb.getValue() == prevOp.stack : "Invalid stack local!";
-            ValueBox.$Accessor.setValue(lvb, stack);
+            Value lvb = as.getLeftOp();
+            assert lvb == prevOp.stack : "Invalid stack local!";
+            // FIXME: [ms] box removal leftover:
+            // ValueBox.$Accessor.setValue(lvb, stack);
+            AbstractDefinitionStmt.$Accessor.setLeftOp(as, stack);
+
             prevOp.stack = stack;
           }
           prevOp.updateBoxes();
@@ -175,15 +178,21 @@ final class StackFrame {
             AbstractDefinitionStmt as =
                 (AbstractDefinitionStmt)
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
-            ValueBox lvb = as.getLeftOpBox();
-            assert lvb.getValue() == newOp.stack : "Invalid stack local!";
-            ValueBox.$Accessor.setValue(lvb, stack);
+            Value lvb = as.getLeftOp();
+            assert lvb == newOp.stack : "Invalid stack local!";
+            // FIXME: [ms] box removal leftover:
+            // ValueBox.$Accessor.setValue(lvb, stack);
+            AbstractDefinitionStmt.$Accessor.setLeftOp(as, stack);
+
             newOp.stack = stack;
           }
           newOp.updateBoxes();
         }
         if (box != null) {
-          ValueBox.$Accessor.setValue(box, stack);
+          // FIXME: [ms] box removal leftover: replace Local
+          // ValueBox.$Accessor.setValue(box, stack);
+
+          boxes[i] = stack;
         }
         inStackLocals[i] = stack;
       }

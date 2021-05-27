@@ -37,7 +37,7 @@ public final class JThisRef implements IdentityRef, Copyable {
 
   private final ReferenceType thisType;
 
-  public JThisRef(ReferenceType thisType) {
+  public JThisRef(@Nonnull ReferenceType thisType) {
     this.thisType = thisType;
   }
 
@@ -79,7 +79,7 @@ public final class JThisRef implements IdentityRef, Copyable {
   }
 
   @Nonnull
-  public JThisRef withThisType(ReferenceType thisType) {
+  public JThisRef withThisType(@Nonnull ReferenceType thisType) {
     return new JThisRef(thisType);
   }
 }

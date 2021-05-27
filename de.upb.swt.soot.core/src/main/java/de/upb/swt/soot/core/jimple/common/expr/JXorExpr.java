@@ -22,7 +22,8 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.Value;
+package de.upb.swt.soot.core.jimple.common.expr;
+
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
@@ -30,7 +31,7 @@ import javax.annotation.Nonnull;
 /** An expression that computes a binary XOR of two operands. */
 public final class JXorExpr extends AbstractIntLongBinopExpr implements Copyable {
 
-  public JXorExpr(Value op1, Value op2) {
+  public JXorExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);
   }
 
@@ -46,12 +47,12 @@ public final class JXorExpr extends AbstractIntLongBinopExpr implements Copyable
   }
 
   @Nonnull
-  public JXorExpr withOp1(Value op1) {
-    return new JXorExpr(op1, getOp2());
+  public JXorExpr withOp1(@Nonnull Immediate op1) {
+    return new JXorExpr(op1, (Immediate) getOp2());
   }
 
   @Nonnull
-  public JXorExpr withOp2(Value op2) {
-    return new JXorExpr(getOp1(), op2);
+  public JXorExpr withOp2(@Nonnull Immediate op2) {
+    return new JXorExpr((Immediate) getOp1(), op2);
   }
 }

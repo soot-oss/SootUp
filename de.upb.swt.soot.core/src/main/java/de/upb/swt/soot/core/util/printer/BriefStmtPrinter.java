@@ -65,7 +65,7 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
       output.append("@this");
     } else if (r instanceof JParameterRef) {
       JParameterRef pr = (JParameterRef) r;
-      output.append("@parameter" + pr.getIndex());
+      output.append("@parameter" + pr.getNum());
     } else if (r instanceof JCaughtExceptionRef) {
       output.append("@caughtexception");
     } else {

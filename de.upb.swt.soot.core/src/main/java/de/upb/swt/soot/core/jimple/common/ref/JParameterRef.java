@@ -48,7 +48,7 @@ public final class JParameterRef implements IdentityRef, Copyable {
    * Constructs a ParameterRef object of the specified type, representing the specified parameter
    * number.
    */
-  public JParameterRef(Type paramType, int number) {
+  public JParameterRef(@Nonnull Type paramType, @Nonnull int number) {
     this.num = number;
     this.paramType = paramType;
   }
@@ -74,8 +74,8 @@ public final class JParameterRef implements IdentityRef, Copyable {
     up.identityRef(this);
   }
 
-  /** Returns the index of this ParameterRef. */
-  public int getIndex() {
+  /** Returns the num of this ParameterRef. */
+  public int getNum() {
     return num;
   }
 
@@ -104,12 +104,12 @@ public final class JParameterRef implements IdentityRef, Copyable {
   }
 
   @Nonnull
-  public JParameterRef withParamType(Type paramType) {
+  public JParameterRef withParamType(@Nonnull Type paramType) {
     return new JParameterRef(paramType, num);
   }
 
   @Nonnull
-  public JParameterRef withNumber(int number) {
+  public JParameterRef withNumber(@Nonnull int number) {
     return new JParameterRef(paramType, number);
   }
 }

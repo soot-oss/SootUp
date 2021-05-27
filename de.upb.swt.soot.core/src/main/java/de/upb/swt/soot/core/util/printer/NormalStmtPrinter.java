@@ -57,7 +57,7 @@ public class NormalStmtPrinter extends LabeledStmtPrinter {
       typeSignature(r.getType());
     } else if (r instanceof JParameterRef) {
       JParameterRef pr = (JParameterRef) r;
-      output.append("@parameter" + pr.getIndex() + ": ");
+      output.append("@parameter" + pr.getNum() + ": ");
       typeSignature(r.getType());
     } else if (r instanceof JCaughtExceptionRef) {
       output.append("@caughtexception");

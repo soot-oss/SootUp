@@ -24,7 +24,8 @@ package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
+import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,27 +33,17 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
 
-  @Nonnull private final ValueBox baseBox;
-
-  // TODO: [ZW] new attribute: later if ValueBox is deleted, then add "final" to it.
-  @Nonnull private final Value base;
+  @Nonnull private final Local base;
 
   AbstractInstanceInvokeExpr(
-      @Nonnull ValueBox baseBox, @Nonnull MethodSignature methodSig, @Nonnull ValueBox[] argBoxes) {
-    super(methodSig, argBoxes);
-    this.baseBox = baseBox;
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
-    this.base = baseBox.getValue();
+      @Nonnull Local base, @Nonnull MethodSignature methodSig, @Nonnull List<Immediate> args) {
+    super(methodSig, args);
+    this.base = base;
   }
 
   @Nonnull
-  public Value getBase() {
-    return baseBox.getValue();
-  }
-
-  @Nonnull
-  public ValueBox getBaseBox() {
-    return baseBox;
+  public Local getBase() {
+    return base;
   }
 
   @Override
@@ -60,8 +51,7 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   public List<Value> getUses() {
     List<Value> list = new ArrayList<>();
 
-    // getArgs in super class must be modified (not yet)
-    List<Value> args = getArgs();
+    List<? extends Value> args = getArgs();
     if (args != null) {
       list.addAll(args);
       for (Value arg : args) {
@@ -73,10 +63,15 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
     return list;
   }
 
+  @Override
+  public void accept(@Nonnull Visitor sw) {
+    ((ExprVisitor) sw).caseInstanceInvokeExpr(this);
+  }
+
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return baseBox.getValue().equivHashCode() * 101 + getMethodSignature().hashCode() * 17;
+    return base.equivHashCode() * 101 + getMethodSignature().hashCode() * 17;
   }
 
   @Nonnull

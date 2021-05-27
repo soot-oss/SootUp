@@ -334,16 +334,15 @@ public abstract class Jimple {
   }
 
   /** Constructs a NewStaticInvokeExpr(ArrayType, List of Immediate) grammar chunk. */
-  public static JStaticInvokeExpr newStaticInvokeExpr(
-      MethodSignature method, List<Immediate> args) {
+  public static JStaticInvokeExpr newStaticInvokeExpr(MethodSignature method, List<Value> args) {
     return new JStaticInvokeExpr(method, args);
   }
 
-  public static JStaticInvokeExpr newStaticInvokeExpr(MethodSignature method, Immediate... args) {
+  public static JStaticInvokeExpr newStaticInvokeExpr(MethodSignature method, Value... args) {
     return newStaticInvokeExpr(method, Arrays.asList(args));
   }
 
-  public static JStaticInvokeExpr newStaticInvokeExpr(MethodSignature method, Immediate arg) {
+  public static JStaticInvokeExpr newStaticInvokeExpr(MethodSignature method, Value arg) {
     return newStaticInvokeExpr(method, Collections.singletonList(arg));
   }
 
@@ -356,7 +355,7 @@ public abstract class Jimple {
    * chunk.
    */
   public static JSpecialInvokeExpr newSpecialInvokeExpr(
-      Local base, MethodSignature method, List<Immediate> args) {
+      Local base, MethodSignature method, List<Value> args) {
     return new JSpecialInvokeExpr(base, method, args);
   }
 
@@ -365,12 +364,12 @@ public abstract class Jimple {
    * chunk.
    */
   public static JSpecialInvokeExpr newSpecialInvokeExpr(
-      Local base, MethodSignature method, Immediate... args) {
+      Local base, MethodSignature method, Value... args) {
     return newSpecialInvokeExpr(base, method, Arrays.asList(args));
   }
 
   public static JSpecialInvokeExpr newSpecialInvokeExpr(
-      Local base, MethodSignature method, Immediate arg) {
+      Local base, MethodSignature method, Value arg) {
     return newSpecialInvokeExpr(base, method, Collections.singletonList(arg));
   }
 
@@ -384,9 +383,9 @@ public abstract class Jimple {
    */
   public static JDynamicInvokeExpr newDynamicInvokeExpr(
       MethodSignature bootstrapMethodRef,
-      List<Immediate> bootstrapArgs,
+      List<Value> bootstrapArgs,
       MethodSignature methodRef,
-      List<Immediate> args) {
+      List<Value> args) {
     return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, args);
   }
 
@@ -396,10 +395,10 @@ public abstract class Jimple {
    */
   public static JDynamicInvokeExpr newDynamicInvokeExpr(
       MethodSignature bootstrapMethodRef,
-      List<Immediate> bootstrapArgs,
+      List<Value> bootstrapArgs,
       MethodSignature methodRef,
       int tag,
-      List<Immediate> args) {
+      List<Value> args) {
     return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, tag, args);
   }
 
@@ -408,7 +407,7 @@ public abstract class Jimple {
    * chunk.
    */
   public static JVirtualInvokeExpr newVirtualInvokeExpr(
-      Local base, MethodSignature method, List<Immediate> args) {
+      Local base, MethodSignature method, List<Value> args) {
     return new JVirtualInvokeExpr(base, method, args);
   }
 
@@ -417,12 +416,12 @@ public abstract class Jimple {
    * chunk.
    */
   public static JVirtualInvokeExpr newVirtualInvokeExpr(
-      Local base, MethodSignature method, Immediate... args) {
+      Local base, MethodSignature method, Value... args) {
     return newVirtualInvokeExpr(base, method, Arrays.asList(args));
   }
 
   public static JVirtualInvokeExpr newVirtualInvokeExpr(
-      Local base, MethodSignature method, Immediate arg) {
+      Local base, MethodSignature method, Value arg) {
     return newVirtualInvokeExpr(base, method, Collections.singletonList(arg));
   }
 
@@ -435,7 +434,7 @@ public abstract class Jimple {
    * chunk.
    */
   public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
-      Local base, MethodSignature method, List<Immediate> args) {
+      Local base, MethodSignature method, List<Value> args) {
     return new JInterfaceInvokeExpr(base, method, args);
   }
 
@@ -444,12 +443,12 @@ public abstract class Jimple {
    * chunk.
    */
   public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
-      Local base, MethodSignature method, Immediate... args) {
+      Local base, MethodSignature method, Value... args) {
     return newInterfaceInvokeExpr(base, method, Arrays.asList(args));
   }
 
   public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
-      Local base, MethodSignature method, Immediate arg) {
+      Local base, MethodSignature method, Value arg) {
     return newInterfaceInvokeExpr(base, method, Collections.singletonList(arg));
   }
 
@@ -504,11 +503,6 @@ public abstract class Jimple {
 
   /** Constructs a IfStmt(Condition, Stmt) grammar chunk. */
   public static JIfStmt newIfStmt(AbstractConditionExpr condition, StmtPositionInfo posInfo) {
-    return new JIfStmt(condition, posInfo);
-  }
-
-  /** Constructs a IfStmt(Condition, UnitBox) grammar chunk. */
-  public static JIfStmt newIfStmt(Value condition, StmtPositionInfo posInfo) {
     return new JIfStmt(condition, posInfo);
   }
 
@@ -575,36 +569,12 @@ public abstract class Jimple {
   /** Constructs a CaughtExceptionRef() grammar chunk. */
   public abstract JCaughtExceptionRef newCaughtExceptionRef();
 
-  public static ValueBox newArgBox(Value value) {
-    return new ImmediateBox(value);
-  }
-
-  public static ValueBox newImmediateBox(Value value) {
-    return new ImmediateBox(value);
-  }
-
-  public static ValueBox newLocalBox(Value local) {
-    return new LocalBox(local);
-  }
-
-  public static ValueBox newIdentityRefBox(Value value) {
-    return new IdentityRefBox(value);
-  }
-
-  public static ValueBox newConditionExprBox(Value condition) {
-    return new ConditionExprBox(condition);
-  }
-
-  public static ValueBox newInvokeExprBox(Value value) {
-    return new InvokeExprBox(value);
-  }
-
   /** Constructs a NewExpr(RefType) grammar chunk. */
   public static JNewExpr newNewExpr(ReferenceType type) {
     return new JNewExpr(type);
   }
 
-  public static JNewMultiArrayExpr newNewMultiArrayExpr(ArrayType type, List<Immediate> sizes) {
+  public static JNewMultiArrayExpr newNewMultiArrayExpr(ArrayType type, List<Value> sizes) {
     return new JNewMultiArrayExpr(type, sizes);
   }
 

@@ -36,7 +36,7 @@ public final class JCaughtExceptionRef implements IdentityRef, Copyable {
 
   private final Type type;
 
-  public JCaughtExceptionRef(Type type) {
+  public JCaughtExceptionRef(@Nonnull Type type) {
     this.type = type;
   }
 

@@ -25,6 +25,7 @@ package de.upb.swt.soot.core.jimple.visitor;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
 import de.upb.swt.soot.core.jimple.common.ref.Ref;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
@@ -57,7 +58,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
     ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor(oldUse, newUse);
     invokeExpr.accept(exprVisitor);
     if (!exprVisitor.getResult().equivTo(invokeExpr)) {
-      setResult(stmt.withInvokeExpr(exprVisitor.getResult()));
+      setResult(stmt.withInvokeExpr((AbstractInvokeExpr) exprVisitor.getResult()));
     } else {
       defaultCaseStmt(stmt);
     }
@@ -102,7 +103,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   @Override
   public void caseEnterMonitorStmt(@Nonnull JEnterMonitorStmt stmt) {
     if (newUse instanceof Immediate && stmt.getOp().equivTo(oldUse)) {
-      setResult(stmt.withOp(newUse));
+      setResult(stmt.withOp((Immediate) newUse));
     } else {
       defaultCaseStmt(stmt);
     }
@@ -111,7 +112,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   @Override
   public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
     if (newUse instanceof Immediate && stmt.getOp().equivTo(oldUse)) {
-      setResult(stmt.withOp(newUse));
+      setResult(stmt.withOp((Immediate) newUse));
     } else {
       defaultCaseStmt(stmt);
     }
@@ -141,8 +142,8 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseRetStmt(@Nonnull JRetStmt stmt) {
-    if (newUse instanceof Immediate && stmt.getStmtAddress().equivTo(oldUse)) {
-      setResult(stmt.withStmtAddress((Immediate) newUse));
+    if (stmt.getStmtAddress().equivTo(oldUse)) {
+      setResult(stmt.withStmtAddress(newUse));
     } else {
       defaultCaseStmt(stmt);
     }
@@ -150,8 +151,8 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
-    if (newUse instanceof Immediate && stmt.getOp().equivTo(oldUse)) {
-      setResult(stmt.withReturnValue((Immediate) newUse));
+    if (stmt.getOp().equivTo(oldUse)) {
+      setResult(stmt.withReturnValue(newUse));
     } else {
       defaultCaseStmt(stmt);
     }
@@ -165,7 +166,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   @Override
   public void caseSwitchStmt(@Nonnull JSwitchStmt stmt) {
     if (newUse instanceof Immediate && stmt.getKey().equivTo(oldUse)) {
-      setResult(stmt.withKey((Immediate) newUse));
+      setResult(stmt.withKey(newUse));
     } else {
       defaultCaseStmt(stmt);
     }
@@ -173,7 +174,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
-    if (newUse instanceof Immediate && stmt.getOp().equivTo(oldUse)) {
+    if (stmt.getOp().equivTo(oldUse)) {
       setResult(stmt.withOp(newUse));
     } else {
       defaultCaseStmt(stmt);

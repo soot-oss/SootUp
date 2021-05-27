@@ -23,7 +23,9 @@ package de.upb.swt.soot.core.jimple.common.stmt;
  */
 
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.*;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
+import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -32,17 +34,13 @@ import javax.annotation.Nonnull;
 /** A statement that ends the method, returning a value. */
 public final class JReturnStmt extends AbstractOpStmt implements Copyable {
 
-  public JReturnStmt(Value returnValue, StmtPositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(returnValue), positionInfo);
-  }
-
-  protected JReturnStmt(ValueBox returnValueBox, StmtPositionInfo positionInfo) {
-    super(returnValueBox, positionInfo);
+  public JReturnStmt(@Nonnull Immediate returnValue, @Nonnull StmtPositionInfo positionInfo) {
+    super(returnValue, positionInfo);
   }
 
   @Override
   public String toString() {
-    return Jimple.RETURN + " " + opBox.getValue().toString();
+    return Jimple.RETURN + " " + op.toString();
   }
 
   @Override
@@ -84,6 +82,6 @@ public final class JReturnStmt extends AbstractOpStmt implements Copyable {
 
   @Nonnull
   public JReturnStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JReturnStmt(getOp(), positionInfo);
+    return new JReturnStmt((Immediate) getOp(), positionInfo);
   }
 }

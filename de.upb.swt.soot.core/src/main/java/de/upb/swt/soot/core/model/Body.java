@@ -66,9 +66,9 @@ public class Body implements Copyable {
       ImmutableUtils.immutableList(
           new LocalsValidator(),
           new TrapsValidator(),
-          new StmtBoxesValidator(),
+          new StmtsValidator(),
           new UsesValidator(),
-          new ValueBoxesValidator(),
+          new ValuesValidator(),
           new CheckInitValidator(),
           new CheckTypesValidator(),
           new CheckVoidLocalesValidator(),
@@ -114,9 +114,9 @@ public class Body implements Copyable {
     }
   }
 
-  /** Verifies that a ValueBox is not used in more than one place. */
-  public void validateValueBoxes() {
-    runValidation(new ValueBoxesValidator());
+  /** Verifies that a Value is not used in more than one place. */
+  public void validateValues() {
+    runValidation(new ValuesValidator());
   }
 
   /** Verifies that each Local of getUsesAndDefs() is in this body's locals Chain. */
@@ -129,9 +129,9 @@ public class Body implements Copyable {
     runValidation(new TrapsValidator());
   }
 
-  /** Verifies that the StmtBoxes of this Body all point to a Stmt contained within this body. */
-  public void validateStmtBoxes() {
-    runValidation(new StmtBoxesValidator());
+  /** Verifies that the Stmts of this Body all point to a Stmt contained within this body. */
+  public void validateStmts() {
+    runValidation(new StmtsValidator());
   }
 
   /** Verifies that each use in this Body has a def. */
@@ -172,7 +172,7 @@ public class Body implements Copyable {
       if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
         JIdentityStmt is = (JIdentityStmt) s;
         JParameterRef pr = (JParameterRef) is.getRightOp();
-        if (pr.getIndex() == i) {
+        if (pr.getNum() == i) {
           return (Local) is.getLeftOp();
         }
       }
@@ -198,7 +198,7 @@ public class Body implements Copyable {
         JIdentityStmt is = (JIdentityStmt) u;
         if (is.getRightOp() instanceof JParameterRef) {
           JParameterRef pr = (JParameterRef) is.getRightOp();
-          retVal.add(pr.getIndex(), (Local) is.getLeftOp());
+          retVal.add(pr.getNum(), (Local) is.getLeftOp());
         }
       }
     }

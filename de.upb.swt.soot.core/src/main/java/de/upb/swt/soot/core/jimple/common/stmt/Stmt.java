@@ -102,10 +102,6 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
     throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
   }
 
-  public ValueBox getInvokeExprBox() {
-    throw new RuntimeException("getInvokeExprBox() called with no invokeExpr present!");
-  }
-
   public boolean containsArrayRef() {
     return false;
   }
@@ -114,20 +110,12 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
     throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
   }
 
-  public ValueBox getArrayRefBox() {
-    throw new RuntimeException("getArrayRefBox() called with no ArrayRef present!");
-  }
-
   public boolean containsFieldRef() {
     return false;
   }
 
   public JFieldRef getFieldRef() {
     throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
-  }
-
-  public ValueBox getFieldRefBox() {
-    throw new RuntimeException("getFieldRefBox() called with no JFieldRef present!");
   }
 
   public StmtPositionInfo getPositionInfo() {

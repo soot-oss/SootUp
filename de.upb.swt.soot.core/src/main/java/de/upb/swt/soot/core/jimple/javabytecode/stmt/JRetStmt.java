@@ -35,43 +35,36 @@ import javax.annotation.Nonnull;
 /** Represents the deprecated JVM <code>ret</code> statement */
 public final class JRetStmt extends Stmt implements Copyable {
 
-  private final ValueBox stmtAddressBox;
+  @Nonnull private final Immediate stmtAddress;
 
-  public JRetStmt(Value stmtAddress, StmtPositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(stmtAddress), positionInfo);
-  }
-
-  private JRetStmt(ValueBox stmtAddressBox, StmtPositionInfo positionInfo) {
+  public JRetStmt(@Nonnull Immediate stmtAddress, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
-    this.stmtAddressBox = stmtAddressBox;
+    this.stmtAddress = stmtAddress;
   }
 
   @Override
   public String toString() {
-    return Jimple.RET + " " + stmtAddressBox.getValue().toString();
+    return Jimple.RET + " " + stmtAddress.toString();
   }
 
   @Override
   public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.RET);
     up.literal(" ");
-    stmtAddressBox.toString(up);
+    stmtAddress.toString(up);
   }
 
-  public Value getStmtAddress() {
-    return stmtAddressBox.getValue();
-  }
-
-  public ValueBox getStmtAddressBox() {
-    return stmtAddressBox;
+  @Nonnull
+  public Immediate getStmtAddress() {
+    return stmtAddress;
   }
 
   @Override
   @Nonnull
   public List<Value> getUses() {
-    final List<Value> uses = stmtAddressBox.getValue().getUses();
+    final List<Value> uses = stmtAddress.getUses();
     List<Value> list = new ArrayList<>(uses.size() + 1);
-    list.add(stmtAddressBox.getValue());
+    list.add(stmtAddress);
     return list;
   }
 
@@ -97,7 +90,7 @@ public final class JRetStmt extends Stmt implements Copyable {
 
   @Override
   public int equivHashCode() {
-    return stmtAddressBox.getValue().equivHashCode();
+    return stmtAddress.equivHashCode();
   }
 
   @Nonnull

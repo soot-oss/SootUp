@@ -460,7 +460,8 @@ public class JimpleConverter {
 
               } else if (ctx.IF() != null) {
                 final Stmt stmt =
-                    Jimple.newIfStmt(valueVisitor.visitBool_expr(ctx.bool_expr()), pos);
+                    Jimple.newIfStmt(
+                        (AbstractConditionExpr) valueVisitor.visitBool_expr(ctx.bool_expr()), pos);
                 unresolvedBranches.put(
                     stmt, Collections.singletonList(ctx.goto_stmt().label_name.getText()));
                 return stmt;
@@ -528,7 +529,7 @@ public class JimpleConverter {
                   JimpleConverterUtil.buildPositionFromCtx(ctx));
             }
 
-            List<Immediate> sizes =
+            List<Value> sizes =
                 ctx.immediate().stream()
                     .map(imm -> (Immediate) visitImmediate(imm))
                     .collect(Collectors.toList());
@@ -584,7 +585,7 @@ public class JimpleConverter {
         @Override
         public Expr visitInvoke_expr(JimpleParser.Invoke_exprContext ctx) {
 
-          List<Immediate> arglist = getArgList(ctx.arg_list(0));
+          List<Value> arglist = getArgList(ctx.arg_list(0));
 
           if (ctx.nonstaticinvoke != null) {
             Local base = getLocal(ctx.local_name.getText());
@@ -619,7 +620,7 @@ public class JimpleConverter {
 
             MethodSignature methodRef = util.getMethodSignature(ctx.bsm, ctx);
 
-            List<Immediate> bootstrapArgs = getArgList(ctx.staticargs);
+            List<Value> bootstrapArgs = getArgList(ctx.staticargs);
 
             return Jimple.newDynamicInvokeExpr(
                 methodRef, bootstrapArgs, bootstrapMethodRef, getArgList(ctx.dyn_args));
@@ -743,14 +744,14 @@ public class JimpleConverter {
         }
 
         @Nonnull
-        private List<Immediate> getArgList(JimpleParser.Arg_listContext ctx) {
+        private List<Value> getArgList(JimpleParser.Arg_listContext ctx) {
           if (ctx == null || ctx.immediate() == null) {
             return Collections.emptyList();
           }
           final List<JimpleParser.ImmediateContext> immediates = ctx.immediate();
-          List<Immediate> arglist = new ArrayList<>(immediates.size());
+          List<Value> arglist = new ArrayList<>(immediates.size());
           for (JimpleParser.ImmediateContext immediate : immediates) {
-            arglist.add((Immediate) visitImmediate(immediate));
+            arglist.add(visitImmediate(immediate));
           }
           return arglist;
         }

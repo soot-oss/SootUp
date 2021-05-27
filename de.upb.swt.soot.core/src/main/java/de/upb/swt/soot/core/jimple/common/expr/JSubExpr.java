@@ -22,6 +22,8 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
+package de.upb.swt.soot.core.jimple.common.expr;
+
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -30,7 +32,7 @@ import javax.annotation.Nonnull;
 /** An expression that subtracts operand 2 from operand 1. */
 public final class JSubExpr extends AbstractFloatBinopExpr implements Copyable {
 
-  public JSubExpr(Value op1, Value op2) {
+  public JSubExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);
   }
 
@@ -46,12 +48,12 @@ public final class JSubExpr extends AbstractFloatBinopExpr implements Copyable {
   }
 
   @Nonnull
-  public JSubExpr withOp1(Value op1) {
-    return new JSubExpr(op1, getOp2());
+  public JSubExpr withOp1(@Nonnull Immediate op1) {
+    return new JSubExpr(op1, (Immediate) getOp2());
   }
 
   @Nonnull
-  public JSubExpr withOp2(Value op2) {
-    return new JSubExpr(getOp1(), op2);
+  public JSubExpr withOp2(@Nonnull Immediate op2) {
+    return new JSubExpr((Immediate) getOp1(), op2);
   }
 }

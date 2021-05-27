@@ -22,6 +22,8 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
+package de.upb.swt.soot.core.jimple.common.expr;
+
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -30,7 +32,7 @@ import javax.annotation.Nonnull;
 /** An expression that computes a binary AND of two operands. */
 public final class JAndExpr extends AbstractIntLongBinopExpr implements Copyable {
 
-  public JAndExpr(Value op1, Value op2) {
+  public JAndExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);
   }
 
@@ -46,12 +48,12 @@ public final class JAndExpr extends AbstractIntLongBinopExpr implements Copyable
   }
 
   @Nonnull
-  public JAndExpr withOp1(Value op1) {
-    return new JAndExpr(op1, getOp2());
+  public JAndExpr withOp1(@Nonnull Immediate op1) {
+    return new JAndExpr(op1, (Immediate) getOp2());
   }
 
   @Nonnull
-  public JAndExpr withOp2(Value op2) {
-    return new JAndExpr(getOp1(), op2);
+  public JAndExpr withOp2(@Nonnull Immediate op2) {
+    return new JAndExpr((Immediate) getOp1(), op2);
   }
 }

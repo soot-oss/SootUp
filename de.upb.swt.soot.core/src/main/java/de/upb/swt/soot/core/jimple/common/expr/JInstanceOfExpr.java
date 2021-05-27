@@ -23,9 +23,9 @@ package de.upb.swt.soot.core.jimple.common.expr;
  */
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
@@ -38,27 +38,23 @@ import javax.annotation.Nonnull;
 /** An expression that checks whether a value is of a certain type. */
 public final class JInstanceOfExpr implements Expr, Copyable {
 
-  private final ValueBox opBox;
+  private final Value op;
   private final Type checkType;
 
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
-  private Value op;
+  public JInstanceOfExpr(@Nonnull Immediate op, @Nonnull Type checkType) {
 
-  public JInstanceOfExpr(Value op, Type checkType) {
-    this.opBox = Jimple.newImmediateBox(op);
-    this.checkType = checkType;
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
     this.op = op;
+    this.checkType = checkType;
   }
 
   @Override
   public String toString() {
-    return opBox.getValue().toString() + " " + Jimple.INSTANCEOF + " " + checkType.toString();
+    return op.toString() + " " + Jimple.INSTANCEOF + " " + checkType.toString();
   }
 
   @Override
   public void toString(@Nonnull StmtPrinter up) {
-    opBox.toString(up);
+    op.toString(up);
     up.literal(" ");
     up.literal(Jimple.INSTANCEOF);
     up.literal(" ");
@@ -73,15 +69,11 @@ public final class JInstanceOfExpr implements Expr, Copyable {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return opBox.getValue().equivHashCode() * 101 + checkType.hashCode() * 17;
+    return op.equivHashCode() * 101 + checkType.hashCode() * 17;
   }
 
   public Value getOp() {
-    return opBox.getValue();
-  }
-
-  public ValueBox getOpBox() {
-    return opBox;
+    return op;
   }
 
   @Override
@@ -108,12 +100,12 @@ public final class JInstanceOfExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public JInstanceOfExpr withOp(Value op) {
-    return new JInstanceOfExpr(op, checkType);
+  public JInstanceOfExpr withOp(@Nonnull Immediate op) {
+    return new JInstanceOfExpr(op, getCheckType());
   }
 
   @Nonnull
-  public JInstanceOfExpr withCheckType(Type checkType) {
-    return new JInstanceOfExpr(getOp(), checkType);
+  public JInstanceOfExpr withCheckType(@Nonnull Type checkType) {
+    return new JInstanceOfExpr((Immediate) getOp(), checkType);
   }
 }

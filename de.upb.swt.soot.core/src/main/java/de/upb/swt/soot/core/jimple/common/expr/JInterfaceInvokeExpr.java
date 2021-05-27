@@ -29,6 +29,7 @@ package de.upb.swt.soot.core.jimple.common.expr;
  */
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -42,12 +43,10 @@ import javax.annotation.Nonnull;
 /** An expression that invokes an interface method. */
 public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
-  /**
-   * Assigns bootstrapArgs to bsmArgBoxes, an array of type ValueBox. And methodArgs to an array
-   * argBoxes.
-   */
-  public JInterfaceInvokeExpr(Value base, MethodSignature method, List<? extends Value> args) {
-    super(Jimple.newLocalBox(base), method, ValueBoxUtils.toValueBoxes(args));
+  /** methodArgs to an array args. */
+  public JInterfaceInvokeExpr(
+      @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
+    super(base, method, args);
 
     // FIXME: [JMP] Move this into view or somewhere, where `SootClass` and its context are
     // available
@@ -80,7 +79,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
         .append(".")
         .append(getMethodSignature())
         .append("(");
-    argBoxesToString(builder);
+    argsToString(builder);
     builder.append(")");
     return builder.toString();
   }
@@ -90,11 +89,11 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
   public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.INTERFACEINVOKE);
     up.literal(" ");
-    getBaseBox().toString(up);
+    getBase().toString(up);
     up.literal(".");
     up.methodSignature(getMethodSignature());
     up.literal("(");
-    argBoxesToPrinter(up);
+    argsToPrinter(up);
     up.literal(")");
   }
 
@@ -110,8 +109,8 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
   }
 
   @Nonnull
-  @Override
   public JInterfaceInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature) {
+  @Override
     return new JInterfaceInvokeExpr(getBase(), methodSignature, getArgs());
   }
 

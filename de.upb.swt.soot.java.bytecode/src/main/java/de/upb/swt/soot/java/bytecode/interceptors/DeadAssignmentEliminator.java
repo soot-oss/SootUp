@@ -22,7 +22,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  */
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.InvokeExprBox;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -122,8 +121,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
             Type type = castExpr.getType();
             Value value = castExpr.getOp();
             isEssential = !(value instanceof NullConstant) && type instanceof ReferenceType;
-          } else if (rhs instanceof InvokeExprBox
-              || rhs instanceof JArrayRef
+          } else if (rhs instanceof JArrayRef
               || rhs instanceof JNewExpr
               || rhs instanceof JNewArrayExpr
               || rhs instanceof JNewMultiArrayExpr) {

@@ -24,6 +24,8 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.Expr;
+import de.upb.swt.soot.core.jimple.common.ref.ConcreteRef;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
@@ -34,117 +36,41 @@ import javax.annotation.Nonnull;
 /** Represents the assignment of one value to another */
 public final class JAssignStmt extends AbstractDefinitionStmt implements Copyable {
 
-  /** The Class LinkedVariableBox. */
-  private static class LinkedVariableBox extends VariableBox {
-    /** The other box. */
-    ValueBox otherBox = null;
-
-    /**
-     * Instantiates a new linked variable box.
-     *
-     * @param v the v
-     */
-    private LinkedVariableBox(Value v) {
-      super(v);
-    }
-
-    /**
-     * Sets the other box.
-     *
-     * @param otherBox the new other box
-     */
-    public void setOtherBox(ValueBox otherBox) {
-      this.otherBox = otherBox;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see de.upb.soot.jimple.VariableBox#canContainValue(de.upb.soot.jimple.Value)
-     */
-    @Override
-    public boolean canContainValue(Value v) {
-      if (super.canContainValue(v)) {
-        if (otherBox == null) {
-          return true;
-        }
-
-        Value o = otherBox.getValue();
-        return (v instanceof Immediate) || (o instanceof Immediate);
-      }
-      return false;
-    }
-  }
-
-  /** The Class LinkedRValueBox. */
-  private static class LinkedRValueBox extends RValueBox {
-
-    /** The other box. */
-    ValueBox otherBox = null;
-
-    /**
-     * Instantiates a new linked R value box.
-     *
-     * @param v the v
-     */
-    private LinkedRValueBox(Value v) {
-      super(v);
-    }
-
-    /**
-     * Sets the other box.
-     *
-     * @param otherBox the new other box
-     */
-    public void setOtherBox(ValueBox otherBox) {
-      this.otherBox = otherBox;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see de.upb.soot.jimple.RValueBox#canContainValue(de.upb.soot.jimple.Value)
-     */
-    @Override
-    public boolean canContainValue(Value v) {
-      if (super.canContainValue(v)) {
-        if (otherBox == null) {
-          return true;
-        }
-
-        Value o = otherBox.getValue();
-        return (v instanceof Immediate) || (o instanceof Immediate);
-      }
-      return false;
-    }
-  }
-
   /**
    * Instantiates a new JAssignStmt.
    *
    * @param variable the variable on the left side of the assign statement.
    * @param rValue the value on the right side of the assign statement.
    */
-  public JAssignStmt(Value variable, Value rValue, StmtPositionInfo positionInfo) {
-    this(new LinkedVariableBox(variable), new LinkedRValueBox(rValue), positionInfo);
-
-    ((LinkedVariableBox) getLeftBox()).setOtherBox(getRightBox());
-    ((LinkedRValueBox) getRightBox()).setOtherBox(getLeftBox());
-
-    if (!getLeftBox().canContainValue(variable) || !getRightBox().canContainValue(rValue)) {
+  public JAssignStmt(
+      @Nonnull Value variable, @Nonnull Value rValue, @Nonnull StmtPositionInfo positionInfo) {
+    super(variable, rValue, positionInfo);
+    if (!checkVariable(variable)) {
       throw new RuntimeException(
-          "Illegal assignment statement.  Make sure that either left side or right hand side has a local or constant.");
+          "Illegal Assignment statement. Make sure that left hand side has a valid operand.");
+    }
+    if (!checkValue(rValue)) {
+      throw new RuntimeException(
+          "Illegal Assignment statement. Make sure that right hand side has a valid operand.");
     }
   }
 
   /**
-   * Instantiates a new JAssignStmt.
+   * returns true if variable can be on the left side of the assign statement
    *
-   * @param variableBox the variable box on the left side of the assign statement.
-   * @param rvalueBox the rvalue box on the right side of the assign statement.
+   * @param variable the variable on the left side of the assign statement.
    */
-  protected JAssignStmt(ValueBox variableBox, ValueBox rvalueBox, StmtPositionInfo positionInfo) {
-    super(variableBox, rvalueBox, positionInfo);
+  private boolean checkVariable(@Nonnull Value variable) {
+    return variable instanceof Local || variable instanceof ConcreteRef;
+  }
+
+  /**
+   * returns true if rValue can be on the right side of the assign statement
+   *
+   * @param rValue the value on the right side of the assign statement.
+   */
+  private boolean checkValue(@Nonnull Value rValue) {
+    return rValue instanceof Immediate || rValue instanceof ConcreteRef || rValue instanceof Expr;
   }
 
   /*
@@ -167,22 +93,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
     if (!containsInvokeExpr()) {
       throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
     }
-
-    return (AbstractInvokeExpr) getRightBox().getValue();
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getInvokeExprBox()
-   */
-  @Override
-  public ValueBox getInvokeExprBox() {
-    if (!containsInvokeExpr()) {
-      throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
-    }
-
-    return getRightBox();
+    return (AbstractInvokeExpr) getRightOp();
   }
 
   /*
@@ -202,31 +113,16 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getArrayRef()
    */
   @Override
+  // TODO [ms]: what is with assignments like: arr[0] = arr[6]?
   public JArrayRef getArrayRef() {
-    if (getLeftOp() instanceof JArrayRef) {
-      return (JArrayRef) getLeftBox().getValue();
-    } else if (getRightOp() instanceof JArrayRef) {
-      return (JArrayRef) getRightBox().getValue();
-    } else {
+    if (!containsArrayRef()) {
       throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
     }
-  }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getArrayRefBox()
-   */
-  @Override
-  public ValueBox getArrayRefBox() {
-    if (!containsArrayRef()) {
-      throw new RuntimeException("getArrayRefBox() called with no ArrayRef present!");
-    }
-
-    if (getLeftBox().getValue() instanceof JArrayRef) {
-      return getLeftBox();
+    if (getLeftOp() instanceof JArrayRef) {
+      return (JArrayRef) getLeftOp();
     } else {
-      return getRightBox();
+      return (JArrayRef) getRightOp();
     }
   }
 
@@ -250,29 +146,12 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
     if (!containsFieldRef()) {
       throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
     }
-
-    if (getLeftBox().getValue() instanceof JFieldRef) {
-      return (JFieldRef) getLeftBox().getValue();
+    // TODO: [MS] what if both Op's are a FieldRef? verify it in a verifier that this does not
+    // happen or is it always handled via an intermediate Local?
+    if (getLeftOp() instanceof JFieldRef) {
+      return (JFieldRef) getLeftOp();
     } else {
-      return (JFieldRef) getRightBox().getValue();
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getFieldRefBox()
-   */
-  @Override
-  public ValueBox getFieldRefBox() {
-    if (!containsFieldRef()) {
-      throw new RuntimeException("getFieldRefBox() called with no JFieldRef present!");
-    }
-
-    if (getLeftBox().getValue() instanceof JFieldRef) {
-      return getLeftBox();
-    } else {
-      return getRightBox();
+      return (JFieldRef) getRightOp();
     }
   }
 
@@ -283,7 +162,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    */
   @Override
   public String toString() {
-    return getLeftBox().getValue().toString() + " = " + getRightBox().getValue().toString();
+    return getLeftOp().toString() + " = " + getRightOp().toString();
   }
 
   /*
@@ -293,9 +172,9 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    */
   @Override
   public void toString(@Nonnull StmtPrinter up) {
-    getLeftBox().toString(up);
+    getLeftOp().toString(up);
     up.literal(" = ");
-    getRightBox().toString(up);
+    getRightOp().toString(up);
   }
 
   /*
@@ -315,21 +194,21 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
 
   @Override
   public int equivHashCode() {
-    return getLeftBox().getValue().equivHashCode() + 31 * getRightBox().getValue().equivHashCode();
+    return getLeftOp().equivHashCode() + 31 * getRightOp().equivHashCode();
   }
 
   @Nonnull
-  public JAssignStmt withVariable(Value variable) {
+  public JAssignStmt withVariable(@Nonnull Value variable) {
     return new JAssignStmt(variable, getRightOp(), getPositionInfo());
   }
 
   @Nonnull
-  public JAssignStmt withRValue(Value rValue) {
+  public JAssignStmt withRValue(@Nonnull Value rValue) {
     return new JAssignStmt(getLeftOp(), rValue, getPositionInfo());
   }
 
   @Nonnull
-  public JAssignStmt withPositionInfo(StmtPositionInfo positionInfo) {
+  public JAssignStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JAssignStmt(getLeftOp(), getRightOp(), positionInfo);
   }
 }

@@ -51,7 +51,7 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
   @Override
   public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef ref) {
     if (newUse instanceof Local && ref.getBase().equivTo(oldUse)) {
-      setResult(ref.withBase(newUse));
+      setResult(ref.withBase((Local) newUse));
     } else {
       this.defaultCaseRef(ref);
     }
@@ -60,7 +60,7 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
   @Override
   public void caseArrayRef(@Nonnull JArrayRef ref) {
     if (newUse instanceof Local && ref.getBase().equivTo(oldUse)) {
-      setResult(ref.withBase(newUse));
+      setResult(ref.withBase((Local) newUse));
     } else if (newUse instanceof Immediate && ref.getIndex().equivTo(oldUse)) {
       setResult(ref.withIndex(newUse));
     } else {
