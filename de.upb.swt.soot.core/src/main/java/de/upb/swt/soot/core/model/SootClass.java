@@ -27,6 +27,9 @@ import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
+import de.upb.swt.soot.core.util.printer.Printer;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -96,11 +99,7 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
   private final Supplier<Set<? extends SootField>> _lazyFields =
       Suppliers.memoize(this::lazyFieldInitializer);
 
-  /**
-   * Gets the {@link Field fields} of this {@link SootClass} in an immutable set.
-   *
-   * @return
-   */
+  /** Gets the {@link Field fields} of this {@link SootClass} in an immutable set. */
   @Override
   @Nonnull
   public Set<? extends SootField> getFields() {
@@ -215,6 +214,15 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
     return classSignature.toString();
   }
 
+  /** Returns the serialized Jimple of this SootClass as String */
+  @Nonnull
+  public String print() {
+    StringWriter output = new StringWriter();
+    Printer p = new Printer();
+    p.printTo(this, new PrintWriter(output));
+    return output.toString();
+  }
+
   /** Returns true if this class is an application class. */
   public boolean isApplicationClass() {
     return sourceType.equals(SourceType.Application);
@@ -275,12 +283,12 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
   }
 
   @Nonnull
-  public SootClass<S> withClassSource(S classSource) {
+  public SootClass<S> withClassSource(@Nonnull S classSource) {
     return new SootClass<S>(classSource, sourceType);
   }
 
   @Nonnull
-  public SootClass<S> withSourceType(SourceType sourceType) {
+  public SootClass<S> withSourceType(@Nonnull SourceType sourceType) {
     return new SootClass<S>(classSource, sourceType);
   }
 }

@@ -27,7 +27,6 @@ import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
@@ -305,8 +304,8 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#accept(de.upb.soot.jimple.visitor.Visitor)
    */
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseAssignStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseAssignStmt(this);
   }
 
   @Override

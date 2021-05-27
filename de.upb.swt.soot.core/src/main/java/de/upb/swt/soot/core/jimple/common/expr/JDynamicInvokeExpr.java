@@ -27,7 +27,6 @@ import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.util.Copyable;
@@ -89,7 +88,8 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
         methodArgs);
   }
 
-  public @Nonnull MethodSignature getBootstrapMethodSignature() {
+  @Nonnull
+  public MethodSignature getBootstrapMethodSignature() {
     return this.bootstrapMethodSignature;
   }
 
@@ -175,8 +175,8 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseDynamicInvokeExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseDynamicInvokeExpr(this);
   }
 
   /** Returns a list containing elements of type ValueBox. */

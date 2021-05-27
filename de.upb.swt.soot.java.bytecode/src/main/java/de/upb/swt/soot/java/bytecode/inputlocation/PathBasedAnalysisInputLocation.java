@@ -135,7 +135,8 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
 
     @Override
-    public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+    @Nonnull
+    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
         @Nonnull IdentifierFactory identifierFactory,
         @Nonnull ClassLoadingOptions classLoadingOptions) {
       return walkDirectory(
@@ -145,7 +146,8 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
 
     @Override
-    public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+    @Nonnull
+    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
         @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
       return getClassSourceInternal(
           (JavaClassType) type,
@@ -186,7 +188,8 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
 
     @Override
-    public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+    @Nonnull
+    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
         @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
       try {
         FileSystem fs = fileSystemCache.get(path);
@@ -201,7 +204,8 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
 
     @Override
-    public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+    @Nonnull
+    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
         @Nonnull IdentifierFactory identifierFactory,
         @Nonnull ClassLoadingOptions classLoadingOptions) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {

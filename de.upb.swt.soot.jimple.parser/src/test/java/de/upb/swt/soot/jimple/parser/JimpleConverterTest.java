@@ -1,44 +1,51 @@
 package de.upb.swt.soot.jimple.parser;
 
 import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
-import de.upb.swt.soot.core.util.printer.Printer;
+import de.upb.swt.soot.core.signatures.MethodSubSignature;
+import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.core.util.StringTools;
 import de.upb.swt.soot.jimple.JimpleParser;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.file.Paths;
+import java.util.Collections;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class JimpleConverterTest {
 
-  void checkJimpleClass(CharStream cs) {
-
+  private SootClass<?> parseJimpleClass(CharStream cs) throws ResolveException {
     JimpleConverter jimpleVisitor = new JimpleConverter();
-    final OverridingClassSource scs = jimpleVisitor.run(cs, null, Paths.get(""));
-    StringWriter output = new StringWriter();
-    Printer p = new Printer();
-    final SootClass sc = new SootClass(scs, SourceType.Application);
-    p.printTo(sc, new PrintWriter(output));
-
-    System.out.println(output);
+    final OverridingClassSource scs =
+        jimpleVisitor.run(cs, new EagerInputLocation<>(), Paths.get(""));
+    return new SootClass<>(scs, SourceType.Application);
   }
 
   @Test
   public void parseMinimalClass() {
 
     CharStream cs = CharStreams.fromString("class MinClass \n { }");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
+  }
+
+  @Test(expected = ResolveException.class)
+  public void parseEmptyFile() {
+    CharStream cs = CharStreams.fromString("");
+    parseJimpleClass(cs);
+  }
+
+  @Test(expected = ResolveException.class)
+  public void parseNonJimpleFile() {
+    CharStream cs = CharStreams.fromString("Hello World!");
+    parseJimpleClass(cs);
   }
 
   @Test
@@ -46,7 +53,7 @@ public class JimpleConverterTest {
     CharStream cs =
         CharStreams.fromString(
             "public class EmptyClass extends java.lang.Object\n" + " { " + " \n " + "  " + "} ");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test
@@ -55,12 +62,12 @@ public class JimpleConverterTest {
         CharStreams.fromString(
             "public class Developer implements human.interaction.devices.Typing \n { public void <init>(){}"
                 + "private void another(){}  } ");
-    checkJimpleClass(cs1);
+    parseJimpleClass(cs1);
 
     CharStream cs2 =
         CharStreams.fromString(
             "public class Developer implements human.interaction.devices.Typing, human.system.KeepAwake \n { public void <init>(){} } ");
-    checkJimpleClass(cs2);
+    parseJimpleClass(cs2);
   }
 
   @Test
@@ -69,7 +76,7 @@ public class JimpleConverterTest {
         CharStreams.fromString(
             "public class BigTable extends Small.Table \n { public void <init>(){}"
                 + "private void another(){}  } ");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test
@@ -80,7 +87,7 @@ public class JimpleConverterTest {
                 + "import Huge.BigTable; \n"
                 + "public class BigTable extends Table \n { public void <init>(){}"
                 + "private void another(){}  } ");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test
@@ -91,7 +98,7 @@ public class JimpleConverterTest {
                 + "import Small.Table; \n"
                 + "public class BigTable extends Table \n { public void <init>(){}"
                 + "private void another(){}  } ");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test(expected = ResolveException.class)
@@ -102,7 +109,7 @@ public class JimpleConverterTest {
                 + "import Medium.Table; \n"
                 + "public class BigTable extends Table \n { public void <init>(){}"
                 + "private void another(){}  } ");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test
@@ -110,22 +117,22 @@ public class JimpleConverterTest {
     CharStream cs =
         CharStreams.fromString(
             "public class StaticFieldClass extends java.lang.Object \n  { static bool globalCounter;  } ");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
 
     CharStream cs1 =
         CharStreams.fromString(
             "public class StaticFieldClass extends java.lang.Object \n  { bool $flag;  } ");
-    checkJimpleClass(cs1);
+    parseJimpleClass(cs1);
 
     CharStream cs2 =
         CharStreams.fromString(
             "public class StaticFieldClass extends java.lang.Object \n  { java.lang.String globalCounter;  } ");
-    checkJimpleClass(cs2);
+    parseJimpleClass(cs2);
 
     CharStream cs3 =
         CharStreams.fromString(
             "public class StaticFieldClass extends java.lang.Object \n  { int globalCounter;  } ");
-    checkJimpleClass(cs3);
+    parseJimpleClass(cs3);
   }
 
   @Test
@@ -134,7 +141,7 @@ public class JimpleConverterTest {
         CharStreams.fromString(
             "public class InstanceField extends java.lang.Object\n"
                 + " {     public int globalCounter;\n long sth;} ");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test(expected = ResolveException.class)
@@ -143,7 +150,7 @@ public class JimpleConverterTest {
         CharStreams.fromString(
             "public class DuplicateField extends java.lang.Object\n"
                 + " {     public int globalCounter; public int globalCounter;} ");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test(expected = ResolveException.class)
@@ -152,7 +159,7 @@ public class JimpleConverterTest {
         CharStreams.fromString(
             "public class DuplicateField extends java.lang.Object\n"
                 + " {     public int globalCounter; bool globalCounter;} ");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test
@@ -160,12 +167,12 @@ public class JimpleConverterTest {
     CharStream cs =
         CharStreams.fromString(
             "public class Noclass extends java.lang.Object \n { public abstract void nobody();  } ");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
 
     CharStream cs2 =
         CharStreams.fromString(
             "public class Noclass extends java.lang.Object \n { public native void withoutbody();  } ");
-    checkJimpleClass(cs2);
+    parseJimpleClass(cs2);
   }
 
   @Test
@@ -173,7 +180,7 @@ public class JimpleConverterTest {
     CharStream cs =
         CharStreams.fromString(
             "public class EmptyClass extends java.lang.Object \n { public void <init>(){}  } ");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test
@@ -183,7 +190,7 @@ public class JimpleConverterTest {
             "public class EmptyClass extends java.lang.Object \n { public void <init>(){}"
                 + "private void another(){}  } ");
 
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test
@@ -191,12 +198,12 @@ public class JimpleConverterTest {
     CharStream cs1 =
         CharStreams.fromString(
             "public class Interleaving1 extends java.lang.Object \n { public void <init>(){} static int globalCounter; protected void another(){}  } ");
-    checkJimpleClass(cs1);
+    parseJimpleClass(cs1);
 
     CharStream cs2 =
         CharStreams.fromString(
             "public class Interleaving2 extends java.lang.Object \n { private bool flag; void <init>(){} static int globalCounter; protected void another(){}  } ");
-    checkJimpleClass(cs2);
+    parseJimpleClass(cs2);
   }
 
   @Test
@@ -204,7 +211,7 @@ public class JimpleConverterTest {
     CharStream cs1 =
         CharStreams.fromString(
             "public class Param extends java.lang.Object \n { public void <init>(java.lang.String){} \n void another(int, float, double, bool, java.lang.String){}  } ");
-    checkJimpleClass(cs1);
+    parseJimpleClass(cs1);
   }
 
   @Test
@@ -221,7 +228,7 @@ public class JimpleConverterTest {
                 + "// SingleLine One \n"
                 + " }"
                 + "// SingleLine End");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test
@@ -234,7 +241,7 @@ public class JimpleConverterTest {
                 + "public void <init>(){} \n"
                 + "//private void another(){} \n"
                 + "} ");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test
@@ -247,12 +254,28 @@ public class JimpleConverterTest {
                 + " public void <init>(){} \n"
                 + "private void another(){} \n"
                 + "} \n");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
-  @Ignore
   @Test
-  // TODO: [ms] fix g4 file to allow a comment there
+  public void testNonGreeedyCommentEverywhere() {
+    CharStream cs =
+        CharStreams.fromString(
+            "public class BigTable extends Table \n {"
+                + " public void <init>(){} \n"
+                + "/* FirstComment */"
+                + "private void another(){} \n"
+                + "/* SecondComment */"
+                + "} \n");
+
+    SootClass<?> sc = parseJimpleClass(cs);
+    assertTrue(
+        sc.getMethod(
+                new MethodSubSignature("another", Collections.emptyList(), VoidType.getInstance()))
+            .isPresent());
+  }
+
+  @Test
   public void testLongCommentEverywhere() {
     CharStream cs =
         CharStreams.fromString(
@@ -270,7 +293,7 @@ public class JimpleConverterTest {
                 + "public void <init>(){}"
                 + "private void another(){}  "
                 + "} ");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test(expected = ResolveException.class)
@@ -282,7 +305,7 @@ public class JimpleConverterTest {
                 + " \n {"
                 + "public void <init>(){}"
                 + "} ");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test(expected = Exception.class)
@@ -293,7 +316,7 @@ public class JimpleConverterTest {
                 + " BigTable extends Table \n {"
                 + "public void <init>(){}"
                 + "} ");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test
@@ -313,9 +336,8 @@ public class JimpleConverterTest {
                 + "    }\n"
                 + "  }\n"
                 + "\n");
-    System.out.println(cs);
 
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test
@@ -335,9 +357,8 @@ public class JimpleConverterTest {
                 + "    }\n"
                 + "  }\n"
                 + "\n");
-    System.out.println(cs);
 
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
 
     CharStream cs1 =
         CharStreams.fromString(
@@ -352,7 +373,7 @@ public class JimpleConverterTest {
                 + "    }\n"
                 + "  }\n"
                 + "\n");
-    checkJimpleClass(cs1);
+    parseJimpleClass(cs1);
   }
 
   @Test
@@ -368,7 +389,7 @@ public class JimpleConverterTest {
                 + "      return;\n"
                 + "    }"
                 + "}");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test
@@ -391,14 +412,14 @@ public class JimpleConverterTest {
                 + "    }\n"
                 + "  }\n"
                 + "\n");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test
   public void testOuterclass() {
     CharStream cs =
         CharStreams.fromString("class OuterClass$InnerClass{" + "public void <init>(){}" + "}");
-    checkJimpleClass(cs);
+    parseJimpleClass(cs);
   }
 
   @Test
@@ -520,9 +541,160 @@ public class JimpleConverterTest {
 
   @Test
   public void testSingleQuoteEscapeSeq() {
+
+    // old kind of escaping -> every part i.e. between the dot which needed escaping was escaped
+    {
+      CharStream cs =
+          CharStreams.fromString("public class escaped.'class' extends java.lang.Object {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("escaped.class", sc.getClassSource().getClassType().toString());
+    }
+    // old kind of escaping: at the beginning
+    {
+      CharStream cs =
+          CharStreams.fromString("public class 'class'.is.escaped extends java.lang.Object {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("class.is.escaped", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // escaped word (pckg) which was unnecessarily escaped by the rules of old soot
+      CharStream cs =
+          CharStreams.fromString(
+              "public class some.'pckg'.'class'.More extends java.lang.Object {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("some.pckg.class.More", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // current escaping
+      CharStream cs =
+          CharStreams.fromString("public class 'annotation interface' extends java.lang.Object {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("annotation interface", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // no escaping needed as "class" is not considered a token if its nested into more
+      CharStream cs =
+          CharStreams.fromString("public class some.pckg.class extends java.lang.Object \n {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("some.pckg.class", sc.getClassSource().getClassType().toString());
+    }
+
+    try {
+      // missing escaping (i.e. class is a token which needs it!)
+      CharStream cs =
+          CharStreams.fromString(
+              "public class class extends java.lang.Object implements java.lang.'annotation'.Annotation\n {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      fail("escaping is needed");
+    } catch (Exception ignored) {
+    }
+
+    {
+      // inside quotes
+      CharStream cs =
+          CharStreams.fromString(
+              "public class \"\\'some.pckg.ClassObj\\'\" extends java.lang.Object \n {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("'some.pckg.ClassObj'", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // testing escaped string things
+      CharStream cs =
+          CharStreams.fromString(
+              "public class 'some.'.pckg.'.ClassObj' extends java.lang.Object \n {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("some..pckg..ClassObj", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // testing escaped string things
+      CharStream cs =
+          CharStreams.fromString(
+              "public class \"some.\\'.pckg.\\'.ClassObj\" extends java.lang.Object \n {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+      assertEquals("some.'.pckg.'.ClassObj", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      assertEquals("'class'", Jimple.unescape("\"'class'\""));
+      CharStream cs =
+          CharStreams.fromString(
+              "public class \"'notescapedquotesinstring'\" extends java.lang.Object \n {}");
+      try {
+        SootClass<?> sc = parseJimpleClass(cs);
+        fail("quotes in string are not escaped");
+      } catch (Exception ignore) {
+      }
+    }
+
+    {
+
+      // escaped quotes in escaped sequence
+      CharStream cs =
+          CharStreams.fromString("public class \"\\'class\\'\" extends java.lang.Object \n {}");
+      SootClass<?> sc = parseJimpleClass(cs);
+
+      assertEquals("'class'", Jimple.unescape("\"\\'class\\'\""));
+      assertEquals("'class'", sc.getClassSource().getClassType().toString());
+    }
+
+    {
+      // different escape start /end symbol
+      try {
+        CharStream cs =
+            CharStreams.fromString("public class \"class' extends java.lang.Object \n {}");
+        SootClass<?> sc = parseJimpleClass(cs);
+        fail("start and end quote do not match.");
+      } catch (Exception ignore) {
+      }
+    }
+
+    assertEquals("\\", StringTools.getUnEscapedStringOf("\\\\"));
+    assertEquals("\"", StringTools.getUnEscapedStringOf("\\\""));
+    assertEquals("'", StringTools.getUnEscapedStringOf("\\'"));
+    assertEquals("\"'", StringTools.getUnEscapedStringOf("\"\\'"));
+
+    assertEquals("'class'", Jimple.unescape("\"'class'\""));
+    assertEquals("'class'", Jimple.unescape("\"\\'class\\'\""));
+    assertEquals("'class'", Jimple.unescape("\\'class\\'"));
+
+    // necessary inner escaping
+    assertEquals("\"class\"", Jimple.unescape("\"\\\"class\\\"\""));
+    // unnecessary inner escaping
+    assertEquals("'class'", Jimple.unescape("\"'class'\""));
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void testWholefile() {
     CharStream cs =
         CharStreams.fromString(
-            "public annotation interface android.support.'annotation'.SomeAnnotation extends java.lang.Object implements java.lang.'annotation'.Annotation\n {}");
-    checkJimpleClass(cs);
+            "import Medium.Table; \n"
+                + "public class BigTable extends Table \n {"
+                + " public void <init>(){} \n"
+                + "private void another(){} \n"
+                + "} \n"
+                + "bla bla \n"
+                + "\n");
+    parseJimpleClass(cs);
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void testFileMultipleClasses() {
+    CharStream cs =
+        CharStreams.fromString(
+            "import Medium.Table; \n"
+                + "public class BigTable extends Table \n {"
+                + " public void <init>(){} \n"
+                + "private void another(){} \n"
+                + "} \n"
+                + "public class AnotherTable extends Table \n {"
+                + " public void <init>(){} \n"
+                + "private void anotherChair(){} \n"
+                + "} \n");
+    parseJimpleClass(cs);
   }
 }

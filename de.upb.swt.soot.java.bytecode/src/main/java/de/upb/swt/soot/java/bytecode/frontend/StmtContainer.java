@@ -25,7 +25,7 @@ import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
+import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.LinkedList;
 import java.util.List;
@@ -138,7 +138,7 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public void accept(@Nonnull Visitor v) {
+  public void accept(@Nonnull StmtVisitor v) {
     throw new UnsupportedOperationException();
   }
 

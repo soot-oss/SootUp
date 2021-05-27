@@ -45,7 +45,7 @@ public class ReplaceUseRefVisitorTest {
     ReplaceUseRefVisitor visitor = new ReplaceUseRefVisitor(base, newBase);
     Ref ref = javaJimple.newArrayRef(base, conIndex);
     ref.accept(visitor);
-    Ref newRef = visitor.getNewRef();
+    Ref newRef = visitor.getResult();
 
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newBase);
@@ -58,7 +58,7 @@ public class ReplaceUseRefVisitorTest {
     visitor = new ReplaceUseRefVisitor(conIndex, conNewIndex);
     ref = javaJimple.newArrayRef(base, conIndex);
     ref.accept(visitor);
-    newRef = visitor.getNewRef();
+    newRef = visitor.getResult();
 
     expectedUses.add(base);
     expectedUses.add(conNewIndex);
@@ -69,7 +69,7 @@ public class ReplaceUseRefVisitorTest {
     visitor = new ReplaceUseRefVisitor(localIndex, localNewIndex);
     ref = javaJimple.newArrayRef(base, localIndex);
     ref.accept(visitor);
-    newRef = visitor.getNewRef();
+    newRef = visitor.getResult();
 
     expectedUses.add(base);
     expectedUses.add(localNewIndex);
@@ -79,7 +79,7 @@ public class ReplaceUseRefVisitorTest {
     // no matched use
     ref = javaJimple.newArrayRef(base, conIndex);
     ref.accept(visitor);
-    newRef = visitor.getNewRef();
+    newRef = visitor.getResult();
 
     assertTrue(newRef.equivTo(ref));
   }
@@ -93,7 +93,7 @@ public class ReplaceUseRefVisitorTest {
     // replace base with newUse
     Ref ref = JavaJimple.newInstanceFieldRef(base, fieldSignature);
     ref.accept(visitor);
-    Ref newRef = visitor.getNewRef();
+    Ref newRef = visitor.getResult();
 
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newBase);
@@ -103,7 +103,7 @@ public class ReplaceUseRefVisitorTest {
     // no matched use
     ref = JavaJimple.newInstanceFieldRef(localIndex, fieldSignature);
     ref.accept(visitor);
-    newRef = visitor.getNewRef();
+    newRef = visitor.getResult();
 
     assertTrue(newRef.equals(ref));
   }

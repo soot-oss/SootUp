@@ -29,21 +29,20 @@ import org.antlr.v4.runtime.*;
 
 public class JimpleConverter {
 
-  final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-  private JimpleConverterUtil util;
-  private Path path;
+  public OverridingClassSource run(
+      @Nonnull CharStream charStream,
+      @Nonnull AnalysisInputLocation<?> inputlocation,
+      @Nonnull Path sourcePath) {
+    return run(
+        JimpleConverterUtil.createJimpleParser(charStream, sourcePath), inputlocation, sourcePath);
+  }
 
   public OverridingClassSource run(
-      CharStream charStream, AnalysisInputLocation inputlocation, Path sourcePath) {
-    path = sourcePath;
-    util = new JimpleConverterUtil(sourcePath);
+      @Nonnull JimpleParser parser,
+      @Nonnull AnalysisInputLocation<?> inputlocation,
+      @Nonnull Path sourcePath) {
 
-    if (charStream.size() == 0) {
-      throw new ResolveException("Empty File to parse.", sourcePath);
-    }
-
-    JimpleParser parser = JimpleConverterUtil.createJimpleParser(charStream, sourcePath);
-    ClassVisitor classVisitor = new ClassVisitor();
+    ClassVisitor classVisitor = new ClassVisitor(sourcePath);
     classVisitor.visit(parser.file());
 
     return new OverridingClassSource(
@@ -59,7 +58,18 @@ public class JimpleConverter {
         classVisitor.modifiers);
   }
 
-  private class ClassVisitor extends JimpleBaseVisitor<Boolean> {
+  private static class ClassVisitor extends JimpleBaseVisitor<Boolean> {
+
+    @Nonnull
+    private final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+
+    @Nonnull private final JimpleConverterUtil util;
+    @Nonnull private final Path path;
+
+    public ClassVisitor(@Nonnull Path path) {
+      this.path = path;
+      util = new JimpleConverterUtil(path);
+    }
 
     private ClassType clazz = null;
     Set<SootField> fields = new HashSet<>();
@@ -77,15 +87,13 @@ public class JimpleConverter {
       position = JimpleConverterUtil.buildPositionFromCtx(ctx);
 
       // imports
-      ctx.importItem().stream()
-          .filter(item -> item.location != null)
-          .forEach(importCtx -> util.addImport(importCtx));
+      ctx.importItem().stream().filter(item -> item.location != null).forEach(util::addImport);
 
       // class_name
       if (ctx.classname != null) {
 
         // "$" in classname is a heuristic for an inner/outer class
-        final String classname = Jimple.unescape(ctx.classname.getText());
+        final String classname = ctx.classname.getText();
         final int dollarPostition = classname.indexOf('$');
         if (dollarPostition > -1) {
           outerclass = util.getClassType(classname.substring(0, dollarPostition));
@@ -110,7 +118,7 @@ public class JimpleConverter {
 
       // extends_clause
       if (ctx.extends_clause() != null) {
-        superclass = util.getClassType(Jimple.unescape(ctx.extends_clause().classname.getText()));
+        superclass = util.getClassType(ctx.extends_clause().classname.getText());
       } else {
         superclass = null;
       }

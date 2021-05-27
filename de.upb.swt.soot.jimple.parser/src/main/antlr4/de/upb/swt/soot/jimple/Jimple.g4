@@ -5,10 +5,9 @@ grammar Jimple;
  */
 
   LINE_COMMENT : '//' ~('\n'|'\r')* ->skip;
-  LONG_COMMENT : '/*' ~('*')* '*'+ ( ~('*' | '/')* ~('*')* '*'+)* '/' -> skip;
+  LONG_COMMENT : '/*' ~('*')* '*'+ ( ~('*' | '/')* ~('*')* '*'+)*? '/' -> skip;
 
-  HYPHEN: ('"' | '\'');
-  STRING_CONSTANT : HYPHEN STRING_CHAR* HYPHEN;
+  STRING_CONSTANT : '"' STRING_CHAR* '"' |  '\'' STRING_CHAR* '\'';
 
   CLASS : 'class';
   EXTENDS : 'extends';
@@ -98,7 +97,7 @@ grammar Jimple;
     '0' ('x' | 'X') HEX_DIGIT+;
 
   fragment ESCAPABLE_CHAR :
-    '\\' | ' ' | '\'' | '.' | HYPHEN | 'n' | 't' | 'r' | 'b' | 'f';
+    '\\' | ' ' | '\'' | '"' | '.'  | 'n' | 't' | 'r' | 'b' | 'f';
   fragment ESCAPE_CHAR :
     '\\' (ESCAPABLE_CHAR | 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT );
 
@@ -111,19 +110,19 @@ grammar Jimple;
   BLANK :
     [ \t\r\n] ->skip;
 
-  CATCHALL_ERRORTOKEN : . ;
+  UNKNOWN : . ;
 
  /*
   * Parser Rules
   */
   identifier:
-    IDENTIFIER | STRING_CONSTANT;
+    STRING_CONSTANT | STRING_CONSTANT . IDENTIFIER | IDENTIFIER ;
 
   integer_constant :
     (PLUS|MINUS)? (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
 
   file:
-    importItem* modifier* file_type classname=identifier extends_clause? implements_clause? L_BRACE member* R_BRACE;
+    importItem* modifier* file_type classname=identifier extends_clause? implements_clause? L_BRACE member* R_BRACE EOF;
 
   importItem:
     'import' location=identifier SEMICOLON;
@@ -132,13 +131,13 @@ grammar Jimple;
     'abstract' | 'final' | 'native' | 'public' | 'protected' | 'private' | 'static' | 'synchronized' | 'transient' |'volatile' | 'strictfp' | 'enum';
 
   file_type :
-    'class' | 'interface' | 'annotation interface';
+    CLASS | 'interface' | 'annotation interface';
 
   extends_clause :
-    'extends' classname=identifier;
+    EXTENDS classname=identifier;
 
   implements_clause :
-    'implements' type_list;
+    IMPLEMENTS type_list;
 
   type:
     identifier (L_BRACKET R_BRACKET)*;
