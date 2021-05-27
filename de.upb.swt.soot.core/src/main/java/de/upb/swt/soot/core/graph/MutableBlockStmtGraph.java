@@ -15,6 +15,15 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
 
   public MutableBlockStmtGraph() {}
 
+  /** copies a StmtGraph into this Mutable instance */
+  public MutableBlockStmtGraph(StmtGraph graph) {
+    setStartingStmt(graph.getStartingStmt());
+    for (Stmt stmt : graph) {
+      setEdges(stmt, successors(stmt));
+    }
+    setTraps();
+  }
+
   @Nonnull
   Collection<? extends BasicBlock> getBlocks() {
     return stmtsToBlock.values();
@@ -172,12 +181,13 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
 
   @Override
   public void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets) {
-    // FIXME [ms] implement smart
+    // TODO [ms] implement smart i.e. not remove(old), add(other)
     MutableBasicBlock fromBlock = stmtsToBlock.get(from);
     if (fromBlock == null) {
-      throw new IllegalArgumentException("Stmt does not exist in this graph.");
+      addNodeInternal(from);
+    } else {
+      successors(from).forEach(succ -> removeEdge(from, succ));
     }
-    successors(from).forEach(succ -> removeEdge(from, succ));
     targets.forEach(to -> putEdge(from, to));
   }
 
@@ -312,13 +322,14 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
 
   @Override
   public void setTraps(@Nonnull List<Trap> traps) {
-    // TODO: implement
+    this.traps = traps;
+    // FIXME: implement splitting into basicblocks
+
   }
 
   @Nonnull
   @Override
   public List<Trap> getTraps() {
-    // FIXME: implement.. collect from BasicBlocks? or use own List?
     if (traps == null) {
       Collections.emptyList();
     }
