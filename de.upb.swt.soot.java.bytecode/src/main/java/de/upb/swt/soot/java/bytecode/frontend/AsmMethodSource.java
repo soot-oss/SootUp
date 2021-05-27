@@ -158,9 +158,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
                 .getMethodSignature(name, declaringClass, retType, sigTypes);
           });
 
-  private final Supplier<Set<Modifier>> lazyModifiers =
-      Suppliers.memoize(() -> AsmUtil.getModifiers(access));
-
   AsmMethodSource(
       int access,
       @Nonnull String name,
@@ -185,8 +182,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Override
   @Nonnull
   public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) throws IOException {
-    // TODO: [ms] as we always need modifiers: dont memoize them +more usage
-    bodyBuilder.setModifiers(lazyModifiers.get());
+    bodyBuilder.setModifiers(AsmUtil.getModifiers(access));
 
     /* initialize */
     int nrInsn = instructions.size();
@@ -1830,7 +1826,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     MethodSignature methodSignature = lazyMethodSignature.get();
 
     int iloc = 0;
-    if (!lazyModifiers.get().contains(Modifier.STATIC)) {
+    if (!bodyBuilder.getModifiers().contains(Modifier.STATIC)) {
       Local l = getOrCreateLocal(iloc++);
       emitStmt(
           Jimple.newIdentityStmt(
