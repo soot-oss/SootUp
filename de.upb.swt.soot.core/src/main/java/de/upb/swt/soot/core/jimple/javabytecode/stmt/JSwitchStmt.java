@@ -22,7 +22,6 @@ package de.upb.swt.soot.core.jimple.javabytecode.stmt;
  * #L%
  */
 
-
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
