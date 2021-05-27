@@ -1653,8 +1653,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       @Nonnull ArrayDeque<BranchedInsnInfo> conversionWorklist,
       @Nonnull AbstractInsnNode cur,
       @Nonnull AbstractInsnNode tgt,
-      @Nullable List<LabelNode> tgts) {
-    int lastIdx = tgts == null ? 0 : tgts.size();
+      @Nonnull List<LabelNode> tgts) {
+    int lastIdx = tgts.size();
     Operand[] stackss = operandStack.getStack().toArray(new Operand[0]);
     int i = 0;
     tgt_loop:
@@ -1716,75 +1716,98 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges = HashBasedTable.create(1, 1);
 
     do {
-      BranchedInsnInfo edge = worklist.pollLast();
+      BranchedInsnInfo edge = worklist.removeLast();
       AbstractInsnNode insn = edge.getInsn();
       operandStack.setOperandStack(edge.getOperandStack());
+      label:
       do {
         int type = insn.getType();
-        if (type == FIELD_INSN) {
-          convertFieldInsn((FieldInsnNode) insn);
-        } else if (type == IINC_INSN) {
-          convertIincInsn((IincInsnNode) insn);
-        } else if (type == INSN) {
-          convertInsn((InsnNode) insn);
-          int op = insn.getOpcode();
-          if ((op >= IRETURN && op <= RETURN) || op == ATHROW) {
+        switch (type) {
+          case FIELD_INSN:
+            convertFieldInsn((FieldInsnNode) insn);
             break;
-          }
-        } else if (type == INT_INSN) {
-          convertIntInsn((IntInsnNode) insn);
-        } else if (type == LDC_INSN) {
-          convertLdcInsn((LdcInsnNode) insn);
-        } else if (type == JUMP_INSN) {
-          JumpInsnNode jmp = (JumpInsnNode) insn;
-          convertJumpInsn(jmp);
-          int op = jmp.getOpcode();
-          if (op == JSR) {
-            throw new UnsupportedOperationException("JSR!");
-          }
-          if (op != GOTO) {
-            /* ifX opcode, i.e. two successors */
-            AbstractInsnNode next = insn.getNext();
-            addEdges(edges, worklist, insn, next, Collections.singletonList(jmp.label));
-          } else {
-            addEdges(edges, worklist, insn, jmp.label, null);
-          }
-          break;
-        } else if (type == LOOKUPSWITCH_INSN) {
-          LookupSwitchInsnNode swtch = (LookupSwitchInsnNode) insn;
-          convertLookupSwitchInsn(swtch);
-          LabelNode dflt = swtch.dflt;
-          addEdges(edges, worklist, insn, dflt, swtch.labels);
-          break;
-        } else if (type == METHOD_INSN) {
-          convertMethodInsn((MethodInsnNode) insn);
-        } else if (type == INVOKE_DYNAMIC_INSN) {
-          convertInvokeDynamicInsn((InvokeDynamicInsnNode) insn);
-        } else if (type == MULTIANEWARRAY_INSN) {
-          convertMultiANewArrayInsn((MultiANewArrayInsnNode) insn);
-        } else if (type == TABLESWITCH_INSN) {
-          TableSwitchInsnNode swtch = (TableSwitchInsnNode) insn;
-          convertTableSwitchInsn(swtch);
-          LabelNode dflt = swtch.dflt;
-          addEdges(edges, worklist, insn, dflt, swtch.labels);
-          break;
-        } else if (type == TYPE_INSN) {
-          convertTypeInsn((TypeInsnNode) insn);
-        } else if (type == VAR_INSN) {
-          if (insn.getOpcode() == RET) {
-            throw new UnsupportedOperationException("RET!");
-          }
-          convertVarInsn((VarInsnNode) insn);
-        } else if (type == LABEL) {
-          convertLabel((LabelNode) insn);
-        } else if (type == LINE) {
-          convertLine((LineNumberNode) insn);
-        } else
-        //noinspection StatementWithEmptyBody
-        if (type == FRAME) {
-          // we can ignore it
-        } else {
-          throw new RuntimeException("Unknown instruction type: " + type);
+          case IINC_INSN:
+            convertIincInsn((IincInsnNode) insn);
+            break;
+          case INSN:
+            {
+              convertInsn((InsnNode) insn);
+              int op = insn.getOpcode();
+              if ((op >= IRETURN && op <= RETURN) || op == ATHROW) {
+                break label;
+              }
+              break;
+            }
+          case INT_INSN:
+            convertIntInsn((IntInsnNode) insn);
+            break;
+          case LDC_INSN:
+            convertLdcInsn((LdcInsnNode) insn);
+            break;
+          case JUMP_INSN:
+            {
+              JumpInsnNode jmp = (JumpInsnNode) insn;
+              convertJumpInsn(jmp);
+              int op = jmp.getOpcode();
+              if (op == JSR) {
+                throw new UnsupportedOperationException("JSR!");
+              }
+              if (op != GOTO) {
+                /* ifX opcode, i.e. two successors */
+                AbstractInsnNode next = insn.getNext();
+                addEdges(edges, worklist, insn, next, Collections.singletonList(jmp.label));
+              } else {
+                addEdges(edges, worklist, insn, jmp.label, Collections.emptyList());
+              }
+              break label;
+            }
+          case LOOKUPSWITCH_INSN:
+            {
+              LookupSwitchInsnNode swtch = (LookupSwitchInsnNode) insn;
+              convertLookupSwitchInsn(swtch);
+              LabelNode dflt = swtch.dflt;
+              addEdges(edges, worklist, insn, dflt, swtch.labels);
+              break label;
+            }
+          case METHOD_INSN:
+            convertMethodInsn((MethodInsnNode) insn);
+            break;
+          case INVOKE_DYNAMIC_INSN:
+            convertInvokeDynamicInsn((InvokeDynamicInsnNode) insn);
+            break;
+          case MULTIANEWARRAY_INSN:
+            convertMultiANewArrayInsn((MultiANewArrayInsnNode) insn);
+            break;
+          case TABLESWITCH_INSN:
+            {
+              TableSwitchInsnNode swtch = (TableSwitchInsnNode) insn;
+              convertTableSwitchInsn(swtch);
+              LabelNode dflt = swtch.dflt;
+              addEdges(edges, worklist, insn, dflt, swtch.labels);
+              break label;
+            }
+          case TYPE_INSN:
+            convertTypeInsn((TypeInsnNode) insn);
+            break;
+          case VAR_INSN:
+            if (insn.getOpcode() == RET) {
+              // TODO: [ms] check: but we do have JRetStmt
+              throw new UnsupportedOperationException("RET!");
+            }
+            convertVarInsn((VarInsnNode) insn);
+            break;
+          case LABEL:
+            convertLabel((LabelNode) insn);
+            break;
+          case LINE:
+            convertLine((LineNumberNode) insn);
+            break;
+            //noinspection StatementWithEmptyBody
+          case FRAME:
+            // we can ignore it -> skip
+            break;
+          default:
+            throw new UnsupportedOperationException("Unknown instruction type: " + type);
         }
       } while ((insn = insn.getNext()) != null);
     } while (!worklist.isEmpty());
@@ -1795,8 +1818,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // code, we have to split the exceptional case (with the exception on
     // the stack) from the normal fall-through case without anything on the
     // stack.
-    for (Iterator<AbstractInsnNode> it = instructions.iterator(); it.hasNext(); ) {
-      AbstractInsnNode node = it.next();
+    for (AbstractInsnNode node : instructions) {
       if (node instanceof JumpInsnNode) {
         if (((JumpInsnNode) node).label == ln) {
           inlineExceptionLabels.add(ln);
