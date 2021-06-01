@@ -69,7 +69,11 @@ public class JrtFileSystemAnalysisInputLocation
     JavaClassType klassType = (JavaClassType) classType;
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
     ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
-    Path filepath = klassType.toPath(classProvider.getHandledFileType(), theFileSystem);
+    Path filepath =
+        theFileSystem.getPath(
+            klassType.getFullyQualifiedName().replace('.', '/')
+                + "."
+                + classProvider.getHandledFileType().getExtension());
 
     // parse as module
     if (klassType.getPackageName() instanceof ModulePackageName) {

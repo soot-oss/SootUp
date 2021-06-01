@@ -123,8 +123,14 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       @Nonnull JavaClassType signature,
       @Nonnull Path path,
       @Nonnull ClassProvider<JavaSootClass> classProvider) {
+
     Path pathToClass =
-        path.resolve(signature.toPath(classProvider.getHandledFileType(), path.getFileSystem()));
+        path.resolve(
+            path.getFileSystem()
+                .getPath(
+                    signature.getFullyQualifiedName().replace('.', '/')
+                        + "."
+                        + classProvider.getHandledFileType().getExtension()));
 
     if (!Files.exists(pathToClass)) {
       return Optional.empty();

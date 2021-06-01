@@ -24,13 +24,9 @@ package de.upb.swt.soot.java.core.types;
 
 import com.google.common.base.Objects;
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 
@@ -110,24 +106,6 @@ public class JavaClassType extends ClassType {
     }
     sb.append(className);
     return sb.toString();
-  }
-
-  public Path toPath(FileType fileType) {
-    return toPath(fileType, FileSystems.getDefault());
-  }
-
-  public Path toPath(FileType fileType, FileSystem fs) {
-    String fileName = getFullyQualifiedName();
-    // Todo: fix JavaClassType.toPath (possibly implement in Soot Java Bytecode module)
-    //    for a java file the file name of the inner class is the name of outerclass
-    //    e.g., for an inner class org.acme.Foo$Bar, the filename is org/acme/Foo.java
-    //    if (fileType == FileType.JAVA && this.isInnerClass) {
-    //      int idxInnerClassChar = fileName.indexOf("$");
-    //      if (idxInnerClassChar != -1) {
-    //        fileName = fileName.substring(0, idxInnerClassChar);
-    //      }
-    //    }
-    return fs.getPath(fileName.replace('.', '/') + "." + fileType.getExtension());
   }
 
   /** The simple class name. */
