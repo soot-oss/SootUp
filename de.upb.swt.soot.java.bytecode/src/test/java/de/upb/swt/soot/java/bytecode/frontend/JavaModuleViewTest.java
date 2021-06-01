@@ -409,10 +409,9 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Ignore("to implement")
   @Test
   public void testDerivedPrivatePackageProtected() {
-    // TODO: adapt
+    // static vs. dynamic type
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
             .addInputLocation(
@@ -422,17 +421,55 @@ public class JavaModuleViewTest {
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
-    JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
-    Optional<JavaSootClass> aClass = view.getClass(targetClass);
-    assertTrue(aClass.isPresent());
-    fail("test module descriptor/rights");
+    JavaClassType mainClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+    assertTrue(view.getClass(mainClass).isPresent());
+
+    JavaClassType bClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("B", "pkgb", "modb");
+    assertTrue(view.getClass(bClass).isPresent());
+    assertTrue(view.getClass((ModulePackageName) mainClass.getPackageName(), bClass).isPresent());
+
+    JavaClassType dataClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Data", "pkgb", "modb");
+    assertTrue(view.getClass(dataClass).isPresent());
+    assertTrue(
+        view.getClass((ModulePackageName) mainClass.getPackageName(), dataClass).isPresent());
+
+    JavaClassType dataFactoryClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("DataFactory", "pkgb", "modb");
+    assertTrue(view.getClass(dataFactoryClass).isPresent());
+    assertTrue(
+        view.getClass((ModulePackageName) mainClass.getPackageName(), dataFactoryClass)
+            .isPresent());
+
+    JavaClassType internalBHelperClass =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("InternalBHelper", "pkgbinternal", "modb");
+    assertTrue(view.getClass(internalBHelperClass).isPresent());
+    assertFalse(
+        view.getClass((ModulePackageName) mainClass.getPackageName(), internalBHelperClass)
+            .isPresent());
+
+    JavaClassType internalBSuperClass =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("InternalBSuperClass", "pkgbinternal", "modb");
+    assertTrue(view.getClass(internalBSuperClass).isPresent());
+    assertFalse(
+        view.getClass((ModulePackageName) mainClass.getPackageName(), internalBSuperClass)
+            .isPresent());
+
+    JavaClassType InternalDataClass =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("InternalData", "pkgbinternal", "modb");
+    assertTrue(view.getClass(InternalDataClass).isPresent());
+    assertFalse(
+        view.getClass((ModulePackageName) mainClass.getPackageName(), InternalDataClass)
+            .isPresent());
   }
 
-  @Ignore("to implement")
+  @Test
   public void testExceptions() {
-    // TODO: adapt
-
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
             .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "exceptions/jar"))
@@ -440,11 +477,39 @@ public class JavaModuleViewTest {
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
-    JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
-    Optional<JavaSootClass> aClass = view.getClass(targetClass);
-    assertTrue(aClass.isPresent());
-    fail("test module descriptor/rights");
+    JavaClassType mainClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+    assertTrue(view.getClass(mainClass).isPresent());
+
+    JavaClassType exceptionClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("MyException", "pkgb", "modb");
+    assertTrue(view.getClass(exceptionClass).isPresent());
+    assertTrue(
+        view.getClass((ModulePackageName) mainClass.getPackageName(), exceptionClass).isPresent());
+
+    JavaClassType internalExceptionClass =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("MyInternalException", "pkgbinternal", "modb");
+    assertTrue(view.getClass(internalExceptionClass).isPresent());
+    assertFalse(
+        view.getClass((ModulePackageName) mainClass.getPackageName(), internalExceptionClass)
+            .isPresent());
+
+    JavaClassType runtimeExceptionClass =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("MyRuntimeException", "pkgb", "modb");
+    assertTrue(view.getClass(runtimeExceptionClass).isPresent());
+    assertTrue(
+        view.getClass((ModulePackageName) mainClass.getPackageName(), runtimeExceptionClass)
+            .isPresent());
+
+    JavaClassType internalRuntimeExceptionClass =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("MyInternalRuntimeException", "pkgbinternal", "modb");
+    assertTrue(view.getClass(internalRuntimeExceptionClass).isPresent());
+    assertFalse(
+        view.getClass((ModulePackageName) mainClass.getPackageName(), internalRuntimeExceptionClass)
+            .isPresent());
   }
 
   @Ignore("to implement")
@@ -469,7 +534,8 @@ public class JavaModuleViewTest {
   @Test
   @Ignore
   public void testSplitpackageAutomaticModules() {
-    // A module must not require 2 or more modules, which have/export the same package
+    // A module must not require 2 or more modules, which contain the same package - export is *not*
+    // even necessary.
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
             .addInputLocation(
@@ -497,10 +563,10 @@ public class JavaModuleViewTest {
             .getClassType("Version2", "pkgsplitted", "modauto2");
     assertTrue(view.getClass(v2Class).isPresent());
 
-    assertTrue(view.getClass(modmain, v2Class).isPresent());
+    assertTrue(view.getClass(modmain, v1Class).isPresent());
     assertTrue(view.getClass(modmain, v2Class).isPresent());
 
-    fail("thats not how it goes");
+    fail("we should complain about the split package in modules..");
   }
 
   @Ignore("to implement")
@@ -522,10 +588,9 @@ public class JavaModuleViewTest {
     fail("test module descriptor/rights");
   }
 
-  @Ignore("to implement")
+  @Test
   public void testHiddenMain() {
     // i.e. main is in non exported package
-    // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
             .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "hiddenmain/jar"))
@@ -534,10 +599,13 @@ public class JavaModuleViewTest {
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
     JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "java.lang", "java.base");
-    Optional<JavaSootClass> aClass = view.getClass(targetClass);
-    assertTrue(aClass.isPresent());
-    fail("test module descriptor/rights");
+        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+    assertTrue(view.getClass(targetClass).isPresent());
+
+    JavaClassType hiddenMain =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("HiddenMain", "pkgmainhidden", "modmain");
+    assertTrue(view.getClass(hiddenMain).isPresent());
   }
 
   @Test
@@ -561,8 +629,8 @@ public class JavaModuleViewTest {
     JavaClassType aClass = JavaModuleIdentifierFactory.getInstance().getClassType("A", "pkga", "");
     assertTrue(view.getClass(aClass).isPresent());
 
-    assertTrue(view.getClass(mainClass.getPackageName(), aClass).isPresent());
-    assertTrue(view.getClass(aClass.getPackageName(), mainClass).isPresent());
+    assertTrue(view.getClass((ModulePackageName) mainClass.getPackageName(), aClass).isPresent());
+    assertTrue(view.getClass((ModulePackageName) aClass.getPackageName(), mainClass).isPresent());
 
     assertEquals(
         1,
