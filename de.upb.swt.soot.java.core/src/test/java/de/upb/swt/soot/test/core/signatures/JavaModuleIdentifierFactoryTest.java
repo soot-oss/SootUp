@@ -86,7 +86,7 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
     assertNotEquals(packageSignature1, packageSignature2);
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void testModuleInfoSignature() {
     JavaModuleIdentifierFactory typeFactory = JavaModuleIdentifierFactory.getInstance();
     JavaClassType classSignature1 = typeFactory.getClassType("module-info");

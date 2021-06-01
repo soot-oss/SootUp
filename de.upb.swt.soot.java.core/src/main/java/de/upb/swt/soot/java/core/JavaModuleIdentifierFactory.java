@@ -88,6 +88,11 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
 
     String className = ClassUtils.getShortClassName(fullyQualyfiedClassNameWithModule);
     String packageName = ClassUtils.getPackageName(fullyQualyfiedClassNameWithModule);
+
+    if (className.equals(MODULE_INFO_FILE)) {
+      throw new IllegalArgumentException("module-info is not allowed as classname.");
+    }
+
     if (moduleName == null) {
       return getClassType(className, packageName);
     } else {
