@@ -73,7 +73,7 @@ public abstract class JimpleTestSuiteBase {
 
   public SootMethod loadMethod(MethodSignature methodSignature) {
     SootClass<?> clazz = loadClass(methodSignature.getDeclClassType());
-    Optional<? extends SootMethod> m = clazz.getMethod(methodSignature);
+    Optional<? extends SootMethod> m = clazz.getMethod(methodSignature.getSubSignature());
     if (!m.isPresent()) {
       System.out.println("existing methods:");
       clazz.getMethods().forEach(System.out::println);

@@ -79,7 +79,6 @@ import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
@@ -1328,7 +1327,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // create ref to actual method
       JavaClassType bclass =
           JavaIdentifierFactory.getInstance()
-              .getClassType(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME);
+              .getClassType(JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME);
 
       // Generate parameters & returnType & parameterTypes
       List<Type> types = AsmUtil.toJimpleSignatureDesc(insn.desc);
