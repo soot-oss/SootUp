@@ -141,7 +141,7 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
   @Nonnull
   public Optional<? extends SootField> getField(@Nonnull FieldSubSignature subSignature) {
     return this.getFields().stream()
-        .filter(field -> field.getSubSignature().equals(subSignature))
+        .filter(field -> field.getSignature().getSubSignature().equals(subSignature))
         .findAny();
   }
 
@@ -182,7 +182,7 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
   @Nonnull
   public Optional<? extends SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
     return this.getMethods().stream()
-        .filter(method -> method.getSubSignature().equals(subSignature))
+        .filter(method -> method.getSignature().getSubSignature().equals(subSignature))
         .findAny();
   }
 

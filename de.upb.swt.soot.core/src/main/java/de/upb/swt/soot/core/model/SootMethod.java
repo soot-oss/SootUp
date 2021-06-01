@@ -54,8 +54,7 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootMethod extends SootClassMember<MethodSubSignature, MethodSignature>
-    implements Method, Copyable {
+public class SootMethod extends SootClassMember<MethodSignature> implements Method, Copyable {
 
   /**
    * An array of parameter types taken by this <code>SootMethod</code> object, in declaration order.
@@ -98,12 +97,6 @@ public class SootMethod extends SootClassMember<MethodSubSignature, MethodSignat
       throw new ResolveException(
           "Could not resolve a corresponding body for " + getSignature(), Paths.get(""), e);
     }
-  }
-
-  @Nonnull
-  @Override
-  public MethodSubSignature getSubSignature() {
-    return (MethodSubSignature) super.getSubSignature();
   }
 
   /** Returns true if this method is not abstract or native, i.e. this method can have a body. */
@@ -170,7 +163,7 @@ public class SootMethod extends SootClassMember<MethodSubSignature, MethodSignat
   public boolean isMain() {
     return isPublic()
         && isStatic()
-        && getSubSignature().toString().equals("void main(java.lang.String[])");
+        && getSignature().getSubSignature().toString().equals("void main(java.lang.String[])");
   }
 
   /** We rely on the JDK class recognition to decide if a method is JDK method. */
@@ -192,7 +185,7 @@ public class SootMethod extends SootClassMember<MethodSubSignature, MethodSignat
     }
 
     // print returnType + name + ( parameterList )
-    final MethodSubSignature subSignature = getSubSignature();
+    final MethodSubSignature subSignature = getSignature().getSubSignature();
     subSignature.toString(printer);
 
     // Print exceptions
