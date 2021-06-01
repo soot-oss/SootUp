@@ -50,6 +50,8 @@ import javax.annotation.Nonnull;
 public class JavaModuleView extends JavaView {
 
   @Nonnull final HashMap<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
+  // FIXME: [ms] integrate JavaProjectView -> makes this obsolete -> refer to
+  // getModuleInfoAnalysisInputLocation()
   @Nonnull final List<ModuleInfoAnalysisInputLocation> moduleInputLocations;
 
   @Nonnull
@@ -342,12 +344,11 @@ public class JavaModuleView extends JavaView {
           getProject().getInputLocations().stream()
               .filter(input -> !(input instanceof ModuleInfoAnalysisInputLocation))
               .flatMap(
-                  input -> {
-                    return input
-                        .getClassSources(
-                            getIdentifierFactory(), classLoadingOptionsSpecifier.apply(input))
-                        .stream();
-                  });
+                  input ->
+                      input
+                          .getClassSources(
+                              getIdentifierFactory(), classLoadingOptionsSpecifier.apply(input))
+                          .stream());
 
     } else {
       // named module
