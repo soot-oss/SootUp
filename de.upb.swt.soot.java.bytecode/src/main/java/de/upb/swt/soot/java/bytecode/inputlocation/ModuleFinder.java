@@ -183,10 +183,7 @@ public class ModuleFinder {
           }
 
           if (attrs.isDirectory()) {
-            Path moduleInfoFile =
-                JavaModuleIdentifierFactory.MODULE_INFO_CLASS.toPath(
-                    classProvider.getHandledFileType());
-            Path mi = entry.resolve(moduleInfoFile);
+            Path mi = entry.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
             if (Files.exists(mi)) {
               buildModuleForExplodedModule(entry);
             }
@@ -205,10 +202,7 @@ public class ModuleFinder {
     PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.createForClassContainer(dir);
 
-    Path moduleInfoFile =
-        dir.resolve(
-            JavaModuleIdentifierFactory.MODULE_INFO_CLASS.toPath(
-                classProvider.getHandledFileType()));
+    Path moduleInfoFile = dir.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
     if (!Files.exists(moduleInfoFile) && !Files.isRegularFile(moduleInfoFile)) {
       return;
     }
@@ -233,10 +227,7 @@ public class ModuleFinder {
     Path mi;
     try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");
-      mi =
-          archiveRoot.resolve(
-              JavaModuleIdentifierFactory.MODULE_INFO_CLASS.toPath(
-                  classProvider.getHandledFileType(), zipFileSystem));
+      mi = archiveRoot.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
 
       if (Files.exists(mi)) {
         // hint: performance - i guess we can load the JavaModuleInfo on demand

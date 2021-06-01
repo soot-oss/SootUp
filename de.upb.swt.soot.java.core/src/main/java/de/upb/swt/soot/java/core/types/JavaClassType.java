@@ -27,7 +27,6 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -58,7 +57,7 @@ public class JavaClassType extends ClassType {
    */
   public JavaClassType(@Nonnull final String className, @Nonnull final PackageName packageName) {
     String realClassName = className;
-    // TODO: [ms] shall we do that inner class conversion here?
+    // TODO: [ms] we shouldnt do that inner class conversion here? -> IdentifierFactory
     if (realClassName.contains(".")) {
       realClassName = realClassName.replace('.', '$');
     }
@@ -129,10 +128,6 @@ public class JavaClassType extends ClassType {
     //      }
     //    }
     return fs.getPath(fileName.replace('.', '/') + "." + fileType.getExtension());
-  }
-
-  public boolean isModuleInfo() {
-    return this.className.equals(JavaModuleIdentifierFactory.MODULE_INFO_CLASS.className);
   }
 
   /** The simple class name. */

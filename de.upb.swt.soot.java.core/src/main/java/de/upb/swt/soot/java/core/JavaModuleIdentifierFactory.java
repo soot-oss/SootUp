@@ -25,7 +25,7 @@ package de.upb.swt.soot.java.core;
 import de.upb.swt.soot.core.signatures.*;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
-import de.upb.swt.soot.java.core.types.JavaClassType;
+import de.upb.swt.soot.java.core.types.ModuleJavaClassType;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -36,8 +36,7 @@ import org.apache.commons.lang3.ClassUtils;
 
 public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
 
-  public static final JavaClassType MODULE_INFO_CLASS =
-      new JavaClassType("module-info", PackageName.DEFAULT_PACKAGE);
+  public static final String MODULE_INFO_FILE = "module-info";
 
   private static final Map<String, ModuleSignature> modules = new HashMap<>();
 
@@ -56,7 +55,8 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
 
   public static JavaModuleIdentifierFactory getInstance(@Nonnull ModuleSignature moduleSignature) {
     return moduleIdentifierFactoryWrapper.computeIfAbsent(
-        moduleSignature, methodSignature -> new IdentifierFactoryWrapper(moduleSignature));
+        moduleSignature,
+        methodSignature -> new JavaModuleIdentifierFactoryWrapper(moduleSignature));
   }
 
   static {
@@ -71,12 +71,12 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
   }
 
   @Override
-  public JavaClassType getClassType(final String className, final String packageName) {
+  public ModuleJavaClassType getClassType(final String className, final String packageName) {
     return getClassType(className, packageName, ModuleSignature.UNNAMED_MODULE.getModuleName());
   }
 
   @Override
-  public JavaClassType getClassType(String fullyQualyfiedClassNameWithModule) {
+  public ModuleJavaClassType getClassType(String fullyQualyfiedClassNameWithModule) {
 
     int moduleSplit = fullyQualyfiedClassNameWithModule.indexOf('/');
     String moduleName = null;
@@ -107,20 +107,20 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
    * @throws NullPointerException if the given module name or package name is null. Use the empty
    *     string to denote the unnamed module or the default package.
    */
-  public JavaClassType getClassType(
+  public ModuleJavaClassType getClassType(
       final @Nonnull String className,
       final @Nonnull String packageName,
       final @Nonnull String moduleName) {
-    PackageName packageIdentifier = getPackageName(packageName, moduleName);
-    return new JavaClassType(className, packageIdentifier);
+    ModulePackageName packageIdentifier = getPackageName(packageName, moduleName);
+    return new ModuleJavaClassType(className, packageIdentifier);
   }
 
-  public JavaClassType getClassType(
+  public ModuleJavaClassType getClassType(
       final @Nonnull String className,
       final @Nonnull String packageName,
       final @Nonnull ModuleSignature moduleSignature) {
-    PackageName packageIdentifier = getPackageName(packageName, moduleSignature);
-    return new JavaClassType(className, packageIdentifier);
+    ModulePackageName packageIdentifier = getPackageName(packageName, moduleSignature);
+    return new ModuleJavaClassType(className, packageIdentifier);
   }
 
   /**
@@ -184,16 +184,16 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
   }
 
   /** Wrapper which refers to a given ModuleSignature when building stuff */
-  private static class IdentifierFactoryWrapper extends JavaModuleIdentifierFactory {
+  private static class JavaModuleIdentifierFactoryWrapper extends JavaModuleIdentifierFactory {
 
     @Nonnull private final ModuleSignature moduleSignature;
 
-    private IdentifierFactoryWrapper(@Nonnull ModuleSignature moduleSignature) {
+    private JavaModuleIdentifierFactoryWrapper(@Nonnull ModuleSignature moduleSignature) {
       this.moduleSignature = moduleSignature;
     }
 
     @Override
-    public JavaClassType getClassType(String fullyQualifiedClassName) {
+    public ModuleJavaClassType getClassType(String fullyQualifiedClassName) {
       int moduleSplitPos = fullyQualifiedClassName.indexOf('/');
       ModuleSignature moduleSig;
       if (moduleSplitPos >= 0) {
@@ -221,7 +221,7 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
 
     @Override
     @Nonnull
-    public JavaClassType fromPath(@Nonnull Path file) {
+    public ModuleJavaClassType fromPath(@Nonnull Path file) {
       String fullyQualifiedName = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
       String packageName = "";
       int index = fullyQualifiedName.lastIndexOf(".");

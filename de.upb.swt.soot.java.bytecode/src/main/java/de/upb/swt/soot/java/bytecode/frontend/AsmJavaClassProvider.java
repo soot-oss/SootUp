@@ -28,6 +28,7 @@ import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -60,7 +61,7 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
     }
 
     JavaClassType klassType = (JavaClassType) classType;
-    if (klassType.isModuleInfo()) {
+    if (klassType.getClassName().equals(JavaModuleIdentifierFactory.MODULE_INFO_FILE)) {
       throw new ResolveException(
           "Can not create ClassSource from a module info descriptor!", sourcePath);
     } else {

@@ -90,7 +90,6 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
   public void testModuleInfoSignature() {
     JavaModuleIdentifierFactory typeFactory = JavaModuleIdentifierFactory.getInstance();
     JavaClassType classSignature1 = typeFactory.getClassType("module-info");
-    assertTrue(classSignature1.isModuleInfo());
   }
 
   @Test

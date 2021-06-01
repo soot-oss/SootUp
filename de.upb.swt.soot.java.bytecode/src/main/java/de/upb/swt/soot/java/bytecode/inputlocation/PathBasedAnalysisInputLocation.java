@@ -101,7 +101,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       @Nonnull ClassProvider<JavaSootClass> classProvider) {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
-      final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_CLASS + ".class";
+      final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
       return Files.walk(dirPath)
           .filter(
               filePath ->

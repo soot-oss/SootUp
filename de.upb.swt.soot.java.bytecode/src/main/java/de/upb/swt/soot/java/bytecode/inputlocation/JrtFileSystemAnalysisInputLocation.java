@@ -126,7 +126,7 @@ public class JrtFileSystemAnalysisInputLocation
     ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
 
     String moduleInfoFilename =
-        JavaModuleIdentifierFactory.MODULE_INFO_CLASS
+        JavaModuleIdentifierFactory.MODULE_INFO_FILE
             + "."
             + classProvider.getHandledFileType().getExtension();
 
@@ -178,7 +178,7 @@ public class JrtFileSystemAnalysisInputLocation
   public Collection<ModuleSignature> discoverModules() {
     if (!isResolved) {
       final Path moduleRoot = theFileSystem.getPath("modules");
-      final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_CLASS + ".class";
+      final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
       try (DirectoryStream<Path> stream = Files.newDirectoryStream(moduleRoot)) {
         {
           for (Path entry : stream) {
