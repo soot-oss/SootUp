@@ -42,8 +42,9 @@ public class InheritDataWithProtectedMethodTest extends JavaTypeHierarchyTestBas
     SootMethod sootMethod =
         sootClass
             .getMethod(
-                identifierFactory.getMethodSignature(
-                    "method", sootClassType, "void", Collections.emptyList()))
+                identifierFactory
+                    .getMethodSignature("method", sootClassType, "void", Collections.emptyList())
+                    .getSubSignature())
             .get();
     Body body = sootMethod.getBody();
     assertNotNull(body);

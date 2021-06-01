@@ -28,7 +28,6 @@ import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
@@ -114,8 +113,13 @@ public final class JNewArrayExpr implements Expr, Copyable {
     return sizeBox.getValue();
   }
 
-  /** Returns a list of type Value, contains a list of values with size */
+  /**
+   * Returns a list of type Value, contains a list of values with size
+   *
+   * @return
+   */
   @Override
+  @Nonnull
   public final List<Value> getUses() {
     List<Value> uses = new ArrayList<>(size.getUses());
     uses.add(size);
@@ -123,14 +127,15 @@ public final class JNewArrayExpr implements Expr, Copyable {
   }
 
   /** Returns an instance of ArrayType(). */
+  @Nonnull
   @Override
   public Type getType() {
     return simplify(baseType, identifierFactory);
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseNewArrayExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseNewArrayExpr(this);
   }
 
   @Nonnull
