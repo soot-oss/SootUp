@@ -22,11 +22,10 @@ package de.upb.swt.soot.core.model;
  * #L%
  */
 
+import com.google.common.collect.Iterables;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.signatures.FieldSignature;
-import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.signatures.MethodSubSignature;
-import de.upb.swt.soot.core.signatures.Signature;
+import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.signatures.*;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import java.util.Optional;
@@ -42,40 +41,82 @@ import javax.annotation.Nonnull;
  */
 public abstract class AbstractClass<T extends AbstractClassSource<?>> {
 
-  protected final T classSource;
+  @Nonnull protected final T classSource;
 
-  public AbstractClass(T cs) {
+  public AbstractClass(@Nonnull T cs) {
     this.classSource = cs;
   }
 
+  @Nonnull
   public T getClassSource() {
     return classSource;
   }
 
+  @Nonnull
   public abstract String getName();
 
+  @Nonnull
   public abstract Type getType();
 
   @Nonnull
-  public Optional<? extends Method> getMethod(@Nonnull MethodSignature signature) {
-    return this.getMethods().stream().filter(m -> m.getSignature().equals(signature)).findAny();
-  }
+  public abstract Set<? extends SootField> getFields();
 
   @Nonnull
-  public Optional<? extends Method> getMethod(@Nonnull MethodSubSignature subSignature) {
+  public abstract Set<? extends SootMethod> getMethods();
+
+  /**
+   * Attempts to retrieve the method with the given subSignature. This method may throw an
+   * AmbiguousStateException if there are more than one method with the given subSignature. If no
+   * method with the given is found, null is returned.
+   */
+  @Nonnull
+  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
     return getMethods().stream()
-        .filter(m -> m.getSignature().getSubSignature().equals(subSignature))
+        .filter(method -> method.getSubSignature().equals(subSignature))
         .findAny();
   }
 
+  /** Attemtps to retrieve the field with the given FieldSubSignature. */
   @Nonnull
-  public abstract Set<? extends Method> getMethods();
-
-  @Nonnull
-  public Optional<? extends Field> getField(@Nonnull FieldSignature signature) {
-    return this.getFields().stream().filter(f -> f.getSignature().equals(signature)).findAny();
+  public Optional<? extends SootField> getField(@Nonnull FieldSubSignature subSignature) {
+    return getFields().stream()
+        .filter(f -> f.getSignature().getSubSignature().equals(subSignature))
+        .findAny();
   }
 
+  /**
+   * Returns the field of this class with the given name. Throws a ResolveException if there is more
+   * than one field with the given name. Returns null if no field with the given name exists.
+   */
   @Nonnull
-  public abstract Set<? extends Field> getFields();
+  public Optional<? extends SootField> getField(@Nonnull String name) {
+    return getFields().stream()
+        .filter(field -> field.getSignature().getName().equals(name))
+        .reduce(
+            (l, r) -> {
+              throw new ResolveException(
+                  "ambiguous field: " + name + " in " + getClassSource().getClassType(),
+                  getClassSource().getSourcePath());
+            });
+  }
+
+  /**
+   * Attempts to retrieve the method with the given name and parameters. This method may throw an
+   * ResolveException if there is more than one method with the given name and parameter.
+   */
+  @Nonnull
+  public Optional<? extends SootMethod> getMethod(
+      @Nonnull String name, @Nonnull Iterable<? extends Type> parameterTypes) {
+    return this.getMethods().stream()
+        .filter(
+            method ->
+                method.getSignature().getName().equals(name)
+                    && Iterables.elementsEqual(parameterTypes, method.getParameterTypes()))
+        .reduce(
+            (l, r) -> {
+              throw new ResolveException(
+                  "ambiguous method: " + name + " in " + getClassSource().getClassType(),
+                  getClassSource().getSourcePath());
+            });
+  }
 }

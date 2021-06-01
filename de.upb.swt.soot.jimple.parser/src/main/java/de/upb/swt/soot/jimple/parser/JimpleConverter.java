@@ -613,7 +613,8 @@ public class JimpleConverter {
             MethodSignature bootstrapMethodRef =
                 identifierFactory.getMethodSignature(
                     ctx.unnamed_method_name.getText(),
-                    identifierFactory.getClassType(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
+                    identifierFactory.getClassType(
+                        JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
                     util.getType(ctx.name.getText()),
                     bootstrapMethodRefParams);
 

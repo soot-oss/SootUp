@@ -44,9 +44,9 @@ public class MethodOverloadingTest extends MinimalBytecodeTestSuiteBase {
     assertJimpleStmts(method, expectedBodyStmts1());
 
     SootClass sootClass = loadClass(getDeclaredClassSignature());
-    assertTrue(sootClass.getMethod(getMethodSignature()).isPresent());
-    assertTrue(sootClass.getMethod(getMethodSignatureSingleParam()).isPresent());
-    assertTrue(sootClass.getMethod(getMethodSignatureInit()).isPresent());
+    assertTrue(sootClass.getMethod(getMethodSignature().getSubSignature()).isPresent());
+    assertTrue(sootClass.getMethod(getMethodSignatureSingleParam().getSubSignature()).isPresent());
+    assertTrue(sootClass.getMethod(getMethodSignatureInit().getSubSignature()).isPresent());
     assertEquals(3, sootClass.getMethods().size());
   }
 
