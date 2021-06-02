@@ -792,7 +792,26 @@ public class JavaModuleViewTest {
 
   @Test
   @Ignore
-  public void testEqualModuleSignaturesInInputLocations() {
-    // TODO: implement test
+  public void testEqualModuleSignaturesInInputLocations() {}
+
+  @Test
+  public void testEqualModulePath() {
+    JavaProject p =
+        JavaProject.builder(new JavaLanguage(9))
+            .addInputLocation(
+                new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar"))
+            .addInputLocation(
+                new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar"))
+            .build();
+
+    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+
+    ModulePackageName modMain =
+        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
+    ModuleJavaClassType targetClassMain =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+    assertTrue(view.getClass(modMain, targetClassMain).isPresent());
+    // should we detect that in general? it doenst lead to errors.. just unnecessary overhead while
+    // resolving..
   }
 }

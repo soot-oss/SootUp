@@ -362,7 +362,7 @@ public class JavaModuleView extends JavaView {
                                           ((ModulePackageName) cs.getClassType().getPackageName())
                                               .getModuleSignature()));
                         }),
-                getProject().getInputLocations().stream()
+                getProject().getModuleInfoAnalysisInputLocation().stream()
                     .flatMap(
                         input -> {
                           // modulepath
