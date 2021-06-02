@@ -24,7 +24,6 @@ package de.upb.swt.soot.core.model;
 
 import com.google.common.collect.Iterables;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.signatures.*;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.signatures.*;
 import de.upb.swt.soot.core.types.Type;
@@ -105,7 +104,6 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
    * Attempts to retrieve the method with the given name and parameters. This method may throw an
    * ResolveException if there is more than one method with the given name and parameter.
    */
-}
   public Optional<? extends SootMethod> getMethod(
       @Nonnull String name, @Nonnull Iterable<? extends Type> parameterTypes) {
     return this.getMethods().stream()
@@ -120,3 +118,4 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
                   getClassSource().getSourcePath());
             });
   }
+};

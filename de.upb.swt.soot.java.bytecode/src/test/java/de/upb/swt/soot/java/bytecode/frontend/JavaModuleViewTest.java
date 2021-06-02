@@ -48,13 +48,10 @@ public class JavaModuleViewTest {
     assertFalse(view.getClass(notExistingModule).isPresent());
 
     Optional<JavaModuleInfo> moduleDescriptor =
-        view.getModuleInfo(((ModulePackageName) targetClass.getPackageName()).getModuleSignature());
+        view.getModuleInfo(targetClass.getPackageName().getModuleSignature());
     assertTrue(moduleDescriptor.isPresent());
 
-    int size =
-        view.getModuleClasses(
-                ((ModulePackageName) targetClass.getPackageName()).getModuleSignature())
-            .size();
+    int size = view.getModuleClasses(targetClass.getPackageName().getModuleSignature()).size();
     assertTrue(
         "actual: " + size,
         size > 5500
@@ -318,40 +315,28 @@ public class JavaModuleViewTest {
     assertTrue(biClassOpt.isPresent());
 
     Optional<JavaModuleInfo> moduleInfoOpt =
-        view.getModuleInfo(((ModulePackageName) bClass.getPackageName()).getModuleSignature());
+        view.getModuleInfo(bClass.getPackageName().getModuleSignature());
     assertTrue(moduleInfoOpt.isPresent());
     // is it open
     assertTrue(
         moduleInfoOpt.get().opens().stream()
             .filter(pckg -> pckg.getPackageName() == bClass.getPackageName())
-            .anyMatch(
-                o ->
-                    o.appliesTo(
-                        ((ModulePackageName) mainClass.getPackageName()).getModuleSignature())));
+            .anyMatch(o -> o.appliesTo(mainClass.getPackageName().getModuleSignature())));
     assertFalse(
         moduleInfoOpt.get().opens().stream()
             .filter(pckg -> pckg.getPackageName() == b1Class.getPackageName())
-            .anyMatch(
-                o ->
-                    o.appliesTo(
-                        ((ModulePackageName) mainClass.getPackageName()).getModuleSignature())));
+            .anyMatch(o -> o.appliesTo(mainClass.getPackageName().getModuleSignature())));
     assertTrue(
         moduleInfoOpt.get().opens().stream()
             .filter(pckg -> pckg.getPackageName() == biClass.getPackageName())
-            .anyMatch(
-                o ->
-                    o.appliesTo(
-                        ((ModulePackageName) mainClass.getPackageName()).getModuleSignature())));
+            .anyMatch(o -> o.appliesTo(mainClass.getPackageName().getModuleSignature())));
 
     // even if a module can access itself this returns false as this implicit rule is not explicitly
     // stated in the module-descriptor
     assertFalse(
         moduleInfoOpt.get().opens().stream()
             .filter(pckg -> pckg.getPackageName() == b1Class.getPackageName())
-            .anyMatch(
-                o ->
-                    o.appliesTo(
-                        ((ModulePackageName) mainClass.getPackageName()).getModuleSignature())));
+            .anyMatch(o -> o.appliesTo(mainClass.getPackageName().getModuleSignature())));
   }
 
   @Test
@@ -369,30 +354,42 @@ public class JavaModuleViewTest {
     Optional<JavaSootClass> mainModmainClass = view.getClass(mainModmainSig);
     assertTrue(mainModmainClass.isPresent());
 
+    ModuleJavaClassType serviceDefSig =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("IService", "myservice", "modservicedefinition");
+    Optional<JavaSootClass> serviceDefClass = view.getClass(serviceDefSig);
+    assertTrue(serviceDefClass.isPresent());
+    Optional<JavaSootClass> serviceDefAccessClass =
+        view.getClass(mainModmainSig.getPackageName(), serviceDefSig);
+    assertTrue(serviceDefAccessClass.isPresent());
+    assertEquals(serviceDefAccessClass.get(), serviceDefClass.get());
+
     ModuleJavaClassType serviceImplSig =
         JavaModuleIdentifierFactory.getInstance()
             .getClassType("ServiceImpl", "com.service.impl", "modservice.impl.com");
     Optional<JavaSootClass> serviceImplClass = view.getClass(serviceImplSig);
     assertTrue(serviceImplClass.isPresent());
+    Optional<JavaSootClass> serviceImplAccessClass =
+        view.getClass(mainModmainSig.getPackageName(), serviceImplSig);
+    assertTrue(serviceImplAccessClass.isPresent());
+    assertEquals(serviceImplAccessClass.get(), serviceImplClass.get());
 
     ModuleJavaClassType serviceImplNetSig =
         JavaModuleIdentifierFactory.getInstance()
             .getClassType("ServiceImpl", "net.service.impl", "modservice.impl.net");
     Optional<JavaSootClass> serviceImplNetClass = view.getClass(serviceImplNetSig);
     assertTrue(serviceImplNetClass.isPresent());
+    Optional<JavaSootClass> serviceImplNetAccessClass =
+        view.getClass(mainModmainSig.getPackageName(), serviceImplNetSig);
+    assertTrue(serviceImplNetAccessClass.isPresent());
+    assertEquals(serviceImplNetAccessClass.get(), serviceImplNetClass.get());
+    assertNotEquals(serviceImplNetClass.get(), serviceImplClass.get());
 
-    ModuleJavaClassType serviceDefSig =
-        JavaModuleIdentifierFactory.getInstance()
-            .getClassType("IService", "myservice", "modservicedefinition");
-    Optional<JavaSootClass> serviceDefClass = view.getClass(serviceDefSig);
-    assertTrue(serviceDefClass.isPresent());
-
-    view.getModuleInfo(((ModulePackageName) mainModmainSig.getPackageName()).getModuleSignature());
+    view.getModuleInfo(mainModmainSig.getPackageName().getModuleSignature());
   }
 
   @Test
   public void testUsesProvideInClient() {
-    // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
             .addInputLocation(
@@ -401,31 +398,37 @@ public class JavaModuleViewTest {
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
-
-    ModuleJavaClassType mainClass =
+    ModuleJavaClassType mainModmainSig =
         JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
-    assertTrue(view.getClass(mainClass).isPresent());
+    Optional<JavaSootClass> mainModmainClass = view.getClass(mainModmainSig);
+    assertTrue(mainModmainClass.isPresent());
 
-    ModuleJavaClassType bClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("B", "pkgb", "modb");
-    assertTrue(view.getClass(bClass).isPresent());
-    assertTrue(view.getClass(mainClass.getPackageName(), bClass).isPresent());
-
-    ModuleJavaClassType serviceImplClass =
+    ModuleJavaClassType serviceImplSig =
         JavaModuleIdentifierFactory.getInstance()
             .getClassType("ServiceImpl", "com.service.impl", "modservice.impl.com");
-    assertTrue(view.getClass(serviceImplClass).isPresent());
-    assertTrue(view.getClass(mainClass.getPackageName(), serviceImplClass).isPresent());
+    Optional<JavaSootClass> serviceImplClass = view.getClass(serviceImplSig);
+    assertTrue(serviceImplClass.isPresent());
+    Optional<JavaSootClass> serviceImplAccessClass = view.getClass(serviceImplSig);
+    assertTrue(serviceImplAccessClass.isPresent());
+    assertEquals(serviceImplAccessClass.get(), serviceImplClass.get());
 
-    ModuleJavaClassType serviceImplNetClass =
+    ModuleJavaClassType serviceImplNetSig =
         JavaModuleIdentifierFactory.getInstance()
             .getClassType("ServiceImpl", "net.service.impl", "modservice.impl.net");
-    assertTrue(view.getClass(serviceImplNetClass).isPresent());
-    assertTrue(view.getClass(mainClass.getPackageName(), serviceImplNetClass).isPresent());
+    Optional<JavaSootClass> serviceImplNetClass = view.getClass(serviceImplNetSig);
+    assertTrue(serviceImplNetClass.isPresent());
+    Optional<JavaSootClass> serviceImplNetAccessClass = view.getClass(serviceImplNetSig);
+    assertTrue(serviceImplNetAccessClass.isPresent());
+    assertEquals(serviceImplNetAccessClass.get(), serviceImplNetClass.get());
+    assertNotEquals(serviceImplNetClass.get(), serviceImplClass.get());
 
-    assertNotEquals(serviceImplNetClass, serviceImplClass);
+    ModuleJavaClassType serviceDefSig =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("IService", "myservice", "modservicedefinition");
+    Optional<JavaSootClass> serviceDefClass = view.getClass(serviceDefSig);
+    assertTrue(serviceDefClass.isPresent());
 
-    fail("test module descriptor/rights");
+    view.getModuleInfo(mainModmainSig.getPackageName().getModuleSignature());
   }
 
   @Test
@@ -637,14 +640,8 @@ public class JavaModuleViewTest {
     assertTrue(view.getClass(mainClass.getPackageName(), aClass).isPresent());
     assertTrue(view.getClass(aClass.getPackageName(), mainClass).isPresent());
 
-    assertEquals(
-        1,
-        view.getModuleClasses(((ModulePackageName) mainClass.getPackageName()).getModuleSignature())
-            .size());
-    assertEquals(
-        1,
-        view.getModuleClasses(((ModulePackageName) aClass.getPackageName()).getModuleSignature())
-            .size());
+    assertEquals(1, view.getModuleClasses(mainClass.getPackageName().getModuleSignature()).size());
+    assertEquals(1, view.getModuleClasses(aClass.getPackageName().getModuleSignature()).size());
   }
 
   @Test

@@ -43,12 +43,12 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
 
-  @Nonnull private final Project<T, ? extends View<T>> project;
+  @Nonnull private final Project<? extends T, ? extends View<T>> project;
 
   @Nonnull private final Map<ModuleDataKey<?>, Object> moduleData = new HashMap<>();
 
-  public AbstractView(@Nonnull Project<T, ? extends View<T>> project) {
-    this.project = (Project<T, ? extends View<T>>) project;
+  public AbstractView(@Nonnull Project<? extends T, ? extends View<T>> project) {
+    this.project = project;
   }
 
   @Override
@@ -60,8 +60,8 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
   @Override
   @Nonnull
   public Optional<Scope> getScope() {
-    // TODO Auto-generated methodRef stub
-    return null;
+    // TODO implement scope
+    throw new UnsupportedOperationException("not implemented yet");
   }
 
   /**
@@ -90,25 +90,7 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
   }
 
   @Nonnull
-  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
-    final Optional<T> aClass = getClass(signature.getDeclClassType());
-    if (!aClass.isPresent()) {
-      return Optional.empty();
-    }
-    return aClass.get().getMethod(signature.getSubSignature());
-  }
-
-  @Nonnull
-  public Optional<? extends SootField> getField(@Nonnull FieldSignature signature) {
-    final Optional<T> aClass = getClass(signature.getDeclClassType());
-    if (!aClass.isPresent()) {
-      return Optional.empty();
-    }
-    return aClass.get().getField(signature.getSubSignature());
-  }
-
-  @Nonnull
-  public Project<T, ? extends View<T>> getProject() {
+  public Project<? extends T, ? extends View<T>> getProject() {
     return project;
   }
 

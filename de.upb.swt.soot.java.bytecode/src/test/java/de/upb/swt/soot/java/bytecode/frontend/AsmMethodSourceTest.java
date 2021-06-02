@@ -20,7 +20,6 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class AsmMethodSourceTest {
 
-  @Ignore // FIXME
   @Test
   @Ignore("FIXME")
   public void testFix_StackUnderrun_convertPutFieldInsn_init() {

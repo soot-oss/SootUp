@@ -15,7 +15,7 @@ public class JavaModuleProject extends JavaProject {
 
   public JavaModuleProject(
       JavaLanguage language,
-      @Nonnull List<AnalysisInputLocation<JavaSootClass>> inputLocations,
+      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
       @Nonnull List<ModuleInfoAnalysisInputLocation> moduleInputLocations,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     super(language, inputLocations, sourceTypeSpecifier);
@@ -37,7 +37,7 @@ public class JavaModuleProject extends JavaProject {
   @Override
   public JavaModuleView createOnDemandView(
       @Nonnull
-          Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
     return new JavaModuleView(this, classLoadingOptionsSpecifier);
   }

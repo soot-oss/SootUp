@@ -55,10 +55,10 @@ public class JavaModuleView extends JavaView {
   @Nonnull final List<ModuleInfoAnalysisInputLocation> moduleInputLocations;
 
   @Nonnull
-  protected Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
+  protected Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
       classLoadingOptionsSpecifier;
 
-  public JavaModuleView(@Nonnull Project<? extends JavaView, JavaSootClass> project) {
+  public JavaModuleView(@Nonnull Project<? extends JavaSootClass, ? extends JavaView> project) {
     this(project, analysisInputLocation -> EmptyClassLoadingOptions.Default);
   }
 
@@ -70,9 +70,9 @@ public class JavaModuleView extends JavaView {
    *     options.
    */
   public JavaModuleView(
-      @Nonnull Project<? extends JavaView, JavaSootClass> project,
+      @Nonnull Project<? extends JavaSootClass, ? extends JavaView> project,
       @Nonnull
-          Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
@@ -87,6 +87,7 @@ public class JavaModuleView extends JavaView {
             .collect(Collectors.toList());
   }
 
+  @Nonnull
   @Override
   public JavaModuleIdentifierFactory getIdentifierFactory() {
     return JavaModuleIdentifierFactory.getInstance();
@@ -152,7 +153,7 @@ public class JavaModuleView extends JavaView {
 
   @Override
   @Nonnull
-  protected Optional<? extends AbstractClassSource<JavaSootClass>> getAbstractClass(
+  protected Optional<? extends AbstractClassSource<? extends JavaSootClass>> getAbstractClass(
       @Nonnull ClassType type) {
 
     // search at first in modules for a class and second on the classpath
@@ -336,7 +337,7 @@ public class JavaModuleView extends JavaView {
       return Collections.emptyList();
     }
 
-    Stream<? extends AbstractClassSource<JavaSootClass>> stream;
+    Stream<? extends AbstractClassSource<? extends JavaSootClass>> stream;
     JavaModuleInfo moduleInfo = startOpt.get();
     if (moduleInfo.isUnnamedModule()) {
       // unnamed module

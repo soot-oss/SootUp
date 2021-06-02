@@ -57,7 +57,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
       classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link JavaView} class. */
-  public JavaView(@Nonnull Project<JavaSootClass, ? extends JavaView> project) {
+  public JavaView(@Nonnull Project<? extends JavaSootClass, ? extends JavaView> project) {
     this(project, analysisInputLocation -> EmptyClassLoadingOptions.Default);
   }
 
@@ -92,7 +92,8 @@ public class JavaView extends AbstractView<JavaSootClass> {
       return Optional.of(cachedClass);
     }
 
-    Optional<? extends AbstractClassSource<JavaSootClass>> abstractClass = getAbstractClass(type);
+    Optional<? extends AbstractClassSource<? extends JavaSootClass>> abstractClass =
+        getAbstractClass(type);
     if (!abstractClass.isPresent()) {
       return Optional.empty();
     }
@@ -101,7 +102,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
   }
 
   @Nonnull
-  protected Optional<? extends AbstractClassSource<JavaSootClass>> getAbstractClass(
+  protected Optional<? extends AbstractClassSource<? extends JavaSootClass>> getAbstractClass(
       @Nonnull ClassType type) {
     return getProject().getInputLocations().stream()
         .map(
