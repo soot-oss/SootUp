@@ -245,6 +245,9 @@ public interface IdentifierFactory {
   @Nonnull
   Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName);
 
+  @Nonnull
+  ClassType getBoxedType(@Nonnull PrimitiveType primitiveType);
+
   /**
    * Gets the array type.
    *

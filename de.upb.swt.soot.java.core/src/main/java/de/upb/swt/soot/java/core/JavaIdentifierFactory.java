@@ -192,6 +192,15 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   }
 
   @Override
+  @Nonnull
+  public JavaClassType getBoxedType(@Nonnull PrimitiveType primitiveType) {
+    String name = primitiveType.getName();
+    StringBuilder boxedname = new StringBuilder(name);
+    boxedname.setCharAt(0, Character.toUpperCase(boxedname.charAt(0)));
+    return getClassType(boxedname.toString(), "java.lang");
+  }
+
+  @Override
   public ArrayType getArrayType(Type baseType, int dim) {
     return new ArrayType(baseType, dim);
   }
