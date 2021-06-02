@@ -66,6 +66,7 @@ public class JavaModuleViewTest {
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     "../shared-test-resources/miniTestSuite/java6/binary/"))
+            .enableModules()
             .build();
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
@@ -340,6 +341,7 @@ public class JavaModuleViewTest {
   }
 
   @Test
+  @Ignore("finish")
   public void testUsesProvide() {
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
@@ -625,6 +627,7 @@ public class JavaModuleViewTest {
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     testPath + "unnamed-module_access-from-automatic-module/jar/cpa.jar"))
+            .enableModules()
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();

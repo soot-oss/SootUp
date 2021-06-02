@@ -30,7 +30,6 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
-import de.upb.swt.soot.java.core.views.JavaModuleView;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +54,7 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
   @Nonnull
   @Override
   public JavaView createOnDemandView() {
-    return getLanguage().getVersion() < 9 ? new JavaView(this) : new JavaModuleView(this);
+    return new JavaView(this);
   }
 
   @Nonnull
@@ -64,9 +63,7 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
       @Nonnull
           Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
-    return getLanguage().getVersion() < 9
-        ? new JavaView(this, classLoadingOptionsSpecifier)
-        : new JavaModuleView(this, classLoadingOptionsSpecifier);
+    return new JavaView(this, classLoadingOptionsSpecifier);
   }
 
   @Nonnull
@@ -96,9 +93,12 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
   public static class JavaProjectBuilder {
     private final List<AnalysisInputLocation<? extends JavaSootClass>> analysisInputLocations =
         new ArrayList<>();
+    private final List<ModuleInfoAnalysisInputLocation> moduleAnalysisInputLocations =
+        new ArrayList<>();
 
     private SourceTypeSpecifier sourceTypeSpecifier = DefaultSourceTypeSpecifier.getInstance();
     private final JavaLanguage language;
+    private boolean useModules = false;
 
     public JavaProjectBuilder(JavaLanguage language) {
       this.language = language;
@@ -121,13 +121,30 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
     public JavaProjectBuilder addInputLocation(
         ModuleInfoAnalysisInputLocation analysisInputLocation) {
       Preconditions.checkArgument(language.getVersion() > 8);
-      this.analysisInputLocations.add(analysisInputLocation);
+      useModules = true;
+      this.moduleAnalysisInputLocations.add(analysisInputLocation);
+      return this;
+    }
+
+    @Nonnull
+    /**
+     * if no ModuleAnalysisInputLocation is given but the analysis should use JavaModules for
+     * resolving anyway
+     */
+    public JavaProjectBuilder enableModules() {
+      ;
+      useModules = true;
       return this;
     }
 
     @Nonnull
     public JavaProject build() {
-      return new JavaProject(language, analysisInputLocations, sourceTypeSpecifier);
+      if (useModules) {
+        return new JavaModuleProject(
+            language, analysisInputLocations, moduleAnalysisInputLocations, sourceTypeSpecifier);
+      } else {
+        return new JavaProject(language, analysisInputLocations, sourceTypeSpecifier);
+      }
     }
   }
 }

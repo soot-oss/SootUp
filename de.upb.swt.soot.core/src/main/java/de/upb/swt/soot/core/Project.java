@@ -83,7 +83,7 @@ public abstract class Project<S extends SootClass<?>, V extends View<S>> {
         Collections.unmodifiableList(new ArrayList<>(inputLocations));
 
     if (unmodifiableInputLocations.isEmpty()) {
-      throw new IllegalArgumentException("The inputLocations collection must not be empty.");
+      //  throw new IllegalArgumentException("The inputLocations collection must not be empty.");
     }
 
     this.sourceTypeSpecifier = sourceTypeSpecifier;
