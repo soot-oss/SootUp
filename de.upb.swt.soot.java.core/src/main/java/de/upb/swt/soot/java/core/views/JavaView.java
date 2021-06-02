@@ -55,11 +55,11 @@ public class JavaView extends AbstractView<JavaSootClass> {
   private volatile boolean isFullyResolved = false;
 
   @Nonnull
-  protected Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
+  protected Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
       classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link JavaView} class. */
-  public JavaView(@Nonnull Project<JavaView, JavaSootClass> project) {
+  public JavaView(@Nonnull Project<JavaSootClass, JavaView> project) {
     this(project, analysisInputLocation -> null);
   }
 
@@ -71,9 +71,9 @@ public class JavaView extends AbstractView<JavaSootClass> {
    *     options.
    */
   public JavaView(
-      @Nonnull Project<JavaView, JavaSootClass> project,
+      @Nonnull Project<JavaSootClass, JavaView> project,
       @Nonnull
-          Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
@@ -99,7 +99,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
       return Optional.of(cachedClass);
     }
 
-    final List<AbstractClassSource<JavaSootClass>> foundClassSources =
+    final List<AbstractClassSource<? extends JavaSootClass>> foundClassSources =
         getProject().getInputLocations().stream()
             .map(
                 location -> {
@@ -139,7 +139,9 @@ public class JavaView extends AbstractView<JavaSootClass> {
         cache.computeIfAbsent(
             classSource.getClassType(),
             type ->
-                classSource.buildClass(getProject().getSourceTypeSpecifier().sourceTypeFor(type)));
+                (JavaSootClass)
+                    classSource.buildClass(
+                        getProject().getSourceTypeSpecifier().sourceTypeFor(type)));
 
     if (theClass.getType() instanceof AnnotationType) {
       JavaAnnotationSootClass jasc = (JavaAnnotationSootClass) theClass;

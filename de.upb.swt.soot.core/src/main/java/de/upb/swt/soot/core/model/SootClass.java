@@ -23,14 +23,9 @@ package de.upb.swt.soot.core.model;
  */
 
 import com.google.common.base.Suppliers;
-import com.google.common.collect.Iterables;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.frontend.SootClassSource;
-import de.upb.swt.soot.core.signatures.FieldSubSignature;
-import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.Printer;
 import java.io.PrintWriter;
@@ -49,7 +44,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
+public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extends AbstractClass<S> {
 
   @Nonnull protected final SourceType sourceType;
   @Nonnull protected final ClassType classSignature;
@@ -59,10 +54,6 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
     this.sourceType = sourceType;
     this.classSignature = classSource.getClassType();
   }
-
-  // TODO: [JMP] Create type signature for this dummy type and move it closer to
-  // its usage.
-  @Nonnull public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
   @Nonnull
   private Set<? extends SootField> lazyFieldInitializer() {
@@ -115,77 +106,6 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
     return this._lazyFields.get();
   }
 
-  /** Returns the number of fields in this class. */
-  public int getFieldCount() {
-    return getFields().size();
-  }
-
-  /**
-   * Returns the field of this class with the given name. Throws a RuntimeException if there is more
-   * than one field with the given name. Returns null if no field with the given name exists.
-   */
-  @Nonnull
-  public Optional<? extends SootField> getField(String name) {
-    return this.getFields().stream()
-        .filter(field -> field.getSignature().getName().equals(name))
-        .reduce(
-            (l, r) -> {
-              throw new RuntimeException("ambiguous field: " + name);
-            });
-  }
-
-  /**
-   * Returns the field of this class with the given sub-signature. If such a field does not exist,
-   * null is returned.
-   */
-  @Nonnull
-  public Optional<? extends SootField> getField(@Nonnull FieldSubSignature subSignature) {
-    return this.getFields().stream()
-        .filter(field -> field.getSubSignature().equals(subSignature))
-        .findAny();
-  }
-
-  /**
-   * Attempts to retrieve the methodRef with the given signature, parameters and return type. If no
-   * matching method can be found, null is returned.
-   */
-  @Nonnull
-  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
-    return this.getMethods().stream()
-        .filter(method -> method.getSignature().equals(signature))
-        .findAny();
-  }
-
-  /**
-   * Attempts to retrieve the method with the given name and parameters. This method may throw an
-   * AmbiguousMethodException if there is more than one method with the given name and parameter.
-   */
-  @Nonnull
-  public Optional<? extends SootMethod> getMethod(
-      String name, Iterable<? extends Type> parameterTypes) {
-    return this.getMethods().stream()
-        .filter(
-            method ->
-                method.getSignature().getName().equals(name)
-                    && Iterables.elementsEqual(parameterTypes, method.getParameterTypes()))
-        .reduce(
-            (l, r) -> {
-              throw new RuntimeException("ambiguous method: " + name);
-            });
-  }
-
-  /**
-   * Attempts to retrieve the method with the given subSignature. This method may throw an
-   * AmbiguousMethodException if there are more than one method with the given subSignature. If no
-   * method with the given is found, null is returned.
-   */
-  @Nonnull
-  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
-    return this.getMethods().stream()
-        .filter(method -> method.getSubSignature().equals(subSignature))
-        .findAny();
-  }
-
   private final Supplier<Set<Modifier>> lazyModifiers =
       Suppliers.memoize(classSource::resolveModifiers);
 
@@ -199,25 +119,17 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
       Suppliers.memoize(classSource::resolveInterfaces);
 
   /**
-   * Returns the number of interfaces being directly implemented by this class. Note that direct
-   * implementation corresponds to an "implements" keyword in the Java class file and that this
-   * class may still be implementing additional interfaces in the usual sense by being a subclass of
-   * a class which directly implements some interfaces.
-   */
-  public int getInterfaceCount() {
-    return lazyInterfaces.get().size();
-  }
-
-  /**
-   * Returns a backed Chain of the interfaces that are directly implemented by this class. (see
-   * getInterfaceCount())
+   * Returns a backed Chain of the interfaces that are directly implemented by this class. Note that
+   * direct implementation corresponds to an "implements" keyword in the Java class file and that
+   * this class may still be implementing additional interfaces in the usual sense by being a
+   * subclass of a class which directly implements some interfaces.
    */
   public Set<? extends ClassType> getInterfaces() {
     return lazyInterfaces.get();
   }
 
   /** Does this class directly implement the given interface? (see getInterfaceCount()) */
-  public boolean implementsInterface(ClassType classSignature) {
+  public boolean implementsInterface(@Nonnull ClassType classSignature) {
     for (ClassType sc : getInterfaces()) {
       if (sc.equals(classSignature)) {
         return true;
@@ -264,6 +176,7 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
   }
 
   /** Returns the ClassSignature of this class. */
+  @Nonnull
   @Override
   public ClassType getType() {
     return classSignature;
@@ -357,6 +270,7 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
     return lazyPosition.get();
   }
 
+  @Nonnull
   @Override
   public S getClassSource() {
     return classSource;
@@ -370,11 +284,11 @@ public class SootClass<S extends SootClassSource<?>> extends AbstractClass<S> {
 
   @Nonnull
   public SootClass<S> withClassSource(@Nonnull S classSource) {
-    return new SootClass<>(classSource, sourceType);
+    return new SootClass<S>(classSource, sourceType);
   }
 
   @Nonnull
   public SootClass<S> withSourceType(@Nonnull SourceType sourceType) {
-    return new SootClass<>(classSource, sourceType);
+    return new SootClass<S>(classSource, sourceType);
   }
 }

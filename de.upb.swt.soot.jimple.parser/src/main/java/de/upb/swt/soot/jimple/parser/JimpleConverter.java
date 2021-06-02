@@ -5,6 +5,8 @@ import de.upb.swt.soot.core.frontend.OverridingBodySource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
+import de.upb.swt.soot.core.inputlocation.EmptyClassLoadingOptions;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.*;
@@ -33,14 +35,33 @@ public class JimpleConverter {
       @Nonnull CharStream charStream,
       @Nonnull AnalysisInputLocation<?> inputlocation,
       @Nonnull Path sourcePath) {
+    return run(charStream, inputlocation, sourcePath, EmptyClassLoadingOptions.Default);
+  }
+
+  public OverridingClassSource run(
+      @Nonnull CharStream charStream,
+      @Nonnull AnalysisInputLocation<?> inputlocation,
+      @Nonnull Path sourcePath,
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
     return run(
-        JimpleConverterUtil.createJimpleParser(charStream, sourcePath), inputlocation, sourcePath);
+        JimpleConverterUtil.createJimpleParser(charStream, sourcePath),
+        inputlocation,
+        sourcePath,
+        classLoadingOptions);
   }
 
   public OverridingClassSource run(
       @Nonnull JimpleParser parser,
       @Nonnull AnalysisInputLocation<?> inputlocation,
       @Nonnull Path sourcePath) {
+    return run(parser, inputlocation, sourcePath, EmptyClassLoadingOptions.Default);
+  }
+
+  public OverridingClassSource run(
+      @Nonnull JimpleParser parser,
+      @Nonnull AnalysisInputLocation<?> inputlocation,
+      @Nonnull Path sourcePath,
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
 
     ClassVisitor classVisitor = new ClassVisitor(sourcePath);
     classVisitor.visit(parser.file());
@@ -507,7 +528,7 @@ public class JimpleConverter {
                   path,
                   JimpleConverterUtil.buildPositionFromCtx(ctx));
             }
-            return Jimple.newNewExpr((ReferenceType) type);
+            return Jimple.newNewExpr((ClassType) type);
           } else if (ctx.NEWARRAY() != null) {
             final Type type = util.getType(ctx.array_type.getText());
             if (type instanceof VoidType || type instanceof NullType) {
@@ -613,7 +634,8 @@ public class JimpleConverter {
             MethodSignature bootstrapMethodRef =
                 identifierFactory.getMethodSignature(
                     ctx.unnamed_method_name.getText(),
-                    identifierFactory.getClassType(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
+                    identifierFactory.getClassType(
+                        JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
                     util.getType(ctx.name.getText()),
                     bootstrapMethodRefParams);
 

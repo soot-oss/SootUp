@@ -131,7 +131,7 @@ public abstract class MinimalBytecodeTestSuiteBase {
 
   public JavaSootMethod loadMethod(MethodSignature methodSignature) {
     JavaSootClass clazz = loadClass(methodSignature.getDeclClassType());
-    Optional<JavaSootMethod> m = clazz.getMethod(methodSignature);
+    Optional<JavaSootMethod> m = clazz.getMethod(methodSignature.getSubSignature());
     assertTrue("No matching method signature found", m.isPresent());
     return m.get();
   }

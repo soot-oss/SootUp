@@ -30,7 +30,6 @@ import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.util.Optional;
 
 public class WalaClassLoaderTestUtils {
-
   public static Optional<SootMethod> getSootMethod(
       WalaJavaClassProvider WalaJavaClassProvider, MethodSignature signature) {
     // We let getClassSource do the hard work for us. This also
@@ -38,6 +37,7 @@ public class WalaClassLoaderTestUtils {
     // class.
     return WalaJavaClassProvider.getClassSource(signature.getDeclClassType())
         .map(cs -> new SootClass(cs, SourceType.Application))
-        .flatMap(sootClass -> (Optional<SootMethod>) sootClass.getMethod(signature));
+        .flatMap(
+            sootClass -> (Optional<SootMethod>) sootClass.getMethod(signature.getSubSignature()));
   }
 }

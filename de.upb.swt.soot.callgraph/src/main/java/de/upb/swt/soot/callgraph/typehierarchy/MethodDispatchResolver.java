@@ -154,7 +154,7 @@ public final class MethodDispatchResolver {
 
     SootMethod specialMethod =
         view.getClass(specialMethodSig.getDeclClassType())
-            .flatMap(cl -> cl.getMethod(specialMethodSig))
+            .flatMap(cl -> cl.getMethod(specialMethodSig.getSubSignature()))
             .orElse(null);
     if (specialMethod != null && specialMethod.isPrivate()) {
       return specialMethodSig;

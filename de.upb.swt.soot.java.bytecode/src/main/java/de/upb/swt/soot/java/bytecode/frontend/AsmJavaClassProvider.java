@@ -26,6 +26,7 @@ import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaSootClass;
@@ -49,7 +50,9 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
 
   @Override
   public AbstractClassSource<JavaSootClass> createClassSource(
-      AnalysisInputLocation<JavaSootClass> srcNamespace, Path sourcePath, ClassType classType) {
+      AnalysisInputLocation<? extends SootClass<?>> srcNamespace,
+      Path sourcePath,
+      ClassType classType) {
     SootClassNode classNode = new SootClassNode();
 
     try {

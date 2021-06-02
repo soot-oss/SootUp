@@ -21,10 +21,7 @@ package de.upb.swt.soot.core.frontend;
  * #L%
  */
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.Position;
-import de.upb.swt.soot.core.model.SootField;
-import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.CollectionUtils;
 import java.nio.file.Path;
@@ -160,6 +157,11 @@ public class OverridingClassSource extends SootClassSource {
   @Override
   public Position resolvePosition() {
     return position != null ? position : delegate.resolvePosition();
+  }
+
+  @Override
+  public SootClass<?> buildClass(@Nonnull SourceType sourceType) {
+    return new SootClass<>(this, sourceType);
   }
 
   @Override
