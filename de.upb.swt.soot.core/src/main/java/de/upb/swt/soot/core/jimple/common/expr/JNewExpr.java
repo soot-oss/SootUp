@@ -26,7 +26,6 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.util.Copyable;
@@ -67,19 +66,21 @@ public final class JNewExpr implements Expr, Copyable {
     up.typeSignature(type);
   }
 
+  @Nonnull
   @Override
   public ReferenceType getType() {
     return type;
   }
 
   @Override
+  @Nonnull
   public List<Value> getUses() {
     return Collections.emptyList();
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseNewExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseNewExpr(this);
   }
 
   @Nonnull

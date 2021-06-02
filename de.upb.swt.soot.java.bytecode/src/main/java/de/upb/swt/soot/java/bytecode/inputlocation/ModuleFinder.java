@@ -123,7 +123,8 @@ public class ModuleFinder {
    *
    * @return the names of all modules found
    */
-  public @Nonnull Collection<String> discoverAllModules() {
+  @Nonnull
+  public Collection<String> discoverAllModules() {
 
     while (modulePathHasNextEntry()) {
       Path path = modulePathEntries.get(next);

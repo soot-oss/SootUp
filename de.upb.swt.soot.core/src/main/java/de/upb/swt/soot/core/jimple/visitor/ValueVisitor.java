@@ -22,8 +22,10 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import javax.annotation.Nonnull;
 
-public interface JimpleValueVisitor extends ConstantVisitor, ExprVisitor {
-  void caseLocal(Local jimpleLocal);
+public interface ValueVisitor extends ImmediateVisitor, ExprVisitor, RefVisitor {
+
+  void defaultCaseValue(@Nonnull Value v);
 }

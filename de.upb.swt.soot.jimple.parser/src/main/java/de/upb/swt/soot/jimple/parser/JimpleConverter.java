@@ -114,7 +114,7 @@ public class JimpleConverter {
       if (ctx.classname != null) {
 
         // "$" in classname is a heuristic for an inner/outer class
-        final String classname = Jimple.unescape(ctx.classname.getText());
+        final String classname = ctx.classname.getText();
         final int dollarPostition = classname.indexOf('$');
         if (dollarPostition > -1) {
           outerclass = util.getClassType(classname.substring(0, dollarPostition));
@@ -139,7 +139,7 @@ public class JimpleConverter {
 
       // extends_clause
       if (ctx.extends_clause() != null) {
-        superclass = util.getClassType(Jimple.unescape(ctx.extends_clause().classname.getText()));
+        superclass = util.getClassType(ctx.extends_clause().classname.getText());
       } else {
         superclass = null;
       }
@@ -634,7 +634,8 @@ public class JimpleConverter {
             MethodSignature bootstrapMethodRef =
                 identifierFactory.getMethodSignature(
                     ctx.unnamed_method_name.getText(),
-                    identifierFactory.getClassType(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
+                    identifierFactory.getClassType(
+                        JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
                     util.getType(ctx.name.getText()),
                     bootstrapMethodRefParams);
 

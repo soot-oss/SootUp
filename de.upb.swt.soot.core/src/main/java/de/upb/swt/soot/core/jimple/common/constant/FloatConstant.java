@@ -23,7 +23,6 @@ package de.upb.swt.soot.core.jimple.common.constant;
  */
 
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import javax.annotation.Nonnull;
@@ -164,14 +163,15 @@ public class FloatConstant implements RealConstant<FloatConstant> {
     }
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return PrimitiveType.getFloat();
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ConstantVisitor) sw).caseFloatConstant(this);
+  public void accept(@Nonnull ConstantVisitor v) {
+    v.caseFloatConstant(this);
   }
 
   public float getValue() {

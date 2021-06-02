@@ -60,7 +60,8 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
   private final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+  @Nonnull
+  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
       @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
     JavaClassType klassType = (JavaClassType) classType;
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
@@ -160,7 +161,8 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
    *
    * @return Collection of found module names.
    */
-  public @Nonnull Collection<String> discoverModules() {
+  @Nonnull
+  public Collection<String> discoverModules() {
     final Path moduleRoot = theFileSystem.getPath("modules");
     List<String> foundModules = new ArrayList<>();
 
