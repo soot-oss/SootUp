@@ -43,12 +43,12 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
 
-  @Nonnull private final Project<? extends View<T>, T> project;
+  @Nonnull private final Project<T, ? extends View<T>> project;
 
   @Nonnull private final Map<ModuleDataKey<?>, Object> moduleData = new HashMap<>();
 
-  public AbstractView(@Nonnull Project<? extends View<?>, ?> project) {
-    this.project = (Project<? extends View<T>, T>) project;
+  public AbstractView(@Nonnull Project<T, ? extends View<T>> project) {
+    this.project = (Project<T, ? extends View<T>>) project;
   }
 
   @Override
@@ -83,7 +83,7 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
   }
 
   @Nonnull
-  public Project<? extends View<T>, T> getProject() {
+  public Project<T, ? extends View<T>> getProject() {
     return project;
   }
 

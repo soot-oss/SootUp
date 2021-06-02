@@ -98,13 +98,13 @@ public class JavaSootClass extends SootClass<JavaSootClassSource> {
   @Nonnull
   @Override
   public Set<? extends JavaSootMethod> getMethods() {
-    return (Set<JavaSootMethod>) super.getMethods();
+    return (Set<? extends JavaSootMethod>) super.getMethods();
   }
 
   @Nonnull
   @Override
-  public Set<? extends SootField> getFields() {
-    return (Set<JavaSootField>) super.getFields();
+  public Set<? extends JavaSootField> getFields() {
+    return (Set<? extends JavaSootField>) super.getFields();
   }
 
   @Nonnull
