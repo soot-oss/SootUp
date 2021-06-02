@@ -389,7 +389,6 @@ public class JavaModuleViewTest {
     view.getModuleInfo(((ModulePackageName) mainModmainSig.getPackageName()).getModuleSignature());
   }
 
-  @Ignore
   @Test
   public void testUsesProvideInClient() {
     // TODO: adapt
@@ -404,8 +403,8 @@ public class JavaModuleViewTest {
 
     JavaClassType targetClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
-    Optional<JavaSootClass> aClass = view.getClass(targetClass);
-    assertTrue(aClass.isPresent());
+    assertTrue(view.getClass(targetClass).isPresent());
+
     fail("test module descriptor/rights");
   }
 
@@ -713,7 +712,7 @@ public class JavaModuleViewTest {
     ModulePackageName pkgbModb =
         JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "modb");
     JavaModuleInfo moduleInfo_pkgbModb = view.getModuleInfo(pkgbModb.getModuleSignature()).get();
-    System.out.println(moduleInfo_pkgbModb);
+
     assertFalse(moduleInfo_pkgbModb.isUnnamedModule());
 
     ModulePackageName cpb = JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "");
