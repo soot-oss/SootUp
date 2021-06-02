@@ -27,7 +27,6 @@ import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.ClassType;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -43,13 +42,8 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public abstract class SootClassSource<S extends SootClass> extends AbstractClassSource<S> {
-
-  @Override
-  @Nonnull
-  public S buildClass(@Nonnull SourceType sourceType) {
-    return (S) new SootClass(this, sourceType);
-  }
+public abstract class SootClassSource<S extends SootClass<? extends SootClassSource<S>>>
+    extends AbstractClassSource<S> {
 
   /**
    * Creates and a {@link SootClassSource} for a specific source file. The file should be passed as
@@ -66,7 +60,7 @@ public abstract class SootClassSource<S extends SootClass> extends AbstractClass
    *     resolved {@link SootClassSource}, backed up by the given file
    */
   public SootClassSource(
-      @Nonnull AnalysisInputLocation<S> srcNamespace,
+      @Nonnull AnalysisInputLocation<? extends SootClass<?>> srcNamespace,
       @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
     super(srcNamespace, classSignature, sourcePath);

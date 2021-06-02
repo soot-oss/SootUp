@@ -27,8 +27,6 @@ import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.util.Copyable;
@@ -39,6 +37,8 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copyable {
+
+  @Nonnull public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
   @Nonnull private final MethodSignature bootstrapMethodSignature;
   // TODO: use immutable List?
@@ -58,11 +58,9 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
     if (!methodSignature
         .getDeclClassType()
         .getFullyQualifiedName()
-        .equals(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME)) {
+        .equals(INVOKEDYNAMIC_DUMMY_CLASS_NAME)) {
       throw new IllegalArgumentException(
-          "Receiver type of JDynamicInvokeExpr must be "
-              + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME
-              + "!");
+          "Receiver type of JDynamicInvokeExpr must be " + INVOKEDYNAMIC_DUMMY_CLASS_NAME + "!");
     }
     this.bootstrapMethodSignature = bootstrapMethodSignature;
     this.bootstrapMethodSignatureArgBoxes = new ValueBox[bootstrapArgs.size()];
@@ -90,7 +88,8 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
         methodArgs);
   }
 
-  public @Nonnull MethodSignature getBootstrapMethodSignature() {
+  @Nonnull
+  public MethodSignature getBootstrapMethodSignature() {
     return this.bootstrapMethodSignature;
   }
 
@@ -176,8 +175,8 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseDynamicInvokeExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseDynamicInvokeExpr(this);
   }
 
   /** Returns a list containing elements of type ValueBox. */

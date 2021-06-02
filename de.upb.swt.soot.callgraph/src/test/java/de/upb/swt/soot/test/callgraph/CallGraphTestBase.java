@@ -70,6 +70,14 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   }
 
   @Test
+  public void testSingleMethod() {
+    CallGraph cg = loadCallGraph("Misc", "example.SingleMethod");
+    assertEquals(0, cg.callCount());
+    assertEquals(0, cg.callsTo(mainMethodSignature).size());
+    assertEquals(0, cg.callsFrom(mainMethodSignature).size());
+  }
+
+  @Test
   public void testAddClass() {
     CallGraph cg = loadCallGraph("Misc", "update.operation.cg.Class");
 

@@ -28,7 +28,6 @@ import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
@@ -57,8 +56,8 @@ public final class JThrowStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseThrowStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseThrowStmt(this);
   }
 
   @Override

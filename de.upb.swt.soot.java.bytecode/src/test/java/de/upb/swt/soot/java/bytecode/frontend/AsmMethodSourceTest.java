@@ -22,6 +22,7 @@ public class AsmMethodSourceTest {
 
   @Ignore // FIXME
   @Test
+  @Ignore("FIXME")
   public void testFix_StackUnderrun_convertPutFieldInsn_init() {
 
     double version = Double.parseDouble(System.getProperty("java.specification.version"));

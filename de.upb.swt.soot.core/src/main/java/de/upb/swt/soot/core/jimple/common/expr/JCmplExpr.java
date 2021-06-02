@@ -25,7 +25,6 @@ package de.upb.swt.soot.core.jimple.common.expr;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
@@ -35,14 +34,15 @@ public final class JCmplExpr extends AbstractIntBinopExpr implements Copyable {
     super(op1, op2);
   }
 
+  @Nonnull
   @Override
   public final String getSymbol() {
     return " " + Jimple.CMPL + " ";
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseCmplExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseCmplExpr(this);
   }
 
   @Nonnull

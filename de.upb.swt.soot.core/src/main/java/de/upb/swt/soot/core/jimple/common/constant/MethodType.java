@@ -22,7 +22,7 @@ package de.upb.swt.soot.core.jimple.common.constant;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
+import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
@@ -42,6 +42,7 @@ public class MethodType implements Constant, Copyable {
     this.type = type;
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return type;
@@ -81,5 +82,7 @@ public class MethodType implements Constant, Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor v) {}
+  public void accept(@Nonnull ConstantVisitor v) {
+    v.caseMethodType(this);
+  }
 }

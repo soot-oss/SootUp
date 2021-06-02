@@ -96,6 +96,7 @@ public class JavaModulePathAnalysisInputLocation
   }
 
   @Override
+  @Nonnull
   public Collection<? extends AbstractClassSource<JavaSootClass>> getModulesClassSources(
       @Nonnull ModuleSignature moduleSignature,
       @Nonnull IdentifierFactory identifierFactory,

@@ -24,7 +24,6 @@ package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
@@ -35,14 +34,15 @@ public final class JSubExpr extends AbstractFloatBinopExpr implements Copyable {
     super(op1, op2);
   }
 
+  @Nonnull
   @Override
   public final String getSymbol() {
     return " - ";
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseSubExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseSubExpr(this);
   }
 
   @Nonnull

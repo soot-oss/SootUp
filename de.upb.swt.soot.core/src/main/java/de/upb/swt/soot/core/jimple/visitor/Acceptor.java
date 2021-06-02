@@ -25,11 +25,11 @@ package de.upb.swt.soot.core.jimple.visitor;
 import javax.annotation.Nonnull;
 
 /** Basic interface used for visited objects in the Visitor design pattern. */
-public interface Acceptor {
+public interface Acceptor<V extends Visitor> {
   /**
    * Called when this object is visited.
    *
    * @param v
    */
-  void accept(@Nonnull Visitor v);
+  void accept(@Nonnull V v);
 }

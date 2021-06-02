@@ -64,7 +64,8 @@ public class JrtFileSystemAnalysisInputLocation
   boolean isResolved = false;
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+  @Nonnull
+  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
       @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
     JavaClassType klassType = (JavaClassType) classType;
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
@@ -112,6 +113,7 @@ public class JrtFileSystemAnalysisInputLocation
 
   /** Retreive CLassSources of a module specified by methodSignature */
   @Override
+  @Nonnull
   public Collection<? extends AbstractClassSource<JavaSootClass>> getModulesClassSources(
       @Nonnull ModuleSignature moduleSignature,
       @Nonnull IdentifierFactory identifierFactory,

@@ -305,17 +305,17 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     @Nonnull private Position position = NoPositionInformation.getInstance();
 
     @Nonnull
-    protected Iterable<Modifier> getModifiers() {
+    public Iterable<Modifier> getModifiers() {
       return modifiers;
     }
 
     @Nullable
-    protected BodySource getSource() {
+    public BodySource getSource() {
       return source;
     }
 
     @Nullable
-    protected MethodSignature getSignature() {
+    public MethodSignature getSignature() {
       return methodSignature;
     }
 
@@ -325,7 +325,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     }
 
     @Nonnull
-    protected Iterable<ClassType> getThrownExceptions() {
+    public Iterable<ClassType> getThrownExceptions() {
       return thrownExceptions;
     }
 

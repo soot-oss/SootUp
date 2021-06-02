@@ -22,6 +22,7 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 
+import com.google.common.collect.Maps;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
@@ -38,13 +39,7 @@ import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -61,10 +56,13 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Nonnull private static final JavaIdentifierFactory INSTANCE = new JavaIdentifierFactory();
 
   /** Caches the created PackageNames for packages. */
-  final Map<String, PackageName> packages = new HashMap<>();
+  @Nonnull protected final Map<String, PackageName> packages = new HashMap<>();
 
   /** Caches annotation types */
-  final Map<String, AnnotationType> annotationTypes = new HashMap<>();
+  @Nonnull protected final Map<String, AnnotationType> annotationTypes = new HashMap<>();
+
+  @Nonnull
+  protected final Map<String, PrimitiveType> primitiveTypeMap = Maps.newHashMapWithExpectedSize(8);
 
   public static JavaIdentifierFactory getInstance() {
     return INSTANCE;
@@ -73,6 +71,24 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   JavaIdentifierFactory() {
     /* Represents the default package. */
     packages.put(PackageName.DEFAULT_PACKAGE.getPackageName(), PackageName.DEFAULT_PACKAGE);
+
+    // initialize primitive map
+    primitiveTypeMap.put(
+        PrimitiveType.LongType.getInstance().getName(), PrimitiveType.LongType.getInstance());
+    primitiveTypeMap.put(
+        PrimitiveType.IntType.getInstance().getName(), PrimitiveType.IntType.getInstance());
+    primitiveTypeMap.put(
+        PrimitiveType.ShortType.getInstance().getName(), PrimitiveType.ShortType.getInstance());
+    primitiveTypeMap.put(
+        PrimitiveType.CharType.getInstance().getName(), PrimitiveType.CharType.getInstance());
+    primitiveTypeMap.put(
+        PrimitiveType.ByteType.getInstance().getName(), PrimitiveType.ByteType.getInstance());
+    primitiveTypeMap.put(
+        PrimitiveType.BooleanType.getInstance().getName(), PrimitiveType.BooleanType.getInstance());
+    primitiveTypeMap.put(
+        PrimitiveType.DoubleType.getInstance().getName(), PrimitiveType.DoubleType.getInstance());
+    primitiveTypeMap.put(
+        PrimitiveType.FloatType.getInstance().getName(), PrimitiveType.FloatType.getInstance());
   }
 
   /**
@@ -116,14 +132,13 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   public Type getType(final String typeDesc) {
     int len = typeDesc.length();
-    int idx = 0;
     StringBuilder stringBuilder = new StringBuilder();
     int nrDims = 0;
     int closed = 0;
 
     // check if this is an array type ...
-    while (idx != len) {
-      char c = typeDesc.charAt(idx++);
+    for (int i = 0; i < len; i++) {
+      char c = typeDesc.charAt(i);
       switch (c) {
         case '[':
           ++nrDims;
@@ -166,8 +181,14 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   }
 
   @Override
-  public @Nonnull Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName) {
-    return PrimitiveType.find(typeName);
+  @Nonnull
+  public Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName) {
+    return Optional.ofNullable(primitiveTypeMap.get(typeName));
+  }
+
+  @Nonnull
+  public Collection<PrimitiveType> getAllPrimitiveTypes() {
+    return Collections.unmodifiableCollection(primitiveTypeMap.values());
   }
 
   @Override
