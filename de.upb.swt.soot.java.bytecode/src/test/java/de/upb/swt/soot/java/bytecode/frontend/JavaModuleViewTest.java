@@ -341,7 +341,6 @@ public class JavaModuleViewTest {
   }
 
   @Test
-  @Ignore("finish")
   public void testUsesProvide() {
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
@@ -405,12 +404,23 @@ public class JavaModuleViewTest {
     Optional<JavaSootClass> mainModmainClass = view.getClass(mainModmainSig);
     assertTrue(mainModmainClass.isPresent());
 
+    ModuleJavaClassType serviceDefSig =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("IService", "myservice", "modservicedefinition");
+    Optional<JavaSootClass> serviceDefClass = view.getClass(serviceDefSig);
+    assertTrue(serviceDefClass.isPresent());
+    Optional<JavaSootClass> serviceDefAccessClass =
+        view.getClass(mainModmainSig.getPackageName(), serviceDefSig);
+    assertTrue(serviceDefAccessClass.isPresent());
+    assertEquals(serviceDefAccessClass.get(), serviceDefClass.get());
+
     ModuleJavaClassType serviceImplSig =
         JavaModuleIdentifierFactory.getInstance()
             .getClassType("ServiceImpl", "com.service.impl", "modservice.impl.com");
     Optional<JavaSootClass> serviceImplClass = view.getClass(serviceImplSig);
     assertTrue(serviceImplClass.isPresent());
-    Optional<JavaSootClass> serviceImplAccessClass = view.getClass(serviceImplSig);
+    Optional<JavaSootClass> serviceImplAccessClass =
+        view.getClass(mainModmainSig.getPackageName(), serviceImplSig);
     assertTrue(serviceImplAccessClass.isPresent());
     assertEquals(serviceImplAccessClass.get(), serviceImplClass.get());
 
@@ -419,16 +429,11 @@ public class JavaModuleViewTest {
             .getClassType("ServiceImpl", "net.service.impl", "modservice.impl.net");
     Optional<JavaSootClass> serviceImplNetClass = view.getClass(serviceImplNetSig);
     assertTrue(serviceImplNetClass.isPresent());
-    Optional<JavaSootClass> serviceImplNetAccessClass = view.getClass(serviceImplNetSig);
+    Optional<JavaSootClass> serviceImplNetAccessClass =
+        view.getClass(mainModmainSig.getPackageName(), serviceImplNetSig);
     assertTrue(serviceImplNetAccessClass.isPresent());
     assertEquals(serviceImplNetAccessClass.get(), serviceImplNetClass.get());
     assertNotEquals(serviceImplNetClass.get(), serviceImplClass.get());
-
-    ModuleJavaClassType serviceDefSig =
-        JavaModuleIdentifierFactory.getInstance()
-            .getClassType("IService", "myservice", "modservicedefinition");
-    Optional<JavaSootClass> serviceDefClass = view.getClass(serviceDefSig);
-    assertTrue(serviceDefClass.isPresent());
 
     view.getModuleInfo(mainModmainSig.getPackageName().getModuleSignature());
   }

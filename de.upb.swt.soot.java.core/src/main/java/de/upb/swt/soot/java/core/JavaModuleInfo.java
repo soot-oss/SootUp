@@ -49,7 +49,7 @@ public abstract class JavaModuleInfo {
   public abstract Collection<PackageReference> opens();
 
   // interface providing
-  public abstract Collection<JavaClassType> provides();
+  public abstract Collection<InterfaceReference> provides();
 
   // interface usage
   public abstract Collection<JavaClassType> uses();
@@ -106,7 +106,7 @@ public abstract class JavaModuleInfo {
       }
 
       @Override
-      public Collection<JavaClassType> provides() {
+      public Collection<InterfaceReference> provides() {
         throw new ResolveException(
             "All Packages are open in the automatic module. Handle it separately.");
       }
@@ -148,7 +148,7 @@ public abstract class JavaModuleInfo {
       }
 
       @Override
-      public Collection<JavaClassType> provides() {
+      public Collection<InterfaceReference> provides() {
         return Collections.emptyList();
       }
 
@@ -198,6 +198,32 @@ public abstract class JavaModuleInfo {
     @Override
     public String toString() {
       return modifiers + " " + moduleInfo;
+    }
+  }
+
+  public static class InterfaceReference {
+    @Nonnull private final JavaClassType interfaceType;
+    @Nonnull private final JavaClassType interfaceImplementation;
+
+    public InterfaceReference(
+        @Nonnull JavaClassType interfaceType, @Nonnull JavaClassType interfaceImplementation) {
+      this.interfaceType = interfaceType;
+      this.interfaceImplementation = interfaceImplementation;
+    }
+
+    @Nonnull
+    public JavaClassType getInterfaceType() {
+      return interfaceType;
+    }
+
+    @Nonnull
+    public JavaClassType getInterfaceImplementation() {
+      return interfaceImplementation;
+    }
+
+    @Override
+    public String toString() {
+      return "provides " + interfaceType + " with " + interfaceImplementation;
     }
   }
 

@@ -140,22 +140,23 @@ public class AsmModuleSource extends JavaModuleInfo {
   }
 
   @Override
-  public Collection<JavaClassType> provides() {
+  public Collection<InterfaceReference> provides() {
     ModuleNode module = _lazyModule.get();
     if (module.provides == null) {
       return Collections.emptyList();
     }
-    ArrayList<JavaClassType> providers = new ArrayList<>(module.provides.size());
+    ArrayList<InterfaceReference> providers = new ArrayList<>(module.provides.size());
     // add provides
     for (ModuleProvideNode moduleProvideNode : module.provides) {
       JavaClassType serviceSignature = AsmUtil.asmIDToSignature(moduleProvideNode.service);
+      if (serviceSignature == null) {
+        throw new IllegalStateException("provides entry without 'with' .");
+      }
       Iterable<JavaClassType> providersSignatures =
           AsmUtil.asmIdToSignature(moduleProvideNode.providers);
       for (JavaClassType sootClassSignature : providersSignatures) {
-        providers.add(sootClassSignature);
+        providers.add(new InterfaceReference(sootClassSignature, serviceSignature));
       }
-
-      providers.add(serviceSignature);
     }
 
     return providers;

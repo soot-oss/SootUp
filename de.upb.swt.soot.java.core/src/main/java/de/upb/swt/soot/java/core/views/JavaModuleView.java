@@ -263,11 +263,13 @@ public class JavaModuleView extends JavaView {
                                               .getModuleSignature()))) {
                         return true;
                       }
+
                       // or is it accessible via a transitive relation
                       return isTransitiveRequires(
-                          moduleInfo,
-                          ((ModulePackageName) sc.getClassType().getPackageName())
-                              .getModuleSignature());
+                              moduleInfo,
+                              ((ModulePackageName) sc.getClassType().getPackageName())
+                                  .getModuleSignature())
+                          || isProvidedInterfaceImplementation((JavaClassType) sc.getClassType());
                     })
                 .findAny();
 
@@ -287,7 +289,6 @@ public class JavaModuleView extends JavaView {
       JavaModuleInfo entryModuleInfo, ModuleSignature moduleSignature) {
 
     // TODO: expensive! cache results.. maybe union-find for transitive hull?
-
     Set<ModuleSignature> visited = new HashSet<>();
     visited.add(entryModuleInfo.getModuleSignature());
 
@@ -301,7 +302,7 @@ public class JavaModuleView extends JavaView {
       }
       JavaModuleInfo moduleInfo = moduleInfoOpt.get();
 
-      if (moduleInfo.isAutomaticModule()) {
+      if (moduleInfo.isAutomaticModule() || moduleInfo.isUnnamedModule()) {
         // automatic module can read everything but its not "forwarding" require transitive!
         continue;
       }
@@ -462,8 +463,27 @@ public class JavaModuleView extends JavaView {
         .filter(
             cs -> {
               // check if the package is exported by or living in the same module
-              return isPackageVisibleToModule(moduleSig, (ModulePackageName) type.getPackageName());
+              return isPackageVisibleToModule(moduleSig, (ModulePackageName) type.getPackageName())
+                  || isProvidedInterfaceImplementation(type);
             });
+  }
+
+  private boolean isProvidedInterfaceImplementation(@Nonnull JavaClassType type) {
+    ModulePackageName packageName = (ModulePackageName) type.getPackageName();
+    JavaModuleInfo moduleInfo = getModuleInfo(packageName.getModuleSignature()).get();
+
+    for (InterfaceReference provides : moduleInfo.provides()) {
+      JavaClassType interfaceType = provides.getInterfaceType();
+      String packageName1 = interfaceType.getPackageName().getPackageName();
+      String packageName2 = type.getPackageName().getPackageName();
+      if (packageName1.equals(packageName2)) {
+        if (interfaceType.getClassName().equals(type.getClassName())) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   @Nonnull
