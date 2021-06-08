@@ -526,10 +526,8 @@ public class JavaModuleViewTest {
         view.getClass(mainClass.getPackageName(), internalRuntimeExceptionClass).isPresent());
   }
 
-  @Ignore("to implement")
   @Test
   public void testInterfaceCallback() {
-    // TODO: adapt
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
             .addInputLocation(
@@ -538,11 +536,29 @@ public class JavaModuleViewTest {
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
 
-    ModuleJavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
-    Optional<JavaSootClass> aClass = view.getClass(targetClass);
-    assertTrue(aClass.isPresent());
-    fail("test module descriptor/rights");
+    ModuleJavaClassType mainClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+    assertTrue(view.getClass(mainClass).isPresent());
+
+    ModuleJavaClassType calleeClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Callee", "pkgcallee", "modcallee");
+    assertTrue(view.getClass(calleeClass).isPresent());
+    assertTrue(view.getClass(mainClass.getPackageName(), calleeClass).isPresent());
+
+    ModuleJavaClassType iCallbackClass =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("ICallback", "pkgcallee", "modcallee");
+    assertTrue(view.getClass(iCallbackClass).isPresent());
+    assertTrue(view.getClass(mainClass.getPackageName(), iCallbackClass).isPresent());
+    assertTrue(view.getClass(calleeClass.getPackageName(), iCallbackClass).isPresent());
+
+    ModuleJavaClassType handlerClass =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("MyCallbackImpl", "pkgcallbackhandler", "modcallbackhandler");
+    assertTrue(view.getClass(handlerClass).isPresent());
+    assertTrue(view.getClass(mainClass.getPackageName(), handlerClass).isPresent());
+    assertFalse(view.getClass(iCallbackClass.getPackageName(), handlerClass).isPresent());
+    assertFalse(view.getClass(calleeClass.getPackageName(), handlerClass).isPresent());
   }
 
   @Test

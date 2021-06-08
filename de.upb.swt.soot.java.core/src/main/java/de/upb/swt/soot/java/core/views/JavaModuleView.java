@@ -143,7 +143,6 @@ public class JavaModuleView extends JavaView {
     Optional<PackageReference> filteredExportedPackages =
         exports.stream()
             .filter(packageReference -> packageReference.getPackageName().equals(packageName))
-            .filter(pr -> pr.appliesTo(packageName.getModuleSignature()))
             .findAny();
     return filteredExportedPackages.isPresent();
   }
