@@ -48,7 +48,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     this.oldUse = oldUse;
     this.newUse = newUse;
   }
-  /* This constructor is for PhiExpr. The phiPred is predecessor of the newUse.*/
+  /* This constructor is for PhiExpr. The phiBlock is a block which newUse belongs to.*/
   public ReplaceUseExprVisitor(Value oldUse, Value newUse, Block phiBlock) {
     this.oldUse = oldUse;
     this.newUse = newUse;
