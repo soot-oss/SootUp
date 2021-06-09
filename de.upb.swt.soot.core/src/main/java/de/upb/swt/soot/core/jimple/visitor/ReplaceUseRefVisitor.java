@@ -25,6 +25,7 @@ package de.upb.swt.soot.core.jimple.visitor;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.expr.JPhiExpr;
 import de.upb.swt.soot.core.jimple.common.ref.*;
 import javax.annotation.Nonnull;
 
@@ -53,7 +54,7 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
   @Nonnull
   @Override
   public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef v) {
-    if (newUse instanceof Local && v.getBase().equivTo(oldUse)) {
+    if ((newUse instanceof Local || newUse instanceof JPhiExpr) &&  v.getBase().equivTo(oldUse)) {
       newRef = v.withBase(newUse);
     } else {
       defaultCase(v);
@@ -63,9 +64,9 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
   @Nonnull
   @Override
   public void caseArrayRef(@Nonnull JArrayRef v) {
-    if (newUse instanceof Local && v.getBase().equivTo(oldUse)) {
+    if ((newUse instanceof Local || newUse instanceof JPhiExpr) && v.getBase().equivTo(oldUse) && newUse.getType().equals(oldUse.getType())) {
       newRef = v.withBase(newUse);
-    } else if (newUse instanceof Immediate && v.getIndex().equivTo(oldUse)) {
+    } else if ((newUse instanceof Immediate || newUse instanceof JPhiExpr)&& v.getIndex().equivTo(oldUse)) {
       newRef = v.withIndex(newUse);
     } else {
       defaultCase(v);

@@ -22,10 +22,15 @@ package de.upb.swt.soot.core.graph;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents BasicBlocks that partition a method body.
@@ -34,11 +39,12 @@ import java.util.List;
  */
 public class Block {
 
-  private final Body body;
-  private final Stmt head;
-  private final Stmt tail;
-  private final List<Stmt> blockStmts;
-  private final int blockLength;
+  private Body body;
+  private Stmt head;
+  private Stmt tail;
+  private List<Stmt> blockStmts;
+  private final Map<Stmt, Integer> stmtToPos = new HashMap();
+  private int blockLength;
 
   public Block(Stmt head, Stmt tail, Body body) {
     ImmutableExceptionalStmtGraph graph = body.getStmtGraph();
@@ -56,6 +62,7 @@ public class Block {
     Stmt stmt = head;
     blockStmts = new ArrayList<>();
     while (stmt != tail) {
+      stmtToPos.put(stmt, num);
       blockStmts.add(stmt);
       num++;
       List<Stmt> succs = graph.successors(stmt);
@@ -69,6 +76,7 @@ public class Block {
       }
     }
     blockStmts.add(tail);
+    stmtToPos.put(tail, num);
     blockLength = num + 1;
   }
 
@@ -78,6 +86,15 @@ public class Block {
     this.tail = tail;
     this.blockStmts = blockStmts;
     this.blockLength = blockStmts.size();
+    for(int i = 0; i < this.blockLength ; i++){
+        this.stmtToPos.put(this.blockStmts.get(i), i);
+    }
+  }
+
+  private Block(){}
+
+  public static Block getEmptyBlock(){
+    return new Block( );
   }
 
   public Body getBody() {
@@ -92,6 +109,26 @@ public class Block {
     return this.tail;
   }
 
+  public void replaceBlockStmt(Stmt oldStmt, Stmt newStmt){
+    if(!this.stmtToPos.containsKey(oldStmt)){
+      throw new RuntimeException("The given oldStmt: " + oldStmt.toString() + " is not this block!");
+    }
+    if(oldStmt==head){
+      this.head = newStmt;
+      this.blockStmts.set(0, newStmt);
+    }else if(oldStmt==tail){
+      this.tail = newStmt;
+      this.blockStmts.set(this.blockLength-1, newStmt);
+    }else{
+      this.blockStmts.set(this.stmtToPos.get(oldStmt), newStmt);
+    }
+  }
+
+
+  /**
+   * Getter of block stmts, the order is same as in StmtGraph of body
+   * @return
+   */
   public List<Stmt> getBlockStmts() {
     return this.blockStmts;
   }
@@ -142,5 +179,9 @@ public class Block {
       return (this.blockStmts.get(i) == block.getBlockStmts().get(i));
     }
     return true;
+  }
+
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator){
+    return comparator.caseBlock(this, o);
   }
 }

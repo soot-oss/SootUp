@@ -22,6 +22,8 @@ package de.upb.swt.soot.core.jimple.basic;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.common.expr.JPhiExpr;
+
 /**
  * Contains an {@link Immediate}.
  *
@@ -35,6 +37,6 @@ public class ImmediateBox extends ValueBox {
 
   @Override
   public boolean canContainValue(Value value) {
-    return value instanceof Immediate;
+    return value instanceof Immediate || value instanceof JPhiExpr;
   }
 }
