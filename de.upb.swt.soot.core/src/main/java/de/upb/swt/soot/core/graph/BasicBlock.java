@@ -15,6 +15,14 @@ public interface BasicBlock {
   List<? extends BasicBlock> getSuccessors();
 
   @Nonnull
+  List<? extends BasicBlock>
+      getExceptionalPredecessors(); // not necessary as an exceptionhandler is not called in an
+                                    // unexceptional flow i.e. its the same as getPredecessors?
+
+  @Nonnull
+  List<? extends BasicBlock> getExceptionalSuccessors();
+
+  @Nonnull
   List<Stmt> getStmts();
 
   int getStmtCount();
@@ -30,9 +38,11 @@ public interface BasicBlock {
 }
 
 class MutableBasicBlock implements BasicBlock {
-
   @Nonnull private final List<MutableBasicBlock> predecessorBlocks = new ArrayList<>();
   @Nonnull private final List<MutableBasicBlock> successorBlocks = new ArrayList<>();
+  @Nonnull private final List<MutableBasicBlock> xPredecessorBlocks = new ArrayList<>();
+  @Nonnull private final List<MutableBasicBlock> xSuccessorBlocks = new ArrayList<>();
+
   @Nonnull private List<Stmt> stmts = new ArrayList<>();
   @Nonnull private List<JTrap> traps = new ArrayList<>();
 
@@ -70,7 +80,7 @@ class MutableBasicBlock implements BasicBlock {
     traps.add(trap);
   }
 
-  public void addTraps(@Nonnull List<JTrap> traps) {
+  public void setTraps(@Nonnull List<JTrap> traps) {
     this.traps = traps;
   }
 
@@ -100,6 +110,18 @@ class MutableBasicBlock implements BasicBlock {
   @Override
   public List<MutableBasicBlock> getSuccessors() {
     return successorBlocks;
+  }
+
+  @Nonnull
+  @Override
+  public List<? extends BasicBlock> getExceptionalPredecessors() {
+    return xPredecessorBlocks;
+  }
+
+  @Nonnull
+  @Override
+  public List<? extends BasicBlock> getExceptionalSuccessors() {
+    return xSuccessorBlocks;
   }
 
   @Nonnull
@@ -151,7 +173,7 @@ class MutableBasicBlock implements BasicBlock {
     }
 
     // copy traps
-    secondBlock.addTraps(getTraps());
+    secondBlock.setTraps(getTraps());
 
     return secondBlock;
   }
