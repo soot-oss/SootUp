@@ -51,6 +51,12 @@ public class ReplaceUseExprVisitorTest {
   Stmt stmt3 = Jimple.newAssignStmt(arg3, IntConstant.getInstance(0), noStmtPositionInfo);
   Stmt stmtPhi = Jimple.newAssignStmt(newArg, IntConstant.getInstance(0), noStmtPositionInfo);
 
+  Block newBlock = new Block(stmtPhi, stmtPhi, ImmutableUtils.immutableList(stmtPhi), null);
+  Block block1 = new Block(stmt1, stmt1, ImmutableUtils.immutableList(stmt1), null);
+  Block block2 = new Block(stmt2, stmt2, ImmutableUtils.immutableList(stmt2), null);
+  Block block3 = new Block(stmt3, stmt3, ImmutableUtils.immutableList(stmt3), null);
+
+
   MethodSignature methodeWithOutParas =
       new MethodSignature(testClass, "invokeExpr", Collections.emptyList(), voidType);
 
@@ -83,6 +89,29 @@ public class ReplaceUseExprVisitorTest {
     addExpr.accept(visitor);
     newExpr = visitor.getNewExpr();
     assertTrue(newExpr.equivTo(addExpr));
+
+    // replace op1 with phi
+    JPhiExpr phi = JPhiExpr.getEmptyPhi();
+    phi.addArg(arg1, block1);
+    phi.addArg(arg2, block2);
+    visitor = new ReplaceUseExprVisitor(op1, phi);
+    addExpr = JavaJimple.newAddExpr(op1, op2);
+    addExpr.accept(visitor);
+    newExpr = visitor.getNewExpr();
+
+    expectedUses.clear();
+    expectedUses.addAll(ImmutableUtils.immutableList(arg1, arg2, phi, op2));
+    assertTrue(newExpr.getUses().equals(expectedUses));
+
+    // replace op1 and op1 with newOp1
+    addExpr = JavaJimple.newAddExpr(op1, op1);
+    addExpr.accept(visitor);
+    newExpr = visitor.getNewExpr();
+
+    expectedUses.clear();
+    expectedUses.addAll(ImmutableUtils.immutableList(arg1, arg2, phi, arg1, arg2, phi));
+    assertTrue(newExpr.getUses().equals(expectedUses));
+
   }
 
   /**
@@ -129,6 +158,19 @@ public class ReplaceUseExprVisitorTest {
     invokeExpr = new JStaticInvokeExpr(methodeWithOutParas, Collections.emptyList());
     invokeExpr.accept(visitor);
     assertTrue(visitor.getNewExpr().equivTo(invokeExpr));
+
+    // replace arg1 with phi
+    JPhiExpr phi = JPhiExpr.getEmptyPhi();
+    phi.addArg(arg1, block1);
+    phi.addArg(arg2, block2);
+    args.set(2, arg3);
+    visitor = new ReplaceUseExprVisitor(arg1, phi);
+    invokeExpr = new JStaticInvokeExpr(method, args);
+    invokeExpr.accept(visitor);
+    newInvokeExpr = visitor.getNewExpr();
+    expectedUses.clear();
+    expectedUses.addAll(ImmutableUtils.immutableList(phi, arg2, arg3, arg1, arg2));
+    assertTrue(newInvokeExpr.getUses().equals(expectedUses));
   }
 
   /** Test use replacing in case InstanceInvokeExpr. JSpecialInvokeExpr is as an example. */
@@ -184,6 +226,20 @@ public class ReplaceUseExprVisitorTest {
     invokeExpr.accept(visitor);
     newInvokeExpr = visitor.getNewExpr();
     assertTrue(newInvokeExpr.equivTo(invokeExpr));
+
+    // replace arg1 in base and args with phi
+    JPhiExpr phi = JPhiExpr.getEmptyPhi();
+    phi.addArg(arg1, block1);
+    phi.addArg(arg2, block2);
+    visitor = new ReplaceUseExprVisitor(arg1, phi);
+    args.set(2, arg3);
+    invokeExpr = new JSpecialInvokeExpr(arg1, method, args);
+    invokeExpr.accept(visitor);
+    newInvokeExpr = visitor.getNewExpr();
+
+    expectedUses.clear();
+    expectedUses.addAll(ImmutableUtils.immutableList(phi, arg2, arg3, arg1, arg2, arg1, arg2, phi));
+    assertTrue(newInvokeExpr.getUses().equals(expectedUses));
   }
 
   /**
@@ -208,21 +264,31 @@ public class ReplaceUseExprVisitorTest {
     lengthExpr = Jimple.newLengthExpr(op2);
     lengthExpr.accept(visitor);
     assertTrue(visitor.getNewExpr().equivTo(lengthExpr));
+
+    // replace op1 with phi
+    JPhiExpr phi = JPhiExpr.getEmptyPhi();
+    phi.addArg(arg1, block1);
+    phi.addArg(arg2, block2);
+    visitor = new ReplaceUseExprVisitor(op1, phi);
+    lengthExpr = Jimple.newLengthExpr(op1);
+    lengthExpr.accept(visitor);
+    newExpr = visitor.getNewExpr();
+
+    expectedUses.clear();
+    expectedUses.addAll(ImmutableUtils.immutableList(arg1, arg2, phi));
+    assertTrue(newExpr.getUses().equals(expectedUses));
   }
 
   /** Test use replacing in case JPhiExpr. */
   @Test
   public void testPhiExpr() {
 
-    Block newBlock = new Block(stmtPhi, stmtPhi, ImmutableUtils.immutableList(stmtPhi), null);
+
     ReplaceUseExprVisitor visitor = new ReplaceUseExprVisitor(arg2, newArg, newBlock);
 
     Set<Local> argsSet = ImmutableUtils.immutableSet(arg1, arg2, arg3);
     LinkedHashSet<Local> args = new LinkedHashSet<>(argsSet);
     Map<Local, Block> argToBlock = new HashMap<>();
-    Block block1 = new Block(stmt1, stmt1, ImmutableUtils.immutableList(stmt1), null);
-    Block block2 = new Block(stmt2, stmt2, ImmutableUtils.immutableList(stmt2), null);
-    Block block3 = new Block(stmt3, stmt3, ImmutableUtils.immutableList(stmt3), null);
 
     argToBlock.put(arg1, block1);
     argToBlock.put(arg2, block2);

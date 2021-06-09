@@ -37,7 +37,7 @@ import javax.annotation.Nonnull;
 /** An expression that invokes a special method (e.g. private methods). */
 public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
-  public JSpecialInvokeExpr(Local base, MethodSignature method, List<? extends Value> args) {
+  public JSpecialInvokeExpr(Value base, MethodSignature method, List<? extends Value> args) {
     super(Jimple.newLocalBox(base), method, ValueBoxUtils.toValueBoxes(args));
   }
 
@@ -81,17 +81,17 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr impleme
   }
 
   @Nonnull
-  public JSpecialInvokeExpr withBase(Local base) {
+  public JSpecialInvokeExpr withBase(Value base) {
     return new JSpecialInvokeExpr(base, getMethodSignature(), getArgs());
   }
 
   @Nonnull
   public JSpecialInvokeExpr withMethodSignature(MethodSignature methodSignature) {
-    return new JSpecialInvokeExpr((Local) getBase(), methodSignature, getArgs());
+    return new JSpecialInvokeExpr(getBase(), methodSignature, getArgs());
   }
 
   @Nonnull
   public JSpecialInvokeExpr withArgs(List<? extends Value> args) {
-    return new JSpecialInvokeExpr((Local) getBase(), getMethodSignature(), args);
+    return new JSpecialInvokeExpr(getBase(), getMethodSignature(), args);
   }
 }
