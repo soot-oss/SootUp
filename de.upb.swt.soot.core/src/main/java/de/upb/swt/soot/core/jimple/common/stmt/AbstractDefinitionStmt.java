@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
 public abstract class AbstractDefinitionStmt extends Stmt {
 
   @Nonnull private Value leftOp;
-  @Nonnull private final Value rightOp;
+  @Nonnull private Value rightOp;
 
   AbstractDefinitionStmt(
       @Nonnull Value leftOp, @Nonnull Value rightOp, @Nonnull StmtPositionInfo positionInfo) {
@@ -79,6 +79,11 @@ public abstract class AbstractDefinitionStmt extends Stmt {
     leftOp = value;
   }
 
+  @Deprecated
+  private void setRightOp(@Nonnull Value value) {
+    rightOp = value;
+  }
+
   // TODO: [ms] remove $Accessor (i.e. replace dependent logic!)
   @Deprecated
   public static class $Accessor {
@@ -89,6 +94,13 @@ public abstract class AbstractDefinitionStmt extends Stmt {
     @Deprecated
     public static void setLeftOp(@Nonnull AbstractDefinitionStmt box, @Nonnull Value value) {
       box.setLeftOp(value);
+      System.out.println("immutability broken!");
+    }
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void setRightOp(@Nonnull AbstractDefinitionStmt box, @Nonnull Value value) {
+      box.setRightOp(value);
       System.out.println("immutability broken!");
     }
 

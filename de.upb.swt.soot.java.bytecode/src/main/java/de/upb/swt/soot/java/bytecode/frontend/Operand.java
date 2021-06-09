@@ -22,8 +22,13 @@ package de.upb.swt.soot.java.bytecode.frontend;
  */
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.expr.Expr;
+import de.upb.swt.soot.core.jimple.common.ref.Ref;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.visitor.ReplaceUseStmtVisitor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -37,8 +42,13 @@ final class Operand {
 
   @Nonnull protected final AbstractInsnNode insn;
   @Nonnull protected final Value value;
+  @Nonnull private final AsmMethodSource methodSource;
   @Nullable protected Local stack;
   @Nonnull private final List<Value> boxes = new ArrayList<>();
+
+  @Nonnull private final List<Stmt> stmtUsages = new ArrayList<>();
+  @Nonnull private final List<Expr> exprUsages = new ArrayList<>();
+  @Nonnull private final List<Ref> refUsages = new ArrayList<>();
 
   /**
    * Constructs a new stack operand.
@@ -46,9 +56,38 @@ final class Operand {
    * @param insn the instruction that produced this operand.
    * @param value the generated value.
    */
-  Operand(@Nonnull AbstractInsnNode insn, @Nonnull Value value) {
+  Operand(
+      @Nonnull AbstractInsnNode insn, @Nonnull Value value, @Nonnull AsmMethodSource methodSource) {
     this.insn = insn;
     this.value = value;
+    this.methodSource = methodSource;
+  }
+
+  /**
+   * Adds a usage of this operand (so whenever it is used in a stmt)
+   *
+   * @param usage the usage
+   */
+  void addUsage(@Nonnull Stmt usage) {
+    stmtUsages.add(usage);
+  }
+
+  /**
+   * Adds a usage of this operand (so whenever it is used in a Expr)
+   *
+   * @param usage the usage
+   */
+  void addUsage(@Nonnull Expr usage) {
+    exprUsages.add(usage);
+  }
+
+  /**
+   * Adds a usage of this operand (so whenever it is used in a Ref)
+   *
+   * @param usage the usage
+   */
+  void addUsage(@Nonnull Ref usage) {
+    refUsages.add(usage);
   }
 
   /**
@@ -73,11 +112,34 @@ final class Operand {
   }
 
   /** Updates all value boxes registered to this operand. */
-  // TODO: [ms] check if method is still necessary
   void updateBoxes() {
-    Value val = stackOrValue();
-    for (Value vb : boxes) {
-      // FIXME: [ms] box removal leftover: ValueBox.$Accessor.setValue(vb, val);
+    ReplaceUseStmtVisitor stmtVisitor = new ReplaceUseStmtVisitor(this.value, this.stackOrValue());
+
+    for (Expr exprUsage : exprUsages) {
+      List<Stmt> stmts = this.methodSource.getStmts(exprUsage);
+
+      stmts =
+          stmts.stream()
+              .map(this.methodSource::getLatestVersionOfStmt)
+              .collect(Collectors.toList());
+
+      stmtUsages.addAll(
+          stmts.stream().filter(stmt -> !stmtUsages.contains(stmt)).collect(Collectors.toList()));
+    }
+
+    for (int i = 0; i < stmtUsages.size(); i++) {
+      Stmt oldUsage = stmtUsages.get(i);
+
+      // resolve stmt in method source, it might not exist anymore!
+      oldUsage = methodSource.getLatestVersionOfStmt(oldUsage);
+
+      oldUsage.accept(stmtVisitor);
+      Stmt newUsage = stmtVisitor.getResult();
+
+      if (!oldUsage.equivTo(newUsage)) {
+        methodSource.replaceStmt(oldUsage, newUsage);
+        stmtUsages.set(i, newUsage);
+      }
     }
   }
 
@@ -93,8 +155,6 @@ final class Operand {
 
   /** @return either the stack local allocated for this operand, or its value. */
   @Nonnull
-  // TODO [ms]: check: split into to methods? removes condition check and lots of explicit casts to
-  // Immediate
   Value stackOrValue() {
     return stack == null ? value : stack;
   }

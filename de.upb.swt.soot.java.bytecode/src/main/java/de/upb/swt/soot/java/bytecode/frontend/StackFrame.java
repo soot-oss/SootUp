@@ -118,8 +118,7 @@ final class StackFrame {
           // check for self/identity assignments
           if (stack != rvalue) {
             JAssignStmt as =
-                Jimple.newAssignStmt(
-                    stack, newOp.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
+                Jimple.newAssignStmt(stack, rvalue, StmtPositionInfo.createNoStmtPositionInfo());
             src.mergeStmts(newOp.insn, as);
             newOp.addValue(as.getRightOp());
           }
