@@ -43,11 +43,11 @@ import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
-import java.io.File;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -74,16 +74,18 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   public void testWar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(war);
-    final ClassType warClass1 = getIdentifierFactory().getClassType("SimpleWarRead");
-    testClassReceival(pathBasedNamespace, warClass1, 2);
+    final ClassType warClass = getIdentifierFactory().getClassType("SimpleWarRead");
+    assertEquals(
+        17, pathBasedNamespace.getClassSources(JavaIdentifierFactory.getInstance()).size());
+
+    final Optional<? extends AbstractClassSource<?>> clazz =
+        pathBasedNamespace.getClassSource(warClass);
+    assertTrue(clazz.isPresent());
+    assertEquals(warClass, clazz.get().getClassType());
   }
 
   @Test
   public void testClassInWar() {
-
-    String warFile = "../shared-test-resources/java-warApp/dummyWarApp.war";
-
-    assertTrue("File " + warFile + " not found.", new File(warFile).exists());
 
     // Create a project
     JavaProject p =

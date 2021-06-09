@@ -250,7 +250,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
                   + "-war"
                   + warPath.hashCode()
                   + "/"));
-      extractWarFile(warPath);
+      extractWarFile(warPath, path);
     }
 
     @Override
@@ -314,11 +314,10 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
      *
      * @param warFilePath The path to war file to be extracted
      */
-    public void extractWarFile(Path warFilePath) {
-      final String destDirectory = path.toString();
+    protected void extractWarFile(Path warFilePath, final Path destDirectory) {
       int extractedSize = 0;
       try {
-        File dest = new File(destDirectory);
+        File dest = destDirectory.toFile();
         if (!dest.exists()) {
           if (!dest.mkdir()) {
             throw new RuntimeException("Could not create the directory: " + destDirectory);
@@ -329,8 +328,8 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         ZipInputStream zis = new ZipInputStream(new FileInputStream(warFilePath.toString()));
         ZipEntry zipEntry;
         while ((zipEntry = zis.getNextEntry()) != null) {
-          String filepath = destDirectory + File.separator + zipEntry.getName();
-          final File file = new File(filepath);
+          Path filepath = destDirectory.resolve(zipEntry.getName());
+          final File file = filepath.toFile();
 
           file.deleteOnExit();
           if (zipEntry.isDirectory()) {
