@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.jimple;
  */
 
 import de.upb.swt.soot.core.IdentifierFactory;
+import de.upb.swt.soot.core.graph.Block;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.expr.*;
@@ -335,8 +336,8 @@ public abstract class Jimple {
     return new JNewArrayExpr(type, size, getIdentifierFactory());
   }
 
-  public static JPhiExpr newPhiExpr(LinkedHashSet<Local> args, Map<Local, Stmt> argToPred) {
-    return new JPhiExpr(args, argToPred);
+  public static JPhiExpr newPhiExpr(LinkedHashSet<Local> args, Map<Local, Block> argToBlock) {
+    return new JPhiExpr(args, argToBlock);
   }
 
   /** Constructs a NewStaticInvokeExpr(ArrayType, List of Immediate) grammar chunk. */

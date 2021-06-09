@@ -22,11 +22,11 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
+import de.upb.swt.soot.core.graph.Block;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
@@ -38,15 +38,15 @@ import javax.annotation.Nonnull;
 /** @Zun Wang */
 public final class JPhiExpr implements Expr, Copyable {
 
-  private final Local[] args;
-  private final HashMap<Stmt, Local> predToArg = new HashMap<>();
-  private final HashMap<Local, Stmt> argToPred;
+  private LinkedHashSet<Local> args = new LinkedHashSet<>();
+  private Map<Block, Local> blockToArg = new HashMap<>();
+  private Map<Local, Block> argToBlock = new HashMap<>();
   private Type type = null;
 
-  public JPhiExpr(@Nonnull LinkedHashSet<Local> args, @Nonnull Map<Local, Stmt> argToPred) {
-    this.args = args.stream().toArray(Local[]::new);
+  public JPhiExpr(@Nonnull LinkedHashSet<Local> args, @Nonnull Map<Local, Block> argToBlock) {
+    this.args = args;
 
-    this.argToPred = (HashMap<Local, Stmt>) argToPred;
+    this.argToBlock = argToBlock;
 
     for (Local arg : args) {
       if (type == null) {
@@ -56,26 +56,41 @@ public final class JPhiExpr implements Expr, Copyable {
           throw new RuntimeException("The given args should have the same type!!");
         }
       }
-      predToArg.put(argToPred.get(arg), arg);
+      blockToArg.put(argToBlock.get(arg), arg);
+    }
+  }
+  private JPhiExpr(){}
+
+  public static JPhiExpr getEmptyPhi(){
+    return new JPhiExpr();
+  }
+
+  public void addArg(Local arg, Block block){
+    //TODO: now there's validation test
+    this.args.add(arg);
+    this.blockToArg.put(block, arg);
+    this.argToBlock.put(arg, block);
+    if(this.type ==null){
+      this.type = arg.getType();
     }
   }
 
   @Nonnull
   public Set<Local> getArgs() {
-    return new LinkedHashSet<>(Arrays.asList(this.args));
+    return this.args;
   }
 
   @Nonnull
   public int getArgsSize() {
-    return this.args.length;
+    return this.args.size();
   }
 
   @Nonnull
-  public Local getArg(@Nonnull Stmt pred) {
-    if (predToArg.get(pred) == null) {
-      throw new RuntimeException("There's no matched arg for the given stmt " + pred.toString());
+  public Local getArg(@Nonnull Block block) {
+    if (blockToArg.get(block) == null) {
+      throw new RuntimeException("There's no matched arg for the given block " + block.toString());
     }
-    return this.predToArg.get(pred);
+    return this.blockToArg.get(block);
   }
 
   @Nonnull
@@ -83,23 +98,19 @@ public final class JPhiExpr implements Expr, Copyable {
     if (index >= this.getArgsSize()) {
       throw new RuntimeException("The given index is out of the bound!");
     }
-    return args[index];
+    List<Local> argsList= new ArrayList<>(this.args);
+    return argsList.get(index);
   }
 
   @Nonnull
-  public int getArgIndex(@Nonnull Stmt pred) {
-    if (!this.predToArg.keySet().contains(pred)) {
+  public int getArgIndex(@Nonnull Block block) {
+    if (!this.blockToArg.keySet().contains(block)) {
       throw new RuntimeException(
-          "The given stmt: " + pred.toString() + " is not contained by PhiExpr!");
+          "The given block: " + block.toString() + " is not contained by PhiExpr!");
     }
-    Local arg = predToArg.get(pred);
-    int i = 0;
-    for (; i < this.args.length; i++) {
-      if (this.args[i] == arg) {
-        break;
-      }
-    }
-    return i;
+    Local arg = blockToArg.get(block);
+    List<Local> argsList= new ArrayList<>(this.args);
+    return argsList.indexOf(arg);
   }
 
   /**
@@ -107,27 +118,27 @@ public final class JPhiExpr implements Expr, Copyable {
    *     index.
    */
   @Nonnull
-  public List<Stmt> getPreds() {
-    List<Stmt> preds = new ArrayList<>();
-    Arrays.stream(args).forEach(arg -> preds.add(this.argToPred.get(arg)));
-    return preds;
+  public List<Block> getBlocks() {
+    List<Block> blocks = new ArrayList<>();
+    this.args.forEach(arg -> blocks.add(this.argToBlock.get(arg)));
+    return blocks;
   }
 
   @Nonnull
-  public Stmt getPred(@Nonnull Local arg) {
+  public Block getBlock(@Nonnull Local arg) {
     if (!getArgs().contains(arg)) {
       throw new RuntimeException(
           "The given arg: " + arg.toString() + " is not contained by PhiExpr!");
     }
-    return this.argToPred.get(arg);
+    return this.argToBlock.get(arg);
   }
 
   @Nonnull
-  public Stmt getPred(@Nonnull int index) {
+  public Block getBlock(@Nonnull int index) {
     if (index >= this.getArgsSize()) {
       throw new RuntimeException("The given index is out of the bound!");
     }
-    return this.argToPred.get(args[index]);
+    return this.argToBlock.get(getArg(index));
   }
 
   @Override
@@ -158,7 +169,7 @@ public final class JPhiExpr implements Expr, Copyable {
   public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.PHI);
     up.literal("(");
-    if (args != null && args.length != 0) {
+    if (args != null && args.size() != 0) {
       ArrayList<Local> list = new ArrayList<>(getArgs());
       list.remove(0).toString(up);
       for (Local arg : list) {
@@ -171,10 +182,14 @@ public final class JPhiExpr implements Expr, Copyable {
 
   @Nonnull
   public String toString() {
+    if(this.args.size() == 0){
+      return Jimple.PHI + "()";
+    }
     StringBuilder builder = new StringBuilder();
-    builder.append(Jimple.PHI + "(" + this.args[0].toString());
+    ArrayList<Local> argsList = new ArrayList<>(this.args);
+    builder.append(Jimple.PHI + "(" + argsList.get(0).toString());
     for (int i = 1; i < getArgsSize(); i++) {
-      builder.append(", " + this.args[i].toString());
+      builder.append(", " + argsList.get(i).toString());
     }
     builder.append(")");
     return builder.toString();
@@ -187,11 +202,11 @@ public final class JPhiExpr implements Expr, Copyable {
 
   @Nonnull
   public JPhiExpr withArgs(@Nonnull LinkedHashSet<Local> args) {
-    return new JPhiExpr(args, this.argToPred);
+    return new JPhiExpr(args, this.argToBlock);
   }
 
   @Nonnull
-  public JPhiExpr withArgToPredMap(@Nonnull Map<Local, Stmt> argToPred) {
-    return new JPhiExpr((LinkedHashSet<Local>) getArgs(), argToPred);
+  public JPhiExpr withArgToBlockMap(@Nonnull Map<Local, Block> argToBlock){
+    return new JPhiExpr((LinkedHashSet<Local>) getArgs(), argToBlock);
   }
 }
