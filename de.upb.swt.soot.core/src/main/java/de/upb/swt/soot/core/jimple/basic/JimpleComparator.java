@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.jimple.basic;
  * #L%
  */
 
+import de.upb.swt.soot.core.graph.Block;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.expr.*;
@@ -90,6 +91,62 @@ public class JimpleComparator {
     }
     Local local = (Local) o;
     return obj.getName().equals(local.getName()) && obj.getType().equals(local.getType());
+  }
+
+  public boolean caseBlock(Block block, Object o){
+    if(!(o instanceof Block)){
+      return false;
+    }
+    Block obj = (Block) o;
+    if(caseStmt(block.getHead(), obj.getHead()) && caseStmt(block.getTail(), obj.getTail()) && block.getBlockLength()==obj.getBlockLength()){
+      List<Stmt> stmts = obj.getBlockStmts();
+      int index = 0;
+      for(Stmt stmt : block.getBlockStmts()){
+        if(!caseStmt(stmt, stmts.get(index))){
+          return false;
+        }
+        index++;
+      }
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  public boolean caseStmt(Stmt stmt, Object o){
+    if(!(o instanceof Stmt)){
+      return false;
+    }else if(stmt instanceof JBreakpointStmt){
+      return caseBreakpointStmt((JBreakpointStmt) stmt, o);
+    }else if(stmt instanceof JInvokeStmt){
+      return caseInvokeStmt((JInvokeStmt) stmt, o);
+    }else if(stmt instanceof JAssignStmt){
+      return caseAssignStmt((JAssignStmt) stmt, o);
+    }else if(stmt instanceof JIdentityStmt){
+      return caseIdentityStmt((JIdentityStmt) stmt, o);
+    }else if(stmt instanceof JEnterMonitorStmt){
+      return caseEnterMonitorStmt((JEnterMonitorStmt) stmt, o);
+    }else if(stmt instanceof JExitMonitorStmt){
+      return caseExitMonitorStmt((JExitMonitorStmt) stmt, o);
+    }else if(stmt instanceof JGotoStmt){
+      return caseGotoStmt((JGotoStmt) stmt, o);
+    }else if(stmt instanceof JIfStmt){
+      return caseIfStmt((JIfStmt) stmt, o);
+    }else if(stmt instanceof JSwitchStmt){
+      return caseSwitchStmt((JSwitchStmt) stmt, o);
+    }else if(stmt  instanceof JNopStmt){
+      return caseNopStmt((JNopStmt) stmt, o);
+    }else if(stmt  instanceof JRetStmt){
+      return caseRetStmt((JRetStmt) stmt, o);
+    }else if(stmt instanceof JReturnStmt){
+      return caseReturnStmt((JReturnStmt) stmt, o);
+    }else if (stmt instanceof JReturnVoidStmt){
+      return caseReturnVoidStmt((JReturnVoidStmt) stmt, o);
+    }else if (stmt instanceof JThrowStmt){
+      return caseThrowStmt((JThrowStmt) stmt, o);
+    }else{
+      return false;
+    }
   }
 
   public boolean caseBreakpointStmt(JBreakpointStmt stmt, Object o) {
@@ -337,10 +394,10 @@ public class JimpleComparator {
         return false;
       }
     }
-    List<Stmt> predsV = v.getPreds();
-    List<Stmt> predsAe = ae.getPreds();
+    List<Block> blocksV = v.getBlocks();
+    List<Block> blocksAe = ae.getBlocks();
     for (int i = 0; i < v.getArgsSize(); i++) {
-      if (!predsV.get(i).equivTo(predsAe.get(i), this)) {
+      if (!caseBlock(blocksV.get(i), blocksAe.get(i))) {
         return false;
       }
     }
@@ -454,4 +511,5 @@ public class JimpleComparator {
   public boolean caseConstant(Constant constant, Object o) {
     return constant.equals(o);
   }
+
 }
