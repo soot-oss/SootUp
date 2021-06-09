@@ -1285,7 +1285,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (isInstance) {
         args[args.length - 1] = operandStack.popLocal();
       }
-      Value[] boxes = args == null ? null : new Value[args.length];
+      Value[] values = args == null ? null : new Value[args.length];
       AbstractInvokeExpr invoke;
       if (!isInstance) {
         invoke = Jimple.newStaticInvokeExpr(methodSignature, argList);
@@ -1307,19 +1307,19 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           default:
             throw new AssertionError("Unknown invoke op:" + op);
         }
-        boxes[boxes.length - 1] = iinvoke.getBase();
+        values[values.length - 1] = iinvoke.getBase();
 
-        args[args.length - 1].addValue(boxes[boxes.length - 1]);
+        args[args.length - 1].addValue(values[values.length - 1]);
         invoke = iinvoke;
         args[args.length - 1].addUsage(invoke);
       }
-      if (boxes != null) {
+      if (values != null) {
         for (int i = 0; i != sigTypes.size(); i++) {
-          boxes[i] = invoke.getArg(i);
-          args[i].addValue(boxes[i]);
+          values[i] = invoke.getArg(i);
+          args[i].addValue(values[i]);
           args[i].addUsage(invoke);
         }
-        frame.setValues(boxes);
+        frame.setValues(values);
         frame.setIn(args);
       }
       opr = new Operand(insn, invoke, this);
@@ -1390,7 +1390,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       List<Immediate> methodArgs = new ArrayList<>(nrArgs);
 
       Operand[] args = new Operand[nrArgs];
-      Value[] boxes = new Value[nrArgs];
+      Value[] values = new Value[nrArgs];
 
       // Beware: Call stack is FIFO, Jimple is linear
 
@@ -1415,12 +1415,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           Jimple.newDynamicInvokeExpr(
               bsmMethodRef, bsmMethodArgs, methodRef, insn.bsm.getTag(), methodArgs);
       for (int i = 0; i < types.size() - 1; i++) {
-        boxes[i] = indy.getArg(i);
-        args[i].addValue(boxes[i]);
+        values[i] = indy.getArg(i);
+        args[i].addValue(values[i]);
         args[i].addUsage(indy);
       }
 
-      frame.setValues(boxes);
+      frame.setValues(values);
       frame.setIn(args);
       opr = new Operand(insn, indy, this);
       frame.setOut(opr);
@@ -1499,19 +1499,19 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       int dims = insn.dims;
       Operand[] sizes = new Operand[dims];
       Immediate[] sizeVals = new Immediate[dims];
-      Value[] boxes = new Value[dims];
+      Value[] values = new Value[dims];
       while (dims-- != 0) {
         sizes[dims] = operandStack.popImmediate();
         sizeVals[dims] = (Immediate) sizes[dims].stackOrValue();
       }
       JNewMultiArrayExpr nm = Jimple.newNewMultiArrayExpr(t, Arrays.asList(sizeVals));
-      for (int i = 0; i != boxes.length; i++) {
+      for (int i = 0; i != values.length; i++) {
         Value vb = nm.getSize(i);
         sizes[i].addValue(vb);
         sizes[i].addUsage(nm);
-        boxes[i] = vb;
+        values[i] = vb;
       }
-      frame.setValues(boxes);
+      frame.setValues(values);
       frame.setIn(sizes);
       opr = new Operand(insn, nm, this);
       frame.setOut(opr);
