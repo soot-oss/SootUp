@@ -63,7 +63,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
 
   private Set<String> sourcePath;
   private IClassHierarchy classHierarchy;
-  private List<SootClass> sootClasses;
+  private List<SootClass<?>> sootClasses;
   private List<SootClassSource<JavaSootClass>> classSources;
   private AnalysisScope scope;
   private ClassLoaderFactory factory;
@@ -245,7 +245,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
    *     is the responsibility of the View.
    */
   @Deprecated
-  public List<SootClass> getSootClasses() {
+  public List<SootClass<?>> getSootClasses() {
     Iterator<IClass> it = iterateWalaClasses();
     if (sootClasses == null) {
       sootClasses = new ArrayList<>();
@@ -253,7 +253,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
     while (it.hasNext()) {
       JavaSourceLoaderImpl.JavaClass walaClass = (JavaSourceLoaderImpl.JavaClass) it.next();
-      SootClass sootClass = walaToSoot.convertClass(walaClass);
+      SootClass<?> sootClass = walaToSoot.convertClass(walaClass);
       sootClasses.add(sootClass);
     }
     return sootClasses;
@@ -347,7 +347,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
 
   @Override
   public SootClassSource<JavaSootClass> createClassSource(
-      AnalysisInputLocation<JavaSootClass> srcNamespace, Path sourcePath, ClassType type) {
+      AnalysisInputLocation<? extends SootClass<?>> srcNamespace, Path sourcePath, ClassType type) {
     return getClassSource(type).orElse(null);
   }
 

@@ -3,10 +3,13 @@ package de.upb.swt.soot.jimple.parser;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.EmptyClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.FileType;
+import de.upb.swt.soot.core.model.AbstractClass;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
@@ -15,13 +18,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /** @author Markus Schmidt */
-public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
+public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClassSource<T>>>
+    implements AnalysisInputLocation<T> {
   final Path path;
 
   public JimpleAnalysisInputLocation(@Nonnull Path path) {
@@ -29,10 +34,10 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   }
 
   @Nonnull
-  Collection<? extends AbstractClassSource> walkDirectory(
+  List<AbstractClassSource<? extends AbstractClass<?>>> walkDirectory(
       @Nonnull Path dirPath,
       @Nonnull IdentifierFactory factory,
-      @Nonnull ClassProvider classProvider) {
+      @Nonnull ClassProvider<? extends SootClass<?>> classProvider) {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
       return Files.walk(dirPath)
@@ -50,34 +55,30 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
 
   @Nonnull
   @Override
-  public Collection<? extends AbstractClassSource> getClassSources(
+  public Collection<? extends SootClassSource<T>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory) {
     return getClassSources(identifierFactory, EmptyClassLoadingOptions.Default);
   }
 
   @Override
   @Nonnull
-  public Collection<? extends AbstractClassSource> getClassSources(
+  public Collection<? extends SootClassSource<T>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
-    return walkDirectory(
-        path,
-        identifierFactory,
-        new JimpleClassProvider(classLoadingOptions.getBodyInterceptors()));
+    return walkDirectory(path, identifierFactory, new JimpleClassProvider(classLoadingOptions));
   }
 
   @Nonnull
   @Override
-  public Optional<? extends AbstractClassSource> getClassSource(@Nonnull ClassType type) {
+  public Optional<? extends SootClassSource<T>> getClassSource(@Nonnull ClassType type) {
     return getClassSource(type, EmptyClassLoadingOptions.Default);
   }
 
   @Override
   @Nonnull
-  public Optional<? extends AbstractClassSource> getClassSource(
+  public Optional<? extends SootClassSource<T>> getClassSource(
       @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
-    final JimpleClassProvider classProvider =
-        new JimpleClassProvider(classLoadingOptions.getBodyInterceptors());
+    final JimpleClassProvider<T> classProvider = new JimpleClassProvider<>(classLoadingOptions);
 
     final String ext = classProvider.getHandledFileType().toString().toLowerCase();
 

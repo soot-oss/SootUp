@@ -42,11 +42,11 @@ import javax.annotation.Nonnull;
  * @author Markus Schmidt
  * @author Linghui Luo
  */
-public class JavaProject extends Project<JavaView, JavaSootClass> {
+public class JavaProject extends Project<JavaSootClass, JavaView> {
 
   public JavaProject(
       JavaLanguage language,
-      @Nonnull List<AnalysisInputLocation<JavaSootClass>> inputLocations,
+      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     super(language, inputLocations, JavaIdentifierFactory.getInstance(), sourceTypeSpecifier);
   }
@@ -61,7 +61,7 @@ public class JavaProject extends Project<JavaView, JavaSootClass> {
   @Override
   public JavaView createOnDemandView(
       @Nonnull
-          Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
     return new JavaView(this, classLoadingOptionsSpecifier);
   }
@@ -91,7 +91,7 @@ public class JavaProject extends Project<JavaView, JavaSootClass> {
   }
 
   public static class JavaProjectBuilder {
-    private final List<AnalysisInputLocation<JavaSootClass>> analysisInputLocations =
+    private final List<AnalysisInputLocation<? extends JavaSootClass>> analysisInputLocations =
         new ArrayList<>();
     private SourceTypeSpecifier sourceTypeSpecifier = DefaultSourceTypeSpecifier.getInstance();
     private final JavaLanguage language;

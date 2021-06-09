@@ -570,7 +570,7 @@ public abstract class Jimple {
   public abstract JCaughtExceptionRef newCaughtExceptionRef();
 
   /** Constructs a NewExpr(RefType) grammar chunk. */
-  public static JNewExpr newNewExpr(ReferenceType type) {
+  public static JNewExpr newNewExpr(ClassType type) {
     return new JNewExpr(type);
   }
 

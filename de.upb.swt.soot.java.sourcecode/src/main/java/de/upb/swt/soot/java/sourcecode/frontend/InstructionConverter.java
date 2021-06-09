@@ -87,13 +87,7 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.ArrayType;
-import de.upb.swt.soot.core.types.NullType;
-import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.core.types.ReferenceType;
-import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.types.UnknownType;
-import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -378,7 +372,7 @@ public class InstructionConverter {
     branchingTargetsOfIfStmts.put(assertIfStmt, stmtAfterAssertion);
     // create failed assertion code.
 
-    ReferenceType assertionErrorType =
+    ClassType assertionErrorType =
         JavaIdentifierFactory.getInstance().getClassType("java.lang.AssertionError");
     Local failureLocal = localGenerator.generateLocal(assertionErrorType);
     JNewExpr newExpr = Jimple.newNewExpr(assertionErrorType);
@@ -692,7 +686,7 @@ public class InstructionConverter {
           converter.convertType(inst.getNewSite().getDeclaredType().getArrayElementType());
       rvalue = JavaJimple.getInstance().newNewArrayExpr(baseType, size);
     } else {
-      rvalue = Jimple.newNewExpr((ReferenceType) type);
+      rvalue = Jimple.newNewExpr((ClassType) type);
     }
 
     Position[] operandPos = new Position[2];

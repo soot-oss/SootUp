@@ -26,6 +26,10 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Scope;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootField;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
 import java.util.Optional;
@@ -40,7 +44,7 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public interface View<T extends SootClass> {
+public interface View<T extends SootClass<?>> {
 
   /** Return all classes in the view. */
   @Nonnull
@@ -53,6 +57,10 @@ public interface View<T extends SootClass> {
    */
   @Nonnull
   Optional<T> getClass(@Nonnull ClassType signature);
+
+  Optional<? extends SootField> getField(@Nonnull FieldSignature signature);
+
+  Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature);
 
   /**
    * Returns the scope if the view is scoped.
