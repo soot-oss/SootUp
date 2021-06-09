@@ -25,7 +25,7 @@ package de.upb.swt.soot.test.java.bytecode.inputlocation;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
-import categories.Java8Test;
+import categories.Java9Test;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.BodySource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
@@ -57,7 +57,7 @@ import org.junit.experimental.categories.Category;
  * @author Manuel Benz created on 06.06.18
  * @author Kaustubh Kelkar updated on 16.04.2020
  */
-@Category(Java8Test.class)
+@Category(Java9Test.class)
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test
