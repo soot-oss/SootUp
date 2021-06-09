@@ -77,8 +77,9 @@ public abstract class AnalysisInputLocationTest {
       int minClassesFound,
       int maxClassesFound) {
 
-    final Optional<? extends AbstractClassSource> clazz = inputLocation.getClassSource(sig);
-    clazz.ifPresent(abstractClassSource -> assertEquals(sig, abstractClassSource.getClassType()));
+    final Optional<? extends AbstractClassSource> clazzOpt = inputLocation.getClassSource(sig);
+    assertTrue(clazzOpt.isPresent());
+    assertEquals(sig, clazzOpt.get().getClassType());
 
     final Collection<? extends AbstractClassSource> classSources =
         inputLocation.getClassSources(getIdentifierFactory());

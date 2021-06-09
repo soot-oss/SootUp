@@ -43,7 +43,8 @@ import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -75,13 +76,14 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(war);
     final ClassType warClass = getIdentifierFactory().getClassType("SimpleWarRead");
-    assertEquals(
-        17, pathBasedNamespace.getClassSources(JavaIdentifierFactory.getInstance()).size());
 
     final Optional<? extends AbstractClassSource<?>> clazz =
         pathBasedNamespace.getClassSource(warClass);
     assertTrue(clazz.isPresent());
     assertEquals(warClass, clazz.get().getClassType());
+
+    assertEquals(
+        19, pathBasedNamespace.getClassSources(JavaIdentifierFactory.getInstance()).size());
   }
 
   @Test
@@ -96,7 +98,8 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     // Get the view
     JavaView view = p.createOnDemandView();
 
-    assertEquals(17, view.getClasses().size());
+    System.out.println(view.getClasses());
+    assertEquals(19, view.getClasses().size());
 
     // Create java class signature
     ClassType utilsClassSignature = p.getIdentifierFactory().getClassType("Employee", "ds");
@@ -214,5 +217,18 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     runtimeContains(v, "HashMap", "java.util");
     runtimeContains(v, "Collection", "java.util");
     runtimeContains(v, "Comparator", "java.util");
+  }
+
+  @Test
+  public void warTest() {
+
+    try (FileSystem fs = FileSystems.newFileSystem(war, null)) {
+      final Path archiveRoot = fs.getPath("/");
+
+      Files.walk(archiveRoot).forEach(f -> System.out.println(f));
+      System.out.println(archiveRoot.toAbsolutePath());
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

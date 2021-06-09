@@ -7,6 +7,7 @@ import com.google.common.cache.RemovalNotification;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.types.ClassType;
@@ -21,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.annotation.Nonnull;
@@ -237,7 +239,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
 
   private static final class WarArchiveAnalysisInputLocation
       extends DirectoryBasedAnalysisInputLocation {
-    public List<Path> jarsFromPath = null;
+    public List<AnalysisInputLocation> containedInputLocations = null;
     public static int maxExtractedByte =
         1024 * 1024 * 500; // limit of extracted file size to protect against archive bombs
 
@@ -259,15 +261,11 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         @Nonnull IdentifierFactory identifierFactory,
         @Nonnull ClassLoadingOptions classLoadingOptions) {
 
-      List<AbstractClassSource<JavaSootClass>> foundClasses = new ArrayList<>();
+      Set<AbstractClassSource<JavaSootClass>> foundClasses = new HashSet<>();
 
       try {
-        for (Path jarPath : getJarsInPath()) {
-          final ArchiveBasedAnalysisInputLocation archiveBasedAnalysisInputLocation =
-              new ArchiveBasedAnalysisInputLocation(jarPath);
-          foundClasses.addAll(
-              archiveBasedAnalysisInputLocation.getClassSources(
-                  identifierFactory, classLoadingOptions));
+        for (AnalysisInputLocation inputLoc : getInputLocationsInPath()) {
+          foundClasses.addAll(inputLoc.getClassSources(identifierFactory, classLoadingOptions));
         }
       } catch (IOException e) {
         throw new RuntimeException(e);
@@ -275,16 +273,26 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       return foundClasses;
     }
 
-    private Collection<Path> getJarsInPath() throws IOException {
-      if (jarsFromPath != null) {
-        return jarsFromPath;
+    private Collection<AnalysisInputLocation> getInputLocationsInPath() throws IOException {
+      if (containedInputLocations != null) {
+        return containedInputLocations;
       }
-      jarsFromPath =
+      containedInputLocations =
           Files.walk(Paths.get(path.toString()))
-              .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
-              .flatMap(p -> StreamUtils.optionalToStream(Optional.of(p)))
+              .flatMap(
+                  f -> {
+                    if (PathUtils.hasExtension(f, FileType.JAR)) {
+                      return Stream.of(
+                          new PathBasedAnalysisInputLocation.ArchiveBasedAnalysisInputLocation(f));
+                    } else if (PathUtils.hasExtension(f, FileType.CLASS)) {
+                      return Stream.of(
+                          new PathBasedAnalysisInputLocation.DirectoryBasedAnalysisInputLocation(
+                              f.getParent()));
+                    }
+                    return Stream.empty();
+                  })
               .collect(Collectors.toList());
-      return jarsFromPath;
+      return containedInputLocations;
     }
 
     @Override
@@ -293,11 +301,9 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
 
       try {
-        for (Path jarPath : getJarsInPath()) {
-          final ArchiveBasedAnalysisInputLocation archiveBasedAnalysisInputLocation =
-              new ArchiveBasedAnalysisInputLocation(jarPath);
+        for (AnalysisInputLocation inputLocation : getInputLocationsInPath()) {
           final Optional<? extends AbstractClassSource<JavaSootClass>> classSource =
-              archiveBasedAnalysisInputLocation.getClassSource(type, classLoadingOptions);
+              inputLocation.getClassSource(type, classLoadingOptions);
           if (classSource.isPresent()) {
             return classSource;
           }
