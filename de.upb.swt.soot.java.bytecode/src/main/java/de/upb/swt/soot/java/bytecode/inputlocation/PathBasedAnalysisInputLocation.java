@@ -21,8 +21,6 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import javax.annotation.Nonnull;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -83,9 +81,9 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     if (Files.isDirectory(path)) {
       return new DirectoryBasedAnalysisInputLocation(path);
     } else if (PathUtils.isArchive(path)) {
-      if (PathUtils.hasExtension(path, FileType.WAR)) {
+      /*if (PathUtils.hasExtension(path, FileType.WAR)) {
         return new WarArchiveAnalysisInputLocation(path);
-      }
+      }*/
       return new ArchiveBasedAnalysisInputLocation(path);
     } else {
       throw new IllegalArgumentException(
@@ -220,185 +218,34 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
   }
 
-  // TODO: [ms] dont extractWarfile and extend ArchiveBasedAnalysisInputLocation?
-  private static final class WarArchiveAnalysisInputLocation
-      extends DirectoryBasedAnalysisInputLocation {
-    public List<Path> jarsFromPath = new ArrayList<>();
-    public static int maxExtractedSize =
-        1024 * 1024 * 500; // limit of extracted file size to protect against archive bombs
-
-    private WarArchiveAnalysisInputLocation(@Nonnull Path warPath) {
-      super(
-          Paths.get(
-              System.getProperty("java.io.tmpdir")
-                  + File.separator
-                  + "sootOutput"
-                  + "-war"
-                  + warPath.hashCode()
-                  + "/"));
-      extractWarFile(warPath);
-    }
-
-    @Override
-    @Nonnull
-    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull IdentifierFactory identifierFactory,
-        @Nonnull ClassLoadingOptions classLoadingOptions) {
-      List<AbstractClassSource<JavaSootClass>> foundClasses = new ArrayList<>();
-
-      try {
-        jarsFromPath =
-            Files.walk(Paths.get(path.toString()))
-                .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
-                .flatMap(p1 -> StreamUtils.optionalToStream(Optional.of(p1)))
-                .collect(Collectors.toList());
-        for (Path jarPath : jarsFromPath) {
-          final ArchiveBasedAnalysisInputLocation archiveBasedAnalysisInputLocation =
-              new ArchiveBasedAnalysisInputLocation(jarPath);
-          foundClasses.addAll(
-              archiveBasedAnalysisInputLocation.getClassSources(
-                  identifierFactory, classLoadingOptions));
+  /**
+   * Parses the web.xml file to search for the servlet-class classes in the extracted directory
+   * after the war file is extracted
+   *
+   * <p>[ms] can help to set entrypoints for analyses automatically
+   *
+   * @param extractedWARPath The path where the war file is extracted Adds the classes associated to
+   *     servlet-class in a {@link ArrayList} of {@link String}
+   */
+  @Nonnull
+  public List<String> retrieveServletClasses(String extractedWARPath) {
+    List<String> classesInXML = new ArrayList<>();
+    try {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document document = builder.parse(new File(extractedWARPath + "/WEB-INF/web.xml"));
+      document.getDocumentElement().normalize();
+      NodeList nList = document.getElementsByTagName("servlet");
+      for (int temp = 0; temp < nList.getLength(); temp++) {
+        Node node = nList.item(temp);
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
+          Element eElement = (Element) node;
+          classesInXML.add(eElement.getElementsByTagName("servlet-class").item(0).getTextContent());
         }
-      } catch (IOException e) {
-        throw new RuntimeException(e);
       }
-      return foundClasses;
+    } catch (ParserConfigurationException | SAXException | IOException e) {
+      throw new RuntimeException(e);
     }
-
-    @Override
-    @Nonnull
-    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-        @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
-
-      try {
-        jarsFromPath =
-            Files.walk(Paths.get(path.toString()))
-                .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
-                .flatMap(p1 -> StreamUtils.optionalToStream(Optional.of(p1)))
-                .collect(Collectors.toList());
-        for (Path jarPath : jarsFromPath) {
-          final ArchiveBasedAnalysisInputLocation archiveBasedAnalysisInputLocation =
-              new ArchiveBasedAnalysisInputLocation(jarPath);
-          final Optional<? extends AbstractClassSource<JavaSootClass>> classSource =
-              archiveBasedAnalysisInputLocation.getClassSource(type, classLoadingOptions);
-          if (classSource.isPresent()) {
-            return classSource;
-          }
-        }
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-
-      return Optional.empty();
-    }
-
-    /**
-     * Extracts the war file at the temporary location to analyze underlying class and jar files
-     *
-     * @param warFilePath The path to war file to be extracted
-     */
-    public void extractWarFile(Path warFilePath) {
-      final String destDirectory = path.toString();
-      int extractedSize = 0;
-      try {
-        File dest = new File(destDirectory);
-        if (!dest.exists()) {
-          if (!dest.mkdir()) {
-            throw new RuntimeException("Could not create the directory: " + destDirectory);
-          }
-          dest.deleteOnExit();
-        }
-
-        ZipInputStream zis = new ZipInputStream(new FileInputStream(warFilePath.toString()));
-        ZipEntry zipEntry;
-        while ((zipEntry = zis.getNextEntry()) != null) {
-          String filepath = destDirectory + File.separator + zipEntry.getName();
-          final File file = new File(filepath);
-
-          file.deleteOnExit();
-          if (zipEntry.isDirectory()) {
-            if (!file.exists()) {
-              file.mkdir();
-            }
-          } else {
-            byte[] incomingValues = new byte[4096];
-            int readBytesZip;
-            if (file.exists()) {
-              // compare contents -> does it contain the extracted war already?
-              int readBytesExistingFile;
-              final BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-              byte[] bisBuf = new byte[4096];
-              while ((readBytesZip = zis.read(incomingValues)) != -1) {
-                if (extractedSize > maxExtractedSize) {
-                  throw new RuntimeException(
-                      "The extracted warfile exceeds the size of "
-                          + maxExtractedSize
-                          + " byte. Either the file is a big archive or maybe it contains an archive bomb.");
-                }
-                readBytesExistingFile = bis.read(bisBuf, 0, readBytesZip);
-                if (readBytesExistingFile != readBytesZip) {
-                  throw new RuntimeException(
-                      "File \"" + file + "\" exists already and has differing size.");
-                } else if (!Arrays.equals(bisBuf, incomingValues)) {
-                  throw new RuntimeException(
-                      "File \"" + file + "\" exists already and has differing contents.");
-                }
-                extractedSize += readBytesZip;
-              }
-
-            } else {
-              BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-              while ((readBytesZip = zis.read(incomingValues)) != -1) {
-                if (extractedSize > maxExtractedSize) {
-                  throw new RuntimeException(
-                      "The extracted warfile exceeds the size of "
-                          + maxExtractedSize
-                          + " byte. Either the file is a big archive or maybe it contains an archive bomb.");
-                }
-                bos.write(incomingValues, 0, readBytesZip);
-                extractedSize += readBytesZip;
-              }
-              bos.close();
-            }
-          }
-          zis.closeEntry();
-        }
-
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    /**
-     * Parses the web.xml file to search for the servlet-class classes in the extracted directory
-     * after the war file is extracted
-     *
-     * <p>[ms] helps to set entrypoints for analyses automatically (later)
-     *
-     * @param extractedWARPath The path where the war file is extracted Adds the classes associated
-     *     to servlet-class in a {@link ArrayList} of {@link String}
-     */
-    @Nonnull
-    public List<String> retrieveServletClasses(String extractedWARPath) {
-      List<String> classesInXML = new ArrayList<>();
-      try {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(new File(extractedWARPath + "/WEB-INF/web.xml"));
-        document.getDocumentElement().normalize();
-        NodeList nList = document.getElementsByTagName("servlet");
-        for (int temp = 0; temp < nList.getLength(); temp++) {
-          Node node = nList.item(temp);
-          if (node.getNodeType() == Node.ELEMENT_NODE) {
-            Element eElement = (Element) node;
-            classesInXML.add(
-                eElement.getElementsByTagName("servlet-class").item(0).getTextContent());
-          }
-        }
-      } catch (ParserConfigurationException | SAXException | IOException e) {
-        throw new RuntimeException(e);
-      }
-      return classesInXML;
-    }
+    return classesInXML;
   }
 }
