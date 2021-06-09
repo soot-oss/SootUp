@@ -94,6 +94,8 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     // Get the view
     JavaView view = p.createOnDemandView();
 
+    assertEquals(17, view.getClasses().size());
+
     // Create java class signature
     ClassType utilsClassSignature = p.getIdentifierFactory().getClassType("Employee", "ds");
 

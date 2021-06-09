@@ -235,11 +235,10 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
   }
 
-  // TODO: [ms] dont extractWarfile and extend ArchiveBasedAnalysisInputLocation?
   private static final class WarArchiveAnalysisInputLocation
       extends DirectoryBasedAnalysisInputLocation {
-    public List<Path> jarsFromPath = new ArrayList<>();
-    public static int maxExtractedSize =
+    public List<Path> jarsFromPath = null;
+    public static int maxExtractedByte =
         1024 * 1024 * 500; // limit of extracted file size to protect against archive bombs
 
     private WarArchiveAnalysisInputLocation(@Nonnull Path warPath) {
@@ -259,15 +258,11 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
         @Nonnull IdentifierFactory identifierFactory,
         @Nonnull ClassLoadingOptions classLoadingOptions) {
+
       List<AbstractClassSource<JavaSootClass>> foundClasses = new ArrayList<>();
 
       try {
-        jarsFromPath =
-            Files.walk(Paths.get(path.toString()))
-                .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
-                .flatMap(p1 -> StreamUtils.optionalToStream(Optional.of(p1)))
-                .collect(Collectors.toList());
-        for (Path jarPath : jarsFromPath) {
+        for (Path jarPath : getJarsInPath()) {
           final ArchiveBasedAnalysisInputLocation archiveBasedAnalysisInputLocation =
               new ArchiveBasedAnalysisInputLocation(jarPath);
           foundClasses.addAll(
@@ -280,18 +275,25 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       return foundClasses;
     }
 
+    private Collection<Path> getJarsInPath() throws IOException {
+      if (jarsFromPath != null) {
+        return jarsFromPath;
+      }
+      jarsFromPath =
+          Files.walk(Paths.get(path.toString()))
+              .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
+              .flatMap(p -> StreamUtils.optionalToStream(Optional.of(p)))
+              .collect(Collectors.toList());
+      return jarsFromPath;
+    }
+
     @Override
     @Nonnull
     public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
         @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
 
       try {
-        jarsFromPath =
-            Files.walk(Paths.get(path.toString()))
-                .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JAR))
-                .flatMap(p1 -> StreamUtils.optionalToStream(Optional.of(p1)))
-                .collect(Collectors.toList());
-        for (Path jarPath : jarsFromPath) {
+        for (Path jarPath : getJarsInPath()) {
           final ArchiveBasedAnalysisInputLocation archiveBasedAnalysisInputLocation =
               new ArchiveBasedAnalysisInputLocation(jarPath);
           final Optional<? extends AbstractClassSource<JavaSootClass>> classSource =
@@ -344,10 +346,10 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
               final BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
               byte[] bisBuf = new byte[4096];
               while ((readBytesZip = zis.read(incomingValues)) != -1) {
-                if (extractedSize > maxExtractedSize) {
+                if (extractedSize > maxExtractedByte) {
                   throw new RuntimeException(
                       "The extracted warfile exceeds the size of "
-                          + maxExtractedSize
+                          + maxExtractedByte
                           + " byte. Either the file is a big archive or maybe it contains an archive bomb.");
                 }
                 readBytesExistingFile = bis.read(bisBuf, 0, readBytesZip);
@@ -364,10 +366,10 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
             } else {
               BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
               while ((readBytesZip = zis.read(incomingValues)) != -1) {
-                if (extractedSize > maxExtractedSize) {
+                if (extractedSize > maxExtractedByte) {
                   throw new RuntimeException(
                       "The extracted warfile exceeds the size of "
-                          + maxExtractedSize
+                          + maxExtractedByte
                           + " byte. Either the file is a big archive or maybe it contains an archive bomb.");
                 }
                 bos.write(incomingValues, 0, readBytesZip);
