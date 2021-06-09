@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
+import de.upb.swt.soot.core.graph.Block;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -40,7 +41,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
 
   Value oldUse;
   Value newUse;
-  Stmt phiPred = null;
+  Block phiBlock = null;
   Expr newExpr;
 
   public ReplaceUseExprVisitor(Value oldUse, Value newUse) {
@@ -48,10 +49,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
     this.newUse = newUse;
   }
   /* This constructor is for PhiExpr. The phiPred is predecessor of the newUse.*/
-  public ReplaceUseExprVisitor(Value oldUse, Value newUse, Stmt phiPred) {
+  public ReplaceUseExprVisitor(Value oldUse, Value newUse, Block phiBlock) {
     this.oldUse = oldUse;
     this.newUse = newUse;
-    this.phiPred = phiPred;
+    this.phiBlock = phiBlock;
   }
 
   @Nonnull
@@ -646,7 +647,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
 
   @Override
   public void casePhiExpr(JPhiExpr v) {
-    if (this.phiPred != null
+    if (this.phiBlock != null
         && newUse instanceof Local
         && v.getArgs().contains(oldUse)
         && newUse.getType().equals(v.getType())
@@ -657,16 +658,16 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
       LinkedHashSet<Local> newArgs = new LinkedHashSet<>(argsList);
       v = v.withArgs(newArgs);
 
-      Map<Local, Stmt> newArgToPred = new HashMap<>();
-      List<Stmt> preds = v.getPreds();
+      Map<Local, Block> newArgToBlock = new HashMap<>();
+      List<Block> blocks = v.getBlocks();
       for (int i = 0; i < v.getArgsSize(); i++) {
         if (i == index) {
-          newArgToPred.put((Local) newUse, phiPred);
+          newArgToBlock.put((Local) newUse, phiBlock);
         } else {
-          newArgToPred.put(argsList.get(i), preds.get(i));
+          newArgToBlock.put(argsList.get(i), blocks.get(i));
         }
       }
-      newExpr = v.withArgToPredMap(newArgToPred);
+      newExpr = v.withArgToBlockMap(newArgToBlock);
     } else {
       defaultCase(v);
     }

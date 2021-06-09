@@ -3,6 +3,7 @@ package de.upb.swt.soot.test;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.graph.Block;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -213,24 +214,30 @@ public class ReplaceUseExprVisitorTest {
   @Test
   public void testPhiExpr() {
 
-    ReplaceUseExprVisitor visitor = new ReplaceUseExprVisitor(arg2, newArg, stmtPhi);
+    Block newBlock = new Block(stmtPhi, stmtPhi, ImmutableUtils.immutableList(stmtPhi), null);
+    ReplaceUseExprVisitor visitor = new ReplaceUseExprVisitor(arg2, newArg, newBlock);
 
     Set<Local> argsSet = ImmutableUtils.immutableSet(arg1, arg2, arg3);
     LinkedHashSet<Local> args = new LinkedHashSet<>(argsSet);
-    Map<Local, Stmt> argToPred = new HashMap<>();
-    argToPred.put(arg1, stmt1);
-    argToPred.put(arg2, stmt2);
-    argToPred.put(arg3, stmt3);
-    Expr expr = Jimple.newPhiExpr(args, argToPred);
+    Map<Local, Block> argToBlock = new HashMap<>();
+    Block block1 = new Block(stmt1, stmt1, ImmutableUtils.immutableList(stmt1), null);
+    Block block2 = new Block(stmt2, stmt2, ImmutableUtils.immutableList(stmt2), null);
+    Block block3 = new Block(stmt3, stmt3, ImmutableUtils.immutableList(stmt3), null);
+
+    argToBlock.put(arg1, block1);
+    argToBlock.put(arg2, block2);
+    argToBlock.put(arg3, block3);
+    Expr expr = Jimple.newPhiExpr(args, argToBlock);
 
     expr.accept(visitor);
     JPhiExpr newExpr = (JPhiExpr) visitor.getNewExpr();
 
     List<Local> expectedArgs = ImmutableUtils.immutableList(arg1, newArg, arg3);
-    List<Stmt> expectedPreds = ImmutableUtils.immutableList(stmt1, stmtPhi, stmt3);
+    List<Block> expectedBlocks = ImmutableUtils.immutableList(block1, newBlock, block3);
 
     assertListsEquiv(expectedArgs, new ArrayList<>(newExpr.getArgs()));
-    assertListsEquiv(expectedPreds, newExpr.getPreds());
+    assertListsEquiv(expectedBlocks, new ArrayList<>(newExpr.getBlocks()));
+
   }
 
   // assert whether two lists are equal
