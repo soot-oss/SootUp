@@ -71,7 +71,7 @@ public final class JRetStmt extends Stmt implements Copyable {
   @Nonnull
   public List<Value> getUses() {
     final List<Value> uses = stmtAddressBox.getValue().getUses();
-    List<Value> list = new ArrayList<>(uses.size() + 1);
+    List<Value> list = new ArrayList<>(uses);
     list.add(stmtAddressBox.getValue());
     return list;
   }
@@ -102,7 +102,7 @@ public final class JRetStmt extends Stmt implements Copyable {
   }
 
   @Nonnull
-  public JRetStmt withStmtAddress(@Nonnull Immediate stmtAddress) {
+  public JRetStmt withStmtAddress(@Nonnull Value stmtAddress) {
     return new JRetStmt(stmtAddress, getPositionInfo());
   }
 
