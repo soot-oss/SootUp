@@ -81,9 +81,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     if (Files.isDirectory(path)) {
       return new DirectoryBasedAnalysisInputLocation(path);
     } else if (PathUtils.isArchive(path)) {
-      /*if (PathUtils.hasExtension(path, FileType.WAR)) {
-        return new WarArchiveAnalysisInputLocation(path);
-      }*/
       return new ArchiveBasedAnalysisInputLocation(path);
     } else {
       throw new IllegalArgumentException(
