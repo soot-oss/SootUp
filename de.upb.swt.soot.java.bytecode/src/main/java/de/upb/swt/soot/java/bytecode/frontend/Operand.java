@@ -111,8 +111,8 @@ final class Operand {
     boxes.add(vb);
   }
 
-  /** Updates all value boxes registered to this operand. */
-  void updateBoxes() {
+  /** Updates all statements and expressions that use this Operand. */
+  void updateUsages() {
     ReplaceUseStmtVisitor stmtVisitor = new ReplaceUseStmtVisitor(this.value, this.stackOrValue());
 
     for (Expr exprUsage : exprUsages) {

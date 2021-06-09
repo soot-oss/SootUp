@@ -368,7 +368,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           Jimple.newAssignStmt(stack, operand.value, StmtPositionInfo.createNoStmtPositionInfo());
 
       setStmt(operand.insn, asssignStmt);
-      operand.updateBoxes();
+      operand.updateUsages();
     }
   }
 

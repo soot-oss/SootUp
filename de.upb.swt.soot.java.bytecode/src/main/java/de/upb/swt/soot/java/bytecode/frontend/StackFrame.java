@@ -112,7 +112,7 @@ final class StackFrame {
           JAssignStmt as =
               Jimple.newAssignStmt(stack, newOp.value, StmtPositionInfo.createNoStmtPositionInfo());
           src.setStmt(newOp.insn, as);
-          newOp.updateBoxes();
+          newOp.updateUsages();
         } else {
           final Value rvalue = newOp.stackOrValue();
           // check for self/identity assignments
@@ -157,13 +157,9 @@ final class StackFrame {
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
             Value lvb = as.getLeftOp();
             assert lvb == prevOp.stack : "Invalid stack local!";
-            // FIXME: [ms] box removal leftover:
-            // ValueBox.$Accessor.setValue(lvb, stack);
-            AbstractDefinitionStmt.$Accessor.setLeftOp(as, stack);
-
             prevOp.stack = stack;
           }
-          prevOp.updateBoxes();
+          prevOp.updateUsages();
         }
         if (newOp.stack != stack) {
           if (newOp.stack == null) {
@@ -179,18 +175,11 @@ final class StackFrame {
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
             Value lvb = as.getLeftOp();
             assert lvb == newOp.stack : "Invalid stack local!";
-            // FIXME: [ms] box removal leftover:
-            // ValueBox.$Accessor.setValue(lvb, stack);
-            AbstractDefinitionStmt.$Accessor.setLeftOp(as, stack);
-
             newOp.stack = stack;
           }
-          newOp.updateBoxes();
+          newOp.updateUsages();
         }
         if (box != null) {
-          // FIXME: [ms] box removal leftover: replace Local
-          // ValueBox.$Accessor.setValue(box, stack);
-
           boxes[i] = stack;
         }
         inStackLocals[i] = stack;

@@ -73,37 +73,4 @@ public abstract class AbstractDefinitionStmt extends Stmt {
   public boolean branches() {
     return false;
   }
-
-  @Deprecated
-  private void setLeftOp(@Nonnull Value value) {
-    leftOp = value;
-  }
-
-  @Deprecated
-  private void setRightOp(@Nonnull Value value) {
-    rightOp = value;
-  }
-
-  // TODO: [ms] remove $Accessor (i.e. replace dependent logic!)
-  @Deprecated
-  public static class $Accessor {
-    // This class deliberately starts with a $-sign to discourage usage
-    // of this Soot implementation detail.
-
-    /** Violates immutability. Only use this for legacy code. */
-    @Deprecated
-    public static void setLeftOp(@Nonnull AbstractDefinitionStmt box, @Nonnull Value value) {
-      box.setLeftOp(value);
-      System.out.println("immutability broken!");
-    }
-
-    /** Violates immutability. Only use this for legacy code. */
-    @Deprecated
-    public static void setRightOp(@Nonnull AbstractDefinitionStmt box, @Nonnull Value value) {
-      box.setRightOp(value);
-      System.out.println("immutability broken!");
-    }
-
-    private $Accessor() {}
-  }
 }

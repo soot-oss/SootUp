@@ -109,7 +109,7 @@ public class OperandStack {
       l = o.stack = methodSource.newStackLocal();
       methodSource.setStmt(
           o.insn, Jimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
-      o.updateBoxes();
+      o.updateUsages();
     }
     return o;
   }
@@ -122,7 +122,7 @@ public class OperandStack {
       l = o.stack = methodSource.newStackLocal();
       methodSource.setStmt(
           o.insn, Jimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
-      o.updateBoxes();
+      o.updateUsages();
     }
     return o;
   }
@@ -135,7 +135,7 @@ public class OperandStack {
       l = o.stack = methodSource.newStackLocal();
       methodSource.setStmt(
           o.insn, Jimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
-      o.updateBoxes();
+      o.updateUsages();
     }
     return o;
   }
