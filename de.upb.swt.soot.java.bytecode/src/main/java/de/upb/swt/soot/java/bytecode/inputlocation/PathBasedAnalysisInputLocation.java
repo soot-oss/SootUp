@@ -152,6 +152,19 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
           path,
           new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()));
     }
+
+    @Override
+    public boolean equals(Object o) {
+      if (!(o instanceof PathBasedAnalysisInputLocation)) {
+        return false;
+      }
+      return path.equals(((PathBasedAnalysisInputLocation) o).path);
+    }
+
+    @Override
+    public int hashCode() {
+      return path.hashCode();
+    }
   }
 
   private static class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {

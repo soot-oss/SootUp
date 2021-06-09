@@ -106,7 +106,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
     if (!(o instanceof JimpleAnalysisInputLocation)) {
       return false;
     }
-    return path.equals(((JimpleAnalysisInputLocation) o).path);
+    return path.equals(((JimpleAnalysisInputLocation<?>) o).path);
   }
 
   @Override

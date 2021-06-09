@@ -302,4 +302,17 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
       return factory.parseFieldSubSignature(subSignature);
     }
   }
+
+  @Override
+  public int hashCode() {
+    return modulePath.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof JavaModulePathAnalysisInputLocation)) {
+      return false;
+    }
+    return modulePath.equals(((JavaModulePathAnalysisInputLocation) o).modulePath);
+  }
 }

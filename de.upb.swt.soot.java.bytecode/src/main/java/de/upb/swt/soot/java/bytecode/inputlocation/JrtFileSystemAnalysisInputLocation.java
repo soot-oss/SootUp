@@ -210,4 +210,14 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
     // if we are using the normal signature factory, than trim the module from the path
     return sig;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    return o instanceof JrtFileSystemAnalysisInputLocation;
+  }
+
+  @Override
+  public int hashCode() {
+    return 31;
+  }
 }
