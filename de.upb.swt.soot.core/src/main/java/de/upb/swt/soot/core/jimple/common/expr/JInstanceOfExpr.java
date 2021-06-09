@@ -38,10 +38,10 @@ import javax.annotation.Nonnull;
 /** An expression that checks whether a value is of a certain type. */
 public final class JInstanceOfExpr implements Expr, Copyable {
 
-  private final Value op;
+  private final Immediate op;
   private final Type checkType;
 
-  public JInstanceOfExpr(@Nonnull Value op, @Nonnull Type checkType) {
+  public JInstanceOfExpr(@Nonnull Immediate op, @Nonnull Type checkType) {
 
     this.op = op;
     this.checkType = checkType;
@@ -100,7 +100,7 @@ public final class JInstanceOfExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public JInstanceOfExpr withOp(@Nonnull Value op) {
+  public JInstanceOfExpr withOp(@Nonnull Immediate op) {
     return new JInstanceOfExpr(op, getCheckType());
   }
 

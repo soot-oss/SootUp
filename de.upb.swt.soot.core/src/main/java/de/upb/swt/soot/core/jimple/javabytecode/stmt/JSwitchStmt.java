@@ -40,19 +40,19 @@ import javax.annotation.Nonnull;
  */
 public class JSwitchStmt extends BranchingStmt implements Copyable {
 
-  private final Value key;
+  private final Immediate key;
   private List<IntConstant> values;
   private final boolean isTableSwitch;
 
   private JSwitchStmt(
-      boolean isTableSwitch, @Nonnull StmtPositionInfo positionInfo, @Nonnull Value key) {
+      boolean isTableSwitch, @Nonnull StmtPositionInfo positionInfo, @Nonnull Immediate key) {
     super(positionInfo);
     this.isTableSwitch = isTableSwitch;
     this.key = key;
   }
 
   public JSwitchStmt(
-      @Nonnull Value key, int lowIndex, int highIndex, @Nonnull StmtPositionInfo positionInfo) {
+      @Nonnull Immediate key, int lowIndex, int highIndex, @Nonnull StmtPositionInfo positionInfo) {
     this(true, positionInfo, key);
 
     if (lowIndex > highIndex) {
@@ -77,7 +77,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
 
   /** Constructs a new JSwitchStmt. lookupValues should be a list of IntConst s. */
   public JSwitchStmt(
-      @Nonnull Value key,
+      @Nonnull Immediate key,
       @Nonnull List<IntConstant> lookupValues,
       @Nonnull StmtPositionInfo positionInfo) {
     this(false, positionInfo, key);
@@ -93,7 +93,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     return Optional.ofNullable(body.getBranchTargetsOf(this).get(values.size()));
   }
 
-  public Value getKey() {
+  public Immediate getKey() {
     return key;
   }
 
@@ -222,7 +222,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   }
 
   @Nonnull
-  public JSwitchStmt withKey(@Nonnull Value key) {
+  public JSwitchStmt withKey(@Nonnull Immediate key) {
     return new JSwitchStmt(key, getValues(), getPositionInfo());
   }
 

@@ -82,7 +82,7 @@ public class ReplaceUseExprVisitorTest {
   @Test
   public void testCaseInvokeExpr() {
 
-    List<Value> args = new ArrayList<>();
+    List<Immediate> args = new ArrayList<>();
     args.add(arg1);
     args.add(arg2);
     args.add(arg3);

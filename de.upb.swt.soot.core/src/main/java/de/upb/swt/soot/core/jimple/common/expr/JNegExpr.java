@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.jimple.common.expr;
  */
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
@@ -36,7 +37,7 @@ import javax.annotation.Nonnull;
 /** An expression that negates its operand (-). */
 public final class JNegExpr extends AbstractUnopExpr implements Copyable {
 
-  public JNegExpr(@Nonnull Value op) {
+  public JNegExpr(@Nonnull Immediate op) {
     super(op);
   }
 
@@ -91,7 +92,7 @@ public final class JNegExpr extends AbstractUnopExpr implements Copyable {
   }
 
   @Nonnull
-  public JNegExpr withOp(@Nonnull Value op) {
+  public JNegExpr withOp(@Nonnull Immediate op) {
     return new JNegExpr(op);
   }
 }

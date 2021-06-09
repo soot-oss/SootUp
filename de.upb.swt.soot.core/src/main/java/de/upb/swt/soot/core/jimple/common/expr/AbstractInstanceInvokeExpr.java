@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -34,7 +35,7 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   @Nonnull private final Local base;
 
   AbstractInstanceInvokeExpr(
-      @Nonnull Local base, @Nonnull MethodSignature methodSig, @Nonnull Value[] args) {
+      @Nonnull Local base, @Nonnull MethodSignature methodSig, @Nonnull Immediate[] args) {
     super(methodSig, args);
     this.base = base;
   }

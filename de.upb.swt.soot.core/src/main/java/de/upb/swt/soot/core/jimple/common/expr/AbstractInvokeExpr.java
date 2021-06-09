@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
@@ -35,9 +36,9 @@ import javax.annotation.Nonnull;
 public abstract class AbstractInvokeExpr implements Expr {
 
   @Nonnull private final MethodSignature methodSignature;
-  @Nonnull private final Value[] args;
+  @Nonnull private final Immediate[] args;
 
-  protected AbstractInvokeExpr(@Nonnull MethodSignature method, @Nonnull Value[] args) {
+  protected AbstractInvokeExpr(@Nonnull MethodSignature method, @Nonnull Immediate[] args) {
     this.methodSignature = method;
     for (Value arg : args) {
       if (arg == null) {
@@ -57,7 +58,7 @@ public abstract class AbstractInvokeExpr implements Expr {
   }
 
   /** Returns a list of arguments. */
-  public List<Value> getArgs() {
+  public List<Immediate> getArgs() {
     return Collections.unmodifiableList(Arrays.asList(args));
   }
 

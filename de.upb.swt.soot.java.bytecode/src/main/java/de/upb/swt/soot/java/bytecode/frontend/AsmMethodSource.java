@@ -1263,7 +1263,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               .getMethodSignature(insn.name, cls, returnType, sigTypes);
       int nrArgs = sigTypes.size();
       final Operand[] args;
-      List<Value> argList = Collections.emptyList();
+      List<Immediate> argList = Collections.emptyList();
       if (!isInstance) {
         args = nrArgs == 0 ? null : new Operand[nrArgs];
         if (args != null) {
@@ -1277,7 +1277,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
       while (nrArgs-- != 0) {
         args[nrArgs] = operandStack.popImmediate(sigTypes.get(nrArgs));
-        argList.add(args[nrArgs].stackOrValue());
+        argList.add((Immediate) args[nrArgs].stackOrValue());
       }
       if (argList.size() > 1) {
         Collections.reverse(argList);
@@ -1373,7 +1373,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     if (out == null) {
       // convert info on bootstrap method
       MethodSignature bsmMethodRef = toMethodSignature(insn.bsm);
-      List<Value> bsmMethodArgs = new ArrayList<>(insn.bsmArgs.length);
+      List<Immediate> bsmMethodArgs = new ArrayList<>(insn.bsmArgs.length);
       for (Object bsmArg : insn.bsmArgs) {
         bsmMethodArgs.add(toSootValue(bsmArg));
       }
@@ -1387,7 +1387,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       List<Type> types = AsmUtil.toJimpleSignatureDesc(insn.desc);
       int nrArgs = types.size() - 1;
       List<Type> parameterTypes = new ArrayList<>(nrArgs);
-      List<Value> methodArgs = new ArrayList<>(nrArgs);
+      List<Immediate> methodArgs = new ArrayList<>(nrArgs);
 
       Operand[] args = new Operand[nrArgs];
       Value[] boxes = new Value[nrArgs];
@@ -1397,7 +1397,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       for (int i = nrArgs - 1; i >= 0; i--) {
         parameterTypes.add(types.get(i));
         args[i] = operandStack.popImmediate(types.get(i));
-        methodArgs.add(args[i].stackOrValue());
+        methodArgs.add((Immediate) args[i].stackOrValue());
       }
       if (methodArgs.size() > 1) {
         Collections.reverse(methodArgs); // Call stack is FIFO, Jimple is linear

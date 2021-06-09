@@ -74,7 +74,7 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
     stmtPrinter.stmtRef(getTarget(stmtPrinter.getBody()), true);
   }
 
-  public Value getCondition() {
+  public AbstractConditionExpr getCondition() {
     return condition;
   }
 
@@ -97,8 +97,8 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
   @Override
   @Nonnull
   public List<Value> getUses() {
-    List<Value> list = new ArrayList<>(condition.getUses());
-    list.add(condition);
+    List<Value> list = new ArrayList<>(getCondition().getUses());
+    list.add(getCondition());
     return list;
   }
 
@@ -124,7 +124,7 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
 
   @Override
   public int equivHashCode() {
-    return condition.equivHashCode();
+    return getCondition().equivHashCode();
   }
 
   @Nonnull
@@ -134,6 +134,6 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
 
   @Nonnull
   public JIfStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JIfStmt((AbstractConditionExpr) getCondition(), positionInfo);
+    return new JIfStmt(getCondition(), positionInfo);
   }
 }

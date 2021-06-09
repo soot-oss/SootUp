@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.jimple.common.expr;
  */
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
@@ -52,7 +53,7 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
       @Nonnull MethodSignature methodSignature,
       @Nonnull int tag,
       @Nonnull List<? extends Value> methodArgs) {
-    super(methodSignature, methodArgs.toArray(new Value[methodArgs.size()]));
+    super(methodSignature, methodArgs.toArray(new Immediate[methodArgs.size()]));
     if (!methodSignature
         .getDeclClassType()
         .getFullyQualifiedName()

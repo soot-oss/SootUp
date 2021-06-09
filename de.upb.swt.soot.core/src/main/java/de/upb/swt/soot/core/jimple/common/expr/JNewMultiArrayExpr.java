@@ -37,7 +37,7 @@ import javax.annotation.Nonnull;
 public final class JNewMultiArrayExpr implements Expr, Copyable {
 
   private final ArrayType baseType;
-  private final List<Value> sizes;
+  private final List<Immediate> sizes;
 
   /**
    * Initiates a JNewMultiArrayExpr.
@@ -45,7 +45,7 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
    * @param type the type of the array
    * @param sizes the sizes
    */
-  public JNewMultiArrayExpr(@Nonnull ArrayType type, @Nonnull List<Value> sizes) {
+  public JNewMultiArrayExpr(@Nonnull ArrayType type, @Nonnull List<Immediate> sizes) {
     this.baseType = type;
     this.sizes = sizes;
   }
@@ -112,7 +112,7 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
   }
 
   /** Returns a list of Values. */
-  public List<Value> getSizes() {
+  public List<Immediate> getSizes() {
     return sizes;
   }
 
@@ -144,7 +144,7 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public JNewMultiArrayExpr withSizes(@Nonnull List<Value> sizes) {
+  public JNewMultiArrayExpr withSizes(@Nonnull List<Immediate> sizes) {
     return new JNewMultiArrayExpr(baseType, sizes);
   }
 }

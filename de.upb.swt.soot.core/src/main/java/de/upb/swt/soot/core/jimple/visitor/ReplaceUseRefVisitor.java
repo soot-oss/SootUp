@@ -62,7 +62,7 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
     if (newUse instanceof Local && ref.getBase().equivTo(oldUse)) {
       setResult(ref.withBase((Local) newUse));
     } else if (newUse instanceof Immediate && ref.getIndex().equivTo(oldUse)) {
-      setResult(ref.withIndex(newUse));
+      setResult(ref.withIndex((Immediate) newUse));
     } else {
       this.defaultCaseRef(ref);
     }

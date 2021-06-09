@@ -41,7 +41,7 @@ import javax.annotation.Nonnull;
  */
 public final class JParameterRef implements IdentityRef, Copyable {
 
-  private final int num;
+  private final int index;
   private final Type paramType;
 
   /**
@@ -49,7 +49,7 @@ public final class JParameterRef implements IdentityRef, Copyable {
    * number.
    */
   public JParameterRef(@Nonnull Type paramType, @Nonnull int number) {
-    this.num = number;
+    this.index = number;
     this.paramType = paramType;
   }
 
@@ -60,13 +60,13 @@ public final class JParameterRef implements IdentityRef, Copyable {
 
   @Override
   public int equivHashCode() {
-    return num * 101 + paramType.hashCode() * 17;
+    return index * 101 + paramType.hashCode() * 17;
   }
 
   /** Converts the given ParameterRef into a String i.e. <code>@parameter0: .int</code>. */
   @Override
   public String toString() {
-    return "@parameter" + num + ": " + paramType;
+    return "@parameter" + index + ": " + paramType;
   }
 
   @Override
@@ -75,8 +75,8 @@ public final class JParameterRef implements IdentityRef, Copyable {
   }
 
   /** Returns the num of this ParameterRef. */
-  public int getNum() {
-    return num;
+  public int getIndex() {
+    return index;
   }
 
   @Override
@@ -105,7 +105,7 @@ public final class JParameterRef implements IdentityRef, Copyable {
 
   @Nonnull
   public JParameterRef withParamType(@Nonnull Type paramType) {
-    return new JParameterRef(paramType, num);
+    return new JParameterRef(paramType, index);
   }
 
   @Nonnull

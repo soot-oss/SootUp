@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,14 +30,14 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractUnopExpr implements Expr {
 
-  @Nonnull private final Value op;
+  @Nonnull private final Immediate op;
 
-  AbstractUnopExpr(@Nonnull Value op) {
+  AbstractUnopExpr(@Nonnull Immediate op) {
     this.op = op;
   }
 
   @Nonnull
-  public Value getOp() {
+  public Immediate getOp() {
     return op;
   }
 

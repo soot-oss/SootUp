@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
@@ -35,10 +36,10 @@ import javax.annotation.Nonnull;
 /** An expression that casts a value to a certain type. */
 public final class JCastExpr implements Expr, Copyable {
 
-  private final Value op;
+  private final Immediate op;
   private final Type type;
 
-  public JCastExpr(@Nonnull Value op, @Nonnull Type type) {
+  public JCastExpr(@Nonnull Immediate op, @Nonnull Type type) {
     this.op = op;
     this.type = type;
   }
@@ -67,7 +68,7 @@ public final class JCastExpr implements Expr, Copyable {
     op.toString(up);
   }
 
-  public Value getOp() {
+  public Immediate getOp() {
     return op;
   }
 
@@ -92,7 +93,7 @@ public final class JCastExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public JCastExpr withOp(@Nonnull Value op) {
+  public JCastExpr withOp(@Nonnull Immediate op) {
     return new JCastExpr(op, type);
   }
 

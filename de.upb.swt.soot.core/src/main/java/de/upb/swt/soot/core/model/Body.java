@@ -172,7 +172,7 @@ public class Body implements Copyable {
       if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
         JIdentityStmt is = (JIdentityStmt) s;
         JParameterRef pr = (JParameterRef) is.getRightOp();
-        if (pr.getNum() == i) {
+        if (pr.getIndex() == i) {
           return (Local) is.getLeftOp();
         }
       }
@@ -198,7 +198,7 @@ public class Body implements Copyable {
         JIdentityStmt is = (JIdentityStmt) u;
         if (is.getRightOp() instanceof JParameterRef) {
           JParameterRef pr = (JParameterRef) is.getRightOp();
-          retVal.add(pr.getNum(), (Local) is.getLeftOp());
+          retVal.add(pr.getIndex(), (Local) is.getLeftOp());
         }
       }
     }

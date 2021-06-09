@@ -166,7 +166,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   @Override
   public void caseSwitchStmt(@Nonnull JSwitchStmt stmt) {
     if (newUse instanceof Immediate && stmt.getKey().equivTo(oldUse)) {
-      setResult(stmt.withKey(newUse));
+      setResult(stmt.withKey((Immediate) newUse));
     } else {
       defaultCaseStmt(stmt);
     }
@@ -175,7 +175,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   @Override
   public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
     if (stmt.getOp().equivTo(oldUse)) {
-      setResult(stmt.withOp(newUse));
+      setResult(stmt.withOp((Immediate) newUse));
     } else {
       defaultCaseStmt(stmt);
     }

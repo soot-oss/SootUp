@@ -764,7 +764,7 @@ public class InstructionConverter {
     String returnType = converter.convertType(target.getReturnType()).toString();
     List<String> parameters = new ArrayList<>();
     List<Type> paraTypes = new ArrayList<>();
-    List<Value> args = new ArrayList<>();
+    List<Immediate> args = new ArrayList<>();
     for (int i = 0; i < target.getNumberOfParameters(); i++) {
       Type paraType = converter.convertType(target.getParameterType(i)); // note
       // the

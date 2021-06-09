@@ -21,6 +21,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #L%
  */
 import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractBinopExpr;
@@ -146,12 +147,12 @@ public class Aggregator implements BodyInterceptor {
                   if (assignStmt.getRightOp() instanceof AbstractBinopExpr) {
                     AbstractBinopExpr rightOp = (AbstractBinopExpr) assignStmt.getRightOp();
                     if (rightOp.getOp1() == val) {
-                      AbstractBinopExpr newBinopExpr = rightOp.withOp1(aggregatee);
+                      AbstractBinopExpr newBinopExpr = rightOp.withOp1((Immediate) aggregatee);
                       newStmt =
                           new JAssignStmt(
                               assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());
                     } else if (rightOp.getOp2() == val) {
-                      AbstractBinopExpr newBinopExpr = rightOp.withOp2(aggregatee);
+                      AbstractBinopExpr newBinopExpr = rightOp.withOp2((Immediate) aggregatee);
                       newStmt =
                           new JAssignStmt(
                               assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());

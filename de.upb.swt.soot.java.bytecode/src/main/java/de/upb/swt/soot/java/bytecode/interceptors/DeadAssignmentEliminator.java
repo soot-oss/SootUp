@@ -121,11 +121,16 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
             Type type = castExpr.getType();
             Value value = castExpr.getOp();
             isEssential = !(value instanceof NullConstant) && type instanceof ReferenceType;
-          } else if (rhs instanceof JArrayRef
+          } else if (rhs instanceof JInterfaceInvokeExpr
+              || rhs instanceof JDynamicInvokeExpr
+              || rhs instanceof JSpecialInvokeExpr
+              || rhs instanceof JStaticInvokeExpr
+              || rhs instanceof JVirtualInvokeExpr
+              || rhs instanceof JArrayRef
               || rhs instanceof JNewExpr
               || rhs instanceof JNewArrayExpr
               || rhs instanceof JNewMultiArrayExpr) {
-            // InvokeExprBox: can have side effects (like throwing a null pointer exception)
+            // InvokeExpr: can have side effects (like throwing a null pointer exception)
             // JArrayRef: can have side effects (like throwing a null pointer exception)
             // JNewExpr: can trigger class initialization
             // JNewArrayExpr: can throw exception

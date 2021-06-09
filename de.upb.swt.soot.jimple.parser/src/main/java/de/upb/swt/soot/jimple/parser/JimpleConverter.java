@@ -550,7 +550,7 @@ public class JimpleConverter {
                   JimpleConverterUtil.buildPositionFromCtx(ctx));
             }
 
-            List<Value> sizes =
+            List<Immediate> sizes =
                 ctx.immediate().stream()
                     .map(imm -> (Immediate) visitImmediate(imm))
                     .collect(Collectors.toList());
@@ -575,7 +575,7 @@ public class JimpleConverter {
         }
 
         @Override
-        public Value visitImmediate(JimpleParser.ImmediateContext ctx) {
+        public Immediate visitImmediate(JimpleParser.ImmediateContext ctx) {
           if (ctx.identifier() != null) {
             return getLocal(ctx.identifier().getText());
           }
@@ -606,7 +606,7 @@ public class JimpleConverter {
         @Override
         public Expr visitInvoke_expr(JimpleParser.Invoke_exprContext ctx) {
 
-          List<Value> arglist = getArgList(ctx.arg_list(0));
+          List<Immediate> arglist = getArgList(ctx.arg_list(0));
 
           if (ctx.nonstaticinvoke != null) {
             Local base = getLocal(ctx.local_name.getText());
@@ -642,7 +642,7 @@ public class JimpleConverter {
 
             MethodSignature methodRef = util.getMethodSignature(ctx.bsm, ctx);
 
-            List<Value> bootstrapArgs = getArgList(ctx.staticargs);
+            List<Immediate> bootstrapArgs = getArgList(ctx.staticargs);
 
             return Jimple.newDynamicInvokeExpr(
                 methodRef, bootstrapArgs, bootstrapMethodRef, getArgList(ctx.dyn_args));
@@ -703,8 +703,8 @@ public class JimpleConverter {
         @Override
         public AbstractBinopExpr visitBinop_expr(JimpleParser.Binop_exprContext ctx) {
 
-          Value left = visitImmediate(ctx.left);
-          Value right = visitImmediate(ctx.right);
+          Immediate left = visitImmediate(ctx.left);
+          Immediate right = visitImmediate(ctx.right);
 
           JimpleParser.BinopContext binopctx = ctx.binop();
 
@@ -766,12 +766,12 @@ public class JimpleConverter {
         }
 
         @Nonnull
-        private List<Value> getArgList(JimpleParser.Arg_listContext ctx) {
+        private List<Immediate> getArgList(JimpleParser.Arg_listContext ctx) {
           if (ctx == null || ctx.immediate() == null) {
             return Collections.emptyList();
           }
           final List<JimpleParser.ImmediateContext> immediates = ctx.immediate();
-          List<Value> arglist = new ArrayList<>(immediates.size());
+          List<Immediate> arglist = new ArrayList<>(immediates.size());
           for (JimpleParser.ImmediateContext immediate : immediates) {
             arglist.add(visitImmediate(immediate));
           }

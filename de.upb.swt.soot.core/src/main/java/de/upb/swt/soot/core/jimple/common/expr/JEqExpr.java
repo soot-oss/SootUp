@@ -22,7 +22,7 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
 /** An expression that checks whether two value are equal. */
 public final class JEqExpr extends AbstractConditionExpr implements Copyable {
 
-  public JEqExpr(@Nonnull Value op1, @Nonnull Value op2) {
+  public JEqExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);
   }
 
@@ -46,12 +46,12 @@ public final class JEqExpr extends AbstractConditionExpr implements Copyable {
   }
 
   @Nonnull
-  public JEqExpr withOp1(@Nonnull Value op1) {
+  public JEqExpr withOp1(@Nonnull Immediate op1) {
     return new JEqExpr(op1, getOp2());
   }
 
   @Nonnull
-  public JEqExpr withOp2(@Nonnull Value op2) {
+  public JEqExpr withOp2(@Nonnull Immediate op2) {
     return new JEqExpr(getOp1(), op2);
   }
 }

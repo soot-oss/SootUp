@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.jimple.common.ref;
  */
 
 import de.upb.swt.soot.core.IdentifierFactory;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -40,11 +41,11 @@ import javax.annotation.Nonnull;
 public final class JArrayRef implements ConcreteRef, Copyable {
 
   private final Local base;
-  private final Value index;
+  private final Immediate index;
   private final IdentifierFactory identifierFactory;
 
   public JArrayRef(
-      @Nonnull Local base, @Nonnull Value index, @Nonnull IdentifierFactory identifierFactory) {
+      @Nonnull Local base, @Nonnull Immediate index, @Nonnull IdentifierFactory identifierFactory) {
     this.base = base;
     this.index = index;
     this.identifierFactory = identifierFactory;
@@ -109,7 +110,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   }
 
   @Nonnull
-  public Value getIndex() {
+  public Immediate getIndex() {
     return index;
   }
 
@@ -140,7 +141,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   }
 
   @Nonnull
-  public JArrayRef withIndex(@Nonnull Value index) {
+  public JArrayRef withIndex(@Nonnull Immediate index) {
     return new JArrayRef(getBase(), index, identifierFactory);
   }
 }

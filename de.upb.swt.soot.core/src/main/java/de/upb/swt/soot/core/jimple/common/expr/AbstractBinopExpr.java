@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -31,21 +32,21 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractBinopExpr implements Expr {
 
-  @Nonnull private final Value op1;
-  @Nonnull private final Value op2;
+  @Nonnull private final Immediate op1;
+  @Nonnull private final Immediate op2;
 
-  AbstractBinopExpr(@Nonnull Value op1, @Nonnull Value op2) {
+  AbstractBinopExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     this.op1 = op1;
     this.op2 = op2;
   }
 
   @Nonnull
-  public Value getOp1() {
+  public Immediate getOp1() {
     return op1;
   }
 
   @Nonnull
-  public Value getOp2() {
+  public Immediate getOp2() {
     return op2;
   }
 
@@ -92,8 +93,8 @@ public abstract class AbstractBinopExpr implements Expr {
   }
 
   @Nonnull
-  public abstract AbstractBinopExpr withOp1(@Nonnull Value value);
+  public abstract AbstractBinopExpr withOp1(@Nonnull Immediate value);
 
   @Nonnull
-  public abstract AbstractBinopExpr withOp2(@Nonnull Value value);
+  public abstract AbstractBinopExpr withOp2(@Nonnull Immediate value);
 }
