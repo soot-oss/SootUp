@@ -42,6 +42,7 @@ import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.nio.file.*;
 import java.util.Collection;
@@ -74,12 +75,12 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   public void testWar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(war);
-    final ClassType warClass = getIdentifierFactory().getClassType("SimpleWarRead");
+    final JavaClassType warClassSig = getIdentifierFactory().getClassType("SimpleWarRead");
 
     final Optional<? extends AbstractClassSource<?>> clazz =
-        pathBasedNamespace.getClassSource(warClass);
+        pathBasedNamespace.getClassSource(warClassSig);
     assertTrue(clazz.isPresent());
-    assertEquals(warClass, clazz.get().getClassType());
+    assertEquals(warClassSig, clazz.get().getClassType());
 
     assertEquals(
         19, pathBasedNamespace.getClassSources(JavaIdentifierFactory.getInstance()).size());
@@ -97,7 +98,6 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     // Get the view
     JavaView view = p.createOnDemandView();
 
-    System.out.println(view.getClasses());
     assertEquals(19, view.getClasses().size());
 
     // Create java class signature

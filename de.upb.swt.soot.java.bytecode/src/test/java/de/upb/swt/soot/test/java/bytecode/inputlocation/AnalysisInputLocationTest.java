@@ -2,7 +2,6 @@ package de.upb.swt.soot.test.java.bytecode.inputlocation;
 
 import static org.junit.Assert.*;
 
-import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
@@ -50,7 +49,7 @@ public abstract class AnalysisInputLocationTest {
   final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
   final String jarFile = jar.toString();
 
-  private IdentifierFactory identifierFactory;
+  private JavaIdentifierFactory identifierFactory;
   private ClassProvider classProvider;
 
   @Before
@@ -59,7 +58,7 @@ public abstract class AnalysisInputLocationTest {
     classProvider = new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors());
   }
 
-  protected IdentifierFactory getIdentifierFactory() {
+  protected JavaIdentifierFactory getIdentifierFactory() {
     return identifierFactory;
   }
 

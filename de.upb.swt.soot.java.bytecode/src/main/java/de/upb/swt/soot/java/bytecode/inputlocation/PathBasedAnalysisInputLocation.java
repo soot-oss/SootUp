@@ -238,8 +238,6 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
   private static final class WarArchiveAnalysisInputLocation
       extends ArchiveBasedAnalysisInputLocation {
     public List<AnalysisInputLocation> containedInputLocations = null;
-    public static int maxExtractedByte =
-        1024 * 1024 * 500; // limit of extracted file size to protect against archive bombs
 
     private WarArchiveAnalysisInputLocation(@Nonnull Path warPath) {
       super(warPath);
