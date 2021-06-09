@@ -84,7 +84,9 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       return new ArchiveBasedAnalysisInputLocation(path);
     } else {
       throw new IllegalArgumentException(
-          "Path has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
+          "Path '"
+              + path.toAbsolutePath()
+              + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
     }
   }
 
