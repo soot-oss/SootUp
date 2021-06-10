@@ -25,6 +25,7 @@ package de.upb.swt.soot.test.java.bytecode.inputlocation;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import categories.Java9Test;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.BodySource;
@@ -57,10 +58,10 @@ import org.junit.experimental.categories.Category;
  * @author Manuel Benz created on 06.06.18
  * @author Kaustubh Kelkar updated on 16.04.2020
  */
-@Category(Java9Test.class)
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test
+  @Category(Java8Test.class)
   public void testJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
@@ -72,6 +73,32 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   }
 
   @Test
+  @Category(Java8Test.class)
+  public void testRuntimeJar() {
+    PathBasedAnalysisInputLocation pathBasedNamespace =
+        PathBasedAnalysisInputLocation.createForClassContainer(
+            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"));
+
+    final Collection<? extends AbstractClassSource> classSources =
+        pathBasedNamespace.getClassSources(getIdentifierFactory());
+
+    JavaView v =
+        JavaProject.builder(new JavaLanguage(8))
+            .addClassPath(pathBasedNamespace)
+            .build()
+            .createOnDemandView();
+    // test some standard jre classes
+    runtimeContains(v, "Object", "java.lang");
+    runtimeContains(v, "List", "java.util");
+    runtimeContains(v, "Map", "java.util");
+    runtimeContains(v, "ArrayList", "java.util");
+    runtimeContains(v, "HashMap", "java.util");
+    runtimeContains(v, "Collection", "java.util");
+    runtimeContains(v, "Comparator", "java.util");
+  }
+
+  @Test
+  @Category(Java9Test.class)
   public void testWar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(war);
@@ -87,6 +114,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   }
 
   @Test
+  @Category(Java9Test.class)
   public void testClassInWar() {
 
     // Create a project
@@ -192,29 +220,5 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   void runtimeContains(View view, String classname, String packageName) {
     final ClassType sig = getIdentifierFactory().getClassType(classname, packageName);
     assertTrue(sig + " is not found in rt.jar", view.getClass(sig).isPresent());
-  }
-
-  @Test
-  public void testRuntimeJar() {
-    PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.createForClassContainer(
-            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"));
-
-    final Collection<? extends AbstractClassSource> classSources =
-        pathBasedNamespace.getClassSources(getIdentifierFactory());
-
-    JavaView v =
-        JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(pathBasedNamespace)
-            .build()
-            .createOnDemandView();
-    // test some standard jre classes
-    runtimeContains(v, "Object", "java.lang");
-    runtimeContains(v, "List", "java.util");
-    runtimeContains(v, "Map", "java.util");
-    runtimeContains(v, "ArrayList", "java.util");
-    runtimeContains(v, "HashMap", "java.util");
-    runtimeContains(v, "Collection", "java.util");
-    runtimeContains(v, "Comparator", "java.util");
   }
 }
