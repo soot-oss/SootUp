@@ -260,15 +260,15 @@ public class ModuleFinder {
     try {
       JarFile jar = new JarFile(path.toFile());
 
-      String file = "META-INF/MANIFEST.MF";
+      final String file = "META-INF/MANIFEST.MF";
       JarEntry entry = (JarEntry) jar.getEntry(file);
       if (entry != null) {
         Manifest manifest = new Manifest(jar.getInputStream(entry));
         Attributes attr = manifest.getMainAttributes();
 
-        String amn = attr.getValue("Automatic-Module-Name");
-        if (amn != null) {
-          return amn;
+        String automaticModuleName = attr.getValue("Automatic-Module-Name");
+        if (automaticModuleName != null) {
+          return automaticModuleName;
         }
       }
     } catch (IOException ignored) {
@@ -287,28 +287,37 @@ public class ModuleFinder {
     // find first occurrence of -${NUMBER}. or -${NUMBER}$
     // according to the java 9 spec and current implementation, version numbers are ignored when
     // naming automatic modules
-    Matcher matcher = Pattern.compile("-(\\d+(\\.|$))").matcher(moduleName);
+    Matcher matcher = Patterns.VERSION.matcher(moduleName);
     if (matcher.find()) {
       int start = matcher.start();
       moduleName = moduleName.substring(0, start);
     }
-    moduleName = Pattern.compile("[^A-Za-z0-9]").matcher(moduleName).replaceAll(".");
+    moduleName = Patterns.ALPHA_NUM.matcher(moduleName).replaceAll(".");
 
     // remove all repeating dots
-    moduleName = Pattern.compile("(\\.)(\\1)+").matcher(moduleName).replaceAll(".");
+    moduleName = Patterns.REPEATING_DOTS.matcher(moduleName).replaceAll(".");
 
     // remove leading dots
     int len = moduleName.length();
     if (len > 0 && moduleName.charAt(0) == '.') {
-      moduleName = Pattern.compile("^\\.").matcher(moduleName).replaceAll("");
+      moduleName = Patterns.LEADING_DOTS.matcher(moduleName).replaceAll("");
     }
 
     // remove trailing dots
     len = moduleName.length();
     if (len > 0 && moduleName.charAt(len - 1) == '.') {
-      moduleName = Pattern.compile("\\.$").matcher(moduleName).replaceAll("");
+      moduleName = Patterns.TRAILING_DOTS.matcher(moduleName).replaceAll("");
     }
 
     return moduleName;
+  }
+
+  /** Lazy-initialized cache of compiled patterns. */
+  private static class Patterns {
+    static final Pattern VERSION = Pattern.compile("-(\\d+(\\.|$))");
+    static final Pattern ALPHA_NUM = Pattern.compile("[^A-Za-z0-9]");
+    static final Pattern REPEATING_DOTS = Pattern.compile("(\\.)(\\1)+");
+    static final Pattern LEADING_DOTS = Pattern.compile("^\\.");
+    static final Pattern TRAILING_DOTS = Pattern.compile("\\.$");
   }
 }
