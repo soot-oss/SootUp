@@ -47,7 +47,6 @@ final class Operand {
 
   @Nonnull private final List<Stmt> stmtUsages = new ArrayList<>();
   @Nonnull private final List<Expr> exprUsages = new ArrayList<>();
-  @Nonnull private final List<Ref> refUsages = new ArrayList<>();
 
   /**
    * Constructs a new stack operand.
@@ -80,19 +79,8 @@ final class Operand {
     exprUsages.add(usage);
   }
 
-  /**
-   * Adds a usage of this operand (so whenever it is used in a Ref)
-   *
-   * @param usage the usage
-   */
-  void addUsage(@Nonnull Ref usage) {
-    refUsages.add(usage);
-  }
-
   /** Updates all statements and expressions that use this Operand. */
   void updateUsages() {
-    // TODO [bh] we never do anything with refs
-
     ReplaceUseStmtVisitor stmtVisitor = new ReplaceUseStmtVisitor(this.value, this.stackOrValue());
 
     for (Expr exprUsage : exprUsages) {
