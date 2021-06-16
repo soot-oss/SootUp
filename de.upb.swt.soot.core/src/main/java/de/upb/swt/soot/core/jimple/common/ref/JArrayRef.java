@@ -28,7 +28,6 @@ import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.RefVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.NullType;
 import de.upb.swt.soot.core.types.Type;
@@ -133,6 +132,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   }
 
   @Override
+  @Nonnull
   public List<Value> getUses() {
     List<Value> list = new ArrayList<>(base.getUses());
     list.add(base);
@@ -141,14 +141,15 @@ public final class JArrayRef implements ConcreteRef, Copyable {
     return list;
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return determineType(identifierFactory);
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((RefVisitor) sw).caseArrayRef(this);
+  public void accept(@Nonnull RefVisitor v) {
+    v.caseArrayRef(this);
   }
 
   @Nonnull

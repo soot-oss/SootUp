@@ -31,7 +31,6 @@ import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.RefVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -79,6 +78,7 @@ public final class JInstanceFieldRef extends JFieldRef implements Copyable {
   }
 
   @Override
+  @Nonnull
   public final List<Value> getUses() {
     List<Value> list = new ArrayList<>(base.getUses());
     list.add(base);
@@ -86,8 +86,8 @@ public final class JInstanceFieldRef extends JFieldRef implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((RefVisitor) sw).caseInstanceFieldRef(this);
+  public void accept(@Nonnull RefVisitor v) {
+    v.caseInstanceFieldRef(this);
   }
 
   @Override

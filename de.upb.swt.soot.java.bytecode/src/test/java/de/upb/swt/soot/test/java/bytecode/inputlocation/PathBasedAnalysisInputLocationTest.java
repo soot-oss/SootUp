@@ -147,6 +147,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                     SootMethod.builder()
                         .withSource(
                             new BodySource() {
+                              @Nonnull
                               @Override
                               public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) {
                                 /* [ms] violating @Nonnull */

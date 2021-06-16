@@ -24,7 +24,6 @@ public class AnnotationLibraryTest extends MinimalBytecodeTestSuiteBase {
     Printer p = new Printer(Printer.Option.LegacyMode);
     StringWriter out = new StringWriter();
     p.printTo(sootClass, new PrintWriter(out));
-    System.out.println(out.toString());
     assertTrue(Modifier.isAnnotation(sootClass.getModifiers()));
   }
 

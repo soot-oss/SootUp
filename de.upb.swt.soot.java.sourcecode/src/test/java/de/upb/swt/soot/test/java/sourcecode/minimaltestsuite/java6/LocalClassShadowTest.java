@@ -41,7 +41,7 @@ public class LocalClassShadowTest extends MinimalSourceTestSuiteBase {
   /** Test: How many Locals with ClassType {@link java.lang.String} */
   @Test
   public void testNumOfLocalsWithString() {
-    SootMethod method = sootLocalClass.getMethod(getMethodSignature()).get();
+    SootMethod method = sootLocalClass.getMethod(getMethodSignature().getSubSignature()).get();
     Body methodBody = method.getBody();
     Set<Local> locals = methodBody.getLocals();
     Set<Local> stringLocals =
@@ -54,7 +54,7 @@ public class LocalClassShadowTest extends MinimalSourceTestSuiteBase {
   /** Test: Locals--info are from different classes */
   @Test
   public void testClassesOfStringLocalAreDifferent() {
-    SootMethod method = sootLocalClass.getMethod(getMethodSignature()).get();
+    SootMethod method = sootLocalClass.getMethod(getMethodSignature().getSubSignature()).get();
     Body methodBody = method.getBody();
     List<Stmt> stmts = methodBody.getStmts();
     Set<Type> classTypes = new HashSet<Type>();

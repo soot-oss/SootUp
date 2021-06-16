@@ -26,6 +26,10 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.Scope;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootField;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -39,12 +43,12 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
 
-  @Nonnull private final Project<? extends View<T>, T> project;
+  @Nonnull private final Project<T, ? extends View<T>> project;
 
   @Nonnull private final Map<ModuleDataKey<?>, Object> moduleData = new HashMap<>();
 
-  public AbstractView(@Nonnull Project<? extends View<?>, ?> project) {
-    this.project = (Project<? extends View<T>, T>) project;
+  public AbstractView(@Nonnull Project<T, ? extends View<T>> project) {
+    this.project = (Project<T, ? extends View<T>>) project;
   }
 
   @Override
@@ -61,7 +65,25 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
   }
 
   @Nonnull
-  public Project<? extends View<T>, T> getProject() {
+  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
+    final Optional<T> aClass = getClass(signature.getDeclClassType());
+    if (!aClass.isPresent()) {
+      return Optional.empty();
+    }
+    return aClass.get().getMethod(signature.getSubSignature());
+  }
+
+  @Nonnull
+  public Optional<? extends SootField> getField(@Nonnull FieldSignature signature) {
+    final Optional<T> aClass = getClass(signature.getDeclClassType());
+    if (!aClass.isPresent()) {
+      return Optional.empty();
+    }
+    return aClass.get().getField(signature.getSubSignature());
+  }
+
+  @Nonnull
+  public Project<T, ? extends View<T>> getProject() {
     return project;
   }
 
