@@ -135,10 +135,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Nonnull private final Map<Stmt, Stmt> replacedStmt = new HashMap<>();
 
-  protected OperandStack getOperandStack() {
-    return operandStack;
-  }
-
   private OperandStack operandStack;
   private Map<LabelNode, Stmt> trapHandler;
   private int lastLineNumber = -1;
@@ -1245,7 +1241,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (!isInstance) {
         invoke = Jimple.newStaticInvokeExpr(methodSignature, argList);
       } else {
-
         Operand baseOperand = args[args.length - 1];
         Local base = (Local) baseOperand.stackOrValue();
 
@@ -1341,8 +1336,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       List<Immediate> methodArgs = new ArrayList<>(nrArgs);
 
       Operand[] args = new Operand[nrArgs];
-      Value[] values = new Value[nrArgs];
-
       // Beware: Call stack is FIFO, Jimple is linear
 
       for (int i = nrArgs - 1; i >= 0; i--) {
@@ -1366,7 +1359,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           Jimple.newDynamicInvokeExpr(
               bsmMethodRef, bsmMethodArgs, methodRef, insn.bsm.getTag(), methodArgs);
       for (int i = 0; i < types.size() - 1; i++) {
-        values[i] = indy.getArg(i);
         args[i].addUsage(indy);
       }
 
@@ -1448,16 +1440,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       int dims = insn.dims;
       Operand[] sizes = new Operand[dims];
       Immediate[] sizeVals = new Immediate[dims];
-      Value[] values = new Value[dims];
       while (dims-- != 0) {
         sizes[dims] = operandStack.popImmediate();
         sizeVals[dims] = (Immediate) sizes[dims].stackOrValue();
       }
       JNewMultiArrayExpr nm = Jimple.newNewMultiArrayExpr(t, Arrays.asList(sizeVals));
-      for (int i = 0; i != values.length; i++) {
-        Value vb = nm.getSize(i);
+      for (int i = 0; i <= dims; i++) {
         sizes[i].addUsage(nm);
-        values[i] = vb;
       }
       frame.setIn(sizes);
       opr = new Operand(insn, nm, this);
@@ -1798,8 +1787,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // code, we have to split the exceptional case (with the exception on
     // the stack) from the normal fall-through case without anything on the
     // stack.
-    for (Iterator<AbstractInsnNode> it = instructions.iterator(); it.hasNext(); ) {
-      AbstractInsnNode node = it.next();
+    for (AbstractInsnNode node : instructions) {
       if (node instanceof JumpInsnNode) {
         if (((JumpInsnNode) node).label == ln) {
           inlineExceptionLabels.add(ln);
@@ -2031,7 +2019,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    *
    * @param usage
    */
-  public List<Stmt> getStmts(Expr usage) {
+  public List<Stmt> getStmts(@Nonnull Expr usage) {
     List<Stmt> currentUses =
         InsnToStmt.values().stream()
             .filter(stmt -> stmt.getUses().contains(usage))
