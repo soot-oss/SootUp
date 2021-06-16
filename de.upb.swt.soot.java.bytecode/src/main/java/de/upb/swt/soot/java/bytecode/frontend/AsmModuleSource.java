@@ -148,7 +148,7 @@ public class AsmModuleSource extends JavaModuleInfo {
     ArrayList<InterfaceReference> providers = new ArrayList<>(module.provides.size());
     // add provides
     for (ModuleProvideNode moduleProvideNode : module.provides) {
-      JavaClassType serviceSignature = AsmUtil.asmIDToSignature(moduleProvideNode.service);
+      JavaClassType serviceSignature = AsmUtil.toJimpleClassType(moduleProvideNode.service);
       if (serviceSignature == null) {
         throw new IllegalStateException("provides entry without 'with' .");
       }
@@ -171,7 +171,7 @@ public class AsmModuleSource extends JavaModuleInfo {
     ArrayList<JavaClassType> uses = new ArrayList<>(module.uses.size());
     // add uses
     for (String usedService : module.uses) {
-      JavaClassType serviceSignature = AsmUtil.asmIDToSignature(usedService);
+      JavaClassType serviceSignature = AsmUtil.toJimpleClassType(usedService);
       uses.add(serviceSignature);
     }
 

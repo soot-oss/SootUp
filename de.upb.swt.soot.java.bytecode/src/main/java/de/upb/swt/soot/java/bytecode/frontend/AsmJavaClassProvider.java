@@ -67,6 +67,7 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
     if (klassType.getClassName().equals(JavaModuleIdentifierFactory.MODULE_INFO_FILE)) {
       throw new ResolveException(
           "Can not create ClassSource from a module info descriptor!", sourcePath);
+      // FIXME: [ms] in <java9 that could be a usual class..
     } else {
       if (klassType instanceof AnnotationType) {
         return new AsmAnnotationClassSource(srcNamespace, sourcePath, klassType, classNode);

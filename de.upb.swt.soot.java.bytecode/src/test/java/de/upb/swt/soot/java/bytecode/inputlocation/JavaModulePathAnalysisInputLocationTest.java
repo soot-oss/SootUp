@@ -3,6 +3,7 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
 import static org.junit.Assert.*;
 
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
@@ -14,6 +15,7 @@ import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaModuleView;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import org.junit.Test;
 
@@ -62,7 +64,7 @@ public class JavaModulePathAnalysisInputLocationTest {
   }
 
   @Test
-  public void getModuleInfo() {
+  public void testGetModuleInfo() {
 
     JavaProject p =
         JavaProject.builder(new JavaLanguage(9))
@@ -90,7 +92,7 @@ public class JavaModulePathAnalysisInputLocationTest {
   }
 
   @Test
-  public void getClassSource() {
+  public void testGetClassSource() {
     JavaModulePathAnalysisInputLocation inputLocation =
         new JavaModulePathAnalysisInputLocation(" TODO ");
     final ClassType sig =
@@ -99,12 +101,15 @@ public class JavaModulePathAnalysisInputLocationTest {
     final Optional<? extends AbstractClassSource<JavaSootClass>> clazzOpt =
         inputLocation.getClassSource(sig);
     assertTrue(clazzOpt.isPresent());
-    assertEquals(sig, clazzOpt.get().getClassType());
-    assertEquals(sig, clazzOpt.get());
+    AbstractClassSource<JavaSootClass> scs = clazzOpt.get();
+    assertEquals(sig, scs.getClassType());
+    assertEquals("modules/java.base/java/lang/String.class", scs.getSourcePath().toString());
+    JavaSootClass javaSootClass = scs.buildClass(SourceType.Application);
+    assertTrue(javaSootClass.getMethod("length", Collections.emptyList()).isPresent());
   }
 
   @Test
-  public void getClassSources() {
+  public void testGetClassSources() {
     JavaModulePathAnalysisInputLocation inputLocation =
         new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar");
     final Collection<? extends AbstractClassSource<?>> classSources =
@@ -113,7 +118,7 @@ public class JavaModulePathAnalysisInputLocationTest {
   }
 
   @Test
-  public void getModules() {
+  public void testGetModules() {
     JavaModulePathAnalysisInputLocation inputLocation =
         new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar");
     Collection<ModuleSignature> modules = inputLocation.getModules();

@@ -130,27 +130,22 @@ public final class AsmUtil {
     }
 
     return StreamSupport.stream(asmClassNames.spliterator(), false)
-        .map(AsmUtil::asmIDToSignature)
+        .map(AsmUtil::toJimpleClassType)
         .collect(Collectors.toList());
   }
 
-  @Nullable
-  public static JavaClassType asmIDToSignature(@Nonnull String asmClassName) {
-    // TODO: [ms] incorporate? -> see toJimpleClassType
-    if (asmClassName.isEmpty()) {
-      return null;
-    }
+  @Nonnull
+  public static JavaClassType toJimpleClassType(@Nonnull String asmClassName) {
     return JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(asmClassName));
   }
 
-  // TODO: [bh] rename this
   /**
    * Converts a type descriptor to a Jimple reference type.
    *
    * @param desc the descriptor.
    * @return the reference type.
    */
-  public static Type toJimpleClassType(@Nonnull String desc) {
+  public static Type toJimpleSignature(@Nonnull String desc) {
     return desc.charAt(0) == '['
         ? toJimpleType(desc)
         : JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(desc));
@@ -214,9 +209,10 @@ public final class AsmUtil {
         : baseType;
   }
 
+  /** Converts n types contained in desc to a list of Jimple Types */
   @Nonnull
   public static List<Type> toJimpleSignatureDesc(@Nonnull String desc) {
-    // [ms] more types are needed for method type which is ( arg-type* ) ret-type
+    // [ms] more types are possibly needed for method type which is ( arg-type* ) ret-type
     List<Type> types = new ArrayList<>(1);
     int len = desc.length();
     int idx = 0;
@@ -268,7 +264,7 @@ public final class AsmUtil {
             baseType = JavaIdentifierFactory.getInstance().getType(toQualifiedName(cls));
             break this_type;
           default:
-            throw new AssertionError("Unknown type: " + c);
+            throw new AssertionError("Unknown type: '" + c + "' in '" + desc + "'.");
         }
       }
 
