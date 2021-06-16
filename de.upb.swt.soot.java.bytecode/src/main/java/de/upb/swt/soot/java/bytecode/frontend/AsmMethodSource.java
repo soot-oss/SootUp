@@ -1241,7 +1241,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (isInstance) {
         args[args.length - 1] = operandStack.popLocal();
       }
-      Value[] values = args == null ? null : new Value[args.length];
       AbstractInvokeExpr invoke;
       if (!isInstance) {
         invoke = Jimple.newStaticInvokeExpr(methodSignature, argList);
@@ -1263,14 +1262,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           default:
             throw new AssertionError("Unknown invoke op:" + op);
         }
-        values[values.length - 1] = iinvoke.getBase();
 
         invoke = iinvoke;
         args[args.length - 1].addUsage(invoke);
       }
-      if (values != null) {
-        for (int i = 0; i != sigTypes.size(); i++) {
-          values[i] = invoke.getArg(i);
+      if (args != null) {
+        for (int i = 0; i <= sigTypes.size(); i++) {
           args[i].addUsage(invoke);
         }
         frame.setIn(args);
