@@ -38,7 +38,7 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr impleme
 
   public JSpecialInvokeExpr(
       @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
-    super(base, method, args.toArray(new Immediate[args.size()]));
+    super(base, method, args.toArray(new Immediate[0]));
   }
 
   @Override

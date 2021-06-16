@@ -53,7 +53,7 @@ public abstract class AbstractInvokeExpr implements Expr {
     return this.methodSignature;
   }
 
-  public Value getArg(@Nonnull int index) {
+  public Value getArg(int index) {
     return args[index];
   }
 
@@ -63,7 +63,7 @@ public abstract class AbstractInvokeExpr implements Expr {
   }
 
   public int getArgCount() {
-    return args == null ? 0 : args.length;
+    return args.length;
   }
 
   @Nonnull
@@ -75,9 +75,6 @@ public abstract class AbstractInvokeExpr implements Expr {
   @Override
   @Nonnull
   public List<Value> getUses() {
-    if (args == null) {
-      return Collections.emptyList();
-    }
     List<Value> list = new ArrayList<>(getArgCount());
     Collections.addAll(list, args);
     for (Value arg : args) {

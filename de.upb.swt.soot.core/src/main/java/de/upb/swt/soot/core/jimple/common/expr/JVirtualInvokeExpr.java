@@ -39,7 +39,7 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr impleme
   /** Stores the values to the args array. */
   public JVirtualInvokeExpr(
       @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
-    super(base, method, args.toArray(new Immediate[args.size()]));
+    super(base, method, args.toArray(new Immediate[0]));
   }
 
   @Override

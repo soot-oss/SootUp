@@ -45,7 +45,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
   /** methodArgs to an array args. */
   public JInterfaceInvokeExpr(
       @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
-    super(base, method, args.toArray(new Immediate[args.size()]));
+    super(base, method, args.toArray(new Immediate[0]));
 
     // FIXME: [JMP] Move this into view or somewhere, where `SootClass` and its context are
     // available

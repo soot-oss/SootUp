@@ -51,9 +51,9 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
       @Nonnull MethodSignature bootstrapMethodSignature,
       @Nonnull List<Immediate> bootstrapArgs,
       @Nonnull MethodSignature methodSignature,
-      @Nonnull int tag,
+      int tag,
       @Nonnull List<Immediate> methodArgs) {
-    super(methodSignature, methodArgs.toArray(new Immediate[methodArgs.size()]));
+    super(methodSignature, methodArgs.toArray(new Immediate[0]));
     if (!methodSignature
         .getDeclClassType()
         .getFullyQualifiedName()
@@ -93,7 +93,7 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   }
 
   @Nonnull
-  public Value getBootstrapArg(@Nonnull int index) {
+  public Value getBootstrapArg(int index) {
     return bootstrapMethodSignatureArgs.get(index);
   }
 

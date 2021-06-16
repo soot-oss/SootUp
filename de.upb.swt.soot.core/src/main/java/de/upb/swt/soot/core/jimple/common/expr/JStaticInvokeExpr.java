@@ -37,7 +37,7 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copya
 
   /** Stores the values to the args array. */
   public JStaticInvokeExpr(@Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
-    super(method, args.toArray(new Immediate[args.size()]));
+    super(method, args.toArray(new Immediate[0]));
   }
 
   @Override
