@@ -120,7 +120,6 @@ final class StackFrame {
             JAssignStmt as =
                 Jimple.newAssignStmt(stack, rvalue, StmtPositionInfo.createNoStmtPositionInfo());
             src.mergeStmts(newOp.insn, as);
-            newOp.addValue(as.getRightOp());
           }
         }
       } else {
@@ -143,7 +142,6 @@ final class StackFrame {
           if (prevOp.stack == stack) {
             continue;
           }
-          prevOp.removeValue(box);
           if (prevOp.stack == null) {
             prevOp.stack = stack;
             JAssignStmt as =

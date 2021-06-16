@@ -44,7 +44,6 @@ final class Operand {
   @Nonnull protected final Value value;
   @Nonnull private final AsmMethodSource methodSource;
   @Nullable protected Local stack;
-  @Nonnull private final List<Value> boxes = new ArrayList<>();
 
   @Nonnull private final List<Stmt> stmtUsages = new ArrayList<>();
   @Nonnull private final List<Expr> exprUsages = new ArrayList<>();
@@ -90,29 +89,10 @@ final class Operand {
     refUsages.add(usage);
   }
 
-  /**
-   * Removes a value from this operand.
-   *
-   * @param vb the value box.
-   */
-  void removeValue(@Nullable Value vb) {
-    if (vb == null) {
-      return;
-    }
-    boxes.remove(vb);
-  }
-
-  /**
-   * Adds a value to this operand.
-   *
-   * @param vb the value box.
-   */
-  void addValue(@Nonnull Value vb) {
-    boxes.add(vb);
-  }
-
   /** Updates all statements and expressions that use this Operand. */
   void updateUsages() {
+    // TODO [bh] we never do anything with refs
+
     ReplaceUseStmtVisitor stmtVisitor = new ReplaceUseStmtVisitor(this.value, this.stackOrValue());
 
     for (Expr exprUsage : exprUsages) {
@@ -171,16 +151,7 @@ final class Operand {
 
   @Override
   public String toString() {
-    return "Operand{"
-        + "insn="
-        + insn
-        + ", value="
-        + value
-        + ", stack="
-        + stack
-        + ", boxes="
-        + boxes
-        + '}';
+    return "Operand{" + "insn=" + insn + ", value=" + value + ", stack=" + stack + '}';
   }
 
   @Nonnull
@@ -196,11 +167,6 @@ final class Operand {
   @Nullable
   public Local getStack() {
     return stack;
-  }
-
-  @Nonnull
-  public List<Value> getBoxes() {
-    return boxes;
   }
 
   @Override
