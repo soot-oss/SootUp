@@ -80,7 +80,8 @@ final class Operand {
 
   /** Updates all statements and expressions that use this Operand. */
   void updateUsages() {
-    ReplaceUseStmtVisitor stmtVisitor = new ReplaceUseStmtVisitor(this.value, this.stackOrValue());
+    ReplaceUseStmtVisitor replaceStmtVisitor =
+        new ReplaceUseStmtVisitor(this.value, this.stackOrValue());
 
     for (Expr exprUsage : exprUsages) {
       List<Stmt> stmts = this.methodSource.getStmts(exprUsage);
@@ -100,8 +101,8 @@ final class Operand {
       // resolve stmt in method source, it might not exist anymore!
       oldUsage = methodSource.getLatestVersionOfStmt(oldUsage);
 
-      oldUsage.accept(stmtVisitor);
-      Stmt newUsage = stmtVisitor.getResult();
+      oldUsage.accept(replaceStmtVisitor);
+      Stmt newUsage = replaceStmtVisitor.getResult();
 
       if (!oldUsage.equivTo(newUsage)) {
         methodSource.replaceStmt(oldUsage, newUsage);
