@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Created-By: 9-ea (Oracle Corporation)
+Add-Exports: java.base/jdk.internal.misc moda/pkgainternal
+Main-Class: pkgmain.Main

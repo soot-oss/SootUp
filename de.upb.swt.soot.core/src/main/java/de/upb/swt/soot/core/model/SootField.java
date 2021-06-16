@@ -23,7 +23,6 @@ package de.upb.swt.soot.core.model;
 
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.signatures.FieldSignature;
-import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.types.Type;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
@@ -57,12 +56,6 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
     } else {
       return Modifier.toString(this.getModifiers()) + ' ' + this.getSignature().getSubSignature();
     }
-  }
-
-  @Nonnull
-  @Override
-  public FieldSubSignature getSubSignature() {
-    return (FieldSubSignature) super.getSubSignature();
   }
 
   @Nonnull
