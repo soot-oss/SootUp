@@ -81,12 +81,12 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
 
     Set<MethodSubSignature> methodSignaturesOfSootClass =
         methodsSetOfSootClass.stream()
-            .map(sootMethod -> sootMethod.getSubSignature())
+            .map(sootMethod -> sootMethod.getSignature().getSubSignature())
             .collect(Collectors.toSet());
 
     Set<MethodSubSignature> methodSignaturesOfSuperClass =
         methodsSetOfSuperClass.stream()
-            .map(sootMethod -> sootMethod.getSubSignature())
+            .map(sootMethod -> sootMethod.getSignature().getSubSignature())
             .collect(Collectors.toSet());
 
     boolean hasAdditionalMethod = false;

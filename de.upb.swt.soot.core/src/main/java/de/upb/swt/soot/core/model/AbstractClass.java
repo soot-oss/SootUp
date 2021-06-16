@@ -72,7 +72,7 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
   @Nonnull
   public Optional<? extends SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
     return getMethods().stream()
-        .filter(m -> m.getSignature().getSubSignature().equals(subSignature))
+        .filter(method -> method.getSignature().getSubSignature().equals(subSignature))
         .findAny();
   }
 
@@ -118,4 +118,4 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
                   getClassSource().getSourcePath());
             });
   }
-};
+}
