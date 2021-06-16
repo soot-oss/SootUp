@@ -82,7 +82,6 @@ public abstract class PathBasedAnalysisInputLocation
    * differs between directories, archives (and possibly network path's in the future).
    *
    * @param path The path to search in
-   * @param javaVersion target version to analyze a multi-release jar
    * @return A {@link PathBasedAnalysisInputLocation} implementation dependent on the given {@link
    *     Path}'s FileSystem
    */
