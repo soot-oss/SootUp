@@ -184,7 +184,7 @@ public class BodyUtils {
    * @param newStmt a modified stmt to replace the oldStmt.
    */
   private static void adaptTraps(
-          @Nonnull Body.BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+      @Nonnull Body.BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
     List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
     for (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) {
       Trap trap = iterator.next();

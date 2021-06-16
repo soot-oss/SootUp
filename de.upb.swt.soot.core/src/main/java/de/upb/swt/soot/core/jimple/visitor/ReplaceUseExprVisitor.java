@@ -23,12 +23,10 @@ package de.upb.swt.soot.core.jimple.visitor;
  */
 
 import de.upb.swt.soot.core.graph.Block;
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.*;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
 import javax.annotation.Nonnull;
 
@@ -94,7 +92,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
   @Nonnull
   @Override
   public void caseCmpExpr(@Nonnull JCmpExpr v) {
-    if (newUse instanceof Immediate || newUse instanceof  JPhiExpr) {
+    if (newUse instanceof Immediate || newUse instanceof JPhiExpr) {
       if (v.getOp1().equivTo(oldUse) && v.getOp2().equivTo(oldUse)) {
         newExpr = new JCmpExpr(newUse, newUse);
       } else if (v.getOp1().equivTo(oldUse)) {
@@ -618,7 +616,8 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
   @Nonnull
   @Override
   public void caseNewArrayExpr(@Nonnull JNewArrayExpr v) {
-    if ((newUse instanceof Immediate || newUse instanceof JPhiExpr) && v.getSize().equivTo(oldUse)) {
+    if ((newUse instanceof Immediate || newUse instanceof JPhiExpr)
+        && v.getSize().equivTo(oldUse)) {
       newExpr = v.withSize(newUse);
     } else {
       defaultCase(v);

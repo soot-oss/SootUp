@@ -54,7 +54,6 @@ public class ReplaceUseStmtVisitorTest {
   MethodSignature methodeWithOutParas =
       new MethodSignature(testClass, "invokeExpr", Collections.emptyList(), voidType);
 
-
   /** Test use replacing in case JAssignStmt. */
   @Test
   public void testcaseAssignStmt() {
@@ -130,7 +129,6 @@ public class ReplaceUseStmtVisitorTest {
       }
     }
     assertTrue(isExpected);
-
   }
 
   /** Test use replacing in case JInvokeStmt and JIfStmt Here JInvokeStmt is as an example */
@@ -171,8 +169,7 @@ public class ReplaceUseStmtVisitorTest {
 
     expectedUses.clear();
     expectedUses.addAll(ImmutableUtils.immutableList(arg1, arg2, phi));
-    expectedUses.add(
-            new JSpecialInvokeExpr(phi, methodeWithOutParas, Collections.emptyList()));
+    expectedUses.add(new JSpecialInvokeExpr(phi, methodeWithOutParas, Collections.emptyList()));
 
     for (int i = 0; i < expectedUses.size(); i++) {
       isExpected = (newStmt.getUses().get(i).equivTo(expectedUses.get(i)));
@@ -213,6 +210,5 @@ public class ReplaceUseStmtVisitorTest {
       }
     }
     assertTrue(isExpected);
-
   }
 }

@@ -56,7 +56,6 @@ public class ReplaceUseExprVisitorTest {
   Block block2 = new Block(stmt2, stmt2, ImmutableUtils.immutableList(stmt2), null);
   Block block3 = new Block(stmt3, stmt3, ImmutableUtils.immutableList(stmt3), null);
 
-
   MethodSignature methodeWithOutParas =
       new MethodSignature(testClass, "invokeExpr", Collections.emptyList(), voidType);
 
@@ -111,7 +110,6 @@ public class ReplaceUseExprVisitorTest {
     expectedUses.clear();
     expectedUses.addAll(ImmutableUtils.immutableList(arg1, arg2, phi, arg1, arg2, phi));
     assertTrue(newExpr.getUses().equals(expectedUses));
-
   }
 
   /**
@@ -283,7 +281,6 @@ public class ReplaceUseExprVisitorTest {
   @Test
   public void testPhiExpr() {
 
-
     ReplaceUseExprVisitor visitor = new ReplaceUseExprVisitor(arg2, newArg, newBlock);
 
     Set<Local> argsSet = ImmutableUtils.immutableSet(arg1, arg2, arg3);
@@ -303,7 +300,6 @@ public class ReplaceUseExprVisitorTest {
 
     assertListsEquiv(expectedArgs, new ArrayList<>(newExpr.getArgs()));
     assertListsEquiv(expectedBlocks, new ArrayList<>(newExpr.getBlocks()));
-
   }
 
   // assert whether two lists are equal

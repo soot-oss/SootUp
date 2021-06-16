@@ -17,8 +17,6 @@ import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Handler;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -66,7 +64,7 @@ public class ReplaceUseRefVisitorTest {
     expectedUses.clear();
 
     // replace base with newPhi
-    JPhiExpr phi  = JPhiExpr.getEmptyPhi();
+    JPhiExpr phi = JPhiExpr.getEmptyPhi();
     phi.addArg(a1, block1);
     phi.addArg(a2, block2);
 
@@ -93,7 +91,6 @@ public class ReplaceUseRefVisitorTest {
     assertTrue(newRef.getUses().equals(expectedUses));
     expectedUses.clear();
 
-
     // replace local index with newUse
     visitor = new ReplaceUseRefVisitor(localIndex, localNewIndex);
     ref = javaJimple.newArrayRef(base, localIndex);
@@ -106,7 +103,7 @@ public class ReplaceUseRefVisitorTest {
     expectedUses.clear();
 
     // replace local index with phi
-    phi  = JPhiExpr.getEmptyPhi();
+    phi = JPhiExpr.getEmptyPhi();
     phi.addArg(arg1, block1);
     phi.addArg(arg2, block2);
 

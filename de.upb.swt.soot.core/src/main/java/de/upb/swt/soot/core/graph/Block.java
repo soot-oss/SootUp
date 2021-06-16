@@ -25,12 +25,11 @@ package de.upb.swt.soot.core.graph;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 /**
  * Represents BasicBlocks that partition a method body.
@@ -86,15 +85,15 @@ public class Block {
     this.tail = tail;
     this.blockStmts = blockStmts;
     this.blockLength = blockStmts.size();
-    for(int i = 0; i < this.blockLength ; i++){
-        this.stmtToPos.put(this.blockStmts.get(i), i);
+    for (int i = 0; i < this.blockLength; i++) {
+      this.stmtToPos.put(this.blockStmts.get(i), i);
     }
   }
 
-  private Block(){}
+  private Block() {}
 
-  public static Block getEmptyBlock(){
-    return new Block( );
+  public static Block getEmptyBlock() {
+    return new Block();
   }
 
   public Body getBody() {
@@ -109,24 +108,25 @@ public class Block {
     return this.tail;
   }
 
-  public void replaceBlockStmt(Stmt oldStmt, Stmt newStmt){
-    if(!this.stmtToPos.containsKey(oldStmt)){
-      throw new RuntimeException("The given oldStmt: " + oldStmt.toString() + " is not this block!");
+  public void replaceBlockStmt(Stmt oldStmt, Stmt newStmt) {
+    if (!this.stmtToPos.containsKey(oldStmt)) {
+      throw new RuntimeException(
+          "The given oldStmt: " + oldStmt.toString() + " is not this block!");
     }
-    if(oldStmt==head){
+    if (oldStmt == head) {
       this.head = newStmt;
       this.blockStmts.set(0, newStmt);
-    }else if(oldStmt==tail){
+    } else if (oldStmt == tail) {
       this.tail = newStmt;
-      this.blockStmts.set(this.blockLength-1, newStmt);
-    }else{
+      this.blockStmts.set(this.blockLength - 1, newStmt);
+    } else {
       this.blockStmts.set(this.stmtToPos.get(oldStmt), newStmt);
     }
   }
 
-
   /**
    * Getter of block stmts, the order is same as in StmtGraph of body
+   *
    * @return
    */
   public List<Stmt> getBlockStmts() {
@@ -181,7 +181,7 @@ public class Block {
     return true;
   }
 
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator){
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseBlock(this, o);
   }
 }

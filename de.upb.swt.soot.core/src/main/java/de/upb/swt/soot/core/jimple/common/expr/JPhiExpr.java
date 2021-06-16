@@ -59,18 +59,19 @@ public final class JPhiExpr implements Expr, Copyable {
       blockToArg.put(argToBlock.get(arg), arg);
     }
   }
-  private JPhiExpr(){}
 
-  public static JPhiExpr getEmptyPhi(){
+  private JPhiExpr() {}
+
+  public static JPhiExpr getEmptyPhi() {
     return new JPhiExpr();
   }
 
-  public void addArg(Local arg, Block block){
-    //TODO: now there's validation test
+  public void addArg(Local arg, Block block) {
+    // TODO: now there's validation test
     this.args.add(arg);
     this.blockToArg.put(block, arg);
     this.argToBlock.put(arg, block);
-    if(this.type ==null){
+    if (this.type == null) {
       this.type = arg.getType();
     }
   }
@@ -98,7 +99,7 @@ public final class JPhiExpr implements Expr, Copyable {
     if (index >= this.getArgsSize()) {
       throw new RuntimeException("The given index is out of the bound!");
     }
-    List<Local> argsList= new ArrayList<>(this.args);
+    List<Local> argsList = new ArrayList<>(this.args);
     return argsList.get(index);
   }
 
@@ -109,7 +110,7 @@ public final class JPhiExpr implements Expr, Copyable {
           "The given block: " + block.toString() + " is not contained by PhiExpr!");
     }
     Local arg = blockToArg.get(block);
-    List<Local> argsList= new ArrayList<>(this.args);
+    List<Local> argsList = new ArrayList<>(this.args);
     return argsList.indexOf(arg);
   }
 
@@ -182,7 +183,7 @@ public final class JPhiExpr implements Expr, Copyable {
 
   @Nonnull
   public String toString() {
-    if(this.args.size() == 0){
+    if (this.args.size() == 0) {
       return Jimple.PHI + "()";
     }
     StringBuilder builder = new StringBuilder();
@@ -206,7 +207,7 @@ public final class JPhiExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public JPhiExpr withArgToBlockMap(@Nonnull Map<Local, Block> argToBlock){
+  public JPhiExpr withArgToBlockMap(@Nonnull Map<Local, Block> argToBlock) {
     return new JPhiExpr((LinkedHashSet<Local>) getArgs(), argToBlock);
   }
 }
