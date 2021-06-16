@@ -1525,12 +1525,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       } else {
         Operand op1 = operandStack.popImmediate();
         Value v1 = op1.stackOrValue();
-        Value vb;
         switch (op) {
           case ANEWARRAY:
             {
               JNewArrayExpr expr = JavaJimple.getInstance().newNewArrayExpr(t, (Immediate) v1);
-              vb = expr.getSize();
               val = expr;
               op1.addUsage(expr);
               break;
@@ -1538,7 +1536,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           case CHECKCAST:
             {
               JCastExpr expr = Jimple.newCastExpr((Immediate) v1, t);
-              vb = expr.getOp();
               val = expr;
               op1.addUsage(expr);
               break;
@@ -1546,7 +1543,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           case INSTANCEOF:
             {
               JInstanceOfExpr expr = Jimple.newInstanceOfExpr((Immediate) v1, t);
-              vb = expr.getOp();
               val = expr;
               op1.addUsage(expr);
               break;
