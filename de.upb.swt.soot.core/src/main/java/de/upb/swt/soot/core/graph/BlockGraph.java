@@ -174,12 +174,22 @@ public class BlockGraph implements Iterable<Block> {
   }
 
   @Nonnull
+  /** return a list of Blocks with reverse postorder */
   public List<Block> getBlocks() {
-    List<Block> blocks = new ArrayList<>();
-    for (int i = 0; i < idxToBlock.size(); i++) {
-      blocks.add(idxToBlock.get(i));
+    Set<Block> blocks = new LinkedHashSet<>();
+    Deque<Block> queue = new ArrayDeque<>();
+    queue.add(startingBlock);
+    while (!queue.isEmpty()) {
+      Block top = queue.removeFirst();
+      blocks.add(top);
+      List<Block> succs = successors(top);
+      for (Block succ : succs) {
+        if (!blocks.contains(succ)) {
+          queue.add(succ);
+        }
+      }
     }
-    return blocks;
+    return new ArrayList<>(blocks);
   }
 
   @Override
@@ -197,11 +207,14 @@ public class BlockGraph implements Iterable<Block> {
    * @return
    */
   private boolean isHead(Stmt stmt, StmtGraph graph) {
-
-    if (graph.predecessors(stmt).isEmpty()) {
+    List<Stmt> preds = graph.predecessors(stmt);
+    if (preds.size() > 1) {
       return true;
     }
-    List<Stmt> preds = graph.predecessors(stmt);
+    if (preds.isEmpty()) {
+      return true;
+    }
+
     for (Stmt pred : preds) {
       if (pred instanceof BranchingStmt) {
         return true;
