@@ -75,5 +75,5 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   public abstract AbstractInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature);
 
   @Nonnull
-  public abstract AbstractInvokeExpr withArgs(@Nonnull List<? extends Value> args);
+  public abstract AbstractInvokeExpr withArgs(@Nonnull List<Immediate> args);
 }

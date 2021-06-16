@@ -26,7 +26,6 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Copyable;
@@ -39,7 +38,7 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr impleme
 
   /** Stores the values to the args array. */
   public JVirtualInvokeExpr(
-      @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<? extends Value> args) {
+      @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
     super(base, method, args.toArray(new Immediate[args.size()]));
   }
 
@@ -94,7 +93,7 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr impleme
 
   @Override
   @Nonnull
-  public JVirtualInvokeExpr withArgs(@Nonnull List<? extends Value> args) {
+  public JVirtualInvokeExpr withArgs(@Nonnull List<Immediate> args) {
     return new JVirtualInvokeExpr(getBase(), getMethodSignature(), args);
   }
 }

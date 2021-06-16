@@ -32,7 +32,6 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Copyable;
@@ -45,7 +44,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
 
   /** methodArgs to an array args. */
   public JInterfaceInvokeExpr(
-      @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<? extends Value> args) {
+      @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
     super(base, method, args.toArray(new Immediate[args.size()]));
 
     // FIXME: [JMP] Move this into view or somewhere, where `SootClass` and its context are
@@ -116,7 +115,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
 
   @Nonnull
   @Override
-  public JInterfaceInvokeExpr withArgs(@Nonnull List<? extends Value> args) {
+  public JInterfaceInvokeExpr withArgs(@Nonnull List<Immediate> args) {
     return new JInterfaceInvokeExpr(getBase(), getMethodSignature(), args);
   }
 }

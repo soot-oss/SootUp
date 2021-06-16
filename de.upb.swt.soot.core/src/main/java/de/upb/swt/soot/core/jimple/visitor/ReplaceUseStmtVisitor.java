@@ -152,7 +152,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   @Override
   public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
     if (stmt.getOp().equivTo(oldUse)) {
-      setResult(stmt.withReturnValue(newUse));
+      setResult(stmt.withReturnValue((Immediate) newUse));
     } else {
       defaultCaseStmt(stmt);
     }

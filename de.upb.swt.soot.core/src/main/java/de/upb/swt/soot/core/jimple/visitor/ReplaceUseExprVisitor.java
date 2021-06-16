@@ -413,11 +413,11 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
   public void caseDynamicInvokeExpr(@Nonnull JDynamicInvokeExpr expr) {
     if (newUse instanceof Immediate) {
       boolean isChanged = false;
-      List<Value> newArgs = new ArrayList<>(expr.getArgs());
+      List<Immediate> newArgs = new ArrayList<>(expr.getArgs());
       int index = 0;
       for (Value arg : expr.getArgs()) {
         if (arg.equivTo(oldUse)) {
-          newArgs.set(index, newUse);
+          newArgs.set(index, (Immediate) newUse);
           isChanged = true;
         }
         index++;
@@ -473,11 +473,11 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
   private void instanceInvokeExpr(@Nonnull AbstractInstanceInvokeExpr expr) {
     boolean isChanged = false;
     if (newUse instanceof Immediate) {
-      List<Value> newArgs = new ArrayList<>(expr.getArgs());
+      List<Immediate> newArgs = new ArrayList<>(expr.getArgs());
       int index = 0;
-      for (Value arg : expr.getArgs()) {
+      for (Immediate arg : expr.getArgs()) {
         if (arg.equivTo(oldUse)) {
-          newArgs.set(index, newUse);
+          newArgs.set(index, (Immediate) newUse);
           isChanged = true;
         }
         index++;

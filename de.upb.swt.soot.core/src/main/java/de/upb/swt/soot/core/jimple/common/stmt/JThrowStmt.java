@@ -26,7 +26,6 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -35,7 +34,7 @@ import javax.annotation.Nonnull;
 /** A statement that throws an Exception */
 public final class JThrowStmt extends AbstractOpStmt implements Copyable {
 
-  public JThrowStmt(@Nonnull Value op, @Nonnull StmtPositionInfo positionInfo) {
+  public JThrowStmt(@Nonnull Immediate op, @Nonnull StmtPositionInfo positionInfo) {
     super(op, positionInfo);
   }
 
@@ -77,7 +76,7 @@ public final class JThrowStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Nonnull
-  public JThrowStmt withOp(@Nonnull Value op) {
+  public JThrowStmt withOp(@Nonnull Immediate op) {
     return new JThrowStmt(op, getPositionInfo());
   }
 
