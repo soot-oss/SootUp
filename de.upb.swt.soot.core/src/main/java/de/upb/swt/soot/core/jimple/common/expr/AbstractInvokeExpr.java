@@ -40,7 +40,7 @@ public abstract class AbstractInvokeExpr implements Expr {
 
   protected AbstractInvokeExpr(@Nonnull MethodSignature method, @Nonnull Immediate[] args) {
     this.methodSignature = method;
-    for (Value arg : args) {
+    for (Immediate arg : args) {
       if (arg == null) {
         throw new IllegalArgumentException("arg may not be null");
       }
