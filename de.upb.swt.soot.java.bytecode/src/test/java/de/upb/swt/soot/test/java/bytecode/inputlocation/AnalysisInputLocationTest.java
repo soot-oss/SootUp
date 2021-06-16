@@ -56,6 +56,9 @@ public abstract class AnalysisInputLocationTest {
   final Path mrj = Paths.get("../shared-test-resources/multi-release-jar/mrjar.jar");
   final String mrjFile = mrj.toString();
 
+  final Path mmrj = Paths.get("../shared-test-resources/multi-release-jar-modular/mrjar.jar");
+  final String mmrjFile = mrj.toString();
+
   private IdentifierFactory identifierFactory;
   private ClassProvider classProvider;
 
