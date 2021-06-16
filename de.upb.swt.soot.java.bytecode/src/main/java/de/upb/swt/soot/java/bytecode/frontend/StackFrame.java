@@ -41,7 +41,6 @@ final class StackFrame {
 
   @Nullable private Operand[] out;
   @Nullable private Local[] inStackLocals;
-  @Nullable private Value[] values;
   @Nonnull private final ArrayList<Operand[]> in = new ArrayList<>(1);
   @Nonnull private final AsmMethodSource src;
 
@@ -69,15 +68,6 @@ final class StackFrame {
     in.clear();
     in.add(oprs);
     inStackLocals = new Local[oprs.length];
-  }
-
-  /**
-   * Sets the values corresponding to the operands used by this frame.
-   *
-   * @param boxes the boxes.
-   */
-  void setValues(Value... boxes) {
-    this.values = boxes;
   }
 
   /**
@@ -136,7 +126,6 @@ final class StackFrame {
           }
         }
         /* add assign statement for prevOp */
-        Value box = values == null ? null : values[i];
         for (int j = 0; j != nrIn; j++) {
           Operand prevOp = in.get(j)[i];
           if (prevOp.stack == stack) {
@@ -176,9 +165,6 @@ final class StackFrame {
             newOp.stack = stack;
           }
           newOp.updateUsages();
-        }
-        if (box != null) {
-          values[i] = stack;
         }
         inStackLocals[i] = stack;
       }
