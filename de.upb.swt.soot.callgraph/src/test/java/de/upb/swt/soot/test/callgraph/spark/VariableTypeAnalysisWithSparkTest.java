@@ -43,7 +43,7 @@ public class VariableTypeAnalysisWithSparkTest
 
   @Override
   protected CallGraph loadCallGraph(String testDirectory, String className) {
-    String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
+    String pointerBenchClassPath = "src/test/resources/callgraph/" + testDirectory;
 
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
     if (version > 1.8) {
@@ -55,7 +55,7 @@ public class VariableTypeAnalysisWithSparkTest
             .addClassPath(
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))
-            .addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath))
+            .addClassPath(new JavaSourcePathAnalysisInputLocation(pointerBenchClassPath))
             .build();
 
     JavaView view = javaProject.createOnDemandView();

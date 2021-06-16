@@ -31,62 +31,17 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class PointsToSetIntersectionTest {
-
-  private JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-  private JavaClassType mainClassSignature;
-  private MethodSignature mainMethodSignature;
-  private View view;
-  private Spark spark;
-  private SootMethod targetMethod;
-
-  @Before
-  public void setUp() {
-    String className = "Test1";
-    String walaClassPath = "src/test/resources/spark/basic";
-
-    double version = Double.parseDouble(System.getProperty("java.specification.version"));
-    if (version > 1.8) {
-      fail("The rt.jar is not available after Java 8. You are using version " + version);
-    }
-
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
-            .addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath))
-            .build();
-
-    view = javaProject.createOnDemandView();
-
-    mainClassSignature = identifierFactory.getClassType(className);
-    mainMethodSignature =
-        identifierFactory.getMethodSignature(
-            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
-
-    SootClass mainClass = (SootClass) view.getClass(mainClassSignature).get();
-    Optional<SootMethod> mainMethod = mainClass.getMethod(mainMethodSignature);
-    assertTrue(mainMethodSignature + " not found in classloader", mainMethod.isPresent());
-
-    final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    CallGraphAlgorithm algorithm = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
-    CallGraph callGraph = algorithm.initialize(Collections.singletonList(mainMethodSignature));
-    spark = new Spark.Builder(view, callGraph).build();
-    spark.analyze();
-
-    MethodSignature targetMethodSig =
-        identifierFactory.getMethodSignature(
-            "go", mainClassSignature, "void", Collections.emptyList());
-
-    Optional<SootMethod> targetOpt = mainClass.getMethod(targetMethodSig);
-    assertTrue(targetOpt.isPresent());
-    targetMethod = targetOpt.get();
-  }
+public class PointsToSetIntersectionTest extends SparkTestBase {
 
   @Test
   public void testLocalsIntersect() {
-    Map<Integer, Local> lineNumberToContainer = getLineNumberToLocalMap(targetMethod, "Container");
+    setUpBasicTest("Test1");
+    MethodSignature targetMethodSig =
+        identifierFactory.getMethodSignature(
+            "go", mainClassSignature, "void", Collections.emptyList());
+    SootMethod targetMethod = getTargetMethod(targetMethodSig);
+
+    Map<Integer, Local> lineNumberToContainer = getLineNumberToLocalMap(targetMethod, "Container", new ArrayList<>());
 
     Local c1 = lineNumberToContainer.get(4);
     Local c2 = lineNumberToContainer.get(8);
@@ -103,7 +58,13 @@ public class PointsToSetIntersectionTest {
 
   @Test
   public void testFieldsIntersect() {
-    Map<Integer, Local> lineNumberToContainer = getLineNumberToLocalMap(targetMethod, "Container");
+    setUpBasicTest("Test1");
+    MethodSignature targetMethodSig =
+            identifierFactory.getMethodSignature(
+                    "go", mainClassSignature, "void", Collections.emptyList());
+    SootMethod targetMethod = getTargetMethod(targetMethodSig);
+
+    Map<Integer, Local> lineNumberToContainer = getLineNumberToLocalMap(targetMethod, "Container", new ArrayList<>());
 
     Local c1 = lineNumberToContainer.get(4);
     Local c2 = lineNumberToContainer.get(8);
@@ -126,18 +87,4 @@ public class PointsToSetIntersectionTest {
     assertFalse(Sets.intersection(c2ItemPointsTo, c3ItemPointsTo).isEmpty());
   }
 
-  private Map<Integer, Local> getLineNumberToLocalMap(SootMethod sootMethod, String typeName) {
-    final ImmutableStmtGraph stmtGraph = sootMethod.getBody().getStmtGraph();
-    Map<Integer, Local> res = new HashMap<>();
-    for (Stmt stmt : stmtGraph) {
-      int line = stmt.getPositionInfo().getStmtPosition().getFirstLine();
-      List<Value> defs = stmt.getDefs();
-      for (Value def : defs) {
-        if (def.getType().toString().equals(typeName) && def instanceof Local) {
-          res.put(line, (Local) def);
-        }
-      }
-    }
-    return res;
-  }
 }
