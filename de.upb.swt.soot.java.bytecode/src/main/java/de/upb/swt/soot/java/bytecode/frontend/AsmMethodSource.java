@@ -1246,7 +1246,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         invoke = Jimple.newStaticInvokeExpr(methodSignature, argList);
       } else {
 
-        Local base = (Local) args[args.length - 1].stackOrValue();
+        Operand baseOperand = args[args.length - 1];
+        Local base = (Local) baseOperand.stackOrValue();
 
         AbstractInstanceInvokeExpr iinvoke;
         switch (op) {
@@ -1264,7 +1265,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         }
 
         invoke = iinvoke;
-        args[args.length - 1].addUsage(invoke);
+        baseOperand.addUsage(invoke);
       }
       if (args != null) {
         for (int i = 0; i <= sigTypes.size(); i++) {
