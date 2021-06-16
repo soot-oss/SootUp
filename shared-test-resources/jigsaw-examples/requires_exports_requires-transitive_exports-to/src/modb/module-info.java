@@ -1,0 +1,3 @@
+module modb {
+    exports pkgb;
+}

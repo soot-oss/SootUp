@@ -121,7 +121,7 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
     String modulename =
         ((ModulePackageName) klassType.getPackageName()).getModuleSignature().getModuleName();
     // lookup the ns for the class provider from the cache and use him...
-    AnalysisInputLocation inputLocation =
+    AnalysisInputLocation<JavaSootClass> inputLocation =
         new ModuleFinder(new AsmJavaClassProvider(bodyInterceptors), modulePath)
             .discoverModule(modulename);
 
