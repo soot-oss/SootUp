@@ -1263,7 +1263,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         baseOperand.addUsage(invoke);
       }
       if (args != null) {
-        for (int i = 0; i <= sigTypes.size(); i++) {
+        for (int i = 0; i < sigTypes.size(); i++) {
           args[i].addUsage(invoke);
         }
         frame.setIn(args);
@@ -1445,7 +1445,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         sizeVals[dims] = (Immediate) sizes[dims].stackOrValue();
       }
       JNewMultiArrayExpr nm = Jimple.newNewMultiArrayExpr(t, Arrays.asList(sizeVals));
-      for (int i = 0; i <= dims; i++) {
+      for (int i = 0; i < dims; i++) {
         sizes[i].addUsage(nm);
       }
       frame.setIn(sizes);
