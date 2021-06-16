@@ -132,7 +132,6 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
      * resolving anyway
      */
     public JavaProjectBuilder enableModules() {
-      ;
       useModules = true;
       return this;
     }

@@ -2,11 +2,11 @@ package de.upb.swt.soot.java.core;
 
 // Modifier for java 9 modules
 public enum ModuleModifier {
-  OPENS(0x0020), // make a module accessible to reflection (deep&shallow)
+  OPENS(0x0020), // a module is accessible to reflection (deep&shallow)
   REQUIRES_TRANSITIVE(
       0x0020), // indicates a dependency that is accessible to other modules which require the given
   // module
-  REQUIRES_STATIC(0x0040), // static: needed at compile but not necessarily at runtime
+  REQUIRES_STATIC(0x0040), // static: needed at compile time but not necessarily at run time
   REQUIRES_SYNTHETIC(0x1000), // ?
   REQUIRES_MANDATED(0x8000); // e.g. to java.base
 

@@ -104,6 +104,7 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
    * Attempts to retrieve the method with the given name and parameters. This method may throw an
    * ResolveException if there is more than one method with the given name and parameter.
    */
+  @Nonnull
   public Optional<? extends SootMethod> getMethod(
       @Nonnull String name, @Nonnull Iterable<? extends Type> parameterTypes) {
     return this.getMethods().stream()

@@ -648,7 +648,6 @@ public class JavaModuleViewTest {
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     testPath + "unnamed-module_access-from-automatic-module/jar/cpa.jar"))
-            .enableModules()
             .build();
 
     JavaModuleView view = (JavaModuleView) p.createOnDemandView();
