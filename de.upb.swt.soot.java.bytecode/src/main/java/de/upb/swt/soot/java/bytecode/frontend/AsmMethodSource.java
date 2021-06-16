@@ -133,7 +133,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private LinkedListMultimap<Stmt, LabelNode> stmtsThatBranchToLabel;
   private Map<AbstractInsnNode, Stmt> InsnToStmt;
 
-  // todo [bh] refactor this! waste of memory
   @Nonnull private final Map<Stmt, Stmt> replacedStmt = new HashMap<>();
 
   protected OperandStack getOperandStack() {
@@ -428,8 +427,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         ref = JavaIdentifierFactory.getInstance().getFieldSignature(insn.name, declClass, type);
         JInstanceFieldRef ifr = Jimple.newInstanceFieldRef((Local) base.stackOrValue(), ref);
         val = ifr;
-        // TODO [bh] ref
-        // base.addValue(ifr.getBase());
         frame.setIn(rvalue, base);
       }
       opr = new Operand(insn, val, this);
@@ -519,9 +516,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       JArrayRef ar =
           JavaJimple.getInstance()
               .newArrayRef((Local) base.stackOrValue(), (Immediate) indx.stackOrValue());
-      // TODO [bh] ref
-      // indx.addValue(ar.getIndex());
-      // base.addValue(ar.getBase());
       opr = new Operand(insn, ar, this);
       frame.setIn(indx, base);
       frame.setOut(opr);
@@ -548,9 +542,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       JArrayRef ar =
           JavaJimple.getInstance()
               .newArrayRef((Local) base.stackOrValue(), (Immediate) indx.stackOrValue());
-      // TODO [bh] ref
-      // indx.addValue(ar.getIndex());
-      // base.addValue(ar.getBase());
       base.addUsage(ar);
       indx.addUsage(ar);
       JAssignStmt as =
