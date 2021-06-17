@@ -22,6 +22,14 @@ public class JavaModuleProject extends JavaProject {
     moduleInfoAnalysisInputLocation = moduleInputLocations;
   }
 
+  @Override
+  public void validate() {
+    if (getInputLocations().isEmpty() && getModuleInfoAnalysisInputLocation().isEmpty()) {
+      throw new IllegalArgumentException(
+          "The inputLocations collection for classPath and modulePath must not be empty.");
+    }
+  }
+
   @Nonnull
   public List<ModuleInfoAnalysisInputLocation> getModuleInfoAnalysisInputLocation() {
     return moduleInfoAnalysisInputLocation;
