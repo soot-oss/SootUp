@@ -78,6 +78,6 @@ public final class JEnterMonitorStmt extends AbstractOpStmt implements Copyable 
 
   @Nonnull
   public JEnterMonitorStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JEnterMonitorStmt((Immediate) getOp(), positionInfo);
+    return new JEnterMonitorStmt(getOp(), positionInfo);
   }
 }

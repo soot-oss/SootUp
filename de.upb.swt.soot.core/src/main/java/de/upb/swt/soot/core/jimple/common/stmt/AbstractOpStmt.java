@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.jimple.common.stmt;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import java.util.ArrayList;
@@ -30,15 +31,15 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractOpStmt extends Stmt {
 
-  protected final Value op;
+  protected final Immediate op;
 
-  protected AbstractOpStmt(@Nonnull Value op, @Nonnull StmtPositionInfo positionInfo) {
+  protected AbstractOpStmt(@Nonnull Immediate op, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.op = op;
   }
 
   @Nonnull
-  public Value getOp() {
+  public Immediate getOp() {
     return op;
   }
 

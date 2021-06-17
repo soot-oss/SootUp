@@ -81,13 +81,7 @@ public final class JReturnStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Nonnull
-  @Override
-  public Immediate getOp() {
-    return (Immediate) super.getOp();
-  }
-
-  @Nonnull
   public JReturnStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JReturnStmt((Immediate) getOp(), positionInfo);
+    return new JReturnStmt(getOp(), positionInfo);
   }
 }

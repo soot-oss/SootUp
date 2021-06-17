@@ -72,7 +72,7 @@ public final class JInstanceOfExpr implements Expr, Copyable {
     return op.equivHashCode() * 101 + checkType.hashCode() * 17;
   }
 
-  public Value getOp() {
+  public Immediate getOp() {
     return op;
   }
 
@@ -106,6 +106,6 @@ public final class JInstanceOfExpr implements Expr, Copyable {
 
   @Nonnull
   public JInstanceOfExpr withCheckType(@Nonnull Type checkType) {
-    return new JInstanceOfExpr((Immediate) getOp(), checkType);
+    return new JInstanceOfExpr(getOp(), checkType);
   }
 }

@@ -78,6 +78,6 @@ public final class JExitMonitorStmt extends AbstractOpStmt implements Copyable {
 
   @Nonnull
   public JExitMonitorStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JExitMonitorStmt((Immediate) getOp(), positionInfo);
+    return new JExitMonitorStmt(getOp(), positionInfo);
   }
 }

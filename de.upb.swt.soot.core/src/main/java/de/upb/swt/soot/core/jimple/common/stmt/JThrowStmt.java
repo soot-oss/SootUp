@@ -82,6 +82,6 @@ public final class JThrowStmt extends AbstractOpStmt implements Copyable {
 
   @Nonnull
   public JThrowStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JThrowStmt((Immediate) getOp(), positionInfo);
+    return new JThrowStmt(getOp(), positionInfo);
   }
 }
