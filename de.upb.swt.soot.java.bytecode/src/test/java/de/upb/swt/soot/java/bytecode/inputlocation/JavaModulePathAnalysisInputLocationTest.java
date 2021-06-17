@@ -5,10 +5,7 @@ import static org.junit.Assert.*;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
-import de.upb.swt.soot.java.core.JavaModuleInfo;
-import de.upb.swt.soot.java.core.JavaProject;
-import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.*;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
@@ -93,8 +90,7 @@ public class JavaModulePathAnalysisInputLocationTest {
 
   @Test
   public void testGetClassSource() {
-    JavaModulePathAnalysisInputLocation inputLocation =
-        new JavaModulePathAnalysisInputLocation(" TODO ");
+    ModuleInfoAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
     final ClassType sig =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
 

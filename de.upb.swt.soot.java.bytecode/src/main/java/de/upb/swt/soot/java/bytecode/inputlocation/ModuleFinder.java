@@ -44,6 +44,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import sun.tools.jar.resources.jar;
 
 /**
  * Discovers all modules in a given module path. For automatic modules, names are generated.
@@ -83,6 +84,16 @@ public class ModuleFinder {
   public ModuleFinder(@Nonnull String modulePath) {
     this.modulePathEntries =
         JavaClassPathAnalysisInputLocation.explode(modulePath).collect(Collectors.toList());
+    for (Path modulePathEntry : modulePathEntries) {
+      if (!Files.exists(modulePathEntry)) {
+        throw new IllegalArgumentException(
+            "'"
+                + modulePathEntry
+                + "' from modulePath '"
+                + modulePath
+                + "' does not exist in the filesystem.");
+      }
+    }
   }
 
   @Nonnull
@@ -109,17 +120,6 @@ public class ModuleFinder {
    */
   @Nullable
   public AnalysisInputLocation<JavaSootClass> getModule(@Nonnull ModuleSignature moduleName) {
-
-    // discover all system's modules if they are not loaded already as they are always existing in
-    // java
-    if (moduleInputLocation.isEmpty()) {
-
-      JrtFileSystemAnalysisInputLocation jrtFileSystemNamespace =
-          new JrtFileSystemAnalysisInputLocation();
-      jrtFileSystemNamespace
-          .discoverModules()
-          .forEach(m -> moduleInputLocation.put(m, jrtFileSystemNamespace));
-    }
 
     // check if module is cached
     AnalysisInputLocation<JavaSootClass> inputLocationForModule =

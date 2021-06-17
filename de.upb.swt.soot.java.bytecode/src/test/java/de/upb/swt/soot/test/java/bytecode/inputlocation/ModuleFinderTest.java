@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import categories.Java9Test;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.inputlocation.ModuleFinder;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
@@ -18,19 +17,6 @@ import org.junit.experimental.categories.Category;
 /** @author Kaustubh Kelkar */
 @Category(Java9Test.class)
 public class ModuleFinderTest extends AnalysisInputLocationTest {
-
-  @Test
-  public void discoverModuleJavaBase() {
-    ModuleFinder moduleFinder = new ModuleFinder(war.toString());
-    AnalysisInputLocation<JavaSootClass> inputLocation =
-        moduleFinder.getModule(JavaModuleIdentifierFactory.getModuleSignature("java.base"));
-    assertNotNull(inputLocation);
-    assertTrue(inputLocation instanceof JrtFileSystemAnalysisInputLocation);
-    assertTrue(
-        inputLocation
-            .getClassSource(getIdentifierFactory().getClassType("String", "java.lang"))
-            .isPresent());
-  }
 
   @Test
   public void discoverModuleByName() {
