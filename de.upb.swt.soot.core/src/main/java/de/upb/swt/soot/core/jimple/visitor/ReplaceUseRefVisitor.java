@@ -34,10 +34,12 @@ import javax.annotation.Nonnull;
  */
 public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
 
-  Immediate oldUse;
-  Immediate newUse;
+  private Immediate oldUse;
+  private Immediate newUse;
 
-  public ReplaceUseRefVisitor(@Nonnull Immediate oldUse, @Nonnull Immediate newUse) {
+  public ReplaceUseRefVisitor() {}
+
+  public void init(@Nonnull Immediate oldUse, @Nonnull Immediate newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
   }
@@ -54,7 +56,7 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
 
   @Override
   public void caseArrayRef(@Nonnull JArrayRef ref) {
-    if (newUse instanceof Local && ref.getBase() == oldUse) {
+    if (ref.getBase() == oldUse) {
       setResult(ref.withBase((Local) newUse));
     } else {
       setResult(ref.withIndex(newUse));

@@ -43,6 +43,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   @Nonnull private final Value newUse;
 
   final ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor();
+  final ReplaceUseRefVisitor refVisitor = new ReplaceUseRefVisitor();
 
   public ReplaceUseStmtVisitor(@Nonnull Value oldUse, @Nonnull Value newUse) {
     this.oldUse = oldUse;
@@ -78,8 +79,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
     } else if (rValue instanceof Ref) {
 
-      ReplaceUseRefVisitor refVisitor =
-          new ReplaceUseRefVisitor((Immediate) oldUse, (Immediate) newUse);
+      refVisitor.init((Immediate) oldUse, (Immediate) newUse);
       ((Ref) rValue).accept(refVisitor);
       if (refVisitor.getResult() != rValue) {
         setResult(stmt.withRValue(refVisitor.getResult()));
