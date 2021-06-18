@@ -98,17 +98,7 @@ public class JimpleComparator {
       return false;
     }
     Block obj = (Block) o;
-    if (caseStmt(block.getHead(), obj.getHead())
-        && caseStmt(block.getTail(), obj.getTail())
-        && block.getBlockLength() == obj.getBlockLength()) {
-      List<Stmt> stmts = obj.getBlockStmts();
-      int index = 0;
-      for (Stmt stmt : block.getBlockStmts()) {
-        if (!caseStmt(stmt, stmts.get(index))) {
-          return false;
-        }
-        index++;
-      }
+    if (caseStmt(block.getHead(), obj.getHead()) && caseStmt(block.getTail(), obj.getTail())) {
       return true;
     } else {
       return false;
