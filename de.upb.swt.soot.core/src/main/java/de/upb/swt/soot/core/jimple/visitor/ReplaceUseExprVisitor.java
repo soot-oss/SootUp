@@ -653,9 +653,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor {
         && !v.getArgs().contains(newUse)) {
       List<Local> argsList = new ArrayList<>(v.getArgs());
       int index = argsList.indexOf(oldUse);
-      argsList.set(index, (Local) newUse);
-      LinkedHashSet<Local> newArgs = new LinkedHashSet<>(argsList);
-      v = v.withArgs(newArgs);
+      v = v.withArgs(argsList);
 
       Map<Local, Block> newArgToBlock = new HashMap<>();
       List<Block> blocks = v.getBlocks();

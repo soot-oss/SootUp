@@ -19,15 +19,13 @@ import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
-public class BlockTest {
+public class BlockGraphTest {
 
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
@@ -75,28 +73,15 @@ public class BlockTest {
           l1, JavaJimple.newAddExpr(l2, IntConstant.getInstance(1)), noStmtPositionInfo);
 
   @Test
-  public void testBlock() {
-    Body body = createBBBody();
-    Block block = new Block(startingStmt, stmt2, body);
-
-    assertTrue(block.getBlockLength() == 3);
-    List<Stmt> expected = ImmutableUtils.immutableList(startingStmt, stmt1, stmt2);
-    assertArrayEquals(expected.toArray(), block.getBlockStmts().toArray());
-
-    String expectedString = "[ l0 := @this: Test\n" + "  l1 = 0\n" + "  if l1 >= 0 ]";
-    assertEquals(expectedString, block.toString());
-  }
-
-  @Test
   public void testBlockGraphWithBranch() {
     Body body = createBBBody();
-    BlockGraph graph = new BlockGraph(body);
+    BlockGraph graph = new BlockGraph(body.getStmtGraph());
 
     // expected Blocks in BlockGraph
-    Block eblock1 = new Block(startingStmt, stmt2, body);
-    Block eblock2 = new Block(stmt3, stmt4, body);
-    Block eblock3 = new Block(stmt5, stmt6, body);
-    Block eblock4 = new Block(ret, ret, body);
+    Block eblock1 = new Block(startingStmt, stmt2);
+    Block eblock2 = new Block(stmt3, stmt4);
+    Block eblock3 = new Block(stmt5, stmt6);
+    Block eblock4 = new Block(ret, ret);
     List<Block> expectedBlocks = ImmutableUtils.immutableList(eblock1, eblock2, eblock3, eblock4);
     List<Block> actualBlocks = graph.getBlocks();
 
@@ -111,37 +96,61 @@ public class BlockTest {
     for (int i = 0; i < stmts.size(); i++) {
       Stmt stmt = stmts.get(i);
       if (i < 3) {
-        assertTrue(graph.predecessors(stmt).isEmpty());
-        assertTrue(graph.successors(stmt).get(0).equals(eblock2));
-        assertTrue(graph.successors(stmt).get(1).equals(eblock3));
+        assertTrue(graph.blockPredecessors(stmt).isEmpty());
+        assertTrue(graph.blockSuccessors(stmt).get(0).equals(eblock2));
+        assertTrue(graph.blockSuccessors(stmt).get(1).equals(eblock3));
         assertTrue(graph.getBlock(stmt).equals(eblock1));
       } else if (i < 5) {
-        assertTrue(graph.predecessors(stmt).get(0).equals(eblock1));
-        assertTrue(graph.successors(stmt).get(0).equals(eblock4));
+        assertTrue(graph.blockPredecessors(stmt).get(0).equals(eblock1));
+        assertTrue(graph.blockSuccessors(stmt).get(0).equals(eblock4));
         assertTrue(graph.getBlock(stmt).equals(eblock2));
       } else if (i < 7) {
-        assertTrue(graph.predecessors(stmt).get(0).equals(eblock1));
-        assertTrue(graph.successors(stmt).get(0).equals(eblock4));
+        assertTrue(graph.blockPredecessors(stmt).get(0).equals(eblock1));
+        assertTrue(graph.blockSuccessors(stmt).get(0).equals(eblock4));
         assertTrue(graph.getBlock(stmt).equals(eblock3));
       } else {
-        assertTrue(graph.predecessors(stmt).get(0).equals(eblock2));
-        assertTrue(graph.predecessors(stmt).get(1).equals(eblock3));
-        assertTrue(graph.successors(stmt).isEmpty());
+        assertTrue(graph.blockPredecessors(stmt).get(0).equals(eblock2));
+        assertTrue(graph.blockPredecessors(stmt).get(1).equals(eblock3));
+        assertTrue(graph.blockSuccessors(stmt).isEmpty());
         assertTrue(graph.getBlock(stmt).equals(eblock4));
       }
+    }
+
+    List<Stmt> expectedBlockStmts1 = ImmutableUtils.immutableList(startingStmt, stmt1, stmt2);
+    List<Stmt> expectedBlockStmts2 = ImmutableUtils.immutableList(stmt3, stmt4);
+    List<Stmt> expectedBlockStmts3 = ImmutableUtils.immutableList(stmt5, stmt6);
+    List<Stmt> expectedBlockStmts4 = ImmutableUtils.immutableList(ret);
+
+    int i = 0;
+    for (Block block : graph.getBlocks()) {
+      List<Stmt> blockStmts = graph.getBlockStmts(block);
+      List<Stmt> expectedBlockStmts;
+      if (i == 0) {
+        expectedBlockStmts = expectedBlockStmts1;
+      } else if (i == 1) {
+        expectedBlockStmts = expectedBlockStmts2;
+      } else if (i == 2) {
+        expectedBlockStmts = expectedBlockStmts3;
+      } else {
+        expectedBlockStmts = expectedBlockStmts4;
+      }
+      for (int j = 0; j < expectedBlockStmts.size(); j++) {
+        assertTrue(blockStmts.get(j) == expectedBlockStmts.get(j));
+      }
+      i++;
     }
   }
 
   @Test
   public void testBlockGraphWithLoop() {
     Body body = createLoopBody();
-    BlockGraph graph = new BlockGraph(body);
+    BlockGraph graph = new BlockGraph(body.getStmtGraph());
 
     // expected Blocks in BlockGraph
-    Block eblock1 = new Block(startingStmt, stmt1, body);
-    Block eblock2 = new Block(stmt7, stmt9, body);
-    Block eblock3 = new Block(stmt10, stmt4, body);
-    Block eblock4 = new Block(ret, ret, body);
+    Block eblock1 = new Block(startingStmt, stmt1);
+    Block eblock2 = new Block(stmt7, stmt9);
+    Block eblock3 = new Block(stmt10, stmt4);
+    Block eblock4 = new Block(ret, ret);
     List<Block> expectedBlocks = ImmutableUtils.immutableList(eblock1, eblock2, eblock3, eblock4);
     List<Block> actualBlocks = graph.getBlocks();
 
@@ -156,25 +165,97 @@ public class BlockTest {
     for (int i = 0; i < stmts.size(); i++) {
       Stmt stmt = stmts.get(i);
       if (i < 2) {
-        assertTrue(graph.predecessors(stmt).isEmpty());
-        assertTrue(graph.successors(stmt).get(0).equals(eblock2));
+        assertTrue(graph.blockPredecessors(stmt).isEmpty());
+        assertTrue(graph.blockSuccessors(stmt).get(0).equals(eblock2));
         assertTrue(graph.getBlock(stmt).equals(eblock1));
       } else if (i < 5) {
-        assertTrue(graph.predecessors(stmt).get(0).equals(eblock1));
-        assertTrue(graph.predecessors(stmt).get(1).equals(eblock3));
-        assertTrue(graph.successors(stmt).get(0).equals(eblock3));
-        assertTrue(graph.successors(stmt).get(1).equals(eblock4));
+        assertTrue(graph.blockPredecessors(stmt).get(0).equals(eblock1));
+        assertTrue(graph.blockPredecessors(stmt).get(1).equals(eblock3));
+        assertTrue(graph.blockSuccessors(stmt).get(0).equals(eblock3));
+        assertTrue(graph.blockSuccessors(stmt).get(1).equals(eblock4));
         assertTrue(graph.getBlock(stmt).equals(eblock2));
       } else if (i < 9) {
-        assertTrue(graph.predecessors(stmt).get(0).equals(eblock2));
-        assertTrue(graph.successors(stmt).get(0).equals(eblock2));
+        assertTrue(graph.blockPredecessors(stmt).get(0).equals(eblock2));
+        assertTrue(graph.blockSuccessors(stmt).get(0).equals(eblock2));
         assertTrue(graph.getBlock(stmt).equals(eblock3));
       } else {
-        assertTrue(graph.predecessors(stmt).get(0).equals(eblock2));
-        assertTrue(graph.successors(stmt).isEmpty());
+        assertTrue(graph.blockPredecessors(stmt).get(0).equals(eblock2));
+        assertTrue(graph.blockSuccessors(stmt).isEmpty());
         assertTrue(graph.getBlock(stmt).equals(eblock4));
       }
     }
+    List<Stmt> expectedBlockStmts1 = ImmutableUtils.immutableList(startingStmt, stmt1);
+    List<Stmt> expectedBlockStmts2 = ImmutableUtils.immutableList(stmt7, stmt8, stmt9);
+    List<Stmt> expectedBlockStmts3 = ImmutableUtils.immutableList(stmt10, stmt11, stmt5, stmt4);
+    List<Stmt> expectedBlockStmts4 = ImmutableUtils.immutableList(ret);
+
+    int i = 0;
+    for (Block block : graph.getBlocks()) {
+      List<Stmt> blockStmts = graph.getBlockStmts(block);
+      List<Stmt> expectedBlockStmts;
+      if (i == 0) {
+        expectedBlockStmts = expectedBlockStmts1;
+      } else if (i == 1) {
+        expectedBlockStmts = expectedBlockStmts2;
+      } else if (i == 2) {
+        expectedBlockStmts = expectedBlockStmts3;
+      } else {
+        expectedBlockStmts = expectedBlockStmts4;
+      }
+      for (int j = 0; j < expectedBlockStmts.size(); j++) {
+        assertTrue(blockStmts.get(j) == expectedBlockStmts.get(j));
+      }
+      i++;
+    }
+  }
+
+  @Test
+  public void testAddNewPhiStmt() {
+    Body body = createBBBody();
+    BlockGraph graph = new BlockGraph(body.getStmtGraph());
+    List<Block> actualBlocks = graph.getBlocks();
+
+    List<Local> args = ImmutableUtils.immutableList(l1, l1);
+    Map<Local, Block> argToBlock = new HashMap<>();
+    argToBlock.put(l1, actualBlocks.get(1));
+    argToBlock.put(l1, actualBlocks.get(2));
+    Stmt phiStmt =
+        JavaJimple.newAssignStmt(l1, JavaJimple.newPhiExpr(args, argToBlock), noStmtPositionInfo);
+
+    graph.addStmtOnTopOfBlock(phiStmt, actualBlocks.get(3));
+
+    // expected Blocks in BlockGraph
+    Block eblock = new Block(phiStmt, ret);
+    assertTrue(graph.getBlocks().get(3).equals(eblock));
+
+    assertTrue(graph.getStmtGraph().containsNode(phiStmt));
+    assertTrue(graph.getStmtGraph().predecessors(ret).get(0) == phiStmt);
+    assertTrue(graph.getStmtGraph().successors(phiStmt).get(0) == ret);
+
+    assertTrue(graph.getStmtGraph().predecessors(phiStmt).get(0) == stmt4);
+    assertTrue(graph.getStmtGraph().predecessors(phiStmt).get(1) == stmt6);
+    assertTrue(graph.getStmtGraph().successors(stmt4).get(0) == phiStmt);
+    assertTrue(graph.getStmtGraph().successors(stmt6).get(0) == phiStmt);
+  }
+
+  @Test
+  public void testRepalceStmt() {
+    Body body = createBBBody();
+    BlockGraph graph = new BlockGraph(body.getStmtGraph());
+    List<Block> actualBlocks = graph.getBlocks();
+
+    List<Local> args = ImmutableUtils.immutableList(l1, l1);
+    Map<Local, Block> argToBlock = new HashMap<>();
+    argToBlock.put(l1, actualBlocks.get(1));
+    argToBlock.put(l1, actualBlocks.get(2));
+    Stmt phiStmt =
+        JavaJimple.newAssignStmt(l1, JavaJimple.newPhiExpr(args, argToBlock), noStmtPositionInfo);
+
+    graph.replaceStmtInBlock(stmt6, phiStmt, actualBlocks.get(2));
+
+    // expected Blocks in BlockGraph
+    Block eblock = new Block(stmt5, phiStmt);
+    assertTrue(graph.getBlocks().get(2).equals(eblock));
   }
 
   /**
