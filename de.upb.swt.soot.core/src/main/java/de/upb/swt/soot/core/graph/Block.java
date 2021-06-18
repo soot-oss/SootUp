@@ -24,11 +24,6 @@ package de.upb.swt.soot.core.graph;
 
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.Body;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import javax.annotation.Nonnull;
 
 /**
@@ -38,66 +33,12 @@ import javax.annotation.Nonnull;
  */
 public class Block {
 
-  private Body body;
-  private Stmt head;
-  private Stmt tail;
-  private List<Stmt> blockStmts;
-  private final Map<Stmt, Integer> stmtToPos = new HashMap();
-  private int blockLength;
+  private final Stmt head;
+  private final Stmt tail;
 
-  public Block(Stmt head, Stmt tail, Body body) {
-    ImmutableExceptionalStmtGraph graph = body.getStmtGraph();
-    if (!graph.containsNode(head) || !graph.containsNode(tail)) {
-      if (!graph.containsNode(head)) {
-        throw new RuntimeException("The given head: " + head.toString() + " is not in graph!");
-      } else {
-        throw new RuntimeException("The given tail: " + tail.toString() + " is not in graph!");
-      }
-    }
+  public Block(@Nonnull Stmt head, @Nonnull Stmt tail) {
     this.head = head;
     this.tail = tail;
-    this.body = body;
-    int num = 0;
-    Stmt stmt = head;
-    blockStmts = new ArrayList<>();
-    while (stmt != tail) {
-      stmtToPos.put(stmt, num);
-      blockStmts.add(stmt);
-      num++;
-      List<Stmt> succs = graph.successors(stmt);
-      if (succs.size() == 1) {
-        stmt = succs.get(0);
-      } else {
-        StringBuilder builder = new StringBuilder();
-        succs.forEach(succ -> builder.append(succ.toString() + " "));
-        throw new RuntimeException(
-            "These successors " + builder.toString() + " should be in different blocks!");
-      }
-    }
-    blockStmts.add(tail);
-    stmtToPos.put(tail, num);
-    blockLength = num + 1;
-  }
-
-  public Block(Stmt head, Stmt tail, List<Stmt> blockStmts, Body body) {
-    this.body = body;
-    this.head = head;
-    this.tail = tail;
-    this.blockStmts = blockStmts;
-    this.blockLength = blockStmts.size();
-    for (int i = 0; i < this.blockLength; i++) {
-      this.stmtToPos.put(this.blockStmts.get(i), i);
-    }
-  }
-
-  private Block() {}
-
-  public static Block getEmptyBlock() {
-    return new Block();
-  }
-
-  public Body getBody() {
-    return this.body;
   }
 
   public Stmt getHead() {
@@ -108,50 +49,15 @@ public class Block {
     return this.tail;
   }
 
-  public void replaceBlockStmt(Stmt oldStmt, Stmt newStmt) {
-    if (!this.stmtToPos.containsKey(oldStmt)) {
-      throw new RuntimeException(
-          "The given oldStmt: " + oldStmt.toString() + " is not this block!");
-    }
-    if (oldStmt == head) {
-      this.head = newStmt;
-      this.blockStmts.set(0, newStmt);
-    } else if (oldStmt == tail) {
-      this.tail = newStmt;
-      this.blockStmts.set(this.blockLength - 1, newStmt);
-    } else {
-      this.blockStmts.set(this.stmtToPos.get(oldStmt), newStmt);
-    }
-  }
-
-  /**
-   * Getter of block stmts, the order is same as in StmtGraph of body
-   *
-   * @return
-   */
-  public List<Stmt> getBlockStmts() {
-    return this.blockStmts;
-  }
-
-  public int getBlockLength() {
-    return this.blockLength;
-  }
-
-  public boolean isInBlock(Stmt stmt) {
-    if (this.blockStmts.contains(stmt)) {
-      return true;
-    }
-    return false;
-  }
-
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append("[");
-    for (Stmt stmt : blockStmts) {
-      builder.append("  " + stmt.toString() + "\n");
+    builder.append("[ ");
+    builder.append(head.toString());
+    if (head != tail) {
+      builder.append(", ... ,");
+      builder.append(tail.toString());
     }
-    builder.delete(1, 2);
-    builder.replace(builder.length() - 1, builder.length(), " ]");
+    builder.append(" ]");
     return builder.toString();
   }
 
@@ -168,15 +74,6 @@ public class Block {
     }
     if (this.tail != block.tail) {
       return false;
-    }
-    if (!this.body.equals(block.getBody())) {
-      return false;
-    }
-    if (this.blockLength != block.getBlockLength()) {
-      return false;
-    }
-    for (int i = 0; i < blockLength; i++) {
-      return (this.blockStmts.get(i) == block.getBlockStmts().get(i));
     }
     return true;
   }

@@ -2,7 +2,6 @@ package de.upb.swt.soot.core.graph;
 
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.Body;
 import java.util.*;
 import javax.annotation.Nonnull;
 
@@ -29,38 +28,35 @@ import javax.annotation.Nonnull;
  */
 public class BlockGraph implements Iterable<Block> {
 
-  private final Body body;
-  private final Block startingBlock;
-  private final Map<Integer, Block> idxToBlock = new HashMap<>();
-  private final Map<Block, Integer> blockToIdx = new HashMap<>();
-  private final Map<Stmt, Block> headToBlock = new HashMap<>();
-  private final Map<Stmt, Block> tailToBlock = new HashMap<>();
+  public final MutableExceptionalStmtGraph stmtGraph;
+  private Block startingBlock;
+  public final Map<Integer, Block> idxToBlock = new HashMap<>();
+  public final Map<Block, Integer> blockToIdx = new HashMap<>();
+  public final Map<Stmt, Block> headToBlock = new HashMap<>();
+  public final Map<Stmt, Block> tailToBlock = new HashMap<>();
 
-  private final ArrayList<List<Block>> predecessors = new ArrayList<>();
-  private final ArrayList<List<Block>> successors = new ArrayList<>();
+  public final ArrayList<List<Block>> blockPreds = new ArrayList<>();
+  public final ArrayList<List<Block>> blockSuccs = new ArrayList<>();
 
-  public BlockGraph(@Nonnull Body body) {
-    this.body = body;
+  public BlockGraph(@Nonnull StmtGraph stmtGraph) {
+
+    this.stmtGraph = new MutableExceptionalStmtGraph(stmtGraph);
+
     int nextFreeIdx = 0;
 
-    StmtGraph graph = this.body.getStmtGraph();
-
-    Iterator<Stmt> iterator = graph.iterator();
+    Iterator<Stmt> iterator = stmtGraph.iterator();
     while (iterator.hasNext()) {
 
       Stmt stmt = iterator.next();
       // decide, whether stmt is a head. If so, construct a block
-      if (isHead(stmt, graph)) {
+      if (isHead(stmt, stmtGraph)) {
         Stmt head = stmt;
         Stmt tail = stmt;
-        List<Stmt> blockStmts = new ArrayList<>();
-        blockStmts.add(head);
-        while (!isTail(tail, graph)) {
-          List<Stmt> succs = graph.successors(tail);
+        while (!isTail(tail, stmtGraph)) {
+          List<Stmt> succs = stmtGraph.successors(tail);
           tail = succs.get(0);
-          blockStmts.add(tail);
         }
-        Block block = new Block(head, tail, blockStmts, this.body);
+        Block block = new Block(head, tail);
         idxToBlock.put(nextFreeIdx, block);
         blockToIdx.put(block, nextFreeIdx);
         headToBlock.put(head, block);
@@ -72,30 +68,30 @@ public class BlockGraph implements Iterable<Block> {
 
     // Initialize predecessors and successors
     for (int i = 0; i < nextFreeIdx; i++) {
-      predecessors.add(new ArrayList<>());
-      successors.add(new ArrayList<>());
+      blockPreds.add(new ArrayList<>());
+      blockSuccs.add(new ArrayList<>());
     }
     for (Block block : blockToIdx.keySet()) {
       // find predecessor-blocks
       Stmt head = block.getHead();
       int idx = blockToIdx.get(block);
-      List<Stmt> preds = graph.predecessors(head);
+      List<Stmt> preds = stmtGraph.predecessors(head);
       if (!preds.isEmpty()) {
         List<Block> predBlocks = new ArrayList<>();
         for (Stmt pred : preds) {
           predBlocks.add(tailToBlock.get(pred));
         }
-        predecessors.set(idx, predBlocks);
+        blockPreds.set(idx, predBlocks);
       }
       // find successors-blocks
       Stmt tail = block.getTail();
-      List<Stmt> succs = graph.successors(tail);
+      List<Stmt> succs = stmtGraph.successors(tail);
       if (!succs.isEmpty()) {
         List<Block> succBlocks = new ArrayList<>();
         for (Stmt succ : succs) {
           succBlocks.add(headToBlock.get(succ));
         }
-        successors.set(idx, succBlocks);
+        blockSuccs.set(idx, succBlocks);
       }
     }
   }
@@ -106,71 +102,91 @@ public class BlockGraph implements Iterable<Block> {
   }
 
   @Nonnull
-  public List<Block> predecessors(@Nonnull Block block) {
+  public MutableExceptionalStmtGraph getStmtGraph() {
+    return this.stmtGraph;
+  }
+
+  @Nonnull
+  public List<Block> blockPredecessors(@Nonnull Block block) {
     Integer idx = blockToIdx.get(block);
     if (idx != null) {
-      return predecessors.get(idx);
+      return blockPreds.get(idx);
     } else {
-      throw new RuntimeException("The given block:\n" + block.toString() + "\n is not in body");
+      throw new RuntimeException(
+          "The given block:\n" + block.toString() + "\n is not in StmtGraph!");
     }
   }
 
   @Nonnull
-  public List<Block> successors(@Nonnull Block block) {
+  public List<Block> blockSuccessors(@Nonnull Block block) {
     Integer idx = blockToIdx.get(block);
     if (idx != null) {
-      return successors.get(idx);
+      return blockSuccs.get(idx);
     } else {
-      throw new RuntimeException("The given block:\n" + block.toString() + "\n is not in body");
+      throw new RuntimeException(
+          "The given block:\n" + block.toString() + "\n is not in StmtGraph!");
     }
   }
 
   @Nonnull
-  public List<Block> predecessors(@Nonnull Stmt stmt) {
-    if (!body.getStmts().contains(stmt)) {
-      throw new RuntimeException("The given stmt: " + stmt.toString() + " is not in body");
+  public List<Block> blockPredecessors(@Nonnull Stmt stmt) {
+    if (!stmtGraph.containsNode(stmt)) {
+      throw new RuntimeException("The given stmt: " + stmt.toString() + " is not in StmtGraph!");
     }
-    if (isHead(stmt, body.getStmtGraph())) {
-      return predecessors(headToBlock.get(stmt));
+    if (isHead(stmt, stmtGraph)) {
+      return blockPredecessors(headToBlock.get(stmt));
     }
     Stmt tail = stmt;
-    StmtGraph graph = body.getStmtGraph();
-    while (!isTail(tail, graph)) {
-      tail = graph.successors(tail).get(0);
+    while (!isTail(tail, stmtGraph)) {
+      tail = stmtGraph.successors(tail).get(0);
     }
-    return predecessors(tailToBlock.get(tail));
+    return blockPredecessors(tailToBlock.get(tail));
   }
 
   @Nonnull
-  public List<Block> successors(@Nonnull Stmt stmt) {
-    if (!body.getStmts().contains(stmt)) {
-      throw new RuntimeException("The given stmt: " + stmt.toString() + " is not in body");
+  public List<Block> blockSuccessors(@Nonnull Stmt stmt) {
+    if (!stmtGraph.containsNode(stmt)) {
+      throw new RuntimeException("The given stmt: " + stmt.toString() + " is not in StmtGraph!");
     }
-    if (isHead(stmt, body.getStmtGraph())) {
-      return successors(headToBlock.get(stmt));
+    if (isHead(stmt, stmtGraph)) {
+      return blockSuccessors(headToBlock.get(stmt));
     }
     Stmt tail = stmt;
-    StmtGraph graph = body.getStmtGraph();
-    while (!isTail(tail, graph)) {
-      tail = graph.successors(tail).get(0);
+    while (!isTail(tail, stmtGraph)) {
+      tail = stmtGraph.successors(tail).get(0);
     }
-    return successors(tailToBlock.get(tail));
+    return blockSuccessors(tailToBlock.get(tail));
   }
 
   @Nonnull
   public Block getBlock(@Nonnull Stmt stmt) {
-    if (!body.getStmts().contains(stmt)) {
-      throw new RuntimeException("The given stmt: " + stmt.toString() + " is not in body");
+    if (!stmtGraph.containsNode(stmt)) {
+      throw new RuntimeException("The given stmt: " + stmt.toString() + " is not in StmtGraph!");
     }
-    if (isHead(stmt, body.getStmtGraph())) {
+    if (isHead(stmt, stmtGraph)) {
       return this.headToBlock.get(stmt);
     }
     Stmt tail = stmt;
-    StmtGraph graph = body.getStmtGraph();
-    while (!isTail(tail, graph)) {
-      tail = graph.successors(tail).get(0);
+    while (!isTail(tail, stmtGraph)) {
+      tail = stmtGraph.successors(tail).get(0);
     }
     return this.tailToBlock.get(tail);
+  }
+
+  @Nonnull
+  public List<Stmt> getBlockStmts(@Nonnull Block block) {
+    if (!blockToIdx.containsKey(block)) {
+      throw new RuntimeException("The given block: " + block.toString() + " is not in BlockGraph!");
+    }
+    List<Stmt> stmts = new ArrayList<>();
+    Stmt head = block.getHead();
+    Stmt tail = block.getTail();
+    stmts.add(head);
+    while (head != tail) {
+      head = stmtGraph.successors(head).get(0);
+      stmts.add(head);
+    }
+    return stmts;
   }
 
   @Nonnull
@@ -182,7 +198,7 @@ public class BlockGraph implements Iterable<Block> {
     while (!queue.isEmpty()) {
       Block top = queue.removeFirst();
       blocks.add(top);
-      List<Block> succs = successors(top);
+      List<Block> succs = blockSuccessors(top);
       for (Block succ : succs) {
         if (!blocks.contains(succ)) {
           queue.add(succ);
@@ -190,6 +206,39 @@ public class BlockGraph implements Iterable<Block> {
       }
     }
     return new ArrayList<>(blocks);
+  }
+
+  /**
+   * Add a stmt on the top of a given block
+   *
+   * @param stmt
+   * @param block
+   */
+  public void addStmtOnTopOfBlock(Stmt stmt, Block block) {
+    if (!blockToIdx.containsKey(block)) {
+      throw new RuntimeException("The given block: " + block.toString() + " is not in BlockGraph!");
+    }
+    Stmt head = block.getHead();
+    stmtGraph.insertNode(stmt, head);
+    Block newBlock = new Block(stmt, block.getTail());
+    replaceBlock(block, newBlock);
+  }
+
+  public void replaceStmtInBlock(Stmt oldStmt, Stmt newStmt, Block block) {
+    if (!blockToIdx.containsKey(block)) {
+      throw new RuntimeException("The given block: " + block.toString() + " is not in BlockGraph!");
+    }
+    if (!stmtGraph.containsNode(oldStmt)) {
+      throw new RuntimeException("The given stmt: " + oldStmt.toString() + " is not in StmtGraph!");
+    }
+    stmtGraph.replaceNode(oldStmt, newStmt);
+    if (oldStmt == block.getHead()) {
+      Block newBlock = new Block(newStmt, block.getTail());
+      replaceBlock(block, newBlock);
+    } else if (oldStmt == block.getTail()) {
+      Block newBlock = new Block(block.getHead(), newStmt);
+      replaceBlock(block, newBlock);
+    }
   }
 
   @Override
@@ -240,5 +289,46 @@ public class BlockGraph implements Iterable<Block> {
       return true;
     }
     return false;
+  }
+
+  private void replaceBlock(@Nonnull Block oldBlock, @Nonnull Block newBlock) {
+
+    if (!blockToIdx.keySet().contains(oldBlock)) {
+      throw new RuntimeException(
+          "The given block: " + oldBlock.toString() + " is not in BlockGraph!");
+    }
+
+    List<Block> preds = blockPredecessors(oldBlock);
+    for (Block pred : preds) {
+      int pidx = blockToIdx.get(pred);
+      blockSuccs.get(pidx).remove(oldBlock);
+      blockSuccs.get(pidx).add(newBlock);
+    }
+
+    List<Block> succs = blockSuccessors(oldBlock);
+    for (Block succ : succs) {
+      int sidx = blockToIdx.get(succ);
+      blockPreds.get(sidx).remove(oldBlock);
+      blockPreds.get(sidx).add(newBlock);
+    }
+
+    Stmt head = oldBlock.getHead();
+    Stmt tail = oldBlock.getHead();
+
+    int idx = blockToIdx.get(oldBlock);
+    idxToBlock.replace(idx, oldBlock, newBlock);
+
+    blockToIdx.remove(oldBlock);
+    blockToIdx.put(newBlock, idx);
+
+    headToBlock.remove(head);
+    headToBlock.put(newBlock.getHead(), newBlock);
+
+    tailToBlock.remove(tail);
+    tailToBlock.put(newBlock.getTail(), newBlock);
+
+    if (oldBlock == this.startingBlock) {
+      this.startingBlock = newBlock;
+    }
   }
 }
