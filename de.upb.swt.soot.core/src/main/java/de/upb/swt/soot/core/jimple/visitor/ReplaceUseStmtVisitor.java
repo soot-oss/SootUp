@@ -68,17 +68,18 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   @Override
   public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
     Value rValue = stmt.getRightOp();
-    Value newRValue = null;
 
     if (rValue instanceof Immediate) {
-      if ((newUse instanceof Immediate) && rValue == oldUse) newRValue = newUse;
+      if ((newUse instanceof Immediate) && rValue == oldUse) {
+        setResult(stmt.withRValue(newUse));
+      }
 
     } else if (rValue instanceof Ref) {
 
       ReplaceUseRefVisitor refVisitor = new ReplaceUseRefVisitor(oldUse, newUse);
       ((Ref) rValue).accept(refVisitor);
-      if (!refVisitor.getResult().equivTo(rValue)) {
-        newRValue = refVisitor.getResult();
+      if (refVisitor.getResult() != rValue) {
+        setResult(stmt.withRValue(refVisitor.getResult()));
       }
 
     } else if (rValue instanceof Expr) {
@@ -86,12 +87,9 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
       ReplaceUseExprVisitor exprVisitor =
           new ReplaceUseExprVisitor((Immediate) oldUse, (Immediate) newUse);
       ((Expr) rValue).accept(exprVisitor);
-      if (!exprVisitor.getResult().equivTo(rValue)) {
-        newRValue = exprVisitor.getResult();
+      if (exprVisitor.getResult() != rValue) {
+        setResult(stmt.withRValue(exprVisitor.getResult()));
       }
-    }
-    if (newRValue != null) {
-      setResult(stmt.withRValue(newRValue));
     } else {
       defaultCaseStmt(stmt);
     }
@@ -104,20 +102,12 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseEnterMonitorStmt(@Nonnull JEnterMonitorStmt stmt) {
-    if (newUse instanceof Immediate && stmt.getOp() == oldUse) {
-      setResult(stmt.withOp((Immediate) newUse));
-    } else {
-      defaultCaseStmt(stmt);
-    }
+    setResult(stmt.withOp((Immediate) newUse));
   }
 
   @Override
   public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
-    if (newUse instanceof Immediate && stmt.getOp() == oldUse) {
-      setResult(stmt.withOp((Immediate) newUse));
-    } else {
-      defaultCaseStmt(stmt);
-    }
+    setResult(stmt.withOp((Immediate) newUse));
   }
 
   @Override
@@ -127,11 +117,11 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseIfStmt(@Nonnull JIfStmt stmt) {
-    Expr condition = (Expr) stmt.getCondition();
+    Expr condition = stmt.getCondition();
     ReplaceUseExprVisitor exprVisitor =
         new ReplaceUseExprVisitor((Immediate) oldUse, (Immediate) newUse);
     condition.accept(exprVisitor);
-    if (!exprVisitor.getResult().equivTo(condition)) {
+    if (exprVisitor.getResult() != condition) {
       setResult(stmt.withCondition((AbstractConditionExpr) exprVisitor.getResult()));
     } else {
       defaultCaseStmt(stmt);
@@ -145,20 +135,12 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseRetStmt(@Nonnull JRetStmt stmt) {
-    if (stmt.getStmtAddress() == oldUse) {
-      setResult(stmt.withStmtAddress(newUse));
-    } else {
-      defaultCaseStmt(stmt);
-    }
+    setResult(stmt.withStmtAddress(newUse));
   }
 
   @Override
   public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
-    if (stmt.getOp() == oldUse) {
-      setResult(stmt.withReturnValue((Immediate) newUse));
-    } else {
-      defaultCaseStmt(stmt);
-    }
+    setResult(stmt.withReturnValue((Immediate) newUse));
   }
 
   @Override
@@ -168,20 +150,12 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseSwitchStmt(@Nonnull JSwitchStmt stmt) {
-    if (newUse instanceof Immediate && stmt.getKey() == oldUse) {
-      setResult(stmt.withKey((Immediate) newUse));
-    } else {
-      defaultCaseStmt(stmt);
-    }
+    setResult(stmt.withKey((Immediate) newUse));
   }
 
   @Override
   public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
-    if (stmt.getOp() == oldUse) {
-      setResult(stmt.withOp((Immediate) newUse));
-    } else {
-      defaultCaseStmt(stmt);
-    }
+    setResult(stmt.withOp((Immediate) newUse));
   }
 
   public void defaultCaseStmt(@Nonnull Stmt stmt) {
