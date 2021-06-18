@@ -60,7 +60,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
     exprVisitor.init((Immediate) oldUse, (Immediate) newUse);
     invokeExpr.accept(exprVisitor);
 
-    if (!exprVisitor.getResult().equivTo(invokeExpr)) {
+    if (exprVisitor.getResult() != invokeExpr) {
       setResult(stmt.withInvokeExpr((AbstractInvokeExpr) exprVisitor.getResult()));
     } else {
       defaultCaseStmt(stmt);
