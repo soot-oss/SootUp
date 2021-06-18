@@ -38,10 +38,12 @@ import javax.annotation.Nonnull;
  */
 public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
 
-  Immediate oldUse;
-  Immediate newUse;
+  private Immediate oldUse;
+  private Immediate newUse;
 
-  public ReplaceUseExprVisitor(Immediate oldUse, Immediate newUse) {
+  public ReplaceUseExprVisitor() {}
+
+  public void init(Immediate oldUse, Immediate newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
   }
