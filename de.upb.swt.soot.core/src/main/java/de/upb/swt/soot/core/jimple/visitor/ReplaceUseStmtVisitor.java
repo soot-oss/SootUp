@@ -73,7 +73,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
     Value rValue = stmt.getRightOp();
 
     if (rValue instanceof Immediate) {
-      if ((newUse instanceof Immediate) && rValue == oldUse) {
+      if (rValue == oldUse) {
         setResult(stmt.withRValue(newUse));
       }
 
