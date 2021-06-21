@@ -50,7 +50,7 @@ public abstract class MinimalSourceTestSuiteBase {
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
         JavaProject project =
             JavaProject.builder(new JavaLanguage(8))
-                .addClassPath(
+                .addInputLocation(
                     new JavaSourcePathAnalysisInputLocation(
                         baseDir
                             + File.separator

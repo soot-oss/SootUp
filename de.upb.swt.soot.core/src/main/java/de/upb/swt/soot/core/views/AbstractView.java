@@ -43,12 +43,12 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
 
-  @Nonnull private final Project<T, ? extends View<T>> project;
+  @Nonnull private final Project<? extends T, ? extends View<T>> project;
 
   @Nonnull private final Map<ModuleDataKey<?>, Object> moduleData = new HashMap<>();
 
-  public AbstractView(@Nonnull Project<T, ? extends View<T>> project) {
-    this.project = (Project<T, ? extends View<T>>) project;
+  public AbstractView(@Nonnull Project<? extends T, ? extends View<T>> project) {
+    this.project = project;
   }
 
   @Override
@@ -60,10 +60,17 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
   @Override
   @Nonnull
   public Optional<Scope> getScope() {
-    // TODO Auto-generated methodRef stub
-    return null;
+    // TODO implement scope
+    throw new UnsupportedOperationException("not implemented yet");
   }
 
+  /**
+   * resolve and check for accessibility of the class from a given package * TODO: incorporate
+   * AccessUtil @Nonnull public synchronized Optional<T> getClass( @Nonnull PackageName
+   * entryPackage, @Nonnull ClassType type) { Optional<T> aClass = getClass(type); if
+   * (aClass.isPresent() && AccessUtil.isAccessible(entryPackage, aClass.get()) ) { return
+   * Optional.empty(); } return aClass; }
+   */
   @Nonnull
   public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
     final Optional<T> aClass = getClass(signature.getDeclClassType());
@@ -83,7 +90,7 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
   }
 
   @Nonnull
-  public Project<T, ? extends View<T>> getProject() {
+  public Project<? extends T, ? extends View<T>> getProject() {
     return project;
   }
 

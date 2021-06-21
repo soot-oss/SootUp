@@ -18,6 +18,11 @@ public class JimpleLanguage extends Language {
   }
 
   @Override
+  public int getVersion() {
+    return -1; // there is no real versioning other than "old" Soot and FutureSoot at the moment
+  }
+
+  @Override
   public IdentifierFactory getIdentifierFactory() {
     // FIXME [ms] ?
     return JavaIdentifierFactory.getInstance();
