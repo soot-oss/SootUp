@@ -265,26 +265,32 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
     JavaLocal local = locals.get(idx);
     if (local == null) {
-      String name;
-      if (localVariables != null) {
-        name = null;
-        for (LocalVariableNode lvn : localVariables) {
-          if (lvn.index == idx) {
-            name = lvn.name;
-            break;
-          }
-        }
-        /* normally for try-catch blocks */
-        if (name == null) {
-          name = "l" + idx;
-        }
-      } else {
-        name = "l" + idx;
-      }
+      String name = determineLocalName(idx);
       local = JavaJimple.newLocal(name, UnknownType.getInstance(), Collections.emptyList());
       locals.put(idx, local);
     }
     return local;
+  }
+
+  @Nonnull
+  private String determineLocalName(int idx) {
+    String name;
+    if (localVariables != null) {
+      name = null;
+      for (LocalVariableNode lvn : localVariables) {
+        if (lvn.index == idx) {
+          name = lvn.name;
+          break;
+        }
+      }
+      /* normally for try-catch blocks */
+      if (name == null) {
+        name = "l" + idx;
+      }
+    } else {
+      name = "l" + idx;
+    }
+    return name;
   }
 
   void setStmt(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
@@ -352,7 +358,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       int op = operand.insn.getOpcode();
 
       // FIXME: [JMP] The IF condition is always false. --> [ms]: *ALOAD are array load instructions
-      // -> seems someone wanted to include or exclude them?
+      // -> seems someone wanted to include or exclude the array instructions?
       if (local == null && op != GETFIELD && op != GETSTATIC && (op < IALOAD && op > SALOAD)) {
         continue;
       }
@@ -1814,35 +1820,37 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     MethodSignature methodSignature = lazyMethodSignature.get();
 
-    int iloc = 0;
+    int localIdx = 0;
+    // create this Local if necessary ( i.e. not static )
     if (!lazyModifiers.get().contains(Modifier.STATIC)) {
-      Local l = getOrCreateLocal(iloc++);
+      Local l = getOrCreateLocal(localIdx++);
       emitStmt(
           Jimple.newIdentityStmt(
               l, Jimple.newThisRef(declaringClass), StmtPositionInfo.createNoStmtPositionInfo()));
     }
-    int nrp = 0;
+
+    // add parameter Locals
     for (int i = 0; i < methodSignature.getParameterTypes().size(); i++) {
       Type parameterType = methodSignature.getParameterTypes().get(i);
-      // check assumption: parameterlocals do not exist yet -> create with annotation
-
+      // [BH] assumption: parameterlocals do not exist yet -> create with annotation
       JavaLocal local =
           JavaJimple.newLocal(
-              "l" + iloc,
+              determineLocalName(localIdx),
               UnknownType.getInstance(),
               AsmUtil.createAnnotationUsage(
                   invisibleParameterAnnotations == null ? null : invisibleParameterAnnotations[i]));
-      locals.put(iloc, local);
+      locals.put(localIdx, local);
 
       emitStmt(
           Jimple.newIdentityStmt(
               local,
-              Jimple.newParameterRef(parameterType, nrp++),
+              Jimple.newParameterRef(parameterType, i),
               StmtPositionInfo.createNoStmtPositionInfo()));
+
       if (AsmUtil.isDWord(parameterType)) {
-        iloc += 2;
+        localIdx += 2;
       } else {
-        iloc++;
+        localIdx++;
       }
     }
 
