@@ -30,25 +30,25 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-public abstract class AbstractDefinitionStmt extends Stmt {
+public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> extends Stmt {
 
-  @Nonnull private final Value leftOp;
-  @Nonnull private final Value rightOp;
+  @Nonnull private final L leftOp;
+  @Nonnull private final R rightOp;
 
   AbstractDefinitionStmt(
-      @Nonnull Value leftOp, @Nonnull Value rightOp, @Nonnull StmtPositionInfo positionInfo) {
+      @Nonnull L leftOp, @Nonnull R rightOp, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.leftOp = leftOp;
     this.rightOp = rightOp;
   }
 
   @Nonnull
-  public final Value getLeftOp() {
+  public final L getLeftOp() {
     return leftOp;
   }
 
   @Nonnull
-  public Value getRightOp() {
+  public R getRightOp() {
     return rightOp;
   }
 

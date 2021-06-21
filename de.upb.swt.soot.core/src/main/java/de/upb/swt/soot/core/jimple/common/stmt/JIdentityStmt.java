@@ -31,7 +31,8 @@ import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
-public final class JIdentityStmt extends AbstractDefinitionStmt implements Copyable {
+public final class JIdentityStmt extends AbstractDefinitionStmt<Local, IdentityRef>
+    implements Copyable {
 
   public JIdentityStmt(
       @Nonnull Local local,
@@ -69,16 +70,16 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Copya
 
   @Nonnull
   public JIdentityStmt withLocal(@Nonnull Local local) {
-    return new JIdentityStmt(local, (IdentityRef) getRightOp(), getPositionInfo());
+    return new JIdentityStmt(local, getRightOp(), getPositionInfo());
   }
 
   @Nonnull
   public JIdentityStmt withIdentityValue(@Nonnull IdentityRef identityValue) {
-    return new JIdentityStmt((Local) getLeftOp(), identityValue, getPositionInfo());
+    return new JIdentityStmt(getLeftOp(), identityValue, getPositionInfo());
   }
 
   @Nonnull
   public JIdentityStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JIdentityStmt((Local) getLeftOp(), (IdentityRef) getRightOp(), positionInfo);
+    return new JIdentityStmt(getLeftOp(), getRightOp(), positionInfo);
   }
 }

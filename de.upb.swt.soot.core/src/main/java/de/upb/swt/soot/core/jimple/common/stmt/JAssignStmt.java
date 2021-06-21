@@ -34,7 +34,7 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
 /** Represents the assignment of one value to another */
-public final class JAssignStmt extends AbstractDefinitionStmt implements Copyable {
+public final class JAssignStmt extends AbstractDefinitionStmt<Value, Value> implements Copyable {
 
   /**
    * Instantiates a new JAssignStmt.
