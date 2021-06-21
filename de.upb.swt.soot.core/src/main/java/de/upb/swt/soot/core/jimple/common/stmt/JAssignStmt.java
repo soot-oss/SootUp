@@ -34,7 +34,8 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
 /** Represents the assignment of one value to another */
-public final class JAssignStmt extends AbstractDefinitionStmt<Value, Value> implements Copyable {
+public final class JAssignStmt<L extends Value, R extends Value>
+    extends AbstractDefinitionStmt<L, R> implements Copyable {
 
   /**
    * Instantiates a new JAssignStmt.
@@ -43,7 +44,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt<Value, Value> impl
    * @param rValue the value on the right side of the assign statement.
    */
   public JAssignStmt(
-      @Nonnull Value variable, @Nonnull Value rValue, @Nonnull StmtPositionInfo positionInfo) {
+      @Nonnull L variable, @Nonnull R rValue, @Nonnull StmtPositionInfo positionInfo) {
     super(variable, rValue, positionInfo);
     if (!validateVariable(variable)) {
       throw new RuntimeException(
@@ -61,6 +62,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt<Value, Value> impl
    * @param variable the variable on the left side of the assign statement.
    */
   private boolean validateVariable(@Nonnull Value variable) {
+    // i.e. not Constant, not IdentityRef, not Expr
     return variable instanceof Local || variable instanceof ConcreteRef;
   }
 
@@ -70,7 +72,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt<Value, Value> impl
    * @param rValue the value on the right side of the assign statement.
    */
   private boolean validateValue(@Nonnull Value rValue) {
-    // constant | local     |  *FieldRef | ArrayRef     | Expr
+    // constant | local     |  *FieldRef | ArrayRef     | Expr ----> i.e. not IdentityRef
     return rValue instanceof Immediate || rValue instanceof ConcreteRef || rValue instanceof Expr;
   }
 
@@ -195,17 +197,17 @@ public final class JAssignStmt extends AbstractDefinitionStmt<Value, Value> impl
   }
 
   @Nonnull
-  public JAssignStmt withVariable(@Nonnull Value variable) {
-    return new JAssignStmt(variable, getRightOp(), getPositionInfo());
+  public JAssignStmt<L, R> withVariable(@Nonnull L variable) {
+    return new JAssignStmt<>(variable, getRightOp(), getPositionInfo());
   }
 
   @Nonnull
-  public JAssignStmt withRValue(@Nonnull Value rValue) {
-    return new JAssignStmt(getLeftOp(), rValue, getPositionInfo());
+  public JAssignStmt<L, R> withRValue(@Nonnull R rValue) {
+    return new JAssignStmt<>(getLeftOp(), rValue, getPositionInfo());
   }
 
   @Nonnull
-  public JAssignStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JAssignStmt(getLeftOp(), getRightOp(), positionInfo);
+  public JAssignStmt<L, R> withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+    return new JAssignStmt<>(getLeftOp(), getRightOp(), positionInfo);
   }
 }
