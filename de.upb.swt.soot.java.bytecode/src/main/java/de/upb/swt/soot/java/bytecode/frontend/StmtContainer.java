@@ -24,6 +24,7 @@ import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -65,7 +66,7 @@ class StmtContainer extends Stmt {
   }
 
   @Nonnull
-  Iterable<Stmt> getStmts() {
+  Collection<Stmt> getStmts() {
     return stmts;
   }
 
@@ -134,7 +135,7 @@ class StmtContainer extends Stmt {
 
   @Override
   public String toString() {
-    return "StmtContainer" + (stmts);
+    return "StmtContainer" + stmts;
   }
 
   @Override

@@ -99,6 +99,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.Handle;
@@ -355,6 +356,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (local == null && op != GETFIELD && op != GETSTATIC && (op < IALOAD && op > SALOAD)) {
         continue;
       }
+
       Local stackLocal = newStackLocal();
       operand.stackLocal = stackLocal;
       JAssignStmt<Local, ?> asssignStmt =
@@ -2019,21 +2021,15 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    *
    * @param expr which is used to filter associated Stmts
    */
-  public List<Stmt> getStmtsThatUse(@Nonnull Expr expr) {
-    List<Stmt> currentUses =
-        InsnToStmt.values().stream()
-            .filter(stmt -> stmt.getUses().contains(expr))
-            .collect(Collectors.toList());
+  public Collection<Stmt> getStmtsThatUse(@Nonnull Expr expr) {
+    Stream<Stmt> currentUses =
+        InsnToStmt.values().stream().filter(stmt -> stmt.getUses().contains(expr));
 
-    List<Stmt> oldMappedUses =
+    Stream<Stmt> oldMappedUses =
         replacedStmt.entrySet().stream()
             .filter(stmt -> stmt.getKey().getUses().contains(expr))
-            .map(stmt -> getLatestVersionOfStmt(stmt.getValue()))
-            .collect(Collectors.toList());
+            .map(stmt -> getLatestVersionOfStmt(stmt.getValue()));
 
-    Set<Stmt> set = new HashSet<>();
-    set.addAll(currentUses);
-    set.addAll(oldMappedUses);
-    return new ArrayList<>(set);
+    return Stream.concat(currentUses, oldMappedUses).collect(Collectors.toSet());
   }
 }
