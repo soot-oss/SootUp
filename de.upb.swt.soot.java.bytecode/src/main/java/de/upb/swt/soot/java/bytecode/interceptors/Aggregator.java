@@ -55,7 +55,7 @@ public class Aggregator implements BodyInterceptor {
     builder.enableDeferredStmtGraphChanges();
     for (Stmt stmt : stmts) {
       if (stmt instanceof JAssignStmt) {
-        JAssignStmt<?, ?> assignStmt = (JAssignStmt<?, ?>) stmt;
+        final JAssignStmt<?, ?> assignStmt = (JAssignStmt<?, ?>) stmt;
         Value lhs = assignStmt.getLeftOp();
         if (lhs instanceof Local) {
           Local lhsLocal = (Local) lhs;
@@ -158,7 +158,7 @@ public class Aggregator implements BodyInterceptor {
                               assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());
                     }
                   } else {
-                    newStmt = ((JAssignStmt<?, ?>) stmt).withRValue(aggregatee);
+                    newStmt = assignStmt.withRValue(aggregatee);
                   }
                   if (newStmt != null) {
                     builder.replaceStmt(stmt, newStmt);
