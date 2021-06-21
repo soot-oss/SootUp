@@ -24,6 +24,7 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.types.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +50,11 @@ public abstract class AbstractDefinitionStmt extends Stmt {
   @Nonnull
   public Value getRightOp() {
     return rightOp;
+  }
+
+  @Nonnull
+  public Type getType() {
+    return getLeftOp().getType();
   }
 
   @Override

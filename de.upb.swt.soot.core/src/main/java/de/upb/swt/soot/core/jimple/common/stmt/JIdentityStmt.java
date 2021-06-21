@@ -27,7 +27,6 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
-import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
@@ -43,7 +42,7 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Copya
 
   @Override
   public String toString() {
-    return getLeftOp().toString() + " := " + getRightOp().toString();
+    return getLeftOp() + " := " + getRightOp();
   }
 
   @Override
@@ -56,10 +55,6 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Copya
   @Override
   public void accept(@Nonnull StmtVisitor sw) {
     sw.caseIdentityStmt(this);
-  }
-
-  public Type getType() {
-    return getLeftOp().getType();
   }
 
   @Override

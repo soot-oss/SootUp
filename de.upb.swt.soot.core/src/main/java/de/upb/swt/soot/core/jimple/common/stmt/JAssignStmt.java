@@ -70,6 +70,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @param rValue the value on the right side of the assign statement.
    */
   private boolean validateValue(@Nonnull Value rValue) {
+    // constant | local     |  *FieldRef | ArrayRef     | Expr
     return rValue instanceof Immediate || rValue instanceof ConcreteRef || rValue instanceof Expr;
   }
 
