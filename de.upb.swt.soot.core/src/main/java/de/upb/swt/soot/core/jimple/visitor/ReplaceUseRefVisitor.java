@@ -51,15 +51,23 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
 
   @Override
   public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef ref) {
-    setResult(ref.withBase((Local) newUse));
+    if (ref.getBase() == oldUse) {
+      setResult(ref.withBase((Local) newUse));
+    } else {
+      throw new IllegalArgumentException(
+          "given oldUse is not a current use of JInstancFieldRef " + ref + "!");
+    }
   }
 
   @Override
   public void caseArrayRef(@Nonnull JArrayRef ref) {
     if (ref.getBase() == oldUse) {
       setResult(ref.withBase((Local) newUse));
-    } else {
+    } else if (ref.getIndex() == oldUse) {
       setResult(ref.withIndex(newUse));
+    } else {
+      throw new IllegalArgumentException(
+          "given oldUse is not a current use of JArrayRef " + ref + "!");
     }
   }
 

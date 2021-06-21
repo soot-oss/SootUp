@@ -1,7 +1,6 @@
 package de.upb.swt.soot.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -81,11 +80,12 @@ public class ReplaceUseRefVisitorTest {
     expectedUses.clear();
 
     // no matched use
-    ref = javaJimple.newArrayRef(base, conIndex);
-    ref.accept(visitor);
-    newRef = visitor.getResult();
-
-    assertTrue(newRef.equivTo(ref));
+    try {
+      ref = javaJimple.newArrayRef(base, conIndex);
+      ref.accept(visitor);
+      fail("not allowed!");
+    } catch (Exception ignore) {
+    }
   }
 
   /** Test use replacing in case JInstanceFieldRef. */
@@ -106,10 +106,11 @@ public class ReplaceUseRefVisitorTest {
     assertEquals(newRef.getUses(), expectedUses);
 
     // no matched use
-    ref = JavaJimple.newInstanceFieldRef(localIndex, fieldSignature);
-    ref.accept(visitor);
-    newRef = visitor.getResult();
-
-    assertEquals(newRef, ref);
+    try {
+      ref = JavaJimple.newInstanceFieldRef(localIndex, fieldSignature);
+      ref.accept(visitor);
+      fail("not allowed!");
+    } catch (Exception ignore) {
+    }
   }
 }
