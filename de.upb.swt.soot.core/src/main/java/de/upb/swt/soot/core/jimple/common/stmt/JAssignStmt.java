@@ -112,17 +112,15 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    *
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getArrayRef()
    */
-  @Override
-  // TODO [ms]: what is with assignments like: arr[0] = arr[6]?
+  // TODO [ms]: what is with assignments like: arr[0] = arr[6]? is that possible? if not ->
+  // validator
   public JArrayRef getArrayRef() {
-    if (!containsArrayRef()) {
-      throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
-    }
-
     if (getLeftOp() instanceof JArrayRef) {
       return (JArrayRef) getLeftOp();
-    } else {
+    } else if (getRightOp() instanceof JArrayRef) {
       return (JArrayRef) getRightOp();
+    } else {
+      throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
     }
   }
 
@@ -141,17 +139,15 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    *
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getFieldRef()
    */
-  @Override
   public JFieldRef getFieldRef() {
-    if (!containsFieldRef()) {
-      throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
-    }
     // TODO: [MS] what if both Op's are a FieldRef? verify it in a verifier that this does not
     // happen or is it always handled via an intermediate Local?
     if (getLeftOp() instanceof JFieldRef) {
       return (JFieldRef) getLeftOp();
-    } else {
+    } else if (getRightOp() instanceof JFieldRef) {
       return (JFieldRef) getRightOp();
+    } else {
+      throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
     }
   }
 
