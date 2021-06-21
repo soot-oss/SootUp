@@ -41,8 +41,8 @@ final class Operand {
 
   @Nonnull protected final AbstractInsnNode insn;
   @Nonnull protected final Value value;
+  @Nullable protected Local stackLocal;
   @Nonnull private final AsmMethodSource methodSource;
-  @Nullable protected Local stack;
 
   @Nonnull private final List<Stmt> stmtUsages = new ArrayList<>();
   @Nonnull private final List<Expr> exprUsages = new ArrayList<>();
@@ -114,7 +114,7 @@ final class Operand {
   /** @return either the stack local allocated for this operand, or its value. */
   @Nonnull
   Value stackOrValue() {
-    return stack == null ? value : stack;
+    return stackLocal == null ? value : stackLocal;
   }
 
   /**
@@ -129,7 +129,7 @@ final class Operand {
 
   @Override
   public String toString() {
-    return "Operand{" + "insn=" + insn + ", value=" + value + ", stack=" + stack + '}';
+    return "Operand{" + "insn=" + insn + ", value=" + value + ", stack=" + stackLocal + '}';
   }
 
   @Nonnull
@@ -144,7 +144,7 @@ final class Operand {
 
   @Nullable
   public Local getStackLocal() {
-    return stack;
+    return stackLocal;
   }
 
   @Override

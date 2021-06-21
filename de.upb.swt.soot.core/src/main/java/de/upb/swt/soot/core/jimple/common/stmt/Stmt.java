@@ -99,6 +99,10 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
     return false;
   }
 
+  /**
+   * This method must only be used for Stmts which contain an InvokeExpr (JInvokeStmt; possible in
+   * JAssignStmt) check via containsInvokExpr().
+   */
   public AbstractInvokeExpr getInvokeExpr() {
     throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
   }
@@ -107,6 +111,10 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
     return false;
   }
 
+  /**
+   * This method must only be used for Stmts which contain an ArrayRef - possible with JAssignStmts.
+   * check via containsArrayRef().
+   */
   public JArrayRef getArrayRef() {
     throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
   }
@@ -115,6 +123,10 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
     return false;
   }
 
+  /**
+   * This method must only be used for Stmts which contain an FieldRef - possible with JAssignStmts.
+   * check via containsFieldRef().
+   */
   public JFieldRef getFieldRef() {
     throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
   }

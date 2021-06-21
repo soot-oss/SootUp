@@ -97,8 +97,8 @@ final class StackFrame {
       /* merge, since prevOp != newOp */
       Local stack = inStackLocals[i];
       if (stack != null) {
-        if (newOp.stack == null) {
-          newOp.stack = stack;
+        if (newOp.stackLocal == null) {
+          newOp.stackLocal = stack;
           JAssignStmt as =
               Jimple.newAssignStmt(stack, newOp.value, StmtPositionInfo.createNoStmtPositionInfo());
           src.setStmt(newOp.insn, as);
@@ -114,13 +114,13 @@ final class StackFrame {
         }
       } else {
         for (int j = 0; j != nrIn; j++) {
-          stack = in.get(j)[i].stack;
+          stack = in.get(j)[i].stackLocal;
           if (stack != null) {
             break;
           }
         }
         if (stack == null) {
-          stack = newOp.stack;
+          stack = newOp.stackLocal;
           if (stack == null) {
             stack = src.newStackLocal();
           }
@@ -128,11 +128,11 @@ final class StackFrame {
         /* add assign statement for prevOp */
         for (int j = 0; j != nrIn; j++) {
           Operand prevOp = in.get(j)[i];
-          if (prevOp.stack == stack) {
+          if (prevOp.stackLocal == stack) {
             continue;
           }
-          if (prevOp.stack == null) {
-            prevOp.stack = stack;
+          if (prevOp.stackLocal == null) {
+            prevOp.stackLocal = stack;
             JAssignStmt as =
                 Jimple.newAssignStmt(
                     stack, prevOp.value, StmtPositionInfo.createNoStmtPositionInfo());
@@ -143,14 +143,14 @@ final class StackFrame {
                 (AbstractDefinitionStmt)
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
             Value lvb = as.getLeftOp();
-            assert lvb == prevOp.stack : "Invalid stack local!";
-            prevOp.stack = stack;
+            assert lvb == prevOp.stackLocal : "Invalid stack local!";
+            prevOp.stackLocal = stack;
           }
           prevOp.updateUsages();
         }
-        if (newOp.stack != stack) {
-          if (newOp.stack == null) {
-            newOp.stack = stack;
+        if (newOp.stackLocal != stack) {
+          if (newOp.stackLocal == null) {
+            newOp.stackLocal = stack;
             JAssignStmt as =
                 Jimple.newAssignStmt(
                     stack, newOp.value, StmtPositionInfo.createNoStmtPositionInfo());
@@ -161,8 +161,8 @@ final class StackFrame {
                 (AbstractDefinitionStmt)
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
             Value lvb = as.getLeftOp();
-            assert lvb == newOp.stack : "Invalid stack local!";
-            newOp.stack = stack;
+            assert lvb == newOp.stackLocal : "Invalid stack local!";
+            newOp.stackLocal = stack;
           }
           newOp.updateUsages();
         }
