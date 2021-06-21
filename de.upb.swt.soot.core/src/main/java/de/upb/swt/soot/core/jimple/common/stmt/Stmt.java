@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.jimple.common.stmt;
  */
 
 import de.upb.swt.soot.core.jimple.basic.*;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.visitor.Acceptor;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -93,6 +94,10 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
 
   public boolean containsInvokeExpr() {
     return false;
+  }
+
+  public AbstractInvokeExpr getInvokeExpr() {
+    throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
   }
 
   public boolean containsArrayRef() {

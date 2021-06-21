@@ -31,8 +31,8 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractDefinitionStmt extends Stmt {
 
-  @Nonnull private Value leftOp;
-  @Nonnull private Value rightOp;
+  @Nonnull private final Value leftOp;
+  @Nonnull private final Value rightOp;
 
   AbstractDefinitionStmt(
       @Nonnull Value leftOp, @Nonnull Value rightOp, @Nonnull StmtPositionInfo positionInfo) {
@@ -41,10 +41,12 @@ public abstract class AbstractDefinitionStmt extends Stmt {
     this.rightOp = rightOp;
   }
 
+  @Nonnull
   public final Value getLeftOp() {
     return leftOp;
   }
 
+  @Nonnull
   public Value getRightOp() {
     return rightOp;
   }

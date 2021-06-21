@@ -45,11 +45,11 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   public JAssignStmt(
       @Nonnull Value variable, @Nonnull Value rValue, @Nonnull StmtPositionInfo positionInfo) {
     super(variable, rValue, positionInfo);
-    if (!checkVariable(variable)) {
+    if (!validateVariable(variable)) {
       throw new RuntimeException(
           "Illegal Assignment statement. Make sure that left hand side has a valid operand.");
     }
-    if (!checkValue(rValue)) {
+    if (!validateValue(rValue)) {
       throw new RuntimeException(
           "Illegal Assignment statement. Make sure that right hand side has a valid operand.");
     }
@@ -60,7 +60,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    *
    * @param variable the variable on the left side of the assign statement.
    */
-  private boolean checkVariable(@Nonnull Value variable) {
+  private boolean validateVariable(@Nonnull Value variable) {
     return variable instanceof Local || variable instanceof ConcreteRef;
   }
 
@@ -69,7 +69,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    *
    * @param rValue the value on the right side of the assign statement.
    */
-  private boolean checkValue(@Nonnull Value rValue) {
+  private boolean validateValue(@Nonnull Value rValue) {
     return rValue instanceof Immediate || rValue instanceof ConcreteRef || rValue instanceof Expr;
   }
 
@@ -158,7 +158,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    */
   @Override
   public String toString() {
-    return getLeftOp().toString() + " = " + getRightOp().toString();
+    return getLeftOp() + " = " + getRightOp();
   }
 
   /*

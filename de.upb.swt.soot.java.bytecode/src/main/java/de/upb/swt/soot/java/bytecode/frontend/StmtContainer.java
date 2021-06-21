@@ -21,9 +21,6 @@ package de.upb.swt.soot.java.bytecode.frontend;
  * #L%
  */
 import de.upb.swt.soot.core.jimple.basic.*;
-import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
-import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -108,27 +105,12 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public AbstractInvokeExpr getInvokeExpr() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public boolean containsArrayRef() {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public JArrayRef getArrayRef() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public boolean containsFieldRef() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public JFieldRef getFieldRef() {
     throw new UnsupportedOperationException();
   }
 
