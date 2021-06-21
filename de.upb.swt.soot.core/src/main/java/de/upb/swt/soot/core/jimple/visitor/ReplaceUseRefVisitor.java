@@ -45,17 +45,11 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
   }
 
   @Override
-  public void caseStaticFieldRef(@Nonnull JStaticFieldRef ref) {
-    defaultCaseRef(ref);
-  }
-
-  @Override
   public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef ref) {
     if (ref.getBase() == oldUse) {
       setResult(ref.withBase((Local) newUse));
     } else {
-      throw new IllegalArgumentException(
-          "given oldUse is not a current use of JInstancFieldRef " + ref + "!");
+      errorHandler(ref);
     }
   }
 
@@ -66,28 +60,17 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
     } else if (ref.getIndex() == oldUse) {
       setResult(ref.withIndex(newUse));
     } else {
-      throw new IllegalArgumentException(
-          "given oldUse is not a current use of JArrayRef " + ref + "!");
+      errorHandler(ref);
     }
-  }
-
-  @Override
-  public void caseParameterRef(@Nonnull JParameterRef ref) {
-    defaultCaseRef(ref);
-  }
-
-  @Override
-  public void caseCaughtExceptionRef(@Nonnull JCaughtExceptionRef ref) {
-    defaultCaseRef(ref);
-  }
-
-  @Override
-  public void caseThisRef(@Nonnull JThisRef ref) {
-    defaultCaseRef(ref);
   }
 
   @Override
   public void defaultCaseRef(@Nonnull Ref ref) {
     setResult(ref);
+  }
+
+  public void errorHandler(@Nonnull Ref ref) {
+    throw new IllegalArgumentException(
+        "The given oldUse which should be replaced is not a current use of" + ref + "!");
   }
 }
