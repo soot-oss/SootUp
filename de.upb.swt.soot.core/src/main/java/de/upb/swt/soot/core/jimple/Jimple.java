@@ -547,8 +547,8 @@ public abstract class Jimple {
     return new JStaticFieldRef(f);
   }
 
-  /** Constructs a ThisRef(RefType) grammar chunk. */
-  public static JThisRef newThisRef(ReferenceType t) {
+  /** Constructs a ThisRef(ClassType) grammar chunk. */
+  public static JThisRef newThisRef(ClassType t) {
     return new JThisRef(t);
   }
 
