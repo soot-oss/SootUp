@@ -43,7 +43,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
 
   public ReplaceUseExprVisitor() {}
 
-  public void init(Immediate oldUse, Immediate newUse) {
+  public void init(@Nonnull Immediate oldUse, @Nonnull Immediate newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
   }
@@ -417,7 +417,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       setResult(expr.withArgs(newArgs));
     }
 
-    if (newUse instanceof Local && expr.getBase() == oldUse) {
+    if (expr.getBase() == oldUse) {
       if (isChanged) {
         setResult(((AbstractInstanceInvokeExpr) getResult()).withBase((Local) newUse));
       } else {
