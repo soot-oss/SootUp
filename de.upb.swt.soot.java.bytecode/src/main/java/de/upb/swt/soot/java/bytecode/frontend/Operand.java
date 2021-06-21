@@ -63,19 +63,19 @@ final class Operand {
   /**
    * Adds a usage of this operand (so whenever it is used in a stmt)
    *
-   * @param usage the usage
+   * @param stmt the usage
    */
-  void addUsage(@Nonnull Stmt usage) {
-    stmtUsages.add(usage);
+  void addUsageInStmt(@Nonnull Stmt stmt) {
+    stmtUsages.add(stmt);
   }
 
   /**
    * Adds a usage of this operand (so whenever it is used in a Expr)
    *
-   * @param usage the usage
+   * @param expr the usage
    */
-  void addUsage(@Nonnull Expr usage) {
-    exprUsages.add(usage);
+  void addUsageInExpr(@Nonnull Expr expr) {
+    exprUsages.add(expr);
   }
 
   /** Updates all statements and expressions that use this Operand. */
@@ -84,7 +84,7 @@ final class Operand {
         new ReplaceUseStmtVisitor(this.value, this.stackOrValue());
 
     for (Expr exprUsage : exprUsages) {
-      List<Stmt> stmts = this.methodSource.getStmts(exprUsage);
+      List<Stmt> stmts = this.methodSource.getStmtsThatUse(exprUsage);
 
       stmts =
           stmts.stream()
@@ -143,7 +143,7 @@ final class Operand {
   }
 
   @Nullable
-  public Local getStack() {
+  public Local getStackLocal() {
     return stack;
   }
 
