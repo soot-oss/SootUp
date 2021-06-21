@@ -24,13 +24,9 @@ package de.upb.swt.soot.java.core.types;
 
 import com.google.common.base.Objects;
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
+import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 
@@ -57,7 +53,7 @@ public class JavaClassType extends ClassType {
    */
   public JavaClassType(@Nonnull final String className, @Nonnull final PackageName packageName) {
     String realClassName = className;
-    // TODO: [ms] shall we do that inner class conversion here?
+    // TODO: [ms] we shouldnt do that inner class conversion here? -> IdentifierFactory
     if (realClassName.contains(".")) {
       realClassName = realClassName.replace('.', '$');
     }
@@ -91,7 +87,7 @@ public class JavaClassType extends ClassType {
   public String getFullyQualifiedName() {
     StringBuilder sb = new StringBuilder();
     if (!packageName.getPackageName().isEmpty()) {
-      sb.append(packageName);
+      sb.append(packageName.getPackageName());
       sb.append('.');
     }
     sb.append(className);
@@ -100,29 +96,16 @@ public class JavaClassType extends ClassType {
 
   @Override
   public String toString() {
-    return getFullyQualifiedName();
-  }
-
-  public Path toPath(FileType fileType) {
-    return toPath(fileType, FileSystems.getDefault());
-  }
-
-  public Path toPath(FileType fileType, FileSystem fs) {
-    String fileName = getFullyQualifiedName();
-    // Todo: fix JavaClassType.toPath (possibly implement in Soot Java Bytecode module)
-    //    for a java file the file name of the inner class is the name of outerclass
-    //    e.g., for an inner class org.acme.Foo$Bar, the filename is org/acme/Foo.java
-    //    if (fileType == FileType.JAVA && this.isInnerClass) {
-    //      int idxInnerClassChar = fileName.indexOf("$");
-    //      if (idxInnerClassChar != -1) {
-    //        fileName = fileName.substring(0, idxInnerClassChar);
-    //      }
-    //    }
-    return fs.getPath(fileName.replace('.', '/') + "." + fileType.getExtension());
-  }
-
-  public boolean isModuleInfo() {
-    return this.className.equals(ModuleIdentifierFactory.MODULE_INFO_CLASS.className);
+    StringBuilder sb = new StringBuilder();
+    String packageNameStr = packageName.toString();
+    if (!packageNameStr.isEmpty()) {
+      sb.append(packageName);
+      if (!packageName.getPackageName().isEmpty()) {
+        sb.append('.');
+      }
+    }
+    sb.append(className);
+    return sb.toString();
   }
 
   /** The simple class name. */
@@ -138,7 +121,13 @@ public class JavaClassType extends ClassType {
   }
 
   public boolean isBuiltInClass() {
-    // TODO: [ms] for java9 modules library check modules instead of that heuristic
+    PackageName packageName = getPackageName();
+    if (packageName instanceof ModulePackageName) {
+      // if java modules (>= java9) are used: use JrtFileSystem for explicit.. otherwise use the
+      // following heuristic
+      String moduleName = ((ModulePackageName) packageName).getModuleSignature().toString();
+      return moduleName.startsWith("java.") || moduleName.startsWith("jdk.");
+    }
     return LIBRARY_CLASS_PATTERN.matcher(getClassName()).find();
   }
 }

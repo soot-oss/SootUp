@@ -95,7 +95,6 @@ import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.jimple.basic.JavaLocal;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
@@ -187,7 +186,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Override
   @Nonnull
-  public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) throws IOException {
+  public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) {
     // FIXME: [AD] add real line number
     Position bodyPos = NoPositionInformation.getInstance();
     bodyBuilder.setPosition(bodyPos);

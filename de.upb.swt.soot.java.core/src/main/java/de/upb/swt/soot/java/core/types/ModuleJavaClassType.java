@@ -1,9 +1,10 @@
-package de.upb.swt.soot.core;
+package de.upb.swt.soot.java.core.types;
+
 /*-
  * #%L
- * Soot
+ * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2020 Linghui Luo, Markus Schmidt
+ * Copyright (C) 2018-2020 Andreas Dann, Christian Brüggemann and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,15 +22,19 @@ package de.upb.swt.soot.core;
  * #L%
  */
 
-/**
- * This class is a container for language specific information
- *
- * @author Markus Schmidt
- */
-public abstract class Language {
-  public abstract String getName();
+import de.upb.swt.soot.java.core.signatures.ModulePackageName;
+import javax.annotation.Nonnull;
 
-  public abstract int getVersion();
+public class ModuleJavaClassType extends JavaClassType {
 
-  public abstract IdentifierFactory getIdentifierFactory();
+  public ModuleJavaClassType(
+      @Nonnull final String className, @Nonnull final ModulePackageName packageName) {
+    super(className, packageName);
+  }
+
+  @Nonnull
+  @Override
+  public ModulePackageName getPackageName() {
+    return (ModulePackageName) super.getPackageName();
+  }
 }

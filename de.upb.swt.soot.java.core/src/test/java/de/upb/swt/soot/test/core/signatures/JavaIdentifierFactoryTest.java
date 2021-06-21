@@ -26,14 +26,13 @@ import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class IdentifierFactoryTest {
+public class JavaIdentifierFactoryTest {
 
   @Test
   public void getSamePackageSignature() {
@@ -58,8 +57,7 @@ public class IdentifierFactoryTest {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     PackageName packageName1 = identifierFactory.getPackageName("java.lang");
     PackageName packageName2 = identifierFactory.getPackageName("java.lang");
-    assertNotEquals(packageName1, null);
-    assertSame(packageName1, packageName2);
+    assertEquals(packageName1, packageName2);
   }
 
   @Test
@@ -69,7 +67,7 @@ public class IdentifierFactoryTest {
     JavaClassType classSignature2 = typeFactory.getClassType("System", "java.lang");
     PackageName packageName1 = classSignature1.getPackageName();
     PackageName packageName2 = classSignature2.getPackageName();
-    assertSame(packageName1, packageName2);
+    assertEquals(packageName1, packageName2);
   }
 
   @Test
@@ -77,7 +75,7 @@ public class IdentifierFactoryTest {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     PackageName packageName1 = identifierFactory.getPackageName("java.lang");
     PackageName packageName2 = identifierFactory.getPackageName("java.lang.invoke");
-    assertNotSame(packageName1, packageName2);
+    assertNotEquals(packageName1, packageName2);
   }
 
   @Test
@@ -113,16 +111,6 @@ public class IdentifierFactoryTest {
     ClassType classSignature2 = null;
     // Class Signatures are unique but not their package
     assertNotEquals(classSignature1, classSignature2);
-  }
-
-  @Test
-  public void sigToPath() {
-    JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
-    JavaClassType classSignature1 = typeFactory.getClassType("System", "java.lang");
-    Path path = classSignature1.toPath(FileType.CLASS);
-    // Class Signatures are unique but not their package
-    assertEquals(
-        path.toString(), "java" + File.separator + "lang" + File.separator + "System.class");
   }
 
   @Test
@@ -398,5 +386,14 @@ public class IdentifierFactoryTest {
     assertTrue(classSignature2 instanceof ArrayType);
     assertEquals(((ArrayType) classSignature2).getDimension(), 1);
     assertEquals(((ArrayType) classSignature2).getBaseType(), base);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testParse() {
+    // not ok!
+    String fieldsSigStr = "<java.base/java.lang.String: [] value>";
+    FieldSignature fieldSignature =
+        JavaModuleIdentifierFactory.getInstance().parseFieldSignature(fieldsSigStr);
+    assertEquals(fieldsSigStr, fieldSignature.toString());
   }
 }
