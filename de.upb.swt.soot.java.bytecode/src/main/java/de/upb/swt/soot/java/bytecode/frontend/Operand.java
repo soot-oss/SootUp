@@ -104,7 +104,7 @@ final class Operand {
       oldUsage.accept(replaceStmtVisitor);
       Stmt newUsage = replaceStmtVisitor.getResult();
 
-      if (!oldUsage.equivTo(newUsage)) {
+      if (oldUsage != newUsage) {
         methodSource.replaceStmt(oldUsage, newUsage);
         stmtUsages.set(i, newUsage);
       }
