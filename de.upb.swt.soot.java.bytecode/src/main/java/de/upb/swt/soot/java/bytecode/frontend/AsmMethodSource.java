@@ -421,7 +421,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       } else {
         Operand base = operandStack.popLocal();
         ref = JavaIdentifierFactory.getInstance().getFieldSignature(insn.name, declClass, type);
-        JInstanceFieldRef ifr = Jimple.newInstanceFieldRef(base.getStackLocal(), ref);
+        JInstanceFieldRef ifr = Jimple.newInstanceFieldRef((Local) base.stackOrValue(), ref);
         val = ifr;
         frame.setIn(rvalue, base);
       }
@@ -537,7 +537,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       Operand baseOp = operandStack.popLocal();
       JArrayRef ar =
           JavaJimple.getInstance()
-              .newArrayRef(baseOp.getStackLocal(), (Immediate) indexOp.stackOrValue());
+              .newArrayRef((Local) baseOp.stackOrValue(), (Immediate) indexOp.stackOrValue());
       JAssignStmt<JArrayRef, ?> as =
           Jimple.newAssignStmt(
               ar, valueOp.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
