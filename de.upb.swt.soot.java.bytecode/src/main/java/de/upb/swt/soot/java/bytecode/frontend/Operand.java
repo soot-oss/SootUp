@@ -26,9 +26,7 @@ import de.upb.swt.soot.core.jimple.common.expr.Expr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.ReplaceUseStmtVisitor;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -85,15 +83,10 @@ final class Operand {
         new ReplaceUseStmtVisitor(this.value, this.stackOrValue());
 
     for (Expr exprUsage : exprUsages) {
-      Collection<Stmt> stmts = this.methodSource.getStmtsThatUse(exprUsage);
-
-      stmts =
-          stmts.stream()
-              .map(this.methodSource::getLatestVersionOfStmt)
-              .collect(Collectors.toList());
-
-      stmtUsages.addAll(
-          stmts.stream().filter(stmt -> !stmtUsages.contains(stmt)).collect(Collectors.toList()));
+      this.methodSource.getStmtsThatUse(exprUsage).stream()
+          .map(this.methodSource::getLatestVersionOfStmt)
+          .filter(stmt -> !stmtUsages.contains(stmt))
+          .forEach(stmtUsages::add);
     }
 
     for (int i = 0; i < stmtUsages.size(); i++) {
