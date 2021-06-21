@@ -79,12 +79,12 @@ final class Operand {
 
   /** Updates all statements and expressions that use this Operand. */
   void updateUsages() {
-    ReplaceUseStmtVisitor replaceStmtVisitor =
-        new ReplaceUseStmtVisitor(this.value, this.stackOrValue());
+    ReplaceUseStmtVisitor replaceStmtVisitor = new ReplaceUseStmtVisitor(value, stackOrValue());
 
     for (Expr exprUsage : exprUsages) {
-      this.methodSource.getStmtsThatUse(exprUsage).stream()
-          .map(this.methodSource::getLatestVersionOfStmt)
+      methodSource
+          .getStmtsThatUse(exprUsage)
+          .map(methodSource::getLatestVersionOfStmt)
           .filter(stmt -> !stmtUsages.contains(stmt))
           .forEach(stmtUsages::add);
     }

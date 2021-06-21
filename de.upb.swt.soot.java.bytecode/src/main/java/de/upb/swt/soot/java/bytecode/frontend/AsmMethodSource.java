@@ -98,7 +98,6 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -2029,7 +2028,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    *
    * @param expr which is used to filter associated Stmts
    */
-  public Collection<Stmt> getStmtsThatUse(@Nonnull Expr expr) {
+  public Stream<Stmt> getStmtsThatUse(@Nonnull Expr expr) {
     Stream<Stmt> currentUses =
         InsnToStmt.values().stream().filter(stmt -> stmt.getUses().contains(expr));
 
@@ -2038,6 +2037,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             .filter(stmt -> stmt.getKey().getUses().contains(expr))
             .map(stmt -> getLatestVersionOfStmt(stmt.getValue()));
 
-    return Stream.concat(currentUses, oldMappedUses).collect(Collectors.toSet());
+    return Stream.concat(currentUses, oldMappedUses);
   }
 }
