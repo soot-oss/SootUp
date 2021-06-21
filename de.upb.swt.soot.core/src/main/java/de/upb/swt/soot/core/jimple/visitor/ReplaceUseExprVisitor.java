@@ -419,7 +419,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
 
     if (newUse instanceof Local && expr.getBase() == oldUse) {
       if (isChanged) {
-        setResult(((JSpecialInvokeExpr) getResult()).withBase((Local) newUse));
+        setResult(((AbstractInstanceInvokeExpr) getResult()).withBase((Local) newUse));
       } else {
         setResult(expr.withBase((Local) newUse));
         isChanged = true;
