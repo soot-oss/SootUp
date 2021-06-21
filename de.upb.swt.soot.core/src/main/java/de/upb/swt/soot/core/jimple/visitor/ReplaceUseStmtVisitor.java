@@ -69,7 +69,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   }
 
   @Override
-  public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+  public void caseAssignStmt(@Nonnull JAssignStmt<?, ?> stmt) {
     Value rValue = stmt.getRightOp();
 
     if (rValue instanceof Immediate) {
@@ -93,7 +93,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
         setResult(stmt.withRValue(exprVisitor.getResult()));
       }
     } else {
-      defaultCaseStmt(stmt);
+      errorHandler(stmt);
     }
   }
 
@@ -119,13 +119,13 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseIfStmt(@Nonnull JIfStmt stmt) {
-    Expr condition = stmt.getCondition();
+    Expr conditionExpr = stmt.getCondition();
     exprVisitor.init((Immediate) oldUse, (Immediate) newUse);
-    condition.accept(exprVisitor);
-    if (exprVisitor.getResult() != condition) {
+    conditionExpr.accept(exprVisitor);
+    if (exprVisitor.getResult() != conditionExpr) {
       setResult(stmt.withCondition((AbstractConditionExpr) exprVisitor.getResult()));
     } else {
-      defaultCaseStmt(stmt);
+      errorHandler(stmt);
     }
   }
 
@@ -161,5 +161,13 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   public void defaultCaseStmt(@Nonnull Stmt stmt) {
     setResult(stmt);
+  }
+
+  public void errorHandler(@Nonnull Stmt stmt) {
+    defaultCaseStmt(stmt);
+    /*
+    throw new IllegalArgumentException(
+            "The given oldUse '"+ oldUse +"' which should be replaced is not a current use of " + stmt + "!");
+            */
   }
 }

@@ -69,16 +69,19 @@ class StmtContainer extends Stmt {
     return stmts;
   }
 
+  @Nonnull
   @Override
   public List<Value> getUses() {
     throw new UnsupportedOperationException();
   }
 
+  @Nonnull
   @Override
   public List<Value> getDefs() {
     throw new UnsupportedOperationException();
   }
 
+  @Nonnull
   @Override
   public List<Value> getUsesAndDefs() {
     throw new UnsupportedOperationException();

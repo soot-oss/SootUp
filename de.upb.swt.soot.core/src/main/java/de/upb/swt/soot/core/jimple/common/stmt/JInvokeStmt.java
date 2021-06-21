@@ -64,6 +64,7 @@ public final class JInvokeStmt extends Stmt implements Copyable {
     return invokeExpr;
   }
 
+  @Nonnull
   @Override
   public List<Value> getUses() {
     List<Value> list = new ArrayList<>(invokeExpr.getUses());

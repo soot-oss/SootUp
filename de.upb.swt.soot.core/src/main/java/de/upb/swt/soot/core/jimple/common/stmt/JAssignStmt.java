@@ -197,12 +197,12 @@ public final class JAssignStmt<L extends Value, R extends Value>
   }
 
   @Nonnull
-  public JAssignStmt<L, R> withVariable(@Nonnull L variable) {
+  public <N extends Value> JAssignStmt<N, R> withVariable(@Nonnull N variable) {
     return new JAssignStmt<>(variable, getRightOp(), getPositionInfo());
   }
 
   @Nonnull
-  public JAssignStmt<L, R> withRValue(@Nonnull R rValue) {
+  public <N extends Value> JAssignStmt<L, N> withRValue(@Nonnull N rValue) {
     return new JAssignStmt<>(getLeftOp(), rValue, getPositionInfo());
   }
 

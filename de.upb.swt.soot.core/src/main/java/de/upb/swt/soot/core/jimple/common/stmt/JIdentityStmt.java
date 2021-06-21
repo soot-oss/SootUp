@@ -31,13 +31,11 @@ import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
-public final class JIdentityStmt extends AbstractDefinitionStmt<Local, IdentityRef>
+public final class JIdentityStmt<T extends IdentityRef> extends AbstractDefinitionStmt<Local, T>
     implements Copyable {
 
   public JIdentityStmt(
-      @Nonnull Local local,
-      @Nonnull IdentityRef identityValue,
-      @Nonnull StmtPositionInfo positionInfo) {
+      @Nonnull Local local, @Nonnull T identityValue, @Nonnull StmtPositionInfo positionInfo) {
     super(local, identityValue, positionInfo);
   }
 
@@ -69,17 +67,17 @@ public final class JIdentityStmt extends AbstractDefinitionStmt<Local, IdentityR
   }
 
   @Nonnull
-  public JIdentityStmt withLocal(@Nonnull Local local) {
-    return new JIdentityStmt(local, getRightOp(), getPositionInfo());
+  public JIdentityStmt<T> withLocal(@Nonnull Local local) {
+    return new JIdentityStmt<>(local, getRightOp(), getPositionInfo());
   }
 
   @Nonnull
-  public JIdentityStmt withIdentityValue(@Nonnull IdentityRef identityValue) {
-    return new JIdentityStmt(getLeftOp(), identityValue, getPositionInfo());
+  public <N extends IdentityRef> JIdentityStmt<N> withIdentityValue(@Nonnull N identityValue) {
+    return new JIdentityStmt<>(getLeftOp(), identityValue, getPositionInfo());
   }
 
   @Nonnull
-  public JIdentityStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JIdentityStmt(getLeftOp(), getRightOp(), positionInfo);
+  public JIdentityStmt<T> withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+    return new JIdentityStmt<>(getLeftOp(), getRightOp(), positionInfo);
   }
 }

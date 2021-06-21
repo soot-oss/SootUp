@@ -55,7 +55,7 @@ public class Aggregator implements BodyInterceptor {
     builder.enableDeferredStmtGraphChanges();
     for (Stmt stmt : stmts) {
       if (stmt instanceof JAssignStmt) {
-        JAssignStmt assignStmt = (JAssignStmt) stmt;
+        JAssignStmt<?, ?> assignStmt = (JAssignStmt<?, ?>) stmt;
         Value lhs = assignStmt.getLeftOp();
         if (lhs instanceof Local) {
           Local lhsLocal = (Local) lhs;
@@ -142,23 +142,23 @@ public class Aggregator implements BodyInterceptor {
                     continue;
                   }
 
-                  Value aggregatee = ((JAssignStmt) relevantDef).getRightOp();
-                  Stmt newStmt = null;
+                  Value aggregatee = ((JAssignStmt<?, ?>) relevantDef).getRightOp();
+                  JAssignStmt<?, ?> newStmt = null;
                   if (assignStmt.getRightOp() instanceof AbstractBinopExpr) {
                     AbstractBinopExpr rightOp = (AbstractBinopExpr) assignStmt.getRightOp();
                     if (rightOp.getOp1() == val) {
                       AbstractBinopExpr newBinopExpr = rightOp.withOp1((Immediate) aggregatee);
                       newStmt =
-                          new JAssignStmt(
+                          new JAssignStmt<>(
                               assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());
                     } else if (rightOp.getOp2() == val) {
                       AbstractBinopExpr newBinopExpr = rightOp.withOp2((Immediate) aggregatee);
                       newStmt =
-                          new JAssignStmt(
+                          new JAssignStmt<>(
                               assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());
                     }
                   } else {
-                    newStmt = ((JAssignStmt) stmt).withRValue(aggregatee);
+                    newStmt = ((JAssignStmt<?, ?>) stmt).withRValue(aggregatee);
                   }
                   if (newStmt != null) {
                     builder.replaceStmt(stmt, newStmt);

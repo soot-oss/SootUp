@@ -486,7 +486,10 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
   }
 
   public void errorHandler(@Nonnull Expr expr) {
-    throw new IllegalArgumentException(
-        "The given oldUse which should be replaced is not a current use of" + expr + "!");
+    defaultCaseExpr(expr);
+    /*    throw new IllegalArgumentException(
+           "The given oldUse '"+ oldUse +"' which should be replaced is not a current use of " + expr + "!");
+
+    */
   }
 }
