@@ -111,16 +111,6 @@ final class Operand {
     }
   }
 
-  /**
-   * @param <A> type of value to cast to.
-   * @return the value.
-   */
-  @SuppressWarnings("unchecked")
-  @Nonnull
-  <A> A value() {
-    return (A) value;
-  }
-
   /** @return either the stack local allocated for this operand, or its value. */
   @Nonnull
   Value stackOrValue() {
