@@ -20,8 +20,10 @@ package de.upb.swt.soot.core.inputlocation;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
+import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
@@ -43,7 +45,7 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public interface AnalysisInputLocation<T extends SootClass> {
+public interface AnalysisInputLocation<T extends AbstractClass<? extends AbstractClassSource<T>>> {
   /**
    * Create or find a class source for a given type.
    *
@@ -56,6 +58,8 @@ public interface AnalysisInputLocation<T extends SootClass> {
 
   /**
    * Scan the input location and create ClassSources for every compilation / interpretation unit.
+   *
+   * @return
    */
   @Nonnull
   Collection<? extends AbstractClassSource<T>> getClassSources(

@@ -13,6 +13,7 @@ import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -48,57 +49,35 @@ import org.junit.Before;
 public abstract class AnalysisInputLocationTest {
 
   final Path war = Paths.get("../shared-test-resources/java-warApp/dummyWarApp.war");
-  final String warFile = war.toString();
-
   final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
-  final String jarFile = jar.toString();
-
   final Path mrj = Paths.get("../shared-test-resources/multi-release-jar/mrjar.jar");
-  final String mrjFile = mrj.toString();
-
   final Path mmrj = Paths.get("../shared-test-resources/multi-release-jar-modular/mrjar.jar");
-  final String mmrjFile = mrj.toString();
 
   private IdentifierFactory identifierFactory;
-  private ClassProvider classProvider;
+  private ClassProvider<JavaSootClass> classProvider;
 
   @Before
   public void setUp() {
-    identifierFactory = JavaIdentifierFactory.getInstance();
     classProvider = new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors());
   }
 
   protected IdentifierFactory getIdentifierFactory() {
-    return identifierFactory;
-  }
-
-  protected ClassProvider getClassProvider() {
-    return classProvider;
-  }
-
-  protected void testClassReceival(AnalysisInputLocation ns, ClassType sig, int minClassesFound) {
-    testClassReceival(ns, sig, minClassesFound, -1);
+    return JavaIdentifierFactory.getInstance();
   }
 
   protected void testClassReceival(
-      AnalysisInputLocation inputLocation,
-      ClassType sig,
-      int minClassesFound,
-      int maxClassesFound) {
+      AnalysisInputLocation<JavaSootClass> ns, ClassType sig, int minClassesFound) {
 
     final JavaProject project =
-        JavaProject.builder(new JavaLanguage(8)).addClassPath(inputLocation).build();
+        JavaProject.builder(new JavaLanguage(8)).addClassPath(ns).build();
     final JavaView view = project.createOnDemandView();
 
-    final Optional<AbstractClassSource> clazz = inputLocation.getClassSource(sig, view);
-    assertEquals(sig, clazz.get().getClassType());
+    final Optional<? extends AbstractClassSource<JavaSootClass>> clazz = ns.getClassSource(sig, view);
+    clazz.ifPresent(abstractClassSource -> assertEquals(sig, abstractClassSource.getClassType()));
 
     final Collection<? extends AbstractClassSource> classSources =
-        inputLocation.getClassSources(getIdentifierFactory(), view);
+        ns.getClassSources(getIdentifierFactory(), view);
 
     assertTrue(classSources.size() >= minClassesFound);
-    if (maxClassesFound != -1) {
-      assertTrue(classSources.size() <= maxClassesFound);
-    }
   }
 }

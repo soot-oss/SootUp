@@ -25,7 +25,7 @@ package de.upb.swt.soot.java.core.language;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Language;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import javax.annotation.Nonnull;
 
 // TODO: Auto-generated Javadoc
@@ -40,13 +40,6 @@ public class JavaLanguage extends Language {
   /** The identifier factory. */
   @Nonnull private final IdentifierFactory identifierFactory;
 
-  /** The use java modules. */
-  private final boolean useJavaModules;
-
-  public int getVersion() {
-    return version;
-  }
-
   /** The version number. */
   private final int version;
 
@@ -57,12 +50,10 @@ public class JavaLanguage extends Language {
    */
   public JavaLanguage(int version) {
     this.version = version;
-    if (version <= 8) {
+    if (version < 9) {
       identifierFactory = JavaIdentifierFactory.getInstance();
-      useJavaModules = false;
     } else {
-      identifierFactory = ModuleIdentifierFactory.getInstance();
-      useJavaModules = true;
+      identifierFactory = JavaModuleIdentifierFactory.getInstance();
     }
   }
 
@@ -73,12 +64,13 @@ public class JavaLanguage extends Language {
   }
 
   @Override
+  public int getVersion() {
+    return version;
+  }
+
+  @Override
   @Nonnull
   public IdentifierFactory getIdentifierFactory() {
     return identifierFactory;
-  }
-
-  public boolean useJavaModules() {
-    return useJavaModules;
   }
 }

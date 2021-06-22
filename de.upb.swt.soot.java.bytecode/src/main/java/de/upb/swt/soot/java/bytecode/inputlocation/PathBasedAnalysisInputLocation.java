@@ -15,6 +15,7 @@ import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -137,8 +138,12 @@ public abstract class PathBasedAnalysisInputLocation
       @Nonnull ClassProvider<JavaSootClass> classProvider) {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
+      final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
       return Files.walk(dirPath)
-          .filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
+          .filter(
+              filePath ->
+                  PathUtils.hasExtension(filePath, handledFileType)
+                      && !filePath.toString().endsWith(moduleInfoFilename))
           .flatMap(
               p ->
                   StreamUtils.optionalToStream(
@@ -155,8 +160,14 @@ public abstract class PathBasedAnalysisInputLocation
       @Nonnull JavaClassType signature,
       @Nonnull Path path,
       @Nonnull ClassProvider<JavaSootClass> classProvider) {
+
     Path pathToClass =
-        path.resolve(signature.toPath(classProvider.getHandledFileType(), path.getFileSystem()));
+        path.resolve(
+            path.getFileSystem()
+                .getPath(
+                    signature.getFullyQualifiedName().replace('.', '/')
+                        + "."
+                        + classProvider.getHandledFileType().getExtension()));
 
     if (!Files.exists(pathToClass)) {
       return Optional.empty();
@@ -172,14 +183,16 @@ public abstract class PathBasedAnalysisInputLocation
     }
 
     @Override
-    public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+    @Nonnull
+    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
         @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
       return walkDirectory(
           path, identifierFactory, new AsmJavaClassProvider(view.getBodyInterceptors()));
     }
 
     @Override
-    public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+    @Nonnull
+    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
         @Nonnull ClassType type, @Nonnull View<?> view) {
       return getClassSourceInternal(
           (JavaClassType) type, path, new AsmJavaClassProvider(view.getBodyInterceptors()));
@@ -250,19 +263,18 @@ public abstract class PathBasedAnalysisInputLocation
     }
 
     @Override
-    public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+    @Nonnull
+    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
         @Nonnull ClassType type, @Nonnull View<?> view) {
-      try {
-        FileSystem fs = fileSystemCache.get(path);
-        final Path archiveRoot = fs.getPath("/");
-        return getClassSourceInternal(
-            (JavaClassType) type,
-            archiveRoot,
-            new AsmJavaClassProvider(view.getBodyInterceptors()),
-            view);
-      } catch (ExecutionException e) {
-        throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
-      }
+      FileSystem fs = fileSystemCache.get(path);
+      final Path archiveRoot = fs.getPath("/");
+      return getClassSourceInternal(
+          (JavaClassType) type,
+          archiveRoot,
+          new AsmJavaClassProvider(view.getBodyInterceptors()),
+          view);
+    } catch (ExecutionException e) {
+      throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
     }
   }
 
@@ -298,7 +310,8 @@ public abstract class PathBasedAnalysisInputLocation
     }
 
     @Override
-    public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+    @Nonnull
+    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
         @Nonnull ClassType type, @Nonnull View<?> view) {
       try {
         FileSystem fs = fileSystemCache.get(path);
@@ -313,8 +326,10 @@ public abstract class PathBasedAnalysisInputLocation
     }
 
     @Override
-    public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
+    @Nonnull
+    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+        @Nonnull IdentifierFactory identifierFactory,
+        @Nonnull View<?> view) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path archiveRoot = fs.getPath("/");
         return walkDirectory(

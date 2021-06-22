@@ -28,15 +28,7 @@ package de.upb.swt.soot.core.jimple.visitor;
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JInvokeStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
 
 public interface StmtVisitor extends Visitor {
@@ -68,5 +60,5 @@ public interface StmtVisitor extends Visitor {
 
   void caseThrowStmt(JThrowStmt stmt);
 
-  void defaultCase(Object obj);
+  void defaultCaseStmt(Stmt stmt);
 }

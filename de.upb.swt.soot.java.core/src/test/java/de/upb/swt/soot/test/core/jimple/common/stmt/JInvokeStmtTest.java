@@ -144,7 +144,10 @@ public class JInvokeStmtTest {
     // JDynamicInvoke
     MethodSignature dmethodSig =
         dif.getMethodSignature(
-            "mylambda", SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME, "void", Collections.emptyList());
+            "mylambda",
+            JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME,
+            "void",
+            Collections.emptyList());
     MethodSignature bootstrapMethodSig =
         dif.getMethodSignature("run", "Runnable", "void", Collections.emptyList());
     List<Immediate> bootstrapArgs = Collections.emptyList();

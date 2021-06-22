@@ -79,14 +79,12 @@ import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.core.types.VoidType;
@@ -95,7 +93,6 @@ import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.jimple.basic.JavaLocal;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -183,7 +180,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Override
   @Nonnull
-  public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) throws IOException {
+  public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) {
     // FIXME: [AD] add real line number
     Position bodyPos = NoPositionInformation.getInstance();
     bodyBuilder.setPosition(bodyPos);
@@ -1328,7 +1325,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // create ref to actual method
       JavaClassType bclass =
           JavaIdentifierFactory.getInstance()
-              .getClassType(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME);
+              .getClassType(JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME);
 
       // Generate parameters & returnType & parameterTypes
       List<Type> types = AsmUtil.toJimpleSignatureDesc(insn.desc);
@@ -1501,10 +1498,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Operand[] out = frame.getOut();
     Operand opr;
     if (out == null) {
-      Type t = AsmUtil.toJimpleClassType(insn.desc);
+      Type t = AsmUtil.toJimpleSignature(insn.desc);
       Value val;
       if (op == NEW) {
-        val = Jimple.newNewExpr((ReferenceType) t);
+        val = Jimple.newNewExpr((ClassType) t);
       } else {
         Operand op1 = operandStack.popImmediate();
         Immediate v1 = (Immediate) op1.stackOrValue();

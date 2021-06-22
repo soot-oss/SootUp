@@ -40,7 +40,7 @@ public class SootMethodTest {
   @Test
   public void testCreateMethod() {
     Project project =
-        JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
+        JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
     View view = project.createOnDemandView();
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
@@ -99,7 +99,7 @@ public class SootMethodTest {
 
     assertTrue(
         mainClass
-            .getMethod(methodSignature)
+            .getMethod(methodSignature.getSubSignature())
             .orElseThrow(() -> new RuntimeException("Failed getting method " + methodSignature))
             .hasBody());
   }

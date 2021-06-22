@@ -27,7 +27,6 @@ import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
@@ -86,12 +85,14 @@ public final class JInstanceOfExpr implements Expr, Copyable {
   }
 
   @Override
+  @Nonnull
   public final List<Value> getUses() {
     List<Value> list = new ArrayList<>(op.getUses());
     list.add(op);
     return list;
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return PrimitiveType.getBoolean();
@@ -102,8 +103,8 @@ public final class JInstanceOfExpr implements Expr, Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseInstanceOfExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseInstanceOfExpr(this);
   }
 
   @Nonnull

@@ -24,9 +24,9 @@ package de.upb.swt.soot.java.core.views;
 
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
+import de.upb.swt.soot.core.inputlocation.EmptyClassLoadingOptions;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.AbstractView;
@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -57,12 +56,12 @@ public class JavaView extends AbstractView<JavaSootClass> {
   private volatile boolean isFullyResolved = false;
 
   @Nonnull
-  protected Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
+  protected Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
       classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link JavaView} class. */
-  public JavaView(@Nonnull Project<JavaView, JavaSootClass> project) {
-    this(project, analysisInputLocation -> null);
+  public JavaView(@Nonnull Project<? extends JavaSootClass, ? extends JavaView> project) {
+    this(project, analysisInputLocation -> EmptyClassLoadingOptions.Default);
   }
 
   /**
@@ -73,9 +72,9 @@ public class JavaView extends AbstractView<JavaSootClass> {
    *     options.
    */
   public JavaView(
-      @Nonnull Project<JavaView, JavaSootClass> project,
+      @Nonnull Project<? extends JavaSootClass, ? extends JavaView> project,
       @Nonnull
-          Function<AnalysisInputLocation<JavaSootClass>, ClassLoadingOptions>
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
@@ -107,42 +106,44 @@ public class JavaView extends AbstractView<JavaSootClass> {
   @Override
   @Nonnull
   public synchronized Optional<JavaSootClass> getClass(@Nonnull ClassType type) {
-    return getAbstractClass(type);
-  }
-
-  @Nonnull
-  Optional<JavaSootClass> getAbstractClass(@Nonnull ClassType type) {
     JavaSootClass cachedClass = cache.get(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
 
-    final List<AbstractClassSource<JavaSootClass>> foundClassSources =
-        getProject().getInputLocations().stream()
-            .map(location -> location.getClassSource(type, this))
-            .filter(Optional::isPresent)
-            .limit(2)
-            .map(Optional::get)
-            .collect(Collectors.toList());
-
-    if (foundClassSources.size() < 1) {
+    Optional<? extends AbstractClassSource<? extends JavaSootClass>> abstractClass =
+        getAbstractClass(type);
+    if (!abstractClass.isPresent()) {
       return Optional.empty();
-    } else if (foundClassSources.size() > 1) {
-      throw new ResolveException(
-          "Multiple class candidates for \""
-              + type
-              + "\" found in the given AnalysisInputLocations. Soot can't decide which AnalysisInputLocation it should refer to for this Type.\n"
-              + "The candidates are "
-              + foundClassSources.stream()
-                  .map(cs -> cs.getSourcePath().toString())
-                  .collect(Collectors.joining(",")),
-          foundClassSources.get(0).getSourcePath());
     }
-    return buildClassFrom(foundClassSources.get(0));
+
+    return buildClassFrom(abstractClass.get());
   }
 
   @Nonnull
-  private synchronized Optional<JavaSootClass> buildClassFrom(
+  protected Optional<? extends AbstractClassSource<? extends JavaSootClass>> getAbstractClass(
+      @Nonnull ClassType type) {
+    return getProject().getInputLocations().stream()
+        .map(
+            location -> {
+              ClassLoadingOptions classLoadingOptions =
+                  classLoadingOptionsSpecifier.apply(location);
+              if (classLoadingOptions != null) {
+                return location.getClassSource(type, this);
+              } else {
+                return location.getClassSource(type, this);
+              }
+            })
+        .filter(Optional::isPresent)
+        // like javas behaviour: if multiple matching Classes(ClassTypes) are found on the
+        // classpath the first is returned (see splitpackage)
+        .limit(1)
+        .map(Optional::get)
+        .findAny();
+  }
+
+  @Nonnull
+  protected synchronized Optional<JavaSootClass> buildClassFrom(
       AbstractClassSource<? extends JavaSootClass> classSource) {
     JavaSootClass theClass =
         cache.computeIfAbsent(

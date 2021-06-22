@@ -1,0 +1,3 @@
+# Stop ignoring .jars from within the jar directories
+!/*/jar/*.jar
+!/*/exploded_module/**/*.class

@@ -143,7 +143,7 @@ public class BodyUtils {
       @Nonnull Stmt oldStmt, @Nonnull Value oldUse, @Nonnull Value newUse) {
     ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(oldUse, newUse);
     oldStmt.accept(visitor);
-    return visitor.getNewStmt();
+    return visitor.getResult();
   }
 
   /**

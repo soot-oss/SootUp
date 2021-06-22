@@ -24,7 +24,6 @@ package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
@@ -38,16 +37,18 @@ public final class JShrExpr extends AbstractIntLongBinopExpr implements Copyable
     super(op1, op2);
   }
 
+  @Nonnull
   @Override
   public String getSymbol() {
     return " >> ";
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseShrExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseShrExpr(this);
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     Value op1 = getOp1();

@@ -9,6 +9,7 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.AbstractView;
+import de.upb.swt.soot.core.views.View;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   private volatile boolean isFullyResolved = false;
 
   @Nonnull
-  protected Function<AnalysisInputLocation<SootClass<?>>, ClassLoadingOptions>
+  protected Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
       classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link de.upb.swt.soot.java.core.views.JavaView} class. */
@@ -51,9 +52,9 @@ public class JimpleView extends AbstractView<SootClass<?>> {
    *     options.
    */
   public JimpleView(
-      @Nonnull Project<JimpleView, ?> project,
+      @Nonnull Project<SootClass<?>, ? extends View<SootClass<?>>> project,
       @Nonnull
-          Function<AnalysisInputLocation<SootClass<?>>, ClassLoadingOptions>
+          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
@@ -96,7 +97,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
       return Optional.of(cachedClass);
     }
 
-    final List<AbstractClassSource<SootClass<?>>> foundClassSources =
+    final List<? extends AbstractClassSource<? extends SootClass<?>>> foundClassSources =
         getProject().getInputLocations().stream()
             .map(location -> location.getClassSource(type, this))
             .filter(Optional::isPresent)
@@ -122,7 +123,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
 
   @Nonnull
   private synchronized Optional<SootClass<?>> buildClassFrom(
-      AbstractClassSource<SootClass<?>> classSource) {
+      AbstractClassSource<? extends SootClass<?>> classSource) {
     SootClass<?> theClass =
         cache.computeIfAbsent(
             classSource.getClassType(),

@@ -32,40 +32,37 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractBinopExpr implements Expr {
 
-  private final ValueBox op1Box;
-  private final ValueBox op2Box;
+  @Nonnull private final ValueBox op1Box;
+  @Nonnull private final ValueBox op2Box;
 
-  // new attributes : later if ValueBox is deleted, then add "final" to it.
-  private Value op1;
-  private Value op2;
-
-  AbstractBinopExpr(ValueBox op1Box, ValueBox op2Box) {
+  AbstractBinopExpr(@Nonnull ValueBox op1Box, @Nonnull ValueBox op2Box) {
     this.op1Box = op1Box;
     this.op2Box = op2Box;
-
-    // new attributes: later if ValueBox is deleted, then fit the constructor.
-    this.op1 = op1Box.getValue();
-    this.op2 = op2Box.getValue();
   }
 
+  @Nonnull
   public Value getOp1() {
     return op1Box.getValue();
   }
 
+  @Nonnull
   public Value getOp2() {
     return op2Box.getValue();
   }
 
+  @Nonnull
   public ValueBox getOp1Box() {
     return op1Box;
   }
 
+  @Nonnull
   public ValueBox getOp2Box() {
     return op2Box;
   }
 
   @Override
-  public final List<Value> getUses() {
+  @Nonnull
+  public List<Value> getUses() {
     List<Value> list = new ArrayList<>(op1Box.getValue().getUses());
     list.add(op1Box.getValue());
     list.addAll(op2Box.getValue().getUses());
@@ -74,7 +71,7 @@ public abstract class AbstractBinopExpr implements Expr {
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseAbstractBinopExpr(this, o);
   }
 
@@ -86,6 +83,7 @@ public abstract class AbstractBinopExpr implements Expr {
   }
 
   /** Returns the unique symbol for an operator. */
+  @Nonnull
   public abstract String getSymbol();
 
   @Override
@@ -104,7 +102,9 @@ public abstract class AbstractBinopExpr implements Expr {
     op2Box.toString(up);
   }
 
-  public abstract AbstractBinopExpr withOp1(Value value);
+  @Nonnull
+  public abstract AbstractBinopExpr withOp1(@Nonnull Value value);
 
-  public abstract AbstractBinopExpr withOp2(Value value);
+  @Nonnull
+  public abstract AbstractBinopExpr withOp2(@Nonnull Value value);
 }

@@ -1,0 +1,3 @@
+module modcommon {
+	exports pkgcommon;
+}

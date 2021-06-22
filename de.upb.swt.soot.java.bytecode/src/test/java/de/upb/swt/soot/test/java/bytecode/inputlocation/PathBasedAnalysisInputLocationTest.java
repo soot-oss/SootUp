@@ -26,6 +26,7 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.BodySource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.model.*;
@@ -44,6 +45,7 @@ import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
@@ -290,8 +292,6 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   }
 
   @Test
-  /** TODO [bh] this test was not doing anything, the class is not found */
-  @Ignore
   public void testWar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(war);
@@ -309,7 +309,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     // Create a project
     JavaProject p =
         JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(new JavaClassPathAnalysisInputLocation(warFile))
+            .addInputLocation(new JavaClassPathAnalysisInputLocation(warFile))
             .build();
 
     // Get the view
@@ -368,6 +368,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                     SootMethod.builder()
                         .withSource(
                             new BodySource() {
+                              @Nonnull
                               @Override
                               public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) {
                                 /* [ms] violating @Nonnull */
@@ -411,14 +412,18 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
   @Test
   public void testRuntimeJar() {
-    final JavaProject project =
-        JavaProject.builder(new JavaLanguage(Integer.MAX_VALUE))
-            .addClassPath(
-                PathBasedAnalysisInputLocation.createForClassContainer(
-                    Paths.get(System.getProperty("java.home") + "/lib/rt.jar")))
-            .build();
-    final JavaView v = project.createOnDemandView();
+    PathBasedAnalysisInputLocation pathBasedNamespace =
+        PathBasedAnalysisInputLocation.createForClassContainer(
+            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"));
 
+    final Collection<? extends AbstractClassSource> classSources =
+        pathBasedNamespace.getClassSources(getIdentifierFactory());
+
+    JavaView v =
+        JavaProject.builder(new JavaLanguage(8))
+            .addInputLocation(pathBasedNamespace)
+            .build()
+            .createOnDemandView();
     // test some standard jre classes
     runtimeContains(v, "Object", "java.lang");
     runtimeContains(v, "List", "java.util");

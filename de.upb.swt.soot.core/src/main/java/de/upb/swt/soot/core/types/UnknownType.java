@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.types;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.visitor.TypeVisitor;
 import javax.annotation.Nonnull;
 
 /**
@@ -44,5 +45,10 @@ public class UnknownType extends Type {
   @Nonnull
   public String toString() {
     return "unknown";
+  }
+
+  @Override
+  public void accept(@Nonnull TypeVisitor v) {
+    v.caseUnknownType();
   }
 }
