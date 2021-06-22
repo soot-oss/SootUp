@@ -67,7 +67,7 @@ public class DomianceFinderTest {
   @Test
   public void testImmediateDominator() {
     Body body = createBody();
-    BlockGraph graph = new BlockGraph(body);
+    BlockGraph graph = new BlockGraph(body.getStmtGraph());
     List<Block> blocks = graph.getBlocks();
     Block expectedBlock1 = blocks.get(0);
     Block expectedBlock2 = blocks.get(1);
@@ -88,7 +88,7 @@ public class DomianceFinderTest {
   @Test
   public void testDominanceFrontiers() {
     Body body = createBody();
-    BlockGraph graph = new BlockGraph(body);
+    BlockGraph graph = new BlockGraph(body.getStmtGraph());
     List<Block> blocks = graph.getBlocks();
     Block eblock1 = blocks.get(1);
     Block eblock2 = blocks.get(6);
