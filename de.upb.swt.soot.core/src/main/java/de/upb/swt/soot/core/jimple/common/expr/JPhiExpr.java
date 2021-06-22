@@ -38,12 +38,12 @@ import javax.annotation.Nonnull;
 /** @Zun Wang */
 public final class JPhiExpr implements Expr, Copyable {
 
-  private LinkedHashSet<Local> args = new LinkedHashSet<>();
+  private List<Local> args = new ArrayList<>();
   private Map<Block, Local> blockToArg = new HashMap<>();
   private Map<Local, Block> argToBlock = new HashMap<>();
   private Type type = null;
 
-  public JPhiExpr(@Nonnull LinkedHashSet<Local> args, @Nonnull Map<Local, Block> argToBlock) {
+  public JPhiExpr(@Nonnull List<Local> args, @Nonnull Map<Local, Block> argToBlock) {
     this.args = args;
 
     this.argToBlock = argToBlock;
@@ -77,7 +77,7 @@ public final class JPhiExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public Set<Local> getArgs() {
+  public List<Local> getArgs() {
     return this.args;
   }
 
@@ -202,12 +202,12 @@ public final class JPhiExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public JPhiExpr withArgs(@Nonnull LinkedHashSet<Local> args) {
+  public JPhiExpr withArgs(@Nonnull List<Local> args) {
     return new JPhiExpr(args, this.argToBlock);
   }
 
   @Nonnull
   public JPhiExpr withArgToBlockMap(@Nonnull Map<Local, Block> argToBlock) {
-    return new JPhiExpr((LinkedHashSet<Local>) getArgs(), argToBlock);
+    return new JPhiExpr(getArgs(), argToBlock);
   }
 }
