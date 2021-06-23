@@ -51,10 +51,10 @@ public abstract class SparkTestBase {
 
     JavaProject javaProject =
         JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(
+            .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))
-            .addClassPath(new JavaSourcePathAnalysisInputLocation(classPath))
+            .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
             .build();
 
     view = javaProject.createOnDemandView();

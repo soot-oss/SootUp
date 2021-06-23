@@ -50,10 +50,10 @@ public class RapidTypeAnalysisWithSparkTest extends CallGraphTestBase<RapidTypeA
 
     JavaProject javaProject =
         JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(
+            .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))
-            .addClassPath(new JavaSourcePathAnalysisInputLocation(pointerBenchClassPath))
+            .addInputLocation(new JavaSourcePathAnalysisInputLocation(pointerBenchClassPath))
             .build();
 
     JavaView view = javaProject.createOnDemandView();
