@@ -30,17 +30,6 @@ import de.upb.swt.soot.core.views.View;
 import javax.annotation.Nullable;
 
 public class MethodUtil {
-  // TODO: replace this with the method in View after merging to develop
-  @Nullable
-  public static SootMethod methodSignatureToMethod(
-      View<? extends SootClass> view, MethodSignature methodSignature) {
-    SootMethod currentMethodCandidate =
-        (SootMethod)
-            view.getClass(methodSignature.getDeclClassType())
-                .flatMap(c -> c.getMethod(methodSignature))
-                .orElse(null);
-    return currentMethodCandidate;
-  }
 
   public static CallGraphEdgeType findCallGraphEdgeType(AbstractInvokeExpr invokeExpr) {
     if (invokeExpr instanceof JVirtualInvokeExpr) {

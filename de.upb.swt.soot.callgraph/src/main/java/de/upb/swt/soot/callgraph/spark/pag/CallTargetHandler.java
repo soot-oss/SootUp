@@ -37,6 +37,8 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.Optional;
+
 public class CallTargetHandler {
 
   PointerAssignmentGraph pag;
@@ -52,12 +54,14 @@ public class CallTargetHandler {
     if (!edgeType.passesParameters()) {
       return;
     }
-    SootMethod sourceMethod = MethodUtil.methodSignatureToMethod(pag.getView(), source);
-    SootMethod targetMethod =
-        MethodUtil.methodSignatureToMethod(pag.getView(), target.getMethodSignature());
-    if (sourceMethod == null || targetMethod == null) {
+    Optional<? extends SootMethod> sourceMethodOp = pag.getView().getMethod(source); //MethodUtil.methodSignatureToMethod(pag.getView(), source);
+    Optional<? extends SootMethod> targetMethodOp = pag.getView().getMethod(target.getMethodSignature());
+    if (!sourceMethodOp.isPresent() || !targetMethodOp.isPresent()) {
       return;
     }
+    SootMethod sourceMethod = sourceMethodOp.get();
+    SootMethod targetMethod = targetMethodOp.get();
+
     IntraproceduralPointerAssignmentGraph srcIntraPag =
         IntraproceduralPointerAssignmentGraph.getInstance(pag, sourceMethod);
     IntraproceduralPointerAssignmentGraph tgtIntraPag =

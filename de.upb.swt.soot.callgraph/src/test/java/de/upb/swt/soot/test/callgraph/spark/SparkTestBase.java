@@ -74,7 +74,7 @@ public abstract class SparkTestBase {
 
     protected SootMethod getTargetMethod(MethodSignature targetMethodSig) {
         SootClass mainClass = (SootClass) view.getClass(mainClassSignature).get();
-        Optional<SootMethod> targetOpt = mainClass.getMethod(targetMethodSig);
+        Optional<SootMethod> targetOpt = mainClass.getMethod(targetMethodSig.getSubSignature());
         assertTrue(targetOpt.isPresent());
         return targetOpt.get();
     }
@@ -82,7 +82,7 @@ public abstract class SparkTestBase {
     protected SootMethod getTargetMethodFromClass(
             MethodSignature targetMethodSig, JavaClassType classSig) {
         SootClass mainClass = (SootClass) view.getClass(classSig).get();
-        Optional<SootMethod> targetOpt = mainClass.getMethod(targetMethodSig);
+        Optional<SootMethod> targetOpt = mainClass.getMethod(targetMethodSig.getSubSignature());
         assertTrue(targetOpt.isPresent());
         return targetOpt.get();
     }

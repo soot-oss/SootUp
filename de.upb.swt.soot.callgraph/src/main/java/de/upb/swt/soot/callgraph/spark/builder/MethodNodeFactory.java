@@ -50,6 +50,8 @@ import java.util.Optional;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
+
 public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
   private SootMethod method;
   private IntraproceduralPointerAssignmentGraph intraPag;
@@ -301,7 +303,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
 
   @Override
   public void caseInstanceFieldRef(JInstanceFieldRef ref) {
-    Optional<SootField> field = ref.getField(view);
+    Optional<? extends SootField> field = view.getField(ref.getFieldSignature());
     if (field.isPresent()) {
       if (pag.getSparkOptions().isFieldBased() || pag.getSparkOptions().isVta()) {
         setResult(pag.getOrCreateGlobalVariableNode(field.get(), field.get().getType()));
@@ -344,6 +346,8 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
     setResult(pag.getOrCreateAllocationNode(expr, expr.getType(), method));
   }
 
+
+
   @Override
   public void caseNewMultiArrayExpr(JNewMultiArrayExpr expr) {
     ArrayType type = (ArrayType) expr.getType();
@@ -364,9 +368,9 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
 
   @Override
   public void caseStaticFieldRef(JStaticFieldRef ref) {
-    Optional<SootField> field = ref.getField(view);
+    Optional<? extends SootField> field = view.getField(ref.getFieldSignature());
     if (field.isPresent()) {
-      setResult(pag.getOrCreateGlobalVariableNode(ref.getField(view), field.get().getType()));
+      setResult(pag.getOrCreateGlobalVariableNode(field.get(), field.get().getType()));
     } else {
       throw new RuntimeException("Field not present on ref:" + ref);
     }
@@ -391,6 +395,8 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
     setResult(caseThis());
   }
 
+
+
   public void caseNullConstant(NullConstant nullConstant) {
     setResult(null);
   }
@@ -403,10 +409,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
     setResult(classConstantLocal);
   }
 
-  @Override
-  public void defaultCase(Object obj) {
-    throw new RuntimeException("failed to handle " + obj);
-  }
+
 
   @Override
   public void caseStaticInvokeExpr(JStaticInvokeExpr expr) {
@@ -434,5 +437,24 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
     } else {
       throw new RuntimeException("Unhandled case of JVirtualInvokeExpr");
     }
+  }
+
+  @Override
+  public void defaultCaseValue(@Nonnull Value v) {
+    defaultCase(v);
+  }
+
+  @Override
+  public void defaultCaseRef(Ref ref) {
+    defaultCase(ref);
+  }
+
+  @Override
+  public void defaultCaseExpr(Expr expr) {
+    defaultCase(expr);
+  }
+
+  public void defaultCase(Object obj) {
+    throw new RuntimeException("failed to handle " + obj);
   }
 }

@@ -27,8 +27,6 @@ import javax.annotation.Nonnull;
 
 public class AbstractConstantVisitor<V> extends AbstractVisitor<V> implements ConstantVisitor {
 
-  V result;
-
   @Override
   public void caseBooleanConstant(@Nonnull BooleanConstant constant) {
     defaultCaseConstant(constant);
@@ -80,13 +78,7 @@ public class AbstractConstantVisitor<V> extends AbstractVisitor<V> implements Co
   }
 
   @Override
-  public void defaultCaseConstant(@Nonnull Constant constant) {}
+  public void defaultCaseConstant(@Nonnull Constant constant) {
 
-  public V getResult() {
-    return result;
-  }
-
-  public void setResult(V result) {
-    this.result = result;
   }
 }

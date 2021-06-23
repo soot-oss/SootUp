@@ -83,7 +83,7 @@ public class MiscEdgeHandler {
   public static List<Pair<Node, Node>> getMiscEdge(
       SootMethod method, GlobalNodeFactory globalNodeFactory, MethodNodeFactory methodNodeFactory) {
     MethodSignature signature = method.getSignature();
-    if (method.getSubSignature().equals(mainSubSignature)) {
+    if (method.getSignature().getSubSignature().equals(mainSubSignature)) {
       Pair<Node, Node> argToParam =
           new ImmutablePair<>(globalNodeFactory.caseArgv(), methodNodeFactory.caseParameter(0));
       return Arrays.asList(argToParam);

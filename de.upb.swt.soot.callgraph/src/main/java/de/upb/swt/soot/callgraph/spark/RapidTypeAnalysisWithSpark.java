@@ -82,7 +82,7 @@ public class RapidTypeAnalysisWithSpark extends AbstractCallGraphAlgorithm {
 
     SootMethod targetMethod =
         view.getClass(targetMethodSignature.getDeclClassType())
-            .flatMap(clazz -> clazz.getMethod(targetMethodSignature))
+            .flatMap(clazz -> clazz.getMethod(targetMethodSignature.getSubSignature()))
             .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
 
     if (Modifier.isStatic(targetMethod.getModifiers())

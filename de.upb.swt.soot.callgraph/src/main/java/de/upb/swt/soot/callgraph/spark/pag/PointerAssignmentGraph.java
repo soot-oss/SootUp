@@ -126,8 +126,9 @@ public class PointerAssignmentGraph {
     Iterator<Pair<MethodSignature, CalleeMethodSignature>> iter = getCallEdges().iterator();
     while (iter.hasNext()) {
       Pair<MethodSignature, CalleeMethodSignature> edge = iter.next();
+
       SootMethod tgt =
-          MethodUtil.methodSignatureToMethod(view, edge.getValue().getMethodSignature());
+              view.getMethod(edge.getValue().getMethodSignature()).orElse(null);
       if (tgt != null && (tgt.isConcrete() || tgt.isNative())) {
         IntraproceduralPointerAssignmentGraph intraPAG =
             IntraproceduralPointerAssignmentGraph.getInstance(this, tgt);
@@ -142,7 +143,7 @@ public class PointerAssignmentGraph {
     Set<MethodSignature> methodSigs = callGraph.getMethodSignatures();
     Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = new HashSet<>();
     for (MethodSignature caller : methodSigs) {
-      SootMethod method = MethodUtil.methodSignatureToMethod(view, caller);
+      SootMethod method = view.getMethod(caller).orElse(null);
       if (method != null && method.hasBody()) {
         for (Stmt s : method.getBody().getStmtGraph().nodes()) {
           if (s.containsInvokeExpr()) {
