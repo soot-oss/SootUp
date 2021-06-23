@@ -127,8 +127,7 @@ public class PointerAssignmentGraph {
     while (iter.hasNext()) {
       Pair<MethodSignature, CalleeMethodSignature> edge = iter.next();
 
-      SootMethod tgt =
-              view.getMethod(edge.getValue().getMethodSignature()).orElse(null);
+      SootMethod tgt = view.getMethod(edge.getValue().getMethodSignature()).orElse(null);
       if (tgt != null && (tgt.isConcrete() || tgt.isNative())) {
         IntraproceduralPointerAssignmentGraph intraPAG =
             IntraproceduralPointerAssignmentGraph.getInstance(this, tgt);

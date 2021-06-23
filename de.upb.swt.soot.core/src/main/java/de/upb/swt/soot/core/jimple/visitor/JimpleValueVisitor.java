@@ -1,4 +1,3 @@
-
 package de.upb.swt.soot.core.jimple.visitor;
 
 /*-
@@ -26,5 +25,5 @@ package de.upb.swt.soot.core.jimple.visitor;
 import de.upb.swt.soot.core.jimple.basic.Local;
 
 public interface JimpleValueVisitor extends ValueVisitor, ConstantVisitor, ExprVisitor {
-    void caseLocal(Local jimpleLocal);
+  void caseLocal(Local jimpleLocal);
 }

@@ -1,7 +1,6 @@
 package de.upb.swt.soot.test.callgraph.spark;
 
 import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertFalse;
 
 import com.google.common.collect.Sets;
@@ -12,13 +11,11 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-
 import java.util.*;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class PointerBenchCollectionsTest extends SparkTestBase {
-
 
   @Test
   public void testArray1() {
@@ -169,5 +166,4 @@ public class PointerBenchCollectionsTest extends SparkTestBase {
     // a and list must not point to a common object
     assertTrue(Sets.intersection(aPointsTo, setPointsTo).isEmpty());
   }
-
 }

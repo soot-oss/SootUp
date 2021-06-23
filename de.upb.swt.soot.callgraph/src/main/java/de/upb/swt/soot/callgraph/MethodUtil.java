@@ -23,11 +23,6 @@ package de.upb.swt.soot.callgraph;
  */
 import de.upb.swt.soot.callgraph.spark.pag.CallGraphEdgeType;
 import de.upb.swt.soot.core.jimple.common.expr.*;
-import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.views.View;
-import javax.annotation.Nullable;
 
 public class MethodUtil {
 

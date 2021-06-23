@@ -7,7 +7,6 @@ import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-
 import java.util.*;
 import org.junit.Test;
 
@@ -209,5 +208,4 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
     // a and b must point to a common object
     assertFalse(Sets.intersection(aPointsTo, bPointsTo).isEmpty());
   }
-
 }

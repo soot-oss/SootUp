@@ -21,7 +21,6 @@ package de.upb.swt.soot.callgraph.spark.pag;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.callgraph.MethodUtil;
 import de.upb.swt.soot.callgraph.spark.builder.MethodNodeFactory;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -33,11 +32,10 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ReferenceType;
+import java.util.Optional;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.Optional;
 
 public class CallTargetHandler {
 
@@ -54,8 +52,11 @@ public class CallTargetHandler {
     if (!edgeType.passesParameters()) {
       return;
     }
-    Optional<? extends SootMethod> sourceMethodOp = pag.getView().getMethod(source); //MethodUtil.methodSignatureToMethod(pag.getView(), source);
-    Optional<? extends SootMethod> targetMethodOp = pag.getView().getMethod(target.getMethodSignature());
+    Optional<? extends SootMethod> sourceMethodOp =
+        pag.getView()
+            .getMethod(source); // MethodUtil.methodSignatureToMethod(pag.getView(), source);
+    Optional<? extends SootMethod> targetMethodOp =
+        pag.getView().getMethod(target.getMethodSignature());
     if (!sourceMethodOp.isPresent() || !targetMethodOp.isPresent()) {
       return;
     }

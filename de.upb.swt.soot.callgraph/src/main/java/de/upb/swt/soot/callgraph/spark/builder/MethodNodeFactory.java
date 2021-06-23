@@ -47,10 +47,9 @@ import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Optional;
+import javax.annotation.Nonnull;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-
-import javax.annotation.Nonnull;
 
 public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
   private SootMethod method;
@@ -346,8 +345,6 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
     setResult(pag.getOrCreateAllocationNode(expr, expr.getType(), method));
   }
 
-
-
   @Override
   public void caseNewMultiArrayExpr(JNewMultiArrayExpr expr) {
     ArrayType type = (ArrayType) expr.getType();
@@ -395,8 +392,6 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
     setResult(caseThis());
   }
 
-
-
   public void caseNullConstant(NullConstant nullConstant) {
     setResult(null);
   }
@@ -408,8 +403,6 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
     pag.addEdge(classConstant, classConstantLocal);
     setResult(classConstantLocal);
   }
-
-
 
   @Override
   public void caseStaticInvokeExpr(JStaticInvokeExpr expr) {

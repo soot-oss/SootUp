@@ -8,7 +8,6 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-
 import java.util.*;
 import org.junit.Test;
 
@@ -392,5 +391,4 @@ public class PointerBenchBasicTest extends SparkTestBase {
     // node and q must not point to same set of objects
     assertTrue(Sets.intersection(nodePointsTo, qPointsTo).isEmpty());
   }
-  
 }

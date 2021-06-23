@@ -10,7 +10,6 @@ import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-
 import java.util.*;
 import org.junit.Test;
 
@@ -219,5 +218,4 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
     // a.f and y must point to  common object
     assertTrue(yPointsTo.containsAll(aDotFPointsTo));
   }
-
 }

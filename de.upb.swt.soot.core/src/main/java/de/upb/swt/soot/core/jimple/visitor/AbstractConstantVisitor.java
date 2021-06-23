@@ -78,7 +78,5 @@ public class AbstractConstantVisitor<V> extends AbstractVisitor<V> implements Co
   }
 
   @Override
-  public void defaultCaseConstant(@Nonnull Constant constant) {
-
-  }
+  public void defaultCaseConstant(@Nonnull Constant constant) {}
 }
