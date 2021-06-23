@@ -18,6 +18,9 @@ import org.junit.Test;
 public class PointerBenchCollectionsTest extends SparkTestBase {
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     A[] array = new A[] {};
@@ -34,6 +37,7 @@ public class PointerBenchCollectionsTest extends SparkTestBase {
    * expected:
    * - a and array do not point to same object
    * - b and c point to same object
+   * </pre>
    */
   @Test
   public void testArray1() {
@@ -74,6 +78,9 @@ public class PointerBenchCollectionsTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     ArrayList<A> list = new ArrayList<A>();
@@ -90,6 +97,7 @@ public class PointerBenchCollectionsTest extends SparkTestBase {
    * expected:
    * - a and list do not point to same object
    * - b and c point to same object
+   * </pre>
    */
   @Ignore
   public void testList1() {
@@ -122,6 +130,9 @@ public class PointerBenchCollectionsTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     LinkedList<A> list = new LinkedList<A>();
@@ -138,6 +149,7 @@ public class PointerBenchCollectionsTest extends SparkTestBase {
    * expected:
    * - a and list do not point to same object
    * - b and c point to same object
+   * </pre>
    */
   @Ignore
   public void testList2() {
@@ -170,6 +182,9 @@ public class PointerBenchCollectionsTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     HashMap<String, A> map = new HashMap<String, A>();
@@ -186,6 +201,7 @@ public class PointerBenchCollectionsTest extends SparkTestBase {
    * expected:
    * - a and map do not point to same object
    * - b and c point to same object
+   * </pre>
    */
   @Ignore
   public void testMap1() {
@@ -218,6 +234,9 @@ public class PointerBenchCollectionsTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     HashSet<A> set = new HashSet<A>();
@@ -238,6 +257,7 @@ public class PointerBenchCollectionsTest extends SparkTestBase {
    *
    * expected:
    * - a,b and set do not point to same object
+   * </pre>
    */
   @Ignore
   public void testSet1() {

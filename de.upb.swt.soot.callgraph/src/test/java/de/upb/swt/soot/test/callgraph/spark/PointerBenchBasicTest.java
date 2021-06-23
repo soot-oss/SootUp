@@ -11,10 +11,10 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
 import org.junit.Test;
 
-
 public class PointerBenchBasicTest extends SparkTestBase {
 
   /**
+   * <pre>
    * java code:
    * main(){
    *     A a = new A();
@@ -52,6 +52,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
   }
 
   /**
+   * <pre>
    * java code:
    * main(){
    *     int i = 0;
@@ -106,6 +107,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
   }
 
   /**
+   * <pre>
    * java code:
    * main(){
    *     A a = new A();
@@ -148,6 +150,9 @@ public class PointerBenchBasicTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main(){
    *     A a = new A();
@@ -166,6 +171,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
    *
    * expected:
    * - b and x point to same object
+   * </pre>
    */
   @Test
   public void testParameter2() {
@@ -193,6 +199,9 @@ public class PointerBenchBasicTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     A a = new A();
@@ -215,6 +224,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
    * expected:
    * - b.f does not point to the same object as a and b
    * - x and y point to same objet
+   * </pre>
    */
   @Test
   public void testInterprocedural1() {
@@ -249,6 +259,9 @@ public class PointerBenchBasicTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     A a = new A();
@@ -274,6 +287,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
    * expected:
    * - b.f does not point to the same object as a, b, and m2
    * - x and y point to same objet
+   * </pre>
    */
   @Test
   public void testInterprocedural2() {
@@ -314,6 +328,9 @@ public class PointerBenchBasicTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     A a = new A();
@@ -328,6 +345,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
    *
    * expected:
    * - a and b points to same object
+   * </pre>
    */
   @Test
   public void testReturnValue1() {
@@ -350,6 +368,9 @@ public class PointerBenchBasicTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     A a = new A();
@@ -368,6 +389,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
    *
    * expected:
    * - a and b points to same object
+   * </pre>
    */
   @Test
   public void testReturnValue2() {
@@ -396,6 +418,9 @@ public class PointerBenchBasicTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     A a = new A();
@@ -415,7 +440,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
    *
    * expected:
    * - a, b and y does not point to same object
-   *
+   * </pre>
    */
   @Test
   public void testReturnValue3() {
@@ -462,6 +487,9 @@ public class PointerBenchBasicTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * class N {
    *     public String value = "";
@@ -491,6 +519,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
    *
    * expected:
    * - node and o,p,q,i do not point to same object
+   * </pre>
    */
   @Test
   public void testLoops1() {
@@ -527,6 +556,9 @@ public class PointerBenchBasicTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * class N {
    *     public String value = "";
@@ -556,6 +588,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
    * expected:
    *  - node and o,p,i do not point to same object
    *  - node.next and o point to same object
+   * </pre>
    */
   @Test
   public void testLoops2() {
@@ -601,6 +634,9 @@ public class PointerBenchBasicTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * class N {
    *     public String value;
@@ -639,6 +675,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
    * expected:
    * - node and n point to same object
    * - node and o,p,q do not point to same object
+   * </pre>
    */
   @Test
   public void testRecursion1() {

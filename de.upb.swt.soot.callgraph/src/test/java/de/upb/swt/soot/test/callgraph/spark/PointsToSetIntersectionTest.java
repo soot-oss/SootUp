@@ -19,17 +19,20 @@ import org.junit.experimental.categories.Category;
 public class PointsToSetIntersectionTest extends SparkTestBase {
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * go() {
    * 	Container c1 = new Container();
    * 	Item i1 = new Item();
    * 	c1.setItem(i1);
    *
-   *	Container c2 = new Container();
-   *	Item i2 = new Item();
-   *	c2.setItem(i2);
+   *    Container c2 = new Container();
+   *    Item i2 = new Item();
+   *    c2.setItem(i2);
    *
-   *	Container c3 = c2;
+   *    Container c3 = c2;
    * }
    *
    * description:
@@ -39,6 +42,8 @@ public class PointsToSetIntersectionTest extends SparkTestBase {
    * - c1 and c2 point to same object
    * - c1 and c3 point to same object
    * - c2 and c3 do not point to same object
+   *
+   * </pre>
    */
   @Test
   public void testLocalsIntersect() {
@@ -65,17 +70,20 @@ public class PointsToSetIntersectionTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * go() {
    * 	Container c1 = new Container();
    * 	Item i1 = new Item();
    * 	c1.setItem(i1);
    *
-   *	Container c2 = new Container();
-   *	Item i2 = new Item();
-   *	c2.setItem(i2);
+   *    Container c2 = new Container();
+   *    Item i2 = new Item();
+   *    c2.setItem(i2);
    *
-   *	Container c3 = c2;
+   *    Container c3 = c2;
    * }
    *
    * description:
@@ -85,6 +93,7 @@ public class PointsToSetIntersectionTest extends SparkTestBase {
    * - c1.item and c2.item point to same object
    * - c1.item and c3.item point to same object
    * - c2.item and c3.item point to same object
+   * </pre>
    */
   @Test
   public void testFieldsIntersect() {

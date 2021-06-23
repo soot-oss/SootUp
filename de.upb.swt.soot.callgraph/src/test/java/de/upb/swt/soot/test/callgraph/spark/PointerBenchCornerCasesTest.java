@@ -16,6 +16,9 @@ import org.junit.Test;
 public class PointerBenchCornerCasesTest extends SparkTestBase {
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     A a = new A();
@@ -29,6 +32,7 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
    * expected:
    * - a and b do not point to same object
    * - a.f and b.f point to same object
+   * </pre>
    */
   @Test
   public void testAccessPath1() {
@@ -60,6 +64,9 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     B b1 = new B();
@@ -78,6 +85,7 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
    * expected:
    * - b2 and b4 point to same object
    * - b2 and a1,a2 do not point to same object
+   * </pre>
    */
   @Test
   public void testObjectSensitivity1() {
@@ -118,6 +126,9 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     B b1 = new B();
@@ -135,6 +146,7 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
    * expected:
    * - b2 and b4 point to same object
    * - b2 and a do not point to same object
+   * </pre>
    */
   @Test
   public void testObjectSensitivity2() {
@@ -169,6 +181,9 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main(String[] args) {
    *     B b = new B();
@@ -188,6 +203,7 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
    * expected:
    * - d and b point to same object
    * - b, a and c do not point to same object
+   * </pre>
    */
   @Test
   public void testFieldSensitivity1() {
@@ -218,6 +234,9 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * test() {
    *     B b = new B();
@@ -237,6 +256,7 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
    * expected:
    * - d and b point to same object
    * - b, a and c do not point to same object
+   * </pre>
    */
   @Test
   public void testFieldSensitivity2() {
@@ -267,6 +287,9 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     A a = new A();
@@ -282,6 +305,7 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
    *
    * expected:
    * - x and y must point to same object
+   * </pre>
    */
   @Test
   public void testStrongUpdate1() {
@@ -310,6 +334,9 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     A a = new A();
@@ -324,6 +351,7 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
    *
    * expected:
    * - a.f and y must point to same
+   * </pre>
    */
   @Test
   public void testStrongUpdate2() {

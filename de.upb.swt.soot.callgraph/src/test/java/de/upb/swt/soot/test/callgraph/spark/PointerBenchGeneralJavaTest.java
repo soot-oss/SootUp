@@ -13,6 +13,9 @@ import org.junit.Test;
 public class PointerBenchGeneralJavaTest extends SparkTestBase {
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * static A a;
    *
@@ -27,7 +30,7 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
    *
    * expected:
    * - b and c point to same object
-   *
+   * </pre>
    */
   @Test
   public void testStaticVariables1() {
@@ -54,6 +57,9 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     A a = new A();
@@ -71,6 +77,7 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
    * expected:
    * - b and c point same object
    * - a,g,h do not point to same object
+   * </pre>
    */
   @Test
   public void testInterface1() {
@@ -109,6 +116,9 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     A a = new A();
@@ -126,6 +136,7 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
    * - b and h point to same object
    * - a and b point to same object
    * - a,p and h do not point to same object
+   * </pre>
    */
   @Test
   public void testSuperClasses1() {
@@ -160,6 +171,9 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * class InnerClass {
    *     private A a;
@@ -189,6 +203,7 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
    * - b and h point to same object
    * - a and b point to same object
    * - i,a,h do do not point to same object
+   * </pre>
    */
   @Test
   public void testOuterClasses1() {
@@ -224,6 +239,9 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    *     A h = new A();
@@ -237,6 +255,7 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
    * expected:
    * - a and b point to same object
    * - b and h do not point to same object
+   * </pre>
    */
   @Test
   public void testNull1() {
@@ -265,6 +284,9 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main() {
    * 		A a = new A();
@@ -278,6 +300,7 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
    * expected:
    * - a and b point to same object
    * - x do not point to any object
+   * </pre>
    */
   @Test
   public void testNull2() {
@@ -306,6 +329,9 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
   }
 
   /**
+   *
+   *
+   * <pre>
    * java code:
    * main(String[] args) {
    *     A a = new A();
@@ -324,6 +350,7 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
    *
    * expected:
    * - a and b point to same object
+   * </pre>
    */
   @Test
   public void testException1() {
@@ -344,5 +371,4 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
     // a and b must point to a common object
     assertFalse(Sets.intersection(aPointsTo, bPointsTo).isEmpty());
   }
-
 }
