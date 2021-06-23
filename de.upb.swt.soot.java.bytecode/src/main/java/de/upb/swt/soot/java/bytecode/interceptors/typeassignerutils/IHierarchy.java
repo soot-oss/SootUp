@@ -25,14 +25,11 @@ package de.upb.swt.soot.java.bytecode.interceptors.typeassignerutils;
  */
 
 import de.upb.swt.soot.core.types.Type;
-
 import java.util.Collection;
 
-/**
- * @author Marcus Nachtigall
- */
+/** @author Marcus Nachtigall */
 public interface IHierarchy {
-    Collection<Type> lcas(Type a, Type b);
+  Collection<Type> lcas(Type a, Type b);
 
-    boolean ancestor(Type ancestor, Type child);
+  boolean ancestor(Type ancestor, Type child);
 }

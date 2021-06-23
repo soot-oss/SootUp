@@ -25,7 +25,6 @@ package de.upb.swt.soot.java.bytecode.interceptors.typeassignerutils;
  */
 
 import de.upb.swt.soot.core.jimple.basic.Local;
-
 import java.util.List;
 
 /**
@@ -35,27 +34,27 @@ import java.util.List;
  */
 public interface ITypingStrategy {
 
-    /**
-     * Creates a new typing class instance with initialized bottom types for the given locals
-     *
-     * @param locals the locals
-     * @return the created typing
-     */
-    public Typing createTyping(List<Local> locals);
+  /**
+   * Creates a new typing class instance with initialized bottom types for the given locals
+   *
+   * @param locals the locals
+   * @return the created typing
+   */
+  public Typing createTyping(List<Local> locals);
 
-    /**
-     * Creates a new typing class as a copy from a given class
-     *
-     * @param typing the original typing used as a copy
-     * @return the newly created typing
-     */
-    public Typing createTyping(Typing typing);
+  /**
+   * Creates a new typing class as a copy from a given class
+   *
+   * @param typing the original typing used as a copy
+   * @return the newly created typing
+   */
+  public Typing createTyping(Typing typing);
 
-    /**
-     * Minimize the given typing list using the hierarchy
-     *
-     * @param typings the typing list
-     * @param hierarchy the hierarchy
-     */
-    public void minimize(List<Typing> typings, IHierarchy hierarchy);
+  /**
+   * Minimize the given typing list using the hierarchy
+   *
+   * @param typings the typing list
+   * @param hierarchy the hierarchy
+   */
+  public void minimize(List<Typing> typings, IHierarchy hierarchy);
 }

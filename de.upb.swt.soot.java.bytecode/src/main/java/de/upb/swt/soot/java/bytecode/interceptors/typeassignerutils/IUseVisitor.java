@@ -28,12 +28,10 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.Type;
 
-/**
- * @author Marcus Nachtigall
- */
+/** @author Marcus Nachtigall */
 public interface IUseVisitor {
 
-    Value visit(Value op, Type useType, Stmt stmt);
+  Value visit(Value op, Type useType, Stmt stmt);
 
-    boolean finish();
+  boolean finish();
 }

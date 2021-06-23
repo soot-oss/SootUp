@@ -27,47 +27,44 @@ package de.upb.swt.soot.java.bytecode.interceptors.typeassignerutils;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
-
 import java.util.Collection;
 import java.util.HashMap;
 
-/**
- * @author Marcus Nachtigall
- */
+/** @author Marcus Nachtigall */
 public class Typing {
-    protected HashMap<Local, Type> map;
+  protected HashMap<Local, Type> map;
 
-    public Typing(Collection<Local> vs) {
-        map = new HashMap<>(vs.size());
-        final UnknownType bottomType = UnknownType.getInstance();
-        for (Local v : vs) {
-            this.map.put(v, bottomType);
-        }
+  public Typing(Collection<Local> vs) {
+    map = new HashMap<>(vs.size());
+    final UnknownType bottomType = UnknownType.getInstance();
+    for (Local v : vs) {
+      this.map.put(v, bottomType);
     }
+  }
 
-    public Typing(Typing tg) {
-        this.map = new HashMap<>(tg.map);
-    }
+  public Typing(Typing tg) {
+    this.map = new HashMap<>(tg.map);
+  }
 
-    public Type get(Local v) {
-        return this.map.get(v);
-    }
+  public Type get(Local v) {
+    return this.map.get(v);
+  }
 
-    public Type set(Local v, Type t) {
-        return this.map.put(v, t);
-    }
+  public Type set(Local v, Type t) {
+    return this.map.put(v, t);
+  }
 
-    @Override
-    public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append('{');
-        for (Local v : this.map.keySet()) {
-            stringBuffer.append(v);
-            stringBuffer.append(':');
-            stringBuffer.append(this.get(v));
-            stringBuffer.append(',');
-        }
-        stringBuffer.append('}');
-        return stringBuffer.toString();
+  @Override
+  public String toString() {
+    StringBuffer stringBuffer = new StringBuffer();
+    stringBuffer.append('{');
+    for (Local v : this.map.keySet()) {
+      stringBuffer.append(v);
+      stringBuffer.append(':');
+      stringBuffer.append(this.get(v));
+      stringBuffer.append(',');
     }
+    stringBuffer.append('}');
+    return stringBuffer.toString();
+  }
 }

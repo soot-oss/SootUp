@@ -110,25 +110,34 @@ public class PrimitiveType extends Type {
         || t.equals(PrimitiveType.getBoolean());
   }
 
-  public static boolean isInstanceOfType(Type type, String name){
-    if(!(type instanceof PrimitiveType)){
+  public static boolean isInstanceOfType(Type type, String name) {
+    if (!(type instanceof PrimitiveType)) {
       return false;
     } else {
-      if(BYTE_TYPE.getName().equals(name) && ((PrimitiveType) type).getName().equals(BYTE_TYPE.getName())){
+      if (BYTE_TYPE.getName().equals(name)
+          && ((PrimitiveType) type).getName().equals(BYTE_TYPE.getName())) {
         return true;
-      } else if(SHORT_TYPE.getName().equals(name) && ((PrimitiveType) type).getName().equals(SHORT_TYPE.getName())){
+      } else if (SHORT_TYPE.getName().equals(name)
+          && ((PrimitiveType) type).getName().equals(SHORT_TYPE.getName())) {
         return true;
-      } else if(INT_TYPE.getName().equals(name) && ((PrimitiveType) type).getName().equals(INT_TYPE.getName())){
+      } else if (INT_TYPE.getName().equals(name)
+          && ((PrimitiveType) type).getName().equals(INT_TYPE.getName())) {
         return true;
-      } else if(LONG_TYPE.getName().equals(name) && ((PrimitiveType) type).getName().equals(LONG_TYPE.getName())){
+      } else if (LONG_TYPE.getName().equals(name)
+          && ((PrimitiveType) type).getName().equals(LONG_TYPE.getName())) {
         return true;
-      } else if(FLOAT_TYPE.getName().equals(name) && ((PrimitiveType) type).getName().equals(FLOAT_TYPE.getName())){
+      } else if (FLOAT_TYPE.getName().equals(name)
+          && ((PrimitiveType) type).getName().equals(FLOAT_TYPE.getName())) {
         return true;
-      } else if (DOUBLE_TYPE.getName().equals(name) && ((PrimitiveType) type).getName().equals(DOUBLE_TYPE.getName())){
+      } else if (DOUBLE_TYPE.getName().equals(name)
+          && ((PrimitiveType) type).getName().equals(DOUBLE_TYPE.getName())) {
         return true;
-      } else if (CHAR_TYPE.getName().equals(name) && ((PrimitiveType) type).getName().equals(CHAR_TYPE.getName())){
+      } else if (CHAR_TYPE.getName().equals(name)
+          && ((PrimitiveType) type).getName().equals(CHAR_TYPE.getName())) {
         return true;
-      } else return BOOLEAN_TYPE.getName().equals(name) && ((PrimitiveType) type).getName().equals(BOOLEAN_TYPE.getName());
+      } else
+        return BOOLEAN_TYPE.getName().equals(name)
+            && ((PrimitiveType) type).getName().equals(BOOLEAN_TYPE.getName());
     }
   }
 

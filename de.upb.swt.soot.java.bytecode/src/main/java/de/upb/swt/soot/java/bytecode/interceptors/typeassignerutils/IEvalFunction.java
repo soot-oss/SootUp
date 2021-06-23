@@ -27,12 +27,9 @@ package de.upb.swt.soot.java.bytecode.interceptors.typeassignerutils;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.Type;
-
 import java.util.Collection;
 
-/**
- * @author Marcus Nachtigall
- */
+/** @author Marcus Nachtigall */
 public interface IEvalFunction {
-    Collection<Type> eval(Typing tg, Value expr, Stmt stmt);
+  Collection<Type> eval(Typing tg, Value expr, Stmt stmt);
 }
