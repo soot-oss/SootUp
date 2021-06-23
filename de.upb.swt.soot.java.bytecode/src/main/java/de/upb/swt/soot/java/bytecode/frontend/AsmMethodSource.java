@@ -184,17 +184,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Override
   @Nonnull
   public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) {
-    // FIXME: [AD] add real line number
-    Position bodyPos = NoPositionInformation.getInstance();
-    bodyBuilder.setPosition(bodyPos);
-    // TODO: [ms] as we always need modifiers: dont memoize them +more usage
     bodyBuilder.setModifiers(AsmUtil.getModifiers(access));
 
     /* initialize */
     int nrInsn = instructions.size();
     nextLocal = maxLocals;
     locals =
-        new ArrayBackedList<>(
+        new NonIndexOutofBoundsArrayList<>(
             maxLocals
                 + Math.max((maxLocals / 2), 5)); // [ms] initial capacity is just roughly estimated.
     stmtsThatBranchToLabel = LinkedListMultimap.create();
@@ -219,7 +215,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     buildStmts();
     buildTraps();
 
-    /* clean up */
+    // FIXME: [AD] add real line number
+    Position bodyPos = NoPositionInformation.getInstance();
+    bodyBuilder.setPosition(bodyPos);
+
+    /* clean up references for GC */
     locals = null;
     stmtsThatBranchToLabel = null;
     InsnToStmt = null;
@@ -240,7 +240,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Override
   public Object resolveDefaultValue() {
-
     return resolveAnnotationsInDefaultValue(this.annotationDefault);
   }
 
