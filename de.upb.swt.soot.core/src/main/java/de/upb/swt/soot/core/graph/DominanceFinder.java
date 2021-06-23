@@ -105,6 +105,17 @@ public class DominanceFinder {
   }
 
   @Nonnull
+  public void replaceBlock(@Nonnull Block newBlock, Block oldBlock) {
+    if (!blockToIdx.keySet().contains(oldBlock)) {
+      throw new RuntimeException(
+          "The given block: " + oldBlock.toString() + " is not in BlockGraph!");
+    }
+    this.blockToIdx.put(newBlock, this.blockToIdx.get(oldBlock));
+    this.blockToIdx.remove(oldBlock);
+    this.idxToBlock.put(this.blockToIdx.get(newBlock), newBlock);
+  }
+
+  @Nonnull
   public Block getImmediateDominator(@Nonnull Block block) {
     if (!blockToIdx.keySet().contains(block)) {
       throw new RuntimeException("The given block: " + block.toString() + " is not in BlockGraph!");
@@ -115,12 +126,12 @@ public class DominanceFinder {
   }
 
   @Nonnull
-  public List<Block> getDominanceFrontiers(@Nonnull Block block) {
+  public Set<Block> getDominanceFrontiers(@Nonnull Block block) {
     if (!blockToIdx.keySet().contains(block)) {
       throw new RuntimeException("The given block: " + block.toString() + " is not in BlockGraph!");
     }
     int idx = this.blockToIdx.get(block);
-    List<Block> dFs = new ArrayList<>();
+    Set<Block> dFs = new HashSet<>();
     ArrayList<Integer> dFs_idx = this.domFrontiers[idx];
     for (Integer i : dFs_idx) {
       dFs.add(this.idxToBlock.get(i));

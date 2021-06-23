@@ -1,11 +1,6 @@
-package de.upb.swt.soot.test.core.model;
-
-import static org.junit.Assert.*;
+package de.upb.swt.soot.test.java.bytecode.interceptors;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.graph.Block;
-import de.upb.swt.soot.core.graph.BlockGraph;
-import de.upb.swt.soot.core.graph.DominanceFinder;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
@@ -17,16 +12,19 @@ import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
+import de.upb.swt.soot.java.bytecode.interceptors.StaticSingleAssigmentFormer;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.*;
+import java.util.Collections;
+import java.util.Set;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
-public class DomianceFinderTest {
+public class StaticSingleAssignmentFormerTest {
+
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
@@ -65,49 +63,128 @@ public class DomianceFinderTest {
   Stmt stmt11 = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
   @Test
-  public void testImmediateDominator() {
-    Body body = createBody();
-    BlockGraph graph = new BlockGraph(body.getStmtGraph());
-    List<Block> blocks = graph.getBlocks();
-    Block expectedBlock1 = blocks.get(0);
-    Block expectedBlock2 = blocks.get(1);
-    Block expectedBlock3 = blocks.get(2);
-    DominanceFinder df = new DominanceFinder(graph);
+  public void testSSA() {
+    StaticSingleAssigmentFormer ssa = new StaticSingleAssigmentFormer();
+    Body.BodyBuilder builder = new Body.BodyBuilder(createBody(), Collections.emptySet());
+    ssa.interceptBody(builder);
 
-    for (int i = 0; i < graph.getBlocks().size(); i++) {
-      if (i == 0 || i == 1) {
-        assertTrue(df.getImmediateDominator(blocks.get(i)) == expectedBlock1);
-      } else if (i == 2 || i == 3) {
-        assertTrue(df.getImmediateDominator(blocks.get(i)) == expectedBlock2);
-      } else {
-        assertTrue(df.getImmediateDominator(blocks.get(i)) == expectedBlock3);
-      }
-    }
+    // expected Blocks in BlockGraph
+    /*Block eblock1 = new Block(startingStmt, stmt2, body);
+    Block eblock2 = new Block(stmt3, stmt4, body);
+    Block eblock3 = new Block(stmt5, stmt6, body);
+    Block eblock4 = new Block(ret, ret, body);*/
+
   }
 
-  @Test
-  public void testDominanceFrontiers() {
-    Body body = createBody();
-    BlockGraph graph = new BlockGraph(body.getStmtGraph());
-    List<Block> blocks = graph.getBlocks();
-    Block eblock1 = blocks.get(1);
-    Block eblock2 = blocks.get(6);
+  /**
+   * bodycreater for BinaryBranches
+   *
+   * <pre>
+   *    l0 := @this Test
+   *    l1 = 0
+   *    if l1 >= 0 goto label1
+   *    l1 = l1 + 1
+   *    goto label2
+   * label1:
+   *    l1 = l1 - 1
+   *    l1 = l1 + 2
+   * label2:
+   *    return l1
+   * </pre>
+   *
+   * after
+   *
+   * <pre>
+   *    l0#00 := @this Test
+   *    l1#01 = 0
+   *    if l1#01 >= 0 goto label1
+   *    l1#10 = l1#01 + 1
+   *    goto label2
+   *    label1:
+   *    l1#20 = l1#01 - 1
+   *    l1#21 = l1#20 + 2
+   *    label2:
+   *    return phi(l1#10, l1#21)
+   * </pre>
+   */
+  /* private Body.BodyBuilder createBBBody() {
+    Body.BodyBuilder builder = Body.builder();
+    builder.setMethodSignature(methodSignature);
 
-    DominanceFinder df = new DominanceFinder(graph);
+    // build set locals
+    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1);
+    builder.setLocals(locals);
 
-    for (int i = 0; i < graph.getBlocks().size(); i++) {
-      if (i == 0 || i == 3) {
-        assertTrue(df.getDominanceFrontiers(blocks.get(i)).isEmpty());
-      } else if (i == 4 || i == 5) {
+    // set graph
+    builder.addFlow(startingStmt, stmt1);
+    builder.addFlow(stmt1, stmt2);
+    builder.addFlow(stmt2, stmt3);
+    builder.addFlow(stmt3, stmt4);
+    builder.addFlow(stmt4, ret);
+    builder.addFlow(stmt2, stmt5);
+    builder.addFlow(stmt5, stmt6);
+    builder.addFlow(stmt6, ret);
 
-        assertTrue(df.getDominanceFrontiers(blocks.get(i)).size() == 1);
-        assertTrue(df.getDominanceFrontiers(blocks.get(i)).toArray()[0] == eblock2);
-      } else {
-        assertTrue(df.getDominanceFrontiers(blocks.get(i)).size() == 1);
-        assertTrue(df.getDominanceFrontiers(blocks.get(i)).toArray()[0] == eblock1);
-      }
-    }
-  }
+    // build startingStmt
+    builder.setStartingStmt(startingStmt);
+
+    // build position
+    Position position = NoPositionInformation.getInstance();
+    builder.setPosition(position);
+
+    return builder;
+  }*/
+
+  /**
+   *
+   *
+   * <pre>
+   *    l0 := @this Test
+   *    l1 = 0
+   * label1:
+   *    l4 = l1
+   *    l3 = 10
+   *    if l4 >= l3 goto label2
+   *    l2 = l1 + 1
+   *    l1 = l2 + 1
+   *    l1 = l1 - 1
+   *    goto label1
+   * label2:
+   *    return
+   * </pre>
+   */
+  /* private Body.BodyBuilder createLoopBody() {
+
+    Body.BodyBuilder builder = Body.builder();
+    builder.setMethodSignature(methodSignature);
+
+    // build set locals
+    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3, l4);
+
+    builder.setLocals(locals);
+
+    // set graph
+    builder.addFlow(startingStmt, stmt1);
+    builder.addFlow(stmt1, stmt7);
+    builder.addFlow(stmt7, stmt8);
+    builder.addFlow(stmt8, stmt9);
+    builder.addFlow(stmt9, stmt10);
+    builder.addFlow(stmt9, ret);
+    builder.addFlow(stmt10, stmt11);
+    builder.addFlow(stmt11, stmt5);
+    builder.addFlow(stmt5, stmt4);
+    builder.addFlow(stmt4, stmt7);
+
+    // build startingStmt
+    builder.setStartingStmt(startingStmt);
+
+    // build position
+    Position position = NoPositionInformation.getInstance();
+    builder.setPosition(position);
+
+    return builder;
+  }*/
+
   /**
    *
    *

@@ -214,7 +214,7 @@ public class BlockGraph implements Iterable<Block> {
    * @param stmt
    * @param block
    */
-  public void addStmtOnTopOfBlock(Stmt stmt, Block block) {
+  public Block addStmtOnTopOfBlock(Stmt stmt, Block block) {
     if (!blockToIdx.containsKey(block)) {
       throw new RuntimeException("The given block: " + block.toString() + " is not in BlockGraph!");
     }
@@ -222,6 +222,7 @@ public class BlockGraph implements Iterable<Block> {
     stmtGraph.insertNode(stmt, head);
     Block newBlock = new Block(stmt, block.getTail());
     replaceBlock(block, newBlock);
+    return newBlock;
   }
 
   public void replaceStmtInBlock(Stmt oldStmt, Stmt newStmt, Block block) {
