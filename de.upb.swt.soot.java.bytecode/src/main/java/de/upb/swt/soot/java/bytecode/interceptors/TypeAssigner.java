@@ -23,8 +23,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import de.upb.swt.soot.java.bytecode.interceptors.typeassignerutils.TypeResolver;
-
 import javax.annotation.Nonnull;
 
 // https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/typing/TypeAssigner.java
@@ -40,16 +38,7 @@ public class TypeAssigner implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    (new TypeResolver(builder)).inferTypes(builder);
     // TODO Implement
-      // TODO: TypeResolver.resolve(builder) - https://github.com/soot-oss/soot/blob/f5142233eb69d1c7ccfe3a0dc6b890e73b8f02b6/src/main/java/soot/jimple/toolkits/typing/fast/TypeResolver.java (613 lines)
-      // TODO: replaceNullType(builder) -> own method in TypeAssigner
-      // TODO: check whether typing failed -> own method in TypeAssigner
-
 
   }
 }
-
-/***
- *
- */
