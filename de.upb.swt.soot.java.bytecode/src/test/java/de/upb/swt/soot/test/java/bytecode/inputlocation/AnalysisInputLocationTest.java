@@ -11,9 +11,9 @@ import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
-import de.upb.swt.soot.java.core.JavaSootClass;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -69,10 +69,11 @@ public abstract class AnalysisInputLocationTest {
       AnalysisInputLocation<JavaSootClass> ns, ClassType sig, int minClassesFound) {
 
     final JavaProject project =
-        JavaProject.builder(new JavaLanguage(8)).addClassPath(ns).build();
+        JavaProject.builder(new JavaLanguage(8)).addInputLocation(ns).build();
     final JavaView view = project.createOnDemandView();
 
-    final Optional<? extends AbstractClassSource<JavaSootClass>> clazz = ns.getClassSource(sig, view);
+    final Optional<? extends AbstractClassSource<JavaSootClass>> clazz =
+        ns.getClassSource(sig, view);
     clazz.ifPresent(abstractClassSource -> assertEquals(sig, abstractClassSource.getClassType()));
 
     final Collection<? extends AbstractClassSource> classSources =

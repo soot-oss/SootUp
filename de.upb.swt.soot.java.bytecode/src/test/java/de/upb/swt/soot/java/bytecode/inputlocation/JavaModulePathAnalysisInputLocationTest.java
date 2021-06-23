@@ -3,6 +3,7 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
 import static org.junit.Assert.*;
 
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
+import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.*;
@@ -91,11 +92,19 @@ public class JavaModulePathAnalysisInputLocationTest {
   @Test
   public void testGetClassSource() {
     ModuleInfoAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
+    JavaModuleProject project =
+        new JavaModuleProject(
+            new JavaLanguage(9),
+            Collections.emptyList(),
+            Collections.singletonList(inputLocation),
+            DefaultSourceTypeSpecifier.getInstance());
+    JavaModuleView view = project.createOnDemandView();
+
     final ClassType sig =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
 
     final Optional<? extends AbstractClassSource<JavaSootClass>> clazzOpt =
-        inputLocation.getClassSource(sig);
+        inputLocation.getClassSource(sig, view);
     assertTrue(clazzOpt.isPresent());
     AbstractClassSource<JavaSootClass> scs = clazzOpt.get();
     assertEquals(sig, scs.getClassType());
@@ -108,8 +117,16 @@ public class JavaModulePathAnalysisInputLocationTest {
   public void testGetClassSources() {
     JavaModulePathAnalysisInputLocation inputLocation =
         new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar");
+    JavaModuleProject project =
+        new JavaModuleProject(
+            new JavaLanguage(9),
+            Collections.emptyList(),
+            Collections.singletonList(inputLocation),
+            DefaultSourceTypeSpecifier.getInstance());
+    JavaModuleView view = project.createOnDemandView();
+
     final Collection<? extends AbstractClassSource<?>> classSources =
-        inputLocation.getClassSources(JavaModuleIdentifierFactory.getInstance());
+        inputLocation.getClassSources(JavaModuleIdentifierFactory.getInstance(), view);
     assertEquals(3, classSources.size());
   }
 

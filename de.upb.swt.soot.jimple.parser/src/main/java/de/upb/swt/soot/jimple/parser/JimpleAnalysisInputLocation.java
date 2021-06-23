@@ -6,8 +6,8 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.AbstractClass;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
@@ -62,14 +62,15 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
   @Override
   @Nonnull
   public Collection<? extends SootClassSource<T>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull View<?> view) {
-    return walkDirectory(path, identifierFactory, new JimpleClassProvider(view.getBodyInterceptors()));
+      @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
+    return walkDirectory(
+        path, identifierFactory, new JimpleClassProvider(view.getBodyInterceptors()));
   }
 
   @Nonnull
   @Override
-  public Optional<? extends AbstractClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View<?> view) {
+  public Optional<? extends AbstractClassSource> getClassSource(
+      @Nonnull ClassType type, @Nonnull View<?> view) {
     return getClassSource(type, view);
   }
 
@@ -77,8 +78,8 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
   @Nonnull
   public Optional<? extends SootClassSource<T>> getClassSource(
       @Nonnull ClassType type, @Nonnull View<?> view) {
-    final JimpleClassProvider<T> classProvider = new JimpleClassProvider<>(view.getBodyInterceptors());
-
+    final JimpleClassProvider<T> classProvider =
+        new JimpleClassProvider<>(view.getBodyInterceptors());
 
     final String ext = classProvider.getHandledFileType().toString().toLowerCase();
 

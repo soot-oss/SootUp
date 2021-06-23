@@ -43,12 +43,12 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
 
-  @Nonnull private final Project<? extends T, ? extends View<T>> project;
+  @Nonnull private final Project<? extends View<T>, T> project;
 
   @Nonnull private final Map<ModuleDataKey<?>, Object> moduleData = new HashMap<>();
 
-  public AbstractView(@Nonnull Project<? extends T, ? extends View<T>> project) {
-    this.project = project;
+  public AbstractView(@Nonnull Project<? extends View<?>, ?> project) {
+    this.project = (Project<? extends View<T>, T>) project;
   }
 
   @Override
@@ -89,11 +89,6 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
     return aClass.get().getField(signature.getSubSignature());
   }
 
-  @Nonnull
-  public Project<? extends T, ? extends View<T>> getProject() {
-    return project;
-  }
-
   @SuppressWarnings("unchecked") // Safe because we only put T in putModuleData
   @Override
   @Nullable
@@ -104,5 +99,11 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
   @Override
   public <K> void putModuleData(@Nonnull ModuleDataKey<K> key, @Nonnull K value) {
     moduleData.put(key, value);
+  }
+
+  @Override
+  @Nonnull
+  public Project<? extends View<T>, ? extends T> getProject() {
+    return project;
   }
 }

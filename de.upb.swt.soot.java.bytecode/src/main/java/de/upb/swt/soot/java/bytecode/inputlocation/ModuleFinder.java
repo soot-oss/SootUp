@@ -44,7 +44,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sun.tools.jar.resources.jar;
 
 /**
  * Discovers all modules in a given module path. For automatic modules, names are generated.
@@ -225,7 +224,7 @@ public class ModuleFinder {
     PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
     Path mi;
-    try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
+    try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, (ClassLoader) null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");
       mi = archiveRoot.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
 

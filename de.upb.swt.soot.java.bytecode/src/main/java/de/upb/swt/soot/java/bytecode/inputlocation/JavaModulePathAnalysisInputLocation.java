@@ -26,26 +26,16 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.signatures.FieldSignature;
-import de.upb.swt.soot.core.signatures.FieldSubSignature;
-import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.signatures.MethodSubSignature;
-import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.*;
+import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
-import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.ModuleInfoAnalysisInputLocation;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -61,8 +51,7 @@ import javax.annotation.Nonnull;
  * @see <a
  *     href=http://docs.oracle.com/javase/9/docs/api/java/lang/module/ModuleFinder.html#of-java.nio.file.Path...->ModuleFinder</a>
  */
-public class JavaModulePathAnalysisInputLocation
-    implements BytecodeAnalysisInputLocation, ModuleInfoAnalysisInputLocation {
+public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisInputLocation {
 
   @Nonnull private final ModuleFinder moduleFinder;
 
@@ -90,8 +79,7 @@ public class JavaModulePathAnalysisInputLocation
   @Override
   @Nonnull
   public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
     Preconditions.checkArgument(
         identifierFactory instanceof JavaModuleIdentifierFactory,
         "Factory must be a JavaModuleSignatureFactory");
@@ -100,8 +88,7 @@ public class JavaModulePathAnalysisInputLocation
     return allModules.stream()
         .flatMap(
             sig ->
-                getClassSourcesInternal(
-                    sig, (JavaModuleIdentifierFactory) identifierFactory, classLoadingOptions))
+                getClassSourcesInternal(sig, (JavaModuleIdentifierFactory) identifierFactory, view))
         .collect(Collectors.toList());
   }
 

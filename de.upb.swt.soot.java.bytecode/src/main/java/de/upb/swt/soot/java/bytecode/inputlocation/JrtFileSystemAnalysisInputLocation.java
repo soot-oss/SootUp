@@ -26,8 +26,6 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.StreamUtils;
@@ -58,8 +56,7 @@ import javax.annotation.Nonnull;
  *
  * @author Andreas Dann created on 06.06.18
  */
-public class JrtFileSystemAnalysisInputLocation
-    implements BytecodeAnalysisInputLocation, ModuleInfoAnalysisInputLocation {
+public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInputLocation {
 
   private static final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
   Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
@@ -168,8 +165,7 @@ public class JrtFileSystemAnalysisInputLocation
 
   @Override
   public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull View<?> view) {
+      @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
 
     Collection<ModuleSignature> moduleSignatures = discoverModules();
     return moduleSignatures.stream()

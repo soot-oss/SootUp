@@ -14,10 +14,9 @@ import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
-import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.JavaSootClass;
-import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.*;
@@ -232,7 +231,14 @@ public abstract class PathBasedAnalysisInputLocation
 
       JavaView javaView = (JavaView) view;
       JavaProject javaProject = (JavaProject) javaView.getProject();
-      int javaVersion = ((JavaLanguage) javaProject.getLanguage()).getVersion();
+      int javaVersion = javaProject.getLanguage().getVersion();
+
+      Path pathToFile =
+          path.getFileSystem()
+              .getPath(
+                  signature.getFullyQualifiedName().replace('.', '/')
+                      + "."
+                      + classProvider.getHandledFileType().getExtension());
 
       // return best match
       for (int i = availableVersions.length - 1; i >= 0; i--) {
@@ -242,9 +248,7 @@ public abstract class PathBasedAnalysisInputLocation
         final Path versionRoot =
             path.getFileSystem().getPath("/META-INF/versions/" + availableVersions[i] + "/");
 
-        Path pathToClass =
-            versionRoot.resolve(
-                signature.toPath(classProvider.getHandledFileType(), path.getFileSystem()));
+        Path pathToClass = versionRoot.resolve(pathToFile);
 
         if (Files.exists(pathToClass)) {
           return Optional.of(classProvider.createClassSource(this, pathToClass, signature));
@@ -252,8 +256,7 @@ public abstract class PathBasedAnalysisInputLocation
       }
 
       // return base class instead
-      Path pathToClass =
-          path.resolve(signature.toPath(classProvider.getHandledFileType(), path.getFileSystem()));
+      Path pathToClass = path.resolve(pathToFile);
 
       if (!Files.exists(pathToClass)) {
         return Optional.empty();
@@ -266,15 +269,17 @@ public abstract class PathBasedAnalysisInputLocation
     @Nonnull
     public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
         @Nonnull ClassType type, @Nonnull View<?> view) {
-      FileSystem fs = fileSystemCache.get(path);
-      final Path archiveRoot = fs.getPath("/");
-      return getClassSourceInternal(
-          (JavaClassType) type,
-          archiveRoot,
-          new AsmJavaClassProvider(view.getBodyInterceptors()),
-          view);
-    } catch (ExecutionException e) {
-      throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
+      try {
+        FileSystem fs = fileSystemCache.get(path);
+        final Path archiveRoot = fs.getPath("/");
+        return getClassSourceInternal(
+            (JavaClassType) type,
+            archiveRoot,
+            new AsmJavaClassProvider(view.getBodyInterceptors()),
+            view);
+      } catch (ExecutionException e) {
+        throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
+      }
     }
   }
 
@@ -299,7 +304,8 @@ public abstract class PathBasedAnalysisInputLocation
                 CacheLoader.from(
                     path -> {
                       try {
-                        return FileSystems.newFileSystem(Objects.requireNonNull(path), null);
+                        return FileSystems.newFileSystem(
+                            Objects.requireNonNull(path), (ClassLoader) null);
                       } catch (IOException e) {
                         throw new RuntimeException("Could not open file system of " + path, e);
                       }
@@ -328,9 +334,8 @@ public abstract class PathBasedAnalysisInputLocation
     @Override
     @Nonnull
     public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull IdentifierFactory identifierFactory,
-        @Nonnull View<?> view) {
-      try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
+        @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
+      try (FileSystem fs = FileSystems.newFileSystem(path, (ClassLoader) null)) {
         final Path archiveRoot = fs.getPath("/");
         return walkDirectory(
             archiveRoot, identifierFactory, new AsmJavaClassProvider(view.getBodyInterceptors()));

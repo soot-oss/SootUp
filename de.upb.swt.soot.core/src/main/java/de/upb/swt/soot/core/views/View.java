@@ -48,9 +48,9 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public interface View<T extends SootClass<?>> {
+public interface View<T extends SootClass> {
 
-  public Project<? extends View<T>, T> getProject();
+  Project getProject();
 
   @Nonnull
   List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation<T> inputLocation);

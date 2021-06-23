@@ -9,7 +9,6 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.AbstractView;
-import de.upb.swt.soot.core.views.View;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,7 +51,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
    *     options.
    */
   public JimpleView(
-      @Nonnull Project<SootClass<?>, ? extends View<SootClass<?>>> project,
+      @Nonnull Project project,
       @Nonnull
           Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
@@ -61,9 +60,11 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   }
 
   @Nonnull
-  public List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation<SootClass<?>> clazz) {
-    return classLoadingOptionsSpecifier.apply(clazz) != null
-        ? classLoadingOptionsSpecifier.apply(clazz).getBodyInterceptors()
+  @Override
+  public List<BodyInterceptor> getBodyInterceptors(
+      AnalysisInputLocation<SootClass<?>> inputLocation) {
+    return classLoadingOptionsSpecifier.apply(inputLocation) != null
+        ? classLoadingOptionsSpecifier.apply(inputLocation).getBodyInterceptors()
         : getBodyInterceptors();
   }
 

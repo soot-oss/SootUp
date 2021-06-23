@@ -45,7 +45,7 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public interface AnalysisInputLocation<T extends AbstractClass<? extends AbstractClassSource<T>>> {
+public interface AnalysisInputLocation<T extends AbstractClass> {
   /**
    * Create or find a class source for a given type.
    *
