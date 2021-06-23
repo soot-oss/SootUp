@@ -12,6 +12,23 @@ import org.junit.Test;
 
 public class PointerBenchGeneralJavaTest extends SparkTestBase {
 
+  /**
+   * java code:
+   * static A a;
+   *
+   * main() {
+   *     a = new A();
+   *     A b = a;
+   *     A c = a;
+   * }
+   *
+   * description:
+   * - Alias to a static variable, allocation site at the static variable site
+   *
+   * expected:
+   * - b and c point to same object
+   *
+   */
   @Test
   public void testStaticVariables1() {
     setUpPointerBench("generalJava.StaticVariables1");
@@ -36,6 +53,25 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
     // points to sets of b and c are also empty in old spark
   }
 
+  /**
+   * java code:
+   * main() {
+   *     A a = new A();
+   *     A b = new A();
+   *
+   *     G g = new G();
+   *     H h = new H();
+   *     g.foo(a);
+   *     A c = h.foo(b);
+   * }
+   *
+   * description:
+   * - Alias from method in interface
+   *
+   * expected:
+   * - b and c point same object
+   * - a,g,h do not point to same object
+   */
   @Test
   public void testInterface1() {
     setUpPointerBench("generalJava.Interface1");
@@ -72,6 +108,25 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
     assertTrue(Sets.intersection(gPointsTo, hPointsTo).isEmpty());
   }
 
+  /**
+   * java code:
+   * main() {
+   *     A a = new A();
+   *     A b = new A();
+   *
+   *     P p = new P(a);
+   *     p.alias(b);
+   *     A h = p.getA();
+   * }
+   *
+   * description:
+   * - Alias from method in super class
+   *
+   * expected:
+   * - b and h point to same object
+   * - a and b point to same object
+   * - a,p and h do not point to same object
+   */
   @Test
   public void testSuperClasses1() {
     setUpPointerBench("generalJava.SuperClasses1");
@@ -104,6 +159,37 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
     assertTrue(Sets.intersection(pPointsTo, hPointsTo).isEmpty());
   }
 
+  /**
+   * java code:
+   * class InnerClass {
+   *     private A a;
+   *
+   *     public InnerClass(A a) {
+   *       this.a = a;
+   *     }
+   *
+   *     public void alias(A x) {
+   *       this.a = x;
+   *     }
+   * }
+   *
+   * test() {
+   *     A a = new A();
+   *     A b = new A();
+   *
+   *     InnerClass i = new InnerClass(a);
+   *     i.alias(b);
+   *     A h = i.a;
+   *   }
+   *
+   * description:
+   * - Alias from method in inner class
+   *
+   * expected:
+   * - b and h point to same object
+   * - a and b point to same object
+   * - i,a,h do do not point to same object
+   */
   @Test
   public void testOuterClasses1() {
     setUpPointerBench("generalJava.OuterClass1");
@@ -137,6 +223,21 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
     assertTrue(Sets.intersection(iPointsTo, hPointsTo).isEmpty());
   }
 
+  /**
+   * java code:
+   * main() {
+   *     A h = new A();
+   *     B a = h.getH();
+   *     B b = a;
+   * }
+   *
+   * description:
+   * - Direct alias to null
+   *
+   * expected:
+   * - a and b point to same object
+   * - b and h do not point to same object
+   */
   @Test
   public void testNull1() {
     setUpPointerBench("generalJava.Null1");
@@ -163,6 +264,21 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
     assertTrue(Sets.intersection(bPointsTo, hPointsTo).isEmpty());
   }
 
+  /**
+   * java code:
+   * main() {
+   * 		A a = new A();
+   * 		A b = a;
+   * 		B x = b.h; // a.h is null
+   * }
+   *
+   * description:
+   * - Implicit alias to null
+   *
+   * expected:
+   * - a and b point to same object
+   * - x do not point to any object
+   */
   @Test
   public void testNull2() {
     setUpPointerBench("generalJava.Null2");
@@ -189,6 +305,26 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
     assertTrue(xPointsTo.isEmpty());
   }
 
+  /**
+   * java code:
+   * main(String[] args) {
+   *     A a = new A();
+   *     A b = new A();
+   *
+   *     try {
+   *       b = a;
+   *       throw new RuntimeException();
+   *     } catch (RuntimeException e) {
+   *
+   *     }
+   * }
+   *
+   * description:
+   * - Alias in exception
+   *
+   * expected:
+   * - a and b point to same object
+   */
   @Test
   public void testException1() {
     setUpPointerBench("generalJava.Exception1");
@@ -208,4 +344,5 @@ public class PointerBenchGeneralJavaTest extends SparkTestBase {
     // a and b must point to a common object
     assertFalse(Sets.intersection(aPointsTo, bPointsTo).isEmpty());
   }
+
 }

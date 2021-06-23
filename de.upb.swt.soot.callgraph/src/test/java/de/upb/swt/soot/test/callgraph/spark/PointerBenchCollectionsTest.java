@@ -17,6 +17,24 @@ import org.junit.Test;
 
 public class PointerBenchCollectionsTest extends SparkTestBase {
 
+  /**
+   * java code:
+   * main() {
+   *     A[] array = new A[] {};
+   *     A a = new A();
+   *     A b = new A();
+   *     array[0] = a;
+   *     array[1] = b;
+   *     A c = array[1];
+   * }
+   *
+   * description:
+   * - assignment using different indexes of an Array
+   *
+   * expected:
+   * - a and array do not point to same object
+   * - b and c point to same object
+   */
   @Test
   public void testArray1() {
     setUpPointerBench("collections.Array1");
@@ -55,6 +73,24 @@ public class PointerBenchCollectionsTest extends SparkTestBase {
     assertFalse(Sets.intersection(bPointsTo, cPointsTo).isEmpty());
   }
 
+  /**
+   * java code:
+   * main() {
+   *     ArrayList<A> list = new ArrayList<A>();
+   *     A a = new A();
+   *     A b = new A();
+   *     list.add(a);
+   *     list.add(b);
+   *     A c = list.get(1);
+   * }
+   *
+   * description:
+   * - assignment using different indexes of an ArrayList
+   *
+   * expected:
+   * - a and list do not point to same object
+   * - b and c point to same object
+   */
   @Ignore
   public void testList1() {
     // TODO: fix stack underrun
@@ -71,18 +107,38 @@ public class PointerBenchCollectionsTest extends SparkTestBase {
     Local list = lineNumberToArrayList.get(22);
     Local a = lineNumberToA.get(23);
     Local b = lineNumberToA.get(25);
+    Local c = lineNumberToA.get(28);
 
     Set<Node> listPointsTo = spark.getPointsToSet(list);
 
     Set<Node> aPointsTo = spark.getPointsToSet(a);
     Set<Node> bPointsTo = spark.getPointsToSet(b);
+    Set<Node> cPointsTo = spark.getPointsToSet(c);
 
     // a and list must not point to a common object
     assertTrue(Sets.intersection(aPointsTo, listPointsTo).isEmpty());
     // c and b must point to a common object
-    assertFalse(Sets.intersection(bPointsTo, aPointsTo).isEmpty());
+    assertFalse(Sets.intersection(bPointsTo, cPointsTo).isEmpty());
   }
 
+  /**
+   * java code:
+   * main() {
+   *     LinkedList<A> list = new LinkedList<A>();
+   *     A a = new A();
+   *     A b = new A();
+   *     list.add(a);
+   *     list.add(b);
+   *     A c = list.get(1);
+   *   }
+   *
+   * description:
+   * - assignment using different indexes of a LinkedList
+   *
+   * expected:
+   * - a and list do not point to same object
+   * - b and c point to same object
+   */
   @Ignore
   public void testList2() {
     // TODO: fix type mismatch
@@ -109,8 +165,28 @@ public class PointerBenchCollectionsTest extends SparkTestBase {
 
     // a and list must not point to a common object
     assertTrue(Sets.intersection(aPointsTo, listPointsTo).isEmpty());
+    // c and b must point to a common object
+    assertFalse(Sets.intersection(bPointsTo, cPointsTo).isEmpty());
   }
 
+  /**
+   * java code:
+   * main() {
+   *     HashMap<String, A> map = new HashMap<String, A>();
+   *     A a = new A();
+   *     A b = new A();
+   *     map.put("first", a);
+   *     map.put("second", b);
+   *     A c = map.get("second");
+   * }
+   *
+   * description:
+   * - assignment using values from a HashMap
+   *
+   * expected:
+   * - a and map do not point to same object
+   * - b and c point to same object
+   */
   @Ignore
   public void testMap1() {
     // TODO: fix stack underrun
@@ -135,10 +211,34 @@ public class PointerBenchCollectionsTest extends SparkTestBase {
     Set<Node> bPointsTo = spark.getPointsToSet(b);
     Set<Node> cPointsTo = spark.getPointsToSet(c);
 
-    // a and list must not point to a common object
+    // a and map must not point to a common object
     assertTrue(Sets.intersection(aPointsTo, mapPointsTo).isEmpty());
+    // c and b must point to a common object
+    assertFalse(Sets.intersection(bPointsTo, cPointsTo).isEmpty());
   }
 
+  /**
+   * java code:
+   * main() {
+   *     HashSet<A> set = new HashSet<A>();
+   *     A a = new A();
+   *     A c = null;
+   *     A b = new A();
+   *     set.add(a);
+   *     set.add(b);
+   *     for (A i : set) {
+   *       c = i;
+   *       break;
+   *     }
+   *     a = null;
+   * }
+   *
+   * description:
+   * - assignment using values from HashSet
+   *
+   * expected:
+   * - a,b and set do not point to same object
+   */
   @Ignore
   public void testSet1() {
     // TODO: fix Multiple un-equal stacks
@@ -155,15 +255,15 @@ public class PointerBenchCollectionsTest extends SparkTestBase {
     Local set = lineNumberToHashSet.get(22);
     Local a = lineNumberToA.get(23);
     Local b = lineNumberToA.get(26);
-    Local c = lineNumberToA.get(24);
 
     Set<Node> setPointsTo = spark.getPointsToSet(set);
 
     Set<Node> aPointsTo = spark.getPointsToSet(a);
     Set<Node> bPointsTo = spark.getPointsToSet(b);
-    Set<Node> cPointsTo = spark.getPointsToSet(c);
 
-    // a and list must not point to a common object
+    // a and set must not point to a common object
     assertTrue(Sets.intersection(aPointsTo, setPointsTo).isEmpty());
+    // b and set must not point to a common object
+    assertTrue(Sets.intersection(bPointsTo, setPointsTo).isEmpty());
   }
 }

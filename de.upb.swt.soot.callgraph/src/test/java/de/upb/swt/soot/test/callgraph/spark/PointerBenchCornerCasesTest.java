@@ -15,6 +15,21 @@ import org.junit.Test;
 
 public class PointerBenchCornerCasesTest extends SparkTestBase {
 
+  /**
+   * java code:
+   * main() {
+   *     A a = new A();
+   *     A b = new A();
+   *     a.f = b.f;
+   * }
+   *
+   * description:
+   * - field assignment
+   *
+   * expected:
+   * - a and b do not point to same object
+   * - a.f and b.f point to same object
+   */
   @Test
   public void testAccessPath1() {
     setUpPointerBench("cornerCases.AccessPath1");
@@ -44,6 +59,26 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
     assertTrue(aFieldPointsTo.equals(bFieldPointsTo));
   }
 
+  /**
+   * java code:
+   * main() {
+   *     B b1 = new B();
+   *     B b2 = new B();
+   *
+   *     A a1 = new A(b1);
+   *     A a2 = new A(b2);
+   *
+   *     B b3 = a1.getF();
+   *     B b4 = a2.getF();
+   * }
+   *
+   * description:
+   * -  field of objects are assigned via their constructors, and accessed via getter method
+   *
+   * expected:
+   * - b2 and b4 point to same object
+   * - b2 and a1,a2 do not point to same object
+   */
   @Test
   public void testObjectSensitivity1() {
     setUpPointerBench("cornerCases.ObjectSensitivity1");
@@ -82,6 +117,25 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
     // assertTrue(Sets.intersection(b2PointsTo, b3PointsTo).isEmpty());
   }
 
+  /**
+   * java code:
+   * main() {
+   *     B b1 = new B();
+   *     B b2 = new B();
+   *
+   *     A a = new A();
+   *
+   *     B b3 = a.id(b1);
+   *     B b4 = a.id(b2);
+   * }
+   *
+   * description:
+   * - assignment of return value of an id method
+   *
+   * expected:
+   * - b2 and b4 point to same object
+   * - b2 and a do not point to same object
+   */
   @Test
   public void testObjectSensitivity2() {
     setUpPointerBench("cornerCases.ObjectSensitivity2");
@@ -114,6 +168,27 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
     assertTrue(Sets.intersection(b2PointsTo, aPointsTo).isEmpty());
   }
 
+  /**
+   * java code:
+   * main(String[] args) {
+   *     B b = new B();
+   *     A a = new A(b);
+   *     A c = new A();
+   *     assign(a, c);
+   *     B d = c.f;
+   * }
+   *
+   * static assign(A x, A y) {
+   *     y.f = x.f;
+   * }
+   *
+   * description:
+   * - field assignment inside static method
+   *
+   * expected:
+   * - d and b point to same object
+   * - b, a and c do not point to same object
+   */
   @Test
   public void testFieldSensitivity1() {
     setUpPointerBench("cornerCases.FieldSensitivity1");
@@ -142,6 +217,27 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
     assertTrue(Sets.intersection(bPointsTo, Sets.intersection(aPointsTo, cPointsTo)).isEmpty());
   }
 
+  /**
+   * java code:
+   * test() {
+   *     B b = new B();
+   *     A a = new A(b);
+   *     A c = new A();
+   *     assign(a, c);
+   *     B d = c.f;
+   * }
+   *
+   * assign(A x, A y) {
+   *     y.f = x.f;
+   * }
+   *
+   * description:
+   * - field assignment inside instance method
+   *
+   * expected:
+   * - d and b point to same object
+   * - b, a and c do not point to same object
+   */
   @Test
   public void testFieldSensitivity2() {
     setUpPointerBench("cornerCases.FieldSensitivity2");
@@ -170,6 +266,23 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
     assertTrue(Sets.intersection(bPointsTo, Sets.intersection(aPointsTo, cPointsTo)).isEmpty());
   }
 
+  /**
+   * java code:
+   * main() {
+   *     A a = new A();
+   *     A b = a;
+   *
+   *     a.f = new B();
+   *     B y = a.f;
+   *     B x = b.f;
+   * }
+   *
+   * description:
+   * - Indirect alias of a.f and b.f through alias of a and b
+   *
+   * expected:
+   * - x and y must point to same object
+   */
   @Test
   public void testStrongUpdate1() {
     setUpPointerBench("cornerCases.StrongUpdate1");
@@ -196,6 +309,22 @@ public class PointerBenchCornerCasesTest extends SparkTestBase {
     assertTrue(xPointsTo.equals(yPointsTo));
   }
 
+  /**
+   * java code:
+   * main() {
+   *     A a = new A();
+   *     A b = a;
+   *     B x = b.f;
+   *     a.f = new B();
+   *     B y = b.f;
+   * }
+   *
+   * description:
+   * - Indirect alias of a.f and b.f through alias of a and b
+   *
+   * expected:
+   * - a.f and y must point to same
+   */
   @Test
   public void testStrongUpdate2() {
     setUpPointerBench("cornerCases.StrongUpdate2");

@@ -11,8 +11,22 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
 import org.junit.Test;
 
+
 public class PointerBenchBasicTest extends SparkTestBase {
 
+  /**
+   * java code:
+   * main(){
+   *     A a = new A();
+   *     A b = a;
+   * }
+   *
+   * description:
+   * - simple assignment
+   *
+   * expected:
+   * - a and b point to same object
+   */
   @Test
   public void testSimpleAlias1() {
     setUpPointerBench("basic.SimpleAlias1");
@@ -37,6 +51,25 @@ public class PointerBenchBasicTest extends SparkTestBase {
     assertTrue(aPointsTo.equals(bPointsTo));
   }
 
+  /**
+   * java code:
+   * main(){
+   *     int i = 0;
+   *     A a = new A();
+   *     A b = new A();
+   *     if (i < 0)
+   *       a = b;
+   * }
+   *
+   * description:
+   * - conditional assigment
+   *
+   * expected:
+   * - i cannot point to same objects as a and b
+   * - a points to 2 objects
+   * - b points to 1 object
+   * - a and b points to a common object
+   */
   @Test
   public void testBranching1() {
     setUpPointerBench("basic.Branching1");
@@ -72,6 +105,23 @@ public class PointerBenchBasicTest extends SparkTestBase {
     assertFalse(aPointsTo.equals(bPointsTo));
   }
 
+  /**
+   * java code:
+   * main(){
+   *     A a = new A();
+   *     test(a);
+   * }
+   *
+   * static test(A x){
+   *     A b = x;
+   * }
+   *
+   * description:
+   * - parameter is being passed to a static method
+   *
+   * expected:
+   * - b and x point to same object
+   */
   @Test
   public void testParameter1() {
     setUpPointerBench("basic.Parameter1");
@@ -97,6 +147,26 @@ public class PointerBenchBasicTest extends SparkTestBase {
     assertTrue(xPointsTo.equals(bPointsTo));
   }
 
+  /**
+   * java code:
+   * main(){
+   *     A a = new A();
+   *     Parameter2 p2 = new Parameter2();
+   *     p2.test(a);
+   * }
+   *
+   * class Parameter2{
+   *    test(A x) {
+   *      A b = x;
+   *    }
+   * }
+   *
+   * description:
+   * parameter is being passed to an instance method
+   *
+   * expected:
+   * - b and x point to same object
+   */
   @Test
   public void testParameter2() {
     setUpPointerBench("basic.Parameter2");
@@ -122,6 +192,30 @@ public class PointerBenchBasicTest extends SparkTestBase {
     assertTrue(xPointsTo.equals(bPointsTo));
   }
 
+  /**
+   * java code:
+   * main() {
+   *     A a = new A();
+   *     A b = new A();
+   *
+   *     b.f = new B();
+   *     alloc(a, b);
+   *
+   *     B x = a.f;
+   *     B y = b.f;
+   * }
+   *
+   * static alloc(A x, A y) {
+   *     x.f = y.f;
+   * }
+   *
+   * description:
+   * - a field of an object is being assigned to a field of another object inside a static method
+   *
+   * expected:
+   * - b.f does not point to the same object as a and b
+   * - x and y point to same objet
+   */
   @Test
   public void testInterprocedural1() {
     setUpPointerBench("basic.Interprocedural1");
@@ -154,6 +248,33 @@ public class PointerBenchBasicTest extends SparkTestBase {
     assertTrue(xPointsTo.equals(yPointsTo));
   }
 
+  /**
+   * java code:
+   * main() {
+   *     A a = new A();
+   *     A b = new A();
+   *
+   *     b.f = new B();
+   *     Interprocedural2 m2 = new Interprocedural2();
+   *     m2.alloc(a, b);
+   *
+   *     B x = a.f;
+   *     B y = b.f;
+   *   }
+   *
+   * class Interprocedural2 {
+   *   alloc(A x, A y) {
+   *     x.f = y.f;
+   *   }
+   * }
+   *
+   * description:
+   * - a field of an object is being assigned to a field of another object inside an instance method
+   *
+   * expected:
+   * - b.f does not point to the same object as a, b, and m2
+   * - x and y point to same objet
+   */
   @Test
   public void testInterprocedural2() {
     setUpPointerBench("basic.Interprocedural2");
@@ -192,6 +313,22 @@ public class PointerBenchBasicTest extends SparkTestBase {
     assertTrue(xPointsTo.equals(yPointsTo));
   }
 
+  /**
+   * java code:
+   * main() {
+   *     A a = new A();
+   *     A b = id(a);
+   * }
+   * static A id(A x) {
+   *     return x;
+   * }
+   *
+   * description:
+   * - assignment of the return value of a static method
+   *
+   * expected:
+   * - a and b points to same object
+   */
   @Test
   public void testReturnValue1() {
     setUpPointerBench("basic.ReturnValue1");
@@ -212,6 +349,26 @@ public class PointerBenchBasicTest extends SparkTestBase {
     assertTrue(aPointsTo.equals(bPointsTo));
   }
 
+  /**
+   * java code:
+   * main() {
+   *     A a = new A();
+   *     ReturnValue2 rv2 = new ReturnValue2();
+   *     A b = rv2.id(a);
+   * }
+   *
+   * class ReturnValue2{
+   *   public A id(A x) {
+   *     return x;
+   *   }
+   * }
+   *
+   * description:
+   * - assignment of the return value of an instance method
+   *
+   * expected:
+   * - a and b points to same object
+   */
   @Test
   public void testReturnValue2() {
     setUpPointerBench("basic.ReturnValue2");
@@ -238,6 +395,28 @@ public class PointerBenchBasicTest extends SparkTestBase {
     assertTrue(Sets.intersection(aPointsTo, rv2PointsTo).isEmpty());
   }
 
+  /**
+   * java code:
+   * main() {
+   *     A a = new A();
+   *     A b = id(a);
+   *     B x = b.f;
+   *     B y = a.f;
+   * }
+   *
+   * static A id(A x) {
+   *     A y = new A();
+   *     y.f = new B();
+   *     return y;
+   * }
+   *
+   * description:
+   * - an object is beign passed to a static method, which returns a different object
+   *
+   * expected:
+   * - a, b and y does not point to same object
+   *
+   */
   @Test
   public void testReturnValue3() {
     setUpPointerBench("basic.ReturnValue3");
@@ -282,6 +461,37 @@ public class PointerBenchBasicTest extends SparkTestBase {
     assertFalse(Sets.intersection(xPointsTo, yDotFPointsTo).isEmpty());
   }
 
+  /**
+   * java code:
+   * class N {
+   *     public String value = "";
+   *     public N next;
+   *
+   *     public N() {
+   *       next = null;
+   *     }
+   * }
+   *
+   * test() {
+   *     N node = new N();
+   *
+   *     int i = 0;
+   *     while (i < 10) {
+   *       node = node.next;
+   *       i++;
+   *     }
+   *
+   *     N o = node.next;
+   *     N p = node.next.next;
+   *     N q = node.next.next.next;
+   * }
+   *
+   * description:
+   * - An object with nested structure is being traversed
+   *
+   * expected:
+   * - node and o,p,q,i do not point to same object
+   */
   @Test
   public void testLoops1() {
     setUpPointerBench("basic.Loops1");
@@ -316,6 +526,37 @@ public class PointerBenchBasicTest extends SparkTestBase {
     assertTrue(Sets.intersection(nodePointsTo, iPointsTo).isEmpty());
   }
 
+  /**
+   * java code:
+   * class N {
+   *     public String value = "";
+   *     public N next;
+   *
+   *     public N() {
+   *       next = new N();
+   *     }
+   * }
+   *
+   * test() {
+   *     N node = new N();
+   *
+   *     int i = 0;
+   *     while (i < 10) {
+   *       node = node.next;
+   *       i++;
+   *     }
+   *
+   *     N o = node.next;
+   *     N p = node.next.next;
+   * }
+   *
+   * description:
+   * - An object with nested structure is being traversed
+   *
+   * expected:
+   *  - node and o,p,i do not point to same object
+   *  - node.next and o point to same object
+   */
   @Test
   public void testLoops2() {
     setUpPointerBench("basic.Loops2");
@@ -359,6 +600,46 @@ public class PointerBenchBasicTest extends SparkTestBase {
     assertTrue(oPointsTo.equals(nextInNPointsTo));
   }
 
+  /**
+   * java code:
+   * class N {
+   *     public String value;
+   *     public N next;
+   *
+   *     public N(String value) {
+   *       this.value = value;
+   *       next = null;
+   *     }
+   * }
+   *
+   * class Recursion1 {
+   *     N recursive(int i, N m) {
+   *     if (i < 10) {
+   *       int j = i + 1;
+   *       return recursive(j, m.next);
+   *     }
+   *     return m;
+   *   }
+   * }
+   *
+   * test() {
+   *     N node = new N("");
+   *
+   *     Recursion1 r1 = new Recursion1();
+   *     N n = r1.recursive(0, node);
+   *
+   *     N o = node.next;
+   *     N p = node.next.next;
+   *     N q = node.next.next.next;
+   * }
+   *
+   * description:
+   * - An object with nested structure is being traversed inside an instance method
+   *
+   * expected:
+   * - node and n point to same object
+   * - node and o,p,q do not point to same object
+   */
   @Test
   public void testRecursion1() {
     setUpPointerBench("basic.Recursion1");
