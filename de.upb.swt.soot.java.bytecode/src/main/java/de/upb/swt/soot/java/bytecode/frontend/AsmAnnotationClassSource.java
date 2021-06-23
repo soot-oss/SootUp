@@ -181,12 +181,12 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
     if (classNode.superName == null) {
       return Optional.empty();
     }
-    return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.superName));
+    return Optional.ofNullable(AsmUtil.toJimpleClassType(classNode.superName));
   }
 
   @Nonnull
   public Optional<? extends ClassType> resolveOuterClass() {
-    return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.outerClass));
+    return Optional.ofNullable(AsmUtil.toJimpleClassType(classNode.outerClass));
   }
 
   @Nonnull

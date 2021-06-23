@@ -42,10 +42,10 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     JavaProject javaProject =
         JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(
+            .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))
-            .addClassPath(new JavaSourcePathAnalysisInputLocation(walaClassPath))
+            .addInputLocation(new JavaSourcePathAnalysisInputLocation(walaClassPath))
             .build();
 
     JavaView view = javaProject.createOnDemandView();
@@ -55,8 +55,9 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
         identifierFactory.getMethodSignature(
             "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
 
-    SootClass sc = (SootClass) view.getClass(mainClassSignature).get();
-    Optional<SootMethod> m = sc.getMethod(mainMethodSignature.getSubSignature());
+    SootClass<?> sc = view.getClass(mainClassSignature).get();
+    Optional<SootMethod> m =
+        (Optional<SootMethod>) sc.getMethod(mainMethodSignature.getSubSignature());
     assertTrue(mainMethodSignature + " not found in classloader", m.isPresent());
 
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);

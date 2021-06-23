@@ -52,6 +52,14 @@ public class AbstractTrap implements Trap {
       @Nonnull Stmt beginStmt,
       @Nonnull Stmt endStmt,
       @Nonnull Stmt handlerStmt) {
+
+    /* TODO: [ms] rethink the beginStmt->endStmt interval model as we dont have a linear
+    // representation anymore.
+    if (beginStmt == endStmt) {
+      throw new IllegalArgumentException("The covered Trap range is empty. Trap is of no use.");
+    }
+    */
+
     this.exception = exception;
     this.beginStmt = beginStmt;
     this.endStmt = endStmt;
