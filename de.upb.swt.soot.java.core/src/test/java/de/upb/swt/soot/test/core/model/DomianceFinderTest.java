@@ -6,6 +6,7 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.graph.Block;
 import de.upb.swt.soot.core.graph.BlockGraph;
 import de.upb.swt.soot.core.graph.DominanceFinder;
+import de.upb.swt.soot.core.graph.DominanceTree;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
@@ -108,6 +109,43 @@ public class DomianceFinderTest {
       }
     }
   }
+
+  @Test
+  public void testDominanceTree() {
+    Body body = createBody();
+    BlockGraph graph = new BlockGraph(body.getStmtGraph());
+    List<Block> blocks = graph.getBlocks();
+
+    DominanceFinder df = new DominanceFinder(graph);
+    for (DominanceTree tree : df.getDominanceTrees()) {
+      if (tree.getContent() == blocks.get(0)) {
+        assertTrue(tree.getChildren().size() == 1);
+        List<DominanceTree> list = new ArrayList<>(tree.getChildren());
+        assertTrue(list.get(0).getContent() == blocks.get(1));
+      } else if (tree.getContent() == blocks.get(1)) {
+        assertTrue(tree.getChildren().size() == 2);
+        List<DominanceTree> list = new ArrayList<>(tree.getChildren());
+        if (list.get(0).getContent() == blocks.get(3)) {
+          assertTrue(list.get(1).getContent() == blocks.get(2));
+        } else {
+          assertTrue(list.get(1).getContent() == blocks.get(3));
+        }
+      } else if (tree.getContent() == blocks.get(2)) {
+        assertTrue(tree.getChildren().size() == 3);
+        Set<Block> contents = new HashSet<>();
+        for (DominanceTree dt : tree.getChildren()) {
+          contents.add(dt.getContent());
+        }
+        assertTrue(contents.contains(blocks.get(4)));
+        assertTrue(contents.contains(blocks.get(5)));
+        assertTrue(contents.contains(blocks.get(6)));
+
+      } else {
+        assertTrue(tree.getChildren().size() == 0);
+      }
+    }
+  }
+
   /**
    *
    *

@@ -34,8 +34,9 @@ public class DominanceFinder {
 
   private Map<Integer, Block> idxToBlock = new HashMap<>();
   private Map<Block, Integer> blockToIdx = new HashMap<>();
-  public int[] doms;
-  public ArrayList<Integer>[] domFrontiers;
+  private int[] doms;
+  private ArrayList<Integer>[] domFrontiers;
+  private DominanceTree dominanceTree;
 
   public DominanceFinder(BlockGraph blockGraph) {
 
@@ -102,6 +103,38 @@ public class DominanceFinder {
         }
       }
     }
+
+    this.dominanceTree = buildDominanceTree(blockGraph.getStartingBlock());
+  }
+
+  @Nonnull
+  private DominanceTree buildDominanceTree(Block block) {
+    DominanceTree tree = new DominanceTree(block);
+    int blockId = this.blockToIdx.get(block);
+    for (int i = 0; i < doms.length; i++) {
+      if (doms[i] == blockId && i != blockId) {
+        tree.addChild(buildDominanceTree(idxToBlock.get(i)));
+      }
+    }
+    return tree;
+  }
+
+  /** @return a list of DominanceTrees in DFS order */
+  @Nonnull
+  public List<DominanceTree> getDominanceTrees() {
+    List<DominanceTree> treeList = new ArrayList<>();
+    Deque<DominanceTree> queue = new ArrayDeque<>();
+    queue.add(dominanceTree);
+    while (!queue.isEmpty()) {
+      DominanceTree tree = queue.removeFirst();
+      treeList.add(tree);
+      if (!tree.getChildren().isEmpty()) {
+        for (DominanceTree child : tree.getChildren()) {
+          queue.push(child);
+        }
+      }
+    }
+    return treeList;
   }
 
   @Nonnull
@@ -139,6 +172,7 @@ public class DominanceFinder {
     return dFs;
   }
 
+  @Nonnull
   private int getFirstDefinedBlockPredIdx(List<Block> preds) {
     for (Block block : preds) {
       int idx = this.blockToIdx.get(block);
@@ -149,6 +183,7 @@ public class DominanceFinder {
     return -1;
   }
 
+  @Nonnull
   private int intersect(int b1, int b2) {
     int f1 = b1;
     int f2 = b2;
