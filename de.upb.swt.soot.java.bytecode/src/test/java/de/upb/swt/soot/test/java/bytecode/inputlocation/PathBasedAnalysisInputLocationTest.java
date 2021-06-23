@@ -26,7 +26,6 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import categories.Java9Test;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.BodySource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
@@ -45,6 +44,8 @@ import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
+import java.io.IOException;
+import java.net.URI;
 import java.nio.file.*;
 import java.util.Collection;
 import java.util.Collections;
@@ -58,10 +59,10 @@ import org.junit.experimental.categories.Category;
  * @author Manuel Benz created on 06.06.18
  * @author Kaustubh Kelkar updated on 16.04.2020
  */
+@Category(Java8Test.class)
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test
-  @Category(Java8Test.class)
   public void testJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
@@ -73,7 +74,6 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   }
 
   @Test
-  @Category(Java8Test.class)
   public void testRuntimeJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(
@@ -98,7 +98,6 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   }
 
   @Test
-  @Category(Java9Test.class)
   public void testWar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(war);
@@ -114,7 +113,6 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   }
 
   @Test
-  @Category(Java9Test.class)
   public void testClassInWar() {
 
     // Create a project
@@ -162,9 +160,9 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     // Build a soot class
     SootClass<?> c =
-        new SootClass(
+        new SootClass<>(
             new OverridingJavaClassSource(
-                new EagerInputLocation(),
+                new EagerInputLocation<>(),
                 null,
                 classSignature,
                 null,
@@ -217,8 +215,37 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     assertEquals("empName", c.getField(nameFieldSubSignature).get().getName());
   }
 
-  void runtimeContains(View view, String classname, String packageName) {
+  void runtimeContains(View<?> view, String classname, String packageName) {
     final ClassType sig = getIdentifierFactory().getClassType(classname, packageName);
     assertTrue(sig + " is not found in rt.jar", view.getClass(sig).isPresent());
+  }
+
+  @Test
+  public void testNestedZipFileSystem() {
+
+    try (FileSystem zip = FileSystems.newFileSystem(war, null)) {
+      System.out.println("Outer zipfile Success :-)");
+
+      Path path = zip.getPath("WEB-INF", "lib", "MiniApp.jar");
+
+      URI uri = path.toUri();
+      try (FileSystem nestedZip = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
+        System.out.println("Nested zipfile Success :-)");
+
+        Path path1 = nestedZip.getPath("MiniApp.class");
+        boolean exists = Files.exists(path1);
+        if (exists) {
+          System.out.println("file found in nested filesys");
+        }
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        fail("cant access nested zipfile");
+      }
+
+    } catch (IOException e) {
+      e.printStackTrace();
+      fail("cant access zipfile");
+    }
   }
 }
