@@ -24,7 +24,6 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -42,7 +41,6 @@ final class StackFrame {
 
   @Nullable private Operand[] out;
   @Nullable private Local[] inStackLocals;
-  @Nullable private ValueBox[] boxes;
   @Nonnull private final ArrayList<Operand[]> in = new ArrayList<>(1);
   @Nonnull private final AsmMethodSource src;
 
@@ -73,15 +71,6 @@ final class StackFrame {
   }
 
   /**
-   * Sets the value boxes corresponding to the operands used by this frame.
-   *
-   * @param boxes the boxes.
-   */
-  void setBoxes(@Nonnull ValueBox... boxes) {
-    this.boxes = boxes;
-  }
-
-  /**
    * Sets the operands produced by this frame.
    *
    * @param oprs the operands.
@@ -108,12 +97,12 @@ final class StackFrame {
       /* merge, since prevOp != newOp */
       Local stack = inStackLocals[i];
       if (stack != null) {
-        if (newOp.stack == null) {
-          newOp.stack = stack;
+        if (newOp.stackLocal == null) {
+          newOp.stackLocal = stack;
           JAssignStmt as =
               Jimple.newAssignStmt(stack, newOp.value, StmtPositionInfo.createNoStmtPositionInfo());
           src.setStmt(newOp.insn, as);
-          newOp.updateBoxes();
+          newOp.updateUsages();
         } else {
           final Value rvalue = newOp.stackOrValue();
           // check for self/identity assignments
@@ -121,32 +110,29 @@ final class StackFrame {
             JAssignStmt as =
                 Jimple.newAssignStmt(stack, rvalue, StmtPositionInfo.createNoStmtPositionInfo());
             src.mergeStmts(newOp.insn, as);
-            newOp.addBox(as.getRightOpBox());
           }
         }
       } else {
         for (int j = 0; j != nrIn; j++) {
-          stack = in.get(j)[i].stack;
+          stack = in.get(j)[i].stackLocal;
           if (stack != null) {
             break;
           }
         }
         if (stack == null) {
-          stack = newOp.stack;
+          stack = newOp.stackLocal;
           if (stack == null) {
             stack = src.newStackLocal();
           }
         }
         /* add assign statement for prevOp */
-        ValueBox box = boxes == null ? null : boxes[i];
         for (int j = 0; j != nrIn; j++) {
           Operand prevOp = in.get(j)[i];
-          if (prevOp.stack == stack) {
+          if (prevOp.stackLocal == stack) {
             continue;
           }
-          prevOp.removeBox(box);
-          if (prevOp.stack == null) {
-            prevOp.stack = stack;
+          if (prevOp.stackLocal == null) {
+            prevOp.stackLocal = stack;
             JAssignStmt as =
                 Jimple.newAssignStmt(
                     stack, prevOp.value, StmtPositionInfo.createNoStmtPositionInfo());
@@ -156,16 +142,15 @@ final class StackFrame {
             AbstractDefinitionStmt as =
                 (AbstractDefinitionStmt)
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
-            ValueBox lvb = as.getLeftOpBox();
-            assert lvb.getValue() == prevOp.stack : "Invalid stack local!";
-            ValueBox.$Accessor.setValue(lvb, stack);
-            prevOp.stack = stack;
+            Value lvb = as.getLeftOp();
+            assert lvb == prevOp.stackLocal : "Invalid stack local!";
+            prevOp.stackLocal = stack;
           }
-          prevOp.updateBoxes();
+          prevOp.updateUsages();
         }
-        if (newOp.stack != stack) {
-          if (newOp.stack == null) {
-            newOp.stack = stack;
+        if (newOp.stackLocal != stack) {
+          if (newOp.stackLocal == null) {
+            newOp.stackLocal = stack;
             JAssignStmt as =
                 Jimple.newAssignStmt(
                     stack, newOp.value, StmtPositionInfo.createNoStmtPositionInfo());
@@ -175,15 +160,11 @@ final class StackFrame {
             AbstractDefinitionStmt as =
                 (AbstractDefinitionStmt)
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
-            ValueBox lvb = as.getLeftOpBox();
-            assert lvb.getValue() == newOp.stack : "Invalid stack local!";
-            ValueBox.$Accessor.setValue(lvb, stack);
-            newOp.stack = stack;
+            Value lvb = as.getLeftOp();
+            assert lvb == newOp.stackLocal : "Invalid stack local!";
+            newOp.stackLocal = stack;
           }
-          newOp.updateBoxes();
-        }
-        if (box != null) {
-          ValueBox.$Accessor.setValue(box, stack);
+          newOp.updateUsages();
         }
         inStackLocals[i] = stack;
       }

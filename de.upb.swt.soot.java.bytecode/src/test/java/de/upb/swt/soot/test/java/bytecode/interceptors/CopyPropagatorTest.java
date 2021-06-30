@@ -4,10 +4,10 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
 import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
 import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
@@ -79,7 +79,7 @@ public class CopyPropagatorTest {
   // i2 = 0
   Stmt stmt6 = JavaJimple.newAssignStmt(i2, IntConstant.getInstance(0), noStmtPositionInfo);
   // if i2 > i1 goto
-  Value condition = JavaJimple.newGtExpr(i2, i1);
+  AbstractConditionExpr condition = JavaJimple.newGtExpr(i2, i1);
   Stmt stmt7 = JavaJimple.newIfStmt(condition, noStmtPositionInfo);
   // i3 = i1 + 1
   Expr add1 = JavaJimple.newAddExpr(i1, IntConstant.getInstance(1));
@@ -90,7 +90,7 @@ public class CopyPropagatorTest {
   Stmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
   // if i2 > 5 goto
-  Value econdition = JavaJimple.newGtExpr(i2, IntConstant.getInstance(5));
+  AbstractConditionExpr econdition = JavaJimple.newGtExpr(i2, IntConstant.getInstance(5));
   Stmt estmt7 = JavaJimple.newIfStmt(econdition, noStmtPositionInfo);
   // i3 = 5 + 1
   Expr eadd1 = JavaJimple.newAddExpr(IntConstant.getInstance(5), IntConstant.getInstance(1));

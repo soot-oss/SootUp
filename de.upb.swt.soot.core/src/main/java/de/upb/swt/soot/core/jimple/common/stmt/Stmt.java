@@ -53,6 +53,7 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
   }
 
   /** Returns a list of Values defined in this Stmt. */
+  // TODO: [ms] naming/signature its just a single Def..always.
   @Nonnull
   public List<Value> getDefs() {
     return Collections.emptyList();
@@ -98,36 +99,36 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
     return false;
   }
 
+  /**
+   * This method must only be used for Stmts which contain an InvokeExpr (JInvokeStmt; possible in
+   * JAssignStmt) check via containsInvokExpr().
+   */
   public AbstractInvokeExpr getInvokeExpr() {
     throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
-  }
-
-  public ValueBox getInvokeExprBox() {
-    throw new RuntimeException("getInvokeExprBox() called with no invokeExpr present!");
   }
 
   public boolean containsArrayRef() {
     return false;
   }
 
+  /**
+   * This method must only be used for Stmts which contain an ArrayRef - possible with JAssignStmts.
+   * check via containsArrayRef().
+   */
   public JArrayRef getArrayRef() {
     throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
-  }
-
-  public ValueBox getArrayRefBox() {
-    throw new RuntimeException("getArrayRefBox() called with no ArrayRef present!");
   }
 
   public boolean containsFieldRef() {
     return false;
   }
 
+  /**
+   * This method must only be used for Stmts which contain an FieldRef - possible with JAssignStmts.
+   * check via containsFieldRef().
+   */
   public JFieldRef getFieldRef() {
     throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
-  }
-
-  public ValueBox getFieldRefBox() {
-    throw new RuntimeException("getFieldRefBox() called with no JFieldRef present!");
   }
 
   public StmtPositionInfo getPositionInfo() {

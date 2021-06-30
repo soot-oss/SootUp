@@ -1,10 +1,10 @@
-package de.upb.swt.soot.core.jimple.common.expr;
+package de.upb.swt.soot.core.validation;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2020 Linghui Luo, Christian Brüggemann
+ * Copyright (C) 1997-2020 Raja Vallée-Rai, Linghui Luo and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,16 +22,17 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.model.Body;
 import java.util.List;
 
-class ValueBoxUtils {
+public class StmtsValidator implements BodyValidator {
 
-  private ValueBoxUtils() {}
+  /** Verifies that the Units of this Body all point to a Unit contained within this body. */
+  @Override
+  public void validate(Body body, List<ValidationException> exception) {}
 
-  static ValueBox[] toValueBoxes(List<? extends Value> args) {
-    return args.stream().map(Jimple::newImmediateBox).toArray(ValueBox[]::new);
+  @Override
+  public boolean isBasicValidator() {
+    return true;
   }
 }
