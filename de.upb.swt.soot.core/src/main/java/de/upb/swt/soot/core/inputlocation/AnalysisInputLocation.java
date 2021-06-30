@@ -36,10 +36,10 @@ import javax.annotation.Nonnull;
  * SootClass}es, e.g. Java Classpath, Android APK, JAR file, etc. The strategy to traverse
  * something.
  *
- * <p>{@link #getClassSource(ClassType)} and {@link #getClassSources(IdentifierFactory)} should in
- * most cases simply call {@link #getClassSource(ClassType, ClassLoadingOptions)} or {@link
- * #getClassSources(IdentifierFactory, ClassLoadingOptions)} respectively with the default {@link
- * ClassLoadingOptions} of the frontend.
+ * <p>{@link #getClassSource(ClassType, View)} and {@link #getClassSources(IdentifierFactory, View)} should in
+ * most cases simply call {@link #getClassSource(ClassType, View)} or {@link
+ * #getClassSources(IdentifierFactory, View)} respectively with the default {@link
+ * de.upb.swt.soot.core.transform.BodyInterceptor}s of the frontend.
  *
  * @author Manuel Benz created on 22.05.18
  * @author Ben Hermann
