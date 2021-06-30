@@ -152,27 +152,15 @@ public class JavaModuleView extends JavaView {
   protected Optional<? extends AbstractClassSource<? extends JavaSootClass>> getAbstractClass(
       @Nonnull ClassType type) {
 
-    // search at first in modules for a class and second on the classpath
-    PackageName packageName = type.getPackageName();
-    if (packageName instanceof ModulePackageName) {
+    Optional<? extends AbstractClassSource<JavaSootClass>> cs =
+        getProject().getModuleInfoAnalysisInputLocation().stream()
+            .map(location -> location.getClassSource(type, this))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .findAny();
 
-      // target Class is is not unnamed module?
-      if (!((ModulePackageName) packageName).getModuleSignature().isUnnamedModule()) {
-        // target is inside a module -> load from module
-        Optional<? extends AbstractClassSource<JavaSootClass>> cs =
-            getProject().getModuleInfoAnalysisInputLocation().stream()
-                .map(
-                    location -> {
-                      return location.getClassSource(type, this);
-                    })
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findAny();
-
-        if (cs.isPresent()) {
-          return cs;
-        }
-      }
+    if (cs.isPresent()) {
+      return cs;
     }
 
     return super.getAbstractClass(type);
@@ -182,6 +170,7 @@ public class JavaModuleView extends JavaView {
   public synchronized Optional<JavaSootClass> getClass(
       @Nonnull ModulePackageName entryPackage, @Nonnull JavaClassType type) {
 
+    System.out.println("called 2");
     Optional<JavaModuleInfo> startOpt = getModuleInfo(entryPackage.getModuleSignature());
     if (!startOpt.isPresent()) {
       return Optional.empty();
@@ -430,10 +419,7 @@ public class JavaModuleView extends JavaView {
 
     // find the class in exported packages of modules
     return getProject().getModuleInfoAnalysisInputLocation().stream()
-        .map(
-            location -> {
-              return location.getClassSource(type, this);
-            })
+        .map(location -> location.getClassSource(type, this))
         .filter(Optional::isPresent)
         .filter(
             cs -> {
@@ -469,5 +455,21 @@ public class JavaModuleView extends JavaView {
       modules.addAll(moduleInputLocation.getModules());
     }
     return modules;
+  }
+
+  @Override
+  protected synchronized void resolveAll() {
+    if (isFullyResolved) {
+      return;
+    }
+
+    getProject().getInputLocations().stream()
+        .flatMap(location -> location.getClassSources(getIdentifierFactory(), this).stream())
+        .forEach(this::buildClassFrom);
+
+    getProject().getModuleInfoAnalysisInputLocation().stream()
+        .flatMap(location -> location.getClassSources(getIdentifierFactory(), this).stream())
+        .forEach(this::buildClassFrom);
+    isFullyResolved = true;
   }
 }

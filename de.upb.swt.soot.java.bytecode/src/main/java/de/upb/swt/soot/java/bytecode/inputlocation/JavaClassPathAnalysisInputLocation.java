@@ -80,15 +80,51 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * Explode the class or modulepath entries, separated by {@link File#pathSeparator}.
    *
    * @param paths entries as one string
+   * @param fileSystem filesystem in which the paths are resolved
    * @return path entries
    */
-  static @Nonnull Stream<Path> explode(@Nonnull String paths) {
+  static @Nonnull Stream<Path> explode(@Nonnull String paths, FileSystem fileSystem) {
     // the classpath is split at every path separator which is not escaped
     String regex = "(?<!\\\\)" + Pattern.quote(File.pathSeparator);
     final Stream<Path> exploded =
-        Stream.of(paths.split(regex)).flatMap(JavaClassPathAnalysisInputLocation::handleWildCards);
+        Stream.of(paths.split(regex)).flatMap(e -> handleWildCards(e, fileSystem));
     // we need to filter out duplicates of the same files to not generate duplicate input locations
     return exploded.map(Path::normalize).distinct();
+  }
+
+  /**
+   * Explode the class or modulepath entries, separated by {@link File#pathSeparator}.
+   *
+   * @param paths entries as one string
+   * @return path entries
+   */
+  static @Nonnull Stream<Path> explode(@Nonnull String paths) {
+    return explode(paths, FileSystems.getDefault());
+  }
+
+  /**
+   * The class path can have directories with wildcards as entries. All jar/JAR files inside those
+   * directories have to be added to the class path.
+   *
+   * @param entry A class path entry
+   * @param fileSystem The filesystem the paths should be resolved for
+   * @return A stream of class path entries with wildcards exploded
+   */
+  private static @Nonnull Stream<Path> handleWildCards(
+      @Nonnull String entry, FileSystem fileSystem) {
+    if (entry.endsWith(WILDCARD_CHAR)) {
+      Path baseDir = fileSystem.getPath(entry.substring(0, entry.indexOf(WILDCARD_CHAR)));
+      try {
+        return StreamUtils.iteratorToStream(
+            Files.newDirectoryStream(baseDir, "*.{jar,JAR}").iterator());
+      } catch (PatternSyntaxException | NotDirectoryException e) {
+        throw new IllegalStateException("Malformed wildcard entry", e);
+      } catch (IOException e) {
+        throw new IllegalStateException("Couldn't access entries denoted by wildcard", e);
+      }
+    } else {
+      return Stream.of(fileSystem.getPath(entry));
+    }
   }
 
   /**
@@ -99,19 +135,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @return A stream of class path entries with wildcards exploded
    */
   private static @Nonnull Stream<Path> handleWildCards(@Nonnull String entry) {
-    if (entry.endsWith(WILDCARD_CHAR)) {
-      Path baseDir = Paths.get(entry.substring(0, entry.indexOf(WILDCARD_CHAR)));
-      try {
-        return StreamUtils.iteratorToStream(
-            Files.newDirectoryStream(baseDir, "*.{jar,JAR}").iterator());
-      } catch (PatternSyntaxException | NotDirectoryException e) {
-        throw new IllegalStateException("Malformed wildcard entry", e);
-      } catch (IOException e) {
-        throw new IllegalStateException("Couldn't access entries denoted by wildcard", e);
-      }
-    } else {
-      return Stream.of(Paths.get(entry));
-    }
+    return handleWildCards(entry, FileSystems.getDefault());
   }
 
   @Override
@@ -158,8 +182,20 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @return list of classpath entries
    */
   private List<AnalysisInputLocation<JavaSootClass>> explodeClassPath(@Nonnull String jarPath) {
+    return explodeClassPath(jarPath, FileSystems.getDefault());
+  }
+
+  /**
+   * extract the classes from the classpath
+   *
+   * @param jarPath The jar path for which the classes need to be listed
+   * @param fileSystem the filesystem the path should be resolved for
+   * @return list of classpath entries
+   */
+  private List<AnalysisInputLocation<JavaSootClass>> explodeClassPath(
+      @Nonnull String jarPath, @Nonnull FileSystem fileSystem) {
     try {
-      return explode(jarPath)
+      return explode(jarPath, fileSystem)
           .flatMap(cp -> StreamUtils.optionalToStream(inputLocationForPath(cp)))
           .collect(Collectors.toList());
 

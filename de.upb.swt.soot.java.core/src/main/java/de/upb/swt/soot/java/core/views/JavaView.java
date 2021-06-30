@@ -53,7 +53,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
 
   @Nonnull private final Map<ClassType, JavaSootClass> cache = new HashMap<>();
 
-  private volatile boolean isFullyResolved = false;
+  protected volatile boolean isFullyResolved = false;
 
   @Nonnull
   protected Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
@@ -124,10 +124,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
   protected Optional<? extends AbstractClassSource<? extends JavaSootClass>> getAbstractClass(
       @Nonnull ClassType type) {
     return getProject().getInputLocations().stream()
-        .map(
-            location -> {
-              return location.getClassSource(type, this);
-            })
+        .map(location -> location.getClassSource(type, this))
         .filter(Optional::isPresent)
         // like javas behaviour: if multiple matching Classes(ClassTypes) are found on the
         // classpath the first is returned (see splitpackage)
@@ -153,7 +150,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
     return Optional.of(theClass);
   }
 
-  private synchronized void resolveAll() {
+  protected synchronized void resolveAll() {
     if (isFullyResolved) {
       return;
     }

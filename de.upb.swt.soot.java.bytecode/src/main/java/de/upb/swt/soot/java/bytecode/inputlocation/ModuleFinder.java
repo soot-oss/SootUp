@@ -80,9 +80,10 @@ public class ModuleFinder {
    *
    * @param modulePath the module path
    */
-  public ModuleFinder(@Nonnull String modulePath) {
+  public ModuleFinder(@Nonnull String modulePath, @Nonnull FileSystem fileSystem) {
     this.modulePathEntries =
-        JavaClassPathAnalysisInputLocation.explode(modulePath).collect(Collectors.toList());
+        JavaClassPathAnalysisInputLocation.explode(modulePath, fileSystem)
+            .collect(Collectors.toList());
     for (Path modulePathEntry : modulePathEntries) {
       if (!Files.exists(modulePathEntry)) {
         throw new IllegalArgumentException(
@@ -93,6 +94,10 @@ public class ModuleFinder {
                 + "' does not exist in the filesystem.");
       }
     }
+  }
+
+  public ModuleFinder(@Nonnull String modulePath) {
+    this(modulePath, FileSystems.getDefault());
   }
 
   @Nonnull
@@ -172,6 +177,10 @@ public class ModuleFinder {
     if (PathUtils.isArchive(path)) {
       buildModuleForJar(path);
     } else if (attrs.isDirectory()) {
+      Path mi = path.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
+      if (Files.exists(mi)) {
+        buildModuleForExplodedModule(path);
+      }
 
       try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
         for (Path entry : stream) {
@@ -182,7 +191,7 @@ public class ModuleFinder {
           }
 
           if (attrs.isDirectory()) {
-            Path mi = entry.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
+            mi = entry.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
             if (Files.exists(mi)) {
               buildModuleForExplodedModule(entry);
             }

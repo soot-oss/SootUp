@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * The Java-specific implementation of {@link IdentifierFactory}. Should not be used for other
@@ -216,8 +217,17 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   @Nonnull
   public JavaClassType fromPath(@Nonnull final Path file) {
-    String separator = file.getFileSystem().getSeparator();
     String path = file.toString();
+    String separator = file.getFileSystem().getSeparator();
+
+    // for multi release jars, remove beginning of path
+    // /META-INF/versions/15/de/upb...
+    // we only want /de/upb...
+    if (path.startsWith("/META-INF/")) {
+      // start at 4th separator
+      int index = StringUtils.ordinalIndexOf(path, separator, 4);
+      path = path.substring(index);
+    }
 
     String fullyQualifiedName =
         FilenameUtils.removeExtension(

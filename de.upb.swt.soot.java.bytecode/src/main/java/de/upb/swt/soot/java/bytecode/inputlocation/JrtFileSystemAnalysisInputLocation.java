@@ -220,7 +220,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
               sig.getClassName(), sig.getPackageName().getPackageName(), moduleDir.toString());
     }
 
-    // if we are using the normal signature factory, than trim the module from the path
+    // if we are using the normal signature factory, then trim the module from the path
     return sig;
   }
 

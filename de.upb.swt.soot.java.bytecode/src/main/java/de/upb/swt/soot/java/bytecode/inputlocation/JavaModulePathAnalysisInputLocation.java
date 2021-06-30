@@ -35,6 +35,8 @@ import de.upb.swt.soot.java.core.ModuleInfoAnalysisInputLocation;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -63,7 +65,20 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
    *     SootClassSource}es for the files found on the class path
    */
   public JavaModulePathAnalysisInputLocation(@Nonnull String modulePath) {
-    moduleFinder = new ModuleFinder(modulePath);
+    this(modulePath, FileSystems.getDefault());
+  }
+
+  /**
+   * Creates a {@link JavaModulePathAnalysisInputLocation} which locates classes in the given module
+   * path.
+   *
+   * @param modulePath The class path to search in The {@link ClassProvider} for generating {@link
+   *     SootClassSource}es for the files found on the class path
+   * @param fileSystem filesystem for the path
+   */
+  public JavaModulePathAnalysisInputLocation(
+      @Nonnull String modulePath, @Nonnull FileSystem fileSystem) {
+    moduleFinder = new ModuleFinder(modulePath, fileSystem);
   }
 
   @Nonnull
@@ -141,6 +156,7 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
     if (inputLocation == null) {
       return Optional.empty();
     }
+
     return inputLocation.getClassSource(klassType, view);
   }
 }
