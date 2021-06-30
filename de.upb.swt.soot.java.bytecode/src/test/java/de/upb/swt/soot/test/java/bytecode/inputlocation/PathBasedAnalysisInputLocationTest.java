@@ -177,7 +177,6 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
   @Test
   public void modularMultiReleaseJar() {
-    // TODO [bh] resolve all modules, resolve all modules class sources, module info
     final ClassType utilityNoModule =
         getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
 
