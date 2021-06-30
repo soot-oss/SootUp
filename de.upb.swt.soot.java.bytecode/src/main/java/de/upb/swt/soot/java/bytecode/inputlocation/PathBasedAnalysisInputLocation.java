@@ -4,7 +4,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
-import com.sun.nio.zipfs.ZipFileSystem;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
@@ -21,6 +20,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -187,26 +187,14 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
                         "Could not close file system of " + removalNotification.getKey(), e);
                   }
                 })
-            //  .expireAfterAccess(5, TimeUnit.SECONDS)
+            .expireAfterAccess(1, TimeUnit.SECONDS)
             .build(
                 CacheLoader.from(
                     path -> {
                       try {
-                        // if nested (zip)-filesystem.. java8 hack
-                        if (path.getFileSystem() instanceof ZipFileSystem) {
-                          try {
-                            return FileSystems.getFileSystem(path.toUri());
-                          } catch (FileSystemNotFoundException e) {
-                            //    e.printStackTrace();
-                            return FileSystems.newFileSystem(path.toUri(), Collections.emptyMap());
-                          }
-                        }
                         return FileSystems.newFileSystem(Objects.requireNonNull(path), null);
                       } catch (IOException e) {
                         throw new RuntimeException("Could not open file system of " + path, e);
-                      } catch (Exception e) {
-                        System.out.println(path.toUri());
-                        throw e;
                       }
                     }));
 
@@ -235,18 +223,15 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
         @Nonnull IdentifierFactory identifierFactory,
         @Nonnull ClassLoadingOptions classLoadingOptions) {
-      FileSystem fs;
-      try {
-        fs = fileSystemCache.get(path);
-      } catch (ExecutionException e) {
+      try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
+        final Path archiveRoot = fs.getPath("/");
+        return walkDirectory(
+            archiveRoot,
+            identifierFactory,
+            new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()));
+      } catch (IOException e) {
         throw new RuntimeException(e);
       }
-
-      final Path archiveRoot = fs.getPath("/");
-      return walkDirectory(
-          archiveRoot,
-          identifierFactory,
-          new AsmJavaClassProvider(classLoadingOptions.getBodyInterceptors()));
     }
   }
 
