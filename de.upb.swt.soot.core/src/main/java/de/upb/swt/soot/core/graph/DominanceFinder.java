@@ -103,8 +103,6 @@ public class DominanceFinder {
         }
       }
     }
-
-    this.dominanceTree = buildDominanceTree(blockGraph.getStartingBlock());
   }
 
   @Nonnull
@@ -135,6 +133,15 @@ public class DominanceFinder {
       }
     }
     return treeList;
+  }
+
+  @Nonnull
+  public DominanceTree getDominanceTree(){
+    if(dominanceTree != null){
+      return this.dominanceTree;
+    }else{
+      return this.dominanceTree = buildDominanceTree(idxToBlock.get(0));
+    }
   }
 
   @Nonnull
