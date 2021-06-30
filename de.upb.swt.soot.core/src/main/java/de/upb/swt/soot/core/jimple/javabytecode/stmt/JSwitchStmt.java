@@ -212,7 +212,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   }
 
   @Nonnull
-  public JSwitchStmt withKey(@Nonnull Value key) {
+  public JSwitchStmt withKey(@Nonnull Immediate key) {
     return new JSwitchStmt(key, getValues(), getPositionInfo());
   }
 
