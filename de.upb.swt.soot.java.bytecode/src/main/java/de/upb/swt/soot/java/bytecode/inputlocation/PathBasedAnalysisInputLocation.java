@@ -123,7 +123,7 @@ public abstract class PathBasedAnalysisInputLocation
 
       String value = attributes.getValue("Multi-Release");
 
-      return Boolean.TRUE.equals(Boolean.valueOf(value));
+      return Boolean.parseBoolean(value);
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {
