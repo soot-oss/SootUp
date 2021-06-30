@@ -89,6 +89,7 @@ public class JavaModuleView extends JavaView {
     return (JavaModuleProject) super.getProject();
   }
 
+  @Nonnull
   public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
     JavaModuleInfo moduleInfo = moduleInfoMap.get(sig);
     if (moduleInfo != null) {
@@ -97,7 +98,7 @@ public class JavaModuleView extends JavaView {
 
     for (ModuleInfoAnalysisInputLocation inputLocation :
         getProject().getModuleInfoAnalysisInputLocation()) {
-      Optional<JavaModuleInfo> moduleInfoOpt = inputLocation.getModuleInfo(sig);
+      Optional<JavaModuleInfo> moduleInfoOpt = inputLocation.getModuleInfo(sig, this);
       if (moduleInfoOpt.isPresent()) {
         moduleInfoMap.put(sig, moduleInfoOpt.get());
         return moduleInfoOpt;
@@ -344,9 +345,9 @@ public class JavaModuleView extends JavaView {
                     .flatMap(
                         input -> {
                           // modulepath
-                          return ((ModuleInfoAnalysisInputLocation) input)
+                          return input
                               .getModulesClassSources(moduleSignature, getIdentifierFactory(), this)
-                                  .stream();
+                              .stream();
                         }));
 
       } else {
@@ -452,7 +453,7 @@ public class JavaModuleView extends JavaView {
     Set<ModuleSignature> modules = new HashSet<>();
     for (ModuleInfoAnalysisInputLocation moduleInputLocation :
         getProject().getModuleInfoAnalysisInputLocation()) {
-      modules.addAll(moduleInputLocation.getModules());
+      modules.addAll(moduleInputLocation.getModules(this));
     }
     return modules;
   }

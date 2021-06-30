@@ -82,12 +82,12 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
   }
 
   @Nonnull
-  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
+  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig, View<?> view) {
     return moduleFinder.getModuleInfo(sig);
   }
 
   @Nonnull
-  public Set<ModuleSignature> getModules() {
+  public Set<ModuleSignature> getModules(View<?> view) {
     return moduleFinder.getModules();
   }
 

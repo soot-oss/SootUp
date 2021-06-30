@@ -45,6 +45,7 @@ import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.ModuleInfoAnalysisInputLocation;
 import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
+import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.ModuleJavaClassType;
 import de.upb.swt.soot.java.core.views.JavaModuleView;
 import de.upb.swt.soot.java.core.views.JavaView;
@@ -176,6 +177,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
   @Test
   public void modularMultiReleaseJar() {
+    // TODO [bh] resolve all modules, resolve all modules class sources, module info
     final ClassType utilityNoModule =
         getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
 
@@ -203,21 +205,38 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     final JavaModuleView view_9 = project_9.createOnDemandView();
 
+    ModuleSignature moduleSignature =
+        JavaModuleIdentifierFactory.getModuleSignature("de.upb.swt.multirelease");
+
+    Assert.assertEquals(Collections.singleton(moduleSignature), view_9.getNamedModules());
+
+    Assert.assertTrue(view_9.getModuleInfo(moduleSignature).isPresent());
+
+    Assert.assertEquals(1, view_9.getModuleClasses(moduleSignature).size());
+
+    Assert.assertEquals(
+        "de.upb.swt.multirelease.Utility",
+        view_9.getModuleClasses(moduleSignature).stream()
+            .findAny()
+            .get()
+            .getType()
+            .getFullyQualifiedName());
+
     // for java 9
     Assert.assertEquals(
         "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
-        view_9.getClass(utilityNoModule).get().getClassSource().getSourcePath().toString());
-    // same class will be returned if no module is specified
-    Assert.assertEquals(
-        "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
         view_9.getClass(utilityModule).get().getClassSource().getSourcePath().toString());
+    // different class will be returned if no module is specified
+    Assert.assertEquals(
+        "/de/upb/swt/multirelease/Utility.class",
+        view_9.getClass(utilityNoModule).get().getClassSource().getSourcePath().toString());
     Assert.assertEquals(
         "/de/upb/swt/multirelease/Main.class",
         view_9.getClass(classType2).get().getClassSource().getSourcePath().toString());
     // assert that method is correctly resolved to base
     Assert.assertTrue(
         view_9
-            .getClass(utilityNoModule)
+            .getClass(utilityModule)
             .get()
             .getMethod(
                 getIdentifierFactory()
@@ -234,9 +253,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     Assert.assertEquals(
         "/de/upb/swt/multirelease/Utility.class",
         view_8.getClass(utilityNoModule).get().getClassSource().getSourcePath().toString());
-    Assert.assertNotEquals(
-        "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
-        view_8.getClass(utilityModule).get().getClassSource().getSourcePath().toString());
+    assertFalse(view_8.getClass(utilityModule).isPresent());
     Assert.assertEquals(
         "/de/upb/swt/multirelease/Main.class",
         view_8.getClass(classType2).get().getClassSource().getSourcePath().toString());

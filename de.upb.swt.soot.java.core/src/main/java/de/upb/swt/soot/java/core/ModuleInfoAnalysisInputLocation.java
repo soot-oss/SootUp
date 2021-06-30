@@ -23,8 +23,8 @@ public interface ModuleInfoAnalysisInputLocation extends AnalysisInputLocation<J
       @Nonnull View<?> view);
 
   @Nonnull
-  Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig);
+  Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig, View<?> view);
 
   @Nonnull
-  Set<ModuleSignature> getModules();
+  Set<ModuleSignature> getModules(View<?> view);
 }

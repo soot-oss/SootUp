@@ -134,7 +134,14 @@ public class JavaModulePathAnalysisInputLocationTest {
   public void testGetModules() {
     JavaModulePathAnalysisInputLocation inputLocation =
         new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar");
-    Collection<ModuleSignature> modules = inputLocation.getModules();
+    JavaModuleProject project =
+        new JavaModuleProject(
+            new JavaLanguage(9),
+            Collections.emptyList(),
+            Collections.singletonList(inputLocation),
+            DefaultSourceTypeSpecifier.getInstance());
+    JavaModuleView view = project.createOnDemandView();
+    Collection<ModuleSignature> modules = inputLocation.getModules(view);
     assertEquals(3, modules.size());
 
     assertTrue(modules.contains(JavaModuleIdentifierFactory.getModuleSignature("modmain")));

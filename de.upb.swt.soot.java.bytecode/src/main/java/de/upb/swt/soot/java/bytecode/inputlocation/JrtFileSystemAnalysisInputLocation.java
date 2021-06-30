@@ -226,7 +226,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
 
   @Nonnull
   @Override
-  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
+  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig, View<?> view) {
     if (!isResolved) {
       discoverModules();
     }
@@ -235,7 +235,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
 
   @Nonnull
   @Override
-  public Set<ModuleSignature> getModules() {
+  public Set<ModuleSignature> getModules(View<?> view) {
     if (!isResolved) {
       discoverModules();
     }
