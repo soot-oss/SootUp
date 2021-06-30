@@ -21,41 +21,63 @@ package de.upb.swt.soot.core.graph;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import java.util.HashSet;
-import java.util.Set;
+
+import org.checkerframework.checker.units.qual.A;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.*;
 
 /*@author Zun Wang*/
 public class DominanceTree {
 
-  private Block content;
-  private Set<DominanceTree> children = new HashSet<>();
+  private Map<Integer, Block> idxToBlock;
+  private Map<Block, Integer> blockToIdx;
+  public List<Integer>[] children;
+  public int[] parents;
 
-  public DominanceTree(Block content) {
-    this.content = content;
+  public DominanceTree(DominanceFinder dominanceFinder) {
+    this.idxToBlock = dominanceFinder.getIdxToBlock();
+    this.blockToIdx = dominanceFinder.getBlockToIdx();
+    int[] iDoms = dominanceFinder.getImmediateDominators();
+    int treeSize = iDoms.length;
+    children = new ArrayList[treeSize];
+    parents = new int[treeSize];
+    for(int i = 0; i < treeSize; i++){
+      children[i] = new ArrayList<>();
+      parents[i] = -1;
+    }
+
+    for(int i = 0; i < treeSize; i++){
+      if(iDoms[i] != i){
+        parents[i] = iDoms[i];
+        children[iDoms[i]].add(i);
+      }
+    }
   }
 
-  public Block getContent() {
-    return this.content;
+  @Nonnull
+  public List<Block> getChildren(@Nonnull Block block) {
+    List<Block> childList= new ArrayList<>();
+    int idx = blockToIdx.get(block);
+    for(int i : children[idx]){
+      childList.add(idxToBlock.get(i));
+    }
+    return childList;
   }
 
-  public Set<DominanceTree> getChildren() {
-    return children;
+  @Nullable
+  public Block getParent(@Nonnull Block block) {
+    int idx = blockToIdx.get(block);
+    if(parents[idx] == -1){
+      return null;
+    }
+    return idxToBlock.get(parents[idx]);
   }
 
-  public void addChild(DominanceTree child) {
-    children.add(child);
+  @Nonnull
+  public Block getRoot(){
+    return this.idxToBlock.get(0);
   }
 
-  public Block setContent(Block content) {
-    return this.content;
-  }
-
-  public void replaceChild(DominanceTree newChild, DominanceTree oldChild) {
-    children.remove(oldChild);
-    children.add(newChild);
-  }
-
-  public void setChildren(Set<DominanceTree> children) {
-    this.children = children;
-  }
 }

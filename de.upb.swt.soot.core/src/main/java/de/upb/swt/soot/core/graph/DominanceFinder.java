@@ -36,7 +36,6 @@ public class DominanceFinder {
   private Map<Block, Integer> blockToIdx = new HashMap<>();
   private int[] doms;
   private ArrayList<Integer>[] domFrontiers;
-  private DominanceTree dominanceTree;
 
   public DominanceFinder(BlockGraph blockGraph) {
 
@@ -105,44 +104,6 @@ public class DominanceFinder {
     }
   }
 
-  @Nonnull
-  private DominanceTree buildDominanceTree(Block block) {
-    DominanceTree tree = new DominanceTree(block);
-    int blockId = this.blockToIdx.get(block);
-    for (int i = 0; i < doms.length; i++) {
-      if (doms[i] == blockId && i != blockId) {
-        tree.addChild(buildDominanceTree(idxToBlock.get(i)));
-      }
-    }
-    return tree;
-  }
-
-  /** @return a list of DominanceTrees in DFS order */
-  @Nonnull
-  public List<DominanceTree> getDominanceTrees() {
-    List<DominanceTree> treeList = new ArrayList<>();
-    Deque<DominanceTree> queue = new ArrayDeque<>();
-    queue.add(getDominanceTree());
-    while (!queue.isEmpty()) {
-      DominanceTree tree = queue.removeFirst();
-      treeList.add(tree);
-      if (!tree.getChildren().isEmpty()) {
-        for (DominanceTree child : tree.getChildren()) {
-          queue.push(child);
-        }
-      }
-    }
-    return treeList;
-  }
-
-  @Nonnull
-  public DominanceTree getDominanceTree() {
-    if (dominanceTree != null) {
-      return this.dominanceTree;
-    } else {
-      return this.dominanceTree = buildDominanceTree(idxToBlock.get(0));
-    }
-  }
 
   @Nonnull
   public void replaceBlock(@Nonnull Block newBlock, Block oldBlock) {
@@ -178,6 +139,22 @@ public class DominanceFinder {
     }
     return dFs;
   }
+
+  @Nonnull
+  public Map<Integer, Block> getIdxToBlock(){
+    return this.idxToBlock;
+  }
+
+  @Nonnull
+  public Map<Block, Integer> getBlockToIdx(){
+    return this.blockToIdx;
+  }
+
+  @Nonnull
+  public int[] getImmediateDominators(){
+    return this.doms;
+  }
+
 
   @Nonnull
   private int getFirstDefinedBlockPredIdx(List<Block> preds) {

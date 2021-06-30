@@ -27,7 +27,7 @@ import org.junit.experimental.categories.Category;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
-public class DomianceFinderTest {
+public class DominanceTest {
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
@@ -117,31 +117,25 @@ public class DomianceFinderTest {
     List<Block> blocks = graph.getBlocks();
 
     DominanceFinder df = new DominanceFinder(graph);
-    for (DominanceTree tree : df.getDominanceTrees()) {
-      if (tree.getContent() == blocks.get(0)) {
-        assertTrue(tree.getChildren().size() == 1);
-        List<DominanceTree> list = new ArrayList<>(tree.getChildren());
-        assertTrue(list.get(0).getContent() == blocks.get(1));
-      } else if (tree.getContent() == blocks.get(1)) {
-        assertTrue(tree.getChildren().size() == 2);
-        List<DominanceTree> list = new ArrayList<>(tree.getChildren());
-        if (list.get(0).getContent() == blocks.get(3)) {
-          assertTrue(list.get(1).getContent() == blocks.get(2));
-        } else {
-          assertTrue(list.get(1).getContent() == blocks.get(3));
-        }
-      } else if (tree.getContent() == blocks.get(2)) {
-        assertTrue(tree.getChildren().size() == 3);
-        Set<Block> contents = new HashSet<>();
-        for (DominanceTree dt : tree.getChildren()) {
-          contents.add(dt.getContent());
-        }
-        assertTrue(contents.contains(blocks.get(4)));
-        assertTrue(contents.contains(blocks.get(5)));
-        assertTrue(contents.contains(blocks.get(6)));
-
-      } else {
-        assertTrue(tree.getChildren().size() == 0);
+    DominanceTree tree = new DominanceTree(df);
+    assertTrue(blocks.get(0) == tree.getRoot());
+    for(int i = 0; i < blocks.size(); i++){
+      Block block = blocks.get(i);
+      if(i==0){
+        assertTrue(tree.getChildren(block).size()==1);
+        assertTrue(tree.getParent(block) == null);
+      }else if(i==1){
+        assertTrue(tree.getChildren(block).size()==2);
+        assertTrue(tree.getParent(block) == blocks.get(0));
+      }else if(i==2){
+        assertTrue(tree.getChildren(block).size()==3);
+        assertTrue(tree.getParent(block) == blocks.get(1));
+      }else if(i==3){
+        assertTrue(tree.getChildren(block).size()==0);
+        assertTrue(tree.getParent(block) == blocks.get(1));
+      }else{
+        assertTrue(tree.getChildren(block).size()==0);
+        assertTrue(tree.getParent(block) == blocks.get(2));
       }
     }
   }
