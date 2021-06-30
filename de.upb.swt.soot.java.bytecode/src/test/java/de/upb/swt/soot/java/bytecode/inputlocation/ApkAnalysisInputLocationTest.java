@@ -25,7 +25,7 @@ public class ApkAnalysisInputLocationTest {
                                 new ApkAnalysisInputLocation(testPath + "droidbench/Aliasing"))
                         .build();
 
-        JavaView view = (JavaModuleView) project.createOnDemandView();
+        JavaView view = project.createOnDemandView();
 
         JavaClassType targetClass = JavaIdentifierFactory.getInstance().getClassType("de.ecspride.MainActivity");
 
