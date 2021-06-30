@@ -122,7 +122,7 @@ public class DominanceFinder {
   public List<DominanceTree> getDominanceTrees() {
     List<DominanceTree> treeList = new ArrayList<>();
     Deque<DominanceTree> queue = new ArrayDeque<>();
-    queue.add(dominanceTree);
+    queue.add(getDominanceTree());
     while (!queue.isEmpty()) {
       DominanceTree tree = queue.removeFirst();
       treeList.add(tree);
