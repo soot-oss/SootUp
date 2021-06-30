@@ -38,7 +38,7 @@ public class JavaSourcePathNamespaceTest {
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
     final JavaProject project =
-        JavaProject.builder(new JavaLanguage(8)).addClassPath(inputLocation).build();
+        JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
     final JavaView view = project.createOnDemandView();
 
     Optional<JavaSootClass> clazz = view.getClass(type);
@@ -65,7 +65,7 @@ public class JavaSourcePathNamespaceTest {
     JavaIdentifierFactory defaultFactories = JavaIdentifierFactory.getInstance();
 
     final JavaProject project =
-        JavaProject.builder(new JavaLanguage(8)).addClassPath(inputLocation).build();
+        JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
     final JavaView view = project.createOnDemandView();
 
     Collection<? extends AbstractClassSource> classSources =
