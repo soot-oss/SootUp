@@ -42,7 +42,8 @@ public class ReplaceUseRefVisitorTest {
   public void testCaseArrayRef() {
 
     // replace base with newUse
-    ReplaceUseRefVisitor visitor = new ReplaceUseRefVisitor(base, newBase);
+    ReplaceUseRefVisitor visitor = new ReplaceUseRefVisitor();
+    visitor.init(base, newBase);
     Ref ref = javaJimple.newArrayRef(base, conIndex);
     ref.accept(visitor);
     Ref newRef = visitor.getResult();
@@ -55,7 +56,8 @@ public class ReplaceUseRefVisitorTest {
     expectedUses.clear();
 
     // replace constant index with newUse
-    visitor = new ReplaceUseRefVisitor(conIndex, conNewIndex);
+    visitor = new ReplaceUseRefVisitor();
+    visitor.init(conIndex, conNewIndex);
     ref = javaJimple.newArrayRef(base, conIndex);
     ref.accept(visitor);
     newRef = visitor.getResult();
@@ -66,7 +68,8 @@ public class ReplaceUseRefVisitorTest {
     expectedUses.clear();
 
     // replace local index with newUse
-    visitor = new ReplaceUseRefVisitor(localIndex, localNewIndex);
+    visitor = new ReplaceUseRefVisitor();
+    visitor.init(localIndex, localNewIndex);
     ref = javaJimple.newArrayRef(base, localIndex);
     ref.accept(visitor);
     newRef = visitor.getResult();
@@ -89,7 +92,8 @@ public class ReplaceUseRefVisitorTest {
   @Test
   public void testCaseInstanceFieldRef() {
 
-    ReplaceUseRefVisitor visitor = new ReplaceUseRefVisitor(base, newBase);
+    ReplaceUseRefVisitor visitor = new ReplaceUseRefVisitor();
+    visitor.init(base, newBase);
 
     // replace base with newUse
     Ref ref = JavaJimple.newInstanceFieldRef(base, fieldSignature);

@@ -39,12 +39,12 @@ public abstract class AbstractStmtVisitor<V> extends AbstractVisitor<V> implemen
   }
 
   @Override
-  public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+  public void caseAssignStmt(@Nonnull JAssignStmt<?, ?> stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
+  public void caseIdentityStmt(@Nonnull JIdentityStmt<?> stmt) {
     defaultCaseStmt(stmt);
   }
 

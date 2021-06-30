@@ -32,7 +32,7 @@ public class AbstractStmtPrinterTest {
             new MethodSubSignature("banana", Collections.emptyList(), VoidType.getInstance()));
     final Body body =
         Body.builder().setModifiers(Collections.emptySet()).setMethodSignature(ms).build();
-    NormalStmtPrinter p = new NormalStmtPrinter(body);
+    NormalStmtPrinter p = new NormalStmtPrinter();
     p.enableImports(true);
 
     // basic sanity checks

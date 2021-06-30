@@ -37,49 +37,31 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
   private Immediate oldUse;
   private Immediate newUse;
 
-  public ReplaceUseRefVisitor(@Nonnull Immediate oldUse, @Nonnull Immediate newUse) {
+  public ReplaceUseRefVisitor() {}
+
+  public void init(@Nonnull Immediate oldUse, @Nonnull Immediate newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
   }
 
   @Override
-  public void caseStaticFieldRef(@Nonnull JStaticFieldRef ref) {
-    this.defaultCaseRef(ref);
-  }
-
-  @Override
   public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef ref) {
-    if (newUse instanceof Local && ref.getBase().equivTo(oldUse)) {
-      setResult(ref.withBase(newUse));
+    if (ref.getBase() == oldUse) {
+      setResult(ref.withBase((Local) newUse));
     } else {
-      this.errorHandler(ref);
+      errorHandler(ref);
     }
   }
 
   @Override
   public void caseArrayRef(@Nonnull JArrayRef ref) {
-    if (newUse instanceof Local && ref.getBase().equivTo(oldUse)) {
-      setResult(ref.withBase(newUse));
-    } else if (newUse instanceof Immediate && ref.getIndex().equivTo(oldUse)) {
+    if (ref.getBase() == oldUse) {
+      setResult(ref.withBase((Local) newUse));
+    } else if (ref.getIndex() == oldUse) {
       setResult(ref.withIndex(newUse));
     } else {
-      this.errorHandler(ref);
+      errorHandler(ref);
     }
-  }
-
-  @Override
-  public void caseParameterRef(@Nonnull JParameterRef ref) {
-    this.defaultCaseRef(ref);
-  }
-
-  @Override
-  public void caseCaughtExceptionRef(@Nonnull JCaughtExceptionRef ref) {
-    this.defaultCaseRef(ref);
-  }
-
-  @Override
-  public void caseThisRef(@Nonnull JThisRef ref) {
-    this.defaultCaseRef(ref);
   }
 
   @Override

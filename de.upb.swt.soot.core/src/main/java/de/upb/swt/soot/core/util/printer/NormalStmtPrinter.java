@@ -26,14 +26,13 @@ import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
-import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 
 /** StmtPrinter implementation for normal (full) Jimple */
 public class NormalStmtPrinter extends LabeledStmtPrinter {
 
-  public NormalStmtPrinter(Body b) {
+  public NormalStmtPrinter() {
     super();
   }
 
@@ -57,7 +56,7 @@ public class NormalStmtPrinter extends LabeledStmtPrinter {
       typeSignature(r.getType());
     } else if (r instanceof JParameterRef) {
       JParameterRef pr = (JParameterRef) r;
-      output.append("@parameter" + pr.getIndex() + ": ");
+      output.append("@parameter").append(pr.getIndex()).append(": ");
       typeSignature(r.getType());
     } else if (r instanceof JCaughtExceptionRef) {
       output.append("@caughtexception");

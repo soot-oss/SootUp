@@ -24,7 +24,6 @@ package de.upb.swt.soot.core.util.printer;
 
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
-import de.upb.swt.soot.core.model.Body;
 
 /**
  * StmtPrinter implementation for normal (full) Jimple for OldSoot
@@ -36,8 +35,8 @@ import de.upb.swt.soot.core.model.Body;
  */
 public class LegacyJimplePrinter extends NormalStmtPrinter {
 
-  public LegacyJimplePrinter(Body b) {
-    super(b);
+  public LegacyJimplePrinter() {
+    super();
   }
 
   @Override
