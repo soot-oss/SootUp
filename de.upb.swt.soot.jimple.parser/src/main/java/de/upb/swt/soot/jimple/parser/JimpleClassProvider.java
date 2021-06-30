@@ -5,9 +5,11 @@ import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 import javax.annotation.Nonnull;
 import org.antlr.v4.runtime.CharStreams;
 

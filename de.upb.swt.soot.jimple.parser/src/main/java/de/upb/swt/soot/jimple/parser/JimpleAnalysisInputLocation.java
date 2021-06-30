@@ -52,26 +52,12 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
     }
   }
 
-  @Nonnull
-  @Override
-  public Collection<? extends SootClassSource<T>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
-    return getClassSources(identifierFactory, view);
-  }
-
   @Override
   @Nonnull
   public Collection<? extends SootClassSource<T>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
     return walkDirectory(
         path, identifierFactory, new JimpleClassProvider(view.getBodyInterceptors()));
-  }
-
-  @Nonnull
-  @Override
-  public Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull ClassType type, @Nonnull View<?> view) {
-    return getClassSource(type, view);
   }
 
   @Override
