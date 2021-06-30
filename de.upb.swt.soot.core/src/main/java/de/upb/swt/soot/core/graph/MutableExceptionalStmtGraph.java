@@ -178,12 +178,12 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
     }
   }
 
-  public void insertNode(@Nonnull Stmt node, @Nonnull Stmt succNode){
+  public void insertNode(@Nonnull Stmt node, @Nonnull Stmt succNode) {
     super.insertNode(node, succNode);
     exceptionalPreds.add(new ArrayList<>());
     exceptionalSuccs.add(new ArrayList<>());
     exceptionalDestinationTraps.add(new ArrayList<>());
-    //TODO: fit the method to traps
+    // TODO: fit the method to traps
   }
 
   /**

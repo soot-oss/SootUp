@@ -243,7 +243,7 @@ public class BlockGraph implements Iterable<Block> {
       newBlock = new Block(newBlock.getHead(), newStmt);
       isChanged = true;
     }
-    if(isChanged){
+    if (isChanged) {
       replaceBlock(block, newBlock);
     }
     return newBlock;

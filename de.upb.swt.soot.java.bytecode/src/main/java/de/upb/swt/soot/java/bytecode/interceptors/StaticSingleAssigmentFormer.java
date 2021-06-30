@@ -58,7 +58,8 @@ public class StaticSingleAssigmentFormer implements BodyInterceptor {
   // corresponding local's def.
   Map<Local, Set<Block>> localToBlocks = new HashMap<>();
 
-  //key: Block which contains phiStmts. Values : a set of phiStmts which contained by corresponding Block
+  // key: Block which contains phiStmts. Values : a set of phiStmts which contained by corresponding
+  // Block
   Map<Block, Set<Stmt>> blockToPhiStmts = new HashMap<>();
 
   int nextFreeIdx = 0;
@@ -132,13 +133,12 @@ public class StaticSingleAssigmentFormer implements BodyInterceptor {
     // renaming
     DominanceTree tree = dominanceFinder.getDominanceTree();
     Map<Local, Stack<Local>> localToNameStack = new HashMap<>();
-    for(Local local : builder.getLocals()){
+    for (Local local : builder.getLocals()) {
       localToNameStack.put(local, new Stack<>());
     }
     rename(tree, localToNameStack);
 
     System.out.println(builder.build());
-
   }
 
   private void replaceBlockInMap(Map<Local, Set<Block>> map, Block nb, Block ob) {
@@ -180,7 +180,7 @@ public class StaticSingleAssigmentFormer implements BodyInterceptor {
         isChanged = true;
       }
     }
-    if(isChanged && blockToPhiStmts.containsKey(oldBlock)){
+    if (isChanged && blockToPhiStmts.containsKey(oldBlock)) {
       blockToPhiStmts.put(block, blockToPhiStmts.get(oldBlock));
       blockToPhiStmts.remove(oldBlock);
     }
@@ -190,11 +190,11 @@ public class StaticSingleAssigmentFormer implements BodyInterceptor {
         for (Stmt phiStmt : phiStmts) {
           Local def = (Local) phiStmt.getDefs().get(0);
           Local oriDef = getOriginalLocal(def, localToNameStack.keySet());
-          if(!localToNameStack.get(oriDef).isEmpty()){
+          if (!localToNameStack.get(oriDef).isEmpty()) {
             Local arg = localToNameStack.get(oriDef).peek();
             for (Value use : phiStmt.getUses()) {
               if (use instanceof JPhiExpr) {
-                //todo: phi addVisitor
+                // todo: phi addVisitor
                 ((JPhiExpr) use).addArg(arg, block);
               }
             }
@@ -203,17 +203,17 @@ public class StaticSingleAssigmentFormer implements BodyInterceptor {
       }
     }
     // call renaming recursively
-    if(!tree.getChildren().isEmpty()){
-      for(DominanceTree child : tree.getChildren()){
+    if (!tree.getChildren().isEmpty()) {
+      for (DominanceTree child : tree.getChildren()) {
         rename(child, localToNameStack);
       }
     }
 
-    for(Stmt stmt : blockGraph.getBlockStmts(block)){
+    for (Stmt stmt : blockGraph.getBlockStmts(block)) {
       if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
         Local def = (Local) stmt.getDefs().get(0);
         Local oriDef = getOriginalLocal(def, localToNameStack.keySet());
-        if(!localToNameStack.get(oriDef).isEmpty()){
+        if (!localToNameStack.get(oriDef).isEmpty()) {
           localToNameStack.get(oriDef).pop();
         }
       }

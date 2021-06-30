@@ -136,10 +136,10 @@ public class DominanceFinder {
   }
 
   @Nonnull
-  public DominanceTree getDominanceTree(){
-    if(dominanceTree != null){
+  public DominanceTree getDominanceTree() {
+    if (dominanceTree != null) {
       return this.dominanceTree;
-    }else{
+    } else {
       return this.dominanceTree = buildDominanceTree(idxToBlock.get(0));
     }
   }
