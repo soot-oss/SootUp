@@ -58,7 +58,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   /** Caches the created PackageNames for packages. */
   @Nonnull protected final Map<String, PackageName> packages = new HashMap<>();
 
-  /** Chaches annotation types */
+  /** Caches annotation types */
   @Nonnull protected final Map<String, AnnotationType> annotationTypes = new HashMap<>();
 
   @Nonnull
@@ -159,6 +159,8 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
     Type ret;
     switch (typeName) {
+      case "":
+        throw new IllegalArgumentException("Invalid! Typedescriptor is empty.");
       case "null":
         ret = NullType.getInstance();
         break;
@@ -187,6 +189,15 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Nonnull
   public Collection<PrimitiveType> getAllPrimitiveTypes() {
     return Collections.unmodifiableCollection(primitiveTypeMap.values());
+  }
+
+  @Override
+  @Nonnull
+  public JavaClassType getBoxedType(@Nonnull PrimitiveType primitiveType) {
+    String name = primitiveType.getName();
+    StringBuilder boxedname = new StringBuilder(name);
+    boxedname.setCharAt(0, Character.toUpperCase(boxedname.charAt(0)));
+    return getClassType(boxedname.toString(), "java.lang");
   }
 
   @Override

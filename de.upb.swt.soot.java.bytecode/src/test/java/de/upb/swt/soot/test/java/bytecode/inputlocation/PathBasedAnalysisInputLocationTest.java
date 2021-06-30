@@ -26,7 +26,6 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import categories.Java9Test;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.BodySource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
@@ -43,13 +42,12 @@ import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
-import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
-import java.nio.file.*;
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -58,10 +56,10 @@ import org.junit.experimental.categories.Category;
  * @author Manuel Benz created on 06.06.18
  * @author Kaustubh Kelkar updated on 16.04.2020
  */
+@Category(Java8Test.class)
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test
-  @Category(Java8Test.class)
   public void testJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
@@ -73,54 +71,24 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   }
 
   @Test
-  @Category(Java8Test.class)
-  public void testRuntimeJar() {
-    PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.createForClassContainer(
-            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"));
-
-    final Collection<? extends AbstractClassSource> classSources =
-        pathBasedNamespace.getClassSources(getIdentifierFactory());
-
-    JavaView v =
-        JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(pathBasedNamespace)
-            .build()
-            .createOnDemandView();
-    // test some standard jre classes
-    runtimeContains(v, "Object", "java.lang");
-    runtimeContains(v, "List", "java.util");
-    runtimeContains(v, "Map", "java.util");
-    runtimeContains(v, "ArrayList", "java.util");
-    runtimeContains(v, "HashMap", "java.util");
-    runtimeContains(v, "Collection", "java.util");
-    runtimeContains(v, "Comparator", "java.util");
-  }
-
-  @Test
-  @Category(Java9Test.class)
   public void testWar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(war);
-    final JavaClassType warClassSig = getIdentifierFactory().getClassType("SimpleWarRead");
-
-    final Optional<? extends AbstractClassSource<?>> clazz =
-        pathBasedNamespace.getClassSource(warClassSig);
-    assertTrue(clazz.isPresent());
-    assertEquals(warClassSig, clazz.get().getClassType());
-
-    assertEquals(
-        19, pathBasedNamespace.getClassSources(JavaIdentifierFactory.getInstance()).size());
+    final ClassType warClass1 = getIdentifierFactory().getClassType("SimpleWarRead");
+    testClassReceival(pathBasedNamespace, warClass1, 2);
   }
 
   @Test
-  @Category(Java9Test.class)
   public void testClassInWar() {
+
+    String warFile = "../shared-test-resources/java-warApp/dummyWarApp.war";
+
+    assertTrue("File " + warFile + " not found.", new File(warFile).exists());
 
     // Create a project
     JavaProject p =
         JavaProject.builder(new JavaLanguage(8))
-            .addClassPath(new JavaClassPathAnalysisInputLocation(warFile))
+            .addInputLocation(new JavaClassPathAnalysisInputLocation(warFile))
             .build();
 
     // Get the view
@@ -181,6 +149,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                     SootMethod.builder()
                         .withSource(
                             new BodySource() {
+                              @Nonnull
                               @Override
                               public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) {
                                 /* [ms] violating @Nonnull */
@@ -220,5 +189,29 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   void runtimeContains(View view, String classname, String packageName) {
     final ClassType sig = getIdentifierFactory().getClassType(classname, packageName);
     assertTrue(sig + " is not found in rt.jar", view.getClass(sig).isPresent());
+  }
+
+  @Test
+  public void testRuntimeJar() {
+    PathBasedAnalysisInputLocation pathBasedNamespace =
+        PathBasedAnalysisInputLocation.createForClassContainer(
+            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"));
+
+    final Collection<? extends AbstractClassSource> classSources =
+        pathBasedNamespace.getClassSources(getIdentifierFactory());
+
+    JavaView v =
+        JavaProject.builder(new JavaLanguage(8))
+            .addInputLocation(pathBasedNamespace)
+            .build()
+            .createOnDemandView();
+    // test some standard jre classes
+    runtimeContains(v, "Object", "java.lang");
+    runtimeContains(v, "List", "java.util");
+    runtimeContains(v, "Map", "java.util");
+    runtimeContains(v, "ArrayList", "java.util");
+    runtimeContains(v, "HashMap", "java.util");
+    runtimeContains(v, "Collection", "java.util");
+    runtimeContains(v, "Comparator", "java.util");
   }
 }

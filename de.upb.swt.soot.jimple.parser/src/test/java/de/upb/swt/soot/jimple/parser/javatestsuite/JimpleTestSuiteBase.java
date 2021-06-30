@@ -48,7 +48,7 @@ public abstract class JimpleTestSuiteBase {
   }
 
   /**
-   * @returns the name of the class - assuming the testname unit has "Test" appended to the
+   * @return the name of the class - assuming the testname unit has "Test" appended to the
    *     respective name of the class
    */
   public String deriveClassName(String classPath) {

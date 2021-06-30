@@ -88,7 +88,8 @@ public class WitherTest {
 
     JavaSootClass newSootClass = sootClass.withReplacedMethod(method, method.withBody(body));
 
-    Optional<JavaSootMethod> newMethod = newSootClass.getMethod(method.getSubSignature());
+    Optional<JavaSootMethod> newMethod =
+        newSootClass.getMethod(method.getSignature().getSubSignature());
     assertTrue(newMethod.isPresent());
     Body newBody = newMethod.get().getBody();
     assertNotNull(newBody);

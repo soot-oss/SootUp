@@ -20,21 +20,24 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import com.google.common.base.Preconditions;
+
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.bytecode.frontend.AsmModuleSource;
+import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.JavaSootClass;
-import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.ModuleInfoAnalysisInputLocation;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
+import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
 import java.net.URI;
@@ -43,11 +46,9 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -55,9 +56,12 @@ import javax.annotation.Nonnull;
  *
  * @author Andreas Dann created on 06.06.18
  */
-public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInputLocation {
+public class JrtFileSystemAnalysisInputLocation
+    implements BytecodeAnalysisInputLocation, ModuleInfoAnalysisInputLocation {
 
-  private final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
+  private static final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
+  Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
+  boolean isResolved = false;
 
   @Override
   @Nonnull
@@ -65,18 +69,30 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
       @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
     JavaClassType klassType = (JavaClassType) classType;
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
+    ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
+    Path filepath =
+        theFileSystem.getPath(
+            klassType.getFullyQualifiedName().replace('.', '/')
+                + "."
+                + classProvider.getHandledFileType().getExtension());
+
+    // parse as module
     if (klassType.getPackageName() instanceof ModulePackageName) {
-      return this.getClassSourceInternalForModule(
-          klassType, new AsmJavaClassProvider(bodyInterceptors));
+
+      ModulePackageName modulePackageSignature = (ModulePackageName) klassType.getPackageName();
+
+      final Path module =
+          theFileSystem.getPath(
+              "modules", modulePackageSignature.getModuleSignature().getModuleName());
+      Path foundClass = module.resolve(filepath);
+      if (Files.isRegularFile(foundClass)) {
+        return Optional.of(classProvider.createClassSource(this, foundClass, klassType));
+      } else {
+        return Optional.empty();
+      }
     }
-    return this.getClassSourceInternalForClassPath(
-        klassType, new AsmJavaClassProvider(bodyInterceptors));
-  }
 
-  private @Nonnull Optional<AbstractClassSource<JavaSootClass>> getClassSourceInternalForClassPath(
-      @Nonnull JavaClassType classSignature, @Nonnull ClassProvider<JavaSootClass> classProvider) {
-
-    Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
+    // module information does not exist in Signature -> search for class
     final Path moduleRoot = theFileSystem.getPath("modules");
     try (DirectoryStream<Path> stream = Files.newDirectoryStream(moduleRoot)) {
       {
@@ -84,76 +100,79 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
           // check each module folder for the class
           Path foundfile = entry.resolve(filepath);
           if (Files.isRegularFile(foundfile)) {
-            return Optional.of(classProvider.createClassSource(this, foundfile, classSignature));
+            return Optional.of(classProvider.createClassSource(this, foundfile, klassType));
           }
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      throw new ResolveException("Error loading a module", moduleRoot, e);
     }
 
     return Optional.empty();
   }
 
-  private @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>>
-      getClassSourceInternalForModule(
-          @Nonnull JavaClassType classSignature,
-          @Nonnull ClassProvider<JavaSootClass> classProvider) {
-    Preconditions.checkArgument(classSignature.getPackageName() instanceof ModulePackageName);
-
-    ModulePackageName modulePackageSignature = (ModulePackageName) classSignature.getPackageName();
-
-    Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
-    final Path module =
-        theFileSystem.getPath(
-            "modules", modulePackageSignature.getModuleSignature().getModuleName());
-    Path foundClass = module.resolve(filepath);
-
-    if (Files.isRegularFile(foundClass)) {
-      return Optional.of(classProvider.createClassSource(this, foundClass, classSignature));
-
-    } else {
-      return Optional.empty();
-    }
-  }
-
-  // get the factory, which I should use the create the correspond class signatures
+  /** Retreive CLassSources of a module specified by methodSignature */
   @Override
   @Nonnull
-  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+  public Collection<? extends AbstractClassSource<JavaSootClass>> getModulesClassSources(
+      @Nonnull ModuleSignature moduleSignature,
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
-    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
-
-    final Path archiveRoot = theFileSystem.getPath("modules");
-    return walkDirectory(
-        archiveRoot, identifierFactory, new AsmJavaClassProvider(bodyInterceptors));
+    return getClassSourcesInternal(moduleSignature, identifierFactory, classLoadingOptions)
+        .collect(Collectors.toList());
   }
 
-  protected @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> walkDirectory(
-      @Nonnull Path dirPath,
+  @Nonnull
+  protected Stream<AbstractClassSource<JavaSootClass>> getClassSourcesInternal(
+      @Nonnull ModuleSignature moduleSignature,
       @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull ClassProvider<JavaSootClass> classProvider) {
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
 
-    final FileType handledFileType = classProvider.getHandledFileType();
+    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
+    ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
+
+    String moduleInfoFilename =
+        JavaModuleIdentifierFactory.MODULE_INFO_FILE
+            + "."
+            + classProvider.getHandledFileType().getExtension();
+
+    final Path archiveRoot = theFileSystem.getPath("modules", moduleSignature.getModuleName());
     try {
-      return Files.walk(dirPath)
-          .filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
+
+      return Files.walk(archiveRoot)
+          .filter(
+              filePath ->
+                  !Files.isDirectory(filePath)
+                      && filePath
+                          .toString()
+                          .endsWith(classProvider.getHandledFileType().getExtension())
+                      && !filePath.toString().endsWith(moduleInfoFilename))
           .flatMap(
-              p ->
-                  StreamUtils.optionalToStream(
-                      Optional.of(
-                          classProvider.createClassSource(
-                              this,
-                              p,
-                              this.fromPath(
-                                  p.subpath(2, p.getNameCount()),
-                                  p.subpath(1, 2),
-                                  identifierFactory)))))
-          .collect(Collectors.toList());
+              p -> {
+                return StreamUtils.optionalToStream(
+                    Optional.of(
+                        classProvider.createClassSource(
+                            this,
+                            p,
+                            fromPath(
+                                p.subpath(2, p.getNameCount()),
+                                p.subpath(1, 2),
+                                identifierFactory))));
+              });
     } catch (IOException e) {
-      throw new IllegalArgumentException(e);
+      throw new ResolveException("Error loading module " + moduleSignature, archiveRoot, e);
     }
+  }
+
+  @Override
+  public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
+
+    Collection<ModuleSignature> moduleSignatures = discoverModules();
+    return moduleSignatures.stream()
+        .flatMap(sig -> getClassSourcesInternal(sig, identifierFactory, classLoadingOptions))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -162,53 +181,67 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
    * @return Collection of found module names.
    */
   @Nonnull
-  public Collection<String> discoverModules() {
-    final Path moduleRoot = theFileSystem.getPath("modules");
-    List<String> foundModules = new ArrayList<>();
-
-    try (DirectoryStream<Path> stream = Files.newDirectoryStream(moduleRoot)) {
-      {
-        for (Path entry : stream) {
-          if (Files.isDirectory(entry)) {
-            foundModules.add(entry.subpath(1, 2).toString());
+  public Collection<ModuleSignature> discoverModules() {
+    if (!isResolved) {
+      final Path moduleRoot = theFileSystem.getPath("modules");
+      final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
+      try (DirectoryStream<Path> stream = Files.newDirectoryStream(moduleRoot)) {
+        {
+          for (Path entry : stream) {
+            if (Files.isDirectory(entry)) {
+              ModuleSignature moduleSignature =
+                  JavaModuleIdentifierFactory.getModuleSignature(entry.subpath(1, 2).toString());
+              Path moduleInfo = entry.resolve(moduleInfoFilename);
+              if (Files.exists(moduleInfo)) {
+                moduleInfoMap.put(moduleSignature, new AsmModuleSource(moduleInfo));
+              } else {
+                moduleInfoMap.put(
+                    moduleSignature, JavaModuleInfo.createAutomaticModuleInfo(moduleSignature));
+              }
+            }
           }
         }
+      } catch (IOException e) {
+        throw new ResolveException("Error while discovering modules", moduleRoot, e);
       }
-    } catch (IOException e) {
-      e.printStackTrace();
+      isResolved = true;
     }
-    return foundModules;
+    return moduleInfoMap.keySet();
   }
 
-  // TODO: originally, I could create a ModuleSingatre in any case, however, then
-  // every signature factory needs a methodRef create from path
-  // however, I cannot think of a general way for java 9 modules anyway....
-  // how to create the module name if we have a jar file..., or a multi jar, or the jrt file system
-  // nevertheless, one general methodRef for all signatures seems reasonable
-  private @Nonnull JavaClassType fromPath(
+  @Nonnull
+  private JavaClassType fromPath(
       final Path filename, final Path moduleDir, final IdentifierFactory identifierFactory) {
 
     // else use the module system and create fully class signature
     JavaClassType sig = (JavaClassType) identifierFactory.fromPath(filename);
 
-    if (identifierFactory instanceof ModuleIdentifierFactory) {
-      // FIXME: adann clean this up!
-      // String filename = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
-      // int index = filename.lastIndexOf('.');
-      // Path parentDir = filename.subpath(0, 2);
-      // Path packageFileName = parentDir.relativize(filename);
-      // // get the package
-      // String packagename = packageFileName.toString().replace('/', '.');
-      // String classname = FilenameUtils.removeExtension(packageFileName.getFileName().toString());
-      //
-
-      return ((ModuleIdentifierFactory) identifierFactory)
+    if (identifierFactory instanceof JavaModuleIdentifierFactory) {
+      return ((JavaModuleIdentifierFactory) identifierFactory)
           .getClassType(
               sig.getClassName(), sig.getPackageName().getPackageName(), moduleDir.toString());
     }
 
     // if we are using the normal signature factory, than trim the module from the path
     return sig;
+  }
+
+  @Nonnull
+  @Override
+  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
+    if (!isResolved) {
+      discoverModules();
+    }
+    return Optional.ofNullable(moduleInfoMap.get(sig));
+  }
+
+  @Nonnull
+  @Override
+  public Set<ModuleSignature> getModules() {
+    if (!isResolved) {
+      discoverModules();
+    }
+    return Collections.unmodifiableSet(moduleInfoMap.keySet());
   }
 
   @Override

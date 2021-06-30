@@ -53,7 +53,7 @@ import java.util.*;
 public class Printer {
 
   /**
-   * Options to control.. UseAbbreviations: print a breif overview of the given SootClass|SootMethod
+   * Options to control.. UseAbbreviations: print a brief overview of the given SootClass|SootMethod
    * OmitLocalsDeclaration: don't print Local declarations at the beginning of each method
    * AddJimpleLn: unsupported yet UseImports: Enable Java like imports to improve readability by
    * shortening the Signatures LegacyMode: Print Jimple like it was printed in old Soot (<= Version
@@ -103,19 +103,19 @@ public class Printer {
     jimpleLnNum++;
   }
 
-  private LabeledStmtPrinter determinePrinter(Body body) {
+  private LabeledStmtPrinter determinePrinter() {
     if (useAbbreviations()) {
-      return new BriefStmtPrinter(body);
+      return new BriefStmtPrinter();
     } else if (options.contains(Option.LegacyMode)) {
-      return new LegacyJimplePrinter(body);
+      return new LegacyJimplePrinter();
     } else {
-      return new NormalStmtPrinter(body);
+      return new NormalStmtPrinter();
     }
   }
 
   public void printTo(SootClass cl, PrintWriter out) {
 
-    LabeledStmtPrinter printer = determinePrinter(null);
+    LabeledStmtPrinter printer = determinePrinter();
     printer.enableImports(options.contains(Option.UseImports));
 
     // add jimple line number tags
@@ -265,7 +265,7 @@ public class Printer {
    * corresponding to the IR used to encode body body.
    */
   public void printTo(Body body, PrintWriter out) {
-    LabeledStmtPrinter printer = determinePrinter(body);
+    LabeledStmtPrinter printer = determinePrinter();
     printer.enableImports(options.contains(Option.UseImports));
     printBody(body, printer);
     out.print(printer);

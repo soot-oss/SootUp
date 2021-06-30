@@ -41,6 +41,7 @@ public class JavaPackageName extends PackageName {
    * @param packageName the package's name
    */
   public JavaPackageName(@Nonnull String packageName) {
+    //noinspection ConstantConditions
     this(packageName, null);
   }
 
