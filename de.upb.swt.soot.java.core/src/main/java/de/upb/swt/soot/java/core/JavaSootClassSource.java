@@ -24,6 +24,7 @@ package de.upb.swt.soot.java.core;
 
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.ClassType;
 import java.nio.file.Path;
@@ -32,7 +33,7 @@ import javax.annotation.Nonnull;
 public abstract class JavaSootClassSource extends SootClassSource<JavaSootClass> {
 
   public JavaSootClassSource(
-      @Nonnull AnalysisInputLocation<JavaSootClass> srcNamespace,
+      @Nonnull AnalysisInputLocation<? extends SootClass<?>> srcNamespace,
       @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
     super(srcNamespace, classSignature, sourcePath);

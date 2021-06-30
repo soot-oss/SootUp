@@ -21,6 +21,7 @@ import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
@@ -34,7 +35,7 @@ public class JFieldRefTest {
   @Before
   public void setUp() {
     JavaProject project =
-        JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
+        JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
     view = project.createOnDemandView();
   }
 
@@ -68,9 +69,10 @@ public class JFieldRefTest {
     assertEquals("<dummyMainClass: int dummyField>", ref.toString());
 
     // FIXME: [JMP] This assert always fails, because the view does not contain any class.
-    assertTrue(ref.getField(view).isPresent());
-    assertEquals(field, ref.getField(view).get());
-    assertEquals(EnumSet.of(Modifier.FINAL), ref.getField(view).get().getModifiers());
+    final Optional<? extends SootField> field1 = view.getField(ref.getFieldSignature());
+    assertTrue(field1.isPresent());
+    assertEquals(field, field1.get());
+    assertEquals(EnumSet.of(Modifier.FINAL), field1.get().getModifiers());
   }
 
   @Ignore
@@ -104,8 +106,9 @@ public class JFieldRefTest {
     assertEquals("obj.<dummyMainClass: int dummyField>", ref.toString());
 
     // FIXME: [JMP] This assert always fails, because the view does not contain any class.
-    assertTrue(ref.getField(view).isPresent());
-    assertEquals(fieldSig, ref.getField(view).get().getSignature());
-    assertEquals(EnumSet.of(Modifier.FINAL), ref.getField(view).get().getModifiers());
+    final Optional<? extends SootField> field1 = view.getField(ref.getFieldSignature());
+    assertTrue(field1.isPresent());
+    assertEquals(fieldSig, field1.get().getSignature());
+    assertEquals(EnumSet.of(Modifier.FINAL), field1.get().getModifiers());
   }
 }

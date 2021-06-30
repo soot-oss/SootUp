@@ -29,5 +29,7 @@ package de.upb.swt.soot.core;
 public abstract class Language {
   public abstract String getName();
 
+  public abstract int getVersion();
+
   public abstract IdentifierFactory getIdentifierFactory();
 }

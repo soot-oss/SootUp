@@ -58,7 +58,7 @@ public class WitherTest {
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature(
             "addDouble", declareClassSig, "double", Arrays.asList("double", "float"));
-    Optional<JavaSootMethod> m = sootClass.getMethod(methodSignature);
+    Optional<JavaSootMethod> m = sootClass.getMethod(methodSignature.getSubSignature());
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -88,7 +88,8 @@ public class WitherTest {
 
     JavaSootClass newSootClass = sootClass.withReplacedMethod(method, method.withBody(body));
 
-    Optional<JavaSootMethod> newMethod = newSootClass.getMethod(method.getSignature());
+    Optional<JavaSootMethod> newMethod =
+        newSootClass.getMethod(method.getSignature().getSubSignature());
     assertTrue(newMethod.isPresent());
     Body newBody = newMethod.get().getBody();
     assertNotNull(newBody);

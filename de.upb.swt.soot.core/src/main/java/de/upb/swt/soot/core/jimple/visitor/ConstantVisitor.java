@@ -22,34 +22,30 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
-import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
-import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
-import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
-import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
-import de.upb.swt.soot.core.jimple.common.constant.MethodHandle;
-import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
-import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
+import de.upb.swt.soot.core.jimple.common.constant.*;
+import javax.annotation.Nonnull;
 
 public interface ConstantVisitor extends Visitor {
-  void caseBooleanConstant(BooleanConstant v);
 
-  void caseDoubleConstant(DoubleConstant v);
+  void caseBooleanConstant(@Nonnull BooleanConstant constant);
 
-  void caseFloatConstant(FloatConstant v);
+  void caseDoubleConstant(@Nonnull DoubleConstant constant);
 
-  void caseIntConstant(IntConstant v);
+  void caseFloatConstant(@Nonnull FloatConstant constant);
 
-  void caseLongConstant(LongConstant v);
+  void caseIntConstant(@Nonnull IntConstant constant);
 
-  void caseNullConstant(NullConstant v);
+  void caseLongConstant(@Nonnull LongConstant constant);
 
-  void caseStringConstant(StringConstant v);
+  void caseNullConstant(@Nonnull NullConstant constant);
 
-  void caseClassConstant(ClassConstant v);
+  void caseStringConstant(@Nonnull StringConstant constant);
 
-  void caseMethodHandle(MethodHandle handle);
+  void caseClassConstant(@Nonnull ClassConstant constant);
 
-  void defaultCase(Object object);
+  void caseMethodHandle(@Nonnull MethodHandle handle);
+
+  void caseMethodType(@Nonnull MethodType methodType);
+
+  void defaultCaseConstant(@Nonnull Constant constant);
 }

@@ -2,7 +2,6 @@ package de.upb.swt.soot.jimple.parser.javatestsuite;
 
 import static org.junit.Assert.*;
 
-import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -30,9 +29,9 @@ public abstract class JimpleTestSuiteBase {
 
   @Before
   public void setup() {
-    AnalysisInputLocation<? extends SootClass<?>> inputLocation =
-        new JimpleAnalysisInputLocation(Paths.get(baseDir));
-    view = new JimpleProject(inputLocation).createOnDemandView();
+    view =
+        new JimpleProject(new JimpleAnalysisInputLocation<>(Paths.get(baseDir)))
+            .createOnDemandView();
   }
 
   /**
@@ -49,7 +48,7 @@ public abstract class JimpleTestSuiteBase {
   }
 
   /**
-   * @returns the name of the class - assuming the testname unit has "Test" appended to the
+   * @return the name of the class - assuming the testname unit has "Test" appended to the
    *     respective name of the class
    */
   public String deriveClassName(String classPath) {
@@ -73,7 +72,7 @@ public abstract class JimpleTestSuiteBase {
 
   public SootMethod loadMethod(MethodSignature methodSignature) {
     SootClass<?> clazz = loadClass(methodSignature.getDeclClassType());
-    Optional<? extends SootMethod> m = clazz.getMethod(methodSignature);
+    Optional<? extends SootMethod> m = clazz.getMethod(methodSignature.getSubSignature());
     if (!m.isPresent()) {
       System.out.println("existing methods:");
       clazz.getMethods().forEach(System.out::println);

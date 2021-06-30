@@ -26,10 +26,7 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
-import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.Position;
-import de.upb.swt.soot.core.model.SootField;
-import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
@@ -50,7 +47,7 @@ class AsmClassSource extends JavaSootClassSource {
   @Nonnull private final ClassNode classNode;
 
   public AsmClassSource(
-      AnalysisInputLocation<JavaSootClass> inputLocation,
+      AnalysisInputLocation<? extends SootClass<?>> inputLocation,
       Path sourcePath,
       JavaClassType javaClassType,
       @Nonnull ClassNode classNode) {
@@ -174,12 +171,12 @@ class AsmClassSource extends JavaSootClassSource {
     if (classNode.superName == null) {
       return Optional.empty();
     }
-    return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.superName));
+    return Optional.ofNullable(AsmUtil.toJimpleClassType(classNode.superName));
   }
 
   @Nonnull
   public Optional<? extends ClassType> resolveOuterClass() {
-    return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.outerClass));
+    return Optional.ofNullable(AsmUtil.toJimpleClassType(classNode.outerClass));
   }
 
   @Nonnull

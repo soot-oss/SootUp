@@ -115,7 +115,8 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
   }
 
   @Override
-  public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+  @Nonnull
+  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
     // By using a set here, already added classes won't be overwritten and the class which is found
@@ -128,7 +129,8 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
   }
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+  @Nonnull
+  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
       @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
     for (AnalysisInputLocation<JavaSootClass> inputLocation : cpEntries) {
       final Optional<? extends AbstractClassSource<JavaSootClass>> classSource =
@@ -140,8 +142,8 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
     return Optional.empty();
   }
 
-  private @Nonnull Optional<AnalysisInputLocation<JavaSootClass>> inputLocationForPath(
-      @Nonnull Path path) {
+  @Nonnull
+  private Optional<AnalysisInputLocation<JavaSootClass>> inputLocationForPath(@Nonnull Path path) {
     if (Files.exists(path) && (Files.isDirectory(path) || PathUtils.isArchive(path))) {
       return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path));
     } else {

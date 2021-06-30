@@ -19,10 +19,16 @@ public class NoModifierClassTest extends MinimalBytecodeTestSuiteBase {
     JavaSootClass clazz = loadClass(getDeclaredClassSignature());
     // TODO SYNCHRONIZED modifier  does not work
     // assertEquals(EnumSet.noneOf(Modifier.class), clazz.getModifiers());
-    assertTrue(clazz.getMethod(getMethodSignature("private")).get().isPrivate());
-    assertTrue(clazz.getMethod(getMethodSignature("protected")).get().isProtected());
-    assertTrue(clazz.getMethod(getMethodSignature("public")).get().isPublic());
-    assertTrue(clazz.getMethod(getMethodSignature("noModifier")).get().getModifiers().isEmpty());
+    assertTrue(clazz.getMethod(getMethodSignature("private").getSubSignature()).get().isPrivate());
+    assertTrue(
+        clazz.getMethod(getMethodSignature("protected").getSubSignature()).get().isProtected());
+    assertTrue(clazz.getMethod(getMethodSignature("public").getSubSignature()).get().isPublic());
+    assertTrue(
+        clazz
+            .getMethod(getMethodSignature("noModifier").getSubSignature())
+            .get()
+            .getModifiers()
+            .isEmpty());
   }
 
   public MethodSignature getMethodSignature(String modifier) {

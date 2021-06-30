@@ -24,9 +24,9 @@ package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
 /** An expression that invokes a special method (e.g. private methods). */
 public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
-  public JSpecialInvokeExpr(Value base, MethodSignature method, List<? extends Value> args) {
+  public JSpecialInvokeExpr(Local base, MethodSignature method, List<? extends Value> args) {
     super(Jimple.newLocalBox(base), method, ValueBoxUtils.toValueBoxes(args));
   }
 
@@ -75,22 +75,25 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr impleme
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseSpecialInvokeExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseSpecialInvokeExpr(this);
   }
 
+  @Override
   @Nonnull
-  public JSpecialInvokeExpr withBase(Value base) {
+  public JSpecialInvokeExpr withBase(@Nonnull Local base) {
     return new JSpecialInvokeExpr(base, getMethodSignature(), getArgs());
   }
 
+  @Override
   @Nonnull
-  public JSpecialInvokeExpr withMethodSignature(MethodSignature methodSignature) {
-    return new JSpecialInvokeExpr(getBase(), methodSignature, getArgs());
+  public JSpecialInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature) {
+    return new JSpecialInvokeExpr((Local) getBase(), methodSignature, getArgs());
   }
 
+  @Override
   @Nonnull
-  public JSpecialInvokeExpr withArgs(List<? extends Value> args) {
-    return new JSpecialInvokeExpr(getBase(), getMethodSignature(), args);
+  public JSpecialInvokeExpr withArgs(@Nonnull List<? extends Value> args) {
+    return new JSpecialInvokeExpr((Local) getBase(), getMethodSignature(), args);
   }
 }

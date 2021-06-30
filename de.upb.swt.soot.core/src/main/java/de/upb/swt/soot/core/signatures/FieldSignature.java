@@ -32,23 +32,15 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class FieldSignature extends SootClassMemberSignature {
+public class FieldSignature extends SootClassMemberSignature<FieldSubSignature> {
 
-  @Nonnull private final FieldSubSignature subSignature;
-
-  public FieldSignature(final ClassType declaringClass, final String name, final Type type) {
+  public FieldSignature(
+      @Nonnull ClassType declaringClass, @Nonnull String name, @Nonnull Type type) {
     this(declaringClass, new FieldSubSignature(name, type));
   }
 
   public FieldSignature(
       @Nonnull ClassType declaringClass, @Nonnull FieldSubSignature subSignature) {
     super(declaringClass, subSignature);
-    this.subSignature = subSignature;
-  }
-
-  @Override
-  @Nonnull
-  public FieldSubSignature getSubSignature() {
-    return subSignature;
   }
 }

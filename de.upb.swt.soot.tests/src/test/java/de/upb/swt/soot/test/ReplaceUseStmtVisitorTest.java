@@ -64,7 +64,7 @@ public class ReplaceUseStmtVisitorTest {
     Expr addExpr = JavaJimple.newAddExpr(op1, op2);
     Stmt stmt = JavaJimple.newAssignStmt(var, addExpr, noStmtPositionInfo);
     stmt.accept(visitor);
-    Stmt newStmt = visitor.getNewStmt();
+    Stmt newStmt = visitor.getResult();
 
     List<Value> expectedUses = new ArrayList<>();
 
@@ -85,7 +85,7 @@ public class ReplaceUseStmtVisitorTest {
     Ref ref = javaJimple.newArrayRef(op1, op2);
     stmt = JavaJimple.newAssignStmt(var, ref, noStmtPositionInfo);
     stmt.accept(visitor);
-    newStmt = visitor.getNewStmt();
+    newStmt = visitor.getResult();
 
     expectedUses.set(0, javaJimple.newArrayRef(newOp, op2));
     expectedUses.set(1, newOp);
@@ -102,7 +102,7 @@ public class ReplaceUseStmtVisitorTest {
     // rValue is a Local, use local to replace it
     stmt = JavaJimple.newAssignStmt(var, op1, noStmtPositionInfo);
     stmt.accept(visitor);
-    stmt = visitor.getNewStmt();
+    stmt = visitor.getResult();
 
     expectedUses.clear();
     expectedUses.add(newOp);
@@ -142,7 +142,7 @@ public class ReplaceUseStmtVisitorTest {
         JavaJimple.newSpecialInvokeExpr(base, methodeWithOutParas, Collections.emptyList());
     Stmt stmt = JavaJimple.newInvokeStmt(invokeExpr, noStmtPositionInfo);
     stmt.accept(visitor);
-    Stmt newStmt = visitor.getNewStmt();
+    Stmt newStmt = visitor.getResult();
 
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newOp);
@@ -186,7 +186,7 @@ public class ReplaceUseStmtVisitorTest {
     ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(op1, newOp);
     Stmt stmt = JavaJimple.newRetStmt(op1, noStmtPositionInfo);
     stmt.accept(visitor);
-    Stmt newStmt = visitor.getNewStmt();
+    Stmt newStmt = visitor.getResult();
 
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newOp);

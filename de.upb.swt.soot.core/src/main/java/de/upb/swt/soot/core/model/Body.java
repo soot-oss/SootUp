@@ -97,6 +97,7 @@ public class Body implements Copyable {
    *
    * @return the method that owns this body.
    */
+  @Nonnull
   public MethodSignature getMethodSignature() {
     return methodSignature;
   }

@@ -22,79 +22,256 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 
-import de.upb.swt.soot.core.frontend.SootClassSource;
-import de.upb.swt.soot.core.model.*;
+import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.java.core.signatures.ModulePackageName;
+import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import javax.annotation.Nonnull;
 
 public abstract class JavaModuleInfo {
 
-  // FIXME: [AD] how to create automatic modules
-  private boolean isAutomaticModule;
-  private EnumSet<Modifier> modifiers;
-  private String moduleName;
+  public JavaModuleInfo() {}
 
-  public JavaModuleInfo(boolean isAutomaticModule) {
-    this.isAutomaticModule = isAutomaticModule;
+  public abstract ModuleSignature getModuleSignature();
+
+  public Set<ModuleModifier> getModifiers() {
+    return Collections.emptySet();
   }
 
-  public abstract String getModuleName();
-
+  // dependencies to other modules
   public abstract Collection<ModuleReference> requires();
 
+  // exported packages
   public abstract Collection<PackageReference> exports();
 
+  // permission for reflection
   public abstract Collection<PackageReference> opens();
 
-  public abstract Collection<JavaClassType> provides();
+  // interface providing
+  public abstract Collection<InterfaceReference> provides();
 
+  // interface usage
   public abstract Collection<JavaClassType> uses();
 
-  public abstract Set<Modifier> resolveModifiers();
+  public abstract boolean isAutomaticModule();
+
+  public boolean isUnnamedModule() {
+    return false;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(getModuleSignature()).append(' ');
+    if (isAutomaticModule()) {
+      sb.append("auto ");
+    }
+    sb.append("requires ").append(requires());
+    sb.append("exports ").append(exports());
+    sb.append("opens ").append(opens());
+    sb.append("uses ").append(uses());
+    sb.append("provides ").append(provides());
+    return sb.toString();
+  }
+
+  /** Represents the automatic module (e.g. a jar without a module-descriptor on the module path) */
+  public static JavaModuleInfo createAutomaticModuleInfo(@Nonnull ModuleSignature moduleName) {
+
+    return new JavaModuleInfo() {
+      @Override
+      public ModuleSignature getModuleSignature() {
+        return moduleName;
+      }
+
+      @Override
+      public Collection<ModuleReference> requires() {
+        // can read all other modules and the unnamed module (modules on the classpath)
+        throw new ResolveException(
+            "All modules can be required from the automatic module. Handle it separately.");
+      }
+
+      @Override
+      public Collection<PackageReference> exports() {
+        // all Packages are exported
+        throw new ResolveException(
+            "All Packages are exported in the automatic module. Handle it separately.");
+      }
+
+      @Override
+      public Collection<PackageReference> opens() {
+        // all Packages are open
+        throw new ResolveException(
+            "All Packages are open in the automatic module. Handle it separately.");
+      }
+
+      @Override
+      public Collection<InterfaceReference> provides() {
+        throw new ResolveException(
+            "All Packages are open in the automatic module. Handle it separately.");
+      }
+
+      @Override
+      public Collection<JavaClassType> uses() {
+        throw new ResolveException(
+            "All Packages are open in the automatic module. Handle it separately.");
+      }
+
+      @Override
+      public boolean isAutomaticModule() {
+        return true;
+      }
+    };
+  }
+
+  /** Represents all Packages from the Classpath */
+  public static JavaModuleInfo getUnnamedModuleInfo() {
+    return new JavaModuleInfo() {
+      @Override
+      public ModuleSignature getModuleSignature() {
+        return JavaModuleIdentifierFactory.getModuleSignature("");
+      }
+
+      @Override
+      public Collection<ModuleReference> requires() {
+        return Collections.emptyList();
+      }
+
+      @Override
+      public Collection<PackageReference> exports() {
+        return Collections.emptyList();
+      }
+
+      @Override
+      public Collection<PackageReference> opens() {
+        return Collections.emptyList();
+      }
+
+      @Override
+      public Collection<InterfaceReference> provides() {
+        return Collections.emptyList();
+      }
+
+      @Override
+      public Collection<JavaClassType> uses() {
+        return Collections.emptyList();
+      }
+
+      @Override
+      public boolean isAutomaticModule() {
+        return true;
+      }
+
+      @Override
+      public boolean isUnnamedModule() {
+        return true;
+      }
+
+      @Override
+      public String toString() {
+        return "<unnamed>" + super.toString();
+      }
+    };
+  }
 
   public static class ModuleReference {
 
-    private JavaClassType moduleInfo;
-    private EnumSet<Modifier> modifiers;
-    private SootClassSource classSource;
+    @Nonnull private final ModuleSignature moduleInfo;
+    @Nonnull private final EnumSet<ModuleModifier> modifiers;
 
-    public ModuleReference(JavaClassType moduleInfo, EnumSet<Modifier> accessModifier) {
+    public ModuleReference(
+        @Nonnull ModuleSignature moduleInfo, @Nonnull EnumSet<ModuleModifier> accessModifier) {
       this.moduleInfo = moduleInfo;
       this.modifiers = accessModifier;
+    }
+
+    @Nonnull
+    public EnumSet<ModuleModifier> getModifiers() {
+      return modifiers;
+    }
+
+    @Nonnull
+    public ModuleSignature getModuleSignature() {
+      return moduleInfo;
+    }
+
+    @Override
+    public String toString() {
+      return modifiers + " " + moduleInfo;
+    }
+  }
+
+  public static class InterfaceReference {
+    @Nonnull private final JavaClassType interfaceType;
+    @Nonnull private final JavaClassType interfaceImplementation;
+
+    public InterfaceReference(
+        @Nonnull JavaClassType interfaceType, @Nonnull JavaClassType interfaceImplementation) {
+      this.interfaceType = interfaceType;
+      this.interfaceImplementation = interfaceImplementation;
+    }
+
+    @Nonnull
+    public JavaClassType getInterfaceType() {
+      return interfaceType;
+    }
+
+    @Nonnull
+    public JavaClassType getInterfaceImplementation() {
+      return interfaceImplementation;
+    }
+
+    @Override
+    public String toString() {
+      return "provides " + interfaceType + " with " + interfaceImplementation;
     }
   }
 
   public static class PackageReference {
-    private String packageName;
-    private EnumSet<Modifier> modifers;
-    private Set<JavaClassType> targetModules;
+    @Nonnull private final ModulePackageName packageName;
+    @Nonnull private final EnumSet<ModuleModifier> modifers;
+    @Nonnull private final Set<ModuleSignature> targetModules;
 
     public PackageReference(
-        String packageName, EnumSet<Modifier> modifier, Collection<JavaClassType> targetModules) {
+        @Nonnull ModulePackageName packageName,
+        @Nonnull EnumSet<ModuleModifier> modifier,
+        @Nonnull Collection<ModuleSignature> targetModules) {
       this.packageName = packageName;
       this.modifers = modifier;
-      this.targetModules = new HashSet<>(targetModules);
+      this.targetModules =
+          targetModules.isEmpty() ? Collections.emptySet() : new HashSet<>(targetModules);
     }
 
-    // e.g. hash by packagename?
+    /** does not return true in case of self reference (which is usually implicitly allowed). */
+    public boolean appliesTo(@Nonnull ModuleSignature moduleSignature) {
 
-    public boolean isPublic() {
-      return this.targetModules.isEmpty();
-    }
-
-    public boolean exportedTo(JavaModuleInfo moduleInfo) {
-      if (isPublic()) {
+      if (targetModules.isEmpty()) {
+        // no specific list of modules is given so this package is exported|opened|.. to all
+        // packages that are interested in it.
         return true;
       }
-      // FIXME: [AD] check for automatic modules ?
-      return targetModules.contains(moduleInfo);
-    }
-  }
 
-  public boolean isAutomaticModule() {
-    return isAutomaticModule;
+      return targetModules.contains(moduleSignature);
+    }
+
+    @Nonnull
+    public ModulePackageName getPackageName() {
+      return packageName;
+    }
+
+    @Nonnull
+    public EnumSet<ModuleModifier> getModifiers() {
+      return modifers;
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder();
+      sb.append(modifers).append(' ').append(packageName);
+      if (!targetModules.isEmpty()) {
+        sb.append(" to ").append(targetModules);
+      }
+      return sb.toString();
+    }
   }
 }

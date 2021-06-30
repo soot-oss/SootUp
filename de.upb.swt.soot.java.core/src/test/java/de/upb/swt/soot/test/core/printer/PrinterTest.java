@@ -57,7 +57,7 @@ public class PrinterTest {
   private SootClass buildClass() {
 
     Project project =
-        JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
+        JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
     View view = project.createOnDemandView();
 
     String className = "some.package.SomeClass";

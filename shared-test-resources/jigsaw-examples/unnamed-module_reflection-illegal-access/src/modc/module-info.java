@@ -1,0 +1,3 @@
+module modc {
+    // empty
+}

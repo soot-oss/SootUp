@@ -23,8 +23,10 @@ package de.upb.swt.soot.core.jimple.common.ref;
  */
 
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.visitor.Acceptor;
+import de.upb.swt.soot.core.jimple.visitor.RefVisitor;
 
 /*
  *   References e.g. Locals, Fields, Array elements
  * */
-public interface Ref extends Value {}
+public interface Ref extends Value, Acceptor<RefVisitor> {}

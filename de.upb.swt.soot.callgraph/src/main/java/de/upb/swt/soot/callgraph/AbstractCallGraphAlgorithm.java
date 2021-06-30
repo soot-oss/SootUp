@@ -76,12 +76,13 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       MethodSignature currentMethodSignature = workList.pop();
       if (processed.contains(currentMethodSignature)) continue;
 
+      if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
+
       Stream<MethodSignature> invocationTargets =
           resolveAllCallsFromSourceMethod(view, currentMethodSignature);
 
       invocationTargets.forEach(
           t -> {
-            if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
             if (!cg.containsMethod(t)) cg.addMethod(t);
             if (!cg.containsCall(currentMethodSignature, t)) {
               cg.addCall(currentMethodSignature, t);
@@ -97,7 +98,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       View<? extends SootClass<?>> view, MethodSignature sourceMethod) {
     SootMethod currentMethodCandidate =
         view.getClass(sourceMethod.getDeclClassType())
-            .flatMap(c -> c.getMethod(sourceMethod))
+            .flatMap(c -> c.getMethod(sourceMethod.getSubSignature()))
             .orElse(null);
     if (currentMethodCandidate == null) return Stream.empty();
 

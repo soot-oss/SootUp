@@ -26,10 +26,7 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
-import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.Position;
-import de.upb.swt.soot.core.model.SootField;
-import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
@@ -38,7 +35,6 @@ import de.upb.swt.soot.java.core.AnnotationUsage;
 import de.upb.swt.soot.java.core.JavaAnnotationSootClassSource;
 import de.upb.swt.soot.java.core.JavaAnnotationSootMethod;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.JavaSootField;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
@@ -64,7 +60,7 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
   @Nonnull protected final ClassNode classNode;
 
   public AsmAnnotationClassSource(
-      AnalysisInputLocation<JavaSootClass> inputLocation,
+      AnalysisInputLocation<? extends SootClass<?>> inputLocation,
       Path sourcePath,
       JavaClassType javaClassType,
       @Nonnull ClassNode classNode) {
@@ -185,12 +181,12 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
     if (classNode.superName == null) {
       return Optional.empty();
     }
-    return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.superName));
+    return Optional.ofNullable(AsmUtil.toJimpleClassType(classNode.superName));
   }
 
   @Nonnull
   public Optional<? extends ClassType> resolveOuterClass() {
-    return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.outerClass));
+    return Optional.ofNullable(AsmUtil.toJimpleClassType(classNode.outerClass));
   }
 
   @Nonnull

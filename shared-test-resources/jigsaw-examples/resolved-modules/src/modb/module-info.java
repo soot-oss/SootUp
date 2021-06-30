@@ -1,0 +1,3 @@
+module modb {
+    requires moda;
+}
