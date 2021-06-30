@@ -79,7 +79,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
               if (rhs instanceof NumericConstant
                   || rhs instanceof StringConstant
                   || rhs instanceof NullConstant) {
-                JReturnStmt returnStmt = new JReturnStmt(rhs, stmt.getPositionInfo());
+                JReturnStmt returnStmt = new JReturnStmt((Immediate) rhs, stmt.getPositionInfo());
                 builder.replaceStmt(stmt, returnStmt);
                 stmt = returnStmt;
                 defs.add(returnStmt);

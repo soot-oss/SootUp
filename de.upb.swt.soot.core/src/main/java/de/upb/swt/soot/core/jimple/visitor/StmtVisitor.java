@@ -36,9 +36,9 @@ public interface StmtVisitor extends Visitor {
 
   void caseInvokeStmt(JInvokeStmt stmt);
 
-  void caseAssignStmt(JAssignStmt stmt);
+  void caseAssignStmt(JAssignStmt<?, ?> stmt);
 
-  void caseIdentityStmt(JIdentityStmt stmt);
+  void caseIdentityStmt(JIdentityStmt<?> stmt);
 
   void caseEnterMonitorStmt(JEnterMonitorStmt stmt);
 

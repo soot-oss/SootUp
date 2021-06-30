@@ -22,9 +22,9 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,41 +32,34 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractBinopExpr implements Expr {
 
-  @Nonnull private final ValueBox op1Box;
-  @Nonnull private final ValueBox op2Box;
+  @Nonnull private final Immediate op1;
+  @Nonnull private final Immediate op2;
 
-  AbstractBinopExpr(@Nonnull ValueBox op1Box, @Nonnull ValueBox op2Box) {
-    this.op1Box = op1Box;
-    this.op2Box = op2Box;
+  AbstractBinopExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+    this.op1 = op1;
+    this.op2 = op2;
   }
 
   @Nonnull
-  public Value getOp1() {
-    return op1Box.getValue();
+  public Immediate getOp1() {
+    return op1;
   }
 
   @Nonnull
-  public Value getOp2() {
-    return op2Box.getValue();
-  }
-
-  @Nonnull
-  public ValueBox getOp1Box() {
-    return op1Box;
-  }
-
-  @Nonnull
-  public ValueBox getOp2Box() {
-    return op2Box;
+  public Immediate getOp2() {
+    return op2;
   }
 
   @Override
   @Nonnull
-  public List<Value> getUses() {
-    List<Value> list = new ArrayList<>(op1Box.getValue().getUses());
-    list.add(op1Box.getValue());
-    list.addAll(op2Box.getValue().getUses());
-    list.add(op2Box.getValue());
+  public final List<Value> getUses() {
+    final List<Value> uses1 = op1.getUses();
+    final List<Value> uses2 = op2.getUses();
+    List<Value> list = new ArrayList<>(uses1.size() + uses2.size() + 2);
+    list.addAll(uses1);
+    list.add(op1);
+    list.addAll(uses2);
+    list.add(op2);
     return list;
   }
 
@@ -78,8 +71,7 @@ public abstract class AbstractBinopExpr implements Expr {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return op1Box.getValue().equivHashCode() * 101 + op2Box.getValue().equivHashCode() + 17
-        ^ getSymbol().hashCode();
+    return op1.equivHashCode() * 101 + op2.equivHashCode() + 17 ^ getSymbol().hashCode();
   }
 
   /** Returns the unique symbol for an operator. */
@@ -88,8 +80,6 @@ public abstract class AbstractBinopExpr implements Expr {
 
   @Override
   public String toString() {
-    Value op1 = op1Box.getValue();
-    Value op2 = op2Box.getValue();
     String leftOp = op1.toString();
     String rightOp = op2.toString();
     return leftOp + getSymbol() + rightOp;
@@ -97,14 +87,14 @@ public abstract class AbstractBinopExpr implements Expr {
 
   @Override
   public void toString(@Nonnull StmtPrinter up) {
-    op1Box.toString(up);
+    op1.toString(up);
     up.literal(getSymbol());
-    op2Box.toString(up);
+    op2.toString(up);
   }
 
   @Nonnull
-  public abstract AbstractBinopExpr withOp1(@Nonnull Value value);
+  public abstract AbstractBinopExpr withOp1(@Nonnull Immediate value);
 
   @Nonnull
-  public abstract AbstractBinopExpr withOp2(@Nonnull Value value);
+  public abstract AbstractBinopExpr withOp2(@Nonnull Immediate value);
 }

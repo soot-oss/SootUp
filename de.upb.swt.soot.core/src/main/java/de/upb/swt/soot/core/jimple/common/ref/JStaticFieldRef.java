@@ -70,7 +70,7 @@ public final class JStaticFieldRef extends JFieldRef implements Copyable {
   }
 
   @Nonnull
-  public JStaticFieldRef withFieldSignature(FieldSignature fieldSig) {
+  public JStaticFieldRef withFieldSignature(@Nonnull FieldSignature fieldSig) {
     return new JStaticFieldRef(fieldSig);
   }
 }

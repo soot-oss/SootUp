@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.types.PrimitiveType;
@@ -33,7 +34,7 @@ import javax.annotation.Nonnull;
 /** An expression that shifts its operand to the left (<<). */
 public final class JShlExpr extends AbstractIntLongBinopExpr implements Copyable {
 
-  public JShlExpr(Value op1, Value op2) {
+  public JShlExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);
   }
 
@@ -69,12 +70,12 @@ public final class JShlExpr extends AbstractIntLongBinopExpr implements Copyable
   }
 
   @Nonnull
-  public JShlExpr withOp1(Value op1) {
+  public JShlExpr withOp1(@Nonnull Immediate op1) {
     return new JShlExpr(op1, getOp2());
   }
 
   @Nonnull
-  public JShlExpr withOp2(Value op2) {
+  public JShlExpr withOp2(@Nonnull Immediate op2) {
     return new JShlExpr(getOp1(), op2);
   }
 }

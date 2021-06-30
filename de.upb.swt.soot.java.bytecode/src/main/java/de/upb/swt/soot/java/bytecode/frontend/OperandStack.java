@@ -104,12 +104,12 @@ public class OperandStack {
   @Nonnull
   public Operand popLocal(@Nonnull Operand o) {
     Value v = o.value;
-    Local l = o.stack;
+    Local l = o.stackLocal;
     if (l == null && !(v instanceof Local)) {
-      l = o.stack = methodSource.newStackLocal();
+      l = o.stackLocal = methodSource.newStackLocal();
       methodSource.setStmt(
           o.insn, Jimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
-      o.updateBoxes();
+      o.updateUsages();
     }
     return o;
   }
@@ -117,12 +117,12 @@ public class OperandStack {
   @Nonnull
   public Operand popImmediate(@Nonnull Operand o) {
     Value v = o.value;
-    Local l = o.stack;
+    Local l = o.stackLocal;
     if (l == null && !(v instanceof Local) && !(v instanceof Constant)) {
-      l = o.stack = methodSource.newStackLocal();
+      l = o.stackLocal = methodSource.newStackLocal();
       methodSource.setStmt(
           o.insn, Jimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
-      o.updateBoxes();
+      o.updateUsages();
     }
     return o;
   }
@@ -130,12 +130,12 @@ public class OperandStack {
   @Nonnull
   public Operand popStackConst(@Nonnull Operand o) {
     Value v = o.value;
-    Local l = o.stack;
+    Local l = o.stackLocal;
     if (l == null && !(v instanceof Constant)) {
-      l = o.stack = methodSource.newStackLocal();
+      l = o.stackLocal = methodSource.newStackLocal();
       methodSource.setStmt(
           o.insn, Jimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
-      o.updateBoxes();
+      o.updateUsages();
     }
     return o;
   }
