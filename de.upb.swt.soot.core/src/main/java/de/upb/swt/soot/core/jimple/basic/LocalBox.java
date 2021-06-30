@@ -22,7 +22,6 @@ package de.upb.swt.soot.core.jimple.basic;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.common.expr.JPhiExpr;
 
 /**
  * Contains a {@link Local}.
@@ -37,6 +36,6 @@ public class LocalBox extends ValueBox {
 
   @Override
   public boolean canContainValue(Value value) {
-    return value instanceof Local || value instanceof JPhiExpr;
+    return value instanceof Local;
   }
 }

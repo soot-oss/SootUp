@@ -28,7 +28,6 @@ import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -196,11 +195,6 @@ public final class JPhiExpr implements Expr, Copyable {
     return builder.toString();
   }
 
-  @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).casePhiExpr(this);
-  }
-
   @Nonnull
   public JPhiExpr withArgs(@Nonnull List<Local> args) {
     return new JPhiExpr(args, this.argToBlock);
@@ -209,5 +203,10 @@ public final class JPhiExpr implements Expr, Copyable {
   @Nonnull
   public JPhiExpr withArgToBlockMap(@Nonnull Map<Local, Block> argToBlock) {
     return new JPhiExpr(getArgs(), argToBlock);
+  }
+
+  @Override
+  public void accept(@Nonnull ExprVisitor v) {
+    v.casePhiExpr(this);
   }
 }

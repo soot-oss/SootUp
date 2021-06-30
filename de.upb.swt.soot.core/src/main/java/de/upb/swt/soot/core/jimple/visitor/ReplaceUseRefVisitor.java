@@ -24,7 +24,6 @@ package de.upb.swt.soot.core.jimple.visitor;
 
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.ref.*;
 import javax.annotation.Nonnull;
 
@@ -35,10 +34,10 @@ import javax.annotation.Nonnull;
  */
 public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
 
-  Value oldUse;
-  Value newUse;
+  private Immediate oldUse;
+  private Immediate newUse;
 
-  public ReplaceUseRefVisitor(@Nonnull Value oldUse, @Nonnull Value newUse) {
+  public ReplaceUseRefVisitor(@Nonnull Immediate oldUse, @Nonnull Immediate newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
   }
@@ -53,7 +52,7 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
     if (newUse instanceof Local && ref.getBase().equivTo(oldUse)) {
       setResult(ref.withBase(newUse));
     } else {
-      this.defaultCaseRef(ref);
+      this.errorHandler(ref);
     }
   }
 
@@ -64,7 +63,7 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
     } else if (newUse instanceof Immediate && ref.getIndex().equivTo(oldUse)) {
       setResult(ref.withIndex(newUse));
     } else {
-      this.defaultCaseRef(ref);
+      this.errorHandler(ref);
     }
   }
 
@@ -86,5 +85,10 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
   @Override
   public void defaultCaseRef(@Nonnull Ref ref) {
     setResult(ref);
+  }
+
+  public void errorHandler(@Nonnull Ref ref) {
+    throw new IllegalArgumentException(
+        "The given oldUse which should be replaced is not a current use of" + ref + "!");
   }
 }

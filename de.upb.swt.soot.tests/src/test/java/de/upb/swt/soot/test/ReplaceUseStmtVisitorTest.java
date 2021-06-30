@@ -3,21 +3,15 @@ package de.upb.swt.soot.test;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.graph.Block;
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
-import de.upb.swt.soot.core.jimple.common.expr.JPhiExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.Ref;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.ReplaceUseStmtVisitor;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -35,7 +29,6 @@ public class ReplaceUseStmtVisitorTest {
   JavaClassType intType = factory.getClassType("int");
   JavaClassType testClass = factory.getClassType("TestClass");
   JavaClassType voidType = factory.getClassType("void");
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
 
   Local op1 = JavaJimple.newLocal("op1", intType);
   Local op2 = JavaJimple.newLocal("op2", intType);
@@ -44,15 +37,10 @@ public class ReplaceUseStmtVisitorTest {
 
   Local base = JavaJimple.newLocal("base", testClass);
 
-  Local arg1 = JavaJimple.newLocal("arg1", intType);
-  Local arg2 = JavaJimple.newLocal("arg2", intType);
-  Stmt stmt1 = Jimple.newAssignStmt(arg1, IntConstant.getInstance(0), noStmtPositionInfo);
-  Stmt stmt2 = Jimple.newAssignStmt(arg2, IntConstant.getInstance(0), noStmtPositionInfo);
-  Block block1 = new Block(stmt1, stmt1, ImmutableUtils.immutableList(stmt1), null);
-  Block block2 = new Block(stmt2, stmt2, ImmutableUtils.immutableList(stmt2), null);
-
   MethodSignature methodeWithOutParas =
       new MethodSignature(testClass, "invokeExpr", Collections.emptyList(), voidType);
+
+  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
 
   /** Test use replacing in case JAssignStmt. */
   @Test
@@ -108,27 +96,6 @@ public class ReplaceUseStmtVisitorTest {
     expectedUses.add(newOp);
 
     assertTrue(stmt.getUses().equals(expectedUses));
-
-    // rValue is a Local, use phi to replace it
-    JPhiExpr phi = JPhiExpr.getEmptyPhi();
-    phi.addArg(arg1, block1);
-    phi.addArg(arg2, block2);
-    visitor = new ReplaceUseStmtVisitor(op1, phi);
-
-    stmt = JavaJimple.newAssignStmt(var, op1, noStmtPositionInfo);
-    stmt.accept(visitor);
-    stmt = visitor.getNewStmt();
-
-    expectedUses.clear();
-    expectedUses.addAll(ImmutableUtils.immutableList(phi, arg1, arg2));
-
-    for (int i = 0; i < expectedUses.size(); i++) {
-      isExpected = stmt.getUses().get(i).equivTo(expectedUses.get(i));
-      if (!isExpected) {
-        break;
-      }
-    }
-    assertTrue(isExpected);
   }
 
   /** Test use replacing in case JInvokeStmt and JIfStmt Here JInvokeStmt is as an example */
@@ -157,27 +124,6 @@ public class ReplaceUseStmtVisitorTest {
       }
     }
     assertTrue(isExpected);
-
-    // test phi
-    JPhiExpr phi = JPhiExpr.getEmptyPhi();
-    phi.addArg(arg1, block1);
-    phi.addArg(arg2, block2);
-    visitor = new ReplaceUseStmtVisitor(base, phi);
-
-    stmt.accept(visitor);
-    newStmt = visitor.getNewStmt();
-
-    expectedUses.clear();
-    expectedUses.addAll(ImmutableUtils.immutableList(arg1, arg2, phi));
-    expectedUses.add(new JSpecialInvokeExpr(phi, methodeWithOutParas, Collections.emptyList()));
-
-    for (int i = 0; i < expectedUses.size(); i++) {
-      isExpected = (newStmt.getUses().get(i).equivTo(expectedUses.get(i)));
-      if (!isExpected) {
-        break;
-      }
-    }
-    assertTrue(isExpected);
   }
 
   @Test
@@ -191,24 +137,5 @@ public class ReplaceUseStmtVisitorTest {
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newOp);
     assertTrue(newStmt.getUses().equals(expectedUses));
-
-    // test phi
-    JPhiExpr phi = JPhiExpr.getEmptyPhi();
-    phi.addArg(arg1, block1);
-    phi.addArg(arg2, block2);
-    visitor = new ReplaceUseStmtVisitor(op1, phi);
-    stmt.accept(visitor);
-    newStmt = visitor.getNewStmt();
-
-    expectedUses.clear();
-    expectedUses.addAll(ImmutableUtils.immutableList(arg1, arg2, phi));
-    boolean isExpected = false;
-    for (int i = 0; i < expectedUses.size(); i++) {
-      isExpected = newStmt.getUses().get(i).equivTo(expectedUses.get(i));
-      if (!isExpected) {
-        break;
-      }
-    }
-    assertTrue(isExpected);
   }
 }
