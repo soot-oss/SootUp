@@ -27,7 +27,7 @@ public class JrtFileSystemAnalysisInputLocationTest {
   @Test
   public void getClassSource() {
     JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
-    Project<JavaView, JavaSootClass> project =
+    Project<JavaSootClass, JavaView> project =
         new JavaProject(
             new JavaLanguage(8),
             Collections.singletonList(inputLocation),
@@ -45,7 +45,7 @@ public class JrtFileSystemAnalysisInputLocationTest {
   public void getClassSources() {
     // hint: quite expensive as it loads **all** Runtime modules!
     JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
-    Project<JavaView, JavaSootClass> project =
+    Project<JavaSootClass, JavaView> project =
         new JavaProject(
             new JavaLanguage(8),
             Collections.singletonList(inputLocation),

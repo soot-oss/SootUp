@@ -10,7 +10,7 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class JimpleProject extends Project<JimpleView, SootClass<?>> {
+public class JimpleProject extends Project<SootClass<?>, JimpleView> {
 
   public JimpleProject(@Nonnull AnalysisInputLocation<? extends SootClass<?>> inputLocation) {
     super(JimpleLanguage.getInstance(), inputLocation, DefaultSourceTypeSpecifier.getInstance());

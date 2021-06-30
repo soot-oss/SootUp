@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public abstract class Project<V extends View<? extends SootClass<?>>, S extends SootClass<?>> {
+public abstract class Project<S extends SootClass<?>, V extends View<? extends SootClass<?>>> {
 
   @Nonnull private final IdentifierFactory identifierFactory;
 

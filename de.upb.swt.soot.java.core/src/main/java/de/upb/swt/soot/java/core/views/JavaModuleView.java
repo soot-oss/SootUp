@@ -55,7 +55,7 @@ public class JavaModuleView extends JavaView {
   protected Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
       classLoadingOptionsSpecifier;
 
-  public JavaModuleView(@Nonnull Project<? extends JavaView, ? extends JavaSootClass> project) {
+  public JavaModuleView(@Nonnull Project<? extends JavaSootClass, ? extends JavaView> project) {
     this(project, analysisInputLocation -> EmptyClassLoadingOptions.Default);
   }
 
@@ -67,7 +67,7 @@ public class JavaModuleView extends JavaView {
    *     options.
    */
   public JavaModuleView(
-      @Nonnull Project<? extends JavaView, ? extends JavaSootClass> project,
+      @Nonnull Project<? extends JavaSootClass, ? extends JavaView> project,
       @Nonnull
           Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {

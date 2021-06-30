@@ -42,7 +42,7 @@ import javax.annotation.Nonnull;
  * @author Markus Schmidt
  * @author Linghui Luo
  */
-public class JavaProject extends Project<JavaView, JavaSootClass> {
+public class JavaProject extends Project<JavaSootClass, JavaView> {
 
   public JavaProject(
       JavaLanguage language,
