@@ -23,6 +23,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import javax.annotation.Nonnull;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -176,7 +178,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     // We cache the FileSystem instances as their creation is expensive.
     // The Guava Cache is thread-safe (see JavaDoc of LoadingCache) hence this
     // cache can be safely shared in a static variable.
-    protected static final LoadingCache<Path, FileSystem> fileSystemCache =
+    private static final LoadingCache<Path, FileSystem> fileSystemCache =
         CacheBuilder.newBuilder()
             .removalListener(
                 (RemovalNotification<Path, FileSystem> removalNotification) -> {
@@ -236,11 +238,21 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
   }
 
   private static final class WarArchiveAnalysisInputLocation
-      extends ArchiveBasedAnalysisInputLocation {
-    public List<AnalysisInputLocation> containedInputLocations = null;
+      extends DirectoryBasedAnalysisInputLocation {
+    public List<AnalysisInputLocation<JavaSootClass>> containedInputLocations = null;
+    public static int maxExtractedByte =
+        1024 * 1024 * 500; // limit of extracted file size to protect against archive bombs
 
     private WarArchiveAnalysisInputLocation(@Nonnull Path warPath) {
-      super(warPath);
+      super(
+          Paths.get(
+              System.getProperty("java.io.tmpdir")
+                  + File.separator
+                  + "sootOutput"
+                  + "-war"
+                  + warPath.hashCode()
+                  + "/"));
+      extractWarFile(warPath, path);
     }
 
     @Override
@@ -252,7 +264,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       Set<AbstractClassSource<JavaSootClass>> foundClasses = new HashSet<>();
 
       try {
-        for (AnalysisInputLocation inputLoc : getInputLocationsInPath()) {
+        for (AnalysisInputLocation<JavaSootClass> inputLoc : getInputLocationsInPath()) {
           foundClasses.addAll(inputLoc.getClassSources(identifierFactory, classLoadingOptions));
         }
       } catch (IOException e) {
@@ -261,33 +273,26 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
       return foundClasses;
     }
 
-    private Collection<AnalysisInputLocation> getInputLocationsInPath() throws IOException {
+    private Collection<AnalysisInputLocation<JavaSootClass>> getInputLocationsInPath()
+        throws IOException {
       if (containedInputLocations != null) {
         return containedInputLocations;
       }
-
-      try {
-        FileSystem fs = fileSystemCache.get(path);
-        final Path archiveRoot = fs.getPath("/");
-        containedInputLocations =
-            Files.walk(archiveRoot)
-                .flatMap(
-                    f -> {
-                      if (PathUtils.hasExtension(f, FileType.JAR)) {
-                        return Stream.of(
-                            new PathBasedAnalysisInputLocation.ArchiveBasedAnalysisInputLocation(
-                                f));
-                      } else if (PathUtils.hasExtension(f, FileType.CLASS)) {
-                        return Stream.of(
-                            new PathBasedAnalysisInputLocation.DirectoryBasedAnalysisInputLocation(
-                                f.getParent()));
-                      }
-                      return Stream.empty();
-                    })
-                .collect(Collectors.toList());
-      } catch (ExecutionException e) {
-        throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
-      }
+      containedInputLocations =
+          Files.walk(path)
+              .flatMap(
+                  f -> {
+                    if (PathUtils.hasExtension(f, FileType.JAR)) {
+                      return Stream.of(
+                          new PathBasedAnalysisInputLocation.ArchiveBasedAnalysisInputLocation(f));
+                    } else if (PathUtils.hasExtension(f, FileType.CLASS)) {
+                      return Stream.of(
+                          new PathBasedAnalysisInputLocation.DirectoryBasedAnalysisInputLocation(
+                              f.getParent()));
+                    }
+                    return Stream.empty();
+                  })
+              .collect(Collectors.toList());
       return containedInputLocations;
     }
 
@@ -297,7 +302,7 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
         @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
 
       try {
-        for (AnalysisInputLocation inputLocation : getInputLocationsInPath()) {
+        for (AnalysisInputLocation<JavaSootClass> inputLocation : getInputLocationsInPath()) {
           final Optional<? extends AbstractClassSource<JavaSootClass>> classSource =
               inputLocation.getClassSource(type, classLoadingOptions);
           if (classSource.isPresent()) {
@@ -312,6 +317,85 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
     }
 
     /**
+     * Extracts the war file at the temporary location to analyze underlying class and jar files
+     *
+     * <p>[ms] hint: extracting is necessary to access nested (zip)filesystems with java8/java9
+     * runtime - nested (zip)filesystems would work with java11 runtime (maybe java10)
+     *
+     * @param warFilePath The path to war file to be extracted
+     */
+    protected void extractWarFile(Path warFilePath, final Path destDirectory) {
+      int extractedSize = 0;
+      try {
+        File dest = destDirectory.toFile();
+        if (!dest.exists()) {
+          if (!dest.mkdir()) {
+            throw new RuntimeException("Could not create the directory: " + destDirectory);
+          }
+          dest.deleteOnExit();
+        }
+
+        ZipInputStream zis = new ZipInputStream(new FileInputStream(warFilePath.toString()));
+        ZipEntry zipEntry;
+        while ((zipEntry = zis.getNextEntry()) != null) {
+          Path filepath = destDirectory.resolve(zipEntry.getName());
+          final File file = filepath.toFile();
+
+          file.deleteOnExit();
+          if (zipEntry.isDirectory()) {
+            if (!file.exists()) {
+              file.mkdir();
+            }
+          } else {
+            byte[] incomingValues = new byte[4096];
+            int readBytesZip;
+            if (file.exists()) {
+              // compare contents -> does it contain the extracted war already?
+              int readBytesExistingFile;
+              final BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+              byte[] bisBuf = new byte[4096];
+              while ((readBytesZip = zis.read(incomingValues)) != -1) {
+                if (extractedSize > maxExtractedByte) {
+                  throw new RuntimeException(
+                      "The extracted warfile exceeds the size of "
+                          + maxExtractedByte
+                          + " byte. Either the file is a big archive or maybe it contains an archive bomb.");
+                }
+                readBytesExistingFile = bis.read(bisBuf, 0, readBytesZip);
+                if (readBytesExistingFile != readBytesZip) {
+                  throw new RuntimeException(
+                      "File \"" + file + "\" exists already and has differing size.");
+                } else if (!Arrays.equals(bisBuf, incomingValues)) {
+                  throw new RuntimeException(
+                      "File \"" + file + "\" exists already and has differing contents.");
+                }
+                extractedSize += readBytesZip;
+              }
+
+            } else {
+              BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+              while ((readBytesZip = zis.read(incomingValues)) != -1) {
+                if (extractedSize > maxExtractedByte) {
+                  throw new RuntimeException(
+                      "The extracted warfile exceeds the size of "
+                          + maxExtractedByte
+                          + " byte. Either the file is a big archive or maybe it contains an archive bomb.");
+                }
+                bos.write(incomingValues, 0, readBytesZip);
+                extractedSize += readBytesZip;
+              }
+              bos.close();
+            }
+          }
+          zis.closeEntry();
+        }
+
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    /**
      * Parses the web.xml file to search for the servlet-class classes in the extracted directory
      * after the war file is extracted
      *
@@ -321,12 +405,12 @@ public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysis
      *     to servlet-class in a {@link ArrayList} of {@link String}
      */
     @Nonnull
-    public List<String> retrieveServletClasses(Path extractedWARPath) {
+    public List<String> retrieveServletClasses(String extractedWARPath) {
       List<String> classesInXML = new ArrayList<>();
       try {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(extractedWARPath.resolve("/WEB-INF/web.xml").toFile());
+        Document document = builder.parse(new File(extractedWARPath + "/WEB-INF/web.xml"));
         document.getDocumentElement().normalize();
         NodeList nList = document.getElementsByTagName("servlet");
         for (int temp = 0; temp < nList.getLength(); temp++) {
