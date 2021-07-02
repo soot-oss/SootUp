@@ -149,7 +149,7 @@ public class JavaModulePathAnalysisInputLocation
 
   @Override
   public int hashCode() {
-    return modulePath.hashCode();
+    return moduleFinder.hashCode();
   }
 
   @Override
@@ -157,6 +157,6 @@ public class JavaModulePathAnalysisInputLocation
     if (!(o instanceof JavaModulePathAnalysisInputLocation)) {
       return false;
     }
-    return modulePath.equals(((JavaModulePathAnalysisInputLocation) o).modulePath);
+    return moduleFinder.equals(((JavaModulePathAnalysisInputLocation) o).moduleFinder);
   }
 }

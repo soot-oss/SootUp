@@ -38,9 +38,7 @@ import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
-import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.JavaProject;
-import de.upb.swt.soot.java.core.OverridingJavaClassSource;
+import de.upb.swt.soot.java.core.*;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.File;
@@ -100,7 +98,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     ClassType utilsClassSignature = p.getIdentifierFactory().getClassType("Employee", "ds");
 
     // Resolve signature to `SootClass`
-    SootClass<?> utilsClass = view.getClass(utilsClassSignature).get();
+    SootClass<JavaSootClassSource> utilsClass = view.getClass(utilsClassSignature).get();
 
     // Parse sub-signature for "setEmpSalary" method
     MethodSubSignature optionalToStreamMethodSubSignature =

@@ -312,6 +312,19 @@ public class ModuleFinder {
     return moduleName;
   }
 
+  @Override
+  public int hashCode() {
+    return modulePathEntries.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof ModuleFinder)) {
+      return false;
+    }
+    return modulePathEntries.equals(((ModuleFinder) o).modulePathEntries);
+  }
+
   /** Lazy-initialized cache of compiled patterns. */
   private static class Patterns {
     static final Pattern VERSION = Pattern.compile("-(\\d+(\\.|$))");
