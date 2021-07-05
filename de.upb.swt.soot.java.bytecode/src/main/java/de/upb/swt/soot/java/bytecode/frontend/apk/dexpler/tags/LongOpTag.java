@@ -42,7 +42,7 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.tags;
  * #L%
  */
 
-import de.upb.swt.soot.java.bytecode.frontend.apk.tag.Tag;
+import de.upb.swt.soot.core.jimple.tag.Tag;
 
 public class LongOpTag implements Tag {
   public String getName() {
