@@ -1,4 +1,4 @@
-package de.upb.swt.soot.java.bytecode.frontend.apk.tag;
+package de.upb.swt.soot.core.jimple.tag;
 
 /**
  * Represents a tag; these get attached to implementations of Host.
