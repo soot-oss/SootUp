@@ -84,4 +84,17 @@ public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>
     // FIXME: add classloadingoptions
     return map.values();
   }
+
+  @Override
+  public int hashCode() {
+    return map.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof EagerInputLocation)) {
+      return false;
+    }
+    return map.equals(((EagerInputLocation<?>) o).map);
+  }
 }
