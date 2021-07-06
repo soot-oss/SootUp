@@ -138,7 +138,6 @@ public class DominanceTest {
         assertTrue(tree.getParent(block) == blocks.get(2));
       }
     }
-    System.out.println(tree.getALLNodesDFS());
   }
 
   /**
