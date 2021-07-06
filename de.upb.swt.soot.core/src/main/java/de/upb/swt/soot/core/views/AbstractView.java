@@ -47,8 +47,8 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
 
   @Nonnull private final Map<ModuleDataKey<?>, Object> moduleData = new HashMap<>();
 
-  public AbstractView(@Nonnull Project<?, ? extends View<?>> project) {
-    this.project = (Project<T, ? extends View<T>>) project;
+  public AbstractView(@Nonnull Project<T, ? extends View<T>> project) {
+    this.project = project;
   }
 
   @Override
