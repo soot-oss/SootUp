@@ -48,27 +48,29 @@ import javax.annotation.Nonnull;
  */
 public class StaticSingleAssigmentFormer implements BodyInterceptor {
 
-  private BlockGraph blockGraph;
-
-  // Keys: all blocks in BlockGraph. Values: a set of locals which defined in the corresponding
-  // block
-  Map<Block, Set<Local>> blockToDefs = new HashMap<>();
-
-  // Keys: all locals in BodyBuilder. Values: a set of blocks which constants stmts with
-  // corresponding local's def.
-  Map<Local, Set<Block>> localToBlocks = new HashMap<>();
-
-  // key: Block which contains phiStmts. Values : a set of phiStmts which contained by corresponding
-  // Block
-  Map<Block, Set<Stmt>> blockToPhiStmts = new HashMap<>();
-
-  int nextFreeIdx = 0;
-
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
     // determine blockToDefs and localToBlocks
-    blockGraph = builder.getBlockGraph();
+    BlockGraph blockGraph = builder.getBlockGraph();
+
+    // Keys: all blocks in BlockGraph. Values: a set of locals which defined in the corresponding
+    // block
+    Map<Block, Set<Local>> blockToDefs = new HashMap<>();
+
+    // Keys: all locals in BodyBuilder. Values: a set of blocks which contains stmts with
+    // corresponding local's def.
+    Map<Local, Set<Block>> localToBlocks = new HashMap<>();
+
+    // key: Block which contains phiStmts. Values : a set of phiStmts which contained by
+    // corresponding
+    // Block
+    Map<Block, Set<Stmt>> blockToPhiStmts = new HashMap<>();
+
+    int nextFreeIdx = 0;
+
+    Set<Local> newLocals = new LinkedHashSet<>(builder.getLocals());
+
     for (Block block : blockGraph.getBlocks()) {
       Set<Local> defs = new HashSet<>();
       for (Stmt stmt : blockGraph.getBlockStmts(block)) {
@@ -130,15 +132,134 @@ public class StaticSingleAssigmentFormer implements BodyInterceptor {
         }
       }
     }
+
     // renaming
-    DominanceTree tree = dominanceFinder.getDominanceTree();
+    DominanceTree tree = new DominanceTree(dominanceFinder);
+    List<Block> treeNodes = tree.getALLNodesDFS();
+    List<Block> blockStack = new ArrayList<>();
+
     Map<Local, Stack<Local>> localToNameStack = new HashMap<>();
     for (Local local : builder.getLocals()) {
       localToNameStack.put(local, new Stack<>());
     }
-    rename(tree, localToNameStack);
 
-    System.out.println(builder.build());
+    HashSet<Block> visited = new HashSet<>();
+
+    for (int i = 0; i < treeNodes.size(); i++) {
+      Block oriBlock = treeNodes.get(i);
+      Block modifiedBlock = oriBlock;
+
+      // replace use and def in each stmts in the current block
+      Set<Stmt> newPhiStmts = new HashSet<>();
+      for (Stmt stmt : blockGraph.getBlockStmts(modifiedBlock)) {
+        // replace use
+        if (!stmt.getUses().isEmpty() && !constainsPhiExpr(stmt)) {
+          for (Value use : stmt.getUses()) {
+            if (use instanceof Local) {
+              Local newUse = localToNameStack.get(use).peek();
+              Stmt newStmt = BodyUtils.withNewUse(stmt, use, newUse);
+              modifiedBlock = blockGraph.replaceStmtInBlock(stmt, newStmt, modifiedBlock);
+              stmt = newStmt;
+            }
+          }
+        }
+        // generate new def and replace with new def
+        if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
+          Local def = (Local) stmt.getDefs().get(0);
+          Local newDef = def.withName(def.getName() + "#" + nextFreeIdx);
+          newLocals.add(newDef);
+          nextFreeIdx++;
+          localToNameStack.get(def).push(newDef);
+          Stmt newStmt = BodyUtils.withNewDef(stmt, newDef);
+          modifiedBlock = blockGraph.replaceStmtInBlock(stmt, newStmt, modifiedBlock);
+          if (constainsPhiExpr(newStmt)) {
+            newPhiStmts.add(newStmt);
+          }
+        }
+      }
+
+      tree.replaceNode(oriBlock, modifiedBlock);
+      if (blockToPhiStmts.containsKey(oriBlock)) {
+        blockToPhiStmts.put(modifiedBlock, newPhiStmts);
+        blockToPhiStmts.remove(oriBlock);
+      }
+      treeNodes.set(i, modifiedBlock);
+      visited.add(modifiedBlock);
+      blockStack.add(modifiedBlock);
+
+      // if successors has phiStmts, add args for phiStmts
+      for (Block succ : blockGraph.blockSuccessors(modifiedBlock)) {
+        if (blockToPhiStmts.containsKey(succ)) {
+          Block oriSucc = succ;
+          Set<Stmt> phiStmts = blockToPhiStmts.get(succ);
+          newPhiStmts = new HashSet<>();
+          for (Stmt phiStmt : phiStmts) {
+            Local def = (Local) phiStmt.getDefs().get(0);
+            Local oriDef = getOriginalLocal(def, localToNameStack.keySet());
+            if (!localToNameStack.get(oriDef).isEmpty()) {
+              Local arg = localToNameStack.get(oriDef).peek();
+
+              JPhiExpr newPhiExpr = null;
+              List<Local> args = null;
+              Map<Local, Block> argToBlock = null;
+              for (Value use : phiStmt.getUses()) {
+                if (use instanceof JPhiExpr) {
+                  newPhiExpr = (JPhiExpr) use;
+                  args = ((JPhiExpr) use).getArgs();
+                  argToBlock = ((JPhiExpr) use).getArgToBlockMap();
+                }
+                args.add(arg);
+                argToBlock.put(arg, modifiedBlock);
+                newPhiExpr = newPhiExpr.withArgs(args);
+                newPhiExpr = newPhiExpr.withArgToBlockMap(argToBlock);
+                Stmt newPhiStmt = ((JAssignStmt) phiStmt).withRValue(newPhiExpr);
+                newPhiStmts.add(newPhiStmt);
+                succ = blockGraph.replaceStmtInBlock(phiStmt, newPhiStmt, succ);
+                break;
+              }
+            }
+          }
+          blockToPhiStmts.remove(oriSucc);
+          blockToPhiStmts.put(succ, newPhiStmts);
+          tree.replaceNode(oriSucc, succ);
+          if (visited.contains(oriSucc)) {
+            visited.remove(oriSucc);
+            visited.add(succ);
+          }
+          if (blockStack.contains(oriSucc)) {
+            int id = blockStack.indexOf(oriSucc);
+            blockStack.set(id, succ);
+          }
+          int treeId = treeNodes.indexOf(oriSucc);
+          treeNodes.set(treeId, succ);
+        }
+      }
+
+      if (tree.getChildren(modifiedBlock).isEmpty()) {
+        Block top = blockStack.get(blockStack.size() - 1);
+        ;
+        List<Block> children;
+        do {
+          blockStack.remove(blockStack.size() - 1);
+          for (Stmt stmt : blockGraph.getBlockStmts(top)) {
+            if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
+              Local def = (Local) stmt.getDefs().get(0);
+              Local oriDef = getOriginalLocal(def, localToNameStack.keySet());
+              if (!localToNameStack.get(oriDef).isEmpty()) {
+                localToNameStack.get(oriDef).pop();
+              }
+            }
+          }
+          if (!blockStack.isEmpty()) {
+            top = blockStack.get(blockStack.size() - 1);
+            children = tree.getChildren(top);
+          } else {
+            break;
+          }
+        } while (containsAllChildren(visited, children));
+      }
+    }
+    builder.setLocals(newLocals);
   }
 
   private void replaceBlockInMap(Map<Local, Set<Block>> map, Block nb, Block ob) {
@@ -151,73 +272,13 @@ public class StaticSingleAssigmentFormer implements BodyInterceptor {
     }
   }
 
-  private void rename(DominanceTree tree, Map<Local, Stack<Local>> localToNameStack) {
-    Block block = tree.getContent();
-    Block oldBlock = block;
-    boolean isChanged = false;
-
-    for (Stmt stmt : blockGraph.getBlockStmts(block)) {
-      // replace use
-      if (!stmt.getUses().isEmpty() && !constainsPhiExpr(stmt)) {
-        for (Value use : stmt.getUses()) {
-          if (use instanceof Local) {
-            Local newUse = localToNameStack.get(use).peek();
-            Stmt newStmt = BodyUtils.withNewUse(stmt, use, newUse);
-            block = blockGraph.replaceStmtInBlock(stmt, newStmt, block);
-            isChanged = true;
-            stmt = newStmt;
-          }
-        }
-      }
-      // generate new def and replace with new def
-      if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
-        Local def = (Local) stmt.getDefs().get(0);
-        Local newDef = def.withName(def.getName() + "#" + nextFreeIdx);
-        nextFreeIdx++;
-        localToNameStack.get(def).push(newDef);
-        Stmt newStmt = BodyUtils.withNewDef(stmt, newDef);
-        block = blockGraph.replaceStmtInBlock(stmt, newStmt, block);
-        isChanged = true;
+  private boolean containsAllChildren(Set<Block> blockSet, List<Block> children) {
+    for (Block child : children) {
+      if (!blockSet.contains(child)) {
+        return false;
       }
     }
-    if (isChanged && blockToPhiStmts.containsKey(oldBlock)) {
-      blockToPhiStmts.put(block, blockToPhiStmts.get(oldBlock));
-      blockToPhiStmts.remove(oldBlock);
-    }
-    for (Block succ : blockGraph.blockSuccessors(block)) {
-      if (blockToPhiStmts.containsKey(succ)) {
-        Set<Stmt> phiStmts = blockToPhiStmts.get(succ);
-        for (Stmt phiStmt : phiStmts) {
-          Local def = (Local) phiStmt.getDefs().get(0);
-          Local oriDef = getOriginalLocal(def, localToNameStack.keySet());
-          if (!localToNameStack.get(oriDef).isEmpty()) {
-            Local arg = localToNameStack.get(oriDef).peek();
-            for (Value use : phiStmt.getUses()) {
-              if (use instanceof JPhiExpr) {
-                // todo: phi addVisitor
-                ((JPhiExpr) use).addArg(arg, block);
-              }
-            }
-          }
-        }
-      }
-    }
-    // call renaming recursively
-    if (!tree.getChildren().isEmpty()) {
-      for (DominanceTree child : tree.getChildren()) {
-        rename(child, localToNameStack);
-      }
-    }
-
-    for (Stmt stmt : blockGraph.getBlockStmts(block)) {
-      if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
-        Local def = (Local) stmt.getDefs().get(0);
-        Local oriDef = getOriginalLocal(def, localToNameStack.keySet());
-        if (!localToNameStack.get(oriDef).isEmpty()) {
-          localToNameStack.get(oriDef).pop();
-        }
-      }
-    }
+    return true;
   }
 
   private boolean constainsPhiExpr(Stmt stmt) {
