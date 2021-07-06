@@ -27,7 +27,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -59,11 +58,18 @@ public class PathUtils {
     if (Files.isDirectory(path)) {
       return false;
     }
-    final String extensionList =
-        extensions.stream().map(FileType::getExtension).collect(Collectors.joining(","));
-    return path.getFileSystem()
-        .getPathMatcher("glob:*.{" + extensionList + "}")
-        .matches(path.getFileName());
+
+    for (FileType extension : extensions) {
+      if (endsWithIgnoreCase(path.toString(), extension.getExtension())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public static boolean endsWithIgnoreCase(String str, String suffix) {
+    int suffixLength = suffix.length();
+    return str.regionMatches(true, str.length() - suffixLength, suffix, 0, suffixLength);
   }
 
   public static boolean isArchive(@Nonnull Path path) {

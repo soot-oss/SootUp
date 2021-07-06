@@ -159,4 +159,17 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
 
     return inputLocation.getClassSource(klassType, view);
   }
+
+  @Override
+  public int hashCode() {
+    return moduleFinder.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof JavaModulePathAnalysisInputLocation)) {
+      return false;
+    }
+    return moduleFinder.equals(((JavaModulePathAnalysisInputLocation) o).moduleFinder);
+  }
 }

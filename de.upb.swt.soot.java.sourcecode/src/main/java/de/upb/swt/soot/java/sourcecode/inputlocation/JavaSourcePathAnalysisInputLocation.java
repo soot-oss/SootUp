@@ -31,10 +31,7 @@ import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
@@ -107,5 +104,19 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
 
   public String getExclusionFilePath() {
     return exclusionFilePath;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(sourcePaths, exclusionFilePath);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof JavaSourcePathAnalysisInputLocation)) {
+      return false;
+    }
+    return sourcePaths.equals(((JavaSourcePathAnalysisInputLocation) o).sourcePaths)
+        && exclusionFilePath.equals(((JavaSourcePathAnalysisInputLocation) o).exclusionFilePath);
   }
 }

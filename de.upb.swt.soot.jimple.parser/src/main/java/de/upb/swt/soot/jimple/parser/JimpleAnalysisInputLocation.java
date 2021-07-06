@@ -28,7 +28,16 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
     implements AnalysisInputLocation<T> {
   final Path path;
 
+  // TODO: allow pointing to a single file
   public JimpleAnalysisInputLocation(@Nonnull Path path) {
+    if (!Files.exists(path)) {
+      throw new IllegalArgumentException(
+          "The configured path '"
+              + path
+              + "' pointing to '"
+              + path.toAbsolutePath()
+              + "' does not exist.");
+    }
     this.path = path;
   }
 
@@ -93,7 +102,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
     if (!(o instanceof JimpleAnalysisInputLocation)) {
       return false;
     }
-    return path.equals(((JimpleAnalysisInputLocation) o).path);
+    return path.equals(((JimpleAnalysisInputLocation<?>) o).path);
   }
 
   @Override

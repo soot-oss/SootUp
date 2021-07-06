@@ -203,4 +203,17 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
       throw new IllegalStateException("Malformed class path given: " + jarPath, e);
     }
   }
+
+  @Override
+  public int hashCode() {
+    return cpEntries.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof JavaClassPathAnalysisInputLocation)) {
+      return false;
+    }
+    return cpEntries.equals(((JavaClassPathAnalysisInputLocation) o).cpEntries);
+  }
 }
