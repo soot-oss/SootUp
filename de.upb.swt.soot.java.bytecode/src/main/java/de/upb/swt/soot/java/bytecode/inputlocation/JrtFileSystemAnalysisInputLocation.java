@@ -243,4 +243,14 @@ public class JrtFileSystemAnalysisInputLocation
     }
     return Collections.unmodifiableSet(moduleInfoMap.keySet());
   }
+
+  @Override
+  public boolean equals(Object o) {
+    return o instanceof JrtFileSystemAnalysisInputLocation;
+  }
+
+  @Override
+  public int hashCode() {
+    return 31;
+  }
 }

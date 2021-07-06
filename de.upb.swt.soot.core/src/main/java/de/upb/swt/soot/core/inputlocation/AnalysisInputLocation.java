@@ -45,6 +45,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  */
 public interface AnalysisInputLocation<T extends AbstractClass<? extends AbstractClassSource<T>>> {
+
   /**
    * Create or find a class source for a given type.
    *
@@ -57,7 +58,6 @@ public interface AnalysisInputLocation<T extends AbstractClass<? extends Abstrac
   /**
    * Scan the input location and create ClassSources for every compilation / interpretation unit.
    */
-  // TODO [ms] does that paramter make any sense
   @Nonnull
   Collection<? extends AbstractClassSource<T>> getClassSources(
       @Nonnull IdentifierFactory identifierFactory);

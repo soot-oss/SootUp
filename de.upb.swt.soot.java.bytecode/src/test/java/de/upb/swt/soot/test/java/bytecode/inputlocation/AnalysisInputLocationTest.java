@@ -62,8 +62,9 @@ public abstract class AnalysisInputLocationTest {
   protected void testClassReceival(
       AnalysisInputLocation<JavaSootClass> ns, ClassType sig, int minClassesFound) {
 
-    final Optional<? extends AbstractClassSource<JavaSootClass>> clazz = ns.getClassSource(sig);
-    clazz.ifPresent(abstractClassSource -> assertEquals(sig, abstractClassSource.getClassType()));
+    final Optional<? extends AbstractClassSource<JavaSootClass>> clazzOpt = ns.getClassSource(sig);
+    assertTrue(clazzOpt.isPresent());
+    assertEquals(sig, clazzOpt.get().getClassType());
 
     final Collection<? extends AbstractClassSource<?>> classSources =
         ns.getClassSources(getIdentifierFactory());

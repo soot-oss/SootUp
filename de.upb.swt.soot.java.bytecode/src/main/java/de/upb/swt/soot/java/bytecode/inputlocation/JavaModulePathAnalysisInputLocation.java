@@ -146,4 +146,17 @@ public class JavaModulePathAnalysisInputLocation
     }
     return inputLocation.getClassSource(klassType);
   }
+
+  @Override
+  public int hashCode() {
+    return moduleFinder.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof JavaModulePathAnalysisInputLocation)) {
+      return false;
+    }
+    return moduleFinder.equals(((JavaModulePathAnalysisInputLocation) o).moduleFinder);
+  }
 }
