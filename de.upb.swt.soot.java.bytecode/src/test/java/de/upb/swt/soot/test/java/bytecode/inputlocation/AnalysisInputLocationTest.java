@@ -10,7 +10,10 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -64,12 +67,17 @@ public abstract class AnalysisInputLocationTest {
   protected void testClassReceival(
       AnalysisInputLocation<JavaSootClass> ns, ClassType sig, int minClassesFound) {
 
-    final Optional<? extends AbstractClassSource<JavaSootClass>> clazzOpt = ns.getClassSource(sig);
+    final JavaProject project =
+        JavaProject.builder(new JavaLanguage(8)).addInputLocation(ns).build();
+    final JavaView view = project.createOnDemandView();
+
+    final Optional<? extends AbstractClassSource<JavaSootClass>> clazzOpt =
+        ns.getClassSource(sig, view);
     assertTrue(clazzOpt.isPresent());
     assertEquals(sig, clazzOpt.get().getClassType());
 
     final Collection<? extends AbstractClassSource<?>> classSources =
-        ns.getClassSources(getIdentifierFactory());
+        ns.getClassSources(getIdentifierFactory(), view);
 
     assertTrue(classSources.size() >= minClassesFound);
   }
