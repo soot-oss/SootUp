@@ -22,11 +22,9 @@ package de.upb.swt.soot.core.graph;
  * #L%
  */
 
-import org.checkerframework.checker.units.qual.A;
-
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
 
 /*@author Zun Wang*/
 public class DominanceTree {
@@ -36,20 +34,20 @@ public class DominanceTree {
   public List<Integer>[] children;
   public int[] parents;
 
-  public DominanceTree(DominanceFinder dominanceFinder) {
+  public DominanceTree(@Nonnull DominanceFinder dominanceFinder) {
     this.idxToBlock = dominanceFinder.getIdxToBlock();
     this.blockToIdx = dominanceFinder.getBlockToIdx();
     int[] iDoms = dominanceFinder.getImmediateDominators();
     int treeSize = iDoms.length;
     children = new ArrayList[treeSize];
     parents = new int[treeSize];
-    for(int i = 0; i < treeSize; i++){
+    for (int i = 0; i < treeSize; i++) {
       children[i] = new ArrayList<>();
       parents[i] = -1;
     }
 
-    for(int i = 0; i < treeSize; i++){
-      if(iDoms[i] != i){
+    for (int i = 0; i < treeSize; i++) {
+      if (iDoms[i] != i) {
         parents[i] = iDoms[i];
         children[iDoms[i]].add(i);
       }
@@ -58,9 +56,9 @@ public class DominanceTree {
 
   @Nonnull
   public List<Block> getChildren(@Nonnull Block block) {
-    List<Block> childList= new ArrayList<>();
+    List<Block> childList = new ArrayList<>();
     int idx = blockToIdx.get(block);
-    for(int i : children[idx]){
+    for (int i : children[idx]) {
       childList.add(idxToBlock.get(i));
     }
     return childList;
@@ -69,15 +67,43 @@ public class DominanceTree {
   @Nullable
   public Block getParent(@Nonnull Block block) {
     int idx = blockToIdx.get(block);
-    if(parents[idx] == -1){
+    if (parents[idx] == -1) {
       return null;
     }
     return idxToBlock.get(parents[idx]);
   }
 
   @Nonnull
-  public Block getRoot(){
+  public Block getRoot() {
     return this.idxToBlock.get(0);
   }
 
+  public void replaceNode(@Nonnull Block oldBlock, @Nonnull Block newBlock) {
+    if (!this.blockToIdx.keySet().contains(oldBlock)) {
+      throw new RuntimeException(
+          "The given replaced block " + oldBlock.toString() + "is not in the DominanceTree");
+    }
+    int idx = this.blockToIdx.get(oldBlock);
+    this.idxToBlock.replace(idx, oldBlock, newBlock);
+    this.blockToIdx.remove(oldBlock);
+    this.blockToIdx.put(newBlock, idx);
+  }
+
+  @Nonnull
+  public List<Block> getALLNodesDFS() {
+    List<Block> blocks = new ArrayList<>();
+    Deque<Block> queue = new ArrayDeque<>();
+    queue.add(getRoot());
+    while (!queue.isEmpty()) {
+      Block fb = queue.removeFirst();
+      blocks.add(fb);
+      if (!getChildren(fb).isEmpty()) {
+        List<Block> children = getChildren(fb);
+        for (int i = children.size() - 1; i >= 0; i--) {
+          queue.addFirst(children.get(i));
+        }
+      }
+    }
+    return blocks;
+  }
 }

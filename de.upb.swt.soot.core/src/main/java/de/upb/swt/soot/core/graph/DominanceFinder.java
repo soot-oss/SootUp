@@ -104,7 +104,6 @@ public class DominanceFinder {
     }
   }
 
-
   @Nonnull
   public void replaceBlock(@Nonnull Block newBlock, Block oldBlock) {
     if (!blockToIdx.keySet().contains(oldBlock)) {
@@ -141,20 +140,19 @@ public class DominanceFinder {
   }
 
   @Nonnull
-  public Map<Integer, Block> getIdxToBlock(){
+  public Map<Integer, Block> getIdxToBlock() {
     return this.idxToBlock;
   }
 
   @Nonnull
-  public Map<Block, Integer> getBlockToIdx(){
+  public Map<Block, Integer> getBlockToIdx() {
     return this.blockToIdx;
   }
 
   @Nonnull
-  public int[] getImmediateDominators(){
+  public int[] getImmediateDominators() {
     return this.doms;
   }
-
 
   @Nonnull
   private int getFirstDefinedBlockPredIdx(List<Block> preds) {
