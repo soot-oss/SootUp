@@ -21,7 +21,6 @@ package de.upb.swt.soot.java.sourcecode.inputlocation;
  * #L%
  */
 
-import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
@@ -84,7 +83,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
   @Override
   @Nonnull
   public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
+      @Nonnull View<?> view) {
     return classProvider.getClassSources();
   }
 

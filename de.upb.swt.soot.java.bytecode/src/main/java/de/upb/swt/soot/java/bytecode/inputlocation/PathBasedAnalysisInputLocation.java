@@ -189,9 +189,9 @@ public abstract class PathBasedAnalysisInputLocation
     @Override
     @Nonnull
     public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
+        @Nonnull View<?> view) {
       return walkDirectory(
-          path, identifierFactory, new AsmJavaClassProvider(view.getBodyInterceptors()));
+          path, view.getIdentifierFactory(), new AsmJavaClassProvider(view.getBodyInterceptors()));
     }
 
     @Override
@@ -374,15 +374,13 @@ public abstract class PathBasedAnalysisInputLocation
     @Nonnull
     @Override
     public Collection<? extends AbstractClassSource<JavaSootClass>> getModulesClassSources(
-        @Nonnull ModuleSignature moduleSignature,
-        @Nonnull IdentifierFactory identifierFactory,
-        @Nonnull View<?> view) {
+        @Nonnull ModuleSignature moduleSignature, @Nonnull View<?> view) {
       return inputLocations.get(view.getProject().getLanguage().getVersion()).stream()
           .filter(location -> location instanceof ModuleInfoAnalysisInputLocation)
           .map(
               location ->
                   ((ModuleInfoAnalysisInputLocation) location)
-                      .getModulesClassSources(moduleSignature, identifierFactory, view))
+                      .getModulesClassSources(moduleSignature, view))
           .flatMap(Collection::stream)
           .collect(Collectors.toList());
     }
@@ -412,13 +410,13 @@ public abstract class PathBasedAnalysisInputLocation
     @Override
     @Nonnull
     public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
+        @Nonnull View<?> view) {
       Collection<AnalysisInputLocation<JavaSootClass>> il =
           getBestMatchingInputLocationsRaw(view.getProject().getLanguage().getVersion());
 
       Collection<AbstractClassSource<JavaSootClass>> result =
           il.stream()
-              .map(location -> location.getClassSources(identifierFactory, view))
+              .map(location -> location.getClassSources(view))
               .flatMap(Collection::stream)
               .collect(Collectors.toList());
 
@@ -426,7 +424,7 @@ public abstract class PathBasedAnalysisInputLocation
 
         Collection<AbstractClassSource<JavaSootClass>> baseSources =
             getBaseInputLocations().stream()
-                .map(location -> location.getClassSources(identifierFactory, view))
+                .map(location -> location.getClassSources(view))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
 
@@ -530,13 +528,15 @@ public abstract class PathBasedAnalysisInputLocation
     @Override
     @Nonnull
     public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
+        @Nonnull View<?> view) {
       // we don't use the filesystem cache here as it could close the filesystem after the timeout
       // while we are still iterating
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path archiveRoot = fs.getPath("/");
         return walkDirectory(
-            archiveRoot, identifierFactory, new AsmJavaClassProvider(view.getBodyInterceptors()));
+            archiveRoot,
+            view.getProject().getIdentifierFactory(),
+            new AsmJavaClassProvider(view.getBodyInterceptors()));
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -584,12 +584,12 @@ public abstract class PathBasedAnalysisInputLocation
     @Override
     @Nonnull
     public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
+        @Nonnull View<?> view) {
 
       Set<AbstractClassSource<JavaSootClass>> foundClasses = new HashSet<>();
 
       for (AnalysisInputLocation<JavaSootClass> inputLoc : containedInputLocations) {
-        foundClasses.addAll(inputLoc.getClassSources(identifierFactory, view));
+        foundClasses.addAll(inputLoc.getClassSources(view));
       }
       return foundClasses;
     }

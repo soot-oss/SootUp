@@ -21,7 +21,6 @@ package de.upb.swt.soot.core.inputlocation;
  * #L%
  */
 import com.google.common.collect.ImmutableMap;
-import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.model.SootClass;
@@ -65,8 +64,7 @@ public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>
 
   @Nonnull
   @Override
-  public Collection<? extends AbstractClassSource<S>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory, @Nullable View<?> view) {
+  public Collection<? extends AbstractClassSource<S>> getClassSources(@Nullable View<?> view) {
     // FIXME: add classloadingoptions
     return map.values();
   }

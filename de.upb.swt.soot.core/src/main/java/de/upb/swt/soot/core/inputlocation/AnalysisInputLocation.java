@@ -21,7 +21,6 @@ package de.upb.swt.soot.core.inputlocation;
  * #L%
  */
 
-import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
@@ -36,10 +35,10 @@ import javax.annotation.Nonnull;
  * SootClass}es, e.g. Java Classpath, Android APK, JAR file, etc. The strategy to traverse
  * something.
  *
- * <p>{@link #getClassSource(ClassType, View)} and {@link #getClassSources(IdentifierFactory, View)}
- * should in most cases simply call {@link #getClassSource(ClassType, View)} or {@link
- * #getClassSources(IdentifierFactory, View)} respectively with the default {@link
- * de.upb.swt.soot.core.transform.BodyInterceptor}s of the frontend.
+ * <p>{@link #getClassSource(ClassType, View)} and {@link #getClassSources(View)} should in most
+ * cases simply call {@link #getClassSource(ClassType, View)} or {@link #getClassSources(View)}
+ * respectively with the default {@link de.upb.swt.soot.core.transform.BodyInterceptor}s of the
+ * frontend.
  *
  * @author Manuel Benz created on 22.05.18
  * @author Ben Hermann
@@ -59,9 +58,8 @@ public interface AnalysisInputLocation<T extends AbstractClass> {
   /**
    * Scan the input location and create ClassSources for every compilation / interpretation unit.
    *
-   * @return
+   * @return The source entries.
    */
   @Nonnull
-  Collection<? extends AbstractClassSource<T>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view);
+  Collection<? extends AbstractClassSource<T>> getClassSources(@Nonnull View<?> view);
 }

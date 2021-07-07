@@ -156,7 +156,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
     }
 
     getProject().getInputLocations().stream()
-        .flatMap(location -> location.getClassSources(getIdentifierFactory(), this).stream())
+        .flatMap(location -> location.getClassSources(this).stream())
         .forEach(this::buildClassFrom);
     isFullyResolved = true;
   }
