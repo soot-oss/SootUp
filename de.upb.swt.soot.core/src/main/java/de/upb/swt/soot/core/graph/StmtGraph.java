@@ -7,10 +7,9 @@ import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public interface StmtGraph extends Iterable<Stmt> {
-  @Nullable
+
   Stmt getStartingStmt();
 
   /**
@@ -19,6 +18,9 @@ public interface StmtGraph extends Iterable<Stmt> {
    */
   @Nonnull
   Set<Stmt> nodes();
+
+  @Nonnull
+  Collection<? extends BasicBlock> getBlocks();
 
   boolean containsNode(@Nonnull Stmt node);
 

@@ -16,17 +16,19 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
   public MutableBlockStmtGraph() {}
 
   /** copies a StmtGraph into this Mutable instance */
-  public MutableBlockStmtGraph(StmtGraph graph) {
+  public MutableBlockStmtGraph(@Nonnull StmtGraph graph) {
     setStartingStmt(graph.getStartingStmt());
     for (Stmt stmt : graph) {
       setEdges(stmt, successors(stmt));
     }
-    setTraps();
+    setTraps(graph.getTraps());
   }
 
+  @Override
   @Nonnull
-  Collection<? extends BasicBlock> getBlocks() {
-    return stmtsToBlock.values();
+  // FIXME: return them in post-reverse-order
+  public Collection<? extends BasicBlock> getBlocks() {
+    return new HashSet<>(stmtsToBlock.values());
   }
 
   @Override
@@ -36,12 +38,8 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
 
   protected MutableBasicBlock addNodeInternal(@Nonnull Stmt stmt) {
     MutableBasicBlock block = new MutableBasicBlock();
-    addNodeInternal(stmt, block);
-    return block;
-  }
-
-  protected void addNodeInternal(@Nonnull Stmt stmt, @Nonnull MutableBasicBlock block) {
     stmtsToBlock.put(stmt, block);
+    return block;
   }
 
   public void removeNode(@Nonnull Stmt stmt) {
@@ -52,7 +50,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
 
   @Override
   public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-    // TODO: [ms] implement it smart
+    // TODO: [ms] implement it smarter
     removeNode(oldStmt);
     addNode(newStmt);
   }
@@ -235,6 +233,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
 
     if (node == block.getHead()) {
       List<MutableBasicBlock> predecessorBlocks = block.getPredecessors();
+      // TODO: [ms] maybe dont copy
       List<Stmt> preds = new ArrayList<>(predecessorBlocks.size());
       predecessorBlocks.forEach(p -> preds.add(p.getTail()));
       return preds;

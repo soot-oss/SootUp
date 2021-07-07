@@ -230,6 +230,13 @@ public class MutableStmtGraphImpl extends StmtGraphImpl implements MutableStmtGr
     return Collections.unmodifiableSet(stmtToIdx.keySet());
   }
 
+  @Nonnull
+  @Override
+  public Collection<? extends BasicBlock> getBlocks() {
+    // FIXME: implement
+    throw new IllegalStateException("Not implemented yet!");
+  }
+
   @Override
   @Nonnull
   public List<Stmt> predecessors(@Nonnull Stmt node) {

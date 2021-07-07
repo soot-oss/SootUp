@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import de.upb.swt.soot.core.graph.MutableExceptionalStmtGraph;
 import de.upb.swt.soot.core.graph.MutableStmtGraph;
+import de.upb.swt.soot.core.graph.MutableStmtGraphImpl;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -140,7 +141,7 @@ public class MutableExceptionalStmtGraphTest {
   }
 
   private StmtGraph createGraphWithNestedTraps_1() {
-    MutableStmtGraph graph = new MutableStmtGraph();
+    MutableStmtGraph graph = new MutableStmtGraphImpl();
     graph.setStartingStmt(startingStmt);
     graph.putEdge(startingStmt, label1Stmt);
     graph.putEdge(label1Stmt, label2Stmt);
@@ -228,7 +229,7 @@ public class MutableExceptionalStmtGraphTest {
   }
 
   private StmtGraph createGraphWithNestedTraps_2() {
-    MutableStmtGraph graph = new MutableStmtGraph();
+    MutableStmtGraph graph = new MutableStmtGraphImpl();
     graph.setStartingStmt(startingStmt);
     graph.putEdge(startingStmt, label1Stmt);
     graph.putEdge(label1Stmt, label2Stmt);
@@ -317,7 +318,7 @@ public class MutableExceptionalStmtGraphTest {
   }
 
   private StmtGraph createGraphWithChainedTraps() {
-    MutableStmtGraph graph = new MutableStmtGraph();
+    MutableStmtGraph graph = new MutableStmtGraphImpl();
     graph.setStartingStmt(startingStmt);
     graph.putEdge(startingStmt, label1Stmt);
     graph.putEdge(label1Stmt, label2Stmt);

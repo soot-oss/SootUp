@@ -17,7 +17,7 @@ public interface BasicBlock {
   @Nonnull
   List<? extends BasicBlock>
       getExceptionalPredecessors(); // not necessary as an exceptionhandler is not called in an
-                                    // unexceptional flow i.e. its the same as getPredecessors?
+  // unexceptional flow i.e. its the same as getPredecessors?
 
   @Nonnull
   List<? extends BasicBlock> getExceptionalSuccessors();
@@ -40,8 +40,9 @@ public interface BasicBlock {
 class MutableBasicBlock implements BasicBlock {
   @Nonnull private final List<MutableBasicBlock> predecessorBlocks = new ArrayList<>();
   @Nonnull private final List<MutableBasicBlock> successorBlocks = new ArrayList<>();
-  @Nonnull private final List<MutableBasicBlock> xPredecessorBlocks = new ArrayList<>();
-  @Nonnull private final List<MutableBasicBlock> xSuccessorBlocks = new ArrayList<>();
+
+  @Nonnull private final List<MutableBasicBlock> exceptionalPredecessorBlocks = new ArrayList<>();
+  @Nonnull private final List<MutableBasicBlock> exceptionalSuccessorBlocks = new ArrayList<>();
 
   @Nonnull private List<Stmt> stmts = new ArrayList<>();
   @Nonnull private List<JTrap> traps = new ArrayList<>();
@@ -60,8 +61,7 @@ class MutableBasicBlock implements BasicBlock {
       predecessorBlocks.forEach(b -> b.removeSuccessorBlock(this));
       predecessorBlocks.clear();
     }
-    Stmt tail = getTail();
-    if (stmt == tail) {
+    if (stmt == getTail()) {
       // TODO: [ms] see question above..
       // switch, if, goto vs. usual stmt
       if (stmt.branches()) {
@@ -115,13 +115,13 @@ class MutableBasicBlock implements BasicBlock {
   @Nonnull
   @Override
   public List<? extends BasicBlock> getExceptionalPredecessors() {
-    return xPredecessorBlocks;
+    return exceptionalPredecessorBlocks;
   }
 
   @Nonnull
   @Override
   public List<? extends BasicBlock> getExceptionalSuccessors() {
-    return xSuccessorBlocks;
+    return exceptionalSuccessorBlocks;
   }
 
   @Nonnull

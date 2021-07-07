@@ -109,6 +109,7 @@ public class ImmutableStmtGraph implements StmtGraph {
     return new ImmutableStmtGraph(stmtGraph);
   }
 
+  @Nullable
   @Override
   public Stmt getStartingStmt() {
     return startingStmt;
@@ -118,6 +119,13 @@ public class ImmutableStmtGraph implements StmtGraph {
   @Override
   public Set<Stmt> nodes() {
     return Collections.unmodifiableSet(nodeToIndex.keySet());
+  }
+
+  @Nonnull
+  @Override
+  public Collection<? extends BasicBlock> getBlocks() {
+    // FIXME: implement
+    throw new IllegalStateException("Not implemented yet!");
   }
 
   @Override
