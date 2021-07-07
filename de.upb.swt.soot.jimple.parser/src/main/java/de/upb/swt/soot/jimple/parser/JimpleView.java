@@ -6,10 +6,11 @@ import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.AbstractView;
-import de.upb.swt.soot.core.views.View;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,12 +51,26 @@ public class JimpleView extends AbstractView<SootClass<?>> {
    *     options.
    */
   public JimpleView(
-      @Nonnull Project<SootClass<?>, ? extends View<SootClass<?>>> project,
+      @Nonnull Project project,
       @Nonnull
           Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
+  }
+
+  @Nonnull
+  @Override
+  public List<BodyInterceptor> getBodyInterceptors(
+      AnalysisInputLocation<SootClass<?>> inputLocation) {
+    return classLoadingOptionsSpecifier.apply(inputLocation) != null
+        ? classLoadingOptionsSpecifier.apply(inputLocation).getBodyInterceptors()
+        : getBodyInterceptors();
+  }
+
+  @Nonnull
+  public List<BodyInterceptor> getBodyInterceptors() {
+    return Collections.emptyList();
   }
 
   @Override
@@ -85,17 +100,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
 
     final List<? extends AbstractClassSource<? extends SootClass<?>>> foundClassSources =
         getProject().getInputLocations().stream()
-            .map(
-                location -> {
-                  ClassLoadingOptions classLoadingOptions =
-                      classLoadingOptionsSpecifier.apply(location);
-
-                  if (classLoadingOptions != null) {
-                    return location.getClassSource(type, classLoadingOptions);
-                  } else {
-                    return location.getClassSource(type);
-                  }
-                })
+            .map(location -> location.getClassSource(type, this))
             .filter(Optional::isPresent)
             .limit(2)
             .map(Optional::get)
@@ -136,17 +141,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
     getProject().getInputLocations().stream()
         .flatMap(
             location -> {
-              ClassLoadingOptions classLoadingOptions =
-                  classLoadingOptionsSpecifier.apply(location);
-              if (classLoadingOptions != null) {
-                Collection<? extends AbstractClassSource<? extends SootClass<?>>> classSources =
-                    location.getClassSources(getIdentifierFactory(), classLoadingOptions);
-                return classSources.stream();
-              } else {
-                Collection<? extends AbstractClassSource<? extends SootClass<?>>> classSources =
-                    location.getClassSources(getIdentifierFactory());
-                return classSources.stream();
-              }
+              return location.getClassSources(getIdentifierFactory(), this).stream();
             })
         .forEach(this::buildClassFrom);
     isFullyResolved = true;

@@ -2,7 +2,7 @@ package de.upb.swt.soot.jimple.parser;
 
 import static org.junit.Assert.*;
 
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import java.nio.file.Paths;
@@ -65,22 +65,20 @@ public class JimpleAnalysisInputLocationTest {
     // files direct in dir
     final JimpleAnalysisInputLocation inputLocation1 =
         new JimpleAnalysisInputLocation(Paths.get(resourceDir + "/jimple/"));
-    final Optional<? extends AbstractClassSource> classSource1 =
-        inputLocation1.getClassSource(onlyClassNameType);
+    JimpleView jv1 = new JimpleProject(inputLocation1).createOnDemandView();
+    final Optional<SootClass<?>> classSource1 = jv1.getClass(onlyClassNameType);
     assertTrue(classSource1.isPresent());
-    final Optional<? extends AbstractClassSource> classSource2 =
-        inputLocation1.getClassSource(classType);
+    final Optional<SootClass<?>> classSource2 = jv1.getClass(classType);
     assertFalse(classSource2.isPresent());
 
     // files in subdir structure
     final JimpleAnalysisInputLocation inputLocation2 =
         new JimpleAnalysisInputLocation(Paths.get(resourceDir));
-    final Optional<? extends AbstractClassSource> classSource3 =
-        inputLocation2.getClassSource(onlyClassNameType);
+    JimpleView jv2 = new JimpleProject(inputLocation2).createOnDemandView();
+    final Optional<SootClass<?>> classSource3 = jv2.getClass(onlyClassNameType);
     assertFalse(classSource3.isPresent());
 
-    final Optional<? extends AbstractClassSource> classSource4 =
-        inputLocation2.getClassSource(classType);
+    final Optional<SootClass<?>> classSource4 = jv2.getClass(classType);
     assertTrue(classSource4.isPresent());
   }
 }

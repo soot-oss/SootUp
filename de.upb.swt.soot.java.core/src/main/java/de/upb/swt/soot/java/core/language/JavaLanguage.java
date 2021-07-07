@@ -40,8 +40,8 @@ public class JavaLanguage extends Language {
   /** The identifier factory. */
   @Nonnull private final IdentifierFactory identifierFactory;
 
-  /** The use java modules. */
-  private int version;
+  /** The version number. */
+  private final int version;
 
   /**
    * Instantiates a new java language with given version e.g 8 or 9

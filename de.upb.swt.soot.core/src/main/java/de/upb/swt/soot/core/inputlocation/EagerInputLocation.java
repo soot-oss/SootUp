@@ -26,6 +26,7 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.views.View;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -55,23 +56,9 @@ public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>
     this.map = ImmutableMap.copyOf(map);
   }
 
-  @Nonnull
   @Override
-  public Optional<? extends SootClassSource<S>> getClassSource(@Nonnull ClassType type) {
-    return Optional.ofNullable(map.get(type));
-  }
-
-  @Nonnull
-  @Override
-  public Collection<? extends AbstractClassSource<S>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory) {
-    return map.values();
-  }
-
-  @Override
-  @Nonnull
-  public Optional<? extends AbstractClassSource<S>> getClassSource(
-      @Nonnull ClassType type, @Nullable ClassLoadingOptions classLoadingOptions) {
+  public @Nonnull Optional<? extends AbstractClassSource<S>> getClassSource(
+      @Nonnull ClassType type, @Nullable View<?> view) {
     // FIXME: add classloadingoptions
     return Optional.ofNullable(map.get(type));
   }
@@ -79,8 +66,7 @@ public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>
   @Nonnull
   @Override
   public Collection<? extends AbstractClassSource<S>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nullable ClassLoadingOptions classLoadingOptions) {
+      @Nonnull IdentifierFactory identifierFactory, @Nullable View<?> view) {
     // FIXME: add classloadingoptions
     return map.values();
   }

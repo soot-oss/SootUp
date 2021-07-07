@@ -27,6 +27,7 @@ import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.nio.file.Paths;
@@ -80,31 +81,17 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
     this.classProvider = new WalaJavaClassProvider(sourcePaths, exclusionFilePath);
   }
 
-  @Nonnull
-  @Override
-  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType type) {
-    return getClassSource(type, SourcecodeClassLoadingOptions.Default);
-  }
-
-  @Nonnull
-  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory) {
-    return getClassSources(identifierFactory, SourcecodeClassLoadingOptions.Default);
-  }
-
   @Override
   @Nonnull
   public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
     return classProvider.getClassSources();
   }
 
   @Override
   @Nonnull
   public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull ClassType type, @Nonnull View<?> view) {
     for (String path : sourcePaths) {
       try {
         return Optional.ofNullable(classProvider.createClassSource(this, Paths.get(path), type));
