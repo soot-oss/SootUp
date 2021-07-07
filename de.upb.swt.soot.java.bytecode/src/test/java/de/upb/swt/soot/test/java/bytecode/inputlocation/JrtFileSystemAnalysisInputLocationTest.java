@@ -9,6 +9,7 @@ import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaModuleProject;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
@@ -28,8 +29,9 @@ public class JrtFileSystemAnalysisInputLocationTest {
   public void getClassSource() {
     JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
     Project<JavaSootClass, JavaView> project =
-        new JavaProject(
-            new JavaLanguage(8),
+        new JavaModuleProject(
+            new JavaLanguage(9),
+            Collections.emptyList(),
             Collections.singletonList(inputLocation),
             DefaultSourceTypeSpecifier.getInstance());
     final ClassType sig =
@@ -46,8 +48,9 @@ public class JrtFileSystemAnalysisInputLocationTest {
     // hint: quite expensive as it loads **all** Runtime modules!
     JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
     Project<JavaSootClass, JavaView> project =
-        new JavaProject(
-            new JavaLanguage(8),
+        new JavaModuleProject(
+            new JavaLanguage(9),
+            Collections.emptyList(),
             Collections.singletonList(inputLocation),
             DefaultSourceTypeSpecifier.getInstance());
     final ClassType sig1 =
