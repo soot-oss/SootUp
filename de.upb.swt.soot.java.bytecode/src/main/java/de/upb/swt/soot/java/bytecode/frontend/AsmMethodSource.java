@@ -836,14 +836,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     } else {
       final Operand operand = dword ? operandStack.popDual() : operandStack.pop();
       frame.mergeIn(operand);
-      // TODO: [ms] hack: please investigate this change further - somewhere there is an underlying
-      // bug likely associated with Value/ValueBox which is solved via remove(insn)/setStmt(..)
-      InsnToStmt.remove(insn);
-      JReturnStmt ret =
-          Jimple.newReturnStmt(
-              (Immediate) operand.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
-      setStmt(insn, ret);
-      operand.addUsageInStmt(ret);
     }
   }
 
