@@ -23,17 +23,13 @@ package de.upb.swt.soot.core.jimple.common.expr;
  */
 
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -41,9 +37,7 @@ import javax.annotation.Nonnull;
 public final class JNewMultiArrayExpr implements Expr, Copyable {
 
   private final ArrayType baseType;
-  private final ValueBox[] sizeBoxes;
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
-  private Value[] sizes;
+  private final List<Immediate> sizes;
 
   /**
    * Initiates a JNewMultiArrayExpr.
@@ -51,14 +45,9 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
    * @param type the type of the array
    * @param sizes the sizes
    */
-  public JNewMultiArrayExpr(ArrayType type, List<? extends Value> sizes) {
+  public JNewMultiArrayExpr(@Nonnull ArrayType type, @Nonnull List<Immediate> sizes) {
     this.baseType = type;
-    this.sizeBoxes = new ValueBox[sizes.size()];
-    for (int i = 0; i < sizes.size(); i++) {
-      sizeBoxes[i] = Jimple.newImmediateBox(sizes.get(i));
-    }
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
-    this.sizes = Arrays.stream(sizeBoxes).map(ValueBox::getValue).toArray(Value[]::new);
+    this.sizes = sizes;
   }
 
   @Override
@@ -79,11 +68,11 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
     Type t = baseType.getBaseType();
     builder.append(Jimple.NEWMULTIARRAY + " (").append(t.toString()).append(")");
 
-    for (ValueBox element : sizeBoxes) {
-      builder.append("[").append(element.getValue().toString()).append("]");
+    for (Value element : sizes) {
+      builder.append("[").append(element.toString()).append("]");
     }
 
-    for (int i = 0; i < baseType.getDimension() - sizeBoxes.length; i++) {
+    for (int i = 0; i < baseType.getDimension() - sizes.size(); i++) {
       builder.append("[]");
     }
 
@@ -99,13 +88,13 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
     up.typeSignature(t);
     up.literal(")");
 
-    for (ValueBox element : sizeBoxes) {
+    for (Value element : sizes) {
       up.literal("[");
       element.toString(up);
       up.literal("]");
     }
 
-    for (int i = 0; i < baseType.getDimension() - sizeBoxes.length; i++) {
+    for (int i = 0; i < baseType.getDimension() - sizes.size(); i++) {
       up.literal("[]");
     }
   }
@@ -114,34 +103,24 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
     return baseType;
   }
 
-  public ValueBox getSizeBox(int index) {
-    return sizeBoxes[index];
+  public Value getSize(@Nonnull int index) {
+    return sizes.get(index);
   }
 
   public int getSizeCount() {
-    return sizeBoxes.length;
+    return sizes.size();
   }
 
-  public Value getSize(int index) {
-    return sizeBoxes[index].getValue();
-  }
-
-  /** Returns a list of values of sizeBoxes. */
-  public List<Value> getSizes() {
-    List<Value> toReturn = new ArrayList<>();
-
-    for (ValueBox element : sizeBoxes) {
-      toReturn.add(element.getValue());
-    }
-
-    return toReturn;
+  /** Returns a list of Values. */
+  public List<Immediate> getSizes() {
+    return sizes;
   }
 
   @Override
   @Nonnull
   public final List<Value> getUses() {
     List<Value> list = new ArrayList<>();
-    Collections.addAll(list, sizes);
+    list.addAll(sizes);
     for (Value size : sizes) {
       list.addAll(size.getUses());
     }
@@ -160,12 +139,12 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public JNewMultiArrayExpr withBaseType(ArrayType baseType) {
+  public JNewMultiArrayExpr withBaseType(@Nonnull ArrayType baseType) {
     return new JNewMultiArrayExpr(baseType, getSizes());
   }
 
   @Nonnull
-  public JNewMultiArrayExpr withSizes(List<Value> sizes) {
+  public JNewMultiArrayExpr withSizes(@Nonnull List<Immediate> sizes) {
     return new JNewMultiArrayExpr(baseType, sizes);
   }
 }

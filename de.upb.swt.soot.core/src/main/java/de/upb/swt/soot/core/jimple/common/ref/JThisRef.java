@@ -25,7 +25,7 @@ package de.upb.swt.soot.core.jimple.common.ref;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.RefVisitor;
-import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -35,9 +35,9 @@ import javax.annotation.Nonnull;
 
 public final class JThisRef implements IdentityRef, Copyable {
 
-  private final ReferenceType thisType;
+  private final ClassType thisType;
 
-  public JThisRef(ReferenceType thisType) {
+  public JThisRef(@Nonnull ClassType thisType) {
     this.thisType = thisType;
   }
 
@@ -79,7 +79,7 @@ public final class JThisRef implements IdentityRef, Copyable {
   }
 
   @Nonnull
-  public JThisRef withThisType(ReferenceType thisType) {
+  public JThisRef withThisType(@Nonnull ClassType thisType) {
     return new JThisRef(thisType);
   }
 }

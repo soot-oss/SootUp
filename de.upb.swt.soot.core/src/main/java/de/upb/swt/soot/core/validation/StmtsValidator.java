@@ -1,10 +1,10 @@
-package de.upb.swt.soot.core.jimple.basic;
+package de.upb.swt.soot.core.validation;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1999-2020 Patrick Lam, Linghui Luo and others
+ * Copyright (C) 1997-2020 Raja Vallée-Rai, Linghui Luo and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,21 +22,17 @@ package de.upb.swt.soot.core.jimple.basic;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.common.ref.ConcreteRef;
+import de.upb.swt.soot.core.model.Body;
+import java.util.List;
 
-/**
- * Contains a {@link Local} or a {@link ConcreteRef}.
- *
- * <p>Prefer to use the factory methods in {@link de.upb.swt.soot.core.jimple.Jimple}.
- */
-public class VariableBox extends ValueBox {
+public class StmtsValidator implements BodyValidator {
 
-  public VariableBox(Value value) {
-    super(value);
-  }
+  /** Verifies that the Units of this Body all point to a Unit contained within this body. */
+  @Override
+  public void validate(Body body, List<ValidationException> exception) {}
 
   @Override
-  public boolean canContainValue(Value value) {
-    return value instanceof Local || value instanceof ConcreteRef;
+  public boolean isBasicValidator() {
+    return true;
   }
 }

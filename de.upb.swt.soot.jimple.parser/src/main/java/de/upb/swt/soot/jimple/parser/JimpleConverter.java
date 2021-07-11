@@ -5,8 +5,6 @@ import de.upb.swt.soot.core.frontend.OverridingBodySource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.inputlocation.EmptyClassLoadingOptions;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.*;
@@ -17,6 +15,7 @@ import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
@@ -35,33 +34,33 @@ public class JimpleConverter {
       @Nonnull CharStream charStream,
       @Nonnull AnalysisInputLocation<?> inputlocation,
       @Nonnull Path sourcePath) {
-    return run(charStream, inputlocation, sourcePath, EmptyClassLoadingOptions.Default);
+    return run(charStream, inputlocation, sourcePath, Collections.emptyList());
   }
 
   public OverridingClassSource run(
       @Nonnull CharStream charStream,
       @Nonnull AnalysisInputLocation<?> inputlocation,
       @Nonnull Path sourcePath,
-      @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
     return run(
         JimpleConverterUtil.createJimpleParser(charStream, sourcePath),
         inputlocation,
         sourcePath,
-        classLoadingOptions);
+        bodyInterceptors);
   }
 
   public OverridingClassSource run(
       @Nonnull JimpleParser parser,
       @Nonnull AnalysisInputLocation<?> inputlocation,
       @Nonnull Path sourcePath) {
-    return run(parser, inputlocation, sourcePath, EmptyClassLoadingOptions.Default);
+    return run(parser, inputlocation, sourcePath, Collections.emptyList());
   }
 
   public OverridingClassSource run(
       @Nonnull JimpleParser parser,
       @Nonnull AnalysisInputLocation<?> inputlocation,
       @Nonnull Path sourcePath,
-      @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
 
     ClassVisitor classVisitor = new ClassVisitor(sourcePath);
     classVisitor.visit(parser.file());
@@ -481,7 +480,8 @@ public class JimpleConverter {
 
               } else if (ctx.IF() != null) {
                 final Stmt stmt =
-                    Jimple.newIfStmt(valueVisitor.visitBool_expr(ctx.bool_expr()), pos);
+                    Jimple.newIfStmt(
+                        (AbstractConditionExpr) valueVisitor.visitBool_expr(ctx.bool_expr()), pos);
                 unresolvedBranches.put(
                     stmt, Collections.singletonList(ctx.goto_stmt().label_name.getText()));
                 return stmt;
@@ -574,7 +574,7 @@ public class JimpleConverter {
         }
 
         @Override
-        public Value visitImmediate(JimpleParser.ImmediateContext ctx) {
+        public Immediate visitImmediate(JimpleParser.ImmediateContext ctx) {
           if (ctx.identifier() != null) {
             return getLocal(ctx.identifier().getText());
           }
@@ -702,8 +702,8 @@ public class JimpleConverter {
         @Override
         public AbstractBinopExpr visitBinop_expr(JimpleParser.Binop_exprContext ctx) {
 
-          Value left = visitImmediate(ctx.left);
-          Value right = visitImmediate(ctx.right);
+          Immediate left = visitImmediate(ctx.left);
+          Immediate right = visitImmediate(ctx.right);
 
           JimpleParser.BinopContext binopctx = ctx.binop();
 
@@ -772,7 +772,7 @@ public class JimpleConverter {
           final List<JimpleParser.ImmediateContext> immediates = ctx.immediate();
           List<Immediate> arglist = new ArrayList<>(immediates.size());
           for (JimpleParser.ImmediateContext immediate : immediates) {
-            arglist.add((Immediate) visitImmediate(immediate));
+            arglist.add(visitImmediate(immediate));
           }
           return arglist;
         }

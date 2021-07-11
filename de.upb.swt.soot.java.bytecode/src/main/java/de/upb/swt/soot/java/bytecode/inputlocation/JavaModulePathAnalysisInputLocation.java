@@ -26,8 +26,8 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.types.*;
+import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.JavaSootClass;
@@ -35,6 +35,8 @@ import de.upb.swt.soot.java.core.ModuleInfoAnalysisInputLocation;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -51,8 +53,7 @@ import javax.annotation.Nonnull;
  * @see <a
  *     href=http://docs.oracle.com/javase/9/docs/api/java/lang/module/ModuleFinder.html#of-java.nio.file.Path...->ModuleFinder</a>
  */
-public class JavaModulePathAnalysisInputLocation
-    implements BytecodeAnalysisInputLocation, ModuleInfoAnalysisInputLocation {
+public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisInputLocation {
 
   @Nonnull private final ModuleFinder moduleFinder;
 
@@ -64,24 +65,36 @@ public class JavaModulePathAnalysisInputLocation
    *     SootClassSource}es for the files found on the class path
    */
   public JavaModulePathAnalysisInputLocation(@Nonnull String modulePath) {
-    moduleFinder = new ModuleFinder(modulePath);
+    this(modulePath, FileSystems.getDefault());
+  }
+
+  /**
+   * Creates a {@link JavaModulePathAnalysisInputLocation} which locates classes in the given module
+   * path.
+   *
+   * @param modulePath The class path to search in The {@link ClassProvider} for generating {@link
+   *     SootClassSource}es for the files found on the class path
+   * @param fileSystem filesystem for the path
+   */
+  public JavaModulePathAnalysisInputLocation(
+      @Nonnull String modulePath, @Nonnull FileSystem fileSystem) {
+    moduleFinder = new ModuleFinder(modulePath, fileSystem);
   }
 
   @Nonnull
-  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
+  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig, View<?> view) {
     return moduleFinder.getModuleInfo(sig);
   }
 
   @Nonnull
-  public Set<ModuleSignature> getModules() {
+  public Set<ModuleSignature> getModules(View<?> view) {
     return moduleFinder.getModules();
   }
 
   @Override
   @Nonnull
   public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
     Preconditions.checkArgument(
         identifierFactory instanceof JavaModuleIdentifierFactory,
         "Factory must be a JavaModuleSignatureFactory");
@@ -90,8 +103,7 @@ public class JavaModulePathAnalysisInputLocation
     return allModules.stream()
         .flatMap(
             sig ->
-                getClassSourcesInternal(
-                    sig, (JavaModuleIdentifierFactory) identifierFactory, classLoadingOptions))
+                getClassSourcesInternal(sig, (JavaModuleIdentifierFactory) identifierFactory, view))
         .collect(Collectors.toList());
   }
 
@@ -100,19 +112,19 @@ public class JavaModulePathAnalysisInputLocation
   public Collection<? extends AbstractClassSource<JavaSootClass>> getModulesClassSources(
       @Nonnull ModuleSignature moduleSignature,
       @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull View<?> view) {
     Preconditions.checkArgument(
         identifierFactory instanceof JavaModuleIdentifierFactory,
         "Factory must be a JavaModuleSignatureFactory");
     return getClassSourcesInternal(
-            moduleSignature, (JavaModuleIdentifierFactory) identifierFactory, classLoadingOptions)
+            moduleSignature, (JavaModuleIdentifierFactory) identifierFactory, view)
         .collect(Collectors.toList());
   }
 
   protected Stream<? extends AbstractClassSource<JavaSootClass>> getClassSourcesInternal(
       @Nonnull ModuleSignature moduleSignature,
       @Nonnull JavaModuleIdentifierFactory identifierFactory,
-      @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull View<?> view) {
 
     AnalysisInputLocation<JavaSootClass> inputLocation = moduleFinder.getModule(moduleSignature);
     if (inputLocation == null) {
@@ -127,13 +139,13 @@ public class JavaModulePathAnalysisInputLocation
       identifierFactory = JavaModuleIdentifierFactory.getInstance(moduleSignature);
     }
 
-    return inputLocation.getClassSources(identifierFactory, classLoadingOptions).stream();
+    return inputLocation.getClassSources(identifierFactory, view).stream();
   }
 
   @Override
   @Nonnull
   public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull ClassType classType, @Nonnull View<?> view) {
     JavaClassType klassType = (JavaClassType) classType;
 
     ModuleSignature modulename =
@@ -144,6 +156,20 @@ public class JavaModulePathAnalysisInputLocation
     if (inputLocation == null) {
       return Optional.empty();
     }
-    return inputLocation.getClassSource(klassType);
+
+    return inputLocation.getClassSource(klassType, view);
+  }
+
+  @Override
+  public int hashCode() {
+    return moduleFinder.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof JavaModulePathAnalysisInputLocation)) {
+      return false;
+    }
+    return moduleFinder.equals(((JavaModulePathAnalysisInputLocation) o).moduleFinder);
   }
 }

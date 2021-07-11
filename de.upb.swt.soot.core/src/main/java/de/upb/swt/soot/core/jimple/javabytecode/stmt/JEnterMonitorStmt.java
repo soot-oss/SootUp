@@ -23,10 +23,9 @@ package de.upb.swt.soot.core.jimple.javabytecode.stmt;
  */
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractOpStmt;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -36,24 +35,20 @@ import javax.annotation.Nonnull;
 /** A statement that enters a JVM monitor, thereby synchronizing its following statements. */
 public final class JEnterMonitorStmt extends AbstractOpStmt implements Copyable {
 
-  public JEnterMonitorStmt(Value op, StmtPositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(op), positionInfo);
-  }
-
-  private JEnterMonitorStmt(ValueBox opBox, StmtPositionInfo positionInfo) {
-    super(opBox, positionInfo);
+  public JEnterMonitorStmt(@Nonnull Immediate op, @Nonnull StmtPositionInfo positionInfo) {
+    super(op, positionInfo);
   }
 
   @Override
   public String toString() {
-    return Jimple.ENTERMONITOR + " " + opBox.getValue().toString();
+    return Jimple.ENTERMONITOR + " " + op.toString();
   }
 
   @Override
   public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.ENTERMONITOR);
     up.literal(" ");
-    opBox.toString(up);
+    op.toString(up);
   }
 
   @Override
@@ -77,12 +72,12 @@ public final class JEnterMonitorStmt extends AbstractOpStmt implements Copyable 
   }
 
   @Nonnull
-  public JEnterMonitorStmt withOp(Value op) {
+  public JEnterMonitorStmt withOp(@Nonnull Immediate op) {
     return new JEnterMonitorStmt(op, getPositionInfo());
   }
 
   @Nonnull
-  public JEnterMonitorStmt withPositionInfo(StmtPositionInfo positionInfo) {
+  public JEnterMonitorStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JEnterMonitorStmt(getOp(), positionInfo);
   }
 }

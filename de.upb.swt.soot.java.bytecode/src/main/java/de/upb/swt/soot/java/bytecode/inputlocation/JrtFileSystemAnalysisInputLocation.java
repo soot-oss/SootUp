@@ -26,10 +26,10 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.StreamUtils;
+import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.frontend.AsmModuleSource;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
@@ -56,8 +56,7 @@ import javax.annotation.Nonnull;
  *
  * @author Andreas Dann created on 06.06.18
  */
-public class JrtFileSystemAnalysisInputLocation
-    implements BytecodeAnalysisInputLocation, ModuleInfoAnalysisInputLocation {
+public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInputLocation {
 
   private static final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
   Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
@@ -66,9 +65,9 @@ public class JrtFileSystemAnalysisInputLocation
   @Override
   @Nonnull
   public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull ClassType classType, @Nonnull View<?> view) {
     JavaClassType klassType = (JavaClassType) classType;
-    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
+    List<BodyInterceptor> bodyInterceptors = view.getBodyInterceptors();
     ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
     Path filepath =
         theFileSystem.getPath(
@@ -117,8 +116,8 @@ public class JrtFileSystemAnalysisInputLocation
   public Collection<? extends AbstractClassSource<JavaSootClass>> getModulesClassSources(
       @Nonnull ModuleSignature moduleSignature,
       @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull ClassLoadingOptions classLoadingOptions) {
-    return getClassSourcesInternal(moduleSignature, identifierFactory, classLoadingOptions)
+      @Nonnull View<?> view) {
+    return getClassSourcesInternal(moduleSignature, identifierFactory, view)
         .collect(Collectors.toList());
   }
 
@@ -126,9 +125,9 @@ public class JrtFileSystemAnalysisInputLocation
   protected Stream<AbstractClassSource<JavaSootClass>> getClassSourcesInternal(
       @Nonnull ModuleSignature moduleSignature,
       @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull View<?> view) {
 
-    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
+    List<BodyInterceptor> bodyInterceptors = view.getBodyInterceptors();
     ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
 
     String moduleInfoFilename =
@@ -166,12 +165,11 @@ public class JrtFileSystemAnalysisInputLocation
 
   @Override
   public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
 
     Collection<ModuleSignature> moduleSignatures = discoverModules();
     return moduleSignatures.stream()
-        .flatMap(sig -> getClassSourcesInternal(sig, identifierFactory, classLoadingOptions))
+        .flatMap(sig -> getClassSourcesInternal(sig, identifierFactory, view))
         .collect(Collectors.toList());
   }
 
@@ -222,13 +220,13 @@ public class JrtFileSystemAnalysisInputLocation
               sig.getClassName(), sig.getPackageName().getPackageName(), moduleDir.toString());
     }
 
-    // if we are using the normal signature factory, than trim the module from the path
+    // if we are using the normal signature factory, then trim the module from the path
     return sig;
   }
 
   @Nonnull
   @Override
-  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
+  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig, View<?> view) {
     if (!isResolved) {
       discoverModules();
     }
@@ -237,10 +235,20 @@ public class JrtFileSystemAnalysisInputLocation
 
   @Nonnull
   @Override
-  public Set<ModuleSignature> getModules() {
+  public Set<ModuleSignature> getModules(View<?> view) {
     if (!isResolved) {
       discoverModules();
     }
     return Collections.unmodifiableSet(moduleInfoMap.keySet());
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return o instanceof JrtFileSystemAnalysisInputLocation;
+  }
+
+  @Override
+  public int hashCode() {
+    return 31;
   }
 }

@@ -1,10 +1,10 @@
-package de.upb.swt.soot.core.jimple.common.expr;
+package de.upb.swt.soot.core.jimple.basic;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2020 Linghui Luo, Christian Brüggemann
+ * Copyright (C) 2002 Ondrej Lhotak
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,16 +22,14 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
-import java.util.List;
+/**
+ * A class that numbers objects, so they can be placed in bitsets.
+ *
+ * @author Ondrej Lhotak
+ */
 
-class ValueBoxUtils {
+public interface Numberable {
+    public void setNumber(int number);
 
-  private ValueBoxUtils() {}
-
-  static ValueBox[] toValueBoxes(List<? extends Value> args) {
-    return args.stream().map(Jimple::newImmediateBox).toArray(ValueBox[]::new);
-  }
+    public int getNumber();
 }

@@ -8,7 +8,7 @@ package de.upb.swt.soot.core.jimple.visitor;
  */
 public abstract class AbstractVisitor<V> implements Visitor {
 
-  private V result;
+  private V result = null;
 
   public V getResult() {
     return result;
