@@ -1,4 +1,4 @@
-package de.upb.swt.soot.java.core.analysis;
+package de.upb.swt.soot.core.analysis;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -24,6 +24,7 @@ package de.upb.swt.soot.java.core.analysis;
 import java.util.*;
 
 import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.jimple.basic.Numberable;
 import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 

@@ -1,4 +1,4 @@
-package de.upb.swt.soot.java.core.analysis;
+package de.upb.swt.soot.core.jimple.basic;
 
 /*-
  * #%L
