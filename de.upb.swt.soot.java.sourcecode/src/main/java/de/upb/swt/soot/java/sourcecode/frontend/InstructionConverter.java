@@ -547,7 +547,7 @@ public class InstructionConverter {
         IntConstant cValue = IntConstant.getInstance(c);
         lookupValues.add(cValue);
       } else {
-        targetList.add(c - 1);
+        targetList.add(c);
       }
     }
     targetList.add(defaultCase);

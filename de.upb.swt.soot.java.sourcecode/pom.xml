@@ -13,7 +13,7 @@
 	</parent>
 
 	<properties>
-		<wala.version>1.5.4</wala.version>
+		<wala.version>1.5.6</wala.version>
 	</properties>
 
 	<dependencies>
