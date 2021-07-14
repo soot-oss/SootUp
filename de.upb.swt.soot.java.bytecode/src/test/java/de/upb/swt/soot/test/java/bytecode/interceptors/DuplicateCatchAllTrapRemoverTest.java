@@ -94,12 +94,12 @@ public class DuplicateCatchAllTrapRemoverTest {
 
     List<Trap> traps = new ArrayList<>();
     ExceptionType exceptionType = new ExceptionType();
-    Trap trap1 = new JTrap(exceptionType, strToA, bToA, jump);
+    Trap trap1 = new Trap(exceptionType, strToA, bToA, jump);
     traps.add(trap1);
-    Trap trap2 = new JTrap(exceptionType, strToA, bToA, ret);
+    Trap trap2 = new Trap(exceptionType, strToA, bToA, ret);
     traps.add(trap2);
     if (containsDuplicate) {
-      Trap trap3 = new JTrap(exceptionType, strToA, bToA, ret);
+      Trap trap3 = new Trap(exceptionType, strToA, bToA, ret);
       traps.add(trap3);
     }
     List<Stmt> stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret);
