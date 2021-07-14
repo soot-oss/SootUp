@@ -34,9 +34,9 @@ import javax.annotation.Nonnull;
 
 /**
  * <code>ParameterRef</code> objects are used by <code>Body</code> objects to refer to the parameter
- * slots on methodRef entry. <br>
+ * slots on method entry. <br>
  *
- * <p>For instance, in an instance methodRef, the first statement will often be <code>
+ * <p>For instance, in a method, the first statement will often be <code>
  *  this := @parameter0; </code>
  */
 public final class JParameterRef implements IdentityRef, Copyable {

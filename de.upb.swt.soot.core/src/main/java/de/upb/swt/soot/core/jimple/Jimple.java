@@ -379,28 +379,29 @@ public abstract class Jimple {
   }
 
   /**
-   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod
-   * methodRef, List args) grammar chunk.
+   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodSignature, List bootstrapArgs,
+   * SootMethod methodSignature, List args) grammar chunk.
    */
   public static JDynamicInvokeExpr newDynamicInvokeExpr(
-      MethodSignature bootstrapMethodRef,
+      MethodSignature bootstrapMethodSignature,
       List<Immediate> bootstrapArgs,
-      MethodSignature methodRef,
+      MethodSignature methodSignature,
       List<Immediate> args) {
-    return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, args);
+    return new JDynamicInvokeExpr(bootstrapMethodSignature, bootstrapArgs, methodSignature, args);
   }
 
   /**
-   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod
-   * methodRef, List args) grammar chunk.
+   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodSignature, List bootstrapArgs,
+   * SootMethod methodSignature, List args) grammar chunk.
    */
   public static JDynamicInvokeExpr newDynamicInvokeExpr(
-      MethodSignature bootstrapMethodRef,
+      MethodSignature bootstrapMethodSignature,
       List<Immediate> bootstrapArgs,
-      MethodSignature methodRef,
+      MethodSignature methodSignature,
       int tag,
       List<Immediate> args) {
-    return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, tag, args);
+    return new JDynamicInvokeExpr(
+        bootstrapMethodSignature, bootstrapArgs, methodSignature, tag, args);
   }
 
   /**
