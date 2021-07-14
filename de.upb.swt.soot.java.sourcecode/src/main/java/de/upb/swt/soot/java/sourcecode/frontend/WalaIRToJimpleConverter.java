@@ -587,7 +587,7 @@ public class WalaIRToJimpleConverter {
           Stmt handlerStmt = index2Stmt.get(block.getFirstInstructionIndex());
           for (TypeReference type : exceptionTypes) {
             ClassType exception = (ClassType) convertType(type);
-            traps.add(new JTrap(exception, from, to, handlerStmt));
+            traps.add(new Trap(exception, from, to, handlerStmt));
           }
         }
 

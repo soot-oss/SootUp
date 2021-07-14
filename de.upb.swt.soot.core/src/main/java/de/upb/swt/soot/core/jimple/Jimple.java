@@ -581,7 +581,7 @@ public abstract class Jimple {
     return new JNewMultiArrayExpr(type, sizes);
   }
 
-  public static JTrap newTrap(ClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
-    return new JTrap(exception, beginStmt, endStmt, handlerStmt);
+  public static Trap newTrap(ClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
+    return new Trap(exception, beginStmt, endStmt, handlerStmt);
   }
 }

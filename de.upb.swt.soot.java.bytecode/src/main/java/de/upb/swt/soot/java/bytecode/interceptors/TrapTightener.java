@@ -23,7 +23,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  */
 
 import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
-import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
@@ -97,7 +96,7 @@ public class TrapTightener implements BodyInterceptor {
           firstUnstrappedStmt = stmtsInPrintOrder.get(id + 1);
         }
         newTrap =
-            new JTrap(
+            new Trap(
                 trap.getExceptionType(), newTrapBegin, firstUnstrappedStmt, trap.getHandlerStmt());
       }
       if (newTrap != null) {

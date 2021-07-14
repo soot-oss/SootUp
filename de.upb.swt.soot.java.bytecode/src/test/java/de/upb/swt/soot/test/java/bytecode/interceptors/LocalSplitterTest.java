@@ -546,7 +546,7 @@ public class LocalSplitterTest {
     builder.setPosition(position);
 
     // build trap
-    JTrap trap = new JTrap(exception, stmt1, stmt3, stmt4);
+    Trap trap = new Trap(exception, stmt1, stmt3, stmt4);
     List<Trap> traps = new ArrayList<>();
     traps.add(trap);
     builder.setTraps(traps);
@@ -588,7 +588,7 @@ public class LocalSplitterTest {
     builder.setPosition(position);
 
     // build trap
-    JTrap trap = new JTrap(exception, stmt1, stmt3, stmt4);
+    Trap trap = new Trap(exception, stmt1, stmt3, stmt4);
     List<Trap> traps = new ArrayList<>();
     traps.add(trap);
     builder.setTraps(traps);
