@@ -1867,6 +1867,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     for (TryCatchBlockNode trycatch : tryCatchBlocks) {
       Stmt handler = trapHandler.get(trycatch.handler);
 
+      // FIXME: [ms] create java.lang.Throwable for modules i.e. with ModuleSignature if modules are
+      // used..
       final String exceptionName =
           (trycatch.type != null) ? AsmUtil.toQualifiedName(trycatch.type) : "java.lang.Throwable";
       JavaClassType exceptionType = JavaIdentifierFactory.getInstance().getClassType(exceptionName);

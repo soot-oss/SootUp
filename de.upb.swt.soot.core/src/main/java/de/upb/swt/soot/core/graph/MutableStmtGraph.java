@@ -15,13 +15,13 @@ public interface MutableStmtGraph extends StmtGraph {
 
   void addNode(@Nonnull Stmt node);
 
-  void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to);
-
-  void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets);
-
-  void putEdge(@Nonnull Stmt from, @Nonnull Stmt to);
-
   void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt);
 
   void removeNode(@Nonnull Stmt node);
+
+  void putEdge(@Nonnull Stmt from, @Nonnull Stmt to);
+
+  void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets);
+
+  void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to);
 }

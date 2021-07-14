@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 public class MutableBlockStmtGraph implements MutableStmtGraph {
 
   @Nonnull private MutableBasicBlock startingBlock = new MutableBasicBlock();
-
   @Nonnull private final Map<Stmt, MutableBasicBlock> stmtsToBlock = new HashMap<>();
   private List<Trap> traps = null;
 
@@ -27,8 +26,8 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
   @Override
   @Nonnull
   // FIXME: return them in post-reverse-order
-  public Collection<? extends BasicBlock> getBlocks() {
-    return new HashSet<>(stmtsToBlock.values());
+  public Collection<BasicBlock> getBlocks() {
+    return new LinkedHashSet<>(stmtsToBlock.values());
   }
 
   @Override
@@ -55,6 +54,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
     addNode(newStmt);
   }
 
+  @Override
   public void putEdge(@Nonnull Stmt stmtA, @Nonnull Stmt stmtB) {
 
     MutableBasicBlock blockA = stmtsToBlock.get(stmtA);
