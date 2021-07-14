@@ -27,8 +27,7 @@ import java.util.List;
 
 /**
  * A relatively simple validator. It tries to check whether after each new-expression-statement
- * there is a corresponding call to the &lt;init&gt; methodRef before a use or the end of the
- * methodRef.
+ * there is a corresponding call to the &lt;init&gt; method before a use or the end of the method.
  *
  * @author Marc Miltenberger
  * @author Steven Arzt

@@ -66,7 +66,7 @@ public class MethodHandle implements Constant {
           return k;
         }
       }
-      throw new RuntimeException("Error: No methodRef handle kind for value '" + kind + "'.");
+      throw new RuntimeException("Error: No method handle kind for value '" + kind + "'.");
     }
 
     public static Kind getKind(String kind) {
@@ -75,7 +75,7 @@ public class MethodHandle implements Constant {
           return k;
         }
       }
-      throw new RuntimeException("Error: No methodRef handle kind for value '" + kind + "'.");
+      throw new RuntimeException("Error: No method handle kind for value '" + kind + "'.");
     }
   }
 

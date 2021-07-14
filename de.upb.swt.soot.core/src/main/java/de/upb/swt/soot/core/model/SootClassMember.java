@@ -55,27 +55,27 @@ public abstract class SootClassMember<S extends SootClassMemberSignature> {
     return this.signature.getDeclClassType();
   }
 
-  /** Convenience methodRef returning true if this class member is protected. */
+  /** Convenience method returning true if this class member is protected. */
   public boolean isProtected() {
     return Modifier.isProtected(this.getModifiers());
   }
 
-  /** Convenience methodRef returning true if this class member is private. */
+  /** Convenience method returning true if this class member is private. */
   public boolean isPrivate() {
     return Modifier.isPrivate(this.getModifiers());
   }
 
-  /** Convenience methodRef returning true if this class member is public. */
+  /** Convenience method returning true if this class member is public. */
   public boolean isPublic() {
     return Modifier.isPublic(this.getModifiers());
   }
 
-  /** Convenience methodRef returning true if this class member is static. */
+  /** Convenience method returning true if this class member is static. */
   public boolean isStatic() {
     return Modifier.isStatic(this.getModifiers());
   }
 
-  /** Convenience methodRef returning true if this field is final. */
+  /** Convenience method returning true if this field is final. */
   public boolean isFinal() {
     return Modifier.isFinal(this.getModifiers());
   }

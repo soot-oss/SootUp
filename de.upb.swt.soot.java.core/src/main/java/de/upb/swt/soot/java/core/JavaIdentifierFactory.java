@@ -238,7 +238,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   }
 
   /**
-   * Returns a unique PackageName. The methodRef looks up a cache if it already contains a signature
+   * Returns a unique PackageName. The method looks up a cache if it already contains a signature
    * with the given package name. If the cache lookup fails a new signature is created.
    *
    * @param packageName the Java package name; must not be null use empty string for the default
@@ -249,15 +249,13 @@ public class JavaIdentifierFactory implements IdentifierFactory {
    */
   @Override
   public PackageName getPackageName(@Nonnull final String packageName) {
-    PackageName packageIdentifier =
-        packages.computeIfAbsent(packageName, (name) -> new PackageName(name));
-    return packageIdentifier;
+    return packages.computeIfAbsent(packageName, (name) -> new PackageName(name));
   }
 
   /**
    * Always creates a new MethodSignature AND a new ClassSignature.
    *
-   * @param methodName the methodRef's name
+   * @param methodName the method's name
    * @param fullyQualifiedNameDeclClass the fully-qualified name of the declaring class
    * @param parameters the methods parameters fully-qualified name or a primitive's name
    * @param fqReturnType the fully-qualified name of the return type or a primitive's name
@@ -282,7 +280,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   /**
    * Always creates a new MethodSignature reusing the given ClassSignature.
    *
-   * @param methodName the methodRef's name
+   * @param methodName the method's name
    * @param declaringClassSignature the ClassSignature of the declaring class
    * @param parameters the methods parameters fully-qualified name or a primitive's name
    * @param fqReturnType the fully-qualified name of the return type or a primitive's name

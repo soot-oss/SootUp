@@ -127,9 +127,9 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
   }
 
   /**
-   * Returns a unique ModuleSignature. The methodRef looks up a cache if it already contains a
+   * Returns a unique ModuleSignature. The method looks up a cache if it already contains a
    * signature with the given module name. If the cache lookup fails a new signature is created.
-   * Returns a unique ModuleSignature. The methodRef looks up a cache if it already contains a
+   * Returns a unique ModuleSignature. The method looks up a cache if it already contains a
    * signature with the given module name. If the cache lookup fails a new signature is created.
    *
    * @param moduleName the module name; Must not be null. Use the empty string for the unnamed

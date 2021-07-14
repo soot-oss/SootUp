@@ -342,7 +342,7 @@ public class WalaIRToJimpleConverter {
     return modifiers;
   }
 
-  /** Return all modifiers for the given methodRef. */
+  /** Return all modifiers for the given method. */
   public EnumSet<Modifier> convertModifiers(AstMethod method) {
     EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
     if (method.isPrivate()) {
