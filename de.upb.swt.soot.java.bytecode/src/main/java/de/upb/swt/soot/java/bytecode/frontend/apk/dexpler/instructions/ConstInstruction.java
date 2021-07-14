@@ -64,9 +64,9 @@ public class ConstInstruction extends DexlibAbstractInstruction {
 
     if (IDalvikTyper.ENABLE_DVKTYPER) {
       if (cst instanceof UntypedConstant) {
-        DalvikTyper.v().addConstraint(assign.getLeftOpBox(), assign.getRightOpBox());
+        DalvikTyper.v().addConstraint(assign.getLeftOp(), assign.getRightOp());
       } else {
-        DalvikTyper.v().setType(assign.getLeftOpBox(), cst.getType(), false);
+        DalvikTyper.v().setType(assign.getLeftOp(), cst.getType(), false);
       }
     }
   }

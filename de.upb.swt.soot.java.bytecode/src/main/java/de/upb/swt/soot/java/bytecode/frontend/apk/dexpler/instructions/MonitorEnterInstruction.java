@@ -55,7 +55,7 @@ public class MonitorEnterInstruction extends DexlibAbstractInstruction {
 
     if (IDalvikTyper.ENABLE_DVKTYPER) {
       // Debug.printDbg(IDalvikTyper.DEBUG, "constraint: "+ enterMonitorStmt);
-      DalvikTyper.v().setType(enterMonitorStmt.getOpBox(), new JavaClassType("java.lang.Object"), true);
+      DalvikTyper.v().setType(enterMonitorStmt.getOp(), new JavaClassType("java.lang.Object"), true);
     }
   }
 }

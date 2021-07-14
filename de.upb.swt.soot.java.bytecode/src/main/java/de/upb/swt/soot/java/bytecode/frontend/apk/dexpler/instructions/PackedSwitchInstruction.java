@@ -39,6 +39,7 @@ import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.DexBody;
 import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.IDalvikTyper;
 import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.typing.DalvikTyper;
+import de.upb.swt.soot.java.core.language.JavaJimple;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.SwitchElement;
 import org.jf.dexlib2.iface.instruction.formats.PackedSwitchPayload;
@@ -72,7 +73,7 @@ public class PackedSwitchInstruction extends SwitchInstruction {
     setStmt(switchStmt);
 
     if (IDalvikTyper.ENABLE_DVKTYPER) {
-      DalvikTyper.v().setType(switchStmt.getKeyBox(), PrimitiveType.IntType.getInstance(), true);
+      DalvikTyper.v().setType(switchStmt.getKey(), PrimitiveType.IntType.getInstance(), true);
     }
 
     return switchStmt;

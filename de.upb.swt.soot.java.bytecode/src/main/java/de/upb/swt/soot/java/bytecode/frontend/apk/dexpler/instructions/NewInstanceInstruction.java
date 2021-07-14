@@ -69,7 +69,7 @@ public class NewInstanceInstruction extends DexlibAbstractInstruction {
 
     if (IDalvikTyper.ENABLE_DVKTYPER) {
       // DalvikTyper.v().captureAssign((JAssignStmt)assign, op); // TODO: ref. type may be null!
-      DalvikTyper.v().setType(assign.getLeftOpBox(), type, false);
+      DalvikTyper.v().setType(assign.getLeftOp(), type, false);
     }
   }
 

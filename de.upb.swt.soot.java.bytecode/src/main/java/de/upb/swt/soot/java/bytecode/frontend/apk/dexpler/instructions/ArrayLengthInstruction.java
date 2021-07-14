@@ -67,7 +67,7 @@ public class ArrayLengthInstruction extends DexlibAbstractInstruction {
     body.add(assign);
 
     if (IDalvikTyper.ENABLE_DVKTYPER) {
-      DalvikTyper.v().setType(assign.getLeftOpBox(), PrimitiveType.IntType.getInstance(), false);
+      DalvikTyper.v().setType(assign.getLeftOp(), PrimitiveType.IntType.getInstance(), false);
     }
   }
 

@@ -59,7 +59,7 @@ public class IgetInstruction extends FieldInstruction {
     body.add(assign);
 
     if (IDalvikTyper.ENABLE_DVKTYPER) {
-      DalvikTyper.v().setType(assign.getLeftOpBox(), r.getType(), false);
+      DalvikTyper.v().setType(assign.getLeftOp(), r.getType(), false);
     }
   }
 

@@ -65,7 +65,7 @@ public class CastInstruction extends TaggedInstruction {
     body.add(assign);
 
     if (IDalvikTyper.ENABLE_DVKTYPER) {
-      DalvikTyper.v().setType(assign.getLeftOpBox(), cast.getType(), false);
+      DalvikTyper.v().setType(assign.getLeftOp(), cast.getType(), false);
       // DalvikTyper.v().captureAssign((JAssignStmt)assign, op);
     }
   }

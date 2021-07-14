@@ -61,7 +61,7 @@ public class MoveExceptionInstruction extends DexlibAbstractInstruction implemen
     body.add(stmtToRetype);
 
     if (IDalvikTyper.ENABLE_DVKTYPER) {
-      DalvikTyper.v().setType(stmtToRetype.getLeftOpBox(), new JavaClassType("java.lang.Throwable"), false);
+      DalvikTyper.v().setType(stmtToRetype.getLeftOp(), new JavaClassType("java.lang.Throwable"), false);
     }
   }
 

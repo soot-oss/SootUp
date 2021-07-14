@@ -73,7 +73,7 @@ public class ConstClassInstruction extends DexlibAbstractInstruction {
     if (IDalvikTyper.ENABLE_DVKTYPER) {
       // DalvikTyper.v().captureAssign((JAssignStmt)assign, op); //TODO:
       // classtype could be null!
-      DalvikTyper.v().setType(assign.getLeftOpBox(), cst.getType(), false);
+      DalvikTyper.v().setType(assign.getLeftOp(), cst.getType(), false);
     }
   }
 

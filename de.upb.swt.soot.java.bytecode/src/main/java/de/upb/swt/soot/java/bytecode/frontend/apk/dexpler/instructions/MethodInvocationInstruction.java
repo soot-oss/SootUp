@@ -97,15 +97,15 @@ public abstract class MethodInvocationInstruction extends DexlibAbstractInstruct
 
       if (invocation instanceof AbstractInstanceInvokeExpr) {
         Type t = invocation.getMethodSignature().getDeclClassType();
-        DalvikTyper.v().setType(((AbstractInstanceInvokeExpr) invocation).getBaseBox(), t, true);
+        DalvikTyper.v().setType(((AbstractInstanceInvokeExpr) invocation).getBase(), t, true);
         // DalvikTyper.v().setObjectType(assign.getLeftOpBox());
       }
       int i = 0;
       for (Type pt : invocation.getMethodSignature().getParameterTypes()) {
-        DalvikTyper.v().setType(invocation.getArgBox(i++), pt, true);
+        DalvikTyper.v().setType(invocation.getArg(i++), pt, true);
       }
       if (assign != null) {
-        DalvikTyper.v().setType(assign.getLeftOpBox(), invocation.getType(), false);
+        DalvikTyper.v().setType(assign.getLeftOp(), invocation.getType(), false);
       }
 
     }
@@ -334,7 +334,7 @@ public abstract class MethodInvocationInstruction extends DexlibAbstractInstruct
     if (name.startsWith("[")) {
       name = "java.lang.Object";
     } else {
-      name = dottedClassName(name);
+      name = Util.dottedClassName(name);
     }
 
     SootClass sc = SootResolver.v().makeClassRef(name);

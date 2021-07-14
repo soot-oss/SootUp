@@ -56,7 +56,7 @@ public class ReturnInstruction extends DexlibAbstractInstruction {
 
       // DalvikTyper.v().addConstraint(returnStmt.getOpBox(), new
       // ImmediateBox(Jimple.body.getBody().getMethod().getReturnType()));
-      DalvikTyper.v().setType(returnStmt.getOpBox(), body.getBody().getMethodSignature().getType(), true);
+      DalvikTyper.v().setType(returnStmt.getOp(), body.getBody().getMethodSignature().getType(), true);
     }
   }
 }

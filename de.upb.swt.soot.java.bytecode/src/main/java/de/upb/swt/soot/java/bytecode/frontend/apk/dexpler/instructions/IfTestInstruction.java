@@ -30,6 +30,7 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.instructions;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractBinopExpr;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.DexBody;
 import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.IDalvikTyper;
@@ -49,14 +50,14 @@ public class IfTestInstruction extends ConditionalJumpInstruction {
     Instruction22t i = (Instruction22t) instruction;
     Local one = body.getRegisterLocal(i.getRegisterA());
     Local other = body.getRegisterLocal(i.getRegisterB());
-    AbstractBinopExpr condition = getComparisonExpr(one, other);
+    AbstractConditionExpr condition = getComparisonExpr(one, other);
     JIfStmt jif = Jimple.newIfStmt(condition, targetInstruction.getStmt().getPositionInfo());
     // setUnit() is called in ConditionalJumpInstruction
 
     addTags(jif);
     if (IDalvikTyper.ENABLE_DVKTYPER) {
       // Debug.printDbg(IDalvikTyper.DEBUG, "constraint if: "+ jif +" condition: "+ condition);
-      DalvikTyper.v().addConstraint(condition.getOp1Box(), condition.getOp2Box());
+      DalvikTyper.v().addConstraint(condition.getOp1(), condition.getOp2());
     }
 
     return jif;

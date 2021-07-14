@@ -29,6 +29,7 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.instructions;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractBinopExpr;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.DexBody;
 import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.IDalvikTyper;
@@ -45,7 +46,7 @@ public class IfTestzInstruction extends ConditionalJumpInstruction {
   @Override
   protected JIfStmt ifStatement(DexBody body) {
     Instruction21t i = (Instruction21t) instruction;
-    AbstractBinopExpr condition = getComparisonExpr(body, i.getRegisterA());
+    AbstractConditionExpr condition = getComparisonExpr(body, i.getRegisterA());
     JIfStmt jif = Jimple.newIfStmt(condition, targetInstruction.getStmt().getPositionInfo());
     // setUnit() is called in ConditionalJumpInstruction
 
