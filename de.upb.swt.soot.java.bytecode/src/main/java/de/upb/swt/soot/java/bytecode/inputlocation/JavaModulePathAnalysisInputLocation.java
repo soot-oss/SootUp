@@ -94,52 +94,38 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
   @Override
   @Nonnull
   public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
+      @Nonnull View<?> view) {
+    IdentifierFactory identifierFactory = view.getIdentifierFactory();
     Preconditions.checkArgument(
         identifierFactory instanceof JavaModuleIdentifierFactory,
         "Factory must be a JavaModuleSignatureFactory");
 
     Collection<ModuleSignature> allModules = moduleFinder.getAllModules();
     return allModules.stream()
-        .flatMap(
-            sig ->
-                getClassSourcesInternal(sig, (JavaModuleIdentifierFactory) identifierFactory, view))
+        .flatMap(sig -> getClassSourcesInternal(sig, view))
         .collect(Collectors.toList());
   }
 
   @Override
   @Nonnull
   public Collection<? extends AbstractClassSource<JavaSootClass>> getModulesClassSources(
-      @Nonnull ModuleSignature moduleSignature,
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull View<?> view) {
+      @Nonnull ModuleSignature moduleSignature, @Nonnull View<?> view) {
+    IdentifierFactory identifierFactory = view.getIdentifierFactory();
     Preconditions.checkArgument(
         identifierFactory instanceof JavaModuleIdentifierFactory,
         "Factory must be a JavaModuleSignatureFactory");
-    return getClassSourcesInternal(
-            moduleSignature, (JavaModuleIdentifierFactory) identifierFactory, view)
-        .collect(Collectors.toList());
+    return getClassSourcesInternal(moduleSignature, view).collect(Collectors.toList());
   }
 
   protected Stream<? extends AbstractClassSource<JavaSootClass>> getClassSourcesInternal(
-      @Nonnull ModuleSignature moduleSignature,
-      @Nonnull JavaModuleIdentifierFactory identifierFactory,
-      @Nonnull View<?> view) {
+      @Nonnull ModuleSignature moduleSignature, @Nonnull View<?> view) {
 
     AnalysisInputLocation<JavaSootClass> inputLocation = moduleFinder.getModule(moduleSignature);
     if (inputLocation == null) {
       return Stream.empty();
     }
 
-    if (!(inputLocation instanceof JavaModulePathAnalysisInputLocation)) {
-      /*
-       * we need a wrapper to create correct types for the found classes, all other ignore modules by default, or have
-       * no clue about modules.
-       */
-      identifierFactory = JavaModuleIdentifierFactory.getInstance(moduleSignature);
-    }
-
-    return inputLocation.getClassSources(identifierFactory, view).stream();
+    return inputLocation.getClassSources(view).stream();
   }
 
   @Override

@@ -76,8 +76,7 @@ public abstract class AnalysisInputLocationTest {
     assertTrue(clazzOpt.isPresent());
     assertEquals(sig, clazzOpt.get().getClassType());
 
-    final Collection<? extends AbstractClassSource<?>> classSources =
-        ns.getClassSources(getIdentifierFactory(), view);
+    final Collection<? extends AbstractClassSource<?>> classSources = ns.getClassSources(view);
 
     assertTrue(classSources.size() >= minClassesFound);
   }

@@ -9,7 +9,7 @@ import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
-import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.JavaModuleProject;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
@@ -28,8 +28,9 @@ public class JrtFileSystemAnalysisInputLocationTest {
   public void getClassSource() {
     JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
     Project<JavaSootClass, JavaView> project =
-        new JavaProject(
-            new JavaLanguage(8),
+        new JavaModuleProject(
+            new JavaLanguage(9),
+            Collections.emptyList(),
             Collections.singletonList(inputLocation),
             DefaultSourceTypeSpecifier.getInstance());
     final ClassType sig =
@@ -46,8 +47,9 @@ public class JrtFileSystemAnalysisInputLocationTest {
     // hint: quite expensive as it loads **all** Runtime modules!
     JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
     Project<JavaSootClass, JavaView> project =
-        new JavaProject(
-            new JavaLanguage(8),
+        new JavaModuleProject(
+            new JavaLanguage(9),
+            Collections.emptyList(),
             Collections.singletonList(inputLocation),
             DefaultSourceTypeSpecifier.getInstance());
     final ClassType sig1 =
@@ -56,8 +58,7 @@ public class JrtFileSystemAnalysisInputLocationTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("System", "java.lang", "java.base");
 
     final Collection<? extends AbstractClassSource<?>> classSources =
-        inputLocation.getClassSources(
-            JavaModuleIdentifierFactory.getInstance(), project.createOnDemandView());
+        inputLocation.getClassSources(project.createOnDemandView());
     assertTrue(classSources.size() > 26000);
     assertTrue(classSources.stream().anyMatch(cs -> cs.getClassType().equals(sig1)));
     assertTrue(classSources.stream().anyMatch(cs -> cs.getClassType().equals(sig2)));

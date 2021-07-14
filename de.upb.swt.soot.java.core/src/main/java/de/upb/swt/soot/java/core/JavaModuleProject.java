@@ -22,6 +22,12 @@ public class JavaModuleProject extends JavaProject {
     moduleInfoAnalysisInputLocation = moduleInputLocations;
   }
 
+  @Nonnull
+  @Override
+  public JavaModuleIdentifierFactory getIdentifierFactory() {
+    return JavaModuleIdentifierFactory.getInstance();
+  }
+
   @Override
   public void validate() {
     if (getInputLocations().isEmpty() && getModuleInfoAnalysisInputLocation().isEmpty()) {

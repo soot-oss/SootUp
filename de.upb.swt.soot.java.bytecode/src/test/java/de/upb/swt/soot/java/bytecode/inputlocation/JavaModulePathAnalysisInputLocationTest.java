@@ -126,7 +126,7 @@ public class JavaModulePathAnalysisInputLocationTest {
     JavaModuleView view = project.createOnDemandView();
 
     final Collection<? extends AbstractClassSource<?>> classSources =
-        inputLocation.getClassSources(JavaModuleIdentifierFactory.getInstance(), view);
+        inputLocation.getClassSources(view);
     assertEquals(3, classSources.size());
   }
 

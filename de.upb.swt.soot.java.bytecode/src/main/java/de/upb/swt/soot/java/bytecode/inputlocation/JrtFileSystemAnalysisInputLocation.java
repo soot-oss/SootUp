@@ -114,10 +114,8 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   @Override
   @Nonnull
   public Collection<? extends AbstractClassSource<JavaSootClass>> getModulesClassSources(
-      @Nonnull ModuleSignature moduleSignature,
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull View<?> view) {
-    return getClassSourcesInternal(moduleSignature, identifierFactory, view)
+      @Nonnull ModuleSignature moduleSignature, @Nonnull View<?> view) {
+    return getClassSourcesInternal(moduleSignature, view.getIdentifierFactory(), view)
         .collect(Collectors.toList());
   }
 
@@ -165,11 +163,11 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
 
   @Override
   public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
+      @Nonnull View<?> view) {
 
     Collection<ModuleSignature> moduleSignatures = discoverModules();
     return moduleSignatures.stream()
-        .flatMap(sig -> getClassSourcesInternal(sig, identifierFactory, view))
+        .flatMap(sig -> getClassSourcesInternal(sig, view.getIdentifierFactory(), view))
         .collect(Collectors.toList());
   }
 

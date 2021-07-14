@@ -24,7 +24,6 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
-import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.types.ClassType;
@@ -141,12 +140,12 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
   @Override
   @Nonnull
   public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory, @Nonnull View<?> view) {
+      @Nonnull View<?> view) {
     // By using a set here, already added classes won't be overwritten and the class which is found
     // first will be kept
     Set<AbstractClassSource<JavaSootClass>> found = new HashSet<>();
     for (AnalysisInputLocation<JavaSootClass> inputLocation : cpEntries) {
-      found.addAll(inputLocation.getClassSources(identifierFactory, view));
+      found.addAll(inputLocation.getClassSources(view));
     }
     return found;
   }

@@ -418,7 +418,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
             .createOnDemandView();
 
     final Collection<? extends AbstractClassSource> classSources =
-        pathBasedNamespace.getClassSources(getIdentifierFactory(), v);
+        pathBasedNamespace.getClassSources(v);
     // test some standard jre classes
     runtimeContains(v, "Object", "java.lang");
     runtimeContains(v, "List", "java.util");

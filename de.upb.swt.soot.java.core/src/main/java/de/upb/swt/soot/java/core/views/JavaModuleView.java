@@ -79,12 +79,6 @@ public class JavaModuleView extends JavaView {
 
   @Nonnull
   @Override
-  public JavaModuleIdentifierFactory getIdentifierFactory() {
-    return JavaModuleIdentifierFactory.getInstance();
-  }
-
-  @Nonnull
-  @Override
   public JavaModuleProject getProject() {
     return (JavaModuleProject) super.getProject();
   }
@@ -322,7 +316,7 @@ public class JavaModuleView extends JavaView {
       // unnamed module
       stream =
           getProject().getInputLocations().stream()
-              .flatMap(input -> input.getClassSources(getIdentifierFactory(), this).stream());
+              .flatMap(input -> input.getClassSources(this).stream());
 
     } else {
       // named module
@@ -334,7 +328,7 @@ public class JavaModuleView extends JavaView {
                     .flatMap(
                         input -> {
                           // classpath
-                          return input.getClassSources(getIdentifierFactory(), this).stream()
+                          return input.getClassSources(this).stream()
                               .filter(
                                   cs ->
                                       moduleSignature.equals(
@@ -345,19 +339,14 @@ public class JavaModuleView extends JavaView {
                     .flatMap(
                         input -> {
                           // modulepath
-                          return input
-                              .getModulesClassSources(moduleSignature, getIdentifierFactory(), this)
-                              .stream();
+                          return input.getModulesClassSources(moduleSignature, this).stream();
                         }));
 
       } else {
         // explicit module
         stream =
             getProject().getModuleInfoAnalysisInputLocation().stream()
-                .flatMap(
-                    input ->
-                        input.getModulesClassSources(moduleSignature, getIdentifierFactory(), this)
-                            .stream());
+                .flatMap(input -> input.getModulesClassSources(moduleSignature, this).stream());
       }
     }
     return stream
@@ -465,11 +454,11 @@ public class JavaModuleView extends JavaView {
     }
 
     getProject().getInputLocations().stream()
-        .flatMap(location -> location.getClassSources(getIdentifierFactory(), this).stream())
+        .flatMap(location -> location.getClassSources(this).stream())
         .forEach(this::buildClassFrom);
 
     getProject().getModuleInfoAnalysisInputLocation().stream()
-        .flatMap(location -> location.getClassSources(getIdentifierFactory(), this).stream())
+        .flatMap(location -> location.getClassSources(this).stream())
         .forEach(this::buildClassFrom);
     isFullyResolved = true;
   }
