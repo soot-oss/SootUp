@@ -365,4 +365,17 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     assertTrue(cg.containsCall(mainMethodSignature, method));
   }
-}
+
+  @Test
+  public void testHelloWorld() {
+    CallGraph cg = loadCallGraph("Misc", "HelloWorld");
+
+    MethodSignature method =
+            identifierFactory.getMethodSignature(
+                    "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+
+
+    assertTrue(cg.containsCall(mainMethodSignature, method));
+  }
+
+  }
