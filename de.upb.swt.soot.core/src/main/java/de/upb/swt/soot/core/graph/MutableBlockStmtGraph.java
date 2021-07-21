@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 public class MutableBlockStmtGraph implements MutableStmtGraph {
 
   @Nonnull private MutableBasicBlock startingBlock = new MutableBasicBlock();
-  @Nonnull private final Map<Stmt, Integer> stmtsToBlock = new HashMap<>();
+  @Nonnull private final Map<Stmt, Integer> stmtToBlock = new HashMap<>();
   @Nonnull private final ArrayList<MutableBasicBlock> blocks = new ArrayList<>();
   private List<Trap> traps = null;
 
@@ -40,12 +40,12 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
     MutableBasicBlock block = new MutableBasicBlock();
     int idx = blocks.size();
     blocks.add(block);
-    stmtsToBlock.put(stmt, idx);
+    stmtToBlock.put(stmt, idx);
     return block;
   }
 
   public void removeNode(@Nonnull Stmt stmt) {
-    Integer blockIdx = stmtsToBlock.remove(stmt);
+    Integer blockIdx = stmtToBlock.remove(stmt);
     MutableBasicBlock blockOfRemovedStmt = blocks.set(blockIdx, null);
 
     blockOfRemovedStmt.removeStmt(stmt);
@@ -68,8 +68,8 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
   @Override
   public void putEdge(@Nonnull Stmt stmtA, @Nonnull Stmt stmtB) {
 
-    Integer blockAIdx = stmtsToBlock.get(stmtA);
-    Integer blockBIdx = stmtsToBlock.get(stmtB);
+    Integer blockAIdx = stmtToBlock.get(stmtA);
+    Integer blockBIdx = stmtToBlock.get(stmtB);
 
     MutableBasicBlock blockA;
     MutableBasicBlock blockB;
@@ -84,7 +84,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
         MutableBasicBlock newBlock = blockA.splitBlockLinked(stmtA, false);
         int newBlockIdx = blocks.size();
         blocks.add(newBlock);
-        newBlock.getStmts().forEach(stmt -> stmtsToBlock.put(stmt, newBlockIdx));
+        newBlock.getStmts().forEach(stmt -> stmtToBlock.put(stmt, newBlockIdx));
         blockA = newBlock;
       }
     }
@@ -102,13 +102,13 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
         // stmtB is at the beginning of the second Block ->
         blockB.addPredecessorBlock(blockA);
         blockA.addSuccessorBlock(blockB);
-        stmtsToBlock.put(stmtB, blockBIdx);
+        stmtToBlock.put(stmtB, blockBIdx);
       } else {
         // stmtB is not at the beginning -> split Block: stmtB is head of newly created Block
         MutableBasicBlock newBlock = blockB.splitBlockLinked(stmtB, true);
         int newBlockIdx = blocks.size();
         blocks.add(newBlock);
-        newBlock.getStmts().forEach(stmt -> stmtsToBlock.put(stmt, newBlockIdx));
+        newBlock.getStmts().forEach(stmt -> stmtToBlock.put(stmt, newBlockIdx));
         blockA.addSuccessorBlock(newBlock);
         newBlock.addPredecessorBlock(newBlock);
       }
@@ -124,7 +124,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
 
   @Override
   public void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
-    Integer blockOfFromIdx = stmtsToBlock.get(from);
+    Integer blockOfFromIdx = stmtToBlock.get(from);
     removeEdgeInternal(from, to, blockOfFromIdx);
   }
 
@@ -136,7 +136,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
     // not tail or head
     if (!(from == blockOfFrom.getTail() || from == blockOfFrom.getHead())) {
       // divide block and dont link them
-      MutableBasicBlock blockOfTo = blocks.get(stmtsToBlock.get(to));
+      MutableBasicBlock blockOfTo = blocks.get(stmtToBlock.get(to));
       if (blockOfFrom != blockOfTo) {
         throw new IllegalStateException();
       }
@@ -146,7 +146,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
         MutableBasicBlock newBlock = blockOfFrom.splitBlockUnlinked(from, to);
         Integer newBlockIdx = blocks.size();
         blocks.add(newBlock);
-        newBlock.getStmts().forEach(s -> stmtsToBlock.put(s, newBlockIdx));
+        newBlock.getStmts().forEach(s -> stmtToBlock.put(s, newBlockIdx));
       }
     }
   }
@@ -168,7 +168,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
                   .forEach(
                       k -> {
                         singlePreviousBlock.addStmt(k);
-                        stmtsToBlock.put(k, blockIdxOfFrom);
+                        stmtToBlock.put(k, blockIdxOfFrom);
                       });
             }
           }
@@ -192,7 +192,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
                   .forEach(
                       k -> {
                         blockOfFrom.addStmt(k);
-                        stmtsToBlock.put(k, blockIdxOfFrom);
+                        stmtToBlock.put(k, blockIdxOfFrom);
                       });
             }
           }
@@ -206,7 +206,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
   @Override
   public void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets) {
     // TODO [ms] implement smart i.e. not remove(old), add(other) ?
-    Integer fromBlockIdx = stmtsToBlock.get(from);
+    Integer fromBlockIdx = stmtToBlock.get(from);
     if (fromBlockIdx == null) {
       // 'from Stmt' does not exist yet -> create
       addNodeInternal(from);
@@ -229,7 +229,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
   }
 
   public void setStartingStmt(@Nonnull Stmt startingStmt) {
-    Integer startingBlockIdx = stmtsToBlock.get(startingStmt);
+    Integer startingBlockIdx = stmtToBlock.get(startingStmt);
     if (startingBlockIdx != null) {
       // TODO: make sure starting stmt is (and keeps beeing) at the beginning of the block!
       this.startingBlock = blocks.get(startingBlockIdx);
@@ -241,18 +241,18 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
   @Nonnull
   @Override
   public Set<Stmt> nodes() {
-    return stmtsToBlock.keySet();
+    return stmtToBlock.keySet();
   }
 
   @Override
   public boolean containsNode(@Nonnull Stmt node) {
-    return stmtsToBlock.containsKey(node);
+    return stmtToBlock.containsKey(node);
   }
 
   @Nonnull
   @Override
   public List<Stmt> predecessors(@Nonnull Stmt node) {
-    Integer blockIdx = stmtsToBlock.get(node);
+    Integer blockIdx = stmtToBlock.get(node);
     if (blockIdx == null) {
       throw new IllegalArgumentException("Stmt is not contained in the BlockStmtGraph: " + node);
     }
@@ -274,7 +274,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
   @Nonnull
   @Override
   public List<Stmt> successors(@Nonnull Stmt node) {
-    Integer blockIdx = stmtsToBlock.get(node);
+    Integer blockIdx = stmtToBlock.get(node);
     if (blockIdx == null) {
       throw new IllegalArgumentException("Stmt is not contained in the BlockStmtGraph: " + node);
     }
@@ -294,7 +294,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
 
   @Override
   public int inDegree(@Nonnull Stmt node) {
-    Integer blockIdx = stmtsToBlock.get(node);
+    Integer blockIdx = stmtToBlock.get(node);
     if (blockIdx == null) {
       throw new IllegalArgumentException("Stmt is not contained in the BlockStmtGraph: " + node);
     }
@@ -309,7 +309,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
 
   @Override
   public int outDegree(@Nonnull Stmt node) {
-    Integer blockIdx = stmtsToBlock.get(node);
+    Integer blockIdx = stmtToBlock.get(node);
     if (blockIdx == null) {
       throw new IllegalArgumentException("Stmt is not contained in the BlockStmtGraph: " + node);
     }
@@ -324,7 +324,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
 
   @Override
   public boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target) {
-    Integer blockAIdx = stmtsToBlock.get(source);
+    Integer blockAIdx = stmtToBlock.get(source);
     if (blockAIdx == null) {
       throw new IllegalArgumentException(
           "source Stmt is not contained in the BlockStmtGraph: " + source);
@@ -333,7 +333,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
     MutableBasicBlock blockA = blocks.get(blockAIdx);
 
     if (source == blockA.getTail()) {
-      Integer blockBIdx = stmtsToBlock.get(source);
+      Integer blockBIdx = stmtToBlock.get(source);
       if (blockBIdx == null) {
         throw new IllegalArgumentException(
             "target Stmt is not contained in the BlockStmtGraph: " + source);
