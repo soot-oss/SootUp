@@ -128,7 +128,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   /* -state fields- */
   private int nextLocal;
-  private Map<Integer, JavaLocal> locals;
+  private List<JavaLocal> locals;
   private LinkedListMultimap<Stmt, LabelNode> stmtsThatBranchToLabel;
   private Map<AbstractInsnNode, Stmt> InsnToStmt;
 
@@ -160,9 +160,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
                 .getMethodSignature(name, declaringClass, retType, sigTypes);
           });
 
-  private final Supplier<Set<Modifier>> lazyModifiers =
-      Suppliers.memoize(() -> AsmUtil.getModifiers(access));
-
   AsmMethodSource(
       int access,
       @Nonnull String name,
@@ -187,16 +184,15 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Override
   @Nonnull
   public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) {
-    // FIXME: [AD] add real line number
-    Position bodyPos = NoPositionInformation.getInstance();
-    bodyBuilder.setPosition(bodyPos);
-    // TODO: [ms] as we always need modifiers: dont memoize them +more usage
-    bodyBuilder.setModifiers(lazyModifiers.get());
+    bodyBuilder.setModifiers(AsmUtil.getModifiers(access));
 
     /* initialize */
     int nrInsn = instructions.size();
     nextLocal = maxLocals;
-    locals = new LinkedHashMap<>(maxLocals + (maxLocals / 2));
+    locals =
+        new NonIndexOutofBoundsArrayList<>(
+            maxLocals
+                + Math.max((maxLocals / 2), 5)); // [ms] initial capacity is just roughly estimated.
     stmtsThatBranchToLabel = LinkedListMultimap.create();
     InsnToStmt = new LinkedHashMap<>(nrInsn);
     operandStack = new OperandStack(this, nrInsn);
@@ -219,7 +215,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     buildStmts();
     buildTraps();
 
-    /* clean up */
+    // FIXME: [AD] add real line number
+    Position bodyPos = NoPositionInformation.getInstance();
+    bodyBuilder.setPosition(bodyPos);
+
+    /* clean up references for GC */
     locals = null;
     stmtsThatBranchToLabel = null;
     InsnToStmt = null;
@@ -240,7 +240,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Override
   public Object resolveDefaultValue() {
-
     return resolveAnnotationsInDefaultValue(this.annotationDefault);
   }
 
@@ -266,7 +265,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     if (local == null) {
       String name = determineLocalName(idx);
       local = JavaJimple.newLocal(name, UnknownType.getInstance(), Collections.emptyList());
-      locals.put(idx, local);
+      locals.set(idx, local);
     }
     return local;
   }
@@ -325,7 +324,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     int idx = nextLocal++;
     JavaLocal l =
         JavaJimple.newLocal("$stack" + idx, UnknownType.getInstance(), Collections.emptyList());
-    locals.put(idx, l);
+    locals.set(idx, l);
     return l;
   }
 
@@ -1813,7 +1812,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     int localIdx = 0;
     // create this Local if necessary ( i.e. not static )
-    if (!lazyModifiers.get().contains(Modifier.STATIC)) {
+    if (!bodyBuilder.getModifiers().contains(Modifier.STATIC)) {
       Local l = getOrCreateLocal(localIdx++);
       emitStmt(
           Jimple.newIdentityStmt(
@@ -1830,7 +1829,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               UnknownType.getInstance(),
               AsmUtil.createAnnotationUsage(
                   invisibleParameterAnnotations == null ? null : invisibleParameterAnnotations[i]));
-      locals.put(localIdx, local);
+      locals.set(localIdx, local);
 
       emitStmt(
           Jimple.newIdentityStmt(
@@ -1838,6 +1837,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               Jimple.newParameterRef(parameterType, i),
               StmtPositionInfo.createNoStmtPositionInfo()));
 
+      // see https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.6.1
       if (AsmUtil.isDWord(parameterType)) {
         localIdx += 2;
       } else {
@@ -1845,7 +1845,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
     }
 
-    Set<Local> bodyLocals = new LinkedHashSet<>(locals.values());
+    Set<Local> bodyLocals = new LinkedHashSet<>(locals);
     bodyBuilder.setLocals(bodyLocals);
   }
 
