@@ -66,16 +66,16 @@ public class JimpleConverter {
     classVisitor.visit(parser.file());
 
     return new OverridingClassSource(
-        inputlocation,
+        classVisitor.methods,
+        classVisitor.fields,
+        classVisitor.modifiers,
+        classVisitor.interfaces,
+        classVisitor.superclass,
+        classVisitor.outerclass,
+        classVisitor.position,
         sourcePath,
         classVisitor.clazz,
-        classVisitor.superclass,
-        classVisitor.interfaces,
-        classVisitor.outerclass,
-        classVisitor.fields,
-        classVisitor.methods,
-        classVisitor.position,
-        classVisitor.modifiers);
+        inputlocation);
   }
 
   private static class ClassVisitor extends JimpleBaseVisitor<Boolean> {
