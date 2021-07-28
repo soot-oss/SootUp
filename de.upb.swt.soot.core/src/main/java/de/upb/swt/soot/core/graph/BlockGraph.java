@@ -1,5 +1,6 @@
 package de.upb.swt.soot.core.graph;
 
+import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
@@ -37,6 +38,8 @@ public class BlockGraph implements Iterable<Block> {
 
   public final ArrayList<List<Block>> blockPreds = new ArrayList<>();
   public final ArrayList<List<Block>> blockSuccs = new ArrayList<>();
+  public ArrayList<List<Block>> exceptionalBlockPreds = new ArrayList<>();
+  public ArrayList<List<Block>> exceptionalBlockSuccs = new ArrayList<>();
 
   public BlockGraph(@Nonnull StmtGraph stmtGraph) {
 
@@ -70,6 +73,8 @@ public class BlockGraph implements Iterable<Block> {
     for (int i = 0; i < nextFreeIdx; i++) {
       blockPreds.add(new ArrayList<>());
       blockSuccs.add(new ArrayList<>());
+      exceptionalBlockPreds.add(new ArrayList<>());
+      exceptionalBlockSuccs.add(new ArrayList<>());
     }
     for (Block block : blockToIdx.keySet()) {
       // find predecessor-blocks
@@ -83,6 +88,15 @@ public class BlockGraph implements Iterable<Block> {
         }
         blockPreds.set(idx, predBlocks);
       }
+      // find exceptional predecessor blocks
+      List<Stmt> exceptionalPreds = this.stmtGraph.exceptionalPredecessors(head);
+      if (!exceptionalPreds.isEmpty()) {
+        Set<Block> ePredBlocksSet = new LinkedHashSet<>();
+        for (Stmt epred : exceptionalPreds) {
+          ePredBlocksSet.add(getBlock(epred));
+        }
+        exceptionalBlockPreds.set(idx, new ArrayList<>(ePredBlocksSet));
+      }
       // find successors-blocks
       Stmt tail = block.getTail();
       List<Stmt> succs = stmtGraph.successors(tail);
@@ -92,6 +106,16 @@ public class BlockGraph implements Iterable<Block> {
           succBlocks.add(headToBlock.get(succ));
         }
         blockSuccs.set(idx, succBlocks);
+      }
+
+      // find exceptional successor blocks
+      List<Stmt> exceptionalSuccs = this.stmtGraph.exceptionalSuccessors(head);
+      if (!exceptionalSuccs.isEmpty()) {
+        Set<Block> eSuccBlocksSet = new LinkedHashSet<>();
+        for (Stmt esucc : exceptionalSuccs) {
+          eSuccBlocksSet.add(getBlock(esucc));
+        }
+        exceptionalBlockSuccs.set(idx, new ArrayList<>(eSuccBlocksSet));
       }
     }
   }
@@ -129,6 +153,28 @@ public class BlockGraph implements Iterable<Block> {
   }
 
   @Nonnull
+  public List<Block> exceptionalBlockPredecessors(@Nonnull Block block) {
+    Integer idx = blockToIdx.get(block);
+    if (idx != null) {
+      return exceptionalBlockPreds.get(idx);
+    } else {
+      throw new RuntimeException(
+          "The given block:\n" + block.toString() + "\n is not in StmtGraph!");
+    }
+  }
+
+  @Nonnull
+  public List<Block> exceptionalBlockSuccessors(@Nonnull Block block) {
+    Integer idx = blockToIdx.get(block);
+    if (idx != null) {
+      return exceptionalBlockSuccs.get(idx);
+    } else {
+      throw new RuntimeException(
+          "The given block:\n" + block.toString() + "\n is not in StmtGraph!");
+    }
+  }
+
+  @Nonnull
   public List<Block> blockPredecessors(@Nonnull Stmt stmt) {
     if (!stmtGraph.containsNode(stmt)) {
       throw new RuntimeException("The given stmt: " + stmt.toString() + " is not in StmtGraph!");
@@ -156,6 +202,22 @@ public class BlockGraph implements Iterable<Block> {
       tail = stmtGraph.successors(tail).get(0);
     }
     return blockSuccessors(tailToBlock.get(tail));
+  }
+
+  @Nonnull
+  public List<Block> exceptionalBlockPredecessors(@Nonnull Stmt stmt) {
+    if (!stmtGraph.containsNode(stmt)) {
+      throw new RuntimeException("The given stmt: " + stmt.toString() + " is not in StmtGraph!");
+    }
+    return exceptionalBlockPredecessors(getBlock(stmt));
+  }
+
+  @Nonnull
+  public List<Block> exceptionalBlockSuccessors(@Nonnull Stmt stmt) {
+    if (!stmtGraph.containsNode(stmt)) {
+      throw new RuntimeException("The given stmt: " + stmt.toString() + " is not in StmtGraph!");
+    }
+    return exceptionalBlockSuccessors(getBlock(stmt));
   }
 
   @Nonnull
@@ -192,20 +254,36 @@ public class BlockGraph implements Iterable<Block> {
   @Nonnull
   /** return a list of Blocks with reverse postorder */
   public List<Block> getBlocks() {
-    Set<Block> blocks = new LinkedHashSet<>();
-    Deque<Block> queue = new ArrayDeque<>();
-    queue.add(startingBlock);
-    while (!queue.isEmpty()) {
-      Block top = queue.removeFirst();
-      blocks.add(top);
-      List<Block> succs = blockSuccessors(top);
-      for (Block succ : succs) {
-        if (!blocks.contains(succ)) {
-          queue.add(succ);
+    Map<Block, List<Block>> adjacentMap = new HashMap<>();
+    HashSet<Block> visited = new HashSet<>();
+    for (Block block : this.blockToIdx.keySet()) {
+      List<Block> succs = new ArrayList<>(blockSuccessors(block));
+      succs.addAll(exceptionalBlockSuccessors(block));
+      adjacentMap.put(block, succs);
+    }
+    Set<Block> postOrder = new LinkedHashSet<>();
+    Deque<Block> stack = new ArrayDeque<>();
+    stack.add(startingBlock);
+    visited.add(startingBlock);
+    while (!stack.isEmpty()) {
+      Block top = stack.getFirst();
+      List<Block> adjacentList = adjacentMap.get(top);
+      if (adjacentList.isEmpty()) {
+        postOrder.add(top);
+        stack.removeFirst();
+      } else {
+        Block next = adjacentList.remove(0);
+        if (!visited.contains(next) && !postOrder.contains(next)) {
+          stack.addFirst(next);
+          visited.add(next);
         }
       }
     }
-    return new ArrayList<>(blocks);
+    Deque<Block> reversePostOrder = new ArrayDeque<>();
+    for (Block block : postOrder) {
+      reversePostOrder.addFirst(block);
+    }
+    return new ArrayList<>(reversePostOrder);
   }
 
   /**
@@ -277,6 +355,14 @@ public class BlockGraph implements Iterable<Block> {
         return true;
       }
     }
+
+    List<Trap> traps = graph.getTraps();
+    for (Trap trap : traps) {
+      if (stmt == trap.getBeginStmt() || stmt == trap.getEndStmt()) {
+        return true;
+      }
+    }
+
     return false;
   }
 

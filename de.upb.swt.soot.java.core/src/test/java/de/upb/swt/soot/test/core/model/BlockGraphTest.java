@@ -5,15 +5,14 @@ import static org.junit.Assert.*;
 import categories.Java8Test;
 import de.upb.swt.soot.core.graph.Block;
 import de.upb.swt.soot.core.graph.BlockGraph;
-import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
@@ -29,6 +28,7 @@ public class BlockGraphTest {
 
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  JavaJimple javaJimple = JavaJimple.getInstance();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
 
   JavaClassType intType = factory.getClassType("int");
@@ -36,6 +36,9 @@ public class BlockGraphTest {
   MethodSignature methodSignature =
       new MethodSignature(classType, "test", Collections.emptyList(), VoidType.getInstance());
   IdentityRef identityRef = JavaJimple.newThisRef(classType);
+  JavaClassType refType = factory.getClassType("ref");
+  IdentityRef caughtExceptionRef = javaJimple.newCaughtExceptionRef();
+  ClassType exception = factory.getClassType("Exception");
 
   // build locals
   Local l0 = JavaJimple.newLocal("l0", intType);
@@ -43,6 +46,8 @@ public class BlockGraphTest {
   Local l2 = JavaJimple.newLocal("l2", intType);
   Local l3 = JavaJimple.newLocal("l3", intType);
   Local l4 = JavaJimple.newLocal("l4", intType);
+  Local stack5 = JavaJimple.newLocal("stack5", refType);
+  Local stack6 = JavaJimple.newLocal("stack6", refType);
 
   Stmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
   Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(0), noStmtPositionInfo);
@@ -71,6 +76,14 @@ public class BlockGraphTest {
   Stmt stmt11 =
       JavaJimple.newAssignStmt(
           l1, JavaJimple.newAddExpr(l2, IntConstant.getInstance(1)), noStmtPositionInfo);
+  Stmt gotoStmt1 = JavaJimple.newGotoStmt(noStmtPositionInfo);
+  Stmt gotoStmt2 = JavaJimple.newGotoStmt(noStmtPositionInfo);
+
+  Stmt stack5Stmt = JavaJimple.newIdentityStmt(stack5, caughtExceptionRef, noStmtPositionInfo);
+  Stmt stack6Stmt = JavaJimple.newIdentityStmt(stack6, caughtExceptionRef, noStmtPositionInfo);
+
+  JTrap trap1 = new JTrap(exception, stmt1, ret, stack5Stmt);
+  JTrap trap2 = new JTrap(exception, stmt10, stmt7, stack6Stmt);
 
   @Test
   public void testBlockGraphWithBranch() {
@@ -207,6 +220,18 @@ public class BlockGraphTest {
       }
       i++;
     }
+  }
+
+  @Test
+  public void testBlockGraphWithTrap() {
+    Body body = createTrapBody();
+    BlockGraph graph = new BlockGraph(body.getStmtGraph());
+    List<Block> actualBlocks = graph.getBlocks();
+
+    /*for(Block b : actualBlocks){
+      System.out.println(b.toString());
+    }*/
+
   }
 
   @Test
@@ -348,6 +373,62 @@ public class BlockGraphTest {
     // build position
     Position position = NoPositionInformation.getInstance();
     builder.setPosition(position);
+
+    return builder.build();
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   *    l0 := @this Test
+   * label1:
+   *    l1 = 0
+   * label2
+   *    l2 = l1 + 1
+   *    l3 = 10
+   * label3
+   *    l4 = l1
+   * label4:
+   *    return
+   * label5:
+   *    stack5 := @caughtexception;
+   *    goto label4;
+   * label6:
+   *    stack6 := @caughtexception;
+   *    goto label4;
+   * </pre>
+   */
+  private Body createTrapBody() {
+
+    Body.BodyBuilder builder = Body.builder();
+    builder.setMethodSignature(methodSignature);
+
+    // build set locals
+    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3, l4, stack5, stack6);
+
+    builder.setLocals(locals);
+
+    // set graph
+    builder.addFlow(startingStmt, stmt1);
+    builder.addFlow(stmt1, stmt10);
+    builder.addFlow(stmt10, stmt8);
+    builder.addFlow(stmt8, stmt7);
+    builder.addFlow(stack5Stmt, gotoStmt1);
+    builder.addFlow(stack6Stmt, gotoStmt2);
+    builder.addFlow(gotoStmt1, ret);
+    builder.addFlow(gotoStmt2, ret);
+    builder.addFlow(stmt7, ret);
+
+    // build startingStmt
+    builder.setStartingStmt(startingStmt);
+
+    // build position
+    Position position = NoPositionInformation.getInstance();
+    builder.setPosition(position);
+
+    List<Trap> traps = ImmutableUtils.immutableList(trap1, trap2);
+    builder.setTraps(traps);
 
     return builder.build();
   }
