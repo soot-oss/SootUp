@@ -65,6 +65,7 @@ public class DominanceFinder {
       for (Block block : blocks) {
         int blockIdx = this.blockToIdx.get(block);
         List<Block> preds = new ArrayList<>(blockGraph.blockPredecessors(block));
+        preds.addAll(blockGraph.exceptionalBlockPredecessors(block));
         int newIdom = getFirstDefinedBlockPredIdx(preds);
         if (!preds.isEmpty() && newIdom != -1) {
           preds.remove(this.idxToBlock.get(newIdom));
@@ -82,7 +83,7 @@ public class DominanceFinder {
       }
     }
 
-    // initialize doms
+    // initialize domFrontiers
     domFrontiers = new ArrayList[blockGraph.getBlocks().size()];
     for (int i = 0; i < domFrontiers.length; i++) {
       domFrontiers[i] = new ArrayList<>();
@@ -90,7 +91,8 @@ public class DominanceFinder {
 
     // calculate dominance frontiers for each block
     for (Block block : blocks) {
-      List<Block> preds = blockGraph.blockPredecessors(block);
+      List<Block> preds = new ArrayList<>(blockGraph.blockPredecessors(block));
+      preds.addAll(blockGraph.exceptionalBlockPredecessors(block));
       if (preds.size() > 1) {
         int blockId = this.blockToIdx.get(block);
         for (Block pred : preds) {
