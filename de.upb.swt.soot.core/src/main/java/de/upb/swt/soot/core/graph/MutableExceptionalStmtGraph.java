@@ -74,10 +74,13 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
           .getTraps()
           .forEach(trap -> handlerStmtToPreds.put(trap.getHandlerStmt(), new ArrayList<>()));
 
-      // set exceptional successors for each stmt
+      // set exceptional destination-traps and exceptional successors for each stmt
       for (Stmt stmt : oriStmtGraph.nodes()) {
-        List<Stmt> inferedSuccs = inferExceptionalSuccs(stmt, stmtToPosInBody, traps);
+        List<Trap> inferedDests = inferExceptionalDestinations(stmt, stmtToPosInBody, traps);
+        List<Stmt> inferedSuccs = new ArrayList<>();
+        inferedDests.forEach(trap -> inferedSuccs.add(trap.getHandlerStmt()));
         Integer idx = stmtToIdx.get(stmt);
+        exceptionalDestinationTraps.set(idx, inferedDests);
         exceptionalSuccs.set(idx, inferedSuccs);
         inferedSuccs.forEach(handlerStmt -> handlerStmtToPreds.get(handlerStmt).add(stmt));
       }
@@ -86,13 +89,6 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
       for (Stmt handlerStmt : handlerStmtToPreds.keySet()) {
         Integer index = stmtToIdx.get(handlerStmt);
         exceptionalPreds.set(index, handlerStmtToPreds.get(handlerStmt));
-      }
-
-      // set exceptional destination-traps for each stmt
-      for (Stmt stmt : oriStmtGraph.nodes()) {
-        List<Trap> inferedDests = inferExceptionalDestinations(stmt, stmtToPosInBody, traps);
-        Integer idx = stmtToIdx.get(stmt);
-        exceptionalDestinationTraps.set(idx, inferedDests);
       }
     }
   }
@@ -115,7 +111,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
   public List<Trap> getDestTraps(@Nonnull Stmt stmt) {
     Integer idx = getNodeIdx(stmt);
     List<Trap> traps = exceptionalDestinationTraps.get(idx);
-    return traps;
+    return Collections.unmodifiableList(traps);
   }
 
   @Override
@@ -286,7 +282,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
    * @param traps a given list of traps
    * @return
    */
-  private List<Stmt> inferExceptionalSuccs(
+  /*private List<Stmt> inferExceptionalSuccs(
       Stmt stmt, Map<Stmt, Integer> posTable, List<Trap> traps) {
     List<Stmt> exceptionalSuccs = new ArrayList<>();
 
@@ -318,5 +314,5 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
       }
     }
     return exceptionalSuccs;
-  }
+  }*/
 }
