@@ -113,8 +113,15 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   /** finds the given method signature in class's superclasses */
   final <T extends Method> T findMethodInHierarchy(
-      @Nonnull View<? extends SootClass> view, @Nonnull MethodSignature sig) {
-    SootClass sc = view.getClass(sig.getDeclClassType()).get();
+      @Nonnull View<? extends SootClass<?>> view, @Nonnull MethodSignature sig) {
+    Optional<? extends SootClass> optSc = view.getClass(sig.getDeclClassType());
+
+    if (!optSc.isPresent()) {
+      throw new ResolveException("Could not find \"" + sig.getDeclClassType() + "\" in view");
+    }
+    ;
+
+    SootClass sc = optSc.get();
     Optional<ClassType> optSuperclass = sc.getSuperclass();
 
     Optional<SootMethod> optMethod;

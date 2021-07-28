@@ -1658,17 +1658,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         conversionWorklist.add(edge);
         continue;
       }
-      if (edge.getOperandStack() != null) {
-        List<Operand> stackTemp = edge.getOperandStack();
-        if (stackTemp.size() != stackss.length) {
-          throw new AssertionError("Multiple un-equal stacks!");
-        }
-        for (int j = 0; j != stackss.length; j++) {
-          if (!stackTemp.get(j).equivTo(stackss[j])) {
-            throw new AssertionError("Multiple un-equal stacks!");
+      for (List<Operand> stackTemp : edge.getOperandStacks()) {
+        if (stackTemp.size() == stackss.length) {
+          int j = 0;
+          for (; j != stackss.length && stackTemp.get(j).equivTo(stackss[j]); j++) {}
+          if (j == stackss.length) {
+            continue tgt_loop;
           }
         }
-        continue;
       }
       final LinkedList<Operand[]> prevStacks = edge.getPrevStacks();
       for (Operand[] ps : prevStacks) {
@@ -1676,7 +1673,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           continue tgt_loop;
         }
       }
-      edge.setOperandStack(operandStack.getStack());
+      edge.addOperandStack(operandStack.getStack());
       prevStacks.add(stackss);
       conversionWorklist.add(edge);
     } while (i < lastIdx && (tgt = tgts.get(i++)) != null);
@@ -1709,7 +1706,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     do {
       BranchedInsnInfo edge = worklist.pollLast();
       AbstractInsnNode insn = edge.getInsn();
-      operandStack.setOperandStack(edge.getOperandStack());
+      operandStack.setOperandStack(edge.getOperandStacks().get(edge.getOperandStacks().size() - 1));
       do {
         int type = insn.getType();
         if (type == FIELD_INSN) {
@@ -1979,11 +1976,18 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return null;
   }
 
+  /**
+   * Returns the latest version of a statement that is used in this method source, or null if the
+   * statement is not used
+   *
+   * @param oldStmt
+   * @return
+   */
   public Stmt getLatestVersionOfStmt(Stmt oldStmt) {
     if (replacedStmt.containsKey(oldStmt)) {
       return getLatestVersionOfStmt(replacedStmt.get(oldStmt));
     } else {
-      return oldStmt;
+      return InsnToStmt.containsValue(oldStmt) ? oldStmt : null;
     }
   }
 
@@ -2002,6 +2006,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     if (key == null) {
       throw new AssertionError("Could not replace value in insn map because it is absent");
+    }
+
+    if (newStmt == null) {
+      InsnToStmt.remove(key);
+      return;
     }
 
     InsnToStmt.put(key, newStmt);
@@ -2027,7 +2036,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Stream<Stmt> oldMappedUses =
         replacedStmt.entrySet().stream()
             .filter(stmt -> stmt.getKey().getUses().contains(expr))
-            .map(stmt -> getLatestVersionOfStmt(stmt.getValue()));
+            .map(stmt -> getLatestVersionOfStmt(stmt.getValue()))
+            .filter(Objects::nonNull);
 
     return Stream.concat(currentUses, oldMappedUses);
   }
