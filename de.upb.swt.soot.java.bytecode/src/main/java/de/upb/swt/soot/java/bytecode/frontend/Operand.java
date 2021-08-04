@@ -39,6 +39,7 @@ import org.objectweb.asm.tree.AbstractInsnNode;
  */
 final class Operand {
 
+  public static final Operand DWORD_DUMMY = new Operand(null, null, null);
   @Nonnull protected final AbstractInsnNode insn;
   @Nonnull protected final Value value;
   @Nullable protected Local stackLocal;
@@ -131,7 +132,7 @@ final class Operand {
    * @return {@code true} if this operand is equal to another operand, {@code false} otherwise.
    */
   boolean equivTo(@Nonnull Operand other) {
-    return stackOrValue().equivTo(other.stackOrValue());
+    return (this == other) || stackOrValue().equivTo(other.stackOrValue());
   }
 
   @Override

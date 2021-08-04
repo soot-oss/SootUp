@@ -112,8 +112,6 @@ import org.objectweb.asm.tree.*;
  */
 public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
-  static final Operand DWORD_DUMMY = new Operand(null, null, null);
-
   // private static final String METAFACTORY_SIGNATURE =
   // "<java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite "
   // +
@@ -336,7 +334,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   private void assignReadOps(@Nullable Local local) {
     for (Operand operand : operandStack.getStack()) {
-      if (operand == DWORD_DUMMY
+      if (operand == Operand.DWORD_DUMMY
           || operand.stackLocal != null
           || (local == null && operand.value instanceof Local)) {
         continue;
@@ -580,7 +578,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // Some instructions allow operands that take two registers
     boolean dword = op == DUP2 || op == DUP2_X1 || op == DUP2_X2;
     if (dword) {
-      if (operandStack.peek() == DWORD_DUMMY) {
+      if (operandStack.peek() == Operand.DWORD_DUMMY) {
         operandStack.pop();
         dupd2 = dupd;
       } else {
@@ -603,7 +601,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // value3, value2, value1 -> value1, value3, value2, value1
       Operand o2 = operandStack.popImmediate();
       Operand o3 =
-          operandStack.peek() == DWORD_DUMMY ? operandStack.pop() : operandStack.popImmediate();
+          operandStack.peek() == Operand.DWORD_DUMMY ? operandStack.pop() : operandStack.popImmediate();
       operandStack.push(dupd);
       operandStack.push(o3);
       operandStack.push(o2);
@@ -628,7 +626,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // (value2, value1)
       Operand o2 = operandStack.popImmediate();
       Operand o2h =
-          operandStack.peek() == DWORD_DUMMY ? operandStack.pop() : operandStack.popImmediate();
+          operandStack.peek() == Operand.DWORD_DUMMY ? operandStack.pop() : operandStack.popImmediate();
       operandStack.push(dupd2);
       operandStack.push(dupd);
       operandStack.push(o2h);
@@ -858,7 +856,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       operandStack.popImmediate();
     } else if (op == POP2) {
       operandStack.popImmediate();
-      if (operandStack.peek() == DWORD_DUMMY) {
+      if (operandStack.peek() == Operand.DWORD_DUMMY) {
         operandStack.pop();
       } else {
         operandStack.popImmediate();

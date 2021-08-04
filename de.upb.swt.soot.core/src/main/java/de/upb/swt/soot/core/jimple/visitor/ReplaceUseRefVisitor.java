@@ -72,6 +72,6 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
 
   public void errorHandler(@Nonnull Ref ref) {
     throw new IllegalArgumentException(
-        "The given oldUse which should be replaced is not a current use of" + ref + "!");
+        "The given oldUse which should be replaced is not a current use of " + ref + "!");
   }
 }
