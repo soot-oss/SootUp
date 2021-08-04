@@ -1652,7 +1652,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     do {
       BranchedInsnInfo edge = edges.get(cur, tgt);
       if (edge == null) {
-        edge = new BranchedInsnInfo(tgt, operandStack.getStack());
+        edge = new BranchedInsnInfo(tgt, new ArrayList<>(operandStack.getStack()));
         edge.addToPrevStack(stackss);
         edges.put(cur, tgt, edge);
         conversionWorklist.add(edge);
