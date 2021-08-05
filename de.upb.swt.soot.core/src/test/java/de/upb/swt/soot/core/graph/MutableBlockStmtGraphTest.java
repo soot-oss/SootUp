@@ -37,6 +37,7 @@ public class MutableBlockStmtGraphTest {
     assertEquals(0, graph.getBlocks().size());
     graph.addNode(firstNop);
     assertEquals(1, graph.getBlocks().size());
+    assertEquals(1, graph.getBlocks().stream().findFirst().get().getStmts().size());
 
     graph.putEdge(firstNop, secondNop);
     assertEquals(1, graph.getBlocks().size());
@@ -52,6 +53,14 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(conditionalStmt, firstNop);
     graph.putEdge(conditionalStmt, secondNop);
     assertEquals(2, graph.getBlocks().size());
+
+    // remove branchingstmt at end
+    graph.removeEdge(firstNop, conditionalStmt);
+    assertEquals(1, graph.getBlocks().size());
+
+    // remove branchingstmt at head
+    graph.removeEdge(conditionalStmt, secondNop);
+    assertEquals(1, graph.getBlocks().size());
   }
 
   @Test

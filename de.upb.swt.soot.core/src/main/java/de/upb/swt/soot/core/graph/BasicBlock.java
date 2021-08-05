@@ -143,7 +143,11 @@ class MutableBasicBlock implements BasicBlock {
   @Nonnull
   @Override
   public Stmt getTail() {
-    return stmts.get(stmts.size() - 1);
+    int size = stmts.size();
+    if (size < 1) {
+      throw new IllegalStateException("Cant get a tail - this block has no assigned Stmts.");
+    }
+    return stmts.get(size - 1);
   }
 
   @Nonnull

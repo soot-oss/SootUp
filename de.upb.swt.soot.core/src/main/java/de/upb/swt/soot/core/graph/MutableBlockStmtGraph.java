@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 
 public class MutableBlockStmtGraph implements MutableStmtGraph {
 
-  @Nonnull private MutableBasicBlock startingBlock = new MutableBasicBlock();
+  @Nullable private MutableBasicBlock startingBlock = null;
   @Nonnull private final Map<Stmt, Integer> stmtToBlock = new HashMap<>();
   @Nonnull private final ArrayList<MutableBasicBlock> blocks = new ArrayList<>();
   private List<Trap> traps = null;
@@ -40,7 +40,13 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
     MutableBasicBlock block = new MutableBasicBlock();
     int idx = blocks.size();
     blocks.add(block);
-    stmtToBlock.put(stmt, idx);
+    return addNodeInternal(block, idx, stmt);
+  }
+
+  protected MutableBasicBlock addNodeInternal(
+      @Nonnull MutableBasicBlock block, int blockIdx, @Nonnull Stmt stmt) {
+    block.addStmt(stmt);
+    stmtToBlock.put(stmt, blockIdx);
     return block;
   }
 
@@ -77,6 +83,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
     if (blockAIdx == null) {
       // stmtA is is not in the graph (i.e. no reference to BlockA) -> create
       blockA = addNodeInternal(stmtA);
+      blockAIdx = stmtToBlock.get(stmtA);
     } else {
       blockA = blocks.get(blockAIdx);
       if (blockA.getTail() != stmtA) {
@@ -94,6 +101,8 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
       // one
       if (blockBIdx == null) {
         blockB = new MutableBasicBlock();
+        blockBIdx = blocks.size();
+        blocks.add(blockB);
       } else {
         blockB = blocks.get(blockBIdx);
       }
@@ -115,10 +124,12 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
     } else {
       // nonbranchingstmt can live in the same block
       if (blockBIdx == null) {
-        addNodeInternal(stmtB);
+        addNodeInternal(blockA, blockAIdx, stmtB);
+      } else {
+        // TODO: check if we can update an edge?
+        throw new IllegalStateException(
+            "Stmt is already in the Graph - nodes/Stmt's must be unique objects.");
       }
-
-      blockA.addStmt(stmtB);
     }
   }
 
