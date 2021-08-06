@@ -27,7 +27,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
   @Override
   @Nonnull
   // FIXME: return them in post-reverse-order
-  public Collection<? extends BasicBlock> getBlocks() {
+  public List<? extends BasicBlock> getBlocks() {
     return blocks;
   }
 
@@ -93,6 +93,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
         blocks.add(newBlock);
         newBlock.getStmts().forEach(stmt -> stmtToBlock.put(stmt, newBlockIdx));
         blockA = newBlock;
+        blockAIdx = newBlockIdx;
       }
     }
 
