@@ -37,4 +37,9 @@ public abstract class BranchingStmt extends Stmt {
   }
 
   public abstract List<Stmt> getTargetStmts(Body body);
+
+  @Override
+  public final boolean branches() {
+    return true;
+  }
 }

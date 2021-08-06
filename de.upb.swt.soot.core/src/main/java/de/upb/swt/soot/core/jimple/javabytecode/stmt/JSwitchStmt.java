@@ -133,11 +133,6 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   }
 
   @Override
-  public boolean branches() {
-    return true;
-  }
-
-  @Override
   public void accept(@Nonnull Visitor sw) {
     ((StmtVisitor) sw).caseSwitchStmt(this);
   }

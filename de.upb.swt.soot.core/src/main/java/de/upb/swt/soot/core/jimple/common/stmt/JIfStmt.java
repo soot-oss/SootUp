@@ -123,11 +123,6 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
   }
 
   @Override
-  public boolean branches() {
-    return true;
-  }
-
-  @Override
   public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
     return comparator.caseIfStmt(this, o);
   }
