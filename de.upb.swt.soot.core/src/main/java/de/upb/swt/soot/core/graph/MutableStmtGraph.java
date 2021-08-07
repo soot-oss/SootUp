@@ -23,6 +23,8 @@ package de.upb.swt.soot.core.graph;
 
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.types.ClassType;
+
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -31,8 +33,6 @@ public interface MutableStmtGraph extends StmtGraph {
     StmtGraph unmodifiableStmtGraph();
 
     void setStartingStmt(@Nonnull Stmt firstStmt);
-
-    void setTraps(@Nonnull List<Trap> traps);
 
     void addNode(@Nonnull Stmt node);
 
@@ -45,4 +45,11 @@ public interface MutableStmtGraph extends StmtGraph {
     void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets);
 
     void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to);
+
+    void setTraps(@Nonnull List<Trap> traps);
+
+    void addTrap(ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt);
+
+    void removeTrap(ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt);
+
 }

@@ -26,16 +26,17 @@ import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
+import de.upb.swt.soot.core.types.ClassType;
+
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * graph structure which keeps node and edge insertion order to store information about successive
- * stmts in edges. Ordered edges are needed because, this stores the target information of {@link
- * BranchingStmt}s so that in conditional branches (e.g. JSwicthStmt or JIfStmt ) we can associate
- * the i-th item with the i-th branch case. In a StmtGraph it is not allowed to have unconnected
- * Nodes.
+ * graph structure which keeps the edge insertion order of each node to store information about successor
+ * stmts in edges. Ordered edges are necessary because we want to associate the i-th item with the i-th branch case
+ * of a {@link BranchingStmt}.
+ * In a StmtGraph it is not allowed to have unconnected Nodes.
  *
  * <pre>
  *  Stmt stmt1, stmt2;
@@ -103,6 +104,18 @@ public class MutableStmtGraphImpl extends StmtGraphImpl implements MutableStmtGr
   @Override
   public void setTraps(@Nonnull List<Trap> traps) {
     this.traps = traps;
+  }
+
+  @Override
+  public void addTrap(ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt) {
+    // FIXME: implement
+    throw new IllegalStateException("Not implemented yet!");
+  }
+
+  @Override
+  public void removeTrap(ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt) {
+    // FIXME: implement
+    throw new IllegalStateException("Not implemented yet!");
   }
 
   @Override

@@ -2,6 +2,8 @@ package de.upb.swt.soot.core.graph;
 
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.types.ClassType;
+
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -359,6 +361,20 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
       int stmtAIdx = stmtsA.indexOf(source);
       return stmtsA.get(stmtAIdx) == target;
     }
+  }
+
+  @Override
+  public void addTrap(ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt) {
+    // FIXME: implement
+    throw new IllegalStateException("Not implemented yet!");
+
+  }
+
+  @Override
+  public void removeTrap(ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt) {
+    // FIXME: implement
+    throw new IllegalStateException("Not implemented yet!");
+
   }
 
   @Override
