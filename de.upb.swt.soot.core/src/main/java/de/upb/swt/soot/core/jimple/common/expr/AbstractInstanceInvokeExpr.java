@@ -22,40 +22,35 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
 
-  private final ValueBox baseBox;
+  @Nonnull private final Local base;
 
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
-  private Value base;
-
-  AbstractInstanceInvokeExpr(ValueBox baseBox, MethodSignature methodSig, ValueBox[] argBoxes) {
-    super(methodSig, argBoxes);
-    this.baseBox = baseBox;
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
-    this.base = baseBox.getValue();
+  AbstractInstanceInvokeExpr(
+      @Nonnull Local base, @Nonnull MethodSignature methodSig, @Nonnull Immediate[] args) {
+    super(methodSig, args);
+    this.base = base;
   }
 
-  public Value getBase() {
-    return baseBox.getValue();
-  }
-
-  public ValueBox getBaseBox() {
-    return baseBox;
+  @Nonnull
+  public Local getBase() {
+    return base;
   }
 
   @Override
+  @Nonnull
   public List<Value> getUses() {
     List<Value> list = new ArrayList<>();
 
-    // getArgs in super class must be modified (not yet)
-    List<Value> args = getArgs();
+    List<? extends Value> args = getArgs();
     if (args != null) {
       list.addAll(args);
       for (Value arg : args) {
@@ -70,6 +65,15 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return baseBox.getValue().equivHashCode() * 101 + getMethodSignature().hashCode() * 17;
+    return base.equivHashCode() * 101 + getMethodSignature().hashCode() * 17;
   }
+
+  @Nonnull
+  public abstract AbstractInvokeExpr withBase(@Nonnull Local base);
+
+  @Nonnull
+  public abstract AbstractInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature);
+
+  @Nonnull
+  public abstract AbstractInvokeExpr withArgs(@Nonnull List<Immediate> args);
 }

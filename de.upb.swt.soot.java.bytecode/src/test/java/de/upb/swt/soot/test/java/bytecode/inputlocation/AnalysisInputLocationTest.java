@@ -10,6 +10,10 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -45,47 +49,35 @@ import org.junit.Before;
 public abstract class AnalysisInputLocationTest {
 
   final Path war = Paths.get("../shared-test-resources/java-warApp/dummyWarApp.war");
-  final String warFile = war.toString();
-
   final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
-  final String jarFile = jar.toString();
+  final Path mrj = Paths.get("../shared-test-resources/multi-release-jar/mrjar.jar");
+  final Path mmrj = Paths.get("../shared-test-resources/multi-release-jar-modular/mrjar.jar");
 
-  private IdentifierFactory identifierFactory;
-  private ClassProvider classProvider;
+  private ClassProvider<JavaSootClass> classProvider;
 
   @Before
   public void setUp() {
-    identifierFactory = JavaIdentifierFactory.getInstance();
     classProvider = new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors());
   }
 
   protected IdentifierFactory getIdentifierFactory() {
-    return identifierFactory;
-  }
-
-  protected ClassProvider getClassProvider() {
-    return classProvider;
-  }
-
-  protected void testClassReceival(AnalysisInputLocation ns, ClassType sig, int minClassesFound) {
-    testClassReceival(ns, sig, minClassesFound, -1);
+    return JavaIdentifierFactory.getInstance();
   }
 
   protected void testClassReceival(
-      AnalysisInputLocation inputLocation,
-      ClassType sig,
-      int minClassesFound,
-      int maxClassesFound) {
+      AnalysisInputLocation<JavaSootClass> ns, ClassType sig, int minClassesFound) {
 
-    final Optional<? extends AbstractClassSource> clazz = inputLocation.getClassSource(sig);
-    clazz.ifPresent(abstractClassSource -> assertEquals(sig, abstractClassSource.getClassType()));
+    final JavaProject project =
+        JavaProject.builder(new JavaLanguage(8)).addInputLocation(ns).build();
+    final JavaView view = project.createOnDemandView();
 
-    final Collection<? extends AbstractClassSource> classSources =
-        inputLocation.getClassSources(getIdentifierFactory());
+    final Optional<? extends AbstractClassSource<JavaSootClass>> clazzOpt =
+        ns.getClassSource(sig, view);
+    assertTrue(clazzOpt.isPresent());
+    assertEquals(sig, clazzOpt.get().getClassType());
+
+    final Collection<? extends AbstractClassSource<?>> classSources = ns.getClassSources(view);
 
     assertTrue(classSources.size() >= minClassesFound);
-    if (maxClassesFound != -1) {
-      assertTrue(classSources.size() <= maxClassesFound);
-    }
   }
 }

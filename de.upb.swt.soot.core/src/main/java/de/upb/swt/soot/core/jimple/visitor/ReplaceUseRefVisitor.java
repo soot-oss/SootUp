@@ -24,7 +24,6 @@ package de.upb.swt.soot.core.jimple.visitor;
 
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.ref.*;
 import javax.annotation.Nonnull;
 
@@ -33,71 +32,45 @@ import javax.annotation.Nonnull;
  *
  * @author Zun Wang
  */
-public class ReplaceUseRefVisitor extends AbstractRefVisitor {
+public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
 
-  Value oldUse;
-  Value newUse;
-  Ref newRef;
+  private Immediate oldUse;
+  private Immediate newUse;
 
-  public ReplaceUseRefVisitor(@Nonnull Value oldUse, @Nonnull Value newUse) {
+  public ReplaceUseRefVisitor() {}
+
+  public void init(@Nonnull Immediate oldUse, @Nonnull Immediate newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
   }
 
-  @Nonnull
   @Override
-  public void caseStaticFieldRef(@Nonnull JStaticFieldRef v) {
-    defaultCase(v);
-  }
-
-  @Nonnull
-  @Override
-  public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef v) {
-    if (newUse instanceof Local && v.getBase().equivTo(oldUse)) {
-      newRef = v.withBase(newUse);
+  public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef ref) {
+    if (ref.getBase() == oldUse) {
+      setResult(ref.withBase((Local) newUse));
     } else {
-      defaultCase(v);
+      errorHandler(ref);
     }
   }
 
-  @Nonnull
   @Override
-  public void caseArrayRef(@Nonnull JArrayRef v) {
-    if (newUse instanceof Local && v.getBase().equivTo(oldUse)) {
-      newRef = v.withBase(newUse);
-    } else if (newUse instanceof Immediate && v.getIndex().equivTo(oldUse)) {
-      newRef = v.withIndex(newUse);
+  public void caseArrayRef(@Nonnull JArrayRef ref) {
+    if (ref.getBase() == oldUse) {
+      setResult(ref.withBase((Local) newUse));
+    } else if (ref.getIndex() == oldUse) {
+      setResult(ref.withIndex(newUse));
     } else {
-      defaultCase(v);
+      errorHandler(ref);
     }
   }
 
-  @Nonnull
   @Override
-  public void caseParameterRef(@Nonnull JParameterRef v) {
-    defaultCase(v);
+  public void defaultCaseRef(@Nonnull Ref ref) {
+    setResult(ref);
   }
 
-  @Nonnull
-  @Override
-  public void caseCaughtExceptionRef(@Nonnull JCaughtExceptionRef v) {
-    defaultCase(v);
-  }
-
-  @Nonnull
-  @Override
-  public void caseThisRef(@Nonnull JThisRef v) {
-    defaultCase(v);
-  }
-
-  @Nonnull
-  @Override
-  public void defaultCase(@Nonnull Object obj) {
-    newRef = (Ref) obj;
-  }
-
-  @Nonnull
-  public Ref getNewRef() {
-    return newRef;
+  public void errorHandler(@Nonnull Ref ref) {
+    throw new IllegalArgumentException(
+        "The given oldUse which should be replaced is not a current use of" + ref + "!");
   }
 }

@@ -24,56 +24,51 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.types.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public abstract class AbstractDefinitionStmt extends Stmt {
+public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> extends Stmt {
 
-  private final ValueBox leftBox;
-  private final ValueBox rightBox;
+  @Nonnull private final L leftOp;
+  @Nonnull private final R rightOp;
 
-  // new attributes: later if ValueBox is deleted, then add "final" to it.
-  private Value leftOp;
-  private Value rightOp;
-
-  AbstractDefinitionStmt(ValueBox leftBox, ValueBox rightBox, StmtPositionInfo positionInfo) {
+  AbstractDefinitionStmt(
+      @Nonnull L leftOp, @Nonnull R rightOp, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
-    this.leftBox = leftBox;
-    this.rightBox = rightBox;
-
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
-    this.leftOp = leftBox.getValue();
-    this.rightOp = rightBox.getValue();
+    this.leftOp = leftOp;
+    this.rightOp = rightOp;
   }
 
-  public final Value getLeftOp() {
-    return leftBox.getValue();
+  @Nonnull
+  public final L getLeftOp() {
+    return leftOp;
   }
 
-  public final Value getRightOp() {
-    return rightBox.getValue();
+  @Nonnull
+  public R getRightOp() {
+    return rightOp;
   }
 
-  public final ValueBox getLeftOpBox() {
-    return leftBox;
-  }
-
-  public final ValueBox getRightOpBox() {
-    return rightBox;
+  @Nonnull
+  public Type getType() {
+    return getLeftOp().getType();
   }
 
   @Override
-  public final List<Value> getDefs() {
+  @Nonnull
+  public List<Value> getDefs() {
     return Collections.singletonList(leftOp);
   }
 
   @Override
+  @Nonnull
   public final List<Value> getUses() {
     List<Value> list = new ArrayList<>(leftOp.getUses());
-    list.add(rightBox.getValue());
-    list.addAll(rightBox.getValue().getUses());
+    list.add(rightOp);
+    list.addAll(rightOp.getUses());
     return list;
   }
 
@@ -85,13 +80,5 @@ public abstract class AbstractDefinitionStmt extends Stmt {
   @Override
   public boolean branches() {
     return false;
-  }
-
-  public ValueBox getLeftBox() {
-    return leftBox;
-  }
-
-  public ValueBox getRightBox() {
-    return rightBox;
   }
 }

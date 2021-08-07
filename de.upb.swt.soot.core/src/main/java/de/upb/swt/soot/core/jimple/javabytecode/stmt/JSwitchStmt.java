@@ -28,7 +28,6 @@ import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -41,28 +40,18 @@ import javax.annotation.Nonnull;
  */
 public class JSwitchStmt extends BranchingStmt implements Copyable {
 
-  private final ValueBox keyBox;
+  private final Immediate key;
   private List<IntConstant> values;
-  private final boolean isTableSwitch;
 
   private JSwitchStmt(
-      boolean isTableSwitch, @Nonnull StmtPositionInfo positionInfo, @Nonnull ValueBox keyBox) {
+      boolean isTableSwitch, @Nonnull StmtPositionInfo positionInfo, @Nonnull Immediate key) {
     super(positionInfo);
-    this.isTableSwitch = isTableSwitch;
-    this.keyBox = keyBox;
+    this.key = key;
   }
 
   public JSwitchStmt(
-      @Nonnull Value key, int lowIndex, int highIndex, @Nonnull StmtPositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(key), lowIndex, highIndex, positionInfo);
-  }
-
-  public JSwitchStmt(
-      @Nonnull ValueBox keyBox,
-      int lowIndex,
-      int highIndex,
-      @Nonnull StmtPositionInfo positionInfo) {
-    this(true, positionInfo, keyBox);
+      @Nonnull Immediate key, int lowIndex, int highIndex, @Nonnull StmtPositionInfo positionInfo) {
+    this(true, positionInfo, key);
 
     if (lowIndex > highIndex) {
       throw new RuntimeException(
@@ -73,35 +62,20 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
               + ").");
     }
 
-    values = new ArrayList<>();
-    int i;
-    // "<=" is not possible; possible overflow would wrap i resulting in an infinite loop
-    for (i = lowIndex; i < highIndex; i++) {
-      values.add(IntConstant.getInstance(i));
-    }
-    if (i == highIndex) {
-      values.add(IntConstant.getInstance(i));
-    }
+    values = new ImmutableAscendingSequenceList(lowIndex, highIndex);
   }
 
   /** Constructs a new JSwitchStmt. lookupValues should be a list of IntConst s. */
   public JSwitchStmt(
-      @Nonnull ValueBox keyBox,
+      @Nonnull Immediate key,
       @Nonnull List<IntConstant> lookupValues,
       @Nonnull StmtPositionInfo positionInfo) {
-    this(false, positionInfo, keyBox);
+    this(false, positionInfo, key);
     values = Collections.unmodifiableList(new ArrayList<>(lookupValues));
   }
 
-  public JSwitchStmt(
-      @Nonnull Value key,
-      @Nonnull List<IntConstant> lookupValues,
-      @Nonnull StmtPositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(key), lookupValues, positionInfo);
-  }
-
   public boolean isTableSwitch() {
-    return isTableSwitch;
+    return values instanceof JSwitchStmt.ImmutableAscendingSequenceList;
   }
 
   @Nonnull
@@ -109,12 +83,8 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     return Optional.ofNullable(body.getBranchTargetsOf(this).get(values.size()));
   }
 
-  public Value getKey() {
-    return keyBox.getValue();
-  }
-
-  public final ValueBox getKeyBox() {
-    return keyBox;
+  public Immediate getKey() {
+    return key;
   }
 
   @Override
@@ -133,8 +103,8 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseSwitchStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseSwitchStmt(this);
   }
 
   /** Amount of labels +1 for default handler */
@@ -249,5 +219,215 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   @Nonnull
   public JSwitchStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JSwitchStmt(getKey(), getValues(), positionInfo);
+  }
+
+  /** Memory saving List<> implementation for tableswitch */
+  private static class ImmutableAscendingSequenceList implements List<IntConstant> {
+    private final int from;
+    private final int to;
+
+    ImmutableAscendingSequenceList(int from, int to) {
+      this.from = from;
+      this.to = to;
+    }
+
+    @Override
+    public int size() {
+      return to - from + 1;
+    }
+
+    @Override
+    public boolean isEmpty() {
+      return size() <= 0;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+      if (o instanceof IntConstant) {
+        int value = ((IntConstant) o).getValue();
+        return value >= from && value <= to;
+      }
+      return false;
+    }
+
+    @Nonnull
+    @Override
+    public Iterator<IntConstant> iterator() {
+      return listIterator();
+    }
+
+    @Nonnull
+    @Override
+    public Object[] toArray() {
+      Object[] intConstants = new IntConstant[to - from + 1];
+      for (int i = 0; i < size(); i++) {
+        intConstants[i] = IntConstant.getInstance(from + i);
+      }
+      return intConstants;
+    }
+
+    @Nonnull
+    @Override
+    public <T> T[] toArray(@Nonnull T[] ts) {
+      T[] intConstants = (T[]) new Object[to - from + 1];
+      for (int i = 0; i < size(); i++) {
+        intConstants[i] = (T) IntConstant.getInstance(from + i);
+      }
+      return intConstants;
+    }
+
+    @Override
+    public boolean add(IntConstant constant) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean remove(Object o) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> collection) {
+      for (Object o : collection) {
+        if (!contains(o)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    @Override
+    public boolean addAll(@Nonnull Collection<? extends IntConstant> collection) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean addAll(int i, @Nonnull Collection<? extends IntConstant> collection) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removeAll(@Nonnull Collection<?> collection) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean retainAll(@Nonnull Collection<?> collection) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void clear() {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public IntConstant get(int i) {
+      if (!(0 <= i && size() > i)) {
+        throw new IndexOutOfBoundsException(
+            "" + (i) + "  is out of range [ 0 , " + (size() - 1) + " ]");
+      }
+      return IntConstant.getInstance(from + i);
+    }
+
+    @Override
+    public IntConstant set(int i, IntConstant constant) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void add(int i, IntConstant constant) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public IntConstant remove(int i) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int indexOf(Object o) {
+      if (!contains(o)) {
+        return -1;
+      }
+      return ((IntConstant) o).getValue() - from;
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+      // as IntConstant values are unique
+      return indexOf(o);
+    }
+
+    @Nonnull
+    @Override
+    public ListIterator<IntConstant> listIterator() {
+      return listIterator(0);
+    }
+
+    @Nonnull
+    @Override
+    public ListIterator<IntConstant> listIterator(int i) {
+      return new ListIterator<IntConstant>() {
+        int it = from + i - 1;
+
+        @Override
+        public boolean hasNext() {
+          return it < to;
+        }
+
+        @Override
+        public IntConstant next() {
+          if (!hasNext()) {
+            throw new IndexOutOfBoundsException("There are no more elements.");
+          }
+          return IntConstant.getInstance(++it);
+        }
+
+        @Override
+        public boolean hasPrevious() {
+          return it > from;
+        }
+
+        @Override
+        public IntConstant previous() {
+          if (!hasPrevious()) {
+            throw new IndexOutOfBoundsException("There are no more elements.");
+          }
+          return IntConstant.getInstance(--it);
+        }
+
+        @Override
+        public int nextIndex() {
+          return it + 1;
+        }
+
+        @Override
+        public int previousIndex() {
+          return it - 1;
+        }
+
+        @Override
+        public void remove() {
+          throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void set(IntConstant constant) {
+          throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void add(IntConstant constant) {
+          throw new UnsupportedOperationException();
+        }
+      };
+    }
+
+    @Nonnull
+    @Override
+    public List<IntConstant> subList(int startIdx, int endIdx) {
+      return new ImmutableAscendingSequenceList(from + startIdx, from + endIdx);
+    }
   }
 }

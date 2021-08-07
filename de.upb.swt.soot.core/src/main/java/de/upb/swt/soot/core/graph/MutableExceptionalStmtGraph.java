@@ -139,7 +139,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraphImpl {
   }
 
   /**
-   * Replaced stmt is never a hanlderStmt of a Trap.
+   * Replaced stmt is never a handlerStmt of a Trap.
    *
    * @param oldStmt a stmt which is already in the StmtGraph
    * @param newStmt a new stmt which will replace the old stmt

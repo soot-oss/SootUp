@@ -23,11 +23,19 @@ package de.upb.swt.soot.core.views;
  */
 
 import de.upb.swt.soot.core.IdentifierFactory;
+import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.Scope;
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootField;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -42,6 +50,14 @@ import javax.annotation.Nullable;
  */
 public interface View<T extends SootClass> {
 
+  Project getProject();
+
+  @Nonnull
+  List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation<T> inputLocation);
+
+  @Nonnull
+  List<BodyInterceptor> getBodyInterceptors();
+
   /** Return all classes in the view. */
   @Nonnull
   Collection<T> getClasses();
@@ -53,6 +69,10 @@ public interface View<T extends SootClass> {
    */
   @Nonnull
   Optional<T> getClass(@Nonnull ClassType signature);
+
+  Optional<? extends SootField> getField(@Nonnull FieldSignature signature);
+
+  Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature);
 
   /**
    * Returns the scope if the view is scoped.

@@ -23,11 +23,10 @@ package de.upb.swt.soot.core.jimple.common.expr;
  */
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
@@ -39,27 +38,23 @@ import javax.annotation.Nonnull;
 /** An expression that checks whether a value is of a certain type. */
 public final class JInstanceOfExpr implements Expr, Copyable {
 
-  private final ValueBox opBox;
+  private final Immediate op;
   private final Type checkType;
 
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
-  private Value op;
+  public JInstanceOfExpr(@Nonnull Immediate op, @Nonnull Type checkType) {
 
-  public JInstanceOfExpr(Value op, Type checkType) {
-    this.opBox = Jimple.newImmediateBox(op);
-    this.checkType = checkType;
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
     this.op = op;
+    this.checkType = checkType;
   }
 
   @Override
   public String toString() {
-    return opBox.getValue().toString() + " " + Jimple.INSTANCEOF + " " + checkType.toString();
+    return op.toString() + " " + Jimple.INSTANCEOF + " " + checkType.toString();
   }
 
   @Override
   public void toString(@Nonnull StmtPrinter up) {
-    opBox.toString(up);
+    op.toString(up);
     up.literal(" ");
     up.literal(Jimple.INSTANCEOF);
     up.literal(" ");
@@ -74,24 +69,22 @@ public final class JInstanceOfExpr implements Expr, Copyable {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return opBox.getValue().equivHashCode() * 101 + checkType.hashCode() * 17;
+    return op.equivHashCode() * 101 + checkType.hashCode() * 17;
   }
 
-  public Value getOp() {
-    return opBox.getValue();
-  }
-
-  public ValueBox getOpBox() {
-    return opBox;
+  public Immediate getOp() {
+    return op;
   }
 
   @Override
+  @Nonnull
   public final List<Value> getUses() {
     List<Value> list = new ArrayList<>(op.getUses());
     list.add(op);
     return list;
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     return PrimitiveType.getBoolean();
@@ -102,17 +95,17 @@ public final class JInstanceOfExpr implements Expr, Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseInstanceOfExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseInstanceOfExpr(this);
   }
 
   @Nonnull
-  public JInstanceOfExpr withOp(Value op) {
-    return new JInstanceOfExpr(op, checkType);
+  public JInstanceOfExpr withOp(@Nonnull Immediate op) {
+    return new JInstanceOfExpr(op, getCheckType());
   }
 
   @Nonnull
-  public JInstanceOfExpr withCheckType(Type checkType) {
+  public JInstanceOfExpr withCheckType(@Nonnull Type checkType) {
     return new JInstanceOfExpr(getOp(), checkType);
   }
 }

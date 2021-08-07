@@ -22,5 +22,8 @@ package de.upb.swt.soot.core.types;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.visitor.Acceptor;
+import de.upb.swt.soot.core.jimple.visitor.TypeVisitor;
+
 /** Represents the signature of a Java type, e.g., a class, a primitive type, void, or null. */
-public abstract class Type {}
+public abstract class Type implements Acceptor<TypeVisitor> {}

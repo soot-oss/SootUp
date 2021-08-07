@@ -38,7 +38,7 @@ public interface RealConstant<R extends RealConstant<R>> extends NumericConstant
    *
    * @param constant the value to compare with
    * @return {@code 0} if values are equal, {@code 1} if passed value less, or {@code -1} if passed
-   *     value greater. When any of the values is {@code NaN} methodRef returns {@code -1}.
+   *     value greater. When any of the values is {@code NaN} returns {@code -1}.
    */
   @Nonnull
   IntConstant cmpl(@Nonnull R constant);
@@ -49,7 +49,7 @@ public interface RealConstant<R extends RealConstant<R>> extends NumericConstant
    *
    * @param constant the value to compare with
    * @return {@code 0} if values are equal, {@code 1} if passed value less, or {@code -1} if passed
-   *     value greater. When any of the values is {@code NaN} methodRef returns {@code 1}.
+   *     value greater. When any of the values is {@code NaN} returns {@code 1}.
    */
   @Nonnull
   IntConstant cmpg(@Nonnull R constant);

@@ -22,8 +22,8 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -31,63 +31,51 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractInvokeExpr implements Expr {
 
-  private final MethodSignature methodSignature;
-  private final ValueBox[] argBoxes;
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
-  private Value[] args;
+  @Nonnull private final MethodSignature methodSignature;
+  @Nonnull private final Immediate[] args;
 
-  protected AbstractInvokeExpr(MethodSignature method, ValueBox[] argBoxes) {
+  protected AbstractInvokeExpr(@Nonnull MethodSignature method, @Nonnull Immediate[] args) {
     this.methodSignature = method;
-    this.argBoxes = argBoxes.length == 0 ? null : argBoxes;
-
-    // new attribute: later if ValueBox is deleted, then fit the constructor
-    this.args = Arrays.stream(argBoxes).map(ValueBox::getValue).toArray(Value[]::new);
+    for (Immediate arg : args) {
+      if (arg == null) {
+        throw new IllegalArgumentException("arg may not be null");
+      }
+    }
+    this.args = args;
   }
 
+  @Nonnull
   public MethodSignature getMethodSignature() {
     return this.methodSignature;
   }
 
   public Value getArg(int index) {
-    return argBoxes[index].getValue();
+    return args[index];
   }
 
-  /** Returns a list of arguments, consisting of values contained in the box. */
-  public List<Value> getArgs() {
-    return argBoxes != null
-        ? Arrays.stream(argBoxes).map(ValueBox::getValue).collect(Collectors.toList())
-        : Collections.emptyList();
-  }
-
-  @Nullable
-  List<ValueBox> getArgBoxes() {
-    return Collections.unmodifiableList(Arrays.asList(argBoxes));
+  /** Returns a list of arguments. */
+  public List<Immediate> getArgs() {
+    return Collections.unmodifiableList(Arrays.asList(args));
   }
 
   public int getArgCount() {
-    return argBoxes == null ? 0 : argBoxes.length;
+    return args.length;
   }
 
-  public ValueBox getArgBox(int index) {
-    return argBoxes[index];
-  }
-
+  @Nonnull
   @Override
   public Type getType() {
     return methodSignature.getType();
   }
 
   @Override
+  @Nonnull
   public List<Value> getUses() {
-    if (args == null) {
-      return Collections.emptyList();
-    }
-    List<Value> list = new ArrayList<>();
+    List<Value> list = new ArrayList<>(getArgCount());
     Collections.addAll(list, args);
     for (Value arg : args) {
       list.addAll(arg.getUses());
@@ -95,28 +83,24 @@ public abstract class AbstractInvokeExpr implements Expr {
     return list;
   }
 
-  protected void argBoxesToString(StringBuilder builder) {
-    if (argBoxes != null) {
-      final int len = argBoxes.length;
-      if (0 < len) {
-        builder.append(argBoxes[0].getValue().toString());
-        for (int i = 1; i < len; i++) {
-          builder.append(", ");
-          builder.append(argBoxes[i].getValue().toString());
-        }
+  protected void argsToString(@Nonnull StringBuilder builder) {
+    final int len = getArgCount();
+    if (0 < len) {
+      builder.append(args[0].toString());
+      for (int i = 1; i < len; i++) {
+        builder.append(", ");
+        builder.append(args[i].toString());
       }
     }
   }
 
-  protected void argBoxesToPrinter(StmtPrinter up) {
-    if (argBoxes != null) {
-      final int len = argBoxes.length;
-      if (0 < len) {
-        argBoxes[0].toString(up);
-        for (int i = 1; i < len; i++) {
-          up.literal(", ");
-          argBoxes[i].toString(up);
-        }
+  protected void argsToPrinter(@Nonnull StmtPrinter up) {
+    final int len = getArgCount();
+    if (0 < len) {
+      args[0].toString(up);
+      for (int i = 1; i < len; i++) {
+        up.literal(", ");
+        args[i].toString(up);
       }
     }
   }

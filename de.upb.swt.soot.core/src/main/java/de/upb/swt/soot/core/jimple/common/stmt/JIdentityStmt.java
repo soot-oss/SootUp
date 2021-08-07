@@ -22,48 +22,38 @@ package de.upb.swt.soot.core.jimple.common.stmt;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
-import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
-public final class JIdentityStmt extends AbstractDefinitionStmt implements Copyable {
+public final class JIdentityStmt<T extends IdentityRef> extends AbstractDefinitionStmt<Local, T>
+    implements Copyable {
 
-  public JIdentityStmt(Value local, Value identityValue, StmtPositionInfo positionInfo) {
-    this(Jimple.newLocalBox(local), Jimple.newIdentityRefBox(identityValue), positionInfo);
-  }
-
-  protected JIdentityStmt(
-      ValueBox localBox, ValueBox identityValueBox, StmtPositionInfo positionInfo) {
-    super(localBox, identityValueBox, positionInfo);
+  public JIdentityStmt(
+      @Nonnull Local local, @Nonnull T identityValue, @Nonnull StmtPositionInfo positionInfo) {
+    super(local, identityValue, positionInfo);
   }
 
   @Override
   public String toString() {
-    return getLeftBox().getValue().toString() + " := " + getRightBox().getValue().toString();
+    return getLeftOp() + " := " + getRightOp();
   }
 
   @Override
   public void toString(@Nonnull StmtPrinter up) {
-    getLeftBox().toString(up);
+    getLeftOp().toString(up);
     up.literal(" := ");
-    getRightBox().toString(up);
+    getRightOp().toString(up);
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseIdentityStmt(this);
-  }
-
-  public Type getType() {
-    return getLeftBox().getValue().getType();
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseIdentityStmt(this);
   }
 
   @Override
@@ -73,21 +63,21 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Copya
 
   @Override
   public int equivHashCode() {
-    return getLeftBox().getValue().equivHashCode() + 31 * getRightBox().getValue().equivHashCode();
+    return getLeftOp().equivHashCode() + 31 * getRightOp().equivHashCode();
   }
 
   @Nonnull
-  public JIdentityStmt withLocal(Value local) {
-    return new JIdentityStmt(local, getRightOp(), getPositionInfo());
+  public JIdentityStmt<T> withLocal(@Nonnull Local local) {
+    return new JIdentityStmt<>(local, getRightOp(), getPositionInfo());
   }
 
   @Nonnull
-  public JIdentityStmt withIdentityValue(Value identityValue) {
-    return new JIdentityStmt(getLeftOp(), identityValue, getPositionInfo());
+  public <N extends IdentityRef> JIdentityStmt<N> withIdentityValue(@Nonnull N identityValue) {
+    return new JIdentityStmt<>(getLeftOp(), identityValue, getPositionInfo());
   }
 
   @Nonnull
-  public JIdentityStmt withPositionInfo(StmtPositionInfo positionInfo) {
-    return new JIdentityStmt(getLeftOp(), getRightOp(), positionInfo);
+  public JIdentityStmt<T> withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+    return new JIdentityStmt<>(getLeftOp(), getRightOp(), positionInfo);
   }
 }

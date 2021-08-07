@@ -14,7 +14,7 @@ import java.util.Collections;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author Hasitha Rajapakse * */
+/** @author: Hasitha Rajapakse * */
 @Category(Java8Test.class)
 public class MethodOverridingTest extends JavaTypeHierarchyTestBase {
   @Test
@@ -38,8 +38,9 @@ public class MethodOverridingTest extends JavaTypeHierarchyTestBase {
     SootMethod sootMethod =
         sootClass
             .getMethod(
-                identifierFactory.getMethodSignature(
-                    "method", sootClassType, "void", Collections.emptyList()))
+                identifierFactory
+                    .getMethodSignature("method", sootClassType, "void", Collections.emptyList())
+                    .getSubSignature())
             .get();
     Body body = sootMethod.getBody();
     assertNotNull(body);
@@ -49,8 +50,10 @@ public class MethodOverridingTest extends JavaTypeHierarchyTestBase {
     SootMethod superMethod =
         superClass
             .getMethod(
-                identifierFactory.getMethodSignature(
-                    "method", superClass.getType(), "void", Collections.emptyList()))
+                identifierFactory
+                    .getMethodSignature(
+                        "method", superClass.getType(), "void", Collections.emptyList())
+                    .getSubSignature())
             .get();
     Body superBody = superMethod.getBody();
     assertNotNull(superBody);

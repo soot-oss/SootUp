@@ -39,22 +39,21 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * This class represents Java Annotations (JSR-175).
  *
  * @author Markus Schmidt, Bastian Haverkamp
  */
-
-// TODO:[ms] move to a better place?
 public class AnnotationType extends JavaClassType {
 
   public void setInherited(boolean inherited) {
     isInherited = inherited;
   }
 
-  private Boolean isInherited = null;
-  private Map<String, Object> defaultValues = null;
+  @Nullable private Boolean isInherited = null;
+  @Nullable private Map<String, Object> defaultValues = null;
 
   /**
    * Returns default values of annotation parameters. Needs to be called at least once with a
@@ -64,7 +63,7 @@ public class AnnotationType extends JavaClassType {
    * @param viewOptional view to resolve annotation soot class of AnnotationType
    * @return default values of all parameters of this annotation
    */
-  public Map<String, Object> getDefaultValues(Optional<JavaView> viewOptional) {
+  public Map<String, Object> getDefaultValues(@Nonnull Optional<JavaView> viewOptional) {
     if (defaultValues == null) {
       defaultValues = new HashMap<>();
       if (viewOptional.isPresent()) {

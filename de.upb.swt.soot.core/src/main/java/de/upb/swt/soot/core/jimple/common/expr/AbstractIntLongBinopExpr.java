@@ -22,18 +22,20 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
 
-  AbstractIntLongBinopExpr(Value op1, Value op2) {
-    super(Jimple.newArgBox(op1), Jimple.newArgBox(op2));
+  AbstractIntLongBinopExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+    super(op1, op2);
   }
 
+  @Nonnull
   @Override
   public Type getType() {
     Value op1 = getOp1();

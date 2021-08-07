@@ -22,36 +22,36 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
 /** An expression that multiplies two numbers. */
 public final class JMulExpr extends AbstractFloatBinopExpr implements Copyable {
 
-  public JMulExpr(Value op1, Value op2) {
+  public JMulExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);
   }
 
+  @Nonnull
   @Override
   public final String getSymbol() {
     return " * ";
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseMulExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseMulExpr(this);
   }
 
   @Nonnull
-  public JMulExpr withOp1(Value op1) {
+  public JMulExpr withOp1(@Nonnull Immediate op1) {
     return new JMulExpr(op1, getOp2());
   }
 
   @Nonnull
-  public JMulExpr withOp2(Value op2) {
+  public JMulExpr withOp2(@Nonnull Immediate op2) {
     return new JMulExpr(getOp1(), op2);
   }
 }

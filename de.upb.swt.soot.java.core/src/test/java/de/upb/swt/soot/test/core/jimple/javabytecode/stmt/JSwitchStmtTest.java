@@ -1,8 +1,6 @@
 package de.upb.swt.soot.test.core.jimple.javabytecode.stmt;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
@@ -12,7 +10,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
-import java.util.ArrayList;
+import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -20,12 +18,6 @@ import org.junit.experimental.categories.Category;
 public class JSwitchStmtTest {
 
   @Test
-  public void test() {
-    // TODO: [ms] incorporate Printer i.e. Body+Targets
-    testLookupSwitchStmt();
-    testTableSwitchStmt();
-  }
-
   public void testLookupSwitchStmt() {
     StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
     ArrayList<IntConstant> lookupValues = new ArrayList<>();
@@ -56,6 +48,7 @@ public class JSwitchStmtTest {
     assertFalse(stmt.equivTo(stmtDifferentKey));
   }
 
+  @Test
   public void testTableSwitchStmt() {
     StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
     ArrayList<Stmt> targets = new ArrayList<>();
@@ -63,7 +56,7 @@ public class JSwitchStmtTest {
     targets.add(new JReturnStmt(IntConstant.getInstance(2), nop));
     targets.add(new JReturnStmt(IntConstant.getInstance(3), nop));
     targets.add(new JNopStmt(nop));
-    Stmt stmt = new JSwitchStmt(IntConstant.getInstance(123), 1, 4, nop);
+    JSwitchStmt stmt = new JSwitchStmt(IntConstant.getInstance(123), 1, 4, nop);
 
     ArrayList<Stmt> targets2 = new ArrayList<>();
     targets.add(new JReturnStmt(IntConstant.getInstance(1), nop));
@@ -82,7 +75,7 @@ public class JSwitchStmtTest {
         stmt.toString());
 
     // equivTo
-    assertFalse(stmt.equivTo(new Integer(666)));
+    assertFalse(stmt.equivTo(666));
     assertTrue(stmt.equivTo(stmt));
     assertFalse(stmt.equivTo(stmt2));
 
@@ -96,9 +89,9 @@ public class JSwitchStmtTest {
   @Test
   public void testTableSwitch() {
     StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
-    Stmt stmt = new JSwitchStmt(IntConstant.getInstance(123), 1, 4, nop);
-    Stmt diffSwitch = new JSwitchStmt(IntConstant.getInstance(123), 0, 4, nop);
-    Stmt diffKeySwitch = new JSwitchStmt(IntConstant.getInstance(42), 1, 4, nop);
+    JSwitchStmt stmt = new JSwitchStmt(IntConstant.getInstance(123), 1, 4, nop);
+    JSwitchStmt diffSwitch = new JSwitchStmt(IntConstant.getInstance(123), 0, 4, nop);
+    JSwitchStmt diffKeySwitch = new JSwitchStmt(IntConstant.getInstance(42), 1, 4, nop);
 
     // toString
     assertEquals(
@@ -106,10 +99,119 @@ public class JSwitchStmtTest {
         stmt.toString());
 
     // equivTo
-    assertFalse(stmt.equivTo(new Integer(666)));
+    assertFalse(stmt.equivTo(666));
     assertTrue(stmt.equivTo(stmt));
     assertFalse(stmt.equivTo(diffSwitch));
     assertFalse(stmt.equivTo(diffKeySwitch));
+
+    assertTrue(stmt.isTableSwitch());
+    assertEquals(5, stmt.getValueCount());
+    List<IntConstant> values = stmt.getValues();
+
+    assertEquals(4, values.size());
+
+    assertFalse(values.contains(IntConstant.getInstance(0)));
+    assertTrue(values.contains(IntConstant.getInstance(1)));
+    assertTrue(values.contains(IntConstant.getInstance(2)));
+    assertTrue(values.contains(IntConstant.getInstance(3)));
+    assertTrue(values.contains(IntConstant.getInstance(4)));
+    assertFalse(values.contains(IntConstant.getInstance(5)));
+
+    try {
+      values.get(-1);
+      fail("should be outoufbounds");
+    } catch (IndexOutOfBoundsException ignored) {
+    }
+    assertEquals(IntConstant.getInstance(1), values.get(0));
+    assertEquals(IntConstant.getInstance(2), values.get(1));
+    assertEquals(IntConstant.getInstance(3), values.get(2));
+    assertEquals(IntConstant.getInstance(4), values.get(3));
+    try {
+      values.get(4);
+      fail("should be outoufbounds");
+    } catch (IndexOutOfBoundsException ignored) {
+    }
+
+    assertArrayEquals(
+        new Object[] {
+          IntConstant.getInstance(1),
+          IntConstant.getInstance(2),
+          IntConstant.getInstance(3),
+          IntConstant.getInstance(4)
+        },
+        values.toArray());
+    assertArrayEquals(
+        new IntConstant[] {
+          IntConstant.getInstance(1),
+          IntConstant.getInstance(2),
+          IntConstant.getInstance(3),
+          IntConstant.getInstance(4)
+        },
+        values.toArray(new IntConstant[0]));
+
+    assertTrue(
+        values.containsAll(
+            Arrays.asList(
+                IntConstant.getInstance(1),
+                IntConstant.getInstance(2),
+                IntConstant.getInstance(3),
+                IntConstant.getInstance(4))));
+    assertFalse(
+        values.containsAll(
+            Arrays.asList(
+                IntConstant.getInstance(42),
+                IntConstant.getInstance(2),
+                IntConstant.getInstance(3),
+                IntConstant.getInstance(4))));
+    assertFalse(values.containsAll(Arrays.asList(IntConstant.getInstance(0))));
+    assertTrue(values.containsAll(Arrays.asList(IntConstant.getInstance(1))));
+    assertTrue(values.containsAll(Arrays.asList(IntConstant.getInstance(4))));
+    assertFalse(values.containsAll(Arrays.asList(IntConstant.getInstance(5))));
+
+    assertFalse(
+        values.containsAll(
+            Arrays.asList(
+                IntConstant.getInstance(42),
+                IntConstant.getInstance(2),
+                IntConstant.getInstance(3),
+                IntConstant.getInstance(4))));
+
+    ListIterator<IntConstant> listIt = values.listIterator();
+
+    try {
+      listIt.previous();
+      fail("should be outoufbounds");
+    } catch (IndexOutOfBoundsException ignored) {
+    }
+    assertEquals(IntConstant.getInstance(1), listIt.next());
+    assertEquals(IntConstant.getInstance(2), listIt.next());
+    assertEquals(IntConstant.getInstance(1), listIt.previous());
+    assertEquals(IntConstant.getInstance(2), listIt.next());
+    assertEquals(IntConstant.getInstance(3), listIt.next());
+    assertEquals(IntConstant.getInstance(4), listIt.next());
+    try {
+      listIt.next();
+      fail("should be outoufbounds");
+    } catch (IndexOutOfBoundsException ignored) {
+    }
+    assertEquals(IntConstant.getInstance(3), listIt.previous());
+
+    List<IntConstant> sublist = values.subList(1, 3);
+    assertEquals(3, sublist.size());
+    assertEquals(IntConstant.getInstance(2), sublist.get(0));
+    assertEquals(IntConstant.getInstance(3), sublist.get(1));
+    assertEquals(IntConstant.getInstance(4), sublist.get(2));
+    try {
+      sublist.get(3);
+      fail("should be outoufbounds");
+    } catch (IndexOutOfBoundsException ignored) {
+    }
+
+    try {
+      sublist.clear();
+      fail("should be unsupported");
+    } catch (UnsupportedOperationException ignored) {
+    }
   }
 
   @Test

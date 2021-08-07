@@ -23,12 +23,10 @@ package de.upb.swt.soot.core.jimple.common.stmt;
  */
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
@@ -36,29 +34,25 @@ import javax.annotation.Nonnull;
 /** A statement that throws an Exception */
 public final class JThrowStmt extends AbstractOpStmt implements Copyable {
 
-  public JThrowStmt(Value op, StmtPositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(op), positionInfo);
-  }
-
-  protected JThrowStmt(ValueBox opBox, StmtPositionInfo positionInfo) {
-    super(opBox, positionInfo);
+  public JThrowStmt(@Nonnull Immediate op, @Nonnull StmtPositionInfo positionInfo) {
+    super(op, positionInfo);
   }
 
   @Override
   public String toString() {
-    return "throw " + opBox.getValue().toString();
+    return "throw " + op.toString();
   }
 
   @Override
   public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.THROW);
     up.literal(" ");
-    opBox.toString(up);
+    op.toString(up);
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseThrowStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseThrowStmt(this);
   }
 
   @Override
@@ -82,12 +76,12 @@ public final class JThrowStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Nonnull
-  public JThrowStmt withOp(Value op) {
+  public JThrowStmt withOp(@Nonnull Immediate op) {
     return new JThrowStmt(op, getPositionInfo());
   }
 
   @Nonnull
-  public JThrowStmt withPositionInfo(StmtPositionInfo positionInfo) {
+  public JThrowStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JThrowStmt(getOp(), positionInfo);
   }
 }

@@ -22,6 +22,7 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 
+import com.google.common.collect.Maps;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
@@ -38,19 +39,14 @@ import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * The Java-specific implementation of {@link IdentifierFactory}. Should not be used for other
@@ -61,10 +57,13 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Nonnull private static final JavaIdentifierFactory INSTANCE = new JavaIdentifierFactory();
 
   /** Caches the created PackageNames for packages. */
-  final Map<String, PackageName> packages = new HashMap<>();
+  @Nonnull protected final Map<String, PackageName> packages = new HashMap<>();
 
-  /** Chaches annotation types */
-  final Map<String, AnnotationType> annotationTypes = new HashMap<>();
+  /** Caches annotation types */
+  @Nonnull protected final Map<String, AnnotationType> annotationTypes = new HashMap<>();
+
+  @Nonnull
+  protected final Map<String, PrimitiveType> primitiveTypeMap = Maps.newHashMapWithExpectedSize(8);
 
   public static JavaIdentifierFactory getInstance() {
     return INSTANCE;
@@ -73,6 +72,24 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   JavaIdentifierFactory() {
     /* Represents the default package. */
     packages.put(PackageName.DEFAULT_PACKAGE.getPackageName(), PackageName.DEFAULT_PACKAGE);
+
+    // initialize primitive map
+    primitiveTypeMap.put(
+        PrimitiveType.LongType.getInstance().getName(), PrimitiveType.LongType.getInstance());
+    primitiveTypeMap.put(
+        PrimitiveType.IntType.getInstance().getName(), PrimitiveType.IntType.getInstance());
+    primitiveTypeMap.put(
+        PrimitiveType.ShortType.getInstance().getName(), PrimitiveType.ShortType.getInstance());
+    primitiveTypeMap.put(
+        PrimitiveType.CharType.getInstance().getName(), PrimitiveType.CharType.getInstance());
+    primitiveTypeMap.put(
+        PrimitiveType.ByteType.getInstance().getName(), PrimitiveType.ByteType.getInstance());
+    primitiveTypeMap.put(
+        PrimitiveType.BooleanType.getInstance().getName(), PrimitiveType.BooleanType.getInstance());
+    primitiveTypeMap.put(
+        PrimitiveType.DoubleType.getInstance().getName(), PrimitiveType.DoubleType.getInstance());
+    primitiveTypeMap.put(
+        PrimitiveType.FloatType.getInstance().getName(), PrimitiveType.FloatType.getInstance());
   }
 
   /**
@@ -116,14 +133,13 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   public Type getType(final String typeDesc) {
     int len = typeDesc.length();
-    int idx = 0;
     StringBuilder stringBuilder = new StringBuilder();
     int nrDims = 0;
     int closed = 0;
 
     // check if this is an array type ...
-    while (idx != len) {
-      char c = typeDesc.charAt(idx++);
+    for (int i = 0; i < len; i++) {
+      char c = typeDesc.charAt(i);
       switch (c) {
         case '[':
           ++nrDims;
@@ -142,12 +158,10 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
     String typeName = stringBuilder.toString();
 
-    // FIXME: [JMP] Is lower case correct here? 'Int' is not the same as 'int', because 'Int' is a
-    // reference type.
-    String typeNameLowerCase = typeName.toLowerCase();
     Type ret;
-
-    switch (typeNameLowerCase) {
+    switch (typeName) {
+      case "":
+        throw new IllegalArgumentException("Invalid! Typedescriptor is empty.");
       case "null":
         ret = NullType.getInstance();
         break;
@@ -156,7 +170,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
         break;
       default:
         ret =
-            getPrimitiveType(typeNameLowerCase)
+            getPrimitiveType(typeName)
                 .map(obj -> (Type) obj)
                 .orElseGet(() -> getClassType(typeName));
     }
@@ -168,8 +182,23 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   }
 
   @Override
-  public @Nonnull Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName) {
-    return PrimitiveType.find(typeName);
+  @Nonnull
+  public Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName) {
+    return Optional.ofNullable(primitiveTypeMap.get(typeName));
+  }
+
+  @Nonnull
+  public Collection<PrimitiveType> getAllPrimitiveTypes() {
+    return Collections.unmodifiableCollection(primitiveTypeMap.values());
+  }
+
+  @Override
+  @Nonnull
+  public JavaClassType getBoxedType(@Nonnull PrimitiveType primitiveType) {
+    String name = primitiveType.getName();
+    StringBuilder boxedname = new StringBuilder(name);
+    boxedname.setCharAt(0, Character.toUpperCase(boxedname.charAt(0)));
+    return getClassType(boxedname.toString(), "java.lang");
   }
 
   @Override
@@ -188,8 +217,17 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   @Nonnull
   public JavaClassType fromPath(@Nonnull final Path file) {
-    String separator = file.getFileSystem().getSeparator();
     String path = file.toString();
+    String separator = file.getFileSystem().getSeparator();
+
+    // for multi release jars, remove beginning of path
+    // /META-INF/versions/15/de/upb...
+    // we only want /de/upb...
+    if (path.startsWith("/META-INF/")) {
+      // start at 4th separator
+      int index = StringUtils.ordinalIndexOf(path, separator, 4);
+      path = path.substring(index);
+    }
 
     String fullyQualifiedName =
         FilenameUtils.removeExtension(
@@ -200,7 +238,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   }
 
   /**
-   * Returns a unique PackageName. The methodRef looks up a cache if it already contains a signature
+   * Returns a unique PackageName. The method looks up a cache if it already contains a signature
    * with the given package name. If the cache lookup fails a new signature is created.
    *
    * @param packageName the Java package name; must not be null use empty string for the default
@@ -211,15 +249,13 @@ public class JavaIdentifierFactory implements IdentifierFactory {
    */
   @Override
   public PackageName getPackageName(@Nonnull final String packageName) {
-    PackageName packageIdentifier =
-        packages.computeIfAbsent(packageName, (name) -> new PackageName(name));
-    return packageIdentifier;
+    return packages.computeIfAbsent(packageName, (name) -> new PackageName(name));
   }
 
   /**
    * Always creates a new MethodSignature AND a new ClassSignature.
    *
-   * @param methodName the methodRef's name
+   * @param methodName the method's name
    * @param fullyQualifiedNameDeclClass the fully-qualified name of the declaring class
    * @param parameters the methods parameters fully-qualified name or a primitive's name
    * @param fqReturnType the fully-qualified name of the return type or a primitive's name
@@ -244,7 +280,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   /**
    * Always creates a new MethodSignature reusing the given ClassSignature.
    *
-   * @param methodName the methodRef's name
+   * @param methodName the method's name
    * @param declaringClassSignature the ClassSignature of the declaring class
    * @param parameters the methods parameters fully-qualified name or a primitive's name
    * @param fqReturnType the fully-qualified name of the return type or a primitive's name

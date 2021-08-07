@@ -31,7 +31,7 @@ public class LegacyJimplePrinterTest {
   SootClass buildClass(Body.BodyBuilder builder) {
 
     Project project =
-        JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
+        JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
     View view = project.createOnDemandView();
 
     MethodSignature methodSignature =
@@ -55,16 +55,16 @@ public class LegacyJimplePrinterTest {
 
     return new SootClass(
         new OverridingClassSource(
-            new EagerInputLocation(),
+            Collections.singleton(dummyMainMethod),
+            Collections.emptySet(),
+            EnumSet.of(Modifier.PUBLIC),
+            Collections.emptySet(),
+            null,
+            null,
+            null,
             null,
             view.getIdentifierFactory().getClassType("dummyMain"),
-            null,
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            Collections.singleton(dummyMainMethod),
-            null,
-            EnumSet.of(Modifier.PUBLIC)),
+            new EagerInputLocation()),
         SourceType.Application);
   }
 

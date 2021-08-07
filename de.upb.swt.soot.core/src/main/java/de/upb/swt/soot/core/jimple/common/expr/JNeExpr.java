@@ -22,36 +22,36 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
 /** The opposite of {@link JEqExpr} */
 public final class JNeExpr extends AbstractConditionExpr implements Copyable {
 
-  public JNeExpr(Value op1, Value op2) {
+  public JNeExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);
   }
 
+  @Nonnull
   @Override
   public final String getSymbol() {
     return " != ";
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseNeExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseNeExpr(this);
   }
 
   @Nonnull
-  public JNeExpr withOp1(Value op1) {
+  public JNeExpr withOp1(@Nonnull Immediate op1) {
     return new JNeExpr(op1, getOp2());
   }
 
   @Nonnull
-  public JNeExpr withOp2(Value op2) {
+  public JNeExpr withOp2(@Nonnull Immediate op2) {
     return new JNeExpr(getOp1(), op2);
   }
 }

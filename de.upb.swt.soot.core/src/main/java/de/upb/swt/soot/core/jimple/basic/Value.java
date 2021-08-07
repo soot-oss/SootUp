@@ -22,7 +22,10 @@ package de.upb.swt.soot.core.jimple.basic;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.visitor.Acceptor;
+import de.upb.swt.soot.core.jimple.common.constant.Constant;
+import de.upb.swt.soot.core.jimple.common.expr.Expr;
+import de.upb.swt.soot.core.jimple.common.ref.Ref;
+import de.upb.swt.soot.core.jimple.visitor.*;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.List;
@@ -34,7 +37,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Values are typed, clonable and must declare which other Values they use (contain).
  */
-public interface Value extends Acceptor, EquivTo {
+public interface Value extends EquivTo {
 
   /**
    * Returns a List of Locals,FieldRefs,ArrayRefs which are used by (ie contained within) this
@@ -42,10 +45,27 @@ public interface Value extends Acceptor, EquivTo {
    *
    * @return
    */
+  @Nonnull
   List<Value> getUses();
 
   /** Returns the Soot type of this Value. */
+  @Nonnull
   Type getType();
 
   void toString(@Nonnull StmtPrinter up);
+
+  default void accept(@Nonnull ValueVisitor v) {
+    // [ms] find a way without casting and instanceof..
+    if (this instanceof Local) {
+      ((Local) this).accept((ImmediateVisitor) v);
+    } else if (this instanceof Expr) {
+      ((Expr) this).accept((ExprVisitor) v);
+    } else if (this instanceof Constant) {
+      ((Constant) this).accept((ConstantVisitor) v);
+    } else if (this instanceof Ref) {
+      ((Ref) this).accept((RefVisitor) v);
+    } else {
+      throw new RuntimeException("Unknown type of Value to switch on.");
+    }
+  }
 }

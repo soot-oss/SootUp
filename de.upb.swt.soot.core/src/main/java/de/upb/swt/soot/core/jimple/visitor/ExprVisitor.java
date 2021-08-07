@@ -25,69 +25,70 @@ package de.upb.swt.soot.core.jimple.visitor;
 import de.upb.swt.soot.core.jimple.common.expr.*;
 
 public interface ExprVisitor extends Visitor {
-  void caseAddExpr(JAddExpr v);
 
-  void caseAndExpr(JAndExpr v);
+  void caseAddExpr(JAddExpr expr);
 
-  void caseCmpExpr(JCmpExpr v);
+  void caseAndExpr(JAndExpr expr);
 
-  void caseCmpgExpr(JCmpgExpr v);
+  void caseCmpExpr(JCmpExpr expr);
 
-  void caseCmplExpr(JCmplExpr v);
+  void caseCmpgExpr(JCmpgExpr expr);
 
-  void caseDivExpr(JDivExpr v);
+  void caseCmplExpr(JCmplExpr expr);
 
-  void caseEqExpr(JEqExpr v);
+  void caseDivExpr(JDivExpr expr);
 
-  void caseNeExpr(JNeExpr v);
+  void caseEqExpr(JEqExpr expr);
 
-  void caseGeExpr(JGeExpr v);
+  void caseNeExpr(JNeExpr expr);
 
-  void caseGtExpr(JGtExpr v);
+  void caseGeExpr(JGeExpr expr);
 
-  void caseLeExpr(JLeExpr v);
+  void caseGtExpr(JGtExpr expr);
 
-  void caseLtExpr(JLtExpr v);
+  void caseLeExpr(JLeExpr expr);
 
-  void caseMulExpr(JMulExpr v);
+  void caseLtExpr(JLtExpr expr);
 
-  void caseOrExpr(JOrExpr v);
+  void caseMulExpr(JMulExpr expr);
 
-  void caseRemExpr(JRemExpr v);
+  void caseOrExpr(JOrExpr expr);
 
-  void caseShlExpr(JShlExpr v);
+  void caseRemExpr(JRemExpr expr);
 
-  void caseShrExpr(JShrExpr v);
+  void caseShlExpr(JShlExpr expr);
 
-  void caseUshrExpr(JUshrExpr v);
+  void caseShrExpr(JShrExpr expr);
 
-  void caseSubExpr(JSubExpr v);
+  void caseUshrExpr(JUshrExpr expr);
 
-  void caseXorExpr(JXorExpr v);
+  void caseSubExpr(JSubExpr expr);
 
-  void caseSpecialInvokeExpr(JSpecialInvokeExpr v);
+  void caseXorExpr(JXorExpr expr);
 
-  void caseVirtualInvokeExpr(JVirtualInvokeExpr v);
+  void caseSpecialInvokeExpr(JSpecialInvokeExpr expr);
 
-  void caseInterfaceInvokeExpr(JInterfaceInvokeExpr v);
+  void caseVirtualInvokeExpr(JVirtualInvokeExpr expr);
 
-  void caseStaticInvokeExpr(JStaticInvokeExpr v);
+  void caseInterfaceInvokeExpr(JInterfaceInvokeExpr expr);
 
-  void caseDynamicInvokeExpr(JDynamicInvokeExpr v);
+  void caseStaticInvokeExpr(JStaticInvokeExpr expr);
 
-  void caseCastExpr(JCastExpr v);
+  void caseDynamicInvokeExpr(JDynamicInvokeExpr expr);
 
-  void caseInstanceOfExpr(JInstanceOfExpr v);
+  void caseCastExpr(JCastExpr expr);
 
-  void caseNewArrayExpr(JNewArrayExpr v);
+  void caseInstanceOfExpr(JInstanceOfExpr expr);
 
-  void caseNewMultiArrayExpr(JNewMultiArrayExpr v);
+  void caseNewArrayExpr(JNewArrayExpr expr);
 
-  void caseNewExpr(JNewExpr v);
+  void caseNewMultiArrayExpr(JNewMultiArrayExpr expr);
 
-  void caseLengthExpr(JLengthExpr v);
+  void caseNewExpr(JNewExpr expr);
 
-  void caseNegExpr(JNegExpr v);
+  void caseLengthExpr(JLengthExpr expr);
 
-  void defaultCase(Object obj);
+  void caseNegExpr(JNegExpr expr);
+
+  void defaultCaseExpr(Expr expr);
 }

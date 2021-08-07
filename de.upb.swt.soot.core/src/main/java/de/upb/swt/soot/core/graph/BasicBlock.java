@@ -1,6 +1,5 @@
 package de.upb.swt.soot.core.graph;
 
-import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ class MutableBasicBlock implements BasicBlock {
   @Nonnull private final List<MutableBasicBlock> exceptionalSuccessorBlocks = new ArrayList<>();
 
   @Nonnull private List<Stmt> stmts = new ArrayList<>();
-  @Nonnull private List<JTrap> traps = new ArrayList<>();
+  @Nonnull private List<Trap> traps = new ArrayList<>();
 
   public MutableBasicBlock() {}
 
@@ -76,11 +75,11 @@ class MutableBasicBlock implements BasicBlock {
     this.stmts = stmts;
   }
 
-  public void addTrap(@Nonnull JTrap trap) {
+  public void addTrap(@Nonnull Trap trap) {
     traps.add(trap);
   }
 
-  public void setTraps(@Nonnull List<JTrap> traps) {
+  public void setTraps(@Nonnull List<Trap> traps) {
     this.traps = traps;
   }
 
@@ -152,7 +151,7 @@ class MutableBasicBlock implements BasicBlock {
 
   @Nonnull
   @Override
-  public List<JTrap> getTraps() {
+  public List<Trap> getTraps() {
     return traps;
   }
 
@@ -221,10 +220,10 @@ class ImmmutableBasicBlock implements BasicBlock{
     @Nonnull private final List<BasicBlock> predecessorBlocks;
     @Nonnull private final List<BasicBlock> successorBlocks;
     @Nonnull private final List<Stmt> stmts;
-    @Nonnull private final List<JTrap> traps;
+    @Nonnull private final List<Trap> traps;
 
 
-    public ImmmutableBasicBlock(@Nonnull List<BasicBlock> predecessorBlocks, @Nonnull List<BasicBlock> successorBlocks, @Nonnull List<Stmt> stmts, @Nonnull List<JTrap> traps) {
+    public ImmmutableBasicBlock(@Nonnull List<BasicBlock> predecessorBlocks, @Nonnull List<BasicBlock> successorBlocks, @Nonnull List<Stmt> stmts, @Nonnull List<Trap> traps) {
         this.predecessorBlocks = predecessorBlocks;
         this.successorBlocks = successorBlocks;
         this.stmts = stmts;
@@ -263,7 +262,7 @@ class ImmmutableBasicBlock implements BasicBlock{
 
     @Nonnull
     @Override
-    public List<JTrap> getTraps() {
+    public List<Trap> getTraps() {
         return traps;
     }
 }

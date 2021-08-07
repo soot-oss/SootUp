@@ -24,13 +24,12 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
-import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
+import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import java.io.*;
 import java.nio.file.*;
@@ -51,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author Manuel Benz created on 22.05.18
  * @author Kaustubh Kelkar updated on 20.07.2020
  */
-public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInputLocation {
+public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation<JavaSootClass> {
   private static final @Nonnull Logger logger =
       LoggerFactory.getLogger(JavaClassPathAnalysisInputLocation.class);
   private static final @Nonnull String WILDCARD_CHAR = "*";
@@ -80,15 +79,51 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
    * Explode the class or modulepath entries, separated by {@link File#pathSeparator}.
    *
    * @param paths entries as one string
+   * @param fileSystem filesystem in which the paths are resolved
    * @return path entries
    */
-  static @Nonnull Stream<Path> explode(@Nonnull String paths) {
+  static @Nonnull Stream<Path> explode(@Nonnull String paths, FileSystem fileSystem) {
     // the classpath is split at every path separator which is not escaped
     String regex = "(?<!\\\\)" + Pattern.quote(File.pathSeparator);
     final Stream<Path> exploded =
-        Stream.of(paths.split(regex)).flatMap(JavaClassPathAnalysisInputLocation::handleWildCards);
+        Stream.of(paths.split(regex)).flatMap(e -> handleWildCards(e, fileSystem));
     // we need to filter out duplicates of the same files to not generate duplicate input locations
     return exploded.map(Path::normalize).distinct();
+  }
+
+  /**
+   * Explode the class or modulepath entries, separated by {@link File#pathSeparator}.
+   *
+   * @param paths entries as one string
+   * @return path entries
+   */
+  static @Nonnull Stream<Path> explode(@Nonnull String paths) {
+    return explode(paths, FileSystems.getDefault());
+  }
+
+  /**
+   * The class path can have directories with wildcards as entries. All jar/JAR files inside those
+   * directories have to be added to the class path.
+   *
+   * @param entry A class path entry
+   * @param fileSystem The filesystem the paths should be resolved for
+   * @return A stream of class path entries with wildcards exploded
+   */
+  private static @Nonnull Stream<Path> handleWildCards(
+      @Nonnull String entry, FileSystem fileSystem) {
+    if (entry.endsWith(WILDCARD_CHAR)) {
+      Path baseDir = fileSystem.getPath(entry.substring(0, entry.indexOf(WILDCARD_CHAR)));
+      try {
+        return StreamUtils.iteratorToStream(
+            Files.newDirectoryStream(baseDir, "*.{jar,JAR}").iterator());
+      } catch (PatternSyntaxException | NotDirectoryException e) {
+        throw new IllegalStateException("Malformed wildcard entry", e);
+      } catch (IOException e) {
+        throw new IllegalStateException("Couldn't access entries denoted by wildcard", e);
+      }
+    } else {
+      return Stream.of(fileSystem.getPath(entry));
+    }
   }
 
   /**
@@ -99,40 +134,29 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
    * @return A stream of class path entries with wildcards exploded
    */
   private static @Nonnull Stream<Path> handleWildCards(@Nonnull String entry) {
-    if (entry.endsWith(WILDCARD_CHAR)) {
-      Path baseDir = Paths.get(entry.substring(0, entry.indexOf(WILDCARD_CHAR)));
-      try {
-        return StreamUtils.iteratorToStream(
-            Files.newDirectoryStream(baseDir, "*.{jar,JAR}").iterator());
-      } catch (PatternSyntaxException | NotDirectoryException e) {
-        throw new IllegalStateException("Malformed wildcard entry", e);
-      } catch (IOException e) {
-        throw new IllegalStateException("Couldn't access entries denoted by wildcard", e);
-      }
-    } else {
-      return Stream.of(Paths.get(entry));
-    }
+    return handleWildCards(entry, FileSystems.getDefault());
   }
 
   @Override
-  public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull ClassLoadingOptions classLoadingOptions) {
+  @Nonnull
+  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+      @Nonnull View<?> view) {
     // By using a set here, already added classes won't be overwritten and the class which is found
     // first will be kept
     Set<AbstractClassSource<JavaSootClass>> found = new HashSet<>();
     for (AnalysisInputLocation<JavaSootClass> inputLocation : cpEntries) {
-      found.addAll(inputLocation.getClassSources(identifierFactory, classLoadingOptions));
+      found.addAll(inputLocation.getClassSources(view));
     }
     return found;
   }
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
+  @Nonnull
+  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+      @Nonnull ClassType type, @Nonnull View<?> view) {
     for (AnalysisInputLocation<JavaSootClass> inputLocation : cpEntries) {
       final Optional<? extends AbstractClassSource<JavaSootClass>> classSource =
-          inputLocation.getClassSource(type, classLoadingOptions);
+          inputLocation.getClassSource(type, view);
       if (classSource.isPresent()) {
         return classSource;
       }
@@ -140,8 +164,8 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
     return Optional.empty();
   }
 
-  private @Nonnull Optional<AnalysisInputLocation<JavaSootClass>> inputLocationForPath(
-      @Nonnull Path path) {
+  @Nonnull
+  private Optional<AnalysisInputLocation<JavaSootClass>> inputLocationForPath(@Nonnull Path path) {
     if (Files.exists(path) && (Files.isDirectory(path) || PathUtils.isArchive(path))) {
       return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path));
     } else {
@@ -157,13 +181,38 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
    * @return list of classpath entries
    */
   private List<AnalysisInputLocation<JavaSootClass>> explodeClassPath(@Nonnull String jarPath) {
+    return explodeClassPath(jarPath, FileSystems.getDefault());
+  }
+
+  /**
+   * extract the classes from the classpath
+   *
+   * @param jarPath The jar path for which the classes need to be listed
+   * @param fileSystem the filesystem the path should be resolved for
+   * @return list of classpath entries
+   */
+  private List<AnalysisInputLocation<JavaSootClass>> explodeClassPath(
+      @Nonnull String jarPath, @Nonnull FileSystem fileSystem) {
     try {
-      return explode(jarPath)
+      return explode(jarPath, fileSystem)
           .flatMap(cp -> StreamUtils.optionalToStream(inputLocationForPath(cp)))
           .collect(Collectors.toList());
 
     } catch (IllegalArgumentException e) {
       throw new IllegalStateException("Malformed class path given: " + jarPath, e);
     }
+  }
+
+  @Override
+  public int hashCode() {
+    return cpEntries.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof JavaClassPathAnalysisInputLocation)) {
+      return false;
+    }
+    return cpEntries.equals(((JavaClassPathAnalysisInputLocation) o).cpEntries);
   }
 }

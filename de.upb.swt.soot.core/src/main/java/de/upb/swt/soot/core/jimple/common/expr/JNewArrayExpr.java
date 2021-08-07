@@ -24,11 +24,10 @@ package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
@@ -40,18 +39,17 @@ import javax.annotation.Nonnull;
 /** An expression that creates a new array of a certain type and a certain size. */
 public final class JNewArrayExpr implements Expr, Copyable {
 
-  private final Type baseType;
-  private final ValueBox sizeBox;
-  private final IdentifierFactory identifierFactory;
-  // new attribute: later if ValueBox is deleted, then add "final" to it.
-  private Value size;
+  @Nonnull private final Type baseType;
+  @Nonnull private final Immediate size;
+  @Nonnull private final IdentifierFactory identifierFactory;
 
-  public JNewArrayExpr(Type baseType, Value size, IdentifierFactory identifierFactory) {
+  public JNewArrayExpr(
+      @Nonnull Type baseType,
+      @Nonnull Immediate size,
+      @Nonnull IdentifierFactory identifierFactory) {
     this.baseType = baseType;
-    this.sizeBox = Jimple.newImmediateBox(size);
-    this.identifierFactory = identifierFactory;
-    // new attribute: later if ValueBox is deleted, then fit the constructor.
     this.size = size;
+    this.identifierFactory = identifierFactory;
   }
 
   // TODO: [ms] wrong layer of responsibility; maybe move that in an own transformer
@@ -72,17 +70,12 @@ public final class JNewArrayExpr implements Expr, Copyable {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return sizeBox.getValue().equivHashCode() * 101 + baseType.hashCode() * 17;
+    return size.equivHashCode() * 101 + baseType.hashCode() * 17;
   }
 
   @Override
   public String toString() {
-    return (Jimple.NEWARRAY + " (")
-        + getBaseTypeString()
-        + ")"
-        + "["
-        + sizeBox.getValue().toString()
-        + "]";
+    return (Jimple.NEWARRAY + " (") + baseType.toString() + ")" + "[" + size.toString() + "]";
   }
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
@@ -94,28 +87,27 @@ public final class JNewArrayExpr implements Expr, Copyable {
     up.typeSignature(baseType);
     up.literal(")");
     up.literal("[");
-    sizeBox.toString(up);
+    size.toString(up);
     up.literal("]");
   }
 
-  private String getBaseTypeString() {
-    return baseType.toString();
-  }
-
+  @Nonnull
   public Type getBaseType() {
     return baseType;
   }
 
-  public ValueBox getSizeBox() {
-    return sizeBox;
+  @Nonnull
+  public Immediate getSize() {
+    return size;
   }
 
-  public Value getSize() {
-    return sizeBox.getValue();
-  }
-
-  /** Returns a list of type Value, contains a list of values with size */
+  /**
+   * Returns a list of type Value, contains a list of values with size
+   *
+   * @return
+   */
   @Override
+  @Nonnull
   public final List<Value> getUses() {
     List<Value> uses = new ArrayList<>(size.getUses());
     uses.add(size);
@@ -123,23 +115,24 @@ public final class JNewArrayExpr implements Expr, Copyable {
   }
 
   /** Returns an instance of ArrayType(). */
+  @Nonnull
   @Override
   public Type getType() {
     return simplify(baseType, identifierFactory);
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseNewArrayExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseNewArrayExpr(this);
   }
 
   @Nonnull
-  public JNewArrayExpr withBaseType(Type baseType) {
+  public JNewArrayExpr withBaseType(@Nonnull Type baseType) {
     return new JNewArrayExpr(baseType, getSize(), identifierFactory);
   }
 
   @Nonnull
-  public JNewArrayExpr withSize(Value size) {
+  public JNewArrayExpr withSize(@Nonnull Immediate size) {
     return new JNewArrayExpr(baseType, size, identifierFactory);
   }
 }

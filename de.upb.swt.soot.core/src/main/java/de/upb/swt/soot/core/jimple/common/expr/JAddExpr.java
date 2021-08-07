@@ -22,36 +22,36 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
 /** An expression that adds two numbers. */
 public final class JAddExpr extends AbstractFloatBinopExpr implements Copyable {
 
-  public JAddExpr(Value op1, Value op2) {
+  public JAddExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);
   }
 
+  @Nonnull
   @Override
   public final String getSymbol() {
     return " + ";
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((ExprVisitor) sw).caseAddExpr(this);
+  public void accept(@Nonnull ExprVisitor v) {
+    v.caseAddExpr(this);
   }
 
   @Nonnull
-  public JAddExpr withOp1(Value op1) {
+  public JAddExpr withOp1(@Nonnull Immediate op1) {
     return new JAddExpr(op1, getOp2());
   }
 
   @Nonnull
-  public JAddExpr withOp2(Value op2) {
+  public JAddExpr withOp2(@Nonnull Immediate op2) {
     return new JAddExpr(getOp1(), op2);
   }
 }

@@ -20,28 +20,25 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.util.PathUtils;
-import de.upb.swt.soot.java.bytecode.frontend.modules.AsmModuleSource;
+import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.bytecode.frontend.AsmModuleSource;
+import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
+import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.JavaSootClass;
-import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -58,36 +55,65 @@ import javax.annotation.Nullable;
  * @author Andreas Dann on 28.06.18
  */
 public class ModuleFinder {
-  private @Nonnull ClassProvider<JavaSootClass> classProvider;
+
   // associate a module name with the input location, that represents the module
-  private @Nonnull Map<String, AnalysisInputLocation<JavaSootClass>> moduleInputLocation =
+  @Nonnull
+  private final Map<ModuleSignature, AnalysisInputLocation<JavaSootClass>> moduleInputLocation =
       new HashMap<>();
+
+  @Nonnull private final Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
+
   private int next = 0;
 
-  private @Nonnull List<Path> modulePathEntries;
+  @Nonnull private final List<Path> modulePathEntries;
 
-  private @Nonnull JrtFileSystemAnalysisInputLocation jrtFileSystemNamespace;
+  @Nonnull
+  private final AsmJavaClassProvider classProvider =
+      new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors());
+
+  public boolean hasMoreToResolve() {
+    return next < modulePathEntries.size();
+  }
 
   /**
    * Helper Class to discover modules in a given module path.
    *
-   * @param classProvider the class provider for resolving found classes
    * @param modulePath the module path
    */
-  public ModuleFinder(
-      @Nonnull ClassProvider<JavaSootClass> classProvider, @Nonnull String modulePath) {
-    this.classProvider = classProvider;
+  public ModuleFinder(@Nonnull String modulePath, @Nonnull FileSystem fileSystem) {
     this.modulePathEntries =
-        JavaClassPathAnalysisInputLocation.explode(modulePath).collect(Collectors.toList());
-    // add the input location for the jrt virtual file system
-    // FIXME: Set Jrt File input location by default?
-    jrtFileSystemNamespace = new JrtFileSystemAnalysisInputLocation();
+        JavaClassPathAnalysisInputLocation.explode(modulePath, fileSystem)
+            .collect(Collectors.toList());
+    for (Path modulePathEntry : modulePathEntries) {
+      if (!Files.exists(modulePathEntry)) {
+        throw new IllegalArgumentException(
+            "'"
+                + modulePathEntry
+                + "' from modulePath '"
+                + modulePath
+                + "' does not exist in the filesystem.");
+      }
+    }
+  }
 
-    // discover all system's modules
-    Collection<String> modules = jrtFileSystemNamespace.discoverModules();
-    modules.forEach(m -> moduleInputLocation.put(m, jrtFileSystemNamespace));
+  public ModuleFinder(@Nonnull String modulePath) {
+    this(modulePath, FileSystems.getDefault());
+  }
 
-    // the rest of the modules are discovered on demand...
+  @Nonnull
+  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
+    if (hasMoreToResolve()) {
+      getAllModules();
+    }
+    return Optional.ofNullable(moduleInfoMap.get(sig));
+  }
+
+  @Nonnull
+  public Set<ModuleSignature> getModules() {
+    if (hasMoreToResolve()) {
+      getAllModules();
+    }
+    return Collections.unmodifiableSet(moduleInfoMap.keySet());
   }
 
   /**
@@ -96,16 +122,19 @@ public class ModuleFinder {
    * @param moduleName the module name
    * @return the input location that resolves classes contained in the module
    */
-  public @Nullable AnalysisInputLocation<JavaSootClass> discoverModule(@Nonnull String moduleName) {
+  @Nullable
+  public AnalysisInputLocation<JavaSootClass> getModule(@Nonnull ModuleSignature moduleName) {
+
+    // check if module is cached
     AnalysisInputLocation<JavaSootClass> inputLocationForModule =
         moduleInputLocation.get(moduleName);
     if (inputLocationForModule != null) {
       return inputLocationForModule;
     }
-    while (modulePathHasNextEntry()) {
-      Path path = modulePathEntries.get(next);
-      discoverModulesIn(path);
-      next++;
+
+    // search iterative on the remaining entries of the modulePath for the module
+    while (hasMoreToResolve()) {
+      discoverModulesIn(modulePathEntries.get(next++));
       inputLocationForModule = moduleInputLocation.get(moduleName);
       if (inputLocationForModule != null) {
         return inputLocationForModule;
@@ -114,21 +143,16 @@ public class ModuleFinder {
     return null;
   }
 
-  private boolean modulePathHasNextEntry() {
-    return this.next < this.modulePathEntries.size();
-  }
-
   /**
    * Discover all modules in the module path.
    *
    * @return the names of all modules found
    */
-  public @Nonnull Collection<String> discoverAllModules() {
+  @Nonnull
+  public Collection<ModuleSignature> getAllModules() {
 
-    while (modulePathHasNextEntry()) {
-      Path path = modulePathEntries.get(next);
-      discoverModulesIn(path);
-      next++;
+    while (hasMoreToResolve()) {
+      discoverModulesIn(modulePathEntries.get(next++));
     }
     return Collections.unmodifiableCollection(moduleInputLocation.keySet());
   }
@@ -143,17 +167,20 @@ public class ModuleFinder {
    * @param path the directory
    */
   private void discoverModulesIn(@Nonnull Path path) {
-    BasicFileAttributes attrs = null;
+    BasicFileAttributes attrs;
     try {
       attrs = Files.readAttributes(path, BasicFileAttributes.class);
     } catch (IOException e) {
-      e.printStackTrace();
-      // TODO: Exception handling.
+      throw new ResolveException("Error while discovering modules", path, e);
     }
 
     if (PathUtils.isArchive(path)) {
       buildModuleForJar(path);
-    } else if (attrs.isDirectory()) { // FIXME: [JMP] `attrs` may be `null`
+    } else if (attrs.isDirectory()) {
+      Path mi = path.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
+      if (Files.exists(mi)) {
+        buildModuleForExplodedModule(path);
+      }
 
       try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
         for (Path entry : stream) {
@@ -164,10 +191,7 @@ public class ModuleFinder {
           }
 
           if (attrs.isDirectory()) {
-            Path moduleInfoFile =
-                ModuleIdentifierFactory.MODULE_INFO_CLASS.toPath(
-                    classProvider.getHandledFileType());
-            Path mi = entry.resolve(moduleInfoFile);
+            mi = entry.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
             if (Files.exists(mi)) {
               buildModuleForExplodedModule(entry);
             }
@@ -175,8 +199,8 @@ public class ModuleFinder {
             buildModuleForJar(entry);
           }
         }
-      } catch (IOException | ResolveException e) {
-        e.printStackTrace();
+      } catch (Exception e) {
+        throw new ResolveException("Error while discovering modules", path, e);
       }
     }
   }
@@ -186,105 +210,80 @@ public class ModuleFinder {
     PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.createForClassContainer(dir);
 
-    Path moduleInfoFile =
-        dir.resolve(
-            ModuleIdentifierFactory.MODULE_INFO_CLASS.toPath(classProvider.getHandledFileType()));
+    Path moduleInfoFile = dir.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
     if (!Files.exists(moduleInfoFile) && !Files.isRegularFile(moduleInfoFile)) {
       return;
     }
 
-    // TODO: [ms] reify module class in a different way
-    /*
-    // get the module's name out of this module-info file
-    Optional<? extends AbstractClassSource> moduleInfoClassSource =
-        inputLocation.getClassSource(ModuleIdentifierFactory.MODULE_INFO_CLASS);
-    if (moduleInfoClassSource.isPresent()) {
-      AsmModuleClassSource moduleInfoSource = moduleInfoClassSource.get();
-      // get the module name
-      String moduleName = this.getModuleName(moduleInfoSource);
-      this.moduleInputLocation.put(moduleName, inputLocation);
+    JavaModuleInfo moduleInfo = new AsmModuleSource(moduleInfoFile);
+    JavaModuleInfo oldValue = moduleInfoMap.put(moduleInfo.getModuleSignature(), moduleInfo);
+    moduleInputLocation.put(moduleInfo.getModuleSignature(), inputLocation);
+    if (oldValue != null) {
+      throw new IllegalStateException(
+          moduleInfo.getModuleSignature().toString() + " has multiple occurences.");
     }
-    */
   }
 
   /**
-   * Creates a module definition and the namesapce for either a modular jar or an automatic module.
+   * Creates a module definition and the namespace for either a modular jar or an automatic module.
    *
    * @param jar the jar file
    */
   private void buildModuleForJar(@Nonnull Path jar) {
     PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
-    Optional<AsmModuleSource> moduleInfoFile = Optional.empty();
-    try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
+    Path mi;
+    try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, (ClassLoader) null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");
-      Path mi =
-          archiveRoot.resolve(
-              ModuleIdentifierFactory.MODULE_INFO_CLASS.toPath(
-                  classProvider.getHandledFileType(), zipFileSystem));
+      mi = archiveRoot.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
+
       if (Files.exists(mi)) {
-
-        // we have a modular jar
-        // get the module name
-        // create proper moduleInfoSignature
-        // FIXME: [ms] get module file  moduleInfoFile =
-        // inputLocation.getClassSource(ModuleIdentifierFactory.MODULE_INFO_CLASS);
+        JavaModuleInfo moduleInfo = new AsmModuleSource(mi);
+        moduleInfoMap.put(moduleInfo.getModuleSignature(), moduleInfo);
+        moduleInputLocation.put(moduleInfo.getModuleSignature(), inputLocation);
+      } else {
+        // no module-info: its an automatic module i.e. create module name from the jar file
+        ModuleSignature moduleSignature =
+            JavaModuleIdentifierFactory.getModuleSignature(createModuleNameForAutomaticModule(jar));
+        moduleInputLocation.put(moduleSignature, inputLocation);
+        moduleInfoMap.put(
+            moduleSignature, JavaModuleInfo.createAutomaticModuleInfo(moduleSignature));
       }
+
     } catch (IOException e) {
-      e.printStackTrace();
+      throw new ResolveException("Error resolving module descriptor in a Jar", jar, e);
     }
-    if (moduleInfoFile.isPresent()) {
-      AsmModuleSource moduleInfoSource = moduleInfoFile.get();
-      // get the module name
-      String moduleName = null;
-      try {
-        moduleName = getModuleName(moduleInfoSource);
-      } catch (ResolveException ResolveException) {
-        ResolveException.printStackTrace();
-      }
-
-      this.moduleInputLocation.put(moduleName, inputLocation);
-    } else {
-      // no module-info treat as automatic module
-      // create module name from the jar file
-      String filename = jar.getFileName().toString();
-
-      // make module base on the filename of the jar
-      String moduleName = createModuleNameForAutomaticModule(filename);
-      this.moduleInputLocation.put(moduleName, inputLocation);
-    }
-  }
-
-  // FIXME: quickly parse the module name
-  private @Nonnull String parseModuleInfoClassFile(@Nonnull AsmModuleSource moduleInfo) {
-    if (moduleInfo instanceof AsmModuleSource) {
-      return ((AsmModuleSource) moduleInfo).getModuleName();
-    }
-    return "";
-  }
-
-  private @Nonnull String getModuleName(@Nonnull AsmModuleSource moduleInfoSource)
-      throws ResolveException {
-    // FIXME: somehow in need the module name from the source code ...
-    // AbstractClass moduleInfoClass = this.classProvider.reify(moduleInfoSource);
-    AsmModuleSource moduleInfoClass = moduleInfoSource;
-    if (!(moduleInfoClass instanceof AsmModuleSource)) {
-      throw new ResolveException("Class is named module-info but does not reify to SootModuleInfo");
-    }
-    // FIXME: here is no view or anything to resolve the content...??? Why do I need a view anyway?
-    String moduleName = parseModuleInfoClassFile(moduleInfoClass);
-
-    return moduleName;
   }
 
   /**
    * Creates a name for an automatic module based on the name of a jar file. The implementation is
    * consistent with parsing module names in the JDK 9.
    *
-   * @param filename the name of the jar file
+   * @param path to the jar file
    * @return the name of the automatic module
    */
-  private @Nonnull String createModuleNameForAutomaticModule(@Nonnull String filename) {
+  @Nonnull
+  public static String createModuleNameForAutomaticModule(@Nonnull Path path) {
+    // check if Automatic-Module-Name header exists in manifest file and use it if exists
+    try {
+      JarFile jar = new JarFile(path.toFile());
+
+      final String file = "META-INF/MANIFEST.MF";
+      JarEntry entry = (JarEntry) jar.getEntry(file);
+      if (entry != null) {
+        Manifest manifest = new Manifest(jar.getInputStream(entry));
+        Attributes attr = manifest.getMainAttributes();
+
+        String automaticModuleName = attr.getValue("Automatic-Module-Name");
+        if (automaticModuleName != null) {
+          return automaticModuleName;
+        }
+      }
+    } catch (IOException ignored) {
+    }
+
+    String filename = path.getFileName().toString();
+
     int i = filename.lastIndexOf(File.separator);
     if (i != -1) {
       filename = filename.substring(i + 1);
@@ -296,28 +295,50 @@ public class ModuleFinder {
     // find first occurrence of -${NUMBER}. or -${NUMBER}$
     // according to the java 9 spec and current implementation, version numbers are ignored when
     // naming automatic modules
-    Matcher matcher = Pattern.compile("-(\\d+(\\.|$))").matcher(moduleName);
+    Matcher matcher = Patterns.VERSION.matcher(moduleName);
     if (matcher.find()) {
       int start = matcher.start();
       moduleName = moduleName.substring(0, start);
     }
-    moduleName = Pattern.compile("[^A-Za-z0-9]").matcher(moduleName).replaceAll(".");
+    moduleName = Patterns.ALPHA_NUM.matcher(moduleName).replaceAll(".");
 
     // remove all repeating dots
-    moduleName = Pattern.compile("(\\.)(\\1)+").matcher(moduleName).replaceAll(".");
+    moduleName = Patterns.REPEATING_DOTS.matcher(moduleName).replaceAll(".");
 
     // remove leading dots
     int len = moduleName.length();
     if (len > 0 && moduleName.charAt(0) == '.') {
-      moduleName = Pattern.compile("^\\.").matcher(moduleName).replaceAll("");
+      moduleName = Patterns.LEADING_DOTS.matcher(moduleName).replaceAll("");
     }
 
     // remove trailing dots
     len = moduleName.length();
     if (len > 0 && moduleName.charAt(len - 1) == '.') {
-      moduleName = Pattern.compile("\\.$").matcher(moduleName).replaceAll("");
+      moduleName = Patterns.TRAILING_DOTS.matcher(moduleName).replaceAll("");
     }
 
     return moduleName;
+  }
+
+  @Override
+  public int hashCode() {
+    return modulePathEntries.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof ModuleFinder)) {
+      return false;
+    }
+    return modulePathEntries.equals(((ModuleFinder) o).modulePathEntries);
+  }
+
+  /** Lazy-initialized cache of compiled patterns. */
+  private static class Patterns {
+    static final Pattern VERSION = Pattern.compile("-(\\d+(\\.|$))");
+    static final Pattern ALPHA_NUM = Pattern.compile("[^A-Za-z0-9]");
+    static final Pattern REPEATING_DOTS = Pattern.compile("(\\.)(\\1)+");
+    static final Pattern LEADING_DOTS = Pattern.compile("^\\.");
+    static final Pattern TRAILING_DOTS = Pattern.compile("\\.$");
   }
 }

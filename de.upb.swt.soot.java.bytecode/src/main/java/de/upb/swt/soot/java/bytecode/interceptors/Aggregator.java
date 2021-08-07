@@ -21,6 +21,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #L%
  */
 import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractBinopExpr;
@@ -54,7 +55,7 @@ public class Aggregator implements BodyInterceptor {
     builder.enableDeferredStmtGraphChanges();
     for (Stmt stmt : stmts) {
       if (stmt instanceof JAssignStmt) {
-        JAssignStmt assignStmt = (JAssignStmt) stmt;
+        final JAssignStmt<?, ?> assignStmt = (JAssignStmt<?, ?>) stmt;
         Value lhs = assignStmt.getLeftOp();
         if (lhs instanceof Local) {
           Local lhsLocal = (Local) lhs;
@@ -142,23 +143,23 @@ public class Aggregator implements BodyInterceptor {
                     continue;
                   }
 
-                  Value aggregatee = ((JAssignStmt) relevantDef).getRightOp();
-                  Stmt newStmt = null;
+                  Value aggregatee = ((JAssignStmt<?, ?>) relevantDef).getRightOp();
+                  JAssignStmt<?, ?> newStmt = null;
                   if (assignStmt.getRightOp() instanceof AbstractBinopExpr) {
                     AbstractBinopExpr rightOp = (AbstractBinopExpr) assignStmt.getRightOp();
                     if (rightOp.getOp1() == val) {
-                      AbstractBinopExpr newBinopExpr = rightOp.withOp1(aggregatee);
+                      AbstractBinopExpr newBinopExpr = rightOp.withOp1((Immediate) aggregatee);
                       newStmt =
-                          new JAssignStmt(
+                          new JAssignStmt<>(
                               assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());
                     } else if (rightOp.getOp2() == val) {
-                      AbstractBinopExpr newBinopExpr = rightOp.withOp2(aggregatee);
+                      AbstractBinopExpr newBinopExpr = rightOp.withOp2((Immediate) aggregatee);
                       newStmt =
-                          new JAssignStmt(
+                          new JAssignStmt<>(
                               assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());
                     }
                   } else {
-                    newStmt = ((JAssignStmt) stmt).withRValue(aggregatee);
+                    newStmt = assignStmt.withRValue(aggregatee);
                   }
                   if (newStmt != null) {
                     builder.replaceStmt(stmt, newStmt);

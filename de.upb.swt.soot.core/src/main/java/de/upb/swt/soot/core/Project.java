@@ -40,12 +40,11 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public abstract class Project<V extends View<? extends SootClass>, S extends SootClass> {
+public abstract class Project<S extends SootClass<?>, V extends View<? extends SootClass<?>>> {
 
-  @Nonnull
-  private final IdentifierFactory identifierFactory; // THINK:[ms] is this really necessary?
+  @Nonnull private final IdentifierFactory identifierFactory;
 
-  @Nonnull private final List<AnalysisInputLocation<S>> inputLocations;
+  @Nonnull private final List<AnalysisInputLocation<? extends S>> inputLocations;
   @Nonnull private final SourceTypeSpecifier sourceTypeSpecifier;
   @Nonnull private final Language language;
   /**
@@ -57,7 +56,7 @@ public abstract class Project<V extends View<? extends SootClass>, S extends Soo
    */
   public Project(
       @Nonnull Language language,
-      @Nonnull AnalysisInputLocation<S> inputLocation,
+      @Nonnull AnalysisInputLocation<? extends S> inputLocation,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     this(
         language,
@@ -76,25 +75,31 @@ public abstract class Project<V extends View<? extends SootClass>, S extends Soo
    */
   public Project(
       @Nonnull Language language,
-      @Nonnull List<AnalysisInputLocation<S>> inputLocations,
+      @Nonnull List<AnalysisInputLocation<? extends S>> inputLocations,
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     this.language = language;
-    List<AnalysisInputLocation<S>> unmodifiableInputLocations =
+    List<AnalysisInputLocation<? extends S>> unmodifiableInputLocations =
         Collections.unmodifiableList(new ArrayList<>(inputLocations));
-
-    if (unmodifiableInputLocations.isEmpty()) {
-      throw new IllegalArgumentException("The inputLocations collection must not be empty.");
-    }
 
     this.sourceTypeSpecifier = sourceTypeSpecifier;
     this.inputLocations = unmodifiableInputLocations;
     this.identifierFactory = identifierFactory;
   }
 
-  /** Gets the inputLocations. */
+  public void validate() {
+    if (inputLocations.isEmpty()) {
+      throw new IllegalArgumentException("The inputLocations collection must not be empty.");
+    }
+  }
+
+  /**
+   * Gets the inputLocations.
+   *
+   * @return
+   */
   @Nonnull
-  public List<AnalysisInputLocation<S>> getInputLocations() {
+  public List<AnalysisInputLocation<? extends S>> getInputLocations() {
     return inputLocations;
   }
 
@@ -114,8 +119,7 @@ public abstract class Project<V extends View<? extends SootClass>, S extends Soo
   }
 
   /**
-   * Create a complete view from everything in all provided input locations. This methodRef starts
-   * the reification process.
+   * Create a complete view from everything in all provided input locations.
    *
    * @return A complete view on the provided code
    */
@@ -133,11 +137,12 @@ public abstract class Project<V extends View<? extends SootClass>, S extends Soo
   @Nonnull
   public abstract V createOnDemandView(
       @Nonnull
-          Function<AnalysisInputLocation<S>, ClassLoadingOptions> classLoadingOptionsSpecifier);
+          Function<AnalysisInputLocation<? extends S>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier);
 
   /**
    * Returns a partial view on the code based on the provided scope and all input locations in the
-   * project. This methodRef starts the reification process.
+   * project and scope.
    *
    * @param s A scope of interest for the view
    * @return A scoped view of the provided code

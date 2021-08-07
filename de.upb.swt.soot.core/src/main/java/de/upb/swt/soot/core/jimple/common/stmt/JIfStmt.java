@@ -26,10 +26,8 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -44,15 +42,11 @@ import javax.annotation.Nonnull;
  */
 public final class JIfStmt extends BranchingStmt implements Copyable {
 
-  private final ValueBox conditionBox;
+  @Nonnull private final AbstractConditionExpr condition;
 
-  public JIfStmt(Value condition, StmtPositionInfo positionInfo) {
-    this(Jimple.newConditionExprBox(condition), positionInfo);
-  }
-
-  private JIfStmt(ValueBox conditionBox, StmtPositionInfo positionInfo) {
+  public JIfStmt(@Nonnull AbstractConditionExpr condition, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
-    this.conditionBox = conditionBox;
+    this.condition = condition;
   }
 
   @Override
@@ -72,7 +66,7 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
   public void toString(@Nonnull StmtPrinter stmtPrinter) {
     stmtPrinter.literal(Jimple.IF);
     stmtPrinter.literal(" ");
-    conditionBox.toString(stmtPrinter);
+    condition.toString(stmtPrinter);
 
     stmtPrinter.literal(" ");
     stmtPrinter.literal(Jimple.GOTO);
@@ -80,12 +74,8 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
     stmtPrinter.stmtRef(getTarget(stmtPrinter.getBody()), true);
   }
 
-  public Value getCondition() {
-    return conditionBox.getValue();
-  }
-
-  public ValueBox getConditionBox() {
-    return conditionBox;
+  public AbstractConditionExpr getCondition() {
+    return condition;
   }
 
   public Stmt getTarget(Body body) {
@@ -113,8 +103,8 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
   }
 
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((StmtVisitor) sw).caseIfStmt(this);
+  public void accept(@Nonnull StmtVisitor sw) {
+    sw.caseIfStmt(this);
   }
 
   @Override
@@ -129,7 +119,7 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
 
   @Override
   public int equivHashCode() {
-    return conditionBox.getValue().equivHashCode();
+    return getCondition().equivHashCode();
   }
 
   @Nonnull
@@ -139,6 +129,6 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
 
   @Nonnull
   public JIfStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JIfStmt((AbstractConditionExpr) getCondition(), positionInfo);
+    return new JIfStmt(getCondition(), positionInfo);
   }
 }

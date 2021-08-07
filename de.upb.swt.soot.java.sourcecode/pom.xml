@@ -13,8 +13,50 @@
 	</parent>
 
 	<properties>
-		<wala.version>1.5.4</wala.version>
+		<wala.version>1.5.7</wala.version>
 	</properties>
+
+	<!-- import managed dependencies from wala to ensure java8 compliant class files -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.ibm.wala</groupId>
+				<artifactId>com.ibm.wala.util</artifactId>
+				<version>${wala.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.ibm.wala</groupId>
+				<artifactId>com.ibm.wala.cast.java</artifactId>
+				<version>${wala.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.ibm.wala</groupId>
+				<artifactId>com.ibm.wala.cast.java.ecj</artifactId>
+				<version>${wala.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.ibm.wala</groupId>
+				<artifactId>com.ibm.wala.shrike</artifactId>
+				<version>${wala.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.ibm.wala</groupId>
+				<artifactId>com.ibm.wala.dalvik</artifactId>
+				<version>${wala.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>

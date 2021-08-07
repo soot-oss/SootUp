@@ -25,7 +25,6 @@ package de.upb.swt.soot.core.jimple.common.ref;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.RefVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
@@ -35,22 +34,22 @@ import javax.annotation.Nonnull;
 
 /**
  * <code>ParameterRef</code> objects are used by <code>Body</code> objects to refer to the parameter
- * slots on methodRef entry. <br>
+ * slots on method entry. <br>
  *
- * <p>For instance, in an instance methodRef, the first statement will often be <code>
+ * <p>For instance, in a method, the first statement will often be <code>
  *  this := @parameter0; </code>
  */
 public final class JParameterRef implements IdentityRef, Copyable {
 
-  private final int num;
+  private final int index;
   private final Type paramType;
 
   /**
    * Constructs a ParameterRef object of the specified type, representing the specified parameter
    * number.
    */
-  public JParameterRef(Type paramType, int number) {
-    this.num = number;
+  public JParameterRef(@Nonnull Type paramType, @Nonnull int number) {
+    this.index = number;
     this.paramType = paramType;
   }
 
@@ -61,13 +60,13 @@ public final class JParameterRef implements IdentityRef, Copyable {
 
   @Override
   public int equivHashCode() {
-    return num * 101 + paramType.hashCode() * 17;
+    return index * 101 + paramType.hashCode() * 17;
   }
 
   /** Converts the given ParameterRef into a String i.e. <code>@parameter0: .int</code>. */
   @Override
   public String toString() {
-    return "@parameter" + num + ": " + paramType;
+    return "@parameter" + index + ": " + paramType;
   }
 
   @Override
@@ -75,39 +74,36 @@ public final class JParameterRef implements IdentityRef, Copyable {
     up.identityRef(this);
   }
 
-  /** Returns the index of this ParameterRef. */
+  /** Returns the num of this ParameterRef. */
   public int getIndex() {
-    return num;
+    return index;
   }
 
   @Override
+  @Nonnull
   public final List<Value> getUses() {
     return Collections.emptyList();
   }
 
   /** Returns the type of this ParameterRef. */
+  @Nonnull
   @Override
   public Type getType() {
     return paramType;
   }
 
-  /**
-   * Used with RefSwitch.
-   *
-   * @param sw
-   */
   @Override
-  public void accept(@Nonnull Visitor sw) {
-    ((RefVisitor) sw).caseParameterRef(this);
+  public void accept(@Nonnull RefVisitor v) {
+    v.caseParameterRef(this);
   }
 
   @Nonnull
-  public JParameterRef withParamType(Type paramType) {
-    return new JParameterRef(paramType, num);
+  public JParameterRef withParamType(@Nonnull Type paramType) {
+    return new JParameterRef(paramType, index);
   }
 
   @Nonnull
-  public JParameterRef withNumber(int number) {
+  public JParameterRef withNumber(@Nonnull int number) {
     return new JParameterRef(paramType, number);
   }
 }

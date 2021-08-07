@@ -4,7 +4,7 @@ package de.upb.swt.soot.core.jimple.basic;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2020 Raja Vallee-Rai, Linghui Luo, Markus Schmidt
+ * Copyright (C) 1999-2020 Patrick Lam, Linghui Luo, Christian Brüggemann and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,29 +22,112 @@ package de.upb.swt.soot.core.jimple.basic;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.util.Copyable;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
- * A trap is an exception catcher.
+ * Represents a try-catch construct.
  *
- * @author Linghui Luo
+ * <p>Prefer to use the factory methods in {@link Jimple}.
  */
-public interface Trap {
-  @Nonnull
-  List<Stmt> getStmts();
+public final class Trap implements Copyable {
+
+  /** The exception being caught. */
+  @Nonnull private final ClassType exception;
+
+  /** The first stmt being trapped. */
+  @Nonnull private final Stmt beginStmt;
+
+  /** The stmt just before the last stmt being trapped. */
+  @Nonnull private final Stmt endStmt;
+
+  /** The stmt to which execution flows after the caught exception is triggered. */
+  @Nonnull private final Stmt handlerStmt;
+
+  /** The list of stmts referred to in this Trap (begin, end and handler). */
+  @Nonnull private final List<Stmt> stmts;
+
+  /** Creates a Trap with the given exception, handler, begin and end stmts. */
+  public Trap(
+      @Nonnull ClassType exception,
+      @Nonnull Stmt beginStmt, // inclusive
+      @Nonnull Stmt endStmt, // exclusive!
+      @Nonnull Stmt handlerStmt) {
+
+    /* TODO: [ms] rethink the beginStmt->endStmt interval model as we dont have a linear
+    // representation anymore.
+    if (beginStmt == endStmt) {
+      throw new IllegalArgumentException("The covered Trap range is empty. Trap is of no use.");
+    }
+    */
+
+    this.exception = exception;
+    this.beginStmt = beginStmt;
+    this.endStmt = endStmt;
+    this.handlerStmt = handlerStmt;
+    this.stmts = Collections.unmodifiableList(Arrays.asList(beginStmt, endStmt, handlerStmt));
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder buf = new StringBuilder("Trap :");
+    buf.append("\nbegin  : ");
+    buf.append(getBeginStmt());
+    buf.append("\nend    : ");
+    buf.append(getEndStmt());
+    buf.append("\nhandler: ");
+    buf.append(getHandlerStmt());
+    return new String(buf);
+  }
 
   @Nonnull
-  ClassType getExceptionType();
+  public Trap withException(@Nonnull ClassType exception) {
+    return new Trap(exception, getBeginStmt(), getEndStmt(), getHandlerStmt());
+  }
 
   @Nonnull
-  Stmt getBeginStmt();
+  public Trap withBeginStmt(@Nonnull Stmt beginStmt) {
+    return new Trap(getExceptionType(), beginStmt, getEndStmt(), getHandlerStmt());
+  }
 
   @Nonnull
-  Stmt getEndStmt();
+  public Trap withHandlerStmt(@Nonnull Stmt handlerStmt) {
+    return new Trap(getExceptionType(), getBeginStmt(), getEndStmt(), handlerStmt);
+  }
 
   @Nonnull
-  Stmt getHandlerStmt();
+  public Trap withEndStmt(@Nonnull Stmt endStmt) {
+    return new Trap(getExceptionType(), getBeginStmt(), endStmt, getHandlerStmt());
+  }
+
+  @Nonnull
+  public Stmt getBeginStmt() {
+    return beginStmt;
+  }
+
+  @Nonnull
+  public Stmt getEndStmt() {
+    return endStmt;
+  }
+
+  @Nonnull
+  public Stmt getHandlerStmt() {
+    return handlerStmt;
+  }
+
+  @Nonnull
+  public List<Stmt> getStmts() {
+    return stmts;
+  }
+
+  @Nonnull
+  public ClassType getExceptionType() {
+    return exception;
+  }
 }
