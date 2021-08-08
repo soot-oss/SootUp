@@ -601,7 +601,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // value3, value2, value1 -> value1, value3, value2, value1
       Operand o2 = operandStack.popImmediate();
       Operand o3 =
-          operandStack.peek() == Operand.DWORD_DUMMY ? operandStack.pop() : operandStack.popImmediate();
+          operandStack.peek() == Operand.DWORD_DUMMY
+              ? operandStack.pop()
+              : operandStack.popImmediate();
       operandStack.push(dupd);
       operandStack.push(o3);
       operandStack.push(o2);
@@ -626,7 +628,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // (value2, value1)
       Operand o2 = operandStack.popImmediate();
       Operand o2h =
-          operandStack.peek() == Operand.DWORD_DUMMY ? operandStack.pop() : operandStack.popImmediate();
+          operandStack.peek() == Operand.DWORD_DUMMY
+              ? operandStack.pop()
+              : operandStack.popImmediate();
       operandStack.push(dupd2);
       operandStack.push(dupd);
       operandStack.push(o2h);
@@ -1704,7 +1708,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     do {
       BranchedInsnInfo edge = worklist.pollLast();
       AbstractInsnNode insn = edge.getInsn();
-      operandStack.setOperandStack(edge.getOperandStacks().get(edge.getOperandStacks().size() - 1));
+      operandStack.setOperandStack(
+          new ArrayList<>(edge.getOperandStacks().get(edge.getOperandStacks().size() - 1)));
       do {
         int type = insn.getType();
         if (type == FIELD_INSN) {
