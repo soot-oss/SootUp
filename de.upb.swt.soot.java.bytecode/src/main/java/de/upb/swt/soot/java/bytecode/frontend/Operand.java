@@ -132,7 +132,11 @@ final class Operand {
    * @return {@code true} if this operand is equal to another operand, {@code false} otherwise.
    */
   boolean equivTo(@Nonnull Operand other) {
-    return (this == other) || stackOrValue().equivTo(other.stackOrValue());
+    // care for DWORD comparison, as stackOrValue is null, which would result in a
+    // NullPointerException
+    return (this == other)
+        || ((this == DWORD_DUMMY) == (other == DWORD_DUMMY)
+            && stackOrValue().equivTo(other.stackOrValue()));
   }
 
   @Override
