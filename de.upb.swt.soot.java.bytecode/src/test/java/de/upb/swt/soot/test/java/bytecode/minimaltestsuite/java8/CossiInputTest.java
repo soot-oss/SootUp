@@ -5,6 +5,7 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.test.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
+import java.util.Collections;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -13,7 +14,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class CossiInputTest extends MinimalBytecodeTestSuiteBase {
 
-  // FIXME: [bh] results in a stack underrun in AsmMethodSource.convertMethodInsn
+  // FIXME: [bh] convert() in AsmMethodSource does not terminate
   // hint: only CossiInput$CossiInputBuilder.build(...) is broken
   @Test
   @Ignore("FIXME")
@@ -25,6 +26,7 @@ public class CossiInputTest extends MinimalBytecodeTestSuiteBase {
 
     SootClass<?> innerClazz =
         loadClass(JavaIdentifierFactory.getInstance().getClassType("CossiInput$CossiInputBuilder"));
-    innerClazz.getMethods().forEach(SootMethod::getBody);
+
+    innerClazz.getMethod("build", Collections.emptyList()).get().getBody();
   }
 }
