@@ -2034,7 +2034,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    */
   public Stream<Stmt> getStmtsThatUse(@Nonnull Expr expr) {
     Stream<Stmt> currentUses =
-        InsnToStmt.values().stream().filter(stmt -> stmt.getUses().contains(expr));
+        InsnToStmt.values().stream()
+            .flatMap(
+                stmt ->
+                    stmt instanceof StmtContainer
+                        ? ((StmtContainer) stmt).getStmts().stream()
+                        : Stream.of(stmt))
+            .filter(stmt -> stmt.getUses().contains(expr));
 
     Stream<Stmt> oldMappedUses =
         replacedStmt.entrySet().stream()

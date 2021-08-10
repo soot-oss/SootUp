@@ -128,10 +128,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
     for (ClassType superClassType : superClasses) {
       Optional<? extends SootClass<?>> superClassOpt = view.getClass(superClassType);
-      if(superClassOpt.isPresent()){
+      if (superClassOpt.isPresent()) {
         SootClass<?> superClass = superClassOpt.get();
         Optional<? extends SootMethod> methodOpt = superClass.getMethod(sig.getSubSignature());
-        if(methodOpt.isPresent()){
+        if (methodOpt.isPresent()) {
           return (T) methodOpt.get();
         }
       }
