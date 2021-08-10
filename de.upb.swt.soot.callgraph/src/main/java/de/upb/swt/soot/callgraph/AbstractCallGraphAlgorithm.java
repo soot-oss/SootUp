@@ -119,21 +119,24 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     if (!optSc.isPresent()) {
       throw new ResolveException("Could not find \"" + sig.getDeclClassType() + "\" in view");
     }
-    ;
 
     SootClass sc = optSc.get();
-    Optional<ClassType> optSuperclass = sc.getSuperclass();
 
-    Optional<SootMethod> optMethod;
-    while (optSuperclass.isPresent()) {
-      ClassType superClassType = optSuperclass.get();
-      SootClass superClass = view.getClass(superClassType).get();
-      optMethod = (Optional<SootMethod>) superClass.getMethod(sig.getSubSignature());
-      if (optMethod.isPresent()) {
-        return (T) optMethod.get();
+    List<ClassType> superClasses = typeHierarchy.superClassesOf(sc.getType());
+    Set<ClassType> interfaces = typeHierarchy.implementedInterfacesOf(sc.getType());
+    superClasses.addAll(interfaces);
+
+    for (ClassType superClassType : superClasses) {
+      Optional<? extends SootClass<?>> superClassOpt = view.getClass(superClassType);
+      if(superClassOpt.isPresent()){
+        SootClass<?> superClass = superClassOpt.get();
+        Optional<? extends SootMethod> methodOpt = superClass.getMethod(sig.getSubSignature());
+        if(methodOpt.isPresent()){
+          return (T) methodOpt.get();
+        }
       }
-      optSuperclass = superClass.getSuperclass();
     }
+
     throw new ResolveException(
         "Could not find \""
             + sig.getSubSignature()
