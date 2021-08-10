@@ -34,9 +34,12 @@ import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
+import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.DexBody;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.iface.instruction.Instruction;
+
+import java.util.Collections;
 
 public abstract class ConditionalJumpInstruction extends JumpInstruction implements DeferableInstruction {
 
@@ -75,8 +78,9 @@ public abstract class ConditionalJumpInstruction extends JumpInstruction impleme
 
   public void deferredJimplify(DexBody body) {
     JIfStmt s = ifStatement(body);
-    // TODO: Dexbody
-    body.getBody().getUnits().swapWith(markerStmt, s); // insertAfter(s, markerUnit);
+    Body.BodyBuilder bb = Body.builder(body.getBody(), Collections.emptySet());
+    bb = bb.replaceStmt(markerStmt, s);
+    body.setBody(bb.build());
     setStmt(s);
   }
 

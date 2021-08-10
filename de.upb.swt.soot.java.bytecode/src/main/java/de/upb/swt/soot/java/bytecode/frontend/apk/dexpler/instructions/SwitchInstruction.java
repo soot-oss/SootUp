@@ -31,10 +31,14 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.DexBody;
+import de.upb.swt.soot.java.core.views.JavaView;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.OffsetInstruction;
 import org.jf.dexlib2.iface.instruction.OneRegisterInstruction;
+
+import java.util.Collections;
 
 
 public abstract class SwitchInstruction extends PseudoInstruction implements DeferableInstruction {
@@ -64,8 +68,12 @@ public abstract class SwitchInstruction extends PseudoInstruction implements Def
     int targetAddress = codeAddress + offset;
     Instruction targetData = body.instructionAtAddress(targetAddress).instruction;
     Stmt stmt = switchStatement(body, targetData, key);
-    // TODO:
-    body.getBody().getUnits().insertAfter(stmt, markerStmt);
+    // TODO: KK modifiers not used?
+    Body.BodyBuilder bb = Body.builder(body.getBody(), Collections.emptySet());
+    bb = bb.addFlow(markerStmt, stmt);
+    //body.getBody().getUnits().insertAfter(stmt, markerStmt);
+    // TODO: possibly dexbody uses bodybuilder?
+    body.setBody(bb.build());
   }
 
 }

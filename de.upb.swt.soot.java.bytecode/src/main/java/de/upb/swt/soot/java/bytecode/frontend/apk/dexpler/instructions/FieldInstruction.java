@@ -35,10 +35,13 @@ import de.upb.swt.soot.core.jimple.common.ref.ConcreteRef;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.DexBody;
 import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.DexType;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import javafx.scene.Scene;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.ReferenceInstruction;
@@ -87,9 +90,12 @@ public abstract class FieldInstruction extends DexlibAbstractInstruction {
    *          if the FieldRef should be static
    */
   private FieldSignature getSootFieldRef(FieldReference fref, boolean isStatic) {
+    JavaIdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
     String className = Util.dottedClassName(fref.getDefiningClass());
-    SootClass sc = SootResolver.v().makeClassRef(className);
-    return Scene.v().makeFieldRef(sc, fref.getName(), DexType.toSoot(fref.getType()), isStatic);
+    JavaClassType sc = idFactory.getClassType(className);
+    FieldSubSignature fieldSubSig = new FieldSubSignature(fref.getName(), idFactory.getType(fref.getType()));
+    // TODO: isStatic not needed for signature?
+    return JavaIdentifierFactory.getInstance().getFieldSignature(sc, fieldSubSig);
   }
 
   /**

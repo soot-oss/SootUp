@@ -237,6 +237,13 @@ public interface IdentifierFactory {
   Type getType(String typeName);
 
   /**
+   * Gets the types of given list of type names
+   * @param typeName
+   * @return List of types
+   */
+  List<Type> getTypes(List<String> typeName);
+
+  /**
    * Gets the primitive type.
    *
    * @param typeName the type name

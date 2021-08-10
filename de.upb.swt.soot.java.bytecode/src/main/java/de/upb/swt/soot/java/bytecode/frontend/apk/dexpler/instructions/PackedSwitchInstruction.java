@@ -32,6 +32,7 @@ import java.util.List;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
@@ -68,8 +69,9 @@ public class PackedSwitchInstruction extends SwitchInstruction {
       int offset = se.getOffset();
       targets.add(body.instructionAtAddress(codeAddress + offset).getStmt());
     }
-    // TODO:
-    JSwitchStmt switchStmt = Jimple.newLookupSwitchStmt(key, lookupValues, targets, defaultTarget);
+    // TODO: KK
+    //JSwitchStmt switchStmt = Jimple.newLookupSwitchStmt(key, lookupValues, targets, defaultTarget);
+    JSwitchStmt switchStmt = Jimple.newLookupSwitchStmt(key, lookupValues, StmtPositionInfo.createNoStmtPositionInfo());
     setStmt(switchStmt);
 
     if (IDalvikTyper.ENABLE_DVKTYPER) {

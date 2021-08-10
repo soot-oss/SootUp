@@ -31,15 +31,22 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JNewArrayExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ArrayType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.DexBody;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.language.JavaJimple;
+import de.upb.swt.soot.java.core.views.JavaView;
 import javafx.scene.Scene;
 import org.jf.dexlib2.iface.instruction.DualReferenceInstruction;
 import org.jf.dexlib2.iface.instruction.Instruction;
@@ -47,6 +54,8 @@ import org.jf.dexlib2.iface.reference.MethodProtoReference;
 import sun.jvm.hotspot.debugger.cdbg.RefType;
 
 public class InvokePolymorphicInstruction extends MethodInvocationInstruction {
+
+  private JavaView view = null;
 
   public InvokePolymorphicInstruction(Instruction instruction, int codeAddress) {
     super(instruction, codeAddress);
@@ -88,42 +97,42 @@ public class InvokePolymorphicInstruction extends MethodInvocationInstruction {
    */
   @Override
   public void jimplify(DexBody body) {
-    SootMethodRef ref = getVirtualSootMethodRef();
-    if (ref.declaringClass().isInterface()) {
+    MethodSignature ref = getVirtualSootMethodRef();
+    if (view.getClass(ref.getDeclClassType()).get().isInterface()) {
       ref = getInterfaceSootMethodRef();
     }
   
     // The invoking object will always be included in the parameter types here
-    List<Local> temp = buildParameters(body,
+    List<Immediate> temp = buildParameters(body,
         ((MethodProtoReference) ((DualReferenceInstruction) instruction).getReference2()).getParameterTypes(), false);
-    List<Local> parms = temp.subList(1, temp.size());
-    Local invoker = temp.get(0);
+    List<Immediate> parms = temp.subList(1, temp.size());
+    Immediate invoker = temp.get(0);
     
     // Only box the arguments into an array if there are arguments and if they are not
     // already in some kind of array
     if (parms.size() > 0 && !(parms.size() == 1 && parms.get(0) instanceof ArrayType)) {
       Body b = body.getBody();
-      PatchingChain<Stmt> units = b.getUnits();
+      List<Stmt> units = b.getStmts();
       
       //Return type for invoke and invokeExact is Object and paramater type is Object[]
-      RefType rf = Scene.v().getRefType("java.lang.Object");
-      Local newArrL = new JimpleLocal("$u" + (b.getLocalCount() + 1), ArrayType.v(rf, 1));
+      ClassType rf = view.getIdentifierFactory().getClassType("java.lang.Object");
+      Local newArrL = JavaJimple.newLocal("$u" + (b.getLocalCount() + 1), view.getIdentifierFactory().getArrayType(rf, 1));
       b.getLocals().add(newArrL);
-      JAssignStmt newArr = new JAssignStmt(newArrL, new JNewArrayExpr(rf, IntConstant.v(parms.size())));
+      JAssignStmt newArr = new JAssignStmt(newArrL, new JNewArrayExpr(rf, IntConstant.getInstance(parms.size()), view.getIdentifierFactory()), StmtPositionInfo.createNoStmtPositionInfo());
       units.add(newArr);
     
       int i = 0;
-      for (Local l : parms) {
-        units.add(new JAssignStmt(new JArrayRef(newArrL, IntConstant.v(i)), l));
+      for (Immediate l : parms) {
+        units.add(new JAssignStmt(new JArrayRef(newArrL, IntConstant.getInstance(i), view.getIdentifierFactory()), l, StmtPositionInfo.createNoStmtPositionInfo()));
         i++;
       }
       parms = Arrays.asList(newArrL);
     }
     
-    if (ref.declaringClass().isInterface()) {
-      invocation = Jimple.v().newInterfaceInvokeExpr(invoker, ref, parms);
+    if (view.getClass(ref.getDeclClassType()).get().isInterface()) {
+      invocation = Jimple.newInterfaceInvokeExpr((Local) invoker, ref, parms);
     } else {
-      invocation = Jimple.v().newVirtualInvokeExpr(invoker, ref, parms);
+      invocation = Jimple.newVirtualInvokeExpr((Local) invoker, ref, parms);
     }
     body.setDanglingInstruction(this);
   }

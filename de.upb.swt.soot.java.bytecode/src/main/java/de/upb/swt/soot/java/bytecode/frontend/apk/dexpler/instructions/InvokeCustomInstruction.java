@@ -28,17 +28,28 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.instructions;
  */
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.*;
 import de.upb.swt.soot.core.jimple.common.constant.MethodHandle.Kind;
+import de.upb.swt.soot.core.jimple.common.expr.JDynamicInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.java.bytecode.frontend.AsmUtil;
 import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.DexBody;
 import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.DexType;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import javafx.scene.Scene;
 import org.jf.dexlib2.MethodHandleType;
 import org.jf.dexlib2.iface.instruction.Instruction;
@@ -63,6 +74,8 @@ import org.jf.dexlib2.iface.value.NullEncodedValue;
 import org.jf.dexlib2.iface.value.ShortEncodedValue;
 import org.jf.dexlib2.iface.value.StringEncodedValue;
 import org.jf.dexlib2.iface.value.TypeEncodedValue;
+import org.objectweb.asm.Handle;
+import sun.jvm.hotspot.asm.Operand;
 
 public class InvokeCustomInstruction extends MethodInvocationInstruction {
 
@@ -77,17 +90,17 @@ public class InvokeCustomInstruction extends MethodInvocationInstruction {
     
     // According to the specification there are two types of references for invoke-custom and method and field type
     if (bootstrapRef instanceof MethodReference) {
-      SootMethodRef bootstrapMethodRef = getBootStrapSootMethodRef();
+      MethodSignature bootstrapMethodRef = getBootStrapSootMethodRef();
       Kind bootStrapKind = dexToSootMethodHandleKind(callSiteReference.getMethodHandle().getMethodHandleType());
       
       // The bootstrap method has three required dynamic arguments and the rest are optional but
       // must always be constants
-      List<Value> bootstrapValues = constantEncodedValuesToValues(callSiteReference.getExtraArguments());
-      SootMethodRef methodRef = getCustomSootMethodRef();
+      List<Immediate> bootstrapValues = (List<Immediate>) (List<?>) constantEncodedValuesToValues(callSiteReference.getExtraArguments());
+      MethodSignature methodRef = getCustomSootMethodRef();
       // The method prototype only includes the method arguments and no invoking object so treat like static
-      List<Local> methodArgs = buildParameters(body, callSiteReference.getMethodProto().getParameterTypes(), true);
+      List<Immediate> methodArgs = (List<Immediate>) (List<?>) buildParameters(body, callSiteReference.getMethodProto().getParameterTypes(), true);
       
-      invocation = Jimple.v().newDynamicInvokeExpr(bootstrapMethodRef, bootstrapValues, methodRef, bootStrapKind.getValue(),
+      invocation = Jimple.newDynamicInvokeExpr(bootstrapMethodRef, bootstrapValues, methodRef, bootStrapKind.getValue(),
           methodArgs);
       body.setDanglingInstruction(this);
     } else if (bootstrapRef instanceof FieldReference) {
@@ -134,7 +147,7 @@ public class InvokeCustomInstruction extends MethodInvocationInstruction {
         out.add(NullConstant.getInstance());
       } else if (ev instanceof MethodTypeEncodedValue) {
         MethodProtoReference protRef = ((MethodTypeEncodedValue) ev).getValue();
-        out.add(MethodType.v(convertParameterTypes(protRef.getParameterTypes()), DexType.toSoot(protRef.getReturnType())));
+        out.add(JavaJimple.getInstance().newMethodType(convertParameterTypes(protRef.getParameterTypes()), DexType.toSoot(protRef.getReturnType())));
       } else if (ev instanceof TypeEncodedValue) {
         out.add(JavaJimple.getInstance().newClassConstant(((TypeEncodedValue) ev).getValue()));
       } else if (ev instanceof MethodHandleEncodedValue) {
@@ -143,9 +156,11 @@ public class InvokeCustomInstruction extends MethodInvocationInstruction {
         Kind kind = dexToSootMethodHandleKind(mh.getMethodHandleType());
         MethodHandle handle;
         if (ref instanceof MethodReference) {
-          handle = MethodHandle.v(getSootMethodRef((MethodReference) ref, kind), kind.getValue());
+          handle = JavaJimple.getInstance().newMethodHandle(getSootMethodRef((MethodReference) ref, kind), kind.getValue());
         } else if (ref instanceof FieldReference) {
-          handle = MethodHandle.v(getSootFieldRef((FieldReference) ref, kind), kind.getValue());
+          FieldSignature fieldSignature = getSootFieldRef((FieldReference) ref, kind);
+          JFieldRef jFieldRef = toSootFieldRef(fieldSignature, kind);
+          handle = JavaJimple.getInstance().newMethodHandle(jFieldRef, kind.getValue());
         } else {
           throw new RuntimeException("Error: Unhandled method reference type " + ref.getClass().toString() + ".");
         }
@@ -157,6 +172,18 @@ public class InvokeCustomInstruction extends MethodInvocationInstruction {
     }
     return out;
   }
+
+  private JFieldRef toSootFieldRef(FieldSignature fieldSignature, Kind kind) {
+    if (kind == MethodHandle.Kind.REF_GET_FIELD_STATIC
+            || kind == MethodHandle.Kind.REF_PUT_FIELD_STATIC) {
+      return Jimple.newStaticFieldRef(fieldSignature);
+    } else {
+      LocalGenerator localGenerator = new LocalGenerator(new LinkedHashSet<>());
+      Local base = localGenerator.generateLocal(fieldSignature.getDeclClassType());
+      return Jimple.newInstanceFieldRef(base, fieldSignature);
+    }
+  }
+
   
   private Kind dexToSootMethodHandleKind(int kind) {
     switch (kind) {
@@ -186,21 +213,22 @@ public class InvokeCustomInstruction extends MethodInvocationInstruction {
   /** Return a dummy SootMethodRef for the method invoked by a 
    * invoke-custom instruction.
    */
-  protected SootMethodRef getCustomSootMethodRef() {
+  protected MethodSignature getCustomSootMethodRef() {
+    JavaIdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
     CallSiteReference callSiteReference = (CallSiteReference) ((ReferenceInstruction) instruction).getReference();
-    SootClass dummyclass = Scene.v().getSootClass(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME);
+    JavaClassType dummyClass = idFactory.getClassType(JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME);
     String methodName = callSiteReference.getMethodName();
     MethodProtoReference methodRef = callSiteReference.getMethodProto();
     // No reference kind stored in invoke custom instruction for the actual 
     // method being invoked so default to static
-    return getSootMethodRef(dummyclass, methodName, methodRef.getReturnType(), 
+    return getSootMethodRef(dummyClass, methodName, methodRef.getReturnType(),
         methodRef.getParameterTypes(), Kind.REF_INVOKE_STATIC);
   }
   
   /** Return a SootMethodRef for the bootstrap method of
    * an invoke-custom instruction.
    */
-  protected SootMethodRef getBootStrapSootMethodRef() {
+  protected MethodSignature getBootStrapSootMethodRef() {
     MethodHandleReference mh = ((CallSiteReference) ((ReferenceInstruction) instruction).getReference()).getMethodHandle();
     return getSootMethodRef((MethodReference) mh.getMemberReference(), dexToSootMethodHandleKind(mh.getMethodHandleType()));
   }
