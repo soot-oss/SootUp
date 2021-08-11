@@ -8,14 +8,11 @@ import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocatio
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.JavaSootClass;
-import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
-import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class Soot1580 {
@@ -34,7 +31,8 @@ public class Soot1580 {
 
     Assert.assertEquals(91, view.getClasses().size());
 
-    ClassType clazzType = JavaIdentifierFactory.getInstance().getClassType("cn.jpush.android.data.f");
+    ClassType clazzType =
+        JavaIdentifierFactory.getInstance().getClassType("cn.jpush.android.data.f");
 
     Assert.assertTrue(view.getClass(clazzType).isPresent());
 
