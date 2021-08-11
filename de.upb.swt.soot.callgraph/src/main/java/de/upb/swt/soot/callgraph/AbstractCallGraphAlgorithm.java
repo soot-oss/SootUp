@@ -33,13 +33,12 @@ import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
@@ -137,12 +136,13 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           }
         }
       }
-      logger.warn("Could not find \""
+      logger.warn(
+          "Could not find \""
               + sig.getSubSignature()
               + "\" in "
               + sig.getDeclClassType().getClassName()
               + " and in its superclasses");
-    } else{
+    } else {
       logger.warn("Could not find \"" + sig.getDeclClassType() + "\" in view");
     }
     return null;
