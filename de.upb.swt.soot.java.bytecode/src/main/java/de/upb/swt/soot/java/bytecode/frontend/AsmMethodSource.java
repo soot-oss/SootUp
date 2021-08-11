@@ -1368,7 +1368,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       AbstractInvokeExpr expr = (AbstractInvokeExpr) opr.value;
       List<Type> types = expr.getMethodSignature().getParameterTypes();
       Operand[] oprs;
-      int nrArgs = types.size();
+      int nrArgs = types.size() - 1;
       final boolean isStaticInvokeExpr = expr instanceof JStaticInvokeExpr;
       if (isStaticInvokeExpr) {
         oprs = (nrArgs == 0) ? null : new Operand[nrArgs];
