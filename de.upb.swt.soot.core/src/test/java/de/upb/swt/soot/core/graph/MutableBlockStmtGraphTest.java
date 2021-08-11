@@ -121,12 +121,12 @@ public class MutableBlockStmtGraphTest {
     assertEquals(1, graph.getBlocks().get(0).getStmts().size());
     assertEquals(3, graph.getBlocks().get(1).getStmts().size());
 
-    assertEquals(3, graph.getBlocks().get(0).getPredecessors().size());
-    assertEquals(2, graph.getBlocks().get(1).getPredecessors().size());
+    assertEquals(1, graph.getBlocks().get(0).getPredecessors().size());
     assertEquals(1, graph.getBlocks().get(0).getSuccessors().size());
+    assertEquals(2, graph.getBlocks().get(1).getPredecessors().size());
     assertEquals(2, graph.getBlocks().get(1).getSuccessors().size());
 
-    // remove non existing edge
+    // remove non-existing edge
     graph.removeEdge(firstNop, conditionalStmt);
     assertEquals(2, graph.getBlocks().size());
     assertEquals(3, graph.getBlocks().get(0).getPredecessors().size());

@@ -95,8 +95,6 @@ import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.jimple.basic.JavaLocal;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-
-import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
@@ -377,8 +375,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       Local stackLocal = newStackLocal();
       operand.stackLocal = stackLocal;
       JAssignStmt<Local, ?> asssignStmt =
-          Jimple.newAssignStmt(
-              stackLocal, operand.value, new StmtPositionInfo(currentLineNumber));
+          Jimple.newAssignStmt(stackLocal, operand.value, new StmtPositionInfo(currentLineNumber));
 
       setStmt(operand.insn, asssignStmt);
       operand.updateUsages();
@@ -445,8 +442,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       opr = new Operand(insn, val, this);
       frame.setOut(opr);
       JAssignStmt<JFieldRef, ?> as =
-              Jimple.newAssignStmt(
-                      val, rvalue.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
+          Jimple.newAssignStmt(
+              val, rvalue.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
       setStmt(insn, as);
       rvalue.addUsageInStmt(as);
     } else {
@@ -553,10 +550,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       Operand baseOp = operandStack.popLocal();
       JArrayRef ar =
           JavaJimple.getInstance()
-                  .newArrayRef((Local) baseOp.stackOrValue(), (Immediate) indexOp.stackOrValue());
+              .newArrayRef((Local) baseOp.stackOrValue(), (Immediate) indexOp.stackOrValue());
       JAssignStmt<JArrayRef, ?> as =
-              Jimple.newAssignStmt(
-                      ar, valueOp.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
+          Jimple.newAssignStmt(
+              ar, valueOp.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
       frame.setIn(valueOp, indexOp, baseOp);
       setStmt(insn, as);
       valueOp.addUsageInStmt(as);
@@ -1570,8 +1567,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Local local = getOrCreateLocal(insn.var);
     if (!InsnToStmt.containsKey(insn)) {
       AbstractDefinitionStmt<Local, ?> as =
-          Jimple.newAssignStmt(
-              local, opr.stackOrValue(), new StmtPositionInfo(currentLineNumber));
+          Jimple.newAssignStmt(local, opr.stackOrValue(), new StmtPositionInfo(currentLineNumber));
       frame.setIn(opr);
       setStmt(insn, as);
       opr.addUsageInStmt(as);
@@ -1593,8 +1589,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (!InsnToStmt.containsKey(insn)) {
         setStmt(
             insn,
-            Jimple.newRetStmt(
-                getOrCreateLocal(insn.var), new StmtPositionInfo(currentLineNumber)));
+            Jimple.newRetStmt(getOrCreateLocal(insn.var), new StmtPositionInfo(currentLineNumber)));
       }
     } else {
       throw new AssertionError("Unknown var op: " + op);
@@ -1625,7 +1620,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
       Local stack = newStackLocal();
       AbstractDefinitionStmt<Local, JCaughtExceptionRef> as =
-              Jimple.newIdentityStmt(stack, ref, StmtPositionInfo.createNoStmtPositionInfo());
+          Jimple.newIdentityStmt(stack, ref, StmtPositionInfo.createNoStmtPositionInfo());
       opr = new Operand(ln, ref, this);
       opr.stackLocal = stack;
       frame.setOut(opr);
@@ -1697,7 +1692,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
         Local local = newStackLocal();
         AbstractDefinitionStmt<Local, JCaughtExceptionRef> as =
-                Jimple.newIdentityStmt(local, ref, StmtPositionInfo.createNoStmtPositionInfo());
+            Jimple.newIdentityStmt(local, ref, StmtPositionInfo.createNoStmtPositionInfo());
 
         Operand opr = new Operand(ln, ref, this);
         opr.stackLocal = local;
@@ -1728,14 +1723,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             convertIincInsn((IincInsnNode) insn);
             break;
           case INSN:
-          {
-            convertInsn((InsnNode) insn);
-            int op = insn.getOpcode();
-            if ((op >= IRETURN && op <= RETURN) || op == ATHROW) {
-              break label;
+            {
+              convertInsn((InsnNode) insn);
+              int op = insn.getOpcode();
+              if ((op >= IRETURN && op <= RETURN) || op == ATHROW) {
+                break label;
+              }
+              break;
             }
-            break;
-          }
           case INT_INSN:
             convertIntInsn((IntInsnNode) insn);
             break;
@@ -1743,30 +1738,30 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             convertLdcInsn((LdcInsnNode) insn);
             break;
           case JUMP_INSN:
-          {
-            JumpInsnNode jmp = (JumpInsnNode) insn;
-            convertJumpInsn(jmp);
-            int op = jmp.getOpcode();
-            if (op == JSR) {
-              throw new UnsupportedOperationException("JSR!");
+            {
+              JumpInsnNode jmp = (JumpInsnNode) insn;
+              convertJumpInsn(jmp);
+              int op = jmp.getOpcode();
+              if (op == JSR) {
+                throw new UnsupportedOperationException("JSR!");
+              }
+              if (op != GOTO) {
+                /* ifX opcode, i.e. two successors */
+                AbstractInsnNode next = insn.getNext();
+                addEdges(edges, worklist, insn, next, Collections.singletonList(jmp.label));
+              } else {
+                addEdges(edges, worklist, insn, jmp.label, Collections.emptyList());
+              }
+              break label;
             }
-            if (op != GOTO) {
-              /* ifX opcode, i.e. two successors */
-              AbstractInsnNode next = insn.getNext();
-              addEdges(edges, worklist, insn, next, Collections.singletonList(jmp.label));
-            } else {
-              addEdges(edges, worklist, insn, jmp.label, Collections.emptyList());
-            }
-            break label;
-          }
           case LOOKUPSWITCH_INSN:
-          {
-            LookupSwitchInsnNode swtch = (LookupSwitchInsnNode) insn;
-            convertLookupSwitchInsn(swtch);
-            LabelNode dflt = swtch.dflt;
-            addEdges(edges, worklist, insn, dflt, swtch.labels);
-            break label;
-          }
+            {
+              LookupSwitchInsnNode swtch = (LookupSwitchInsnNode) insn;
+              convertLookupSwitchInsn(swtch);
+              LabelNode dflt = swtch.dflt;
+              addEdges(edges, worklist, insn, dflt, swtch.labels);
+              break label;
+            }
           case METHOD_INSN:
             convertMethodInsn((MethodInsnNode) insn);
             break;
@@ -1777,13 +1772,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             convertMultiANewArrayInsn((MultiANewArrayInsnNode) insn);
             break;
           case TABLESWITCH_INSN:
-          {
-            TableSwitchInsnNode swtch = (TableSwitchInsnNode) insn;
-            convertTableSwitchInsn(swtch);
-            LabelNode dflt = swtch.dflt;
-            addEdges(edges, worklist, insn, dflt, swtch.labels);
-            break label;
-          }
+            {
+              TableSwitchInsnNode swtch = (TableSwitchInsnNode) insn;
+              convertTableSwitchInsn(swtch);
+              LabelNode dflt = swtch.dflt;
+              addEdges(edges, worklist, insn, dflt, swtch.labels);
+              break label;
+            }
           case TYPE_INSN:
             convertTypeInsn((TypeInsnNode) insn);
             break;
@@ -1800,7 +1795,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           case LINE:
             convertLine((LineNumberNode) insn);
             break;
-          //noinspection StatementWithEmptyBody
+            //noinspection StatementWithEmptyBody
           case FRAME:
             // we can ignore it -> skip
             break;
@@ -1809,7 +1804,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         }
       } while ((insn = insn.getNext()) != null);
     } while (!worklist.isEmpty());
-
   }
 
   private boolean checkInlineExceptionHandler(@Nonnull LabelNode ln) {
@@ -1864,10 +1858,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       locals.set(localIdx, local);
 
       emitStmt(
-              Jimple.newIdentityStmt(
-                      local,
-                      Jimple.newParameterRef(parameterType, i),
-                      StmtPositionInfo.createNoStmtPositionInfo()));
+          Jimple.newIdentityStmt(
+              local,
+              Jimple.newParameterRef(parameterType, i),
+              StmtPositionInfo.createNoStmtPositionInfo()));
 
       // see https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.6.1
       if (AsmUtil.isDWord(parameterType)) {

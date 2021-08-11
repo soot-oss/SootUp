@@ -120,8 +120,6 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
         int newBlockIdx = blocks.size();
         blocks.add(newBlock);
         newBlock.getStmts().forEach(stmt -> stmtToBlock.put(stmt, newBlockIdx));
-        blockA.addSuccessorBlock(newBlock);
-        newBlock.addPredecessorBlock(newBlock);
       }
     } else {
       // nonbranchingstmt can live in the same block
