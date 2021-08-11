@@ -14,7 +14,9 @@ public interface BasicBlock {
   List<? extends BasicBlock> getSuccessors();
 
   @Nonnull
-  List<? extends BasicBlock>  getExceptionalPredecessors(); // not really necessary as an exceptionhandler is not called in an
+  List<? extends BasicBlock>
+      getExceptionalPredecessors(); // not really necessary as an exceptionhandler is not called in
+                                    // an
   // unexceptional flow i.e. its the same as getPredecessors?
 
   @Nonnull
@@ -87,7 +89,7 @@ class MutableBasicBlock implements BasicBlock {
   }
 
   public void addSuccessorBlock(@Nonnull MutableBasicBlock block) {
-    predecessorBlocks.add(block);
+    successorBlocks.add(block);
   }
 
   public void removePredecessorBlock(MutableBasicBlock b) {
@@ -154,6 +156,11 @@ class MutableBasicBlock implements BasicBlock {
     return traps;
   }
 
+  /**
+   * splits a single MutableBasicBlock into 2 at splitIndex position, so that the Stmt at the
+   * splitIdx is the Head of the second MutableBasicBlock. this method does not link the splitted
+   * blocks.
+   */
   public MutableBasicBlock splitBlockUnlinked(@Nonnull Stmt newTail, @Nonnull Stmt newHead) {
     int splitIdx = stmts.indexOf(newTail);
     if (splitIdx < 0) {
@@ -165,13 +172,24 @@ class MutableBasicBlock implements BasicBlock {
     return splitBlockUnlinked(splitIdx);
   }
 
+  /** @param splitIdx should be in [1, stmts.size()-1] */
   protected MutableBasicBlock splitBlockUnlinked(int splitIdx) {
     MutableBasicBlock secondBlock = new MutableBasicBlock();
 
+    if (splitIdx < 1 || splitIdx >= stmts.size()) {
+      throw new IndexOutOfBoundsException("splitIdx makes no sense.");
+    }
+
     // move stmts from current/ first into new second block
-    secondBlock.setStmts(new ArrayList<>(stmts.size() - splitIdx + 1));
+    secondBlock.setStmts(new ArrayList<>(stmts.size() - splitIdx));
     for (int i = splitIdx; i < stmts.size(); i++) {
-      secondBlock.addStmt(stmts.remove(i));
+      secondBlock.addStmt(stmts.get(i));
+    }
+
+    // TODO: [ms] performance hint: order of removal -> from last to splitidx -> that way the
+    // underlying arraylist needs not to move its entries while removing the whole trail anyways
+    if (stmts.size() > splitIdx) {
+      stmts.subList(splitIdx, stmts.size()).clear();
     }
 
     // copy traps
@@ -186,14 +204,14 @@ class MutableBasicBlock implements BasicBlock {
    * @param shouldBeNewHead if true: splitStmt is the Head of the second BasicBlock if false
    *     splitStmt is the tail of the first BasicBlock
    * @return second half with splitStmt as the head of the second BasicBlock
-   * @oaram splitStmt the stmt which determines where to split the BasicBlock
+   * @param splitStmt the stmt which determines where to split the BasicBlock
    */
   @Nonnull
   public MutableBasicBlock splitBlockLinked(@Nonnull Stmt splitStmt, boolean shouldBeNewHead) {
 
     int splitIdx = stmts.indexOf(splitStmt);
     if (splitIdx < 0) {
-      throw new IllegalArgumentException("Stmt is not contained in this Block.");
+      throw new IllegalArgumentException("splitting Stmt is not contained in this Block.");
     }
 
     if (!shouldBeNewHead) {

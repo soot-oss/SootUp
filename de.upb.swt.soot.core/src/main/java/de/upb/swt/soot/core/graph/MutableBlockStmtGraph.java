@@ -3,7 +3,6 @@ package de.upb.swt.soot.core.graph;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
-
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -367,21 +366,21 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
   public void addTrap(ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt) {
     // FIXME: implement
     throw new IllegalStateException("Not implemented yet!");
-
   }
 
   @Override
   public void removeTrap(ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt) {
     // FIXME: implement
     throw new IllegalStateException("Not implemented yet!");
-
   }
 
   @Override
   public void setTraps(@Nonnull List<Trap> traps) {
-    if (this.traps != null && this.traps.size() > 0) {
-      // TODO: remove old trap information and possibly merge blocks if necessary
-
+    if (this.traps != null) {
+      for (Trap trap : this.traps) {
+        removeTrap(
+            trap.getExceptionType(), trap.getBeginStmt(), trap.getEndStmt(), trap.getHandlerStmt());
+      }
     }
     this.traps = traps;
 
@@ -390,6 +389,8 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
       // TODO: find startblock and possibly split
       // TODO: add trap to in between blocks
       // TODO: find endblock and possibly split
+      addTrap(
+          trap.getExceptionType(), trap.getBeginStmt(), trap.getEndStmt(), trap.getHandlerStmt());
     }
   }
 
