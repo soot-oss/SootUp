@@ -25,6 +25,7 @@
     <module>de.upb.swt.soot.tests</module>
     <module>de.upb.swt.soot.callgraph</module>
     <module>de.upb.swt.soot.jimple.parser</module>
+    <module>examples</module>
   </modules>
 
 	<!-- Shared Configuration -->
