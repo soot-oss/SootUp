@@ -334,12 +334,17 @@ public class MutableStmtGraph extends StmtGraph {
   /**
    * Add a stmt into StmtGraph before a given stmt that is already in StmtGraph
    *
-   * @param node a stmt which should be inserted into StmtGraph
-   * @param succNode a stmt that's already in the stmtGraph, it should be not a instance of
-   *     JIdentityStmt Todo[zw]: is not suitable for trap.
+   * @param node a stmt which should be inserted into StmtGraph, it should be not an instance or
+   *     JSwitchStmt or JIfStmt
+   * @param succNode a stmt that's already in the stmtGraph, it should be not an instance of
+   *     JIdentityStmt
    */
   public void insertNode(@Nonnull Stmt node, @Nonnull Stmt succNode) {
     if (succNode instanceof JIdentityStmt) {
+      throw new RuntimeException(
+          "Before " + succNode.toString() + " can not insert the stmt: " + node.toString());
+    }
+    if (node instanceof JSwitchStmt || node instanceof JIfStmt) {
       throw new RuntimeException(
           "Before " + succNode.toString() + " can not insert the stmt: " + node.toString());
     }

@@ -21,6 +21,7 @@ package de.upb.swt.soot.core.graph;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
@@ -174,12 +175,54 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
     }
   }
 
+  /**
+   * Add a stmt into StmtGraph before a given stmt that is already in StmtGraph
+   *
+   * @param node a stmt which should be inserted into StmtGraph, it should be not an instance or
+   *     JSwitchStmt or JIfStmt
+   * @param succNode a stmt that's already in the stmtGraph, it should be not an instance of
+   *     JIdentityStmt TODO: the inserted node is an instance of PhiStmt, for other stmts maybe some
+   *     properties should be added
+   */
   public void insertNode(@Nonnull Stmt node, @Nonnull Stmt succNode) {
     super.insertNode(node, succNode);
-    exceptionalPreds.add(new ArrayList<>());
-    exceptionalSuccs.add(new ArrayList<>());
-    exceptionalDestinationTraps.add(new ArrayList<>());
-    // TODO: fit the method to traps
+    List<Trap> traps = new ArrayList<>(getTraps());
+    boolean hasNewTraps = false;
+    if (exceptionalSuccessors(succNode).isEmpty()) {
+      exceptionalPreds.add(new ArrayList<>());
+      exceptionalSuccs.add(new ArrayList<>());
+      exceptionalDestinationTraps.add(new ArrayList<>());
+      for (Trap trap : traps) {
+        if (succNode == trap.getEndStmt()) {
+          Trap newTrap =
+              new JTrap(trap.getExceptionType(), trap.getBeginStmt(), node, trap.getHandlerStmt());
+          traps.remove(trap);
+          traps.add(newTrap);
+          hasNewTraps = true;
+        }
+      }
+    } else {
+      List<Stmt> exSuccs = exceptionalSuccessors(succNode);
+      exceptionalPreds.add(new ArrayList<>());
+      exceptionalSuccs.add(new ArrayList<>(exSuccs));
+      exceptionalDestinationTraps.add(new ArrayList<>(getDestTraps(succNode)));
+      for (Stmt exSucc : exSuccs) {
+        int idx = getNodeIdx(exSucc);
+        exceptionalPreds.get(idx).add(node);
+      }
+      for (Trap trap : traps) {
+        if (succNode == trap.getBeginStmt()) {
+          Trap newTrap =
+              new JTrap(trap.getExceptionType(), node, trap.getEndStmt(), trap.getHandlerStmt());
+          traps.remove(trap);
+          traps.add(newTrap);
+          hasNewTraps = true;
+        }
+      }
+    }
+    if (hasNewTraps) {
+      setTraps(traps);
+    }
   }
 
   /**
