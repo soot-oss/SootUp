@@ -105,9 +105,10 @@ public class DeclareEnumWithConstructorTest extends MinimalSourceTestSuiteBase {
     return Stream.of(
             "$r0 := @parameter0: java.lang.String[]",
             "$r1 = <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number ONE>",
-            "$r2 = <java.lang.System: java.io.PrintStream out>",
-            "$i0 = specialinvoke $r1.<DeclareEnumWithConstructor$Number: int getValue()>()",
-            "virtualinvoke $r2.<java.io.PrintStream: void println(int)>($i0)",
+            "$r2 = $r1",
+            "$r3 = <java.lang.System: java.io.PrintStream out>",
+            "$i0 = specialinvoke $r2.<DeclareEnumWithConstructor$Number: int getValue()>()",
+            "virtualinvoke $r3.<java.io.PrintStream: void println(int)>($i0)",
             "return")
         .collect(Collectors.toList());
   }

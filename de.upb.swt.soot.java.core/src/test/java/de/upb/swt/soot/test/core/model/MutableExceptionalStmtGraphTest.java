@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import de.upb.swt.soot.core.graph.MutableExceptionalStmtGraph;
 import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
-import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Trap;
@@ -75,12 +74,12 @@ public class MutableExceptionalStmtGraphTest {
   // stack9 := @caughtexception
   Stmt label9Stmt = JavaJimple.newIdentityStmt(stack9, caughtExceptionRef, noStmtPositionInfo);
 
-  JTrap trap1 = new JTrap(exception1, label1Stmt, label4Stmt, label6Stmt);
-  JTrap trap2 = new JTrap(exception1, label2Stmt, label3Stmt, label7Stmt);
-  JTrap trap3 = new JTrap(exception2, label2Stmt, label3Stmt, label7Stmt);
-  JTrap trap4 = new JTrap(exception1, label1Stmt, label3Stmt, label6Stmt);
-  JTrap trap5 = new JTrap(exception1, label6Stmt, stmtInLabel6, label7Stmt);
-  JTrap trap6 = new JTrap(exception1, label7Stmt, label8Stmt, label9Stmt);
+  Trap trap1 = new Trap(exception1, label1Stmt, label4Stmt, label6Stmt);
+  Trap trap2 = new Trap(exception1, label2Stmt, label3Stmt, label7Stmt);
+  Trap trap3 = new Trap(exception2, label2Stmt, label3Stmt, label7Stmt);
+  Trap trap4 = new Trap(exception1, label1Stmt, label3Stmt, label6Stmt);
+  Trap trap5 = new Trap(exception1, label6Stmt, stmtInLabel6, label7Stmt);
+  Trap trap6 = new Trap(exception1, label7Stmt, label8Stmt, label9Stmt);
 
   @Test
   public void graphWithNestedTraps_1Test() {

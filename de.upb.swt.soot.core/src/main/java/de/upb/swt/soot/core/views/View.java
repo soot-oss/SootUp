@@ -23,15 +23,19 @@ package de.upb.swt.soot.core.views;
  */
 
 import de.upb.swt.soot.core.IdentifierFactory;
+import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.Scope;
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -44,7 +48,15 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public interface View<T extends SootClass<?>> {
+public interface View<T extends SootClass> {
+
+  Project getProject();
+
+  @Nonnull
+  List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation<T> inputLocation);
+
+  @Nonnull
+  List<BodyInterceptor> getBodyInterceptors();
 
   /** Return all classes in the view. */
   @Nonnull

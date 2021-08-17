@@ -22,7 +22,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  */
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
-import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
@@ -113,7 +112,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
       List<Trap> traps = builder.getTraps();
       // if used in a Trap replace occurences of goto by inlined return
       for (int i = 0; i < traps.size(); i++) {
-        JTrap trap = (JTrap) traps.get(i);
+        Trap trap = traps.get(i);
         boolean modified = false;
         if (trap.getBeginStmt() == gotoStmt) {
           trap = trap.withBeginStmt(newStmt);

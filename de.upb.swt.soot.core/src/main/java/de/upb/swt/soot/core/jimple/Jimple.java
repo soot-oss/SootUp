@@ -386,28 +386,29 @@ public abstract class Jimple {
   }
 
   /**
-   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod
-   * methodRef, List args) grammar chunk.
+   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodSignature, List bootstrapArgs,
+   * SootMethod methodSignature, List args) grammar chunk.
    */
   public static JDynamicInvokeExpr newDynamicInvokeExpr(
-      MethodSignature bootstrapMethodRef,
+      MethodSignature bootstrapMethodSignature,
       List<Immediate> bootstrapArgs,
-      MethodSignature methodRef,
+      MethodSignature methodSignature,
       List<Immediate> args) {
-    return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, args);
+    return new JDynamicInvokeExpr(bootstrapMethodSignature, bootstrapArgs, methodSignature, args);
   }
 
   /**
-   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod
-   * methodRef, List args) grammar chunk.
+   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodSignature, List bootstrapArgs,
+   * SootMethod methodSignature, List args) grammar chunk.
    */
   public static JDynamicInvokeExpr newDynamicInvokeExpr(
-      MethodSignature bootstrapMethodRef,
+      MethodSignature bootstrapMethodSignature,
       List<Immediate> bootstrapArgs,
-      MethodSignature methodRef,
+      MethodSignature methodSignature,
       int tag,
       List<Immediate> args) {
-    return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, tag, args);
+    return new JDynamicInvokeExpr(
+        bootstrapMethodSignature, bootstrapArgs, methodSignature, tag, args);
   }
 
   /**
@@ -587,7 +588,7 @@ public abstract class Jimple {
     return new JNewMultiArrayExpr(type, sizes);
   }
 
-  public static JTrap newTrap(ClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
-    return new JTrap(exception, beginStmt, endStmt, handlerStmt);
+  public static Trap newTrap(ClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
+    return new Trap(exception, beginStmt, endStmt, handlerStmt);
   }
 }

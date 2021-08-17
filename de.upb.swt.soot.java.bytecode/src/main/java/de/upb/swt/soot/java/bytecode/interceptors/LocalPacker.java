@@ -21,7 +21,9 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #L%
  */
 import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -118,7 +120,7 @@ public class LocalPacker implements BodyInterceptor {
         newStmt = BodyUtils.withNewDef(newStmt, newLocal);
       }
       if (!stmt.equals(newStmt)) {
-        BodyUtils.replaceStmtInBuilder(builder, stmt, newStmt);
+        replaceStmtInBuilder(builder, stmt, newStmt);
       }
     }
     builder.setLocals(newLocals);
@@ -248,6 +250,41 @@ public class LocalPacker implements BodyInterceptor {
       }
     }
     return localToLocals;
+  }
+
+  /**
+   * Replace corresponding oldStmt with newStmt in BodyBuilder
+   *
+   * @param builder
+   * @param oldStmt
+   * @param newStmt
+   */
+  private void replaceStmtInBuilder(Body.BodyBuilder builder, Stmt oldStmt, Stmt newStmt) {
+    builder.replaceStmt(oldStmt, newStmt);
+    adaptTraps(builder, oldStmt, newStmt);
+  }
+  /**
+   * Fit the modified stmt in Traps
+   *
+   * @param builder a bodybuilder, use it to modify Trap
+   * @param oldStmt a Stmt which maybe a beginStmt or endStmt in a Trap
+   * @param newStmt a modified stmt to replace the oldStmt.
+   */
+  private void adaptTraps(
+      @Nonnull Body.BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+    List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
+    for (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) {
+      Trap trap = iterator.next();
+      JTrap jtrap = (JTrap) trap;
+      if (oldStmt.equivTo(trap.getBeginStmt())) {
+        Trap newTrap = jtrap.withBeginStmt(newStmt);
+        iterator.set(newTrap);
+      } else if (oldStmt.equivTo(trap.getEndStmt())) {
+        Trap newTrap = jtrap.withEndStmt(newStmt);
+        iterator.set(newTrap);
+      }
+    }
+    builder.setTraps(traps);
   }
 
   private class TypeColorPair {

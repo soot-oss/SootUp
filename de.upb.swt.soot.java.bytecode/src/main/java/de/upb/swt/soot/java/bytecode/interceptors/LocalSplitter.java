@@ -24,6 +24,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 
 import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -269,8 +270,32 @@ public class LocalSplitter implements BodyInterceptor {
    */
   private void replaceStmtInBuilder(
       BodyBuilder builder, List<Stmt> stmts, Stmt oldStmt, Stmt newStmt) {
-    BodyUtils.replaceStmtInBuilder(builder, oldStmt, newStmt);
+    builder.replaceStmt(oldStmt, newStmt);
+    adaptTraps(builder, oldStmt, newStmt);
     adaptVisitList(stmts, oldStmt, newStmt);
+  }
+  /**
+   * Fit the modified stmt in Traps
+   *
+   * @param builder a bodybuilder, use it to modify Trap
+   * @param oldStmt a Stmt which maybe a beginStmt or endStmt in a Trap
+   * @param newStmt a modified stmt to replace the oldStmt.
+   */
+  private void adaptTraps(
+      @Nonnull BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+    List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
+    for (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) {
+      Trap trap = iterator.next();
+      JTrap jtrap = (JTrap) trap;
+      if (oldStmt.equivTo(trap.getBeginStmt())) {
+        Trap newTrap = jtrap.withBeginStmt(newStmt);
+        iterator.set(newTrap);
+      } else if (oldStmt.equivTo(trap.getEndStmt())) {
+        Trap newTrap = jtrap.withEndStmt(newStmt);
+        iterator.set(newTrap);
+      }
+    }
+    builder.setTraps(traps);
   }
 
   /**

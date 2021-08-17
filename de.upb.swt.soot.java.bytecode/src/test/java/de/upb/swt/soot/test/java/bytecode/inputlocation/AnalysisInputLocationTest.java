@@ -10,7 +10,10 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -47,6 +50,8 @@ public abstract class AnalysisInputLocationTest {
 
   final Path war = Paths.get("../shared-test-resources/java-warApp/dummyWarApp.war");
   final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
+  final Path mrj = Paths.get("../shared-test-resources/multi-release-jar/mrjar.jar");
+  final Path mmrj = Paths.get("../shared-test-resources/multi-release-jar-modular/mrjar.jar");
 
   private ClassProvider<JavaSootClass> classProvider;
 
@@ -62,11 +67,16 @@ public abstract class AnalysisInputLocationTest {
   protected void testClassReceival(
       AnalysisInputLocation<JavaSootClass> ns, ClassType sig, int minClassesFound) {
 
-    final Optional<? extends AbstractClassSource<JavaSootClass>> clazz = ns.getClassSource(sig);
-    clazz.ifPresent(abstractClassSource -> assertEquals(sig, abstractClassSource.getClassType()));
+    final JavaProject project =
+        JavaProject.builder(new JavaLanguage(8)).addInputLocation(ns).build();
+    final JavaView view = project.createOnDemandView();
 
-    final Collection<? extends AbstractClassSource<?>> classSources =
-        ns.getClassSources(getIdentifierFactory());
+    final Optional<? extends AbstractClassSource<JavaSootClass>> clazzOpt =
+        ns.getClassSource(sig, view);
+    assertTrue(clazzOpt.isPresent());
+    assertEquals(sig, clazzOpt.get().getClassType());
+
+    final Collection<? extends AbstractClassSource<?>> classSources = ns.getClassSources(view);
 
     assertTrue(classSources.size() >= minClassesFound);
   }

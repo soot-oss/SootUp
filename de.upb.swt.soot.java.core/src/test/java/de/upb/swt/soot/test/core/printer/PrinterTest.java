@@ -105,13 +105,7 @@ public class PrinterTest {
 
     return new SootClass(
         new OverridingClassSource(
-            new EagerInputLocation(),
-            null,
-            view.getIdentifierFactory().getClassType(className),
-            JavaIdentifierFactory.getInstance().getClassType("some.great.Superclass"),
-            Collections.singleton(
-                JavaIdentifierFactory.getInstance().getClassType("some.great.Interface")),
-            null,
+            new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)),
             Collections.singleton(
                 new SootField(
                     JavaIdentifierFactory.getInstance()
@@ -121,9 +115,15 @@ public class PrinterTest {
                             PrimitiveType.getInt()),
                     EnumSet.of(Modifier.PRIVATE),
                     NoPositionInformation.getInstance())),
-            new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)),
+            EnumSet.of(Modifier.PUBLIC),
+            Collections.singleton(
+                JavaIdentifierFactory.getInstance().getClassType("some.great.Interface")),
+            JavaIdentifierFactory.getInstance().getClassType("some.great.Superclass"),
+            null,
             NoPositionInformation.getInstance(),
-            EnumSet.of(Modifier.PUBLIC)),
+            null,
+            view.getIdentifierFactory().getClassType(className),
+            new EagerInputLocation()),
         SourceType.Application);
   }
 }
