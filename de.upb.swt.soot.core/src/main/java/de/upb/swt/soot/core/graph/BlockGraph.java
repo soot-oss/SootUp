@@ -292,18 +292,16 @@ public class BlockGraph implements Iterable<Block> {
    * @param stmt
    * @param block
    */
-  public Block addStmtOnTopOfBlock(Stmt stmt, Block block) {
+  public void addStmtOnTopOfBlock(Stmt stmt, Block block) {
     if (!blockToIdx.containsKey(block)) {
       throw new RuntimeException("The given block: " + block.toString() + " is not in BlockGraph!");
     }
     Stmt head = block.getHead();
     stmtGraph.insertNode(stmt, head);
-    Block newBlock = new Block(stmt, block.getTail());
-    replaceBlock(block, newBlock);
-    return newBlock;
+    block.setHead(stmt);
   }
 
-  public Block replaceStmtInBlock(Stmt oldStmt, Stmt newStmt, Block block) {
+  public void replaceStmtInBlock(Stmt oldStmt, Stmt newStmt, Block block) {
     if (!blockToIdx.containsKey(block)) {
       throw new RuntimeException("The given block: " + block.toString() + " is not in BlockGraph!");
     }
@@ -311,20 +309,12 @@ public class BlockGraph implements Iterable<Block> {
       throw new RuntimeException("The given stmt: " + oldStmt.toString() + " is not in StmtGraph!");
     }
     stmtGraph.replaceNode(oldStmt, newStmt);
-    Block newBlock = block;
-    boolean isChanged = false;
     if (oldStmt == block.getHead()) {
-      newBlock = new Block(newStmt, newBlock.getTail());
-      isChanged = true;
+      block.setHead(newStmt);
     }
     if (oldStmt == block.getTail()) {
-      newBlock = new Block(newBlock.getHead(), newStmt);
-      isChanged = true;
+      block.setTail(newStmt);
     }
-    if (isChanged) {
-      replaceBlock(block, newBlock);
-    }
-    return newBlock;
   }
 
   @Override

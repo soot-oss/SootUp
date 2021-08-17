@@ -298,8 +298,8 @@ public class DominanceTest {
    *    l2 = 1
    *    l3 = 0
    * label1:
-   *    if l3 < 100 goto label3
-   *    if l2 < 20 goto label 2
+   *    if l3 < 100 goto label6
+   *    if l2 < 20 goto label5
    * label2:
    *    l2 = l1
    * label3:

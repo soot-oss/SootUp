@@ -33,8 +33,8 @@ import javax.annotation.Nonnull;
  */
 public class Block {
 
-  private final Stmt head;
-  private final Stmt tail;
+  private Stmt head;
+  private Stmt tail;
 
   public Block(@Nonnull Stmt head, @Nonnull Stmt tail) {
     this.head = head;
@@ -47,6 +47,14 @@ public class Block {
 
   public Stmt getTail() {
     return this.tail;
+  }
+
+  public void setHead(Stmt newHead) {
+    this.head = newHead;
+  }
+
+  public void setTail(Stmt newTail) {
+    this.tail = newTail;
   }
 
   public String toString() {
