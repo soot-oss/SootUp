@@ -21,7 +21,6 @@ package de.upb.swt.soot.core.graph;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
@@ -195,7 +194,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
       for (Trap trap : traps) {
         if (succNode == trap.getEndStmt()) {
           Trap newTrap =
-              new JTrap(trap.getExceptionType(), trap.getBeginStmt(), node, trap.getHandlerStmt());
+              new Trap(trap.getExceptionType(), trap.getBeginStmt(), node, trap.getHandlerStmt());
           traps.remove(trap);
           traps.add(newTrap);
           hasNewTraps = true;
@@ -213,7 +212,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
       for (Trap trap : traps) {
         if (succNode == trap.getBeginStmt()) {
           Trap newTrap =
-              new JTrap(trap.getExceptionType(), node, trap.getEndStmt(), trap.getHandlerStmt());
+              new Trap(trap.getExceptionType(), node, trap.getEndStmt(), trap.getHandlerStmt());
           traps.remove(trap);
           traps.add(newTrap);
           hasNewTraps = true;

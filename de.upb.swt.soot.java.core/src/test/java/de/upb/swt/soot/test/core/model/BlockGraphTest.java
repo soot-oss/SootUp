@@ -82,8 +82,8 @@ public class BlockGraphTest {
   Stmt stack5Stmt = JavaJimple.newIdentityStmt(stack5, caughtExceptionRef, noStmtPositionInfo);
   Stmt stack6Stmt = JavaJimple.newIdentityStmt(stack6, caughtExceptionRef, noStmtPositionInfo);
 
-  JTrap trap1 = new JTrap(exception, stmt1, ret, stack5Stmt);
-  JTrap trap2 = new JTrap(exception, stmt10, stmt7, stack6Stmt);
+  Trap trap1 = new Trap(exception, stmt1, ret, stack5Stmt);
+  Trap trap2 = new Trap(exception, stmt10, stmt7, stack6Stmt);
 
   @Test
   public void testBlockGraphWithBranch() {

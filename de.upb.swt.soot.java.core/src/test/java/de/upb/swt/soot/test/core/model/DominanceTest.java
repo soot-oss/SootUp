@@ -71,7 +71,7 @@ public class DominanceTest {
   Stmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
   Stmt stack4Stmt = JavaJimple.newIdentityStmt(stack4, caughtExceptionRef, noStmtPositionInfo);
   Stmt stmt12 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(0), noStmtPositionInfo);
-  JTrap trap = new JTrap(exception, stmt7, stmt8, stack4Stmt);
+  Trap trap = new Trap(exception, stmt7, stmt8, stack4Stmt);
 
   @Test
   public void testImmediateDominator() {

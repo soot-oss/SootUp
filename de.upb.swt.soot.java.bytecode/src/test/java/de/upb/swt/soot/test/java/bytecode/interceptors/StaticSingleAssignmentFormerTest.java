@@ -72,7 +72,7 @@ public class StaticSingleAssignmentFormerTest {
   Stmt l2eq0 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(0), noStmtPositionInfo);
   Stmt goTo = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
-  JTrap trap = new JTrap(exception, stmt7, stmt8, handlerStmt);
+  Trap trap = new Trap(exception, stmt7, stmt8, handlerStmt);
 
   @Test
   public void testSSA() {
