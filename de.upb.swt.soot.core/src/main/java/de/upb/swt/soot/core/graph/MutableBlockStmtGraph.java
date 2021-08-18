@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 
 public class MutableBlockStmtGraph implements MutableStmtGraph {
 
-  @Nullable private MutableBasicBlock startingBlock = null;
+  @Nullable private Stmt startingStmt = null;
   @Nonnull private final Map<Stmt, Integer> stmtToBlock = new HashMap<>();
   @Nonnull private final ArrayList<MutableBasicBlock> blocks = new ArrayList<>();
   private List<Trap> traps = null;
@@ -58,15 +58,15 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
 
   public void removeNode(@Nonnull Stmt stmt) {
     Integer blockIdx = stmtToBlock.remove(stmt);
-    MutableBasicBlock blockOfRemovedStmt = blocks.set(blockIdx, null);
-
-    blockOfRemovedStmt.removeStmt(stmt);
     removeBorderEdgesInternal(stmt, blockIdx);
+    MutableBasicBlock blockOfRemovedStmt = blocks.get(blockIdx);
+    blockOfRemovedStmt.removeStmt(stmt);
 
     // for GC: clear entry in blocks if block is empty -> not referenced anymore -> not reachable
     // for the user
     if (blockOfRemovedStmt.getStmts().size() <= 0) {
-      blocks.set(blockIdx, null);
+      // blocks.set(blockIdx, null);
+      blocks.remove(blockIdx);
     }
   }
 
@@ -239,7 +239,11 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
   @Nullable
   @Override
   public Stmt getStartingStmt() {
-    return startingBlock.getHead();
+    // is the stmt currently in a block associated with the graph?
+    if (stmtToBlock.get(startingStmt) == null) {
+      return null;
+    }
+    return startingStmt;
   }
 
   @Nonnull
@@ -249,13 +253,10 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
   }
 
   public void setStartingStmt(@Nonnull Stmt startingStmt) {
-    Integer startingBlockIdx = stmtToBlock.get(startingStmt);
-    if (startingBlockIdx != null) {
-      // TODO: make sure starting stmt is (and keeps beeing) at the beginning of the block!
-      this.startingBlock = blocks.get(startingBlockIdx);
-    } else {
-      this.startingBlock = addNodeInternal(startingStmt);
+    if (stmtToBlock.get(startingStmt) == null) {
+      addNodeInternal(startingStmt);
     }
+    this.startingStmt = startingStmt;
   }
 
   @Nonnull
