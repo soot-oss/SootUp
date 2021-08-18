@@ -16,8 +16,6 @@ public class Soot1577 {
   final String directory = "../shared-test-resources/soot-1577/";
 
   @Test
-  @Ignore("FIX ME")
-  // TODO [bh] a dummy nop has two successors for some reason
   public void test() {
     AnalysisInputLocation<JavaSootClass> inputLocation =
         new JavaClassPathAnalysisInputLocation(directory);

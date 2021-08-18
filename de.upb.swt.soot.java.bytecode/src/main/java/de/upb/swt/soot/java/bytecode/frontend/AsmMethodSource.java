@@ -1607,7 +1607,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (!InsnToStmt.containsKey(ln)) {
         JNopStmt nop = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
         setStmt(ln, nop);
-        emitStmt(nop);
       }
       return;
     }
