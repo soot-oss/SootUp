@@ -21,6 +21,8 @@ public class GraphVizExporter {
     StringBuilder sb = new StringBuilder();
     sb.append("digraph G {\n")
         .append("\tcompound=true;\n")
+        .append("\trankdir=TD;\n")
+        .append("\tordering=out;\n")
         .append("\tstyle=filled;\n")
         .append("\tcolor=lightgrey;\n")
         .append("\tnode [shape=record, style=filled,color=white];\n\n");
@@ -29,7 +31,11 @@ public class GraphVizExporter {
     Stmt startingStmt = graph.getStartingStmt();
     if (startingStmt != null) {
       sb.append("\tstart [shape=Mdiamond, color=grey];\n");
-      sb.append("\tstart -> ").append(graph.getStartingStmt().hashCode()).append(";\n");
+      BasicBlock startingStmtBlock =
+          graph.getBlocks().stream().filter(b -> b.getHead() == startingStmt).findFirst().get();
+      sb.append("\tstart:s -> ")
+          .append(graph.getStartingStmt().hashCode())
+          .append(":n [lhead=\"cluster_" + startingStmtBlock.hashCode() + "\"];\n");
     }
     sb.append("\n");
 
@@ -73,7 +79,7 @@ public class GraphVizExporter {
         for (BasicBlock successorBlock : successors) {
           sb.append("\t")
               .append(block.getTail().hashCode())
-              .append(" -> ")
+              .append(":s -> ")
               .append(successorBlock.getHead().hashCode())
               //  .append(" [ltail=\"cluster_" + block.hashCode() + "\", lhead=\"cluster_" +
               // successorBlock.hashCode() + "\"]")
@@ -88,7 +94,7 @@ public class GraphVizExporter {
         for (BasicBlock successorBlock : exceptionalSuccessors) {
           sb.append("\t")
               .append(block.getTail().hashCode())
-              .append(" -> ")
+              .append(":e -> ")
               .append(successorBlock.getHead().hashCode())
               .append(" [color=red, ltail=\"cluster_" + block.hashCode() + "\"]")
               .append(";\n");
