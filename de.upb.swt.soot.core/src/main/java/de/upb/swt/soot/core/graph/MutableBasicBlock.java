@@ -83,12 +83,6 @@ class MutableBasicBlock implements BasicBlock {
 
   @Nonnull
   @Override
-  public List<? extends BasicBlock> getExceptionalPredecessors() {
-    return exceptionalPredecessorBlocks;
-  }
-
-  @Nonnull
-  @Override
   public List<? extends BasicBlock> getExceptionalSuccessors() {
     return exceptionalSuccessorBlocks;
   }

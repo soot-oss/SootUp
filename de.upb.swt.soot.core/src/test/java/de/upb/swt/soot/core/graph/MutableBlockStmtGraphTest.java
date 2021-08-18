@@ -87,25 +87,37 @@ public class MutableBlockStmtGraphTest {
     assertEquals(0, graph.getBlocks().size());
     graph.addNode(firstNop);
     assertEquals(1, graph.getBlocks().size());
+
+    // test duplicate insertion of the same node
+    graph.addNode(firstNop);
+    assertEquals(1, graph.getBlocks().size());
+
+    graph.addNode(secondNop);
+    assertEquals(2, graph.getBlocks().size());
   }
 
   @Test
   public void modifyStmtToBlockAtTail() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     assertEquals(0, graph.getBlocks().size());
+    assertEquals(0, graph.nodes().size());
 
     graph.addNode(firstNop);
+    assertEquals(1, graph.nodes().size());
     assertEquals(1, graph.getBlocks().size());
     assertEquals(1, graph.getBlocks().get(0).getStmts().size());
 
     graph.putEdge(firstNop, secondNop);
     assertEquals(1, graph.getBlocks().size());
+    assertEquals(2, graph.nodes().size());
 
     graph.putEdge(secondNop, thirdNop);
     assertEquals(1, graph.getBlocks().size());
+    assertEquals(3, graph.nodes().size());
 
     // insert branchingstmt at end
     graph.putEdge(thirdNop, conditionalStmt);
+    assertEquals(4, graph.nodes().size());
     assertEquals(1, graph.getBlocks().size());
     assertEquals(0, graph.getBlocks().get(0).getPredecessors().size());
     assertEquals(0, graph.getBlocks().get(0).getSuccessors().size());
@@ -114,39 +126,32 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(conditionalStmt, firstNop);
     assertEquals(1, graph.getBlocks().size());
     assertEquals(1, graph.getBlocks().get(0).getPredecessors().size());
+    assertEquals(1, graph.getBlocks().get(0).getSuccessors().size());
 
     // add connection between branchingstmt and second stmt
     graph.putEdge(conditionalStmt, secondNop);
     assertEquals(2, graph.getBlocks().size());
-    assertEquals(1, graph.getBlocks().get(0).getStmts().size());
-    assertEquals(3, graph.getBlocks().get(1).getStmts().size());
 
+    assertEquals(1, graph.getBlocks().get(0).getStmts().size());
     assertEquals(1, graph.getBlocks().get(0).getPredecessors().size());
     assertEquals(1, graph.getBlocks().get(0).getSuccessors().size());
+
+    assertEquals(3, graph.getBlocks().get(1).getStmts().size());
     assertEquals(2, graph.getBlocks().get(1).getPredecessors().size());
     assertEquals(2, graph.getBlocks().get(1).getSuccessors().size());
 
     // remove non-existing edge
     graph.removeEdge(firstNop, conditionalStmt);
     assertEquals(2, graph.getBlocks().size());
-    assertEquals(3, graph.getBlocks().get(0).getPredecessors().size());
-    assertEquals(2, graph.getBlocks().get(1).getPredecessors().size());
-    assertEquals(1, graph.getBlocks().get(0).getSuccessors().size());
-    assertEquals(2, graph.getBlocks().get(1).getSuccessors().size());
 
     // remove branchingstmt at end -> edge across blocks
     graph.removeEdge(conditionalStmt, firstNop);
     assertEquals(2, graph.getBlocks().size());
-    assertEquals(2, graph.getBlocks().get(0).getPredecessors().size());
-    assertEquals(2, graph.getBlocks().get(1).getPredecessors().size());
-    assertEquals(1, graph.getBlocks().get(0).getSuccessors().size());
-    assertEquals(1, graph.getBlocks().get(1).getSuccessors().size());
 
     // remove branchingstmt at head
     graph.removeEdge(conditionalStmt, secondNop);
-    assertEquals(1, graph.getBlocks().size());
-    assertEquals(0, graph.getBlocks().get(0).getPredecessors().size());
-    assertEquals(0, graph.getBlocks().get(0).getSuccessors().size());
+    assertEquals(2, graph.getBlocks().size());
+    assertEquals(4, graph.nodes().size());
   }
 
   @Test

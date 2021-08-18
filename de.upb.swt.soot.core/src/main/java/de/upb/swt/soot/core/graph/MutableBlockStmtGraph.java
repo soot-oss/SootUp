@@ -38,17 +38,22 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
   }
 
   protected MutableBasicBlock addNodeInternal(@Nonnull Stmt stmt) {
+    Integer blockIdx = stmtToBlock.get(stmt);
+    if (blockIdx != null) {
+      return blocks.get(blockIdx);
+    }
+
     MutableBasicBlock block = new MutableBasicBlock();
-    int idx = blocks.size();
+    blockIdx = blocks.size();
     blocks.add(block);
-    return addNodeInternal(block, idx, stmt);
+    addNodeInternal(block, blockIdx, stmt);
+    return block;
   }
 
-  protected MutableBasicBlock addNodeInternal(
+  protected void addNodeInternal(
       @Nonnull MutableBasicBlock block, int blockIdx, @Nonnull Stmt stmt) {
     block.addStmt(stmt);
     stmtToBlock.put(stmt, blockIdx);
-    return block;
   }
 
   public void removeNode(@Nonnull Stmt stmt) {
@@ -120,7 +125,11 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
         int newBlockIdx = blocks.size();
         blocks.add(newBlock);
         newBlock.getStmts().forEach(stmt -> stmtToBlock.put(stmt, newBlockIdx));
+
+        newBlock.addPredecessorBlock(blockA);
+        newBlock.addSuccessorBlock(blockA);
       }
+
     } else {
       // nonbranchingstmt can live in the same block
       if (blockBIdx == null) {
@@ -172,7 +181,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
         // merge previous block if possible i.e. no branchingstmt as tail && same traps
         if (blockOfFrom.getPredecessors().size() == 1) {
           MutableBasicBlock singlePreviousBlock = blockOfFrom.getPredecessors().get(0);
-          if (!singlePreviousBlock.getTail().branches()) {
+          if (!singlePreviousBlock.getTail().branches() && singlePreviousBlock != blockOfFrom) {
             if (singlePreviousBlock.getTraps().equals(blockOfFrom.getTraps())) {
               blockOfFrom
                   .getStmts()

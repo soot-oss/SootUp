@@ -13,12 +13,6 @@ public interface BasicBlock {
   List<? extends BasicBlock> getSuccessors();
 
   @Nonnull
-  List<? extends BasicBlock>
-      getExceptionalPredecessors(); // not really necessary as an exceptionhandler is not called in
-  // an
-  // unexceptional flow i.e. its the same as getPredecessors?
-
-  @Nonnull
   List<? extends BasicBlock> getExceptionalSuccessors();
 
   @Nonnull
