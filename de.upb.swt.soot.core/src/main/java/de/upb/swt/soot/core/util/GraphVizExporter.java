@@ -20,6 +20,7 @@ public class GraphVizExporter {
 
     StringBuilder sb = new StringBuilder();
     sb.append("digraph G {\n")
+        .append("\tcompound=true;\n")
         .append("\tstyle=filled;\n")
         .append("\tcolor=lightgrey;\n")
         .append("\tnode [shape=record, style=filled,color=white];\n\n");
@@ -50,7 +51,7 @@ public class GraphVizExporter {
       for (Stmt stmt : stmts) {
         sb.append("\t\t")
             .append(stmt.hashCode())
-            .append("[label=\"")
+            .append(" [label=\"")
             .append(escape(stmt.toString()))
             .append("\"]")
             .append(";\n");
@@ -66,16 +67,34 @@ public class GraphVizExporter {
       sb.append("\t}\n");
 
       /* add edges to other blocks */
-      for (BasicBlock successorBlock : block.getSuccessors()) {
-        sb.append("\t")
-            .append(block.getTail().hashCode())
-            .append(" -> ")
-            .append(successorBlock.getHead().hashCode())
-            // connect blocks instead of head/tail stmts?
-            //   .append("[lhead=cluster_"+block.hashCode()+",
-            // ltail=cluster_"+successorBlock.hashCode()+"]")
-            .append(";\n");
+      List<? extends BasicBlock> successors = block.getSuccessors();
+      if (successors.size() > 0) {
+        sb.append("\t//branching edges\n");
+        for (BasicBlock successorBlock : successors) {
+          sb.append("\t")
+              .append(block.getTail().hashCode())
+              .append(" -> ")
+              .append(successorBlock.getHead().hashCode())
+              //  .append(" [ltail=\"cluster_" + block.hashCode() + "\", lhead=\"cluster_" +
+              // successorBlock.hashCode() + "\"]")
+              .append(";\n");
+        }
       }
+
+      /* add exceptional edges */
+      List<? extends BasicBlock> exceptionalSuccessors = block.getExceptionalSuccessors();
+      if (exceptionalSuccessors.size() > 0) {
+        sb.append("\t//exceptional edges \n");
+        for (BasicBlock successorBlock : exceptionalSuccessors) {
+          sb.append("\t")
+              .append(block.getTail().hashCode())
+              .append(" -> ")
+              .append(successorBlock.getHead().hashCode())
+              .append(" [color=red, ltail=\"cluster_" + block.hashCode() + "\"]")
+              .append(";\n");
+        }
+      }
+
       sb.append("\n");
     }
 
