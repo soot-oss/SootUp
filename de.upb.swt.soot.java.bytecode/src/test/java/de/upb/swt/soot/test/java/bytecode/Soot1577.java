@@ -9,7 +9,6 @@ import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class Soot1577 {
