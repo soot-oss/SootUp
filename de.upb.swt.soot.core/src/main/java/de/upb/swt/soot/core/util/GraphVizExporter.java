@@ -23,22 +23,26 @@ public class GraphVizExporter {
 
   public static String export(@Nonnull StmtGraph graph) {
 
+    // TODO: hint: use edge weight to have a better top->down code like linear layouting with
+    // starting stmt at the top;
+    // TODO: improvement: use dfs starting with startingstmt to have a more intuitive order of
+    // blocks
+
     StringBuilder sb = new StringBuilder();
     sb.append("digraph G {\n")
         .append("\tcompound=true;\n")
-        .append("\trankdir=TD;\n")
-        .append("\tordering=out;\n")
+        .append("\tlabelloc=b;\n")
         .append("\tstyle=filled;\n")
-        .append("\tcolor=lightgrey;\n")
-        .append("\tnode [shape=box, style=filled,color=white];\n")
-        .append("\t\tedge [fontsize=10]\n")
+        .append("\tcolor=gray90;\n")
+        .append("\tnode [shape=box, style=filled, color=white];\n")
+        .append("\tedge [fontsize=10, fontcolor=grey40]\n")
         .append("\tfontsize=10\n\n");
 
     /* entrypoint */
     Stmt startingStmt = graph.getStartingStmt();
     /*
     if (startingStmt != null) {
-        sb.append("\tstart [shape=Mdiamond, color=grey];\n");
+        sb.append("\tstart [shape=Mdiamond, color=grey80];\n");
         BasicBlock startingStmtBlock =
                 graph.getBlocks().stream().filter(b -> b.getHead() == startingStmt).findFirst().get();
         sb.append("\tstart:s -> ")
@@ -64,11 +68,11 @@ public class GraphVizExporter {
       for (Stmt stmt : stmts) {
         sb.append("\t\t")
             .append(stmt.hashCode())
-            .append(" [label=\"")
+            .append("[label=\"")
             .append(escape(stmt.toString()))
             .append("\"");
         if (startingStmt == stmt) {
-          sb.append("shape=Mdiamond, color=grey");
+          sb.append("shape=Mdiamond, color=grey50, fillcolor=white");
         }
         sb.append("];\n");
       }
@@ -94,7 +98,7 @@ public class GraphVizExporter {
             labelIt = Arrays.asList("false", "true").iterator();
           } else if (tailStmt instanceof JSwitchStmt) {
             labelIt =
-                ((JSwitchStmt) tailStmt).getValues().stream().map(Object::toString).iterator();
+                ((JSwitchStmt) tailStmt).getValues().stream().map(s -> "case " + s).iterator();
           }
           // TODO: [ms] JGoto feels still odd in the StmtGraph representation
 
@@ -104,13 +108,23 @@ public class GraphVizExporter {
           sb.append("\t")
               .append(tailStmt.hashCode())
               .append(":s -> ")
-              .append(successorBlock.getHead().hashCode());
+              .append(successorBlock.getHead().hashCode())
+              .append(":n");
 
           if (labelIt != null) {
-            sb.append("[label=\"").append(labelIt.next()).append("\", fontsize=10]");
+            if (labelIt.hasNext()) {
+              sb.append("[");
+              sb.append("label=\"").append(labelIt.next()).append("\" ");
+              sb.append("]");
+            } else {
+              System.err.println(
+                  "invalid StmtGraph! At least one successor of "
+                      + successorBlock.getTail()
+                      + " is missing");
+            }
           }
-          //  .append(" [ltail=\"cluster_" + block.hashCode() + "\", lhead=\"cluster_" +
-          // successorBlock.hashCode() + "\"]")
+          //          sb.append("ltail=\"cluster_").append(block.hashCode()).append("\",
+          // lhead=\"cluster_").append(successorBlock.hashCode()).append("\"]");
           sb.append(";\n");
         }
       }
@@ -125,7 +139,7 @@ public class GraphVizExporter {
               .append(":e -> ")
               // TODO: [ms] add exception label with signature
               .append(successorBlock.getHead().hashCode())
-              .append("[color=red, ltail=\"cluster_")
+              .append(":n [color=red, ltail=\"cluster_")
               .append(block.hashCode())
               .append("\"]")
               .append(";\n");
