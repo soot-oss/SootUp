@@ -165,7 +165,6 @@ public class JavaModuleView extends JavaView {
   public synchronized Optional<JavaSootClass> getClass(
       @Nonnull ModulePackageName entryPackage, @Nonnull JavaClassType type) {
 
-    System.out.println("called 2");
     Optional<JavaModuleInfo> startOpt = getModuleInfo(entryPackage.getModuleSignature());
     if (!startOpt.isPresent()) {
       return Optional.empty();

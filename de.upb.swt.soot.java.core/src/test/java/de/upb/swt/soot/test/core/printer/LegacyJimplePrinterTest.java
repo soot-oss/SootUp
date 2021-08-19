@@ -55,16 +55,16 @@ public class LegacyJimplePrinterTest {
 
     return new SootClass(
         new OverridingClassSource(
-            new EagerInputLocation(),
+            Collections.singleton(dummyMainMethod),
+            Collections.emptySet(),
+            EnumSet.of(Modifier.PUBLIC),
+            Collections.emptySet(),
+            null,
+            null,
+            null,
             null,
             view.getIdentifierFactory().getClassType("dummyMain"),
-            null,
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            Collections.singleton(dummyMainMethod),
-            null,
-            EnumSet.of(Modifier.PUBLIC)),
+            new EagerInputLocation()),
         SourceType.Application);
   }
 
