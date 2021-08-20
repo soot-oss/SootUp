@@ -10,6 +10,7 @@ import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.util.GraphVizExporter;
 import org.junit.Test;
 
 public class MutableBlockStmtGraphTest {
@@ -94,6 +95,16 @@ public class MutableBlockStmtGraphTest {
 
     graph.addNode(secondNop);
     assertEquals(2, graph.getBlocks().size());
+
+    graph.removeNode(firstNop);
+    assertEquals(1, graph.getBlocks().size());
+
+    // removal of not existing
+    graph.removeNode(firstNop);
+    assertEquals(1, graph.getBlocks().size());
+
+    graph.removeNode(secondNop);
+    assertEquals(0, graph.getBlocks().size());
   }
 
   @Test
@@ -103,6 +114,7 @@ public class MutableBlockStmtGraphTest {
     assertEquals(0, graph.nodes().size());
 
     graph.addNode(firstNop);
+    graph.setStartingStmt(firstNop);
     assertEquals(1, graph.nodes().size());
     assertEquals(1, graph.getBlocks().size());
     assertEquals(1, graph.getBlocks().get(0).getStmts().size());
@@ -140,6 +152,8 @@ public class MutableBlockStmtGraphTest {
     assertEquals(2, graph.getBlocks().get(1).getPredecessors().size());
     assertEquals(2, graph.getBlocks().get(1).getSuccessors().size());
 
+    System.out.println(GraphVizExporter.createUrlToWebeditor(graph));
+
     // remove non-existing edge
     graph.removeEdge(firstNop, conditionalStmt);
     assertEquals(2, graph.getBlocks().size());
@@ -148,10 +162,18 @@ public class MutableBlockStmtGraphTest {
     graph.removeEdge(conditionalStmt, firstNop);
     assertEquals(2, graph.getBlocks().size());
 
+    assertEquals(4, graph.nodes().size());
+    graph.removeNode(firstNop);
+    assertEquals(3, graph.nodes().size());
+
     // remove branchingstmt at head
     graph.removeEdge(conditionalStmt, secondNop);
     assertEquals(2, graph.getBlocks().size());
-    assertEquals(4, graph.nodes().size());
+    assertEquals(3, graph.nodes().size());
+
+    graph.removeNode(secondNop);
+    assertEquals(2, graph.nodes().size());
+    assertEquals(1, graph.getBlocks().size());
   }
 
   @Test

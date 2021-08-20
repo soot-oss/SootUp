@@ -4,6 +4,7 @@ import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -27,9 +28,9 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
 
   @Override
   @Nonnull
-  // FIXME: return them in post-reverse-order
+  // FIXME: return them in post-reverse-order for ssa?
   public List<? extends BasicBlock> getBlocks() {
-    return blocks;
+    return blocks.stream().filter(Objects::nonNull).collect(Collectors.toList());
   }
 
   @Override
@@ -58,15 +59,19 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
 
   public void removeNode(@Nonnull Stmt stmt) {
     Integer blockIdx = stmtToBlock.remove(stmt);
+    if (blockIdx == null) {
+      return;
+    }
+    // do edges to this node exist? remove them
     removeBorderEdgesInternal(stmt, blockIdx);
     MutableBasicBlock blockOfRemovedStmt = blocks.get(blockIdx);
     blockOfRemovedStmt.removeStmt(stmt);
 
-    // for GC: clear entry in blocks if block is empty -> not referenced anymore -> not reachable
-    // for the user
     if (blockOfRemovedStmt.getStmts().size() <= 0) {
-      // blocks.set(blockIdx, null);
-      blocks.remove(blockIdx);
+      // for GC: clear entry in blocks if block is empty -> not referenced anymore -> not reachable
+      // anymore
+      blocks.set(blockIdx, null);
+      // blocks.remove( blockIdx.intValue() ); needs update blockIdx that are changed
     }
   }
 
