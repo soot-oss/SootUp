@@ -115,24 +115,30 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
         blockB = new MutableBasicBlock();
         blockBIdx = blocks.size();
         blocks.add(blockB);
-      } else {
-        blockB = blocks.get(blockBIdx);
-      }
-
-      if (blockB.getHead() == stmtB) {
-        // stmtB is at the beginning of the second Block ->
+        blockB.addStmt(stmtB);
+        stmtToBlock.put(stmtB, blockBIdx);
         blockB.addPredecessorBlock(blockA);
         blockA.addSuccessorBlock(blockB);
-        stmtToBlock.put(stmtB, blockBIdx);
-      } else {
-        // stmtB is not at the beginning -> split Block: stmtB is head of newly created Block
-        MutableBasicBlock newBlock = blockB.splitBlockLinked(stmtB, true);
-        int newBlockIdx = blocks.size();
-        blocks.add(newBlock);
-        newBlock.getStmts().forEach(stmt -> stmtToBlock.put(stmt, newBlockIdx));
 
-        newBlock.addPredecessorBlock(blockA);
-        newBlock.addSuccessorBlock(blockA);
+      } else {
+        blockB = blocks.get(blockBIdx);
+
+        if (blockB.getHead() == stmtB) {
+          // stmtB is at the beginning of the second Block -> connect blockA and blockB
+          blockB.addPredecessorBlock(blockA);
+          blockA.addSuccessorBlock(blockB);
+          stmtToBlock.put(stmtB, blockBIdx);
+        } else {
+          // stmtB is not at the beginning -> split Block: stmtB is head of newly created Block
+          MutableBasicBlock newBlock = blockB.splitBlockLinked(stmtB, true);
+          int newBlockIdx = blocks.size();
+          blocks.add(newBlock);
+          newBlock.getStmts().forEach(stmt -> stmtToBlock.put(stmt, newBlockIdx));
+
+          // FIXME [ms] looks strange?!
+          newBlock.addPredecessorBlock(blockA);
+          newBlock.addSuccessorBlock(blockA);
+        }
       }
 
     } else {
@@ -140,8 +146,8 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
       if (blockBIdx == null) {
         addNodeInternal(blockA, blockAIdx, stmtB);
       } else {
-        // TODO: check if we can update an edge?
-        throw new IllegalStateException(
+        // TODO: what would make sense here?!
+        throw new IllegalArgumentException(
             "Stmt is already in the Graph - nodes/Stmt's must be unique objects.");
       }
     }

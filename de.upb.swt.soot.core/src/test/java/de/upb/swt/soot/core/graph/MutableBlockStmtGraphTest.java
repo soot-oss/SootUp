@@ -11,6 +11,8 @@ import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.GraphVizExporter;
+import java.util.Arrays;
+import java.util.Collections;
 import org.junit.Test;
 
 public class MutableBlockStmtGraphTest {
@@ -92,12 +94,15 @@ public class MutableBlockStmtGraphTest {
     // test duplicate insertion of the same node
     graph.addNode(firstNop);
     assertEquals(1, graph.getBlocks().size());
+    assertEquals(1, graph.getBlocks().get(0).getStmts().size());
 
     graph.addNode(secondNop);
     assertEquals(2, graph.getBlocks().size());
+    assertEquals(1, graph.getBlocks().get(1).getStmts().size());
 
     graph.removeNode(firstNop);
     assertEquals(1, graph.getBlocks().size());
+    assertEquals(1, graph.getBlocks().get(0).getStmts().size());
 
     // removal of not existing
     graph.removeNode(firstNop);
@@ -105,6 +110,82 @@ public class MutableBlockStmtGraphTest {
 
     graph.removeNode(secondNop);
     assertEquals(0, graph.getBlocks().size());
+  }
+
+  @Test
+  public void removeStmtBetweenEdges() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.setStartingStmt(firstNop);
+    graph.putEdge(firstNop, secondNop);
+    graph.putEdge(secondNop, thirdNop);
+    assertEquals(3, graph.getBlocks().get(0).getStmts().size());
+
+    graph.removeNode(secondNop);
+    assertEquals(Arrays.asList(firstNop, thirdNop), graph.getBlocks().get(0).getStmts());
+  }
+
+  @Test
+  public void removeStmtTail() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.setStartingStmt(firstNop);
+    graph.putEdge(firstNop, secondNop);
+    graph.putEdge(secondNop, thirdNop);
+
+    graph.removeNode(thirdNop);
+    assertEquals(Arrays.asList(firstNop, secondNop), graph.getBlocks().get(0).getStmts());
+  }
+
+  @Test
+  public void removeStmtHead() {
+    assertNotEquals(Arrays.asList(firstNop, secondNop), Arrays.asList(firstNop, thirdNop));
+
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.setStartingStmt(firstNop);
+    graph.putEdge(firstNop, secondNop);
+    graph.putEdge(secondNop, thirdNop);
+
+    graph.removeNode(firstNop);
+    assertEquals(Arrays.asList(secondNop, thirdNop), graph.getBlocks().get(0).getStmts());
+  }
+
+  @Test
+  public void removeStmtConditionalTail() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.setStartingStmt(firstNop);
+    graph.putEdge(firstNop, secondNop);
+    graph.putEdge(secondNop, conditionalStmt);
+
+    graph.removeNode(conditionalStmt);
+    assertEquals(Arrays.asList(firstNop, secondNop), graph.getBlocks().get(0).getStmts());
+  }
+
+  @Test
+  public void testSetEdges() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.setEdges(firstNop, Collections.singletonList(conditionalStmt));
+    assertEquals(Arrays.asList(firstNop, conditionalStmt), graph.getBlocks().get(0).getStmts());
+
+    graph.setEdges(conditionalStmt, Arrays.asList(secondNop, thirdNop));
+    assertEquals(3, graph.getBlocks().size());
+
+    assertEquals(Arrays.asList(firstNop, conditionalStmt), graph.getBlocks().get(0).getStmts());
+    assertEquals(Collections.singletonList(secondNop), graph.getBlocks().get(1).getStmts());
+    assertEquals(Collections.singletonList(thirdNop), graph.getBlocks().get(2).getStmts());
+  }
+
+  @Test
+  public void removeStmtConditionalTailBetweenBlocks() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.setStartingStmt(firstNop);
+    graph.putEdge(firstNop, conditionalStmt);
+
+    graph.setEdges(conditionalStmt, Arrays.asList(secondNop, thirdNop));
+    assertEquals(3, graph.getBlocks().size());
+
+    graph.removeNode(conditionalStmt);
+    assertEquals(Collections.singletonList(firstNop), graph.getBlocks().get(0).getStmts());
+    assertEquals(Collections.singletonList(secondNop), graph.getBlocks().get(1).getStmts());
+    assertEquals(Collections.singletonList(thirdNop), graph.getBlocks().get(2).getStmts());
   }
 
   @Test
