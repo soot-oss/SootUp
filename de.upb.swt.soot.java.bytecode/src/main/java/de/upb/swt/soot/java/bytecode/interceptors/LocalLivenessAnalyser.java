@@ -22,6 +22,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #L%
  */
 
+import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -29,7 +30,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.*;
 import javax.annotation.Nonnull;
 
-/** @auther Zun Wang */
+/** @author Zun Wang */
 public class LocalLivenessAnalyser {
 
   // Each stmt(node) has out-edges and in-edges
@@ -39,13 +40,13 @@ public class LocalLivenessAnalyser {
   // e.g: a = b + c; live-in={b,c}  live-out={a,b,c}
   private final Map<Stmt, Set<Local>> liveOut = new HashMap<>();
 
-  public LocalLivenessAnalyser(@Nonnull StmtGraph graph) {
+  public LocalLivenessAnalyser(@Nonnull ExceptionalStmtGraph graph) {
     // initial liveIn and liveOut
     List<Stmt> startingStmts = new ArrayList<>();
     for (Stmt stmt : graph.nodes()) {
       liveIn.put(stmt, Collections.emptySet());
       liveOut.put(stmt, Collections.emptySet());
-      if (graph.successors(stmt).isEmpty()) {
+      if (graph.successors(stmt).isEmpty() && graph.exceptionalSuccessors(stmt).isEmpty()) {
         startingStmts.add(stmt);
       }
     }
@@ -62,6 +63,9 @@ public class LocalLivenessAnalyser {
         Set<Local> out = new HashSet<>(liveOut.get(stmt));
         for (Stmt succ : graph.successors(stmt)) {
           out = merge(out, liveIn.get(succ));
+        }
+        for (Stmt esucc : graph.exceptionalSuccessors(stmt)) {
+          out = merge(out, liveIn.get(esucc));
         }
         if (!isEqual(out, liveOut.get(stmt))) {
           fixed = false;
@@ -87,6 +91,11 @@ public class LocalLivenessAnalyser {
             queue.addLast(pred);
           }
         }
+        for (Stmt epred : graph.exceptionalPredecessors(stmt)){
+          if (!visitedStmts.contains(epred)){
+            queue.addLast(epred);
+          }
+        }
       }
     }
   }
@@ -100,7 +109,7 @@ public class LocalLivenessAnalyser {
   @Nonnull
   public Set<Local> getLiveLocalsBeforeStmt(@Nonnull Stmt stmt) {
     if (!liveIn.containsKey(stmt)) {
-      throw new RuntimeException("Stmt: " + stmt.toString() + " is not in StmtGraph!");
+      throw new RuntimeException("Stmt: " + stmt + " is not in StmtGraph!");
     }
     return liveIn.get(stmt);
   }
@@ -114,7 +123,7 @@ public class LocalLivenessAnalyser {
   @Nonnull
   public Set<Local> getLiveLocalsAfterStmt(@Nonnull Stmt stmt) {
     if (!liveOut.containsKey(stmt)) {
-      throw new RuntimeException("Stmt: " + stmt.toString() + " is not in StmtGraph!");
+      throw new RuntimeException("Stmt: " + stmt + " is not in StmtGraph!");
     }
     return liveOut.get(stmt);
   }
@@ -131,11 +140,7 @@ public class LocalLivenessAnalyser {
     if (set1.isEmpty()) {
       return set2;
     } else {
-      for (Local local : set2) {
-        if (!set1.contains(local)) {
-          set1.add(local);
-        }
-      }
+      set1.addAll(set2);
       return set1;
     }
   }
@@ -147,7 +152,6 @@ public class LocalLivenessAnalyser {
    * @param set2
    * @return if same return true, else return false;
    */
-  @Nonnull
   private boolean isEqual(@Nonnull Set<Local> set1, @Nonnull Set<Local> set2) {
     if (set1.size() != set2.size()) {
       return false;
