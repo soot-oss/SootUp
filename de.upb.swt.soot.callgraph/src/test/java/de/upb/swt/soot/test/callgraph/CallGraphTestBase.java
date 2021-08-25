@@ -369,6 +369,31 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testHelloWorld() {
+    // Get an instance of the Runtime class
+    Runtime runtime = Runtime.getRuntime();
+
+    // To convert from Bytes to MegaBytes:
+    // 1 MB = 1024 KB and 1 KB = 1024 Bytes.
+    // Therefore, 1 MB = 1024 * 1024 Bytes.
+    long MegaBytes = 1024 * 1024;
+
+    // Memory which is currently available for use by heap
+    long totalMemory = runtime.totalMemory() / MegaBytes;
+    System.out.println("Heap size available for use -> " + totalMemory + " MB");
+
+    // Maximum memory which can be used if required.
+    // The heap cannot grow beyond this size
+    long maxMemory = runtime.maxMemory() / MegaBytes;
+    System.out.println("Maximum memory Heap can use -> " + maxMemory + " MB");
+
+    // Free memory still available
+    long freeMemory = runtime.freeMemory() / MegaBytes;
+    System.out.println("Free memory in heap -> " + freeMemory + " MB");
+
+    // Memory currently used by heap
+    long memoryInUse = totalMemory - freeMemory;
+    System.out.println("Memory already used by heap -> " + memoryInUse + " MB");
+
     CallGraph cg = loadCallGraph("Misc", "HelloWorld");
 
     ClassType clazzType = JavaIdentifierFactory.getInstance().getClassType("java.io.PrintStream");
