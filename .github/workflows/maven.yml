@@ -25,8 +25,6 @@ jobs:
     - name: Build (JDK8)
       run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     - name: Test (JDK8)
-      env:
-        MAVEN_OPTS: "-Xmx6000m"
       run: mvn verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     - name: Prepare Coverage Reports
       env: 
@@ -61,8 +59,6 @@ jobs:
     - name: Build (JDK9)
       run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     - name: Test (JDK9)
-      env:
-        MAVEN_OPTS: "-Xmx6000m"
       run: mvn verify -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -PJava9
     - name: Prepare Coverage Reports      
       env: 

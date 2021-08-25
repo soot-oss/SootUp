@@ -210,6 +210,7 @@
 				<configuration>
 					<!-- Sets the VM argument line used when unit tests are run. -->
 					<argLine>${surefireArgLine}</argLine>
+					<argLine>-Xmx4096M</argLine>
 					<groups>${testcase.groups}</groups>
 				</configuration>
 			</plugin>
