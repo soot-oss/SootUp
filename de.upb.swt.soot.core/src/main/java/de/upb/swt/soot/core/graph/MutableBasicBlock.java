@@ -100,6 +100,9 @@ class MutableBasicBlock implements BasicBlock {
   @Nonnull
   @Override
   public Stmt getHead() {
+    /*if (stmts.size() < 1) {
+      throw new IllegalStateException("Cant get a head - this block has no assigned Stmts.");
+    }*/
     return stmts.get(0);
   }
 
@@ -107,9 +110,9 @@ class MutableBasicBlock implements BasicBlock {
   @Override
   public Stmt getTail() {
     int size = stmts.size();
-    if (size < 1) {
+    /*if (size < 1) {
       throw new IllegalStateException("Cant get a tail - this block has no assigned Stmts.");
-    }
+    }*/
     return stmts.get(size - 1);
   }
 

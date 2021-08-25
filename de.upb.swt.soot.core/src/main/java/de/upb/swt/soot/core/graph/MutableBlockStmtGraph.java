@@ -127,7 +127,6 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
           // stmtB is at the beginning of the second Block -> connect blockA and blockB
           blockB.addPredecessorBlock(blockA);
           blockA.addSuccessorBlock(blockB);
-          stmtToBlock.put(stmtB, blockBIdx);
         } else {
           // stmtB is not at the beginning -> split Block: stmtB is head of newly created Block
           MutableBasicBlock newBlock = blockB.splitBlockLinked(stmtB, true);
@@ -135,9 +134,8 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
           blocks.add(newBlock);
           newBlock.getStmts().forEach(stmt -> stmtToBlock.put(stmt, newBlockIdx));
 
-          // FIXME [ms] looks strange?!
           newBlock.addPredecessorBlock(blockA);
-          newBlock.addSuccessorBlock(blockA);
+          blockA.addSuccessorBlock(newBlock);
         }
       }
 

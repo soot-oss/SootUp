@@ -71,6 +71,7 @@ public class GraphVizExporter {
             .append("[label=\"")
             .append(escape(stmt.toString()))
             .append("\"");
+        // mark startingstmt itself
         if (startingStmt == stmt) {
           sb.append("shape=Mdiamond, color=grey50, fillcolor=white");
         }
@@ -93,6 +94,7 @@ public class GraphVizExporter {
         Stmt tailStmt = block.getTail();
 
         Iterator<String> labelIt = null;
+        // build edge labels for branching stmts
         if (tailStmt instanceof BranchingStmt) {
           if (tailStmt instanceof JIfStmt) {
             labelIt = Arrays.asList("false", "true").iterator();

@@ -221,9 +221,13 @@ public class MutableBlockStmtGraphTest {
     assertEquals(1, graph.getBlocks().get(0).getPredecessors().size());
     assertEquals(1, graph.getBlocks().get(0).getSuccessors().size());
 
+    System.out.println(GraphVizExporter.createUrlToWebeditor(graph));
+
     // add connection between branchingstmt and second stmt
     graph.putEdge(conditionalStmt, secondNop);
     assertEquals(2, graph.getBlocks().size());
+
+    System.out.println(GraphVizExporter.createUrlToWebeditor(graph));
 
     assertEquals(1, graph.getBlocks().get(0).getStmts().size());
     assertEquals(1, graph.getBlocks().get(0).getPredecessors().size());
@@ -232,8 +236,6 @@ public class MutableBlockStmtGraphTest {
     assertEquals(3, graph.getBlocks().get(1).getStmts().size());
     assertEquals(2, graph.getBlocks().get(1).getPredecessors().size());
     assertEquals(2, graph.getBlocks().get(1).getSuccessors().size());
-
-    System.out.println(GraphVizExporter.createUrlToWebeditor(graph));
 
     // remove non-existing edge
     graph.removeEdge(firstNop, conditionalStmt);
