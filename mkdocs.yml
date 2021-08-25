@@ -2,3 +2,9 @@ site_name: FutureSoot
 
 theme:
   name: material
+
+plugins:
+  - tooltips
+
+extra_css:
+  - css/hint.min.css
