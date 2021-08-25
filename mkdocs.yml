@@ -1,4 +1,19 @@
 site_name: FutureSoot
+#site_url: https://example.com/
+repo_url: https://github.com/secure-software-engineering/soot-reloaded/
+
+nav:
+ # - 'Hello FutureSoot':
+    - Installation: installation.md
+    - Getting started: getting-started.md
+
+#  - 'Knowledge':
+#    - Goal: goal.md
+    - Jimple: jimple.md
+#    - CallGraph: callgraph.md
+#    - Analyses: analyses.md
+
+#  - About: about.md
 
 theme:
   name: material
