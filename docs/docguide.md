@@ -11,5 +11,5 @@
 this enables that tutorial code can be tested and will fail if its not up to date anymore :)
 
 ```
-{{ include('shared-test-resources/callgraph/jcg/Classloading/CL1.java')}}
+{{ include('basicSetup/BasicSetup.java')}}
 ```

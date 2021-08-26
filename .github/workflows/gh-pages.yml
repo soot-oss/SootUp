@@ -13,4 +13,5 @@ jobs:
           python-version: 3.x
       - run: pip install mkdocs-material
       - run: pip install mkdocs-tooltips
+      - run: pip install git+https://github.com/RedisLabs/mkdocs-include.git
       - run: mkdocs gh-deploy --force
