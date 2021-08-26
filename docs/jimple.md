@@ -3,7 +3,6 @@ What is Jimple? Jimple is the intermediate representation [**IR**]{A data struct
 Soots intention is to provide a simplified way to analyze JVM bytecode. For this 
 purpose Jimple was designed as a representation of JVM bytecode which is human readable.
 
-
 ## Jimple Grammar Structure
 Jimple mimics the JVMs class file structure.
 Therefore it is object oriented.
@@ -88,12 +87,20 @@ An Immediate has a [**given**]{as in constant or immutable} Type and consists of
 
 
 ### Type
+VoidType
+#### PrimaryType
+BooleanType, ByteType, CharType, ShortType, IntType, LongType, DoubleType, FloatType
 
-// TODO
-
+#### ReferenceType
+ClassType, 
+ArrayType
+NullType
 
 #### Local
-Anakin: "Whats this?" ObiWan:" A Local!"
+```
+$i0 
+```
+[Whats this?](https://www.youtube.com/watch?v=_FLhO7ZnKHs&t=54s)
 A Local is a variable and its scope is inside its method i.e. no referencing from outside a method.
 Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
 
@@ -101,6 +108,7 @@ Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
 #### Constant
 represents a value itself. don't confuse it with a variable/Local which has a immutable (i.e. final) attribute. 
 
+There exists a constant entity for every Type - that way all value types can have a representation.
 
 ### Expr
 // TODO
@@ -108,21 +116,39 @@ represents a value itself. don't confuse it with a variable/Local which has a im
 
 ### Ref
 #### JArrayRef
+```
+$arr[1]
+```
 referencing a position inside an array.
 
 #### JFieldRef (JStaticFieldRef & JInstanceFieldRef)
+```
+<SomePackage.ExampleClass: fieldname>
+// or
+$r1.<SomePackage.ExampleClass: fieldname>
+```
 referencing a Field via its FieldSignature and if necessary (i.e. with JInstanceFieldRef) the corresponding Local instance that points to the object instance.
 
 #### IdentityRef
 The IdentityRef makes those implicit special value assignments explicit.
 
 ##### JThisRef
+```
+@this: package.fruit.Banana
+```
 represents the this pointer of the current class.
 
 ##### JCaughtExceptionRef
+```
+@caughtexception
+```
 represents the value of the thrown exception (caught by this exceptionhandler).
 
 ##### JParameterRef
+```
+$i0 := @parameter0
+$i1 := @parameter1 
+```
 represents a parameter of a method, identified by its index.
 
 

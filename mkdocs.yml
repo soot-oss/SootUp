@@ -3,6 +3,7 @@ site_name: FutureSoot
 repo_url: https://github.com/secure-software-engineering/soot-reloaded/
 
 nav:
+    -  Home: index.md
  # - 'Hello FutureSoot':
     - Installation: installation.md
     - Getting started: getting-started.md
@@ -18,8 +19,13 @@ nav:
 theme:
   name: material
 
+
 plugins:
   - tooltips
+  - search
+  - include:
+      src_path: './'
+    #examples/src/test/java/de.upb.swt.soot.examples/
 
 extra_css:
   - css/hint.min.css
