@@ -26,7 +26,6 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.core.views.View;
@@ -68,7 +67,8 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
       @Nonnull ClassType classType, @Nonnull View<?> view) {
     JavaClassType klassType = (JavaClassType) classType;
 
-    ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this));
+    ClassProvider<JavaSootClass> classProvider =
+        new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this));
     Path filepath =
         theFileSystem.getPath(
             klassType.getFullyQualifiedName().replace('.', '/')
@@ -125,7 +125,8 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull View<?> view) {
 
-    ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this));
+    ClassProvider<JavaSootClass> classProvider =
+        new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this));
 
     String moduleInfoFilename =
         JavaModuleIdentifierFactory.MODULE_INFO_FILE

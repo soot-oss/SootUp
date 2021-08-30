@@ -11,13 +11,11 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.interceptors.DeadAssignmentEliminator;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.JavaSootClassSource;
-import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.nio.file.Paths;
@@ -53,17 +51,21 @@ public class BodyInterceptor {
     MethodSignature methodSignature =
         project
             .getIdentifierFactory()
-            .getMethodSignature(
-                "someMethod", classType, "void", Collections.emptyList());
+            .getMethodSignature("someMethod", classType, "void", Collections.emptyList());
 
     // Create a view for project, which allows us to retrieve classes
-    JavaView view = project.createOnDemandView(analysisInputLocation -> new ClassLoadingOptions() {
-      @Nonnull
-      @Override
-      public List<de.upb.swt.soot.core.transform.BodyInterceptor> getBodyInterceptors() {
-        return Collections.singletonList(new DeadAssignmentEliminator());
-      }
-    });
+    // add class loading options, which can specify body interceptors
+    JavaView view =
+        project.createOnDemandView(
+            analysisInputLocation ->
+                new ClassLoadingOptions() {
+                  @Nonnull
+                  @Override
+                  public List<de.upb.swt.soot.core.transform.BodyInterceptor>
+                      getBodyInterceptors() {
+                    return Collections.singletonList(new DeadAssignmentEliminator());
+                  }
+                });
 
     // Assert that class is present
     assertTrue(view.getClass(classType).isPresent());
@@ -77,9 +79,16 @@ public class BodyInterceptor {
 
     System.out.println(method.getBody());
 
-    assertTrue(method.getBody().getStmts().stream().noneMatch(stmt -> stmt instanceof JAssignStmt && ((JAssignStmt) stmt).getRightOp().equivTo(
-        IntConstant.getInstance(3)))); // assert that l1 = 3 is not present
-
-
+    assertTrue(
+        method.getBody().getStmts().stream()
+            .noneMatch(
+                stmt ->
+                    stmt instanceof JAssignStmt
+                        && ((JAssignStmt) stmt)
+                            .getRightOp()
+                            .equivTo(
+                                IntConstant.getInstance(
+                                    3)))); // assert that l1 = 3 is not present, i.e. body
+                                           // interceptor worked
   }
 }
