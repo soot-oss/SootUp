@@ -93,8 +93,8 @@ public class LocalPackerTest {
    *    l3 = 10;
    *    l2#3 = l3;
    *    l1#4 = 0;
-   *    l1#5 = l1#4 + 1;
    *  label1:
+   *    l1#5 = l1#4 + 1;
    *    if l1#5 > l3 goto label2;
    *    goto label1;
    *  label2:
