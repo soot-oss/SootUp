@@ -9,6 +9,7 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
@@ -191,7 +192,7 @@ public abstract class PathBasedAnalysisInputLocation
     public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
         @Nonnull View<?> view) {
       return walkDirectory(
-          path, view.getIdentifierFactory(), new AsmJavaClassProvider(view.getBodyInterceptors()));
+          path, view.getIdentifierFactory(), new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this)));
     }
 
     @Override
@@ -199,7 +200,7 @@ public abstract class PathBasedAnalysisInputLocation
     public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
         @Nonnull ClassType type, @Nonnull View<?> view) {
       return getClassSourceInternal(
-          (JavaClassType) type, path, new AsmJavaClassProvider(view.getBodyInterceptors()));
+          (JavaClassType) type, path, new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this)));
     }
   }
 
@@ -519,7 +520,7 @@ public abstract class PathBasedAnalysisInputLocation
         return getClassSourceInternal(
             (JavaClassType) type,
             archiveRoot,
-            new AsmJavaClassProvider(view.getBodyInterceptors()));
+            new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this)));
       } catch (ExecutionException e) {
         throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
       }
@@ -536,7 +537,7 @@ public abstract class PathBasedAnalysisInputLocation
         return walkDirectory(
             archiveRoot,
             view.getProject().getIdentifierFactory(),
-            new AsmJavaClassProvider(view.getBodyInterceptors()));
+            new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this)));
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

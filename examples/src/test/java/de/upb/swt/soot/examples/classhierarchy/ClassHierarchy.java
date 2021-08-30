@@ -1,4 +1,4 @@
-package de.upb.swt.soot.examples.basicSetup;
+package de.upb.swt.soot.examples.classhierarchy;
 
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;

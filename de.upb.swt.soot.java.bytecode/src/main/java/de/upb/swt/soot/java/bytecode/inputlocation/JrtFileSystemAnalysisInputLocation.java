@@ -67,8 +67,8 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
       @Nonnull ClassType classType, @Nonnull View<?> view) {
     JavaClassType klassType = (JavaClassType) classType;
-    List<BodyInterceptor> bodyInterceptors = view.getBodyInterceptors();
-    ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
+
+    ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this));
     Path filepath =
         theFileSystem.getPath(
             klassType.getFullyQualifiedName().replace('.', '/')
@@ -125,8 +125,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull View<?> view) {
 
-    List<BodyInterceptor> bodyInterceptors = view.getBodyInterceptors();
-    ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
+    ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this));
 
     String moduleInfoFilename =
         JavaModuleIdentifierFactory.MODULE_INFO_FILE
