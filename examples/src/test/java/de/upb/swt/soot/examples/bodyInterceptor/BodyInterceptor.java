@@ -79,16 +79,12 @@ public class BodyInterceptor {
 
     System.out.println(method.getBody());
 
+    // assert that l1 = 3 is not present, i.e. body interceptor worked
     assertTrue(
         method.getBody().getStmts().stream()
             .noneMatch(
                 stmt ->
                     stmt instanceof JAssignStmt
-                        && ((JAssignStmt) stmt)
-                            .getRightOp()
-                            .equivTo(
-                                IntConstant.getInstance(
-                                    3)))); // assert that l1 = 3 is not present, i.e. body
-                                           // interceptor worked
+                        && ((JAssignStmt) stmt).getRightOp().equivTo(IntConstant.getInstance(3))));
   }
 }
