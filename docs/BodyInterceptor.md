@@ -129,3 +129,17 @@ The following table shows the letter corresponding to each type:
 | null | n |
 | unknown | e |
 | reference | r |
+
+
+#### StaticSingleAssignmentFormer
+
+StaticSingleAssignmentFormer is a<code>BodyInterceptor</code>that transforms jimple body into SSA form, so that each local variable is assigned exactly once and defined before its first use.
+
+Example:
+
+![SSA Example_1](./figures/SSA Example_1.png)
+
+![SSA Example_2](./figures/SSA Example_2.png)
+
+In the given example, the StaticSingleAssignmentFormer assigns to a new local variable for each<code>IdentityStmt</code>and<code>AssignStmt</code>. And each use uses the local variable which is most recently defined. Sometimes, it is impossible to determine the most recently defined local variable for a use in a join block. In this case, the StaticSingleAssignmentFormer will insert a<code>PhiStmt</code>in the front of the join block to merge all most recently defined local variables and assign them a new local variable. 
+
