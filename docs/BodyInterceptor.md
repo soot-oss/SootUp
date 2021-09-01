@@ -40,19 +40,19 @@ Example:
 
 ![TrapTightener Example](./figures/TrapTightener%20Example.png)
 
-We assume in the example above that only the<code>Stmt</code>:<code>l2 := 2</code>might throw an exception caught by the<code>Trap</code>which is labeled with<code>label3</code>. In the jimple body before running the TrapTightener, the protected area covered by the Trap contains three<code>Stmt</code>:<code>l1 := 1; l2 := 2; l2 := 3</code>. But an exception could only arise at the<code>Stmt</code>:<code>l2 := 2</code>. After the implementation of TrapTightener, we will get a contractible protected area which contains only the<code>Stmt</code>that might throw an exception, namely the<code>Stmt</code>:<code>l2 := 2</code>.
+We assume in the example above that only the<code>Stmt</code>:<code>l2 := 2</code>might throw an exception caught by the<code>Trap</code>which is labeled with<code>label3</code>. In the jimple body before running the TrapTightener, the protected area covered by the Trap contains three<code>Stmts</code>:<code>l1 := 1; l2 := 2; l2 := 3</code>. But an exception could only arise at the<code>Stmt</code>:<code>l2 := 2</code>. After the implementation of TrapTightener, we will get a contractible protected area which contains only the<code>Stmt</code>that might throw an exception, namely the<code>Stmt</code>:<code>l2 := 2</code>.
 
 
 
 #### EmptySwitchEliminator
 
-EmptySwitchEliminator is a<code>BodyInterceptor</code>that removes the empty switch statement which contains only the default case.
+EmptySwitchEliminator is a<code>BodyInterceptor</code>that removes empty switch statements which contain only the default case.
 
 Example: 
 
 ![EmptySwitchEliminator Example](./figures/EmptySwitchEliminator Example.png)
 
-As shown in the example above, the switch statement in the jimple body always takes the default action. After running EmptySwitchEliminator, the switch statement is replaced with the<code>GotoStmt</code>for default case.
+As shown in the example above, the switch statement in the jimple body always takes the default action. After running EmptySwitchEliminator, the switch statement is replaced with a<code>GotoStmt</code>to the default case.
 
 
 
@@ -87,9 +87,9 @@ c = use(a); // a, b, c are local variables
 According to the copy propagation's definition, the statement<code>c = use(a)</code>can be replaced with<code>c = use(b)</code>iff both conditions are met: 
 
 * <code>a</code>is defined only one time on all the paths from<code>a = b</code>to<code>c = use(a)</code>.
-* There're no definitions of<code>b</code>on any path from<code>a = b</code>to<code>c = use(a)</code>.
+* There are no definitions of<code>b</code>on any path from<code>a = b</code>to<code>c = use(a)</code>.
 
-In the example for global copy propagation, the first used<code>l1</code>is replaced with<code>l0</code>, but the second used<code>l1</code>cannot be replace with<code>l3</code>, because the second condition is not satisfied.
+In the example for global copy propagation, the first used<code>l1</code>is replaced with<code>l0</code>, but the second used<code>l1</code>cannot be replaced with<code>l3</code>, because the second condition is not satisfied.
 
 Example for constant propagation:
 
@@ -103,9 +103,9 @@ a = const;
 b = use(a); // a, b are local variables, const is a constant
 ```
 
-After perfoming the constant propagation, the statement<code>b = use(a)</code>can be replace with<code>b = use(const)</code>iff<code>a</code>is not redefined on all the paths from<code>a = const</code>to<code>b = use(a)</code>.
+After perfoming the constant propagation, the statement<code>b = use(a)</code>can be replaced with<code>b = use(const)</code>iff<code>a</code>is not redefined on any of the paths from<code>a = const</code>to<code>b = use(a)</code>.
 
-Therefore, the first used<code>l1</code>in the second example can be replace with the constant<code>1</code>, but the second used<code>l1</code>cannot be replaced with the constant<code>2</code>, because<code>l1</code>is redefined on the path from<code>l1 = 2</code>to<code>l4 = use(l1)</code>.  However, it can replaced with local variable<code>l2</code>, because the both conditions of copy propagation are met. 
+Therefore, the first used<code>l1</code>in the second example can be replaced with the constant<code>1</code>, but the second used<code>l1</code>cannot be replaced with the constant<code>2</code>, because<code>l1</code>is redefined on the path from<code>l1 = 2</code>to<code>l4 = use(l1)</code>.  However, it can be replaced with local variable<code>l2</code>, because the both conditions of copy propagation are met. 
 
 #### LocalNameStandardizer
 
@@ -141,5 +141,5 @@ Example:
 
 ![SSA Example_2](./figures/SSA Example_2.png)
 
-In the given example, the StaticSingleAssignmentFormer assigns to a new local variable for each<code>IdentityStmt</code>and<code>AssignStmt</code>. And each use uses the local variable which is most recently defined. Sometimes, it is impossible to determine the most recently defined local variable for a use in a join block. In this case, the StaticSingleAssignmentFormer will insert a<code>PhiStmt</code>in the front of the join block to merge all most recently defined local variables and assign them a new local variable. 
+In the given example, the StaticSingleAssignmentFormer assigns each<code>IdentityStmt</code>and<code>AssignStmt</code>to a new local variable . And each use uses the local variable which is most recently defined. Sometimes, it is impossible to determine the most recently defined local variable for a use in a join block. In this case, the StaticSingleAssignmentFormer will insert a<code>PhiStmt</code>in the front of the join block to merge all most recently defined local variables and assign them a new local variable. 
 
