@@ -21,6 +21,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #L%
  */
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
@@ -44,10 +45,11 @@ public class LocalNameStandardizer implements BodyInterceptor {
     int defsCount = 0;
     for (Stmt stmt : builder.getStmtGraph()) {
       Local def = null;
-      if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
-        def = (Local) stmt.getDefs().get(0);
+      final List<Value> defs = stmt.getDefs();
+      if (!defs.isEmpty() && defs.get(0) instanceof Local) {
+        def = (Local) defs.get(0);
       }
-      if (def != null && !localToFirstOccurrence.keySet().contains(def)) {
+      if (def != null && !localToFirstOccurrence.containsKey(def)) {
         localToFirstOccurrence.put(def, defsCount);
         defsCount++;
       }
@@ -56,7 +58,7 @@ public class LocalNameStandardizer implements BodyInterceptor {
     // Sort all locals in a list
     ArrayList<Local> localsList = new ArrayList<>(builder.getLocals());
     LocalComparator localComparator = new LocalComparator(localToFirstOccurrence);
-    Collections.sort(localsList, localComparator);
+    localsList.sort(localComparator);
 
     // Assign new name to each local
     int refCount = 0;
@@ -117,12 +119,12 @@ public class LocalNameStandardizer implements BodyInterceptor {
     builder.setLocals(sortedLocals);
   }
 
-  private class LocalComparator implements Comparator<Local> {
+  private static class LocalComparator implements Comparator<Local> {
 
-    Map<Local, Integer> localToFirstOccurance;
+    Map<Local, Integer> localToFirstOccurence;
 
     public LocalComparator(Map<Local, Integer> localToInteger) {
-      this.localToFirstOccurance = localToInteger;
+      this.localToFirstOccurence = localToInteger;
     }
 
     @Override
@@ -130,7 +132,7 @@ public class LocalNameStandardizer implements BodyInterceptor {
       int result = local1.getType().toString().compareTo(local2.getType().toString());
       if (result == 0) {
         result =
-            Integer.compare(localToFirstOccurance.get(local1), localToFirstOccurance.get(local2));
+            Integer.compare(localToFirstOccurence.get(local1), localToFirstOccurence.get(local2));
       }
       return result;
     }
