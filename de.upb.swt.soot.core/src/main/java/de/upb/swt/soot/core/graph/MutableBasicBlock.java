@@ -143,7 +143,8 @@ class MutableBasicBlock implements BasicBlock {
     MutableBasicBlock secondBlock = new MutableBasicBlock();
 
     if (splitIdx < 1 || splitIdx >= stmts.size()) {
-      throw new IndexOutOfBoundsException("splitIdx makes no sense.");
+      throw new IndexOutOfBoundsException(
+          "splitIdx makes no sense. please copy/create a new block.");
     }
 
     // copy stmts from current i.e. first block to new i.e. second block

@@ -90,7 +90,6 @@ public class GraphVizExporter {
       /* add edges to other blocks */
       List<? extends BasicBlock> successors = block.getSuccessors();
       if (successors.size() > 0) {
-        sb.append("\t//branching edges\n");
         Stmt tailStmt = block.getTail();
 
         Iterator<String> labelIt = null;

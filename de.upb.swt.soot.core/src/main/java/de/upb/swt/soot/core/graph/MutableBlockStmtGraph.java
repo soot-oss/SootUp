@@ -128,14 +128,21 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
           blockB.addPredecessorBlock(blockA);
           blockA.addSuccessorBlock(blockB);
         } else {
-          // stmtB is not at the beginning -> split Block: stmtB is head of newly created Block
+
           MutableBasicBlock newBlock = blockB.splitBlockLinked(stmtB, true);
           int newBlockIdx = blocks.size();
           blocks.add(newBlock);
           newBlock.getStmts().forEach(stmt -> stmtToBlock.put(stmt, newBlockIdx));
 
-          newBlock.addPredecessorBlock(blockA);
-          blockA.addSuccessorBlock(newBlock);
+          if (blockA == blockB) {
+            // self referencing block: end of block flows to beginning of newly splitted block (i.e.
+            // the same block)
+            newBlock.addSuccessorBlock(newBlock);
+            newBlock.addPredecessorBlock(newBlock);
+          } else {
+            blockA.addSuccessorBlock(newBlock);
+            newBlock.addPredecessorBlock(blockA);
+          }
         }
       }
 
@@ -234,7 +241,6 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
 
   @Override
   public void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets) {
-    // TODO [ms] implement smart i.e. not remove(old), add(other) ?
     Integer fromBlockIdx = stmtToBlock.get(from);
     if (fromBlockIdx == null) {
       // 'from Stmt' does not exist yet -> create
