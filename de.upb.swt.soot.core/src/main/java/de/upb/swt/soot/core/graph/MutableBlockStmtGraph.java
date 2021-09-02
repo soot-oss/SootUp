@@ -98,11 +98,10 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
     } else {
       blockA = blocks.get(blockAIdx);
       if (blockA.getTail() != stmtA) {
-        // StmtA is not at the end of its current Block -> needs split
-        MutableBasicBlock newBlock = blockA.splitBlockLinked(stmtA, false);
-        int newBlockIdx = blocks.size();
-        blocks.add(newBlock);
-        newBlock.getStmts().forEach(stmt -> stmtToBlock.put(stmt, newBlockIdx));
+        // if StmtA is not at the end of the block -> it needs to branch to reach StmtB
+        // if StmtA branches -> it must at the end of a block
+        throw new IllegalArgumentException(
+            "StmtA is neither a BranchingStmt nor at the end of a block but it must be to reach StmtB.");
       }
     }
 
