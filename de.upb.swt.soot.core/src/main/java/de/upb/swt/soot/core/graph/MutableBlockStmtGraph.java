@@ -135,7 +135,8 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
           newBlock.getStmts().forEach(stmt -> stmtToBlock.put(stmt, newBlockIdx));
 
           if (blockA == blockB) {
-            // self referencing block: end of block flows to beginning of newly splitted block (i.e.
+            // successor of block is the origin: end of block flows to beginning of new splitted
+            // block (i.e.
             // the same block)
             newBlock.addSuccessorBlock(newBlock);
             newBlock.addPredecessorBlock(newBlock);
@@ -147,13 +148,21 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
       }
 
     } else {
-      // nonbranchingstmt can live in the same block
+      // stmt does not branch: it can live in the same block: so add it to the block
       if (blockBIdx == null) {
         addNodeInternal(blockA, blockAIdx, stmtB);
       } else {
-        // TODO: what would make sense here?!
-        throw new IllegalArgumentException(
-            "Stmt is already in the Graph - nodes/Stmt's must be unique objects.");
+        blockB = blocks.get(blockBIdx);
+        if (blockB.getHead() == stmtB) {
+          // stmtB is at the beginning of the second Block -> connect blockA and blockB
+          blockB.addPredecessorBlock(blockA);
+          blockA.addSuccessorBlock(blockB);
+          // TODO: hint: [ms] for serialisation we need to validate that n-1 predecessors are
+          // branching stmts.
+        } else {
+          throw new IllegalArgumentException(
+              "Stmt is already in the Graph: a) remove StmtB or b) StmtA must be a branching Stmt that branches to StmtB ");
+        }
       }
     }
   }
