@@ -3,9 +3,7 @@ package de.upb.swt.soot.core.util;
 import com.google.common.collect.Sets;
 import de.upb.swt.soot.core.graph.BasicBlock;
 import de.upb.swt.soot.core.graph.StmtGraph;
-import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import java.net.URLEncoder;
 import java.util.*;
@@ -29,13 +27,13 @@ public class GraphVizExporter {
 
     StringBuilder sb = new StringBuilder();
     sb.append("digraph G {\n")
-        .append("\tcompound=true;\n")
-        .append("\tlabelloc=b;\n")
-        .append("\tstyle=filled;\n")
-        .append("\tcolor=gray90;\n")
-        .append("\tnode [shape=box, style=filled, color=white];\n")
-        .append("\tedge [fontsize=10, arrowsize=1.5, fontcolor=grey40]\n")
-        .append("\tfontsize=10;\n\n");
+        .append("\tcompound=true\n")
+        .append("\tlabelloc=b\n")
+        .append("\tstyle=filled\n")
+        .append("\tcolor=gray90\n")
+        .append("\tnode [shape=box,style=filled,color=white]\n")
+        .append("\tedge [fontsize=10,arrowsize=1.5,fontcolor=grey40]\n")
+        .append("\tfontsize=10\n\n");
 
     /* entrypoint */
     Stmt startingStmt = graph.getStartingStmt();
@@ -63,7 +61,7 @@ public class GraphVizExporter {
           .append(" { \n")
           .append("\t\tlabel = \"Block #")
           .append(++i)
-          .append("\";\n");
+          .append("\"\n");
 
       /* print stmts in a block*/
       List<Stmt> stmts = block.getStmts();
@@ -75,10 +73,10 @@ public class GraphVizExporter {
             .append(escape(stmt.toString()))
             .append("\"");
         // mark startingstmt itself
-        if (startingStmt == stmt) {
-          sb.append("shape=Mdiamond, color=grey50, fillcolor=white");
+        if (startingStmt == stmt || stmt.getSuccessorCount() == 0) {
+          sb.append(",shape=Mdiamond,color=grey50,fillcolor=white");
         }
-        sb.append("];\n");
+        sb.append("]\n");
       }
       if (stmts.size() > 1) {
         sb.append("\n\t\t");
@@ -86,7 +84,7 @@ public class GraphVizExporter {
           sb.append(stmt.hashCode()).append(" -> ");
         }
         sb.delete(sb.length() - 4, sb.length());
-        sb.append(";\n");
+        sb.append("\n");
       }
       sb.append("\t}\n");
 
@@ -124,18 +122,18 @@ public class GraphVizExporter {
           if (labelIt.hasNext() || drawSideWays) {
             sb.append("[");
             if (labelIt.hasNext()) {
-              sb.append("label=\"").append(labelIt.next()).append("\", ");
+              sb.append("label=\"").append(labelIt.next()).append("\",");
             }
             if (drawSideWays) {
               sb.append("constraint=false");
             } else {
-              sb.setLength(sb.length() - 2);
+              sb.setLength(sb.length() - 1);
             }
             sb.append("]");
           }
           //          sb.append("ltail=\"cluster_").append(block.hashCode()).append("\",
           // lhead=\"cluster_").append(successorBlock.hashCode()).append("\"]");
-          sb.append(";\n");
+          sb.append("\n");
         }
       }
 
@@ -149,10 +147,9 @@ public class GraphVizExporter {
               .append(":e -> ")
               // TODO: [ms] add exception label with signature
               .append(successorBlock.getHead().hashCode())
-              .append(":n [color=red, ltail=\"cluster_")
+              .append(":n [color=red,ltail=\"cluster_")
               .append(block.hashCode())
-              .append("\"]")
-              .append(";\n");
+              .append("\"]\n");
         }
       }
 
