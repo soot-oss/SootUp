@@ -1,5 +1,6 @@
 package de.upb.swt.soot.core.util;
 
+import com.google.common.collect.Sets;
 import de.upb.swt.soot.core.graph.BasicBlock;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
@@ -7,9 +8,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import javax.annotation.Nonnull;
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -35,8 +34,8 @@ public class GraphVizExporter {
         .append("\tstyle=filled;\n")
         .append("\tcolor=gray90;\n")
         .append("\tnode [shape=box, style=filled, color=white];\n")
-        .append("\tedge [fontsize=10, fontcolor=grey40]\n")
-        .append("\tfontsize=10\n\n");
+        .append("\tedge [fontsize=10, arrowsize=1.5, fontcolor=grey40]\n")
+        .append("\tfontsize=10;\n\n");
 
     /* entrypoint */
     Stmt startingStmt = graph.getStartingStmt();
@@ -54,7 +53,10 @@ public class GraphVizExporter {
 
     /* print a block in a subgraph */
     int i = 0;
-    for (BasicBlock block : graph.getBlocks()) {
+    final Collection<? extends BasicBlock> blocks = graph.getBlocks();
+    Set<BasicBlock> drawnBlocks = Sets.newHashSetWithExpectedSize(blocks.size());
+
+    for (BasicBlock block : blocks) {
 
       sb.append("\tsubgraph cluster_")
           .append(block.hashCode())
@@ -65,6 +67,7 @@ public class GraphVizExporter {
 
       /* print stmts in a block*/
       List<Stmt> stmts = block.getStmts();
+      drawnBlocks.add(block);
       for (Stmt stmt : stmts) {
         sb.append("\t\t")
             .append(stmt.hashCode())
@@ -92,7 +95,7 @@ public class GraphVizExporter {
       if (successors.size() > 0) {
         Stmt tailStmt = block.getTail();
 
-        Iterator<String> labelIt = null;
+        Iterator<String> labelIt;
         // build edge labels for branching stmts
         if (tailStmt instanceof BranchingStmt) {
           if (tailStmt instanceof JIfStmt) {
@@ -100,29 +103,35 @@ public class GraphVizExporter {
           } else if (tailStmt instanceof JSwitchStmt) {
             labelIt =
                 ((JSwitchStmt) tailStmt).getValues().stream().map(s -> "case " + s).iterator();
+          } else {
+            labelIt = Collections.emptyIterator();
           }
-          // TODO: [ms] JGoto feels still odd in the StmtGraph representation
-
+        } else {
+          labelIt = Collections.emptyIterator();
         }
 
         for (BasicBlock successorBlock : successors) {
-          sb.append("\t")
-              .append(tailStmt.hashCode())
-              .append(":s -> ")
-              .append(successorBlock.getHead().hashCode())
-              .append(":n");
+          sb.append("\t").append(tailStmt.hashCode());
+          final boolean successorIsAlreadyDrawn = drawnBlocks.contains(successorBlock);
+          if (successorIsAlreadyDrawn) {
+            sb.append(":e -> ");
+          } else {
+            sb.append(":s -> ");
+          }
+          sb.append(successorBlock.getHead().hashCode()).append(":n");
 
-          if (labelIt != null) {
+          boolean drawSideWays = successorIsAlreadyDrawn || block == successorBlock;
+          if (labelIt.hasNext() || drawSideWays) {
+            sb.append("[");
             if (labelIt.hasNext()) {
-              sb.append("[");
-              sb.append("label=\"").append(labelIt.next()).append("\" ");
-              sb.append("]");
-            } else {
-              System.err.println(
-                  "invalid StmtGraph! At least one successor of "
-                      + successorBlock.getTail()
-                      + " is missing");
+              sb.append("label=\"").append(labelIt.next()).append("\", ");
             }
+            if (drawSideWays) {
+              sb.append("constraint=false");
+            } else {
+              sb.setLength(sb.length() - 2);
+            }
+            sb.append("]");
           }
           //          sb.append("ltail=\"cluster_").append(block.hashCode()).append("\",
           // lhead=\"cluster_").append(successorBlock.hashCode()).append("\"]");
