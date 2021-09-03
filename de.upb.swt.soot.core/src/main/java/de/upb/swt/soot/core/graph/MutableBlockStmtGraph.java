@@ -105,6 +105,13 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
       }
     }
 
+    if (blockA.getSuccessors().size() >= stmtA.getSuccessorCount()) {
+      throw new IllegalArgumentException(
+          "Can't add another flow - there are already enough flows ("
+              + stmtA.getSuccessorCount()
+              + ") outgoing from StmtA.");
+    }
+
     if (stmtA.branches()) {
       // branching A indicates the end of BlockA and connects to another BlockB: reuse or create new
       // one
