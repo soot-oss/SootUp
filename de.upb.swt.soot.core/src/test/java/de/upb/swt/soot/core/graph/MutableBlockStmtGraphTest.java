@@ -260,6 +260,50 @@ public class MutableBlockStmtGraphTest {
   }
 
   @Test
+  public void removeStmtInBetweenBlock() {
+
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.putEdge(firstNop, secondNop);
+    graph.putEdge(secondNop, thirdNop);
+    graph.removeNode(secondNop);
+
+    assertEquals(graph.getBlocks().get(0).getStmts(), Arrays.asList(firstNop, thirdNop));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void addBadSuccessorCount() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.putEdge(firstNop, secondNop);
+    graph.putEdge(firstNop, thirdNop);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void addDuplicateBadSuccessorCount() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.putEdge(firstNop, secondNop);
+    graph.putEdge(firstNop, secondNop);
+  }
+
+  @Test
+  public void addSameSuccessorMultipleTimes() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.putEdge(conditionalStmt, secondNop);
+    graph.putEdge(conditionalStmt, secondNop);
+
+    assertEquals(2, graph.getBlocks().size());
+  }
+
+  @Test
+  public void addBlocks() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.putEdge(firstNop, conditionalStmt);
+    graph.putEdge(conditionalStmt, secondNop);
+    graph.putEdge(conditionalStmt, thirdNop);
+
+    assertEquals(3, graph.getBlocks().size());
+  }
+
+  @Test
   public void modifyTrapToCompleteBlock() {
 
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();

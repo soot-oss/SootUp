@@ -123,17 +123,18 @@ class MutableBasicBlock implements BasicBlock {
   }
 
   /**
-   * splits a single MutableBasicBlock into 2 at splitIndex position, so that the Stmt at the
+   * splits a single MutableBasicBlock into two at splitIndex position, so that the Stmt at the
    * splitIdx is the Head of the second MutableBasicBlock. this method does not link the splitted
    * blocks.
    */
   public MutableBasicBlock splitBlockUnlinked(@Nonnull Stmt newTail, @Nonnull Stmt newHead) {
     int splitIdx = stmts.indexOf(newTail);
     if (splitIdx < 0) {
-      throw new IllegalArgumentException("Stmt is not contained in this Block.");
+      throw new IllegalArgumentException(
+          "Can not split by that Stmt - it is not contained in this Block.");
     }
     if (stmts.get(splitIdx + 1) != newHead) {
-      throw new IllegalArgumentException("Those Stmts are not connected.");
+      throw new IllegalArgumentException("Can not split - those Stmts are not connected.");
     }
     return splitBlockUnlinked(splitIdx);
   }
