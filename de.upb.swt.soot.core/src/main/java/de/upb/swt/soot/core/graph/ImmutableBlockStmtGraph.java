@@ -1,35 +1,47 @@
 package de.upb.swt.soot.core.graph;
 
+import com.google.common.collect.Lists;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 // FIXME: implement
 public class ImmutableBlockStmtGraph implements StmtGraph {
-  public ImmutableBlockStmtGraph() {
+
+  private final List<Stmt> stmts;
+  private final List<ImmutableBasicBlock> blocks;
+
+  public ImmutableBlockStmtGraph(@Nonnull StmtGraph graph) {
+    stmts = Lists.newArrayListWithExpectedSize(graph.nodes().size());
+    // linearize..
+    // TODO: add blocks in matching order!
+    for (Stmt stmt : graph) {
+      stmts.add(stmt);
+    }
+
+    // TODO: traps
+
     throw new IllegalStateException("implement it!");
   }
 
   @Nullable
   @Override
   public Stmt getStartingStmt() {
-    throw new IllegalStateException("Not implemented yet!");
+    return stmts.isEmpty() ? null : stmts.get(0);
   }
 
   @Nonnull
   @Override
-  public Set<Stmt> nodes() {
-    throw new IllegalStateException("Not implemented yet!");
+  public List<Stmt> nodes() {
+    return stmts;
   }
 
   @Nonnull
   @Override
-  public Collection<BasicBlock> getBlocks() {
-    throw new IllegalStateException("Not implemented yet!");
+  public List<ImmutableBasicBlock> getBlocks() {
+    return blocks;
   }
 
   @Override
@@ -68,5 +80,73 @@ public class ImmutableBlockStmtGraph implements StmtGraph {
   @Override
   public List<Trap> getTraps() {
     throw new IllegalStateException("Not implemented yet!");
+  }
+
+  private class ImmutableBasicBlock implements BasicBlock {
+    private final ImmutableStmtGraph graph;
+    private final int startIdx;
+    private final int endIdx;
+    private final List<ImmutableBasicBlock> successors;
+    private final List<ImmutableBasicBlock> predecessors;
+
+    private ImmutableBasicBlock(
+        ImmutableStmtGraph graph,
+        int startIdx,
+        int endIdx,
+        List<ImmutableBasicBlock> successors,
+        List<ImmutableBasicBlock> predecessors) {
+      this.graph = graph;
+      this.startIdx = startIdx;
+      this.endIdx = endIdx;
+      this.successors = successors;
+      this.predecessors = predecessors;
+    }
+
+    @Nonnull
+    @Override
+    public List<? extends BasicBlock> getPredecessors() {
+      return predecessors;
+    }
+
+    @Nonnull
+    @Override
+    public List<? extends BasicBlock> getSuccessors() {
+      return successors;
+    }
+
+    @Nonnull
+    @Override
+    public List<? extends BasicBlock> getExceptionalSuccessors() {
+      throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public List<Stmt> getStmts() {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getStmtCount() {
+      return endIdx - startIdx + 1;
+    }
+
+    @Nonnull
+    @Override
+    public Stmt getHead() {
+      throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public Stmt getTail() {
+      throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public List<? extends Trap> getTraps() {
+      throw new UnsupportedOperationException();
+    }
   }
 }

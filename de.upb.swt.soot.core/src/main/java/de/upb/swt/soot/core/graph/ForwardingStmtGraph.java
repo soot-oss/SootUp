@@ -24,7 +24,6 @@ import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
@@ -47,7 +46,7 @@ public class ForwardingStmtGraph extends StmtGraphImpl {
 
   @Nonnull
   @Override
-  public Set<Stmt> nodes() {
+  public Collection<Stmt> nodes() {
     return backingGraph.nodes();
   }
 

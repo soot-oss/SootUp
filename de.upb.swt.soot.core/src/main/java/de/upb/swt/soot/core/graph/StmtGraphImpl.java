@@ -49,8 +49,8 @@ public abstract class StmtGraphImpl implements StmtGraph {
       return false;
     }
 
-    Set<Stmt> nodes = nodes();
-    final Set<Stmt> otherNodes = otherGraph.nodes();
+    Collection<Stmt> nodes = nodes();
+    final Collection<Stmt> otherNodes = otherGraph.nodes();
     if (nodes.size() != otherNodes.size()) {
       return false;
     }

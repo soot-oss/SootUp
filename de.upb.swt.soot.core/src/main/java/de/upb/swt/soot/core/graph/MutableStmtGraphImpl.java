@@ -22,9 +22,7 @@ package de.upb.swt.soot.core.graph;
  */
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
 import javax.annotation.Nonnull;
@@ -71,7 +69,7 @@ public class MutableStmtGraphImpl extends StmtGraphImpl implements MutableStmtGr
     setStartingStmt(originalStmtGraph.getStartingStmt());
     traps = originalStmtGraph.getTraps();
 
-    final Set<Stmt> nodes = originalStmtGraph.nodes();
+    final Collection<Stmt> nodes = originalStmtGraph.nodes();
     final int nodeSize = nodes.size();
     predecessors = new ArrayList<>(nodeSize);
     successors = new ArrayList<>(nodeSize);
@@ -138,23 +136,8 @@ public class MutableStmtGraphImpl extends StmtGraphImpl implements MutableStmtGr
     predecessors.add(
         new ArrayList<>(1)); // [ms] hint: wastes an entry if its a TrapHandler or the first Stmt
 
-    final int calculatedSuccessorSize;
-    if (node instanceof JSwitchStmt) {
-      calculatedSuccessorSize = ((JSwitchStmt) node).getValueCount();
-    } else if (node instanceof JIfStmt) {
-      calculatedSuccessorSize = 2;
-    }
-    /* memory- vs runtime+
-      else if( node instanceof JReturnStmt || node instanceof JThrowStmt ){
-      successors.add( Collections.emptyList());
-      return idx;
-    }*/
-    else {
-      calculatedSuccessorSize = 1;
-    }
-
     // sets successors at successors[idx]
-    successors.add(new ArrayList<>(calculatedSuccessorSize));
+    successors.add(new ArrayList<>(node.getSuccessorCount()));
     return idx;
   }
 

@@ -270,6 +270,22 @@ public class MutableBlockStmtGraphTest {
     assertEquals(graph.getBlocks().get(0).getStmts(), Arrays.asList(firstNop, thirdNop));
   }
 
+  @Test
+  public void checkInfoMethods() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.putEdge(firstNop, secondNop);
+    graph.putEdge(secondNop, thirdNop);
+
+    assertEquals(Arrays.asList(firstNop), graph.predecessors(secondNop));
+    assertEquals(Arrays.asList(secondNop), graph.successors(firstNop));
+    assertEquals(1, graph.outDegree(firstNop));
+    assertEquals(1, graph.inDegree(secondNop));
+    assertTrue(graph.hasEdgeConnecting(firstNop, secondNop));
+    assertTrue(graph.hasEdgeConnecting(firstNop, secondNop));
+
+    assertFalse(graph.hasEdgeConnecting(secondNop, firstNop));
+  }
+
   @Test(expected = IllegalArgumentException.class)
   public void addBadSuccessorCount() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
@@ -291,6 +307,14 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(conditionalStmt, secondNop);
 
     assertEquals(2, graph.getBlocks().size());
+
+    assertEquals(0, graph.outDegree(secondNop));
+    assertEquals(2, graph.inDegree(secondNop));
+    assertEquals(Arrays.asList(conditionalStmt, conditionalStmt), graph.predecessors(secondNop));
+    assertEquals(2, graph.outDegree(conditionalStmt));
+    assertEquals(Arrays.asList(secondNop, secondNop), graph.successors(conditionalStmt));
+    assertTrue(graph.hasEdgeConnecting(conditionalStmt, secondNop));
+    assertFalse(graph.hasEdgeConnecting(secondNop, conditionalStmt));
   }
 
   @Test

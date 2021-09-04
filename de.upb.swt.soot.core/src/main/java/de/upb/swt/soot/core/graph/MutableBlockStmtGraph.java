@@ -393,8 +393,7 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
               successorBlock -> successorBlock == blockB && successorBlock.getHead() == target);
     } else {
       List<Stmt> stmtsA = blockA.getStmts();
-      int stmtAIdx = stmtsA.indexOf(source);
-      return stmtsA.get(stmtAIdx) == target;
+      return stmtsA.get(stmtsA.indexOf(source) + 1) == target;
     }
   }
 

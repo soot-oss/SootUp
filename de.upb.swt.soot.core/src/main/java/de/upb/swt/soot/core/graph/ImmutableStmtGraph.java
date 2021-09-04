@@ -48,7 +48,7 @@ public class ImmutableStmtGraph implements StmtGraph {
 
   /** creates an immutable copy of the given stmtGraph. */
   protected ImmutableStmtGraph(StmtGraph originalStmtGraph) {
-    final Set<Stmt> nodes = originalStmtGraph.nodes();
+    final Collection<Stmt> nodes = originalStmtGraph.nodes();
     final int nodeSize = nodes.size();
     nodeToIndex = new HashMap<>(nodeSize);
     predecessors = new Object[nodeSize];

@@ -17,7 +17,7 @@ public interface StmtGraph extends Iterable<Stmt> {
    * iterator().
    */
   @Nonnull
-  Set<Stmt> nodes();
+  Collection<Stmt> nodes();
 
   @Nonnull
   Collection<? extends BasicBlock> getBlocks();
