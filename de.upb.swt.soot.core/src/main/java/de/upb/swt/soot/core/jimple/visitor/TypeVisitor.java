@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.jimple.visitor;
  */
 
 import de.upb.swt.soot.core.types.*;
+import javax.annotation.Nonnull;
 
 public interface TypeVisitor extends Visitor {
 
@@ -44,7 +45,7 @@ public interface TypeVisitor extends Visitor {
 
   void caseArrayType();
 
-  void caseClassType();
+  void caseClassType(@Nonnull ClassType classType);
 
   void caseNullType();
 

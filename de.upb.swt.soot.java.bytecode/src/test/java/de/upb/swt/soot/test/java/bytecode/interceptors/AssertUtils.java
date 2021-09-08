@@ -8,6 +8,7 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -56,7 +57,7 @@ public class AssertUtils {
   }
 
   // assert whether two sets contain the same objects
-  public static void assertSetsEquiv(Set expected, Set actual) {
+  public static void assertSetsEquiv(Set<?> expected, Collection<?> actual) {
 
     assertNotNull(expected);
     assertNotNull(actual);

@@ -1,6 +1,7 @@
 package de.upb.swt.soot.core.jimple.visitor;
 
 import de.upb.swt.soot.core.types.*;
+import javax.annotation.Nonnull;
 
 /** @author Markus Schmidt */
 public abstract class AbstractTypeVisitor<V> extends AbstractVisitor<V> implements TypeVisitor {
@@ -51,7 +52,7 @@ public abstract class AbstractTypeVisitor<V> extends AbstractVisitor<V> implemen
   }
 
   @Override
-  public void caseClassType() {
+  public void caseClassType(@Nonnull ClassType classType) {
     defaultCaseType();
   }
 
