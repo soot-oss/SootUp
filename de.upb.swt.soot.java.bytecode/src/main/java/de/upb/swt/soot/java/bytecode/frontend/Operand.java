@@ -43,8 +43,8 @@ final class Operand {
   @Nullable protected Local stackLocal;
   @Nonnull private final AsmMethodSource methodSource;
 
-  @Nonnull private final List<Stmt> stmtUsages = new ArrayList<>();
-  @Nonnull private final List<Expr> exprUsages = new ArrayList<>();
+  @Nonnull private final List<Stmt> usedByStmts = new ArrayList<>();
+  @Nonnull private final List<Expr> usedByExpr = new ArrayList<>();
 
   /**
    * Constructs a new stack operand.
@@ -65,7 +65,7 @@ final class Operand {
    * @param stmt the usage
    */
   void addUsageInStmt(@Nonnull Stmt stmt) {
-    stmtUsages.add(stmt);
+    usedByStmts.add(stmt);
   }
 
   /**
@@ -74,23 +74,22 @@ final class Operand {
    * @param expr the usage
    */
   void addUsageInExpr(@Nonnull Expr expr) {
-    exprUsages.add(expr);
+    usedByExpr.add(expr);
   }
 
   /** Updates all statements and expressions that use this Operand. */
   void updateUsages() {
     ReplaceUseStmtVisitor replaceStmtVisitor = new ReplaceUseStmtVisitor(value, stackOrValue());
 
-    for (Expr exprUsage : exprUsages) {
+    for (Expr expr : usedByExpr) {
       methodSource
-          .getStmtsThatUse(exprUsage)
-          .map(methodSource::getLatestVersionOfStmt)
-          .filter(stmt -> !stmtUsages.contains(stmt))
-          .forEach(stmtUsages::add);
+          .getStmtsThatUse(expr)
+          .filter(stmt -> !usedByStmts.contains(stmt))
+          .forEach(usedByStmts::add);
     }
 
-    for (int i = 0; i < stmtUsages.size(); i++) {
-      Stmt oldUsage = stmtUsages.get(i);
+    for (int i = 0; i < usedByStmts.size(); i++) {
+      Stmt oldUsage = usedByStmts.get(i);
 
       // resolve stmt in method source, it might not exist anymore!
       oldUsage = methodSource.getLatestVersionOfStmt(oldUsage);
@@ -100,7 +99,7 @@ final class Operand {
 
       if (oldUsage != newUsage) {
         methodSource.replaceStmt(oldUsage, newUsage);
-        stmtUsages.set(i, newUsage);
+        usedByStmts.set(i, newUsage);
       }
     }
   }
