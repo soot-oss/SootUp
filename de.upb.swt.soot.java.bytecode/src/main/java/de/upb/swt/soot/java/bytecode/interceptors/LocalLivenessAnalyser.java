@@ -99,9 +99,7 @@ public class LocalLivenessAnalyser {
     }
   }
 
-  /**
-   * Get all live locals before the given stmt.
-   */
+  /** Get all live locals before the given stmt. */
   @Nonnull
   public Set<Local> getLiveLocalsBeforeStmt(@Nonnull Stmt stmt) {
     if (!liveIn.containsKey(stmt)) {
@@ -110,9 +108,7 @@ public class LocalLivenessAnalyser {
     return liveIn.get(stmt);
   }
 
-  /**
-   * Get all live locals after the given stmt.
-   */
+  /** Get all live locals after the given stmt. */
   @Nonnull
   public Set<Local> getLiveLocalsAfterStmt(@Nonnull Stmt stmt) {
     if (!liveOut.containsKey(stmt)) {
@@ -123,6 +119,7 @@ public class LocalLivenessAnalyser {
 
   /**
    * Merge two local sets into one set.
+   *
    * @return a merged local set
    */
   @Nonnull
@@ -137,6 +134,7 @@ public class LocalLivenessAnalyser {
 
   /**
    * Check whether two sets contains same locals.
+   *
    * @return if same return true, else return false;
    */
   private boolean isEqual(@Nonnull Set<Local> set1, @Nonnull Set<Local> set2) {
