@@ -23,7 +23,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  */
 
 import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
-import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -91,8 +90,8 @@ public class LocalLivenessAnalyser {
             queue.addLast(pred);
           }
         }
-        for (Stmt epred : graph.exceptionalPredecessors(stmt)){
-          if (!visitedStmts.contains(epred)){
+        for (Stmt epred : graph.exceptionalPredecessors(stmt)) {
+          if (!visitedStmts.contains(epred)) {
             queue.addLast(epred);
           }
         }
@@ -102,9 +101,6 @@ public class LocalLivenessAnalyser {
 
   /**
    * Get all live locals before the given stmt.
-   *
-   * @param stmt
-   * @return
    */
   @Nonnull
   public Set<Local> getLiveLocalsBeforeStmt(@Nonnull Stmt stmt) {
@@ -116,9 +112,6 @@ public class LocalLivenessAnalyser {
 
   /**
    * Get all live locals after the given stmt.
-   *
-   * @param stmt
-   * @return
    */
   @Nonnull
   public Set<Local> getLiveLocalsAfterStmt(@Nonnull Stmt stmt) {
@@ -129,10 +122,7 @@ public class LocalLivenessAnalyser {
   }
 
   /**
-   * Merge two local sets into one set
-   *
-   * @param set1
-   * @param set2
+   * Merge two local sets into one set.
    * @return a merged local set
    */
   @Nonnull
@@ -146,10 +136,7 @@ public class LocalLivenessAnalyser {
   }
 
   /**
-   * Check whether two sets contains same locals
-   *
-   * @param set1
-   * @param set2
+   * Check whether two sets contains same locals.
    * @return if same return true, else return false;
    */
   private boolean isEqual(@Nonnull Set<Local> set1, @Nonnull Set<Local> set2) {
