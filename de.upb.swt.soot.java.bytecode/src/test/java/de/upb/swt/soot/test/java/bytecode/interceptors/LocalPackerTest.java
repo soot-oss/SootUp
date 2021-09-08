@@ -4,6 +4,7 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -29,15 +30,18 @@ import org.junit.experimental.categories.Category;
 public class LocalPackerTest {
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  JavaJimple javaJimple = JavaJimple.getInstance();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
 
   JavaClassType classType = factory.getClassType("Test");
   JavaClassType intType = factory.getClassType("int");
+  JavaClassType exception = factory.getClassType("Exception");
 
   IdentityRef identityRef = JavaJimple.newThisRef(classType);
 
   IdentityRef identityRef0 = JavaJimple.newParameterRef(intType, 0);
   IdentityRef identityRef1 = JavaJimple.newParameterRef(intType, 1);
+  IdentityRef caughtExceptionRef = javaJimple.newCaughtExceptionRef();
 
   // build locals
   Local l0 = JavaJimple.newLocal("l0", classType);
@@ -49,6 +53,8 @@ public class LocalPackerTest {
   Local l2hash3 = JavaJimple.newLocal("l2#3", intType);
   Local l1hash4 = JavaJimple.newLocal("l1#4", intType);
   Local l1hash5 = JavaJimple.newLocal("l1#5", intType);
+  Local l4 = JavaJimple.newLocal("l4", exception);
+  Local el4 = JavaJimple.newLocal("l3", exception);
 
   // build stmts
   Stmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
@@ -66,6 +72,8 @@ public class LocalPackerTest {
   Stmt stmt6 = JavaJimple.newIfStmt(JavaJimple.newGtExpr(l1hash5, l3), noStmtPositionInfo);
   Stmt gt = JavaJimple.newGotoStmt(noStmtPositionInfo);
   Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
+  Stmt trapHandler = JavaJimple.newIdentityStmt(l4, caughtExceptionRef, noStmtPositionInfo);
+  Stmt throwStmt = JavaJimple.newThrowStmt(l4, noStmtPositionInfo);
 
   Stmt eidentityStmt0 = JavaJimple.newIdentityStmt(l1, identityRef0, noStmtPositionInfo);
   Stmt eidentityStmt1 = JavaJimple.newIdentityStmt(l2, identityRef1, noStmtPositionInfo);
@@ -79,6 +87,8 @@ public class LocalPackerTest {
       JavaJimple.newAssignStmt(
           l2, JavaJimple.newAddExpr(l2, IntConstant.getInstance(1)), noStmtPositionInfo);
   Stmt estmt6 = JavaJimple.newIfStmt(JavaJimple.newGtExpr(l2, l1), noStmtPositionInfo);
+  Stmt etrapHandler = JavaJimple.newIdentityStmt(el4, caughtExceptionRef, noStmtPositionInfo);
+  Stmt ethrowStmt = JavaJimple.newThrowStmt(el4, noStmtPositionInfo);
 
   /**
    *
@@ -95,6 +105,7 @@ public class LocalPackerTest {
    *    l1#4 = 0;
    *    l1#5 = l1#4 + 1;
    *  label1:
+   *    l1#5 = l1#5 + 1;
    *    if l1#5 > l3 goto label2;
    *    goto label1;
    *  label2:
@@ -117,6 +128,7 @@ public class LocalPackerTest {
    *  label1:
    *    l2 = l2 + 1;
    *    if l2 > l1 goto label2;
+   *    goto labe1;
    *  label2:
    *     return;
    * </pre>
@@ -125,12 +137,86 @@ public class LocalPackerTest {
   public void testLocalPacker() {
     Body body = createBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
+    System.out.println(builder.build());
+
+    LocalPacker localPacker = new LocalPacker();
+    localPacker.interceptBody(builder);
+    body = builder.build();
+    System.out.println(body);
+
+    Body expectedBody = createExpectedBody();
+
+    AssertUtils.assertLocalsEquiv(expectedBody, body);
+    AssertUtils.assertStmtGraphEquiv(expectedBody, body);
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   *    Test l0;
+   *    int l1, l2, l3, l1#1, l2#2, l2#3, l1#4, l1#5;
+   *    Exception l4;
+   *
+   *    l0 := @this Test
+   *    l1#1 := @parameter0: int;
+   *    l2#2 := @parameter1: int;
+   *    l3 = 10;
+   *    l2#3 = l3;
+   *    l1#4 = 0;
+   *    l1#5 = l1#4 + 1;
+   *  label1:
+   *    l1#5 = l1#5 + 1;
+   *  label2:
+   *    if l1#5 > l3 goto label2;
+   *    goto label1;
+   *  label3:
+   *    l4 := @caughtexception;
+   *    throw l4;
+   *  label4:
+   *    return;
+   *
+   *  catch Exception from label1 to label2 with label3;
+   * </pre>
+   *
+   * to:
+   *
+   * <pre>
+   *    Test l0;
+   *    int l1, l2;
+   *    Exception l3;
+   *
+   *    l0 := @this: Test;
+   *    l1 := @parameter0: int;
+   *    l2 := @parameter1: int;
+   *    l1 = 10;
+   *    l2 = l1;
+   *    l2 = 0;
+   *    l2 = l2 + 1;
+   *  label1:
+   *    l2 = l2 + 1;
+   *  label2:
+   *    if l2 > l1 goto label2;
+   *    goto labe1;
+   *  label3:
+   *    l3 := @caughtexception;
+   *    throw l3;
+   *  label4:
+   *     return;
+   *
+   *  catch Exception from label1 to label2 with label3;
+   * </pre>
+   */
+  @Test
+  public void testLocalPackerWithTrap() {
+    Body body = createTrapBody();
+    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
     LocalPacker localPacker = new LocalPacker();
     localPacker.interceptBody(builder);
     body = builder.build();
 
-    Body expectedBody = createExpectedBody();
+    Body expectedBody = createExpectedTrapBody();
 
     AssertUtils.assertLocalsEquiv(expectedBody, body);
     AssertUtils.assertStmtGraphEquiv(expectedBody, body);
@@ -207,6 +293,94 @@ public class LocalPackerTest {
     // build position
     Position position = NoPositionInformation.getInstance();
     builder.setPosition(position);
+
+    return builder.build();
+  }
+
+  private Body createTrapBody() {
+
+    Body.BodyBuilder builder = Body.builder();
+
+    List<Type> parameters = new ArrayList<>();
+    parameters.add(intType);
+    // parameters.add(doubleType);
+    MethodSignature methodSignature =
+        new MethodSignature(classType, "test", parameters, VoidType.getInstance());
+    builder.setMethodSignature(methodSignature);
+
+    // build set locals
+    Set<Local> locals =
+        ImmutableUtils.immutableSet(
+            l0, l1, l2, l3, l4, l1hash1, l2hash2, l2hash3, l1hash4, l1hash5);
+    builder.setLocals(locals);
+
+    // build stmtGraph
+    builder.addFlow(startingStmt, identityStmt0);
+    builder.addFlow(identityStmt0, identityStmt1);
+    builder.addFlow(identityStmt1, stmt1);
+    builder.addFlow(stmt1, stmt2);
+    builder.addFlow(stmt2, stmt3);
+    builder.addFlow(stmt3, stmt4);
+    builder.addFlow(stmt4, stmt5);
+    builder.addFlow(stmt5, stmt6);
+    builder.addFlow(stmt6, gt);
+    builder.addFlow(gt, stmt5);
+    builder.addFlow(stmt6, ret);
+    builder.addFlow(trapHandler, throwStmt);
+
+    builder.setStartingStmt(startingStmt);
+
+    // build position
+    Position position = NoPositionInformation.getInstance();
+    builder.setPosition(position);
+
+    Trap trap = new Trap(exception, stmt5, stmt6, trapHandler);
+    List<Trap> traps = new ArrayList<>();
+    traps.add(trap);
+    builder.setTraps(traps);
+
+    return builder.build();
+  }
+
+  private Body createExpectedTrapBody() {
+
+    Body.BodyBuilder builder = Body.builder();
+
+    List<Type> parameters = new ArrayList<>();
+    parameters.add(intType);
+
+    MethodSignature methodSignature =
+        new MethodSignature(classType, "test", parameters, VoidType.getInstance());
+    builder.setMethodSignature(methodSignature);
+
+    // build set locals
+    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, el4);
+    builder.setLocals(locals);
+
+    // build stmtGraph
+    builder.addFlow(startingStmt, eidentityStmt0);
+    builder.addFlow(eidentityStmt0, eidentityStmt1);
+    builder.addFlow(eidentityStmt1, estmt1);
+    builder.addFlow(estmt1, estmt2);
+    builder.addFlow(estmt2, estmt3);
+    builder.addFlow(estmt3, estmt4);
+    builder.addFlow(estmt4, estmt5);
+    builder.addFlow(estmt5, estmt6);
+    builder.addFlow(estmt6, gt);
+    builder.addFlow(gt, estmt5);
+    builder.addFlow(estmt6, ret);
+    builder.addFlow(etrapHandler, ethrowStmt);
+
+    builder.setStartingStmt(startingStmt);
+
+    // build position
+    Position position = NoPositionInformation.getInstance();
+    builder.setPosition(position);
+
+    Trap trap = new Trap(exception, estmt5, estmt6, etrapHandler);
+    List<Trap> traps = new ArrayList<>();
+    traps.add(trap);
+    builder.setTraps(traps);
 
     return builder.build();
   }
