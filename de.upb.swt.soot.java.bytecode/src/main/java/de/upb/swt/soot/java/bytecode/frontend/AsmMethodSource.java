@@ -63,10 +63,7 @@ import de.upb.swt.soot.core.jimple.common.expr.JInstanceOfExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNewArrayExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNewMultiArrayExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
-import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
-import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
-import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
+import de.upb.swt.soot.core.jimple.common.ref.*;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractOpStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
@@ -1840,9 +1837,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // create this Local if necessary ( i.e. not static )
     if (!bodyBuilder.getModifiers().contains(Modifier.STATIC)) {
       Local l = getOrCreateLocal(localIdx++);
-      emitStmt(
+      final JIdentityStmt<JThisRef> stmt =
           Jimple.newIdentityStmt(
-              l, Jimple.newThisRef(declaringClass), new StmtPositionInfo(currentLineNumber)));
+              l, Jimple.newThisRef(declaringClass), new StmtPositionInfo(currentLineNumber));
+      emitStmt(stmt);
     }
 
     // add parameter Locals
@@ -1971,9 +1969,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
       // jump to the original implementation
       Stmt targetStmt = InsnToStmt.get(ln);
-      JGotoStmt gotoImpl = Jimple.newGotoStmt(new StmtPositionInfo(currentLineNumber));
-      emitStmt(gotoImpl);
-      bodyBuilder.addFlow(gotoImpl, targetStmt);
+      JGotoStmt gotoStmt = Jimple.newGotoStmt(new StmtPositionInfo(currentLineNumber));
+      emitStmt(gotoStmt);
+      bodyBuilder.addFlow(gotoStmt, targetStmt);
     }
 
     // link branching stmts with its targets
@@ -2008,10 +2006,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   public Stmt getLatestVersionOfStmt(Stmt oldStmt) {
-    if (replacedStmt.containsKey(oldStmt)) {
-      return getLatestVersionOfStmt(replacedStmt.get(oldStmt));
-    } else {
-      return oldStmt;
+    while (true) {
+      final Stmt replacedVersion = replacedStmt.get(oldStmt);
+      if (replacedVersion != null) {
+        oldStmt = replacedVersion;
+      } else {
+        return oldStmt;
+      }
     }
   }
 
