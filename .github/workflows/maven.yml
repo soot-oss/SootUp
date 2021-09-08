@@ -48,6 +48,7 @@ jobs:
 
     - uses: actions/upload-artifact@v2
       with:
+        if: always()
         name: test-reports-jdk8
         path: target/test-reports-jdk8
 
@@ -86,6 +87,7 @@ jobs:
         path: target/coverage-reports-jdk9
 
     - uses: actions/upload-artifact@v2
+      if: always()
       with:
         name: test-reports-jdk9
         path: target/test-reports-jdk9
