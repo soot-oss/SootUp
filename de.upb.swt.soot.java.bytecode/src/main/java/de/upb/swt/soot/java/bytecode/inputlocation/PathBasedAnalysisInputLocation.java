@@ -151,7 +151,7 @@ public abstract class PathBasedAnalysisInputLocation
           .flatMap(
               p ->
                   StreamUtils.optionalToStream(
-                      Optional.of(classProvider.createClassSource(this, p, factory.fromPath(p)))))
+                      Optional.of(classProvider.createClassSource(this, p, factory.fromPath(dirPath, p)))))
           .collect(Collectors.toList());
 
     } catch (IOException e) {
@@ -234,7 +234,7 @@ public abstract class PathBasedAnalysisInputLocation
         final Path archiveRoot = fs.getPath("/");
         tmp =
             Files.list(archiveRoot.getFileSystem().getPath("/META-INF/versions/"))
-                .map(dir -> dir.getFileName().toString().replace(File.separator, ""))
+                .map(dir -> dir.getFileName().toString().replace("/", ""))
                 .mapToInt(Integer::new)
                 .sorted()
                 .toArray();

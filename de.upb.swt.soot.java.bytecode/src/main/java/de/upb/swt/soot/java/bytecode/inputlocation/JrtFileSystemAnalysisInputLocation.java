@@ -210,7 +210,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
       final Path filename, final Path moduleDir, final IdentifierFactory identifierFactory) {
 
     // else use the module system and create fully class signature
-    JavaClassType sig = (JavaClassType) identifierFactory.fromPath(filename);
+    JavaClassType sig = (JavaClassType) identifierFactory.fromPath(moduleDir, filename);
 
     if (identifierFactory instanceof JavaModuleIdentifierFactory) {
       return ((JavaModuleIdentifierFactory) identifierFactory)

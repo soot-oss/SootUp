@@ -216,7 +216,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
   @Override
   @Nonnull
-  public JavaClassType fromPath(@Nonnull final Path file) {
+  public JavaClassType fromPath(@Nonnull final Path rootDirectory, @Nonnull final Path file) {
     String path = file.toString();
     String separator = file.getFileSystem().getSeparator();
 
@@ -231,8 +231,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
     String fullyQualifiedName =
         FilenameUtils.removeExtension(
-                path.startsWith(separator) ? path.substring(separator.length()) : path)
-            .replace(separator, ".");
+            file.subpath(rootDirectory.getNameCount(), file.getNameCount())
+            .toString()
+            .replace(separator, "."));
 
     return getClassType(fullyQualifiedName);
   }
