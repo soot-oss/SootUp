@@ -61,7 +61,9 @@ public class ClassHierarchy {
     // Check direct subtypes
     Set<ClassType> subtypes = typeHierarchy.directSubtypesOf(clazzTypeC);
     Assert.assertTrue(subtypes.stream().allMatch(type -> type.getClassName().equals("D")));
-    Assert.assertTrue(subtypes.stream().allMatch(type -> type.getFullyQualifiedName().equals("ClassHierarchy.D")));
+    Assert.assertTrue(
+        subtypes.stream()
+            .allMatch(type -> type.getFullyQualifiedName().equals("ClassHierarchy.D")));
 
     // Examine super types
     List<ClassType> superClasses = typeHierarchy.superClassesOf(clazzTypeC);

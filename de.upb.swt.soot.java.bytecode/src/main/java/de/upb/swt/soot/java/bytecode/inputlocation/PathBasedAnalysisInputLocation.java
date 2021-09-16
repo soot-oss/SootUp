@@ -151,7 +151,8 @@ public abstract class PathBasedAnalysisInputLocation
           .flatMap(
               p ->
                   StreamUtils.optionalToStream(
-                      Optional.of(classProvider.createClassSource(this, p, factory.fromPath(dirPath, p)))))
+                      Optional.of(
+                          classProvider.createClassSource(this, p, factory.fromPath(dirPath, p)))))
           .collect(Collectors.toList());
 
     } catch (IOException e) {

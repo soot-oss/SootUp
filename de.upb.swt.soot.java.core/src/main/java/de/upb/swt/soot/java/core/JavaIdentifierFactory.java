@@ -232,8 +232,8 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     String fullyQualifiedName =
         FilenameUtils.removeExtension(
             file.subpath(rootDirectory.getNameCount(), file.getNameCount())
-            .toString()
-            .replace(separator, "."));
+                .toString()
+                .replace(separator, "."));
 
     return getClassType(fullyQualifiedName);
   }
