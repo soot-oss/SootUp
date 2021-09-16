@@ -64,7 +64,7 @@ public class OperandStack {
   }
 
   public void pushDual(Operand opr) {
-    stack.add(Operand.DWORD_DUMMY);
+    stack.add(AsmMethodSource.DWORD_DUMMY);
     stack.add(opr);
   }
 
@@ -90,7 +90,7 @@ public class OperandStack {
   public Operand popDual() {
     Operand o = pop();
     Operand o2 = pop();
-    if (o2 != Operand.DWORD_DUMMY && o2 != o) {
+    if (o2 != AsmMethodSource.DWORD_DUMMY && o2 != o) {
       throw new AssertionError("Not dummy operand, " + o2.value + " -- " + o.value);
     }
     return o;

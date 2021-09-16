@@ -8,7 +8,6 @@ import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
@@ -363,19 +362,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             identifierFactory.getClassType("j8sim.Interface"),
             "void",
             Collections.emptyList());
-
-    assertTrue(cg.containsCall(mainMethodSignature, method));
-  }
-
-  @Test
-  public void testHelloWorld() {
-    CallGraph cg = loadCallGraph("Misc", "HelloWorld");
-
-    ClassType clazzType = JavaIdentifierFactory.getInstance().getClassType("java.io.PrintStream");
-
-    MethodSignature method =
-        identifierFactory.getMethodSignature(
-            "println", clazzType, "void", Collections.singletonList("java.lang.String"));
 
     assertTrue(cg.containsCall(mainMethodSignature, method));
   }

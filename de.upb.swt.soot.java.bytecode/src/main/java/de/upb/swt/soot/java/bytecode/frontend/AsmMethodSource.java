@@ -112,6 +112,8 @@ import org.objectweb.asm.tree.*;
  */
 public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
+  static final Operand DWORD_DUMMY = new Operand(null, null, null);
+
   // private static final String METAFACTORY_SIGNATURE =
   // "<java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite "
   // +
@@ -333,7 +335,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   private void assignReadOps(@Nullable Local local) {
     for (Operand operand : operandStack.getStack()) {
-      if (operand == Operand.DWORD_DUMMY
+      if (operand == DWORD_DUMMY
           || operand.stackLocal != null
           || (local == null && operand.value instanceof Local)) {
         continue;
@@ -577,7 +579,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // Some instructions allow operands that take two registers
     boolean dword = op == DUP2 || op == DUP2_X1 || op == DUP2_X2;
     if (dword) {
-      if (operandStack.peek() == Operand.DWORD_DUMMY) {
+      if (operandStack.peek() == DWORD_DUMMY) {
         operandStack.pop();
         dupd2 = dupd;
       } else {
@@ -600,9 +602,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // value3, value2, value1 -> value1, value3, value2, value1
       Operand o2 = operandStack.popImmediate();
       Operand o3 =
-          operandStack.peek() == Operand.DWORD_DUMMY
-              ? operandStack.pop()
-              : operandStack.popImmediate();
+          operandStack.peek() == DWORD_DUMMY ? operandStack.pop() : operandStack.popImmediate();
       operandStack.push(dupd);
       operandStack.push(o3);
       operandStack.push(o2);
@@ -627,9 +627,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // (value2, value1)
       Operand o2 = operandStack.popImmediate();
       Operand o2h =
-          operandStack.peek() == Operand.DWORD_DUMMY
-              ? operandStack.pop()
-              : operandStack.popImmediate();
+          operandStack.peek() == DWORD_DUMMY ? operandStack.pop() : operandStack.popImmediate();
       operandStack.push(dupd2);
       operandStack.push(dupd);
       operandStack.push(o2h);
@@ -859,7 +857,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       operandStack.popImmediate();
     } else if (op == POP2) {
       operandStack.popImmediate();
-      if (operandStack.peek() == Operand.DWORD_DUMMY) {
+      if (operandStack.peek() == DWORD_DUMMY) {
         operandStack.pop();
       } else {
         operandStack.popImmediate();
@@ -1653,20 +1651,23 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     do {
       BranchedInsnInfo edge = edges.get(cur, tgt);
       if (edge == null) {
-        edge = new BranchedInsnInfo(tgt, new ArrayList<>(operandStack.getStack()));
+        edge = new BranchedInsnInfo(tgt, operandStack.getStack());
         edge.addToPrevStack(stackss);
         edges.put(cur, tgt, edge);
         conversionWorklist.add(edge);
         continue;
       }
-      for (List<Operand> stackTemp : edge.getOperandStacks()) {
-        if (stackTemp.size() == stackss.length) {
-          int j = 0;
-          for (; j != stackss.length && stackTemp.get(j).equivTo(stackss[j]); j++) {}
-          if (j == stackss.length) {
-            continue tgt_loop;
+      if (edge.getOperandStack() != null) {
+        List<Operand> stackTemp = edge.getOperandStack();
+        if (stackTemp.size() != stackss.length) {
+          throw new AssertionError("Multiple un-equal stacks!");
+        }
+        for (int j = 0; j != stackss.length; j++) {
+          if (!stackTemp.get(j).equivTo(stackss[j])) {
+            throw new AssertionError("Multiple un-equal stacks!");
           }
         }
+        continue;
       }
       final LinkedList<Operand[]> prevStacks = edge.getPrevStacks();
       for (Operand[] ps : prevStacks) {
@@ -1674,7 +1675,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           continue tgt_loop;
         }
       }
-      edge.addOperandStack(operandStack.getStack());
+      edge.setOperandStack(operandStack.getStack());
       prevStacks.add(stackss);
       conversionWorklist.add(edge);
     } while (i < lastIdx && (tgt = tgts.get(i++)) != null);
@@ -1707,8 +1708,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     do {
       BranchedInsnInfo edge = worklist.pollLast();
       AbstractInsnNode insn = edge.getInsn();
-      operandStack.setOperandStack(
-          new ArrayList<>(edge.getOperandStacks().get(edge.getOperandStacks().size() - 1)));
+      operandStack.setOperandStack(edge.getOperandStack());
       do {
         int type = insn.getType();
         if (type == FIELD_INSN) {
@@ -1979,18 +1979,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return null;
   }
 
-  /**
-   * Returns the latest version of a statement that is used in this method source, or null if the
-   * statement is not used
-   *
-   * @param oldStmt
-   * @return
-   */
   public Stmt getLatestVersionOfStmt(Stmt oldStmt) {
     if (replacedStmt.containsKey(oldStmt)) {
       return getLatestVersionOfStmt(replacedStmt.get(oldStmt));
     } else {
-      return InsnToStmt.containsValue(oldStmt) ? oldStmt : null;
+      return oldStmt;
     }
   }
 
@@ -2011,11 +2004,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       throw new AssertionError("Could not replace value in insn map because it is absent");
     }
 
-    if (newStmt == null) {
-      InsnToStmt.remove(key);
-      return;
-    }
-
     InsnToStmt.put(key, newStmt);
     replacedStmt.put(oldStmt, newStmt);
 
@@ -2034,19 +2022,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    */
   public Stream<Stmt> getStmtsThatUse(@Nonnull Expr expr) {
     Stream<Stmt> currentUses =
-        InsnToStmt.values().stream()
-            .flatMap(
-                stmt ->
-                    stmt instanceof StmtContainer
-                        ? ((StmtContainer) stmt).getStmts().stream()
-                        : Stream.of(stmt))
-            .filter(stmt -> stmt.getUses().contains(expr));
+        InsnToStmt.values().stream().filter(stmt -> stmt.getUses().contains(expr));
 
     Stream<Stmt> oldMappedUses =
         replacedStmt.entrySet().stream()
             .filter(stmt -> stmt.getKey().getUses().contains(expr))
-            .map(stmt -> getLatestVersionOfStmt(stmt.getValue()))
-            .filter(Objects::nonNull);
+            .map(stmt -> getLatestVersionOfStmt(stmt.getValue()));
 
     return Stream.concat(currentUses, oldMappedUses);
   }
