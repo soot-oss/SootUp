@@ -27,6 +27,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.ReplaceUseStmtVisitor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -38,6 +39,7 @@ import org.objectweb.asm.tree.AbstractInsnNode;
  */
 final class Operand {
 
+  public static final Operand DWORD_DUMMY = new Operand(null, null, null);
   @Nonnull protected final AbstractInsnNode insn;
   @Nonnull protected final Value value;
   @Nullable protected Local stackLocal;
@@ -79,15 +81,21 @@ final class Operand {
 
   /** Updates all statements and expressions that use this Operand. */
   void updateUsages() {
-    ReplaceUseStmtVisitor replaceStmtVisitor = new ReplaceUseStmtVisitor(value, stackOrValue());
 
     for (Expr exprUsage : exprUsages) {
       methodSource
           .getStmtsThatUse(exprUsage)
           .map(methodSource::getLatestVersionOfStmt)
+          .filter(Objects::nonNull)
           .filter(stmt -> !stmtUsages.contains(stmt))
           .forEach(stmtUsages::add);
     }
+
+    if (value == stackOrValue()) return;
+
+    ReplaceUseStmtVisitor replaceStmtVisitor = new ReplaceUseStmtVisitor(value, stackOrValue());
+
+    List<Stmt> stmtsToDelete = new ArrayList<>();
 
     for (int i = 0; i < stmtUsages.size(); i++) {
       Stmt oldUsage = stmtUsages.get(i);
@@ -95,14 +103,20 @@ final class Operand {
       // resolve stmt in method source, it might not exist anymore!
       oldUsage = methodSource.getLatestVersionOfStmt(oldUsage);
 
-      oldUsage.accept(replaceStmtVisitor);
-      Stmt newUsage = replaceStmtVisitor.getResult();
+      if (oldUsage == null) {
+        stmtsToDelete.add(oldUsage);
+      } else {
+        oldUsage.accept(replaceStmtVisitor);
+        Stmt newUsage = replaceStmtVisitor.getResult();
 
-      if (oldUsage != newUsage) {
-        methodSource.replaceStmt(oldUsage, newUsage);
-        stmtUsages.set(i, newUsage);
+        if (oldUsage != newUsage) {
+          methodSource.replaceStmt(oldUsage, newUsage);
+          stmtUsages.set(i, newUsage);
+        }
       }
     }
+
+    stmtUsages.removeAll(stmtsToDelete);
   }
 
   /** @return either the stack local allocated for this operand, or its value. */
@@ -118,7 +132,11 @@ final class Operand {
    * @return {@code true} if this operand is equal to another operand, {@code false} otherwise.
    */
   boolean equivTo(@Nonnull Operand other) {
-    return stackOrValue().equivTo(other.stackOrValue());
+    // care for DWORD comparison, as stackOrValue is null, which would result in a
+    // NullPointerException
+    return (this == other)
+        || ((this == DWORD_DUMMY) == (other == DWORD_DUMMY)
+            && stackOrValue().equivTo(other.stackOrValue()));
   }
 
   @Override
