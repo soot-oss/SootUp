@@ -137,12 +137,10 @@ public class LocalPackerTest {
   public void testLocalPacker() {
     Body body = createBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
-    System.out.println(builder.build());
 
     LocalPacker localPacker = new LocalPacker();
     localPacker.interceptBody(builder);
     body = builder.build();
-    System.out.println(body);
 
     Body expectedBody = createExpectedBody();
 
