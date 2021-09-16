@@ -229,11 +229,12 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       path = path.substring(index);
     }
 
+    final int nameCountBaseDir =
+        rootDirectory.toString().isEmpty() ? 0 : rootDirectory.getNameCount();
+
     String fullyQualifiedName =
         FilenameUtils.removeExtension(
-            file.subpath(rootDirectory.getNameCount(), file.getNameCount())
-                .toString()
-                .replace(separator, "."));
+            file.subpath(nameCountBaseDir, file.getNameCount()).toString().replace(separator, "."));
 
     return getClassType(fullyQualifiedName);
   }
