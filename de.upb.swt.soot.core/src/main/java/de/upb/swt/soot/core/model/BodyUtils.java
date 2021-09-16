@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.model;
  */
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
@@ -103,7 +104,6 @@ public class BodyUtils {
    * @param graph a stmt graph which contains the given stmts.
    * @param use a local that is used by the given stmt.
    * @param stmt a stmt which uses the given local.
-   * @return
    */
   public static List<Stmt> getDefsForLocalUse(StmtGraph graph, Local use, Stmt stmt) {
     if (!stmt.getUses().contains(use)) {
@@ -161,5 +161,35 @@ public class BodyUtils {
       return ((JIdentityStmt) oldStmt).withLocal(newDef);
     }
     throw new RuntimeException("The given stmt must be JAssignStmt or JIdentityStmt!");
+  }
+
+  /**
+   * Replace corresponding oldStmt with newStmt in BodyBuilder
+   */
+  public static void replaceStmtInBuilder(Body.BodyBuilder builder, Stmt oldStmt, Stmt newStmt) {
+    builder.replaceStmt(oldStmt, newStmt);
+    adaptTraps(builder, oldStmt, newStmt);
+  }
+  /**
+   * Fit the modified stmt in Traps
+   *
+   * @param builder a bodybuilder, use it to modify Trap
+   * @param oldStmt a Stmt which maybe a beginStmt or endStmt in a Trap
+   * @param newStmt a modified stmt to replace the oldStmt.
+   */
+  public static void adaptTraps(
+      @Nonnull Body.BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+    List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
+    for (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) {
+      Trap trap = iterator.next();
+      if (oldStmt.equivTo(trap.getBeginStmt())) {
+        Trap newTrap = trap.withBeginStmt(newStmt);
+        iterator.set(newTrap);
+      } else if (oldStmt.equivTo(trap.getEndStmt())) {
+        Trap newTrap = trap.withEndStmt(newStmt);
+        iterator.set(newTrap);
+      }
+    }
+    builder.setTraps(traps);
   }
 }
