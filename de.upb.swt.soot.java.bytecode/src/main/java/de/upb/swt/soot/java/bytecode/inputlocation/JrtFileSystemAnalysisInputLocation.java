@@ -45,6 +45,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -151,7 +152,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
                         classProvider.createClassSource(
                             this,
                             p,
-                            fromPath(
+                            this.fromPath(
                                 p.subpath(2, p.getNameCount()),
                                 p.subpath(1, 2),
                                 identifierFactory))));
@@ -210,13 +211,20 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
       final Path filename, final Path moduleDir, final IdentifierFactory identifierFactory) {
 
     // else use the module system and create fully class signature
-    JavaClassType sig = (JavaClassType) identifierFactory.fromPath(moduleDir, filename);
+    // we do not have a base directory here, the moduleDir is actually not a directory
+    JavaClassType sig = (JavaClassType) identifierFactory.fromPath(Paths.get(""), filename);
+
 
     if (identifierFactory instanceof JavaModuleIdentifierFactory) {
+      System.out.println(((JavaModuleIdentifierFactory) identifierFactory)
+          .getClassType(
+              sig.getClassName(), sig.getPackageName().getPackageName(), moduleDir.toString()));
       return ((JavaModuleIdentifierFactory) identifierFactory)
           .getClassType(
               sig.getClassName(), sig.getPackageName().getPackageName(), moduleDir.toString());
     }
+
+    System.out.println(sig);
 
     // if we are using the normal signature factory, then trim the module from the path
     return sig;
