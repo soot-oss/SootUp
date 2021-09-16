@@ -214,17 +214,11 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
     // we do not have a base directory here, the moduleDir is actually not a directory
     JavaClassType sig = (JavaClassType) identifierFactory.fromPath(Paths.get(""), filename);
 
-
     if (identifierFactory instanceof JavaModuleIdentifierFactory) {
-      System.out.println(((JavaModuleIdentifierFactory) identifierFactory)
-          .getClassType(
-              sig.getClassName(), sig.getPackageName().getPackageName(), moduleDir.toString()));
       return ((JavaModuleIdentifierFactory) identifierFactory)
           .getClassType(
               sig.getClassName(), sig.getPackageName().getPackageName(), moduleDir.toString());
     }
-
-    System.out.println(sig);
 
     // if we are using the normal signature factory, then trim the module from the path
     return sig;
