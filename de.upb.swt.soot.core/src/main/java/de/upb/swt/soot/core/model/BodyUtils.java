@@ -163,9 +163,7 @@ public class BodyUtils {
     throw new RuntimeException("The given stmt must be JAssignStmt or JIdentityStmt!");
   }
 
-  /**
-   * Replace corresponding oldStmt with newStmt in BodyBuilder
-   */
+  /** Replace corresponding oldStmt with newStmt in BodyBuilder */
   public static void replaceStmtInBuilder(Body.BodyBuilder builder, Stmt oldStmt, Stmt newStmt) {
     builder.replaceStmt(oldStmt, newStmt);
     adaptTraps(builder, oldStmt, newStmt);
