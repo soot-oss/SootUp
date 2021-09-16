@@ -58,12 +58,12 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
     Stream<MethodSignature> result = Stream.of(targetMethodSignature);
 
     SootMethod targetMethod =
-        (SootMethod)
-            view.getClass(targetMethodSignature.getDeclClassType())
-                .flatMap(clazz -> clazz.getMethod(targetMethodSignature.getSubSignature()))
-                .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
+        view.getClass(targetMethodSignature.getDeclClassType())
+            .flatMap(clazz -> clazz.getMethod(targetMethodSignature.getSubSignature()))
+            .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
 
-    if (Modifier.isStatic(targetMethod.getModifiers())
+    if (targetMethod == null
+        || Modifier.isStatic(targetMethod.getModifiers())
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return result;
     } else {

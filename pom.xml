@@ -209,7 +209,7 @@
 				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
 					<!-- Sets the VM argument line used when unit tests are run. -->
-					<argLine>${surefireArgLine}</argLine>
+					<argLine>-Xmx4096M ${surefireArgLine}</argLine>
 					<groups>${testcase.groups}</groups>
 				</configuration>
 			</plugin>

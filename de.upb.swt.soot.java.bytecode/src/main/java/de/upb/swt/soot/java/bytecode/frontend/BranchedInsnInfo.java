@@ -32,12 +32,12 @@ class BranchedInsnInfo {
   /* previous stacks at edge */
   @Nonnull private final LinkedList<Operand[]> prevStacks;
   /* current stack at edge */
-  @Nullable private List<Operand> operandStack;
+  @Nullable private final List<List<Operand>> operandStacks = new ArrayList<>();
 
   BranchedInsnInfo(@Nonnull AbstractInsnNode insn, @Nonnull List<Operand> operands) {
     this.insn = insn;
     this.prevStacks = new LinkedList<>();
-    this.operandStack = operands;
+    this.operandStacks.add(operands);
   }
 
   @Nonnull
@@ -45,12 +45,13 @@ class BranchedInsnInfo {
     return insn;
   }
 
-  public List<Operand> getOperandStack() {
-    return operandStack;
+  @Nonnull
+  public List<List<Operand>> getOperandStacks() {
+    return operandStacks;
   }
 
-  public void setOperandStack(@Nullable List<Operand> operandStack) {
-    this.operandStack = new ArrayList<>(operandStack);
+  public void addOperandStack(@Nullable List<Operand> operandStack) {
+    operandStacks.add(operandStack);
   }
 
   @Nonnull
