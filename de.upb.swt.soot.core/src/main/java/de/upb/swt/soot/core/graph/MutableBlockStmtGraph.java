@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class MutableBlockStmtGraph implements MutableStmtGraph {
+public class MutableBlockStmtGraph extends StmtGraph implements MutableStmtGraph {
 
   @Nullable private Stmt startingStmt = null;
   @Nonnull private final Map<Stmt, Integer> stmtToBlock = new HashMap<>();
@@ -196,6 +196,8 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
         Integer newBlockIdx = blocks.size();
         blocks.add(newBlock);
         newBlock.getStmts().forEach(s -> stmtToBlock.put(s, newBlockIdx));
+      } else {
+        // TODO: do we need to do sth here?
       }
     }
   }
@@ -390,7 +392,8 @@ public class MutableBlockStmtGraph implements MutableStmtGraph {
       MutableBasicBlock blockB = blocks.get(blockBIdx);
       return blockA.getSuccessors().stream()
           .anyMatch(
-              successorBlock -> successorBlock == blockB && successorBlock.getHead() == target);
+              successorBlock -> /*successorBlock == blockB && */
+                  successorBlock.getHead() == target);
     } else {
       List<Stmt> stmtsA = blockA.getStmts();
       return stmtsA.get(stmtsA.indexOf(source) + 1) == target;

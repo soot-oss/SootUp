@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
  *
  * @author Markus Schmidt
  */
-public class ForwardingStmtGraph extends StmtGraphImpl {
+public class ForwardingStmtGraph extends StmtGraph {
 
   @Nonnull protected final StmtGraph backingGraph;
 
@@ -52,7 +52,7 @@ public class ForwardingStmtGraph extends StmtGraphImpl {
 
   @Nonnull
   @Override
-  public Collection<? extends BasicBlock> getBlocks() {
+  public List<? extends BasicBlock> getBlocks() {
     // FIXME: implement
     throw new IllegalStateException("Not implemented yet!");
   }

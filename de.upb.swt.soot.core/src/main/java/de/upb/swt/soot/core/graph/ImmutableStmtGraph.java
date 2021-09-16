@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
 // [ms] possible performance improvement: on instantiation assign: Collection.singleTonList()
 // directly and not on demand -> change type of sucessors/predecessors to List<Stmt> this removes
 // additional checks in successor()/predecessor()
-public class ImmutableStmtGraph implements StmtGraph {
+public class ImmutableStmtGraph extends StmtGraph {
 
   @Nonnull
   protected final Map<Stmt, Integer>
@@ -123,7 +123,7 @@ public class ImmutableStmtGraph implements StmtGraph {
 
   @Nonnull
   @Override
-  public Collection<? extends BasicBlock> getBlocks() {
+  public List<? extends BasicBlock> getBlocks() {
     // FIXME: implement
     throw new IllegalStateException("Not implemented yet!");
   }

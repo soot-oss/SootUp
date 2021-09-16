@@ -27,7 +27,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-public interface MutableStmtGraph extends StmtGraph {
+public interface MutableStmtGraph {
   @Nonnull
   StmtGraph unmodifiableStmtGraph();
 

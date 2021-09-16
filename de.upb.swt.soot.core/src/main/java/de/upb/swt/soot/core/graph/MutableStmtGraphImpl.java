@@ -46,7 +46,7 @@ import javax.annotation.Nullable;
  *
  * @author Markus Schmidt
  */
-public class MutableStmtGraphImpl extends StmtGraphImpl implements MutableStmtGraph {
+public class MutableStmtGraphImpl extends StmtGraph implements MutableStmtGraph {
 
   @Nonnull protected final ArrayList<List<Stmt>> predecessors;
   @Nonnull protected final ArrayList<List<Stmt>> successors;
@@ -226,7 +226,7 @@ public class MutableStmtGraphImpl extends StmtGraphImpl implements MutableStmtGr
 
   @Nonnull
   @Override
-  public Collection<? extends BasicBlock> getBlocks() {
+  public List<? extends BasicBlock> getBlocks() {
     // FIXME: implement
     throw new IllegalStateException("Not implemented yet!");
   }

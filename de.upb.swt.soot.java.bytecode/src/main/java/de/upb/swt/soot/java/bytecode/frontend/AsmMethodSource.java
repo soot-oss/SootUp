@@ -142,7 +142,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
 
-  private Map<LabelNode, Stmt> labelsToStmt;
+  @Nonnull private final Map<LabelNode, Stmt> labelsToStmt = new HashMap<>();
   @Nonnull private final Body.BodyBuilder bodyBuilder = Body.builder();
 
   Stmt rememberedStmt = null;
@@ -1912,7 +1912,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   private void buildStmts() {
     AbstractInsnNode insn = instructions.getFirst();
-    labelsToStmt = new HashMap<>();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
 
     do {
@@ -1940,7 +1939,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         if (isLabelNode) {
           JIdentityStmt<?> caughtEx = findIdentityRefInContainer(stmt);
           if (caughtEx != null && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
-            danglingLabel.forEach(l -> trapHandler.put(l, caughtEx));
+            danglingLabel.forEach(label -> trapHandler.put(label, caughtEx));
           }
         }
         danglingLabel.clear();

@@ -8,57 +8,66 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
-public interface StmtGraph extends Iterable<Stmt> {
+/**
+ * Interface for control flow graphs on Jimple Stmts. A StmtGraph is directed and connected (except
+ * for traphandlers - those are not connected to the unexceptional flow via StmtGraph). Its directed
+ * edges represent flows between Stmts. If the edge starts in a branching Stmt there is an edge for
+ * each flow to the target Stmt. This can include duplicate flows to the same target e.g. for
+ * JSwitchStmt, so that every label has its own flow to a target.
+ *
+ * @author Markus Schmidt
+ */
+public abstract class StmtGraph implements Iterable<Stmt> {
 
-  Stmt getStartingStmt();
+  abstract Stmt getStartingStmt();
 
   /**
    * returns the nodes in this graph in no deterministic order (->Set) to get a linearized flow use
    * iterator().
    */
   @Nonnull
-  Collection<Stmt> nodes();
+  public abstract Collection<Stmt> nodes();
 
   @Nonnull
-  Collection<? extends BasicBlock> getBlocks();
+  public abstract List<? extends BasicBlock> getBlocks();
 
-  boolean containsNode(@Nonnull Stmt node);
+  public abstract boolean containsNode(@Nonnull Stmt node);
 
   /**
    * returns the ingoing flows to node as an List with no reliable/specific order and possibly
    * duplicate entries (like successors(Stmt).
    */
   @Nonnull
-  List<Stmt> predecessors(@Nonnull Stmt node);
+  public abstract List<Stmt> predecessors(@Nonnull Stmt node);
 
   /** returns the outgoing flows of node as ordered List. The List can have duplicate entries! */
   @Nonnull
-  List<Stmt> successors(@Nonnull Stmt node);
+  public abstract List<Stmt> successors(@Nonnull Stmt node);
 
   /** returns the amount of ingoing flows into node */
-  int inDegree(@Nonnull Stmt node);
+  public abstract int inDegree(@Nonnull Stmt node);
 
   /** returns the amount of flows that start from node */
-  int outDegree(@Nonnull Stmt node);
+  public abstract int outDegree(@Nonnull Stmt node);
 
   /** returns the amount of flows with node as source or target. */
-  default int degree(@Nonnull Stmt node) {
+  public int degree(@Nonnull Stmt node) {
     return inDegree(node) + outDegree(node);
   }
 
   /** returns true if there is a flow between source and target */
-  boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
+  public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
 
   /** returns a list of associated traps */
   @Nonnull
-  List<Trap> getTraps();
+  abstract List<Trap> getTraps();
 
   /**
    * returns a Collection of Stmts that leave the body (i.e. JReturnVoidStmt, JReturnStmt and
    * JThrowStmt)
    */
   @Nonnull
-  default List<Stmt> getTails() {
+  public List<Stmt> getTails() {
     return nodes().stream().filter(stmt -> outDegree(stmt) == 0).collect(Collectors.toList());
   }
 
@@ -67,7 +76,7 @@ public interface StmtGraph extends Iterable<Stmt> {
    * are the starting Stmt.
    */
   @Nonnull
-  default Collection<Stmt> getEntrypoints() {
+  public Collection<Stmt> getEntrypoints() {
     final ArrayList<Stmt> stmts = new ArrayList<>();
     stmts.add(getStartingStmt());
     getTraps().stream().map(Trap::getHandlerStmt).forEach(stmts::add);
@@ -75,7 +84,7 @@ public interface StmtGraph extends Iterable<Stmt> {
   }
 
   /** validates whether the each Stmt has the correct amount of outgoing flows. */
-  default void validateStmtConnectionsInGraph() {
+  public void validateStmtConnectionsInGraph() {
     for (Stmt stmt : nodes()) {
       final List<Stmt> successors = successors(stmt);
       final int successorCount = successors.size();
@@ -146,7 +155,7 @@ public interface StmtGraph extends Iterable<Stmt> {
    * @param to end point for the path.
    * @return null if there is no such path.
    */
-  default List<Stmt> getExtendedBasicBlockPathBetween(@Nonnull Stmt from, @Nonnull Stmt to) {
+  public List<Stmt> getExtendedBasicBlockPathBetween(@Nonnull Stmt from, @Nonnull Stmt to) {
 
     // if this holds, we're doomed to failure!!!
     if (inDegree(to) > 1) {
@@ -202,8 +211,42 @@ public interface StmtGraph extends Iterable<Stmt> {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+
+    if (!(o instanceof StmtGraph)) {
+      return false;
+    }
+    StmtGraph otherGraph = (StmtGraph) o;
+
+    if (getStartingStmt() != otherGraph.getStartingStmt()) {
+      return false;
+    }
+
+    Collection<Stmt> nodes = nodes();
+    final Collection<Stmt> otherNodes = otherGraph.nodes();
+    if (nodes.size() != otherNodes.size()) {
+      return false;
+    }
+
+    if (!getTraps().equals(otherGraph.getTraps())) {
+      return false;
+    }
+
+    for (Stmt node : nodes) {
+      if (!otherNodes.contains(node) || !successors(node).equals(otherGraph.successors(node))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  @Override
   @Nonnull
-  default Iterator<Stmt> iterator() {
+  public Iterator<Stmt> iterator() {
     return new StmtGraphBlockIterator(this, getTraps());
   }
 }
