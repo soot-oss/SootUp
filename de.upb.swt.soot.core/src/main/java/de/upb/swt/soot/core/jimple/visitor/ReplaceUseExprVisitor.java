@@ -361,7 +361,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       index++;
     }
     if (isChanged) {
-      setResult(expr.withMethodArgs(newArgs));
+      setResult(expr.withArgs(newArgs));
     } else {
       errorHandler(expr);
     }

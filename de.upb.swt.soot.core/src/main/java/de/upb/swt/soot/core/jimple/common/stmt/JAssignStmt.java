@@ -210,4 +210,15 @@ public final class JAssignStmt<L extends Value, R extends Value>
   public JAssignStmt<L, R> withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JAssignStmt<>(getLeftOp(), getRightOp(), positionInfo);
   }
+
+  @Nonnull
+  public JAssignStmt withArrayRef(JArrayRef arrayRef){
+    if (getLeftOp() instanceof JArrayRef) {
+      return new JAssignStmt(arrayRef, getRightOp(), getPositionInfo());
+    } else if (getRightOp() instanceof JArrayRef) {
+      return new JAssignStmt(getLeftOp(), arrayRef, getPositionInfo());
+    } else {
+      throw new RuntimeException("withArrayRef() called with no ArrayRef present!");
+    }
+  }
 }

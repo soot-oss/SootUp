@@ -182,6 +182,11 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   }
 
   @Override
+  public List<Type> getTypes(List<String> typeName) {
+    return typeName.stream().map(t->getType(t)).collect(Collectors.toList());
+  }
+
+  @Override
   @Nonnull
   public Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName) {
     return Optional.ofNullable(primitiveTypeMap.get(typeName));

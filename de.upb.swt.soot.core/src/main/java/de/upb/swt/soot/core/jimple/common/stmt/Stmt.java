@@ -26,6 +26,8 @@ import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
+import de.upb.swt.soot.core.jimple.tag.AbstractHost;
+import de.upb.swt.soot.core.jimple.tag.Host;
 import de.upb.swt.soot.core.jimple.visitor.Acceptor;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -35,7 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
+public abstract class Stmt extends AbstractHost implements EquivTo, Acceptor<StmtVisitor>, Copyable, Host {
 
   protected final StmtPositionInfo positionInfo;
 
@@ -134,4 +136,7 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
   public StmtPositionInfo getPositionInfo() {
     return positionInfo;
   }
+
+
+
 }

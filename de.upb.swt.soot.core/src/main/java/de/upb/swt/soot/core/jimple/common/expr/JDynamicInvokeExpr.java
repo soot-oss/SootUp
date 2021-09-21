@@ -205,8 +205,9 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   }
 
   @Nonnull
-  public JDynamicInvokeExpr withMethodArgs(@Nonnull List<Immediate> methodArgs) {
+  @Override
+  public AbstractInvokeExpr withArgs(@Nonnull List<Immediate> methodArgs) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), methodArgs);
+            bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), methodArgs);
   }
 }

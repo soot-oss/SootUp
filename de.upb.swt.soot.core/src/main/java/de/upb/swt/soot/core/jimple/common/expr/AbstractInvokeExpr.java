@@ -53,7 +53,7 @@ public abstract class AbstractInvokeExpr implements Expr {
     return this.methodSignature;
   }
 
-  public Value getArg(int index) {
+  public Immediate getArg(int index) {
     return args[index];
   }
 
@@ -104,4 +104,9 @@ public abstract class AbstractInvokeExpr implements Expr {
       }
     }
   }
+
+  @Nonnull
+  public abstract AbstractInvokeExpr withArgs(@Nonnull List<Immediate> args);
+
+
 }
