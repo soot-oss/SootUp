@@ -278,6 +278,11 @@ public class SimpleLocalDefs implements LocalDefs {
     }
   } // end inner class FlowAssignment
 
+  /** @param bodyBuilder */
+  public SimpleLocalDefs(Body.BodyBuilder bodyBuilder) {
+    this(bodyBuilder.getStmtGraph(), bodyBuilder.getLocals(), FlowAnalysisMode.Automatic);
+  }
+
   /** @param body */
   public SimpleLocalDefs(Body body) {
     this(body, FlowAnalysisMode.Automatic);

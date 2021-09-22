@@ -36,11 +36,12 @@ import de.upb.swt.soot.core.util.EscapedWriter;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.Printer;
 import de.upb.swt.soot.core.validation.*;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Class that models the Jimple body (code attribute) of a method.
@@ -469,6 +470,30 @@ public class Body implements Copyable {
 
     BodyBuilder() {
       ecfg = new MutableExceptionalStmtGraph();
+    }
+
+    @Nullable
+    public MethodSignature getMethodSignature() {
+      return methodSig;
+    }
+
+    // FIXME see Body
+    public Collection<Value> getUses() {
+      ArrayList<Value> useList = new ArrayList<>();
+
+      for (Stmt stmt : ecfg.nodes()) {
+        useList.addAll(stmt.getUses());
+      }
+      return useList;
+    }
+    // FIXME see Body
+    public Collection<Value> getDefs() {
+      ArrayList<Value> defList = new ArrayList<>();
+
+      for (Stmt stmt : ecfg.nodes()) {
+        defList.addAll(stmt.getDefs());
+      }
+      return defList;
     }
 
     BodyBuilder(@Nonnull Body body, @Nonnull Set<Modifier> modifiers) {

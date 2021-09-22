@@ -40,7 +40,7 @@ import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.OneRegisterInstruction;
-import sun.jvm.hotspot.debugger.cdbg.RefType;
+
 
 public class MoveExceptionInstruction extends DexlibAbstractInstruction implements RetypeableInstruction {
 
@@ -72,16 +72,16 @@ public class MoveExceptionInstruction extends DexlibAbstractInstruction implemen
   }
 
   @Override
-  public void retype(Body body) {
+  public void retype(Body.BodyBuilder bodyBuilder) {
     if (realType == null) {
       throw new RuntimeException("Real type of this instruction has not been set or was already retyped: " + this);
     }
-    if (body.getStmts().contains(stmtToRetype)) {
+    if (bodyBuilder.getStmts().contains(stmtToRetype)) {
       Local l = (Local) (stmtToRetype.getLeftOp());
       l = l.withType(realType);
-      int idx = body.getStmts().indexOf(stmtToRetype);
+      int idx = bodyBuilder.getStmts().indexOf(stmtToRetype);
       JIdentityStmt idWithLocal = stmtToRetype.withLocal(l);
-      body.getStmts().set(idx, idWithLocal);
+      bodyBuilder.getStmts().set(idx, idWithLocal);
       realType = null;
     }
   }

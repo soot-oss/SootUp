@@ -1,38 +1,36 @@
-package de.upb.swt.soot.core.jimple.common.expr;
+package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2018-2020 Linghui Luo
+ * Copyright (C) 1997 - 2018 Raja Vallée-Rai and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.Immediate;
-import javax.annotation.Nonnull;
+public class InvalidDalvikBytecodeException extends RuntimeException {
 
-public abstract class AbstractConditionExpr extends AbstractIntBinopExpr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -1932386032493767303L;
 
-  AbstractConditionExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
-    super(op1, op2);
+  public InvalidDalvikBytecodeException(String msg) {
+    super(msg);
   }
-
-  abstract public JEqExpr withOp1(@Nonnull Immediate op1);
-
-  abstract public JEqExpr withOp2(@Nonnull Immediate op2);
 
 }

@@ -26,15 +26,10 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
 
 /**
  * Analysis that implements the LocalUses interface. Uses for a Local defined at a given Stmt are
@@ -43,19 +38,27 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class SimpleLocalUses implements LocalUses {
 
-  final Body body;
+  final Collection<Local> locals;
   private final Map<Stmt, List<Pair<Stmt, Value>>> stmtToUses;
+
+  public SimpleLocalUses(Body body, LocalDefs localDefs){
+    this(body.getLocals(), body.getStmts(),localDefs);
+  }
+
+  public SimpleLocalUses(Body.BodyBuilder bodyBuilder, LocalDefs localDefs){
+    this(bodyBuilder.getLocals(), bodyBuilder.getStmts(),localDefs);
+  }
 
   /**
    * Construct the analysis from a method body and a LocalDefs interface. This supposes that a
    * LocalDefs analysis must have been computed prior.
    */
-  public SimpleLocalUses(Body body, LocalDefs localDefs) {
-    this.body = body;
-    this.stmtToUses = new HashMap<>(body.getStmts().size() * 2 + 1, 0.7f);
+  public SimpleLocalUses(Collection<Local> locals, List<Stmt> stmts, LocalDefs localDefs) {
+    this.locals = locals;
+    this.stmtToUses = new HashMap<>(stmts.size() * 2 + 1, 0.7f);
 
     // Traverse Stmts and associate uses with definitions
-    for (Stmt stmt : body.getStmts()) {
+    for (Stmt stmt : stmts) {
       for (Value v : stmt.getUses()) {
         if (v instanceof Local) {
           // Add this statement to the uses of the definition of the local
@@ -111,7 +114,7 @@ public class SimpleLocalUses implements LocalUses {
    * @return The list of variables declared, but not used in this body
    */
   public Set<Local> getUnusedVariables() {
-    Set<Local> res = new HashSet<>(body.getLocals());
+    Set<Local> res = new HashSet<>(locals);
     res.retainAll(getUsedVariables());
     return res;
   }

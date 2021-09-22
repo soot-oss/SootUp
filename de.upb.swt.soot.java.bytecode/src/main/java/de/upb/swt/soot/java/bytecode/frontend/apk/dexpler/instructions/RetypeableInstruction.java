@@ -53,8 +53,8 @@ public interface RetypeableInstruction {
    *
    * Retyping is separated from setting the type, to make it possible to retype after local splitting.
    *
-   * @param body
+   * @param bodyBuilder
    *          The body containing the processed statement
    */
-  public void retype(Body body);
+  public void retype(Body.BodyBuilder bodyBuilder);
 }

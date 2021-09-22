@@ -42,13 +42,6 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.typing;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import de.upb.swt.soot.core.analysis.SimpleLocalDefs;
 import de.upb.swt.soot.core.analysis.SimpleLocalUses;
 import de.upb.swt.soot.core.graph.StmtGraph;
@@ -76,6 +69,8 @@ import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.tags.IntOpTag;
 import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.tags.LongOpTag;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
 
 public class DalvikTyper implements IDalvikTyper {
 
@@ -139,9 +134,9 @@ public class DalvikTyper implements IDalvikTyper {
   }
 
   @Override
-  public void assignType(final Body b) {
+  public void assignType(final Body.BodyBuilder bodyBuilder) {
 
-    // Debug.printDbg("assignTypes: before: \n", b);
+    // Debug.printDbg("assignTypes: before: \n", bodyBuilder);
 
     constraints.clear();
     localObjList.clear();
@@ -149,7 +144,7 @@ public class DalvikTyper implements IDalvikTyper {
     final Set<Stmt> todoStmts = new HashSet<>();
 
     // put constraints:
-    for (Stmt stmt : b.getStmts()) {
+    for (Stmt stmt : bodyBuilder.getStmts()) {
       StmtVisitor ss = new StmtVisitor() {
 
         @Override
@@ -339,7 +334,7 @@ public class DalvikTyper implements IDalvikTyper {
         @Override
         public void caseReturnStmt(JReturnStmt stmt) {
           // add constraint
-          DalvikTyper.v().setType(stmt.getOp(), b.getMethodSignature().getType(), true);
+          DalvikTyper.v().setType(stmt.getOp(), bodyBuilder.getMethodSignature().getType(), true);
 
         }
 
@@ -371,11 +366,11 @@ public class DalvikTyper implements IDalvikTyper {
     if (!todoStmts.isEmpty()) {
 
       // propagate array types
-      StmtGraph stmtGraph = b.getStmtGraph();
-      SimpleLocalDefs sld = new SimpleLocalDefs(b);
-      SimpleLocalUses slu = new SimpleLocalUses(b, sld);
+      StmtGraph stmtGraph = bodyBuilder.getStmtGraph();
+      SimpleLocalDefs sld = new SimpleLocalDefs(bodyBuilder);
+      SimpleLocalUses slu = new SimpleLocalUses(bodyBuilder, sld);
 
-      for (Stmt s : b.getStmts()) {
+      for (Stmt s : bodyBuilder.getStmts()) {
         if (s instanceof AbstractDefinitionStmt) {
           // Debug.printDbg("U: ", u);
           AbstractDefinitionStmt ass = (AbstractDefinitionStmt) s;
@@ -440,7 +435,7 @@ public class DalvikTyper implements IDalvikTyper {
                       }
                       if (aTypeOtherThanObject == null) {
                         throw new RuntimeException(
-                            "error: did not found array type for base " + arBase + " " + local2Obj.get(arBase) + " \n " + b);
+                            "error: did not found array type for base " + arBase + " " + local2Obj.get(arBase) + " \n " + bodyBuilder);
                       }
                       baseT = aTypeOtherThanObject;
                     }
@@ -484,7 +479,7 @@ public class DalvikTyper implements IDalvikTyper {
         Local baselocal = ar.getBase();
         if (!local2Obj.containsKey(baselocal)) {
           // Debug.printDbg("oups no baselocal! for ", u);
-          // Debug.printDbg("b: ", b.getMethod(), " \n", b);
+          // Debug.printDbg("bodyBuilder: ", bodyBuilder.getMethod(), " \n", bodyBuilder);
           throw new RuntimeException("oups");
         }
 
@@ -499,7 +494,7 @@ public class DalvikTyper implements IDalvikTyper {
           }
           if (aTypeOtherThanObject == null) {
             throw new RuntimeException(
-                "did not found array type for base " + baselocal + " " + local2Obj.get(baselocal) + " \n " + b);
+                "did not found array type for base " + baselocal + " " + local2Obj.get(baselocal) + " \n " + bodyBuilder);
           }
           baseT = aTypeOtherThanObject;
         }
@@ -523,8 +518,8 @@ public class DalvikTyper implements IDalvikTyper {
 
     // Debug.printDbg(IDalvikTyper.DEBUG, "list of constraints:");
     List<Value> usesAndDefs = new ArrayList<>();
-    usesAndDefs.addAll(b.getUses());
-    usesAndDefs.addAll(b.getDefs());
+    usesAndDefs.addAll(bodyBuilder.getUses());
+    usesAndDefs.addAll(bodyBuilder.getDefs());
 
     // clear constraints after local splitting and dead code eliminator
     List<Constraint> toRemove = new ArrayList<Constraint>();
@@ -707,7 +702,7 @@ public class DalvikTyper implements IDalvikTyper {
       }
     }
 
-    List<Stmt> stmts = b.getStmts();
+    List<Stmt> stmts = bodyBuilder.getStmts();
     for(int i=0; i<stmts.size(); i++){
       Stmt s = stmts.get(i);
       if (!(s instanceof JAssignStmt)) {
@@ -743,7 +738,7 @@ public class DalvikTyper implements IDalvikTyper {
             // cst.value);
             newValue = cst.toIntConstant();
           } else { // check if used in cast, just in case...
-            for (Stmt s : b.getStmts()) {
+            for (Stmt s : bodyBuilder.getStmts()) {
               for (Value v1 : s.getUses()) {
                 if (v1 == l) {
                   // Debug.printDbg("local used in ", u);
@@ -775,7 +770,7 @@ public class DalvikTyper implements IDalvikTyper {
     }
 
     // fix untypedconstants which have flown to an array index
-    List<Stmt> stmtList = b.getStmts();
+    List<Stmt> stmtList = bodyBuilder.getStmts();
     for (int i=0; i<stmtList.size(); i++) {
       Stmt stmt = stmtList.get(i);
       AbstractStmtVisitor<Stmt> sw = new AbstractStmtVisitor() {
@@ -897,7 +892,7 @@ public class DalvikTyper implements IDalvikTyper {
         public void caseReturnStmt(JReturnStmt stmt) {
           if (stmt.getOp() instanceof UntypedConstant) {
             UntypedConstant uc = (UntypedConstant) stmt.getOp();
-            Type type = b.getMethodSignature().getType();
+            Type type = bodyBuilder.getMethodSignature().getType();
             stmt = stmt.withReturnValue((Immediate) uc.defineType(type));
             setResult(stmt);
           }
@@ -910,7 +905,7 @@ public class DalvikTyper implements IDalvikTyper {
 
     // fix untyped constants remaining
 
-    // Debug.printDbg("assignTypes: after: \n", b);
+    // Debug.printDbg("assignTypes: after: \n", bodyBuilder);
 
   }
 
@@ -1024,8 +1019,8 @@ public class DalvikTyper implements IDalvikTyper {
   }
 
   // this is needed because UnuesedStatementTransformer checks types in the div expressions
-  public void typeUntypedConstrantInDiv(final Body b) {
-    List<Stmt> stmts = b.getStmts();
+  public void typeUntypedConstrantInDiv(final Body.BodyBuilder bodyBuilder) {
+    List<Stmt> stmts = bodyBuilder.getStmts();
     for (int i=0; i<stmts.size(); i++) {
       Stmt s = stmts.get(i);
       AbstractStmtVisitor<Stmt> sw = new AbstractStmtVisitor<Stmt>() {
@@ -1115,7 +1110,7 @@ public class DalvikTyper implements IDalvikTyper {
         public void caseReturnStmt(JReturnStmt stmt) {
           if (stmt.getOp() instanceof UntypedConstant) {
             UntypedConstant uc = (UntypedConstant) stmt.getOp();
-            Type type = b.getMethodSignature().getType();
+            Type type = bodyBuilder.getMethodSignature().getType();
             Immediate defineType = uc.defineType(type);
             setResult(stmt.withReturnValue(defineType));
           }
