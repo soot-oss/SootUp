@@ -491,6 +491,12 @@ public class WalaIRToJimpleConverter {
         HashMap<Integer, Stmt> index2Stmt = new HashMap<>();
         Stmt stmt = null;
         for (SSAInstruction inst : insts) {
+
+          // WALA sets target of goto to -1 if the goto points to a dead block
+          if (inst instanceof SSAGotoInstruction) {
+            if (((SSAGotoInstruction) inst).getTarget() == -1) continue;
+          }
+
           List<Stmt> retStmts = instConverter.convertInstruction(inst, index2Stmt);
           if (!retStmts.isEmpty()) {
             final int retStmtsSize = retStmts.size();
