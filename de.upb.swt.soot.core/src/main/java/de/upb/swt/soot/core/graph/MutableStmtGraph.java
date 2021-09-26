@@ -27,27 +27,30 @@ import de.upb.swt.soot.core.types.ClassType;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-public interface MutableStmtGraph {
+/** @author Markus Schmidt */
+public abstract class MutableStmtGraph extends StmtGraph {
   @Nonnull
-  StmtGraph unmodifiableStmtGraph();
+  public abstract StmtGraph unmodifiableStmtGraph();
 
-  void setStartingStmt(@Nonnull Stmt firstStmt);
+  public abstract void setStartingStmt(@Nonnull Stmt firstStmt);
 
-  void addNode(@Nonnull Stmt node);
+  public abstract void addNode(@Nonnull Stmt node);
 
-  void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt);
+  public abstract void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt);
 
-  void removeNode(@Nonnull Stmt node);
+  public abstract void removeNode(@Nonnull Stmt node);
 
-  void putEdge(@Nonnull Stmt from, @Nonnull Stmt to);
+  public abstract void putEdge(@Nonnull Stmt from, @Nonnull Stmt to);
 
-  void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets);
+  public abstract void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets);
 
-  void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to);
+  public abstract void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to);
 
-  void setTraps(@Nonnull List<Trap> traps);
+  public abstract void setTraps(@Nonnull List<Trap> traps);
 
-  void addTrap(ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt);
+  public abstract void addTrap(
+      ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt);
 
-  void removeTrap(ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt);
+  public abstract void removeTrap(
+      ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt);
 }

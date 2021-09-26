@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 // FIXME: implement
-public class ImmutableBlockStmtGraph implements StmtGraph {
+public class ImmutableBlockStmtGraph extends StmtGraph {
 
   private final List<Stmt> stmts;
   private final List<ImmutableBasicBlock> blocks;

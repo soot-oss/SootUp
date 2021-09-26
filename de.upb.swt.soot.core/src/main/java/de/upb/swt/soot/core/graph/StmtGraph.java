@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class StmtGraph implements Iterable<Stmt> {
 
-  abstract Stmt getStartingStmt();
+  public abstract Stmt getStartingStmt();
 
   /**
    * returns the nodes in this graph in no deterministic order (->Set) to get a linearized flow use

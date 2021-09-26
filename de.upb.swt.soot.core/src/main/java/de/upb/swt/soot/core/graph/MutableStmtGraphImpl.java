@@ -46,7 +46,7 @@ import javax.annotation.Nullable;
  *
  * @author Markus Schmidt
  */
-public class MutableStmtGraphImpl extends StmtGraph implements MutableStmtGraph {
+public class MutableStmtGraphImpl extends MutableStmtGraph {
 
   @Nonnull protected final ArrayList<List<Stmt>> predecessors;
   @Nonnull protected final ArrayList<List<Stmt>> successors;

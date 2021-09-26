@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class MutableBlockStmtGraph extends StmtGraph implements MutableStmtGraph {
+public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Nullable private Stmt startingStmt = null;
   @Nonnull private final Map<Stmt, Integer> stmtToBlock = new HashMap<>();
