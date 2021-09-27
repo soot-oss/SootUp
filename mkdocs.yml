@@ -23,7 +23,7 @@ plugins:
   - tooltips
   - search
   - include:
-      src_path: 'examples/src/test/java/de.upb.swt.soot.examples/'
+      src_path: 'examples/src/test/java/de.upb.swt.soot.examples'
 
 extra_css:
   - css/hint.min.css
