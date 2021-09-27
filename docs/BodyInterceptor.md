@@ -50,7 +50,7 @@ EmptySwitchEliminator is a<code>BodyInterceptor</code>that removes empty switch 
 
 Example: 
 
-![EmptySwitchEliminator Example](./figures/EmptySwitchEliminator Example.png)
+![EmptySwitchEliminator Example](./figures/EmptySwitchEliminator%20Example.png)
 
 As shown in the example above, the switch statement in the jimple body always takes the default action. After running EmptySwitchEliminator, the switch statement is replaced with a<code>GotoStmt</code>to the default case.
 
@@ -62,7 +62,7 @@ UnreachableCodeEliminator is a<code>BodyInterceptor</code>that removes all unrea
 
 Example: 
 
-![UnreachableCodeEliminator Example](./figures/UnreachableCodeEliminator Example.png)
+![UnreachableCodeEliminator Example](./figures/UnreachableCodeEliminator%20Example.png)
 
 Obviously, the code segment<code>l2 = 2; l3 = 3;</code>is unreachable. It will be removed after running the UreachableCodeEliminator.
 
@@ -74,7 +74,7 @@ CopyPropagator is a<code>BodyInterceptor</code>that supports the global copy pro
 
 Example for global copy propagation:
 
-![UnreachableCodeEliminator Example](./figures/CopyPropagator Example_1.png)
+![UnreachableCodeEliminator Example](./figures/CopyPropagator%20Example_1.png)
 
 Consider a code segment in the following form: 
 
@@ -93,7 +93,7 @@ In the example for global copy propagation, the first used<code>l1</code>is repl
 
 Example for constant propagation:
 
-![CopyPropagator Example_1](figures/CopyPropagator Example_2.png)
+![CopyPropagator Example_1](figures/CopyPropagator%20Example_2.png)
 
 Constant propagation is similar to copy propagation. Consider a code segment in the following form:
 
@@ -137,9 +137,9 @@ StaticSingleAssignmentFormer is a<code>BodyInterceptor</code>that transforms jim
 
 Example:
 
-![SSA Example_1](./figures/SSA Example_1.png)
+![SSA Example_1](./figures/SSA%20Example_1.png)
 
-![SSA Example_2](./figures/SSA Example_2.png)
+![SSA Example_2](./figures/SSA%20Example_2.png)
 
 In the given example, the StaticSingleAssignmentFormer assigns each<code>IdentityStmt</code>and<code>AssignStmt</code>to a new local variable . And each use uses the local variable which is most recently defined. Sometimes, it is impossible to determine the most recently defined local variable for a use in a join block. In this case, the StaticSingleAssignmentFormer will insert a<code>PhiStmt</code>in the front of the join block to merge all most recently defined local variables and assign them a new local variable. 
 
