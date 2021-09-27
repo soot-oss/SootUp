@@ -22,14 +22,16 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
-import soot.Body;
-import soot.BodyTransformer;
+import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import soot.Unit;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
 
-import java.util.Iterator;
-import java.util.Map;
+import javax.annotation.Nonnull;
 
 /**
  * This transformer is the inverse of the DexReturnInliner. It looks for unnecessary duplicates of return statements and
@@ -38,30 +40,26 @@ import java.util.Map;
  * @author Steven Arzt
  *
  */
-public class DexReturnPacker extends BodyTransformer {
-
-  public static DexReturnPacker v() {
-    return new DexReturnPacker();
-  }
+public class DexReturnPacker implements BodyInterceptor {
 
   @Override
-  protected void internalTransform(Body b, String phaseName, Map<String, String> options) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     // Look for consecutive return statements
-    Unit lastUnit = null;
-    for (Iterator<Unit> unitIt = b.getUnits().iterator(); unitIt.hasNext();) {
-      Unit curUnit = unitIt.next();
+    Stmt lastStmt = null;
+    for (Stmt stmt :builder.getStmts()) {
 
-      if (curUnit instanceof ReturnStmt || curUnit instanceof ReturnVoidStmt) {
+      if (stmt instanceof JReturnStmt || stmt instanceof JReturnVoidStmt) {
         // Check for duplicates
-        if (lastUnit != null && isEqual(lastUnit, curUnit)) {
-          curUnit.redirectJumpsToThisTo(lastUnit);
-          unitIt.remove();
+        if (lastStmt != null && isEqual(lastStmt, stmt)) {
+          // FIXME
+          stmt.redirectJumpsToThisTo(lastStmt);
+          stmt.remove();
         } else {
-          lastUnit = curUnit;
+          lastStmt = stmt;
         }
       } else {
         // Start over
-        lastUnit = null;
+        lastStmt = null;
       }
     }
   }
@@ -69,24 +67,24 @@ public class DexReturnPacker extends BodyTransformer {
   /**
    * Checks whether the two given units are semantically equal
    *
-   * @param unit1
+   * @param stmt1
    *          The first unit
-   * @param unit2
+   * @param stmt2
    *          The second unit
    * @return True if the two given units are semantically equal, otherwise false
    */
-  private boolean isEqual(Unit unit1, Unit unit2) {
+  private boolean isEqual(Stmt stmt1, Stmt stmt2) {
     // Trivial case
-    if (unit1 == unit2 || unit1.equals(unit2)) {
+    if (stmt1 == stmt2 || stmt1.equals(stmt2)) {
       return true;
     }
 
     // Semantic check
-    if (unit1.getClass() == unit2.getClass()) {
-      if (unit1 instanceof ReturnVoidStmt) {
+    if (stmt1.getClass() == stmt2.getClass()) {
+      if (stmt1 instanceof JReturnVoidStmt) {
         return true;
-      } else if (unit1 instanceof ReturnStmt) {
-        return ((ReturnStmt) unit1).getOp() == ((ReturnStmt) unit2).getOp();
+      } else if (stmt1 instanceof JReturnStmt) {
+        return ((JReturnStmt) stmt1).getOp() == ((JReturnStmt) stmt2).getOp();
       }
     }
 

@@ -22,6 +22,8 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import soot.Body;
 import soot.Singletons;
 import soot.Trap;
@@ -32,6 +34,7 @@ import soot.toolkits.exceptions.TrapTransformer;
 import soot.toolkits.graph.ExceptionalGraph.ExceptionDest;
 import soot.toolkits.graph.ExceptionalUnitGraph;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
@@ -47,7 +50,7 @@ import java.util.*;
  *
  * @author Alexandre Bartel
  */
-public class TrapMinimizer extends TrapTransformer {
+public class TrapMinimizer implements BodyInterceptor {
 
   public TrapMinimizer(Singletons.Global g) {
   }
@@ -57,7 +60,7 @@ public class TrapMinimizer extends TrapTransformer {
   }
 
   @Override
-  protected void internalTransform(Body b, String phaseName, Map<String, String> options) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     // If we have less then two traps, there's nothing to do here
     if (b.getTraps().size() == 0) {
       return;

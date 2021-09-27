@@ -432,7 +432,7 @@ public class DexBody {
     final Jimple jimple = JavaJimple.getInstance();
     final UnknownType unknownType = UnknownType.getInstance();
     final NullConstant nullConstant = NullConstant.getInstance();
-    // final Options options = Options.v();
+    final Options options = Options.v();
 
     /*
      * Timer t_whole_jimplification = new Timer(); Timer t_num = new Timer(); Timer t_null = new Timer();
@@ -445,12 +445,12 @@ public class DexBody {
     deferredInstructions = new ArrayList<DeferableInstruction>();
     instructionsToRetype = new HashSet<RetypeableInstruction>();
 
-    /*if (jbOptions.use_original_names()) {
+    if (jbOptions.use_original_names()) {
       PhaseOptions.v().setPhaseOptionIfUnset("jb.lns", "only-stack-locals");
     }
     if (jbOptions.stabilize_local_names()) {
       PhaseOptions.v().setPhaseOption("jb.lns", "sort-locals:true");
-    }*/
+    }
 
     if (IDalvikTyper.ENABLE_DVKTYPER) {
       DalvikTyper.v().clear();
@@ -839,15 +839,15 @@ public class DexBody {
     // on the fly.
     if (Options.v().wrong_staticness() == Options.wrong_staticness_fix
         || Options.v().wrong_staticness() == Options.wrong_staticness_fixstrict) {
-      FieldStaticnessCorrector.interceptBody(this.bodyBuilder);
-      MethodStaticnessCorrector.interceptBody(this.bodyBuilder);
+      new FieldStaticnessCorrector().interceptBody(this.bodyBuilder);
+      new MethodStaticnessCorrector().interceptBody(this.bodyBuilder);
     }
 
     // Inline PackManager.v().getPack("jb").apply(jBody);
     // Keep only transformations that have not been done
     // at this point.
     new TrapTightener().interceptBody(this.bodyBuilder);
-    new TrapMinimizer().interceptBody(this.bodyBuilder);
+    TrapMinimizer.v().interceptBody(this.bodyBuilder);
     // LocalSplitter.v().transform(jBody);
     new Aggregator().interceptBody(this.bodyBuilder);
     // new UnusedLocalEliminator().v().transform(jBody);
@@ -889,7 +889,7 @@ public class DexBody {
     for (Stmt u : this.bodyBuilder.getStmts()) {
       if (u instanceof JAssignStmt) {
         JAssignStmt ass = (JAssignStmt) u;
-        if (ass.getRightOp() instanceof CastExpr) {
+        if (ass.getRightOp() instanceof JCastExpr) {
           JCastExpr c = (JCastExpr) ass.getRightOp();
           if (c.getType() instanceof NullType) {
             // FIXME as I did in other abstract class
@@ -983,7 +983,7 @@ public class DexBody {
 
   protected CopyPropagator getCopyPopagator() {
     if (this.copyPropagator == null) {
-      this.copyPropagator = new CopyPropagator(DalvikThrowAnalysis.v(), false);
+      this.copyPropagator = new CopyPropagator(new DalvikThrowAnalysis(), false);
     }
     return this.copyPropagator;
   }
@@ -1050,9 +1050,9 @@ public class DexBody {
       // if the try block ends on the last instruction of the body, add a
       // nop instruction so Soot can include
       // the last instruction in the try block.
-      if (bodyBuilder.getStmts().getLast() == endStmt
+      if (bodyBuilder.getStmts().get(bodyBuilder.getStmts().size()-1) == endStmt
           && instructionAtAddress(endAddress - 1).getStmt() == endStmt) {
-        Stmt nop = jimple.newNopStmt();
+        Stmt nop = jimple.newNopStmt(endStmt.getPositionInfo());
         bodyBuilder.getStmts().insertAfter(nop, endStmt);
         endStmt = nop;
       }
