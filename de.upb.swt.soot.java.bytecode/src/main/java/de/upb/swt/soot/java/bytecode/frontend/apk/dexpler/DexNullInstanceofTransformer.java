@@ -22,16 +22,15 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
-import soot.Body;
-import soot.BodyTransformer;
-import soot.Unit;
-import soot.jimple.AssignStmt;
-import soot.jimple.InstanceOfExpr;
-import soot.jimple.IntConstant;
-import soot.jimple.NullConstant;
+import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
+import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
+import de.upb.swt.soot.core.jimple.common.expr.JInstanceOfExpr;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 
-import java.util.Iterator;
-import java.util.Map;
+import javax.annotation.Nonnull;
 
 /**
  * Transformer that swaps
@@ -45,29 +44,24 @@ import java.util.Map;
  * @author Steven Arzt
  *
  */
-public class DexNullInstanceofTransformer extends BodyTransformer {
-
-  public static DexNullInstanceofTransformer v() {
-    return new DexNullInstanceofTransformer();
-  }
+public class DexNullInstanceofTransformer implements BodyInterceptor {
 
   @Override
-  protected void internalTransform(Body b, String phaseName, Map<String, String> options) {
-    for (Iterator<Unit> unitIt = b.getUnits().snapshotIterator(); unitIt.hasNext();) {
-      Unit u = unitIt.next();
-      if (u instanceof AssignStmt) {
-        AssignStmt assignStmt = (AssignStmt) u;
-        if (assignStmt.getRightOp() instanceof InstanceOfExpr) {
-          InstanceOfExpr iof = (InstanceOfExpr) assignStmt.getRightOp();
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+    for (Stmt stmt : builder.getStmts()) {
+      if (stmt instanceof JAssignStmt) {
+        JAssignStmt assignStmt = (JAssignStmt) stmt;
+        if (assignStmt.getRightOp() instanceof JInstanceOfExpr) {
+          JInstanceOfExpr iof = (JInstanceOfExpr) assignStmt.getRightOp();
 
           // If the operand of the "instanceof" expression is null or
           // the zero constant, we replace the whole operation with
           // its outcome "false"
-          if (iof.getOp() == NullConstant.v()) {
-            assignStmt.setRightOp(IntConstant.v(0));
+          if (iof.getOp() == NullConstant.getInstance()) {
+            assignStmt.setRightOp(IntConstant.getInstance(0));
           }
           if (iof.getOp() instanceof IntConstant && ((IntConstant) iof.getOp()).value == 0) {
-            assignStmt.setRightOp(IntConstant.v(0));
+            assignStmt.setRightOp(IntConstant.getInstance(0));
           }
         }
       }

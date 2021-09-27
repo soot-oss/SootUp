@@ -27,12 +27,14 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.model.Body;
 import soot.*;
 import soot.dexpler.tags.ObjectOpTag;
 import soot.jimple.*;
 import soot.jimple.internal.AbstractInstanceInvokeExpr;
 import soot.jimple.internal.AbstractInvokeExpr;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
@@ -54,7 +56,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
   private Local l = null;
 
   @Override
-  protected void internalTransform(final Body body, String phaseName, Map<String, String> options) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     final DexDefUseAnalysis localDefs = new DexDefUseAnalysis(body);
     AbstractStmtSwitch checkDef = new AbstractStmtSwitch() { // Alex: should also end as
       // soon as detected as not

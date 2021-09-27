@@ -22,14 +22,18 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
-import soot.*;
-import soot.javaToJimple.LocalGenerator;
-import soot.jimple.CaughtExceptionRef;
-import soot.jimple.IdentityStmt;
-import soot.jimple.Jimple;
-import soot.jimple.Stmt;
+import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 
-import java.util.Map;
+import javax.annotation.Nonnull;
 
 /**
  * Transformer to ensure that all exception handlers pull the exception object. In other words, if an exception handler must
@@ -43,28 +47,7 @@ import java.util.Map;
  * @author Steven Arzt
  *
  */
-public class DexTrapStackFixer extends BodyTransformer {
-
-  public static DexTrapStackFixer v() {
-    return new DexTrapStackFixer();
-  }
-
-  @Override
-  protected void internalTransform(Body b, String phaseName, Map<String, String> options) {
-    for (Trap t : b.getTraps()) {
-      // If the first statement already catches the exception, we're fine
-      if (isCaughtExceptionRef(t.getHandlerUnit())) {
-        continue;
-      }
-
-      // Add the exception reference
-      Local l = new LocalGenerator(b).generateLocal(t.getException().getType());
-      Stmt caughtStmt = Jimple.v().newIdentityStmt(l, Jimple.v().newCaughtExceptionRef());
-      b.getUnits().add(caughtStmt);
-      b.getUnits().add(Jimple.v().newGotoStmt(t.getHandlerUnit()));
-      t.setHandlerUnit(caughtStmt);
-    }
-  }
+public class DexTrapStackFixer implements BodyInterceptor {
 
   /**
    * Checks whether the given statement stores an exception reference
@@ -73,12 +56,33 @@ public class DexTrapStackFixer extends BodyTransformer {
    *          The statement to check
    * @return True if the given statement stores an exception reference, otherwise false
    */
-  private boolean isCaughtExceptionRef(Unit handlerUnit) {
-    if (!(handlerUnit instanceof IdentityStmt)) {
+  private boolean isCaughtExceptionRef(Stmt handlerUnit) {
+    if (!(handlerUnit instanceof JIdentityStmt)) {
       return false;
     }
-    IdentityStmt stmt = (IdentityStmt) handlerUnit;
-    return stmt.getRightOp() instanceof CaughtExceptionRef;
+    JIdentityStmt stmt = (JIdentityStmt) handlerUnit;
+    return stmt.getRightOp() instanceof JCaughtExceptionRef;
   }
 
+  @Override
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+    // Find all Locals that must be split
+    // If a local as a definition appears two or more times, then this local must be split
+
+    for (Trap t : builder.getTraps()) {
+      // If the first statement already catches the exception, we're fine
+      if (isCaughtExceptionRef(t.getHandlerStmt())) {
+        continue;
+      }
+
+      // Add the exception reference
+      Local l = new LocalGenerator(builder.getLocals()).generateLocal(t.getExceptionType());
+      Stmt caughtStmt = Jimple.newIdentityStmt(l, new JCaughtExceptionRef(t.getExceptionType()), StmtPositionInfo.createNoStmtPositionInfo());
+      builder.getStmts().add(caughtStmt);
+      builder.getStmts().add(Jimple.newGotoStmt(t.getHandlerStmt().getPositionInfo()));
+      // FIXME - should I add a setter or not in de.upb.swt.soot.core.jimple.basic.Trap?
+      t.setHandlerUnit(caughtStmt);
+    }
+
+  }
 }

@@ -22,6 +22,8 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import soot.*;
@@ -32,6 +34,7 @@ import soot.jimple.Stmt;
 import soot.options.Options;
 import soot.toolkits.scalar.UnusedLocalEliminator;
 
+import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -51,14 +54,10 @@ import java.util.Map;
  * @author Steven Arzt
  *
  */
-public class DexArrayInitReducer extends BodyTransformer {
+public class DexArrayInitReducer implements BodyInterceptor {
   private static final Logger logger = LoggerFactory.getLogger(DexArrayInitReducer.class);
 
-  public static DexArrayInitReducer v() {
-    return new DexArrayInitReducer();
-  }
 
-  @Override
   protected void internalTransform(Body b, String phaseName, Map<String, String> options) {
     // Make sure that we only have linear control flow
     if (!b.getTraps().isEmpty()) {
@@ -194,4 +193,8 @@ public class DexArrayInitReducer extends BodyTransformer {
     UnusedLocalEliminator.v().transform(b);
   }
 
+  @Override
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+
+  }
 }

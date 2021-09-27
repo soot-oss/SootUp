@@ -42,6 +42,8 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import soot.*;
 import soot.jimple.*;
 import soot.jimple.toolkits.scalar.LocalCreation;
@@ -49,6 +51,7 @@ import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.scalar.LocalDefs;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -65,13 +68,10 @@ import java.util.Map;
  * @author Steven Arzt
  *
  */
-public class DexNullArrayRefTransformer extends BodyTransformer {
+public class DexNullArrayRefTransformer implements BodyInterceptor {
 
-  public static DexNullArrayRefTransformer v() {
-    return new DexNullArrayRefTransformer();
-  }
-
-  protected void internalTransform(final Body body, String phaseName, Map<String, String> options) {
+  @Override
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     final ExceptionalUnitGraph g = new ExceptionalUnitGraph(body, DalvikThrowAnalysis.v());
     final LocalDefs defs = G.v().soot_toolkits_scalar_LocalDefsFactory().newLocalDefs(g);
     final LocalCreation lc = new LocalCreation(body.getLocals(), "ex");
@@ -169,4 +169,5 @@ public class DexNullArrayRefTransformer extends BodyTransformer {
     // Throw the exception
     body.getUnits().swapWith(oldStmt, Jimple.v().newThrowStmt(lcEx));
   }
+
 }

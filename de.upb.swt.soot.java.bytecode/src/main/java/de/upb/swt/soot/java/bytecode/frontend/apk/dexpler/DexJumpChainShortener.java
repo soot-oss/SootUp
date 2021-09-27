@@ -22,14 +22,15 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
-import soot.Body;
-import soot.BodyTransformer;
-import soot.Unit;
+import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import soot.jimple.GotoStmt;
 import soot.jimple.IfStmt;
 
-import java.util.Iterator;
-import java.util.Map;
+import javax.annotation.Nonnull;
 
 /**
  * Transformer for reducing goto chains. If there is a chain of jumps in the code before the final target is reached, we
@@ -38,31 +39,26 @@ import java.util.Map;
  * @author Steven Arzt
  *
  */
-public class DexJumpChainShortener extends BodyTransformer {
+public class DexJumpChainShortener implements BodyInterceptor {
 
-  public static DexJumpChainShortener v() {
-    return new DexJumpChainShortener();
-  }
 
   @Override
-  protected void internalTransform(Body b, String phaseName, Map<String, String> options) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+    for (Stmt stmt : builder.getStmts()) {
 
-    for (Iterator<Unit> unitIt = b.getUnits().snapshotIterator(); unitIt.hasNext();) {
-      Unit u = unitIt.next();
-      if (u instanceof GotoStmt) {
-        GotoStmt stmt = (GotoStmt) u;
-        while (stmt.getTarget() instanceof GotoStmt) {
-          GotoStmt nextTarget = (GotoStmt) stmt.getTarget();
-          stmt.setTarget(nextTarget.getTarget());
+      if (stmt instanceof JGotoStmt) {
+        JGotoStmt jGotoStmtstmt = (JGotoStmt) stmt;
+        while (jGotoStmtstmt.getTarget() instanceof JGotoStmt) {
+          JGotoStmt nextTarget = (JGotoStmt) jGotoStmtstmt.getTarget();
+          jGotoStmtstmt.setTarget(nextTarget.getTarget());
         }
-      } else if (u instanceof IfStmt) {
-        IfStmt stmt = (IfStmt) u;
-        while (stmt.getTarget() instanceof GotoStmt) {
-          GotoStmt nextTarget = (GotoStmt) stmt.getTarget();
-          stmt.setTarget(nextTarget.getTarget());
+      } else if (stmt instanceof JIfStmt) {
+        JIfStmt jIfStmt = (JIfStmt) stmt;
+        while (jIfStmt.getTarget() instanceof JGotoStmt) {
+          JGotoStmt nextTarget = (JGotoStmt) jIfStmt.getTarget();
+          jIfStmt.setTarget(nextTarget.getTarget());
         }
       }
     }
   }
-
 }

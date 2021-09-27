@@ -329,7 +329,7 @@ public class DexBody {
    * @param u Unit to add.
    */
   public void add(Stmt u) {
-    getBody().getUnits().add(u);
+    getBody().getStmts().add(u);
   }
 
   /**
@@ -636,16 +636,16 @@ public class DexBody {
      */
 
     // Fix traps that do not catch exceptions
-    DexTrapStackFixer.v().transform(bodyBuilder);
+    new DexTrapStackFixer().interceptBody(bodyBuilder);
 
     // Sort out jump chains
-    DexJumpChainShortener.v().transform(bodyBuilder);
+    new DexJumpChainShortener().interceptBody(bodyBuilder);
 
     // Make sure that we don't have any overlapping uses due to returns
-    DexReturnInliner.v().transform(bodyBuilder);
+    new DexReturnInliner().interceptBody(bodyBuilder);
 
     // Shortcut: Reduce array initializations
-    DexArrayInitReducer.v().transform(bodyBuilder);
+    new DexArrayInitReducer().interceptBody(bodyBuilder);
 
     // split first to find undefined uses
     getLocalSplitter().interceptBody(bodyBuilder);
@@ -695,16 +695,16 @@ public class DexBody {
 
     } else {
       // t_num.start();
-      DexNumTransformer.interceptBody(this.bodyBuilder);
+      new DexNumTransformer().interceptBody(this.bodyBuilder);
       // t_num.end();
 
-      DexReturnValuePropagator.interceptBody(this.bodyBuilder);
-      getCopyPopagator().transform(this.bodyBuilder);
+      new DexReturnValuePropagator().interceptBody(this.bodyBuilder);
+      getCopyPopagator().interceptBody(this.bodyBuilder);
 
-      DexNullThrowTransformer.interceptBody(this.bodyBuilder);
+      new DexNullThrowTransformer().interceptBody(this.bodyBuilder);
 
       // t_null.start();
-      DexNullTransformer.interceptBody(this.bodyBuilder);
+      new DexNullTransformer().interceptBody(this.bodyBuilder);
       // t_null.end();
 
       new DexIfTransformer().interceptBody(this.bodyBuilder);
@@ -723,7 +723,7 @@ public class DexBody {
     }
 
     // Remove "instanceof" checks on the null constant
-    DexNullInstanceofTransformer.interceptBody(this.bodyBuilder);
+    new DexNullInstanceofTransformer().interceptBody(this.bodyBuilder);
 
     new TypeAssigner().interceptBody(this.bodyBuilder);
 
@@ -861,16 +861,16 @@ public class DexBody {
     new ConditionalBranchFolder().interceptBody(this.bodyBuilder);
 
     // Remove unnecessary typecasts
-    ConstantCastEliminator.interceptBody(this.bodyBuilder);
-    IdentityCastEliminator.interceptBody(this.bodyBuilder);
+    new ConstantCastEliminator().interceptBody(this.bodyBuilder);
+    new IdentityCastEliminator().interceptBody(this.bodyBuilder);
 
     // Remove unnecessary logic operations
-    IdentityOperationEliminator.interceptBody(this.bodyBuilder);
+    new IdentityOperationEliminator().interceptBody(this.bodyBuilder);
 
     // We need to run this transformer since the conditional branch folder
     // might have rendered some code unreachable (well, it was unreachable
     // before as well, but we didn't know).
-    UnreachableCodeEliminator.interceptBody(this.bodyBuilder);
+    new UnreachableCodeEliminator().interceptBody(this.bodyBuilder);
 
     // Not sure whether we need this even though we do it earlier on as
     // the earlier pass does not have type information
@@ -881,10 +881,10 @@ public class DexBody {
     // this again
     new DeadAssignmentEliminator().interceptBody(this.bodyBuilder);
     new UnusedLocalEliminator().interceptBody(this.bodyBuilder);
-    NopEliminator.interceptBody(this.bodyBuilder);
+    new NopEliminator().interceptBody(this.bodyBuilder);
 
     // Remove unnecessary chains of return statements
-    DexReturnPacker.interceptBody(this.bodyBuilder);
+    new DexReturnPacker().interceptBody(this.bodyBuilder);
 
     for (Stmt u : this.bodyBuilder.getStmts()) {
       if (u instanceof JAssignStmt) {
@@ -1037,7 +1037,7 @@ public class DexBody {
       int startAddress = tryItem.getStartCodeAddress();
       int length = tryItem.getCodeUnitCount(); // .getTryLength();
       int endAddress = startAddress + length; // - 1;
-      Unit beginStmt = instructionAtAddress(startAddress).getUnit();
+      Stmt beginStmt = instructionAtAddress(startAddress).getStmt();
       // (startAddress + length) typically points to the first byte of the
       // first instruction after the try block
       // except if there is no instruction after the try block in which
@@ -1046,14 +1046,14 @@ public class DexBody {
       // length) always points to "somewhere" in
       // the last instruction of the try block since the smallest
       // instruction is on two bytes (nop = 0x0000).
-      Unit endStmt = instructionAtAddress(endAddress).getUnit();
+      Stmt endStmt = instructionAtAddress(endAddress).getStmt();
       // if the try block ends on the last instruction of the body, add a
       // nop instruction so Soot can include
       // the last instruction in the try block.
-      if (bodyBuilder.getUnits().getLast() == endStmt
-          && instructionAtAddress(endAddress - 1).getUnit() == endStmt) {
-        Unit nop = jimple.newNopStmt();
-        bodyBuilder.getUnits().insertAfter(nop, endStmt);
+      if (bodyBuilder.getStmts().getLast() == endStmt
+          && instructionAtAddress(endAddress - 1).getStmt() == endStmt) {
+        Stmt nop = jimple.newNopStmt();
+        bodyBuilder.getStmts().insertAfter(nop, endStmt);
         endStmt = nop;
       }
 
@@ -1065,8 +1065,9 @@ public class DexBody {
         }
         Type t = DexType.toSoot(exceptionType);
         // exceptions can only be of RefType
-        if (t instanceof RefType) {
-          SootClass exception = ((RefType) t).getSootClass();
+        if (t instanceof ReferenceType) {
+          // FIXME - SootClass needs to resolved
+          SootClass exception = ((ReferenceType) t).getClass();
           DexlibAbstractInstruction instruction =
               instructionAtAddress(handler.getHandlerCodeAddress());
           if (!(instruction instanceof MoveExceptionInstruction)) {
@@ -1079,7 +1080,7 @@ public class DexBody {
             ((MoveExceptionInstruction) instruction).setRealType(this, exception.getType());
           }
 
-          Trap trap = jimple.newTrap(exception, beginStmt, endStmt, instruction.getUnit());
+          Trap trap = jimple.newTrap(exception, beginStmt, endStmt, instruction.getStmt());
           bodyBuilder.getTraps().add(trap);
         }
       }

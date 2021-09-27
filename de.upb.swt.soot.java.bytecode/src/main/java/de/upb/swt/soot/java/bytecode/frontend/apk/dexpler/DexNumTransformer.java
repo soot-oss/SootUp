@@ -27,11 +27,13 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.model.Body;
 import soot.*;
 import soot.dexpler.tags.DoubleOpTag;
 import soot.dexpler.tags.FloatOpTag;
 import soot.jimple.*;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
@@ -59,19 +61,15 @@ import java.util.*;
  * concludes that an "long" has to be changed to a "double, rightValue has to change from LongConstant.v(literal) to
  * DoubleConstant.v(Double.longBitsToDouble(literal)).
  */
-public class DexNumTransformer extends soot.dexpler.DexTransformer {
+public class DexNumTransformer extends DexTransformer {
   // Note: we need an instance variable for inner class access, treat this as
   // a local variable (including initialization before use)
 
   private boolean usedAsFloatingPoint;
   boolean doBreak = false;
 
-  public static DexNumTransformer v() {
-    return new DexNumTransformer();
-  }
-
   @Override
-  protected void internalTransform(final Body body, String phaseName, Map<String, String> options) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     final soot.dexpler.DexDefUseAnalysis localDefs = new soot.dexpler.DexDefUseAnalysis(body);
 
     for (Local loc : getNumCandidates(body)) {
@@ -294,4 +292,5 @@ public class DexNumTransformer extends soot.dexpler.DexTransformer {
       }
     }
   }
+
 }

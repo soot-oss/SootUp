@@ -22,6 +22,8 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import soot.*;
 import soot.jimple.*;
 import soot.jimple.toolkits.scalar.LocalCreation;
@@ -30,16 +32,13 @@ import soot.toolkits.graph.UnitGraph;
 import soot.toolkits.scalar.LocalDefs;
 import soot.toolkits.scalar.LocalUses;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
-public class DexReturnValuePropagator extends BodyTransformer {
-
-  public static DexReturnValuePropagator v() {
-    return new DexReturnValuePropagator();
-  }
+public class DexReturnValuePropagator implements BodyInterceptor {
 
   @Override
-  protected void internalTransform(Body body, String phaseName, Map<String, String> options) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     ExceptionalUnitGraph graph = new ExceptionalUnitGraph(body, DalvikThrowAnalysis.v(), true);
     LocalDefs localDefs = G.v().soot_toolkits_scalar_LocalDefsFactory().newLocalDefs(graph);
     LocalUses localUses = null;

@@ -22,10 +22,13 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import soot.*;
 import soot.jimple.*;
 import soot.jimple.toolkits.scalar.LocalCreation;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
@@ -41,14 +44,14 @@ import java.util.Map;
  * @author Steven Arzt
  *
  */
-public class DexNullThrowTransformer extends BodyTransformer {
+public class DexNullThrowTransformer implements BodyInterceptor {
 
   public static DexNullThrowTransformer v() {
     return new DexNullThrowTransformer();
   }
 
   @Override
-  protected void internalTransform(Body b, String phaseName, Map<String, String> options) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     LocalCreation lc = new LocalCreation(b.getLocals(), "ex");
 
     for (Iterator<Unit> unitIt = b.getUnits().snapshotIterator(); unitIt.hasNext();) {
@@ -92,5 +95,6 @@ public class DexNullThrowTransformer extends BodyTransformer {
     // Throw the exception
     body.getUnits().swapWith(oldStmt, Jimple.v().newThrowStmt(lcEx));
   }
+
 
 }

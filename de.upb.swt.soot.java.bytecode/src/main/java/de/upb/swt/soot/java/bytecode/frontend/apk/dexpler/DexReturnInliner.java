@@ -27,7 +27,7 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
-import soot.Body;
+import de.upb.swt.soot.core.model.Body;
 import soot.Trap;
 import soot.Unit;
 import soot.UnitBox;
@@ -35,7 +35,6 @@ import soot.jimple.*;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -45,11 +44,7 @@ import java.util.Set;
  *
  * @author Steven Arzt
  */
-public class DexReturnInliner extends soot.dexpler.DexTransformer {
-
-  public static DexReturnInliner v() {
-    return new DexReturnInliner();
-  }
+public class DexReturnInliner extends DexTransformer {
 
   private boolean isInstanceofReturn(Unit u) {
     if (u instanceof ReturnStmt || u instanceof ReturnVoidStmt) {
@@ -66,7 +61,7 @@ public class DexReturnInliner extends soot.dexpler.DexTransformer {
   }
 
   @Override
-  protected void internalTransform(final Body body, String phaseName, Map<String, String> options) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     Set<Unit> duplicateIfTargets = getFallThroughReturns(body);
 
     Iterator<Unit> it = body.getUnits().snapshotIterator();

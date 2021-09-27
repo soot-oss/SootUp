@@ -42,6 +42,7 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import soot.*;
 import soot.jimple.*;
 import soot.toolkits.scalar.LocalDefs;
@@ -53,7 +54,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public abstract class DexTransformer extends BodyTransformer {
+public abstract class DexTransformer implements BodyInterceptor {
 
   /**
    * Collect definitions of l in body including the definitions of aliases of l.
