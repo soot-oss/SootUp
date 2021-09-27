@@ -10,6 +10,8 @@ nav:
 #  - 'Knowledge':
 #    - Goal: goal.md
     - Jimple: jimple.md
+    - Body Interceptors: BodyInterceptor.md
+    - Tools: Tools.md
 #    - CallGraph: callgraph.md
 #    - Analyses: analyses.md
 
