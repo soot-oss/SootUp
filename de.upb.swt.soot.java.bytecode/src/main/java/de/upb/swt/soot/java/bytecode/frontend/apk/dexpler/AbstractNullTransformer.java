@@ -22,19 +22,20 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
-import soot.RefLikeType;
-import soot.Type;
-import soot.Unit;
-import soot.Value;
-import soot.jimple.AssignStmt;
-import soot.jimple.ConditionExpr;
-import soot.jimple.EqExpr;
-import soot.jimple.IfStmt;
-import soot.jimple.InstanceFieldRef;
-import soot.jimple.IntConstant;
-import soot.jimple.LongConstant;
-import soot.jimple.NeExpr;
-import soot.jimple.NullConstant;
+
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
+import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
+import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
+import de.upb.swt.soot.core.jimple.common.expr.Expr;
+import de.upb.swt.soot.core.jimple.common.expr.JEqExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JNeExpr;
+import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.Type;
 
 /**
  * Abstract base class for {@link DexNullTransformer} and {@link DexIfTransformer}.
@@ -49,8 +50,8 @@ public abstract class AbstractNullTransformer extends DexTransformer {
      * @param expr
      *          the ConditionExpr to examine
      */
-    protected boolean isZeroComparison(ConditionExpr expr) {
-        if (expr instanceof EqExpr || expr instanceof NeExpr) {
+    protected boolean isZeroComparison(Expr expr) {
+        if (expr instanceof JEqExpr || expr instanceof JNeExpr) {
             if (expr.getOp2() instanceof IntConstant && ((IntConstant) expr.getOp2()).value == 0) {
                 return true;
             }
@@ -67,30 +68,30 @@ public abstract class AbstractNullTransformer extends DexTransformer {
      * @param u
      *          the unit where 0 will be replaced with null.
      */
-    protected void replaceWithNull(Unit u) {
-        if (u instanceof IfStmt) {
-            ConditionExpr expr = (ConditionExpr) ((IfStmt) u).getCondition();
+    protected void replaceWithNull(Stmt u) {
+        if (u instanceof JIfStmt) {
+            Expr expr = (Expr) ((JIfStmt) u).getCondition();
             if (isZeroComparison(expr)) {
-                expr.setOp2(NullConstant.v());
+                expr.setOp2(NullConstant.getInstance());
             }
-        } else if (u instanceof AssignStmt) {
-            AssignStmt s = (AssignStmt) u;
+        } else if (u instanceof JAssignStmt) {
+            JAssignStmt s = (JAssignStmt) u;
             Value v = s.getRightOp();
-            if ((v instanceof IntConstant && ((IntConstant) v).value == 0)
-                    || (v instanceof LongConstant && ((LongConstant) v).value == 0)) {
+            if ((v instanceof IntConstant && ((IntConstant) v).getValue() == 0)
+                    || (v instanceof LongConstant && ((LongConstant) v).getValue() == 0)) {
                 // If this is a field assignment, double-check the type. We
                 // might have a.f = 2 with a being a null candidate, but a.f
                 // being an int.
-                if (!(s.getLeftOp() instanceof InstanceFieldRef)
-                        || ((InstanceFieldRef) s.getLeftOp()).getFieldRef().type() instanceof RefLikeType) {
-                    s.setRightOp(NullConstant.v());
+                if (!(s.getLeftOp() instanceof JInstanceFieldRef)
+                        || ((JInstanceFieldRef) s.getLeftOp()).getFieldRef().type() instanceof JInstanceFieldRef) {
+                    s.setRightOp(NullConstant.getInstance());
                 }
             }
         }
     }
 
     protected static boolean isObject(Type t) {
-        return t instanceof RefLikeType;
+        return t instanceof ReferenceType;
     }
 
 }

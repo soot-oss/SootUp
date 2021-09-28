@@ -27,13 +27,27 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
-import soot.*;
-import soot.dexpler.tags.ObjectOpTag;
-import soot.jimple.*;
-import soot.jimple.internal.AbstractInstanceInvokeExpr;
-import soot.jimple.internal.AbstractInvokeExpr;
+import de.upb.swt.soot.core.jimple.basic.Immediate;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
+import de.upb.swt.soot.core.jimple.common.expr.*;
+import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
+import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
+import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
+import de.upb.swt.soot.core.jimple.common.stmt.*;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.JExitMonitorStmt;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.types.UnknownType;
+import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.tags.ObjectOpTag;
 
-import java.util.*;
+import javax.annotation.Nonnull;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * BodyTransformer to find and change definition of locals used within an if which contains a condition involving two locals
@@ -56,47 +70,47 @@ public class DexIfTransformer extends AbstractNullTransformer {
   Local l = null;
 
   @Override
-  protected void internalTransform(final Body body, String phaseName, Map<String, String> options) {
-    final soot.dexpler.DexDefUseAnalysis localDefs = new soot.dexpler.DexDefUseAnalysis(body);
+  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+    final DexDefUseAnalysis localDefs = new DexDefUseAnalysis(builder);
 
-    Set<IfStmt> ifSet = getNullIfCandidates(body);
-    for (IfStmt ifs : ifSet) {
-      ConditionExpr ifCondition = (ConditionExpr) ifs.getCondition();
+    Set<JIfStmt  > ifSet = getNullIfCandidates(builder);
+    for (JIfStmt    ifs : ifSet) {
+       AbstractConditionExpr ifCondition = ( AbstractConditionExpr) ifs.getCondition();
       Local[] twoIfLocals = new Local[] { (Local) ifCondition.getOp1(), (Local) ifCondition.getOp2() };
       usedAsObject = false;
       for (Local loc : twoIfLocals) {
-        Set<Unit> defs = localDefs.collectDefinitionsWithAliases(loc);
+        Set<Stmt> defs = localDefs.collectDefinitionsWithAliases(loc);
 
         // process normally
         doBreak = false;
-        for (Unit u : defs) {
+        for (Stmt stmt : defs) {
 
           // put correct local in l
-          if (u instanceof DefinitionStmt) {
-            l = (Local) ((DefinitionStmt) u).getLeftOp();
+          if (stmt instanceof AbstractDefinitionStmt) {
+            l = (Local) ((AbstractDefinitionStmt) stmt).getLeftOp();
           } else {
-            throw new RuntimeException("ERROR: def can not be something else than Assign or Identity statement! (def: " + u
-                + " class: " + u.getClass() + "");
+            throw new RuntimeException("ERROR: def can not be something else than Assign or Identity statement! (def: " + stmt
+                + " class: " + stmt.getClass() + "");
           }
 
           // check defs
-          u.apply(new AbstractStmtSwitch() { // Alex: should also end
+          stmt.apply(new AbstractStmtSwitch() { // Alex: should also end
             // as soon as detected
             // as not used as an
             // object
             @Override
-            public void caseAssignStmt(AssignStmt stmt) {
+            public void caseAssignStmt(JAssignStmt stmt) {
               Value r = stmt.getRightOp();
-              if (r instanceof FieldRef) {
-                usedAsObject = isObject(((FieldRef) r).getFieldRef().type());
+              if (r instanceof Type) {
+                usedAsObject = isObject(((Type) r).getFieldRef().type());
                 if (usedAsObject) {
                   doBreak = true;
                 }
                 return;
-              } else if (r instanceof ArrayRef) {
-                ArrayRef ar = (ArrayRef) r;
+              } else if (r instanceof JArrayRef) {
+                JArrayRef ar = (JArrayRef) r;
                 if (ar.getType() instanceof UnknownType) {
-                  usedAsObject = stmt.hasTag(ObjectOpTag.NAME); // isObject
+                  usedAsObject = stmt.hasTag(new ObjectOpTag().getName()); // isObject
                   // (findArrayType
                   // (g,
                   // localDefs,
@@ -109,25 +123,25 @@ public class DexIfTransformer extends AbstractNullTransformer {
                   doBreak = true;
                 }
                 return;
-              } else if (r instanceof StringConstant || r instanceof NewExpr || r instanceof NewArrayExpr) {
+              } else if (r instanceof StringConstant || r instanceof JNewExpr || r instanceof JNewArrayExpr) {
                 usedAsObject = true;
                 if (usedAsObject) {
                   doBreak = true;
                 }
                 return;
-              } else if (r instanceof CastExpr) {
-                usedAsObject = isObject(((CastExpr) r).getCastType());
+              } else if (r instanceof JCastExpr) {
+                usedAsObject = isObject(((JCastExpr) r).getType());
                 if (usedAsObject) {
                   doBreak = true;
                 }
                 return;
-              } else if (r instanceof InvokeExpr) {
-                usedAsObject = isObject(((InvokeExpr) r).getType());
+              } else if (r instanceof AbstractInvokeExpr) {
+                usedAsObject = isObject(((AbstractInvokeExpr) r).getType());
                 if (usedAsObject) {
                   doBreak = true;
                 }
                 return;
-              } else if (r instanceof LengthExpr) {
+              } else if (r instanceof JLengthExpr) {
                 usedAsObject = false;
                 if (usedAsObject) {
                   doBreak = true;
@@ -138,7 +152,7 @@ public class DexIfTransformer extends AbstractNullTransformer {
             }
 
             @Override
-            public void caseIdentityStmt(IdentityStmt stmt) {
+            public void caseIdentityStmt(JIdentityStmt stmt) {
               if (stmt.getLeftOp() == l) {
                 usedAsObject = isObject(stmt.getRightOp().getType());
                 if (usedAsObject) {
@@ -153,11 +167,11 @@ public class DexIfTransformer extends AbstractNullTransformer {
           }
 
           // check uses
-          for (Unit use : localDefs.getUsesOf(l)) {
+          for (Stmt use : localDefs.getUsesOf(l)) {
             use.apply(new AbstractStmtSwitch() {
-              private boolean examineInvokeExpr(InvokeExpr e) {
-                List<Value> args = e.getArgs();
-                List<Type> argTypes = e.getMethodRef().parameterTypes();
+              private boolean examineInvokeExpr(AbstractInvokeExpr e) {
+                List<Immediate> args = e.getArgs();
+                List<Type> argTypes = e.getMethodSignature().getParameterTypes();
                 assert args.size() == argTypes.size();
                 for (int i = 0; i < args.size(); i++) {
                   if (args.get(i) == l && isObject(argTypes.get(i))) {
@@ -165,7 +179,7 @@ public class DexIfTransformer extends AbstractNullTransformer {
                   }
                 }
                 // check for base
-                SootMethodRef sm = e.getMethodRef();
+                SootMethodRef sm = e.getMethodSignature().getType(); //getMethodRef();
                 if (!sm.isStatic()) {
                   if (e instanceof AbstractInvokeExpr) {
                     AbstractInstanceInvokeExpr aiiexpr = (AbstractInstanceInvokeExpr) e;
@@ -179,8 +193,8 @@ public class DexIfTransformer extends AbstractNullTransformer {
               }
 
               @Override
-              public void caseInvokeStmt(InvokeStmt stmt) {
-                InvokeExpr e = stmt.getInvokeExpr();
+              public void caseInvokeStmt(JInvokeStmt stmt) {
+                AbstractInvokeExpr e = stmt.getInvokeExpr();
                 usedAsObject = examineInvokeExpr(e);
                 if (usedAsObject) {
                   doBreak = true;
@@ -189,12 +203,12 @@ public class DexIfTransformer extends AbstractNullTransformer {
               }
 
               @Override
-              public void caseAssignStmt(AssignStmt stmt) {
+              public void caseAssignStmt(JAssignStmt stmt) {
                 Value left = stmt.getLeftOp();
                 Value r = stmt.getRightOp();
 
-                if (left instanceof ArrayRef) {
-                  if (((ArrayRef) left).getIndex() == l) {
+                if (left instanceof JArrayRef) {
+                  if (((JArrayRef) left).getIndex() == l) {
                     // doBreak = true;
                     return;
                   }
@@ -203,11 +217,11 @@ public class DexIfTransformer extends AbstractNullTransformer {
                 // IMPOSSIBLE! WOULD BE DEF!
                 // // gets value assigned
                 // if (stmt.getLeftOp() == l) {
-                // if (r instanceof FieldRef)
+                // if (r instanceof Type)
                 // usedAsObject = isObject(((FieldRef)
                 // r).getFieldRef().type());
-                // else if (r instanceof ArrayRef)
-                // usedAsObject = isObject(((ArrayRef)
+                // else if (r instanceof JArrayRef)
+                // usedAsObject = isObject(((JArrayRef)
                 // r).getType());
                 // else if (r instanceof StringConstant || r
                 // instanceof NewExpr || r instanceof
@@ -226,22 +240,22 @@ public class DexIfTransformer extends AbstractNullTransformer {
                 // used to assign
                 if (stmt.getRightOp() == l) {
                   Value l = stmt.getLeftOp();
-                  if (l instanceof StaticFieldRef && isObject(((StaticFieldRef) l).getFieldRef().type())) {
+                  if (l instanceof JStaticFieldRef && isObject(((JStaticFieldRef) l).getFieldSignature().getType())) {
                     usedAsObject = true;
                     if (usedAsObject) {
                       doBreak = true;
                     }
                     return;
-                  } else if (l instanceof InstanceFieldRef && isObject(((InstanceFieldRef) l).getFieldRef().type())) {
+                  } else if (l instanceof JInstanceFieldRef && isObject(((JInstanceFieldRef) l).getFieldSignature().getType())) {
                     usedAsObject = true;
                     if (usedAsObject) {
                       doBreak = true;
                     }
                     return;
-                  } else if (l instanceof ArrayRef) {
-                    Type aType = ((ArrayRef) l).getType();
+                  } else if (l instanceof JArrayRef) {
+                    Type aType = ((JArrayRef) l).getType();
                     if (aType instanceof UnknownType) {
-                      usedAsObject = stmt.hasTag(ObjectOpTag.NAME); // isObject(
+                      usedAsObject = stmt.hasTag(new ObjectOpTag().getName()); // isObject(
                       // findArrayType(g,
                       // localDefs,
                       // localUses,
@@ -258,15 +272,15 @@ public class DexIfTransformer extends AbstractNullTransformer {
 
                 // is used as value (does not exclude
                 // assignment)
-                if (r instanceof FieldRef) {
+                if (r instanceof Type) {
                   usedAsObject = true; // isObject(((FieldRef)
                   // r).getFieldRef().type());
                   if (usedAsObject) {
                     doBreak = true;
                   }
                   return;
-                } else if (r instanceof ArrayRef) {
-                  ArrayRef ar = (ArrayRef) r;
+                } else if (r instanceof JArrayRef) {
+                  JArrayRef ar = (JArrayRef) r;
                   if (ar.getBase() == l) {
                     usedAsObject = true;
                   } else { // used as index
@@ -276,33 +290,33 @@ public class DexIfTransformer extends AbstractNullTransformer {
                     doBreak = true;
                   }
                   return;
-                } else if (r instanceof StringConstant || r instanceof NewExpr) {
+                } else if (r instanceof StringConstant || r instanceof JNewExpr) {
                   throw new RuntimeException("NOT POSSIBLE StringConstant or NewExpr at " + stmt);
-                } else if (r instanceof NewArrayExpr) {
+                } else if (r instanceof JNewArrayExpr) {
                   usedAsObject = false;
                   if (usedAsObject) {
                     doBreak = true;
                   }
                   return;
-                } else if (r instanceof CastExpr) {
-                  usedAsObject = isObject(((CastExpr) r).getCastType());
+                } else if (r instanceof JCastExpr) {
+                  usedAsObject = isObject(((JCastExpr) r).getType());
                   if (usedAsObject) {
                     doBreak = true;
                   }
                   return;
-                } else if (r instanceof InvokeExpr) {
-                  usedAsObject = examineInvokeExpr((InvokeExpr) stmt.getRightOp());
+                } else if (r instanceof AbstractInvokeExpr) {
+                  usedAsObject = examineInvokeExpr((AbstractInvokeExpr) stmt.getRightOp());
                   if (usedAsObject) {
                     doBreak = true;
                   }
                   return;
-                } else if (r instanceof LengthExpr) {
+                } else if (r instanceof JLengthExpr) {
                   usedAsObject = true;
                   if (usedAsObject) {
                     doBreak = true;
                   }
                   return;
-                } else if (r instanceof BinopExpr) {
+                } else if (r instanceof AbstractBinopExpr) {
                   usedAsObject = false;
                   if (usedAsObject) {
                     doBreak = true;
@@ -312,14 +326,14 @@ public class DexIfTransformer extends AbstractNullTransformer {
               }
 
               @Override
-              public void caseIdentityStmt(IdentityStmt stmt) {
+              public void caseIdentityStmt(JIdentityStmt stmt) {
                 if (stmt.getLeftOp() == l) {
                   throw new RuntimeException("IMPOSSIBLE 0");
                 }
               }
 
               @Override
-              public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
+              public void caseEnterMonitorStmt(JEnterMonitorStmt stmt) {
                 usedAsObject = stmt.getOp() == l;
                 if (usedAsObject) {
                   doBreak = true;
@@ -328,7 +342,7 @@ public class DexIfTransformer extends AbstractNullTransformer {
               }
 
               @Override
-              public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
+              public void caseExitMonitorStmt(JExitMonitorStmt stmt) {
                 usedAsObject = stmt.getOp() == l;
                 if (usedAsObject) {
                   doBreak = true;
@@ -337,8 +351,8 @@ public class DexIfTransformer extends AbstractNullTransformer {
               }
 
               @Override
-              public void caseReturnStmt(ReturnStmt stmt) {
-                usedAsObject = stmt.getOp() == l && isObject(body.getMethod().getReturnType());
+              public void caseReturnStmt(JReturnStmt stmt) {
+                usedAsObject = stmt.getOp() == l && isObject(builder.getMethodSignature().getType());
                 if (usedAsObject) {
                   doBreak = true;
                 }
@@ -346,7 +360,7 @@ public class DexIfTransformer extends AbstractNullTransformer {
               }
 
               @Override
-              public void caseThrowStmt(ThrowStmt stmt) {
+              public void caseThrowStmt(JThrowStmt stmt) {
                 usedAsObject = stmt.getOp() == l;
                 if (usedAsObject) {
                   doBreak = true;
@@ -375,10 +389,10 @@ public class DexIfTransformer extends AbstractNullTransformer {
 
       // change values
       if (usedAsObject) {
-        Set<Unit> defsOp1 = localDefs.collectDefinitionsWithAliases(twoIfLocals[0]);
-        Set<Unit> defsOp2 = localDefs.collectDefinitionsWithAliases(twoIfLocals[1]);
+        Set<Stmt> defsOp1 = localDefs.collectDefinitionsWithAliases(twoIfLocals[0]);
+        Set<Stmt> defsOp2 = localDefs.collectDefinitionsWithAliases(twoIfLocals[1]);
         defsOp1.addAll(defsOp2);
-        for (Unit u : defsOp1) {
+        for (Stmt u : defsOp1) {
           Stmt s = (Stmt) u;
           // If we have a[x] = 0 and a is an object, we may not conclude 0 -> null
           if (!s.containsArrayRef()
@@ -386,8 +400,8 @@ public class DexIfTransformer extends AbstractNullTransformer {
             replaceWithNull(u);
           }
 
-          Local l = (Local) ((DefinitionStmt) u).getLeftOp();
-          for (Unit uuse : localDefs.getUsesOf(l)) {
+          Local l = (Local) ((AbstractDefinitionStmt) u).getLeftOp();
+          for (Stmt uuse : localDefs.getUsesOf(l)) {
             Stmt use = (Stmt) uuse;
             // If we have a[x] = 0 and a is an object, we may not conclude 0 -> null
             if (!use.containsArrayRef()
@@ -404,24 +418,24 @@ public class DexIfTransformer extends AbstractNullTransformer {
   /**
    * Collect all the if statements comparing two locals with an Eq or Ne expression
    *
-   * @param body
-   *          the body to analyze
+   * @param bodyBuilder
+   *          the bodyBuilder to analyze
    */
-  private Set<IfStmt> getNullIfCandidates(Body body) {
-    Set<IfStmt> candidates = new HashSet<IfStmt>();
-    Iterator<Unit> i = body.getUnits().iterator();
+  private Set<JIfStmt   > getNullIfCandidates(Body.BodyBuilder bodyBuilder) {
+    Set<JIfStmt   > candidates = new HashSet<JIfStmt   >();
+    Iterator<Stmt> i = bodyBuilder.getStmts().iterator();
     while (i.hasNext()) {
-      Unit u = i.next();
-      if (u instanceof IfStmt) {
-        ConditionExpr expr = (ConditionExpr) ((IfStmt) u).getCondition();
+      Stmt u = i.next();
+      if (u instanceof JIfStmt   ) {
+         AbstractConditionExpr expr = ( AbstractConditionExpr) ((JIfStmt   ) u).getCondition();
         boolean isTargetIf = false;
-        if (((expr instanceof EqExpr) || (expr instanceof NeExpr))) {
+        if (((expr instanceof JEqExpr) || (expr instanceof JNeExpr))) {
           if (expr.getOp1() instanceof Local && expr.getOp2() instanceof Local) {
             isTargetIf = true;
           }
         }
         if (isTargetIf) {
-          candidates.add((IfStmt) u);
+          candidates.add((JIfStmt   ) u);
         }
 
       }

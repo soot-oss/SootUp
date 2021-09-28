@@ -27,6 +27,10 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
+import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import soot.*;
 import soot.dexpler.tags.ObjectOpTag;
@@ -35,7 +39,10 @@ import soot.jimple.internal.AbstractInstanceInvokeExpr;
 import soot.jimple.internal.AbstractInvokeExpr;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * BodyTransformer to find and change IntConstant(0) to NullConstant where locals are used as objects.
@@ -310,7 +317,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
 
       // change values
       if (usedAsObject) {
-        for (Unit u : defs) {
+        for (Stmt u : defs) {
           replaceWithNull(u);
           Set<Value> defLocals = new HashSet<Value>();
           for (ValueBox vb : u.getDefBoxes()) {
@@ -318,7 +325,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
           }
 
           Local l = (Local) ((DefinitionStmt) u).getLeftOp();
-          for (Unit uuse : localDefs.getUsesOf(l)) {
+          for (Stmt uuse : localDefs.getUsesOf(l)) {
             Stmt use = (Stmt) uuse;
             // If we have a[x] = 0 and a is an object, we may not conclude 0 -> null
             if (!use.containsArrayRef() || !defLocals.contains(use.getArrayRef().getBase())) {
@@ -450,7 +457,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
    */
   private Set<Local> getNullCandidates(Body body) {
     Set<Local> candidates = null;
-    for (Unit u : body.getUnits()) {
+    for (Stmt u : body.getStmts()) {
       if (u instanceof AssignStmt) {
         AssignStmt a = (AssignStmt) u;
         if (!(a.getLeftOp() instanceof Local)) {
@@ -465,8 +472,8 @@ public class DexNullTransformer extends AbstractNullTransformer {
           }
           candidates.add(l);
         }
-      } else if (u instanceof IfStmt) {
-        ConditionExpr expr = (ConditionExpr) ((IfStmt) u).getCondition();
+      } else if (u instanceof JIfStmt) {
+        AbstractConditionExpr expr = (AbstractConditionExpr) ((JIfStmt) u).getCondition();
         if (isZeroComparison(expr) && expr.getOp1() instanceof Local) {
           if (candidates == null) {
             candidates = new HashSet<Local>();

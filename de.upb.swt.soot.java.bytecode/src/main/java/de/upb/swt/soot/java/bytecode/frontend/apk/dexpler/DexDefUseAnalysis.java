@@ -22,11 +22,13 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
-import soot.*;
-import soot.jimple.AssignStmt;
-import soot.jimple.DefinitionStmt;
-import soot.toolkits.scalar.LocalDefs;
-
+import de.upb.swt.soot.core.analysis.LocalDefs;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
 import java.util.*;
 
 /**
@@ -37,38 +39,38 @@ import java.util.*;
  */
 public class DexDefUseAnalysis implements LocalDefs {
 
-  private final Body body;
-  private final Map<Local, Set<Unit>> localToUses = new HashMap<Local, Set<Unit>>();
-  private final Map<Local, Set<Unit>> localToDefs = new HashMap<Local, Set<Unit>>();
-  private final Map<Local, Set<Unit>> localToDefsWithAliases = new HashMap<Local, Set<Unit>>();
+  private final Body.BodyBuilder bodyBuilder;
+  private final Map<Local, Set<Stmt>> localToUses = new HashMap<Local, Set<Stmt>>();
+  private final Map<Local, Set<Stmt>> localToDefs = new HashMap<Local, Set<Stmt>>();
+  private final Map<Local, Set<Stmt>> localToDefsWithAliases = new HashMap<Local, Set<Stmt>>();
 
   protected Map<Local, Integer> localToNumber = new HashMap<>();
   protected BitSet[] localToDefsBits;
   protected BitSet[] localToUsesBits;
-  protected List<Unit> unitList;
+  protected List<Stmt> unitList;
 
-  public DexDefUseAnalysis(Body body) {
-    this.body = body;
+  public DexDefUseAnalysis(Body.BodyBuilder bodyBuilder) {
+    this.bodyBuilder = bodyBuilder;
 
     initialize();
   }
 
   protected void initialize() {
     int lastLocalNumber = 0;
-    for (Local l : body.getLocals()) {
+    for (Local l : bodyBuilder.getLocals()) {
       localToNumber.put(l, lastLocalNumber++);
     }
 
-    localToDefsBits = new BitSet[body.getLocalCount()];
-    localToUsesBits = new BitSet[body.getLocalCount()];
+    localToDefsBits = new BitSet[bodyBuilder.getLocals().size()];
+    localToUsesBits = new BitSet[bodyBuilder.getLocals().size()];
 
-    unitList = new ArrayList<>(body.getUnits());
+    unitList = new ArrayList<>(bodyBuilder.getStmts());
     for (int i = 0; i < unitList.size(); i++) {
-      Unit u = unitList.get(i);
+      Stmt u = unitList.get(i);
 
       // Record the definitions
-      if (u instanceof DefinitionStmt) {
-        Value val = ((DefinitionStmt) u).getLeftOp();
+      if (u instanceof AbstractDefinitionStmt) {
+        Value val = ((AbstractDefinitionStmt ) u).getLeftOp();
         if (val instanceof Local) {
           final int localIdx = localToNumber.get((Local) val);
           BitSet bs = localToDefsBits[localIdx];
@@ -80,10 +82,9 @@ public class DexDefUseAnalysis implements LocalDefs {
       }
 
       // Record the uses
-      for (ValueBox vb : u.getUseBoxes()) {
-        Value val = vb.getValue();
-        if (val instanceof Local) {
-          final int localIdx = localToNumber.get((Local) val);
+      for (Value value : u.getUses()) {
+        if (value instanceof Local) {
+          final int localIdx = localToNumber.get((Local) value);
           BitSet bs = localToUsesBits[localIdx];
           if (bs == null) {
             localToUsesBits[localIdx] = bs = new BitSet();
@@ -94,8 +95,8 @@ public class DexDefUseAnalysis implements LocalDefs {
     }
   }
 
-  public Set<Unit> getUsesOf(Local l) {
-    Set<Unit> uses = localToUses.get(l);
+  public Set<Stmt> getUsesOf(Local l) {
+    Set<Stmt> uses = localToUses.get(l);
     if (uses == null) {
       uses = new HashSet<>();
       BitSet bs = localToUsesBits[localToNumber.get(l)];
@@ -118,10 +119,10 @@ public class DexDefUseAnalysis implements LocalDefs {
    * @param l
    *          the local whose definitions are to collect
    */
-  protected Set<Unit> collectDefinitionsWithAliases(Local l) {
-    Set<Unit> defs = localToDefsWithAliases.get(l);
+  protected Set<Stmt> collectDefinitionsWithAliases(Local l) {
+    Set<Stmt> defs = localToDefsWithAliases.get(l);
     if (defs == null) {
-      defs = new HashSet<Unit>();
+      defs = new HashSet<Stmt>();
 
       Set<Local> seenLocals = new HashSet<Local>();
       List<Local> newLocals = new ArrayList<Local>();
@@ -133,10 +134,10 @@ public class DexDefUseAnalysis implements LocalDefs {
         BitSet bsDefs = localToDefsBits[localToNumber.get(curLocal)];
         if (bsDefs != null) {
           for (int i = bsDefs.nextSetBit(0); i >= 0; i = bsDefs.nextSetBit(i + 1)) {
-            Unit u = unitList.get(i);
+            Stmt u = unitList.get(i);
             defs.add(u);
 
-            DefinitionStmt defStmt = (DefinitionStmt) u;
+            AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) u;
             if (defStmt.getRightOp() instanceof Local && seenLocals.add((Local) defStmt.getRightOp())) {
               newLocals.add((Local) defStmt.getRightOp());
             }
@@ -147,9 +148,9 @@ public class DexDefUseAnalysis implements LocalDefs {
         BitSet bsUses = localToUsesBits[localToNumber.get(curLocal)];
         if (bsUses != null) {
           for (int i = bsUses.nextSetBit(0); i >= 0; i = bsUses.nextSetBit(i + 1)) {
-            Unit use = unitList.get(i);
-            if (use instanceof AssignStmt) {
-              AssignStmt assignUse = (AssignStmt) use;
+            Stmt use = unitList.get(i);
+            if (use instanceof JAssignStmt) {
+              JAssignStmt assignUse = (JAssignStmt) use;
               if (assignUse.getRightOp() == curLocal && assignUse.getLeftOp() instanceof Local
                   && seenLocals.add((Local) assignUse.getLeftOp())) {
                 newLocals.add((Local) assignUse.getLeftOp());
@@ -165,21 +166,22 @@ public class DexDefUseAnalysis implements LocalDefs {
   }
 
   @Override
-  public List<Unit> getDefsOfAt(Local l, Unit s) {
+  public List<Stmt> getDefsOfAt(Local l, Stmt s) {
     return getDefsOf(l);
   }
 
+
   @Override
-  public List<Unit> getDefsOf(Local l) {
-    Set<Unit> defs = localToDefs.get(l);
+  public List<Stmt> getDefsOf(Local l) {
+    Set<Stmt> defs = localToDefs.get(l);
     if (defs == null) {
       defs = new HashSet<>();
       BitSet bs = localToDefsBits[localToNumber.get(l)];
       if (bs != null) {
         for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-          Unit u = unitList.get(i);
-          if (u instanceof DefinitionStmt) {
-            if (((DefinitionStmt) u).getLeftOp() == l) {
+          Stmt u = unitList.get(i);
+          if (u instanceof AbstractDefinitionStmt) {
+            if (((AbstractDefinitionStmt) u).getLeftOp() == l) {
               defs.add(u);
             }
           }
