@@ -28,8 +28,6 @@ import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.List;
 import javax.annotation.Nonnull;
 

@@ -96,7 +96,8 @@ public class Aggregator implements BodyInterceptor {
                           // TODO [bh] removing the next line will make the AggregatorTest run,
                           // but I think there is something else wrong here. cantAggr
                           // is a boolean for each value of the definition we might collapse
-                          // so we should only care about locals that use values of the definition or the value we currently iterate, right?
+                          // so we should only care about locals that use values of the definition
+                          // or the value we currently iterate, right?
                           cantAggr = true;
                           break;
                         }
@@ -145,7 +146,6 @@ public class Aggregator implements BodyInterceptor {
                   if (cantAggr) {
                     continue;
                   }
-
 
                   Value aggregatee = ((JAssignStmt<?, ?>) relevantDef).getRightOp();
                   JAssignStmt<?, ?> newStmt = null;

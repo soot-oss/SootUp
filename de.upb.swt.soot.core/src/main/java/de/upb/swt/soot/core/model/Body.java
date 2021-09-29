@@ -555,8 +555,6 @@ public class Body implements Copyable {
       this.setTraps(traps);
     }
 
-
-
     /** remove the a stmt from the graph and stmt */
     @Nonnull
     public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
@@ -696,15 +694,12 @@ public class Body implements Copyable {
       return modifiers;
     }
 
-
-    /**
-     * Removes a stmt and all of it's then unreachable sucessor stmts
-     */
+    /** Removes a stmt and all of it's then unreachable sucessor stmts */
     public BodyBuilder removeStmtAndUnreachableSuccessors(Stmt stmt) {
       final StmtGraph stmtGraph = this.getStmtGraph();
       Deque<Stmt> stack = new ArrayDeque<>();
       stack.addFirst(stmt);
-      
+
       while (!stack.isEmpty()) {
         Stmt itStmt = stack.pollFirst();
         if (stmtGraph.containsNode(itStmt)) {
@@ -743,6 +738,5 @@ public class Body implements Copyable {
 
       return this;
     }
-
   }
 }
