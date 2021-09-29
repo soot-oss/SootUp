@@ -76,19 +76,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
               builder.addFlow(predecessor, branchTarget);
             }
 
-            Deque<Stmt> stack = new ArrayDeque<>();
-            stack.addFirst(fallsThroughStmt);
-            // remove all now unreachable stmts from "true"-block
-            while (!stack.isEmpty()) {
-              Stmt itStmt = stack.pollFirst();
-              if (builderStmtGraph.containsNode(itStmt)
-                  && builderStmtGraph.predecessors(itStmt).size() < 1) {
-                for (Stmt succ : stmtGraph.successors(itStmt)) {
-                  builder.removeFlow(itStmt, succ);
-                  stack.add(succ);
-                }
-              }
-            }
+            builder.removeStmtAndUnreachableSuccessors(fallsThroughStmt);
           }
         }
       }

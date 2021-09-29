@@ -530,8 +530,32 @@ public class Body implements Copyable {
     @Nonnull
     public BodyBuilder replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
       ecfg.replaceNode(oldStmt, newStmt);
+      adaptTraps(oldStmt, newStmt);
       return this;
     }
+
+    /**
+     * Fit the modified stmt in Traps
+     *
+     * @param oldStmt a Stmt which maybe a beginStmt or endStmt in a Trap
+     * @param newStmt a modified stmt to replace the oldStmt.
+     */
+    private void adaptTraps(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+      List<Trap> traps = new ArrayList<>(this.getStmtGraph().getTraps());
+      for (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) {
+        Trap trap = iterator.next();
+        if (oldStmt.equivTo(trap.getBeginStmt())) {
+          Trap newTrap = trap.withBeginStmt(newStmt);
+          iterator.set(newTrap);
+        } else if (oldStmt.equivTo(trap.getEndStmt())) {
+          Trap newTrap = trap.withEndStmt(newStmt);
+          iterator.set(newTrap);
+        }
+      }
+      this.setTraps(traps);
+    }
+
+
 
     /** remove the a stmt from the graph and stmt */
     @Nonnull
@@ -671,5 +695,54 @@ public class Body implements Copyable {
     public Set<Modifier> getModifiers() {
       return modifiers;
     }
+
+
+    /**
+     * Removes a stmt and all of it's then unreachable sucessor stmts
+     */
+    public BodyBuilder removeStmtAndUnreachableSuccessors(Stmt stmt) {
+      final StmtGraph stmtGraph = this.getStmtGraph();
+      Deque<Stmt> stack = new ArrayDeque<>();
+      stack.addFirst(stmt);
+      
+      while (!stack.isEmpty()) {
+        Stmt itStmt = stack.pollFirst();
+        if (stmtGraph.containsNode(itStmt)) {
+          for (Stmt succ : stmtGraph.successors(itStmt)) {
+            removeFlow(itStmt, succ);
+            stack.add(succ);
+          }
+        }
+      }
+
+      if (this.getStmtGraph().getStartingStmt() == stmt) {
+        setStartingStmt(null);
+      }
+
+      return this;
+    }
+
+    public BodyBuilder removeStmtAndLinkPredecessorsToSuccessors(Stmt stmt) {
+      final StmtGraph stmtGraph = this.getStmtGraph();
+      final Collection<Stmt> predecessors = stmtGraph.predecessors(stmt);
+      final Collection<Stmt> successors = stmtGraph.successors(stmt);
+
+      for (Stmt predecessor : predecessors) {
+        this.removeFlow(predecessor, stmt);
+        for (Stmt successor : successors) {
+          this.addFlow(predecessor, successor);
+        }
+      }
+      for (Stmt successor : successors) {
+        this.removeFlow(stmt, successor);
+      }
+
+      if (this.getStmtGraph().getStartingStmt() == stmt) {
+        setStartingStmt(null);
+      }
+
+      return this;
+    }
+
   }
 }

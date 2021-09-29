@@ -93,6 +93,10 @@ public class Aggregator implements BodyInterceptor {
                     if (pathStmt != stmt && pathStmt != relevantDef) {
                       for (Value stmtDef : pathStmt.getDefs()) {
                         if (localsUsed.contains(stmtDef)) {
+                          // TODO [bh] removing the next line will make the AggregatorTest run,
+                          // but I think there is something else wrong here. cantAggr
+                          // is a boolean for each value of the definition we might collapse
+                          // so we should only care about locals that use values of the definition or the value we currently iterate, right?
                           cantAggr = true;
                           break;
                         }
@@ -142,6 +146,7 @@ public class Aggregator implements BodyInterceptor {
                     continue;
                   }
 
+
                   Value aggregatee = ((JAssignStmt<?, ?>) relevantDef).getRightOp();
                   JAssignStmt<?, ?> newStmt = null;
                   if (assignStmt.getRightOp() instanceof AbstractBinopExpr) {
@@ -162,11 +167,7 @@ public class Aggregator implements BodyInterceptor {
                   }
                   if (newStmt != null) {
                     builder.replaceStmt(stmt, newStmt);
-                    if (graph.getStartingStmt() == relevantDef) {
-                      Stmt newStartingStmt = builder.getStmtGraph().successors(relevantDef).get(0);
-                      builder.setStartingStmt(newStartingStmt);
-                    }
-                    builder.removeStmt(relevantDef);
+                    builder.removeStmtAndLinkPredecessorsToSuccessors(relevantDef);
                   }
                 }
               }

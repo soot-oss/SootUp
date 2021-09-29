@@ -208,15 +208,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
         // Remove the dead statements
         for (Stmt stmt : stmts) {
           if (!essential.contains(stmt)) {
-            for (Stmt predecessor : stmtGraph.predecessors(stmt)) {
-              builder.removeFlow(predecessor, stmt);
-              for (Stmt successor : stmtGraph.successors(stmt)) {
-                builder.addFlow(predecessor, successor);
-              }
-            }
-            for (Stmt successor : stmtGraph.successors(stmt)) {
-              builder.removeFlow(stmt, successor);
-            }
+            builder.removeStmtAndLinkPredecessorsToSuccessors(stmt);
           }
         }
       }
