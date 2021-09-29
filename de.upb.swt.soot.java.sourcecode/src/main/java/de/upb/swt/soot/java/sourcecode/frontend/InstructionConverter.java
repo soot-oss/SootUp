@@ -880,12 +880,7 @@ public class InstructionConverter {
       value = IntConstant.getInstance(0);
     } else {
       if (symbolTable.isConstant(val)) {
-        Object c = symbolTable.getConstantValue(val);
-        if (c instanceof Boolean) {
-          constant = c.equals(true) ? 1 : 0;
-        } else {
-          constant = c;
-        }
+        constant = symbolTable.getConstantValue(val);
       }
       value = getLocal(PrimitiveType.getInt(), val);
     }
