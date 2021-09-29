@@ -1609,7 +1609,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (!InsnToStmt.containsKey(ln)) {
         JNopStmt nop = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
         setStmt(ln, nop);
-        emitStmt(nop);
       }
       return;
     }
@@ -1693,7 +1692,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         Operand opr = new Operand(ln, ref, this);
         opr.stackLocal = local;
 
-        worklist.add(new BranchedInsnInfo(ln, Collections.singletonList(opr)));
+        List<Operand> operands = new ArrayList<>();
+        operands.add(opr);
+
+        worklist.add(new BranchedInsnInfo(ln, operands));
 
         // Save the statements
         inlineExceptionHandlers.put(ln, as);
