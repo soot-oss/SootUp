@@ -27,9 +27,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import soot.Unit;
-import soot.jimple.ReturnStmt;
-import soot.jimple.ReturnVoidStmt;
+
 
 import javax.annotation.Nonnull;
 

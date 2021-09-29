@@ -42,17 +42,17 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
-import soot.Type;
-import soot.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.types.Type;
 
 public abstract class DvkTyperBase {
   public static boolean ENABLE_DVKTYPER = false;
 
-  public abstract void setType(ValueBox v, Type type);
+  public abstract void setType(Value v, Type type);
 
-  public abstract void setObjectType(ValueBox v);
+  public abstract void setObjectType(Value v);
 
-  public abstract void setConstraint(ValueBox box1, ValueBox box2);
+  public abstract void setConstraint(Value box1, Value box2);
 
   abstract void assignType();
 

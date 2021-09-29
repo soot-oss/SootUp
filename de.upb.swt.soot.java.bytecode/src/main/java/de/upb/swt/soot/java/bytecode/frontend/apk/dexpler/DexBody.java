@@ -43,8 +43,6 @@ import de.upb.swt.soot.core.jimple.common.expr.JEqExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
-import de.upb.swt.soot.core.jimple.tag.LineNumberTag;
-import de.upb.swt.soot.core.jimple.tag.SourceLineNumberTag;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
@@ -56,7 +54,6 @@ import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.typing.DalvikTyper;
 import de.upb.swt.soot.java.bytecode.interceptors.*;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
-import javafx.scene.Scene;
 import org.jf.dexlib2.analysis.ClassPath;
 import org.jf.dexlib2.analysis.ClassPathResolver;
 import org.jf.dexlib2.analysis.ClassProvider;
@@ -181,7 +178,7 @@ public class DexBody {
   }
 
   /**
-   * @param code the codeitem that is contained in this body
+   * @param dexFile the codeitem that is contained in this body
    * @param method the method that is associated with this body
    */
   protected DexBody(

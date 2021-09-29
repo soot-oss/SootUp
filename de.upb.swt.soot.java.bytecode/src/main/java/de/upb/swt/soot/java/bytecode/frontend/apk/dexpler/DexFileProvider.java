@@ -22,6 +22,7 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import javafx.scene.Scene;
 import org.jf.dexlib2.DexFileFactory;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
@@ -30,12 +31,6 @@ import org.jf.dexlib2.iface.MultiDexContainer;
 import org.jf.dexlib2.iface.MultiDexContainer.DexEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import soot.CompilationDeathException;
-import soot.G;
-import soot.Scene;
-import soot.Singletons;
-import soot.options.Options;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.*;

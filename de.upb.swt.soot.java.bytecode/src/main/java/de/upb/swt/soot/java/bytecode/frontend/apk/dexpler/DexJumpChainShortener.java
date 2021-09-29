@@ -27,8 +27,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import soot.jimple.GotoStmt;
-import soot.jimple.IfStmt;
+
 
 import javax.annotation.Nonnull;
 

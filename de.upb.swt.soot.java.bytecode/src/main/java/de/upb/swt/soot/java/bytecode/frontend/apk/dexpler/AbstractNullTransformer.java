@@ -27,6 +27,7 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
 import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
 import de.upb.swt.soot.core.jimple.common.expr.JEqExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNeExpr;
@@ -52,10 +53,10 @@ public abstract class AbstractNullTransformer extends DexTransformer {
      */
     protected boolean isZeroComparison(Expr expr) {
         if (expr instanceof JEqExpr || expr instanceof JNeExpr) {
-            if (expr.getOp2() instanceof IntConstant && ((IntConstant) expr.getOp2()).value == 0) {
+            if (((AbstractConditionExpr) expr).getOp2() instanceof IntConstant && ((IntConstant) ((AbstractConditionExpr) expr).getOp2()).getValue() == 0) {
                 return true;
             }
-            if (expr.getOp2() instanceof LongConstant && ((LongConstant) expr.getOp2()).value == 0) {
+            if (((AbstractConditionExpr) expr).getOp2() instanceof LongConstant && ((LongConstant) ((AbstractConditionExpr) expr).getOp2()).getValue() == 0) {
                 return true;
             }
         }

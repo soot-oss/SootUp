@@ -22,17 +22,10 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.transform.BodyInterceptor;
-import soot.Body;
-import soot.Singletons;
-import soot.Trap;
-import soot.Unit;
-import soot.jimple.Jimple;
-import soot.options.Options;
-import soot.toolkits.exceptions.TrapTransformer;
-import soot.toolkits.graph.ExceptionalGraph.ExceptionDest;
-import soot.toolkits.graph.ExceptionalUnitGraph;
+import de.upb.swt.soot.core.transform.BodyInterceptor
 
 import javax.annotation.Nonnull;
 import java.util.*;
