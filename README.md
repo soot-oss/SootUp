@@ -16,7 +16,8 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 
 
 ## Tutorial & Documentation
-Take a look into [our Website](https://secure-software-engineering.github.io/soot-reloaded/getting-started/). For obvious reasons there isn't a lot of information on St*ckoverflow, yet.
+Take a look into [our website](https://secure-software-engineering.github.io/soot-reloaded/getting-started/). For
+obvious reasons there isn't a lot of information on St*ckoverflow, yet.
 
 ## What is done and what needs to be done
 - Big todo list: https://github.com/secure-software-engineering/soot-reloaded/wiki/TODOs
