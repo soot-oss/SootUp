@@ -33,7 +33,7 @@ import de.upb.swt.soot.core.types.Type;
 import java.util.*;
 import javax.annotation.Nonnull;
 
-/** @author Zun Wang */
+/** @author Zun Wang * */
 public class LocalPacker implements BodyInterceptor {
 
   @Override
