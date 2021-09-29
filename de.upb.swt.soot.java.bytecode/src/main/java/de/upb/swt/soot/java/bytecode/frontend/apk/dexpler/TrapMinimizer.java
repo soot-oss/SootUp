@@ -22,10 +22,12 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.transform.BodyInterceptor
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -49,31 +51,31 @@ public class TrapMinimizer implements BodyInterceptor {
   }
 
   public static TrapMinimizer v() {
-    return soot.G.v().soot_dexpler_TrapMinimizer();
+    return new TrapMinimizer();
   }
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     // If we have less then two traps, there's nothing to do here
-    if (b.getTraps().size() == 0) {
+    if (builder.getTraps().size() == 0) {
       return;
     }
 
-    ExceptionalUnitGraph eug = new ExceptionalUnitGraph(b, soot.dexpler.DalvikThrowAnalysis.v(), Options.v().omit_excepting_unit_edges());
-    Set<Unit> unitsWithMonitor = getUnitsWithMonitor(eug);
+    ExceptionalStmtGraph eug = new ExceptionalStmtGraph(builder, new DalvikThrowAnalysis(), Options.v().omit_excepting_unit_edges());
+    Set<Stmt> unitsWithMonitor = getStmtsWithMonitor(eug);
 
-    Map<Trap, List<Trap>> replaceTrapBy = new HashMap<Trap, List<Trap>>(b.getTraps().size());
+    Map<Trap, List<Trap>> replaceTrapBy = new HashMap<Trap, List<Trap>>(builder.getTraps().size());
     boolean updateTrap = false;
-    for (Trap tr : b.getTraps()) {
+    for (Trap tr : builder.getTraps()) {
       List<Trap> newTraps = new ArrayList<Trap>(); // will contain the new
       // traps
-      Unit firstTrapStmt = tr.getBeginUnit(); // points to the first unit
+      Stmt firstTrapStmt = tr.getBeginStmt(); // points to the first unit
       // in the trap
       boolean goesToHandler = false; // true if there is an edge from the
       // unit to the handler of the
       // current trap
       updateTrap = false;
-      for (Unit u = tr.getBeginUnit(); u != tr.getEndUnit(); u = b.getUnits().getSuccOf(u)) {
+      for (Stmt u = tr.getBeginStmt(); u != tr.getEndStmt(); u = builder.getStmts().getSuccOf(u)) {
         if (goesToHandler) {
           goesToHandler = false;
         } else {
@@ -92,15 +94,15 @@ public class TrapMinimizer implements BodyInterceptor {
         // check if the current unit has an edge to the current trap's
         // handler
         if (!goesToHandler) {
-          if (soot.dexpler.DalvikThrowAnalysis.v().mightThrow(u).catchableAs(tr.getException().getType())) {
-            // We need to be careful here. The ExceptionalUnitGraph
+          if (new DalvikThrowAnalysis().mightThrow(u).catchableAs(tr.getException().getType())) {
+            // We need to be careful here. The ExceptionalStmtGraph
             // will
             // always give us an edge from the predecessor of the
             // excepting
             // unit to the handler. This predecessor, however, does
             // not need
             // to be inside the new minimized catch block.
-            for (ExceptionDest<Unit> ed : eug.getExceptionDests(u)) {
+            for (ExceptionDest<Stmt> ed : eug.getExceptionDests(u)) {
               if (ed.getTrap() == tr) {
                 goesToHandler = true;
                 break;
@@ -120,7 +122,7 @@ public class TrapMinimizer implements BodyInterceptor {
             // updateTrap to true
             continue;
           }
-          Trap t = Jimple.v().newTrap(tr.getException(), firstTrapStmt, u, tr.getHandlerUnit());
+          Trap t = Jimple.v().newTrap(tr.getException(), firstTrapStmt, u, tr.getHandlerStmt());
           newTraps.add(t);
         } else {
           // if the current unit has an edge to the current trap's
@@ -128,8 +130,8 @@ public class TrapMinimizer implements BodyInterceptor {
           // add a trap if the current trap has been updated before
           // and if the
           // next unit is outside the current trap.
-          if (b.getUnits().getSuccOf(u) == tr.getEndUnit() && updateTrap) {
-            Trap t = Jimple.v().newTrap(tr.getException(), firstTrapStmt, tr.getEndUnit(), tr.getHandlerUnit());
+          if (builder.getStmts().getSuccOf(u) == tr.getEndStmt() && updateTrap) {
+            Trap t = Jimple.v().newTrap(tr.getException(), firstTrapStmt, tr.getEndStmt(), tr.getHandlerStmt());
             newTraps.add(t);
           }
         }
@@ -145,9 +147,9 @@ public class TrapMinimizer implements BodyInterceptor {
 
     // replace traps where necessary
     for (Trap k : replaceTrapBy.keySet()) {
-      b.getTraps().insertAfter(replaceTrapBy.get(k), k); // we must keep
+      builder.getTraps().insertAfter(replaceTrapBy.get(k), k); // we must keep
       // the order
-      b.getTraps().remove(k);
+      builder.getTraps().remove(k);
     }
 
   }

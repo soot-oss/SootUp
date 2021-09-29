@@ -32,7 +32,6 @@ import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-
 import javax.annotation.Nonnull;
 
 /**

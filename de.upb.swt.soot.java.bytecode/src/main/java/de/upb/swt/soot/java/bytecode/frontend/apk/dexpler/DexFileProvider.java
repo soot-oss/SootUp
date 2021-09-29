@@ -22,7 +22,14 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
-import javafx.scene.Scene;
+import de.upb.swt.soot.core.frontend.AbstractClassSource;
+import de.upb.swt.soot.core.frontend.ClassProvider;
+import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.FileType;
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import org.jf.dexlib2.DexFileFactory;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
@@ -31,8 +38,10 @@ import org.jf.dexlib2.iface.MultiDexContainer;
 import org.jf.dexlib2.iface.MultiDexContainer.DexEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -40,8 +49,12 @@ import java.util.*;
  *
  * @author Manuel Benz created on 16.10.17
  */
-public class DexFileProvider {
+public class DexFileProvider implements ClassProvider<JavaSootClass> {
   private static final Logger logger = LoggerFactory.getLogger(DexFileProvider.class);
+  boolean multiple_dex = true; //Options.v().process_multiple_dex();
+  boolean search_dex = true; //Options.v().search_dex_in_archives()
+  // FIXME - find a way to detect andorid APK version
+  int api = 14;//Scene.v().getAndroidAPIVersion();
 
   private final static Comparator<DexContainer<? extends DexFile>> DEFAULT_PRIORITIZER
       = new Comparator<DexContainer<? extends DexFile>>() {
@@ -77,12 +90,6 @@ public class DexFileProvider {
    */
   private final Map<String, Map<String, DexContainer<? extends DexFile>>> dexMap = new HashMap<>();
 
-  public DexFileProvider(Singletons.Global g) {
-  }
-
-  public static DexFileProvider v() {
-    return G.v().soot_dexpler_DexFileProvider();
-  }
 
   /**
    * Returns all dex files found in dex source sorted by the default dex prioritizer
@@ -126,7 +133,7 @@ public class DexFileProvider {
    * @param dexSource
    *          Path to a jar, apk, dex, odex or a directory containing multiple dex files
    * @return Dex file with given name in dex source
-   * @throws CompilationDeathException
+   * @throws ResolveException
    *           If no dex file with the given name exists
    */
   public DexContainer<? extends DexFile> getDexFromSource(File dexSource, String dexName) throws IOException {
@@ -141,13 +148,13 @@ public class DexFileProvider {
       }
     }
 
-    throw new CompilationDeathException("Dex file with name '" + dexName + "' not found in " + dexSource);
+    throw new ResolveException("Dex file with name '" + dexName + "' not found in " + dexSource, dexSource.toPath());
   }
 
   private List<File> allSourcesFromFile(File dexSource) throws IOException {
     if (dexSource.isDirectory()) {
       List<File> dexFiles = getAllDexFilesInDirectory(dexSource);
-      if (dexFiles.size() > 1 && !Options.v().process_multiple_dex()) {
+      if (dexFiles.size() > 1 && !multiple_dex) {
         File file = dexFiles.get(0);
         logger.warn("Multiple dex files detected, only processing '" + file.getCanonicalPath()
             + "'. Use '-process-multiple-dex' option to process them all.");
@@ -157,7 +164,7 @@ public class DexFileProvider {
       }
     } else {
       String ext = com.google.common.io.Files.getFileExtension(dexSource.getName()).toLowerCase();
-      if ((ext.equals("jar") || ext.equals("zip")) && !Options.v().search_dex_in_archives()) {
+      if ((ext.equals("jar") || ext.equals("zip")) && !search_dex) {
         return Collections.emptyList();
       } else {
         return Collections.singletonList(dexSource);
@@ -174,7 +181,7 @@ public class DexFileProvider {
           dexFiles = mappingForFile(theSource);
           dexMap.put(key, dexFiles);
         } catch (IOException e) {
-          throw new CompilationDeathException("Error parsing dex source", e);
+          throw new ResolveException("Error parsing dex source", theSource.toPath());
         }
       }
     }
@@ -187,8 +194,6 @@ public class DexFileProvider {
    * @throws IOException
    */
   private Map<String, DexContainer<? extends DexFile>> mappingForFile(File dexSourceFile) throws IOException {
-    int api = Scene.v().getAndroidAPIVersion();
-    boolean multiple_dex = Options.v().process_multiple_dex();
 
     // load dex files from apk/folder/file
     MultiDexContainer<? extends DexBackedDexFile> dexContainer
@@ -198,9 +203,7 @@ public class DexFileProvider {
     int dexFileCount = dexEntryNameList.size();
 
     if (dexFileCount < 1) {
-      if (Options.v().verbose()) {
         logger.debug("" + String.format("Warning: No dex file found in '%s'", dexSourceFile));
-      }
       return Collections.emptyMap();
     }
 
@@ -254,6 +257,16 @@ public class DexFileProvider {
       }
     }
     return ret;
+  }
+
+  @Override
+  public AbstractClassSource<JavaSootClass> createClassSource(AnalysisInputLocation<? extends SootClass<?>> inputLocation, Path sourcePath, ClassType classSignature) {
+    return null;
+  }
+
+  @Override
+  public FileType getHandledFileType() {
+    return FileType.DEX;
   }
 
   public static final class DexContainer<T extends DexFile> {

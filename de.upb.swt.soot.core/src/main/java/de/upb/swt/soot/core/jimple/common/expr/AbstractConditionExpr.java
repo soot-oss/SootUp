@@ -31,8 +31,8 @@ public abstract class AbstractConditionExpr extends AbstractIntBinopExpr {
     super(op1, op2);
   }
 
-  abstract public JEqExpr withOp1(@Nonnull Immediate op1);
+  abstract public AbstractConditionExpr withOp1(@Nonnull Immediate op1);
 
-  abstract public JEqExpr withOp2(@Nonnull Immediate op2);
+  abstract public AbstractConditionExpr withOp2(@Nonnull Immediate op2);
 
 }

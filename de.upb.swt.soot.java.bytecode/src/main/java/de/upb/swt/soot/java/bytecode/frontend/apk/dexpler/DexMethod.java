@@ -27,6 +27,7 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.model.SootMethod;
 import org.jf.dexlib2.iface.Annotation;
 import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.DexFile;

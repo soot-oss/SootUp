@@ -71,8 +71,11 @@ public abstract class AbstractNullTransformer extends DexTransformer {
      */
     protected void replaceWithNull(Stmt u) {
         if (u instanceof JIfStmt) {
-            Expr expr = (Expr) ((JIfStmt) u).getCondition();
+            JIfStmt jIfStmt = (JIfStmt) u;
+            Expr expr = (Expr) (jIfStmt).getCondition();
             if (isZeroComparison(expr)) {
+
+                jIfStmt.withCondition(NullConstant.getInstance())
                 expr.setOp2(NullConstant.getInstance());
             }
         } else if (u instanceof JAssignStmt) {
@@ -84,7 +87,7 @@ public abstract class AbstractNullTransformer extends DexTransformer {
                 // might have a.f = 2 with a being a null candidate, but a.f
                 // being an int.
                 if (!(s.getLeftOp() instanceof JInstanceFieldRef)
-                        || ((JInstanceFieldRef) s.getLeftOp()).getFieldRef().type() instanceof JInstanceFieldRef) {
+                        || s.getLeftOp() instanceof JInstanceFieldRef) {
                     s.setRightOp(NullConstant.getInstance());
                 }
             }

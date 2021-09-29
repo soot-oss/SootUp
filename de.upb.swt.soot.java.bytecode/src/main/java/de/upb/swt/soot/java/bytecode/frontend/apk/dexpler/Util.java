@@ -27,10 +27,18 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
-import soot.*;
-import soot.javaToJimple.LocalGenerator;
-import soot.jimple.*;
-import soot.jimple.toolkits.scalar.LocalCreation;
+import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
+import de.upb.swt.soot.core.jimple.common.constant.*;
+import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
+import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.types.*;
+import javafx.scene.Scene;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,47 +107,47 @@ public class Util {
           break;
 
         case 'J':
-          returnType = LongType.v();
+          returnType = PrimitiveType.LongType.getInstance();
           notFound = false;
           break;
 
         case 'S':
-          returnType = ShortType.v();
+          returnType = PrimitiveType.ShortType.getInstance();
           notFound = false;
           break;
 
         case 'D':
-          returnType = DoubleType.v();
+          returnType = PrimitiveType.DoubleType.getInstance();
           notFound = false;
           break;
 
         case 'I':
-          returnType = IntType.v();
+          returnType = PrimitiveType.IntType.getInstance();
           notFound = false;
           break;
 
         case 'F':
-          returnType = FloatType.v();
+          returnType = PrimitiveType.FloatType.getInstance();
           notFound = false;
           break;
 
         case 'B':
-          returnType = ByteType.v();
+          returnType = PrimitiveType.ByteType.getInstance();
           notFound = false;
           break;
 
         case 'C':
-          returnType = CharType.v();
+          returnType = PrimitiveType.CharType.getInstance();
           notFound = false;
           break;
 
         case 'V':
-          returnType = VoidType.v();
+          returnType = VoidType.getInstance();
           notFound = false;
           break;
 
         case 'Z':
-          returnType = BooleanType.v();
+          returnType = PrimitiveType.BooleanType.getInstance();
           notFound = false;
           break;
 
@@ -149,7 +157,7 @@ public class Util {
       idx++;
     }
     if (returnType != null && arraySize > 0) {
-      returnType = ArrayType.v(returnType, arraySize);
+      returnType = new ArrayType(returnType, arraySize);
     }
     return returnType;
   }
@@ -186,97 +194,97 @@ public class Util {
    *          the type to test
    */
   public static boolean isFloatLike(Type t) {
-    return t.equals(FloatType.v()) || t.equals(DoubleType.v()) || t.equals(RefType.v("java.lang.Float"))
-        || t.equals(RefType.v("java.lang.Double"));
+    return t.equals(PrimitiveType.FloatType.getInstance()) || t.equals(PrimitiveType.DoubleType.getInstance()) || t.equals(ReferenceType("java.lang.Float"))
+        || t.equals(ReferenceType("java.lang.Double"));
   }
 
   /**
    * Remove all statements except from IdentityStatements for parameters. Return default value (null or zero or nothing
    * depending on the return type).
    *
-   * @param jBody
+   * @param bodyBuilder
    */
-  public static void emptyBody(Body jBody) {
+  public static void emptyBody(Body.BodyBuilder bodyBuilder) {
     // identity statements
-    List<Unit> idStmts = new ArrayList<Unit>();
+    List<Stmt> idStmts = new ArrayList<Stmt>();
     List<Local> idLocals = new ArrayList<Local>();
-    for (Unit u : jBody.getUnits()) {
-      if (u instanceof IdentityStmt) {
-        IdentityStmt i = (IdentityStmt) u;
-        if (i.getRightOp() instanceof ParameterRef || i.getRightOp() instanceof ThisRef) {
-          idStmts.add(u);
+    for (Stmt stmt : bodyBuilder.getStmts()) {
+      if (stmt instanceof JIdentityStmt) {
+        JIdentityStmt i = (JIdentityStmt) stmt;
+        if (i.getRightOp() instanceof JParameterRef || i.getRightOp() instanceof JThisRef) {
+          idStmts.add(stmt);
           idLocals.add((Local) i.getLeftOp());
         }
       }
     }
 
-    jBody.getUnits().clear();
-    jBody.getLocals().clear();
-    jBody.getTraps().clear();
+    bodyBuilder.getStmts().clear();
+    bodyBuilder.getLocals().clear();
+    bodyBuilder.getTraps().clear();
 
-    final LocalGenerator lg = new LocalGenerator(jBody);
+    final LocalGenerator lg = new LocalGenerator(bodyBuilder.getLocals());
 
-    for (Unit u : idStmts) {
-      jBody.getUnits().add(u);
+    for (Stmt stmt : idStmts) {
+      bodyBuilder.getStmts().add(stmt);
     }
     for (Local l : idLocals) {
-      jBody.getLocals().add(l);
+      bodyBuilder.getLocals().add(l);
     }
 
-    Type rType = jBody.getMethod().getReturnType();
+    Type rType = bodyBuilder.getMethodSignature().getType();
 
-    jBody.getUnits().add(Jimple.v().newNopStmt());
+    bodyBuilder.getStmts().add(Jimple.v().newNopStmt());
 
     if (rType instanceof VoidType) {
-      jBody.getUnits().add(Jimple.v().newReturnVoidStmt());
+      bodyBuilder.getStmts().add(Jimple.v().newReturnVoidStmt());
     } else {
-      Type t = jBody.getMethod().getReturnType();
+      Type t = bodyBuilder.getMethodSignature().getType();
       Local l = lg.generateLocal(t);
 
-      AssignStmt ass = null;
-      if (t instanceof RefType || t instanceof ArrayType) {
-        ass = Jimple.v().newAssignStmt(l, NullConstant.v());
-      } else if (t instanceof LongType) {
-        ass = Jimple.v().newAssignStmt(l, LongConstant.v(0));
-      } else if (t instanceof FloatType) {
-        ass = Jimple.v().newAssignStmt(l, FloatConstant.v(0.0f));
-      } else if (t instanceof IntType) {
-        ass = Jimple.v().newAssignStmt(l, IntConstant.v(0));
-      } else if (t instanceof DoubleType) {
-        ass = Jimple.v().newAssignStmt(l, DoubleConstant.v(0));
-      } else if (t instanceof BooleanType || t instanceof ByteType || t instanceof CharType || t instanceof ShortType) {
-        ass = Jimple.v().newAssignStmt(l, IntConstant.v(0));
+      JAssignStmt ass = null;
+      if (t instanceof ReferenceType || t instanceof ArrayType) {
+        ass = Jimple.v().newAssignStmt(l, NullConstant.getInstance());
+      } else if (t instanceof PrimitiveType.LongType) {
+        ass = Jimple.v().newAssignStmt(l, LongConstant.getInstance(0));
+      } else if (t instanceof PrimitiveType.FloatType) {
+        ass = Jimple.v().newAssignStmt(l, FloatConstant.getInstance(0.0f));
+      } else if (t instanceof PrimitiveType.IntType) {
+        ass = Jimple.v().newAssignStmt(l, IntConstant.getInstance(0));
+      } else if (t instanceof PrimitiveType.DoubleType) {
+        ass = Jimple.v().newAssignStmt(l, DoubleConstant.getInstance(0));
+      } else if (t instanceof PrimitiveType.BooleanType || t instanceof PrimitiveType.ByteType || t instanceof PrimitiveType.CharType || t instanceof PrimitiveType.ShortType) {
+        ass = Jimple.v().newAssignStmt(l, IntConstant.getInstance(0));
       } else {
         throw new RuntimeException("error: return type unknown: " + t + " class: " + t.getClass());
       }
-      jBody.getUnits().add(ass);
-      jBody.getUnits().add(Jimple.v().newReturnStmt(l));
+      bodyBuilder.getStmts().add(ass);
+      bodyBuilder.getStmts().add(Jimple.v().newReturnStmt(l));
     }
 
   }
 
   /**
-   * Insert a runtime exception before unit u of body b. Useful to analyze broken code (which make reference to inexisting
+   * Insert a runtime exception before unit stmt of body bodyBuilder. Useful to analyze broken code (which make reference to inexisting
    * class for instance) exceptionType: e.g., "java.lang.RuntimeException"
    */
-  public static void addExceptionAfterUnit(Body b, String exceptionType, Unit u, String m) {
-    LocalCreation lc = new LocalCreation(b.getLocals());
-    Local l = lc.newLocal(RefType.v(exceptionType));
+  public static void addExceptionAfterUnit(Body.BodyBuilder bodyBuilder, String exceptionType, Stmt stmt, String m) {
+    LocalCreation lc = new LocalCreation(bodyBuilder.getLocals());
+    Local l = lc.newLocal(ReferenceType.v(exceptionType));
 
-    List<Unit> newUnits = new ArrayList<Unit>();
-    Unit u1 = Jimple.v().newAssignStmt(l, Jimple.v().newNewExpr(RefType.v(exceptionType)));
-    Unit u2
+    List<Stmt> newUnits = new ArrayList<Stmt>();
+    Stmt u1 = Jimple.v().newAssignStmt(l, Jimple.v().newNewExpr(ReferenceType.v(exceptionType)));
+    Stmt u2
         = Jimple.v()
             .newInvokeStmt(Jimple.v().newSpecialInvokeExpr(l,
                 Scene.v().makeMethodRef(Scene.v().getSootClass(exceptionType), "<init>",
-                    Collections.singletonList((Type) RefType.v("java.lang.String")), VoidType.v(), false),
+                    Collections.singletonList((Type) ReferenceType.v("java.lang.String")), VoidType.getInstance(), false),
                 StringConstant.v(m)));
-    Unit u3 = Jimple.v().newThrowStmt(l);
+    Stmt u3 = Jimple.v().newThrowStmt(l);
     newUnits.add(u1);
     newUnits.add(u2);
     newUnits.add(u3);
 
-    b.getUnits().insertBefore(newUnits, u);
+    bodyBuilder.getStmts().insertBefore(newUnits, stmt);
   }
 
   public static List<String> splitParameters(String parameters) {

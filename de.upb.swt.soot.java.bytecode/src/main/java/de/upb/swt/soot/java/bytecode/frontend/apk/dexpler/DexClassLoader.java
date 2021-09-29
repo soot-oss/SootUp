@@ -54,7 +54,7 @@ public class DexClassLoader {
    * @param dexMethodFactory
    *          The factory method for creating dex methods
    */
-  protected void loadMethod(Method method, SootClass declaringClass, soot.dexpler.DexAnnotation annotations, DexMethod dexMethodFactory) {
+  protected void loadMethod(Method method, SootClass declaringClass, DexAnnotation annotations, DexMethod dexMethodFactory) {
     SootMethod sm = dexMethodFactory.makeSootMethod(method);
     if (declaringClass.declaresMethod(sm.getName(), sm.getParameterTypes(), sm.getReturnType())) {
       return;
@@ -75,7 +75,7 @@ public class DexClassLoader {
 
     // super class for hierarchy level
     if (superClass != null) {
-      String superClassName = soot.dexpler.Util.dottedClassName(superClass);
+      String superClassName = Util.dottedClassName(superClass);
       SootClass sootSuperClass = SootResolver.v().makeClassRef(superClassName);
       sc.setSuperclass(sootSuperClass);
       deps.typesToHierarchy.add(sootSuperClass.getType());
@@ -88,7 +88,7 @@ public class DexClassLoader {
     // Retrieve interface names
     if (defItem.getInterfaces() != null) {
       for (String interfaceName : defItem.getInterfaces()) {
-        String interfaceClassName = soot.dexpler.Util.dottedClassName(interfaceName);
+        String interfaceClassName = Util.dottedClassName(interfaceName);
         if (sc.implementsInterface(interfaceClassName)) {
           continue;
         }
@@ -103,7 +103,7 @@ public class DexClassLoader {
     if (Options.v().oaat() && sc.resolvingLevel() <= SootClass.HIERARCHY) {
       return deps;
     }
-    soot.dexpler.DexAnnotation da = createDexAnnotation(sc, deps);
+    DexAnnotation da = createDexAnnotation(sc, deps);
 
     // get the fields of the class
     for (Field sf : defItem.getStaticFields()) {
@@ -209,8 +209,8 @@ public class DexClassLoader {
    * @param deps
    * @return
    */
-  protected soot.dexpler.DexAnnotation createDexAnnotation(SootClass clazz, Dependencies deps) {
-    return new soot.dexpler.DexAnnotation(clazz, deps);
+  protected DexAnnotation createDexAnnotation(SootClass clazz, Dependencies deps) {
+    return new DexAnnotation(clazz, deps);
   }
 
   /**
@@ -234,7 +234,7 @@ public class DexClassLoader {
    * @param field
    *          The field to load
    */
-  protected void loadField(SootClass declaringClass, soot.dexpler.DexAnnotation annotations, Field sf) {
+  protected void loadField(SootClass declaringClass, DexAnnotation annotations, Field sf) {
     if (declaringClass.declaresField(sf.getName(), DexType.toSoot(sf.getType()))) {
       return;
     }
