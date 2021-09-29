@@ -81,6 +81,7 @@ import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.*;
+import de.upb.swt.soot.java.core.ConstantUtil;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -874,33 +875,23 @@ public class InstructionConverter {
   private Immediate extractValueAndAddAssignStmt(
       StmtPositionInfo posInfo, List<Stmt> addTo, int val) {
     Immediate value;
-    Integer intConstant = null;
-    String stringConstant = null;
+    Object constant = null;
     if (symbolTable.isZero(val)) {
       value = IntConstant.getInstance(0);
     } else {
       if (symbolTable.isConstant(val)) {
         Object c = symbolTable.getConstantValue(val);
         if (c instanceof Boolean) {
-          intConstant = c.equals(true) ? 1 : 0;
-        }
-        if (c instanceof String) {
-          stringConstant = c.toString();
+          constant = c.equals(true) ? 1 : 0;
+        } else {
+          constant = c;
         }
       }
       value = getLocal(PrimitiveType.getInt(), val);
     }
-    if (intConstant != null) {
+    if (constant != null) {
       JAssignStmt assignStmt =
-          Jimple.newAssignStmt(value, IntConstant.getInstance(intConstant), posInfo);
-      addTo.add(assignStmt);
-    }
-    if (stringConstant != null) {
-      JAssignStmt assignStmt =
-          Jimple.newAssignStmt(
-              value,
-              new StringConstant(stringConstant, identifierFactory.getType("java.lang.String")),
-              posInfo);
+          Jimple.newAssignStmt(value, ConstantUtil.fromObject(constant), posInfo);
       addTo.add(assignStmt);
     }
     return value;
