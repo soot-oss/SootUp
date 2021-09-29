@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class AggregatorTest {
@@ -34,7 +33,6 @@ public class AggregatorTest {
    * <p>i = 0; b = 7 + 4; return;
    */
   @Test
-  @Ignore("FIX ME")
   public void testAggregation() {
     Body.BodyBuilder testBuilder = createBody(true);
     Body testBody = testBuilder.build();
@@ -42,12 +40,6 @@ public class AggregatorTest {
     Body processedBody = testBuilder.build();
     List<Stmt> originalStmts = testBody.getStmts();
     List<Stmt> processedStmts = processedBody.getStmts();
-    System.out.println("new");
-    processedStmts.forEach(System.out::println);
-    System.out.println("old");
-    originalStmts.forEach(System.out::println);
-
-    System.out.println(processedBody.getStmtGraph().getStartingStmt());
 
     assertEquals(originalStmts.size() - 1, processedStmts.size());
     assertEquals("b = a + 4", originalStmts.get(3).toString());

@@ -73,13 +73,10 @@ public class Aggregator implements BodyInterceptor {
                   boolean propagatingArrayRef = false;
                   List<JFieldRef> fieldRefList = new ArrayList<>();
 
-                  List<Value> localsUsed = new ArrayList<>();
                   for (Stmt pathStmt : path) {
                     List<Value> allDefs = pathStmt.getDefs();
                     for (Value def : allDefs) {
-                      if (def instanceof Local) {
-                        localsUsed.add(def);
-                      } else if (def instanceof AbstractInstanceInvokeExpr) {
+                      if (def instanceof AbstractInstanceInvokeExpr) {
                         propagatingInvokeExpr = true;
                       } else if (def instanceof JArrayRef) {
                         propagatingArrayRef = true;
@@ -92,15 +89,6 @@ public class Aggregator implements BodyInterceptor {
                   for (Stmt pathStmt : path) {
                     if (pathStmt != stmt && pathStmt != relevantDef) {
                       for (Value stmtDef : pathStmt.getDefs()) {
-                        if (localsUsed.contains(stmtDef)) {
-                          // TODO [bh] removing the next line will make the AggregatorTest run,
-                          // but I think there is something else wrong here. cantAggr
-                          // is a boolean for each value of the definition we might collapse
-                          // so we should only care about locals that use values of the definition
-                          // or the value we currently iterate, right?
-                          cantAggr = true;
-                          break;
-                        }
                         if (propagatingInvokeExpr || propagatingFieldRef || propagatingArrayRef) {
                           if (stmtDef instanceof JFieldRef) {
                             if (propagatingInvokeExpr) {
