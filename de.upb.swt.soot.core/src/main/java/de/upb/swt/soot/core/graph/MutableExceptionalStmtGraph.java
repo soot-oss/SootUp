@@ -264,49 +264,6 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
     return destinations;
   }
 
-  /**
-   * Using the information of body position for each stmt and the information of traps infer the
-   * exceptional successors for a given stmt.
-   *
-   * @param stmt a given stmt
-   * @param posTable a map that maps each stmt to its corresponding position number in the body
-   * @param traps a given list of traps
-   * @return
-   */
-  /*private List<Stmt> inferExceptionalSuccs(
-      Stmt stmt, Map<Stmt, Integer> posTable, List<Trap> traps) {
-    List<Stmt> exceptionalSuccs = new ArrayList<>();
-
-    // 1.step if the stmt in a trap range, then this trap's handlerStmt
-    // is a candidate for exceptional successors of the stmt
-    // 2.step if a trap-candidate includes another trap-candidate completely,
-    // then delete this trap-candidate
-    // the both steps are done in the method <code>inferExceptionalDestinations</code>
-    List<Trap> candidates = inferExceptionalDestinations(stmt, posTable, traps);
-
-    for (Trap trap : candidates) {
-      if (!exceptionalSuccs.contains(trap.getHandlerStmt())) {
-        exceptionalSuccs.add(trap.getHandlerStmt());
-      }
-    }
-    // 3.step detect chained traps, if a handlerStmt(Succ) is trap's beginStmt,
-    // then handlerStmt of this trap is also a successor.
-    Deque<Stmt> queue = new ArrayDeque<>(exceptionalSuccs);
-    while (!queue.isEmpty()) {
-      Stmt first = queue.removeFirst();
-      for (Trap t : traps) {
-        if (first == t.getBeginStmt()) {
-          Stmt handlerStmt = t.getHandlerStmt();
-          if (!exceptionalSuccs.contains(handlerStmt)) {
-            exceptionalSuccs.add(handlerStmt);
-            queue.add(handlerStmt);
-          }
-        }
-      }
-    }
-    return exceptionalSuccs;
-  }*/
-
   /** Remove a node from the graph. */
   @Override
   public void removeNode(@Nonnull Stmt node) {
