@@ -67,14 +67,7 @@ import com.ibm.wala.types.TypeReference;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
-import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
-import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
-import de.upb.swt.soot.core.jimple.common.constant.Constant;
-import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
-import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
-import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
-import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
+import de.upb.swt.soot.core.jimple.common.constant.*;
 import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
@@ -881,21 +874,33 @@ public class InstructionConverter {
   private Immediate extractValueAndAddAssignStmt(
       StmtPositionInfo posInfo, List<Stmt> addTo, int val) {
     Immediate value;
-    Integer constant = null;
+    Integer intConstant = null;
+    String stringConstant = null;
     if (symbolTable.isZero(val)) {
       value = IntConstant.getInstance(0);
     } else {
       if (symbolTable.isConstant(val)) {
         Object c = symbolTable.getConstantValue(val);
         if (c instanceof Boolean) {
-          constant = c.equals(true) ? 1 : 0;
+          intConstant = c.equals(true) ? 1 : 0;
+        }
+        if (c instanceof String) {
+          stringConstant = c.toString();
         }
       }
       value = getLocal(PrimitiveType.getInt(), val);
     }
-    if (constant != null) {
+    if (intConstant != null) {
       JAssignStmt assignStmt =
-          Jimple.newAssignStmt(value, IntConstant.getInstance(constant), posInfo);
+          Jimple.newAssignStmt(value, IntConstant.getInstance(intConstant), posInfo);
+      addTo.add(assignStmt);
+    }
+    if (stringConstant != null) {
+      JAssignStmt assignStmt =
+          Jimple.newAssignStmt(
+              value,
+              new StringConstant(stringConstant, identifierFactory.getType("java.lang.String")),
+              posInfo);
       addTo.add(assignStmt);
     }
     return value;
