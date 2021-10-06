@@ -56,6 +56,16 @@ public final class JAssignStmt<L extends Value, R extends Value>
     }
   }
 
+  @Override
+  public JAssignStmt withLeftOp(@Nonnull L left) {
+    return null;
+  }
+
+  @Override
+  public JAssignStmt withRightOp(@Nonnull R right) {
+    return null;
+  }
+
   /**
    * returns true if variable can be on the left side of the assign statement
    *

@@ -419,6 +419,9 @@ public class DexBody {
     return i;
   }
 
+  boolean use_original_names = true;
+  boolean stabilize_local_names = true;
+
   /**
    * Return the jimple equivalent of this body.
    *
@@ -429,7 +432,8 @@ public class DexBody {
     final Jimple jimple = JavaJimple.getInstance();
     final UnknownType unknownType = UnknownType.getInstance();
     final NullConstant nullConstant = NullConstant.getInstance();
-    final Options options = Options.v();
+
+    // final Options options = Options.v();
 
     /*
      * Timer t_whole_jimplification = new Timer(); Timer t_num = new Timer(); Timer t_null = new Timer();
@@ -442,11 +446,13 @@ public class DexBody {
     deferredInstructions = new ArrayList<DeferableInstruction>();
     instructionsToRetype = new HashSet<RetypeableInstruction>();
 
-    if (jbOptions.use_original_names()) {
-      PhaseOptions.v().setPhaseOptionIfUnset("jb.lns", "only-stack-locals");
+    if (use_original_names) {
+      // FIXME - what is alternative to PhaseOptions - commented line below
+      // PhaseOptions.v().setPhaseOptionIfUnset("jb.lns", "only-stack-locals");
     }
-    if (jbOptions.stabilize_local_names()) {
-      PhaseOptions.v().setPhaseOption("jb.lns", "sort-locals:true");
+    if (stabilize_local_names) {
+      // FIXME - what is alternative to PhaseOptions - commented line below
+      // PhaseOptions.v().setPhaseOption("jb.lns", "sort-locals:true");
     }
 
     if (IDalvikTyper.ENABLE_DVKTYPER) {
@@ -481,7 +487,7 @@ public class DexBody {
 
         String localName = null;
         Type localType = null;
-        if (jbOptions.use_original_names()) {
+        if (use_original_names) {
           // Attempt to read original parameter name.
           try {
             localName = parameterNames.get(argIdx);
@@ -562,6 +568,7 @@ public class DexBody {
 
     ClassPath cp = null;
     if (isOdex) {
+      // FIXME - implement new way to get separated ClassPath
       String[] sootClasspath = options.soot_classpath().split(File.pathSeparator);
       List<String> classpathList = new ArrayList<String>();
       for (String str : sootClasspath) {
@@ -715,7 +722,7 @@ public class DexBody {
 
     if (IDalvikTyper.ENABLE_DVKTYPER) {
       for (Local l : this.bodyBuilder.getLocals()) {
-        l.setType(unknownType);
+        l.getType();// setType(unknownType);
       }
     }
 
@@ -834,6 +841,7 @@ public class DexBody {
 
     // Some apps reference static fields as instance fields. We fix this
     // on the fly.
+    // FIXME - options and missing classes from old soot in toolkit package
     if (Options.v().wrong_staticness() == Options.wrong_staticness_fix
         || Options.v().wrong_staticness() == Options.wrong_staticness_fixstrict) {
       new FieldStaticnessCorrector().interceptBody(this.bodyBuilder);
@@ -857,6 +865,7 @@ public class DexBody {
     // to statically decide the conditions earlier.
     new ConditionalBranchFolder().interceptBody(this.bodyBuilder);
 
+    // FIXME - missing classes from old soot in toolkit package
     // Remove unnecessary typecasts
     new ConstantCastEliminator().interceptBody(this.bodyBuilder);
     new IdentityCastEliminator().interceptBody(this.bodyBuilder);
@@ -890,7 +899,7 @@ public class DexBody {
           JCastExpr c = (JCastExpr) ass.getRightOp();
           if (c.getType() instanceof NullType) {
             // FIXME as I did in other abstract class
-            ass.setRightOp(nullConstant);
+            ass = ass.withLeftOp(nullConstant);
           }
         }
       }
@@ -923,6 +932,7 @@ public class DexBody {
     // $r4 = virtualinvoke $n0.<java.lang.ref.WeakReference:
     // java.lang.Object get()>();
     //
+    // FIXME reflect it in the statements Value vb valuebox
     for (Local l : this.bodyBuilder.getLocals()) {
       Type t = l.getType();
       if (t instanceof NullType) {
@@ -962,7 +972,7 @@ public class DexBody {
 
   protected LocalSplitter getLocalSplitter() {
     if (this.localSplitter == null) {
-      this.localSplitter = new LocalSplitter(DalvikThrowAnalysis.v());
+      this.localSplitter = new LocalSplitter(new DalvikThrowAnalysis());
     }
     return this.localSplitter;
   }
@@ -971,7 +981,7 @@ public class DexBody {
 
   protected UnreachableCodeEliminator getUnreachableCodeEliminator() {
     if (this.unreachableCodeEliminator == null) {
-      this.unreachableCodeEliminator = new UnreachableCodeEliminator(DalvikThrowAnalysis.v());
+      this.unreachableCodeEliminator = new UnreachableCodeEliminator(new DalvikThrowAnalysis());
     }
     return this.unreachableCodeEliminator;
   }
@@ -1077,7 +1087,7 @@ public class DexBody {
             ((MoveExceptionInstruction) instruction).setRealType(this, exception.getType());
           }
 
-          Trap trap = jimple.newTrap(exception, beginStmt, endStmt, instruction.getStmt());
+          Trap trap = jimple.newTrap(exception.getType(), beginStmt, endStmt, instruction.getStmt());
           bodyBuilder.getTraps().add(trap);
         }
       }

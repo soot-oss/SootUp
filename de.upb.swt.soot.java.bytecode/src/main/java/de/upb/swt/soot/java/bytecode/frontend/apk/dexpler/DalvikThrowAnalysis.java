@@ -20,13 +20,10 @@
 
 package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
 
-import soot.*;
-import soot.baf.EnterMonitorInst;
-import soot.baf.ReturnInst;
-import soot.baf.ReturnVoidInst;
-import soot.jimple.*;
-import soot.toolkits.exceptions.ThrowableSet;
-import soot.toolkits.exceptions.UnitThrowAnalysis;
+
+import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
+import de.upb.swt.soot.core.model.SootMethod;
+import javafx.scene.Scene;
 
 /**
  *
@@ -124,7 +121,7 @@ public class DalvikThrowAnalysis extends UnitThrowAnalysis {
    * @param g
    *          guarantees that the constructor may only be called from {@link Singletons}.
    */
-  public DalvikThrowAnalysis(Singletons.Global g) {
+  public DalvikThrowAnalysis() {
   }
 
   /**
@@ -132,15 +129,12 @@ public class DalvikThrowAnalysis extends UnitThrowAnalysis {
    *
    * @return Soot's <code>UnitThrowAnalysis</code>.
    */
-  public static DalvikThrowAnalysis v() {
-    return G.v().soot_dexpler_DalvikThrowAnalysis();
-  }
 
   protected DalvikThrowAnalysis(boolean isInterproc) {
     super(isInterproc);
   }
 
-  public DalvikThrowAnalysis(Singletons.Global g, boolean isInterproc) {
+  public DalvikThrowAnalysis(boolean isInterproc) {
     super(isInterproc);
   }
 
