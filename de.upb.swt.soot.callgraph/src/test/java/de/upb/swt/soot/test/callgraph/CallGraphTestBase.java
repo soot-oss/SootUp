@@ -9,6 +9,7 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
@@ -17,6 +18,8 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import junit.framework.TestCase;
 import org.junit.Ignore;
@@ -32,23 +35,29 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   protected abstract T createAlgorithm(JavaView view, TypeHierarchy typeHierarchy);
 
-  CallGraph loadCallGraph(String testDirectory, String className) {
-    String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
+  private static Map<String, JavaView> viewToClassPath = new HashMap<>();
 
+
+  private JavaView createViewForClassPath(String classPath){
+    JavaProject javaProject =
+            JavaProject.builder(new JavaLanguage(8))
+                    .addInputLocation(
+                            new JavaClassPathAnalysisInputLocation(
+                                    System.getProperty("java.home") + "/lib/rt.jar"))
+                    .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
+                    .build();
+    return javaProject.createOnDemandView();
+  }
+
+  CallGraph loadCallGraph(String testDirectory, String className) {
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
     if (version > 1.8) {
       fail("The rt.jar is not available after Java 8. You are using version " + version);
     }
 
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
-            .addInputLocation(new JavaSourcePathAnalysisInputLocation(walaClassPath))
-            .build();
+    String classPath = "src/test/resources/callgraph/" + testDirectory;
 
-    JavaView view = javaProject.createOnDemandView();
+    JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
 
     mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =
