@@ -1,9 +1,12 @@
 package de.upb.swt.soot.test.java.bytecode.interceptors;
 
+import static org.junit.Assert.assertEquals;
+
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
 import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
@@ -11,6 +14,7 @@ import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
 import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -111,8 +115,15 @@ public class CopyPropagatorTest {
   // r6 = r3
   Stmt stmt14 = JavaJimple.newAssignStmt(r6, r3, noStmtPositionInfo);
 
-  Stmt eestmt4 = JavaJimple.newAssignStmt(r4, NullConstant.getInstance(), noStmtPositionInfo);
-  Stmt estmt13 = JavaJimple.newAssignStmt(r5, NullConstant.getInstance(), noStmtPositionInfo);
+  JAssignStmt<Local, Constant> eestmt4 =
+      JavaJimple.newAssignStmt(r4, NullConstant.getInstance(), noStmtPositionInfo);
+  JAssignStmt<Local, Constant> estmt13 =
+      JavaJimple.newAssignStmt(r5, NullConstant.getInstance(), noStmtPositionInfo);
+
+  @Test
+  public void testEqualStmt() {
+    assertEquals(eestmt4, eestmt4.withRValue(NullConstant.getInstance()));
+  }
 
   @Test
   /** Test the copy propagation's chain */
