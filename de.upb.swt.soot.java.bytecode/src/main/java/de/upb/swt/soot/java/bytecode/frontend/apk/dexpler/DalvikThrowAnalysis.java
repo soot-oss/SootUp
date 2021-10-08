@@ -20,9 +20,9 @@
 
 package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
 
-
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.toolkits.exceptions.StmtThrowAnalysis;
 import javafx.scene.Scene;
 
 /**
@@ -113,14 +113,8 @@ import javafx.scene.Scene;
  *
  */
 
-public class DalvikThrowAnalysis extends UnitThrowAnalysis {
+public class DalvikThrowAnalysis extends StmtThrowAnalysis {
 
-  /**
-   * Constructs a <code>DalvikThrowAnalysis</code> for inclusion in Soot's global variable manager, {@link G}.
-   *
-   * @param g
-   *          guarantees that the constructor may only be called from {@link Singletons}.
-   */
   public DalvikThrowAnalysis() {
   }
 

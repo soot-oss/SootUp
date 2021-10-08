@@ -1039,7 +1039,6 @@ public class DexBody {
    * <p>Should only be called at the end jimplify.
    */
   private void addTraps() {
-    final Jimple jimple = Jimple.v();
     for (TryBlock<? extends ExceptionHandler> tryItem : tries) {
       int startAddress = tryItem.getStartCodeAddress();
       int length = tryItem.getCodeUnitCount(); // .getTryLength();
@@ -1059,7 +1058,7 @@ public class DexBody {
       // the last instruction in the try block.
       if (bodyBuilder.getStmts().get(bodyBuilder.getStmts().size()-1) == endStmt
           && instructionAtAddress(endAddress - 1).getStmt() == endStmt) {
-        Stmt nop = jimple.newNopStmt(endStmt.getPositionInfo());
+        Stmt nop = Jimple.newNopStmt(endStmt.getPositionInfo());
         bodyBuilder.getStmts().insertAfter(nop, endStmt);
         endStmt = nop;
       }
@@ -1068,13 +1067,13 @@ public class DexBody {
       for (ExceptionHandler handler : hList) {
         String exceptionType = handler.getExceptionType();
         if (exceptionType == null) {
-          exceptionType = "Ljava/lang/Throwable;";
+          exceptionType = "java/lang/Throwable;";
         }
         Type t = DexType.toSoot(exceptionType);
         // exceptions can only be of RefType
         if (t instanceof ReferenceType) {
           // FIXME - SootClass needs to resolved
-          SootClass exception = ((ReferenceType) t).getClass();
+          ClassType exception = ((ClassType) t);
           DexlibAbstractInstruction instruction =
               instructionAtAddress(handler.getHandlerCodeAddress());
           if (!(instruction instanceof MoveExceptionInstruction)) {
@@ -1084,10 +1083,10 @@ public class DexBody {
                         "First instruction of trap handler unit not MoveException but %s",
                         instruction.getClass().getName()));
           } else {
-            ((MoveExceptionInstruction) instruction).setRealType(this, exception.getType());
+            ((MoveExceptionInstruction) instruction).setRealType(this, exception);
           }
 
-          Trap trap = jimple.newTrap(exception.getType(), beginStmt, endStmt, instruction.getStmt());
+          Trap trap = Jimple.newTrap(exception, beginStmt, endStmt, instruction.getStmt());
           bodyBuilder.getTraps().add(trap);
         }
       }

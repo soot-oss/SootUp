@@ -22,13 +22,10 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.google.common.base.Strings.isNullOrEmpty;
 
 public class ApkAnalysisInputLocation implements AnalysisInputLocation<JavaSootClass> {
 
@@ -54,10 +51,10 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation<JavaSootC
     public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(@Nonnull ClassType type, @Nonnull View<?> view) {
         // TODO code here
         ArrayList<DexContainer<? extends DexFile>> resultList = new ArrayList<>();
-        List<File> allSources = allSourcesFromFile(apkPath);
+        List<Path> allSources = allSourcesFromFile(apkPath);
         updateIndex(allSources);
 
-        for (File theSource : allSources) {
+        for (Path theSource : allSources) {
             resultList.addAll(dexMap.get(theSource.getCanonicalPath()).values());
         }
 
@@ -123,14 +120,14 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation<JavaSootC
         throw new CompilationDeathException("Dex file with name '" + dexName + "' not found in " + dexSource);
     }
 
-    private List<File> allSourcesFromFile(Path dexSource) {
+    private List<Path> allSourcesFromFile(Path dexSource) {
         if (Files.isDirectory(dexSource)) {
-            List<File> dexFiles = getAllDexFilesInDirectory(dexSource);
+            List<Path> dexFiles = getAllDexFilesInDirectory(dexSource);
             if (dexFiles.size() > 1 && !Options.v().process_multiple_dex()) {
-                File file = dexFiles.get(0);
-                logger.warn("Multiple dex files detected, only processing '" + file.getCanonicalPath()
+                Path path = dexFiles.get(0);
+                logger.warn("Multiple dex files detected, only processing '" + path.getCanonicalPath()
                         + "'. Use '-process-multiple-dex' option to process them all.");
-                return Collections.singletonList(file);
+                return Collections.singletonList(path);
             } else {
                 return dexFiles;
             }
