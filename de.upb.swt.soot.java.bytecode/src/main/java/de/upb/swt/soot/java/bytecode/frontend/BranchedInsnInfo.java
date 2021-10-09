@@ -54,8 +54,8 @@ class BranchedInsnInfo {
   }
 
   @Nonnull
-  public LinkedList<Operand[]> getPrevStacks() {
-    return prevStacks;
+  public List<Operand[]> getPrevStacks() {
+    return Collections.unmodifiableList(prevStacks);
   }
 
   public void addToPrevStack(@Nonnull Operand[] stacksOperands) {

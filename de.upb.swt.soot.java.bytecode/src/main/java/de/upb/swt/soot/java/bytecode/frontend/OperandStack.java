@@ -41,10 +41,10 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 public class OperandStack {
 
   private final AsmMethodSource methodSource;
-  private List<Operand> stack;
-  public Map<AbstractInsnNode, StackFrame> frames;
+  @Nonnull private List<Operand> stack;
+  @Nonnull public Map<AbstractInsnNode, StackFrame> frames;
 
-  public OperandStack(AsmMethodSource methodSource, int nrInsn) {
+  public OperandStack(@Nonnull AsmMethodSource methodSource, int nrInsn) {
     this.methodSource = methodSource;
     frames = new LinkedHashMap<>(nrInsn);
   }
@@ -177,11 +177,12 @@ public class OperandStack {
     return popStackConst(popDual());
   }
 
+  @Nonnull
   public List<Operand> getStack() {
     return stack;
   }
 
-  public void setOperandStack(List<Operand> stack) {
+  public void setOperandStack(@Nonnull List<Operand> stack) {
     this.stack = stack;
   }
 }

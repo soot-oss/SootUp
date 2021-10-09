@@ -1627,14 +1627,15 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   /* Conversion */
-
   private void addEdges(
       @Nonnull Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges,
       @Nonnull ArrayDeque<BranchedInsnInfo> conversionWorklist,
-      @Nonnull AbstractInsnNode cur,
-      @Nonnull AbstractInsnNode tgt,
-      @Nullable List<LabelNode> tgts) {
-    int lastIdx = tgts.size();
+      @Nonnull AbstractInsnNode cur, /*  branching instruction node */
+      @Nonnull
+          AbstractInsnNode
+              tgt, /* "default" targets i.e. LabelNode or fallsthrough "target" of if  */
+      @Nullable List<LabelNode> tgts /* other branch target(s) */) {
+    final int lastIdx = tgts.size();
     Operand[] stackss = operandStack.getStack().toArray(new Operand[0]);
     int i = 0;
     tgt_loop:
@@ -1647,8 +1648,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         conversionWorklist.add(edge);
         continue;
       }
-      if (edge.getOperandStack() != null) {
-        List<Operand> stackTemp = edge.getOperandStack();
+      List<Operand> stackTemp = edge.getOperandStack();
+      if (stackTemp != null) {
         if (stackTemp.size() != stackss.length) {
           throw new AssertionError("Multiple un-equal stacks!");
         }
@@ -1659,14 +1660,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         }
         continue;
       }
-      final LinkedList<Operand[]> prevStacks = edge.getPrevStacks();
+      final List<Operand[]> prevStacks = edge.getPrevStacks();
       for (Operand[] ps : prevStacks) {
         if (Arrays.equals(ps, stackss)) {
           continue tgt_loop;
         }
       }
       edge.setOperandStack(operandStack.getStack());
-      prevStacks.add(stackss);
+      edge.addToPrevStack(stackss);
       conversionWorklist.add(edge);
     } while (i < lastIdx && (tgt = tgts.get(i++)) != null);
   }
