@@ -1635,7 +1635,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           AbstractInsnNode
               tgt, /* "default" targets i.e. LabelNode or fallsthrough "target" of if  */
       @Nullable List<LabelNode> tgts /* other branch target(s) */) {
-    final int lastIdx = tgts.size();
     Operand[] stackss = operandStack.getStack().toArray(new Operand[0]);
     int i = 0;
     tgt_loop:
@@ -1669,7 +1668,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       edge.setOperandStack(operandStack.getStack());
       edge.addToPrevStack(stackss);
       conversionWorklist.add(edge);
-    } while (i < lastIdx && (tgt = tgts.get(i++)) != null);
+    } while ((tgt = tgts.get(i++)) != null);
   }
 
   private void convert() {
