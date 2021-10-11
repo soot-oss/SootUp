@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.toolkits.exceptions;
+package de.upb.swt.soot.java.core.toolkits.exceptions;
 
 import soot.*;
 import soot.baf.ThrowInst;

@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.toolkits.exceptions;
+package de.upb.swt.soot.java.core.toolkits.exceptions;
 
 /*-
  * #%L
@@ -22,13 +22,12 @@ package de.upb.swt.soot.core.toolkits.exceptions;
  * #L%
  */
 
-import soot.Unit;
-import soot.baf.ThrowInst;
-import soot.jimple.ThrowStmt;
+
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 
 /**
  * <p>
- * A source of information about the exceptions that {@link Unit}s might throw.
+ * A source of information about the exceptions that {@link Stmt}s might throw.
  * </p>
  *
  * <p>
@@ -46,11 +45,11 @@ public interface ThrowAnalysis {
    * Returns a set representing the {@link Throwable} types that the specified unit might throw.
    *
    * @param u
-   *          {@link Unit} whose exceptions are to be returned.
+   *          {@link Stmt} whose exceptions are to be returned.
    *
    * @return a representation of the <code>Throwable</code> types that <code>u</code> might throw.
    */
-  ThrowableSet mightThrow(Unit u);
+  ThrowableSet mightThrow(Stmt stmt);
 
   /**
    * Returns a set representing the {@link Throwable} types that the specified throw instruction might throw explicitly, that

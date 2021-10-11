@@ -22,7 +22,7 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
 
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.toolkits.exceptions.StmtThrowAnalysis;
+import de.upb.swt.soot.java.core.toolkits.exceptions.StmtThrowAnalysis;
 import javafx.scene.Scene;
 
 /**
