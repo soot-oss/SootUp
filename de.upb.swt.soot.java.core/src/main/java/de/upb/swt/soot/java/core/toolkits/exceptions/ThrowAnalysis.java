@@ -44,7 +44,7 @@ public interface ThrowAnalysis {
   /**
    * Returns a set representing the {@link Throwable} types that the specified unit might throw.
    *
-   * @param u
+   * @param stmt
    *          {@link Stmt} whose exceptions are to be returned.
    *
    * @return a representation of the <code>Throwable</code> types that <code>u</code> might throw.

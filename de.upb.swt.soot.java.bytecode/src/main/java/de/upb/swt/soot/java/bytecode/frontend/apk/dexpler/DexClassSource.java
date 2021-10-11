@@ -8,7 +8,6 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.DexFile;
-import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.MultiDexContainer;
 
 import javax.annotation.Nonnull;
@@ -83,7 +82,7 @@ public class DexClassSource extends SootClassSource<JavaSootClass> {
      * @param dexMethodFactory
      *          The factory method for creating dex methods
      */
-    protected void loadMethod(org.jf.dexlib2.iface.Method method, SootClass declaringClass, DexAnnotation annotations, DexMethod dexMethodFactory) {
+    protected void loadMethod(Method method, SootClass declaringClass, DexAnnotation annotations, DexMethod dexMethodFactory) {
         SootMethod sm = dexMethodFactory.makeSootMethod(method);
         if (declaringClass.declaresMethod(sm.getName(), sm.getParameterTypes(), sm.getReturnType())) {
             return;

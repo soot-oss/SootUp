@@ -5,7 +5,10 @@ import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.*;
+import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.DexClassLoader;
+import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.DexFileProvider;
+import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.DexType;
+import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.Util;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import javafx.scene.Scene;
@@ -39,7 +42,8 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation<JavaSootC
 
     @Nonnull private final Path apkPath;
 
-    public ApkAnalysisInputLocation(@Nonnull Path apkPath){
+    public ApkAnalysisInputLocation(@Nonnull Path apkPath, Collection<MultiDexContainer.DexEntry<? extends DexFile>> dexFiles){
+        this.dexFiles = dexFiles;
         if (!Files.exists(apkPath)) {
             throw new ResolveException("No APK file found",apkPath);
         }
@@ -50,12 +54,12 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation<JavaSootC
     @Override
     public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(@Nonnull ClassType type, @Nonnull View<?> view) {
         // TODO code here
-        ArrayList<DexContainer<? extends DexFile>> resultList = new ArrayList<>();
+        ArrayList<DexFileProvider.DexContainer<? extends DexFile>> resultList = new ArrayList<>();
         List<Path> allSources = allSourcesFromFile(apkPath);
         updateIndex(allSources);
 
         for (Path theSource : allSources) {
-            resultList.addAll(dexMap.get(theSource.getCanonicalPath()).values());
+            resultList.addAll(dexMap.get(theSource).values());
         }
 
         if (resultList.size() > 1) {
@@ -80,14 +84,14 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation<JavaSootC
      *          A comparator that defines the ordering of dex files in the result list
      * @return List of dex files derived from source
      */
-    public List<DexContainer<? extends DexFile>> getDexFromSource(File dexSource,
+    public List<DexFileProvider.DexContainer<? extends DexFile>> getDexFromSource(Path dexSource,
                                                                   Comparator<DexContainer<? extends DexFile>> prioritizer) throws IOException {
-        ArrayList<DexContainer<? extends DexFile>> resultList = new ArrayList<>();
-        List<File> allSources = allSourcesFromFile(dexSource);
+        ArrayList<DexFileProvider.DexContainer<? extends DexFile>> resultList = new ArrayList<>();
+        List<Path> allSources = allSourcesFromFile(dexSource);
         updateIndex(allSources);
 
-        for (File theSource : allSources) {
-            resultList.addAll(dexMap.get(theSource.getCanonicalPath()).values());
+        for (Path theSource : allSources) {
+            resultList.addAll(dexMap.get(theSource).values());
         }
 
         if (resultList.size() > 1) {
@@ -105,19 +109,19 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation<JavaSootC
      * @throws CompilationDeathException
      *           If no dex file with the given name exists
      */
-    public DexContainer<? extends DexFile> getDexFromSource(File dexSource, String dexName) throws IOException {
-        List<File> allSources = allSourcesFromFile(dexSource);
+    public DexFileProvider.DexContainer<? extends DexFile> getDexFromSource(Path dexSource, String dexName) throws IOException {
+        List<Path> allSources = allSourcesFromFile(dexSource);
         updateIndex(allSources);
 
         // we take the first dex we find with the given name
-        for (File theSource : allSources) {
-            DexContainer<? extends DexFile> dexFile = dexMap.get(theSource.getCanonicalPath()).get(dexName);
+        for (Path theSource : allSources) {
+            DexFileProvider.DexContainer<? extends DexFile> dexFile = dexMap.get(theSource).get(dexName);
             if (dexFile != null) {
                 return dexFile;
             }
         }
 
-        throw new CompilationDeathException("Dex file with name '" + dexName + "' not found in " + dexSource);
+        throw new ResolveException("Dex file with name '" + dexName + "' not found in " + dexSource, dexSource);
     }
 
     private List<Path> allSourcesFromFile(Path dexSource) {
@@ -125,14 +129,14 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation<JavaSootC
             List<Path> dexFiles = getAllDexFilesInDirectory(dexSource);
             if (dexFiles.size() > 1 && !Options.v().process_multiple_dex()) {
                 Path path = dexFiles.get(0);
-                logger.warn("Multiple dex files detected, only processing '" + path.getCanonicalPath()
+                logger.warn("Multiple dex files detected, only processing '" + path
                         + "'. Use '-process-multiple-dex' option to process them all.");
                 return Collections.singletonList(path);
             } else {
                 return dexFiles;
             }
         } else {
-            String ext = com.google.common.io.Files.getFileExtension(dexSource.getName()).toLowerCase();
+            String ext = com.google.common.io.Files.getFileExtension(dexSource.getFileName().toString()).toLowerCase();
             if ((ext.equals("jar") || ext.equals("zip")) && !Options.v().search_dex_in_archives()) {
                 return Collections.emptyList();
             } else {
@@ -167,7 +171,7 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation<JavaSootC
 
         // load dex files from apk/folder/file
         MultiDexContainer<? extends DexBackedDexFile> dexContainer
-                = DexFileFactory.loadDexContainer(dexSourceFile, Opcodes.forApi(api));
+                = DexFileFactory.loadDexContainer(dexSourceFile.toFile(), Opcodes.forApi(api));
 
         List<String> dexEntryNameList = dexContainer.getDexEntryNames();
         int dexFileCount = dexEntryNameList.size();
@@ -190,7 +194,7 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation<JavaSootC
             MultiDexContainer.DexEntry<? extends DexFile> entry = dexContainer.getEntry(entryName);
             entryName = deriveDexName(entryName);
             logger.debug("" + String.format("Found dex file '%s' with %d classes in '%s'", entryName,
-                    entry.getDexFile().getClasses().size(), dexSourceFile.getCanonicalPath()));
+                    entry.getDexFile().getClasses().size(), dexSourceFile));
 
             if (multiple_dex) {
                 dexMap.put(entryName, new DexContainer<>(entry, entryName, dexSourceFile));
@@ -247,7 +251,7 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation<JavaSootC
 
     public void initialize() {
         // resolve classes in dex files
-        for (DexEntry<? extends DexFile> dexEntry : dexFiles) {
+        for (MultiDexContainer.DexEntry<? extends DexFile> dexEntry : dexFiles) {
             final DexFile dexFile = dexEntry.getDexFile();
             for (ClassDef defItem : dexFile.getClasses()) {
                 String forClassName = Util.dottedClassName(defItem.getType());
@@ -302,34 +306,34 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation<JavaSootC
         systemAnnotationNames = Collections.unmodifiableSet(systemAnnotationNamesModifiable);
     }
 
-    private final DexClassLoader dexLoader = createDexClassLoader();
+    private final DexClassLoader dexLoader = new DexClassLoader();
 
     private static class ClassInformation {
-        public DexEntry<? extends DexFile> dexEntry;
+        public MultiDexContainer.DexEntry<? extends DexFile> dexEntry;
         public ClassDef classDefinition;
 
-        public ClassInformation(DexEntry<? extends DexFile> entry, ClassDef classDef) {
+        public ClassInformation(MultiDexContainer.DexEntry<? extends DexFile> entry, ClassDef classDef) {
             this.dexEntry = entry;
             this.classDefinition = classDef;
         }
     }
 
-    private final Map<String, DexlibWrapper.ClassInformation> classesToDefItems = new HashMap<String, DexlibWrapper.ClassInformation>();
-    private final Collection<DexEntry<? extends DexFile>> dexFiles;
+    private final Map<String, ClassInformation> classesToDefItems = new HashMap<String, ClassInformation>();
+    private final Collection<MultiDexContainer.DexEntry<? extends DexFile>> dexFiles;
 
     /**
      * Construct a DexlibWrapper from a dex file and stores its classes referenced by their name. No further process is done
      * here.
      */
-    public DexlibWrapper(File dexSource) {
+    public ApkAnalysisInputLocation(Path dexSource) {
         try {
-            List<DexFileProvider.DexContainer<? extends DexFile>> containers = new DexFileProvider().getDexFromSource(dexSource);
+            List<DexFileProvider.DexContainer<? extends DexFile>> containers = new DexFileProvider().getDexFromSource(dexSource.toFile());
             this.dexFiles = new ArrayList<>(containers.size());
             for (DexFileProvider.DexContainer<? extends DexFile> container : containers) {
                 this.dexFiles.add(container.getBase());
             }
         } catch (IOException e) {
-            throw new ResolveException("IOException during dex parsing", dexSource.toPath());
+            throw new ResolveException("IOException during dex parsing", dexSource);
         }
     }
 

@@ -27,21 +27,18 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.model.Method;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
-import org.jf.dexlib2.iface.Annotation;
+import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.java.bytecode.interceptors.TypeAssigner;
+import javafx.scene.Scene;
 import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.DexFile;
-import org.jf.dexlib2.iface.Method;
-import org.jf.dexlib2.iface.MultiDexContainer.DexEntry;
 import org.jf.dexlib2.iface.value.ArrayEncodedValue;
 import org.jf.dexlib2.iface.value.EncodedValue;
 import org.jf.dexlib2.iface.value.TypeEncodedValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import soot.*;
-import soot.jimple.Jimple;
-import soot.jimple.toolkits.typing.TypeAssigner;
-import soot.options.Options;
 
 import java.util.ArrayList;
 import java.util.List;
