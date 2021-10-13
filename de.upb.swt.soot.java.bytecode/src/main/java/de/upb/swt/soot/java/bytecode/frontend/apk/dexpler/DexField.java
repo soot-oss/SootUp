@@ -27,11 +27,10 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
-import org.jf.dexlib2.iface.Field;
-import org.jf.dexlib2.iface.value.*;
+import de.upb.swt.soot.core.model.Field;
+import de.upb.swt.soot.core.types.Type;
 import soot.Scene;
 import soot.SootField;
-import soot.Type;
 import soot.tagkit.*;
 
 /**
@@ -47,7 +46,7 @@ public class DexField {
    * @param df
    * @param sf
    */
-  private static void addConstantTag(SootField df, Field sf) {
+  private static void addConstantTag(Field df, Field sf) {
     Tag tag = null;
 
     EncodedValue ev = sf.getInitialValue();
@@ -81,11 +80,11 @@ public class DexField {
    *
    * @return the Soot equivalent of a field
    */
-  public static SootField makeSootField(Field f) {
+  public static Field makeSootField(Field f) {
     String name = f.getName();
     Type type = DexType.toSoot(f.getType());
     int flags = f.getAccessFlags();
-    SootField sf = Scene.v().makeSootField(name, type, flags);
+    Field sf = Scene.v().makeSootField(name, type, flags);
     DexField.addConstantTag(sf, f);
     return sf;
   }

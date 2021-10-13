@@ -1,11 +1,12 @@
 package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
 
 import de.upb.swt.soot.core.frontend.ResolveException;
-import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.java.core.AnnotationUsage;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.JavaSootClassSource;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.MultiDexContainer;
@@ -16,10 +17,15 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
-public class DexClassSource extends SootClassSource<JavaSootClass> {
+public class DexClassSource extends JavaSootClassSource {
 
     public DexClassSource(@Nonnull AnalysisInputLocation<? extends SootClass<?>> srcNamespace, @Nonnull ClassType classSignature, @Nonnull Path sourcePath) {
         super(srcNamespace, classSignature, sourcePath);
+    }
+
+    @Override
+    protected Iterable<AnnotationUsage> resolveAnnotations() {
+        return null;
     }
 
     @Override
@@ -82,13 +88,32 @@ public class DexClassSource extends SootClassSource<JavaSootClass> {
      * @param dexMethodFactory
      *          The factory method for creating dex methods
      */
-    protected void loadMethod(Method method, SootClass declaringClass, DexAnnotation annotations, DexMethod dexMethodFactory) {
+    protected void loadMethod(Method method, JavaSootClass declaringClass, DexAnnotation annotations, DexMethod dexMethodFactory) {
         SootMethod sm = dexMethodFactory.makeSootMethod(method);
         if (declaringClass.declaresMethod(sm.getName(), sm.getParameterTypes(), sm.getReturnType())) {
             return;
         }
         declaringClass.addMethod(sm);
         annotations.handleMethodAnnotation(sm, method);
+    }
+
+    /**
+     * Loads a single field from a dex file
+     *
+     * @param declaringClass
+     *          The class that declares the method to load
+     * @param annotations
+     *          The worker object for handling annotations
+     * @param field
+     *          The field to load
+     */
+    protected void loadField(SootClass declaringClass, DexAnnotation annotations, Field sf) {
+        if (declaringClass.declaresField(sf.getName(), DexType.toSoot(sf.getType()))) {
+            return;
+        }
+        SootField sootField = DexField.makeSootField(sf);
+        sootField = declaringClass.getOrAddField(sootField);
+        annotations.handleFieldAnnotation(sootField, sf);
     }
 
     public Dependencies makeSootClass(SootClass sc, ClassDef defItem, MultiDexContainer.DexEntry<? extends DexFile> dexEntry) {
@@ -117,7 +142,7 @@ public class DexClassSource extends SootClassSource<JavaSootClass> {
         if (defItem.getInterfaces() != null) {
             for (String interfaceName : defItem.getInterfaces()) {
                 String interfaceClassName = Util.dottedClassName(interfaceName);
-                if (sc.implementsInterface(interfaceClassName.)) {
+                if (sc.implementsInterface(interfaceClassName)) {
                     continue;
                 }
 
@@ -252,25 +277,6 @@ public class DexClassSource extends SootClassSource<JavaSootClass> {
         return new DexMethod(dexEntry, sc);
     }
 
-    /**
-     * Loads a single field from a dex file
-     *
-     * @param declaringClass
-     *          The class that declares the method to load
-     * @param annotations
-     *          The worker object for handling annotations
-     * @param field
-     *          The field to load
-     */
-    protected void loadField(SootClass declaringClass, DexAnnotation annotations, Field sf) {
-        if (declaringClass.declaresField(sf.getName(), DexType.toSoot(sf.getType()))) {
-            return;
-        }
-
-        SootField sootField = DexField.makeSootField(sf);
-        sootField = declaringClass.getOrAddField(sootField);
-        annotations.handleFieldAnnotation(sootField, sf);
-    }
 
 }
 

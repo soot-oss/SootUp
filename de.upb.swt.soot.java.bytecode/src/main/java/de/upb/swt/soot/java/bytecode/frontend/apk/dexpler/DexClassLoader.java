@@ -22,13 +22,12 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.DexFile;
-import org.jf.dexlib2.iface.Field;
-import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.iface.MultiDexContainer.DexEntry;
 
 import java.util.Iterator;

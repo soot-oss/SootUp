@@ -22,6 +22,7 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.tag.Host;
 import org.jf.dexlib2.AnnotationVisibility;
 import org.jf.dexlib2.iface.*;
 import org.jf.dexlib2.iface.reference.FieldReference;
