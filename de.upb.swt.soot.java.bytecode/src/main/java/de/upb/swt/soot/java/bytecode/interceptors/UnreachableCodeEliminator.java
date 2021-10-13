@@ -20,7 +20,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
@@ -38,26 +38,24 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
-    StmtGraph graph = builder.getStmtGraph();
-    List<Trap> traps = builder.getTraps();
+    ExceptionalStmtGraph graph = builder.getStmtGraph();
 
-    // get all valid starting stmts: startingStmt and handlerStmts(if they in stmtGraph)
+    // collect all reachable stmts
+    Set<Stmt> reachableStmts = new HashSet<>();
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(graph.getStartingStmt());
-    for (Trap trap : traps) {
-      if (graph.containsNode(trap.getHandlerStmt())) {
-        queue.addLast(trap.getHandlerStmt());
-      }
-    }
 
-    // calculate all reachable stmts
-    Set<Stmt> reachableStmts = new HashSet<>();
     while (!queue.isEmpty()) {
       Stmt stmt = queue.removeFirst();
       reachableStmts.add(stmt);
       for (Stmt succ : graph.successors(stmt)) {
         if (!reachableStmts.contains(succ)) {
           queue.addLast(succ);
+        }
+      }
+      for (Stmt esucc : graph.exceptionalSuccessors(stmt)) {
+        if (!reachableStmts.contains(esucc)) {
+          queue.addLast(esucc);
         }
       }
     }
@@ -72,20 +70,11 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
     builder.disableAndCommitDeferredStmtGraphChanges();
 
     // cleanup invalid traps
-    Iterator<Trap> trapIterator = traps.iterator();
-    while (trapIterator.hasNext()) {
-      Trap trap = trapIterator.next();
-      // is the Traphandler Stmt (still) in the StmtGraph?
-      if (!graph.containsNode(trap.getHandlerStmt())) {
-        trapIterator.remove();
-      } else
-      // has the trap a valid range? TODO: [ms] why don't we check that (i.e. trap range is empty)
-      // in trap instantiation?
-      if (trap.getBeginStmt() == trap.getEndStmt()) {
-        trapIterator.remove();
-        for (Stmt trapStmt : trap.getStmts()) {
-          builder.removeStmt(trapStmt);
-        }
+    List<Trap> traps = new ArrayList<>(builder.getTraps());
+    for (Trap trap : traps) {
+      if (trap.getBeginStmt() == trap.getEndStmt()
+          || !reachableStmts.contains(trap.getHandlerStmt())) {
+        builder.removeTrap(trap);
       }
     }
   }

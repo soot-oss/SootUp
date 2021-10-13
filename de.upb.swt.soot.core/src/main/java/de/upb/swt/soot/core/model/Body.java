@@ -554,6 +554,12 @@ public class Body implements Copyable {
     }
 
     @Nonnull
+    public BodyBuilder removeTrap(@Nonnull Trap trap) {
+      ecfg.removeTrap(trap);
+      return this;
+    }
+
+    @Nonnull
     public List<Trap> getTraps() {
       return ecfg.getTraps();
     }

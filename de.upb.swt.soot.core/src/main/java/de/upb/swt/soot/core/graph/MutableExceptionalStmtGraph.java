@@ -37,9 +37,9 @@ import javax.annotation.Nonnull;
  */
 public class MutableExceptionalStmtGraph extends MutableStmtGraph {
 
-  @Nonnull private final ArrayList<List<Stmt>> exceptionalPreds = new ArrayList<>();
-  @Nonnull private final ArrayList<List<Stmt>> exceptionalSuccs = new ArrayList<>();
-  @Nonnull private final ArrayList<List<Trap>> exceptionalDestinationTraps = new ArrayList<>();
+  @Nonnull private ArrayList<List<Stmt>> exceptionalPreds = new ArrayList<>();
+  @Nonnull private ArrayList<List<Stmt>> exceptionalSuccs = new ArrayList<>();
+  @Nonnull private ArrayList<List<Trap>> exceptionalDestinationTraps = new ArrayList<>();
 
   /** creates an empty instance of ExceptionalStmtGraph */
   public MutableExceptionalStmtGraph() {
@@ -74,10 +74,13 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
           .getTraps()
           .forEach(trap -> handlerStmtToPreds.put(trap.getHandlerStmt(), new ArrayList<>()));
 
-      // set exceptional successors for each stmt
+      // set exceptional destination-traps and exceptional successors for each stmt
       for (Stmt stmt : oriStmtGraph.nodes()) {
-        List<Stmt> inferedSuccs = inferExceptionalSuccs(stmt, stmtToPosInBody, traps);
+        List<Trap> inferedDests = inferExceptionalDestinations(stmt, stmtToPosInBody, traps);
+        List<Stmt> inferedSuccs = new ArrayList<>();
+        inferedDests.forEach(trap -> inferedSuccs.add(trap.getHandlerStmt()));
         Integer idx = stmtToIdx.get(stmt);
+        exceptionalDestinationTraps.set(idx, inferedDests);
         exceptionalSuccs.set(idx, inferedSuccs);
         inferedSuccs.forEach(handlerStmt -> handlerStmtToPreds.get(handlerStmt).add(stmt));
       }
@@ -86,13 +89,6 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
       for (Stmt handlerStmt : handlerStmtToPreds.keySet()) {
         Integer index = stmtToIdx.get(handlerStmt);
         exceptionalPreds.set(index, handlerStmtToPreds.get(handlerStmt));
-      }
-
-      // set exceptional destination-traps for each stmt
-      for (Stmt stmt : oriStmtGraph.nodes()) {
-        List<Trap> inferedDests = inferExceptionalDestinations(stmt, stmtToPosInBody, traps);
-        Integer idx = stmtToIdx.get(stmt);
-        exceptionalDestinationTraps.set(idx, inferedDests);
       }
     }
   }
@@ -235,7 +231,6 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
    * @param stmt a given stmt
    * @param posTable a map that maps each stmt to its corresponding position number in the body
    * @param traps a given list of traps
-   * @return
    */
   private List<Trap> inferExceptionalDestinations(
       Stmt stmt, Map<Stmt, Integer> posTable, List<Trap> traps) {
@@ -269,46 +264,66 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
     return destinations;
   }
 
-  /**
-   * Using the information of body position for each stmt and the information of traps infer the
-   * exceptional successors for a given stmt.
-   *
-   * @param stmt a given stmt
-   * @param posTable a map that maps each stmt to its corresponding position number in the body
-   * @param traps a given list of traps
-   * @return
-   */
-  private List<Stmt> inferExceptionalSuccs(
-      Stmt stmt, Map<Stmt, Integer> posTable, List<Trap> traps) {
-    List<Stmt> exceptionalSuccs = new ArrayList<>();
+  /** Remove a node from the graph. */
+  @Override
+  public void removeNode(@Nonnull Stmt node) {
+    super.removeNode(node);
 
-    // 1.step if the stmt in a trap range, then this trap's handlerStmt
-    // is a candidate for exceptional successors of the stmt
-    // 2.step if a trap-candidate includes another trap-candidate completely,
-    // then delete this trap-candidate
-    // the both steps are done in the method <code>inferExceptionalDestinations</code>
-    List<Trap> candidates = inferExceptionalDestinations(stmt, posTable, traps);
-
-    for (Trap trap : candidates) {
-      if (!exceptionalSuccs.contains(trap.getHandlerStmt())) {
-        exceptionalSuccs.add(trap.getHandlerStmt());
-      }
-    }
-    // 3.step detect chained traps, if a handlerStmt(Succ) is trap's beginStmt,
-    // then handlerStmt of this trap is also a successor.
-    Deque<Stmt> queue = new ArrayDeque<>(exceptionalSuccs);
-    while (!queue.isEmpty()) {
-      Stmt first = queue.removeFirst();
-      for (Trap t : traps) {
-        if (first == t.getBeginStmt()) {
-          Stmt handlerStmt = t.getHandlerStmt();
-          if (!exceptionalSuccs.contains(handlerStmt)) {
-            exceptionalSuccs.add(handlerStmt);
-            queue.add(handlerStmt);
-          }
+    // remove node from exceptional successor list of nodes exceptional predecessors
+    final List<Stmt> epreds = exceptionalPreds.get(removedIdx);
+    for (Stmt epred : epreds) {
+      int predIdx = getNodeIdx(epred);
+      exceptionalSuccs.get(predIdx).remove(node);
+      List<Trap> dests = new ArrayList<>(exceptionalDestinationTraps.get(predIdx));
+      for (Trap dest : dests) {
+        if (dest.getHandlerStmt() == node) {
+          exceptionalDestinationTraps.remove(dest);
         }
       }
     }
-    return exceptionalSuccs;
+    exceptionalPreds.set(removedIdx, null);
+    exceptionalDestinationTraps.set(removedIdx, null);
+
+    // remove node from exceptional predecessor list of nodes exceptional successors
+    final List<Stmt> esuccs = exceptionalSuccs.get(removedIdx);
+    esuccs.forEach(esucc -> exceptionalPreds.get(getNodeIdx(esucc)).remove(node));
+    exceptionalSuccs.set(removedIdx, null);
+  }
+
+  /** This method is used to add a normal node. */
+  @Override
+  public int addNode(@Nonnull Stmt node) {
+    super.addNode(node);
+    if (exceptionalPreds == null) {
+      exceptionalPreds = new ArrayList<>();
+    }
+    if (exceptionalSuccs == null) {
+      exceptionalSuccs = new ArrayList<>();
+    }
+    if (exceptionalDestinationTraps == null) {
+      exceptionalDestinationTraps = new ArrayList<>();
+    }
+    exceptionalPreds.add(new ArrayList<>());
+    exceptionalSuccs.add(new ArrayList<>());
+    exceptionalDestinationTraps.add(new ArrayList<>());
+    return stmtToIdx.get(node);
+  }
+
+  private int getNodeIdxOrCreate(@Nonnull Stmt node) {
+    Integer idx = stmtToIdx.get(node);
+    if (idx == null) {
+      idx = addNode(node);
+    }
+    return idx;
+  }
+
+  /** Put a normal edge in exceptional StmtGraph */
+  @Override
+  public void putEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
+    int fromIdx = getNodeIdxOrCreate(from);
+    int toIdx = getNodeIdxOrCreate(to);
+
+    predecessors.get(toIdx).add(from);
+    successors.get(fromIdx).add(to);
   }
 }

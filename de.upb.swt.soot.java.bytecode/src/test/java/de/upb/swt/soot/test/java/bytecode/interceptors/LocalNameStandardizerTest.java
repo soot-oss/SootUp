@@ -74,6 +74,16 @@ public class LocalNameStandardizerTest {
   Stmt stmt7 = JavaJimple.newAssignStmt(l7, DoubleConstant.getInstance(1.1), noStmtPositionInfo);
   Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
+  Stmt estartingStmt = JavaJimple.newIdentityStmt(r2, identityRef, noStmtPositionInfo);
+  Stmt estmt1 = JavaJimple.newAssignStmt(i0, IntConstant.getInstance(1), noStmtPositionInfo);
+  Stmt estmt2 = JavaJimple.newAssignStmt(z0, BooleanConstant.getInstance(true), noStmtPositionInfo);
+  Stmt estmt3 = JavaJimple.newAssignStmt(e0, IntConstant.getInstance(0), noStmtPositionInfo);
+
+  Stmt estmt4 = JavaJimple.newAssignStmt(r0, expr, noStmtPositionInfo);
+  Stmt estmt5 = JavaJimple.newAssignStmt(i1, IntConstant.getInstance(2), noStmtPositionInfo);
+  Stmt estmt6 = JavaJimple.newAssignStmt(r1, r1, noStmtPositionInfo);
+  Stmt estmt7 = JavaJimple.newAssignStmt(d0, DoubleConstant.getInstance(1.1), noStmtPositionInfo);
+
   @Test
   public void testBody() {
 
@@ -83,12 +93,10 @@ public class LocalNameStandardizerTest {
     LocalNameStandardizer standardizer = new LocalNameStandardizer();
     standardizer.interceptBody(builder);
 
-    assertEquals(builder.getLocals().size(), expectedLocals.size());
-    List<Local> localsList = new ArrayList<>(builder.getLocals());
-    List<Local> expectedLocalsList = new ArrayList<>(expectedLocals);
-    for (int i = 0; i < localsList.size(); i++) {
-      assertEquals(localsList.get(i), expectedLocalsList.get(i));
-    }
+    Body expectedBody = createExpectedBody();
+
+    AssertUtils.assertLocalsEquiv(expectedBody, builder.build());
+    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
   }
 
   private Body createBody() {
@@ -102,7 +110,7 @@ public class LocalNameStandardizerTest {
 
     builder.setLocals(locals);
 
-    // build stmtsGraph for the builder
+    // build stmtGraph for the builder
     builder.addFlow(startingStmt, stmt1);
     builder.addFlow(stmt1, stmt2);
     builder.addFlow(stmt2, stmt3);
@@ -114,6 +122,36 @@ public class LocalNameStandardizerTest {
 
     // set startingStmt
     builder.setStartingStmt(startingStmt);
+
+    // set Position
+    builder.setPosition(NoPositionInformation.getInstance());
+
+    return builder.build();
+  }
+
+  private Body createExpectedBody() {
+
+    // build an instance of BodyBuilder
+    Body.BodyBuilder builder = Body.builder();
+    builder.setMethodSignature(methodSignature);
+
+    // add locals into builder
+    Set<Local> locals = ImmutableUtils.immutableSet(z0, d0, i0, i1, r0, r1, r2, e0);
+
+    builder.setLocals(locals);
+
+    // build stmtGraph for the builder
+    builder.addFlow(estartingStmt, estmt1);
+    builder.addFlow(estmt1, estmt2);
+    builder.addFlow(estmt2, estmt3);
+    builder.addFlow(estmt3, estmt4);
+    builder.addFlow(estmt4, estmt5);
+    builder.addFlow(estmt5, estmt6);
+    builder.addFlow(estmt6, estmt7);
+    builder.addFlow(estmt7, ret);
+
+    // set startingStmt
+    builder.setStartingStmt(estartingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
