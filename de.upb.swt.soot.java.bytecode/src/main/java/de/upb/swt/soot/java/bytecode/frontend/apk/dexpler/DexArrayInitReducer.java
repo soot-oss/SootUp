@@ -22,17 +22,17 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.constant.Constant;
+import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.java.bytecode.interceptors.UnusedLocalEliminator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import soot.*;
-import soot.jimple.ArrayRef;
-import soot.jimple.AssignStmt;
-import soot.jimple.Constant;
-import soot.jimple.Stmt;
-import soot.options.Options;
-import soot.toolkits.scalar.UnusedLocalEliminator;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
@@ -58,19 +58,17 @@ public class DexArrayInitReducer implements BodyInterceptor {
   private static final Logger logger = LoggerFactory.getLogger(DexArrayInitReducer.class);
 
 
-  protected void internalTransform(Body b, String phaseName, Map<String, String> options) {
+  protected void internalTransform(Body.BodyBuilder bodyBuilder, String phaseName, Map<String, String> options) {
     // Make sure that we only have linear control flow
-    if (!b.getTraps().isEmpty()) {
+    if (!bodyBuilder.getTraps().isEmpty()) {
       return;
     }
 
     // Look for a chain of two constant assignments followed by an array put
-    Unit u1 = null, u2 = null;
-    for (Iterator<Unit> uIt = b.getUnits().snapshotIterator(); uIt.hasNext();) {
-      Unit u = uIt.next();
-
+    Stmt u1 = null, u2 = null;
+    for (Stmt u : bodyBuilder.getStmts()) {
       // If this is not an assignment, it does not matter.
-      if (!(u instanceof AssignStmt) || !((Stmt) u).getBoxesPointingToThis().isEmpty()) {
+      if (!(u instanceof JAssignStmt) || !u.getBoxesPointingToThis().isEmpty()) {
         u1 = null;
         u2 = null;
         continue;
@@ -78,50 +76,50 @@ public class DexArrayInitReducer implements BodyInterceptor {
 
       // If this is an assignment to an array, we must already have two
       // preceding constant assignments
-      AssignStmt assignStmt = (AssignStmt) u;
-      if (assignStmt.getLeftOp() instanceof ArrayRef) {
+      JAssignStmt assignStmt = (JAssignStmt) u;
+      if (assignStmt.getLeftOp() instanceof JArrayRef) {
         if (u1 != null && u2 != null && u2.getBoxesPointingToThis().isEmpty()
             && assignStmt.getBoxesPointingToThis().isEmpty()) {
-          ArrayRef arrayRef = (ArrayRef) assignStmt.getLeftOp();
+          JArrayRef arrayRef = (JArrayRef) assignStmt.getLeftOp();
 
-          Value u1val = u1.getDefBoxes().get(0).getValue();
-          Value u2val = u2.getDefBoxes().get(0).getValue();
+          Value u1val = u1.getDefs().get(0);
+          Value u2val = u2.getDefs().get(0);
 
           // index
           if (arrayRef.getIndex() == u1val) {
-            arrayRef.setIndex(((AssignStmt) u1).getRightOp());
+            arrayRef.setIndex(((JAssignStmt) u1).getRightOp());
           } else if (arrayRef.getIndex() == u2val) {
-            arrayRef.setIndex(((AssignStmt) u2).getRightOp());
+            arrayRef.setIndex(((JAssignStmt) u2).getRightOp());
           }
 
           // value
           if (assignStmt.getRightOp() == u1val) {
-            assignStmt.setRightOp(((AssignStmt) u1).getRightOp());
+            assignStmt.setRightOp(((JAssignStmt) u1).getRightOp());
           } else if (assignStmt.getRightOp() == u2val) {
-            assignStmt.setRightOp(((AssignStmt) u2).getRightOp());
+            assignStmt.setRightOp(((JAssignStmt) u2).getRightOp());
           }
 
           // Remove the unnecessary assignments
-          Iterator<Unit> checkIt = b.getUnits().iterator(u);
+          Iterator<Stmt> checkIt = bodyBuilder.getStmts().iterator(u);
           boolean foundU1 = false, foundU2 = false, doneU1 = false, doneU2 = false;
           while (!(doneU1 && doneU2) && !(foundU1 && foundU2) && checkIt.hasNext()) {
-            Unit checkU = checkIt.next();
+            Stmt checkU = checkIt.next();
 
             // Does the current statement use the value?
-            for (ValueBox vb : checkU.getUseBoxes()) {
-              if (!doneU1 && vb.getValue() == u1val) {
+            for (Value vb : checkU.getUses()) {
+              if (!doneU1 && vb == u1val) {
                 foundU1 = true;
               }
-              if (!doneU2 && vb.getValue() == u2val) {
+              if (!doneU2 && vb == u2val) {
                 foundU2 = true;
               }
             }
 
             // Does the current statement overwrite the value?
-            for (ValueBox vb : checkU.getDefBoxes()) {
-              if (vb.getValue() == u1val) {
+            for (Value vb : checkU.getDefs()) {
+              if (vb == u1val) {
                 doneU1 = true;
-              } else if (vb.getValue() == u2val) {
+              } else if (vb == u2val) {
                 doneU2 = true;
               }
             }
@@ -136,18 +134,18 @@ public class DexArrayInitReducer implements BodyInterceptor {
           if (!foundU1) {
             // only remove constant assignment if the left value is Local
             if (u1val instanceof Local) {
-              b.getUnits().remove(u1);
+              bodyBuilder.getStmts().remove(u1);
               if (Options.v().verbose()) {
-                logger.debug("[" + b.getMethod().getName() + "]    remove 1 " + u1);
+                logger.debug("[" + bodyBuilder.getMethodSignature().getName() + "]    remove 1 " + u1);
               }
             }
           }
           if (!foundU2) {
             // only remove constant assignment if the left value is Local
             if (u2val instanceof Local) {
-              b.getUnits().remove(u2);
+              bodyBuilder.getStmts().remove(u2);
               if (Options.v().verbose()) {
-                logger.debug("[" + b.getMethod().getName() + "]    remove 2 " + u2);
+                logger.debug("[" + bodyBuilder.getMethod().getName() + "]    remove 2 " + u2);
               }
             }
           }
@@ -177,8 +175,8 @@ public class DexArrayInitReducer implements BodyInterceptor {
 
         // If the last value is overwritten again, we start again at the beginning
         if (u1 != null) {
-          Value op1 = ((AssignStmt) u1).getLeftOp();
-          if (op1 == ((AssignStmt) u2).getLeftOp()) {
+          Value op1 = ((JAssignStmt) u1).getLeftOp();
+          if (op1 == ((JAssignStmt) u2).getLeftOp()) {
             u1 = u2;
             u2 = null;
           }
@@ -190,7 +188,7 @@ public class DexArrayInitReducer implements BodyInterceptor {
     }
 
     // Remove all locals that are no longer necessary
-    UnusedLocalEliminator.v().transform(b);
+    new UnusedLocalEliminator().interceptBody(bodyBuilder);
   }
 
   @Override

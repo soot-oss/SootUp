@@ -42,12 +42,26 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.analysis.LocalDefs;
+import de.upb.swt.soot.core.analysis.LocalUses;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.constant.Constant;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JNewArrayExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
+import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
+import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import soot.*;
-import soot.jimple.*;
-import soot.toolkits.scalar.LocalDefs;
-import soot.toolkits.scalar.LocalUses;
-import soot.toolkits.scalar.UnitValueBoxPair;
+import de.upb.swt.soot.core.types.ArrayType;
+import de.upb.swt.soot.core.types.NullType;
+import de.upb.swt.soot.core.types.Type;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -57,7 +71,7 @@ import java.util.Set;
 public abstract class DexTransformer implements BodyInterceptor {
 
   /**
-   * Collect definitions of l in body including the definitions of aliases of l.
+   * Collect definitions of l in bodyBuilder including the definitions of aliases of l.
    * 
    * In this context an alias is a local that propagates its value to l.
    * 
@@ -65,32 +79,32 @@ public abstract class DexTransformer implements BodyInterceptor {
    *          the local whose definitions are to collect
    * @param localDefs
    *          the LocalDefs object
-   * @param body
-   *          the body that contains the local
+   * @param bodyBuilder
+   *          the bodyBuilder that contains the local
    */
-  protected List<Unit> collectDefinitionsWithAliases(Local l, LocalDefs localDefs, LocalUses localUses, Body body) {
+  protected List<Stmt> collectDefinitionsWithAliases(Local l, LocalDefs localDefs, LocalUses localUses, Body.BodyBuilder bodyBuilder) {
     Set<Local> seenLocals = new HashSet<Local>();
     List<Local> newLocals = new ArrayList<Local>();
-    List<Unit> defs = new ArrayList<Unit>();
+    List<Stmt> defs = new ArrayList<Stmt>();
     newLocals.add(l);
     seenLocals.add(l);
 
     while (!newLocals.isEmpty()) {
       Local local = newLocals.remove(0);
-      for (Unit u : collectDefinitions(local, localDefs)) {
-        if (u instanceof AssignStmt) {
-          Value r = ((AssignStmt) u).getRightOp();
+      for (Stmt stmt : collectDefinitions(local, localDefs)) {
+        if (stmt instanceof JAssignStmt) {
+          Value r = ((JAssignStmt) stmt).getRightOp();
           if (r instanceof Local && seenLocals.add((Local) r)) {
             newLocals.add((Local) r);
           }
         }
-        defs.add(u);
+        defs.add(stmt);
         //
-        List<UnitValueBoxPair> usesOf = localUses.getUsesOf(u);
-        for (UnitValueBoxPair pair : usesOf) {
-          Unit unit = pair.getUnit();
-          if (unit instanceof AssignStmt) {
-            AssignStmt assignStmt = ((AssignStmt) unit);
+        List<Pair<Stmt, Value>> usesOf = localUses.getUsesOf(stmt);
+        for (Pair<Stmt, Value> pair : usesOf) {
+          Stmt stmt1 = pair.getKey();
+          if (stmt1 instanceof JAssignStmt) {
+            JAssignStmt assignStmt = ((JAssignStmt) stmt1);
             Value right = assignStmt.getRightOp();
             Value left = assignStmt.getLeftOp();
             if (right == local && left instanceof Local && seenLocals.add((Local) left)) {
@@ -111,32 +125,30 @@ public abstract class DexTransformer implements BodyInterceptor {
    *          the local whose definitions are to collect
    * @param localDefs
    *          the LocalDefs object
-   * @param body
-   *          the body that contains the local
    */
-  private List<Unit> collectDefinitions(Local l, LocalDefs localDefs) {
+  private List<Stmt> collectDefinitions(Local l, LocalDefs localDefs) {
     return localDefs.getDefsOf(l);
   }
 
-  protected Type findArrayType(LocalDefs localDefs, Stmt arrayStmt, int depth, Set<Unit> alreadyVisitedDefs) {
-    ArrayRef aRef = null;
+  protected Type findArrayType(LocalDefs localDefs, Stmt arrayStmt, int depth, Set<Stmt> alreadyVisitedDefs) {
+    JArrayRef jArrayRef = null;
     if (arrayStmt.containsArrayRef()) {
-      aRef = arrayStmt.getArrayRef();
+      jArrayRef = arrayStmt.getArrayRef();
     }
     Local aBase = null;
 
-    if (null == aRef) {
-      if (arrayStmt instanceof AssignStmt) {
-        AssignStmt stmt = (AssignStmt) arrayStmt;
+    if (null == jArrayRef) {
+      if (arrayStmt instanceof JAssignStmt) {
+        JAssignStmt stmt = (JAssignStmt) arrayStmt;
         aBase = (Local) stmt.getRightOp();
       } else {
         throw new RuntimeException("ERROR: not an assign statement: " + arrayStmt);
       }
     } else {
-      aBase = (Local) aRef.getBase();
+      aBase = (Local) jArrayRef.getBase();
     }
 
-    List<Unit> defsOfaBaseList = localDefs.getDefsOfAt(aBase, arrayStmt);
+    List<Stmt> defsOfaBaseList = localDefs.getDefsOfAt(aBase, arrayStmt);
     if (defsOfaBaseList == null || defsOfaBaseList.isEmpty()) {
       throw new RuntimeException("ERROR: no def statement found for array base local " + arrayStmt);
     }
@@ -145,23 +157,23 @@ public abstract class DexTransformer implements BodyInterceptor {
     // list
     Type aType = null;
     int nullDefCount = 0;
-    for (Unit baseDef : defsOfaBaseList) {
+    for (Stmt baseDef : defsOfaBaseList) {
       if (alreadyVisitedDefs.contains(baseDef)) {
         continue;
       }
-      Set<Unit> newVisitedDefs = new HashSet<Unit>(alreadyVisitedDefs);
+      Set<Stmt> newVisitedDefs = new HashSet<Stmt>(alreadyVisitedDefs);
       newVisitedDefs.add(baseDef);
 
       // baseDef is either an assignment statement or an identity
       // statement
-      if (baseDef instanceof AssignStmt) {
-        AssignStmt stmt = (AssignStmt) baseDef;
+      if (baseDef instanceof JAssignStmt) {
+        JAssignStmt stmt = (JAssignStmt) baseDef;
         Value r = stmt.getRightOp();
-        if (r instanceof FieldRef) {
-          Type t = ((FieldRef) r).getFieldRef().type();
+        if (r instanceof JFieldRef) {
+          Type t = r.getType();
           if (t instanceof ArrayType) {
             ArrayType at = (ArrayType) t;
-            t = at.getArrayElementType();
+            t = at.getBaseType();
           }
           if (depth == 0) {
             aType = t;
@@ -169,8 +181,8 @@ public abstract class DexTransformer implements BodyInterceptor {
           } else {
             return t;
           }
-        } else if (r instanceof ArrayRef) {
-          ArrayRef ar = (ArrayRef) r;
+        } else if (r instanceof JArrayRef) {
+          JArrayRef ar = (JArrayRef) r;
           if (ar.getType().toString().equals(".unknown") || ar.getType().toString().equals("unknown")) { // ||
             // ar.getType())
             // {
@@ -178,7 +190,7 @@ public abstract class DexTransformer implements BodyInterceptor {
             // returned?
             if (t instanceof ArrayType) {
               ArrayType at = (ArrayType) t;
-              t = at.getArrayElementType();
+              t = at.getBaseType();
             }
             if (depth == 0) {
               aType = t;
@@ -188,7 +200,7 @@ public abstract class DexTransformer implements BodyInterceptor {
             }
           } else {
             ArrayType at = (ArrayType) stmt.getRightOp().getType();
-            Type t = at.getArrayElementType();
+            Type t = at.getBaseType();
             if (depth == 0) {
               aType = t;
               break;
@@ -196,8 +208,17 @@ public abstract class DexTransformer implements BodyInterceptor {
               return t;
             }
           }
-        } else if (r instanceof NewExpr) {
-          NewExpr expr = (NewExpr) r;
+        } else if (r instanceof JNewExpr) {
+          JNewExpr expr = (JNewExpr) r;
+          Type t = expr.getType();
+          if (depth == 0) {
+            aType = t;
+            break;
+          } else {
+            return t;
+          }
+        } else if (r instanceof JNewArrayExpr) {
+          JNewArrayExpr expr = (JNewArrayExpr) r;
           Type t = expr.getBaseType();
           if (depth == 0) {
             aType = t;
@@ -205,20 +226,11 @@ public abstract class DexTransformer implements BodyInterceptor {
           } else {
             return t;
           }
-        } else if (r instanceof NewArrayExpr) {
-          NewArrayExpr expr = (NewArrayExpr) r;
-          Type t = expr.getBaseType();
-          if (depth == 0) {
-            aType = t;
-            break;
-          } else {
-            return t;
-          }
-        } else if (r instanceof CastExpr) {
-          Type t = (((CastExpr) r).getCastType());
+        } else if (r instanceof JCastExpr) {
+          Type t = (((JCastExpr) r).getType());
           if (t instanceof ArrayType) {
             ArrayType at = (ArrayType) t;
-            t = at.getArrayElementType();
+            t = at.getBaseType();
           }
           if (depth == 0) {
             aType = t;
@@ -226,11 +238,11 @@ public abstract class DexTransformer implements BodyInterceptor {
           } else {
             return t;
           }
-        } else if (r instanceof InvokeExpr) {
-          Type t = ((InvokeExpr) r).getMethodRef().returnType();
+        } else if (r instanceof AbstractInvokeExpr) {
+          Type t = ((AbstractInvokeExpr) r).getMethodSignature().getType();
           if (t instanceof ArrayType) {
             ArrayType at = (ArrayType) t;
-            t = at.getArrayElementType();
+            t = at.getBaseType();
           }
           if (depth == 0) {
             aType = t;
@@ -260,10 +272,10 @@ public abstract class DexTransformer implements BodyInterceptor {
               stmt.toString(), r.getClass().getName()));
         }
 
-      } else if (baseDef instanceof IdentityStmt) {
-        IdentityStmt stmt = (IdentityStmt) baseDef;
+      } else if (baseDef instanceof JIdentityStmt) {
+        JIdentityStmt stmt = (JIdentityStmt) baseDef;
         ArrayType at = (ArrayType) stmt.getRightOp().getType();
-        Type t = at.getArrayElementType();
+        Type t = at.getBaseType();
         if (depth == 0) {
           aType = t;
           break;
@@ -281,7 +293,7 @@ public abstract class DexTransformer implements BodyInterceptor {
 
     if (depth == 0 && aType == null) {
       if (nullDefCount == defsOfaBaseList.size()) {
-        return NullType.v();
+        return NullType.getInstance();
       } else {
         throw new RuntimeException("ERROR: could not find type of array from statement '" + arrayStmt + "'");
       }

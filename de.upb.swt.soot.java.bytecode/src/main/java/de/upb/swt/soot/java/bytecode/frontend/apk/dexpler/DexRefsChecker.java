@@ -27,10 +27,16 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.SootField;
+import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import soot.*;
-import soot.jimple.FieldRef;
-import soot.jimple.Stmt;
 
+import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -39,7 +45,7 @@ import java.util.Set;
 /**
 
  */
-public class DexRefsChecker extends soot.dexpler.DexTransformer {
+public class DexRefsChecker extends DexTransformer {
   // Note: we need an instance variable for inner class access, treat this as
   // a local variable (including initialization before use)
 
@@ -50,42 +56,41 @@ public class DexRefsChecker extends soot.dexpler.DexTransformer {
   Local l = null;
 
   @Override
-  protected void internalTransform(final Body body, String phaseName, @SuppressWarnings("rawtypes") Map options) {
-    // final ExceptionalUnitGraph g = new ExceptionalUnitGraph(body);
+  public void interceptBody(final Body.BodyBuilder bodyBuilder) {
+    // final ExceptionalUnitGraph g = new ExceptionalUnitGraph(bodyBuilder);
     // final SmartLocalDefs localDefs = new SmartLocalDefs(g, new
     // SimpleLiveLocals(g));
     // final SimpleLocalUses localUses = new SimpleLocalUses(g, localDefs);
 
-    for (Unit u : getRefCandidates(body)) {
-      Stmt s = (Stmt) u;
+    for (Stmt stmt : getRefCandidates(bodyBuilder)) {
       boolean hasField = false;
-      FieldRef fr = null;
-      SootField sf = null;
-      if (s.containsFieldRef()) {
-        fr = s.getFieldRef();
-        sf = fr.getField();
-        if (sf != null) {
+      JFieldRef jFieldRef = null;
+      SootField sootField = null;
+      if (stmt.containsFieldRef()) {
+        jFieldRef = stmt.getFieldRef();
+        sootField = jFieldRef.getField();
+        if (sootField != null) {
           hasField = true;
         }
       } else {
-        throw new RuntimeException("Unit '" + u + "' does not contain array ref nor field ref.");
+        throw new RuntimeException("Stmt '" + stmt + "' does not contain array ref nor field ref.");
       }
 
       if (!hasField) {
-        System.out.println("Warning: add missing field '" + fr + "' to class!");
-        SootClass sc = null;
-        String frStr = fr.toString();
+        System.out.println("Warning: add missing field '" + jFieldRef + "' to class!");
+        JavaSootClass sc = null;
+        String frStr = jFieldRef.toString();
         if (frStr.contains(".<")) {
           sc = Scene.v().getSootClass(frStr.split(".<")[1].split(" ")[0].split(":")[0]);
         } else {
           sc = Scene.v().getSootClass(frStr.split(":")[0].replaceAll("^<", ""));
         }
-        String fname = fr.toString().split(">")[0].split(" ")[2];
+        String fname = jFieldRef.toString().split(">")[0].split(" ")[2];
         int modifiers = soot.Modifier.PUBLIC;
-        Type ftype = fr.getType();
+        Type ftype = jFieldRef.getType();
         sc.addField(Scene.v().makeSootField(fname, ftype, modifiers));
       } else {
-        // System.out.println("field "+ sf.getName() +" '"+ sf +"'
+        // System.out.println("field "+ sootField.getName() +" '"+ sootField +"'
         // phantom: "+ isPhantom +" declared: "+ isDeclared);
       }
 
@@ -95,17 +100,16 @@ public class DexRefsChecker extends soot.dexpler.DexTransformer {
   /**
    * Collect all the if statements comparing two locals with an Eq or Ne expression
    *
-   * @param body
-   *          the body to analyze
+   * @param bodyBuilder
+   *          the bodyBuilder to analyze
    */
-  private Set<Unit> getRefCandidates(Body body) {
-    Set<Unit> candidates = new HashSet<Unit>();
-    Iterator<Unit> i = body.getUnits().iterator();
+  private Set<Stmt> getRefCandidates(Body.BodyBuilder bodyBuilder) {
+    Set<Stmt> candidates = new HashSet<Stmt>();
+    Iterator<Stmt> i = bodyBuilder.getStmts().iterator();
     while (i.hasNext()) {
-      Unit u = i.next();
-      Stmt s = (Stmt) u;
+      Stmt s = i.next();
       if (s.containsFieldRef()) {
-        candidates.add(u);
+        candidates.add(s);
       }
     }
     return candidates;

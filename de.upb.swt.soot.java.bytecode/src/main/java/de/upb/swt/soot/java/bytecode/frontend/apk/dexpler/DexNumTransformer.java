@@ -27,14 +27,24 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
+import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.types.Type;
 import soot.*;
 import soot.dexpler.tags.DoubleOpTag;
 import soot.dexpler.tags.FloatOpTag;
 import soot.jimple.*;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * BodyTransformer to find and change initialization type of Jimple variables. Dalvik bytecode does not provide enough
@@ -69,12 +79,12 @@ public class DexNumTransformer extends DexTransformer {
   boolean doBreak = false;
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    final soot.dexpler.DexDefUseAnalysis localDefs = new soot.dexpler.DexDefUseAnalysis(body);
+  public void interceptBody(@Nonnull Body.BodyBuilder bodyBuilder) {
+    final DexDefUseAnalysis localDefs = new DexDefUseAnalysis(bodyBuilder);
 
-    for (Local loc : getNumCandidates(body)) {
+    for (Local loc : getNumCandidates(bodyBuilder)) {
       usedAsFloatingPoint = false;
-      Set<Unit> defs = localDefs.collectDefinitionsWithAliases(loc);
+      Set<Stmt> defs = localDefs.collectDefinitionsWithAliases(loc);
 
       // process normally
       doBreak = false;
@@ -84,7 +94,7 @@ public class DexNumTransformer extends DexTransformer {
         // check defs
         u.apply(new AbstractStmtSwitch() {
           @Override
-          public void caseAssignStmt(AssignStmt stmt) {
+          public void caseAssignStmt(JAssignStmt stmt) {
             Value r = stmt.getRightOp();
             if (r instanceof BinopExpr && !(r instanceof CmpExpr)) {
               usedAsFloatingPoint = examineBinopExpr(stmt);
@@ -101,7 +111,7 @@ public class DexNumTransformer extends DexTransformer {
               ArrayRef ar = (ArrayRef) r;
               Type arType = ar.getType();
               if (arType instanceof UnknownType) {
-                Type t = findArrayType(localDefs, stmt, 0, Collections.<Unit>emptySet()); // TODO:
+                Type t = findArrayType(localDefs, stmt, 0, Collections.<Stmt>emptySet()); // TODO:
                 // check
                 // where
                 // else
@@ -160,7 +170,7 @@ public class DexNumTransformer extends DexTransformer {
             }
 
             @Override
-            public void caseAssignStmt(AssignStmt stmt) {
+            public void caseAssignStmt(JAssignStmt stmt) {
               // only case where 'l' could be on the left side is
               // arrayRef with 'l' as the index
               Value left = stmt.getLeftOp();
@@ -204,7 +214,7 @@ public class DexNumTransformer extends DexTransformer {
                   ArrayRef ar = (ArrayRef) left;
                   Type arType = ar.getType();
                   if (arType instanceof UnknownType) {
-                    arType = findArrayType(localDefs, stmt, 0, Collections.<Unit>emptySet());
+                    arType = findArrayType(localDefs, stmt, 0, Collections.<Stmt>emptySet());
                   }
                   usedAsFloatingPoint = isFloatingPointLike(arType);
                   doBreak = true;
@@ -215,7 +225,7 @@ public class DexNumTransformer extends DexTransformer {
 
             @Override
             public void caseReturnStmt(ReturnStmt stmt) {
-              usedAsFloatingPoint = stmt.getOp() == l && isFloatingPointLike(body.getMethod().getReturnType());
+              usedAsFloatingPoint = stmt.getOp() == l && isFloatingPointLike(bodyBuilder.getMethod().getReturnType());
               doBreak = true;
               return;
             }
@@ -240,8 +250,8 @@ public class DexNumTransformer extends DexTransformer {
     }
   }
 
-  protected boolean examineBinopExpr(Unit u) {
-    return u.hasTag(FloatOpTag.NAME) || u.hasTag(DoubleOpTag.NAME);
+  protected boolean examineBinopExpr(Stmt stmt) {
+    return stmt.hasTag(FloatOpTag.NAME) || stmt.hasTag(DoubleOpTag.NAME);
   }
 
   private boolean isFloatingPointLike(Type t) {
@@ -254,11 +264,11 @@ public class DexNumTransformer extends DexTransformer {
    * @param body
    *          the body to analyze
    */
-  private Set<Local> getNumCandidates(Body body) {
+  private Set<Local> getNumCandidates(Body.BodyBuilder body) {
     Set<Local> candidates = new HashSet<Local>();
-    for (Unit u : body.getUnits()) {
-      if (u instanceof AssignStmt) {
-        AssignStmt a = (AssignStmt) u;
+    for (Stmt stmt : body.getStmts()) {
+      if (stmt instanceof JAssignStmt) {
+        JAssignStmt a = (JAssignStmt) stmt;
         if (!(a.getLeftOp() instanceof Local)) {
           continue;
         }
