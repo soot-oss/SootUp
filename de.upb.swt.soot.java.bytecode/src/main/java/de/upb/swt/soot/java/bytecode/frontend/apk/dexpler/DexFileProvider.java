@@ -91,7 +91,7 @@ public class DexFileProvider implements ClassProvider<JavaSootClass> {
   /**
    * Mapping of filesystem file (apk, dex, etc.) to mapping of dex name to dex file
    */
-  private final Map<String, Map<String, DexContainer<? extends DexFile>>> dexMap = new HashMap<>();
+  private final Map<String, Map<Path, DexContainer<? extends DexFile>>> dexMap = new HashMap<>();
 
 
   /**
@@ -231,7 +231,7 @@ public class DexFileProvider implements ClassProvider<JavaSootClass> {
       } else if (dexMap.isEmpty() && (entryName.equals("classes.dex") || !entryNameIterator.hasPrevious())) {
         // We prefer to have classes.dex in single dex mode.
         // If we haven't found a classes.dex until the last element, take the last!
-        dexMap = Collections.singletonMap(entryName, new DexFileProvider.DexContainer<>(entry, Paths.get(entryName), dexSourceFile));
+        dexMap = Collections.singletonMap(Paths.get(entryName), new DexFileProvider.DexContainer<>(entry, entryName, dexSourceFile));
         if (dexFileCount > 1) {
           logger.warn("Multiple dex files detected, only processing '" + entryName
                   + "'. Use '-process-multiple-dex' option to process them all.");
