@@ -38,12 +38,10 @@ import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.types.*;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import javafx.scene.Scene;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Util {
   /**
@@ -102,6 +100,7 @@ public class Util {
 
         case 'L':
           String objectName = type.replaceAll("^[^L]*L", "").replaceAll(";$", "");
+          // FIXME - what is alternative
           returnType = RefType.v(objectName.replace("/", "."));
           notFound = false;
           break;
@@ -243,22 +242,22 @@ public class Util {
 
       JAssignStmt ass = null;
       if (t instanceof ReferenceType || t instanceof ArrayType) {
-        ass = Jimple.v().newAssignStmt(l, NullConstant.getInstance());
+        ass = Jimple.newAssignStmt(l, NullConstant.getInstance(), ass.getPositionInfo());
       } else if (t instanceof PrimitiveType.LongType) {
-        ass = Jimple.v().newAssignStmt(l, LongConstant.getInstance(0));
+        ass = Jimple.newAssignStmt(l, LongConstant.getInstance(0), ass.getPositionInfo());
       } else if (t instanceof PrimitiveType.FloatType) {
-        ass = Jimple.v().newAssignStmt(l, FloatConstant.getInstance(0.0f));
+        ass = Jimple.newAssignStmt(l, FloatConstant.getInstance(0.0f), ass.getPositionInfo());
       } else if (t instanceof PrimitiveType.IntType) {
-        ass = Jimple.v().newAssignStmt(l, IntConstant.getInstance(0));
+        ass = Jimple.newAssignStmt(l, IntConstant.getInstance(0), ass.getPositionInfo());
       } else if (t instanceof PrimitiveType.DoubleType) {
-        ass = Jimple.v().newAssignStmt(l, DoubleConstant.getInstance(0));
+        ass = Jimple.newAssignStmt(l, DoubleConstant.getInstance(0), ass.getPositionInfo());
       } else if (t instanceof PrimitiveType.BooleanType || t instanceof PrimitiveType.ByteType || t instanceof PrimitiveType.CharType || t instanceof PrimitiveType.ShortType) {
-        ass = Jimple.v().newAssignStmt(l, IntConstant.getInstance(0));
+        ass = Jimple.newAssignStmt(l, IntConstant.getInstance(0), ass.getPositionInfo());
       } else {
         throw new RuntimeException("error: return type unknown: " + t + " class: " + t.getClass());
       }
       bodyBuilder.getStmts().add(ass);
-      bodyBuilder.getStmts().add(Jimple.v().newReturnStmt(l));
+      bodyBuilder.getStmts().add(Jimple.newReturnStmt(l, ass.getPositionInfo()));
     }
 
   }
@@ -268,23 +267,24 @@ public class Util {
    * class for instance) exceptionType: e.g., "java.lang.RuntimeException"
    */
   public static void addExceptionAfterUnit(Body.BodyBuilder bodyBuilder, String exceptionType, Stmt stmt, String m) {
-    LocalCreation lc = new LocalCreation(bodyBuilder.getLocals());
-    Local l = lc.newLocal(ReferenceType.v(exceptionType));
+    Set<Local> locals = bodyBuilder.getLocals();
+    // FIXME - what class type below?
+    Local l = new Local(exceptionType , JavaIdentifierFactory.getInstance().getClassType(""));
 
-    List<Stmt> newUnits = new ArrayList<Stmt>();
-    Stmt u1 = Jimple.v().newAssignStmt(l, Jimple.v().newNewExpr(ReferenceType.v(exceptionType)));
-    Stmt u2
-        = Jimple.v()
-            .newInvokeStmt(Jimple.v().newSpecialInvokeExpr(l,
-                Scene.v().makeMethodRef(Scene.v().getSootClass(exceptionType), "<init>",
-                    Collections.singletonList((Type) ReferenceType.v("java.lang.String")), VoidType.getInstance(), false),
-                StringConstant.v(m)));
-    Stmt u3 = Jimple.v().newThrowStmt(l);
-    newUnits.add(u1);
-    newUnits.add(u2);
-    newUnits.add(u3);
+    List<Stmt> stmts = new ArrayList<>();
+    Stmt stmt1 = Jimple.newAssignStmt(l, Jimple.newNewExpr(JavaIdentifierFactory.getInstance().getClassType(exceptionType)), stmt.getPositionInfo());
+    Stmt stmt2
+        = Jimple
+            .newInvokeStmt(Jimple.newSpecialInvokeExpr(l,
+                            JavaIdentifierFactory.getInstance().getClassType(exceptionType), "<init>",
+                    Collections.singletonList((Type) JavaIdentifierFactory.getInstance().getClassType("java.lang.String")), VoidType.getInstance(), false),
+                new StringConstant(m));
+    Stmt stmt3 = Jimple.newThrowStmt(l, stmt.getPositionInfo());
+    stmts.add(stmt1);
+    stmts.add(stmt2);
+    stmts.add(stmt3);
 
-    bodyBuilder.getStmts().insertBefore(newUnits, stmt);
+    bodyBuilder.getStmtGraph().insertBefore(stmts, stmt);
   }
 
   public static List<String> splitParameters(String parameters) {

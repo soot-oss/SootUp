@@ -936,7 +936,7 @@ public class DexBody {
     for (Local l : this.bodyBuilder.getLocals()) {
       Type t = l.getType();
       if (t instanceof NullType) {
-        l.setType(objectType);
+        l.withType(objectType);
       }
     }
 
@@ -972,7 +972,7 @@ public class DexBody {
 
   protected LocalSplitter getLocalSplitter() {
     if (this.localSplitter == null) {
-      this.localSplitter = new LocalSplitter(new DalvikThrowAnalysis());
+      this.localSplitter = new LocalSplitter();
     }
     return this.localSplitter;
   }
@@ -981,7 +981,7 @@ public class DexBody {
 
   protected UnreachableCodeEliminator getUnreachableCodeEliminator() {
     if (this.unreachableCodeEliminator == null) {
-      this.unreachableCodeEliminator = new UnreachableCodeEliminator(new DalvikThrowAnalysis());
+      this.unreachableCodeEliminator = new UnreachableCodeEliminator();
     }
     return this.unreachableCodeEliminator;
   }
@@ -990,7 +990,7 @@ public class DexBody {
 
   protected CopyPropagator getCopyPopagator() {
     if (this.copyPropagator == null) {
-      this.copyPropagator = new CopyPropagator(new DalvikThrowAnalysis(), false);
+      this.copyPropagator = new CopyPropagator();
     }
     return this.copyPropagator;
   }

@@ -64,10 +64,6 @@ public class DexNullTransformer extends AbstractNullTransformer {
   private boolean usedAsObject;
   private boolean doBreak = false;
 
-  public static DexNullTransformer v() {
-    return new DexNullTransformer();
-  }
-
   private Local l = null;
 
   @Override

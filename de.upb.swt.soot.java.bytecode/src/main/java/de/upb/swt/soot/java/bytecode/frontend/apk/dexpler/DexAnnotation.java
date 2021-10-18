@@ -23,6 +23,10 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  */
 
 import de.upb.swt.soot.core.jimple.tag.Host;
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.Type;
 import org.jf.dexlib2.AnnotationVisibility;
 import org.jf.dexlib2.iface.*;
 import org.jf.dexlib2.iface.reference.FieldReference;
@@ -30,10 +34,6 @@ import org.jf.dexlib2.iface.reference.MethodReference;
 import org.jf.dexlib2.iface.value.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import soot.*;
-import soot.javaToJimple.IInitialResolver.Dependencies;
-import soot.tagkit.*;
-import soot.toDex.SootToDexUtils;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -56,7 +56,7 @@ public class DexAnnotation {
   public static final String DALVIK_ANNOTATION_ENCLOSINGMETHOD = "dalvik.annotation.EnclosingMethod";
   public static final String DALVIK_ANNOTATION_ENCLOSINGCLASS = "dalvik.annotation.EnclosingClass";
   public static final String DALVIK_ANNOTATION_DEFAULT = "dalvik.annotation.AnnotationDefault";
-  private final Type ARRAY_TYPE = RefType.v("Array");
+  private final Type ARRAY_TYPE = ReferenceType.v("Array");
   private final SootClass clazz;
   private final Dependencies deps;
 
