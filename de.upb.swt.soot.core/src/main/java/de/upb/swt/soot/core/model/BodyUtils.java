@@ -158,7 +158,7 @@ public class BodyUtils {
     if (oldStmt instanceof JAssignStmt) {
       return ((JAssignStmt) oldStmt).withVariable(newDef);
     } else if (oldStmt instanceof JIdentityStmt) {
-      return ((JIdentityStmt) oldStmt).withLocal(newDef);
+      return ((JIdentityStmt) oldStmt).withLeftOp(newDef);
     }
     throw new RuntimeException("The given stmt must be JAssignStmt or JIdentityStmt!");
   }

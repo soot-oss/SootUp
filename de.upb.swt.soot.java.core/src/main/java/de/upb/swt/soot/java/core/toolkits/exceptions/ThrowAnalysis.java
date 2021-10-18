@@ -23,6 +23,7 @@ package de.upb.swt.soot.java.core.toolkits.exceptions;
  */
 
 
+import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 
 /**
@@ -51,16 +52,6 @@ public interface ThrowAnalysis {
    */
   ThrowableSet mightThrow(Stmt stmt);
 
-  /**
-   * Returns a set representing the {@link Throwable} types that the specified throw instruction might throw explicitly, that
-   * is, the possible types for its <code>Throwable</code> argument.
-   *
-   * @param t
-   *          {@link ThrowInst} whose explicit exceptions are to be returned.
-   *
-   * @return a representation of the possible types of <code>t</code>'s <code>Throwable</code> operand.
-   */
-  ThrowableSet mightThrowExplicitly(ThrowInst t);
 
   /**
    * Returns a set representing the {@link Throwable} types that the specified throw statement might throw explicitly, that
@@ -71,19 +62,7 @@ public interface ThrowAnalysis {
    *
    * @return a representation of the possible types of <code>t</code>'s <code>Throwable</code> operand.
    */
-  ThrowableSet mightThrowExplicitly(ThrowStmt t);
-
-  /**
-   * Returns a set representing the {@link Throwable} types that the specified throw instruction might throw implicitly, that
-   * is, the possible types of errors which might arise in the course of executing the <code>throw</code> instruction, rather
-   * than the type of the <code>throw</code>'s operand.
-   *
-   * @param t
-   *          {@link ThrowStmt} whose implicit exceptions are to be returned.
-   *
-   * @return a representation of the types of exceptions that <code>t</code> might throw implicitly.
-   */
-  ThrowableSet mightThrowImplicitly(ThrowInst t);
+  ThrowableSet mightThrowExplicitly(JThrowStmt t);
 
   /**
    * Returns a set representing the {@link Throwable} types that the specified throw statement might throw implicitly, that
@@ -95,6 +74,6 @@ public interface ThrowAnalysis {
    *
    * @return a representation of the types of exceptions that <code>t</code> might throw implicitly.
    */
-  ThrowableSet mightThrowImplicitly(ThrowStmt t);
+  ThrowableSet mightThrowImplicitly(JThrowStmt t);
 
 }

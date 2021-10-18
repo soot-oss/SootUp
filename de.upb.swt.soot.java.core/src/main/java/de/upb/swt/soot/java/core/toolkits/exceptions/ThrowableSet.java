@@ -25,6 +25,7 @@ package de.upb.swt.soot.java.core.toolkits.exceptions;
 import com.google.common.cache.CacheBuilder;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import javafx.scene.Scene;
@@ -45,12 +46,12 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * <p>
  * There is a limitation on the combinations of operations permitted on a <code>ThrowableSet</code>. The
- * <code>ThrowableSet</code>s returned by {@link #whichCatchableAs(RefType)} cannot be involved in subsequent
+ * <code>ThrowableSet</code>s returned by {@link #whichCatchableAs(ReferenceType)} cannot be involved in subsequent
  * <code>add()</code> or <code>whichCatchableAs()</code> operations. That is, given
  *
  * <blockquote> <code>p = s.whichCatchableAs(r)</code> </blockquote>
  *
- * for any <code>ThrowableSet</code> <code>s</code> and {@link soot.RefType RefType} <code>r</code>, and
+ * for any <code>ThrowableSet</code> <code>s</code> and {@link soot.ReferenceType RefType} <code>r</code>, and
  *
  * <blockquote> <code>t == p.getUncaught()</code> or <code>t == p.getCaught()</code> </blockquote>
  *
@@ -84,13 +85,13 @@ public class ThrowableSet {
   /**
    * Set of exception types included within the set.
    */
-  protected final Set<Type> exceptionsIncluded;
+  protected final Set<ClassType> exceptionsIncluded;
   /**
    * Set of exception types which, though members of exceptionsIncluded, are to be excluded from the types represented by
    * this <code>ThrowableSet</code>. To simplify the implementation, once a <code>ThrowableSet</code> has any excluded types,
    * the various <code>add()</code> methods of this class must bar additions of subtypes of those excluded types.
    */
-  protected final Set<AnySubType> exceptionsExcluded;
+  protected final Set<ClassType> exceptionsExcluded;
   /**
    * A map from ({@link RefLikeType} \\union <code>ThrowableSet</code>) to <code>ThrowableSet</code>. If the mapping (k,v) is
    * in <code>memoizedAdds</code> and k is a <code>ThrowableSet</code>, then v is the set that results from adding all
@@ -105,7 +106,7 @@ public class ThrowableSet {
    * <code>ThrowableSet</code> is by adding elements to or removing them from an existing set.
    *
    * @param include
-   *          The set of {@link RefType} and {@link AnySubType} objects representing the types to be included in the set.
+   *          The set of {@link ReferenceType} and {@link AnySubType} objects representing the types to be included in the set.
    * @param exclude
    *          The set of {@link AnySubType} objects representing the types to be excluded from the set.
    */
@@ -166,7 +167,7 @@ public class ThrowableSet {
    * <code>ThrowableSet</code>.
    *
    * <p>
-   * Add <code>e</code> as a {@link RefType} when you know that the run-time class of the exception you are representing is
+   * Add <code>e</code> as a {@link ReferenceType} when you know that the run-time class of the exception you are representing is
    * necessarily <code>e</code> and cannot be a subclass of <code>e</code>.
    *
    * <p>
@@ -191,7 +192,7 @@ public class ThrowableSet {
    *
    * @throws {@link
    *           ThrowableSet.IllegalStateException} if this <code>ThrowableSet</code> is the result of a
-   *           {@link #whichCatchableAs(RefType)} operation and, thus, unable to represent the addition of <code>e</code>.
+   *           {@link #whichCatchableAs(ReferenceType)} operation and, thus, unable to represent the addition of <code>e</code>.
    */
   public ThrowableSet add(Type e) throws AlreadyHasExclusionsException {
     if (INSTRUMENTING) {
@@ -227,7 +228,7 @@ public class ThrowableSet {
     boolean eHasNoHierarchy = hasNoHierarchy(e);
 
     for (AnySubType excludedType : exceptionsExcluded) {
-      RefType exclusionBase = excludedType.getBase();
+      ReferenceType exclusionBase = excludedType.getBase();
       if ((eHasNoHierarchy && exclusionBase.equals(e)) || (!eHasNoHierarchy && hierarchy.canStoreType(e, exclusionBase))) {
         throw new AlreadyHasExclusionsException("ThrowableSet.add(RefType): adding" + e.toString() + " to the set [ "
             + this.toString() + "] where " + exclusionBase.toString() + " is excluded.");
@@ -242,12 +243,12 @@ public class ThrowableSet {
           // Need to use incumbent.getBase() because
           // hierarchy.canStoreType() assumes that parent
           // is not an AnySubType.
-          RefType incumbentBase = ((AnySubType) incumbent).getBase();
+          ReferenceType incumbentBase = ((AnySubType) incumbent).getBase();
           if (hierarchy.canStoreType(e, incumbentBase)) {
             addToMemoizedAdds(e, this);
             return this;
           }
-        } else if (!(incumbent instanceof RefType)) {
+        } else if (!(incumbent instanceof ReferenceType)) {
           // assertion failure.
           throw new IllegalStateException(
               "ThrowableSet.add(RefType): Set element " + incumbent.toString() + " is neither a RefType nor an AnySubType.");
@@ -261,7 +262,7 @@ public class ThrowableSet {
     return result;
   }
 
-  private boolean hasNoHierarchy(RefType type) {
+  private boolean hasNoHierarchy(ReferenceType type) {
     final SootClass sootClass = type.getSootClass();
     return !(sootClass.hasSuperclass() || JAVA_LANG_OBJECT_CLASS == sootClass);
   }
@@ -982,16 +983,16 @@ public class ThrowableSet {
      * another class, including the process of loading, preparing, and verifying the referenced class.
      */
     public final ThrowableSet RESOLVE_CLASS_ERRORS;
-    public final RefType RUNTIME_EXCEPTION;
-    public final RefType ARITHMETIC_EXCEPTION;
-    public final RefType ARRAY_STORE_EXCEPTION;
-    public final RefType CLASS_CAST_EXCEPTION;
-    public final RefType ILLEGAL_MONITOR_STATE_EXCEPTION;
-    public final RefType INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    public final RefType ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    public final RefType NEGATIVE_ARRAY_SIZE_EXCEPTION;
-    public final RefType NULL_POINTER_EXCEPTION;
-    public final RefType INSTANTIATION_ERROR;
+    public final ReferenceType RUNTIME_EXCEPTION;
+    public final ReferenceType ARITHMETIC_EXCEPTION;
+    public final ReferenceType ARRAY_STORE_EXCEPTION;
+    public final ReferenceType CLASS_CAST_EXCEPTION;
+    public final ReferenceType ILLEGAL_MONITOR_STATE_EXCEPTION;
+    public final ReferenceType INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    public final ReferenceType ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    public final ReferenceType NEGATIVE_ARRAY_SIZE_EXCEPTION;
+    public final ReferenceType NULL_POINTER_EXCEPTION;
+    public final ReferenceType INSTANTIATION_ERROR;
     /**
      * <code>ThrowableSet</code> representing all possible Throwables.
      */

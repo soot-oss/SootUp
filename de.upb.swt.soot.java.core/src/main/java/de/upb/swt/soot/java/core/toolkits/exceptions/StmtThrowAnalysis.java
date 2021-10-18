@@ -24,15 +24,24 @@ package de.upb.swt.soot.java.core.toolkits.exceptions;
 
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import heros.solver.IDESolver;
-import soot.*;
-import soot.baf.*;
-import soot.grimp.GrimpValueSwitch;
-import soot.grimp.NewInvokeExpr;
-import soot.jimple.*;
-import soot.shimple.PhiExpr;
-import soot.shimple.ShimpleValueSwitch;
-import soot.toolkits.exceptions.ThrowableSet.Pair;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
+import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
+import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
+import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
+import de.upb.swt.soot.core.jimple.common.stmt.*;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
+import de.upb.swt.soot.core.jimple.visitor.AbstractStmtVisitor;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.types.UnknownType;
+import javafx.scene.Scene;
 
 import java.util.*;
 
@@ -64,12 +73,6 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     this(false);
   }
 
-  /**
-   * A protected constructor for use by unit tests.
-   */
-  protected StmtThrowAnalysis() {
-    this(false);
-  }
 
   /**
    * Returns the single instance of <code>UnitThrowAnalysis</code>.
@@ -83,11 +86,11 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     this.isInterproc = isInterproc;
   }
 
-  public static UnitThrowAnalysis interproceduralAnalysis = null;
+  public static StmtThrowAnalysis interproceduralAnalysis = null;
 
-  public static UnitThrowAnalysis interproc() {
+  public static StmtThrowAnalysis interproc() {
     if (interproceduralAnalysis == null) {
-      interproceduralAnalysis = new UnitThrowAnalysis(true);
+      interproceduralAnalysis = new StmtThrowAnalysis(true);
     }
     return interproceduralAnalysis;
   }
@@ -105,15 +108,16 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
   }
 
   @Override
-  public ThrowableSet mightThrow(Unit u) {
+  public ThrowableSet mightThrow(Stmt u) {
     return mightThrow(u, null);
   }
 
-  public ThrowableSet mightThrow(Unit u, SootMethod sm) {
+  public ThrowableSet mightThrow(Stmt u, SootMethod sm) {
     UnitSwitch sw = unitSwitch(sm);
     u.apply(sw);
     return sw.getResult();
   }
+
 
   @Override
   public ThrowableSet mightThrowImplicitly(ThrowInst t) {
@@ -121,7 +125,7 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
   }
 
   @Override
-  public ThrowableSet mightThrowImplicitly(ThrowStmt t) {
+  public ThrowableSet mightThrowImplicitly(JThrowStmt t) {
     return implicitThrowExceptions;
   }
 
@@ -189,12 +193,12 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     }
 
     // We need a mapping between unit and exception
-    final PatchingChain<Unit> units = sm.getActiveBody().getUnits();
-    Map<Unit, Collection<Trap>> unitToTraps
-        = sm.getActiveBody().getTraps().isEmpty() ? null : new HashMap<Unit, Collection<Trap>>();
+    final PatchingChain<Stmt> stmts = sm.getActiveBody().getUnits();
+    Map<Stmt, Collection<Trap>> unitToTraps
+        = sm.getActiveBody().getTraps().isEmpty() ? null : new HashMap<Stmt, Collection<Trap>>();
     for (Trap t : sm.getActiveBody().getTraps()) {
-      for (Iterator<Unit> unitIt = units.iterator(t.getBeginUnit(), units.getPredOf(t.getEndUnit())); unitIt.hasNext();) {
-        Unit unit = unitIt.next();
+      for (Iterator<Stmt> unitIt = stmts.iterator(t.getBeginUnit(), stmts.getPredOf(t.getEndUnit())); unitIt.hasNext();) {
+        Stmt unit = unitIt.next();
 
         Collection<Trap> unitsForTrap = unitToTraps.get(unit);
         if (unitsForTrap == null) {
@@ -209,16 +213,16 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     if (sm.hasActiveBody()) {
       Body methodBody = sm.getActiveBody();
 
-      for (Unit u : methodBody.getUnits()) {
-        if (u instanceof Stmt) {
-          Stmt stmt = (Stmt) u;
+      for (Stmt s : methodBody.getUnits()) {
+        if (s instanceof Stmt) {
+          Stmt stmt = (Stmt) s;
 
           ThrowableSet curStmtSet;
           if (stmt.containsInvokeExpr()) {
-            InvokeExpr inv = stmt.getInvokeExpr();
+            AbstractInvokeExpr inv = stmt.getInvokeExpr();
             curStmtSet = mightThrow(inv.getMethod(), doneSet);
           } else {
-            curStmtSet = mightThrow(u, sm);
+            curStmtSet = mightThrow(s, sm);
           }
 
           // The exception might be caught along the way
@@ -226,7 +230,7 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
             Collection<Trap> trapsForUnit = unitToTraps.get(stmt);
             if (trapsForUnit != null) {
               for (Trap t : trapsForUnit) {
-                Pair p = curStmtSet.whichCatchableAs(t.getException().getType());
+                ThrowableSet.Pair p = curStmtSet.whichCatchableAs(t.getException().getType());
                 curStmtSet = curStmtSet.remove(p.getCaught());
               }
             }
@@ -240,10 +244,10 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     return methodSet;
   }
 
-  private static final IntConstant INT_CONSTANT_ZERO = IntConstant.v(0);
-  private static final LongConstant LONG_CONSTANT_ZERO = LongConstant.v(0);
+  private static final IntConstant INT_CONSTANT_ZERO = IntConstant.getInstance(0);
+  private static final LongConstant LONG_CONSTANT_ZERO = LongConstant.getInstance(0);
 
-  protected class UnitSwitch implements InstSwitch, StmtSwitch {
+  protected class UnitSwitch extends AbstractStmtVisitor<ThrowableSet> {
 
     // Asynchronous errors are always possible:
     protected ThrowableSet result = defaultResult();
@@ -253,345 +257,15 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
       this.sm = sm;
     }
 
-    ThrowableSet getResult() {
+    public ThrowableSet getResult() {
       return result;
     }
 
-    @Override
-    public void caseReturnVoidInst(ReturnVoidInst i) {
-      result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
-    }
-
-    @Override
-    public void caseReturnInst(ReturnInst i) {
-      result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
-    }
-
-    @Override
-    public void caseNopInst(NopInst i) {
-    }
-
-    @Override
-    public void caseGotoInst(GotoInst i) {
-    }
-
-    @Override
-    public void caseJSRInst(JSRInst i) {
-    }
-
-    @Override
-    public void casePushInst(PushInst i) {
-    }
-
-    @Override
-    public void casePopInst(PopInst i) {
-    }
-
-    @Override
-    public void caseIdentityInst(IdentityInst i) {
-    }
-
-    @Override
-    public void caseStoreInst(StoreInst i) {
-    }
-
-    @Override
-    public void caseLoadInst(LoadInst i) {
-    }
-
-    @Override
-    public void caseArrayWriteInst(ArrayWriteInst i) {
-      result = result.add(mgr.NULL_POINTER_EXCEPTION);
-      result = result.add(mgr.ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION);
-      if (i.getOpType() instanceof RefType) {
-        result = result.add(mgr.ARRAY_STORE_EXCEPTION);
-      }
-    }
-
-    @Override
-    public void caseArrayReadInst(ArrayReadInst i) {
-      result = result.add(mgr.NULL_POINTER_EXCEPTION);
-      result = result.add(mgr.ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION);
-    }
-
-    @Override
-    public void caseIfNullInst(IfNullInst i) {
-    }
-
-    @Override
-    public void caseIfNonNullInst(IfNonNullInst i) {
-    }
-
-    @Override
-    public void caseIfEqInst(IfEqInst i) {
-    }
-
-    @Override
-    public void caseIfNeInst(IfNeInst i) {
-    }
-
-    @Override
-    public void caseIfGtInst(IfGtInst i) {
-    }
-
-    @Override
-    public void caseIfGeInst(IfGeInst i) {
-    }
-
-    @Override
-    public void caseIfLtInst(IfLtInst i) {
-    }
-
-    @Override
-    public void caseIfLeInst(IfLeInst i) {
-    }
-
-    @Override
-    public void caseIfCmpEqInst(IfCmpEqInst i) {
-    }
-
-    @Override
-    public void caseIfCmpNeInst(IfCmpNeInst i) {
-    }
-
-    @Override
-    public void caseIfCmpGtInst(IfCmpGtInst i) {
-    }
-
-    @Override
-    public void caseIfCmpGeInst(IfCmpGeInst i) {
-    }
-
-    @Override
-    public void caseIfCmpLtInst(IfCmpLtInst i) {
-    }
-
-    @Override
-    public void caseIfCmpLeInst(IfCmpLeInst i) {
-    }
-
-    @Override
-    public void caseStaticGetInst(StaticGetInst i) {
-      result = result.add(mgr.INITIALIZATION_ERRORS);
-    }
-
-    @Override
-    public void caseStaticPutInst(StaticPutInst i) {
-      result = result.add(mgr.INITIALIZATION_ERRORS);
-    }
-
-    @Override
-    public void caseFieldGetInst(FieldGetInst i) {
-      result = result.add(mgr.RESOLVE_FIELD_ERRORS);
-      result = result.add(mgr.NULL_POINTER_EXCEPTION);
-    }
-
-    @Override
-    public void caseFieldPutInst(FieldPutInst i) {
-      result = result.add(mgr.RESOLVE_FIELD_ERRORS);
-      result = result.add(mgr.NULL_POINTER_EXCEPTION);
-    }
-
-    @Override
-    public void caseInstanceCastInst(InstanceCastInst i) {
-      result = result.add(mgr.RESOLVE_CLASS_ERRORS);
-      result = result.add(mgr.CLASS_CAST_EXCEPTION);
-    }
-
-    @Override
-    public void caseInstanceOfInst(InstanceOfInst i) {
-      result = result.add(mgr.RESOLVE_CLASS_ERRORS);
-    }
-
-    @Override
-    public void casePrimitiveCastInst(PrimitiveCastInst i) {
-    }
-
-    @Override
-    public void caseDynamicInvokeInst(DynamicInvokeInst i) {
-      result = result.add(mgr.RESOLVE_METHOD_ERRORS);
-      result = result.add(mgr.NULL_POINTER_EXCEPTION);
-      result = result.add(mgr.INITIALIZATION_ERRORS);
-      // might throw anything
-      result = result.add(ThrowableSet.Manager.v().ALL_THROWABLES);
-    }
-
-    @Override
-    public void caseStaticInvokeInst(StaticInvokeInst i) {
-      result = result.add(mgr.INITIALIZATION_ERRORS);
-      result = result.add(mightThrow(i.getMethodRef()));
-    }
-
-    @Override
-    public void caseVirtualInvokeInst(VirtualInvokeInst i) {
-      result = result.add(mgr.RESOLVE_METHOD_ERRORS);
-      result = result.add(mgr.NULL_POINTER_EXCEPTION);
-      result = result.add(mightThrow(i.getMethodRef()));
-    }
-
-    @Override
-    public void caseInterfaceInvokeInst(InterfaceInvokeInst i) {
-      result = result.add(mgr.RESOLVE_METHOD_ERRORS);
-      result = result.add(mgr.NULL_POINTER_EXCEPTION);
-      result = result.add(mightThrow(i.getMethodRef()));
-    }
-
-    @Override
-    public void caseSpecialInvokeInst(SpecialInvokeInst i) {
-      result = result.add(mgr.RESOLVE_METHOD_ERRORS);
-      result = result.add(mgr.NULL_POINTER_EXCEPTION);
-      result = result.add(mightThrow(i.getMethodRef()));
-    }
-
-    @Override
-    public void caseThrowInst(ThrowInst i) {
-      result = mightThrowImplicitly(i);
-      result = result.add(mightThrowExplicitly(i));
-    }
-
-    @Override
-    public void caseAddInst(AddInst i) {
-    }
-
-    @Override
-    public void caseAndInst(AndInst i) {
-    }
-
-    @Override
-    public void caseOrInst(OrInst i) {
-    }
-
-    @Override
-    public void caseXorInst(XorInst i) {
-    }
-
-    @Override
-    public void caseArrayLengthInst(ArrayLengthInst i) {
-      result = result.add(mgr.NULL_POINTER_EXCEPTION);
-    }
-
-    @Override
-    public void caseCmpInst(CmpInst i) {
-    }
-
-    @Override
-    public void caseCmpgInst(CmpgInst i) {
-    }
-
-    @Override
-    public void caseCmplInst(CmplInst i) {
-    }
-
-    @Override
-    public void caseDivInst(DivInst i) {
-      if (i.getOpType() instanceof IntegerType || i.getOpType() == LongType.v()) {
-        result = result.add(mgr.ARITHMETIC_EXCEPTION);
-      }
-    }
-
-    @Override
-    public void caseIncInst(IncInst i) {
-    }
-
-    @Override
-    public void caseMulInst(MulInst i) {
-    }
-
-    @Override
-    public void caseRemInst(RemInst i) {
-      if (i.getOpType() instanceof IntegerType || i.getOpType() == LongType.v()) {
-        result = result.add(mgr.ARITHMETIC_EXCEPTION);
-      }
-    }
-
-    @Override
-    public void caseSubInst(SubInst i) {
-    }
-
-    @Override
-    public void caseShlInst(ShlInst i) {
-    }
-
-    @Override
-    public void caseShrInst(ShrInst i) {
-    }
-
-    @Override
-    public void caseUshrInst(UshrInst i) {
-    }
-
-    @Override
-    public void caseNewInst(NewInst i) {
-      result = result.add(mgr.INITIALIZATION_ERRORS);
-    }
-
-    @Override
-    public void caseNegInst(NegInst i) {
-    }
-
-    @Override
-    public void caseSwapInst(SwapInst i) {
-    }
-
-    @Override
-    public void caseDup1Inst(Dup1Inst i) {
-    }
-
-    @Override
-    public void caseDup2Inst(Dup2Inst i) {
-    }
-
-    @Override
-    public void caseDup1_x1Inst(Dup1_x1Inst i) {
-    }
-
-    @Override
-    public void caseDup1_x2Inst(Dup1_x2Inst i) {
-    }
-
-    @Override
-    public void caseDup2_x1Inst(Dup2_x1Inst i) {
-    }
-
-    @Override
-    public void caseDup2_x2Inst(Dup2_x2Inst i) {
-    }
-
-    @Override
-    public void caseNewArrayInst(NewArrayInst i) {
-      result = result.add(mgr.RESOLVE_CLASS_ERRORS); // Could be omitted for primitive arrays.
-      result = result.add(mgr.NEGATIVE_ARRAY_SIZE_EXCEPTION);
-    }
-
-    @Override
-    public void caseNewMultiArrayInst(NewMultiArrayInst i) {
-      result = result.add(mgr.RESOLVE_CLASS_ERRORS);
-      result = result.add(mgr.NEGATIVE_ARRAY_SIZE_EXCEPTION);
-    }
-
-    @Override
-    public void caseLookupSwitchInst(LookupSwitchInst i) {
-    }
-
-    @Override
-    public void caseTableSwitchInst(TableSwitchInst i) {
-    }
-
-    @Override
-    public void caseEnterMonitorInst(EnterMonitorInst i) {
-      result = result.add(mgr.NULL_POINTER_EXCEPTION);
-    }
-
-    @Override
-    public void caseExitMonitorInst(ExitMonitorInst i) {
-      result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
-      result = result.add(mgr.NULL_POINTER_EXCEPTION);
-    }
 
     @Override
-    public void caseAssignStmt(AssignStmt s) {
+    public void caseAssignStmt(JAssignStmt s) {
       Value lhs = s.getLeftOp();
-      if (lhs instanceof ArrayRef && (lhs.getType() instanceof UnknownType || lhs.getType() instanceof RefType)) {
+      if (lhs instanceof JArrayRef && (lhs.getType() instanceof UnknownType || lhs.getType() instanceof ReferenceType)) {
         // This corresponds to an aastore byte code.
         result = result.add(mgr.ARRAY_STORE_EXCEPTION);
       }
@@ -600,75 +274,71 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     }
 
     @Override
-    public void caseBreakpointStmt(BreakpointStmt s) {
+    public void caseBreakpointStmt(JBreakpointStmt s) {
     }
 
     @Override
-    public void caseEnterMonitorStmt(EnterMonitorStmt s) {
+    public void caseEnterMonitorStmt(JEnterMonitorStmt s) {
       result = result.add(mgr.NULL_POINTER_EXCEPTION);
       result = result.add(mightThrow(s.getOp()));
     }
 
     @Override
-    public void caseExitMonitorStmt(ExitMonitorStmt s) {
+    public void caseExitMonitorStmt(JExitMonitorStmt s) {
       result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
       result = result.add(mgr.NULL_POINTER_EXCEPTION);
       result = result.add(mightThrow(s.getOp()));
     }
 
     @Override
-    public void caseGotoStmt(GotoStmt s) {
+    public void caseGotoStmt(JGotoStmt s) {
     }
 
     @Override
-    public void caseIdentityStmt(IdentityStmt s) {
+    public void caseIdentityStmt(JIdentityStmt s) {
     }
     // Perhaps IdentityStmt shouldn't even return VM_ERRORS,
     // since it corresponds to no bytecode instructions whatsoever.
 
     @Override
-    public void caseIfStmt(IfStmt s) {
+    public void caseIfStmt(JIfStmt s) {
       result = result.add(mightThrow(s.getCondition()));
     }
 
     @Override
-    public void caseInvokeStmt(InvokeStmt s) {
+    public void caseInvokeStmt(JInvokeStmt s) {
       result = result.add(mightThrow(s.getInvokeExpr()));
     }
 
     @Override
-    public void caseLookupSwitchStmt(LookupSwitchStmt s) {
+    public void caseSwitchStmt(JSwitchStmt s) {
       result = result.add(mightThrow(s.getKey()));
     }
 
     @Override
-    public void caseNopStmt(NopStmt s) {
+    public void caseNopStmt(JNopStmt s) {
     }
 
     @Override
-    public void caseRetStmt(RetStmt s) {
+    public void caseRetStmt(JRetStmt s) {
       // Soot should never produce any RetStmt, since
       // it implements jsr with gotos.
     }
 
     @Override
-    public void caseReturnStmt(ReturnStmt s) {
+    public void caseReturnStmt(JReturnStmt s) {
       // result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
       // result = result.add(mightThrow(s.getOp()));
     }
 
     @Override
-    public void caseReturnVoidStmt(ReturnVoidStmt s) {
+    public void caseReturnVoidStmt(JReturnVoidStmt s) {
       // result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
     }
 
-    @Override
-    public void caseTableSwitchStmt(TableSwitchStmt s) {
-      result = result.add(mightThrow(s.getKey()));
-    }
 
     @Override
-    public void caseThrowStmt(ThrowStmt s) {
+    public void caseThrowStmt(JThrowStmt s) {
       result = mightThrowImplicitly(s);
       result = result.add(mightThrowExplicitly(s, sm));
     }
@@ -851,7 +521,7 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
       caseInstanceInvokeExpr(expr);
     }
 
-    // INSERTED for invokedynamic UnitThrowAnalysis.java
+    // INSERTED for invokedynamic StmtThrowAnalysis.java
     @Override
     public void caseDynamicInvokeExpr(DynamicInvokeExpr expr) {
       // caseInstanceInvokeExpr(expr);

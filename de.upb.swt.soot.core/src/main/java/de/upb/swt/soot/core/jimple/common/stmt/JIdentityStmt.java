@@ -67,17 +67,18 @@ public final class JIdentityStmt<T extends IdentityRef> extends AbstractDefiniti
   }
 
   @Nonnull
-  public JIdentityStmt<T> withLocal(@Nonnull Local local) {
-    return new JIdentityStmt<>(local, getRightOp(), getPositionInfo());
-  }
-
-  @Nonnull
-  public <N extends IdentityRef> JIdentityStmt<N> withIdentityValue(@Nonnull N identityValue) {
-    return new JIdentityStmt<>(getLeftOp(), identityValue, getPositionInfo());
-  }
-
-  @Nonnull
   public JIdentityStmt<T> withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JIdentityStmt<>(getLeftOp(), getRightOp(), positionInfo);
   }
+
+  @Override
+  public JIdentityStmt<T> withLeftOp(@Nonnull Local left) {
+    return new JIdentityStmt<T>(left, getRightOp(), getPositionInfo());
+  }
+
+  @Override
+  public JIdentityStmt<T> withRightOp(@Nonnull T right) {
+    return new JIdentityStmt<T>(getLeftOp(), right, getPositionInfo());
+  }
+
 }

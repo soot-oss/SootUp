@@ -38,6 +38,7 @@ import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JExitMonitorStmt;
+import de.upb.swt.soot.core.jimple.visitor.AbstractStmtVisitor;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
@@ -94,7 +95,7 @@ public class DexIfTransformer extends AbstractNullTransformer {
           }
 
           // check defs
-          stmt.apply(new AbstractStmtSwitch() { // Alex: should also end
+          stmt.accept(new AbstractStmtVisitor() { // Alex: should also end
             // as soon as detected
             // as not used as an
             // object
@@ -102,7 +103,7 @@ public class DexIfTransformer extends AbstractNullTransformer {
             public void caseAssignStmt(JAssignStmt stmt) {
               Value r = stmt.getRightOp();
               if (r instanceof Type) {
-                usedAsObject = isObject(((Type) r).getFieldRef().type());
+                usedAsObject = isObject(r.getType());
                 if (usedAsObject) {
                   doBreak = true;
                 }
@@ -168,7 +169,7 @@ public class DexIfTransformer extends AbstractNullTransformer {
 
           // check uses
           for (Stmt use : localDefs.getUsesOf(l)) {
-            use.apply(new AbstractStmtSwitch() {
+            use.accept(new AbstractStmtVisitor() {
               private boolean examineInvokeExpr(AbstractInvokeExpr e) {
                 List<Immediate> args = e.getArgs();
                 List<Type> argTypes = e.getMethodSignature().getParameterTypes();
@@ -179,16 +180,16 @@ public class DexIfTransformer extends AbstractNullTransformer {
                   }
                 }
                 // check for base
-                SootMethodRef sm = e.getMethodSignature().getType(); //getMethodRef();
-                if (!sm.isStatic()) {
-                  if (e instanceof AbstractInvokeExpr) {
+                // Type sm = e.getMethodSignature().getType();
+
+                  if (e instanceof AbstractInstanceInvokeExpr) {
                     AbstractInstanceInvokeExpr aiiexpr = (AbstractInstanceInvokeExpr) e;
                     Value b = aiiexpr.getBase();
                     if (b == l) {
                       return true;
                     }
                   }
-                }
+
                 return false;
               }
 

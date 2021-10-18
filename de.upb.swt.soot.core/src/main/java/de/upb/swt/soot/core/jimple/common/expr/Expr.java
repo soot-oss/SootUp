@@ -22,17 +22,11 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.Acceptor;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 
-import javax.annotation.Nonnull;
-
 /*   An Expression is a Language construct that returns a Value  */
 public interface Expr extends Value, Acceptor<ExprVisitor> {
-
-    abstract public AbstractConditionExpr withOp1(@Nonnull Immediate op1);
-    abstract public AbstractConditionExpr withOp2(@Nonnull Immediate op2);
 
 }

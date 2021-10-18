@@ -83,7 +83,7 @@ public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> e
     return false;
   }
 
-  abstract public AbstractDefinitionStmt withLeftOp(@Nonnull L left);
+  abstract public AbstractDefinitionStmt<L, R> withLeftOp(@Nonnull L left);
 
-  abstract public AbstractDefinitionStmt withRightOp(@Nonnull R right);
+  abstract public AbstractDefinitionStmt<L, R> withRightOp(@Nonnull R right);
 }

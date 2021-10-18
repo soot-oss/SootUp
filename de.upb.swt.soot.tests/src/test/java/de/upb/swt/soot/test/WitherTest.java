@@ -84,7 +84,7 @@ public class WitherTest {
 
     Local local = (Local) firstStmt.getLeftOp();
     Local newLocal = local.withName("newName");
-    final JIdentityStmt firstStmtNew = firstStmt.withLocal(newLocal);
+    final JIdentityStmt firstStmtNew = firstStmt.withLeftOp(newLocal);
 
     JavaSootClass newSootClass = sootClass.withReplacedMethod(method, method.withBody(body));
 

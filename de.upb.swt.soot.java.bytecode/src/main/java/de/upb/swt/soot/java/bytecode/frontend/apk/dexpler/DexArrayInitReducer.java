@@ -65,42 +65,42 @@ public class DexArrayInitReducer implements BodyInterceptor {
     }
 
     // Look for a chain of two constant assignments followed by an array put
-    Stmt u1 = null, u2 = null;
-    for (Stmt u : bodyBuilder.getStmts()) {
+    Stmt stmt1 = null, stmt2 = null;
+    for (Stmt stmt : bodyBuilder.getStmts()) {
       // If this is not an assignment, it does not matter.
-      if (!(u instanceof JAssignStmt) || !u.getBoxesPointingToThis().isEmpty()) {
-        u1 = null;
-        u2 = null;
+      if (!(stmt instanceof JAssignStmt) || !stmt.getBoxesPointingToThis().isEmpty()) {
+        stmt1 = null;
+        stmt2 = null;
         continue;
       }
 
       // If this is an assignment to an array, we must already have two
       // preceding constant assignments
-      JAssignStmt assignStmt = (JAssignStmt) u;
+      JAssignStmt assignStmt = (JAssignStmt) stmt;
       if (assignStmt.getLeftOp() instanceof JArrayRef) {
-        if (u1 != null && u2 != null && u2.getBoxesPointingToThis().isEmpty()
+        if (stmt1 != null && stmt2 != null && stmt2.getBoxesPointingToThis().isEmpty()
             && assignStmt.getBoxesPointingToThis().isEmpty()) {
           JArrayRef arrayRef = (JArrayRef) assignStmt.getLeftOp();
 
-          Value u1val = u1.getDefs().get(0);
-          Value u2val = u2.getDefs().get(0);
+          Value u1val = stmt1.getDefs().get(0);
+          Value u2val = stmt2.getDefs().get(0);
 
           // index
           if (arrayRef.getIndex() == u1val) {
-            arrayRef.setIndex(((JAssignStmt) u1).getRightOp());
+            arrayRef.setIndex(((JAssignStmt) stmt1).getRightOp());
           } else if (arrayRef.getIndex() == u2val) {
-            arrayRef.setIndex(((JAssignStmt) u2).getRightOp());
+            arrayRef.setIndex(((JAssignStmt) stmt2).getRightOp());
           }
 
           // value
           if (assignStmt.getRightOp() == u1val) {
-            assignStmt.setRightOp(((JAssignStmt) u1).getRightOp());
+            assignStmt.setRightOp(((JAssignStmt) stmt1).getRightOp());
           } else if (assignStmt.getRightOp() == u2val) {
-            assignStmt.setRightOp(((JAssignStmt) u2).getRightOp());
+            assignStmt.setRightOp(((JAssignStmt) stmt2).getRightOp());
           }
 
           // Remove the unnecessary assignments
-          Iterator<Stmt> checkIt = bodyBuilder.getStmts().iterator(u);
+          Iterator<Stmt> checkIt = bodyBuilder.getStmts().iterator(stmt);
           boolean foundU1 = false, foundU2 = false, doneU1 = false, doneU2 = false;
           while (!(doneU1 && doneU2) && !(foundU1 && foundU2) && checkIt.hasNext()) {
             Stmt checkU = checkIt.next();
@@ -134,28 +134,28 @@ public class DexArrayInitReducer implements BodyInterceptor {
           if (!foundU1) {
             // only remove constant assignment if the left value is Local
             if (u1val instanceof Local) {
-              bodyBuilder.getStmts().remove(u1);
+              bodyBuilder.getStmts().remove(stmt1);
               if (Options.v().verbose()) {
-                logger.debug("[" + bodyBuilder.getMethodSignature().getName() + "]    remove 1 " + u1);
+                logger.debug("[" + bodyBuilder.getMethodSignature().getName() + "]    remove 1 " + stmt1);
               }
             }
           }
           if (!foundU2) {
             // only remove constant assignment if the left value is Local
             if (u2val instanceof Local) {
-              bodyBuilder.getStmts().remove(u2);
+              bodyBuilder.getStmts().remove(stmt2);
               if (Options.v().verbose()) {
-                logger.debug("[" + bodyBuilder.getMethod().getName() + "]    remove 2 " + u2);
+                logger.debug("[" + bodyBuilder.getMethod().getName() + "]    remove 2 " + stmt2);
               }
             }
           }
 
-          u1 = null;
-          u2 = null;
+          stmt1 = null;
+          stmt2 = null;
         } else {
           // No proper initialization before
-          u1 = null;
-          u2 = null;
+          stmt1 = null;
+          stmt2 = null;
           continue;
         }
       }
@@ -163,27 +163,27 @@ public class DexArrayInitReducer implements BodyInterceptor {
       // We have a normal assignment. This could be an array index or
       // value.
       if (!(assignStmt.getRightOp() instanceof Constant)) {
-        u1 = null;
-        u2 = null;
+        stmt1 = null;
+        stmt2 = null;
         continue;
       }
 
-      if (u1 == null) {
-        u1 = assignStmt;
-      } else if (u2 == null) {
-        u2 = assignStmt;
+      if (stmt1 == null) {
+        stmt1 = assignStmt;
+      } else if (stmt2 == null) {
+        stmt2 = assignStmt;
 
         // If the last value is overwritten again, we start again at the beginning
-        if (u1 != null) {
-          Value op1 = ((JAssignStmt) u1).getLeftOp();
-          if (op1 == ((JAssignStmt) u2).getLeftOp()) {
-            u1 = u2;
-            u2 = null;
+        if (stmt1 != null) {
+          Value op1 = ((JAssignStmt) stmt1).getLeftOp();
+          if (op1 == ((JAssignStmt) stmt2).getLeftOp()) {
+            stmt1 = stmt2;
+            stmt2 = null;
           }
         }
       } else {
-        u1 = u2;
-        u2 = assignStmt;
+        stmt1 = stmt2;
+        stmt2 = assignStmt;
       }
     }
 

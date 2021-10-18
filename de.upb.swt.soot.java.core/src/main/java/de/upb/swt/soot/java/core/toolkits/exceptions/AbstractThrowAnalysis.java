@@ -1,11 +1,17 @@
 package de.upb.swt.soot.java.core.toolkits.exceptions;
 
-import soot.*;
-import soot.baf.ThrowInst;
-import soot.grimp.NewInvokeExpr;
-import soot.jimple.DefinitionStmt;
-import soot.jimple.NewExpr;
-import soot.jimple.ThrowStmt;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
+import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.types.NullType;
+import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.types.UnknownType;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,20 +24,16 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractThrowAnalysis implements ThrowAnalysis {
 
-  abstract public ThrowableSet mightThrow(Unit u);
+  abstract public ThrowableSet mightThrow(Stmt stmt);
+
+
 
   @Override
-  public ThrowableSet mightThrowExplicitly(ThrowInst t) {
-    // Deducing the type at the top of the Baf stack is beyond me, so...
-    return ThrowableSet.Manager.v().ALL_THROWABLES;
-  }
-
-  @Override
-  public ThrowableSet mightThrowExplicitly(ThrowStmt t) {
+  public ThrowableSet mightThrowExplicitly(JThrowStmt t) {
     return mightThrowExplicitly(t, null);
   }
 
-  public ThrowableSet mightThrowExplicitly(ThrowStmt t, SootMethod sm) {
+  public ThrowableSet mightThrowExplicitly(JThrowStmt t, SootMethod sm) {
     Value thrownExpression = t.getOp();
     Type thrownType = thrownExpression.getType();
     if (thrownType == null || thrownType instanceof UnknownType) {
@@ -41,29 +43,29 @@ public abstract class AbstractThrowAnalysis implements ThrowAnalysis {
       ThrowableSet result = ThrowableSet.Manager.v().EMPTY;
       result = result.add(ThrowableSet.Manager.v().NULL_POINTER_EXCEPTION);
       return result;
-    } else if (!(thrownType instanceof RefType)) {
+    } else if (!(thrownType instanceof ReferenceType)) {
       throw new IllegalStateException("UnitThrowAnalysis StmtSwitch: type of throw argument is not a RefType!");
     } else {
       ThrowableSet result = ThrowableSet.Manager.v().EMPTY;
-      if (thrownExpression instanceof NewInvokeExpr) {
+      if (thrownExpression instanceof AbstractInvokeExpr) { // JNewInvokeExpr
         // In this case, we know the exact type of the
         // argument exception.
-        result = result.add((RefType) thrownType);
+        result = result.add(thrownType);
       } else {
-        RefType preciseType = null;
+        ReferenceType preciseType = null;
         // If there is only one allocation site, we know the type as well
         if (thrownExpression instanceof Local && sm != null) {
-          Set<RefType> types = sm.getActiveBody().getUnits().stream().filter(u -> u instanceof DefinitionStmt)
-              .map(u -> (DefinitionStmt) u).filter(d -> d.getLeftOp() == thrownExpression).map(d -> d.getRightOp())
-              .filter(o -> o instanceof NewExpr).map(o -> (NewExpr) o).map(n -> n.getType())
-              .filter(r -> r instanceof RefType).map(r -> (RefType) r).collect(Collectors.toSet());
+          Set<ReferenceType> types = sm.getBody().getStmts().stream().filter(stmt -> stmt instanceof AbstractDefinitionStmt)
+              .map(stmt -> (AbstractDefinitionStmt ) stmt).filter(d -> d.getLeftOp() == thrownExpression).map(d -> d.getRightOp())
+              .filter(o -> o instanceof JNewExpr).map(o -> (JNewExpr) o).map(n -> n.getType())
+              .filter(r -> r instanceof ReferenceType).map(r -> (ReferenceType) r).collect(Collectors.toSet());
           if (types.size() == 1) {
             preciseType = types.iterator().next();
           }
         }
 
         if (preciseType == null) {
-          result = result.add(AnySubType.v((RefType) thrownType));
+          result = result.add(AnySubType.v((ReferenceType) thrownType));
         } else {
           result = result.add(preciseType);
         }
@@ -74,5 +76,5 @@ public abstract class AbstractThrowAnalysis implements ThrowAnalysis {
 
   abstract public ThrowableSet mightThrowImplicitly(ThrowInst t);
 
-  abstract public ThrowableSet mightThrowImplicitly(ThrowStmt t);
+  abstract public ThrowableSet mightThrowImplicitly(JThrowStmt t);
 }

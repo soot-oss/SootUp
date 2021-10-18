@@ -36,7 +36,7 @@ import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.typing.DalvikTyper;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.formats.Instruction11x;
-import sun.jvm.hotspot.debugger.cdbg.RefType;
+
 
 
 public class ThrowInstruction extends DexlibAbstractInstruction {

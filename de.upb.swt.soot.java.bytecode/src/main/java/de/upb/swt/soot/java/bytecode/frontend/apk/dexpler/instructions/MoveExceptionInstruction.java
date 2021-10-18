@@ -80,7 +80,7 @@ public class MoveExceptionInstruction extends DexlibAbstractInstruction implemen
       Local l = (Local) (stmtToRetype.getLeftOp());
       l = l.withType(realType);
       int idx = bodyBuilder.getStmts().indexOf(stmtToRetype);
-      JIdentityStmt idWithLocal = stmtToRetype.withLocal(l);
+      JIdentityStmt idWithLocal = stmtToRetype.withLeftOp(l);
       bodyBuilder.getStmts().set(idx, idWithLocal);
       realType = null;
     }

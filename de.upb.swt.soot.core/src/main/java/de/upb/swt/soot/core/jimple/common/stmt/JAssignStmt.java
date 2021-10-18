@@ -57,13 +57,13 @@ public final class JAssignStmt<L extends Value, R extends Value>
   }
 
   @Override
-  public JAssignStmt withLeftOp(@Nonnull L left) {
-    return null;
+  public JAssignStmt<L, R> withLeftOp(@Nonnull L left) {
+    return new JAssignStmt<L, R>(left, getRightOp(), getPositionInfo());
   }
 
   @Override
-  public JAssignStmt withRightOp(@Nonnull R right) {
-    return null;
+  public JAssignStmt<L, R> withRightOp(@Nonnull R right) {
+    return new JAssignStmt<L, R>(getLeftOp(), right, getPositionInfo());
   }
 
   /**

@@ -21,8 +21,10 @@
 package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
 
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
+import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.java.core.toolkits.exceptions.StmtThrowAnalysis;
+import de.upb.swt.soot.java.core.toolkits.exceptions.ThrowableSet;
 import javafx.scene.Scene;
 
 /**
@@ -145,7 +147,7 @@ public class DalvikThrowAnalysis extends StmtThrowAnalysis {
 
   @Override
   protected UnitSwitch unitSwitch(SootMethod sm) {
-    return new UnitThrowAnalysis.UnitSwitch(sm) {
+    return new StmtThrowAnalysis.UnitSwitch(sm) {
 
       // Dalvik does not throw an exception for this instruction
       @Override
@@ -154,7 +156,7 @@ public class DalvikThrowAnalysis extends StmtThrowAnalysis {
 
       // Dalvik does not throw an exception for this instruction
       @Override
-      public void caseReturnVoidInst(ReturnVoidInst i) {
+      public void caseReturnVoidInst(JReturnVoidStmt i) {
       }
 
       @Override
