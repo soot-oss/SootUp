@@ -33,6 +33,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
@@ -70,12 +71,12 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
   @Override
   @Nonnull
-  protected Set<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
+  protected Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
     Set<MethodSignature> result = Sets.newHashSet(targetMethodSignature);
 
     if (!chaGraph.containsMethod(method.getSignature())) {
-      return result;
+      return result.stream();
     }
     collectInstantiatedClassesInMethod(method);
 
@@ -86,13 +87,13 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
     if (Modifier.isStatic(targetMethod.getModifiers())
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
-      return result;
+      return result.stream();
     } else {
       Set<MethodSignature> implAndOverrides =
           MethodDispatchResolver.resolveAbstractDispatchInClasses(
               view, targetMethodSignature, instantiatedClasses);
       result.addAll(implAndOverrides);
-      return result;
+      return result.stream();
     }
   }
 }

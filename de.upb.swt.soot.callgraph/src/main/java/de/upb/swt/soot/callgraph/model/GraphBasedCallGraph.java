@@ -35,9 +35,9 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 
 public final class GraphBasedCallGraph implements MutableCallGraph {
 
-  private List<MethodSignature> entryPoints;
+  protected List<MethodSignature> entryPoints;
 
-  private static class Vertex {
+  protected static class Vertex {
     @Nonnull final MethodSignature methodSignature;
 
     private Vertex(@Nonnull MethodSignature methodSignature) {
@@ -45,7 +45,7 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
     }
   }
 
-  private static class Edge {}
+  protected static class Edge {}
 
   @Nonnull private final DefaultDirectedGraph<Vertex, Edge> graph;
   @Nonnull private final Map<MethodSignature, Vertex> signatureToVertex;

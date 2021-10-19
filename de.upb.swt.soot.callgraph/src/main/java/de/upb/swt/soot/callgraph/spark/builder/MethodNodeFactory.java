@@ -117,6 +117,7 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
     if (!canProcess(stmt)) {
       return;
     }
+    // TODO visitor pattern that handles creation of new nodes -> need to pass ofcg here?
     stmt.accept(
         new AbstractStmtVisitor() {
           @Override
