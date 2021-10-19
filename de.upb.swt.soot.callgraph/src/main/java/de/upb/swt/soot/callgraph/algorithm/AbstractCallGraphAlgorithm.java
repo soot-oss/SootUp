@@ -22,11 +22,8 @@ package de.upb.swt.soot.callgraph.algorithm;
  * #L%
  */
 
-import de.upb.swt.soot.callgraph.MethodUtil;
 import de.upb.swt.soot.callgraph.model.*;
-import de.upb.swt.soot.callgraph.spark.pag.CallGraphEdgeType;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
-import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Method;
