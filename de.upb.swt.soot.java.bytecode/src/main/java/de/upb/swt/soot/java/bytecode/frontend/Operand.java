@@ -22,9 +22,12 @@ package de.upb.swt.soot.java.bytecode.frontend;
  */
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.common.expr.Expr;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.visitor.ReplaceUseStmtVisitor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -36,10 +39,14 @@ import org.objectweb.asm.tree.AbstractInsnNode;
  */
 final class Operand {
 
+  public static final Operand DWORD_DUMMY = new Operand(null, null, null);
   @Nonnull protected final AbstractInsnNode insn;
   @Nonnull protected final Value value;
-  @Nullable protected Local stack;
-  @Nonnull protected final List<ValueBox> boxes = new ArrayList<>();
+  @Nullable protected Local stackLocal;
+  @Nonnull private final AsmMethodSource methodSource;
+
+  @Nonnull private final List<Stmt> stmtUsages = new ArrayList<>();
+  @Nonnull private final List<Expr> exprUsages = new ArrayList<>();
 
   /**
    * Constructs a new stack operand.
@@ -47,54 +54,75 @@ final class Operand {
    * @param insn the instruction that produced this operand.
    * @param value the generated value.
    */
-  Operand(@Nonnull AbstractInsnNode insn, @Nonnull Value value) {
+  Operand(
+      @Nonnull AbstractInsnNode insn, @Nonnull Value value, @Nonnull AsmMethodSource methodSource) {
     this.insn = insn;
     this.value = value;
+    this.methodSource = methodSource;
   }
 
   /**
-   * Removes a value from this operand.
+   * Adds a usage of this operand (so whenever it is used in a stmt)
    *
-   * @param vb the value box.
+   * @param stmt the usage
    */
-  void removeBox(@Nullable ValueBox vb) {
-    if (vb == null) {
-      return;
-    }
-    boxes.remove(vb);
+  void addUsageInStmt(@Nonnull Stmt stmt) {
+    stmtUsages.add(stmt);
   }
 
   /**
-   * Adds a value box to this operand.
+   * Adds a usage of this operand (so whenever it is used in a Expr)
    *
-   * @param vb the value box.
+   * @param expr the usage
    */
-  void addBox(@Nonnull ValueBox vb) {
-    boxes.add(vb);
+  void addUsageInExpr(@Nonnull Expr expr) {
+    exprUsages.add(expr);
   }
 
-  /** Updates all value boxes registered to this operand. */
-  void updateBoxes() {
-    Value val = stackOrValue();
-    for (ValueBox vb : boxes) {
-      ValueBox.$Accessor.setValue(vb, val);
+  /** Updates all statements and expressions that use this Operand. */
+  void updateUsages() {
+
+    for (Expr exprUsage : exprUsages) {
+      methodSource
+          .getStmtsThatUse(exprUsage)
+          .map(methodSource::getLatestVersionOfStmt)
+          .filter(Objects::nonNull)
+          .filter(stmt -> !stmtUsages.contains(stmt))
+          .forEach(stmtUsages::add);
     }
-  }
 
-  /**
-   * @param <A> type of value to cast to.
-   * @return the value.
-   */
-  @SuppressWarnings("unchecked")
-  @Nonnull
-  <A> A value() {
-    return (A) value;
+    if (value == stackOrValue()) return;
+
+    ReplaceUseStmtVisitor replaceStmtVisitor = new ReplaceUseStmtVisitor(value, stackOrValue());
+
+    List<Stmt> stmtsToDelete = new ArrayList<>();
+
+    for (int i = 0; i < stmtUsages.size(); i++) {
+      Stmt oldUsage = stmtUsages.get(i);
+
+      // resolve stmt in method source, it might not exist anymore!
+      oldUsage = methodSource.getLatestVersionOfStmt(oldUsage);
+
+      if (oldUsage == null) {
+        stmtsToDelete.add(oldUsage);
+      } else {
+        oldUsage.accept(replaceStmtVisitor);
+        Stmt newUsage = replaceStmtVisitor.getResult();
+
+        if (oldUsage != newUsage) {
+          methodSource.replaceStmt(oldUsage, newUsage);
+          stmtUsages.set(i, newUsage);
+        }
+      }
+    }
+
+    stmtUsages.removeAll(stmtsToDelete);
   }
 
   /** @return either the stack local allocated for this operand, or its value. */
   @Nonnull
   Value stackOrValue() {
-    return stack == null ? value : stack;
+    return stackLocal == null ? value : stackLocal;
   }
 
   /**
@@ -104,21 +132,16 @@ final class Operand {
    * @return {@code true} if this operand is equal to another operand, {@code false} otherwise.
    */
   boolean equivTo(@Nonnull Operand other) {
-    return stackOrValue().equivTo(other.stackOrValue());
+    // care for DWORD comparison, as stackOrValue is null, which would result in a
+    // NullPointerException
+    return (this == other)
+        || ((this == DWORD_DUMMY) == (other == DWORD_DUMMY)
+            && stackOrValue().equivTo(other.stackOrValue()));
   }
 
   @Override
   public String toString() {
-    return "Operand{"
-        + "insn="
-        + insn
-        + ", value="
-        + value
-        + ", stack="
-        + stack
-        + ", boxes="
-        + boxes
-        + '}';
+    return "Operand{" + "insn=" + insn + ", value=" + value + ", stack=" + stackLocal + '}';
   }
 
   @Nonnull
@@ -132,13 +155,8 @@ final class Operand {
   }
 
   @Nullable
-  public Local getStack() {
-    return stack;
-  }
-
-  @Nonnull
-  public List<ValueBox> getBoxes() {
-    return boxes;
+  public Local getStackLocal() {
+    return stackLocal;
   }
 
   @Override

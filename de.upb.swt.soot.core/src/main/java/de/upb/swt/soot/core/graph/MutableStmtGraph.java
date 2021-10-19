@@ -20,7 +20,6 @@ package de.upb.swt.soot.core.graph;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
@@ -57,6 +56,7 @@ public class MutableStmtGraph extends StmtGraph {
   @Nonnull protected final ArrayList<List<Stmt>> successors;
   @Nonnull protected final Map<Stmt, Integer> stmtToIdx;
   private int nextFreeId = 0;
+  protected int removedIdx;
 
   @Nullable protected Stmt startingStmt;
   @Nonnull protected List<Trap> traps = Collections.emptyList();
@@ -305,18 +305,18 @@ public class MutableStmtGraph extends StmtGraph {
       for (Trap trap : getTraps()) {
         if (oldStmt == trap.getBeginStmt()) {
           Trap newTrap =
-              new JTrap(trap.getExceptionType(), newStmt, trap.getEndStmt(), trap.getHandlerStmt());
+              new Trap(trap.getExceptionType(), newStmt, trap.getEndStmt(), trap.getHandlerStmt());
           newTraps.add(newTrap);
           trapIsChanged = true;
         } else if (oldStmt == trap.getEndStmt()) {
           Trap newTrap =
-              new JTrap(
+              new Trap(
                   trap.getExceptionType(), trap.getBeginStmt(), newStmt, trap.getHandlerStmt());
           newTraps.add(newTrap);
           trapIsChanged = true;
         } else if (oldStmt == trap.getHandlerStmt()) {
           Trap newTrap =
-              new JTrap(trap.getExceptionType(), trap.getBeginStmt(), trap.getEndStmt(), newStmt);
+              new Trap(trap.getExceptionType(), trap.getBeginStmt(), trap.getEndStmt(), newStmt);
           newTraps.add(newTrap);
           trapIsChanged = true;
         } else {
@@ -342,6 +342,7 @@ public class MutableStmtGraph extends StmtGraph {
       return;
     }
     final int nodeIdx = integer;
+    removedIdx = nodeIdx;
     // remove node from index map
     stmtToIdx.remove(node);
 
@@ -361,5 +362,15 @@ public class MutableStmtGraph extends StmtGraph {
     succs.forEach(succ -> predecessors.get(getNodeIdx(succ)).remove(node));
     // invalidate entry for node itself to allow gc
     successors.set(nodeIdx, null);
+  }
+
+  public void removeTrap(Trap trap) {
+    Set<Trap> trapsSet = new LinkedHashSet<>(this.traps);
+    if (trapsSet.contains(trap)) {
+      trapsSet.remove(trap);
+      setTraps(new ArrayList<>(trapsSet));
+    } else {
+      throw new RuntimeException("The trap " + trap.toString() + " is not in StmtGraph!");
+    }
   }
 }

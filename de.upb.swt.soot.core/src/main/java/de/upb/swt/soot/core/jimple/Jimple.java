@@ -379,28 +379,29 @@ public abstract class Jimple {
   }
 
   /**
-   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod
-   * methodRef, List args) grammar chunk.
+   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodSignature, List bootstrapArgs,
+   * SootMethod methodSignature, List args) grammar chunk.
    */
   public static JDynamicInvokeExpr newDynamicInvokeExpr(
-      MethodSignature bootstrapMethodRef,
+      MethodSignature bootstrapMethodSignature,
       List<Immediate> bootstrapArgs,
-      MethodSignature methodRef,
+      MethodSignature methodSignature,
       List<Immediate> args) {
-    return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, args);
+    return new JDynamicInvokeExpr(bootstrapMethodSignature, bootstrapArgs, methodSignature, args);
   }
 
   /**
-   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod
-   * methodRef, List args) grammar chunk.
+   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodSignature, List bootstrapArgs,
+   * SootMethod methodSignature, List args) grammar chunk.
    */
   public static JDynamicInvokeExpr newDynamicInvokeExpr(
-      MethodSignature bootstrapMethodRef,
+      MethodSignature bootstrapMethodSignature,
       List<Immediate> bootstrapArgs,
-      MethodSignature methodRef,
+      MethodSignature methodSignature,
       int tag,
       List<Immediate> args) {
-    return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, tag, args);
+    return new JDynamicInvokeExpr(
+        bootstrapMethodSignature, bootstrapArgs, methodSignature, tag, args);
   }
 
   /**
@@ -507,20 +508,16 @@ public abstract class Jimple {
     return new JIfStmt(condition, posInfo);
   }
 
-  /** Constructs a IfStmt(Condition, UnitBox) grammar chunk. */
-  public static JIfStmt newIfStmt(Value condition, StmtPositionInfo posInfo) {
-    return new JIfStmt(condition, posInfo);
-  }
-
   /** Constructs a IdentityStmt(Local, IdentityRef) grammar chunk. */
-  public static JIdentityStmt newIdentityStmt(
-      Local local, IdentityRef identityRef, StmtPositionInfo posInfo) {
-    return new JIdentityStmt(local, identityRef, posInfo);
+  public static <L extends IdentityRef> JIdentityStmt<L> newIdentityStmt(
+      Local local, L identityRef, StmtPositionInfo posInfo) {
+    return new JIdentityStmt<>(local, identityRef, posInfo);
   }
 
   /** Constructs a AssignStmt(Variable, RValue) grammar chunk. */
-  public static JAssignStmt newAssignStmt(Value variable, Value rvalue, StmtPositionInfo posInfo) {
-    return new JAssignStmt(variable, rvalue, posInfo);
+  public static <L extends Value, R extends Value> JAssignStmt<L, R> newAssignStmt(
+      L variable, R rvalue, StmtPositionInfo posInfo) {
+    return new JAssignStmt<>(variable, rvalue, posInfo);
   }
 
   /** Constructs a InvokeStmt(InvokeExpr) grammar chunk. */
@@ -552,8 +549,8 @@ public abstract class Jimple {
     return new JStaticFieldRef(f);
   }
 
-  /** Constructs a ThisRef(RefType) grammar chunk. */
-  public static JThisRef newThisRef(ReferenceType t) {
+  /** Constructs a ThisRef(ClassType) grammar chunk. */
+  public static JThisRef newThisRef(ClassType t) {
     return new JThisRef(t);
   }
 
@@ -575,30 +572,6 @@ public abstract class Jimple {
   /** Constructs a CaughtExceptionRef() grammar chunk. */
   public abstract JCaughtExceptionRef newCaughtExceptionRef();
 
-  public static ValueBox newArgBox(Value value) {
-    return new ImmediateBox(value);
-  }
-
-  public static ValueBox newImmediateBox(Value value) {
-    return new ImmediateBox(value);
-  }
-
-  public static ValueBox newLocalBox(Value local) {
-    return new LocalBox(local);
-  }
-
-  public static ValueBox newIdentityRefBox(Value value) {
-    return new IdentityRefBox(value);
-  }
-
-  public static ValueBox newConditionExprBox(Value condition) {
-    return new ConditionExprBox(condition);
-  }
-
-  public static ValueBox newInvokeExprBox(Value value) {
-    return new InvokeExprBox(value);
-  }
-
   /** Constructs a NewExpr(RefType) grammar chunk. */
   public static JNewExpr newNewExpr(ClassType type) {
     return new JNewExpr(type);
@@ -608,7 +581,7 @@ public abstract class Jimple {
     return new JNewMultiArrayExpr(type, sizes);
   }
 
-  public static JTrap newTrap(ClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
-    return new JTrap(exception, beginStmt, endStmt, handlerStmt);
+  public static Trap newTrap(ClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
+    return new Trap(exception, beginStmt, endStmt, handlerStmt);
   }
 }

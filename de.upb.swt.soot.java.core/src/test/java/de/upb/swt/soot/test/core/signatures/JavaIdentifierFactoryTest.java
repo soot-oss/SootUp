@@ -116,16 +116,18 @@ public class JavaIdentifierFactoryTest {
   @Test
   public void sigFromPath() {
     JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
+    Path rootDirectory = Paths.get("");
     Path p = Paths.get("java/lang/System.class");
-    ClassType classSignature = typeFactory.fromPath(p);
+    ClassType classSignature = typeFactory.fromPath(rootDirectory, p);
     assertEquals(classSignature.toString(), "java.lang.System");
   }
 
   @Test
   public void sigFromPathStartsWithSlash() {
     JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
+    Path rootDirectory = Paths.get("/");
     Path p = Paths.get("/java/lang/System.class");
-    ClassType classSignature = typeFactory.fromPath(p);
+    ClassType classSignature = typeFactory.fromPath(rootDirectory, p);
     assertEquals(classSignature.toString(), "java.lang.System");
   }
 

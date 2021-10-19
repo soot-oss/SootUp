@@ -41,8 +41,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
+
+  private static final Logger logger = LoggerFactory.getLogger(AbstractCallGraphAlgorithm.class);
 
   @Nonnull protected final View<? extends SootClass<?>> view;
   @Nonnull protected final TypeHierarchy typeHierarchy;
@@ -106,17 +110,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     if (currentMethodCandidate == null) return Stream.empty();
 
     if (currentMethodCandidate.hasBody()) {
-      Set<MethodSignature> resolvedCalls = new HashSet<>();
-      Set<Stmt> stmts = currentMethodCandidate.getBody().getStmtGraph().nodes();
-      for (Stmt stmt : stmts) {
-        if (stmt.containsInvokeExpr()) {
-          Set<MethodSignature> invokeSet =
-              resolveCall(currentMethodCandidate, stmt.getInvokeExpr());
-          CallGraphEdgeType edgeType = MethodUtil.findCallGraphEdgeType(stmt.getInvokeExpr());
-          invokeSet.forEach(e -> resolvedCalls.add(e));
-        }
-      }
-      return resolvedCalls.stream();
+      return currentMethodCandidate.getBody().getStmtGraph().nodes().stream()
+          .filter(Stmt::containsInvokeExpr)
+          .flatMap(s -> resolveCall(currentMethodCandidate, s.getInvokeExpr()));
     } else {
       return Stream.empty();
     }
@@ -124,26 +120,36 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   /** finds the given method signature in class's superclasses */
   protected final <T extends Method> T findMethodInHierarchy(
-      @Nonnull View<? extends SootClass> view, @Nonnull MethodSignature sig) {
-    SootClass sc = view.getClass(sig.getDeclClassType()).get();
-    Optional<ClassType> optSuperclass = sc.getSuperclass();
+      @Nonnull View<? extends SootClass<?>> view, @Nonnull MethodSignature sig) {
+    Optional<? extends SootClass> optSc = view.getClass(sig.getDeclClassType());
 
-    Optional<SootMethod> optMethod;
-    while (optSuperclass.isPresent()) {
-      ClassType superClassType = optSuperclass.get();
-      SootClass superClass = view.getClass(superClassType).get();
-      optMethod = (Optional<SootMethod>) superClass.getMethod(sig.getSubSignature());
-      if (optMethod.isPresent()) {
-        return (T) optMethod.get();
+    if (optSc.isPresent()) {
+      SootClass sc = optSc.get();
+
+      List<ClassType> superClasses = typeHierarchy.superClassesOf(sc.getType());
+      Set<ClassType> interfaces = typeHierarchy.implementedInterfacesOf(sc.getType());
+      superClasses.addAll(interfaces);
+
+      for (ClassType superClassType : superClasses) {
+        Optional<? extends SootClass<?>> superClassOpt = view.getClass(superClassType);
+        if (superClassOpt.isPresent()) {
+          SootClass<?> superClass = superClassOpt.get();
+          Optional<? extends SootMethod> methodOpt = superClass.getMethod(sig.getSubSignature());
+          if (methodOpt.isPresent()) {
+            return (T) methodOpt.get();
+          }
+        }
       }
-      optSuperclass = superClass.getSuperclass();
+      logger.warn(
+          "Could not find \""
+              + sig.getSubSignature()
+              + "\" in "
+              + sig.getDeclClassType().getClassName()
+              + " and in its superclasses");
+    } else {
+      logger.warn("Could not find \"" + sig.getDeclClassType() + "\" in view");
     }
-    throw new ResolveException(
-        "Could not find \""
-            + sig.getSubSignature()
-            + "\" in "
-            + sig.getDeclClassType().getClassName()
-            + " and in its superclasses");
+    return null;
   }
 
   @Nonnull
@@ -196,6 +202,5 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   @Nonnull
-  protected abstract Set<MethodSignature> resolveCall(
-      SootMethod method, AbstractInvokeExpr invokeExpr);
+  abstract Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr);
 }

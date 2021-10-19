@@ -25,6 +25,7 @@ package de.upb.swt.soot.core.jimple.visitor;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
 import de.upb.swt.soot.core.jimple.common.ref.Ref;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
@@ -41,6 +42,9 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   @Nonnull private final Value oldUse;
   @Nonnull private final Value newUse;
 
+  final ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor();
+  final ReplaceUseRefVisitor refVisitor = new ReplaceUseRefVisitor();
+
   public ReplaceUseStmtVisitor(@Nonnull Value oldUse, @Nonnull Value newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
@@ -54,43 +58,45 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   @Override
   public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
     Expr invokeExpr = stmt.getInvokeExpr();
-    ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor(oldUse, newUse);
+    exprVisitor.init(oldUse, newUse);
     invokeExpr.accept(exprVisitor);
-    if (!exprVisitor.getResult().equivTo(invokeExpr)) {
-      setResult(stmt.withInvokeExpr(exprVisitor.getResult()));
+
+    if (exprVisitor.getResult() != invokeExpr) {
+      setResult(stmt.withInvokeExpr((AbstractInvokeExpr) exprVisitor.getResult()));
     } else {
       defaultCaseStmt(stmt);
     }
   }
 
   @Override
-  public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+  public void caseAssignStmt(@Nonnull JAssignStmt<?, ?> stmt) {
     Value rValue = stmt.getRightOp();
-    Value newRValue = null;
 
     if (rValue instanceof Immediate) {
-      if ((newUse instanceof Immediate) && rValue.equivTo(oldUse)) newRValue = newUse;
+      if (rValue == oldUse) {
+        setResult(stmt.withRValue(newUse));
+      }
 
     } else if (rValue instanceof Ref) {
-
-      ReplaceUseRefVisitor refVisitor = new ReplaceUseRefVisitor(oldUse, newUse);
-      ((Ref) rValue).accept(refVisitor);
-      if (!refVisitor.getResult().equivTo(rValue)) {
-        newRValue = refVisitor.getResult();
+      if (rValue == oldUse) {
+        setResult(stmt.withRValue(newUse));
+      } else {
+        refVisitor.init(oldUse, newUse);
+        ((Ref) rValue).accept(refVisitor);
+        if (refVisitor.getResult() != rValue) {
+          setResult(stmt.withRValue(refVisitor.getResult()));
+        }
       }
 
     } else if (rValue instanceof Expr) {
 
-      ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor(oldUse, newUse);
+      exprVisitor.init(oldUse, newUse);
       ((Expr) rValue).accept(exprVisitor);
-      if (!exprVisitor.getResult().equivTo(rValue)) {
-        newRValue = exprVisitor.getResult();
+      if (exprVisitor.getResult() != rValue) {
+        setResult(stmt.withRValue(exprVisitor.getResult()));
       }
-    }
-    if (newRValue != null) {
-      setResult(stmt.withRValue(newRValue));
     } else {
-      defaultCaseStmt(stmt);
+      errorHandler(stmt);
     }
   }
 
@@ -101,20 +107,12 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseEnterMonitorStmt(@Nonnull JEnterMonitorStmt stmt) {
-    if (newUse instanceof Immediate && stmt.getOp().equivTo(oldUse)) {
-      setResult(stmt.withOp(newUse));
-    } else {
-      defaultCaseStmt(stmt);
-    }
+    setResult(stmt.withOp((Immediate) newUse));
   }
 
   @Override
   public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
-    if (newUse instanceof Immediate && stmt.getOp().equivTo(oldUse)) {
-      setResult(stmt.withOp(newUse));
-    } else {
-      defaultCaseStmt(stmt);
-    }
+    setResult(stmt.withOp((Immediate) newUse));
   }
 
   @Override
@@ -124,13 +122,13 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseIfStmt(@Nonnull JIfStmt stmt) {
-    Expr condition = (Expr) stmt.getCondition();
-    ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor(oldUse, newUse);
-    condition.accept(exprVisitor);
-    if (!exprVisitor.getResult().equivTo(condition)) {
+    Expr conditionExpr = stmt.getCondition();
+    exprVisitor.init((Immediate) oldUse, (Immediate) newUse);
+    conditionExpr.accept(exprVisitor);
+    if (exprVisitor.getResult() != conditionExpr) {
       setResult(stmt.withCondition((AbstractConditionExpr) exprVisitor.getResult()));
     } else {
-      defaultCaseStmt(stmt);
+      errorHandler(stmt);
     }
   }
 
@@ -141,20 +139,12 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseRetStmt(@Nonnull JRetStmt stmt) {
-    if (newUse instanceof Immediate && stmt.getStmtAddress().equivTo(oldUse)) {
-      setResult(stmt.withStmtAddress((Immediate) newUse));
-    } else {
-      defaultCaseStmt(stmt);
-    }
+    setResult(stmt.withStmtAddress(newUse));
   }
 
   @Override
   public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
-    if (newUse instanceof Immediate && stmt.getOp().equivTo(oldUse)) {
-      setResult(stmt.withReturnValue((Immediate) newUse));
-    } else {
-      defaultCaseStmt(stmt);
-    }
+    setResult(stmt.withReturnValue((Immediate) newUse));
   }
 
   @Override
@@ -164,23 +154,23 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseSwitchStmt(@Nonnull JSwitchStmt stmt) {
-    if (newUse instanceof Immediate && stmt.getKey().equivTo(oldUse)) {
-      setResult(stmt.withKey((Immediate) newUse));
-    } else {
-      defaultCaseStmt(stmt);
-    }
+    setResult(stmt.withKey((Immediate) newUse));
   }
 
   @Override
   public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
-    if (newUse instanceof Immediate && stmt.getOp().equivTo(oldUse)) {
-      setResult(stmt.withOp(newUse));
-    } else {
-      defaultCaseStmt(stmt);
-    }
+    setResult(stmt.withOp((Immediate) newUse));
   }
 
   public void defaultCaseStmt(@Nonnull Stmt stmt) {
     setResult(stmt);
+  }
+
+  public void errorHandler(@Nonnull Stmt stmt) {
+    defaultCaseStmt(stmt);
+    /*
+    throw new IllegalArgumentException(
+            "The given oldUse '"+ oldUse +"' which should be replaced is not a current use of " + stmt + "!");
+            */
   }
 }

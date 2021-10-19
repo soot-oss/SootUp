@@ -5,7 +5,6 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Position;
@@ -33,15 +32,12 @@ public class LocalLivenessAnalyserTest {
   JavaClassType classType = factory.getClassType("Test");
   MethodSignature methodSignature =
       new MethodSignature(classType, "test", Collections.emptyList(), VoidType.getInstance());
-  IdentityRef identityRef = JavaJimple.newThisRef(classType);
 
   // build locals
-  // Local l0 = JavaJimple.newLocal("l0", classType);
   Local a = JavaJimple.newLocal("a", intType);
   Local b = JavaJimple.newLocal("b", intType);
   Local c = JavaJimple.newLocal("c", intType);
 
-  // Stmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
   Stmt aeq0 = JavaJimple.newAssignStmt(a, IntConstant.getInstance(0), noStmtPositionInfo);
   Stmt beqaplus1 =
       JavaJimple.newAssignStmt(
@@ -70,7 +66,8 @@ public class LocalLivenessAnalyserTest {
   @Test
   public void testLivenessAnalyser() {
     Body body = createBody();
-    LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(body.getStmtGraph());
+    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
+    LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(builder.getStmtGraph());
     Set<Local> cSet = ImmutableUtils.immutableSet(c);
     Set<Local> ac = ImmutableUtils.immutableSet(a, c);
     Set<Local> bc = ImmutableUtils.immutableSet(b, c);
@@ -99,7 +96,6 @@ public class LocalLivenessAnalyserTest {
     builder.setLocals(locals);
 
     // set graph
-    // builder.addFlow(startingStmt, aeq0);
     builder.addFlow(aeq0, beqaplus1);
     builder.addFlow(beqaplus1, ceqcplusb);
     builder.addFlow(ceqcplusb, aeqbplus2);

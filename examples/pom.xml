@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>Soot Examples</name>
+  <artifactId>examples</artifactId>
+  <packaging>jar</packaging>
+  <parent>
+    <groupId>de.upb.swt</groupId>
+    <artifactId>soot</artifactId>
+    <version>4.0.0-SNAPSHOT</version>
+  </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>de.upb.swt</groupId>
+      <artifactId>soot.callgraph</artifactId>
+      <version>4.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>de.upb.swt</groupId>
+      <artifactId>soot.core</artifactId>
+      <version>4.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>de.upb.swt</groupId>
+      <artifactId>soot.java.bytecode</artifactId>
+      <version>4.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>de.upb.swt</groupId>
+      <artifactId>soot.java.core</artifactId>
+      <version>4.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>de.upb.swt</groupId>
+      <artifactId>soot.java.sourcecode</artifactId>
+      <version>4.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>de.upb.swt</groupId>
+      <artifactId>soot.jimple.parser</artifactId>
+      <version>4.0.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
+</project>

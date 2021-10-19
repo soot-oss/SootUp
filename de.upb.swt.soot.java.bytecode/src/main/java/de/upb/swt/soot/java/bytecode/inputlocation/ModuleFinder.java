@@ -44,7 +44,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sun.tools.jar.resources.jar;
 
 /**
  * Discovers all modules in a given module path. For automatic modules, names are generated.
@@ -81,9 +80,10 @@ public class ModuleFinder {
    *
    * @param modulePath the module path
    */
-  public ModuleFinder(@Nonnull String modulePath) {
+  public ModuleFinder(@Nonnull String modulePath, @Nonnull FileSystem fileSystem) {
     this.modulePathEntries =
-        JavaClassPathAnalysisInputLocation.explode(modulePath).collect(Collectors.toList());
+        JavaClassPathAnalysisInputLocation.explode(modulePath, fileSystem)
+            .collect(Collectors.toList());
     for (Path modulePathEntry : modulePathEntries) {
       if (!Files.exists(modulePathEntry)) {
         throw new IllegalArgumentException(
@@ -94,6 +94,10 @@ public class ModuleFinder {
                 + "' does not exist in the filesystem.");
       }
     }
+  }
+
+  public ModuleFinder(@Nonnull String modulePath) {
+    this(modulePath, FileSystems.getDefault());
   }
 
   @Nonnull
@@ -173,6 +177,10 @@ public class ModuleFinder {
     if (PathUtils.isArchive(path)) {
       buildModuleForJar(path);
     } else if (attrs.isDirectory()) {
+      Path mi = path.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
+      if (Files.exists(mi)) {
+        buildModuleForExplodedModule(path);
+      }
 
       try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
         for (Path entry : stream) {
@@ -183,7 +191,7 @@ public class ModuleFinder {
           }
 
           if (attrs.isDirectory()) {
-            Path mi = entry.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
+            mi = entry.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
             if (Files.exists(mi)) {
               buildModuleForExplodedModule(entry);
             }
@@ -225,7 +233,7 @@ public class ModuleFinder {
     PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
     Path mi;
-    try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
+    try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, (ClassLoader) null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");
       mi = archiveRoot.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
 
@@ -310,6 +318,19 @@ public class ModuleFinder {
     }
 
     return moduleName;
+  }
+
+  @Override
+  public int hashCode() {
+    return modulePathEntries.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof ModuleFinder)) {
+      return false;
+    }
+    return modulePathEntries.equals(((ModuleFinder) o).modulePathEntries);
   }
 
   /** Lazy-initialized cache of compiled patterns. */

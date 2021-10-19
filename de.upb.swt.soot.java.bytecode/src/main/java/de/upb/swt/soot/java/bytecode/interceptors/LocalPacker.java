@@ -20,8 +20,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.graph.StmtGraph;
-import de.upb.swt.soot.core.jimple.basic.JTrap;
+import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -38,7 +37,6 @@ import javax.annotation.Nonnull;
 public class LocalPacker implements BodyInterceptor {
 
   @Override
-  @Nonnull
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
     Map<Local, Integer> localToColor = assignLocalsColor(builder);
@@ -127,9 +125,9 @@ public class LocalPacker implements BodyInterceptor {
   }
 
   /**
-   * Assign each local from a Bodybuilder a integer color
+   * Assign each local from a Bodybuilder an integer color
    *
-   * @param builder
+   * @param builder an instance of BodyBuilder
    * @return a Map that maps local to a integer color
    */
   private Map<Local, Integer> assignLocalsColor(Body.BodyBuilder builder) {
@@ -154,8 +152,6 @@ public class LocalPacker implements BodyInterceptor {
           count++;
           typeToColorCount.put(type, count);
         }
-      } else {
-        break;
       }
     }
     // Sort locals according to their number of interference-locals, local with more interferences <
@@ -214,7 +210,7 @@ public class LocalPacker implements BodyInterceptor {
   private Map<Local, Set<Local>> buildLocalInterferenceMap(Body.BodyBuilder builder) {
     // Maps local to its interfering locals
     Map<Local, Set<Local>> localToLocals = new HashMap<>();
-    StmtGraph graph = builder.getStmtGraph();
+    ExceptionalStmtGraph graph = builder.getStmtGraph();
     LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(graph);
 
     for (Stmt stmt : builder.getStmts()) {
@@ -226,7 +222,9 @@ public class LocalPacker implements BodyInterceptor {
         for (Stmt succ : graph.successors(stmt)) {
           aliveLocals.addAll(analyser.getLiveLocalsBeforeStmt(succ));
         }
-
+        for (Stmt esucc : graph.exceptionalSuccessors(stmt)) {
+          aliveLocals.addAll(analyser.getLiveLocalsBeforeStmt(esucc));
+        }
         for (Local aliveLocal : aliveLocals) {
           if (aliveLocal != def && aliveLocal.getType().equals(def.getType())) {
             // set interference for both locals: aliveLocal, def
@@ -252,13 +250,7 @@ public class LocalPacker implements BodyInterceptor {
     return localToLocals;
   }
 
-  /**
-   * Replace corresponding oldStmt with newStmt in BodyBuilder
-   *
-   * @param builder
-   * @param oldStmt
-   * @param newStmt
-   */
+  /** Replace corresponding oldStmt with newStmt in BodyBuilder */
   private void replaceStmtInBuilder(Body.BodyBuilder builder, Stmt oldStmt, Stmt newStmt) {
     builder.replaceStmt(oldStmt, newStmt);
     adaptTraps(builder, oldStmt, newStmt);
@@ -275,12 +267,11 @@ public class LocalPacker implements BodyInterceptor {
     List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
     for (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) {
       Trap trap = iterator.next();
-      JTrap jtrap = (JTrap) trap;
       if (oldStmt.equivTo(trap.getBeginStmt())) {
-        Trap newTrap = jtrap.withBeginStmt(newStmt);
+        Trap newTrap = trap.withBeginStmt(newStmt);
         iterator.set(newTrap);
       } else if (oldStmt.equivTo(trap.getEndStmt())) {
-        Trap newTrap = jtrap.withEndStmt(newStmt);
+        Trap newTrap = trap.withEndStmt(newStmt);
         iterator.set(newTrap);
       }
     }

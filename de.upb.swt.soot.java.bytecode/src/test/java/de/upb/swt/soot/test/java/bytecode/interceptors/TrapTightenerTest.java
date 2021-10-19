@@ -60,9 +60,9 @@ public class TrapTightenerTest {
   Stmt stmt10 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(3), noStmtPositionInfo);
   Stmt stmt11 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(4), noStmtPositionInfo);
   // trap
-  JTrap trap1 = new JTrap(exception, stmt2, stmt5, stmt6);
-  JTrap trap2 = new JTrap(exception, stmt1, stmt5, stmt6);
-  JTrap trap3 = new JTrap(exception, stmt7, stmt10, stmt6);
+  Trap trap1 = new Trap(exception, stmt2, stmt5, stmt6);
+  Trap trap2 = new Trap(exception, stmt1, stmt5, stmt6);
+  Trap trap3 = new Trap(exception, stmt7, stmt10, stmt6);
 
   /**
    *

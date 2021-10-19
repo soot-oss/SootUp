@@ -342,7 +342,7 @@ public class WalaIRToJimpleConverter {
     return modifiers;
   }
 
-  /** Return all modifiers for the given methodRef. */
+  /** Return all modifiers for the given method. */
   public EnumSet<Modifier> convertModifiers(AstMethod method) {
     EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
     if (method.isPrivate()) {
@@ -490,7 +490,17 @@ public class WalaIRToJimpleConverter {
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
         HashMap<Integer, Stmt> index2Stmt = new HashMap<>();
         Stmt stmt = null;
+        boolean isVoidMethod = walaMethod.getReturnType().equals(TypeReference.Void);
+
         for (SSAInstruction inst : insts) {
+
+          // WALA sets target of goto to -1 if the goto points to a dead block
+          if (!isVoidMethod && inst instanceof SSAGotoInstruction) {
+            if (((SSAGotoInstruction) inst).getTarget() == -1) {
+              continue;
+            }
+          }
+
           List<Stmt> retStmts = instConverter.convertInstruction(inst, index2Stmt);
           if (!retStmts.isEmpty()) {
             final int retStmtsSize = retStmts.size();
@@ -506,7 +516,7 @@ public class WalaIRToJimpleConverter {
         }
 
         // add return void stmt for methods with return type being void
-        if (walaMethod.getReturnType().equals(TypeReference.Void)) {
+        if (isVoidMethod) {
           Stmt ret;
           final boolean isImplicitLastStmtTargetOfBranchStmt = instConverter.hasJumpTarget(-1);
           final boolean validMethodLeaving =
@@ -587,7 +597,7 @@ public class WalaIRToJimpleConverter {
           Stmt handlerStmt = index2Stmt.get(block.getFirstInstructionIndex());
           for (TypeReference type : exceptionTypes) {
             ClassType exception = (ClassType) convertType(type);
-            traps.add(new JTrap(exception, from, to, handlerStmt));
+            traps.add(new Trap(exception, from, to, handlerStmt));
           }
         }
 

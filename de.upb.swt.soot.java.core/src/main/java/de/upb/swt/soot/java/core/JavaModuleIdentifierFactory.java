@@ -26,12 +26,10 @@ import de.upb.swt.soot.core.signatures.*;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 import de.upb.swt.soot.java.core.types.ModuleJavaClassType;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ClassUtils;
 
 public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
@@ -129,9 +127,9 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
   }
 
   /**
-   * Returns a unique ModuleSignature. The methodRef looks up a cache if it already contains a
+   * Returns a unique ModuleSignature. The method looks up a cache if it already contains a
    * signature with the given module name. If the cache lookup fails a new signature is created.
-   * Returns a unique ModuleSignature. The methodRef looks up a cache if it already contains a
+   * Returns a unique ModuleSignature. The method looks up a cache if it already contains a
    * signature with the given module name. If the cache lookup fails a new signature is created.
    *
    * @param moduleName the module name; Must not be null. Use the empty string for the unnamed
@@ -222,20 +220,6 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
         List<String> parameters) {
       return super.getMethodSignature(
           methodName, fullyQualifiedNameDeclClass, fqReturnType, parameters);
-    }
-
-    @Override
-    @Nonnull
-    public ModuleJavaClassType fromPath(@Nonnull Path file) {
-      String fullyQualifiedName = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
-      String packageName = "";
-      int index = fullyQualifiedName.lastIndexOf(".");
-      String className = fullyQualifiedName;
-      if (index > 0) {
-        className = fullyQualifiedName.substring(index);
-        packageName = fullyQualifiedName.substring(0, index);
-      }
-      return getClassType(className, packageName, moduleSignature);
     }
   }
 }

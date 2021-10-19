@@ -1,6 +1,6 @@
 package de.upb.swt.soot.test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -42,7 +42,8 @@ public class ReplaceUseRefVisitorTest {
   public void testCaseArrayRef() {
 
     // replace base with newUse
-    ReplaceUseRefVisitor visitor = new ReplaceUseRefVisitor(base, newBase);
+    ReplaceUseRefVisitor visitor = new ReplaceUseRefVisitor();
+    visitor.init(base, newBase);
     Ref ref = javaJimple.newArrayRef(base, conIndex);
     ref.accept(visitor);
     Ref newRef = visitor.getResult();
@@ -51,44 +52,48 @@ public class ReplaceUseRefVisitorTest {
     expectedUses.add(newBase);
     expectedUses.add(conIndex);
 
-    assertTrue(newRef.getUses().equals(expectedUses));
+    assertEquals(newRef.getUses(), expectedUses);
     expectedUses.clear();
 
     // replace constant index with newUse
-    visitor = new ReplaceUseRefVisitor(conIndex, conNewIndex);
+    visitor = new ReplaceUseRefVisitor();
+    visitor.init(conIndex, conNewIndex);
     ref = javaJimple.newArrayRef(base, conIndex);
     ref.accept(visitor);
     newRef = visitor.getResult();
 
     expectedUses.add(base);
     expectedUses.add(conNewIndex);
-    assertTrue(newRef.getUses().equals(expectedUses));
+    assertEquals(newRef.getUses(), expectedUses);
     expectedUses.clear();
 
     // replace local index with newUse
-    visitor = new ReplaceUseRefVisitor(localIndex, localNewIndex);
+    visitor = new ReplaceUseRefVisitor();
+    visitor.init(localIndex, localNewIndex);
     ref = javaJimple.newArrayRef(base, localIndex);
     ref.accept(visitor);
     newRef = visitor.getResult();
 
     expectedUses.add(base);
     expectedUses.add(localNewIndex);
-    assertTrue(newRef.getUses().equals(expectedUses));
+    assertEquals(newRef.getUses(), expectedUses);
     expectedUses.clear();
 
     // no matched use
-    ref = javaJimple.newArrayRef(base, conIndex);
-    ref.accept(visitor);
-    newRef = visitor.getResult();
-
-    assertTrue(newRef.equivTo(ref));
+    try {
+      ref = javaJimple.newArrayRef(base, conIndex);
+      ref.accept(visitor);
+      fail("not allowed!");
+    } catch (Exception ignore) {
+    }
   }
 
   /** Test use replacing in case JInstanceFieldRef. */
   @Test
   public void testCaseInstanceFieldRef() {
 
-    ReplaceUseRefVisitor visitor = new ReplaceUseRefVisitor(base, newBase);
+    ReplaceUseRefVisitor visitor = new ReplaceUseRefVisitor();
+    visitor.init(base, newBase);
 
     // replace base with newUse
     Ref ref = JavaJimple.newInstanceFieldRef(base, fieldSignature);
@@ -98,13 +103,14 @@ public class ReplaceUseRefVisitorTest {
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newBase);
 
-    assertTrue(newRef.getUses().equals(expectedUses));
+    assertEquals(newRef.getUses(), expectedUses);
 
     // no matched use
-    ref = JavaJimple.newInstanceFieldRef(localIndex, fieldSignature);
-    ref.accept(visitor);
-    newRef = visitor.getResult();
-
-    assertTrue(newRef.equals(ref));
+    try {
+      ref = JavaJimple.newInstanceFieldRef(localIndex, fieldSignature);
+      ref.accept(visitor);
+      fail("not allowed!");
+    } catch (Exception ignore) {
+    }
   }
 }

@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public abstract class Project<S extends SootClass<?>, V extends View<S>> {
+public abstract class Project<S extends SootClass<?>, V extends View<? extends SootClass<?>>> {
 
   @Nonnull private final IdentifierFactory identifierFactory;
 
@@ -119,8 +119,7 @@ public abstract class Project<S extends SootClass<?>, V extends View<S>> {
   }
 
   /**
-   * Create a complete view from everything in all provided input locations. This methodRef starts
-   * the reification process.
+   * Create a complete view from everything in all provided input locations.
    *
    * @return A complete view on the provided code
    */
@@ -143,7 +142,7 @@ public abstract class Project<S extends SootClass<?>, V extends View<S>> {
 
   /**
    * Returns a partial view on the code based on the provided scope and all input locations in the
-   * project. This methodRef starts the reification process.
+   * project and scope.
    *
    * @param s A scope of interest for the view
    * @return A scoped view of the provided code

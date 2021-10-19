@@ -49,7 +49,7 @@ public class LocalGenerator {
    * Creates Locals {@link Local} with a standard naming scheme. If a Set of Locals is provided, the
    * LocalGenerator checks whether the name is already taken.
    */
-  // TODO: [ms] make it private and access it via BodyBuilder?
+  // TODO: [ms] make it private - access it via BodyBuilder
   public LocalGenerator(@Nonnull Set<Local> existingLocals) {
     locals = existingLocals;
   }

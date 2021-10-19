@@ -95,16 +95,16 @@ public class OverridingClassSource extends SootClassSource {
 
   /** Class source where all information already available */
   public OverridingClassSource(
-      @Nonnull AnalysisInputLocation srcNamespace,
+      @Nonnull Set<SootMethod> sootMethods,
+      @Nonnull Set<SootField> sootFields,
+      @Nonnull EnumSet<Modifier> modifiers,
+      @Nonnull Set<ClassType> interfaces,
+      @Nonnull ClassType superClass,
+      @Nonnull ClassType outerClass,
+      @Nonnull Position position,
       @Nonnull Path sourcePath,
       @Nonnull ClassType classType,
-      @Nonnull ClassType superClass,
-      @Nonnull Set<ClassType> interfaces,
-      @Nonnull ClassType outerClass,
-      @Nonnull Set<SootField> sootFields,
-      @Nonnull Set<SootMethod> sootMethods,
-      @Nonnull Position position,
-      @Nonnull EnumSet<Modifier> modifiers) {
+      @Nonnull AnalysisInputLocation srcNamespace) {
     super(srcNamespace, classType, sourcePath);
 
     this.delegate = null;
