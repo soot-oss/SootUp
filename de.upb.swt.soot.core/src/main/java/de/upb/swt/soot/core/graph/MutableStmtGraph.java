@@ -57,6 +57,7 @@ public class MutableStmtGraph extends StmtGraph {
   @Nonnull protected final ArrayList<List<Stmt>> successors;
   @Nonnull protected final Map<Stmt, Integer> stmtToIdx;
   private int nextFreeId = 0;
+  protected int removedIdx;
 
   @Nullable protected Stmt startingStmt;
   @Nonnull protected List<Trap> traps = Collections.emptyList();
@@ -387,6 +388,7 @@ public class MutableStmtGraph extends StmtGraph {
       return;
     }
     final int nodeIdx = integer;
+    removedIdx = nodeIdx;
     // remove node from index map
     stmtToIdx.remove(node);
 
@@ -406,5 +408,15 @@ public class MutableStmtGraph extends StmtGraph {
     succs.forEach(succ -> predecessors.get(getNodeIdx(succ)).remove(node));
     // invalidate entry for node itself to allow gc
     successors.set(nodeIdx, null);
+  }
+
+  public void removeTrap(Trap trap) {
+    Set<Trap> trapsSet = new LinkedHashSet<>(this.traps);
+    if (trapsSet.contains(trap)) {
+      trapsSet.remove(trap);
+      setTraps(new ArrayList<>(trapsSet));
+    } else {
+      throw new RuntimeException("The trap " + trap.toString() + " is not in StmtGraph!");
+    }
   }
 }

@@ -20,8 +20,9 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -36,7 +37,6 @@ import javax.annotation.Nonnull;
 public class LocalPacker implements BodyInterceptor {
 
   @Override
-  @Nonnull
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
     Map<Local, Integer> localToColor = assignLocalsColor(builder);
@@ -118,16 +118,16 @@ public class LocalPacker implements BodyInterceptor {
         newStmt = BodyUtils.withNewDef(newStmt, newLocal);
       }
       if (!stmt.equals(newStmt)) {
-        BodyUtils.replaceStmtInBuilder(builder, stmt, newStmt);
+        replaceStmtInBuilder(builder, stmt, newStmt);
       }
     }
     builder.setLocals(newLocals);
   }
 
   /**
-   * Assign each local from a Bodybuilder a integer color
+   * Assign each local from a Bodybuilder an integer color
    *
-   * @param builder
+   * @param builder an instance of BodyBuilder
    * @return a Map that maps local to a integer color
    */
   private Map<Local, Integer> assignLocalsColor(Body.BodyBuilder builder) {
@@ -152,8 +152,6 @@ public class LocalPacker implements BodyInterceptor {
           count++;
           typeToColorCount.put(type, count);
         }
-      } else {
-        break;
       }
     }
     // Sort locals according to their number of interference-locals, local with more interferences <
@@ -212,7 +210,7 @@ public class LocalPacker implements BodyInterceptor {
   private Map<Local, Set<Local>> buildLocalInterferenceMap(Body.BodyBuilder builder) {
     // Maps local to its interfering locals
     Map<Local, Set<Local>> localToLocals = new HashMap<>();
-    StmtGraph graph = builder.getStmtGraph();
+    ExceptionalStmtGraph graph = builder.getStmtGraph();
     LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(graph);
 
     for (Stmt stmt : builder.getStmts()) {
@@ -224,7 +222,9 @@ public class LocalPacker implements BodyInterceptor {
         for (Stmt succ : graph.successors(stmt)) {
           aliveLocals.addAll(analyser.getLiveLocalsBeforeStmt(succ));
         }
-
+        for (Stmt esucc : graph.exceptionalSuccessors(stmt)) {
+          aliveLocals.addAll(analyser.getLiveLocalsBeforeStmt(esucc));
+        }
         for (Local aliveLocal : aliveLocals) {
           if (aliveLocal != def && aliveLocal.getType().equals(def.getType())) {
             // set interference for both locals: aliveLocal, def
@@ -248,6 +248,34 @@ public class LocalPacker implements BodyInterceptor {
       }
     }
     return localToLocals;
+  }
+
+  /** Replace corresponding oldStmt with newStmt in BodyBuilder */
+  private void replaceStmtInBuilder(Body.BodyBuilder builder, Stmt oldStmt, Stmt newStmt) {
+    builder.replaceStmt(oldStmt, newStmt);
+    adaptTraps(builder, oldStmt, newStmt);
+  }
+  /**
+   * Fit the modified stmt in Traps
+   *
+   * @param builder a bodybuilder, use it to modify Trap
+   * @param oldStmt a Stmt which maybe a beginStmt or endStmt in a Trap
+   * @param newStmt a modified stmt to replace the oldStmt.
+   */
+  private void adaptTraps(
+      @Nonnull Body.BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+    List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
+    for (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) {
+      Trap trap = iterator.next();
+      if (oldStmt.equivTo(trap.getBeginStmt())) {
+        Trap newTrap = trap.withBeginStmt(newStmt);
+        iterator.set(newTrap);
+      } else if (oldStmt.equivTo(trap.getEndStmt())) {
+        Trap newTrap = trap.withEndStmt(newStmt);
+        iterator.set(newTrap);
+      }
+    }
+    builder.setTraps(traps);
   }
 
   private class TypeColorPair {

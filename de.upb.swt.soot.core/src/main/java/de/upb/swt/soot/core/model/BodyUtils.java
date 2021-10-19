@@ -104,7 +104,6 @@ public class BodyUtils {
    * @param graph a stmt graph which contains the given stmts.
    * @param use a local that is used by the given stmt.
    * @param stmt a stmt which uses the given local.
-   * @return
    */
   public static List<Stmt> getDefsForLocalUse(StmtGraph graph, Local use, Stmt stmt) {
     if (!stmt.getUses().contains(use)) {
@@ -164,13 +163,7 @@ public class BodyUtils {
     throw new RuntimeException("The given stmt must be JAssignStmt or JIdentityStmt!");
   }
 
-  /**
-   * Replace corresponding oldStmt with newStmt in BodyBuilder
-   *
-   * @param builder
-   * @param oldStmt
-   * @param newStmt
-   */
+  /** Replace corresponding oldStmt with newStmt in BodyBuilder */
   public static void replaceStmtInBuilder(Body.BodyBuilder builder, Stmt oldStmt, Stmt newStmt) {
     builder.replaceStmt(oldStmt, newStmt);
     adaptTraps(builder, oldStmt, newStmt);

@@ -1,4 +1,31 @@
 site_name: FutureSoot
+#site_url: https://example.com/
+repo_url: https://github.com/secure-software-engineering/soot-reloaded/
+
+nav:
+    - Home: index.md
+    - Installation: installation.md
+    - Getting started: getting-started.md
+
+#  - 'Knowledge':
+#    - Goal: goal.md
+    - Jimple: jimple.md
+    - Body Interceptors: BodyInterceptor.md
+    - Tools: Tools.md
+#    - CallGraph: callgraph.md
+#    - Analyses: analyses.md
+
+#  - About: about.md
 
 theme:
   name: material
+
+
+plugins:
+  - tooltips
+  - search
+  - include:
+      src_path: 'examples/src/test/java/de/upb/swt/soot/examples'
+
+extra_css:
+  - css/hint.min.css
