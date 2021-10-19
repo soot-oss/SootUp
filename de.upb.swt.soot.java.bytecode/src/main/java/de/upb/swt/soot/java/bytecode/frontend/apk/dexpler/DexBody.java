@@ -45,7 +45,6 @@ import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.java.bytecode.frontend.AsmUtil;
@@ -54,6 +53,7 @@ import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.typing.DalvikTyper;
 import de.upb.swt.soot.java.bytecode.interceptors.*;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
+import de.upb.swt.soot.java.core.toolkits.scalar.*;
 import org.jf.dexlib2.analysis.ClassPath;
 import org.jf.dexlib2.analysis.ClassPathResolver;
 import org.jf.dexlib2.analysis.ClassProvider;
@@ -109,6 +109,12 @@ public class DexBody {
 
   protected final DexEntry<? extends DexFile> dexEntry;
   protected final Method method;
+
+  private boolean use_original_names = true;
+  private boolean stabilize_local_names = true;
+  private int options_wrong_staticness = 0;
+  private int options_wrong_staticness_fix = 0;
+  private int options_wrong_staticness_fixstrict = 0;
 
   /**
    * An entry of debug information for a register from the dex file.
@@ -419,8 +425,6 @@ public class DexBody {
     return i;
   }
 
-  boolean use_original_names = true;
-  boolean stabilize_local_names = true;
 
   /**
    * Return the jimple equivalent of this body.
@@ -841,9 +845,9 @@ public class DexBody {
 
     // Some apps reference static fields as instance fields. We fix this
     // on the fly.
-    // FIXME - options and missing classes from old soot in toolkit package
-    if (Options.v().wrong_staticness() == Options.wrong_staticness_fix
-        || Options.v().wrong_staticness() == Options.wrong_staticness_fixstrict) {
+
+    if (options_wrong_staticness == options_wrong_staticness_fix
+        || options_wrong_staticness == options_wrong_staticness_fixstrict) {
       new FieldStaticnessCorrector().interceptBody(this.bodyBuilder);
       new MethodStaticnessCorrector().interceptBody(this.bodyBuilder);
     }
@@ -1059,6 +1063,7 @@ public class DexBody {
       if (bodyBuilder.getStmts().get(bodyBuilder.getStmts().size()-1) == endStmt
           && instructionAtAddress(endAddress - 1).getStmt() == endStmt) {
         Stmt nop = Jimple.newNopStmt(endStmt.getPositionInfo());
+        // FIXME - insertafter needs to be resolved
         bodyBuilder.getStmts().insertAfter(nop, endStmt);
         endStmt = nop;
       }
