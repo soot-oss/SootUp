@@ -25,7 +25,6 @@ package de.upb.swt.soot.callgraph.spark;
 import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.spark.pag.CallGraphEdgeType;
 import de.upb.swt.soot.callgraph.spark.pag.CalleeMethodSignature;
-import de.upb.swt.soot.callgraph.spark.pag.EdgeType;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationDotField;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -83,7 +82,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,11 +93,12 @@ import org.slf4j.LoggerFactory;
 public class OnFlyCallGraphBuilder {
   private static final Logger logger = LoggerFactory.getLogger(OnFlyCallGraphBuilder.class);
 
-  // NOTE: this field must be static to avoid adding the transformation again if the call graph is rebuilt.
+  // NOTE: this field must be static to avoid adding the transformation again if the call graph is
+  // rebuilt.
   static boolean registeredGuardsTransformation = false;
 
-  private static final Pattern PATTERN_METHOD_SUBSIG
-      = Pattern.compile("(?<returnType>.*?) (?<methodName>.*?)\\((?<parameters>.*?)\\)");
+  private static final Pattern PATTERN_METHOD_SUBSIG =
+      Pattern.compile("(?<returnType>.*?) (?<methodName>.*?)\\((?<parameters>.*?)\\)");
 
   private static final PrimitiveType[] CHAR_NARROWINGS;
   private static final PrimitiveType[] INT_NARROWINGS;
@@ -117,14 +116,14 @@ public class OnFlyCallGraphBuilder {
     final ByteType bT = ByteType.getInstance();
     final LongType lT = LongType.getInstance();
     final FloatType fT = FloatType.getInstance();
-    CHAR_NARROWINGS = new PrimitiveType[] { cT };
-    INT_NARROWINGS = new PrimitiveType[] { iT, cT, sT, bT, sT };
-    SHORT_NARROWINGS = new PrimitiveType[] { sT, bT };
-    LONG_NARROWINGS = new PrimitiveType[] { lT, iT, cT, sT, bT, sT };
-    BYTE_NARROWINGS = new ByteType[] { bT };
-    FLOAT_NARROWINGS = new PrimitiveType[] { fT, lT, iT, cT, sT, bT, sT };
-    BOOLEAN_NARROWINGS = new PrimitiveType[] { BooleanType.getInstance() };
-    DOUBLE_NARROWINGS = new PrimitiveType[] { DoubleType.getInstance(), fT, lT, iT, cT, sT, bT, sT };
+    CHAR_NARROWINGS = new PrimitiveType[] {cT};
+    INT_NARROWINGS = new PrimitiveType[] {iT, cT, sT, bT, sT};
+    SHORT_NARROWINGS = new PrimitiveType[] {sT, bT};
+    LONG_NARROWINGS = new PrimitiveType[] {lT, iT, cT, sT, bT, sT};
+    BYTE_NARROWINGS = new ByteType[] {bT};
+    FLOAT_NARROWINGS = new PrimitiveType[] {fT, lT, iT, cT, sT, bT, sT};
+    BOOLEAN_NARROWINGS = new PrimitiveType[] {BooleanType.getInstance()};
+    DOUBLE_NARROWINGS = new PrimitiveType[] {DoubleType.getInstance(), fT, lT, iT, cT, sT, bT, sT};
   }
 
   protected final MethodSubSignature sigFinalize;
@@ -135,7 +134,7 @@ public class OnFlyCallGraphBuilder {
   protected final MethodSubSignature sigExecutorExecute;
   protected final MethodSubSignature sigHandlerPost;
   protected final MethodSubSignature sigHandlerPostAtFrontOfQueue;
-  protected final MethodSubSignature sigRunOnUiThread;// Method from android.app.Activity
+  protected final MethodSubSignature sigRunOnUiThread; // Method from android.app.Activity
 
   // type based reflection resolution state
   protected final MethodSubSignature sigHandlerPostAtTime;
@@ -153,9 +152,12 @@ public class OnFlyCallGraphBuilder {
   protected final MethodSubSignature sigDoInBackground;
   protected final MethodSubSignature sigForName;
 
-  protected final ReferenceType clRunnable = new JavaClassType("Runnable", new PackageName("java.lang"));
-  protected final ReferenceType clAsyncTask = new JavaClassType("Runnable", new PackageName("android.os.AsyncTask"));
-  protected final ReferenceType clHandler = new JavaClassType("Runnable", new PackageName("android.os.Handler"));
+  protected final ReferenceType clRunnable =
+      new JavaClassType("Runnable", new PackageName("java.lang"));
+  protected final ReferenceType clAsyncTask =
+      new JavaClassType("Runnable", new PackageName("android.os.AsyncTask"));
+  protected final ReferenceType clHandler =
+      new JavaClassType("Runnable", new PackageName("android.os.Handler"));
 
   /** context-insensitive stuff */
   // TODO
@@ -186,6 +188,7 @@ public class OnFlyCallGraphBuilder {
 
   /** context-sensitive stuff */
   protected final List<MethodSignature> reachableMethods;
+
   protected final List<MethodSignature> worklist;
 
   protected final VirtualEdgesSummaries virtualEdgeSummaries = new VirtualEdgesSummaries();
@@ -200,28 +203,64 @@ public class OnFlyCallGraphBuilder {
       this.sigInit = view.getIdentifierFactory().parseMethodSubSignature("void <init>()");
       this.sigStart = view.getIdentifierFactory().parseMethodSubSignature("void start()");
       this.sigRun = view.getIdentifierFactory().parseMethodSubSignature("void run()");
-      this.sigExecute = view.getIdentifierFactory().parseMethodSubSignature("android.os.AsyncTask execute(java.lang.Object[])");
-      this.sigExecutorExecute = view.getIdentifierFactory().parseMethodSubSignature("void execute(java.lang.Runnable)");
-      this.sigHandlerPost = view.getIdentifierFactory().parseMethodSubSignature("boolean post(java.lang.Runnable)");
-      this.sigHandlerPostAtFrontOfQueue = view.getIdentifierFactory().parseMethodSubSignature("boolean postAtFrontOfQueue(java.lang.Runnable)");
-      this.sigRunOnUiThread = view.getIdentifierFactory().parseMethodSubSignature("void runOnUiThread(java.lang.Runnable)");
-      this.sigHandlerPostAtTime = view.getIdentifierFactory().parseMethodSubSignature("boolean postAtTime(java.lang.Runnable,long)");
-      this.sigHandlerPostAtTimeWithToken = view.getIdentifierFactory().parseMethodSubSignature("boolean postAtTime(java.lang.Runnable,java.lang.Object,long)");
-      this.sigHandlerPostDelayed = view.getIdentifierFactory().parseMethodSubSignature("boolean postDelayed(java.lang.Runnable,long)");
-      this.sigHandlerSendEmptyMessage = view.getIdentifierFactory().parseMethodSubSignature("boolean sendEmptyMessage(int)");
-      this.sigHandlerSendEmptyMessageAtTime = view.getIdentifierFactory().parseMethodSubSignature("boolean sendEmptyMessageAtTime(int,long)");
-      this.sigHandlerSendEmptyMessageDelayed = view.getIdentifierFactory().parseMethodSubSignature("boolean sendEmptyMessageDelayed(int,long)");
-      this.sigHandlerSendMessage = view.getIdentifierFactory().parseMethodSubSignature("boolean postAtTime(java.lang.Runnable,long)");
-      this.sigHandlerSendMessageAtFrontOfQueue = view.getIdentifierFactory().parseMethodSubSignature("boolean sendMessageAtFrontOfQueue(android.os.Message)");
-      this.sigHandlerSendMessageAtTime = view.getIdentifierFactory().parseMethodSubSignature("boolean sendMessageAtTime(android.os.Message,long)");
-      this.sigHandlerSendMessageDelayed = view.getIdentifierFactory().parseMethodSubSignature("boolean sendMessageDelayed(android.os.Message,long)");
-      this.sigHandlerHandleMessage = view.getIdentifierFactory().parseMethodSubSignature("void handleMessage(android.os.Message)");
-      this.sigObjRun = view.getIdentifierFactory().parseMethodSubSignature("java.lang.Object run()");
-      this.sigDoInBackground = view.getIdentifierFactory().parseMethodSubSignature("java.lang.Object doInBackground(java.lang.Object[])");
-      this.sigForName = view.getIdentifierFactory().parseMethodSubSignature("java.lang.Class forName(java.lang.String)");
+      this.sigExecute =
+          view.getIdentifierFactory()
+              .parseMethodSubSignature("android.os.AsyncTask execute(java.lang.Object[])");
+      this.sigExecutorExecute =
+          view.getIdentifierFactory().parseMethodSubSignature("void execute(java.lang.Runnable)");
+      this.sigHandlerPost =
+          view.getIdentifierFactory().parseMethodSubSignature("boolean post(java.lang.Runnable)");
+      this.sigHandlerPostAtFrontOfQueue =
+          view.getIdentifierFactory()
+              .parseMethodSubSignature("boolean postAtFrontOfQueue(java.lang.Runnable)");
+      this.sigRunOnUiThread =
+          view.getIdentifierFactory()
+              .parseMethodSubSignature("void runOnUiThread(java.lang.Runnable)");
+      this.sigHandlerPostAtTime =
+          view.getIdentifierFactory()
+              .parseMethodSubSignature("boolean postAtTime(java.lang.Runnable,long)");
+      this.sigHandlerPostAtTimeWithToken =
+          view.getIdentifierFactory()
+              .parseMethodSubSignature(
+                  "boolean postAtTime(java.lang.Runnable,java.lang.Object,long)");
+      this.sigHandlerPostDelayed =
+          view.getIdentifierFactory()
+              .parseMethodSubSignature("boolean postDelayed(java.lang.Runnable,long)");
+      this.sigHandlerSendEmptyMessage =
+          view.getIdentifierFactory().parseMethodSubSignature("boolean sendEmptyMessage(int)");
+      this.sigHandlerSendEmptyMessageAtTime =
+          view.getIdentifierFactory()
+              .parseMethodSubSignature("boolean sendEmptyMessageAtTime(int,long)");
+      this.sigHandlerSendEmptyMessageDelayed =
+          view.getIdentifierFactory()
+              .parseMethodSubSignature("boolean sendEmptyMessageDelayed(int,long)");
+      this.sigHandlerSendMessage =
+          view.getIdentifierFactory()
+              .parseMethodSubSignature("boolean postAtTime(java.lang.Runnable,long)");
+      this.sigHandlerSendMessageAtFrontOfQueue =
+          view.getIdentifierFactory()
+              .parseMethodSubSignature("boolean sendMessageAtFrontOfQueue(android.os.Message)");
+      this.sigHandlerSendMessageAtTime =
+          view.getIdentifierFactory()
+              .parseMethodSubSignature("boolean sendMessageAtTime(android.os.Message,long)");
+      this.sigHandlerSendMessageDelayed =
+          view.getIdentifierFactory()
+              .parseMethodSubSignature("boolean sendMessageDelayed(android.os.Message,long)");
+      this.sigHandlerHandleMessage =
+          view.getIdentifierFactory()
+              .parseMethodSubSignature("void handleMessage(android.os.Message)");
+      this.sigObjRun =
+          view.getIdentifierFactory().parseMethodSubSignature("java.lang.Object run()");
+      this.sigDoInBackground =
+          view.getIdentifierFactory()
+              .parseMethodSubSignature("java.lang.Object doInBackground(java.lang.Object[])");
+      this.sigForName =
+          view.getIdentifierFactory()
+              .parseMethodSubSignature("java.lang.Class forName(java.lang.String)");
     }
     {
-      this.receiverToSites = new LargeNumberedMap<Local, List<VirtualCallSite>>(sc.getLocalNumberer());
+      this.receiverToSites =
+          new LargeNumberedMap<Local, List<VirtualCallSite>>(sc.getLocalNumberer());
       final IterableNumberer<SootMethod> methodNumberer = sc.getMethodNumberer();
       this.methodToReceivers = new HashMap<>(methodNumberer);
       this.methodToInvokeBases = new HashMap<>(methodNumberer);
@@ -235,8 +274,9 @@ public class OnFlyCallGraphBuilder {
     this.worklist = reachableMethods.listener();
     this.options = new CGOptions(PhaseOptions.v().getPhaseOptions("cg"));
     if (!options.verbose()) {
-      logger.debug("[Call Graph] For information on where the call graph may be incomplete,"
-          + " use the verbose option to the cg phase.");
+      logger.debug(
+          "[Call Graph] For information on where the call graph may be incomplete,"
+              + " use the verbose option to the cg phase.");
     }
     /*
     if (options.reflection_log() == null || options.reflection_log().length() == 0) {
@@ -275,7 +315,7 @@ public class OnFlyCallGraphBuilder {
   public void processReachables() {
     while (true) {
       if (!worklist.iterator().hasNext()) {
-        //reachableMethods.update();
+        // reachableMethods.update();
         if (!worklist.iterator().hasNext()) {
           break;
         }
@@ -372,7 +412,7 @@ public class OnFlyCallGraphBuilder {
     Set<RefLikeType> resolved = new HashSet<>();
     if (!classRoots.isEmpty()) {
       final FastHierarchy fh = Scene.v().getOrMakeFastHierarchy();
-      for (LinkedList<SootClass> worklist = new LinkedList<>(classRoots); !worklist.isEmpty();) {
+      for (LinkedList<SootClass> worklist = new LinkedList<>(classRoots); !worklist.isEmpty(); ) {
         SootClass cls = worklist.removeFirst();
         if (resolved.add(cls.getType())) {
           worklist.addAll(fh.getSubclassesOf(cls));
@@ -397,8 +437,10 @@ public class OnFlyCallGraphBuilder {
       boolean mustBeNull = ics.nullnessCode() == InvokeCallSite.MUST_BE_NULL;
       // if the arg array may be null and we haven't seen a size or type
       // yet, then generate nullary methods
-      if (mustBeNull || (ics.nullnessCode() == InvokeCallSite.MAY_BE_NULL
-          && (!invokeArgsToSize.containsKey(ics.argArray()) || !reachingArgTypes.containsKey(ics.argArray())))) {
+      if (mustBeNull
+          || (ics.nullnessCode() == InvokeCallSite.MAY_BE_NULL
+              && (!invokeArgsToSize.containsKey(ics.argArray())
+                  || !reachingArgTypes.containsKey(ics.argArray())))) {
         for (Type bType : resolveToClasses(s)) {
           assert (bType instanceof ReferenceType);
           // do not handle array reflection
@@ -407,7 +449,8 @@ public class OnFlyCallGraphBuilder {
           }
           SootClass baseClass = ((ReferenceType) bType).getSootClass();
           assert (!baseClass.isInterface());
-          for (Iterator<SootMethod> mIt = getPublicNullaryMethodIterator(baseClass); mIt.hasNext();) {
+          for (Iterator<SootMethod> mIt = getPublicNullaryMethodIterator(baseClass);
+              mIt.hasNext(); ) {
             SootMethod sm = mIt.next();
             cm.addVirtualEdge(ics.container(), ics.stmt(), sm, Kind.REFL_INVOKE, null);
           }
@@ -434,10 +477,12 @@ public class OnFlyCallGraphBuilder {
           // we do not handle static methods or array reflection
           if (!(bType instanceof NullType) && !(bType instanceof ArrayType)) {
             SootClass baseClass = ((ReferenceType) bType).getSootClass();
-            Iterator<SootMethod> mIt = getPublicMethodIterator(baseClass, reachingTypes, methodSizes, mustNotBeNull);
+            Iterator<SootMethod> mIt =
+                getPublicMethodIterator(baseClass, reachingTypes, methodSizes, mustNotBeNull);
             while (mIt.hasNext()) {
               SootMethod sm = mIt.next();
-              cm.addVirtualEdge(ics.container(), ics.stmt(), sm, CallGraphEdgeType.REFL_INVOKE, null);
+              cm.addVirtualEdge(
+                  ics.container(), ics.stmt(), sm, CallGraphEdgeType.REFL_INVOKE, null);
             }
           }
         }
@@ -455,14 +500,15 @@ public class OnFlyCallGraphBuilder {
         continue;
       }
       SootClass baseClass = ((ReferenceType) bType).getSootClass();
-      for (Iterator<SootMethod> mIt = getPublicMethodIterator(baseClass, at); mIt.hasNext();) {
+      for (Iterator<SootMethod> mIt = getPublicMethodIterator(baseClass, at); mIt.hasNext(); ) {
         SootMethod sm = mIt.next();
         cm.addVirtualEdge(ics.container(), ics.stmt(), sm, CallGraphEdgeType.REFL_INVOKE, null);
       }
     }
   }
 
-  private static Iterator<SootMethod> getPublicMethodIterator(SootClass baseClass, final ArrayTypes at) {
+  private static Iterator<SootMethod> getPublicMethodIterator(
+      SootClass baseClass, final ArrayTypes at) {
     return new AbstractMethodIterator(baseClass) {
       @Override
       protected boolean acceptMethod(SootMethod m) {
@@ -537,8 +583,11 @@ public class OnFlyCallGraphBuilder {
     }
   }
 
-  private static Iterator<SootMethod> getPublicMethodIterator(final SootClass baseClass, final Set<Type> reachingTypes,
-      final BitSet methodSizes, final boolean mustNotBeNull) {
+  private static Iterator<SootMethod> getPublicMethodIterator(
+      final SootClass baseClass,
+      final Set<Type> reachingTypes,
+      final BitSet methodSizes,
+      final boolean mustNotBeNull) {
     if (baseClass.isPhantomClass()) {
       return Collections.emptyIterator();
     }
@@ -580,14 +629,15 @@ public class OnFlyCallGraphBuilder {
     if (rcvrToCallSites != null) {
       final VirtualCalls virtualCalls = VirtualCalls.v();
       final FastHierarchy fh = sc.getOrMakeFastHierarchy();
-      for (Iterator<VirtualCallSite> siteIt = rcvrToCallSites.iterator(); siteIt.hasNext();) {
+      for (Iterator<VirtualCallSite> siteIt = rcvrToCallSites.iterator(); siteIt.hasNext(); ) {
         final VirtualCallSite site = siteIt.next();
         if (skipSite(site, fh, type)) {
           continue;
         }
 
         if (site.iie() instanceof JSpecialInvokeExpr && !site.kind().isFake()) {
-          SootMethod target = virtualCalls.resolveSpecial(site.iie().getMethodRef(), site.container(), appOnly);
+          SootMethod target =
+              virtualCalls.resolveSpecial(site.iie().getMethodRef(), site.container(), appOnly);
           // if the call target resides in a phantom class then "target" will be null;
           // simply do not add the target in that case
           if (target != null) {
@@ -612,7 +662,9 @@ public class OnFlyCallGraphBuilder {
                     params.add(sc.getTypeUnsafe(p.trim()));
                   }
                 }
-                ref = view.getIdentifierFactory().getMethodSignature(methodName, receiverClass,returnType, params);
+                ref =
+                    view.getIdentifierFactory()
+                        .getMethodSignature(methodName, receiverClass, returnType, params);
                 // TODO: is static?
               }
             }
@@ -621,7 +673,8 @@ public class OnFlyCallGraphBuilder {
           }
 
           if (ref != null) {
-            virtualCalls.resolve(type, receiver.getType(), ref, site.container(), targetsQueue, appOnly);
+            virtualCalls.resolve(
+                type, receiver.getType(), ref, site.container(), targetsQueue, appOnly);
             if (!targets.hasNext() && options.resolve_all_abstract_invokes()) {
               /*
                * In the situation where we find nothing to resolve an invoke to in the first call, this might be because the
@@ -637,13 +690,19 @@ public class OnFlyCallGraphBuilder {
                * Where as, it used to not resolve any targets in this situation, I want to at least resolve the method in the
                * parent class if there is one (as this is technically a possibility and the only information we have).
                */
-              virtualCalls.resolveSuperType(type, receiver.getType(), site.iie().getMethodRef(), targetsQueue, appOnly);
+              virtualCalls.resolveSuperType(
+                  type, receiver.getType(), site.iie().getMethodRef(), targetsQueue, appOnly);
             }
           }
         }
         while (targets.hasNext()) {
           SootMethod target = targets.next();
-          cm.addVirtualEdge(MethodContext.v(site.container(), srcContext), site.stmt(), target, site.kind(), typeContext);
+          cm.addVirtualEdge(
+              MethodContext.v(site.container(), srcContext),
+              site.stmt(),
+              target,
+              site.kind(),
+              typeContext);
         }
       }
     }
@@ -673,7 +732,8 @@ public class OnFlyCallGraphBuilder {
 
   public void addStringConstant(Local l, Context srcContext, String constant) {
     if (constant != null) {
-      for (Iterator<VirtualCallSite> siteIt = stringConstToSites.get(l).iterator(); siteIt.hasNext();) {
+      for (Iterator<VirtualCallSite> siteIt = stringConstToSites.get(l).iterator();
+          siteIt.hasNext(); ) {
         final VirtualCallSite site = siteIt.next();
         final int constLen = constant.length();
         if (constLen > 0 && constant.charAt(0) == '[') {
@@ -686,21 +746,32 @@ public class OnFlyCallGraphBuilder {
         ClassType classType = view.getIdentifierFactory().getClassType(constant);
         if (view.getClass(classType).isPresent()) {
           SootClass sootcls = view.getClass(classType).get();
-/*          if (!sootcls.isApplicationClass() && !sootcls.isPhantomClass()) {
+          /*          if (!sootcls.isApplicationClass() && !sootcls.isPhantomClass()) {
             sootcls.setLibraryClass();
           }*/
           for (SootMethod clinit : EntryPoints.v().clinitsOf(sootcls)) {
-            cm.addStaticEdge(MethodContext.v(site.container(), srcContext), site.stmt(), clinit, CallGraphEdgeType.CLINIT);
+            cm.addStaticEdge(
+                MethodContext.v(site.container(), srcContext),
+                site.stmt(),
+                clinit,
+                CallGraphEdgeType.CLINIT);
           }
         } else if (options.verbose()) {
-          logger.warn("Class " + constant + " is a dynamic class and was not specified as such; graph will be incomplete!");
+          logger.warn(
+              "Class "
+                  + constant
+                  + " is a dynamic class and was not specified as such; graph will be incomplete!");
         }
       }
     } else if (options.verbose()) {
-      for (Iterator<VirtualCallSite> siteIt = stringConstToSites.get(l).iterator(); siteIt.hasNext();) {
+      for (Iterator<VirtualCallSite> siteIt = stringConstToSites.get(l).iterator();
+          siteIt.hasNext(); ) {
         final VirtualCallSite site = siteIt.next();
-        logger.warn("Method " + site.container() + " is reachable, and calls Class.forName on a non-constant"
-            + " String; graph will be incomplete! Use safe-forname option for a conservative result.");
+        logger.warn(
+            "Method "
+                + site.container()
+                + " is reachable, and calls Class.forName on a non-constant"
+                + " String; graph will be incomplete! Use safe-forname option for a conservative result.");
       }
     }
   }
@@ -784,7 +855,12 @@ public class OnFlyCallGraphBuilder {
     baseToInvokeSite.put(l, ics);
   }
 
-  private void addVirtualCallSite(Stmt s, SootMethod m, Local receiver, AbstractInstanceInvokeExpr iie, NumberedString subSig,
+  private void addVirtualCallSite(
+      Stmt s,
+      SootMethod m,
+      Local receiver,
+      AbstractInstanceInvokeExpr iie,
+      NumberedString subSig,
       CallGraphEdgeType kind) {
     List<VirtualCallSite> sites = receiverToSites.get(receiver);
     if (sites == null) {
@@ -819,11 +895,18 @@ public class OnFlyCallGraphBuilder {
               if (t instanceof DirectTarget) {
                 DirectTarget directTarget = (DirectTarget) t;
                 if (t.isBase) {
-                  addVirtualCallSite(s, m, receiver, iie, directTarget.targetMethod, virtualEdge.edgeType);
+                  addVirtualCallSite(
+                      s, m, receiver, iie, directTarget.targetMethod, virtualEdge.edgeType);
                 } else {
                   Value runnable = iie.getArg(t.argIndex);
                   if (runnable instanceof Local) {
-                    addVirtualCallSite(s, m, (Local) runnable, iie, directTarget.targetMethod, virtualEdge.edgeType);
+                    addVirtualCallSite(
+                        s,
+                        m,
+                        (Local) runnable,
+                        iie,
+                        directTarget.targetMethod,
+                        virtualEdge.edgeType);
                   }
                 }
               } else if (t instanceof WrapperTarget) {
@@ -839,16 +922,25 @@ public class OnFlyCallGraphBuilder {
                 }
 
                 if (wrapperObject != null && receiverToSites.get(wrapperObject) != null) {
-                  // addVirtualCallSite() may change receiverToSites, which may lead to a ConcurrentModificationException
-                  // I'm not entirely sure whether we ought to deal with the new call sites that are being added, instead of
+                  // addVirtualCallSite() may change receiverToSites, which may lead to a
+                  // ConcurrentModificationException
+                  // I'm not entirely sure whether we ought to deal with the new call sites that are
+                  // being added, instead of
                   // just working on a snapshot, though.
-                  List<VirtualCallSite> callSites = new ArrayList<>(receiverToSites.get(wrapperObject));
+                  List<VirtualCallSite> callSites =
+                      new ArrayList<>(receiverToSites.get(wrapperObject));
                   for (final VirtualCallSite site : callSites) {
                     if (w.registrationSignature == site.subSig()) {
                       for (RegisteredHandlerTarget target : w.targets) {
                         Value runnable = iie.getArg(t.argIndex);
                         if (runnable instanceof Local) {
-                          addVirtualCallSite(s, m, (Local) runnable, iie, target.targetMethod, virtualEdge.edgeType);
+                          addVirtualCallSite(
+                              s,
+                              m,
+                              (Local) runnable,
+                              iie,
+                              target.targetMethod,
+                              virtualEdge.edgeType);
                         }
                       }
                     }
@@ -866,7 +958,8 @@ public class OnFlyCallGraphBuilder {
           if (tgt.isPresent()) {
             addEdge(m, s, tgt.get());
             Signature signature = tgt.get().getSignature();
-            VirtualEdge virtualEdge = virtualEdgeSummaries.getVirtualEdgesMatchingFunction(signature);
+            VirtualEdge virtualEdge =
+                virtualEdgeSummaries.getVirtualEdgesMatchingFunction(signature);
             if (virtualEdge != null) {
               for (VirtualEdgeTarget t : virtualEdge.targets) {
                 if (t instanceof DirectTarget) {
@@ -876,7 +969,13 @@ public class OnFlyCallGraphBuilder {
                   } else {
                     Value runnable = ie.getArg(t.argIndex);
                     if (runnable instanceof Local) {
-                      addVirtualCallSite(s, m, (Local) runnable, null, directTarget.targetMethod, Kind.GENERIC_FAKE);
+                      addVirtualCallSite(
+                          s,
+                          m,
+                          (Local) runnable,
+                          null,
+                          directTarget.targetMethod,
+                          Kind.GENERIC_FAKE);
                     }
                   }
                 }
@@ -884,7 +983,9 @@ public class OnFlyCallGraphBuilder {
             }
           } else if (!Options.v().ignore_resolution_errors()) {
             throw new InternalError(
-                "Unresolved target " + ie.getMethod() + ". Resolution error should have occured earlier.");
+                "Unresolved target "
+                    + ie.getMethod()
+                    + ". Resolution error should have occured earlier.");
           }
         }
       }
@@ -917,7 +1018,8 @@ public class OnFlyCallGraphBuilder {
             }
             break;
           case "java.lang.reflect.Constructor":
-            if ("java.lang.Object newInstance(java.lang.Object[])".equals(methodRef.getSubSignature().toString())) {
+            if ("java.lang.Object newInstance(java.lang.Object[])"
+                .equals(methodRef.getSubSignature().toString())) {
               reflectionModel.contructorNewInstance(source, s);
             }
             break;
@@ -968,7 +1070,7 @@ public class OnFlyCallGraphBuilder {
   protected void processNewMethodContext(MethodSignature methodSignature) {
     SootMethod m = view.getMethod(methodSignature).get();
     for (MethodSignature callee : cicg.callsFrom(methodSignature)) {
-      //cm.addStaticEdge(methodSignature, e.srcUnit(), e.tgt(), e.kind());
+      // cm.addStaticEdge(methodSignature, e.srcUnit(), e.tgt(), e.kind());
     }
   }
 
@@ -992,7 +1094,10 @@ public class OnFlyCallGraphBuilder {
           }
         }
       } else if (options.verbose()) {
-        logger.warn("Class " + cls + " is a dynamic class and was not specified as such; graph will be incomplete!");
+        logger.warn(
+            "Class "
+                + cls
+                + " is a dynamic class and was not specified as such; graph will be incomplete!");
       }
     }
   }
@@ -1001,7 +1106,12 @@ public class OnFlyCallGraphBuilder {
     cicg.addEdge(new Edge(src, stmt, tgt, kind));
   }
 
-  private void addEdge(SootMethod src, Stmt stmt, SootClass<?> cls, MethodSubSignature methodSubSig, CallGraphEdgeType kind) {
+  private void addEdge(
+      SootMethod src,
+      Stmt stmt,
+      SootClass<?> cls,
+      MethodSubSignature methodSubSig,
+      CallGraphEdgeType kind) {
     if (cls.getMethod(methodSubSig).isPresent()) {
       SootMethod sm = cls.getMethod(methodSubSig).get();
       addEdge(src, stmt, sm, kind);
@@ -1021,8 +1131,8 @@ public class OnFlyCallGraphBuilder {
 
     @Override
     public void classForName(SootMethod source, Stmt s) {
-      List<Local> stringConstants = methodToStringConstants
-          .computeIfAbsent(source, k -> new ArrayList<>());
+      List<Local> stringConstants =
+          methodToStringConstants.computeIfAbsent(source, k -> new ArrayList<>());
       Value className = s.getInvokeExpr().getArg(0);
       if (className instanceof StringConstant) {
         String cls = ((StringConstant) className).getValue();
@@ -1040,7 +1150,8 @@ public class OnFlyCallGraphBuilder {
               addEdge(source, s, clinit, CallGraphEdgeType.CLINIT);
             }
           }
-          VirtualCallSite site = new VirtualCallSite(s, source, null, null, CallGraphEdgeType.CLINIT);
+          VirtualCallSite site =
+              new VirtualCallSite(s, source, null, null, CallGraphEdgeType.CLINIT);
           List<VirtualCallSite> sites = stringConstToSites.get(constant);
           if (sites == null) {
             stringConstToSites.put(constant, sites = new ArrayList<VirtualCallSite>());
@@ -1066,8 +1177,11 @@ public class OnFlyCallGraphBuilder {
         }
 
         if (options.verbose()) {
-          logger.warn("Method " + source + " is reachable, and calls Class.newInstance; graph will be incomplete!"
-              + " Use safe-newinstance option for a conservative result.");
+          logger.warn(
+              "Method "
+                  + source
+                  + " is reachable, and calls Class.newInstance; graph will be incomplete!"
+                  + " Use safe-newinstance option for a conservative result.");
         }
       }
     }
@@ -1087,8 +1201,11 @@ public class OnFlyCallGraphBuilder {
           }
         }
         if (options.verbose()) {
-          logger.warn("Method " + source + " is reachable, and calls Constructor.newInstance; graph will be incomplete!"
-              + " Use safe-newinstance option for a conservative result.");
+          logger.warn(
+              "Method "
+                  + source
+                  + " is reachable, and calls Constructor.newInstance; graph will be incomplete!"
+                  + " Use safe-newinstance option for a conservative result.");
         }
       }
     }
@@ -1097,7 +1214,10 @@ public class OnFlyCallGraphBuilder {
     public void methodInvoke(SootMethod container, Stmt invokeStmt) {
       if (!warnedAlready(container)) {
         if (options.verbose()) {
-          logger.warn("Call to java.lang.reflect.Method: invoke() from " + container + "; graph will be incomplete!");
+          logger.warn(
+              "Call to java.lang.reflect.Method: invoke() from "
+                  + container
+                  + "; graph will be incomplete!");
         }
         markWarned(container);
       }
@@ -1148,13 +1268,16 @@ public class OnFlyCallGraphBuilder {
     }
 
     /**
-     * Adds an edge to all class initializers of all possible receivers of Class.forName() calls within source.
+     * Adds an edge to all class initializers of all possible receivers of Class.forName() calls
+     * within source.
      */
     @Override
     public void classForName(SootMethod container, Stmt forNameInvokeStmt) {
       Set<String> classNames = reflectionInfo.classForNameClassNames(container);
       if (classNames == null || classNames.isEmpty()) {
-        registerGuard(container, forNameInvokeStmt,
+        registerGuard(
+            container,
+            forNameInvokeStmt,
             "Class.forName() call site; Soot did not expect this site to be reached");
       } else {
         for (String clsName : classNames) {
@@ -1164,17 +1287,22 @@ public class OnFlyCallGraphBuilder {
     }
 
     /**
-     * Adds an edge to the constructor of the target class from this call to {@link Class#newInstance()}.
+     * Adds an edge to the constructor of the target class from this call to {@link
+     * Class#newInstance()}.
      */
     @Override
     public void classNewInstance(SootMethod container, Stmt newInstanceInvokeStmt) {
       Set<String> classNames = reflectionInfo.classNewInstanceClassNames(container);
       if (classNames == null || classNames.isEmpty()) {
-        registerGuard(container, newInstanceInvokeStmt,
+        registerGuard(
+            container,
+            newInstanceInvokeStmt,
             "Class.newInstance() call site; Soot did not expect this site to be reached");
       } else {
         for (String clsName : classNames) {
-          SootMethod constructor = view.getClassOrThrow(view.getIdentifierFactory().getClassType(clsName)).getMethod(sigInit);
+          SootMethod constructor =
+              view.getClassOrThrow(view.getIdentifierFactory().getClassType(clsName))
+                  .getMethod(sigInit);
           if (constructor != null) {
             addEdge(container, newInstanceInvokeStmt, constructor, Kind.REFL_CLASS_NEWINSTANCE);
           }
@@ -1183,18 +1311,22 @@ public class OnFlyCallGraphBuilder {
     }
 
     /**
-     * Adds a special edge of kind {@link Kind#REFL_CONSTR_NEWINSTANCE} to all possible target constructors of this call to
-     * {@link Constructor#newInstance(Object...)}. Those kinds of edges are treated specially in terms of how parameters are
-     * assigned, as parameters to the reflective call are passed into the argument array of
-     * {@link Constructor#newInstance(Object...)}.
+     * Adds a special edge of kind {@link Kind#REFL_CONSTR_NEWINSTANCE} to all possible target
+     * constructors of this call to {@link Constructor#newInstance(Object...)}. Those kinds of edges
+     * are treated specially in terms of how parameters are assigned, as parameters to the
+     * reflective call are passed into the argument array of {@link
+     * Constructor#newInstance(Object...)}.
      *
      * @see PAG#addCallTarget(Edge)
      */
     @Override
     public void contructorNewInstance(SootMethod container, Stmt newInstanceInvokeStmt) {
-      Set<String> constructorSignatures = reflectionInfo.constructorNewInstanceSignatures(container);
+      Set<String> constructorSignatures =
+          reflectionInfo.constructorNewInstanceSignatures(container);
       if (constructorSignatures == null || constructorSignatures.isEmpty()) {
-        registerGuard(container, newInstanceInvokeStmt,
+        registerGuard(
+            container,
+            newInstanceInvokeStmt,
             "Constructor.newInstance(..) call site; Soot did not expect this site to be reached");
       } else {
         final Scene sc = Scene.v();
@@ -1206,10 +1338,10 @@ public class OnFlyCallGraphBuilder {
     }
 
     /**
-     * Adds a special edge of kind {@link Kind#REFL_INVOKE} to all possible target methods of this call to
-     * {@link Method#invoke(Object, Object...)}. Those kinds of edges are treated specially in terms of how parameters are
-     * assigned, as parameters to the reflective call are passed into the argument array of
-     * {@link Method#invoke(Object, Object...)}.
+     * Adds a special edge of kind {@link Kind#REFL_INVOKE} to all possible target methods of this
+     * call to {@link Method#invoke(Object, Object...)}. Those kinds of edges are treated specially
+     * in terms of how parameters are assigned, as parameters to the reflective call are passed into
+     * the argument array of {@link Method#invoke(Object, Object...)}.
      *
      * @see PAG#addCallTarget(Edge)
      */
@@ -1217,7 +1349,10 @@ public class OnFlyCallGraphBuilder {
     public void methodInvoke(SootMethod container, Stmt invokeStmt) {
       Set<String> methodSignatures = reflectionInfo.methodInvokeSignatures(container);
       if (methodSignatures == null || methodSignatures.isEmpty()) {
-        registerGuard(container, invokeStmt, "Method.invoke(..) call site; Soot did not expect this site to be reached");
+        registerGuard(
+            container,
+            invokeStmt,
+            "Method.invoke(..) call site; Soot did not expect this site to be reached");
       } else {
         final Scene sc = Scene.v();
         for (String methodSignature : methodSignatures) {
@@ -1231,36 +1366,47 @@ public class OnFlyCallGraphBuilder {
       guards.add(new Guard(container, stmt, string));
 
       if (options.verbose()) {
-        logger.debug("Incomplete trace file: Class.forName() is called in method '" + container
-            + "' but trace contains no information about the receiver class of this call.");
+        logger.debug(
+            "Incomplete trace file: Class.forName() is called in method '"
+                + container
+                + "' but trace contains no information about the receiver class of this call.");
         switch (options.guards()) {
           case "ignore":
             logger.debug("Guarding strategy is set to 'ignore'. Will ignore this problem.");
             break;
           case "print":
-            logger.debug("Guarding strategy is set to 'print'. "
-                + "Program will print a stack trace if this location is reached during execution.");
+            logger.debug(
+                "Guarding strategy is set to 'print'. "
+                    + "Program will print a stack trace if this location is reached during execution.");
             break;
           case "throw":
-            logger.debug("Guarding strategy is set to 'throw'. "
-                + "Program will throw an error if this location is reached during execution.");
+            logger.debug(
+                "Guarding strategy is set to 'throw'. "
+                    + "Program will throw an error if this location is reached during execution.");
             break;
           default:
-            throw new RuntimeException("Invalid value for phase option (guarding): " + options.guards());
+            throw new RuntimeException(
+                "Invalid value for phase option (guarding): " + options.guards());
         }
       }
 
       if (!registeredGuardsTransformation) {
         registeredGuardsTransformation = true;
-        PackManager.v().getPack("wjap").add(new Transform("wjap.guards", new SceneTransformer() {
+        PackManager.v()
+            .getPack("wjap")
+            .add(
+                new Transform(
+                    "wjap.guards",
+                    new SceneTransformer() {
 
-          @Override
-          protected void internalTransform(String phaseName, Map<String, String> options) {
-            for (Guard g : guards) {
-              insertGuard(g);
-            }
-          }
-        }));
+                      @Override
+                      protected void internalTransform(
+                          String phaseName, Map<String, String> options) {
+                        for (Guard g : guards) {
+                          insertGuard(g);
+                        }
+                      }
+                    }));
         PhaseOptions.v().setPhaseOption("wjap.guards", "enabled");
       }
     }
@@ -1272,7 +1418,10 @@ public class OnFlyCallGraphBuilder {
 
       SootMethod container = guard.container;
       if (!container.hasActiveBody()) {
-        logger.warn("Tried to insert guard into " + container + " but couldn't because method has no body.");
+        logger.warn(
+            "Tried to insert guard into "
+                + container
+                + " but couldn't because method has no body.");
       } else {
         final Jimple jimp = Jimple.v();
         final Body body = container.getActiveBody();
@@ -1282,28 +1431,39 @@ public class OnFlyCallGraphBuilder {
         // exc = new Error
         RefType runtimeExceptionType = RefType.v("java.lang.Error");
         Local exceptionLocal = lg.generateLocal(runtimeExceptionType);
-        AssignStmt assignStmt = jimp.newAssignStmt(exceptionLocal, jimp.newNewExpr(runtimeExceptionType));
+        AssignStmt assignStmt =
+            jimp.newAssignStmt(exceptionLocal, jimp.newNewExpr(runtimeExceptionType));
         units.insertBefore(assignStmt, guard.stmt);
 
         // exc.<init>(message)
-        SootMethodRef cref = runtimeExceptionType.getSootClass()
-            .getMethod("<init>", Collections.<Type>singletonList(RefType.v("java.lang.String"))).makeRef();
-        InvokeStmt initStmt
-            = jimp.newInvokeStmt(jimp.newSpecialInvokeExpr(exceptionLocal, cref, StringConstant.v(guard.message)));
+        SootMethodRef cref =
+            runtimeExceptionType
+                .getSootClass()
+                .getMethod("<init>", Collections.<Type>singletonList(RefType.v("java.lang.String")))
+                .makeRef();
+        InvokeStmt initStmt =
+            jimp.newInvokeStmt(
+                jimp.newSpecialInvokeExpr(exceptionLocal, cref, StringConstant.v(guard.message)));
         units.insertAfter(initStmt, assignStmt);
 
         switch (options.guards()) {
           case "print":
             // logger.error(exc.getMessage(), exc);
-            VirtualInvokeExpr printStackTraceExpr = jimp.newVirtualInvokeExpr(exceptionLocal, Scene.v()
-                .getSootClass("java.lang.Throwable").getMethod("printStackTrace", Collections.<Type>emptyList()).makeRef());
+            VirtualInvokeExpr printStackTraceExpr =
+                jimp.newVirtualInvokeExpr(
+                    exceptionLocal,
+                    Scene.v()
+                        .getSootClass("java.lang.Throwable")
+                        .getMethod("printStackTrace", Collections.<Type>emptyList())
+                        .makeRef());
             units.insertAfter(jimp.newInvokeStmt(printStackTraceExpr), initStmt);
             break;
           case "throw":
             units.insertAfter(jimp.newThrowStmt(exceptionLocal), initStmt);
             break;
           default:
-            throw new RuntimeException("Invalid value for phase option (guarding): " + options.guards());
+            throw new RuntimeException(
+                "Invalid value for phase option (guarding): " + options.guards());
         }
       }
     }
@@ -1321,7 +1481,7 @@ public class OnFlyCallGraphBuilder {
     }
   }
 
-  private static abstract class AbstractMethodIterator implements Iterator<SootMethod> {
+  private abstract static class AbstractMethodIterator implements Iterator<SootMethod> {
     private SootMethod next;
     private SootClass currClass;
     private Iterator<SootMethod> methodIterator;
@@ -1339,7 +1499,11 @@ public class OnFlyCallGraphBuilder {
         while (true) {
           while (methodIterator.hasNext()) {
             SootMethod n = methodIterator.next();
-            if (!n.isPublic() || n.isStatic() || n.isConstructor() || n.isStaticInitializer() || !n.isConcrete()) {
+            if (!n.isPublic()
+                || n.isStatic()
+                || n.isConstructor()
+                || n.isStaticInitializer()
+                || !n.isConcrete()) {
               continue;
             }
             if (!acceptMethod(n)) {

@@ -118,7 +118,8 @@ public class PointerAssignmentGraph {
           intraPAG.addToPAG();
           // TODO [bh]: all new nodes that we just added might be interesting for the callgraph
           // problem: no order here, we do not care about a starting point!
-          // need to at starting method and go from there, building the PAG over all classes in the view like this does not work
+          // need to at starting method and go from there, building the PAG over all classes in the
+          // view like this does not work
         }
       }
     }

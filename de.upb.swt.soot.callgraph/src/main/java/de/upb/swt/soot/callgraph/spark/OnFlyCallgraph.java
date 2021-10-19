@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ondrej Lhotak
  */
-
 public class OnFlyCallGraph extends GraphBasedCallGraph {
   protected final OnFlyCallGraphBuilder ofcgb;
   // TODO list need to be updated, was class Reachables
@@ -60,32 +59,30 @@ public class OnFlyCallGraph extends GraphBasedCallGraph {
     return callGraph;
   }
 
-  public OnFlyCallGraph(PointerAssignmentGraph pag, List<MethodSignature> entryPoints, boolean appOnly) {
+  public OnFlyCallGraph(
+      PointerAssignmentGraph pag, List<MethodSignature> entryPoints, boolean appOnly) {
     super(entryPoints);
     this.pag = pag;
     // TODO
     callGraph = null;
-    //Scene.v().setCallGraph(callGraph);
-    //ContextManager cm = CallGraphBuilder.makeContextManager(callGraph);
-    //reachableMethods = Scene.v().getReachableMethods();
+    // Scene.v().setCallGraph(callGraph);
+    // ContextManager cm = CallGraphBuilder.makeContextManager(callGraph);
+    // reachableMethods = Scene.v().getReachableMethods();
     ofcgb = createOnFlyCallGraphBuilder(reachableMethods, appOnly);
-    //callEdges = cm.callGraph().listener();
+    // callEdges = cm.callGraph().listener();
   }
 
   /**
-   * Factory method for creating a new on-fly callgraph builder. Custom implementations can override this method for
-   * injecting own callgraph builders without having to modify Soot.
+   * Factory method for creating a new on-fly callgraph builder. Custom implementations can override
+   * this method for injecting own callgraph builders without having to modify Soot.
    *
-   * @param cm
-   *          The context manager
-   * @param reachableMethods
-   *          The reachable method set
-   * @param appOnly
-   *          True to only consider application code
+   * @param cm The context manager
+   * @param reachableMethods The reachable method set
+   * @param appOnly True to only consider application code
    * @return The new on-fly callgraph builder
    */
-  protected OnFlyCallGraphBuilder createOnFlyCallGraphBuilder(List<MethodSignature> reachableMethods,
-      boolean appOnly) {
+  protected OnFlyCallGraphBuilder createOnFlyCallGraphBuilder(
+      List<MethodSignature> reachableMethods, boolean appOnly) {
     return new OnFlyCallGraphBuilder(reachableMethods, appOnly);
   }
 
@@ -103,7 +100,8 @@ public class OnFlyCallGraph extends GraphBasedCallGraph {
       try {
         mpag.build();
       } catch (Exception e) {
-        String msg = String.format("An error occurred while processing %s in callgraph", mpag.getMethod());
+        String msg =
+            String.format("An error occurred while processing %s in callgraph", mpag.getMethod());
         if (Options.v().allow_cg_errors()) {
           logger.error(msg, e);
         } else {
@@ -133,12 +131,13 @@ public class OnFlyCallGraph extends GraphBasedCallGraph {
       return;
     }
     if (ofcgb.wantArrayField(df)) {
-      ptsi.forall(new P2SetVisitor() {
-        @Override
-        public void visit(Node n) {
-          ofcgb.addInvokeArgType(df, null, n.getType());
-        }
-      });
+      ptsi.forall(
+          new P2SetVisitor() {
+            @Override
+            public void visit(Node n) {
+              ofcgb.addInvokeArgType(df, null, n.getType());
+            }
+          });
     }
   }
 
@@ -152,44 +151,47 @@ public class OnFlyCallGraph extends GraphBasedCallGraph {
 
     PointsToSetInternal p2set = vn.getP2Set().getNewSet();
     if (ofcgb.wantTypes(receiver)) {
-      p2set.forall(new P2SetVisitor() {
-        public final void visit(Node n) {
-          if (n instanceof AllocationNode) {
-            ofcgb.addType(receiver, context, n.getType(), (AllocationNode) n);
-          }
-        }
-      });
+      p2set.forall(
+          new P2SetVisitor() {
+            public final void visit(Node n) {
+              if (n instanceof AllocationNode) {
+                ofcgb.addType(receiver, context, n.getType(), (AllocationNode) n);
+              }
+            }
+          });
     }
     if (ofcgb.wantStringConstants(receiver)) {
-      p2set.forall(new P2SetVisitor() {
-        public final void visit(Node n) {
-          if (n instanceof StringConstantNode) {
-            String constant = ((StringConstantNode) n).getString();
-            ofcgb.addStringConstant(receiver, context, constant);
-          } else {
-            ofcgb.addStringConstant(receiver, context, null);
-          }
-        }
-      });
+      p2set.forall(
+          new P2SetVisitor() {
+            public final void visit(Node n) {
+              if (n instanceof StringConstantNode) {
+                String constant = ((StringConstantNode) n).getString();
+                ofcgb.addStringConstant(receiver, context, constant);
+              } else {
+                ofcgb.addStringConstant(receiver, context, null);
+              }
+            }
+          });
     }
     if (ofcgb.wantInvokeArg(receiver)) {
-      p2set.forall(new P2SetVisitor() {
-        @Override
-        public void visit(Node n) {
-          if (n instanceof AllocationNode) {
-            AllocationNode an = ((AllocationNode) n);
-            ofcgb.addInvokeArgDotField(receiver, pag.makeAllocDotField(an, ArrayElement.v()));
-            assert an.getNewExpr() instanceof JNewArrayExpr;
-            JNewArrayExpr nae = (JNewArrayExpr) an.getNewExpr();
-            if (!(nae.getSize() instanceof IntConstant)) {
-              ofcgb.setArgArrayNonDetSize(receiver, context);
-            } else {
-              IntConstant sizeConstant = (IntConstant) nae.getSize();
-              ofcgb.addPossibleArgArraySize(receiver, sizeConstant.value, context);
+      p2set.forall(
+          new P2SetVisitor() {
+            @Override
+            public void visit(Node n) {
+              if (n instanceof AllocationNode) {
+                AllocationNode an = ((AllocationNode) n);
+                ofcgb.addInvokeArgDotField(receiver, pag.makeAllocDotField(an, ArrayElement.v()));
+                assert an.getNewExpr() instanceof JNewArrayExpr;
+                JNewArrayExpr nae = (JNewArrayExpr) an.getNewExpr();
+                if (!(nae.getSize() instanceof IntConstant)) {
+                  ofcgb.setArgArrayNonDetSize(receiver, context);
+                } else {
+                  IntConstant sizeConstant = (IntConstant) nae.getSize();
+                  ofcgb.addPossibleArgArraySize(receiver, sizeConstant.value, context);
+                }
+              }
             }
-          }
-        }
-      });
+          });
       for (Type ty : pag.reachingObjectsOfArrayElement(p2set).possibleTypes()) {
         ofcgb.addInvokeArgType(receiver, context, ty);
       }
@@ -197,7 +199,5 @@ public class OnFlyCallGraph extends GraphBasedCallGraph {
   }
 
   /** Node uses this to notify PAG that n2 has been merged into n1. */
-  public void mergedWith(Node n1, Node n2) {
-  }
-
+  public void mergedWith(Node n1, Node n2) {}
 }

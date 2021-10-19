@@ -7,11 +7,11 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 /**
- * An abstract class providing a metaframework for carrying out dataflow analysis. This class provides common methods and
- * fields required by the BranchedFlowAnalysis and FlowAnalysis abstract classes.
+ * An abstract class providing a metaframework for carrying out dataflow analysis. This class
+ * provides common methods and fields required by the BranchedFlowAnalysis and FlowAnalysis abstract
+ * classes.
  *
- * @param <A>
- *          abstraction type
+ * @param <A> abstraction type
  */
 public abstract class AbstractFlowAnalysis<A> {
   /** Maps graph nodes to IN sets. */
@@ -29,23 +29,19 @@ public abstract class AbstractFlowAnalysis<A> {
     this.graph = graph;
   }
 
-  /**
-   * Returns the flow object corresponding to the initial values for each graph node.
-   */
+  /** Returns the flow object corresponding to the initial values for each graph node. */
   protected abstract A newInitialFlow();
 
   /**
    * Returns the initial flow value for entry/exit graph nodes.
    *
-   * This is equal to {@link #newInitialFlow()}
+   * <p>This is equal to {@link #newInitialFlow()}
    */
   protected A entryInitialFlow() {
     return newInitialFlow();
   }
 
-  /**
-   * Determines whether <code>entryInitialFlow()</code> is applied to trap handlers.
-   */
+  /** Determines whether <code>entryInitialFlow()</code> is applied to trap handlers. */
   protected boolean treatTrapHandlersAsEntries() {
     return false;
   }
@@ -54,15 +50,16 @@ public abstract class AbstractFlowAnalysis<A> {
   protected abstract boolean isForward();
 
   /**
-   * Compute the merge of the <code>in1</code> and <code>in2</code> sets, putting the result into <code>out</code>. The
-   * behavior of this function depends on the implementation ( it may be necessary to check whether <code>in1</code> and
-   * <code>in2</code> are equal or aliased ). Used by the doAnalysis method.
+   * Compute the merge of the <code>in1</code> and <code>in2</code> sets, putting the result into
+   * <code>out</code>. The behavior of this function depends on the implementation ( it may be
+   * necessary to check whether <code>in1</code> and <code>in2</code> are equal or aliased ). Used
+   * by the doAnalysis method.
    */
   protected abstract void merge(A in1, A in2, A out);
 
   /**
-   * Merges in1 and in2 into out, just before node succNode. By default, this method just calls merge(A,A,A), ignoring the
-   * node.
+   * Merges in1 and in2 into out, just before node succNode. By default, this method just calls
+   * merge(A,A,A), ignoring the node.
    */
   protected void merge(Stmt succNode, A in1, A in2, A out) {
     merge(in1, in2, out);
@@ -72,7 +69,8 @@ public abstract class AbstractFlowAnalysis<A> {
   protected abstract void copy(A source, A dest);
 
   /**
-   * Carries out the actual flow analysis. Typically called from a concrete FlowAnalysis's constructor.
+   * Carries out the actual flow analysis. Typically called from a concrete FlowAnalysis's
+   * constructor.
    */
   protected abstract void doAnalysis();
 
@@ -81,9 +79,7 @@ public abstract class AbstractFlowAnalysis<A> {
     return unitToBeforeFlow.get(s);
   }
 
-  /**
-   * Merges in into inout, just before node succNode.
-   */
+  /** Merges in into inout, just before node succNode. */
   protected void mergeInto(Stmt succNode, A inout, A in) {
     A tmp = newInitialFlow();
     merge(succNode, inout, in, tmp);

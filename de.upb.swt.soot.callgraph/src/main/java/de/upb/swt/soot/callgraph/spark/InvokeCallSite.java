@@ -16,11 +16,17 @@ public class InvokeCallSite extends AbstractCallSite {
   private final int nullnessCode;
   private final ArrayTypes reachingTypes;
 
-  public InvokeCallSite(Stmt stmt, SootMethod container, AbstractInstanceInvokeExpr iie, Local base) {
+  public InvokeCallSite(
+      Stmt stmt, SootMethod container, AbstractInstanceInvokeExpr iie, Local base) {
     this(stmt, container, iie, base, (Local) null, 0);
   }
 
-  public InvokeCallSite(Stmt stmt, SootMethod container, AbstractInstanceInvokeExpr iie, Local base, Local argArray,
+  public InvokeCallSite(
+      Stmt stmt,
+      SootMethod container,
+      AbstractInstanceInvokeExpr iie,
+      Local base,
+      Local argArray,
       int nullnessCode) {
     super(stmt, container);
     this.iie = iie;
@@ -30,7 +36,12 @@ public class InvokeCallSite extends AbstractCallSite {
     this.reachingTypes = null;
   }
 
-  public InvokeCallSite(Stmt stmt, SootMethod container, AbstractInstanceInvokeExpr iie, Local base, ArrayTypes reachingArgTypes,
+  public InvokeCallSite(
+      Stmt stmt,
+      SootMethod container,
+      AbstractInstanceInvokeExpr iie,
+      Local base,
+      ArrayTypes reachingArgTypes,
       int nullnessCode) {
     super(stmt, container);
     this.iie = iie;
@@ -40,17 +51,13 @@ public class InvokeCallSite extends AbstractCallSite {
     this.reachingTypes = reachingArgTypes;
   }
 
-  /**
-   * @deprecated use {@link #getStmt()}
-   */
+  /** @deprecated use {@link #getStmt()} */
   @Deprecated
   public Stmt stmt() {
     return stmt;
   }
 
-  /**
-   * @deprecated use {@link #getContainer()}
-   */
+  /** @deprecated use {@link #getContainer()} */
   @Deprecated
   public SootMethod container() {
     return container;

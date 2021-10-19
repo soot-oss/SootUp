@@ -19,9 +19,9 @@ import java.util.RandomAccess;
 import java.util.Set;
 
 /**
- * An abstract class providing a framework for carrying out dataflow analysis. Subclassing either BackwardFlowAnalysis or
- * ForwardFlowAnalysis and providing implementations for the abstract methods will allow Soot to compute the corresponding
- * flow analysis.
+ * An abstract class providing a framework for carrying out dataflow analysis. Subclassing either
+ * BackwardFlowAnalysis or ForwardFlowAnalysis and providing implementations for the abstract
+ * methods will allow Soot to compute the corresponding flow analysis.
  */
 public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
   public enum Flow {
@@ -45,9 +45,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
     final D data;
     int number;
 
-    /**
-     * This Entry is part of a real scc.
-     */
+    /** This Entry is part of a real scc. */
     boolean isRealStronglyConnected;
 
     Entry<D, F>[] in;
@@ -57,7 +55,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
 
     @SuppressWarnings("unchecked")
     Entry(D u, Entry<D, F> pred) {
-      in = new Entry[] { pred };
+      in = new Entry[] {pred};
       data = u;
       isRealStronglyConnected = false;
     }
@@ -80,16 +78,17 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
     INSTANCE;
 
     /**
-     * Creates a new {@code Entry} graph based on a {@code DirectedGraph}. This includes pseudo topological order, local
-     * access for predecessors and successors, a graph entry-point, a {@code Numberable} interface and a real strongly
-     * connected component marker.
+     * Creates a new {@code Entry} graph based on a {@code DirectedGraph}. This includes pseudo
+     * topological order, local access for predecessors and successors, a graph entry-point, a
+     * {@code Numberable} interface and a real strongly connected component marker.
      *
      * @param g
      * @param gv
      * @param entryFlow
      * @return
      */
-    <F> List<Entry<Stmt, F>> newUniverse(StmtGraph g, GraphView gv, F entryFlow, boolean isForward) {
+    <F> List<Entry<Stmt, F>> newUniverse(
+        StmtGraph g, GraphView gv, F entryFlow, boolean isForward) {
       final int n = g.nodes().size();
 
       Deque<Entry<Stmt, F>> s = new ArrayDeque<Entry<Stmt, F>>(n);
@@ -152,9 +151,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
           if (entries.isEmpty()) {
             throw new RuntimeException("error: backward analysis on an empty entry set.");
           }
-
         }
-
       }
 
       visitEntry(visited, superEntry, entries);
@@ -169,7 +166,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
       int i = 0;
       Entry<Stmt, F> v = superEntry;
 
-      for (;;) {
+      for (; ; ) {
         if (i < v.out.length) {
           Entry<Stmt, F> w = v.out[i++];
 
@@ -207,7 +204,8 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
     }
 
     @SuppressWarnings("unchecked")
-    private <D, F> Entry<D, F>[] visitEntry(Map<D, Entry<D, F>> visited, Entry<D, F> v, List<D> out) {
+    private <D, F> Entry<D, F>[] visitEntry(
+        Map<D, Entry<D, F>> visited, Entry<D, F> v, List<D> out) {
       int n = out.size();
       Entry<D, F>[] a = new Entry[n];
 
@@ -270,7 +268,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
       }
 
       w.isRealStronglyConnected = true;
-      for (;;) {
+      for (; ; ) {
         w = s.removeLast();
         assert w.number >= v.number;
         w.isRealStronglyConnected = true;
@@ -284,7 +282,8 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
   }
 
   enum InteractionFlowHandler {
-    NONE, FORWARD {
+    NONE,
+    FORWARD {
       @Override
       public <A> void handleFlowIn(FlowAnalysis<A> a, Stmt s) {
         beforeEvent(stop(s), a, s);
@@ -334,11 +333,9 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
       return h;
     }
 
-    public <A> void handleFlowIn(FlowAnalysis<A> a, Stmt s) {
-    }
+    public <A> void handleFlowIn(FlowAnalysis<A> a, Stmt s) {}
 
-    public <A> void handleFlowOut(FlowAnalysis<A> a, Stmt s) {
-    }
+    public <A> void handleFlowOut(FlowAnalysis<A> a, Stmt s) {}
   }
 
   enum GraphView {
@@ -384,25 +381,22 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
   }
 
   /**
-   * Given the merge of the <code>out</code> sets, compute the <code>in</code> set for <code>s</code> (or in to out,
-   * depending on direction).
+   * Given the merge of the <code>out</code> sets, compute the <code>in</code> set for <code>s
+   * </code> (or in to out, depending on direction).
    *
-   * This function often causes confusion, because the same interface is used for both forward and backward flow analyses.
-   * The first parameter is always the argument to the flow function (i.e. it is the "in" set in a forward analysis and the
-   * "out" set in a backward analysis), and the third parameter is always the result of the flow function (i.e. it is the
-   * "out" set in a forward analysis and the "in" set in a backward analysis).
+   * <p>This function often causes confusion, because the same interface is used for both forward
+   * and backward flow analyses. The first parameter is always the argument to the flow function
+   * (i.e. it is the "in" set in a forward analysis and the "out" set in a backward analysis), and
+   * the third parameter is always the result of the flow function (i.e. it is the "out" set in a
+   * forward analysis and the "in" set in a backward analysis).
    *
-   * @param in
-   *          the input flow
-   * @param d
-   *          the current node
-   * @param out
-   *          the returned flow
-   **/
+   * @param in the input flow
+   * @param d the current node
+   * @param out the returned flow
+   */
   protected abstract void flowThrough(A in, Stmt d, A out);
 
   /** Accessor function returning value of OUT set for s. */
-
   public A getFlowAfter(Stmt s) {
     A a = unitToAfterFlow.get(s);
     return a == null ? newInitialFlow() : a;
@@ -456,13 +450,13 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
   }
 
   /**
-   * If a flow node can be omitted return <code>true</code>, otherwise <code>false</code>. There is no guarantee a node will
-   * be omitted. A omissible node does not influence the result of an analysis.
+   * If a flow node can be omitted return <code>true</code>, otherwise <code>false</code>. There is
+   * no guarantee a node will be omitted. A omissible node does not influence the result of an
+   * analysis.
    *
-   * If you are unsure, don't overwrite this method
+   * <p>If you are unsure, don't overwrite this method
    *
-   * @param n
-   *          the node to check
+   * @param n the node to check
    * @return <code>false</code>
    */
   protected boolean omissible(Stmt n) {
@@ -501,19 +495,21 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
     }
   }
 
-  final int doAnalysis(GraphView gv, InteractionFlowHandler ifh, Map<Stmt, A> inFlow, Map<Stmt, A> outFlow) {
+  final int doAnalysis(
+      GraphView gv, InteractionFlowHandler ifh, Map<Stmt, A> inFlow, Map<Stmt, A> outFlow) {
     assert gv != null;
     assert ifh != null;
 
     ifh = Options.v().interactive_mode() ? ifh : InteractionFlowHandler.NONE;
 
-    final List<Entry<Stmt, A>> universe = Orderer.INSTANCE.newUniverse(graph, gv, entryInitialFlow(), isForward());
+    final List<Entry<Stmt, A>> universe =
+        Orderer.INSTANCE.newUniverse(graph, gv, entryInitialFlow(), isForward());
     initFlow(universe, inFlow, outFlow);
 
     Queue<Entry<Stmt, A>> q = PriorityQueue.of(universe, true);
 
     // Perform fixed point flow analysis
-    for (int numComputations = 0;; numComputations++) {
+    for (int numComputations = 0; ; numComputations++) {
       Entry<Stmt, A> e = q.poll();
       if (e == null) {
         return numComputations;
@@ -562,5 +558,4 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
     flowThrough(d.inFlow, d.data, d.outFlow);
     return true;
   }
-
 }

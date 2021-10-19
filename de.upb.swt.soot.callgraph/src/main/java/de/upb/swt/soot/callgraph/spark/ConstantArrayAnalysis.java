@@ -73,7 +73,8 @@ public class ConstantArrayAnalysis extends ForwardFlowAnalysis<ArrayState> {
         return false;
       }
       ArrayTypesInternal otherTypes = (ArrayTypesInternal) obj;
-      return this.sizeState.equals(otherTypes.sizeState) && Arrays.equals(this.typeState, otherTypes.typeState)
+      return this.sizeState.equals(otherTypes.sizeState)
+          && Arrays.equals(this.typeState, otherTypes.typeState)
           && this.mustAssign.equals(otherTypes.mustAssign);
     }
 
@@ -93,7 +94,11 @@ public class ConstantArrayAnalysis extends ForwardFlowAnalysis<ArrayState> {
 
     @Override
     public String toString() {
-      return "ArrayTypes [possibleSizes=" + possibleSizes + ", possibleTypes=" + Arrays.toString(possibleTypes) + "]";
+      return "ArrayTypes [possibleSizes="
+          + possibleSizes
+          + ", possibleTypes="
+          + Arrays.toString(possibleTypes)
+          + "]";
     }
   }
 
@@ -120,7 +125,8 @@ public class ConstantArrayAnalysis extends ForwardFlowAnalysis<ArrayState> {
 
     public void deepCloneLocalValueSlot(int localRef, int index) {
       this.state[localRef] = (ArrayTypesInternal) this.state[localRef].clone();
-      this.state[localRef].typeState[index] = (BitSet) this.state[localRef].typeState[index].clone();
+      this.state[localRef].typeState[index] =
+          (BitSet) this.state[localRef].typeState[index].clone();
     }
   }
 
@@ -210,7 +216,8 @@ public class ConstantArrayAnalysis extends ForwardFlowAnalysis<ArrayState> {
           int varRef = localToInt.get((Local) lhs);
           out.active.clear(varRef);
           out.state[varRef] = null;
-        } else if (rhs instanceof Local && in.state[localToInt.get((Local) rhs)] != null
+        } else if (rhs instanceof Local
+            && in.state[localToInt.get((Local) rhs)] != null
             && in.active.get(localToInt.get((Local) rhs))) {
           int lhsRef = localToInt.get((Local) lhs);
           int rhsRef = localToInt.get((Local) rhs);
