@@ -199,5 +199,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   @Nonnull
-  protected abstract Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr);
+  protected abstract Stream<MethodSignature> resolveCall(
+      SootMethod method, AbstractInvokeExpr invokeExpr);
 }
