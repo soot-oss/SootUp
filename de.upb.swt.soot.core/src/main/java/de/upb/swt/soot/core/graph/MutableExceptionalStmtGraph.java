@@ -260,13 +260,15 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
     Integer posb2 = posTable.get(trap2.getBeginStmt());
     Integer pose2 = posTable.get(trap2.getEndStmt());
     if (posb1 == null) {
-      throw new RuntimeException(posb1.toString() + " is not contained by pos-table!");
+      throw new RuntimeException(
+          trap1.getBeginStmt().toString() + " is not contained by pos-table!");
     } else if (pose1 == null) {
-      throw new RuntimeException(pose1.toString() + " is not contained by pos-table!");
+      throw new RuntimeException(trap1.getEndStmt().toString() + " is not contained by pos-table!");
     } else if (posb2 == null) {
-      throw new RuntimeException(posb2.toString() + " is not contained by pos-table!");
+      throw new RuntimeException(
+          trap2.getBeginStmt().toString() + " is not contained by pos-table!");
     } else if (pose2 == null) {
-      throw new RuntimeException(pose2.toString() + " is not contained by pos-table!");
+      throw new RuntimeException(trap2.getEndStmt().toString() + " is not contained by pos-table!");
     } else {
       if (posb1 < posb2 && pose1 > pose2) {
         return true;
