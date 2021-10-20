@@ -110,7 +110,7 @@ public class ThrowableSet {
    * @param exclude
    *          The set of {@link AnySubType} objects representing the types to be excluded from the set.
    */
-  protected ThrowableSet(Set<RefLikeType> include, Set<AnySubType> exclude) {
+  protected ThrowableSet(Set<ClassType> include, Set<ClassType> exclude) {
     exceptionsIncluded = getImmutable(include);
     exceptionsExcluded = getImmutable(exclude);
     // We don't need to clone include and exclude to guarantee
@@ -227,7 +227,7 @@ public class ThrowableSet {
     Hierarchy hierarchy = Scene.v().getOrMakeFastHierarchy();
     boolean eHasNoHierarchy = hasNoHierarchy(e);
 
-    for (AnySubType excludedType : exceptionsExcluded) {
+    for (ClassType excludedType : exceptionsExcluded) {
       ReferenceType exclusionBase = excludedType.getBase();
       if ((eHasNoHierarchy && exclusionBase.equals(e)) || (!eHasNoHierarchy && hierarchy.canStoreType(e, exclusionBase))) {
         throw new AlreadyHasExclusionsException("ThrowableSet.add(RefType): adding" + e.toString() + " to the set [ "
@@ -301,7 +301,7 @@ public class ThrowableSet {
    *           if this <code>ThrowableSet</code> is the result of a {@link #whichCatchableAs(RefType)} operation and, thus,
    *           unable to represent the addition of <code>e</code>.
    */
-  public ThrowableSet add(AnySubType e) throws AlreadyHasExclusionsException {
+  public ThrowableSet add(ClassType e) throws AlreadyHasExclusionsException {
     if (INSTRUMENTING) {
       Manager.v().addsOfAnySubType++;
     }
@@ -318,7 +318,7 @@ public class ThrowableSet {
     final SootClass objectClass = Scene.v().getObjectType().getSootClass();
 
     FastHierarchy hierarchy = Scene.v().getOrMakeFastHierarchy();
-    RefType newBase = e.getBase();
+    ReferenceType newBase = e.getBase();
     boolean newBaseHasNoHierarchy = hasNoHierarchy(newBase);
 
     if (INSTRUMENTING) {
@@ -686,7 +686,7 @@ public class ThrowableSet {
    *         be caught as <code>catcher</code> and the other containing the types in this <code>ThrowableSet</code> which
    *         would not be caught as <code>catcher</code>.
    */
-  public Pair whichCatchableAs(RefType catcher) {
+  public Pair whichCatchableAs(ReferenceType catcher) {
     if (INSTRUMENTING) {
       Manager.v().removesOfAnySubType++;
     }

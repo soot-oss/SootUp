@@ -21,8 +21,13 @@
 package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
 
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
-import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
+import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
+import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.types.*;
+import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.toolkits.exceptions.StmtThrowAnalysis;
 import de.upb.swt.soot.java.core.toolkits.exceptions.ThrowableSet;
 import javafx.scene.Scene;
@@ -117,8 +122,6 @@ import javafx.scene.Scene;
 
 public class DalvikThrowAnalysis extends StmtThrowAnalysis {
 
-  public DalvikThrowAnalysis() {
-  }
 
   /**
    * Returns the single instance of <code>DalvikThrowAnalysis</code>.
@@ -126,19 +129,15 @@ public class DalvikThrowAnalysis extends StmtThrowAnalysis {
    * @return Soot's <code>UnitThrowAnalysis</code>.
    */
 
-  protected DalvikThrowAnalysis(boolean isInterproc) {
-    super(isInterproc);
+  protected DalvikThrowAnalysis(View view, boolean isInterproc) {
+    super(view, isInterproc);
   }
 
-  public DalvikThrowAnalysis(boolean isInterproc) {
-    super(isInterproc);
+  public DalvikThrowAnalysis(View view) {
+    super(view);
   }
 
-  public static DalvikThrowAnalysis interproceduralAnalysis = null;
 
-  public static DalvikThrowAnalysis interproc() {
-    return G.v().interproceduralDalvikThrowAnalysis();
-  }
 
   @Override
   protected ThrowableSet defaultResult() {
@@ -146,34 +145,21 @@ public class DalvikThrowAnalysis extends StmtThrowAnalysis {
   }
 
   @Override
-  protected UnitSwitch unitSwitch(SootMethod sm) {
-    return new StmtThrowAnalysis.UnitSwitch(sm) {
+  protected StmtSwitch unitSwitch(SootMethod sm) {
+    return new StmtSwitch(sm) {
 
-      // Dalvik does not throw an exception for this instruction
-      @Override
-      public void caseReturnInst(ReturnInst i) {
-      }
 
-      // Dalvik does not throw an exception for this instruction
-      @Override
-      public void caseReturnVoidInst(JReturnVoidStmt i) {
-      }
+
 
       @Override
-      public void caseEnterMonitorInst(EnterMonitorInst i) {
-        result = result.add(mgr.NULL_POINTER_EXCEPTION);
-        result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
-      }
-
-      @Override
-      public void caseEnterMonitorStmt(EnterMonitorStmt s) {
+      public void caseEnterMonitorStmt(JEnterMonitorStmt s) {
         result = result.add(mgr.NULL_POINTER_EXCEPTION);
         result = result.add(mgr.ILLEGAL_MONITOR_STATE_EXCEPTION);
         result = result.add(mightThrow(s.getOp()));
       }
 
       @Override
-      public void caseAssignStmt(AssignStmt s) {
+      public void caseAssignStmt(JAssignStmt s) {
         // Dalvik only throws ArrayIndexOutOfBounds and
         // NullPointerException which are both handled through the
         // ArrayRef expressions. There is no ArrayStoreException in
@@ -187,7 +173,7 @@ public class DalvikThrowAnalysis extends StmtThrowAnalysis {
 
   @Override
   protected ValueSwitch valueSwitch() {
-    return new UnitThrowAnalysis.ValueSwitch() {
+    return new StmtThrowAnalysis.ValueSwitch() {
 
       // from ./vm/mterp/c/OP_CONST_STRING.c
       //
@@ -254,15 +240,15 @@ public class DalvikThrowAnalysis extends StmtThrowAnalysis {
       }
 
       @Override
-      public void caseCastExpr(CastExpr expr) {
-        if (expr.getCastType() instanceof PrimType) {
+      public void caseCastExpr(JCastExpr expr) {
+        if (expr.getType() instanceof PrimitiveType) {
           // No exception are thrown for primitive casts
           return;
         }
         Type fromType = expr.getOp().getType();
-        Type toType = expr.getCastType();
+        Type toType = expr.getType();
         result = result.add(mgr.RESOLVE_CLASS_ERRORS);
-        if (toType instanceof RefLikeType) {
+        if (toType instanceof ReferenceType) {
           // fromType might still be unknown when we are called,
           // but toType will have a value.
           FastHierarchy h = Scene.v().getOrMakeFastHierarchy();

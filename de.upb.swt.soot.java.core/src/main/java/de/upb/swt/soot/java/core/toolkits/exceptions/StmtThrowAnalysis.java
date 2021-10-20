@@ -22,25 +22,25 @@ package de.upb.swt.soot.java.core.toolkits.exceptions;
  * #L%
  */
 
+import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
-import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
-import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
-import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
+import de.upb.swt.soot.core.jimple.common.constant.*;
+import de.upb.swt.soot.core.jimple.common.expr.*;
+import de.upb.swt.soot.core.jimple.common.ref.*;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
 import de.upb.swt.soot.core.jimple.visitor.AbstractStmtVisitor;
+import de.upb.swt.soot.core.jimple.visitor.AbstractValueVisitor;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.types.ReferenceType;
-import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.types.UnknownType;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.*;
+import de.upb.swt.soot.core.views.View;
 import javafx.scene.Scene;
 
 import java.util.*;
@@ -64,15 +64,18 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
       .add(ThrowableSet.Manager.v().NULL_POINTER_EXCEPTION).add(ThrowableSet.Manager.v().ILLEGAL_MONITOR_STATE_EXCEPTION);
 
   /**
-   * Constructs a <code>UnitThrowAnalysis</code> for inclusion in Soot's global variable manager, {@link G}.
-   *
-   * @param g
-   *          guarantees that the constructor may only be called from {@link Singletons}.
+   * Constructs a <code>UnitThrowAnalysis</code> for inclusion in Soot's global variable manager.
    */
-  public StmtThrowAnalysis() {
-    this(false);
+  public StmtThrowAnalysis(View view) {
+    this(view,false);
   }
 
+  protected final boolean isInterproc;
+
+  public StmtThrowAnalysis(View view, boolean isInterproc) {
+    super(view);
+    this.isInterproc = isInterproc;
+  }
 
   /**
    * Returns the single instance of <code>UnitThrowAnalysis</code>.
@@ -80,27 +83,12 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
    * @return Soot's <code>UnitThrowAnalysis</code>.
    */
 
-  protected final boolean isInterproc;
-
-  protected StmtThrowAnalysis(boolean isInterproc) {
-    this.isInterproc = isInterproc;
-  }
-
-  public static StmtThrowAnalysis interproceduralAnalysis = null;
-
-  public static StmtThrowAnalysis interproc() {
-    if (interproceduralAnalysis == null) {
-      interproceduralAnalysis = new StmtThrowAnalysis(true);
-    }
-    return interproceduralAnalysis;
-  }
-
   protected ThrowableSet defaultResult() {
     return mgr.VM_ERRORS;
   }
 
-  protected UnitSwitch unitSwitch(SootMethod sm) {
-    return new UnitSwitch(sm);
+  protected StmtSwitch unitSwitch(SootMethod sm) {
+    return new StmtSwitch(sm);
   }
 
   protected ValueSwitch valueSwitch() {
@@ -113,16 +101,12 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
   }
 
   public ThrowableSet mightThrow(Stmt u, SootMethod sm) {
-    UnitSwitch sw = unitSwitch(sm);
-    u.apply(sw);
+    StmtSwitch sw = unitSwitch(sm);
+    u.accept(sw);
     return sw.getResult();
   }
 
 
-  @Override
-  public ThrowableSet mightThrowImplicitly(ThrowInst t) {
-    return implicitThrowExceptions;
-  }
 
   @Override
   public ThrowableSet mightThrowImplicitly(JThrowStmt t) {
@@ -131,17 +115,17 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
 
   protected ThrowableSet mightThrow(Value v) {
     ValueSwitch sw = valueSwitch();
-    v.apply(sw);
+    v.accept(sw);
     return sw.getResult();
   }
 
-  protected ThrowableSet mightThrow(SootMethodRef m) {
+  protected ThrowableSet mightThrow(MethodSignature m) {
     // The throw analysis is used in the front-ends. Conseqeuently, some
     // methods might not yet be loaded. If this is the case, we make
     // conservative assumptions.
-    SootMethod sm = m.tryResolve();
-    if (sm != null) {
-      return mightThrow(sm);
+    Optional<? extends SootMethod> sm = view.getMethod(m);
+    if (sm.isPresent()) {
+      return mightThrow(sm.get());
     } else {
       return mgr.ALL_THROWABLES;
     }
@@ -161,12 +145,13 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     }
     return methodToThrowSet.getUnchecked(sm);
   }
+  private static CacheBuilder<Object, Object> DEFAULT_CACHE_BUILDER = CacheBuilder.newBuilder().concurrencyLevel(Runtime.getRuntime().availableProcessors()).initialCapacity(10000).softValues();
 
   protected final LoadingCache<SootMethod, ThrowableSet> methodToThrowSet
-      = IDESolver.DEFAULT_CACHE_BUILDER.build(new CacheLoader<SootMethod, ThrowableSet>() {
+      = DEFAULT_CACHE_BUILDER.build(new CacheLoader<SootMethod, ThrowableSet>() {
         @Override
         public ThrowableSet load(SootMethod sm) throws Exception {
-          return mightThrow(sm, new HashSet<SootMethod>());
+          return mightThrow(sm.getSignature(), new HashSet<MethodSignature>());
         }
       });
 
@@ -180,24 +165,25 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
    *
    * @return a representation of the set of {@link Throwable Throwable} types that <code>m</code> might throw.
    */
-  private ThrowableSet mightThrow(SootMethod sm, Set<SootMethod> doneSet) {
+  private ThrowableSet mightThrow(MethodSignature methodSignature, Set<MethodSignature> doneSet) {
     // Do not run in loops
-    if (!doneSet.add(sm)) {
+    SootMethod sm = view.getMethod(methodSignature).get();
+    if (!doneSet.add(sm.getSignature())) {
       return ThrowableSet.Manager.v().EMPTY;
     }
 
     // If we don't have body, we silently ignore the method. This is
     // unsound, but would otherwise always bloat our result set.
-    if (!sm.hasActiveBody()) {
+    if (!sm.hasBody()) {
       return ThrowableSet.Manager.v().EMPTY;
     }
 
     // We need a mapping between unit and exception
-    final PatchingChain<Stmt> stmts = sm.getActiveBody().getUnits();
+    final StmtGraph stmts = sm.getBody().getStmtGraph();
     Map<Stmt, Collection<Trap>> unitToTraps
-        = sm.getActiveBody().getTraps().isEmpty() ? null : new HashMap<Stmt, Collection<Trap>>();
-    for (Trap t : sm.getActiveBody().getTraps()) {
-      for (Iterator<Stmt> unitIt = stmts.iterator(t.getBeginUnit(), stmts.getPredOf(t.getEndUnit())); unitIt.hasNext();) {
+        = sm.getBody().getTraps().isEmpty() ? null : new HashMap<Stmt, Collection<Trap>>();
+    for (Trap t : sm.getBody().getTraps()) {
+      for (Iterator<Stmt> unitIt = stmts.iterator(t.getBeginStmt(), stmts.getPredOf(t.getEndUnit())); unitIt.hasNext();) {
         Stmt unit = unitIt.next();
 
         Collection<Trap> unitsForTrap = unitToTraps.get(unit);
@@ -210,17 +196,17 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     }
 
     ThrowableSet methodSet = ThrowableSet.Manager.v().EMPTY;
-    if (sm.hasActiveBody()) {
-      Body methodBody = sm.getActiveBody();
+    if (sm.hasBody()) {
+      Body methodBody = sm.getBody();
 
-      for (Stmt s : methodBody.getUnits()) {
+      for (Stmt s : methodBody.getStmts()) {
         if (s instanceof Stmt) {
           Stmt stmt = (Stmt) s;
 
           ThrowableSet curStmtSet;
           if (stmt.containsInvokeExpr()) {
             AbstractInvokeExpr inv = stmt.getInvokeExpr();
-            curStmtSet = mightThrow(inv.getMethod(), doneSet);
+            curStmtSet = mightThrow(inv.getMethodSignature(), doneSet);
           } else {
             curStmtSet = mightThrow(s, sm);
           }
@@ -230,7 +216,7 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
             Collection<Trap> trapsForUnit = unitToTraps.get(stmt);
             if (trapsForUnit != null) {
               for (Trap t : trapsForUnit) {
-                ThrowableSet.Pair p = curStmtSet.whichCatchableAs(t.getException().getType());
+                ThrowableSet.Pair p = curStmtSet.whichCatchableAs(t.getExceptionType());
                 curStmtSet = curStmtSet.remove(p.getCaught());
               }
             }
@@ -247,13 +233,13 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
   private static final IntConstant INT_CONSTANT_ZERO = IntConstant.getInstance(0);
   private static final LongConstant LONG_CONSTANT_ZERO = LongConstant.getInstance(0);
 
-  protected class UnitSwitch extends AbstractStmtVisitor<ThrowableSet> {
+  protected class StmtSwitch extends AbstractStmtVisitor<ThrowableSet> {
 
     // Asynchronous errors are always possible:
     protected ThrowableSet result = defaultResult();
     protected SootMethod sm;
 
-    public UnitSwitch(SootMethod sm) {
+    public StmtSwitch(SootMethod sm) {
       this.sm = sm;
     }
 
@@ -343,17 +329,14 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
       result = result.add(mightThrowExplicitly(s, sm));
     }
 
-    @Override
-    public void defaultCase(Object obj) {
-    }
   }
 
-  protected class ValueSwitch implements GrimpValueSwitch, ShimpleValueSwitch {
+  protected class ValueSwitch extends AbstractValueVisitor<ThrowableSet> {
 
     // Asynchronous errors are always possible:
     protected ThrowableSet result = defaultResult();
 
-    ThrowableSet getResult() {
+    public ThrowableSet getResult() {
       return result;
     }
 
@@ -398,141 +381,141 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     // Declared by ExprSwitch interface:
 
     @Override
-    public void caseAddExpr(AddExpr expr) {
+    public void caseAddExpr(JAddExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseAndExpr(AndExpr expr) {
+    public void caseAndExpr(JAndExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseCmpExpr(CmpExpr expr) {
+    public void caseCmpExpr(JCmpExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseCmpgExpr(CmpgExpr expr) {
+    public void caseCmpgExpr(JCmpgExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseCmplExpr(CmplExpr expr) {
+    public void caseCmplExpr(JCmplExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseDivExpr(DivExpr expr) {
+    public void caseDivExpr(JDivExpr expr) {
       caseBinopDivExpr(expr);
     }
 
     @Override
-    public void caseEqExpr(EqExpr expr) {
+    public void caseEqExpr(JEqExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseNeExpr(NeExpr expr) {
+    public void caseNeExpr(JNeExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseGeExpr(GeExpr expr) {
+    public void caseGeExpr(JGeExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseGtExpr(GtExpr expr) {
+    public void caseGtExpr(JGtExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseLeExpr(LeExpr expr) {
+    public void caseLeExpr(JLeExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseLtExpr(LtExpr expr) {
+    public void caseLtExpr(JLtExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseMulExpr(MulExpr expr) {
+    public void caseMulExpr(JMulExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseOrExpr(OrExpr expr) {
+    public void caseOrExpr(JOrExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseRemExpr(RemExpr expr) {
+    public void caseRemExpr(JRemExpr expr) {
       caseBinopDivExpr(expr);
     }
 
     @Override
-    public void caseShlExpr(ShlExpr expr) {
+    public void caseShlExpr(JShlExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseShrExpr(ShrExpr expr) {
+    public void caseShrExpr(JShrExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseUshrExpr(UshrExpr expr) {
+    public void caseUshrExpr(JUshrExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseSubExpr(SubExpr expr) {
+    public void caseSubExpr(JSubExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseXorExpr(XorExpr expr) {
+    public void caseXorExpr(JXorExpr expr) {
       caseBinopExpr(expr);
     }
 
     @Override
-    public void caseInterfaceInvokeExpr(InterfaceInvokeExpr expr) {
+    public void caseInterfaceInvokeExpr(JInterfaceInvokeExpr expr) {
       caseInstanceInvokeExpr(expr);
     }
 
     @Override
-    public void caseSpecialInvokeExpr(SpecialInvokeExpr expr) {
+    public void caseSpecialInvokeExpr(JSpecialInvokeExpr expr) {
       caseInstanceInvokeExpr(expr);
     }
 
     @Override
-    public void caseStaticInvokeExpr(StaticInvokeExpr expr) {
+    public void caseStaticInvokeExpr(JStaticInvokeExpr expr) {
       result = result.add(mgr.INITIALIZATION_ERRORS);
       for (int i = 0; i < expr.getArgCount(); i++) {
         result = result.add(mightThrow(expr.getArg(i)));
       }
-      result = result.add(mightThrow(expr.getMethodRef()));
+      result = result.add(mightThrow(expr.getMethodSignature()));
     }
 
     @Override
-    public void caseVirtualInvokeExpr(VirtualInvokeExpr expr) {
+    public void caseVirtualInvokeExpr(JVirtualInvokeExpr expr) {
       caseInstanceInvokeExpr(expr);
     }
 
     // INSERTED for invokedynamic StmtThrowAnalysis.java
     @Override
-    public void caseDynamicInvokeExpr(DynamicInvokeExpr expr) {
+    public void caseDynamicInvokeExpr(JDynamicInvokeExpr expr) {
       // caseInstanceInvokeExpr(expr);
     }
 
     @Override
-    public void caseCastExpr(CastExpr expr) {
+    public void caseCastExpr(JCastExpr expr) {
       result = result.add(mgr.RESOLVE_CLASS_ERRORS);
       Type fromType = expr.getOp().getType();
-      Type toType = expr.getCastType();
-      if (toType instanceof RefLikeType) {
+      Type toType = expr.getType();
+      if (toType instanceof ReferenceType) {
         // fromType might still be unknown when we are called,
         // but toType will have a value.
         FastHierarchy h = Scene.v().getOrMakeFastHierarchy();
@@ -545,14 +528,14 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     }
 
     @Override
-    public void caseInstanceOfExpr(InstanceOfExpr expr) {
+    public void caseInstanceOfExpr(JInstanceOfExpr expr) {
       result = result.add(mgr.RESOLVE_CLASS_ERRORS);
       result = result.add(mightThrow(expr.getOp()));
     }
 
     @Override
-    public void caseNewArrayExpr(NewArrayExpr expr) {
-      if (expr.getBaseType() instanceof RefLikeType) {
+    public void caseNewArrayExpr(JNewArrayExpr expr) {
+      if (expr.getBaseType() instanceof ReferenceType) {
         result = result.add(mgr.RESOLVE_CLASS_ERRORS);
       }
       Value count = expr.getSize();
@@ -563,7 +546,7 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     }
 
     @Override
-    public void caseNewMultiArrayExpr(NewMultiArrayExpr expr) {
+    public void caseNewMultiArrayExpr(JNewMultiArrayExpr expr) {
       result = result.add(mgr.RESOLVE_CLASS_ERRORS);
       for (int i = 0; i < expr.getSizeCount(); i++) {
         Value count = expr.getSize(i);
@@ -576,28 +559,28 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public void caseNewExpr(NewExpr expr) {
+    public void caseNewExpr(JNewExpr expr) {
       result = result.add(mgr.INITIALIZATION_ERRORS);
-      for (ValueBox box : expr.getUseBoxes()) {
-        result = result.add(mightThrow(box.getValue()));
+      for (Value value : expr.getUses()) {
+        result = result.add(mightThrow(value));
       }
     }
 
     @Override
-    public void caseLengthExpr(LengthExpr expr) {
+    public void caseLengthExpr(JLengthExpr expr) {
       result = result.add(mgr.NULL_POINTER_EXCEPTION);
       result = result.add(mightThrow(expr.getOp()));
     }
 
     @Override
-    public void caseNegExpr(NegExpr expr) {
+    public void caseNegExpr(JNegExpr expr) {
       result = result.add(mightThrow(expr.getOp()));
     }
 
     // Declared by RefSwitch interface:
 
     @Override
-    public void caseArrayRef(ArrayRef ref) {
+    public void caseArrayRef(JArrayRef ref) {
       result = result.add(mgr.NULL_POINTER_EXCEPTION);
       result = result.add(mgr.ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION);
       result = result.add(mightThrow(ref.getBase()));
@@ -605,27 +588,27 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     }
 
     @Override
-    public void caseStaticFieldRef(StaticFieldRef ref) {
+    public void caseStaticFieldRef(JStaticFieldRef ref) {
       result = result.add(mgr.INITIALIZATION_ERRORS);
     }
 
     @Override
-    public void caseInstanceFieldRef(InstanceFieldRef ref) {
+    public void caseInstanceFieldRef(JInstanceFieldRef ref) {
       result = result.add(mgr.RESOLVE_FIELD_ERRORS);
       result = result.add(mgr.NULL_POINTER_EXCEPTION);
       result = result.add(mightThrow(ref.getBase()));
     }
 
     @Override
-    public void caseParameterRef(ParameterRef v) {
+    public void caseParameterRef(JParameterRef v) {
     }
 
     @Override
-    public void caseCaughtExceptionRef(CaughtExceptionRef v) {
+    public void caseCaughtExceptionRef(JCaughtExceptionRef v) {
     }
 
     @Override
-    public void caseThisRef(ThisRef v) {
+    public void caseThisRef(JThisRef v) {
     }
 
     @Override
@@ -640,8 +623,8 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     @SuppressWarnings("rawtypes")
     @Override
     public void casePhiExpr(PhiExpr e) {
-      for (ValueBox box : e.getUseBoxes()) {
-        result = result.add(mightThrow(box.getValue()));
+      for (Value value : e.getUseBoxes()) {
+        result = result.add(mightThrow(value));
       }
     }
 
@@ -652,12 +635,12 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     // The remaining cases are not declared by GrimpValueSwitch,
     // but are used to factor out code common to several cases.
 
-    private void caseBinopExpr(BinopExpr expr) {
+    private void caseBinopExpr(AbstractBinopExpr expr) {
       result = result.add(mightThrow(expr.getOp1()));
       result = result.add(mightThrow(expr.getOp2()));
     }
 
-    private void caseBinopDivExpr(BinopExpr expr) {
+    private void caseBinopDivExpr(AbstractBinopExpr expr) {
       // Factors out code common to caseDivExpr and caseRemExpr.
       // The checks against constant divisors would perhaps be
       // better performed in a later pass, post-constant-propagation.
@@ -665,24 +648,24 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
       Type divisorType = divisor.getType();
       if (divisorType instanceof UnknownType) {
         result = result.add(mgr.ARITHMETIC_EXCEPTION);
-      } else if ((divisorType instanceof IntegerType)
+      } else if ((divisorType instanceof PrimitiveType.IntType)
           && ((!(divisor instanceof IntConstant)) || (((IntConstant) divisor).equals(INT_CONSTANT_ZERO)))) {
         result = result.add(mgr.ARITHMETIC_EXCEPTION);
-      } else if ((divisorType == LongType.v())
+      } else if ((divisorType == PrimitiveType.LongType.getInstance())
           && ((!(divisor instanceof LongConstant)) || (((LongConstant) divisor).equals(LONG_CONSTANT_ZERO)))) {
         result = result.add(mgr.ARITHMETIC_EXCEPTION);
       }
       caseBinopExpr(expr);
     }
 
-    private void caseInstanceInvokeExpr(InstanceInvokeExpr expr) {
+    private void caseInstanceInvokeExpr(AbstractInstanceInvokeExpr expr) {
       result = result.add(mgr.RESOLVE_METHOD_ERRORS);
       result = result.add(mgr.NULL_POINTER_EXCEPTION);
       for (int i = 0; i < expr.getArgCount(); i++) {
         result = result.add(mightThrow(expr.getArg(i)));
       }
       result = result.add(mightThrow(expr.getBase()));
-      result = result.add(mightThrow(expr.getMethodRef()));
+      result = result.add(mightThrow(expr.getMethodSignature()));
     }
   }
 }

@@ -7,11 +7,13 @@ import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.NullType;
 import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
+import de.upb.swt.soot.core.views.View;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,14 +21,18 @@ import java.util.stream.Collectors;
 /**
  * Abstract class implementing parts of the {@link ThrowAnalysis} interface which may be common to multiple concrete
  * <code>ThrowAnalysis</code> classes. <code>AbstractThrowAnalysis</code> provides straightforward implementations of
- * {@link mightThrowExplicitly(ThrowInst)} and {@link mightThrowExplicitly(ThrowStmt)}, since concrete implementations of
+ * {@link mightThrowExplicitly(JThrowStmt)}, since concrete implementations of
  * <code>ThrowAnalysis</code> seem likely to differ mainly in their treatment of implicit exceptions.
  */
 public abstract class AbstractThrowAnalysis implements ThrowAnalysis {
 
+  protected View<SootClass> view;
+
   abstract public ThrowableSet mightThrow(Stmt stmt);
 
-
+  public AbstractThrowAnalysis(View<SootClass> view) {
+    this.view = view;
+  }
 
   @Override
   public ThrowableSet mightThrowExplicitly(JThrowStmt t) {
@@ -65,7 +71,7 @@ public abstract class AbstractThrowAnalysis implements ThrowAnalysis {
         }
 
         if (preciseType == null) {
-          result = result.add(AnySubType.v((ReferenceType) thrownType));
+          result = result.add(thrownType);
         } else {
           result = result.add(preciseType);
         }
@@ -73,8 +79,6 @@ public abstract class AbstractThrowAnalysis implements ThrowAnalysis {
       return result;
     }
   }
-
-  abstract public ThrowableSet mightThrowImplicitly(ThrowInst t);
 
   abstract public ThrowableSet mightThrowImplicitly(JThrowStmt t);
 }

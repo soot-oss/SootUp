@@ -42,20 +42,24 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.analysis.LocalDefs;
+import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
+import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.java.core.toolkits.scalar.LocalCreation;
 import soot.*;
 import soot.jimple.*;
-import soot.jimple.toolkits.scalar.LocalCreation;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
-import soot.toolkits.graph.ExceptionalUnitGraph;
-import soot.toolkits.scalar.LocalDefs;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * If Dalvik bytecode contains statements using a base array which is always null, Soot's fast type resolver will fail with
@@ -71,24 +75,22 @@ import java.util.Map;
 public class DexNullArrayRefTransformer implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    final ExceptionalUnitGraph g = new ExceptionalUnitGraph(body, DalvikThrowAnalysis.v());
+  public void interceptBody(@Nonnull Body.BodyBuilder bodyBuilder) {
+    final ExceptionalStmtGraph g = new ExceptionalStmtGraph(bodyBuilder, new DalvikThrowAnalysis());
     final LocalDefs defs = G.v().soot_toolkits_scalar_LocalDefsFactory().newLocalDefs(g);
-    final LocalCreation lc = new LocalCreation(body.getLocals(), "ex");
+    final LocalCreation lc = new LocalCreation(bodyBuilder.getLocals(), "ex");
 
     boolean changed = false;
-    for (Iterator<Unit> unitIt = body.getUnits().snapshotIterator(); unitIt.hasNext();) {
-      Stmt s = (Stmt) unitIt.next();
-
-      if (s.containsArrayRef()) {
+    for (Stmt stmt : bodyBuilder.getStmts()) {
+      if (stmt.containsArrayRef()) {
         // Check array reference
-        Value base = s.getArrayRef().getBase();
-        if (isAlwaysNullBefore(s, (Local) base, defs)) {
-          createThrowStmt(body, s, lc);
+        Value base = stmt.getArrayRef().getBase();
+        if (isAlwaysNullBefore(stmt, (Local) base, defs)) {
+          createThrowStmt(bodyBuilder, stmt, lc);
           changed = true;
         }
-      } else if (s instanceof AssignStmt) {
-        AssignStmt ass = (AssignStmt) s;
+      } else if (stmt instanceof AssignStmt) {
+        AssignStmt ass = (AssignStmt) stmt;
         Value rightOp = ass.getRightOp();
         if (rightOp instanceof LengthExpr) {
           // Check lengthof expression
@@ -97,11 +99,11 @@ public class DexNullArrayRefTransformer implements BodyInterceptor {
           if (base instanceof IntConstant) {
             IntConstant ic = (IntConstant) base;
             if (ic.value == 0) {
-              createThrowStmt(body, s, lc);
+              createThrowStmt(bodyBuilder, stmt, lc);
               changed = true;
             }
-          } else if (base == NullConstant.v() || isAlwaysNullBefore(s, (Local) base, defs)) {
-            createThrowStmt(body, s, lc);
+          } else if (base == NullConstant.v() || isAlwaysNullBefore(stmt, (Local) base, defs)) {
+            createThrowStmt(bodyBuilder, stmt, lc);
             changed = true;
           }
         }
@@ -109,7 +111,7 @@ public class DexNullArrayRefTransformer implements BodyInterceptor {
     }
 
     if (changed) {
-      UnreachableCodeEliminator.v().transform(body);
+      UnreachableCodeEliminator.v().transform(bodyBuilder);
     }
   }
 
@@ -145,29 +147,29 @@ public class DexNullArrayRefTransformer implements BodyInterceptor {
   /**
    * Creates a new statement that throws a NullPointerException
    *
-   * @param body
-   *          The body in which to create the statement
+   * @param bodyBuilder
+   *          The bodyBuilder in which to create the statement
    * @param oldStmt
    *          The old faulty statement that shall be replaced with the exception
    * @param lc
    *          The object for creating new locals
    */
-  private void createThrowStmt(Body body, Unit oldStmt, LocalCreation lc) {
+  private void createThrowStmt(Body.BodyBuilder bodyBuilder, Stmt oldStmt, LocalCreation lc) {
     RefType tp = RefType.v("java.lang.NullPointerException");
     Local lcEx = lc.newLocal(tp);
 
-    SootMethodRef constructorRef
+    MethodSignature constructorRef
         = Scene.v().makeConstructorRef(tp.getSootClass(), Collections.singletonList((Type) RefType.v("java.lang.String")));
 
     // Create the exception instance
-    Stmt newExStmt = Jimple.v().newAssignStmt(lcEx, Jimple.v().newNewExpr(tp));
-    body.getUnits().insertBefore(newExStmt, oldStmt);
-    Stmt invConsStmt = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(lcEx, constructorRef,
+    Stmt newExStmt = Jimple.newAssignStmt(lcEx, Jimple.newNewExpr(tp));
+    bodyBuilder.getStmts().insertBefore(newExStmt, oldStmt);
+    Stmt invConsStmt = Jimple.newInvokeStmt(Jimple.newSpecialInvokeExpr(lcEx, constructorRef,
         Collections.singletonList(StringConstant.v("Invalid array reference replaced by Soot"))));
-    body.getUnits().insertBefore(invConsStmt, oldStmt);
+    bodyBuilder.getUnits().insertBefore(invConsStmt, oldStmt);
 
     // Throw the exception
-    body.getUnits().swapWith(oldStmt, Jimple.v().newThrowStmt(lcEx));
+    bodyBuilder.getUnits().swapWith(oldStmt, Jimple.v().newThrowStmt(lcEx));
   }
 
 }
