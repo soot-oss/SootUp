@@ -333,8 +333,7 @@ public class StaticSingleAssigmentFormer implements BodyInterceptor {
     List<Local> args = new ArrayList<>();
     Map<Local, Block> argToBlock = new HashMap<>();
     JPhiExpr phi = new JPhiExpr(args, argToBlock);
-    JAssignStmt phiStmt = new JAssignStmt(local, phi, StmtPositionInfo.createNoStmtPositionInfo());
-    return phiStmt;
+    return new JAssignStmt(local, phi, StmtPositionInfo.createNoStmtPositionInfo());
   }
 
   private Local getOriginalLocal(Local local, Set<Local> oriLocals) {

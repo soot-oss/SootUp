@@ -133,8 +133,7 @@ public final class JPhiExpr implements Expr, Copyable {
     if (args == null) {
       return Collections.emptyList();
     }
-    List<Value> list = new ArrayList<>(getArgs());
-    return list;
+    return new ArrayList<>(getArgs());
   }
 
   @Override
@@ -156,7 +155,7 @@ public final class JPhiExpr implements Expr, Copyable {
   public void toString(@Nonnull StmtPrinter up) {
     up.literal(Jimple.PHI);
     up.literal("(");
-    if (args != null && args.size() != 0) {
+    if (args != null && !args.isEmpty()) {
       ArrayList<Local> list = new ArrayList<>(getArgs());
       list.remove(0).toString(up);
       for (Local arg : list) {
@@ -169,7 +168,7 @@ public final class JPhiExpr implements Expr, Copyable {
 
   @Nonnull
   public String toString() {
-    if (this.args.size() == 0) {
+    if (this.args.isEmpty()) {
       return Jimple.PHI + "()";
     }
     StringBuilder builder = new StringBuilder();

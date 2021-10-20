@@ -98,11 +98,7 @@ public class JimpleComparator {
       return false;
     }
     Block obj = (Block) o;
-    if (caseStmt(block.getHead(), obj.getHead()) && caseStmt(block.getTail(), obj.getTail())) {
-      return true;
-    } else {
-      return false;
-    }
+    return caseStmt(block.getHead(), obj.getHead()) && caseStmt(block.getTail(), obj.getTail());
   }
 
   public boolean caseStmt(Stmt stmt, Object o) {

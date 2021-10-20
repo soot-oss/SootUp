@@ -125,13 +125,7 @@ public class MutableStmtGraph extends StmtGraph {
       calculatedSuccessorSize = ((JSwitchStmt) node).getValueCount();
     } else if (node instanceof JIfStmt) {
       calculatedSuccessorSize = 2;
-    }
-    /* memory- vs runtime+
-      else if( node instanceof JReturnStmt || node instanceof JThrowStmt ){
-      successors.add( Collections.emptyList());
-      return idx;
-    }*/
-    else {
+    } else {
       calculatedSuccessorSize = 1;
     }
 

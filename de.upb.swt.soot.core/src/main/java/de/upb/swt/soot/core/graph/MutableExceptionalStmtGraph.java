@@ -183,6 +183,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
    *     JIdentityStmt T TODO: the inserted node is an instance of PhiStmt, for other stmts maybe
    *     some properties should be added
    */
+  @Override
   public void insertNode(@Nonnull Stmt node, @Nonnull Stmt succNode) {
     super.insertNode(node, succNode);
     List<Trap> traps = new ArrayList<>(getTraps());
