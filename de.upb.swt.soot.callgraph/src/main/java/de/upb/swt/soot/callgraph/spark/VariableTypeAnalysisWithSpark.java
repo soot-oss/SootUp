@@ -43,6 +43,7 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 public class VariableTypeAnalysisWithSpark extends AbstractCallGraphAlgorithm {
@@ -71,12 +72,12 @@ public class VariableTypeAnalysisWithSpark extends AbstractCallGraphAlgorithm {
 
   @Override
   @Nonnull
-  protected Set<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
+  protected Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
     Set<MethodSignature> result = Sets.newHashSet(targetMethodSignature);
 
     if (!chaGraph.containsMethod(method.getSignature())) {
-      return result;
+      return result.stream();
     }
     collectInstantiatedAndAssignedClassesInMethod(method);
 
@@ -87,13 +88,13 @@ public class VariableTypeAnalysisWithSpark extends AbstractCallGraphAlgorithm {
 
     if (Modifier.isStatic(targetMethod.getModifiers())
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
-      return result;
+      return result.stream();
     } else {
       Set<MethodSignature> implAndOverrides =
           MethodDispatchResolver.resolveAbstractDispatchInClasses(
               view, targetMethodSignature, instantiatedClasses);
       result.addAll(implAndOverrides);
-      return result;
+      return result.stream();
     }
   }
 

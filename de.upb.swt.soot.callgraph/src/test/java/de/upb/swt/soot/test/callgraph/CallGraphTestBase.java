@@ -35,8 +35,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   protected abstract T createAlgorithm(JavaView view, TypeHierarchy typeHierarchy);
 
-  protected CallGraph loadCallGraph(String testDirectory, String className) {
-    String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
   private static Map<String, JavaView> viewToClassPath = new HashMap<>();
 
   private JavaView createViewForClassPath(String classPath) {
@@ -50,7 +48,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     return javaProject.createOnDemandView();
   }
 
-  CallGraph loadCallGraph(String testDirectory, String className) {
+  protected CallGraph loadCallGraph(String testDirectory, String className) {
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
     if (version > 1.8) {
       fail("The rt.jar is not available after Java 8. You are using version " + version);
