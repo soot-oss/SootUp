@@ -110,8 +110,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
   @Nonnull
   public List<Trap> getDestTraps(@Nonnull Stmt stmt) {
     Integer idx = getNodeIdx(stmt);
-    List<Trap> traps = exceptionalDestinationTraps.get(idx);
-    return traps;
+    return exceptionalDestinationTraps.get(idx);
   }
 
   @Override
@@ -270,10 +269,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
     } else if (pose2 == null) {
       throw new RuntimeException(trap2.getEndStmt().toString() + " is not contained by pos-table!");
     } else {
-      if (posb1 < posb2 && pose1 > pose2) {
-        return true;
-      }
-      return false;
+      return posb1 < posb2 && pose1 > pose2;
     }
   }
 
