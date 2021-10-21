@@ -36,10 +36,10 @@ public class BlockGraph implements Iterable<Block> {
   public final Map<Stmt, Block> headToBlock = new HashMap<>();
   public final Map<Stmt, Block> tailToBlock = new HashMap<>();
 
-  public final ArrayList<List<Block>> blockPreds = new ArrayList<>();
-  public final ArrayList<List<Block>> blockSuccs = new ArrayList<>();
-  public ArrayList<List<Block>> exceptionalBlockPreds = new ArrayList<>();
-  public ArrayList<List<Block>> exceptionalBlockSuccs = new ArrayList<>();
+  public final List<List<Block>> blockPreds = new ArrayList<>();
+  public final List<List<Block>> blockSuccs = new ArrayList<>();
+  public List<List<Block>> exceptionalBlockPreds = new ArrayList<>();
+  public List<List<Block>> exceptionalBlockSuccs = new ArrayList<>();
 
   public BlockGraph(@Nonnull StmtGraph stmtGraph) {
 
@@ -369,10 +369,7 @@ public class BlockGraph implements Iterable<Block> {
       return true;
     }
     Stmt succ = graph.successors(stmt).get(0);
-    if (isHead(succ, graph)) {
-      return true;
-    }
-    return false;
+    return isHead(succ, graph);
   }
 
   public void replaceBlock(@Nonnull Block oldBlock, @Nonnull Block newBlock) {

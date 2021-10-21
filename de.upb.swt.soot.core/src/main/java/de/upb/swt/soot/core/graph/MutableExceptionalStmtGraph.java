@@ -110,8 +110,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
   @Nonnull
   public List<Trap> getDestTraps(@Nonnull Stmt stmt) {
     Integer idx = getNodeIdx(stmt);
-    List<Trap> traps = exceptionalDestinationTraps.get(idx);
-    return traps;
+    return exceptionalDestinationTraps.get(idx);
   }
 
   @Override
@@ -183,6 +182,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
    *     JIdentityStmt T TODO: the inserted node is an instance of PhiStmt, for other stmts maybe
    *     some properties should be added
    */
+  @Override
   public void insertNode(@Nonnull Stmt node, @Nonnull Stmt succNode) {
     super.insertNode(node, succNode);
     List<Trap> traps = new ArrayList<>(getTraps());
@@ -259,18 +259,17 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
     Integer posb2 = posTable.get(trap2.getBeginStmt());
     Integer pose2 = posTable.get(trap2.getEndStmt());
     if (posb1 == null) {
-      throw new RuntimeException(posb1.toString() + " is not contained by pos-table!");
+      throw new RuntimeException(
+          trap1.getBeginStmt().toString() + " is not contained by pos-table!");
     } else if (pose1 == null) {
-      throw new RuntimeException(pose1.toString() + " is not contained by pos-table!");
+      throw new RuntimeException(trap1.getEndStmt().toString() + " is not contained by pos-table!");
     } else if (posb2 == null) {
-      throw new RuntimeException(posb2.toString() + " is not contained by pos-table!");
+      throw new RuntimeException(
+          trap2.getBeginStmt().toString() + " is not contained by pos-table!");
     } else if (pose2 == null) {
-      throw new RuntimeException(pose2.toString() + " is not contained by pos-table!");
+      throw new RuntimeException(trap2.getEndStmt().toString() + " is not contained by pos-table!");
     } else {
-      if (posb1 < posb2 && pose1 > pose2) {
-        return true;
-      }
-      return false;
+      return posb1 < posb2 && pose1 > pose2;
     }
   }
 

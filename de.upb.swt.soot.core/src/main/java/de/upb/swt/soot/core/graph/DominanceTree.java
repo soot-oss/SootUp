@@ -31,8 +31,8 @@ public class DominanceTree {
 
   private Map<Integer, Block> idxToBlock;
   private Map<Block, Integer> blockToIdx;
-  public List<Integer>[] children;
-  public int[] parents;
+  private List<Integer>[] children;
+  private int[] parents;
 
   public DominanceTree(@Nonnull DominanceFinder dominanceFinder) {
     this.idxToBlock = dominanceFinder.getIdxToBlock();
