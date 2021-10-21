@@ -375,7 +375,7 @@ public class BlockGraph implements Iterable<Block> {
     return false;
   }
 
-  private void replaceBlock(@Nonnull Block oldBlock, @Nonnull Block newBlock) {
+  public void replaceBlock(@Nonnull Block oldBlock, @Nonnull Block newBlock) {
 
     if (!blockToIdx.keySet().contains(oldBlock)) {
       throw new RuntimeException(
