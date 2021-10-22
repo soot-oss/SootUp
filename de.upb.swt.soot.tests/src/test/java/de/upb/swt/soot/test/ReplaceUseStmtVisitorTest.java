@@ -87,7 +87,7 @@ public class ReplaceUseStmtVisitorTest {
     }
     assertTrue(isExpected);
 
-    // rValue is a Local
+    // rValue is a Local, use local to replace it
     stmt = JavaJimple.newAssignStmt(var, op1, noStmtPositionInfo);
     stmt.accept(visitor);
     stmt = visitor.getResult();

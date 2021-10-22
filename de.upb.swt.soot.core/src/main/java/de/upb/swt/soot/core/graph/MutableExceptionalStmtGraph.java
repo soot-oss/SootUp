@@ -110,8 +110,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
   @Nonnull
   public List<Trap> getDestTraps(@Nonnull Stmt stmt) {
     Integer idx = getNodeIdx(stmt);
-    List<Trap> traps = exceptionalDestinationTraps.get(idx);
-    return traps;
+    return exceptionalDestinationTraps.get(idx);
   }
 
   @Override
@@ -175,6 +174,57 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
   }
 
   /**
+   * Add a stmt into StmtGraph before a given stmt that is already in StmtGraph
+   *
+   * @param node a stmt which should be inserted into StmtGraph, it should be not an instance or
+   *     JSwitchStmt or JIfStmt
+   * @param succNode a stmt that's already in the stmtGraph, it should be not an instance of
+   *     JIdentityStmt T TODO: the inserted node is an instance of PhiStmt, for other stmts maybe
+   *     some properties should be added
+   */
+  @Override
+  public void insertNode(@Nonnull Stmt node, @Nonnull Stmt succNode) {
+    super.insertNode(node, succNode);
+    List<Trap> traps = new ArrayList<>(getTraps());
+    boolean hasNewTraps = false;
+    if (exceptionalSuccessors(succNode).isEmpty()) {
+      exceptionalPreds.add(new ArrayList<>());
+      exceptionalSuccs.add(new ArrayList<>());
+      exceptionalDestinationTraps.add(new ArrayList<>());
+      for (Trap trap : traps) {
+        if (succNode == trap.getEndStmt()) {
+          Trap newTrap =
+              new Trap(trap.getExceptionType(), trap.getBeginStmt(), node, trap.getHandlerStmt());
+          traps.remove(trap);
+          traps.add(newTrap);
+          hasNewTraps = true;
+        }
+      }
+    } else {
+      List<Stmt> exSuccs = exceptionalSuccessors(succNode);
+      exceptionalPreds.add(new ArrayList<>());
+      exceptionalSuccs.add(new ArrayList<>(exSuccs));
+      exceptionalDestinationTraps.add(new ArrayList<>(getDestTraps(succNode)));
+      for (Stmt exSucc : exSuccs) {
+        int idx = getNodeIdx(exSucc);
+        exceptionalPreds.get(idx).add(node);
+      }
+      for (Trap trap : traps) {
+        if (succNode == trap.getBeginStmt()) {
+          Trap newTrap =
+              new Trap(trap.getExceptionType(), node, trap.getEndStmt(), trap.getHandlerStmt());
+          traps.remove(trap);
+          traps.add(newTrap);
+          hasNewTraps = true;
+        }
+      }
+    }
+    if (hasNewTraps) {
+      setTraps(traps);
+    }
+  }
+
+  /**
    * Build the map for stmt positions in a StmtGraph
    *
    * @param stmtGraph an instance of StmtGraph
@@ -209,18 +259,17 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
     Integer posb2 = posTable.get(trap2.getBeginStmt());
     Integer pose2 = posTable.get(trap2.getEndStmt());
     if (posb1 == null) {
-      throw new RuntimeException(posb1.toString() + " is not contained by pos-table!");
+      throw new RuntimeException(
+          trap1.getBeginStmt().toString() + " is not contained by pos-table!");
     } else if (pose1 == null) {
-      throw new RuntimeException(pose1.toString() + " is not contained by pos-table!");
+      throw new RuntimeException(trap1.getEndStmt().toString() + " is not contained by pos-table!");
     } else if (posb2 == null) {
-      throw new RuntimeException(posb2.toString() + " is not contained by pos-table!");
+      throw new RuntimeException(
+          trap2.getBeginStmt().toString() + " is not contained by pos-table!");
     } else if (pose2 == null) {
-      throw new RuntimeException(pose2.toString() + " is not contained by pos-table!");
+      throw new RuntimeException(trap2.getEndStmt().toString() + " is not contained by pos-table!");
     } else {
-      if (posb1 < posb2 && pose1 > pose2) {
-        return true;
-      }
-      return false;
+      return posb1 < posb2 && pose1 > pose2;
     }
   }
 
@@ -277,7 +326,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraph {
       List<Trap> dests = new ArrayList<>(exceptionalDestinationTraps.get(predIdx));
       for (Trap dest : dests) {
         if (dest.getHandlerStmt() == node) {
-          exceptionalDestinationTraps.remove(dest);
+          exceptionalDestinationTraps.get(predIdx).remove(dest);
         }
       }
     }
