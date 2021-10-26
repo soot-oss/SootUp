@@ -856,7 +856,7 @@ public class DexBody {
     // Keep only transformations that have not been done
     // at this point.
     new TrapTightener().interceptBody(this.bodyBuilder);
-    TrapMinimizer.v().interceptBody(this.bodyBuilder);
+    TrapMinimizer.getInstance().interceptBody(this.bodyBuilder);
     // LocalSplitter.v().transform(jBody);
     new Aggregator().interceptBody(this.bodyBuilder);
     // new UnusedLocalEliminator().v().transform(jBody);

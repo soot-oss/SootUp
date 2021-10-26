@@ -137,19 +137,14 @@ public class DalvikThrowAnalysis extends StmtThrowAnalysis {
     super(view);
   }
 
-
-
   @Override
   protected ThrowableSet defaultResult() {
     return mgr.EMPTY;
   }
 
   @Override
-  protected StmtSwitch unitSwitch(SootMethod sm) {
+  protected StmtSwitch stmtSwitch(SootMethod sm) {
     return new StmtSwitch(sm) {
-
-
-
 
       @Override
       public void caseEnterMonitorStmt(JEnterMonitorStmt s) {

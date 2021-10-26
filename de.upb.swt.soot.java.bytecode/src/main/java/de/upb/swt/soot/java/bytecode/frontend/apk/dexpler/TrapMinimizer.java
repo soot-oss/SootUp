@@ -28,6 +28,7 @@ import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.java.core.toolkits.exceptions.TrapTransformer;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -45,13 +46,14 @@ import java.util.*;
  *
  * @author Alexandre Bartel
  */
-public class TrapMinimizer implements BodyInterceptor {
+public class TrapMinimizer extends TrapTransformer {
 
-  public TrapMinimizer(Singletons.Global g) {
-  }
+  @Nonnull
+  private static final TrapMinimizer INSTANCE = new TrapMinimizer();
 
-  public static TrapMinimizer v() {
-    return new TrapMinimizer();
+
+  public static TrapMinimizer getInstance() {
+    return INSTANCE;
   }
 
   @Override
@@ -61,8 +63,8 @@ public class TrapMinimizer implements BodyInterceptor {
       return;
     }
 
-    ExceptionalStmtGraph eug = new ExceptionalStmtGraph(builder, new DalvikThrowAnalysis(), Options.v().omit_excepting_unit_edges());
-    Set<Stmt> unitsWithMonitor = getStmtsWithMonitor(eug);
+    ExceptionalStmtGraph eug = builder.getStmtGraph();
+    Set<Stmt> stmtsWithMonitor = getStmtsWithMonitor(eug);
 
     Map<Trap, List<Trap>> replaceTrapBy = new HashMap<Trap, List<Trap>>(builder.getTraps().size());
     boolean updateTrap = false;
@@ -87,14 +89,14 @@ public class TrapMinimizer implements BodyInterceptor {
 
         // If this is the catch-all block and the current unit has an,
         // active monitor, we need to keep the block
-        if (tr.getException().getName().equals("java.lang.Throwable") && unitsWithMonitor.contains(u)) {
+        if (tr.getExceptionType().getClassName().equals("java.lang.Throwable") && stmtsWithMonitor.contains(u)) {
           goesToHandler = true;
         }
 
         // check if the current unit has an edge to the current trap's
         // handler
         if (!goesToHandler) {
-          if (new DalvikThrowAnalysis().mightThrow(u).catchableAs(tr.getException().getType())) {
+          if (new DalvikThrowAnalysis().mightThrow(u).catchableAs(tr.getExceptionType())) {
             // We need to be careful here. The ExceptionalStmtGraph
             // will
             // always give us an edge from the predecessor of the

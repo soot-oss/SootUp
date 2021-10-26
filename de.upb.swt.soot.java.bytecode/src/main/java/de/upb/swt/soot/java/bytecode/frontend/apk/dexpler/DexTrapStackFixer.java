@@ -80,7 +80,7 @@ public class DexTrapStackFixer implements BodyInterceptor {
       builder.getStmts().add(caughtStmt);
       builder.getStmts().add(Jimple.newGotoStmt(t.getHandlerStmt().getPositionInfo()));
       // FIXME - should I add a setter or not in de.upb.swt.soot.core.jimple.basic.Trap?
-      t.setHandlerUnit(caughtStmt);
+      t.withHandlerStmt(caughtStmt);
     }
 
   }

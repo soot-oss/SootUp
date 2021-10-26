@@ -41,7 +41,6 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.core.views.View;
-import javafx.scene.Scene;
 
 import java.util.*;
 
@@ -87,7 +86,7 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     return mgr.VM_ERRORS;
   }
 
-  protected StmtSwitch unitSwitch(SootMethod sm) {
+  protected StmtSwitch stmtSwitch(SootMethod sm) {
     return new StmtSwitch(sm);
   }
 
@@ -101,7 +100,7 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
   }
 
   public ThrowableSet mightThrow(Stmt u, SootMethod sm) {
-    StmtSwitch sw = unitSwitch(sm);
+    StmtSwitch sw = stmtSwitch(sm);
     u.accept(sw);
     return sw.getResult();
   }

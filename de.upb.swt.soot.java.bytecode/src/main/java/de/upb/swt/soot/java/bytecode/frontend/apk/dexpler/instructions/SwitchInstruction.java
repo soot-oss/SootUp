@@ -33,7 +33,6 @@ import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.DexBody;
-import de.upb.swt.soot.java.core.views.JavaView;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.OffsetInstruction;
 import org.jf.dexlib2.iface.instruction.OneRegisterInstruction;

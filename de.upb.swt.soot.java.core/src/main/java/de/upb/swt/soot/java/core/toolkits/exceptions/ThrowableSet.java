@@ -195,7 +195,7 @@ public class ThrowableSet {
    *           ThrowableSet.IllegalStateException} if this <code>ThrowableSet</code> is the result of a
    *           {@link #whichCatchableAs(ReferenceType)} operation and, thus, unable to represent the addition of <code>e</code>.
    */
-  public ThrowableSet add(ReferenceType e) throws AlreadyHasExclusionsException {
+  public ThrowableSet add(ClassType e) throws AlreadyHasExclusionsException {
     if (INSTRUMENTING) {
       Manager.getInstance().addsOfRefType++;
     }
@@ -229,7 +229,7 @@ public class ThrowableSet {
     boolean eHasNoHierarchy = hasNoHierarchy(e);
 
     for (ClassType excludedType : exceptionsExcluded) {
-      ReferenceType exclusionBase = excludedType.getBase();
+      ReferenceType exclusionBase = excludedType;
       if ((eHasNoHierarchy && exclusionBase.equals(e)) || (!eHasNoHierarchy && hierarchy.canStoreType(e, exclusionBase))) {
         throw new AlreadyHasExclusionsException("ThrowableSet.add(RefType): adding" + e.toString() + " to the set [ "
             + this.toString() + "] where " + exclusionBase.toString() + " is excluded.");
@@ -244,7 +244,7 @@ public class ThrowableSet {
           // Need to use incumbent.getBase() because
           // hierarchy.canStoreType() assumes that parent
           // is not an AnySubType.
-          ReferenceType incumbentBase = ((ClassType) incumbent).getBase();
+          ReferenceType incumbentBase = (ClassType) incumbent;
           if (hierarchy.canStoreType(e, incumbentBase)) {
             addToMemoizedAdds(e, this);
             return this;
@@ -265,7 +265,7 @@ public class ThrowableSet {
 
   private boolean hasNoHierarchy(ClassType type) {
     final SootClass sootClass = type.getSootClass();
-    return !(sootClass.hasSuperclass() || JAVA_LANG_OBJECT_CLASS == sootClass);
+    return !(sootClass.hasSuperclass() || JAVA_LANG_OBJECT_CLASS == type);
   }
 
   /**
@@ -319,7 +319,7 @@ public class ThrowableSet {
     final SootClass objectClass = Scene.v().getObjectType().getSootClass();
 
     FastHierarchy hierarchy = Scene.v().getOrMakeFastHierarchy();
-    ReferenceType newBase = e.getBase();
+    ClassType newBase = e;
     boolean newBaseHasNoHierarchy = hasNoHierarchy(newBase);
 
     if (INSTRUMENTING) {
@@ -329,8 +329,8 @@ public class ThrowableSet {
         Manager.getInstance().addsExclusionWithSearch++;
       }
     }
-    for (AnySubType excludedType : exceptionsExcluded) {
-      RefType exclusionBase = excludedType.getBase();
+    for (ClassType excludedType : exceptionsExcluded) {
+      ReferenceType exclusionBase = excludedType;
       boolean exclusionBaseHasNoHierarchy = !(exclusionBase.getSootClass().hasSuperclass() || //
           exclusionBase.getSootClass() == objectClass);
 
@@ -361,9 +361,9 @@ public class ThrowableSet {
 
     int changes = 0;
     boolean addNewException = true;
-    Set<Type> resultSet = new HashSet<>();
+    Set<ClassType> resultSet = new HashSet<>();
 
-    for (Type incumbent : this.exceptionsIncluded) {
+    for (ClassType incumbent : this.exceptionsIncluded) {
       if (incumbent instanceof Type) {
         if (hierarchy.canStoreType(incumbent, newBase)) {
           // Omit incumbent from result.
@@ -372,7 +372,7 @@ public class ThrowableSet {
           resultSet.add(incumbent);
         }
       } else if (incumbent instanceof ClassType) {
-        ReferenceType incumbentBase = ((ClassType) incumbent).getBase();
+        ReferenceType incumbentBase = incumbent;
         if (newBaseHasNoHierarchy) {
           if (!incumbentBase.equals(newBase)) {
             resultSet.add(incumbent);
@@ -426,7 +426,7 @@ public class ThrowableSet {
    */
   public ThrowableSet add(ThrowableSet s) throws AlreadyHasExclusionsException {
     if (INSTRUMENTING) {
-      Manager.v().addsOfSet++;
+      Manager.getInstance().addsOfSet++;
     }
     if ((exceptionsExcluded.size() > 0) || (s.exceptionsExcluded.size() > 0)) {
       throw new AlreadyHasExclusionsException(
@@ -435,14 +435,14 @@ public class ThrowableSet {
     ThrowableSet result = getMemoizedAdds(s);
     if (result == null) {
       if (INSTRUMENTING) {
-        Manager.v().addsInclusionFromSearch++;
-        Manager.v().addsExclusionWithoutSearch++;
+        Manager.getInstance().addsInclusionFromSearch++;
+        Manager.getInstance().addsExclusionWithoutSearch++;
       }
       result = this.add(s.exceptionsIncluded);
       addToMemoizedAdds(s, result);
     } else if (INSTRUMENTING) {
-      Manager.v().addsInclusionFromMemo++;
-      Manager.v().addsExclusionWithoutSearch++;
+      Manager.getInstance().addsInclusionFromMemo++;
+      Manager.getInstance().addsExclusionWithoutSearch++;
     }
     return result;
   }
@@ -506,17 +506,17 @@ public class ThrowableSet {
    *
    * @return a set containing all the <code>addedExceptions</code> as well as the exceptions in this set.
    */
-  private ThrowableSet remove(Set<RefLikeType> removedExceptions) {
+  private ThrowableSet remove(Set<ClassType> removedExceptions) {
     // Is there anything to remove?
     if (removedExceptions.isEmpty()) {
       return this;
     }
 
     int changes = 0;
-    Set<RefLikeType> resultSet = new HashSet<>(this.exceptionsIncluded);
-    for (RefLikeType tp : removedExceptions) {
-      if (tp instanceof RefType) {
-        if (resultSet.remove(tp)) {
+    Set<ClassType> resultSet = new HashSet<>(this.exceptionsIncluded);
+    for (ClassType classType : removedExceptions) {
+      if (classType instanceof ReferenceType) {
+        if (resultSet.remove(classType)) {
           changes++;
         }
       }
@@ -524,7 +524,7 @@ public class ThrowableSet {
 
     ThrowableSet result = null;
     if (changes > 0) {
-      result = Manager.v().registerSetIfNew(resultSet, this.exceptionsExcluded);
+      result = Manager.getInstance().registerSetIfNew(resultSet, this.exceptionsExcluded);
     } else {
       result = this;
     }
@@ -565,9 +565,9 @@ public class ThrowableSet {
    * @return <code>true</code> if this set contains an exception type that might be caught by <code>catcher</code>, false if
    *         it does not.
    */
-  public boolean catchableAs(RefType catcher) {
+  public boolean catchableAs(ReferenceType catcher) {
     if (INSTRUMENTING) {
-      Manager.v().catchableAsQueries++;
+      Manager.getInstance().catchableAsQueries++;
     }
 
     FastHierarchy h = Scene.v().getOrMakeFastHierarchy();
@@ -582,14 +582,14 @@ public class ThrowableSet {
 
     if (exceptionsExcluded.size() > 0) {
       if (INSTRUMENTING) {
-        Manager.v().catchableAsFromSearch++;
+        Manager.getInstance().catchableAsFromSearch++;
       }
-      for (AnySubType exclusion : exceptionsExcluded) {
+      for (ClassType exclusion : exceptionsExcluded) {
         if (catcherHasNoHierarchy) {
-          if (exclusion.getBase().equals(catcher)) {
+          if (exclusion.equals(catcher)) {
             return false;
           }
-        } else if (h.canStoreType(catcher, exclusion.getBase())) {
+        } else if (h.canStoreType(catcher, exclusion)) {
           return false;
         }
       }
@@ -598,20 +598,20 @@ public class ThrowableSet {
     if (exceptionsIncluded.contains(catcher)) {
       if (INSTRUMENTING) {
         if (exceptionsExcluded.size() == 0) {
-          Manager.v().catchableAsFromMap++;
+          Manager.getInstance().catchableAsFromMap++;
         } else {
-          Manager.v().catchableAsFromSearch++;
+          Manager.getInstance().catchableAsFromSearch++;
         }
       }
       return true;
     } else {
       if (INSTRUMENTING) {
         if (exceptionsExcluded.size() == 0) {
-          Manager.v().catchableAsFromSearch++;
+          Manager.getInstance().catchableAsFromSearch++;
         }
       }
-      for (RefLikeType thrownType : exceptionsIncluded) {
-        if (thrownType instanceof RefType) {
+      for (ClassType thrownType : exceptionsIncluded) {
+        if (thrownType instanceof ReferenceType) {
           if (thrownType == catcher) {
             // assertion failure.
             throw new IllegalStateException(
@@ -620,9 +620,9 @@ public class ThrowableSet {
             return true;
           }
         } else {
-          RefType thrownBase = ((AnySubType) thrownType).getBase();
+          ReferenceType thrownBase = thrownType;
           if (catcherHasNoHierarchy) {
-            if (thrownBase.equals(catcher) || thrownBase.getClassName().equals("java.lang.Throwable")) {
+            if (thrownBase.equals(catcher) || thrownBase.getClass().getName().equals("java.lang.Throwable")) {
               return true;
             }
           }
@@ -704,14 +704,14 @@ public class ThrowableSet {
           uncaughtIncluded = addExceptionToSet(inclusion, uncaughtIncluded);
         }
       } else {
-        RefType base = ((AnySubType) inclusion).getBase();
+        ReferenceType base = inclusion;
         // If the current type is has no hierarchy, we catch it if and
         // only if it is in the inclusion list and ignore any hierarchy.
         if (catcherHasNoHierarchy) {
           if (base.equals(catcher)) {
             caughtIncluded = addExceptionToSet(inclusion, caughtIncluded);
           } else {
-            if (base.getClassName().equals("java.lang.Throwable")) {
+            if (base.getClass().getName().equals("java.lang.Throwable")) {
               caughtIncluded = addExceptionToSet(catcher, caughtIncluded);
             }
             uncaughtIncluded = addExceptionToSet(inclusion, uncaughtIncluded);
@@ -730,7 +730,7 @@ public class ThrowableSet {
           // from the uncaught types.
           uncaughtIncluded = addExceptionToSet(inclusion, uncaughtIncluded);
           uncaughtExcluded = addExceptionToSet(ClassType.v(catcher), uncaughtExcluded);
-          caughtIncluded = addExceptionToSet(AnySubType.v(catcher), caughtIncluded);
+          caughtIncluded = addExceptionToSet(ClassType.v(catcher), caughtIncluded);
           // Any already excluded subtypes of inclusion
           // which are subtypes of catcher will have been
           // added to caughtExcluded by the previous loop.
@@ -739,8 +739,8 @@ public class ThrowableSet {
         }
       }
     }
-    ThrowableSet caughtSet = Manager.v().registerSetIfNew(caughtIncluded, caughtExcluded);
-    ThrowableSet uncaughtSet = Manager.v().registerSetIfNew(uncaughtIncluded, uncaughtExcluded);
+    ThrowableSet caughtSet = Manager.getInstance().registerSetIfNew(caughtIncluded, caughtExcluded);
+    ThrowableSet uncaughtSet = Manager.getInstance().registerSetIfNew(uncaughtIncluded, uncaughtExcluded);
     return new Pair(caughtSet, uncaughtSet);
   }
 
@@ -955,7 +955,7 @@ public class ThrowableSet {
     public final ReferenceType INDEX_OUT_OF_BOUNDS_EXCEPTION;
     public final ReferenceType ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     public final ReferenceType NEGATIVE_ARRAY_SIZE_EXCEPTION;
-    public final ReferenceType NULL_POINTER_EXCEPTION;
+    public final ClassType NULL_POINTER_EXCEPTION;
     public final ReferenceType INSTANTIATION_ERROR;
     /**
      * <code>ThrowableSet</code> representing all possible Throwables.
