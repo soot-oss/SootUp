@@ -22,7 +22,9 @@ package de.upb.swt.soot.core.jimple.common.stmt;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.*;
+import de.upb.swt.soot.core.jimple.basic.EquivTo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
@@ -32,10 +34,11 @@ import de.upb.swt.soot.core.jimple.visitor.Acceptor;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
+
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
 
 public abstract class Stmt extends AbstractHost implements EquivTo, Acceptor<StmtVisitor>, Copyable, Host {
 
@@ -136,6 +139,7 @@ public abstract class Stmt extends AbstractHost implements EquivTo, Acceptor<Stm
   public StmtPositionInfo getPositionInfo() {
     return positionInfo;
   }
+
 
 
 

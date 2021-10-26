@@ -158,7 +158,7 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
   /**
    * Returns the set of types that might be thrown as a result of calling the specified method.
    *
-   * @param sm
+   * @param methodSignature
    *          method whose exceptions are to be returned.
    * @param doneSet
    *          The set of methods that were already processed
@@ -183,14 +183,10 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     Map<Stmt, Collection<Trap>> unitToTraps
         = sm.getBody().getTraps().isEmpty() ? null : new HashMap<Stmt, Collection<Trap>>();
     for (Trap t : sm.getBody().getTraps()) {
+      // FIXME - how to adapt branching factor? stmts.iterator is not the way it works (Legacy Code incidentally occured)
       for (Iterator<Stmt> unitIt = stmts.iterator(t.getBeginStmt(), stmts.getPredOf(t.getEndStmt())); unitIt.hasNext();) {
         Stmt unit = unitIt.next();
-
-        Collection<Trap> unitsForTrap = unitToTraps.get(unit);
-        if (unitsForTrap == null) {
-          unitsForTrap = new ArrayList<Trap>();
-          unitToTraps.put(unit, unitsForTrap);
-        }
+        Collection<Trap> unitsForTrap = unitToTraps.computeIfAbsent(unit, k -> new ArrayList<>());
         unitsForTrap.add(t);
       }
     }
@@ -199,16 +195,13 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     if (sm.hasBody()) {
       Body methodBody = sm.getBody();
 
-      for (Stmt s : methodBody.getStmts()) {
-        if (s instanceof Stmt) {
-          Stmt stmt = (Stmt) s;
-
+      for (Stmt stmt : methodBody.getStmts()) {
           ThrowableSet curStmtSet;
           if (stmt.containsInvokeExpr()) {
             AbstractInvokeExpr inv = stmt.getInvokeExpr();
             curStmtSet = mightThrow(inv.getMethodSignature(), doneSet);
           } else {
-            curStmtSet = mightThrow(s, sm);
+            curStmtSet = mightThrow(stmt, sm);
           }
 
           // The exception might be caught along the way
@@ -225,7 +218,6 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
           methodSet = methodSet.add(curStmtSet);
         }
       }
-    }
 
     return methodSet;
   }
@@ -518,7 +510,7 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
       if (toType instanceof ReferenceType) {
         // fromType might still be unknown when we are called,
         // but toType will have a value.
-        FastHierarchy h = Scene.v().getOrMakeFastHierarchy();
+        TypeHierarchy h = view. Scene.v().getOrMakeFastHierarchy();
         if (fromType == null || fromType instanceof UnknownType
             || ((!(fromType instanceof NullType)) && (!h.canStoreType(fromType, toType)))) {
           result = result.add(mgr.CLASS_CAST_EXCEPTION);
@@ -539,7 +531,7 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
         result = result.add(mgr.RESOLVE_CLASS_ERRORS);
       }
       Value count = expr.getSize();
-      if ((!(count instanceof IntConstant)) || (((IntConstant) count).lessThan(INT_CONSTANT_ZERO))) {
+      if ((!(count instanceof IntConstant)) || (((IntConstant) count).lessThan(INT_CONSTANT_ZERO)) == BooleanConstant.getTrue()) {
         result = result.add(mgr.NEGATIVE_ARRAY_SIZE_EXCEPTION);
       }
       result = result.add(mightThrow(count));
@@ -550,7 +542,7 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
       result = result.add(mgr.RESOLVE_CLASS_ERRORS);
       for (int i = 0; i < expr.getSizeCount(); i++) {
         Value count = expr.getSize(i);
-        if ((!(count instanceof IntConstant)) || (((IntConstant) count).lessThan(INT_CONSTANT_ZERO))) {
+        if ((!(count instanceof IntConstant)) || (((IntConstant) count).lessThan(INT_CONSTANT_ZERO)) == BooleanConstant.getTrue()) {
           result = result.add(mgr.NEGATIVE_ARRAY_SIZE_EXCEPTION);
         }
         result = result.add(mightThrow(count));
@@ -615,22 +607,16 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     public void caseLocal(Local l) {
     }
 
-    @Override
-    public void caseNewInvokeExpr(NewInvokeExpr e) {
-      caseStaticInvokeExpr(e);
-    }
-
+    // FIXME - when SSA branch is merged
+    /*
     @SuppressWarnings("rawtypes")
     @Override
     public void casePhiExpr(PhiExpr e) {
-      for (Value value : e.getUseBoxes()) {
+      for (Value value : e.getUses()) {
         result = result.add(mightThrow(value));
       }
     }
-
-    @Override
-    public void defaultCase(Object obj) {
-    }
+    */
 
     // The remaining cases are not declared by GrimpValueSwitch,
     // but are used to factor out code common to several cases.

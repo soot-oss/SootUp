@@ -27,8 +27,8 @@ import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.Type;
 import javafx.scene.Scene;
 import org.slf4j.Logger;
@@ -45,29 +45,30 @@ import javax.annotation.Nonnull;
  *
  * @author Steven Arzt
  */
-public class MethodStaticnessCorrector extends AbstractStaticnessCorrector {
+public class MethodStaticnessCorrector implements BodyInterceptor {
   private static final Logger logger = LoggerFactory.getLogger(MethodStaticnessCorrector.class);
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder bodyBuilder) {
-    for (Stmt stmt : bodyBuilder.getStmts()) {
+    for (Stmt stmt : bodyBuilder.getStmtGraph().nodes()) {
         if (stmt.containsInvokeExpr()) {
           AbstractInvokeExpr iexpr = stmt.getInvokeExpr();
           if (iexpr instanceof JStaticInvokeExpr) {
             Type type = iexpr.getMethodSignature().getType();
-            if (isClassLoaded(type.getClass())) {
+
               SootMethod target = Scene.v().grabMethod(type.getSignature());
               if (target != null && !target.isStatic()) {
                 if (canBeMadeStatic(target)) {
                   // Remove the this-assignment to prevent
                   // 'this-assignment in a static method!' exception
                   Body targetBody = target.getBody();
-                  targetBody.getStmts().remove(targetBody.getThisStmt());
+                  // FIXME - add change body to some modifiable view?
+                  targetBody.getStmtGraph().nodes().remove(targetBody.getThisStmt());
                   target.withModifiers(target.getModifiers());
                   logger.warn(target.getName() + " changed into a static method");
                 }
               }
-            }
+
           }
       }
     }

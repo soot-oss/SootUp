@@ -23,6 +23,7 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  */
 
 import de.upb.swt.soot.core.jimple.tag.Host;
+import de.upb.swt.soot.core.jimple.tag.Tag;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.ReferenceType;

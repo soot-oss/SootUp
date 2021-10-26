@@ -848,7 +848,7 @@ public class DexBody {
 
     if (options_wrong_staticness == options_wrong_staticness_fix
         || options_wrong_staticness == options_wrong_staticness_fixstrict) {
-      new FieldStaticnessCorrector().interceptBody(this.bodyBuilder);
+      new FieldStaticnessCorrector(view).interceptBody(this.bodyBuilder);
       new MethodStaticnessCorrector().interceptBody(this.bodyBuilder);
     }
 

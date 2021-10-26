@@ -24,11 +24,12 @@ import com.google.common.base.Suppliers;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.core.views.View;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Represents a type hierarchy. It can be created from a {@link View} using {@link #fromView(View)}.
@@ -92,6 +93,14 @@ public interface TypeHierarchy {
    */
   @Nullable
   ClassType superClassOf(@Nonnull ClassType classType);
+
+  /**
+   * Returns true if <code>storeType</code> is a subtype of <code>CanidateType</code>. If they
+   * are identical, this will return true.
+   */
+  default boolean canStore(@Nonnull Type storeType, @Nonnull Type candidateType){
+    return storeType == candidateType || isSubtype(storeType, candidateType);
+  }
 
   /**
    * Returns true if <code>potentialSubtype</code> is a subtype of <code>supertype</code>. If they

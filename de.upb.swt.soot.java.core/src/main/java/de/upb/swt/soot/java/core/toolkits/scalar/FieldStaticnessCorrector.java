@@ -10,12 +10,12 @@ package de.upb.swt.soot.java.core.toolkits.scalar;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -29,9 +29,13 @@ import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.views.View;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
 
 /**
  * Transformer that checks whether a static field is used like an instance field. If this is the case, all instance
@@ -39,8 +43,13 @@ import javax.annotation.Nonnull;
  *
  * @author Steven Arzt
  */
-public class FieldStaticnessCorrector extends AbstractStaticnessCorrector {
+public class FieldStaticnessCorrector implements BodyInterceptor {
 
+  private View<SootClass> view;
+
+  protected FieldStaticnessCorrector(View view) {
+    this.view = view;
+  }
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder bodyBuilder) {
@@ -52,20 +61,18 @@ public class FieldStaticnessCorrector extends AbstractStaticnessCorrector {
         if (assignStmt.containsFieldRef()) {
           JFieldRef ref = assignStmt.getFieldRef();
           // Make sure that the target class has already been loaded
-          if (isTypeLoaded(ref.getType())) {
-            try {
-              if (ref instanceof JInstanceFieldRef) {
-                SootField fld = ref.getField();
-                if (fld != null && fld.isStatic()) {
-                  if (assignStmt.getLeftOp() == ref) {
-                    assignStmt.withLeftOp(Jimple.newStaticFieldRef(ref.getField().makeRef()));
-                  } else if (assignStmt.getRightOp() == ref) {
-                    assignStmt.withRightOp(Jimple.newStaticFieldRef(ref.getField().makeRef()));
-                  }
+
+          if (ref instanceof JInstanceFieldRef) {
+            Optional<? extends SootField> field = view.getField(ref.getFieldSignature());
+            if(field.isPresent()){
+              SootField fld = field.get();
+              if (fld.isStatic()) {
+                if (assignStmt.getLeftOp() == ref) {
+                  assignStmt.withLeftOp(Jimple.newStaticFieldRef(fld.getSignature()));
+                } else if (assignStmt.getRightOp() == ref) {
+                  assignStmt.withRightOp(Jimple.newStaticFieldRef(fld.getSignature()));
                 }
               }
-            } catch (ConflictingFieldRefException ex) {
-              // That field is broken, just don't touch it
             }
           }
         }
