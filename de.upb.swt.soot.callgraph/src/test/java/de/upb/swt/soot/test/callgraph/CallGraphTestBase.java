@@ -2,7 +2,8 @@ package de.upb.swt.soot.test.callgraph;
 
 import static junit.framework.TestCase.*;
 
-import de.upb.swt.soot.callgraph.*;
+import de.upb.swt.soot.callgraph.algorithm.AbstractCallGraphAlgorithm;
+import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;
@@ -47,7 +48,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     return javaProject.createOnDemandView();
   }
 
-  CallGraph loadCallGraph(String testDirectory, String className) {
+  protected CallGraph loadCallGraph(String testDirectory, String className) {
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
     if (version > 1.8) {
       fail("The rt.jar is not available after Java 8. You are using version " + version);

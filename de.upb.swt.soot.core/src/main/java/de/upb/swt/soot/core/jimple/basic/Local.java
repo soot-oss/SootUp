@@ -66,12 +66,12 @@ public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
     if (!(o instanceof Local)) {
       return false;
     }
-    return name.equals(((Local) o).getName());
+    return name.equals(((Local) o).getName()) && type.equals(((Local) o).getType());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(name);
+    return Objects.hash(name, type);
   }
 
   @Override

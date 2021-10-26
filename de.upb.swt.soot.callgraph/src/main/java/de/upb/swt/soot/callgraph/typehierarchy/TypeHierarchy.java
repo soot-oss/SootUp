@@ -93,6 +93,19 @@ public interface TypeHierarchy {
   @Nullable
   ClassType superClassOf(@Nonnull ClassType classType);
 
+  /** Returns true if src type can be casted to dst type. */
+  default boolean canCast(@Nonnull Type src, @Nonnull Type dst) {
+    if (dst == null) {
+      return true;
+    } else if (dst == src) {
+      return true;
+    } else if (src == null) {
+      return false;
+    } else {
+      return isSubtype(dst, src);
+    }
+  }
+
   /**
    * Returns true if <code>potentialSubtype</code> is a subtype of <code>supertype</code>. If they
    * are identical, this will return false.
