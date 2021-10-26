@@ -25,6 +25,7 @@ package de.upb.swt.soot.java.core.toolkits.scalar;
 
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
 

@@ -23,12 +23,19 @@ package de.upb.swt.soot.java.core.toolkits.scalar;
  */
 
 
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
+import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
+import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.types.PrimitiveType;
+import de.upb.swt.soot.core.types.Type;
 
 import javax.annotation.Nonnull;
-import java.util.Map;
 
 /**
  * Transformer for removing unnecessary casts on primitive values. An assignment a = (float) 42 will for instance be
@@ -41,21 +48,21 @@ public class ConstantCastEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder bodyBuilder) {
     // Check for all assignments that perform casts on primitive constants
-    for (Unit u : bodyBuilder.getUnits()) {
-      if (u instanceof AssignStmt) {
-        AssignStmt assign = (AssignStmt) u;
+    for (Stmt stmt : bodyBuilder.getStmts()) {
+      if (stmt instanceof JAssignStmt) {
+        JAssignStmt assign = (JAssignStmt) stmt;
         Value rightOp = assign.getRightOp();
-        if (rightOp instanceof CastExpr) {
-          CastExpr ce = (CastExpr) rightOp;
+        if (rightOp instanceof JCastExpr) {
+          JCastExpr ce = (JCastExpr) rightOp;
           Value castOp = ce.getOp();
           if (castOp instanceof IntConstant) {
             Type castType = ce.getType();
-            if (castType instanceof FloatType) {
+            if (castType instanceof PrimitiveType.FloatType) {
               // a = (float) 42
-              assign.setRightOp(FloatConstant.v(((IntConstant) castOp).value));
-            } else if (castType instanceof DoubleType) {
+              assign.withRightOp(FloatConstant.getInstance(((IntConstant) castOp).getValue()));
+            } else if (castType instanceof PrimitiveType.DoubleType) {
               // a = (double) 42
-              assign.setRightOp(DoubleConstant.v(((IntConstant) castOp).value));
+              assign.withRightOp(DoubleConstant.getInstance(((IntConstant) castOp).getValue()));
             }
           }
         }

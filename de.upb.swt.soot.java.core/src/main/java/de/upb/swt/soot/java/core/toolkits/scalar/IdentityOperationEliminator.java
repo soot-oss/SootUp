@@ -23,12 +23,22 @@ package de.upb.swt.soot.java.core.toolkits.scalar;
  */
 
 
+import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
+import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
+import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
+import de.upb.swt.soot.core.jimple.common.expr.*;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.types.PrimitiveType;
+import de.upb.swt.soot.core.types.Type;
 
 import javax.annotation.Nonnull;
-import java.util.Map;
+import java.util.Iterator;
 
 /**
  * Transformer that eliminates unnecessary logic operations such as
@@ -45,55 +55,55 @@ public class IdentityOperationEliminator implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder bodyBuilder) {
-    final Chain<Unit> units = bodyBuilder.getUnits();
-    for (Unit u : units) {
-      if (u instanceof AssignStmt) {
-        final AssignStmt assignStmt = (AssignStmt) u;
+    final StmtGraph stmts = bodyBuilder.getStmtGraph();
+    for (Stmt stmt : stmts) {
+      if (stmt instanceof JAssignStmt) {
+        final JAssignStmt assignStmt = (JAssignStmt) stmt;
         final Value rightOp = assignStmt.getRightOp();
-        if (rightOp instanceof AddExpr) {
+        if (rightOp instanceof JAddExpr) {
           // a = bodyBuilder + 0 --> a = bodyBuilder
           // a = 0 + bodyBuilder --> a = bodyBuilder
-          BinopExpr aer = (BinopExpr) rightOp;
+          AbstractBinopExpr aer = (AbstractBinopExpr) rightOp;
           if (isConstZero(aer.getOp1())) {
-            assignStmt.setRightOp(aer.getOp2());
+            assignStmt.withRightOp(aer.getOp2());
           } else if (isConstZero(aer.getOp2())) {
-            assignStmt.setRightOp(aer.getOp1());
+            assignStmt.withRightOp(aer.getOp1());
           }
-        } else if (rightOp instanceof SubExpr) {
+        } else if (rightOp instanceof JSubExpr) {
           // a = bodyBuilder - 0 --> a = bodyBuilder
-          BinopExpr aer = (BinopExpr) rightOp;
+          AbstractBinopExpr aer = (AbstractBinopExpr) rightOp;
           if (isConstZero(aer.getOp2())) {
-            assignStmt.setRightOp(aer.getOp1());
+            assignStmt.withRightOp(aer.getOp1());
           }
-        } else if (rightOp instanceof MulExpr) {
+        } else if (rightOp instanceof JMulExpr) {
           // a = bodyBuilder * 0 --> a = 0
           // a = 0 * bodyBuilder --> a = 0
-          BinopExpr aer = (BinopExpr) rightOp;
+          AbstractBinopExpr aer = (AbstractBinopExpr) rightOp;
           if (isConstZero(aer.getOp1())) {
-            assignStmt.setRightOp(getZeroConst(assignStmt.getLeftOp().getType()));
+            assignStmt.withRightOp(getZeroConst(assignStmt.getLeftOp().getType()));
           } else if (isConstZero(aer.getOp2())) {
-            assignStmt.setRightOp(getZeroConst(assignStmt.getLeftOp().getType()));
+            assignStmt.withRightOp(getZeroConst(assignStmt.getLeftOp().getType()));
           }
-        } else if (rightOp instanceof OrExpr) {
+        } else if (rightOp instanceof JOrExpr) {
           // a = bodyBuilder | 0 --> a = bodyBuilder
           // a = 0 | bodyBuilder --> a = bodyBuilder
-          OrExpr orExpr = (OrExpr) rightOp;
+          JOrExpr orExpr = (JOrExpr) rightOp;
           if (isConstZero(orExpr.getOp1())) {
-            assignStmt.setRightOp(orExpr.getOp2());
+            assignStmt.withRightOp(orExpr.getOp2());
           } else if (isConstZero(orExpr.getOp2())) {
-            assignStmt.setRightOp(orExpr.getOp1());
+            assignStmt.withRightOp(orExpr.getOp1());
           }
         }
       }
     }
 
     // In a second step, we remove assingments such as <a = a>
-    for (Iterator<Unit> unitIt = units.iterator(); unitIt.hasNext();) {
-      Unit u = unitIt.next();
-      if (u instanceof AssignStmt) {
-        AssignStmt assignStmt = (AssignStmt) u;
+    for (Iterator<Stmt> stmtIt = stmts.iterator(); stmtIt.hasNext();) {
+      Stmt stmt = stmtIt.next();
+      if (stmt instanceof JAssignStmt) {
+        JAssignStmt assignStmt = (JAssignStmt) stmt;
         if (assignStmt.getLeftOp() == assignStmt.getRightOp()) {
-          unitIt.remove();
+          stmtIt.remove();
         }
       }
     }
@@ -107,14 +117,14 @@ public class IdentityOperationEliminator implements BodyInterceptor {
    * @return The constant zero value of the given type
    */
   private static Value getZeroConst(Type type) {
-    if (type instanceof IntType) {
-      return IntConstant.v(0);
-    } else if (type instanceof LongType) {
-      return LongConstant.v(0);
-    } else if (type instanceof FloatType) {
-      return FloatConstant.v(0);
-    } else if (type instanceof DoubleType) {
-      return DoubleConstant.v(0);
+    if (type instanceof PrimitiveType.IntType) {
+      return IntConstant.getInstance(0);
+    } else if (type instanceof PrimitiveType.LongType) {
+      return LongConstant.getInstance(0);
+    } else if (type instanceof PrimitiveType.FloatType) {
+      return FloatConstant.getInstance(0);
+    } else if (type instanceof PrimitiveType.DoubleType) {
+      return DoubleConstant.getInstance(0);
     }
     throw new RuntimeException("Unsupported numeric type");
   }
@@ -127,7 +137,7 @@ public class IdentityOperationEliminator implements BodyInterceptor {
    * @return True if the given value is the constant integer 0, otherwise false
    */
   private static boolean isConstZero(Value op) {
-    return (op instanceof IntConstant) && (((IntConstant) op).value == 0);
+    return (op instanceof IntConstant) && (((IntConstant) op).getValue() == 0);
   }
 
 }

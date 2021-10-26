@@ -24,11 +24,14 @@ package de.upb.swt.soot.java.core.toolkits.scalar;
 
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
+import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
 
 import javax.annotation.Nonnull;
-import java.util.Map;
 
 /**
  * Transformer that checks whether a static field is used like an instance field. If this is the case, all instance
@@ -43,21 +46,21 @@ public class FieldStaticnessCorrector extends AbstractStaticnessCorrector {
   public void interceptBody(@Nonnull Body.BodyBuilder bodyBuilder) {
     // Some apps reference static fields as instance fields. We need to fix
     // this for not breaking the client analysis.
-    for (Unit u : bodyBuilder.getUnits()) {
-      if (u instanceof AssignStmt) {
-        AssignStmt assignStmt = (AssignStmt) u;
+    for (Stmt stmt : bodyBuilder.getStmts()) {
+      if (stmt instanceof JAssignStmt) {
+        JAssignStmt assignStmt = (JAssignStmt) stmt;
         if (assignStmt.containsFieldRef()) {
-          FieldRef ref = assignStmt.getFieldRef();
+          JFieldRef ref = assignStmt.getFieldRef();
           // Make sure that the target class has already been loaded
-          if (isTypeLoaded(ref.getFieldRef().type())) {
+          if (isTypeLoaded(ref.getType())) {
             try {
-              if (ref instanceof InstanceFieldRef) {
+              if (ref instanceof JInstanceFieldRef) {
                 SootField fld = ref.getField();
                 if (fld != null && fld.isStatic()) {
                   if (assignStmt.getLeftOp() == ref) {
-                    assignStmt.setLeftOp(Jimple.v().newStaticFieldRef(ref.getField().makeRef()));
+                    assignStmt.withLeftOp(Jimple.newStaticFieldRef(ref.getField().makeRef()));
                   } else if (assignStmt.getRightOp() == ref) {
-                    assignStmt.setRightOp(Jimple.v().newStaticFieldRef(ref.getField().makeRef()));
+                    assignStmt.withRightOp(Jimple.newStaticFieldRef(ref.getField().makeRef()));
                   }
                 }
               }
@@ -69,5 +72,4 @@ public class FieldStaticnessCorrector extends AbstractStaticnessCorrector {
       }
     }
   }
-
 }

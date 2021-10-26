@@ -57,11 +57,11 @@ import java.util.*;
  */
 public class StmtThrowAnalysis extends AbstractThrowAnalysis {
 
-  protected final ThrowableSet.Manager mgr = ThrowableSet.Manager.v();
+  protected final ThrowableSet.Manager mgr = ThrowableSet.Manager.getInstance();
 
   // Cache the response to mightThrowImplicitly():
-  private final ThrowableSet implicitThrowExceptions = ThrowableSet.Manager.v().VM_ERRORS
-      .add(ThrowableSet.Manager.v().NULL_POINTER_EXCEPTION).add(ThrowableSet.Manager.v().ILLEGAL_MONITOR_STATE_EXCEPTION);
+  private final ThrowableSet implicitThrowExceptions = ThrowableSet.Manager.getInstance().VM_ERRORS
+      .add(ThrowableSet.Manager.getInstance().NULL_POINTER_EXCEPTION).add(ThrowableSet.Manager.getInstance().ILLEGAL_MONITOR_STATE_EXCEPTION);
 
   /**
    * Constructs a <code>UnitThrowAnalysis</code> for inclusion in Soot's global variable manager.
@@ -141,7 +141,7 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
    */
   protected ThrowableSet mightThrow(SootMethod sm) {
     if (!isInterproc) {
-      return ThrowableSet.Manager.v().ALL_THROWABLES;
+      return ThrowableSet.Manager.getInstance().ALL_THROWABLES;
     }
     return methodToThrowSet.getUnchecked(sm);
   }
@@ -169,13 +169,13 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     // Do not run in loops
     SootMethod sm = view.getMethod(methodSignature).get();
     if (!doneSet.add(sm.getSignature())) {
-      return ThrowableSet.Manager.v().EMPTY;
+      return ThrowableSet.Manager.getInstance().EMPTY;
     }
 
     // If we don't have body, we silently ignore the method. This is
     // unsound, but would otherwise always bloat our result set.
     if (!sm.hasBody()) {
-      return ThrowableSet.Manager.v().EMPTY;
+      return ThrowableSet.Manager.getInstance().EMPTY;
     }
 
     // We need a mapping between unit and exception
@@ -183,7 +183,7 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
     Map<Stmt, Collection<Trap>> unitToTraps
         = sm.getBody().getTraps().isEmpty() ? null : new HashMap<Stmt, Collection<Trap>>();
     for (Trap t : sm.getBody().getTraps()) {
-      for (Iterator<Stmt> unitIt = stmts.iterator(t.getBeginStmt(), stmts.getPredOf(t.getEndUnit())); unitIt.hasNext();) {
+      for (Iterator<Stmt> unitIt = stmts.iterator(t.getBeginStmt(), stmts.getPredOf(t.getEndStmt())); unitIt.hasNext();) {
         Stmt unit = unitIt.next();
 
         Collection<Trap> unitsForTrap = unitToTraps.get(unit);
@@ -195,7 +195,7 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
       }
     }
 
-    ThrowableSet methodSet = ThrowableSet.Manager.v().EMPTY;
+    ThrowableSet methodSet = ThrowableSet.Manager.getInstance().EMPTY;
     if (sm.hasBody()) {
       Body methodBody = sm.getBody();
 
@@ -539,7 +539,7 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
         result = result.add(mgr.RESOLVE_CLASS_ERRORS);
       }
       Value count = expr.getSize();
-      if ((!(count instanceof IntConstant)) || (((IntConstant) count).isLessThan(INT_CONSTANT_ZERO))) {
+      if ((!(count instanceof IntConstant)) || (((IntConstant) count).lessThan(INT_CONSTANT_ZERO))) {
         result = result.add(mgr.NEGATIVE_ARRAY_SIZE_EXCEPTION);
       }
       result = result.add(mightThrow(count));
@@ -550,7 +550,7 @@ public class StmtThrowAnalysis extends AbstractThrowAnalysis {
       result = result.add(mgr.RESOLVE_CLASS_ERRORS);
       for (int i = 0; i < expr.getSizeCount(); i++) {
         Value count = expr.getSize(i);
-        if ((!(count instanceof IntConstant)) || (((IntConstant) count).isLessThan(INT_CONSTANT_ZERO))) {
+        if ((!(count instanceof IntConstant)) || (((IntConstant) count).lessThan(INT_CONSTANT_ZERO))) {
           result = result.add(mgr.NEGATIVE_ARRAY_SIZE_EXCEPTION);
         }
         result = result.add(mightThrow(count));

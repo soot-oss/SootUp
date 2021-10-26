@@ -23,11 +23,15 @@ package de.upb.swt.soot.java.core.toolkits.scalar;
  */
 
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 
 import javax.annotation.Nonnull;
-import java.util.Map;
+import java.util.Iterator;
 
 /**
  * Transformer that removes unnecessary identity casts such as
@@ -42,29 +46,28 @@ public class IdentityCastEliminator implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder bodyBuilder) {
-    for (Iterator<Unit> unitIt = bodyBuilder.getUnits().iterator(); unitIt.hasNext();) {
-      Unit curUnit = unitIt.next();
-      if (curUnit instanceof AssignStmt) {
-        final AssignStmt assignStmt = (AssignStmt) curUnit;
+    for (Iterator<Stmt> stmtIterator = bodyBuilder.getStmts().iterator(); stmtIterator.hasNext();) {
+      Stmt stmt = stmtIterator.next();
+      if (stmt instanceof JAssignStmt) {
+        final JAssignStmt assignStmt = (JAssignStmt) stmt;
         final Value leftOp = assignStmt.getLeftOp();
         final Value rightOp = assignStmt.getRightOp();
-        if (leftOp instanceof Local && rightOp instanceof CastExpr) {
-          final CastExpr ce = (CastExpr) rightOp;
+        if (leftOp instanceof Local && rightOp instanceof JCastExpr) {
+          final JCastExpr ce = (JCastExpr) rightOp;
           final Value castOp = ce.getOp();
 
           // If this a cast such as a = (X) a, we can remove the whole line.
           // Otherwise, if only the types match, we can replace the typecast
           // with a normal assignment.
-          if (castOp.getType() == ce.getCastType()) {
+          if (castOp.getType() == ce.getType()) {
             if (leftOp == castOp) {
-              unitIt.remove();
+              stmtIterator.remove();
             } else {
-              assignStmt.setRightOp(castOp);
+              assignStmt.withRightOp(castOp);
             }
           }
         }
       }
     }
   }
-
  }

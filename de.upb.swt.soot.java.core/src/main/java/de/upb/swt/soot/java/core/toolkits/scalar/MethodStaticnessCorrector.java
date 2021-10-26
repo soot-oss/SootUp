@@ -27,6 +27,7 @@ import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.Type;
 import javafx.scene.Scene;
@@ -60,9 +61,9 @@ public class MethodStaticnessCorrector extends AbstractStaticnessCorrector {
                 if (canBeMadeStatic(target)) {
                   // Remove the this-assignment to prevent
                   // 'this-assignment in a static method!' exception
-                  Body targetBody = target.getActiveBody();
-                  targetBody.getUnits().remove(targetBody.getThisUnit());
-                  target.setModifiers(target.getModifiers() | Modifier.STATIC);
+                  Body targetBody = target.getBody();
+                  targetBody.getStmts().remove(targetBody.getThisStmt());
+                  target.withModifiers(target.getModifiers());
                   logger.warn(target.getName() + " changed into a static method");
                 }
               }
@@ -80,14 +81,14 @@ public class MethodStaticnessCorrector extends AbstractStaticnessCorrector {
    * @return True if the given method can be made static, otherwise false
    */
   private boolean canBeMadeStatic(SootMethod target) {
-    if (!target.hasActiveBody()) {
+    if (!target.hasBody()) {
       return false;
     }
-    Body body = target.getActiveBody();
+    Body body = target.getBody();
     Value thisLocal = body.getThisLocal();
-    for (Unit u : body.getUnits()) {
-      for (ValueBox vb : u.getUseBoxes()) {
-        if (vb.getValue() == thisLocal) {
+    for (Stmt stmt : body.getStmts()) {
+      for (Value value : stmt.getUses()) {
+        if (value == thisLocal) {
           return false;
         }
       }

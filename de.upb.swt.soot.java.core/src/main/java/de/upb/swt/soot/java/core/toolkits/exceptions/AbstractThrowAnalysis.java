@@ -44,19 +44,19 @@ public abstract class AbstractThrowAnalysis implements ThrowAnalysis {
     Type thrownType = thrownExpression.getType();
     if (thrownType == null || thrownType instanceof UnknownType) {
       // We can't identify the type of thrownExpression, so...
-      return ThrowableSet.Manager.v().ALL_THROWABLES;
+      return ThrowableSet.Manager.getInstance().ALL_THROWABLES;
     } else if (thrownType instanceof NullType) {
-      ThrowableSet result = ThrowableSet.Manager.v().EMPTY;
-      result = result.add(ThrowableSet.Manager.v().NULL_POINTER_EXCEPTION);
+      ThrowableSet result = ThrowableSet.Manager.getInstance().EMPTY;
+      result = result.add(ThrowableSet.Manager.getInstance().NULL_POINTER_EXCEPTION);
       return result;
     } else if (!(thrownType instanceof ReferenceType)) {
       throw new IllegalStateException("UnitThrowAnalysis StmtSwitch: type of throw argument is not a RefType!");
     } else {
-      ThrowableSet result = ThrowableSet.Manager.v().EMPTY;
+      ThrowableSet result = ThrowableSet.Manager.getInstance().EMPTY;
       if (thrownExpression instanceof AbstractInvokeExpr) { // JNewInvokeExpr
         // In this case, we know the exact type of the
         // argument exception.
-        result = result.add(thrownType);
+        result = result.add((ReferenceType) thrownType);
       } else {
         ReferenceType preciseType = null;
         // If there is only one allocation site, we know the type as well
@@ -71,7 +71,7 @@ public abstract class AbstractThrowAnalysis implements ThrowAnalysis {
         }
 
         if (preciseType == null) {
-          result = result.add(thrownType);
+          result = result.add((ReferenceType) thrownType);
         } else {
           result = result.add(preciseType);
         }
