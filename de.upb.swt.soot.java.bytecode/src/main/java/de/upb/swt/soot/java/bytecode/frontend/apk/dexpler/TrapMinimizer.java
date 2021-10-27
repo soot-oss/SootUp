@@ -104,7 +104,7 @@ public class TrapMinimizer extends TrapTransformer {
             // unit to the handler. This predecessor, however, does
             // not need
             // to be inside the new minimized catch block.
-            for (ExceptionDest<Stmt> ed : eug.getExceptionDests(u)) {
+            for (ExceptionDes<Stmt> ed : eug.getExceptionDests(u)) {
               if (ed.getTrap() == tr) {
                 goesToHandler = true;
                 break;
@@ -124,7 +124,7 @@ public class TrapMinimizer extends TrapTransformer {
             // updateTrap to true
             continue;
           }
-          Trap t = Jimple.v().newTrap(tr.getException(), firstTrapStmt, u, tr.getHandlerStmt());
+          Trap t = Jimple.newTrap(tr.getExceptionType(), firstTrapStmt, u, tr.getHandlerStmt());
           newTraps.add(t);
         } else {
           // if the current unit has an edge to the current trap's
@@ -133,7 +133,7 @@ public class TrapMinimizer extends TrapTransformer {
           // and if the
           // next unit is outside the current trap.
           if (builder.getStmts().getSuccOf(u) == tr.getEndStmt() && updateTrap) {
-            Trap t = Jimple.v().newTrap(tr.getException(), firstTrapStmt, tr.getEndStmt(), tr.getHandlerStmt());
+            Trap t = Jimple.newTrap(tr.getExceptionType(), firstTrapStmt, tr.getEndStmt(), tr.getHandlerStmt());
             newTraps.add(t);
           }
         }
