@@ -379,6 +379,7 @@ public class PointerAssignmentGraph {
   public Map<VariableNode, Set<FieldReferenceNode>> getStoreEdges() {
     return internalEdges.storeEdges;
   }
+  public Map<FieldReferenceNode, Set<VariableNode>> getStoreEdgesInv() { return internalEdges.storeEdgesInv; }
 
   public Map<FieldReferenceNode, Set<VariableNode>> getLoadEdges() {
     return internalEdges.loadEdges;

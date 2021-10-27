@@ -23,10 +23,23 @@ package de.upb.swt.soot.callgraph.spark.solver;
  */
 
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.FieldReferenceNode;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
+import de.upb.swt.soot.core.model.Field;
+
+import java.util.*;
 
 /** Propagates points-to sets along pointer assignment graph using a relevant aliases. */
 public class AliasPropagator implements Propagator {
   private PointerAssignmentGraph pag;
+  private Map<FieldReferenceNode, Set<Node>> loadSets = new HashMap<>();
+  private Map<Field, Set<VariableNode>> fieldToBase = new HashMap<>();
+  private final Set<VariableNode> workList = new TreeSet<>();
+
+  //todo: a field OnFlyCallGraph ofcg
+
 
   public AliasPropagator(PointerAssignmentGraph pag) {
     this.pag = pag;
@@ -34,6 +47,42 @@ public class AliasPropagator implements Propagator {
 
   @Override
   public void propagate() {
-    throw new UnsupportedOperationException();
+    //todo: ofcg = pag.getOnFlyCallGraph;
+    new TopologicalSorter(pag, false).sort();
+    //collect all FieldReferenceNodes' (field, set of bases) pairs
+    for(FieldReferenceNode frNode : pag.getLoadEdges().keySet()){
+      if(!fieldToBase.containsKey(frNode)){
+        fieldToBase.put(frNode.getField(), new HashSet<>());
+      }
+      fieldToBase.get(frNode.getField()).add(frNode.getBase());
+    }
+
+    for(FieldReferenceNode frNode : pag.getStoreEdgesInv().keySet()){
+      if(!fieldToBase.containsKey(frNode)){
+        fieldToBase.put(frNode.getField(), new HashSet<>());
+      }
+      fieldToBase.get(frNode.getField()).add(frNode.getBase());
+    }
+
+    //process all allocation nodes
+    for(AllocationNode alNode: pag.getAllocationEdges().keySet()){
+      handleAllocionNode(alNode);
+
+
+    }
+  }
+
+
+  protected boolean handleAllocionNode(AllocationNode source){
+    boolean ret = false;
+    Set<VariableNode> targets =  pag.allocLookup(source);
+    for(VariableNode target : targets){
+      if(target.getReplacement() != target){
+
+        throw new RuntimeException("The node " + target + " has been merged to " + target.getReplacement() + "! Can not be added into workList!");
+      }
+      workList.add(target);
+    }
+    return ret;
   }
 }
