@@ -36,7 +36,10 @@ public class AliasPropagator implements Propagator {
   private PointerAssignmentGraph pag;
   private Map<FieldReferenceNode, Set<Node>> loadSets = new HashMap<>();
   private Map<Field, Set<VariableNode>> fieldToBase = new HashMap<>();
-  private final Set<VariableNode> workList = new TreeSet<>();
+
+  private final Set<VariableNode> varNodeWorkList = new HashSet<>();
+  private Set<VariableNode> aliasWorkList = new HashSet<>();
+  private Set<FieldReferenceNode> fieldRefWorkList = new HashSet<>();
 
   //todo: a field OnFlyCallGraph ofcg
 
@@ -66,23 +69,83 @@ public class AliasPropagator implements Propagator {
 
     //process all allocation nodes
     for(AllocationNode alNode: pag.getAllocationEdges().keySet()){
-      handleAllocionNode(alNode);
-
-
+      handleAllocaionNode(alNode);
     }
+
+    do{
+
+      handleVarNodeWorkList();
+
+      handleAliasWorkList();
+      handleFieldRefWorkList();
+    }while(!varNodeWorkList.isEmpty());
+
+
   }
 
 
-  protected boolean handleAllocionNode(AllocationNode source){
-    boolean ret = false;
+
+  protected void handleVarNodeWorkList(){
+    aliasWorkList = new HashSet<>();
+    while(!varNodeWorkList.isEmpty()){
+      VariableNode source = varNodeWorkList.iterator().next();
+      varNodeWorkList.remove(source);
+      aliasWorkList.add(source);
+      handleVarNode(source);
+    }
+  }
+
+  protected void handleAliasWorkList(){
+    for(VariableNode source : aliasWorkList){
+      for(FieldReferenceNode fr : source.getAllFieldReferences()){
+
+      }
+    }
+  }
+
+  protected void handleFieldRefWorkList(){
+
+  }
+
+  /**
+   * Propagates new points-to information of AllocationNode source to all its successors.
+   */
+  protected void handleAllocaionNode(AllocationNode source){
+
     Set<VariableNode> targets =  pag.allocLookup(source);
     for(VariableNode target : targets){
-      if(target.getReplacement() != target){
-
-        throw new RuntimeException("The node " + target + " has been merged to " + target.getReplacement() + "! Can not be added into workList!");
+      Set<Node> p2Set = target.getOrCreatePointsToSet();
+      if(p2Set.add(source)){
+        varNodeWorkList.add(target);
       }
-      workList.add(target);
     }
-    return ret;
+  }
+  /**
+   * Propagates new points-to information of VariableNode source to all its variable node successors
+   */
+  protected void handleVarNode(VariableNode source){
+    if(source.getReplacement() != source){
+      throw new RuntimeException("The variableNode " + source + " has been merged to another variable node " + source.getReplacement());
+    }
+    Set<Node> p2SetOfSource = source.getPointsToSet();
+
+    //Todo: Lack of OnFlyCallGraph Part
+
+    Set<VariableNode> varTargets = pag.simpleLookup(source);
+    for(VariableNode varTarget : varTargets){
+      Set<Node> p2SetOfTarget = varTarget.getOrCreatePointsToSet();
+      if(p2SetOfTarget.addAll(p2SetOfSource)){
+        varNodeWorkList.add(varTarget);
+      }
+    }
+
+    //todo: how to distinguish q.f_in and q.f_out????
+    Set<FieldReferenceNode> fieldTargets = pag.storeLookup(source);
+    for(FieldReferenceNode fieldTarget: fieldTargets){
+      Set<Node> p2SetOfTarget = fieldTarget.getOrCreatePointsToSet();
+      if(p2SetOfTarget.addAll(p2SetOfSource)){
+        fieldRefWorkList.add(fieldTarget);
+      }
+    }
   }
 }

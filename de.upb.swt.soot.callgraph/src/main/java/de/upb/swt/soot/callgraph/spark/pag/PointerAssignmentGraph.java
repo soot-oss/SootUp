@@ -398,6 +398,15 @@ public class PointerAssignmentGraph {
     return internalEdges.storeEdgesInv.get(key);
   }
 
+  public Set<FieldReferenceNode> storeLookup(VariableNode key) {
+    // TODO: somethingMerged?
+    return internalEdges.storeEdges.get(key);
+  }
+
+  public Set<VariableNode> simpleLookup(VariableNode key) {
+    return internalEdges.simpleEdges.get(key);
+  }
+
   public Set<VariableNode> simpleInvLookup(VariableNode key) {
     return internalEdges.simpleEdgesInv.get(key);
   }
