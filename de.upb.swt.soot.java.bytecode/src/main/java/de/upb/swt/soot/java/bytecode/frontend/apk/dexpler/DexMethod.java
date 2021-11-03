@@ -27,18 +27,22 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.frontend.BodySource;
+import de.upb.swt.soot.core.frontend.OverridingBodySource;
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.model.Method;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.java.bytecode.interceptors.TypeAssigner;
 import javafx.scene.Scene;
-import org.jf.dexlib2.iface.AnnotationElement;
-import org.jf.dexlib2.iface.DexFile;
+import org.jf.dexlib2.iface.*;
 import org.jf.dexlib2.iface.value.ArrayEncodedValue;
 import org.jf.dexlib2.iface.value.EncodedValue;
 import org.jf.dexlib2.iface.value.TypeEncodedValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,11 +54,12 @@ import java.util.List;
  */
 public class DexMethod {
   private static final Logger logger = LoggerFactory.getLogger(DexMethod.class);
+  private boolean options_oaat = true;
 
-  protected final DexEntry<? extends DexFile> dexEntry;
+  protected final MultiDexContainer.DexEntry<? extends DexFile> dexEntry;
   protected final SootClass declaringClass;
 
-  public DexMethod(final DexEntry<? extends DexFile> dexFile, final SootClass declaringClass) {
+  public DexMethod(final MultiDexContainer.DexEntry<? extends DexFile> dexFile, final SootClass declaringClass) {
     this.dexEntry = dexFile;
     this.declaringClass = declaringClass;
   }
@@ -64,7 +69,7 @@ public class DexMethod {
    *
    * @return the SootMethod of this method
    */
-  public SootMethod makeSootMethod(final Method method) {
+  public SootMethod makeSootMethod(final org.jf.dexlib2.iface.Method method) {
     int accessFlags = method.getAccessFlags();
 
     // get the name of the method
@@ -88,22 +93,22 @@ public class DexMethod {
       return sm;
     }
 
-    if (Options.v().oaat() && declaringClass.resolvingLevel() <= SootClass.SIGNATURES) {
+    if (options_oaat && declaringClass.resolvingLevel() <= SootClass.SIGNATURES) {
       return sm;
     }
 
     // sets the method source by adding its body as the active body
-    sm.setSource(createMethodSource(method));
+    sm.withSource(createMethodSource(method));
 
     return sm;
   }
 
-  protected MethodSource createMethodSource(final Method method) {
-    return new MethodSource() {
+  protected BodySource createMethodSource(final Method method) {
+    return new OverridingBodySource() {
 
       @Override
-      public Body getBody(SootMethod m, String phaseName) {
-        Body b = Jimple.v().newBody(m);
+      public Body.BodyBuilder getBodyBuilder(SootMethod m, String phaseName) {
+        Body.BodyBuilder b = Jimple.newBody(m);
         try {
           // add the body of this code item
           DexBody dexBody = new DexBody(dexEntry, method, declaringClass.getType());
@@ -111,8 +116,8 @@ public class DexMethod {
         } catch (InvalidDalvikBytecodeException e) {
           String msg = "Warning: Invalid bytecode in method " + m + ": " + e;
           logger.debug("" + msg);
-          soot.dexpler.Util.emptyBody(b);
-          soot.dexpler.Util.addExceptionAfterUnit(b, "java.lang.RuntimeException", b.getUnits().getLast(),
+          Util.emptyBody(b);
+          Util.addExceptionAfterUnit(b, "java.lang.RuntimeException", b.getUnits().getLast(),
               "Soot has detected that this method contains invalid Dalvik bytecode,"
                   + " which would have throw an exception at runtime. [" + msg + "]");
           TypeAssigner.v().transform(b);
@@ -155,7 +160,7 @@ public class DexMethod {
             if (evSub instanceof TypeEncodedValue) {
               TypeEncodedValue valueType = (TypeEncodedValue) evSub;
               String exceptionName = valueType.getValue();
-              String dottedName = soot.dexpler.Util.dottedClassName(exceptionName);
+              String dottedName = Util.dottedClassName(exceptionName);
               thrownExceptions.add(SootResolver.v().makeClassRef(dottedName));
             }
           }

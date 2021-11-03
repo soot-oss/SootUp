@@ -195,7 +195,7 @@ public class ThrowableSet {
    *           ThrowableSet.IllegalStateException} if this <code>ThrowableSet</code> is the result of a
    *           {@link #whichCatchableAs(ReferenceType)} operation and, thus, unable to represent the addition of <code>e</code>.
    */
-  public ThrowableSet add(ClassType e) throws AlreadyHasExclusionsException {
+  public ThrowableSet add(ReferenceType e) throws AlreadyHasExclusionsException {
     if (INSTRUMENTING) {
       Manager.getInstance().addsOfRefType++;
     }

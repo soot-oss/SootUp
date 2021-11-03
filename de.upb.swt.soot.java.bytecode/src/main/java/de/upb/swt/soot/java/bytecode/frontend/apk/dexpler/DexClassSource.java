@@ -2,6 +2,7 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
 
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.jimple.tag.Tag;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.AnnotationUsage;
@@ -116,6 +117,8 @@ public class DexClassSource extends JavaSootClassSource {
         annotations.handleFieldAnnotation(sootField, sf);
     }
 
+    private boolean options_oaat = true;
+
     public Dependencies makeSootClass(SootClass sc, ClassDef defItem, MultiDexContainer.DexEntry<? extends DexFile> dexEntry) {
         String superClass = defItem.getSuperclass();
         Dependencies deps = new Dependencies();
@@ -153,7 +156,7 @@ public class DexClassSource extends JavaSootClassSource {
             }
         }
 
-        if (Options.v().oaat() && sc.resolvingLevel() <= SootClass.HIERARCHY) {
+        if (options_oaat && sc.resolvingLevel() <= SootClass.HIERARCHY) {
             return deps;
         }
         DexAnnotation da = createDexAnnotation(sc, deps);

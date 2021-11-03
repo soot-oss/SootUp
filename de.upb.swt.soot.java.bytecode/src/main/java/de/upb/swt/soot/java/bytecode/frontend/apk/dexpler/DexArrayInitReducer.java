@@ -56,7 +56,7 @@ import java.util.Map;
  */
 public class DexArrayInitReducer implements BodyInterceptor {
   private static final Logger logger = LoggerFactory.getLogger(DexArrayInitReducer.class);
-
+  private boolean options_verbose = true;
 
   protected void internalTransform(Body.BodyBuilder bodyBuilder, String phaseName, Map<String, String> options) {
     // Make sure that we only have linear control flow
@@ -87,20 +87,20 @@ public class DexArrayInitReducer implements BodyInterceptor {
 
           // index
           if (arrayRef.getIndex() == u1val) {
-            arrayRef.setIndex(((JAssignStmt) stmt1).getRightOp());
+            arrayRef.withIndex(((JAssignStmt) stmt1).getRightOp());
           } else if (arrayRef.getIndex() == u2val) {
-            arrayRef.setIndex(((JAssignStmt) stmt2).getRightOp());
+            arrayRef.withIndex(((JAssignStmt) stmt2).getRightOp());
           }
 
           // value
           if (assignStmt.getRightOp() == u1val) {
-            assignStmt.setRightOp(((JAssignStmt) stmt1).getRightOp());
+            assignStmt.withRightOp(((JAssignStmt) stmt1).getRightOp());
           } else if (assignStmt.getRightOp() == u2val) {
-            assignStmt.setRightOp(((JAssignStmt) stmt2).getRightOp());
+            assignStmt.withRightOp(((JAssignStmt) stmt2).getRightOp());
           }
 
           // Remove the unnecessary assignments
-          Iterator<Stmt> checkIt = bodyBuilder.getStmts().iterator(stmt);
+          Iterator<Stmt> checkIt = bodyBuilder.getStmts().iterator();
           boolean foundU1 = false, foundU2 = false, doneU1 = false, doneU2 = false;
           while (!(doneU1 && doneU2) && !(foundU1 && foundU2) && checkIt.hasNext()) {
             Stmt checkU = checkIt.next();
@@ -135,7 +135,7 @@ public class DexArrayInitReducer implements BodyInterceptor {
             // only remove constant assignment if the left value is Local
             if (u1val instanceof Local) {
               bodyBuilder.getStmts().remove(stmt1);
-              if (Options.v().verbose()) {
+              if (options_verbose) {
                 logger.debug("[" + bodyBuilder.getMethodSignature().getName() + "]    remove 1 " + stmt1);
               }
             }
@@ -144,8 +144,8 @@ public class DexArrayInitReducer implements BodyInterceptor {
             // only remove constant assignment if the left value is Local
             if (u2val instanceof Local) {
               bodyBuilder.getStmts().remove(stmt2);
-              if (Options.v().verbose()) {
-                logger.debug("[" + bodyBuilder.getMethod().getName() + "]    remove 2 " + stmt2);
+              if (options_verbose) {
+                logger.debug("[" + bodyBuilder.getMethodSignature().getName() + "]    remove 2 " + stmt2);
               }
             }
           }

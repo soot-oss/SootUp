@@ -28,6 +28,7 @@ import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.DexFile;
+import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.MultiDexContainer.DexEntry;
 
 import java.util.Iterator;
@@ -234,7 +235,7 @@ public class DexClassLoader {
       return;
     }
 
-    SootField sootField = DexField.makeSootField(sf);
+    de.upb.swt.soot.core.model.Field sootField = DexField.makeSootField(sf);
     sootField = declaringClass.getOrAddField(sootField);
     annotations.handleFieldAnnotation(sootField, sf);
   }

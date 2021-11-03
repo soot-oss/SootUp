@@ -43,19 +43,22 @@ public class DexJumpChainShortener implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+    Body body = builder.build();
     for (Stmt stmt : builder.getStmts()) {
 
       if (stmt instanceof JGotoStmt) {
         JGotoStmt jGotoStmtstmt = (JGotoStmt) stmt;
-        while (jGotoStmtstmt.getTarget() instanceof JGotoStmt) {
-          JGotoStmt nextTarget = (JGotoStmt) jGotoStmtstmt.getTarget();
-          jGotoStmtstmt.setTarget(nextTarget.getTarget());
+        while (jGotoStmtstmt.getTarget(body) instanceof JGotoStmt) {
+          JGotoStmt nextTarget = (JGotoStmt) jGotoStmtstmt.getTarget(body);
+          // FIXME - add withTarget(Stmt) implementation in JGotoStmt
+          jGotoStmtstmt.setTarget(nextTarget.getTarget(body));
         }
       } else if (stmt instanceof JIfStmt) {
         JIfStmt jIfStmt = (JIfStmt) stmt;
-        while (jIfStmt.getTarget() instanceof JGotoStmt) {
-          JGotoStmt nextTarget = (JGotoStmt) jIfStmt.getTarget();
-          jIfStmt.setTarget(nextTarget.getTarget());
+        while (jIfStmt.getTarget(body) instanceof JGotoStmt) {
+          JGotoStmt nextTarget = (JGotoStmt) jIfStmt.getTarget(body);
+          // FIXME - add withTarget(Stmt) implementation in JGotoStmt
+          jIfStmt.setTarget(nextTarget.getTarget(body));
         }
       }
     }

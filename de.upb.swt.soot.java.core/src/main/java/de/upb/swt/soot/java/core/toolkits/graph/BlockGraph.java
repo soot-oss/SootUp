@@ -10,24 +10,22 @@ package de.upb.swt.soot.java.core.toolkits.graph;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 
-import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.Body;
 
 import java.util.*;
+
 
 /**
  * <p>
@@ -43,8 +41,8 @@ import java.util.*;
  */
 public abstract class BlockGraph implements DirectedBodyGraph<Block> {
 
-  protected Body.BodyBuilder bodyBuilder;
-  protected StmtGraph stmtGraph;
+  protected Body mBody;
+  protected Chain<Unit> mUnits;
   protected List<Block> mBlocks;
   protected List<Block> mHeads;
   protected List<Block> mTails;
@@ -53,13 +51,13 @@ public abstract class BlockGraph implements DirectedBodyGraph<Block> {
    * Create a <code>BlockGraph</code> representing at the basic block level the control flow specified, at the
    * <code>Unit</code> level, by a given {@link UnitGraph}.
    *
-   * @param stmtGraph
+   * @param unitGraph
    *          A representation of the control flow at the level of individual {@link Unit}s.
    */
-  protected BlockGraph(StmtGraph stmtGraph) {
-    this.bodyBuilder = stmtGraph.getBody();
-    this.stmtGraph = bodyBuilder.getUnits();
-    buildBlocks(computeLeaders(stmtGraph), stmtGraph);
+  protected BlockGraph(UnitGraph unitGraph) {
+    this.mBody = unitGraph.getBody();
+    this.mUnits = mBody.getUnits();
+    buildBlocks(computeLeaders(unitGraph), unitGraph);
   }
 
   /**
@@ -100,7 +98,7 @@ public abstract class BlockGraph implements DirectedBodyGraph<Block> {
    */
   protected Set<Unit> computeLeaders(UnitGraph unitGraph) {
     Body body = unitGraph.getBody();
-    if (body != bodyBuilder) {
+    if (body != mBody) {
       throw new RuntimeException("BlockGraph.computeLeaders() called with a UnitGraph that doesn't match its mBody.");
     }
     Set<Unit> leaders = new HashSet<Unit>();
@@ -134,32 +132,32 @@ public abstract class BlockGraph implements DirectedBodyGraph<Block> {
    *
    * <p>
    * <code>BlockGraph</code> provides an implementation of <code>buildBlocks()</code> which splits the {@link Unit}s in
-   * <code>stmtGraph</code> so that each <code>Unit</code> in the passed set of block leaders is the first unit in a block.
-   * It defines as heads the blocks which begin with <code>Unit</code>s which are heads in <code>stmtGraph</code>, and
-   * defines as tails the blocks which end with <code>Unit</code>s which are tails in <code>stmtGraph</code>. Subclasses
+   * <code>unitGraph</code> so that each <code>Unit</code> in the passed set of block leaders is the first unit in a block.
+   * It defines as heads the blocks which begin with <code>Unit</code>s which are heads in <code>unitGraph</code>, and
+   * defines as tails the blocks which end with <code>Unit</code>s which are tails in <code>unitGraph</code>. Subclasses
    * might override this behavior.
    *
    * @param leaders
    *          Contains <code>Unit</code>s which are to be block leaders.
    *
-   * @param stmtGraph
+   * @param unitGraph
    *          Provides information about the predecessors and successors of each <code>Unit</code> in the <code>Body</code>,
    *          for determining the predecessors and successors of each created {@link Block}.
    *
    * @return a {@link Map} from {@link Unit}s which begin or end a block to the block which contains them.
    */
-  protected Map<Stmt, Block> buildBlocks(Set<Stmt> leaders, StmtGraph stmtGraph) {
+  protected Map<Unit, Block> buildBlocks(Set<Unit> leaders, UnitGraph unitGraph) {
     final ArrayList<Block> blockList = new ArrayList<Block>(leaders.size());
     final ArrayList<Block> headList = new ArrayList<Block>();
     final ArrayList<Block> tailList = new ArrayList<Block>();
 
     // Maps head and tail units to their blocks, for building predecessor and successor lists.
-    final Map<Stmt, Block> stmtToBlock = new HashMap<Stmt, Block>();
+    final Map<Unit, Block> unitToBlock = new HashMap<Unit, Block>();
 
     {
-      Stmt blockHead = null;
+      Unit blockHead = null;
       int blockLength = 0;
-      Iterator<Stmt> unitIt = this.stmtGraph.iterator();
+      Iterator<Unit> unitIt = mUnits.iterator();
       if (unitIt.hasNext()) {
         blockHead = unitIt.next();
         if (!leaders.contains(blockHead)) {
@@ -173,7 +171,7 @@ public abstract class BlockGraph implements DirectedBodyGraph<Block> {
       while (unitIt.hasNext()) {
         Unit u = unitIt.next();
         if (leaders.contains(u)) {
-          addBlock(blockHead, blockTail, indexInMethod, blockLength, blockList, stmtToBlock);
+          addBlock(blockHead, blockTail, indexInMethod, blockLength, blockList, unitToBlock);
           indexInMethod++;
           blockHead = u;
           blockLength = 0;
@@ -183,21 +181,21 @@ public abstract class BlockGraph implements DirectedBodyGraph<Block> {
       }
       if (blockLength > 0) {
         // Add final block.
-        addBlock(blockHead, blockTail, indexInMethod, blockLength, blockList, stmtToBlock);
+        addBlock(blockHead, blockTail, indexInMethod, blockLength, blockList, unitToBlock);
       }
     }
 
     // The underlying UnitGraph defines heads and tails.
-    for (Unit headUnit : stmtGraph.getHeads()) {
-      Block headBlock = stmtToBlock.get(headUnit);
+    for (Unit headUnit : unitGraph.getHeads()) {
+      Block headBlock = unitToBlock.get(headUnit);
       if (headBlock.getHead() == headUnit) {
         headList.add(headBlock);
       } else {
         throw new RuntimeException("BlockGraph(): head Unit is not the first unit in the corresponding Block!");
       }
     }
-    for (Unit tailUnit : stmtGraph.getTails()) {
-      Block tailBlock = stmtToBlock.get(tailUnit);
+    for (Unit tailUnit : unitGraph.getTails()) {
+      Block tailBlock = unitToBlock.get(tailUnit);
       if (tailBlock.getTail() == tailUnit) {
         tailList.add(tailBlock);
       } else {
@@ -208,7 +206,7 @@ public abstract class BlockGraph implements DirectedBodyGraph<Block> {
     for (Iterator<Block> blockIt = blockList.iterator(); blockIt.hasNext();) {
       Block block = blockIt.next();
 
-      List<Unit> predUnits = stmtGraph.getPredsOf(block.getHead());
+      List<Unit> predUnits = unitGraph.getPredsOf(block.getHead());
       if (predUnits.isEmpty()) {
         block.setPreds(Collections.<Block>emptyList());
 
@@ -224,19 +222,19 @@ public abstract class BlockGraph implements DirectedBodyGraph<Block> {
         List<Block> predBlocks = new ArrayList<Block>(predUnits.size());
         for (Unit predUnit : predUnits) {
           assert (predUnit != null);
-          Block predBlock = stmtToBlock.get(predUnit);
+          Block predBlock = unitToBlock.get(predUnit);
           if (predBlock == null) {
             throw new RuntimeException("BlockGraph(): block head predecessor (" + predUnit + ") mapped to null block!");
           }
           predBlocks.add(predBlock);
         }
         block.setPreds(Collections.unmodifiableList(predBlocks));
-        if (block.getHead() == this.stmtGraph.getFirst()) {
+        if (block.getHead() == mUnits.getFirst()) {
           headList.add(block); // Make the first block a head even if the Body is one huge loop.
         }
       }
 
-      List<Unit> succUnits = stmtGraph.getSuccsOf(block.getTail());
+      List<Unit> succUnits = unitGraph.getSuccsOf(block.getTail());
       if (succUnits.isEmpty()) {
         block.setSuccs(Collections.<Block>emptyList());
         if (!tailList.contains(block)) {
@@ -253,7 +251,7 @@ public abstract class BlockGraph implements DirectedBodyGraph<Block> {
         List<Block> succBlocks = new ArrayList<Block>(succUnits.size());
         for (Unit succUnit : succUnits) {
           assert (succUnit != null);
-          Block succBlock = stmtToBlock.get(succUnit);
+          Block succBlock = unitToBlock.get(succUnit);
           if (succBlock == null) {
             throw new RuntimeException("BlockGraph(): block tail successor (" + succUnit + ") mapped to null block!");
           }
@@ -270,7 +268,7 @@ public abstract class BlockGraph implements DirectedBodyGraph<Block> {
     this.mHeads = headList.isEmpty() ? Collections.emptyList() : Collections.unmodifiableList(headList);
     tailList.trimToSize(); // potentially a long-lived object
     this.mTails = tailList.isEmpty() ? Collections.emptyList() : Collections.unmodifiableList(tailList);
-    return stmtToBlock;
+    return unitToBlock;
   }
 
   /**
@@ -291,7 +289,7 @@ public abstract class BlockGraph implements DirectedBodyGraph<Block> {
    *          <code>tail</code> to the new block
    */
   private void addBlock(Unit head, Unit tail, int index, int length, List<Block> blockList, Map<Unit, Block> unitToBlock) {
-    Block block = new Block(head, tail, bodyBuilder, index, length, this);
+    Block block = new Block(head, tail, mBody, index, length, this);
     blockList.add(block);
     unitToBlock.put(tail, block);
     unitToBlock.put(head, block);
@@ -304,7 +302,7 @@ public abstract class BlockGraph implements DirectedBodyGraph<Block> {
    */
   @Override
   public Body getBody() {
-    return bodyBuilder;
+    return mBody;
   }
 
   /**

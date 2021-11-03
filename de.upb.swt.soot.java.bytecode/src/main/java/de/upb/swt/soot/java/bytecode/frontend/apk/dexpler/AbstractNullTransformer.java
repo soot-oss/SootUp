@@ -72,7 +72,7 @@ public abstract class AbstractNullTransformer extends DexTransformer {
     protected void replaceWithNull(Stmt u) {
         if (u instanceof JIfStmt) {
             JIfStmt jIfStmt = (JIfStmt) u;
-            Expr expr = (Expr) (jIfStmt).getCondition();
+            AbstractConditionExpr expr = jIfStmt.getCondition();
             if (isZeroComparison(expr)) {
                 jIfStmt.withCondition(expr.withOp2(NullConstant.getInstance()));
             }

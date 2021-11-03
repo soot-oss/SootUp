@@ -22,13 +22,9 @@ package de.upb.swt.soot.java.core.toolkits.graph;
  * #L%
  */
 
-import jdk.nashorn.internal.ir.Block;
-import soot.Body;
-import soot.Trap;
-import soot.Unit;
-import soot.toolkits.exceptions.ThrowAnalysis;
-import soot.toolkits.exceptions.ThrowableSet;
-
+import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.java.core.toolkits.exceptions.ThrowAnalysis;
+import de.upb.swt.soot.java.core.toolkits.exceptions.ThrowableSet;
 import java.util.*;
 
 /**
@@ -69,9 +65,9 @@ public class ExceptionalBlockGraph extends BlockGraph implements ExceptionalGrap
    * </p>
    *
    * <p>
-   * Note that this constructor builds an {@link soot.toolkits.graph.ExceptionalUnitGraph} internally when splitting <code>body</code>'s
-   * {@link Unit}s into {@link Block}s. Callers who already have an <code>ExceptionalUnitGraph</code> to hand can use the
-   * constructor taking an <code>ExceptionalUnitGraph</code> as a parameter, as a minor optimization.
+   * Note that this constructor builds an {@link soot.toolkits.graph.ExceptionalStmtGraph} internally when splitting <code>body</code>'s
+   * {@link Unit}s into {@link Block}s. Callers who already have an <code>ExceptionalStmtGraph</code> to hand can use the
+   * constructor taking an <code>ExceptionalStmtGraph</code> as a parameter, as a minor optimization.
    *
    * @param body
    *          The underlying body we want to make a graph for.
@@ -84,7 +80,7 @@ public class ExceptionalBlockGraph extends BlockGraph implements ExceptionalGrap
    * Constructs a graph for the blocks found by partitioning the the {@link Unit}s in an {@link soot.toolkits.graph.ExceptionalUnitGraph}.
    *
    * @param unitGraph
-   *          The <code>ExceptionalUnitGraph</code> whose <code>Unit</code>s are to be split into blocks.
+   *          The <code>ExceptionalStmtGraph</code> whose <code>Unit</code>s are to be split into blocks.
    */
   public ExceptionalBlockGraph(soot.toolkits.graph.ExceptionalUnitGraph unitGraph) {
     super(unitGraph);
@@ -113,7 +109,7 @@ public class ExceptionalBlockGraph extends BlockGraph implements ExceptionalGrap
       // to respond to getExceptionDests() on demand.
       throwAnalysis = unitGraph.getThrowAnalysis();
       if (throwAnalysis == null) {
-        throw new IllegalStateException("ExceptionalUnitGraph lacked a cached ThrowAnalysis for a Body with no Traps.");
+        throw new IllegalStateException("ExceptionalStmtGraph lacked a cached ThrowAnalysis for a Body with no Traps.");
       }
     } else {
       int initialMapSize = (mBlocks.size() * 2) / 3;

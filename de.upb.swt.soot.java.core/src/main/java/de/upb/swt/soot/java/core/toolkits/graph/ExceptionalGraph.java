@@ -94,7 +94,7 @@ public interface ExceptionalGraph<N> extends DirectedBodyGraph<N> {
    * @return the <code>Body</code> from which this graph was built.
    */
   @Override
-  public Body getBody();
+  public Body getBodyBuilder();
 
   /**
    * Returns a list of nodes which are predecessors of a given node when only unexceptional control flow is considered.

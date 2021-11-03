@@ -1,7 +1,8 @@
 package de.upb.swt.soot.java.core.toolkits.graph;
 
 /*-
- * #%L
+ * #%
+ *
  * Soot - a J*va Optimization Framework
  * %%
  * Copyright (C) 1999 Patrice Pominville, Raja Vallee-Rai
@@ -59,7 +60,7 @@ import java.util.Map.Entry;
  * <code>Unit</code> to complete execution before the handler starts execution). If the excepting <code>Unit</code> might
  * have the side effect of changing some field, then there will definitely be an edge from the excepting <code>Unit</code>
  * itself to its handlers, since the side effect might occur before the exception is raised. If the excepting
- * <code>Unit</code> has no side effects, then parameters passed to the <code>ExceptionalUnitGraph</code> constructor
+ * <code>Unit</code> has no side effects, then parameters passed to the <code>ExceptionalStmtGraph</code> constructor
  * determine whether or not there is an edge from the excepting <code>Unit</code> itself to the handler <code>Unit</code>.
  * </p>
  */
@@ -134,17 +135,17 @@ public class ExceptionalUnitGraph extends UnitGraph implements soot.toolkits.gra
 
   /**
    * <p>
-   * Allocates an <code>ExceptionalUnitGraph</code> object without initializing it. This &ldquo;partial constructor&rdquo; is
+   * Allocates an <code>ExceptionalStmtGraph</code> object without initializing it. This &ldquo;partial constructor&rdquo; is
    * provided for the benefit of subclasses whose constructors need to perform some subclass-specific processing before
    * actually creating the graph edges (because, for example, the subclass overrides a utility method like
    * {@link #buildExceptionDests(ThrowAnalysis)} or {@link #buildExceptionalEdges(ThrowAnalysis, Map, Map, Map, boolean)}
    * with a replacement method that depends on additional parameters passed to the subclass's constructor). The subclass
    * constructor is responsible for calling {@link #initialize(ThrowAnalysis, boolean)}, or otherwise performing the
-   * initialization required to implement <code>ExceptionalUnitGraph</code>'s interface.
+   * initialization required to implement <code>ExceptionalStmtGraph</code>'s interface.
    * </p>
    *
    * <p>
-   * Clients who opt to extend <code>ExceptionalUnitGraph</code> should be warned that the class has not been carefully
+   * Clients who opt to extend <code>ExceptionalStmtGraph</code> should be warned that the class has not been carefully
    * designed for inheritance; code that uses the <code>protected</code> members of this class may need to be rewritten for
    * each new Soot release.
    * </p>
@@ -161,7 +162,7 @@ public class ExceptionalUnitGraph extends UnitGraph implements soot.toolkits.gra
   }
 
   /**
-   * Performs the real work of constructing an <code>ExceptionalUnitGraph</code>, factored out of the constructors so that
+   * Performs the real work of constructing an <code>ExceptionalStmtGraph</code>, factored out of the constructors so that
    * subclasses have the option to delay creating the graph's edges until after they have performed some subclass-specific
    * initialization.
    *
@@ -185,7 +186,7 @@ public class ExceptionalUnitGraph extends UnitGraph implements soot.toolkits.gra
     this.throwAnalysis = throwAnalysis;
 
     Set<Unit> trapUnitsThatAreHeads;
-    if (body.getTraps().isEmpty()) {
+    if (bodyBuilder.getTraps().isEmpty()) {
       // No handlers, so all exceptional control flow exits the method.
       unitToExceptionDests = Collections.emptyMap();
       unitToExceptionalSuccs = Collections.emptyMap();
@@ -196,7 +197,7 @@ public class ExceptionalUnitGraph extends UnitGraph implements soot.toolkits.gra
     } else {
       unitToExceptionDests = buildExceptionDests(throwAnalysis);
       unitToExceptionalSuccs = new LinkedHashMap<Unit, List<Unit>>(unitToExceptionDests.size() * 2 + 1, 0.7f);
-      unitToExceptionalPreds = new LinkedHashMap<Unit, List<Unit>>(body.getTraps().size() * 2 + 1, 0.7f);
+      unitToExceptionalPreds = new LinkedHashMap<Unit, List<Unit>>(bodyBuilder.getTraps().size() * 2 + 1, 0.7f);
       trapUnitsThatAreHeads = buildExceptionalEdges(throwAnalysis, unitToExceptionDests, unitToExceptionalSuccs,
           unitToExceptionalPreds, omitExceptingUnitEdges);
 
@@ -229,7 +230,7 @@ public class ExceptionalUnitGraph extends UnitGraph implements soot.toolkits.gra
    *
    *         <p>
    *         The returned map has an idiosyncracy which is hidden from most client code, but which is exposed to subclasses
-   *         extending <code>ExceptionalUnitGraph</code>. If a <code>Unit</code> throws one or more exceptions which are
+   *         extending <code>ExceptionalStmtGraph</code>. If a <code>Unit</code> throws one or more exceptions which are
    *         caught within the method, it will be mapped to a <code>Collection</code> of <code>ExceptionDest</code>s
    *         describing the sets of exceptions that the <code>Unit</code> might throw to each {@link Trap}. But if all of a
    *         <code>Unit</code>'s exceptions escape the method, it will be mapped to <code>null</code, rather than to a
@@ -239,12 +240,12 @@ public class ExceptionalUnitGraph extends UnitGraph implements soot.toolkits.gra
    *         </p>
    */
   protected Map<Unit, Collection<ExceptionDest>> buildExceptionDests(ThrowAnalysis throwAnalysis) {
-    Chain<Unit> units = body.getUnits();
+    Chain<Unit> units = bodyBuilder.getUnits();
     Map<Unit, ThrowableSet> unitToUncaughtThrowables = new LinkedHashMap<Unit, ThrowableSet>(units.size());
     Map<Unit, Collection<ExceptionDest>> result = null;
 
     // Record the caught exceptions.
-    for (Trap trap : body.getTraps()) {
+    for (Trap trap : bodyBuilder.getTraps()) {
       RefType catcher = trap.getException().getType();
       for (Iterator<Unit> unitIt = units.iterator(trap.getBeginUnit(), units.getPredOf(trap.getEndUnit())); unitIt
           .hasNext();) {
@@ -259,9 +260,9 @@ public class ExceptionalUnitGraph extends UnitGraph implements soot.toolkits.gra
           result = addDestToMap(result, unit, trap, catchableAs.getCaught());
           unitToUncaughtThrowables.put(unit, catchableAs.getUncaught());
         } else {
-          assert thrownSet.equals(catchableAs.getUncaught()) : "ExceptionalUnitGraph.buildExceptionDests(): "
+          assert thrownSet.equals(catchableAs.getUncaught()) : "ExceptionalStmtGraph.buildExceptionDests(): "
               + "catchableAs.caught == EMPTY, but catchableAs.uncaught != thrownSet" + System.getProperty("line.separator")
-              + body.getMethod().getSubSignature() + " Unit: " + unit.toString() + System.getProperty("line.separator")
+              + bodyBuilder.getMethod().getSubSignature() + " Unit: " + unit.toString() + System.getProperty("line.separator")
               + " catchableAs.getUncaught() == " + catchableAs.getUncaught().toString()
               + System.getProperty("line.separator") + " thrownSet == " + thrownSet.toString();
         }
@@ -470,7 +471,7 @@ public class ExceptionalUnitGraph extends UnitGraph implements soot.toolkits.gra
 
     LinkedList<CFGEdge> workList = new LinkedList<CFGEdge>();
 
-    for (Trap trap : body.getTraps()) {
+    for (Trap trap : bodyBuilder.getTraps()) {
       Unit handlerStart = trap.getHandlerUnit();
       if (mightThrowToIntraproceduralCatcher(handlerStart)) {
         List<Unit> handlerPreds = getUnexceptionalPredsOf(handlerStart);
@@ -571,22 +572,22 @@ public class ExceptionalUnitGraph extends UnitGraph implements soot.toolkits.gra
   /**
    * <p>
    * A placeholder that overrides {@link UnitGraph#buildHeadsAndTails()} with a method which always throws an exception. The
-   * placeholder serves to indicate that <code>ExceptionalUnitGraph</code> does not use <code>buildHeadsAndTails()</code>,
-   * and to document the conditions under which <code>ExceptionalUnitGraph considers a node to be a head or
+   * placeholder serves to indicate that <code>ExceptionalStmtGraph</code> does not use <code>buildHeadsAndTails()</code>,
+   * and to document the conditions under which <code>ExceptionalStmtGraph considers a node to be a head or
    * tail.
    * </p>
    *
    * <p>
-   * <code>ExceptionalUnitGraph</code> defines the graph's set of heads to include the first {@link Unit} in the graph's
+   * <code>ExceptionalStmtGraph</code> defines the graph's set of heads to include the first {@link Unit} in the graph's
    * body, together with the first <code>Unit</code> in any exception handler which might catch an exception thrown by the
    * first <code>Unit</code> in the body (because any of those <code>Unit</code>s might be the first to successfully complete
-   * execution). <code>ExceptionalUnitGraph</code> defines the graph's set of tails to include all <code>Unit</code>s which
+   * execution). <code>ExceptionalStmtGraph</code> defines the graph's set of tails to include all <code>Unit</code>s which
    * represent some variety of return bytecode or an <code>athrow</code> bytecode whose argument might escape the method.
    * </p>
    */
   @Override
   protected void buildHeadsAndTails() throws IllegalStateException {
-    throw new IllegalStateException("ExceptionalUnitGraph uses buildHeadsAndTails(List) instead of buildHeadsAndTails()");
+    throw new IllegalStateException("ExceptionalStmtGraph uses buildHeadsAndTails(List) instead of buildHeadsAndTails()");
   }
 
   /**
@@ -600,7 +601,7 @@ public class ExceptionalUnitGraph extends UnitGraph implements soot.toolkits.gra
     heads.addAll(additionalHeads);
 
     if (unitChain.isEmpty()) {
-      throw new IllegalStateException("No body for method " + body.getMethod().getSignature());
+      throw new IllegalStateException("No body for method " + bodyBuilder.getMethod().getSignature());
     }
 
     Unit entryPoint = unitChain.getFirst();
@@ -734,7 +735,7 @@ public class ExceptionalUnitGraph extends UnitGraph implements soot.toolkits.gra
    * </p>
    *
    * <p>
-   * This method is package-private because it exposes a detail of the implementation of <code>ExceptionalUnitGraph</code> so
+   * This method is package-private because it exposes a detail of the implementation of <code>ExceptionalStmtGraph</code> so
    * that the {@link soot.toolkits.graph.ExceptionalBlockGraph ExceptionalBlockGraph} constructor can cache the same
    * <code>ThrowAnalysis</code> for the same purpose.
    *

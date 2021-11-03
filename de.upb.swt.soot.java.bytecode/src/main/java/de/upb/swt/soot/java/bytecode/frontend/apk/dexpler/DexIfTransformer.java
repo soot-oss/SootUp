@@ -64,7 +64,7 @@ public class DexIfTransformer extends AbstractNullTransformer {
   private boolean usedAsObject;
   private boolean doBreak = false;
 
-  public static DexIfTransformer v() {
+  public static DexIfTransformer getInstance() {
     return new DexIfTransformer();
   }
 
@@ -76,7 +76,7 @@ public class DexIfTransformer extends AbstractNullTransformer {
 
     Set<JIfStmt  > ifSet = getNullIfCandidates(builder);
     for (JIfStmt    ifs : ifSet) {
-       AbstractConditionExpr ifCondition = ( AbstractConditionExpr) ifs.getCondition();
+       AbstractConditionExpr ifCondition = ifs.getCondition();
       Local[] twoIfLocals = new Local[] { (Local) ifCondition.getOp1(), (Local) ifCondition.getOp2() };
       usedAsObject = false;
       for (Local loc : twoIfLocals) {
@@ -131,13 +131,13 @@ public class DexIfTransformer extends AbstractNullTransformer {
                 }
                 return;
               } else if (r instanceof JCastExpr) {
-                usedAsObject = isObject(((JCastExpr) r).getType());
+                usedAsObject = isObject(r.getType());
                 if (usedAsObject) {
                   doBreak = true;
                 }
                 return;
               } else if (r instanceof AbstractInvokeExpr) {
-                usedAsObject = isObject(((AbstractInvokeExpr) r).getType());
+                usedAsObject = isObject(r.getType());
                 if (usedAsObject) {
                   doBreak = true;
                 }

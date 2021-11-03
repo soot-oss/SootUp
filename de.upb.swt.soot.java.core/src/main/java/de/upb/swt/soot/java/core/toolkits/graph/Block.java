@@ -62,9 +62,9 @@ public class Block implements Iterable<Stmt> {
    *
    * @see Body
    * @see Chain
-   * @see soot.toolkits.graph.BlockGraph
-   * @see Unit
-   * @see SootMethod
+   * @see BlockGraph
+   * @see Stmt
+   * @see de.upb.swt.soot.core.model.SootMethod
    */
   public Block(Stmt aHead, Stmt aTail, Body.BodyBuilder bodyBuilder, int aIndexInMethod, int aBlockLength, BlockGraph aBlockGraph) {
     mHead = aHead;
@@ -87,11 +87,11 @@ public class Block implements Iterable<Stmt> {
   }
 
   /**
-   * Returns an iterator for the linear chain of Units that make up the block.
+   * Returns an iterator for the linear chain of Stmts that make up the block.
    *
    * @return An iterator that iterates over the block's units.
    * @see Chain
-   * @see Unit
+   * @see Stmt
    */
   @Override
   public Iterator<Stmt> iterator() {
@@ -103,10 +103,10 @@ public class Block implements Iterable<Stmt> {
    *
    *
    * @param toInsert
-   *          A Unit to be inserted.
+   *          A Stmt to be inserted.
    * @param point
    *          A Unit in the Block's body before which we wish to insert the Unit.
-   * @see Unit
+   * @see Stmt
    * @see Chain
    */
   public void insertBefore(Stmt toInsert, Stmt point) {

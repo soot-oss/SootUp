@@ -1,0 +1,67 @@
+package de.upb.swt.soot.core.jimple.tag;
+
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2003 Archie L. Cobbs
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
+
+import de.upb.swt.soot.core.jimple.common.constant.Constant;
+
+import java.util.Arrays;
+
+public abstract class ConstantValueTag implements Tag {
+
+  protected final byte[] bytes; // encoded constant
+
+  protected ConstantValueTag(byte[] bytes) {
+    this.bytes = bytes;
+  }
+
+  @Override
+  public byte[] getValue() {
+    return bytes;
+  }
+
+  public abstract Constant getConstant();
+
+  @Override
+  public abstract String toString();
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + Arrays.hashCode(bytes);
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ConstantValueTag other = (ConstantValueTag) obj;
+    return Arrays.equals(bytes, other.bytes);
+  }
+}

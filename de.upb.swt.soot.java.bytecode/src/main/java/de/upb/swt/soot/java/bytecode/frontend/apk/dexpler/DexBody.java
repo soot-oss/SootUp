@@ -429,9 +429,9 @@ public class DexBody {
   /**
    * Return the jimple equivalent of this body.
    *
-   * @param m the SootMethod that contains this body
+   * @param sootMethod the SootMethod that contains this body
    */
-  public Body jimplify(Body b, SootMethod m) {
+  public Body jimplify(Body.BodyBuilder bodyBuilder, SootMethod sootMethod) {
 
     final Jimple jimple = JavaJimple.getInstance();
     final UnknownType unknownType = UnknownType.getInstance();
@@ -446,7 +446,7 @@ public class DexBody {
      */
 
     //JBOptions jbOptions = new JBOptions(PhaseOptions.v().getPhaseOptions("jb"));
-    bodyBuilder = Body.builder();
+    this.bodyBuilder = Body.builder();
     deferredInstructions = new ArrayList<DeferableInstruction>();
     instructionsToRetype = new HashSet<RetypeableInstruction>();
 
@@ -471,7 +471,7 @@ public class DexBody {
 
       Local thisLocal =
           jimple.newLocal(freshLocalName("this"), unknownType); // generateLocal(UnknownType.v());
-      bodyBuilder.getLocals().add(thisLocal);
+      this.bodyBuilder.getLocals().add(thisLocal);
 
       registerLocals[thisRegister] = thisLocal;
       JIdentityStmt idStmt =
@@ -480,7 +480,7 @@ public class DexBody {
       paramLocals.add(thisLocal);
       if (IDalvikTyper.ENABLE_DVKTYPER) {
         DalvikTyper.v()
-            .setType(idStmt.getLeftOp(), bodyBuilder.getMethodSignature().getDeclClassType(), false);
+            .setType(idStmt.getLeftOp(), this.bodyBuilder.getMethodSignature().getDeclClassType(), false);
       }
     }
     {
@@ -511,12 +511,12 @@ public class DexBody {
           localType = unknownType;
         }
 
-        Local gen = jimple.newLocal(freshLocalName(localName), localType);
-        bodyBuilder.getLocals().add(gen);
+        Local gen = Jimple.newLocal(freshLocalName(localName), localType);
+        this.bodyBuilder.getLocals().add(gen);
         registerLocals[parameterRegister] = gen;
 
         JIdentityStmt idStmt =
-                jimple.newIdentityStmt(gen, jimple.newParameterRef(t, i++), StmtPositionInfo.createNoStmtPositionInfo());
+                Jimple.newIdentityStmt(gen, Jimple.newParameterRef(t, i++), StmtPositionInfo.createNoStmtPositionInfo());
         add(idStmt);
         paramLocals.add(gen);
         if (IDalvikTyper.ENABLE_DVKTYPER) {
@@ -538,8 +538,8 @@ public class DexBody {
           } else {
             name = "$u" + parameterRegister;
           }
-          Local g = jimple.newLocal(freshLocalName(name), unknownType);
-          bodyBuilder.getLocals().add(g);
+          Local g = Jimple.newLocal(freshLocalName(name), unknownType);
+          this.bodyBuilder.getLocals().add(g);
           registerLocals[parameterRegister] = g;
         }
 
@@ -555,29 +555,25 @@ public class DexBody {
       } else {
         name = "$u" + i;
       }
-      registerLocals[i] = jimple.newLocal(freshLocalName(name), unknownType);
-      bodyBuilder.getLocals().add(registerLocals[i]);
+      registerLocals[i] = Jimple.newLocal(freshLocalName(name), unknownType);
+      this.bodyBuilder.getLocals().add(registerLocals[i]);
     }
 
     // add local to store intermediate results
-    storeResultLocal = jimple.newLocal(freshLocalName("$u-1"), unknownType);
-    bodyBuilder.getLocals().add(storeResultLocal);
+    storeResultLocal = Jimple.newLocal(freshLocalName("$u-1"), unknownType);
+    this.bodyBuilder.getLocals().add(storeResultLocal);
 
     // process bytecode instructions
     final DexFile dexFile = dexEntry.getDexFile();
     final boolean isOdex =
-        dexFile instanceof DexBackedDexFile
-            ? ((DexBackedDexFile) dexFile).supportsOptimizedOpcodes()
-            : false;
+            dexFile instanceof DexBackedDexFile && ((DexBackedDexFile) dexFile).supportsOptimizedOpcodes();
 
     ClassPath cp = null;
     if (isOdex) {
       // FIXME - implement new way to get separated ClassPath
       String[] sootClasspath = options.soot_classpath().split(File.pathSeparator);
       List<String> classpathList = new ArrayList<String>();
-      for (String str : sootClasspath) {
-        classpathList.add(str);
-      }
+      classpathList.addAll(Arrays.asList(sootClasspath));
       try {
         ClassPathResolver resolver =
             new ClassPathResolver(classpathList, classpathList, classpathList, dexEntry);
@@ -644,28 +640,28 @@ public class DexBody {
      */
 
     // Fix traps that do not catch exceptions
-    new DexTrapStackFixer().interceptBody(bodyBuilder);
+    new DexTrapStackFixer().interceptBody(this.bodyBuilder);
 
     // Sort out jump chains
-    new DexJumpChainShortener().interceptBody(bodyBuilder);
+    new DexJumpChainShortener().interceptBody(this.bodyBuilder);
 
     // Make sure that we don't have any overlapping uses due to returns
-    new DexReturnInliner().interceptBody(bodyBuilder);
+    new DexReturnInliner().interceptBody(this.bodyBuilder);
 
     // Shortcut: Reduce array initializations
-    new DexArrayInitReducer().interceptBody(bodyBuilder);
+    new DexArrayInitReducer().interceptBody(this.bodyBuilder);
 
     // split first to find undefined uses
-    getLocalSplitter().interceptBody(bodyBuilder);
+    getLocalSplitter().interceptBody(this.bodyBuilder);
 
     // Remove dead code and the corresponding locals before assigning types
-    getUnreachableCodeEliminator().interceptBody(bodyBuilder);
-    new DeadAssignmentEliminator().interceptBody(bodyBuilder);
-    new UnusedLocalEliminator().interceptBody(bodyBuilder);
+    getUnreachableCodeEliminator().interceptBody(this.bodyBuilder);
+    new DeadAssignmentEliminator().interceptBody(this.bodyBuilder);
+    new UnusedLocalEliminator().interceptBody(this.bodyBuilder);
 
 
     for (RetypeableInstruction i : instructionsToRetype) {
-      i.retype(bodyBuilder);
+      i.retype(this.bodyBuilder);
     }
 
     // {

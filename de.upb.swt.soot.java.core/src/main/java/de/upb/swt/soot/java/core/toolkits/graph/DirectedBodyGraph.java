@@ -33,5 +33,5 @@ public interface DirectedBodyGraph<N> extends DirectedGraph<N> {
   /**
    * @return the {@link Body} from which this graph was built
    */
-  public Body getBody();
+  public Body getBodyBuilder();
 }

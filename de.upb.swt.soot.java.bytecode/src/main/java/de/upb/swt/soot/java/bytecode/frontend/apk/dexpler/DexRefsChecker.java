@@ -57,7 +57,7 @@ public class DexRefsChecker extends DexTransformer {
 
   @Override
   public void interceptBody(final Body.BodyBuilder bodyBuilder) {
-    // final ExceptionalUnitGraph g = new ExceptionalUnitGraph(bodyBuilder);
+    // final ExceptionalStmtGraph g = new ExceptionalStmtGraph(bodyBuilder);
     // final SmartLocalDefs localDefs = new SmartLocalDefs(g, new
     // SimpleLiveLocals(g));
     // final SimpleLocalUses localUses = new SimpleLocalUses(g, localDefs);

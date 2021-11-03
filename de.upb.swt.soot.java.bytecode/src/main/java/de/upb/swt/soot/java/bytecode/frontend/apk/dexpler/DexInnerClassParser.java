@@ -22,7 +22,8 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
-import soot.tagkit.InnerClassTag;
+
+import de.upb.swt.soot.core.jimple.tag.InnerClassTag;
 
 /**
  * Utility class for handling inner/outer class references in Dalvik
