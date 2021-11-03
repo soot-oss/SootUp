@@ -28,21 +28,19 @@ import de.upb.swt.soot.callgraph.spark.pag.nodes.FieldReferenceNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
 import de.upb.swt.soot.core.model.Field;
-
 import java.util.*;
 
 /** Propagates points-to sets along pointer assignment graph using a relevant aliases. */
 public class AliasPropagator implements Propagator {
   private PointerAssignmentGraph pag;
-  private Map<FieldReferenceNode, Set<Node>> loadSets = new HashMap<>();
-  private Map<Field, Set<VariableNode>> fieldToBase = new HashMap<>();
+  private Map<Field, Set<VariableNode>> fieldToBases = new HashMap<>();
+  private Map<FieldReferenceNode, Set<FieldReferenceNode>> aliasEdges = new HashMap();
 
   private final Set<VariableNode> varNodeWorkList = new HashSet<>();
   private Set<VariableNode> aliasWorkList = new HashSet<>();
   private Set<FieldReferenceNode> fieldRefWorkList = new HashSet<>();
 
-  //todo: a field OnFlyCallGraph ofcg
-
+  // todo: a field OnFlyCallGraph ofcg
 
   public AliasPropagator(PointerAssignmentGraph pag) {
     this.pag = pag;
@@ -50,44 +48,41 @@ public class AliasPropagator implements Propagator {
 
   @Override
   public void propagate() {
-    //todo: ofcg = pag.getOnFlyCallGraph;
+    // todo: ofcg = pag.getOnFlyCallGraph;
     new TopologicalSorter(pag, false).sort();
-    //collect all FieldReferenceNodes' (field, set of bases) pairs
-    for(FieldReferenceNode frNode : pag.getLoadEdges().keySet()){
-      if(!fieldToBase.containsKey(frNode)){
-        fieldToBase.put(frNode.getField(), new HashSet<>());
+
+    // collect all FieldReferenceNodes' (field, set of bases) pairs
+    for (FieldReferenceNode frNode : pag.getLoadEdges().keySet()) {
+      if (!fieldToBases.containsKey(frNode)) {
+        fieldToBases.put(frNode.getField(), new HashSet<>());
       }
-      fieldToBase.get(frNode.getField()).add(frNode.getBase());
+      fieldToBases.get(frNode.getField()).add(frNode.getBase());
     }
 
-    for(FieldReferenceNode frNode : pag.getStoreEdgesInv().keySet()){
-      if(!fieldToBase.containsKey(frNode)){
-        fieldToBase.put(frNode.getField(), new HashSet<>());
+    for (FieldReferenceNode frNode : pag.getStoreEdgesInv().keySet()) {
+      if (!fieldToBases.containsKey(frNode)) {
+        fieldToBases.put(frNode.getField(), new HashSet<>());
       }
-      fieldToBase.get(frNode.getField()).add(frNode.getBase());
+      fieldToBases.get(frNode.getField()).add(frNode.getBase());
     }
 
-    //process all allocation nodes
-    for(AllocationNode alNode: pag.getAllocationEdges().keySet()){
-      handleAllocaionNode(alNode);
+    // process all allocation nodes
+    for (AllocationNode alNode : pag.getAllocationEdges().keySet()) {
+      handleAllocationNode(alNode);
     }
 
-    do{
+    do {
 
       handleVarNodeWorkList();
-
       handleAliasWorkList();
       handleFieldRefWorkList();
-    }while(!varNodeWorkList.isEmpty());
 
-
+    } while (!varNodeWorkList.isEmpty());
   }
 
-
-
-  protected void handleVarNodeWorkList(){
+  protected void handleVarNodeWorkList() {
     aliasWorkList = new HashSet<>();
-    while(!varNodeWorkList.isEmpty()){
+    while (!varNodeWorkList.isEmpty()) {
       VariableNode source = varNodeWorkList.iterator().next();
       varNodeWorkList.remove(source);
       aliasWorkList.add(source);
@@ -95,27 +90,52 @@ public class AliasPropagator implements Propagator {
     }
   }
 
-  protected void handleAliasWorkList(){
-    for(VariableNode source : aliasWorkList){
-      for(FieldReferenceNode fr : source.getAllFieldReferences()){
-
+  protected void handleAliasWorkList() {
+    for (VariableNode source : aliasWorkList) {
+      for (FieldReferenceNode srcFr : source.getAllFieldReferences()) {
+        Field field = srcFr.getField();
+        for (VariableNode target : fieldToBases.get(field)) {
+          if (intersect(source.getPointsToSet(), target.getPointsToSet())) {
+            FieldReferenceNode tgtFr = target.getField(field);
+            if (!aliasEdges.containsKey(srcFr)) {
+              aliasEdges.put(srcFr, new HashSet<>());
+            }
+            if (!aliasEdges.containsKey(tgtFr)) {
+              aliasEdges.put(tgtFr, new HashSet<>());
+            }
+            aliasEdges.get(srcFr).add(tgtFr);
+            aliasEdges.get(tgtFr).add(srcFr);
+            fieldRefWorkList.add(srcFr);
+            fieldRefWorkList.add(tgtFr);
+          }
+        }
       }
     }
   }
 
-  protected void handleFieldRefWorkList(){
-
+  protected void handleFieldRefWorkList() {
+    for (FieldReferenceNode source : fieldRefWorkList) {
+      for (FieldReferenceNode target : aliasEdges.get(source)) {
+        target.getOrCreatePointsToSet().addAll(source.getPointsToSet());
+      }
+    }
+    fieldRefWorkList = new HashSet<>();
+    for (FieldReferenceNode source : aliasEdges.keySet()) {
+      for (VariableNode target : pag.loadLookup(source)) {
+        if (target.getOrCreatePointsToSet().addAll(source.getPointsToSet())) {
+          varNodeWorkList.add(target);
+        }
+      }
+    }
   }
 
-  /**
-   * Propagates new points-to information of AllocationNode source to all its successors.
-   */
-  protected void handleAllocaionNode(AllocationNode source){
+  /** Propagates new points-to information of AllocationNode source to all its successors. */
+  protected void handleAllocationNode(AllocationNode source) {
 
-    Set<VariableNode> targets =  pag.allocLookup(source);
-    for(VariableNode target : targets){
+    Set<VariableNode> targets = pag.allocLookup(source);
+    for (VariableNode target : targets) {
       Set<Node> p2Set = target.getOrCreatePointsToSet();
-      if(p2Set.add(source)){
+      if (p2Set.add(source)) {
         varNodeWorkList.add(target);
       }
     }
@@ -123,29 +143,38 @@ public class AliasPropagator implements Propagator {
   /**
    * Propagates new points-to information of VariableNode source to all its variable node successors
    */
-  protected void handleVarNode(VariableNode source){
-    if(source.getReplacement() != source){
-      throw new RuntimeException("The variableNode " + source + " has been merged to another variable node " + source.getReplacement());
+  protected void handleVarNode(VariableNode source) {
+    if (source.getReplacement() != source) {
+      throw new RuntimeException(
+          "The variableNode "
+              + source
+              + " has been merged to another variable node "
+              + source.getReplacement());
     }
     Set<Node> p2SetOfSource = source.getPointsToSet();
 
-    //Todo: Lack of OnFlyCallGraph Part
+    // Todo: Lack of OnFlyCallGraph Part
 
     Set<VariableNode> varTargets = pag.simpleLookup(source);
-    for(VariableNode varTarget : varTargets){
+    for (VariableNode varTarget : varTargets) {
       Set<Node> p2SetOfTarget = varTarget.getOrCreatePointsToSet();
-      if(p2SetOfTarget.addAll(p2SetOfSource)){
+      if (p2SetOfTarget.addAll(p2SetOfSource)) {
         varNodeWorkList.add(varTarget);
       }
     }
 
-    //todo: how to distinguish q.f_in and q.f_out????
     Set<FieldReferenceNode> fieldTargets = pag.storeLookup(source);
-    for(FieldReferenceNode fieldTarget: fieldTargets){
+    for (FieldReferenceNode fieldTarget : fieldTargets) {
       Set<Node> p2SetOfTarget = fieldTarget.getOrCreatePointsToSet();
-      if(p2SetOfTarget.addAll(p2SetOfSource)){
+      if (p2SetOfTarget.addAll(p2SetOfSource)) {
         fieldRefWorkList.add(fieldTarget);
       }
     }
+  }
+
+  private boolean intersect(Set<Node> set1, Set<Node> set2) {
+    Set<Node> intersection = new HashSet(set1);
+    intersection.retainAll(set2);
+    return intersection.size() > 0;
   }
 }
