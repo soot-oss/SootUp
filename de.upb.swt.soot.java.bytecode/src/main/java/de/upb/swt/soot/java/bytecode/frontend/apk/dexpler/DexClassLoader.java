@@ -10,12 +10,12 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -23,20 +23,21 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  */
 
 import de.upb.swt.soot.core.model.Method;
+import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.MultiDexContainer.DexEntry;
-
-import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Class for loading methods from dex files
  */
 public class DexClassLoader {
+
+  private boolean options_oaat = true;
 
   /**
    * Loads a single method from a dex file
@@ -50,11 +51,15 @@ public class DexClassLoader {
    * @param dexMethodFactory
    *          The factory method for creating dex methods
    */
-  protected void loadMethod(Method method, SootClass declaringClass, DexAnnotation annotations, DexMethod dexMethodFactory) {
+  protected void loadMethod(org.jf.dexlib2.iface.Method method, SootClass declaringClass, DexAnnotation annotations, DexMethod dexMethodFactory) {
     SootMethod sm = dexMethodFactory.makeSootMethod(method);
-    if (declaringClass.declaresMethod(sm.getName(), sm.getParameterTypes(), sm.getReturnType())) {
-      return;
+    Set<? extends SootMethod> declaringClassMethods = declaringClass.getMethods();
+    for (SootMethod sootMethod: declaringClassMethods) {
+      if (sootMethod.getName().equals(sm.getName()) && sootMethod.getReturnType()==sm.getReturnType() && sootMethod.getParameterTypes() == sm.getParameterTypes()) {
+        return;
+      }
     }
+
     declaringClass.addMethod(sm);
     annotations.handleMethodAnnotation(sm, method);
   }
@@ -96,7 +101,7 @@ public class DexClassLoader {
       }
     }
 
-    if (Options.v().oaat() && sc.resolvingLevel() <= SootClass.HIERARCHY) {
+    if (options_oaat && sc.resolvingLevel() <= SootClass.HIERARCHY) {
       return deps;
     }
     DexAnnotation da = createDexAnnotation(sc, deps);
