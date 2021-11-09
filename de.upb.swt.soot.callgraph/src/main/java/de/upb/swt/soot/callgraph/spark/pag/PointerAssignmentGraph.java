@@ -27,6 +27,8 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import de.upb.swt.soot.callgraph.MethodUtil;
 import de.upb.swt.soot.callgraph.model.CallGraph;
+import de.upb.swt.soot.callgraph.model.GraphBasedCallGraph;
+import de.upb.swt.soot.callgraph.model.MutableCallGraph;
 import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
 import de.upb.swt.soot.callgraph.spark.builder.NodeConstants;
 import de.upb.swt.soot.callgraph.spark.builder.SparkOptions;
@@ -96,29 +98,70 @@ public class PointerAssignmentGraph {
   private TypeHierarchy typeHierarchy;
   private boolean somethingMerged = false;
   private SparkOptions sparkOptions;
+  private Collection<MethodSignature> entrypoints;
 
   public PointerAssignmentGraph(
-      View<? extends SootClass> view, CallGraph callGraph, SparkOptions sparkOptions) {
+      View<? extends SootClass> view,
+      CallGraph callGraph,
+      SparkOptions sparkOptions,
+      List<MethodSignature> entrypoints) {
     this.view = view;
-    this.callGraph = callGraph;
+    this.callGraph = sparkOptions.isOnFlyCG() ? new GraphBasedCallGraph(entrypoints) : callGraph;
     this.sparkOptions = sparkOptions;
     if (!sparkOptions.isIgnoreTypes()) {
       this.typeHierarchy = new ViewTypeHierarchy(view);
     }
     this.internalEdges = new InternalEdges(this.sparkOptions, this.typeHierarchy);
+    this.entrypoints = entrypoints;
+    if (this.sparkOptions.isOnFlyCG() && (this.entrypoints == null || this.entrypoints.isEmpty())) {
+      throw new AssertionError("On fly call graph can only be computed if entrypoints are given");
+    }
     build();
   }
 
   private void build() {
-    for (SootClass<?> clazz : view.getClasses()) {
-      for (SootMethod method : clazz.getMethods()) {
-        if (!method.isAbstract() && callGraph.containsMethod(method.getSignature())) {
-          IntraproceduralPointerAssignmentGraph intraPAG =
-              IntraproceduralPointerAssignmentGraph.getInstance(this, method);
-          intraPAG.addToPAG();
+    // TODO if this is OFCG, we start with entry methods and extend the worklist
+    if (!getSparkOptions().isOnFlyCG()) {
+      // rework this to use worklist approach as well? or at least iterate through call graph, the
+      // current implementation considers ALL methods in the applicatin
+      for (SootClass<?> clazz : view.getClasses()) {
+        for (SootMethod method : clazz.getMethods()) {
+          if (!method.isAbstract() && callGraph.containsMethod(method.getSignature())) {
+            IntraproceduralPointerAssignmentGraph intraPAG =
+                IntraproceduralPointerAssignmentGraph.getInstance(this, method);
+            intraPAG.addToPAG();
+          }
         }
       }
+    } else {
+      Deque<MethodSignature> worklist = new ArrayDeque<>();
+      worklist.addAll(this.entrypoints);
+      MethodSignature methodSignature = worklist.poll();
+      while (methodSignature != null) {
+        Optional<? extends SootMethod> optMethod = view.getMethod(methodSignature);
+        if (!optMethod.isPresent()) {
+          // throw error?
+        } else {
+          SootMethod method = optMethod.get();
+          if (!method.isAbstract()) {
+            IntraproceduralPointerAssignmentGraph intraPAG =
+                IntraproceduralPointerAssignmentGraph.getInstance(this, method);
+            intraPAG.addToPAG();
+            // TODO update worklist either on node creation or maybe on call edge thingys?
+            // could maybe iterate over getCallEdges() incrementally
+            getCallEdges(methodSignature)
+                .forEach(
+                    edge -> {
+                      ((MutableCallGraph) callGraph)
+                          .addCall(edge.getKey(), edge.getValue().getMethodSignature());
+                      worklist.add(edge.getValue().getMethodSignature());
+                    });
+          }
+        }
+        methodSignature = worklist.poll();
+      }
     }
+
     handleCallEdges();
   }
 
@@ -142,17 +185,23 @@ public class PointerAssignmentGraph {
     Set<MethodSignature> methodSigs = callGraph.getMethodSignatures();
     Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = new HashSet<>();
     for (MethodSignature caller : methodSigs) {
-      SootMethod method = view.getMethod(caller).orElse(null);
-      if (method != null && method.hasBody()) {
-        for (Stmt s : method.getBody().getStmtGraph().nodes()) {
-          if (s.containsInvokeExpr()) {
-            CalleeMethodSignature callee =
-                new CalleeMethodSignature(
-                    s.getInvokeExpr().getMethodSignature(),
-                    MethodUtil.findCallGraphEdgeType(s.getInvokeExpr()),
-                    s);
-            callEdges.add(new ImmutablePair<>(caller, callee));
-          }
+      callEdges.addAll(getCallEdges(caller));
+    }
+    return callEdges;
+  }
+
+  private Set<Pair<MethodSignature, CalleeMethodSignature>> getCallEdges(MethodSignature caller) {
+    Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = new HashSet<>();
+    SootMethod method = view.getMethod(caller).orElse(null);
+    if (method != null && method.hasBody()) {
+      for (Stmt s : method.getBody().getStmtGraph().nodes()) {
+        if (s.containsInvokeExpr()) {
+          CalleeMethodSignature callee =
+              new CalleeMethodSignature(
+                  s.getInvokeExpr().getMethodSignature(),
+                  MethodUtil.findCallGraphEdgeType(s.getInvokeExpr()),
+                  s);
+          callEdges.add(new ImmutablePair<>(caller, callee));
         }
       }
     }

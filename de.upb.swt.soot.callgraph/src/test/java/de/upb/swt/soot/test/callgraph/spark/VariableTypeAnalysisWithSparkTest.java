@@ -74,7 +74,7 @@ public class VariableTypeAnalysisWithSparkTest
 
     CallGraphAlgorithm algorithm = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
     CallGraph callGraph = algorithm.initialize(Collections.singletonList(mainMethodSignature));
-    Spark spark = new Spark.Builder(view, callGraph).vta(true).build();
+    Spark spark = new Spark.Builder(view, callGraph, Collections.emptyList()).vta(true).build();
     spark.analyze();
     return spark.getCallGraph();
   }

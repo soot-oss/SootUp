@@ -36,8 +36,10 @@ import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.views.View;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Spark implements PointsToAnalysis {
@@ -45,13 +47,19 @@ public class Spark implements PointsToAnalysis {
   private View<? extends SootClass<?>> view;
   private CallGraph callGraph;
   private SparkOptions options;
+  private List<MethodSignature> entrypoints;
 
   private PointerAssignmentGraph pag;
 
-  private Spark(View<? extends SootClass<?>> view, CallGraph callGraph, SparkOptions options) {
+  private Spark(
+      View<? extends SootClass<?>> view,
+      CallGraph callGraph,
+      SparkOptions options,
+      List<MethodSignature> entrypoints) {
     this.view = view;
     this.callGraph = callGraph;
     this.options = options;
+    this.entrypoints = entrypoints;
   }
 
   public void analyze() {
@@ -93,7 +101,7 @@ public class Spark implements PointsToAnalysis {
   }
 
   private void buildPointerAssignmentGraph() {
-    pag = new PointerAssignmentGraph(view, callGraph, options);
+    pag = new PointerAssignmentGraph(view, callGraph, options, entrypoints);
   }
 
   private void collapsePointerAssigmentGraph() {
@@ -197,6 +205,7 @@ public class Spark implements PointsToAnalysis {
 
     private View<? extends SootClass<?>> view;
     private CallGraph callGraph;
+    private List<MethodSignature> entrypoints;
 
     // VTA: Setting VTA to true has the effect of setting:
     // - field-based,
@@ -208,9 +217,11 @@ public class Spark implements PointsToAnalysis {
     // - types-for-sites to true,
     // - causes Spark to use a single points-to set for all variables
 
-    public Builder(View<? extends SootClass<?>> view, CallGraph callGraph) {
+    public Builder(
+        View<? extends SootClass<?>> view, CallGraph callGraph, List<MethodSignature> entrypoints) {
       this.view = view;
       this.callGraph = callGraph;
+      this.entrypoints = entrypoints;
       options = new SparkOptions();
     }
 
@@ -291,7 +302,7 @@ public class Spark implements PointsToAnalysis {
 
     public Spark build() {
       options.validate();
-      return new Spark(view, callGraph, options);
+      return new Spark(view, callGraph, options, entrypoints);
     }
   }
 }

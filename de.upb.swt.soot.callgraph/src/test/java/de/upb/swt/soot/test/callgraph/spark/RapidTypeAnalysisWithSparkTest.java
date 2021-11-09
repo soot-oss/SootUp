@@ -72,7 +72,7 @@ public class RapidTypeAnalysisWithSparkTest extends CallGraphTestBase<RapidTypeA
 
     CallGraphAlgorithm algorithm = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
     CallGraph callGraph = algorithm.initialize(Collections.singletonList(mainMethodSignature));
-    Spark spark = new Spark.Builder(view, callGraph).rta(true).build();
+    Spark spark = new Spark.Builder(view, callGraph, Collections.emptyList()).rta(true).build();
     spark.analyze();
     return spark.getCallGraph();
   }
@@ -81,6 +81,8 @@ public class RapidTypeAnalysisWithSparkTest extends CallGraphTestBase<RapidTypeA
   public void testMiscExample1() {
     /** We expect constructors for B, C and E We expect A.print(), B.print(), C.print() */
     CallGraph cg = loadCallGraph("Misc", "example1.Example");
+
+    // TODO also construct ofcg and test if they are equal
 
     MethodSignature constructorB =
         identifierFactory.getMethodSignature(
