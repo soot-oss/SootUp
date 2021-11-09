@@ -6,11 +6,8 @@ import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 
-import de.upb.swt.soot.callgraph.algorithm.CallGraphAlgorithm;
-import de.upb.swt.soot.callgraph.algorithm.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.spark.Spark;
-import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -69,9 +66,16 @@ public class OnFlyCallGraphTest extends SparkTestBase {
         (Optional<SootMethod>) sc.getMethod(mainMethodSignature.getSubSignature());
     assertTrue(mainMethodSignature + " not found in classloader", m.isPresent());
 
-    Spark spark = new Spark.Builder(view, null, Collections.singletonList(mainMethodSignature)).onFlyCFG(true).build();
+    Spark spark =
+        new Spark.Builder(view, null, Collections.singletonList(mainMethodSignature))
+            .onFlyCFG(true)
+            .build();
     spark.analyze();
-    m.get().getBody().getLocals().forEach(local -> System.out.println("Local " + local + " -> " + spark.getPointsToSet(local)));
+    m.get()
+        .getBody()
+        .getLocals()
+        .forEach(
+            local -> System.out.println("Local " + local + " -> " + spark.getPointsToSet(local)));
     System.out.println(m.get().getBody().getStmts());
 
     CallGraph cg = spark.getCallGraph();
@@ -81,6 +85,7 @@ public class OnFlyCallGraphTest extends SparkTestBase {
     assertNotNull(cg);
     return cg;
   }
+
   @Test
   public void testSingleMethod() {
     CallGraph cg = loadCallGraph("Misc", "example.SingleMethod");
@@ -90,9 +95,7 @@ public class OnFlyCallGraphTest extends SparkTestBase {
   }
 
   @Test
-  public void testAddClass() {
-
-  }
+  public void testAddClass() {}
 
   @Test
   public void testRecursiveCall() {

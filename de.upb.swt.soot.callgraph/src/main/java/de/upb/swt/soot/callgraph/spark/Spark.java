@@ -43,7 +43,6 @@ import de.upb.swt.soot.core.views.View;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.commons.lang3.mutable.Mutable;
 
 public class Spark implements PointsToAnalysis {
 
@@ -63,7 +62,8 @@ public class Spark implements PointsToAnalysis {
     if (options.isOnFlyCG()) {
       this.callGraph = new GraphBasedCallGraph(entrypoints);
       // TODO move this to constructor of graphbasedcallgraph?
-      entrypoints.forEach(methodSignature -> ((MutableCallGraph) this.callGraph).addMethod(methodSignature));
+      entrypoints.forEach(
+          methodSignature -> ((MutableCallGraph) this.callGraph).addMethod(methodSignature));
     } else {
       this.callGraph = callGraph;
     }

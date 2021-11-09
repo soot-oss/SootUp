@@ -27,7 +27,6 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import de.upb.swt.soot.callgraph.MethodUtil;
 import de.upb.swt.soot.callgraph.model.CallGraph;
-import de.upb.swt.soot.callgraph.model.GraphBasedCallGraph;
 import de.upb.swt.soot.callgraph.model.MutableCallGraph;
 import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
 import de.upb.swt.soot.callgraph.spark.builder.NodeConstants;
@@ -100,9 +99,7 @@ public class PointerAssignmentGraph {
   private SparkOptions sparkOptions;
 
   public PointerAssignmentGraph(
-      View<? extends SootClass> view,
-      CallGraph callGraph,
-      SparkOptions sparkOptions) {
+      View<? extends SootClass> view, CallGraph callGraph, SparkOptions sparkOptions) {
     this.view = view;
     this.callGraph = callGraph;
     this.sparkOptions = sparkOptions;
@@ -110,8 +107,8 @@ public class PointerAssignmentGraph {
       this.typeHierarchy = new ViewTypeHierarchy(view);
     }
     this.internalEdges = new InternalEdges(this.sparkOptions, this.typeHierarchy);
-    if (this.sparkOptions.isOnFlyCG() && (this.callGraph == null || this.callGraph.getEntryPoints()
-        .isEmpty())) {
+    if (this.sparkOptions.isOnFlyCG()
+        && (this.callGraph == null || this.callGraph.getEntryPoints().isEmpty())) {
       throw new AssertionError("On fly call graph can only be computed if entrypoints are given");
     }
     build();
@@ -148,7 +145,8 @@ public class PointerAssignmentGraph {
             intraPAG.addToPAG();
             // TODO update worklist either on node creation or maybe on call edge thingys?
             // could maybe iterate over getCallEdges() incrementally
-            // TODO problem: we are not precise here, as the pointsToSets are not yet collapsed/refined/propagated -> refine in refineCallgraph?
+            // TODO problem: we are not precise here, as the pointsToSets are not yet
+            // collapsed/refined/propagated -> refine in refineCallgraph?
             System.out.println("edges -> " + getCallEdges());
             getCallEdges(methodSignature)
                 .forEach(
@@ -156,10 +154,12 @@ public class PointerAssignmentGraph {
                       System.out.println("edge" + edge);
                       if (!callGraph.containsMethod(edge.getValue().getMethodSignature())) {
                         // add method to cg
-                        ((MutableCallGraph) callGraph).addMethod(edge.getValue().getMethodSignature());
+                        ((MutableCallGraph) callGraph)
+                            .addMethod(edge.getValue().getMethodSignature());
                       }
 
-                      if (!callGraph.containsCall(edge.getKey(), edge.getValue().getMethodSignature())) {
+                      if (!callGraph.containsCall(
+                          edge.getKey(), edge.getValue().getMethodSignature())) {
                         ((MutableCallGraph) callGraph)
                             .addCall(edge.getKey(), edge.getValue().getMethodSignature());
                         worklist.add(edge.getValue().getMethodSignature());
