@@ -35,6 +35,7 @@ public class AliasPropagator implements Propagator {
   private PointerAssignmentGraph pag;
   private Map<Field, Set<VariableNode>> fieldToBases = new HashMap<>();
   private Map<FieldReferenceNode, Set<FieldReferenceNode>> aliasEdges = new HashMap();
+  private Map<FieldReferenceNode, Set<Node>> loadSets = new HashMap<>();
 
   private final Set<VariableNode> varNodeWorkList = new HashSet<>();
   private Set<VariableNode> aliasWorkList = new HashSet<>();
