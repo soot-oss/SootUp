@@ -98,22 +98,20 @@ public class PointerAssignmentGraph {
   private TypeHierarchy typeHierarchy;
   private boolean somethingMerged = false;
   private SparkOptions sparkOptions;
-  private Collection<MethodSignature> entrypoints;
 
   public PointerAssignmentGraph(
       View<? extends SootClass> view,
       CallGraph callGraph,
-      SparkOptions sparkOptions,
-      List<MethodSignature> entrypoints) {
+      SparkOptions sparkOptions) {
     this.view = view;
-    this.callGraph = sparkOptions.isOnFlyCG() ? new GraphBasedCallGraph(entrypoints) : callGraph;
+    this.callGraph = callGraph;
     this.sparkOptions = sparkOptions;
     if (!sparkOptions.isIgnoreTypes()) {
       this.typeHierarchy = new ViewTypeHierarchy(view);
     }
     this.internalEdges = new InternalEdges(this.sparkOptions, this.typeHierarchy);
-    this.entrypoints = entrypoints;
-    if (this.sparkOptions.isOnFlyCG() && (this.entrypoints == null || this.entrypoints.isEmpty())) {
+    if (this.sparkOptions.isOnFlyCG() && (this.callGraph == null || this.callGraph.getEntryPoints()
+        .isEmpty())) {
       throw new AssertionError("On fly call graph can only be computed if entrypoints are given");
     }
     build();
@@ -134,33 +132,46 @@ public class PointerAssignmentGraph {
         }
       }
     } else {
-      Deque<MethodSignature> worklist = new ArrayDeque<>();
-      worklist.addAll(this.entrypoints);
+      Deque<MethodSignature> worklist = new ArrayDeque<>(this.callGraph.getEntryPoints());
       MethodSignature methodSignature = worklist.poll();
       while (methodSignature != null) {
         Optional<? extends SootMethod> optMethod = view.getMethod(methodSignature);
         if (!optMethod.isPresent()) {
+          System.out.println("method not there?");
           // throw error?
         } else {
           SootMethod method = optMethod.get();
+          System.out.println("working on " + method);
           if (!method.isAbstract()) {
             IntraproceduralPointerAssignmentGraph intraPAG =
                 IntraproceduralPointerAssignmentGraph.getInstance(this, method);
             intraPAG.addToPAG();
             // TODO update worklist either on node creation or maybe on call edge thingys?
             // could maybe iterate over getCallEdges() incrementally
+            // TODO problem: we are not precise here, as the pointsToSets are not yet collapsed/refined/propagated -> refine in refineCallgraph?
+            System.out.println("edges -> " + getCallEdges());
             getCallEdges(methodSignature)
                 .forEach(
                     edge -> {
-                      ((MutableCallGraph) callGraph)
-                          .addCall(edge.getKey(), edge.getValue().getMethodSignature());
-                      worklist.add(edge.getValue().getMethodSignature());
+                      System.out.println("edge" + edge);
+                      if (!callGraph.containsMethod(edge.getValue().getMethodSignature())) {
+                        // add method to cg
+                        ((MutableCallGraph) callGraph).addMethod(edge.getValue().getMethodSignature());
+                      }
+
+                      if (!callGraph.containsCall(edge.getKey(), edge.getValue().getMethodSignature())) {
+                        ((MutableCallGraph) callGraph)
+                            .addCall(edge.getKey(), edge.getValue().getMethodSignature());
+                        worklist.add(edge.getValue().getMethodSignature());
+                      }
                     });
           }
         }
         methodSignature = worklist.poll();
       }
     }
+
+    System.out.println("edges -> " + getCallEdges());
 
     handleCallEdges();
   }
@@ -181,7 +192,7 @@ public class PointerAssignmentGraph {
     }
   }
 
-  private Set<Pair<MethodSignature, CalleeMethodSignature>> getCallEdges() {
+  public Set<Pair<MethodSignature, CalleeMethodSignature>> getCallEdges() {
     Set<MethodSignature> methodSigs = callGraph.getMethodSignatures();
     Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = new HashSet<>();
     for (MethodSignature caller : methodSigs) {

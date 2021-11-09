@@ -54,4 +54,13 @@ public class CalleeMethodSignature {
   public Stmt getSourceStmt() {
     return sourceStmt;
   }
+
+  @Override
+  public String toString() {
+    return "CalleeMethodSignature{" +
+        "edgeType=" + edgeType +
+        ", methodSignature=" + methodSignature +
+        ", sourceStmt=" + sourceStmt +
+        '}';
+  }
 }

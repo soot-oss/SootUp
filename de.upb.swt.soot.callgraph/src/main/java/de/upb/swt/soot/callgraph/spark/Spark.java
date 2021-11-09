@@ -25,6 +25,8 @@ package de.upb.swt.soot.callgraph.spark;
 import com.google.common.collect.Sets;
 import de.upb.swt.soot.callgraph.algorithm.CallGraphAlgorithm;
 import de.upb.swt.soot.callgraph.model.CallGraph;
+import de.upb.swt.soot.callgraph.model.GraphBasedCallGraph;
+import de.upb.swt.soot.callgraph.model.MutableCallGraph;
 import de.upb.swt.soot.callgraph.spark.builder.PropagatorEnum;
 import de.upb.swt.soot.callgraph.spark.builder.SparkOptions;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
@@ -41,6 +43,7 @@ import de.upb.swt.soot.core.views.View;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.lang3.mutable.Mutable;
 
 public class Spark implements PointsToAnalysis {
 
@@ -57,7 +60,13 @@ public class Spark implements PointsToAnalysis {
       SparkOptions options,
       List<MethodSignature> entrypoints) {
     this.view = view;
-    this.callGraph = callGraph;
+    if (options.isOnFlyCG()) {
+      this.callGraph = new GraphBasedCallGraph(entrypoints);
+      // TODO move this to constructor of graphbasedcallgraph?
+      entrypoints.forEach(methodSignature -> ((MutableCallGraph) this.callGraph).addMethod(methodSignature));
+    } else {
+      this.callGraph = callGraph;
+    }
     this.options = options;
     this.entrypoints = entrypoints;
   }
@@ -73,6 +82,8 @@ public class Spark implements PointsToAnalysis {
     propagatePointerAssignmentGraph();
 
     refineCallGraph();
+
+    System.out.println("final edges ->  " + pag.getCallEdges());
   }
 
   /**
@@ -101,7 +112,8 @@ public class Spark implements PointsToAnalysis {
   }
 
   private void buildPointerAssignmentGraph() {
-    pag = new PointerAssignmentGraph(view, callGraph, options, entrypoints);
+    System.out.println(entrypoints);
+    pag = new PointerAssignmentGraph(view, callGraph, options);
   }
 
   private void collapsePointerAssigmentGraph() {
@@ -302,6 +314,7 @@ public class Spark implements PointsToAnalysis {
 
     public Spark build() {
       options.validate();
+      System.out.println(entrypoints);
       return new Spark(view, callGraph, options, entrypoints);
     }
   }
