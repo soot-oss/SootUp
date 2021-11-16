@@ -36,10 +36,10 @@ public class BasicSetup {
 
     // Specify the language of the JavaProject. This is especially relevant for Multi-release jars,
     // where classes are loaded depending on the language level of the analysis
-    JavaLanguage language = new JavaLanguage(8);
+    Language language = new JavaLanguage(8);
 
     // Create a new JavaProject based on the input location
-    JavaProject project = JavaProject.builder(language).addInputLocation(inputLocation).build();
+    Project project = JavaProject.builder(language).addInputLocation(inputLocation).build();
 
     // Create a signature for the class we want to analyze
     ClassType classType = project.getIdentifierFactory().getClassType("HelloWorld");
@@ -52,7 +52,7 @@ public class BasicSetup {
                 "main", classType, "void", Collections.singletonList("java.lang.String[]"));
 
     // Create a view for project, which allows us to retrieve classes
-    JavaView view = project.createOnDemandView();
+    View view = project.createOnDemandView();
 
     // Assert that class is present
     assertTrue(view.getClass(classType).isPresent());
