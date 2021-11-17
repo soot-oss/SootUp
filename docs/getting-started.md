@@ -35,10 +35,18 @@ Before you use Soot as a library, you need understand the following data structu
 
 - `StmtGraph`: represents the control flow graph of a method body in Jimple statements.
 
-## Add Soot as Library Dependency
+## Add Soot as Library Dependency to Your Project
 1. Maven
+
+TODO
+
 2. Gradle
+
+TODO
+
 3. Eclipse
+
+TODO
 
 ## Basic Project Setup
 1. Create a project to analyze Java bytecode. 
@@ -69,17 +77,17 @@ Project project = new JimpleProject(inputLocation);
 ~~~
 
 ## Create Different Views
-1. Create a full view of all code found in given analysis input location. 
-
-   TODO
-
-2. Create a on-demand view. 
+1. Create a full view of all classes found in given analysis input location. 
+~~~
+  project.createFullView();
+~~~  
+2. Create a on-demand view. An on-demand view does not load all classes into the view, but only classes that are specified and their transitive closure. 
 
    TODO
 
 3. Create a view based on a defined scope. 
-
    TODO
+
 ## Perform an Intra-procedural Analysis
 
 ## Construct Call Graph
