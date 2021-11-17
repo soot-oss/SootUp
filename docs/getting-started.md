@@ -35,19 +35,56 @@ Before you use Soot as a library, you need understand the following data structu
 
 - `StmtGraph`: represents the control flow graph of a method body in Jimple statements.
 
+## Add Soot as Library Dependency
+1. Maven
+2. Gradle
+3. Eclipse
 
 ## Basic Project Setup
 1. Create a project to analyze Java bytecode. 
-   TODO
+~~~
+Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");
+AnalysisInputLocation<JavaSootClass> inputLocation = PathBasedAnalysisInputLocation.createForClassContainer(pathToBinary;
+Language language = new JavaLanguage(8);
+Project project = JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
+~~~
+
 2. Create a project to analyze Java source code.
-   TODO
+~~~
+Path pathToSource = Paths.get("src/test/resources/BasicSetup/source");
+AnalysisInputLocation<JavaSootClass> inputLocation = new JavaSourcePathAnalysisInputLocation(pathToSource.toString());
+Language language = new JavaLanguage(8);
+Project project = JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
+~~~
+
 3. Create a project to analyze Android APK. 
+
    TODO
+
 4. Create a project to analyze Jimple code.
+~~~
+Path pathToJimple = Paths.get("src/test/resources/BasicSetup/jimple");
+AnalysisInputLocation<JavaSootClass> inputLocation = new JimpleAnalysisInputLocation(pathToJimple);
+Project project = new JimpleProject(inputLocation);
+~~~
+
+## Create Different Views
+1. Create a full view of all code found in given analysis input location. 
+
    TODO
-## Perform an Intra-procedurl Analysis
 
+2. Create a on-demand view. 
 
+   TODO
+
+3. Create a view based on a defined scope. 
+
+   TODO
+## Perform an Intra-procedural Analysis
+
+## Construct Call Graph
+
+## Perform an Inter-procedural Analysis
 
 ```
 {{ include('basicSetup/BasicSetup.java') }}

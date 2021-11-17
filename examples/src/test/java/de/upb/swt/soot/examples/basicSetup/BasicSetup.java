@@ -19,9 +19,13 @@ import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.JavaSootClassSource;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
-import de.upb.swt.soot.java.core.views.JavaView;
+import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
+import de.upb.swt.soot.jimple.parser.JimpleAnalysisInputLocation;
+import de.upb.swt.soot.jimple.parser.JimpleProject;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -30,19 +34,38 @@ import org.junit.experimental.categories.Category;
 public class BasicSetup {
 
   @Test
-  public void test() {
+  public void createSourceCodeProject() {
+    Path pathToSource = Paths.get("src/test/resources/BasicSetup/source");
+    AnalysisInputLocation<JavaSootClass> inputLocation =
+        new JavaSourcePathAnalysisInputLocation(pathToSource.toString());
+    Language language = new JavaLanguage(8);
+    Project project =
+        JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
+  }
+
+  @Ignore
+  public void createJimpleProject() {
+    Path pathToJimple = Paths.get("src/test/resources/BasicSetup/jimple");
+    AnalysisInputLocation<JavaSootClass> inputLocation =
+        new JimpleAnalysisInputLocation(pathToJimple);
+    Project project = new JimpleProject(inputLocation);
+  }
+
+  @Test
+  public void createByteCodeProject() {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
+    Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");
     AnalysisInputLocation<JavaSootClass> inputLocation =
-        PathBasedAnalysisInputLocation.createForClassContainer(
-            Paths.get("src/test/resources/BasicSetup/binary"));
+        PathBasedAnalysisInputLocation.createForClassContainer(pathToBinary);
 
     // Specify the language of the JavaProject. This is especially relevant for Multi-release jars,
     // where classes are loaded depending on the language level of the analysis
     Language language = new JavaLanguage(8);
 
     // Create a new JavaProject based on the input location
-    Project project = JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
+    Project project =
+        JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
 
     // Create a signature for the class we want to analyze
     ClassType classType = project.getIdentifierFactory().getClassType("HelloWorld");
@@ -61,7 +84,8 @@ public class BasicSetup {
     assertTrue(view.getClass(classType).isPresent());
 
     // Retrieve class
-    SootClass<JavaSootClassSource> sootClass = (SootClass<JavaSootClassSource>) view.getClass(classType).get();
+    SootClass<JavaSootClassSource> sootClass =
+        (SootClass<JavaSootClassSource>) view.getClass(classType).get();
 
     // Retrieve method
     view.getMethod(methodSignature);
