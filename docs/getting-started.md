@@ -67,7 +67,7 @@ Project project = JavaProject.builder((JavaLanguage) language).addInputLocation(
 
 3. Create a project to analyze Android APK. 
 
-   TODO
+   TODO: add code
 
 4. Create a project to analyze Jimple code.
 ~~~
@@ -83,10 +83,10 @@ Project project = new JimpleProject(inputLocation);
 ~~~  
 2. Create a on-demand view. An on-demand view does not load all classes into the view, but only classes that are specified and their transitive closure. 
 
-   TODO
+   TODO: add code 
 
 3. Create a view based on a defined scope. 
-   TODO
+   TODO: add code
 
 ## Perform an Intra-procedural Analysis
 
