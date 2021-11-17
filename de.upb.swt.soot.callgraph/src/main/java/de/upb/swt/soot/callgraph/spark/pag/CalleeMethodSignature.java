@@ -21,6 +21,11 @@ package de.upb.swt.soot.callgraph.spark.pag;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.stmt.JInvokeStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 
@@ -29,6 +34,7 @@ public class CalleeMethodSignature {
 
   private CallGraphEdgeType edgeType;
   private MethodSignature methodSignature;
+  private Local baseObject = null;
 
   /**
    * The unit at which the call occurs; may be null for calls not occurring at a specific statement
@@ -41,6 +47,26 @@ public class CalleeMethodSignature {
     this.methodSignature = methodSignature;
     this.edgeType = edgeType;
     this.sourceStmt = sourceStmt;
+    if (sourceStmt instanceof JInvokeStmt) {
+      JInvokeStmt invokeStmt = (JInvokeStmt) sourceStmt;
+      AbstractInvokeExpr abstractInvokeExpr = invokeStmt.getInvokeExpr();
+      // todo others
+      if (abstractInvokeExpr instanceof AbstractInstanceInvokeExpr) {
+        AbstractInstanceInvokeExpr abstractInstanceInvokeExpr =
+            (AbstractInstanceInvokeExpr) abstractInvokeExpr;
+
+        baseObject = abstractInstanceInvokeExpr.getBase();
+      } else if (abstractInvokeExpr instanceof JStaticInvokeExpr) {
+        JStaticInvokeExpr jStaticInvokeExpr = (JStaticInvokeExpr) abstractInvokeExpr;
+        // baseObject = (Local) jStaticInvokeExpr.getArg(0);
+      }
+    }
+  }
+
+  public Local getBaseObject() {
+    System.out.println("base object is " + baseObject);
+    System.out.println(sourceStmt.getInvokeExpr());
+    return baseObject;
   }
 
   public MethodSignature getMethodSignature() {

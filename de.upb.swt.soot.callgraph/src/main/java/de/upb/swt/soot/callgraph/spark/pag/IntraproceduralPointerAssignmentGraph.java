@@ -39,6 +39,11 @@ public class IntraproceduralPointerAssignmentGraph {
   private final PointerAssignmentGraph pag;
   private final SootMethod method;
   private final MethodNodeFactory nodeFactory;
+
+  public Queue<Pair<Node, Node>> getInternalEdges() {
+    return internalEdges;
+  }
+
   private final Queue<Pair<Node, Node>> internalEdges =
       new ArrayDeque<>(); // a (target) = b (source)
   private final Queue<Pair<Node, Node>> inEdges = new ArrayDeque<>();
