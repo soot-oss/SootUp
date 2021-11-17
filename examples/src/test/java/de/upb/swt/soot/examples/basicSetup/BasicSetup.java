@@ -3,6 +3,8 @@ package de.upb.swt.soot.examples.basicSetup;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.Language;
+import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.common.expr.JVirtualInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.JInvokeStmt;
@@ -10,6 +12,7 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.JavaSootClass;
@@ -39,7 +42,7 @@ public class BasicSetup {
     Language language = new JavaLanguage(8);
 
     // Create a new JavaProject based on the input location
-    Project project = JavaProject.builder(language).addInputLocation(inputLocation).build();
+    Project project = JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
 
     // Create a signature for the class we want to analyze
     ClassType classType = project.getIdentifierFactory().getClassType("HelloWorld");
@@ -58,7 +61,7 @@ public class BasicSetup {
     assertTrue(view.getClass(classType).isPresent());
 
     // Retrieve class
-    SootClass<JavaSootClassSource> sootClass = view.getClass(classType).get();
+    SootClass<JavaSootClassSource> sootClass = (SootClass<JavaSootClassSource>) view.getClass(classType).get();
 
     // Retrieve method
     view.getMethod(methodSignature);
