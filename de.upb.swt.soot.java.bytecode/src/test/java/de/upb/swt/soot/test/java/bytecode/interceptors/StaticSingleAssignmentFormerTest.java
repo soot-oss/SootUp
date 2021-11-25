@@ -11,7 +11,7 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import de.upb.swt.soot.java.bytecode.interceptors.StaticSingleAssigmentFormer;
+import de.upb.swt.soot.java.bytecode.interceptors.StaticSingleAssignmentFormer;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -76,7 +76,7 @@ public class StaticSingleAssignmentFormerTest {
 
   @Test
   public void testSSA() {
-    StaticSingleAssigmentFormer ssa = new StaticSingleAssigmentFormer();
+    StaticSingleAssignmentFormer ssa = new StaticSingleAssignmentFormer();
     Body.BodyBuilder builder = new Body.BodyBuilder(createBody(), Collections.emptySet());
     ssa.interceptBody(builder);
 
@@ -126,7 +126,7 @@ public class StaticSingleAssignmentFormerTest {
 
   @Test
   public void testTrapedSSA() {
-    StaticSingleAssigmentFormer ssa = new StaticSingleAssigmentFormer();
+    StaticSingleAssignmentFormer ssa = new StaticSingleAssignmentFormer();
     Body.BodyBuilder builder = new Body.BodyBuilder(createTrapedBody(), Collections.emptySet());
 
     ssa.interceptBody(builder);

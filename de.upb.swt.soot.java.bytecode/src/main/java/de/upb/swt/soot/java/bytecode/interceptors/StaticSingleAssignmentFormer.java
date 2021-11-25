@@ -46,7 +46,7 @@ import javax.annotation.Nonnull;
  * @see <a
  *     href="https://en.wikipedia.org/wiki/Static_single_assignment_form">https://en.wikipedia.org/wiki/Static_single_assignment_form</a>
  */
-public class StaticSingleAssigmentFormer implements BodyInterceptor {
+public class StaticSingleAssignmentFormer implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
@@ -89,7 +89,7 @@ public class StaticSingleAssigmentFormer implements BodyInterceptor {
     // key: Block which contains phiStmts. Values : a set of phiStmts which contained by
     // corresponding Block
     Map<Block, Set<Stmt>> blockToPhiStmts =
-        decideBlockToPhiStmts(dominanceFinder, blockToDefs, localToBlocks);
+        decideBlockToPhiStmts(builder, dominanceFinder, blockToDefs, localToBlocks);
 
     // delete meaningless phiStmts and add other phiStmts into blockGraph
     addPhiStmts(blockToPhiStmts, blockGraph, blockToDefs);
@@ -203,6 +203,7 @@ public class StaticSingleAssigmentFormer implements BodyInterceptor {
    *     corresponding block
    */
   private Map<Block, Set<Stmt>> decideBlockToPhiStmts(
+      Body.BodyBuilder builder,
       DominanceFinder dominanceFinder,
       Map<Block, Set<Local>> blockToDefs,
       Map<Local, Set<Block>> localToBlocks) {
@@ -210,7 +211,7 @@ public class StaticSingleAssigmentFormer implements BodyInterceptor {
     Map<Block, Set<Local>> blockToPhiLocals = new HashMap<>();
     Map<Local, Set<Block>> localToPhiBlocks = new HashMap<>();
 
-    for (Local local : localToBlocks.keySet()) {
+    for (Local local : builder.getLocals()) {
       localToPhiBlocks.put(local, new HashSet<>());
       Deque<Block> blocks = new ArrayDeque<>(localToBlocks.get(local));
       while (!blocks.isEmpty()) {
@@ -347,7 +348,7 @@ public class StaticSingleAssigmentFormer implements BodyInterceptor {
         return oriLocal;
       }
     }
-    throw new RuntimeException(local.toString() + " has no original local!");
+    throw new RuntimeException(local + " has no original local!");
   }
 
   private Stmt addNewArgToPhi(Stmt phiStmt, Local arg, Block block) {
