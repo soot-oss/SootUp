@@ -32,7 +32,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   protected abstract T createAlgorithm(JavaView view, TypeHierarchy typeHierarchy);
 
-  //private static Map<String, JavaView> viewToClassPath = new HashMap<>();
+  // private static Map<String, JavaView> viewToClassPath = new HashMap<>();
 
   private JavaView createViewForClassPath(String classPath) {
     JavaProject javaProject =
@@ -53,7 +53,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     String classPath = "src/test/resources/callgraph/" + testDirectory;
 
-    //JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
+    // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
     JavaView view = createViewForClassPath(classPath);
 
     mainClassSignature = identifierFactory.getClassType(className);
