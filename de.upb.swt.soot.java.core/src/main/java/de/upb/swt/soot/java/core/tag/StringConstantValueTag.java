@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.jimple.tag;
+package de.upb.swt.soot.java.core.tag;
 
 /*-
  * #%L
@@ -24,6 +24,7 @@ package de.upb.swt.soot.core.jimple.tag;
 
 
 import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +60,7 @@ public class StringConstantValueTag extends ConstantValueTag {
 
   @Override
   public StringConstant getConstant() {
-    return StringConstant.v(value);
+    return new StringConstant(value, JavaIdentifierFactory.getInstance().getClassType("java.lang.String"));
   }
 
   @Override

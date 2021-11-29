@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.jimple.tag;
+package de.upb.swt.soot.java.core.tag;
 
 /*-
  * #%L
@@ -22,43 +22,34 @@ package de.upb.swt.soot.core.jimple.tag;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
 
-public class FloatConstantValueTag extends ConstantValueTag {
+import de.upb.swt.soot.core.jimple.common.constant.Constant;
 
-  public static final String NAME = "FloatConstantValueTag";
+import java.util.Arrays;
 
-  private final float value;
+public abstract class ConstantValueTag implements Tag {
 
-  public FloatConstantValueTag(float value) {
-    super(null);
-    this.value = value;
-  }
+  protected final byte[] bytes; // encoded constant
 
-  public float getFloatValue() {
-    return value;
+  protected ConstantValueTag(byte[] bytes) {
+    this.bytes = bytes;
   }
 
   @Override
-  public String getName() {
-    return NAME;
+  public byte[] getValue() {
+    return bytes;
   }
 
-  @Override
-  public String toString() {
-    return "ConstantValue: " + Float.toString(value);
-  }
+  public abstract Constant getConstant();
 
   @Override
-  public FloatConstant getConstant() {
-    return FloatConstant.getInstance(value);
-  }
+  public abstract String toString();
 
   @Override
   public int hashCode() {
     final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + Float.floatToIntBits(value);
+    int result = 1;
+    result = prime * result + Arrays.hashCode(bytes);
     return result;
   }
 
@@ -67,13 +58,10 @@ public class FloatConstantValueTag extends ConstantValueTag {
     if (this == obj) {
       return true;
     }
-    if (!super.equals(obj)) {
+    if (obj == null || this.getClass() != obj.getClass()) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
-    FloatConstantValueTag other = (FloatConstantValueTag) obj;
-    return Float.floatToIntBits(this.value) == Float.floatToIntBits(other.value);
+    ConstantValueTag other = (ConstantValueTag) obj;
+    return Arrays.equals(bytes, other.bytes);
   }
 }

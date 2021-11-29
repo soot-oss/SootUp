@@ -22,13 +22,17 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler.typing;
  * #L%
  */
 
-import soot.*;
-import soot.jimple.*;
-import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
-import soot.jimple.toolkits.scalar.NopEliminator;
-import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
-import soot.toolkits.scalar.LocalDefs;
-import soot.toolkits.scalar.UnusedLocalEliminator;
+import de.upb.swt.soot.core.analysis.LocalDefs;
+import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.java.bytecode.interceptors.DeadAssignmentEliminator;
+import de.upb.swt.soot.java.bytecode.interceptors.NopEliminator;
+import de.upb.swt.soot.java.bytecode.interceptors.UnreachableCodeEliminator;
+import de.upb.swt.soot.java.bytecode.interceptors.UnusedLocalEliminator;
+import javafx.scene.Scene;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,12 +41,12 @@ import java.util.Set;
 
 public class Validate {
 
-  public static void validateArrays(Body b) {
+  public static void validateArrays(Body.BodyBuilder bodyBuilder) {
 
     Set<DefinitionStmt> definitions = new HashSet<DefinitionStmt>();
     Set<Unit> unitWithArrayRef = new HashSet<Unit>();
 
-    for (Unit u : b.getUnits()) {
+    for (Unit u : bodyBuilder.getUnits()) {
       if (u instanceof DefinitionStmt) {
         DefinitionStmt s = (DefinitionStmt) u;
         definitions.add(s);
@@ -56,7 +60,7 @@ public class Validate {
       }
     }
 
-    final LocalDefs localDefs = G.v().soot_toolkits_scalar_LocalDefsFactory().newLocalDefs(b, true);
+    final LocalDefs localDefs = G.v().soot_toolkits_scalar_LocalDefsFactory().newLocalDefs(bodyBuilder, true);
 
     Set<Unit> toReplace = new HashSet<Unit>();
 
@@ -177,7 +181,7 @@ public class Validate {
       // new object
       RefType throwableType = RefType.v("java.lang.Throwable");
       Local ttt = Jimple.v().newLocal("ttt_" + ++i, throwableType);
-      b.getLocals().add(ttt);
+      bodyBuilder.getLocals().add(ttt);
       Value r = Jimple.v().newNewExpr(throwableType);
       Unit initLocalUnit = Jimple.v().newAssignStmt(ttt, r);
 
@@ -195,16 +199,16 @@ public class Validate {
       Unit newUnit = Jimple.v().newThrowStmt(ttt);
 
       // change instruction in body
-      b.getUnits().swapWith(u, newUnit);
-      b.getUnits().insertBefore(initMethod, newUnit);
-      b.getUnits().insertBefore(initLocalUnit, initMethod);
+      bodyBuilder.getUnits().swapWith(u, newUnit);
+      bodyBuilder.getUnits().insertBefore(initMethod, newUnit);
+      bodyBuilder.getUnits().insertBefore(initLocalUnit, initMethod);
       // Exception a = throw new Exception();
     }
 
-    DeadAssignmentEliminator.v().transform(b);
-    UnusedLocalEliminator.v().transform(b);
-    NopEliminator.v().transform(b);
-    UnreachableCodeEliminator.v().transform(b);
+    DeadAssignmentEliminator.v().transform(bodyBuilder);
+    UnusedLocalEliminator.v().transform(bodyBuilder);
+    NopEliminator.v().transform(bodyBuilder);
+    UnreachableCodeEliminator.v().transform(bodyBuilder);
 
   }
 

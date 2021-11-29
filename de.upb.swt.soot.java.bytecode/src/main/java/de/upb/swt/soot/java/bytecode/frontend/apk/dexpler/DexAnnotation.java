@@ -23,11 +23,14 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  */
 
 import de.upb.swt.soot.core.jimple.tag.Host;
+import de.upb.swt.soot.core.jimple.tag.InnerClassAttribute;
+import de.upb.swt.soot.core.jimple.tag.InnerClassTag;
 import de.upb.swt.soot.core.jimple.tag.Tag;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import org.jf.dexlib2.AnnotationVisibility;
 import org.jf.dexlib2.iface.*;
 import org.jf.dexlib2.iface.reference.FieldReference;
@@ -49,14 +52,14 @@ public class DexAnnotation {
 
   private static final Logger logger = LoggerFactory.getLogger(DexAnnotation.class);
 
-  public static final String JAVA_DEPRECATED = "java.lang.Deprecated";
-  public static final String DALVIK_ANNOTATION_THROWS = "dalvik.annotation.Throws";
-  public static final String DALVIK_ANNOTATION_SIGNATURE = "dalvik.annotation.Signature";
-  public static final String DALVIK_ANNOTATION_MEMBERCLASSES = "dalvik.annotation.MemberClasses";
-  public static final String DALVIK_ANNOTATION_INNERCLASS = "dalvik.annotation.InnerClass";
-  public static final String DALVIK_ANNOTATION_ENCLOSINGMETHOD = "dalvik.annotation.EnclosingMethod";
-  public static final String DALVIK_ANNOTATION_ENCLOSINGCLASS = "dalvik.annotation.EnclosingClass";
-  public static final String DALVIK_ANNOTATION_DEFAULT = "dalvik.annotation.AnnotationDefault";
+  public static final ReferenceType JAVA_DEPRECATED = JavaIdentifierFactory.getInstance().getClassType("java.lang.Deprecated");
+  public static final ReferenceType DALVIK_ANNOTATION_THROWS = JavaIdentifierFactory.getInstance().getClassType("dalvik.annotation.Throws");
+  public static final ReferenceType DALVIK_ANNOTATION_SIGNATURE = JavaIdentifierFactory.getInstance().getClassType("dalvik.annotation.Signature");
+  public static final ReferenceType DALVIK_ANNOTATION_MEMBERCLASSES = JavaIdentifierFactory.getInstance().getClassType("dalvik.annotation.MemberClasses");
+  public static final ReferenceType DALVIK_ANNOTATION_INNERCLASS = JavaIdentifierFactory.getInstance().getClassType("dalvik.annotation.InnerClass");
+  public static final ReferenceType DALVIK_ANNOTATION_ENCLOSINGMETHOD = JavaIdentifierFactory.getInstance().getClassType("dalvik.annotation.EnclosingMethod");
+  public static final ReferenceType DALVIK_ANNOTATION_ENCLOSINGCLASS = JavaIdentifierFactory.getInstance().getClassType("dalvik.annotation.EnclosingClass");
+  public static final ReferenceType DALVIK_ANNOTATION_DEFAULT = JavaIdentifierFactory.getInstance().getClassType("dalvik.annotation.AnnotationDefault");
   private final Type ARRAY_TYPE = ReferenceType.v("Array");
   private final SootClass clazz;
   private final Dependencies deps;

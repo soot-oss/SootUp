@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.jimple.tag;
+package de.upb.swt.soot.java.core.tag;
 
 /*-
  * #%L
@@ -22,34 +22,43 @@ package de.upb.swt.soot.core.jimple.tag;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
 
-import de.upb.swt.soot.core.jimple.common.constant.Constant;
+public class FloatConstantValueTag extends ConstantValueTag {
 
-import java.util.Arrays;
+  public static final String NAME = "FloatConstantValueTag";
 
-public abstract class ConstantValueTag implements Tag {
+  private final float value;
 
-  protected final byte[] bytes; // encoded constant
+  public FloatConstantValueTag(float value) {
+    super(null);
+    this.value = value;
+  }
 
-  protected ConstantValueTag(byte[] bytes) {
-    this.bytes = bytes;
+  public float getFloatValue() {
+    return value;
   }
 
   @Override
-  public byte[] getValue() {
-    return bytes;
+  public String getName() {
+    return NAME;
   }
 
-  public abstract Constant getConstant();
+  @Override
+  public String toString() {
+    return "ConstantValue: " + Float.toString(value);
+  }
 
   @Override
-  public abstract String toString();
+  public FloatConstant getConstant() {
+    return FloatConstant.getInstance(value);
+  }
 
   @Override
   public int hashCode() {
     final int prime = 31;
-    int result = 1;
-    result = prime * result + Arrays.hashCode(bytes);
+    int result = super.hashCode();
+    result = prime * result + Float.floatToIntBits(value);
     return result;
   }
 
@@ -58,10 +67,13 @@ public abstract class ConstantValueTag implements Tag {
     if (this == obj) {
       return true;
     }
-    if (obj == null || this.getClass() != obj.getClass()) {
+    if (!super.equals(obj)) {
       return false;
     }
-    ConstantValueTag other = (ConstantValueTag) obj;
-    return Arrays.equals(bytes, other.bytes);
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    FloatConstantValueTag other = (FloatConstantValueTag) obj;
+    return Float.floatToIntBits(this.value) == Float.floatToIntBits(other.value);
   }
 }

@@ -22,37 +22,44 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.analysis.LocalDefs;
+import de.upb.swt.soot.core.analysis.LocalUses;
+import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
+import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.constant.Constant;
+import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import soot.*;
-import soot.jimple.*;
-import soot.jimple.toolkits.scalar.LocalCreation;
-import soot.toolkits.graph.ExceptionalUnitGraph;
-import soot.toolkits.graph.UnitGraph;
-import soot.toolkits.scalar.LocalDefs;
-import soot.toolkits.scalar.LocalUses;
+import de.upb.swt.soot.java.core.toolkits.scalar.LocalCreation;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class DexReturnValuePropagator implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    ExceptionalUnitGraph graph = new ExceptionalUnitGraph(body, DalvikThrowAnalysis.v(), true);
+    ExceptionalStmtGraph graph = new ExceptionalStmtGraph(builder, new DalvikThrowAnalysis(), true);
     LocalDefs localDefs = G.v().soot_toolkits_scalar_LocalDefsFactory().newLocalDefs(graph);
     LocalUses localUses = null;
     LocalCreation localCreation = null;
 
     // If a return statement's operand has only one definition and this is
     // a copy statement, we take the original operand
-    for (Unit u : body.getUnits()) {
-      if (u instanceof ReturnStmt) {
-        ReturnStmt retStmt = (ReturnStmt) u;
+    for (Stmt u : builder.getStmts()) {
+      if (u instanceof JReturnStmt) {
+        JReturnStmt retStmt = (JReturnStmt) u;
         if (retStmt.getOp() instanceof Local) {
-          List<Unit> defs = localDefs.getDefsOfAt((Local) retStmt.getOp(), retStmt);
-          if (defs.size() == 1 && defs.get(0) instanceof AssignStmt) {
-            AssignStmt assign = (AssignStmt) defs.get(0);
+          List<Stmt> defs = localDefs.getDefsOfAt((Local) retStmt.getOp(), retStmt);
+          if (defs.size() == 1 && defs.get(0) instanceof JAssignStmt) {
+            JAssignStmt assign = (JAssignStmt) defs.get(0);
             final Value rightOp = assign.getRightOp();
             final Value leftOp = assign.getLeftOp();
 
@@ -72,11 +79,11 @@ public class DexReturnValuePropagator implements BodyInterceptor {
             // we rename the local to help splitting
             else if (rightOp instanceof FieldRef) {
               if (localUses == null) {
-                localUses = LocalUses.Factory.newLocalUses(body, localDefs);
+                localUses = LocalUses.Factory.newLocalUses(builder.build(), localDefs);
               }
               if (localUses.getUsesOf(assign).size() == 1) {
                 if (localCreation == null) {
-                  localCreation = new LocalCreation(body.getLocals(), "ret");
+                  localCreation = new LocalCreation(builder.getLocals(), "ret");
                 }
                 Local newLocal = localCreation.newLocal(leftOp.getType());
                 assign.setLeftOp(newLocal);
@@ -102,20 +109,20 @@ public class DexReturnValuePropagator implements BodyInterceptor {
    *          The unit graph to use for the check
    * @return True if there is at least one path between unitDef and unitUse on which local l gets redefined, otherwise false
    */
-  private boolean isRedefined(Local l, Unit unitUse, AssignStmt unitDef, UnitGraph graph) {
-    List<Unit> workList = new ArrayList<Unit>();
+  private boolean isRedefined(Local l, Stmt unitUse, JAssignStmt unitDef, StmtGraph graph) {
+    List<Stmt> workList = new ArrayList<Stmt>();
     workList.add(unitUse);
 
-    Set<Unit> doneSet = new HashSet<Unit>();
+    Set<Stmt> doneSet = new HashSet<Stmt>();
 
     // Check for redefinitions of the local between definition and use
     while (!workList.isEmpty()) {
-      Unit curStmt = workList.remove(0);
+      Stmt curStmt = workList.remove(0);
       if (!doneSet.add(curStmt)) {
         continue;
       }
 
-      for (Unit u : graph.getPredsOf(curStmt)) {
+      for (Stmt u : graph.getPredsOf(curStmt)) {
         if (u != unitDef) {
           if (u instanceof DefinitionStmt) {
             DefinitionStmt defStmt = (DefinitionStmt) u;

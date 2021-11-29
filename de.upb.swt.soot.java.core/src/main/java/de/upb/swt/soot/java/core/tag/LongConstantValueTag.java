@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.jimple.tag;
+package de.upb.swt.soot.java.core.tag;
 
 /*-
  * #%L
@@ -22,20 +22,23 @@ package de.upb.swt.soot.core.jimple.tag;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
 
-public class DoubleConstantValueTag extends ConstantValueTag {
+import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
 
-  public static final String NAME = "DoubleConstantValueTag";
+public class LongConstantValueTag extends ConstantValueTag {
 
-  private final double value;
+  public static final String NAME = "LongConstantValueTag";
 
-  public DoubleConstantValueTag(double val) {
-    super(null);
-    this.value = val;
+  private final long value;
+
+  public LongConstantValueTag(long value) {
+    super(new byte[] { (byte) ((value >> 56) & 0xff), (byte) ((value >> 48) & 0xff), (byte) ((value >> 40) & 0xff),
+        (byte) ((value >> 32) & 0xff), (byte) ((value >> 24) & 0xff), (byte) ((value >> 16) & 0xff),
+        (byte) ((value >> 8) & 0xff), (byte) ((value) & 0xff) });
+    this.value = value;
   }
 
-  public double getDoubleValue() {
+  public long getLongValue() {
     return value;
   }
 
@@ -46,20 +49,19 @@ public class DoubleConstantValueTag extends ConstantValueTag {
 
   @Override
   public String toString() {
-    return "ConstantValue: " + Double.toString(value);
+    return "ConstantValue: " + Long.toString(value);
   }
 
   @Override
-  public DoubleConstant getConstant() {
-    return DoubleConstant.getInstance(value);
+  public LongConstant getConstant() {
+    return LongConstant.getInstance(value);
   }
 
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = super.hashCode();
-    long temp = Double.doubleToLongBits(value);
-    result = prime * result + (int) (temp ^ (temp >>> 32));
+    result = prime * result + (int) (value ^ (value >>> 32));
     return result;
   }
 
@@ -74,7 +76,7 @@ public class DoubleConstantValueTag extends ConstantValueTag {
     if (this.getClass() != obj.getClass()) {
       return false;
     }
-    DoubleConstantValueTag other = (DoubleConstantValueTag) obj;
-    return Double.doubleToLongBits(this.value) == Double.doubleToLongBits(other.value);
+    LongConstantValueTag other = (LongConstantValueTag) obj;
+    return this.value == other.value;
   }
 }

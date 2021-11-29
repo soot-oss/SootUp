@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.jimple.tag;
+package de.upb.swt.soot.java.core.tag;
 
 /*-
  * #%L
@@ -23,22 +23,21 @@ package de.upb.swt.soot.core.jimple.tag;
  */
 
 
-import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
+import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 
-public class LongConstantValueTag extends ConstantValueTag {
+public class IntegerConstantValueTag extends ConstantValueTag {
 
-  public static final String NAME = "LongConstantValueTag";
+  public static final String NAME = "IntegerConstantValueTag";
 
-  private final long value;
+  private final int value;
 
-  public LongConstantValueTag(long value) {
-    super(new byte[] { (byte) ((value >> 56) & 0xff), (byte) ((value >> 48) & 0xff), (byte) ((value >> 40) & 0xff),
-        (byte) ((value >> 32) & 0xff), (byte) ((value >> 24) & 0xff), (byte) ((value >> 16) & 0xff),
-        (byte) ((value >> 8) & 0xff), (byte) ((value) & 0xff) });
+  public IntegerConstantValueTag(int value) {
+    super(new byte[] { (byte) ((value >> 24) & 0xff), (byte) ((value >> 16) & 0xff), (byte) ((value >> 8) & 0xff),
+        (byte) ((value) & 0xff) });
     this.value = value;
   }
 
-  public long getLongValue() {
+  public int getIntValue() {
     return value;
   }
 
@@ -49,19 +48,19 @@ public class LongConstantValueTag extends ConstantValueTag {
 
   @Override
   public String toString() {
-    return "ConstantValue: " + Long.toString(value);
+    return "ConstantValue: " + Integer.toString(value);
   }
 
   @Override
-  public LongConstant getConstant() {
-    return LongConstant.getInstance(value);
+  public IntConstant getConstant() {
+    return IntConstant.getInstance(value);
   }
 
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = super.hashCode();
-    result = prime * result + (int) (value ^ (value >>> 32));
+    result = prime * result + value;
     return result;
   }
 
@@ -76,7 +75,7 @@ public class LongConstantValueTag extends ConstantValueTag {
     if (this.getClass() != obj.getClass()) {
       return false;
     }
-    LongConstantValueTag other = (LongConstantValueTag) obj;
+    IntegerConstantValueTag other = (IntegerConstantValueTag) obj;
     return this.value == other.value;
   }
 }

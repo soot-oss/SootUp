@@ -22,6 +22,9 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
+import de.upb.swt.soot.core.jimple.tag.InnerClassAttribute;
+import de.upb.swt.soot.core.jimple.tag.InnerClassTag;
+import de.upb.swt.soot.core.jimple.tag.Tag;
 import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
@@ -30,6 +33,8 @@ import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.MultiDexContainer.DexEntry;
+
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -55,7 +60,7 @@ public class DexClassLoader {
     SootMethod sm = dexMethodFactory.makeSootMethod(method);
     Set<? extends SootMethod> declaringClassMethods = declaringClass.getMethods();
     for (SootMethod sootMethod: declaringClassMethods) {
-      if (sootMethod.getName().equals(sm.getName()) && sootMethod.getReturnType()==sm.getReturnType() && sootMethod.getParameterTypes() == sm.getParameterTypes()) {
+      if (sm.getName().equals(sootMethod.getName()) && sm.getReturnType().equals(sootMethod.getReturnType()) && sm.getParameterTypes().equals(sootMethod.getParameterTypes())) {
         return;
       }
     }

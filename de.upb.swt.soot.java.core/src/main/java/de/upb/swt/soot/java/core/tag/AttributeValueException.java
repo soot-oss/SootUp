@@ -1,10 +1,10 @@
-package de.upb.swt.soot.java.core.toolkits.graph;
+package de.upb.swt.soot.java.core.tag;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1999 Patrice Pominville, Raja Vallee-Rai
+ * Copyright (C) 2000 Patrice Pominville and Feng Qian
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,16 +22,10 @@ package de.upb.swt.soot.java.core.toolkits.graph;
  * #L%
  */
 
-import soot.Body;
-
-/**
- *
- * @param <N>
- */
-public interface DirectedBodyGraph<N> extends DirectedGraph<N> {
+public class AttributeValueException extends RuntimeException {
 
   /**
-   * @return the {@link Body} from which this graph was built
+   * 
    */
-  public Body getBodyBuilder();
+  private static final long serialVersionUID = 5318900011605820606L;
 }

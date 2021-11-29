@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.jimple.tag;
+package de.upb.swt.soot.java.core.tag;
 
 /*-
  * #%L
@@ -79,7 +79,6 @@ public class AbstractHost implements Host {
         if ((tagIndex = searchForTag(aName)) != -1) {
             return mTagList.get(tagIndex);
         }
-
         return null;
     }
 

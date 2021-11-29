@@ -28,10 +28,6 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import soot.Unit;
-import soot.jimple.ExitMonitorStmt;
-import soot.util.HashMultiMap;
-import soot.util.MultiMap;
 
 import java.util.ArrayList;
 import java.util.HashSet;
