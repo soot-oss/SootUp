@@ -27,7 +27,6 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import de.upb.swt.soot.callgraph.MethodUtil;
 import de.upb.swt.soot.callgraph.model.CallGraph;
-import de.upb.swt.soot.callgraph.model.MutableCallGraph;
 import de.upb.swt.soot.callgraph.spark.builder.GlobalNodeFactory;
 import de.upb.swt.soot.callgraph.spark.builder.NodeConstants;
 import de.upb.swt.soot.callgraph.spark.builder.SparkOptions;
@@ -44,7 +43,6 @@ import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
@@ -135,110 +133,34 @@ public class PointerAssignmentGraph {
       while (methodSignature != null) {
         Optional<? extends SootMethod> optMethod = view.getMethod(methodSignature);
         if (!optMethod.isPresent()) {
-          System.out.println("method not there?");
           // throw error?
         } else {
           SootMethod method = optMethod.get();
-          System.out.println("working on " + method);
           if (!method.isAbstract()) {
             IntraproceduralPointerAssignmentGraph intraPAG =
                 IntraproceduralPointerAssignmentGraph.getInstance(this, method);
             intraPAG.addToPAG();
-            // TODO update worklist either on node creation or maybe on call edge thingys?
-            // could maybe iterate over getCallEdges() incrementally
-            // TODO problem: we are not precise here, as the pointsToSets are not yet
-            // collapsed/refined/propagated -> refine in refineCallgraph?
-            System.out.println("edges -> " + getCallEdges());
-            LocalVariableNode lvn =
-                intraPAG
-                    .getPointerAssignmentGraph()
-                    .getLocalVariableNode(
-                        view.getMethod(methodSignature).get().getBody().getLocals().stream()
-                            .filter(local -> local.getName().equals("$r1"))
-                            .findFirst());
-            System.out.println(intraPAG.getInternalEdges());
 
-            // TODO problem: this only looks at intraPAG
-            // in testVirtualCall3, we need PAG as we pass a reference to another method, so we need
-            // pointsTo from method callOnInterface()
-            // in method method()
-            getCallEdges(methodSignature)
-                .forEach(
-                    edge -> {
-                      System.out.println("---");
-                      System.out.println("checking -> " + edge.getValue());
-                      // find out what the type of the base object this method is called on (callee)
-                      // is
-                      Optional<Pair<Node, Node>> pairPointsTo =
-                          intraPAG.getInternalEdges().stream()
-                              .filter(
-                                  pair -> {
-                                    System.out.println("checking pair: " + pair);
-                                    System.out.println(
-                                        "called from " + edge.getValue().getBaseObject());
-                                    Node value = pair.getValue();
-                                    if (value instanceof LocalVariableNode) {
-                                      LocalVariableNode localVariableNode =
-                                          (LocalVariableNode) value;
-                                      return localVariableNode
-                                          .getVariable()
-                                          .equals(edge.getValue().getBaseObject());
-                                    }
-                                    return false;
-                                  })
-                              .findFirst();
+            // TODO ofcg: 1. propagate PAG in global!
 
-                      if (pairPointsTo.isPresent()) {
-                        // We know what the base variable of the call points to
-                        System.out.println("pair I found -> " + pairPointsTo.get());
-                        MethodSignature preciseSignature = edge.getValue().getMethodSignature();
-                        System.out.println("callee is " + preciseSignature);
+            // propagate();
 
-                        // todo other nodes
-                        if (pairPointsTo.get().getKey() instanceof AllocationNode) {
-                          AllocationNode allocationNode =
-                              (AllocationNode) pairPointsTo.get().getKey();
-                          MethodSignature inpreciseSignature = edge.getValue().getMethodSignature();
-                          preciseSignature =
-                              inpreciseSignature.withDeclaringClassSignature(
-                                  (ClassType) allocationNode.getType());
-                          System.out.println(
-                              inpreciseSignature + " -> made to -> " + preciseSignature);
-                        }
-
-                        if (!callGraph.containsMethod(preciseSignature)) {
-                          // add method to cg
-                          ((MutableCallGraph) callGraph).addMethod(preciseSignature);
-                        }
-
-                        if (!callGraph.containsCall(
-                            edge.getKey(), edge.getValue().getMethodSignature())) {
-                          ((MutableCallGraph) callGraph).addCall(edge.getKey(), preciseSignature);
-                          worklist.add(preciseSignature);
-                        }
-                      } else {
-                        if (!callGraph.containsMethod(edge.getValue().getMethodSignature())) {
-                          // add method to cg
-                          ((MutableCallGraph) callGraph)
-                              .addMethod(edge.getValue().getMethodSignature());
-                        }
-
-                        if (!callGraph.containsCall(
-                            edge.getKey(), edge.getValue().getMethodSignature())) {
-                          ((MutableCallGraph) callGraph)
-                              .addCall(edge.getKey(), edge.getValue().getMethodSignature());
-                          worklist.add(edge.getValue().getMethodSignature());
-                        }
-                      }
-                      System.out.println("---");
-                    });
+            // TODO ofcg: 2. add all methods that can be reached from this method on to the call
+            // graph and add the newly reached methods to the worklist
+            // important: Care about the type of the base object, only use information from the
+            // points-to set here!
+            // this might be null in the beginning, but that is okay. Otherwise we are not precise
+            // example: A varA = someMethod();
+            // varA.foo();
+            // we do not know what the type varA actually is here
+            // do only add call edges when we know it (points-to set!)
+            //
+            // getCallEdges(methodSignature);
           }
         }
         methodSignature = worklist.poll();
       }
     }
-
-    System.out.println("edges -> " + getCallEdges());
 
     handleCallEdges();
   }

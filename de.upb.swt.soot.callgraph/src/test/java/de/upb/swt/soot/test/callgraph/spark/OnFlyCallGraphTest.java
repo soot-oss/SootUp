@@ -161,7 +161,7 @@ public class OnFlyCallGraphTest extends SparkTestBase {
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             "method",
-            identifierFactory.getClassType("nvc4.Rootclass"),
+            identifierFactory.getClassType("nvc4.Class"),
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(firstMethod, targetMethod));
@@ -178,10 +178,7 @@ public class OnFlyCallGraphTest extends SparkTestBase {
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            "method",
-            identifierFactory.getClassType("nvc5.Middle"),
-            "void",
-            Collections.emptyList());
+            "method", identifierFactory.getClassType("nvc5.Sub"), "void", Collections.emptyList());
     assertTrue(cg.containsCall(firstMethod, targetMethod));
   }
 
@@ -260,7 +257,7 @@ public class OnFlyCallGraphTest extends SparkTestBase {
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
             "method",
-            identifierFactory.getClassType("j8dim1.Interface"),
+            identifierFactory.getClassType("j8dim1.Class"),
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
@@ -273,7 +270,7 @@ public class OnFlyCallGraphTest extends SparkTestBase {
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
             "method",
-            identifierFactory.getClassType("j8dim2.Interface"),
+            identifierFactory.getClassType("j8dim2.SubClass"),
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
@@ -285,7 +282,10 @@ public class OnFlyCallGraphTest extends SparkTestBase {
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            "method", mainClassSignature, "void", Collections.emptyList());
+            "method",
+            identifierFactory.getClassType("j8dim3.SubClass"),
+            "void",
+            Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
   }
 
@@ -296,7 +296,7 @@ public class OnFlyCallGraphTest extends SparkTestBase {
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
             "method",
-            identifierFactory.getClassType("j8dim4.Interface"),
+            identifierFactory.getClassType("j8dim4.SubClass"),
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
@@ -309,14 +309,17 @@ public class OnFlyCallGraphTest extends SparkTestBase {
     MethodSignature method =
         identifierFactory.getMethodSignature(
             "method",
-            identifierFactory.getClassType("j8dim5.DirectInterface"),
+            identifierFactory.getClassType("j8dim5.Class"),
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, method));
 
     MethodSignature compute =
         identifierFactory.getMethodSignature(
-            "compute", mainClassSignature, "void", Collections.emptyList());
+            "compute",
+            identifierFactory.getClassType("j8dim5.Class"),
+            "void",
+            Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, compute));
   }
 

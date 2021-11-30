@@ -85,6 +85,9 @@ public class Node {
     return replacement;
   }
 
+  // TODO ofcg: When merging two nodes and one of them is actually the baseObject of an invoke,
+  // reevaluate all call targets of the baseObject
+  // i.e. add to the call graph and worklist all newly reached methods!
   public void mergeWith(Node other) {
     if (other.replacement != other) {
       throw new RuntimeException("replacement cannot be the same object");

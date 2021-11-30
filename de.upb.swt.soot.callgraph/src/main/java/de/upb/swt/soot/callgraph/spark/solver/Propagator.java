@@ -24,5 +24,9 @@ package de.upb.swt.soot.callgraph.spark.solver;
 
 /** Propagator that propagates points-to sets along pointer assignment graph. */
 public interface Propagator {
+
+  // TODO ofcg: Propagator needs to be able to be used incrementally, so after a single intraPAG is
+  // added.
+  // current implementations always evaluate the whole PAG, which is not scalable
   void propagate();
 }

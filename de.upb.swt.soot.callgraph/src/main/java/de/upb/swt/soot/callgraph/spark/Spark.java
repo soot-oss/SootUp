@@ -82,8 +82,6 @@ public class Spark implements PointsToAnalysis {
     propagatePointerAssignmentGraph();
 
     refineCallGraph();
-
-    System.out.println("final edges ->  " + pag.getCallEdges());
   }
 
   /**
@@ -112,7 +110,6 @@ public class Spark implements PointsToAnalysis {
   }
 
   private void buildPointerAssignmentGraph() {
-    System.out.println(entrypoints);
     pag = new PointerAssignmentGraph(view, callGraph, options);
   }
 
@@ -314,7 +311,6 @@ public class Spark implements PointsToAnalysis {
 
     public Spark build() {
       options.validate();
-      System.out.println(entrypoints);
       return new Spark(view, callGraph, options, entrypoints);
     }
   }
