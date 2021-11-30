@@ -20,6 +20,7 @@ package de.upb.swt.soot.java.bytecode.frontend;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,6 +28,8 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 
 // FIXME: [AD] is it reasonable to get rid of it?
 class BranchedInsnInfo {
+  /* Traps associated with the current block */
+  @Nonnull private List<ClassType> traps;
   /* edge endpoint */
   @Nonnull private final AbstractInsnNode insn;
   /* previous stacks at edge */
@@ -34,7 +37,11 @@ class BranchedInsnInfo {
   /* current stack at edge */
   @Nullable private List<Operand> operandStack;
 
-  BranchedInsnInfo(@Nonnull AbstractInsnNode insn, @Nonnull List<Operand> operands) {
+  BranchedInsnInfo(
+      @Nonnull List<ClassType> traps,
+      @Nonnull AbstractInsnNode insn,
+      @Nonnull List<Operand> operands) {
+    this.traps = new ArrayList<>(traps);
     this.insn = insn;
     this.prevStacks = new LinkedList<>();
     this.operandStack = operands;

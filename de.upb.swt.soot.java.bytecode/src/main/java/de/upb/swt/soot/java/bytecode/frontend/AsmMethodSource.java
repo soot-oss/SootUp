@@ -198,7 +198,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     /* retrieve all trap handlers */
     for (TryCatchBlockNode tc : tryCatchBlocks) {
-      trapHandler.put(tc.handler, Jimple.newNopStmt(new StmtPositionInfo(currentLineNumber)));
+      // reserve space/ insert labels in datastructure
+      trapHandler.put(tc.handler, null);
     }
     /* convert instructions */
     try {
@@ -1584,6 +1585,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   private void convertLabel(@Nonnull LabelNode ln) {
+    // only do it for Labels which are referring to a traphandler
     if (!trapHandler.containsKey(ln)) {
       return;
     }
@@ -1628,20 +1630,23 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   /* Conversion */
   private void addEdges(
+      @Nonnull List<ClassType> traps,
       @Nonnull Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges,
       @Nonnull ArrayDeque<BranchedInsnInfo> conversionWorklist,
       @Nonnull AbstractInsnNode cur, /*  branching instruction node */
       @Nonnull
           AbstractInsnNode
               tgt, /* "default" targets i.e. LabelNode or fallsthrough "target" of if  */
-      @Nullable List<LabelNode> tgts /* other branch target(s) */) {
+      @Nonnull List<LabelNode> tgts /* other branch target(s) */) {
     Operand[] stackss = operandStack.getStack().toArray(new Operand[0]);
+    /* iterate over possible following instructions which is: combined(tgt, tgts) */
     int i = 0;
-    tgt_loop:
+    outer_loop:
     do {
       BranchedInsnInfo edge = edges.get(cur, tgt);
       if (edge == null) {
-        edge = new BranchedInsnInfo(tgt, operandStack.getStack());
+        // [ms] check why this edge could be already there
+        edge = new BranchedInsnInfo(traps, tgt, operandStack.getStack());
         edge.addToPrevStack(stackss);
         edges.put(cur, tgt, edge);
         conversionWorklist.add(edge);
@@ -1652,8 +1657,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         if (stackTemp.size() != stackss.length) {
           throw new AssertionError("Multiple un-equal stacks!");
         }
-        for (int j = 0; j != stackss.length; j++) {
-          if (!stackTemp.get(j).equivTo(stackss[j])) {
+        int j = 0;
+        for (Operand operand : stackTemp) {
+          if (!operand.equivTo(stackss[j++])) {
             throw new AssertionError("Multiple un-equal stacks!");
           }
         }
@@ -1662,41 +1668,52 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       final List<Operand[]> prevStacks = edge.getPrevStacks();
       for (Operand[] ps : prevStacks) {
         if (Arrays.equals(ps, stackss)) {
-          continue tgt_loop;
+          continue outer_loop;
         }
       }
       edge.setOperandStack(operandStack.getStack());
       edge.addToPrevStack(stackss);
       conversionWorklist.add(edge);
-    } while ((tgt = tgts.get(i++)) != null);
+      tgt = tgts.get(i++);
+    } while (i < tgts.size());
   }
 
   private void convert() {
+    List<ClassType> traps = new ArrayList<>();
     ArrayDeque<BranchedInsnInfo> worklist = new ArrayDeque<>();
-    for (LabelNode ln : trapHandler.keySet()) {
-      if (checkInlineExceptionHandler(ln)) {
+
+    for (LabelNode handlerNode : trapHandler.keySet()) {
+      // TODO: [ms] is there a less expensive way O( #Stmts )* trapAmount.. ->
+      // checkInlineExceptionHandler(...)
+
+      // If this label is reachable through an exception and through normal
+      // code, we have to split the exceptional case (with the exception on
+      // the stack) from the normal fall-through case without anything on the
+      // stack.
+      if (checkInlineExceptionHandler(handlerNode)) {
         // Catch the exception
         JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
         Local local = newStackLocal();
         AbstractDefinitionStmt<Local, JCaughtExceptionRef> as =
             Jimple.newIdentityStmt(local, ref, StmtPositionInfo.createNoStmtPositionInfo());
 
-        Operand opr = new Operand(ln, ref, this);
+        Operand opr = new Operand(handlerNode, ref, this);
         opr.stackLocal = local;
 
-        worklist.add(new BranchedInsnInfo(ln, Collections.singletonList(opr)));
+        worklist.add(new BranchedInsnInfo(traps, handlerNode, Collections.singletonList(opr)));
 
         // Save the statements
-        inlineExceptionHandlers.put(ln, as);
+        inlineExceptionHandlers.put(handlerNode, as);
       } else {
-        worklist.add(new BranchedInsnInfo(ln, new ArrayList<>()));
+        worklist.add(new BranchedInsnInfo(traps, handlerNode, new ArrayList<>()));
       }
     }
-    worklist.add(new BranchedInsnInfo(instructions.getFirst(), new ArrayList<>()));
+    worklist.add(new BranchedInsnInfo(traps, instructions.getFirst(), Collections.emptyList()));
     Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges = HashBasedTable.create(1, 1);
 
     do {
-      BranchedInsnInfo edge = worklist.removeLast();
+      BranchedInsnInfo edge =
+          worklist.removeLast(); // TODO: [ms] simplify: make use of the do-while!
       AbstractInsnNode insn = edge.getInsn();
       operandStack.setOperandStack(edge.getOperandStack());
       label:
@@ -1735,9 +1752,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               if (op != GOTO) {
                 /* ifX opcode, i.e. two successors */
                 AbstractInsnNode next = insn.getNext();
-                addEdges(edges, worklist, insn, next, Collections.singletonList(jmp.label));
+                addEdges(traps, edges, worklist, insn, next, Collections.singletonList(jmp.label));
               } else {
-                addEdges(edges, worklist, insn, jmp.label, Collections.emptyList());
+                addEdges(traps, edges, worklist, insn, jmp.label, Collections.emptyList());
               }
               break label;
             }
@@ -1746,7 +1763,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               LookupSwitchInsnNode swtch = (LookupSwitchInsnNode) insn;
               convertLookupSwitchInsn(swtch);
               LabelNode dflt = swtch.dflt;
-              addEdges(edges, worklist, insn, dflt, swtch.labels);
+              addEdges(traps, edges, worklist, insn, dflt, swtch.labels);
               break label;
             }
           case METHOD_INSN:
@@ -1763,7 +1780,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               TableSwitchInsnNode swtch = (TableSwitchInsnNode) insn;
               convertTableSwitchInsn(swtch);
               LabelNode dflt = swtch.dflt;
-              addEdges(edges, worklist, insn, dflt, swtch.labels);
+              addEdges(traps, edges, worklist, insn, dflt, swtch.labels);
               break label;
             }
           case TYPE_INSN:
@@ -1794,10 +1811,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   private boolean checkInlineExceptionHandler(@Nonnull LabelNode ln) {
-    // If this label is reachable through an exception and through normal
-    // code, we have to split the exceptional case (with the exception on
-    // the stack) from the normal fall-through case without anything on the
-    // stack.
+
     for (AbstractInsnNode node : instructions) {
       if (node instanceof JumpInsnNode) {
         if (((JumpInsnNode) node).label == ln) {
@@ -1866,8 +1880,35 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private void buildTraps() {
     List<Trap> traps = new ArrayList<>();
 
+    List<TryCatchBlockNode> trapList = new ArrayList<>(tryCatchBlocks);
+    trapList.sort(
+        (a, b) -> {
+          int aStart = a.start.getLabel().getOffset();
+          int bStart = b.start.getLabel().getOffset();
+          int aEnd = a.end.getLabel().getOffset();
+          int bEnd = b.end.getLabel().getOffset();
+
+          if (aStart > bStart) {
+            return 1;
+          } else if (aStart < bStart) {
+            return -1;
+          } else if (aEnd > bEnd) {
+            return 1;
+          } else if (aEnd < bEnd) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
+
     for (TryCatchBlockNode trycatch : tryCatchBlocks) {
       Stmt handler = trapHandler.get(trycatch.handler);
+      if (handler == null) {
+        throw new ResolveException(
+            "Label for the TrapHandler "
+                + trycatch.handler
+                + " has no associated Stmt to jump to.");
+      }
 
       // FIXME: [ms] create java.lang.Throwable for modules i.e. with ModuleSignature if modules are
       // used..
@@ -1875,6 +1916,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           (trycatch.type != null) ? AsmUtil.toQualifiedName(trycatch.type) : "java.lang.Throwable";
       JavaClassType exceptionType = JavaIdentifierFactory.getInstance().getClassType(exceptionName);
 
+      /*
       Trap trap =
           Jimple.newTrap(
               exceptionType,
@@ -1882,7 +1924,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               labelsToStmt.get(trycatch.end),
               handler);
       traps.add(trap);
+      */
+
     }
+
     bodyBuilder.setTraps(traps);
   }
 
@@ -1935,7 +1980,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         Stmt targetStmt =
             stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt;
         danglingLabel.forEach(l -> labelsToStmt.put(l, targetStmt));
-        // If this is an exception handler, register the starting Stmt for it
+        // If the targetStmt is an exception handler, register the starting Stmt for it
         if (isLabelNode) {
           JIdentityStmt<?> caughtEx = findIdentityRefInContainer(stmt);
           if (caughtEx != null && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
@@ -1956,7 +2001,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
       trapHandler.put(ln, handler);
 
-      // jump to the original implementation
+      // jump back to the original implementation
       Stmt targetStmt = insnToStmt.get(ln);
       JGotoStmt gotoStmt = Jimple.newGotoStmt(new StmtPositionInfo(currentLineNumber));
       emitStmt(gotoStmt);

@@ -246,8 +246,12 @@ public class Body implements Copyable {
       }
     }
 
-    for (Trap item : getTraps()) {
-      stmtList.addAll(item.getStmts());
+    for (Trap trap : getTraps()) {
+      // TODO: [ms] check: is this necessary? seems to be a duplicate addition to the list as
+      // start/end/handler should already added while iterating ".nodes()"
+      stmtList.add(trap.getBeginStmt());
+      stmtList.add(trap.getEndStmt());
+      stmtList.add(trap.getHandlerStmt());
     }
     return Collections.unmodifiableCollection(stmtList);
   }

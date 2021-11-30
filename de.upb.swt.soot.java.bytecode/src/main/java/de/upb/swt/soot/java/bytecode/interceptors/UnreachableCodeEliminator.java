@@ -83,9 +83,9 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
       // in trap instantiation?
       if (trap.getBeginStmt() == trap.getEndStmt()) {
         trapIterator.remove();
-        for (Stmt trapStmt : trap.getStmts()) {
-          builder.removeStmt(trapStmt);
-        }
+        builder.removeStmt(trap.getBeginStmt());
+        builder.removeStmt(trap.getEndStmt());
+        builder.removeStmt(trap.getHandlerStmt());
       }
     }
   }

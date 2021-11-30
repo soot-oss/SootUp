@@ -26,9 +26,6 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.Copyable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
@@ -50,9 +47,6 @@ public final class Trap implements Copyable {
   /** The stmt to which execution flows after the caught exception is triggered. */
   @Nonnull private final Stmt handlerStmt;
 
-  /** The list of stmts referred to in this Trap (begin, end and handler). */
-  @Nonnull private final List<Stmt> stmts;
-
   /** Creates a Trap with the given exception, handler, begin and end stmts. */
   public Trap(
       @Nonnull ClassType exception,
@@ -71,7 +65,6 @@ public final class Trap implements Copyable {
     this.beginStmt = beginStmt;
     this.endStmt = endStmt;
     this.handlerStmt = handlerStmt;
-    this.stmts = Collections.unmodifiableList(Arrays.asList(beginStmt, endStmt, handlerStmt));
   }
 
   @Override
@@ -119,11 +112,6 @@ public final class Trap implements Copyable {
   @Nonnull
   public Stmt getHandlerStmt() {
     return handlerStmt;
-  }
-
-  @Nonnull
-  public List<Stmt> getStmts() {
-    return stmts;
   }
 
   @Nonnull
