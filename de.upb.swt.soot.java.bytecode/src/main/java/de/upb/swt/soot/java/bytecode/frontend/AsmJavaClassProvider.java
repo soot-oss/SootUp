@@ -33,6 +33,7 @@ import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import de.upb.swt.soot.java.core.types.ModuleJavaClassType;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -64,10 +65,10 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
     }
 
     JavaClassType klassType = (JavaClassType) classType;
-    if (klassType.getClassName().equals(JavaModuleIdentifierFactory.MODULE_INFO_FILE)) {
+    if (klassType instanceof ModuleJavaClassType
+        && klassType.getClassName().equals(JavaModuleIdentifierFactory.MODULE_INFO_FILE)) {
       throw new ResolveException(
           "Can not create ClassSource from a module info descriptor!", sourcePath);
-      // FIXME: [ms] in <java9 that could be a usual class..
     } else {
       if (klassType instanceof AnnotationType) {
         return new AsmAnnotationClassSource(srcNamespace, sourcePath, klassType, classNode);
