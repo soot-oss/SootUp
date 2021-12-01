@@ -18,8 +18,6 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import junit.framework.TestCase;
 import org.junit.Ignore;
@@ -35,7 +33,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   protected abstract T createAlgorithm(JavaView view, TypeHierarchy typeHierarchy);
 
-  private static Map<String, JavaView> viewToClassPath = new HashMap<>();
+  // private static Map<String, JavaView> viewToClassPath = new HashMap<>();
 
   private JavaView createViewForClassPath(String classPath) {
     JavaProject javaProject =
@@ -56,7 +54,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     String classPath = "src/test/resources/callgraph/" + testDirectory;
 
-    JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
+    // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
+    JavaView view = createViewForClassPath(classPath);
 
     mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =
