@@ -52,7 +52,6 @@ public class AliasPropagator implements Propagator {
   private Map<FieldReferenceNode, Set<Node>> newLoadSets = new HashMap<>();
 
   // todo: a field OnFlyCallGraph ofcg
-
   public AliasPropagator(PointerAssignmentGraph pag) {
     this.pag = pag;
   }
@@ -64,14 +63,14 @@ public class AliasPropagator implements Propagator {
 
     // collect all FieldReferenceNodes' (field, set of bases) pairs
     for (FieldReferenceNode frNode : pag.getLoadEdges().keySet()) {
-      if (!fieldToBases.containsKey(frNode)) {
+      if (!fieldToBases.containsKey(frNode.getField())) {
         fieldToBases.put(frNode.getField(), new HashSet<>());
       }
       fieldToBases.get(frNode.getField()).add(frNode.getBase());
     }
 
     for (FieldReferenceNode frNode : pag.getStoreEdgesInv().keySet()) {
-      if (!fieldToBases.containsKey(frNode)) {
+      if (!fieldToBases.containsKey(frNode.getField())) {
         fieldToBases.put(frNode.getField(), new HashSet<>());
       }
       fieldToBases.get(frNode.getField()).add(frNode.getBase());
@@ -137,12 +136,15 @@ public class AliasPropagator implements Propagator {
 
   protected void handleFieldRefWorkList() {
     for (FieldReferenceNode source : inFieldRefWorkList) {
-      for (FieldReferenceNode target : aliasEdges.get(source)) {
-        if (addNewP2Info(
-            getOrCreateOutFrNewP2Set(target),
-            source.getOrCreatePointsToSet(),
-            getOrCreateOutFrOldP2Set(target))) {
-          outFieldRefWorkList.add(target);
+      Set<FieldReferenceNode> targets = aliasEdges.get(source);
+      if(targets != null && !targets.isEmpty()){
+        for (FieldReferenceNode target : aliasEdges.get(source)) {
+          if (addNewP2Info(
+                  getOrCreateOutFrNewP2Set(target),
+                  source.getOrCreatePointsToSet(),
+                  getOrCreateOutFrOldP2Set(target))) {
+            outFieldRefWorkList.add(target);
+          }
         }
       }
       flushNew(source, nodeToNewPoint2Set.get(source));
@@ -155,9 +157,11 @@ public class AliasPropagator implements Propagator {
         continue;
       }
       Set<VariableNode> targets = pag.loadLookup(source);
-      for (VariableNode target : targets) {
-        if (addNewP2Info(nodeToNewPoint2Set.get(target), p2Set, target.getOrCreatePointsToSet())) {
-          varNodeWorkList.add(target);
+      if(targets!=null && !targets.isEmpty()){
+        for (VariableNode target : targets) {
+          if (addNewP2Info(nodeToNewPoint2Set.get(target), p2Set, target.getOrCreatePointsToSet())) {
+            varNodeWorkList.add(target);
+          }
         }
       }
       Set<Node> p2SetOld = getOrCreateOutFrOldP2Set(source);
@@ -203,29 +207,34 @@ public class AliasPropagator implements Propagator {
     // Todo: Lack of OnFlyCallGraph Part
 
     Set<VariableNode> varTargets = pag.simpleLookup(source);
-    for (VariableNode varTarget : varTargets) {
-      Set<Node> oldP2Set = varTarget.getOrCreatePointsToSet();
-      Set<Node> newP2Set = nodeToNewPoint2Set.get(varTarget);
-      if (newP2Set == null) {
-        nodeToNewPoint2Set.put(varTarget, new HashSet<>());
-      }
-      if (addNewP2Info(newP2Set, newP2SetOfSource, oldP2Set)) {
-        varNodeWorkList.add(varTarget);
+    if(varTargets!=null && !varTargets.isEmpty()){
+      for (VariableNode varTarget : varTargets) {
+        Set<Node> oldP2Set = varTarget.getOrCreatePointsToSet();
+        Set<Node> newP2Set = nodeToNewPoint2Set.get(varTarget);
+        if (newP2Set == null) {
+          newP2Set = new HashSet<>();
+          nodeToNewPoint2Set.put(varTarget, newP2Set);
+        }
+        if (addNewP2Info(newP2Set, newP2SetOfSource, oldP2Set)) {
+          varNodeWorkList.add(varTarget);
+        }
       }
     }
 
     Set<FieldReferenceNode> fieldTargets = pag.storeLookup(source);
-    for (FieldReferenceNode fieldTarget : fieldTargets) {
-      Set<Node> oldP2Set = fieldTarget.getOrCreatePointsToSet();
-      Set<Node> newP2Set = nodeToNewPoint2Set.get(fieldTarget);
-      if (newP2Set == null) {
-        nodeToNewPoint2Set.put(fieldTarget, new HashSet<>());
-      }
-      if (addNewP2Info(newP2Set, newP2SetOfSource, oldP2Set)) {
-        inFieldRefWorkList.add(fieldTarget);
+    if(fieldTargets!=null && !varTargets.isEmpty()){
+      for (FieldReferenceNode fieldTarget : fieldTargets) {
+        Set<Node> oldP2Set = fieldTarget.getOrCreatePointsToSet();
+        Set<Node> newP2Set = nodeToNewPoint2Set.get(fieldTarget);
+        if (newP2Set == null) {
+          newP2Set = new HashSet<>();
+          nodeToNewPoint2Set.put(fieldTarget, newP2Set);
+        }
+        if (addNewP2Info(newP2Set, newP2SetOfSource, oldP2Set)) {
+          inFieldRefWorkList.add(fieldTarget);
+        }
       }
     }
-
     flushNew(source, newP2SetOfSource);
   }
 
