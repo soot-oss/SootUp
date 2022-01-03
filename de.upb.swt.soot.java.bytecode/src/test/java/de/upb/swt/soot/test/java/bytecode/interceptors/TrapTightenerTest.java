@@ -110,8 +110,8 @@ public class TrapTightenerTest {
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
     // modify exceptionalStmtGraph
-    builder.removeDestinations(stmt1);
-    builder.removeDestinations(stmt10);
+    builder.removeTargetTrapsOf(stmt1);
+    builder.removeTargetTrapsOf(stmt10);
 
     TrapTightener trapTightener = new TrapTightener();
     trapTightener.interceptBody(builder);
@@ -144,14 +144,14 @@ public class TrapTightenerTest {
    * </pre>
    */
   @Test
-  public void testMinitoredBody() {
+  public void testMonitoredBody() {
 
     Body body = creatBodyWithMonitor();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
     // modify exceptionalStmtGraph
-    builder.removeDestinations(stmt2);
-    builder.removeDestinations(stmt4);
+    builder.removeTargetTrapsOf(stmt2);
+    builder.removeTargetTrapsOf(stmt4);
 
     TrapTightener trapTightener = new TrapTightener();
     trapTightener.interceptBody(builder);

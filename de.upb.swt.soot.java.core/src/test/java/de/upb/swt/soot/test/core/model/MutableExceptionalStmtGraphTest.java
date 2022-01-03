@@ -92,12 +92,11 @@ public class MutableExceptionalStmtGraphTest {
     Map<Stmt, List<Trap>> expectedExceptionalDests = expectedDestsForGraphWithNestedTraps_1();
 
     for (Stmt stmt : expectedExceptionalPreds.keySet()) {
-      assertStmtsListsEquiv(
+      assertEquals(
           expectedExceptionalPreds.get(stmt), exceptionalStmtGraph.exceptionalPredecessors(stmt));
-      assertStmtsListsEquiv(
+      assertEquals(
           expectedExceptionalSuccs.get(stmt), exceptionalStmtGraph.exceptionalSuccessors(stmt));
-      assertStmtsListsEquiv(
-          expectedExceptionalDests.get(stmt), exceptionalStmtGraph.getDestTraps(stmt));
+      assertEquals(expectedExceptionalDests.get(stmt), exceptionalStmtGraph.getDestTraps(stmt));
     }
   }
 
@@ -111,12 +110,11 @@ public class MutableExceptionalStmtGraphTest {
     Map<Stmt, List<Trap>> expectedExceptionalDests = expectedDestsForGraphWithNestedTraps_2();
 
     for (Stmt stmt : expectedExceptionalPreds.keySet()) {
-      assertStmtsListsEquiv(
+      assertEquals(
           expectedExceptionalPreds.get(stmt), exceptionalStmtGraph.exceptionalPredecessors(stmt));
-      assertStmtsListsEquiv(
+      assertEquals(
           expectedExceptionalSuccs.get(stmt), exceptionalStmtGraph.exceptionalSuccessors(stmt));
-      assertStmtsListsEquiv(
-          expectedExceptionalDests.get(stmt), exceptionalStmtGraph.getDestTraps(stmt));
+      assertEquals(expectedExceptionalDests.get(stmt), exceptionalStmtGraph.getDestTraps(stmt));
     }
   }
 
@@ -130,12 +128,11 @@ public class MutableExceptionalStmtGraphTest {
     Map<Stmt, List<Trap>> expectedExceptionalDests = expectedDestsForGraphWithChainedTraps();
 
     for (Stmt stmt : expectedExceptionalPreds.keySet()) {
-      assertStmtsListsEquiv(
+      assertEquals(
           expectedExceptionalPreds.get(stmt), exceptionalStmtGraph.exceptionalPredecessors(stmt));
-      assertStmtsListsEquiv(
+      assertEquals(
           expectedExceptionalSuccs.get(stmt), exceptionalStmtGraph.exceptionalSuccessors(stmt));
-      assertStmtsListsEquiv(
-          expectedExceptionalDests.get(stmt), exceptionalStmtGraph.getDestTraps(stmt));
+      assertEquals(expectedExceptionalDests.get(stmt), exceptionalStmtGraph.getDestTraps(stmt));
     }
   }
 
@@ -192,9 +189,7 @@ public class MutableExceptionalStmtGraphTest {
     List<Stmt> succs_1 = ImmutableUtils.immutableList(label7Stmt);
 
     StmtGraph graph = createGraphWithNestedTraps_1();
-    Iterator<Stmt> it = graph.iterator();
-    while (it.hasNext()) {
-      Stmt stmt = it.next();
+    for (Stmt stmt : graph) {
       if (stmt == label1Stmt || stmt == label3Stmt) {
         succsMap.put(stmt, succs_0);
       } else if (stmt == label2Stmt || stmt == stmtInLabel2) {
@@ -213,9 +208,7 @@ public class MutableExceptionalStmtGraphTest {
     List<Trap> dests_1 = ImmutableUtils.immutableList(trap2);
 
     StmtGraph graph = createGraphWithNestedTraps_1();
-    Iterator<Stmt> it = graph.iterator();
-    while (it.hasNext()) {
-      Stmt stmt = it.next();
+    for (Stmt stmt : graph) {
       if (stmt == label1Stmt || stmt == label3Stmt) {
         destsMap.put(stmt, dests_0);
       } else if (stmt == label2Stmt || stmt == stmtInLabel2) {
@@ -260,9 +253,7 @@ public class MutableExceptionalStmtGraphTest {
     List<Stmt> preds_1 = ImmutableUtils.immutableList(label2Stmt, stmtInLabel2);
 
     StmtGraph graph = createGraphWithNestedTraps_1();
-    Iterator<Stmt> it = graph.iterator();
-    while (it.hasNext()) {
-      Stmt stmt = it.next();
+    for (Stmt stmt : graph) {
       if (stmt == label6Stmt) {
         predsMap.put(stmt, preds_0);
       } else if (stmt == label7Stmt) {
@@ -281,9 +272,7 @@ public class MutableExceptionalStmtGraphTest {
     List<Stmt> succs_1 = ImmutableUtils.immutableList(label6Stmt, label7Stmt);
 
     StmtGraph graph = createGraphWithNestedTraps_1();
-    Iterator<Stmt> it = graph.iterator();
-    while (it.hasNext()) {
-      Stmt stmt = it.next();
+    for (Stmt stmt : graph) {
       if (stmt == label1Stmt || stmt == label3Stmt) {
         succsMap.put(stmt, succs_0);
       } else if (stmt == label2Stmt || stmt == stmtInLabel2) {
@@ -302,9 +291,7 @@ public class MutableExceptionalStmtGraphTest {
     List<Trap> dests_1 = ImmutableUtils.immutableList(trap1, trap3);
 
     StmtGraph graph = createGraphWithNestedTraps_1();
-    Iterator<Stmt> it = graph.iterator();
-    while (it.hasNext()) {
-      Stmt stmt = it.next();
+    for (Stmt stmt : graph) {
       if (stmt == label1Stmt || stmt == label3Stmt) {
         destsMap.put(stmt, dests_0);
       } else if (stmt == label2Stmt || stmt == stmtInLabel2) {
@@ -349,9 +336,7 @@ public class MutableExceptionalStmtGraphTest {
         ImmutableUtils.immutableList(label1Stmt, label2Stmt, label6Stmt, label7Stmt);
 
     StmtGraph graph = createGraphWithChainedTraps();
-    Iterator<Stmt> it = graph.iterator();
-    while (it.hasNext()) {
-      Stmt stmt = it.next();
+    for (Stmt stmt : graph) {
       if (stmt == label6Stmt) {
         predsMap.put(stmt, preds_0);
       } else if (stmt == label7Stmt) {
@@ -373,9 +358,7 @@ public class MutableExceptionalStmtGraphTest {
     List<Stmt> succs_2 = ImmutableUtils.immutableList(label9Stmt);
 
     StmtGraph graph = createGraphWithChainedTraps();
-    Iterator<Stmt> it = graph.iterator();
-    while (it.hasNext()) {
-      Stmt stmt = it.next();
+    for (Stmt stmt : graph) {
       if (stmt == label1Stmt || stmt == label2Stmt) {
         succsMap.put(stmt, succs_0);
       } else if (stmt == label6Stmt) {
@@ -397,9 +380,7 @@ public class MutableExceptionalStmtGraphTest {
     List<Trap> dests_2 = ImmutableUtils.immutableList(trap6);
 
     StmtGraph graph = createGraphWithChainedTraps();
-    Iterator<Stmt> it = graph.iterator();
-    while (it.hasNext()) {
-      Stmt stmt = it.next();
+    for (Stmt stmt : graph) {
       if (stmt == label1Stmt || stmt == label2Stmt) {
         destsMap.put(stmt, dests_0);
       } else if (stmt == label6Stmt) {
@@ -411,32 +392,5 @@ public class MutableExceptionalStmtGraphTest {
       }
     }
     return destsMap;
-  }
-
-  // assert whether two stmt lists are equal
-  public static void assertStmtsListsEquiv(List expected, List actual) {
-
-    assertNotNull(expected);
-    assertNotNull(actual);
-    if (expected.size() != actual.size()) {
-      System.out.println("Expected size is not equal to actual size: ");
-      System.out.println("expected size of list: " + expected.size());
-      System.out.println("actual size of list: " + actual.size());
-    }
-    assertEquals(expected.size(), actual.size());
-    boolean condition = true;
-    for (Object o : actual) {
-      if (!expected.contains(o)) {
-        condition = false;
-        break;
-      }
-    }
-    if (!condition) {
-      System.out.println("expected:");
-      System.out.println(expected);
-      System.out.println("actual:");
-      System.out.println(actual);
-    }
-    assertTrue(condition);
   }
 }

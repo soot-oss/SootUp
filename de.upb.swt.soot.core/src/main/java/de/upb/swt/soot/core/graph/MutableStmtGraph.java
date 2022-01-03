@@ -24,6 +24,7 @@ package de.upb.swt.soot.core.graph;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -34,23 +35,42 @@ public abstract class MutableStmtGraph extends StmtGraph {
 
   public abstract void setStartingStmt(@Nonnull Stmt firstStmt);
 
-  public abstract void addNode(@Nonnull Stmt node);
+  public void addNode(@Nonnull Stmt node) {
+    addNode(node, Collections.emptyList());
+  }
 
+  public abstract void addNode(@Nonnull Stmt node, @Nonnull List<ClassType> traps);
+
+  // maybe refactor addBlock into MutableBlockStmtGraph..
+  public abstract void addBlock(@Nonnull MutableBasicBlock block);
+
+  // public abstract void replaceBlock(@Nonnull MutableBasicBlock oldBlock, @Nonnull
+  // MutableBasicBlock newBlock);
+
+  /** Modification of nodes (without manipulating any flows) */
   public abstract void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt);
 
   public abstract void removeNode(@Nonnull Stmt node);
 
+  /** Modifications of unexceptional flows */
   public abstract void putEdge(@Nonnull Stmt from, @Nonnull Stmt to);
 
   public abstract void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets);
 
   public abstract void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to);
 
-  public abstract void setTraps(@Nonnull List<Trap> traps);
+  /** Modifications of exceptional flows */
+  public abstract void clearExceptionalEdges(@Nonnull Stmt stmt);
 
-  public abstract void addTrap(
-      ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt);
+  //  public abstract void addExceptionalEdge(@Nonnull Stmt stmt, @Nonnull
+  // JIdentityStmt<JCaughtExceptionRef> traphandlerStmt );
 
-  public abstract void removeTrap(
-      ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt);
+  // public abstract void removeExceptionalEdge(@Nonnull Stmt stmt, @Nonnull
+  // JIdentityStmt<JCaughtExceptionRef> traphandlerStmt );
+
+  // FIXME: legacy/remove!
+  @Deprecated
+  public void setTraps(@Nonnull List<Trap> traps) {
+    throw new RuntimeException("Deprecated");
+  }
 }

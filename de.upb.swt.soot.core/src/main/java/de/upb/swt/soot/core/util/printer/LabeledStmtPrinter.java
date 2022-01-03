@@ -126,7 +126,8 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
           trapStmts.add(trap.getEndStmt());
         });
 
-    // Build labelStmts and refStmts
+    // Build labelStmts and refStmts -> is stmt head of a block or does it mark the range of a trap
+    // -> ie does it need a label
     for (Stmt stmt : targetStmtsOfBranches) {
       if (body.isStmtBranchTarget(stmt) || trapStmts.contains(stmt)) {
         labelStmts.add(stmt);

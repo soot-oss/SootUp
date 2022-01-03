@@ -1,6 +1,5 @@
 package de.upb.swt.soot.core.graph;
 
-import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
@@ -13,7 +12,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   @Nullable private Stmt startingStmt = null;
   @Nonnull private final Map<Stmt, Integer> stmtToBlock = new HashMap<>();
   @Nonnull private final ArrayList<MutableBasicBlock> blocks = new ArrayList<>();
-  private List<Trap> traps = null;
 
   public MutableBlockStmtGraph() {}
 
@@ -23,7 +21,14 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     for (Stmt stmt : graph) {
       setEdges(stmt, successors(stmt));
     }
-    setTraps(graph.getTraps());
+    // FIXME: setTraps(graph.getTraps());
+    throw new IllegalArgumentException("cant handle trap conversion ");
+  }
+
+  @Override
+  public void clearExceptionalEdges(@Nonnull Stmt stmt) {
+    // FIXME implement
+    throw new IllegalArgumentException("cant handle trap removal yet.");
   }
 
   @Override
@@ -34,8 +39,41 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   @Override
-  public void addNode(@Nonnull Stmt node) {
-    addNodeInternal(node);
+  public void addNode(@Nonnull Stmt node, @Nonnull List<ClassType> exceptions) {
+    final MutableBasicBlock block = addNodeInternal(node);
+
+    if (block.getExceptionalSuccessors().size() == exceptions.size()) {
+
+    } else {
+
+      // FIXME: implement: handle traps/exceptions i.e. block splitting in here!
+
+    }
+  }
+
+  @Override
+  public void addBlock(@Nonnull MutableBasicBlock block) {
+    // check if the block is already existing in blocks
+    // TODO: [ms] -> performance! its currently an ArrayList
+    for (MutableBasicBlock mutableBasicBlock : blocks) {
+      if (mutableBasicBlock == block) {
+        throw new IllegalArgumentException(
+            "The given block exists already in this MutableBlockStmtGraph Instance.");
+      }
+    }
+
+    int newIdx = blocks.size();
+    blocks.add(block);
+    block
+        .getStmts()
+        .forEach(
+            stmt -> {
+              final Integer exists = stmtToBlock.put(stmt, newIdx);
+              if (exists != null) {
+                throw new IllegalArgumentException(
+                    "Stmt \"" + stmt + "\" of the given Block exists already in the graph!");
+              }
+            });
   }
 
   protected MutableBasicBlock addNodeInternal(@Nonnull Stmt stmt) {
@@ -398,46 +436,5 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       List<Stmt> stmtsA = blockA.getStmts();
       return stmtsA.get(stmtsA.indexOf(source) + 1) == target;
     }
-  }
-
-  @Override
-  public void addTrap(ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt) {
-    // FIXME: implement
-    throw new IllegalStateException("Not implemented yet!");
-  }
-
-  @Override
-  public void removeTrap(ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt) {
-    // FIXME: implement
-    throw new IllegalStateException("Not implemented yet!");
-  }
-
-  @Override
-  public void setTraps(@Nonnull List<Trap> traps) {
-    if (this.traps != null) {
-      for (Trap trap : this.traps) {
-        removeTrap(
-            trap.getExceptionType(), trap.getBeginStmt(), trap.getEndStmt(), trap.getHandlerStmt());
-      }
-    }
-    this.traps = traps;
-
-    for (Trap trap : traps) {
-      // FIXME: implement splitting into basicblocks
-      // TODO: find startblock and possibly split
-      // TODO: add trap to in between blocks
-      // TODO: find endblock and possibly split
-      addTrap(
-          trap.getExceptionType(), trap.getBeginStmt(), trap.getEndStmt(), trap.getHandlerStmt());
-    }
-  }
-
-  @Nonnull
-  @Override
-  public List<Trap> getTraps() {
-    if (traps == null) {
-      Collections.emptyList();
-    }
-    return traps;
   }
 }

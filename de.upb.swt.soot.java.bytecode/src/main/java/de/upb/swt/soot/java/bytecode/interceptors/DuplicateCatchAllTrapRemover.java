@@ -53,7 +53,7 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
-    // TODO: [ms] this algorithms costs are cubic!
+    // TODO: [ms] this algorithms costs are (currently) cubic!
     // maybe sorting it into some kind of interval tree and retrieve overlaps will help to reduce
     // costs
 
@@ -66,6 +66,7 @@ public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
     // Find two traps that use java.lang.Throwable as their type and that span the same code region
     for (int i = 0, trapsSize = traps.size(); i < trapsSize; i++) {
       Trap trap1 = traps.get(i);
+      // FIXME(#430): [ms] adapt to work with java module, too
       if (trap1.getExceptionType().getFullyQualifiedName().equals("java.lang.Throwable")) {
         for (int j = 0; j < trapsSize; j++) {
           Trap trap2 = traps.get(j);

@@ -6,11 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-class MutableBasicBlock implements BasicBlock {
+public class MutableBasicBlock implements BasicBlock {
   @Nonnull private final List<MutableBasicBlock> predecessorBlocks = new ArrayList<>();
   @Nonnull private final List<MutableBasicBlock> successorBlocks = new ArrayList<>();
 
-  @Nonnull private final List<MutableBasicBlock> exceptionalPredecessorBlocks = new ArrayList<>();
   @Nonnull private final List<MutableBasicBlock> exceptionalSuccessorBlocks = new ArrayList<>();
 
   @Nonnull private List<Stmt> stmts = new ArrayList<>();

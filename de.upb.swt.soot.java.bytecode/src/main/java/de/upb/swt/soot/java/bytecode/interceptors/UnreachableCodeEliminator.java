@@ -78,14 +78,18 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
       // is the Traphandler Stmt (still) in the StmtGraph?
       if (!graph.containsNode(trap.getHandlerStmt())) {
         trapIterator.remove();
-      } else
-      // has the trap a valid range? TODO: [ms] why don't we check that (i.e. trap range is empty)
-      // in trap instantiation?
-      if (trap.getBeginStmt() == trap.getEndStmt()) {
-        trapIterator.remove();
-        builder.removeStmt(trap.getBeginStmt());
-        builder.removeStmt(trap.getEndStmt());
-        builder.removeStmt(trap.getHandlerStmt());
+      } else {
+        // has the trap a valid range? TODO: [ms] why don't we check that (i.e. trap range is empty)
+        // in trap instantiation?
+        /*      if (trap.getBeginStmt() == trap.getEndStmt()) {
+               trapIterator.remove();
+               // FIXME: [ms] do we really want to remove begin/end stmt if there is no trap..
+               // FIXME: [ms] check that the handlerstmt is just reachable via an exceptional flow before removing it! (and remove successing stmts without another predecessor, too)
+               builder.removeStmt(trap.getBeginStmt());
+               builder.removeStmt(trap.getEndStmt());
+               builder.removeStmt(trap.getHandlerStmt());
+             }
+        */
       }
     }
   }

@@ -1959,11 +1959,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
 
+    // TODO: [ms] improve - every label denotes a border of a Block! implement adding the Blocks
+    // directly into StmtGraph
+    // MutableBasicBlock block = new MutableBasicBlock();
+
     do {
 
       // assign Stmt associated with the current instruction. see
       // https://asm.ow2.io/javadoc/org/objectweb/asm/Label.html
-      // there can be multiple labels assigned to the following stmt!
+      // there can be multiple labels assigned to the following stmt! (and other AbstractNodes in
+      // between!)
       final boolean isLabelNode = insn instanceof LabelNode;
       if (isLabelNode) {
         // Save the label to assign it to the next real Stmt
@@ -1975,16 +1980,33 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         continue;
       }
 
-      // associate label with following stmt
+      // build traps for this block
+      if (!danglingLabel.isEmpty()) {
+        // TODO: [ms] sliding window of traps via bytecodeoffset
+        // hint: if we have a new label -> indicates: traprange start/end (/handler) or branch
+        // target -> check/adapt sliding window of traps
+        // possible performance hint: verify: traprangestart|traprangeend|branchtarget <=>
+        // !traphandler
+
+        /*if( range.contains(insn) ){
+
+          // FIXME: implement
+
+        }
+        */
+
+      }
+
+      // associate collected labels from danglingLabel with the following stmt
       if (!danglingLabel.isEmpty()) {
         Stmt targetStmt =
             stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt;
         danglingLabel.forEach(l -> labelsToStmt.put(l, targetStmt));
-        // If the targetStmt is an exception handler, register the starting Stmt for it
         if (isLabelNode) {
-          JIdentityStmt<?> caughtEx = findIdentityRefInContainer(stmt);
-          if (caughtEx != null && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
-            danglingLabel.forEach(label -> trapHandler.put(label, caughtEx));
+          // If the targetStmt is an exception handler, register the starting Stmt for it
+          JIdentityStmt<?> identityRef = findIdentityRefInContainer(stmt);
+          if (identityRef != null && identityRef.getRightOp() instanceof JCaughtExceptionRef) {
+            danglingLabel.forEach(label -> trapHandler.put(label, identityRef));
           }
         }
         danglingLabel.clear();
@@ -1994,7 +2016,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     } while ((insn = insn.getNext()) != null);
 
-    // Emit the inline exception handlers
+    // Emit the inline exception handler blocks
     for (LabelNode ln : inlineExceptionHandlers.keySet()) {
       Stmt handler = inlineExceptionHandlers.get(ln);
       emitStmts(handler);
@@ -2008,7 +2030,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       bodyBuilder.addFlow(gotoStmt, targetStmt);
     }
 
-    // link branching stmts with its targets
+    // connect branching stmts with its targets
     for (Map.Entry<Stmt, LabelNode> entry : stmtsThatBranchToLabel.entries()) {
       final Stmt fromStmt = entry.getKey();
       final Stmt targetStmt = labelsToStmt.get(entry.getValue());

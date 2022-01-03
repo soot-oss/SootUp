@@ -117,7 +117,7 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
     @Nonnull
     @Override
     public List<? extends BasicBlock> getExceptionalSuccessors() {
-      throw new UnsupportedOperationException();
+      throw new UnsupportedOperationException("not implemented yet");
     }
 
     @Nonnull

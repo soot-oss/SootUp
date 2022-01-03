@@ -54,20 +54,19 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
   private int nextFreeId = 0;
 
   @Nullable protected Stmt startingStmt;
-  @Nonnull protected List<Trap> traps;
 
   /** creates an empty instance of MutableStmtGraph */
   public MutableStmtGraphImpl() {
     predecessors = new ArrayList<>();
     successors = new ArrayList<>();
     stmtToIdx = new HashMap<>();
-    traps = Collections.emptyList();
   }
 
   /** creates a mutable copy(!) of originalStmtGraph */
   public MutableStmtGraphImpl(@Nonnull StmtGraph originalStmtGraph) {
     setStartingStmt(originalStmtGraph.getStartingStmt());
-    traps = originalStmtGraph.getTraps();
+
+    // FIXME: copy traps!
 
     final Collection<Stmt> nodes = originalStmtGraph.nodes();
     final int nodeSize = nodes.size();
@@ -97,37 +96,21 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
     this.startingStmt = firstStmt;
   }
 
-  @Override
-  public void setTraps(@Nonnull List<Trap> traps) {
-    this.traps = traps;
-  }
-
-  @Override
-  public void addTrap(ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt) {
-    // FIXME: implement
-    throw new IllegalStateException("Not implemented yet!");
-  }
-
-  @Override
-  public void removeTrap(ClassType throwableSig, Stmt fromStmt, Stmt toStmt, Stmt handlerStmt) {
-    // FIXME: implement
-    throw new IllegalStateException("Not implemented yet!");
-  }
-
-  @Override
-  @Nonnull
-  public List<Trap> getTraps() {
-    return traps;
-  }
-
   @Nullable
   public Stmt getStartingStmt() {
     return startingStmt;
   }
 
   @Override
-  public void addNode(@Nonnull Stmt node) {
+  public void addNode(@Nonnull Stmt node, @Nonnull List<ClassType> traps) {
     addNodeInternal(node);
+    // FIXME add traps!
+    throw new RuntimeException("not yet implemented");
+  }
+
+  @Override
+  public void addBlock(@Nonnull MutableBasicBlock block) {
+    throw new RuntimeException("not implemented yet!");
   }
 
   protected int addNodeInternal(@Nonnull Stmt node) {
@@ -180,6 +163,11 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
         stmtToIdx.remove(from);
       }
     }
+  }
+
+  @Override
+  public void clearExceptionalEdges(@Nonnull Stmt stmt) {
+    throw new IllegalArgumentException("removal of traps is not implemented, yet.");
   }
 
   @Override

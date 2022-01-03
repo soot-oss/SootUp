@@ -60,7 +60,10 @@ public abstract class StmtGraph implements Iterable<Stmt> {
 
   /** returns a list of associated traps */
   @Nonnull
-  abstract List<Trap> getTraps();
+  @Deprecated
+  public List<Trap> getTraps() {
+    throw new RuntimeException("deprecated");
+  }
 
   /**
    * returns a Collection of Stmts that leave the body (i.e. JReturnVoidStmt, JReturnStmt and
@@ -242,6 +245,28 @@ public abstract class StmtGraph implements Iterable<Stmt> {
     }
 
     return true;
+  }
+
+  @Nonnull
+  public Iterator<Stmt> iterateUntilBranching(@Nonnull Stmt start) {
+    return new Iterator<Stmt>() {
+      Stmt nextElement = start;
+
+      @Override
+      public boolean hasNext() {
+        return !(nextElement instanceof BranchingStmt);
+      }
+
+      @Override
+      public Stmt next() {
+        final Stmt tmpElement = nextElement;
+        final List<Stmt> successors = successors(nextElement);
+        if (successors.size() > 0) {
+          nextElement = successors.get(0);
+        }
+        return tmpElement;
+      }
+    };
   }
 
   @Override

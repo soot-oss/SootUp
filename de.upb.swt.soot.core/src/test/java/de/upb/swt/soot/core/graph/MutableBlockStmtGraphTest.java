@@ -328,6 +328,54 @@ public class MutableBlockStmtGraphTest {
   }
 
   @Test
+  public void addBlockDirectly() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    assertEquals(0, graph.getBlocks().size());
+
+    MutableBasicBlock blockA = new MutableBasicBlock();
+    blockA.addStmt(firstNop);
+    MutableBasicBlock blockB = new MutableBasicBlock();
+    blockB.addStmt(secondNop);
+    MutableBasicBlock blockC = new MutableBasicBlock();
+    blockC.addStmt(thirdNop);
+
+    graph.addBlock(blockA);
+    assertEquals(1, graph.getBlocks().size());
+
+    graph.addBlock(blockB);
+    assertEquals(2, graph.getBlocks().size());
+  }
+
+  @Test
+  public void linkDirectlyAddedBlocks() {
+
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    MutableBasicBlock blockA = new MutableBasicBlock();
+    blockA.addStmt(firstNop);
+    MutableBasicBlock blockB = new MutableBasicBlock();
+    blockB.addStmt(secondNop);
+    MutableBasicBlock blockC = new MutableBasicBlock();
+    blockC.addStmt(thirdNop);
+
+    graph.addBlock(blockA);
+    graph.addBlock(blockB);
+    graph.addBlock(blockC);
+  }
+
+  @Test
+  public void testBlockValidity() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    MutableBasicBlock block = new MutableBasicBlock();
+  }
+
+  @Test
+  public void testSth() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+  }
+
+  /*
+
+  @Test
   public void modifyTrapToCompleteBlock() {
 
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
@@ -347,4 +395,6 @@ public class MutableBlockStmtGraphTest {
     fail("implement adding");
     fail("implement removal test");
   }
+  */
+
 }

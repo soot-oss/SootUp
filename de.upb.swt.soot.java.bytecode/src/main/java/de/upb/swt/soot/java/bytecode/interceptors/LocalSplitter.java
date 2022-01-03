@@ -22,7 +22,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #L%
  */
 
-import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
@@ -87,7 +86,7 @@ public class LocalSplitter implements BodyInterceptor {
       }
     }
 
-    ExceptionalStmtGraph graph = builder.getStmtGraph();
+    StmtGraph graph = builder.getStmtGraph();
 
     // Create a new Local-Set for the modified new body.
     Set<Local> newLocals = new LinkedHashSet<>(builder.getLocals());

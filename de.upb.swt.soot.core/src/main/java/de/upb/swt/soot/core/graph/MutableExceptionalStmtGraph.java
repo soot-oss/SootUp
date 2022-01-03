@@ -39,7 +39,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraphImpl {
 
   @Nonnull private final ArrayList<List<Stmt>> exceptionalPreds = new ArrayList<>();
   @Nonnull private final ArrayList<List<Stmt>> exceptionalSuccs = new ArrayList<>();
-  @Nonnull private final ArrayList<List<Trap>> exceptionalDestinationTraps = new ArrayList<>();
+  @Nonnull private final ArrayList<List<Trap>> exceptionalTargetTraps = new ArrayList<>();
 
   /** creates an empty instance of ExceptionalStmtGraph */
   public MutableExceptionalStmtGraph() {
@@ -56,7 +56,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraphImpl {
     for (int i = 0; i < size; i++) {
       exceptionalPreds.add(Collections.emptyList());
       exceptionalSuccs.add(Collections.emptyList());
-      exceptionalDestinationTraps.add(Collections.emptyList());
+      exceptionalTargetTraps.add(Collections.emptyList());
     }
 
     // if there're traps, then infer every stmt's exceptional succs
@@ -91,7 +91,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraphImpl {
       for (Stmt stmt : oriStmtGraph.nodes()) {
         List<Trap> inferedDests = inferExceptionalDestinations(stmt, stmtToPosInBody, traps);
         Integer idx = stmtToIdx.get(stmt);
-        exceptionalDestinationTraps.set(idx, inferedDests);
+        exceptionalTargetTraps.set(idx, inferedDests);
       }
     }
   }
@@ -113,7 +113,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraphImpl {
   @Nonnull
   public List<Trap> getDestTraps(@Nonnull Stmt stmt) {
     int idx = getNodeIdx(stmt);
-    return exceptionalDestinationTraps.get(idx);
+    return exceptionalTargetTraps.get(idx);
   }
 
   @Nonnull
@@ -123,14 +123,14 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraphImpl {
   }
 
   /**
-   * Set the destinationsTrap of the given stmt as empty list
+   * Set the targetTrap of the given stmt as empty list
    *
    * @param stmt a given stmt
    */
-  public void removeDestinations(@Nonnull Stmt stmt) {
+  public void removeTargetTraps(@Nonnull Stmt stmt) {
     int idx = getNodeIdx(stmt);
-    List<Trap> dests = exceptionalDestinationTraps.get(idx);
-    exceptionalDestinationTraps.set(idx, Collections.emptyList());
+    List<Trap> dests = exceptionalTargetTraps.get(idx);
+    exceptionalTargetTraps.set(idx, Collections.emptyList());
     exceptionalSuccs.set(idx, Collections.emptyList());
     for (Trap trap : dests) {
       int i = getNodeIdx(trap.getHandlerStmt());
@@ -163,12 +163,12 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraphImpl {
           int hIdx = stmtToIdx.get(trap.getHandlerStmt());
           for (Stmt exceptPred : exceptionalPreds.get(hIdx)) {
             int exceptPredIdx = stmtToIdx.get(exceptPred);
-            List<Trap> dests = exceptionalDestinationTraps.get(exceptPredIdx);
+            List<Trap> dests = exceptionalTargetTraps.get(exceptPredIdx);
             for (Trap dest : dests) {
               if (dest.getHandlerStmt() == trap.getHandlerStmt()
                   && (dest.getBeginStmt() == oldStmt || dest.getEndStmt() == oldStmt)) {
-                exceptionalDestinationTraps.get(exceptPredIdx).remove(dest);
-                exceptionalDestinationTraps.get(exceptPredIdx).add(trap);
+                exceptionalTargetTraps.get(exceptPredIdx).remove(dest);
+                exceptionalTargetTraps.get(exceptPredIdx).add(trap);
               }
             }
           }

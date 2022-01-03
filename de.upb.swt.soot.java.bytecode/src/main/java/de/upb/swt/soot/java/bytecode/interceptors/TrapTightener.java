@@ -22,7 +22,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #L%
  */
 
-import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
@@ -37,7 +37,7 @@ public class TrapTightener implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    ExceptionalStmtGraph exceptionalGraph = builder.getStmtGraph();
+    StmtGraph exceptionalGraph = builder.getStmtGraph();
     List<Stmt> stmtsInPrintOrder = builder.getStmts();
 
     Set<Stmt> monitoredStmts = monitoredStmts(exceptionalGraph);
@@ -114,7 +114,7 @@ public class TrapTightener implements BodyInterceptor {
    * @param graph a given exceptionalStmtGraph
    * @return a list of monitored stmts
    */
-  private Set<Stmt> monitoredStmts(ExceptionalStmtGraph graph) {
+  private Set<Stmt> monitoredStmts(StmtGraph graph) {
     Set<Stmt> monitoredStmts = new HashSet<>();
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(graph.getStartingStmt());
@@ -155,7 +155,7 @@ public class TrapTightener implements BodyInterceptor {
    * @param stmt is a stmt in the given graph
    * @return a list of successors(normal+exceptional) of the given stmt
    */
-  private List<Stmt> getMixSuccessors(ExceptionalStmtGraph graph, Stmt stmt) {
+  private List<Stmt> getMixSuccessors(StmtGraph graph, Stmt stmt) {
     List<Stmt> succs = new ArrayList<>(graph.successors(stmt));
     succs.addAll(graph.exceptionalSuccessors(stmt));
     return succs;
@@ -170,7 +170,7 @@ public class TrapTightener implements BodyInterceptor {
    * @return If trap-destinations of the given stmt contain the given trap, return true, otherwise
    *     return false
    */
-  private boolean mightThrow(ExceptionalStmtGraph graph, Stmt stmt, Trap trap) {
+  private boolean mightThrow(StmtGraph graph, Stmt stmt, Trap trap) {
     for (Trap dest : graph.getDestTraps(stmt)) {
       if (dest == trap) {
         return true;

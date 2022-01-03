@@ -51,14 +51,14 @@ public class JGotoStmt extends BranchingStmt implements Copyable {
     stmtPrinter.stmtRef(getTarget(stmtPrinter.getBody()), true);
   }
 
-  public Stmt getTarget(Body body) {
-    // [ms] bounds are validated in Body
+  public Stmt getTarget(@Nonnull Body body) {
+    // [ms] bounds are validated in Body if its a valid StmtGraph
     return getTargetStmts(body).get(0);
   }
 
   @Override
   @Nonnull
-  public List<Stmt> getTargetStmts(Body body) {
+  public List<Stmt> getTargetStmts(@Nonnull Body body) {
     return body.getBranchTargetsOf(this);
   }
 

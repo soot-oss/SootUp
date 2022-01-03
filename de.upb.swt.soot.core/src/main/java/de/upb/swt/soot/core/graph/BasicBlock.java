@@ -12,6 +12,8 @@ public interface BasicBlock {
   @Nonnull
   List<? extends BasicBlock> getSuccessors();
 
+  // hint: theres no getExceptionalPredecessorBlocks() as it makes no sense in that direction -> use
+  // getPredecessors() ;-)
   @Nonnull
   List<? extends BasicBlock> getExceptionalSuccessors();
 
@@ -19,6 +21,10 @@ public interface BasicBlock {
   List<Stmt> getStmts();
 
   int getStmtCount();
+
+  default boolean isEmpty() {
+    return getStmtCount() > 0;
+  }
 
   @Nonnull
   Stmt getHead();
