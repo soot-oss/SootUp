@@ -52,7 +52,7 @@ public class Body implements Copyable {
   /** The locals for this Body. */
   private final Set<Local> locals;
 
-  @Nonnull private final ImmutableExceptionalStmtGraph ecfg;
+  @Nonnull private final ImmutableExceptionalStmtGraph graph;
 
   /** The Position Information in the Source for this Body. */
   @Nonnull private final Position position;
@@ -86,7 +86,7 @@ public class Body implements Copyable {
       @Nonnull Position position) {
     this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
-    this.ecfg = new ImmutableExceptionalStmtGraph(stmtGraph);
+    this.graph = new ImmutableExceptionalStmtGraph(stmtGraph);
     this.position = position;
     // FIXME: [JMP] Virtual method call in constructor
     checkInit();
@@ -163,13 +163,13 @@ public class Body implements Copyable {
   /** Returns an unmodifiable view of the traps found in this Body. */
   @Nonnull
   public List<Trap> getTraps() {
-    return ecfg.getTraps();
+    return graph.getTraps();
   }
 
   /** Return unit containing the \@this-assignment * */
   public Stmt getThisStmt() {
     for (Stmt u : getStmts()) {
-      if (u instanceof JIdentityStmt && ((JIdentityStmt) u).getRightOp() instanceof JThisRef) {
+      if (u instanceof JIdentityStmt && ((JIdentityStmt<?>) u).getRightOp() instanceof JThisRef) {
         return u;
       }
     }
@@ -179,17 +179,18 @@ public class Body implements Copyable {
 
   /** Return LHS of the first identity stmt assigning from \@this. */
   public Local getThisLocal() {
-    return (Local) (((JIdentityStmt) getThisStmt()).getLeftOp());
+    return (Local) (((JIdentityStmt<?>) getThisStmt()).getLeftOp());
   }
 
   /** Return LHS of the first identity stmt assigning from \@parameter i. */
   public Local getParameterLocal(int i) {
     for (Stmt s : getStmts()) {
-      if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
-        JIdentityStmt is = (JIdentityStmt) s;
-        JParameterRef pr = (JParameterRef) is.getRightOp();
+      if (s instanceof JIdentityStmt
+          && ((JIdentityStmt<?>) s).getRightOp() instanceof JParameterRef) {
+        JIdentityStmt<?> idStmt = (JIdentityStmt<?>) s;
+        JParameterRef pr = (JParameterRef) idStmt.getRightOp();
         if (pr.getIndex() == i) {
-          return (Local) is.getLeftOp();
+          return idStmt.getLeftOp();
         }
       }
     }
@@ -209,12 +210,12 @@ public class Body implements Copyable {
     final List<Local> retVal = new ArrayList<>();
     // TODO: [ms] performance: don't iterate over all stmt -> lazy vs freedom/error tolerance -> use
     // fixed index positions at the beginning?
-    for (Stmt u : ecfg.nodes()) {
+    for (Stmt u : graph.nodes()) {
       if (u instanceof JIdentityStmt) {
-        JIdentityStmt is = (JIdentityStmt) u;
-        if (is.getRightOp() instanceof JParameterRef) {
-          JParameterRef pr = (JParameterRef) is.getRightOp();
-          retVal.add(pr.getIndex(), (Local) is.getLeftOp());
+        JIdentityStmt<?> idStmt = (JIdentityStmt<?>) u;
+        if (idStmt.getRightOp() instanceof JParameterRef) {
+          JParameterRef pr = (JParameterRef) idStmt.getRightOp();
+          retVal.add(pr.getIndex(), idStmt.getLeftOp());
         }
       }
     }
@@ -234,7 +235,7 @@ public class Body implements Copyable {
   @Nonnull
   public Collection<Stmt> getTargetStmtsInBody() {
     List<Stmt> stmtList = new ArrayList<>();
-    for (Stmt stmt : ecfg.nodes()) {
+    for (Stmt stmt : graph.nodes()) {
       if (stmt instanceof BranchingStmt) {
         if (stmt instanceof JIfStmt) {
           stmtList.add(((JIfStmt) stmt).getTarget(this));
@@ -265,8 +266,8 @@ public class Body implements Copyable {
    */
   @Nonnull
   public List<Stmt> getStmts() {
-    final ArrayList<Stmt> stmts = new ArrayList<>(ecfg.nodes().size());
-    for (Stmt stmt : ecfg) {
+    final ArrayList<Stmt> stmts = new ArrayList<>(graph.nodes().size());
+    for (Stmt stmt : graph) {
       stmts.add(stmt);
     }
     return stmts;
@@ -274,7 +275,7 @@ public class Body implements Copyable {
 
   @Nonnull
   public ImmutableExceptionalStmtGraph getStmtGraph() {
-    return ecfg;
+    return graph;
   }
 
   private void checkInit() {
@@ -299,11 +300,11 @@ public class Body implements Copyable {
   /** returns a List of Branch targets of Branching Stmts */
   @Nonnull
   public List<Stmt> getBranchTargetsOf(@Nonnull BranchingStmt fromStmt) {
-    return ecfg.successors(fromStmt);
+    return graph.successors(fromStmt);
   }
 
   public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
-    final List<Stmt> predecessors = ecfg.predecessors(targetStmt);
+    final List<Stmt> predecessors = graph.predecessors(targetStmt);
     if (predecessors.size() > 1) {
       return true;
     }
@@ -351,7 +352,7 @@ public class Body implements Copyable {
   public Collection<Value> getUses() {
     ArrayList<Value> useList = new ArrayList<>();
 
-    for (Stmt stmt : ecfg.nodes()) {
+    for (Stmt stmt : graph.nodes()) {
       useList.addAll(stmt.getUses());
     }
     return useList;
@@ -366,7 +367,7 @@ public class Body implements Copyable {
   public Collection<Value> getDefs() {
     ArrayList<Value> defList = new ArrayList<>();
 
-    for (Stmt stmt : ecfg.nodes()) {
+    for (Stmt stmt : graph.nodes()) {
       defList.addAll(stmt.getDefs());
     }
     return defList;
@@ -691,6 +692,7 @@ public class Body implements Copyable {
       return new Body(methodSig, locals, graph, position);
     }
 
+    @Nonnull
     public Set<Modifier> getModifiers() {
       return modifiers;
     }

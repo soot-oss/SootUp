@@ -360,6 +360,26 @@ public class MutableBlockStmtGraphTest {
     graph.addBlock(blockA);
     graph.addBlock(blockB);
     graph.addBlock(blockC);
+
+    graph.putEdge(firstNop, secondNop);
+    graph.putEdge(secondNop, thirdNop);
+
+    assertEquals(3, graph.getBlocks().size());
+    assertEquals(1, graph.successors(firstNop).size());
+    assertEquals(1, graph.successors(secondNop).size());
+
+    // assertEquals(  Arrays.asList(firstNop, secondNop, thirdNop),
+    // Stream.generate(graph.iterator()::hasNext) );
+
+    graph.removeEdge(secondNop, thirdNop);
+    assertEquals(3, graph.getBlocks().size());
+    assertEquals(1, graph.successors(firstNop).size());
+    assertEquals(graph.successors(secondNop).toString(), 0, graph.successors(secondNop).size());
+
+    graph.removeEdge(firstNop, thirdNop); // empty operation
+    assertEquals(3, graph.getBlocks().size());
+    assertEquals(0, graph.successors(firstNop).size());
+    assertEquals(1, graph.successors(secondNop).size());
   }
 
   @Test

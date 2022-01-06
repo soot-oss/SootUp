@@ -220,9 +220,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     removeBorderEdgesInternal(from, blockIdxOfFrom);
 
     MutableBasicBlock blockOfFrom = blocks.get(blockIdxOfFrom);
-    // not tail or head
+    // neither a tail nor a head stmt
     if (!(from == blockOfFrom.getTail() || from == blockOfFrom.getHead())) {
-      // divide block and dont link them
+      // divide block and don't link them
       MutableBasicBlock blockOfTo = blocks.get(stmtToBlock.get(to));
       if (blockOfFrom != blockOfTo) {
         throw new IllegalStateException();
@@ -235,7 +235,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         blocks.add(newBlock);
         newBlock.getStmts().forEach(s -> stmtToBlock.put(s, newBlockIdx));
       } else {
-        // TODO: do we need to do sth here?
+        // TODO: do we need to do sth here? i.e. in the case that: ...
       }
     }
   }

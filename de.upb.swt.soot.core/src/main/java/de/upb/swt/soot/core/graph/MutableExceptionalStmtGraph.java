@@ -147,6 +147,11 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraphImpl {
   @Override
   public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
 
+    if (oldStmt.getSuccessorCount() != newStmt.getSuccessorCount()) {
+      throw new RuntimeException(
+          "You can only use replaceNode if newStmt has the same amount of branches/outgoing flows.");
+    }
+
     super.replaceNode(oldStmt, newStmt);
 
     int idx = stmtToIdx.get(newStmt);

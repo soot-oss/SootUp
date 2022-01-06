@@ -30,6 +30,7 @@ import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -82,11 +83,29 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
 
   @Nonnull
   public Optional<? extends SootField> getField(@Nonnull FieldSignature signature) {
-    final Optional<T> aClass = getClass(signature.getDeclClassType());
-    if (!aClass.isPresent()) {
-      return Optional.empty();
+
+    ClassType itSig = signature.getDeclClassType();
+
+    while (true) {
+      final Optional<T> scOpt = getClass(itSig);
+      if (!scOpt.isPresent()) {
+        break;
+      }
+      T sc = scOpt.get();
+
+      final Optional<? extends SootField> field = sc.getField(signature.getSubSignature());
+      if (field.isPresent()) {
+        return field;
+      }
+
+      final Optional<? extends ClassType> superclassType = sc.getSuperclass();
+      if (!superclassType.isPresent()) {
+        break;
+      }
+      itSig = superclassType.get();
     }
-    return aClass.get().getField(signature.getSubSignature());
+
+    return Optional.empty();
   }
 
   @SuppressWarnings("unchecked") // Safe because we only put T in putModuleData
