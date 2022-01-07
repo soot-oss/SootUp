@@ -34,6 +34,13 @@ markdown_extensions:
   - pymdownx.highlight:
       linenums: true
       use_pygments: true
+      extend_pygments_lang:
+        - name: jimple
+          lang: lsp
+          options:
+            filetype: jimple
+            lspcommand: "java -jar ~/jimplelsp.jar"
+
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
