@@ -29,3 +29,11 @@ plugins:
 
 extra_css:
   - css/hint.min.css
+
+markdown_extensions:
+  - pymdownx.highlight:
+      linenums: true
+      use_pygments: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
