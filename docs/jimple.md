@@ -97,7 +97,7 @@ ArrayType
 NullType
 
 #### Local
-```
+```jimple
 $i0 
 ```
 [Whats this?](https://www.youtube.com/watch?v=_FLhO7ZnKHs&t=54s)
@@ -116,13 +116,13 @@ There exists a constant entity for every Type - that way all value types can hav
 
 ### Ref
 #### JArrayRef
-```
+```jimple
 $arr[1]
 ```
 referencing a position inside an array.
 
 #### JFieldRef (JStaticFieldRef & JInstanceFieldRef)
-```
+```jimple
 <SomePackage.ExampleClass: fieldname>
 // or
 $r1.<SomePackage.ExampleClass: fieldname>
@@ -133,19 +133,19 @@ referencing a Field via its FieldSignature and if necessary (i.e. with JInstance
 The IdentityRef makes those implicit special value assignments explicit.
 
 ##### JThisRef
-```
+```jimple
 @this: package.fruit.Banana
 ```
 represents the this pointer of the current class.
 
 ##### JCaughtExceptionRef
-```
+```jimple
 @caughtexception
 ```
 represents the value of the thrown exception (caught by this exceptionhandler).
 
 ##### JParameterRef
-```
+```jimple
 $i0 := @parameter0
 $i1 := @parameter1 
 ```
