@@ -21,4 +21,6 @@ jobs:
       - run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
       - run: pwd
       - run: ls
+      - run: stat jimplelsp.jar
       - run: mkdocs gh-deploy --force
+      - run: java -jar jimplelsp.jar
