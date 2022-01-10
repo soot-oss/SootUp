@@ -19,8 +19,6 @@ jobs:
       - run: pip install git+https://github.com/swissiety/LspLexer4Pygments.git
       # grab latest release url of the JimpleLSP jar and download it
       - run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
-      - run: pwd
-      - run: ls
       - run: stat jimplelsp.jar
+      - run: python3 -m pygments -x -O filetype=jimple,lspcommand="java -jar ./jimplelsp.jar" -l lspserver ./shared-test-resources/wala-test-jimple/A.jimple
       - run: mkdocs gh-deploy --force
-      - run: java -jar jimplelsp.jar
