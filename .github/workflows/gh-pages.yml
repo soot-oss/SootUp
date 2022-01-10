@@ -7,15 +7,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # download the latest jimplelsp and (re)name/move the jar to ~/jimplelsp.jar which is
-      - uses: robinraju/release-downloader@v1.3
-        with:
-            repository: "swissiety/JimpleLSP"
-            latest: true
-            fileName: "*.jar"
-            out-file-path: "jimplelspdir"
-      - run: mv jimplelspdir/*.jar ~/jimplelsp.jar
-      # install mk_docs plugins
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
@@ -24,5 +15,5 @@ jobs:
       - run: pip install mkdocs-tooltips
       - run: pip install git+https://github.com/RedisLabs/mkdocs-include.git
       - run: pip install git+https://github.com/swissiety/LspLexer4Pygments.git
-      # deploy gh-pages
+      - run: curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep "browser_download_url.*jar" | cut -d ":" -f 2,3 | tr -d \" | tail -n +1 | wget -q -O ~/jimplelsp.jar -
       - run: mkdocs gh-deploy --force
