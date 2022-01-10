@@ -3,6 +3,8 @@ on:
   push:
     branches: 
       - develop
+      - enhancement/docSyntaxHighlighting
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -17,4 +19,6 @@ jobs:
       - run: pip install git+https://github.com/swissiety/LspLexer4Pygments.git
       # grab latest release url of the JimpleLSP jar and download it
       - run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
+      - run: pwd
+      - run: ls
       - run: mkdocs gh-deploy --force
