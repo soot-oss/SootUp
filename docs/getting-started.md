@@ -35,6 +35,14 @@ Before you use Soot as a library, you need understand the following data structu
 
 - `StmtGraph`: represents the control flow graph of a method body in Jimple statements.
 
+- `Signature`: represents a class ,a methods or a field and they have the following structure:
+```jimple 
+<DeclaringClassPackages.DeclaringClass>
+<DeclaringClassPackages.DeclaringClass: methodName()>
+<DeclaringClassPackages.DeclaringClass: methodName(parameterType1,parameterType2 )>
+<DeclaringClassPackages.DeclaringClass: FieldTypePackage.FieldType FieldName>
+```
+
 ## Add Soot as Library Dependency to Your Project
 1. Maven
 
@@ -50,7 +58,7 @@ TODO
 
 ## Basic Project Setup
 1. Create a project to analyze Java bytecode. 
-~~~
+~~~java
 Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");
 AnalysisInputLocation<JavaSootClass> inputLocation = PathBasedAnalysisInputLocation.createForClassContainer(pathToBinary;
 Language language = new JavaLanguage(8);
@@ -58,7 +66,7 @@ Project project = JavaProject.builder((JavaLanguage) language).addInputLocation(
 ~~~
 
 2. Create a project to analyze Java source code.
-~~~
+~~~java
 Path pathToSource = Paths.get("src/test/resources/BasicSetup/source");
 AnalysisInputLocation<JavaSootClass> inputLocation = new JavaSourcePathAnalysisInputLocation(pathToSource.toString());
 Language language = new JavaLanguage(8);
@@ -70,7 +78,7 @@ Project project = JavaProject.builder((JavaLanguage) language).addInputLocation(
    TODO: add code
 
 4. Create a project to analyze Jimple code.
-~~~
+~~~java
 Path pathToJimple = Paths.get("src/test/resources/BasicSetup/jimple");
 AnalysisInputLocation<JavaSootClass> inputLocation = new JimpleAnalysisInputLocation(pathToJimple);
 Project project = new JimpleProject(inputLocation);
@@ -78,7 +86,7 @@ Project project = new JimpleProject(inputLocation);
 
 ## Create Different Views
 1. Create a full view of all classes found in given analysis input location. 
-~~~
+~~~java
   project.createFullView();
 ~~~  
 2. Create a on-demand view. An on-demand view does not load all classes into the view, but only classes that are specified and their transitive closure. 
@@ -96,6 +104,6 @@ Project project = new JimpleProject(inputLocation);
 
 
 ## All Code Used Aboves
-```
+```java
 {{ include('basicSetup/BasicSetup.java') }}
 ```
