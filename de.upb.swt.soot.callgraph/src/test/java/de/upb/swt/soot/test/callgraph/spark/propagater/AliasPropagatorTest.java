@@ -7,6 +7,7 @@ import de.upb.swt.soot.callgraph.spark.builder.SparkOptions;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.solver.AliasPropagator;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
+import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.VoidType;
@@ -23,6 +24,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static junit.framework.TestCase.fail;
 
@@ -54,13 +57,21 @@ public class AliasPropagatorTest {
 
         JavaView view = javaProject.createOnDemandView();
 
+
         JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
         JavaClassType mainClassSignature = identifierFactory.getClassType(className);
+
+        Optional<? extends SootField> field = view.getField(identifierFactory.getFieldSignature("src", identifierFactory.getClassType("java.util.concurrent.CompletableFuture$UniCompletion"), "java.util.concurrent.CompletableFuture")
+                );
+        Optional<? extends SootField> field2 = view.getField(identifierFactory.getFieldSignature("dep", identifierFactory.getClassType("java.util.concurrent.CompletableFuture$OrRelay"), "java.util.concurrent.CompletableFuture")
+        );
+        view.getClass();
+        Assert.assertTrue(field2.isPresent());
+        System.out.println("I'm here!");
 
         MethodSignature methodSignature =
                 identifierFactory.getMethodSignature(
                         "test", mainClassSignature, "void", Collections.emptyList());
-
 
         final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
         CallGraphAlgorithm algorithm = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);

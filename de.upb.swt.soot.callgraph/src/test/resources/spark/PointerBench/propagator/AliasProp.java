@@ -7,13 +7,13 @@ public class AliasProp {
 
     public void test() {
 
-        boolean condition = true;
+        //boolean condition = true;
         O o1 = new O(); //r1 = o1;
         O o2 = new O(); //r2 = o2
         B b = new B(); //r3 = b;
 
         O p, q;
-        if(condition){
+        if(Math.random()<1){
             p = o1;
         }else{
             p = o2;
