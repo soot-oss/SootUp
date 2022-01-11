@@ -43,6 +43,7 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -126,7 +127,8 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
             if (!(leftOp.getType() instanceof ReferenceType)) {
               return;
             }
-            if (!(rightOp.getType() instanceof ReferenceType)) {
+            //TODO: After implementation of TypeAssigner, delete the UnknownType
+            if (!(rightOp.getType() instanceof ReferenceType || rightOp.getType() instanceof UnknownType)) {
               throw new AssertionError(
                   "Type mismatch in assignment " + stmt + " in method " + method.getSignature());
             }
