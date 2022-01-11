@@ -89,11 +89,14 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
       }
 
     } else if (rValue instanceof Expr) {
-
-      exprVisitor.init((Immediate) oldUse, (Immediate) newUse);
-      ((Expr) rValue).accept(exprVisitor);
-      if (exprVisitor.getResult() != rValue) {
-        setResult(stmt.withRValue(exprVisitor.getResult()));
+      if(oldUse==rValue){
+        setResult(stmt.withRValue(newUse));
+      }else {
+        exprVisitor.init((Immediate) oldUse, (Immediate) newUse);
+        ((Expr) rValue).accept(exprVisitor);
+        if (exprVisitor.getResult() != rValue) {
+          setResult(stmt.withRValue(exprVisitor.getResult()));
+        }
       }
     } else {
       errorHandler(stmt);
