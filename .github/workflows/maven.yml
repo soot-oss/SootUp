@@ -28,7 +28,7 @@ jobs:
       run: mvn verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     - name: Prepare Coverage and Test Reports
       env: 
-        SUBMODULES: java.core java.bytecode java.sourcecode callgraph
+        SUBMODULES: java.core java.bytecode java.sourcecode callgraph examples tests
       run: |
            sudo mkdir target/coverage-reports-jdk8
            sudo mkdir target/test-reports-jdk8
