@@ -32,7 +32,7 @@ public enum CallGraphEdgeType {
   INTERFACE("INTERFACE"),
   /** Due to explicit invokespecial instruction. */
   SPECIAL("SPECIAL"),
-  /** Due to explicit invokedynamic instruction.*/
+  /** Due to explicit invokedynamic instruction. */
   DYNAMIC("DYNAMIC"),
   /** Implicit call to static initializer. */
   CLINIT("CLINIT"),

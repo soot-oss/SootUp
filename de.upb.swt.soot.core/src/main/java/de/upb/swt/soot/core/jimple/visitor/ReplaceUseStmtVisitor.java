@@ -89,9 +89,9 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
       }
 
     } else if (rValue instanceof Expr) {
-      if(oldUse==rValue){
+      if (oldUse == rValue) {
         setResult(stmt.withRValue(newUse));
-      }else {
+      } else {
         exprVisitor.init((Immediate) oldUse, (Immediate) newUse);
         ((Expr) rValue).accept(exprVisitor);
         if (exprVisitor.getResult() != rValue) {

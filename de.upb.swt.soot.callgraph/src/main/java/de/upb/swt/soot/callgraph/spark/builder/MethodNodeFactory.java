@@ -127,8 +127,9 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
             if (!(leftOp.getType() instanceof ReferenceType)) {
               return;
             }
-            //TODO: After implementation of TypeAssigner, delete the UnknownType
-            if (!(rightOp.getType() instanceof ReferenceType || rightOp.getType() instanceof UnknownType)) {
+            // TODO: After implementation of TypeAssigner, delete the UnknownType
+            if (!(rightOp.getType() instanceof ReferenceType
+                || rightOp.getType() instanceof UnknownType)) {
               throw new AssertionError(
                   "Type mismatch in assignment " + stmt + " in method " + method.getSignature());
             }

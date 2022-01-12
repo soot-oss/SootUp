@@ -37,7 +37,7 @@ public class MethodUtil {
       return CallGraphEdgeType.STATIC;
     } else if (invokeExpr instanceof JDynamicInvokeExpr) {
       return CallGraphEdgeType.DYNAMIC;
-    }else {
+    } else {
       throw new RuntimeException("No such invokeExpr:" + invokeExpr);
     }
   }

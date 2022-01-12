@@ -104,7 +104,7 @@ public class AliasPropagator implements Propagator {
       for (FieldReferenceNode srcFr : source.getAllFieldReferences()) {
         Field field = srcFr.getField();
         Set<VariableNode> targets = fieldToBases.get(field);
-        if(targets!=null && !targets.isEmpty()){
+        if (targets != null && !targets.isEmpty()) {
           for (VariableNode target : fieldToBases.get(field)) {
             if (intersect(source.getPointsToSet(), getFullP2Set(target))) {
               FieldReferenceNode tgtFr = target.getField(field);
@@ -119,15 +119,15 @@ public class AliasPropagator implements Propagator {
               inFieldRefWorkList.add(srcFr);
               inFieldRefWorkList.add(tgtFr);
               if (addNewP2Info(
-                      getOrCreateOutFrNewP2Set(tgtFr),
-                      srcFr.getOrCreatePointsToSet(),
-                      getOrCreateOutFrOldP2Set(tgtFr))) {
+                  getOrCreateOutFrNewP2Set(tgtFr),
+                  srcFr.getOrCreatePointsToSet(),
+                  getOrCreateOutFrOldP2Set(tgtFr))) {
                 outFieldRefWorkList.add(tgtFr);
               }
               if (addNewP2Info(
-                      getOrCreateOutFrNewP2Set(srcFr),
-                      tgtFr.getOrCreatePointsToSet(),
-                      getOrCreateOutFrOldP2Set(srcFr))) {
+                  getOrCreateOutFrNewP2Set(srcFr),
+                  tgtFr.getOrCreatePointsToSet(),
+                  getOrCreateOutFrOldP2Set(srcFr))) {
                 outFieldRefWorkList.add(srcFr);
               }
             }
@@ -140,18 +140,18 @@ public class AliasPropagator implements Propagator {
   protected void handleFieldRefWorkList() {
     for (FieldReferenceNode source : inFieldRefWorkList) {
       Set<FieldReferenceNode> targets = aliasEdges.get(source);
-      if(targets != null && !targets.isEmpty()){
+      if (targets != null && !targets.isEmpty()) {
         for (FieldReferenceNode target : aliasEdges.get(source)) {
           if (addNewP2Info(
-                  getOrCreateOutFrNewP2Set(target),
-                  source.getOrCreatePointsToSet(),
-                  getOrCreateOutFrOldP2Set(target))) {
+              getOrCreateOutFrNewP2Set(target),
+              source.getOrCreatePointsToSet(),
+              getOrCreateOutFrOldP2Set(target))) {
             outFieldRefWorkList.add(target);
           }
         }
       }
       Set<Node> newInfo = nodeToNewPoint2Set.get(source);
-      if(newInfo != null && !newInfo.isEmpty()){
+      if (newInfo != null && !newInfo.isEmpty()) {
         flushNew(source, nodeToNewPoint2Set.get(source));
       }
     }
@@ -163,9 +163,10 @@ public class AliasPropagator implements Propagator {
         continue;
       }
       Set<VariableNode> targets = pag.loadLookup(source);
-      if(targets!=null && !targets.isEmpty()){
+      if (targets != null && !targets.isEmpty()) {
         for (VariableNode target : targets) {
-          if (addNewP2Info(nodeToNewPoint2Set.get(target), p2Set, target.getOrCreatePointsToSet())) {
+          if (addNewP2Info(
+              nodeToNewPoint2Set.get(target), p2Set, target.getOrCreatePointsToSet())) {
             varNodeWorkList.add(target);
           }
         }
@@ -213,7 +214,7 @@ public class AliasPropagator implements Propagator {
     // Todo: Lack of OnFlyCallGraph Part
 
     Set<VariableNode> varTargets = pag.simpleLookup(source);
-    if(varTargets!=null && !varTargets.isEmpty()){
+    if (varTargets != null && !varTargets.isEmpty()) {
       for (VariableNode varTarget : varTargets) {
         Set<Node> oldP2Set = varTarget.getOrCreatePointsToSet();
         Set<Node> newP2Set = nodeToNewPoint2Set.get(varTarget);
@@ -228,7 +229,7 @@ public class AliasPropagator implements Propagator {
     }
 
     Set<FieldReferenceNode> fieldTargets = pag.storeLookup(source);
-    if(fieldTargets!=null && !fieldTargets.isEmpty()){
+    if (fieldTargets != null && !fieldTargets.isEmpty()) {
       for (FieldReferenceNode fieldTarget : fieldTargets) {
         Set<Node> oldP2Set = fieldTarget.getOrCreatePointsToSet();
         Set<Node> newP2Set = nodeToNewPoint2Set.get(fieldTarget);
