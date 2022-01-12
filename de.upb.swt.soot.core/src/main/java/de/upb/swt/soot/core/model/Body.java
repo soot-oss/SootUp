@@ -542,6 +542,7 @@ public class Body implements Copyable {
       return this;
     }
 
+    @Deprecated
     @Nonnull
     public BodyBuilder setTraps(@Nonnull List<Trap> traps) {
       graph.setTraps(traps);

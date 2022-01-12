@@ -389,19 +389,12 @@ public class MutableBlockStmtGraphTest {
   }
 
   @Test
-  public void testSth() {
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-  }
-
-  /*
-
-  @Test
   public void modifyTrapToCompleteBlock() {
 
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     graph.putEdge(firstNop, secondNop);
     assertEquals(1, graph.getBlocks().size());
-    graph.addTrap(throwableSig, secondNop, secondNop, firstHandlerStmt);
+    // graph.addTrap(throwableSig, secondNop, secondNop, firstHandlerStmt);
   }
 
   @Test
@@ -415,6 +408,9 @@ public class MutableBlockStmtGraphTest {
     fail("implement adding");
     fail("implement removal test");
   }
-  */
 
+  @Test
+  public void testSth() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+  }
 }

@@ -66,9 +66,7 @@ public class TrapTightener implements BodyInterceptor {
         // If trap is a catch-all block and the current stmt has an active monitor, we need to keep
         // the block
         if (isCatchAll && monitoredStmts.contains(s)) {
-          if (newTrapBegin == null) {
-            newTrapBegin = s;
-          }
+          newTrapBegin = s;
           break;
         }
       }
@@ -125,7 +123,7 @@ public class TrapTightener implements BodyInterceptor {
       visitedStmts.add(stmt);
       // enter a monitored block
       if (stmt instanceof JEnterMonitorStmt) {
-        Deque<Stmt> monitoredQueue = new ArrayDeque();
+        Deque<Stmt> monitoredQueue = new ArrayDeque<>();
         monitoredQueue.add(stmt);
         while (!monitoredQueue.isEmpty()) {
           Stmt monitorStmt = monitoredQueue.removeFirst();
