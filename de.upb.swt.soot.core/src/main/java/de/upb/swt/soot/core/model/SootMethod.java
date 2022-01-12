@@ -140,6 +140,11 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   }
 
   @Nonnull
+  public BodySource getBodySource() {
+    return bodySource;
+  }
+  
+  @Nonnull
   public List<ClassType> getExceptionSignatures() {
     return exceptions;
   }
@@ -371,5 +376,18 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
       return new SootMethod(
           getSource(), getSignature(), getModifiers(), getThrownExceptions(), position);
     }
+  }
+  
+  @Override
+  public int hashCode() {
+    return getBodySource().getSignature().hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if(!(obj instanceof SootMethod)) {
+      return false;
+    }
+    return getBodySource() == ((SootMethod)obj).getBodySource();
   }
 }
