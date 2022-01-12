@@ -103,30 +103,33 @@ public class AliasPropagator implements Propagator {
     for (VariableNode source : aliasWorkList) {
       for (FieldReferenceNode srcFr : source.getAllFieldReferences()) {
         Field field = srcFr.getField();
-        for (VariableNode target : fieldToBases.get(field)) {
-          if (intersect(source.getPointsToSet(), getFullP2Set(target))) {
-            FieldReferenceNode tgtFr = target.getField(field);
-            if (!aliasEdges.containsKey(srcFr)) {
-              aliasEdges.put(srcFr, new HashSet<>());
-            }
-            if (!aliasEdges.containsKey(tgtFr)) {
-              aliasEdges.put(tgtFr, new HashSet<>());
-            }
-            aliasEdges.get(srcFr).add(tgtFr);
-            aliasEdges.get(tgtFr).add(srcFr);
-            inFieldRefWorkList.add(srcFr);
-            inFieldRefWorkList.add(tgtFr);
-            if (addNewP2Info(
-                getOrCreateOutFrNewP2Set(tgtFr),
-                srcFr.getOrCreatePointsToSet(),
-                getOrCreateOutFrOldP2Set(tgtFr))) {
-              outFieldRefWorkList.add(tgtFr);
-            }
-            if (addNewP2Info(
-                getOrCreateOutFrNewP2Set(srcFr),
-                tgtFr.getOrCreatePointsToSet(),
-                getOrCreateOutFrOldP2Set(srcFr))) {
-              outFieldRefWorkList.add(srcFr);
+        Set<VariableNode> targets = fieldToBases.get(field);
+        if(targets!=null && !targets.isEmpty()){
+          for (VariableNode target : fieldToBases.get(field)) {
+            if (intersect(source.getPointsToSet(), getFullP2Set(target))) {
+              FieldReferenceNode tgtFr = target.getField(field);
+              if (!aliasEdges.containsKey(srcFr)) {
+                aliasEdges.put(srcFr, new HashSet<>());
+              }
+              if (!aliasEdges.containsKey(tgtFr)) {
+                aliasEdges.put(tgtFr, new HashSet<>());
+              }
+              aliasEdges.get(srcFr).add(tgtFr);
+              aliasEdges.get(tgtFr).add(srcFr);
+              inFieldRefWorkList.add(srcFr);
+              inFieldRefWorkList.add(tgtFr);
+              if (addNewP2Info(
+                      getOrCreateOutFrNewP2Set(tgtFr),
+                      srcFr.getOrCreatePointsToSet(),
+                      getOrCreateOutFrOldP2Set(tgtFr))) {
+                outFieldRefWorkList.add(tgtFr);
+              }
+              if (addNewP2Info(
+                      getOrCreateOutFrNewP2Set(srcFr),
+                      tgtFr.getOrCreatePointsToSet(),
+                      getOrCreateOutFrOldP2Set(srcFr))) {
+                outFieldRefWorkList.add(srcFr);
+              }
             }
           }
         }
@@ -147,7 +150,10 @@ public class AliasPropagator implements Propagator {
           }
         }
       }
-      flushNew(source, nodeToNewPoint2Set.get(source));
+      Set<Node> newInfo = nodeToNewPoint2Set.get(source);
+      if(newInfo != null && !newInfo.isEmpty()){
+        flushNew(source, nodeToNewPoint2Set.get(source));
+      }
     }
     inFieldRefWorkList = new HashSet<>();
 
@@ -222,7 +228,7 @@ public class AliasPropagator implements Propagator {
     }
 
     Set<FieldReferenceNode> fieldTargets = pag.storeLookup(source);
-    if(fieldTargets!=null && !varTargets.isEmpty()){
+    if(fieldTargets!=null && !fieldTargets.isEmpty()){
       for (FieldReferenceNode fieldTarget : fieldTargets) {
         Set<Node> oldP2Set = fieldTarget.getOrCreatePointsToSet();
         Set<Node> newP2Set = nodeToNewPoint2Set.get(fieldTarget);

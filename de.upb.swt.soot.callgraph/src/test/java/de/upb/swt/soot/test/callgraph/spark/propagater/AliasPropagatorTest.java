@@ -61,14 +61,6 @@ public class AliasPropagatorTest {
         JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
         JavaClassType mainClassSignature = identifierFactory.getClassType(className);
 
-        Optional<? extends SootField> field = view.getField(identifierFactory.getFieldSignature("src", identifierFactory.getClassType("java.util.concurrent.CompletableFuture$UniCompletion"), "java.util.concurrent.CompletableFuture")
-                );
-        Optional<? extends SootField> field2 = view.getField(identifierFactory.getFieldSignature("dep", identifierFactory.getClassType("java.util.concurrent.CompletableFuture$OrRelay"), "java.util.concurrent.CompletableFuture")
-        );
-        view.getClass();
-        Assert.assertTrue(field2.isPresent());
-        System.out.println("I'm here!");
-
         MethodSignature methodSignature =
                 identifierFactory.getMethodSignature(
                         "test", mainClassSignature, "void", Collections.emptyList());

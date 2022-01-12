@@ -13,6 +13,7 @@ public class AliasProp {
         B b = new B(); //r3 = b;
 
         O p, q;
+        //if(condition){
         if(Math.random()<1){
             p = o1;
         }else{
