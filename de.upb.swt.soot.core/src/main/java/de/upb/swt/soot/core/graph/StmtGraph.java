@@ -243,7 +243,7 @@ public abstract class StmtGraph implements Iterable<Stmt> {
       final int successorCount = successors.size();
 
       if (predecessors(stmt).size() == 0) {
-        if (!(stmt == getStartingStmt()
+        if (!(stmt.equals(getStartingStmt())
             || getTraps().stream()
                 .map(Trap::getHandlerStmt)
                 .anyMatch(handler -> handler == stmt))) {
