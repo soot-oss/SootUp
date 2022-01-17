@@ -2,9 +2,9 @@
 
 ## Body Interceptors
 
-!!! info
+!!! info "Soot Equivalent"
 
-    Soot Equivalent: Transformer
+    [BodyTransformer](https://github.com/soot-oss/soot/blob/develop/src/main/java/soot/BodyTransformer.java)
 
 
 Almost in all use-cases you can simply *ignore* body interceptors. They are applied to each `Body` *by default* to create their rather normalized or leaner versions, e.g. 
