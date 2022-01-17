@@ -10,8 +10,8 @@ nav:
 #  - 'Knowledge':
 #    - Goal: goal.md
     - Jimple: jimple.md
-    - Body Interceptors: BodyInterceptor.md
-    - Tools: Tools.md
+    - Advanced Topics: advanced-topics.md
+    - Tools: tools.md
 #    - CallGraph: callgraph.md
 #    - Analyses: analyses.md
 
@@ -41,7 +41,9 @@ markdown_extensions:
             filetype: jimple
             # the path of the jimplelsp.jar needs to be the same as in the gh-pages.yml workflow
             lspcommand: "java -jar ./jimplelsp.jar"
-
+  - admonition
+    - pymdownx.details
+    - pymdownx.superfences
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
