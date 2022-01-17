@@ -42,9 +42,14 @@ You can use bytecode analysis typically when you do not have access to the sourc
 
     ~~~java
     Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");
-    AnalysisInputLocation<JavaSootClass> inputLocation = PathBasedAnalysisInputLocation.createForClassContainer(pathToBinary;
-    Language language = new JavaLanguage(8);
-    Project project = JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
+    
+    AnalysisInputLocation<JavaSootClass> inputLocation = 
+            PathBasedAnalysisInputLocation.createForClassContainer(pathToBinary);
+            
+    JavaLanguage language = new JavaLanguage(8);
+    
+    Project project = 
+            JavaProject.builder(language).addInputLocation(inputLocation).build();
     ~~~
 
 If you have access to the source code, it is also possible to create a project for analyzing source code. Following example shows how to create project for analyzing Java source code.
@@ -53,9 +58,14 @@ If you have access to the source code, it is also possible to create a project f
 
     ~~~java
     Path pathToSource = Paths.get("src/test/resources/BasicSetup/source");
-    AnalysisInputLocation<JavaSootClass> inputLocation = new JavaSourcePathAnalysisInputLocation(pathToSource.toString());
-    Language language = new JavaLanguage(8);
-    Project project = JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
+    
+    AnalysisInputLocation<JavaSootClass> inputLocation = 
+            new JavaSourcePathAnalysisInputLocation(pathToSource.toString());
+            
+    JavaLanguage language = new JavaLanguage(8);
+    
+    Project project = 
+            JavaProject.builder(language).addInputLocation(inputLocation).build();
     ~~~
 
 If you have a [Jimple](../jimple) file, you can create a project for analyzing jimple code directly. Following example shows how to create project for analyzing jimple code.
@@ -64,7 +74,9 @@ If you have a [Jimple](../jimple) file, you can create a project for analyzing j
 
     ~~~java
     Path pathToJimple = Paths.get("src/test/resources/BasicSetup/jimple");
+    
     AnalysisInputLocation<JavaSootClass> inputLocation = new JimpleAnalysisInputLocation(pathToJimple);
+    
     Project project = new JimpleProject(inputLocation);
     ~~~
 
@@ -79,9 +91,9 @@ If you have a [Jimple](../jimple) file, you can create a project for analyzing j
 It is possible to create different views based on your needs. You can prefer creating a full view, when you are interested in the whole program including all the application code, and the library code; or you can create an on-demand view, when you want to limit your analysis' scope.
 You can call different view creation methods on the `project` object.
 
-~~~java
+```java
 project.createFullView();
- ~~~ 
+```
 
 
 ## Retrieving a Class
@@ -96,12 +108,17 @@ Let's say the following is the target program that we want to analyze:
     package example;
     
     public class HelloWorld {
+    
       public HelloWorld() {
+      
       }
     
       public static void main(String[] var0) {
+      
         System.out.println("Hello World!");
+        
       }
+      
     }
     ```
 
