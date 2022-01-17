@@ -75,7 +75,8 @@ If you have a [Jimple](../jimple) file, you can create a project for analyzing j
     ~~~java
     Path pathToJimple = Paths.get("src/test/resources/BasicSetup/jimple");
     
-    AnalysisInputLocation<JavaSootClass> inputLocation = new JimpleAnalysisInputLocation(pathToJimple);
+    AnalysisInputLocation<JavaSootClass> inputLocation = 
+            new JimpleAnalysisInputLocation(pathToJimple);
     
     Project project = new JimpleProject(inputLocation);
     ~~~
@@ -131,7 +132,7 @@ Then, we could define the `ClassType` of the `HelloWorld` class as follows:
             project.getIdentifierFactory().getClassType("example.HelloWorld");
     ```
 
-Once we have a `ClassType` which identifies the `HelloWorld` class, we can use it to retrieve the corresponding `SootClass` object from the `view` as shown below.
+Once we have a `ClassType` that identifies the `HelloWorld` class, we can use it to retrieve the corresponding `SootClass` object from the `view` as shown below:
 
 !!! example "Retrieving a SootClass"
 
@@ -139,6 +140,68 @@ Once we have a `ClassType` which identifies the `HelloWorld` class, we can use i
     SootClass<JavaSootClassSource> sootClass =
             (SootClass<JavaSootClassSource>) view.getClass(classType).get();
     ```
+
+## Retrieving a Method
+Like the classes, methods also have an identifier which we call `MethodSignature`. For instance, we can define the method signature for identifying the `main` method of the `HelloWorld` class as follows:
+
+!!! example "Defining a MethodSignature"
+
+    ```java
+    MethodSignature methodSignature =
+        project
+            .getIdentifierFactory()
+            .getMethodSignature(
+                "main", // method name
+                classType,
+                "void", // return type
+                Collections.singletonList("java.lang.String[]")); // args
+    ```
+
+Once we have a `MethodSignature` that identifies the `main` method of the `HelloWorld` class, we can use it to retrueve the corresponding `SootMethod` object from the `view` as shown below:
+
+!!! example "Retrieving a SootMethod from the View"
+
+    ```java
+    Optional<SootMethod> opt = view.getMethod(methodSignature);
+    
+    if(opt.isPresent()){
+      SootMethod method = opt.get();
+    }
+    ```
+Alternatively, we can also retrieve a `SootMethod` from `SootClass` that contains it.
+
+!!! example "Retrieving a SootMethod from a SootClass"
+
+    ```java
+    Optional<? extends SootMethod> opt = sootClass.getMethod(methodSignature.getSubSignature());
+    
+    if(opt.isPresent()){
+      SootMethod method = opt.get();
+    }
+    ```
+
+## Retrieving the Control-Flow Graph of a Method
+
+Each `SootMethod` contain a Control-Flow Graph (CFG), or as we name here a `StmtGraph`, that is usually used for program analysis. You can retrieve the CFG of a `SootMethod` as follows:
+
+!!! example "Retrieving the CFG of a SootMethod"
+
+    ```java
+        sootMethod.getBody().getStmts();
+    ```
+
+
+<!--- ## Perform an Intra-procedural Analysis --->
+
+## Construct Call Graph
+
+## Perform an Inter-procedural Analysis
+
+
+## All Code Used Aboves
+```java
+{{ include('basicSetup/BasicSetup.java') }}
+```
 
 
 <!---
@@ -156,14 +219,3 @@ Once we have a `ClassType` which identifies the `HelloWorld` class, we can use i
    
 --->
 
-## Perform an Intra-procedural Analysis
-
-## Construct Call Graph
-
-## Perform an Inter-procedural Analysis
-
-
-## All Code Used Aboves
-```java
-{{ include('basicSetup/BasicSetup.java') }}
-```
