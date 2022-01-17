@@ -29,3 +29,19 @@ plugins:
 
 extra_css:
   - css/hint.min.css
+
+markdown_extensions:
+  - pymdownx.highlight:
+      linenums: true
+      use_pygments: true
+      extend_pygments_lang:
+        - name: jimple
+          lang: lspserver
+          options:
+            filetype: jimple
+            # the path of the jimplelsp.jar needs to be the same as in the gh-pages.yml workflow
+            lspcommand: "java -jar ./jimplelsp.jar"
+
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences

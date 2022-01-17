@@ -373,6 +373,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertTrue(cg.containsCall(mainMethodSignature, method));
   }
 
+  /** Ignored because takes too long to analyze whole rt.jar */
   @Ignore
   public void testHelloWorld() {
     CallGraph cg = loadCallGraph("Misc", "HelloWorld");
