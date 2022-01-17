@@ -1,15 +1,6 @@
 # Getting Started
-This new version enables Soot users to use Soot in a much more flexible manner. Particularly, we introduce the following major, breaking changes:
 
-- Library by default. This version of Soot assumes that it’s embedded in a client application that owns the thread of control. This analysis client can use off Soot whatever is needed. We also plan to implement a command-line client which implements a default control thread to load into Soot certain code projects, have them analyzed/transformed, similarly to how old Soot was used.
-
-- No singleton such the `Scene` class in the old Soot any more. A much more decoupled, modular design allows users to parallelize analysis of multiple projects.
-
-- We use WALA's source code front ends to support more languages. This will not only allow Soot to analyze Java source code, but also JavaScript and Python.
-
-- Jimple is the only intermediate representation (IR) in this new version and it undergos slight changes to accommodate different programming languages. 
-
-- Immutable by design. This allows users to have multiple views on the code. Jimple-modification is still possible.
+This page walks you through the core data structures, as well as shows how to get started with FutureSoot.
 
 ## Core Data Structures
 Before you use Soot as a library, you need understand the following data structures at first: 
@@ -34,27 +25,6 @@ Before you use Soot as a library, you need understand the following data structu
 - `Body`: represents a method body in Jimpe.
 
 - `StmtGraph`: represents the control flow graph of a method body in Jimple statements.
-
-- `Signature`: represents a class ,a methods or a field and they have the following structure:
-```jimple 
-<DeclaringClassPackages.DeclaringClass>
-<DeclaringClassPackages.DeclaringClass: methodName()>
-<DeclaringClassPackages.DeclaringClass: methodName(parameterType1,parameterType2 )>
-<DeclaringClassPackages.DeclaringClass: FieldTypePackage.FieldType FieldName>
-```
-
-## Add Soot as Library Dependency to Your Project
-1. Maven
-
-TODO
-
-2. Gradle
-
-TODO
-
-3. Eclipse
-
-TODO
 
 ## Basic Project Setup
 1. Create a project to analyze Java bytecode. 
