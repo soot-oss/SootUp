@@ -197,12 +197,119 @@ You can view all the code used until this point below:
 
     [BasicSetup.java](https://github.com/secure-software-engineering/soot-reloaded/blob/develop/examples/src/test/java/de/upb/swt/soot/examples/basicSetup/BasicSetup.java)
 
+## FutureSoot vs Soot
+
+Below we show a comparison of the code so far with the same functionality in Soot.
+
+=== "FutureSoot"
+
+    ``` java
+        // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
+        // from the directory
+        Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");
+        AnalysisInputLocation<JavaSootClass> inputLocation =
+            PathBasedAnalysisInputLocation.createForClassContainer(pathToBinary);
+    
+        // Specify the language of the JavaProject. This is especially relevant for Multi-release jars,
+        // where classes are loaded depending on the language level of the analysis
+        Language language = new JavaLanguage(8);
+    
+        // Create a new JavaProject based on the input location
+        Project project =
+            JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
+    
+        // Create a signature for the class we want to analyze
+        ClassType classType = project.getIdentifierFactory().getClassType("HelloWorld");
+    
+        // Create a signature for the method we want to analyze
+        MethodSignature methodSignature =
+            project
+                .getIdentifierFactory()
+                .getMethodSignature(
+                    "main", classType, "void", Collections.singletonList("java.lang.String[]"));
+    
+        // Create a view for project, which allows us to retrieve classes
+        View view = project.createOnDemandView();
+    
+        // Assert that class is present
+        assertTrue(view.getClass(classType).isPresent());
+    
+        // Retrieve class
+        SootClass<JavaSootClassSource> sootClass =
+            (SootClass<JavaSootClassSource>) view.getClass(classType).get();
+    
+        // Retrieve method
+        view.getMethod(methodSignature);
+    
+        // Alternatively:
+        assertTrue(sootClass.getMethod(methodSignature.getSubSignature()).isPresent());
+        SootMethod sootMethod = sootClass.getMethod(methodSignature.getSubSignature()).get();
+    
+        // Read jimple code of method
+        System.out.println(sootMethod.getBody());
+    
+        // Assert that Hello world print is present
+        assertTrue(
+            sootMethod.getBody().getStmts().stream()
+                .anyMatch(
+                    stmt ->
+                        stmt instanceof JInvokeStmt
+                            && stmt.getInvokeExpr() instanceof JVirtualInvokeExpr
+                            && stmt.getInvokeExpr()
+                                .getArg(0)
+                                .equivTo(JavaJimple.getInstance().newStringConstant("Hello World!"))));
+    ```
+
+=== "Soot"
+
+    ``` java
+    G.reset();
+    String userdir = System.getProperty("user.dir");
+    String sootCp = userdir + File.separator + "target" + File.separator + "test-classes"+ File.pathSeparator + "lib"+File.separator+"rt.jar";
+    Options.v().set_soot_classpath(sootCp);
+
+    // We want to perform a whole program, i.e. an interprocedural analysis.
+    // We construct a basic CHA call graph for the program
+    Options.v().set_whole_program(true);
+    Options.v().setPhaseOption("cg.cha", "on");
+    Options.v().setPhaseOption("cg", "all-reachable:true");
+
+    Options.v().set_no_bodies_for_excluded(true);
+    Options.v().set_allow_phantom_refs(true);
+    Options.v().setPhaseOption("jb", "use-original-names:true");
+    Options.v().set_prepend_classpath(false);
+
+    Scene.v().addBasicClass("java.lang.StringBuilder");
+    SootClass c = Scene.v().forceResolve(targetTestClassName, SootClass.BODIES);
+    if (c != null) {
+        c.setApplicationClass();
+    }
+    Scene.v().loadNecessaryClasses();
+    
+    SootMethod method;
+    for (SootClass c : Scene.v().getApplicationClasses()) {
+        if(c.getName().equals("example.HelloWorld")){
+            for (SootMethod m : c.getMethods()) {
+                if (!m.hasActiveBody()) {
+                    continue;
+                }
+                if (m.getName().equals("entryPoint")) {
+                    method = m;
+                    break;
+                }
+            }
+        }
+    }
+    ```
+
+
 <!--- ## Perform an Intra-procedural Analysis --->
 
+<!--- 
 ## Construct Call Graph
 
 ## Perform an Inter-procedural Analysis
-
+--->
 
 
 
