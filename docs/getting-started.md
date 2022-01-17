@@ -36,7 +36,7 @@ Before you get started with the FutureSoot library, it helps to learn about the 
 
 ## Creating a Project
 
-Following example shows how to create project for analyzing Java bytecode.
+You can use bytecode analysis typically when you do not have access to the source code of the target program. Following example shows how to create project for analyzing Java bytecode.
 
 !!! example "Create a project to analyze Java bytecode"
 
@@ -47,7 +47,7 @@ Following example shows how to create project for analyzing Java bytecode.
     Project project = JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
     ~~~
 
-Following example shows how to create project for analyzing Java source code.
+If you have access to the source code, it is also possible to create a project for analyzing source code. Following example shows how to create project for analyzing Java source code.
 
 !!! example "Create a project to analyze Java source code"
 
@@ -58,7 +58,7 @@ Following example shows how to create project for analyzing Java source code.
     Project project = JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
     ~~~
 
-Following example shows how to create project for analyzing jimple code.
+If you have a [Jimple](../jimple) file, you can create a project for analyzing jimple code directly. Following example shows how to create project for analyzing jimple code.
 
 !!! example "Create a project to analyze jimple code"
 
