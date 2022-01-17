@@ -34,33 +34,46 @@ Before you get started with the FutureSoot library, it helps to learn about the 
 
 - `StmtGraph`: represents the control flow graph of a method body in Jimple statements.
 
-## Basic Project Setup
-1. Create a project to analyze Java bytecode. 
-~~~java
-Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");
-AnalysisInputLocation<JavaSootClass> inputLocation = PathBasedAnalysisInputLocation.createForClassContainer(pathToBinary;
-Language language = new JavaLanguage(8);
-Project project = JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
-~~~
+## Creating a Project
 
-2. Create a project to analyze Java source code.
-~~~java
-Path pathToSource = Paths.get("src/test/resources/BasicSetup/source");
-AnalysisInputLocation<JavaSootClass> inputLocation = new JavaSourcePathAnalysisInputLocation(pathToSource.toString());
-Language language = new JavaLanguage(8);
-Project project = JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
-~~~
+Following example shows how to create project for analyzing Java bytecode.
 
+!!! example "Create a project to analyze Java bytecode"
+
+    ~~~java
+    Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");
+    AnalysisInputLocation<JavaSootClass> inputLocation = PathBasedAnalysisInputLocation.createForClassContainer(pathToBinary;
+    Language language = new JavaLanguage(8);
+    Project project = JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
+    ~~~
+
+Following example shows how to create project for analyzing Java source code.
+
+!!! example "Create a project to analyze Java source code"
+
+    ~~~java
+    Path pathToSource = Paths.get("src/test/resources/BasicSetup/source");
+    AnalysisInputLocation<JavaSootClass> inputLocation = new JavaSourcePathAnalysisInputLocation(pathToSource.toString());
+    Language language = new JavaLanguage(8);
+    Project project = JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
+    ~~~
+
+Following example shows how to create project for analyzing jimple code.
+
+!!! example "Create a project to analyze jimple code"
+
+    ~~~java
+    Path pathToJimple = Paths.get("src/test/resources/BasicSetup/jimple");
+    AnalysisInputLocation<JavaSootClass> inputLocation = new JimpleAnalysisInputLocation(pathToJimple);
+    Project project = new JimpleProject(inputLocation);
+    ~~~
+
+<!---
 3. Create a project to analyze Android APK. 
 
    TODO: add code
+--->
 
-4. Create a project to analyze Jimple code.
-~~~java
-Path pathToJimple = Paths.get("src/test/resources/BasicSetup/jimple");
-AnalysisInputLocation<JavaSootClass> inputLocation = new JimpleAnalysisInputLocation(pathToJimple);
-Project project = new JimpleProject(inputLocation);
-~~~
 
 ## Create Different Views
 1. Create a full view of all classes found in given analysis input location. 
