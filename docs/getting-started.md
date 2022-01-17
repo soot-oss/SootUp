@@ -193,11 +193,9 @@ Each `SootMethod` contain a Control-Flow Graph (CFG), or as we name here a `Stmt
 
 You can view all the code used until this point below:
 
-??? example "All the code used above"
+!!! info "All the code used above"
 
-    ```java
-    {{ include('basicSetup/BasicSetup.java') }}
-    ```
+    [BasicSetup.java](https://github.com/secure-software-engineering/soot-reloaded/blob/develop/examples/src/test/java/de/upb/swt/soot/examples/basicSetup/BasicSetup.java)
 
 <!--- ## Perform an Intra-procedural Analysis --->
 
