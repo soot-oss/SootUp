@@ -187,9 +187,17 @@ Each `SootMethod` contain a Control-Flow Graph (CFG), or as we name here a `Stmt
 !!! example "Retrieving the CFG of a SootMethod"
 
     ```java
-        sootMethod.getBody().getStmts();
+    sootMethod.getBody().getStmts();
     ```
 
+
+You can view all the code used until this point below:
+
+??? example "All the code used above"
+
+    ```java
+    {{ include('basicSetup/BasicSetup.java') }}
+    ```
 
 <!--- ## Perform an Intra-procedural Analysis --->
 
@@ -198,10 +206,6 @@ Each `SootMethod` contain a Control-Flow Graph (CFG), or as we name here a `Stmt
 ## Perform an Inter-procedural Analysis
 
 
-## All Code Used Aboves
-```java
-{{ include('basicSetup/BasicSetup.java') }}
-```
 
 
 <!---
