@@ -5,7 +5,7 @@ The purpose of the FutureSoot project is to make [Soot](https://github.com/soot-
 
 
 
-!!! note
+!!! important
 
     FutureSoot is *not a version update* to Soot, it is instead a *completely new implementation* written from scratch that aims to be a leaner, more extensible equivalent of Soot.
 
@@ -22,13 +22,33 @@ Soot can do many things. It is a library and a stand-alone command-line applicat
 
 FutureSoot has a modular architecture, which enables its clients to include only the necessary functionality to their applications. Below are its modules:
 
-- **core:** contains the core building blocks such as the jimple IR, control flow graphs, and frontend interfaces. The rest of the modules build on the core module.
-- **java.core:** contains parts that are essential for analyzing Java code.
-- **java.bytecode:** Java bytecode frontend implementation, contains the components that are specific to analyzing java bytecode.
-- **java.sourcecode:** Java source code frontend implementation, contains the components that are specific to analyzing java source code.
-- **callgraph:** contains implementations of common call graph construction algorithms such as CHA, RTA, VTA, as well as a reimplementation of Spark pointer analysis framework.
-- **jimple.parser:** enables reading .jimple files.
-- **tests:** contains test code that depends on all of the above modules.
+??? info "core"
+
+    [core module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.swt.soot.core) contains the core building blocks such as the jimple IR, control flow graphs, and frontend interfaces. The rest of the modules build on the core module.
+    
+??? info "java.core"
+    
+    [java.core module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.swt.soot.java.core) contains parts that are essential for analyzing Java code.
+
+??? info "java.bytecode"
+
+    [java.bytecode module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.swt.soot.java.bytecode) contains the functionality that is necessary for taking as input java bytecode.
+    
+??? info "java.sourcecode"
+
+    [java.sourcecode module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.swt.soot.java.sourcecode) contains the functionality that is necessary for taking as input java source code.
+    
+??? info "callgraph"
+ 
+    [callgraph module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.swt.soot.callgraph) contains implementations of common call graph construction algorithms such as **CHA**, **RTA**, **VTA**, as well as a reimplementation of **Spark** pointer analysis framework.
+  
+??? info "jimple.parser"
+    
+    [jimple.parser module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.swt.soot.jimple.parser) contains the functionalty that is necessary for taking as input .jimple files.
+
+??? info "tests" 
+
+    [tests module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.swt.soot.tests) contains integrations tests, that depend on all of the above modules.
 
 ### No More Singletons
 
