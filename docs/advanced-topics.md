@@ -158,3 +158,22 @@ Example:
 
 In the given example, the StaticSingleAssignmentFormer assigns each<code>IdentityStmt</code>and<code>AssignStmt</code>to a new local variable . And each use uses the local variable which is most recently defined. Sometimes, it is impossible to determine the most recently defined local variable for a use in a join block. In this case, the StaticSingleAssignmentFormer will insert a<code>PhiStmt</code>in the front of the join block to merge all most recently defined local variables and assign them a new local variable. 
 
+## Tools
+
+#### LocalLivenessAnalyser
+
+LocalLivenessAnalyser is used for querying for the list of live local variables before and after a given <code>Stmt</code>.
+
+Example:
+
+![LocalLiveness Example](./figures/LocalLiveness%20Example.png)
+
+The live local variables before and after each <code>Stmt</code> will be calculated after generating an instance of LocalLivenessAnalyser as shown the example above. They can be queried by using the methods <code>getLiveLocalsBeforeStmt</code> and <code>getLiveLocalsAfterStmt</code>.
+
+#### DominanceFinder
+
+DomianceFinder is used for querying for the immediate dominator and dominance frontiers for a given basic block.
+
+Example:  ![DominanceFinder Example](figures/DominanceFinder%20Example.png)
+
+After generating an instance of DominanceFinder for a <code>BlockGraph</code>, we will get the immediate dominator and dominance frontiers for each basic block. The both properties can be queried by using the methods<code>getImmediateDominator</code>and<code>getDominanceFrontiers</code>.
