@@ -74,8 +74,58 @@ If you have a [Jimple](../jimple) file, you can create a project for analyzing j
    TODO: add code
 --->
 
+## Creating a View
 
-## Create Different Views
+It is possible to create different views based on your needs. You can prefer creating a full view, when you are interested in the whole program including all the application code, and the library code; or you can create an on-demand view, when you want to limit your analysis' scope.
+You can call different view creation methods on the `project` object.
+
+~~~java
+project.createFullView();
+ ~~~ 
+
+
+## Retrieving a Class
+
+Each class is identified with a unique signature adhering to [Java identifier rules](https://www.geeksforgeeks.org/java-identifiers/), therefore you first need to specify the class signature (`ClassType`) as shown below.
+
+Let's say the following is the target program that we want to analyze:
+
+!!! example "Target Program"
+    
+    ```java
+    package example;
+    
+    public class HelloWorld {
+      public HelloWorld() {
+      }
+    
+      public static void main(String[] var0) {
+        System.out.println("Hello World!");
+      }
+    }
+    ```
+
+Then, we could define the `ClassType` of the `HelloWorld` class as follows:
+
+!!! example "Defining a ClassType"
+
+    ```java
+    ClassType classType = 
+            project.getIdentifierFactory().getClassType("example.HelloWorld");
+    ```
+
+Once we have a `ClassType` which identifies the `HelloWorld` class, we can use it to retrieve the corresponding `SootClass` object from the `view` as shown below.
+
+!!! example "Retrieving a SootClass"
+
+    ```java
+    SootClass<JavaSootClassSource> sootClass =
+            (SootClass<JavaSootClassSource>) view.getClass(classType).get();
+    ```
+
+
+<!---
+## Creating Different Views
 1. Create a full view of all classes found in given analysis input location. 
 ~~~java
   project.createFullView();
@@ -86,6 +136,8 @@ If you have a [Jimple](../jimple) file, you can create a project for analyzing j
 
 3. Create a view based on a defined scope. 
    TODO: add code
+   
+--->
 
 ## Perform an Intra-procedural Analysis
 
