@@ -3,16 +3,24 @@
 This page walks you through the core data structures, as well as shows how to get started with FutureSoot.
 
 ## Core Data Structures
-Before you use Soot as a library, you need understand the following data structures at first: 
+Before you get started with the FutureSoot library, it helps to learn about the following core data structures: 
 
 - `Project`: defines the outlines of an analysis. Soot users should first create a `Project` instance. It is the starting point for all operations. 
   You can define multiple instances of `Project` at the same time and there are no information shared between them. All caches are always at the project level.
 
 - `Language`: represents the programming language of the analyzed code. 
 
-- `AnalysisInputLocation`: defines where to find the analyzed code. It is like the `cp` option in the old Soot, which specifies the classpath for Soot to find classes to be analyzed.
+- `AnalysisInputLocation`: points to the target code to be analyzed.
 
-- `View`: presents the code/classes under analysis. It can been seen as a replacement of the `Scene` class, but it is not a singletion class.
+!!! info "Soot Equivalent"
+
+    It corresponds to the `cp` option, which specifies the classpath for Soot to find classes to be analyzed.
+
+- `View`: presents the code/classes under analysis.
+
+!!! info "Soot Equivalent"
+
+    It corresponds to the `Scene` class, but it is not a singletion.
 
 - `Scope`: defines the scope of the `View`. By default, the `View` is created with all code found on the `AnalysisInputLocation` specified for the `Project` instance.
 
