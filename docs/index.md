@@ -1,6 +1,14 @@
 # What is FutureSoot?
 
-The purpose of the FutureSoot project is to make [Soot](https://github.com/soot-oss/soot) future-proof. The focus of this project lies on restructuring Soot away from a framework that makes heavy use of singletons, towards a lighter library that can easily be included in other projects. FutureSoot is *not a version update* to Soot, it is instead a *completely new implementation* written from scratch that aims to be a leaner, more extensible equivalent of Soot.
+The purpose of the FutureSoot project is to make [Soot](https://github.com/soot-oss/soot) future-proof. The focus of this project lies on restructuring Soot away from a framework that makes heavy use of singletons, towards a lighter library that can easily be included in other projects.
+
+
+
+
+!!! note
+
+    FutureSoot is *not a version update* to Soot, it is instead a *completely new implementation* written from scratch that aims to be a leaner, more extensible equivalent of Soot.
+
 
 ## What is new?
 
@@ -36,22 +44,26 @@ FutureSoot has been designed with the goal of immutability in mind. This makes s
 
 #### Withers instead of Setters
 
-Due to the immutability goal, many classes do not have setters anymore. For example, a `Body` does not have a method `setStmts(List<Stmt> stmts)`. Instead, a method called `withStmts(List<Stmt> stmts)` has been added. This does not modify the original instance, but returns a copy that has different `stmts` than the original instance. This concept of so-called `with`-ers can be found all throughout FutureSoot. A simplified example:
+Due to the immutability goal, many classes do not have setters anymore. For example, a `Body` does not have a method `setStmts(List<Stmt> stmts)`. Instead, a method called `withStmts(List<Stmt> stmts)` has been added. This does not modify the original instance, but returns a copy that has different `stmts` than the original instance. This concept of so-called `with`-ers can be found all throughout FutureSoot. 
 
-```java
-class Body {
-  final List<Stmt> stmts;
-  final List<Local> locals;
+!!! example "A simplified example"
 
-  Body(List<Stmt> stmts, List<Local> locals) {
-    this.stmts = stmts;
-    this.locals = locals;
-  }  
+    ```java
+    class Body {
+      final List<Stmt> stmts;
+      final List<Local> locals;
+    
+      Body(List<Stmt> stmts, List<Local> locals) {
+        this.stmts = stmts;
+        this.locals = locals;
+      }  
+    
+      Body withStmts(List<Stmt> stmts) { return new Body(stmts, this.locals); }
+      Body withLocals(List<Local> locals) { return new Body(this.stmts, locals); }
+    }
+    ```
 
-  Body withStmts(List<Stmt> stmts) { return new Body(stmts, this.locals); }
-  Body withLocals(List<Local> locals) { return new Body(this.stmts, locals); }
-}
-```
+
 
 ### Intermediate Representation
 
