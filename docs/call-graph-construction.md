@@ -32,24 +32,17 @@ Below, we show how to create a type hierarchy:
 === "Soot"
 
     ```java
+    // TODO: add old Soot equivalent
+    
     G.reset();
-    String userdir = System.getProperty("user.dir");
-    String sootCp = 
-            userdir 
-            + File.separator 
-            + "target" 
-            + File.separator 
-            + "test-classes"
-            + File.pathSeparator + "lib"+File.separator+"rt.jar";
-            
-    Options.v().set_soot_classpath(sootCp);
-    Options.v().set_whole_program(true);
-    Options.v().setPhaseOption("cg.cha", "on");
-    Options.v().setPhaseOption("cg", "all-reachable:true");
-    Options.v().set_no_bodies_for_excluded(true);
-    Options.v().set_allow_phantom_refs(true);
-    Options.v().setPhaseOption("jb", "use-original-names:true");
-    Options.v().set_prepend_classpath(false);
+        String userdir = System.getProperty("user.dir");
+        String sootCp = 
+                userdir 
+                + File.separator 
+                + "target" 
+                + File.separator 
+                + "test-classes"
+                + File.pathSeparator + "lib"+File.separator+"rt.jar";
     ```
 
 ## Defining an Entry Method
@@ -74,6 +67,8 @@ All the call graph construction algorithm require an entry method to start with.
 === "Soot"
 
     ```java
+    // TODO: add old Soot equivalent
+    
     G.reset();
     String userdir = System.getProperty("user.dir");
     String sootCp = 
@@ -105,15 +100,17 @@ You can construct a call graph with CHA as follows:
 === "Soot"
 
     ```java
-    G.reset();
-    String userdir = System.getProperty("user.dir");
-    String sootCp = 
-            userdir 
-            + File.separator 
-            + "target" 
-            + File.separator 
-            + "test-classes"
-            + File.pathSeparator + "lib"+File.separator+"rt.jar";    
+    // TODO: add old Soot equivalent
+        
+        G.reset();
+            String userdir = System.getProperty("user.dir");
+            String sootCp = 
+                    userdir 
+                    + File.separator 
+                    + "target" 
+                    + File.separator 
+                    + "test-classes"
+                    + File.pathSeparator + "lib"+File.separator+"rt.jar";
     ```
 
 ## Rapid Type Analysis
@@ -135,15 +132,17 @@ You can construct a call graph with RTA as follows:
 === "Soot"
 
     ```java
-    G.reset();
-    String userdir = System.getProperty("user.dir");
-    String sootCp = 
-            userdir 
-            + File.separator 
-            + "target" 
-            + File.separator 
-            + "test-classes"
-            + File.pathSeparator + "lib"+File.separator+"rt.jar";    
+    // TODO: add old Soot equivalent
+        
+        G.reset();
+            String userdir = System.getProperty("user.dir");
+            String sootCp = 
+                    userdir 
+                    + File.separator 
+                    + "target" 
+                    + File.separator 
+                    + "test-classes"
+                    + File.pathSeparator + "lib"+File.separator+"rt.jar";   
     ```
 
 ## Variable Type Analysis
@@ -167,13 +166,15 @@ Spark requires an initial call graph to begin with. You can use one of the call 
 === "Soot"
 
     ```java
-    G.reset();
-    String userdir = System.getProperty("user.dir");
-    String sootCp = 
-            userdir 
-            + File.separator 
-            + "target" 
-            + File.separator 
-            + "test-classes"
-            + File.pathSeparator + "lib"+File.separator+"rt.jar";    
+    // TODO: add old Soot equivalent
+        
+        G.reset();
+            String userdir = System.getProperty("user.dir");
+            String sootCp = 
+                    userdir 
+                    + File.separator 
+                    + "target" 
+                    + File.separator 
+                    + "test-classes"
+                    + File.pathSeparator + "lib"+File.separator+"rt.jar";    
     ```
