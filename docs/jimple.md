@@ -1,7 +1,58 @@
 # Jimple
 What is Jimple? Jimple is the intermediate representation [**IR**]{A data structure which represents (source) code} of Soot.
-Soots intention is to provide a simplified way to analyze JVM bytecode. For this 
-purpose Jimple was designed as a representation of JVM bytecode which is human readable.
+Soot's intention is to provide a simplified way to analyze JVM bytecode. JVM bytecode is stack-based, which makes it difficult for program analysis.
+Java source code, on the other hand, is also not quite suitable for program analysis, due to its nested structures.
+Therefore, Jimple aims to bring the best of both worlds, a non-stack-based and flat (non-nested) representation.
+For this purpose Jimple was designed as a representation of JVM bytecode which is human readable.
+
+!!! info
+
+    To learn more about jimple, refer to the [thesis](https://courses.cs.washington.edu/courses/cse501/01wi/project/sable-thesis.pdf) by Raja Vallee-Rai.
+
+
+It might help to visualize how the Jimple version of a Java code looks like. Have a look at the following example on the `HelloWorld` class.
+
+=== "Jimple"
+
+    ```jimple
+    public class HelloWorld extends java.lang.Object
+    {
+        public void <init>()
+        {
+            HelloWorld r0;
+            r0 := @this: HelloWorld;
+            specialinvoke r0.<java.lang.Object: void <init>()>();
+            return;
+        }
+    
+        public static void main(java.lang.String[])
+        {
+            java.lang.String[] r0;
+            java.io.PrintStream $r1;
+            
+            r0 := @parameter0: java.lang.String[];
+            $r1 = <java.lang.System: java.io.PrintStream out>;
+            virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Hello world!");
+            return;
+        }
+    }
+    ```
+
+=== "Java"
+
+    ```java
+    public class HelloWorld {
+    
+      public HelloWorld() {
+      
+      }
+    
+      public static void main(String[] var0) {
+        System.out.println("Hello World!");
+      }
+      
+    }
+    ```
 
 ## Jimple Grammar Structure
 Jimple mimics the JVMs class file structure.
