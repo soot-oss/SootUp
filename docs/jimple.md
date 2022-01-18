@@ -79,8 +79,8 @@ It is referenced by its MethodSignature and contains a [**StmtGraph**]{a control
 
 
 ### Signatures
-Everything that we can reference across a method (e.g. a Class, Interface, Method or Field) - which is basically every item//TODO:wording that is not a Local - has a Signature.
-
+Signatures are required for identifying or referencing things across a method, such as Classes, Interfaces, Methods or Fields. 
+Locals, on the other hand, do not need signatures, since they are referenced within method boundaries.
 
 ### Trap
 A Trap is a mechanism to model exceptional flow.
@@ -162,8 +162,9 @@ represents a value itself. don't confuse it with a variable/Local which has a im
 
 There exists a constant entity for every Type - that way all value types can have a representation.
 
+
 ### Expr
-// TODO
+An expression is a language construct that returns a value. E.g. a binary operation such as addition.
 
 
 ### Ref
