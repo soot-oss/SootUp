@@ -1,7 +1,9 @@
 package de.upb.swt.soot.examples.callgraph;
 
 import de.upb.swt.soot.callgraph.CallGraph;
+import de.upb.swt.soot.callgraph.CallGraphAlgorithm;
 import de.upb.swt.soot.callgraph.ClassHierarchyAnalysisAlgorithm;
+import de.upb.swt.soot.callgraph.RapidTypeAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -54,8 +56,8 @@ public class CallgraphExample {
     // Create type hierarchy and CHA
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
     System.out.println(typeHierarchy.subclassesOf(classTypeA));
-    ClassHierarchyAnalysisAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
-
+    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+    cha = new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
     // Create CG by initializing CHA with entry method(s)
     CallGraph cg = cha.initialize(Collections.singletonList(entryMethodSignature));
 
