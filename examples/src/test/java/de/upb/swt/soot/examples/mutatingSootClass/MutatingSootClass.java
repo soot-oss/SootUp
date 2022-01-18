@@ -85,7 +85,8 @@ public class MutatingSootClass {
     Body newBody = oldBody.withLocals(Collections.singleton(newLocal));
 
     // Modify body source
-    OverridingBodySource newBodySource = new OverridingBodySource(method.getBodySource()).withBody(newBody);
+    OverridingBodySource newBodySource =
+        new OverridingBodySource(method.getBodySource()).withBody(newBody);
 
     // Create OverridingClassSource
     OverridingJavaClassSource overridingJavaClassSource =
@@ -103,7 +104,8 @@ public class MutatingSootClass {
     // assert that only our newly created local exists
     assertEquals(
         newLocal,
-        newClass.getMethods().stream().filter(m -> m.getName().equals("main"))
+        newClass.getMethods().stream()
+            .filter(m -> m.getName().equals("main"))
             .findFirst()
             .get()
             .getBody()
@@ -113,9 +115,17 @@ public class MutatingSootClass {
             .get());
 
     // assert that old soot class remains unchanged
-    assertFalse(sootClass.getMethods().stream().filter(m -> !m.getName().equals("main")).findFirst().get().getBody().getLocals().isEmpty());
+    assertFalse(
+        sootClass.getMethods().stream()
+            .filter(m -> !m.getName().equals("main"))
+            .findFirst()
+            .get()
+            .getBody()
+            .getLocals()
+            .isEmpty());
     assertTrue(
-        sootClass.getMethods().stream().filter(m -> m.getName().equals("main"))
+        sootClass.getMethods().stream()
+            .filter(m -> m.getName().equals("main"))
             .findFirst()
             .get()
             .getBody()
