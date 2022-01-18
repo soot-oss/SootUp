@@ -231,6 +231,8 @@ Below we show a comparison of the code so far with the same functionality in Soo
 
     SootMethod sootMethod = 
             sootClass.getMethod(methodSignature.getSubSignature()).get();
+    
+    sootMethod.getBody().getStmts();
     ```
 
 === "Soot"
@@ -277,6 +279,8 @@ Below we show a comparison of the code so far with the same functionality in Soo
             }
         }
     }
+    
+    method.getActiveBody().getUnits();
     ```
 
 
