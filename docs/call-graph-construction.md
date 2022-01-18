@@ -123,7 +123,8 @@ You can construct a call graph with RTA as follows:
 === "FutureSoot"
 
     ```java
-    CallGraphAlgorithm cha = new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
+    CallGraphAlgorithm cha = 
+            new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
     
     CallGraph cg = 
             cha.initialize(Collections.singletonList(entryMethodSignature));
