@@ -32,7 +32,8 @@ It might help to visualize how the Jimple version of a Java code looks like. Hav
             
             r0 := @parameter0: java.lang.String[];
             $r1 = <java.lang.System: java.io.PrintStream out>;
-            virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Hello world!");
+            virtualinvoke $r1.<java.io.PrintStream: 
+                    void println(java.lang.String)>("Hello world!");
             return;
         }
     }
