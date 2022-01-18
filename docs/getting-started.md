@@ -20,7 +20,7 @@ Before you get started with the FutureSoot library, it helps to learn about the 
 
 !!! info "Soot Equivalent"
 
-    It corresponds to the `Scene` class, but it is not a singletion.
+    It corresponds to the `Scene` class, but it is not a singleton. So it is possible to instantiate multiple views simultaneously.
 
 - `Scope`: defines the scope of the `View`. By default, the `View` is created with all code found on the `AnalysisInputLocation` specified for the `Project` instance.
 

@@ -119,9 +119,10 @@ transfers the control flow to another method until the called method returns.
 
 
 ##### JAssignStmt
-assigns a Value from the right handside to the left handside.
-On the left handside can occure a Local referencing a variable (i.e. a Local) or a FieldRef referencing a Field.
-On the right handside can be an expression (Expr), a Local, a FieldRef or a Constant.
+assigns a Value from the right hand-side to the left hand-side.
+Left hand-side of an assignment can be a Local referencing a variable (i.e. a Local) or a FieldRef referencing a Field.
+Right hand-side of an assignment can be an expression (Expr), a Local, a FieldRef or a Constant.
+
 ##### JIdentityStmt
 is semantically like the JAssignStmt and handles assignments of IdentityRef's to make implicit assignments explicit into the StmtGraph. 
 
@@ -135,7 +136,7 @@ models a Breakpoint set by a Debugger (usually not relevant for static analyses)
 
 
 ### Immediate
-An Immediate has a [**given**]{as in constant or immutable} Type and consists of a Local ("a Variable", "Sth that contains a Value") or a Constant ("Sth that is a Value").
+An Immediate has a [**given**]{as in constant or immutable} Type and consists of a Local ("a Variable", "Something that contains a Value") or a Constant ("Something that is a Value").
 
 
 ### Type
@@ -152,7 +153,7 @@ NullType
 ```jimple
 $i0 
 ```
-[Whats this?](https://www.youtube.com/watch?v=_FLhO7ZnKHs&t=54s)
+[What's this?](https://www.youtube.com/watch?v=_FLhO7ZnKHs&t=54s)
 A Local is a variable and its scope is inside its method i.e. no referencing from outside a method.
 Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
 
