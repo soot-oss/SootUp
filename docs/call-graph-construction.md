@@ -11,7 +11,8 @@ Below, we show how to create a type hierarchy:
 
     ```java
     AnalysisInputLocation<JavaSootClass> inputLocation =
-        new JavaClassPathAnalysisInputLocation("src/test/resources/Callgraph/binary");
+        new JavaClassPathAnalysisInputLocation(
+                "src/test/resources/Callgraph/binary");
 
     JavaLanguage language = new JavaLanguage(8);
 
@@ -92,9 +93,11 @@ You can construct a call graph with CHA as follows:
 === "FutureSoot"
 
     ```java
-    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+    CallGraphAlgorithm cha = 
+            new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
     
-    CallGraph cg = cha.initialize(Collections.singletonList(entryMethodSignature));
+    CallGraph cg = 
+            cha.initialize(Collections.singletonList(entryMethodSignature));
 
     cg.callsFrom(entryMethodSignature).forEach(System.out::println);
     ```
@@ -122,7 +125,8 @@ You can construct a call graph with RTA as follows:
     ```java
     CallGraphAlgorithm cha = new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
     
-    CallGraph cg = cha.initialize(Collections.singletonList(entryMethodSignature));
+    CallGraph cg = 
+            cha.initialize(Collections.singletonList(entryMethodSignature));
 
     cg.callsFrom(entryMethodSignature).forEach(System.out::println);
     ```
