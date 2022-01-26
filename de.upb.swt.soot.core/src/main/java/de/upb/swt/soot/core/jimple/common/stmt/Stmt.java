@@ -134,15 +134,4 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
   public StmtPositionInfo getPositionInfo() {
     return positionInfo;
   }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof Stmt)) {
-      return false;
-    }
-    Stmt stmt = (Stmt) o;
-    // [ms] not so sure about equaling over the positionInfo, too
-    return equivTo(stmt); // && Objects.equals(positionInfo, stmt.positionInfo);
-  }
 }
