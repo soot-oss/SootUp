@@ -301,6 +301,22 @@ public class MutableBlockStmtGraphTest {
   }
 
   @Test
+  public void addMultipleBranchingEdgesToSameTarget() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.putEdge(conditionalStmt, secondNop);
+    graph.putEdge(conditionalStmt, secondNop);
+    assertEquals(2, graph.successors(conditionalStmt).size());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void addMultipleBranchingEdgesToSameTargetBAdCount() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.putEdge(conditionalStmt, secondNop);
+    graph.putEdge(conditionalStmt, secondNop);
+    graph.putEdge(conditionalStmt, secondNop);
+  }
+
+  @Test
   public void addSameSuccessorMultipleTimes() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     graph.putEdge(conditionalStmt, secondNop);
@@ -388,9 +404,77 @@ public class MutableBlockStmtGraphTest {
   }
 
   @Test
-  public void testBlockValidity() {
+  public void testRemoveNodeAtBeginning() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.putEdge(firstNop, secondNop);
+    graph.putEdge(secondNop, thirdNop);
+    graph.removeNode(firstNop);
+    assertEquals(1, graph.getBlocks().size());
+    assertEquals(1, graph.successors(secondNop).size());
+    assertEquals(0, graph.successors(thirdNop).size());
+    assertEquals(0, graph.predecessors(secondNop).size());
+    assertEquals(1, graph.predecessors(thirdNop).size());
+  }
+
+  @Test
+  public void testRemoveNodeMalcolm /* i.e. in the middle */() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.putEdge(firstNop, secondNop);
+    graph.putEdge(secondNop, thirdNop);
+    graph.removeNode(secondNop);
+    assertEquals(2, graph.getBlocks().size());
+    assertEquals(0, graph.successors(firstNop).size());
+    assertEquals(0, graph.successors(thirdNop).size());
+    assertEquals(0, graph.predecessors(firstNop).size());
+    assertEquals(0, graph.predecessors(thirdNop).size());
+  }
+
+  @Test
+  public void testRemoveNodeAtEnd() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    graph.putEdge(firstNop, secondNop);
+    graph.putEdge(secondNop, thirdNop);
+    graph.removeNode(thirdNop);
+    assertEquals(1, graph.getBlocks().size());
+    assertEquals(1, graph.successors(firstNop).size());
+    assertEquals(0, graph.successors(secondNop).size());
+    assertEquals(0, graph.predecessors(firstNop).size());
+    assertEquals(1, graph.predecessors(secondNop).size());
+  }
+
+  @Test
+  public void testBlockAddStmt() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     MutableBasicBlock block = new MutableBasicBlock();
+    block.addStmt(firstNop);
+    block.addStmt(secondNop);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testBlockAddStmtInvalidDuplicateStmtObject() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    MutableBasicBlock block = new MutableBasicBlock();
+    block.addStmt(firstNop);
+    block.addStmt(firstNop);
+    /* possible but is a problem in the graph! */
+    graph.addBlock(block);
+  }
+
+  @Test
+  public void testBlockAddStmtInvalidDuplicateStmtObjectViaGraph() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    MutableBasicBlock block = new MutableBasicBlock();
+    block.addStmt(firstNop);
+    graph.addNode(firstNop); // ignores adding as it already exists
+    graph.addBlock(block);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testBlockStmtValidity() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    MutableBasicBlock block = new MutableBasicBlock();
+    block.addStmt(conditionalStmt);
+    block.addStmt(firstNop);
   }
 
   @Test

@@ -57,8 +57,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     // TODO: [ms] -> performance! its currently an ArrayList
     for (MutableBasicBlock mutableBasicBlock : blocks) {
       if (mutableBasicBlock == block) {
-        throw new IllegalArgumentException(
-            "The given block exists already in this MutableBlockStmtGraph Instance.");
+        return;
       }
     }
 
@@ -96,14 +95,16 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   public void removeNode(@Nonnull Stmt stmt) {
-    Integer blockIdx = stmtToBlock.remove(stmt);
-    if (blockIdx == null) {
-      return;
-    }
+
     // do edges from or to this node exist? remove them
     // TODO: [ms] implement more performant solution based on datastructure implications
     predecessors(stmt).forEach(p -> removeEdge(p, stmt));
     successors(stmt).forEach(s -> removeEdge(stmt, s));
+
+    Integer blockIdx = stmtToBlock.remove(stmt);
+    if (blockIdx == null) {
+      return;
+    }
 
     MutableBasicBlock blockOfRemovedStmt = blocks.get(blockIdx);
     blockOfRemovedStmt.removeStmt(stmt);
@@ -119,7 +120,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Override
   public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-    // TODO: [ms] implement it smarter
+    // TODO: [ms] implement it smarter i.e. more performant based on implications of the
+    // datastructure
     removeNode(oldStmt);
     addNode(newStmt);
   }
