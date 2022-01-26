@@ -187,7 +187,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
     bodyBuilder = Body.builder();
 
-
     bodyBuilder.setModifiers(AsmUtil.getModifiers(access));
 
     /* initialize */
@@ -2029,9 +2028,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     List<LabelNode> branchLabels = stmtsThatBranchToLabel.get(oldStmt);
 
     if (branchLabels != null) {
-      branchLabels.forEach(bl -> {
-        stmtsThatBranchToLabel.put(newStmt, bl);
-        });
+      branchLabels.forEach(
+          bl -> {
+            stmtsThatBranchToLabel.put(newStmt, bl);
+          });
       stmtsThatBranchToLabel.removeAll(oldStmt);
     }
   }
