@@ -28,7 +28,6 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.Set;
 import org.junit.Test;
 
 /**
