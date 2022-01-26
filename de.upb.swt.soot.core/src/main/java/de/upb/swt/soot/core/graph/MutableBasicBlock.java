@@ -1,6 +1,7 @@
 package de.upb.swt.soot.core.graph;
 
 import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,10 @@ public class MutableBasicBlock implements BasicBlock {
   public MutableBasicBlock() {}
 
   public void addStmt(@Nonnull Stmt stmt) {
+    if (getStmtCount() > 0 && getTail() instanceof BranchingStmt) {
+      throw new IllegalArgumentException(
+          "you can't add another Stmt after a BranchingStmt to the same Block.");
+    }
     stmts.add(stmt);
   }
 
@@ -127,7 +132,7 @@ public class MutableBasicBlock implements BasicBlock {
    * blocks.
    */
   public MutableBasicBlock splitBlockUnlinked(@Nonnull Stmt newTail, @Nonnull Stmt newHead) {
-    int splitIdx = stmts.indexOf(newTail);
+    int splitIdx = stmts.indexOf(newTail); // not cheap.
     if (splitIdx < 0) {
       throw new IllegalArgumentException(
           "Can not split by that Stmt - it is not contained in this Block.");
@@ -135,7 +140,7 @@ public class MutableBasicBlock implements BasicBlock {
     if (stmts.get(splitIdx + 1) != newHead) {
       throw new IllegalArgumentException("Can not split - those Stmts are not connected.");
     }
-    return splitBlockUnlinked(splitIdx);
+    return splitBlockUnlinked(splitIdx + 1);
   }
 
   /** @param splitIdx should be in [1, stmts.size()-1] */

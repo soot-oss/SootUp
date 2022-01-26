@@ -100,8 +100,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     if (blockIdx == null) {
       return;
     }
-    // do edges to this node exist? remove them
-    removeBorderEdgesInternal(stmt, blockIdx);
+    // do edges from or to this node exist? remove them
+    // TODO: [ms] implement more performant solution based on datastructure implications
+    predecessors(stmt).forEach(p -> removeEdge(p, stmt));
+    successors(stmt).forEach(s -> removeEdge(stmt, s));
+
     MutableBasicBlock blockOfRemovedStmt = blocks.get(blockIdx);
     blockOfRemovedStmt.removeStmt(stmt);
 
@@ -109,7 +112,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // for GC: clear entry in blocks if block is empty -> not referenced anymore -> not reachable
       // anymore
       blocks.set(blockIdx, null);
-      // blocks.remove( blockIdx.intValue() ); needs update blockIdx that are changed
+      // blocks.remove( blockIdx.intValue() ); would need an expensive update of all higher blockIdx
+      // that are then changed
     }
   }
 
@@ -145,9 +149,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
     if (blockA.getSuccessors().size() >= stmtA.getSuccessorCount()) {
       throw new IllegalArgumentException(
-          "Can't add another flow - there are already enough flows ("
+          "Can't add another flow - there are already enough flows i.e. "
               + stmtA.getSuccessorCount()
-              + ") outgoing from StmtA.");
+              + " outgoing from StmtA "
+              + stmtA);
     }
 
     if (stmtA.branches()) {
@@ -169,6 +174,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           // stmtB is at the beginning of the second Block -> connect blockA and blockB
           blockB.addPredecessorBlock(blockA);
           blockA.addSuccessorBlock(blockB);
+
         } else {
 
           MutableBasicBlock newBlock = blockB.splitBlockLinked(stmtB, true);
@@ -197,8 +203,22 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         blockB = blocks.get(blockBIdx);
         if (blockB.getHead() == stmtB) {
           // stmtB is at the beginning of the second Block -> connect blockA and blockB
-          blockB.addPredecessorBlock(blockA);
-          blockA.addSuccessorBlock(blockB);
+          // lockB.addPredecessorBlock(blockA);
+          // blockA.addSuccessorBlock(blockB);
+
+          // merge and remove now obsolete Block B
+          Integer finalBlockAIdx = blockAIdx;
+          blockB
+              .getStmts()
+              .forEach(
+                  stmt -> {
+                    blockA.addStmt(stmt);
+                    stmtToBlock.put(stmt, finalBlockAIdx);
+                  });
+          // dont remove the block slot otherwise we need to update all higher indices to reflect
+          // the new index positions
+          blocks.set(blockBIdx, null);
+
           // TODO: hint: [ms] for serialisation we need to validate that n-1 predecessors are
           // branching stmts.
         } else {
@@ -217,17 +237,13 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   protected void removeEdgeInternal(
       @Nonnull Stmt from, @Nonnull Stmt to, @Nonnull Integer blockIdxOfFrom) {
-    removeBorderEdgesInternal(from, blockIdxOfFrom);
-
     MutableBasicBlock blockOfFrom = blocks.get(blockIdxOfFrom);
-    // neither a tail nor a head stmt
-    if (!(from == blockOfFrom.getTail() || from == blockOfFrom.getHead())) {
-      // divide block and don't link them
-      MutableBasicBlock blockOfTo = blocks.get(stmtToBlock.get(to));
-      if (blockOfFrom != blockOfTo) {
-        throw new IllegalStateException();
-      }
+    MutableBasicBlock blockOfTo = blocks.get(stmtToBlock.get(to));
+    removeBlockBorderEdgesInternal(from, blockOfFrom, blockIdxOfFrom);
 
+    // divide block if from and to are from the same block
+    if (blockOfFrom == blockOfTo) {
+      // divide block and don't link them
       int fromIdx = blockOfFrom.getStmts().indexOf(from);
       if (blockOfFrom.getStmts().get(fromIdx + 1) == to) {
         MutableBasicBlock newBlock = blockOfFrom.splitBlockUnlinked(from, to);
@@ -240,32 +256,31 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
   }
 
-  protected void removeBorderEdgesInternal(@Nonnull Stmt from, @Nonnull Integer blockIdxOfFrom) {
-    MutableBasicBlock blockOfFrom = blocks.get(blockIdxOfFrom);
+  protected void removeBlockBorderEdgesInternal(
+      @Nonnull Stmt from, @Nonnull MutableBasicBlock blockOfFrom, @Nonnull Integer blockIdxOfFrom) {
     // TODO: is it intuitive to remove connections to the BasicBlock in the case we cant merge the
     // blocks?
-    if (from == blockOfFrom.getHead()) {
 
-      if (blockOfFrom.getStmts().size() > 0) {
-        // merge previous block if possible i.e. no branchingstmt as tail && same traps
-        if (blockOfFrom.getPredecessors().size() == 1) {
-          MutableBasicBlock singlePreviousBlock = blockOfFrom.getPredecessors().get(0);
-          if (!singlePreviousBlock.getTail().branches() && singlePreviousBlock != blockOfFrom) {
-            if (singlePreviousBlock.getTraps().equals(blockOfFrom.getTraps())) {
-              blockOfFrom
-                  .getStmts()
-                  .forEach(
-                      k -> {
-                        singlePreviousBlock.addStmt(k);
-                        stmtToBlock.put(k, blockIdxOfFrom);
-                      });
-            }
+    // merge previous block if possible i.e. previous block has no branchingstmt as tail && same
+    // traps
+    if (blockOfFrom.getStmts().size() > 0 && from == blockOfFrom.getTail()) {
+      if (blockOfFrom.getPredecessors().size() == 1) {
+        MutableBasicBlock singlePreviousBlock = blockOfFrom.getPredecessors().get(0);
+        if (!singlePreviousBlock.getTail().branches() && singlePreviousBlock != blockOfFrom) {
+          if (singlePreviousBlock.getTraps().equals(blockOfFrom.getTraps())) {
+            blockOfFrom
+                .getStmts()
+                .forEach(
+                    k -> {
+                      singlePreviousBlock.addStmt(k);
+                      stmtToBlock.put(k, blockIdxOfFrom);
+                    });
           }
         }
       }
     }
 
-    // remove outgoing connections if stmts is the tail
+    // remove outgoing connections from block if from stmt is the tail
     if (from == blockOfFrom.getTail()) {
 
       if (!from.branches()) {
