@@ -1812,17 +1812,27 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   // inline exceptionhandler := exceptionhandler thats reachable through unexceptional "normal" flow
   // and exceptional flow
   private void indexInlineExceptionHandlers() {
-    // FIXME: [ms] shouldnt we check the dflt LabelNode of both switcheIsnNode types too?!
     final Set<LabelNode> handlerLabelNodes = trapHandler.keySet();
+
+    if (handlerLabelNodes.isEmpty()) {
+      // my job is done here
+      return;
+    }
+
     for (AbstractInsnNode node : instructions) {
       if (node instanceof JumpInsnNode) {
         final LabelNode handlerLabel = ((JumpInsnNode) node).label;
         if (handlerLabelNodes.contains(handlerLabel)) {
           inlineExceptionLabels.add(handlerLabel);
-          ;
         }
       } else if (node instanceof LookupSwitchInsnNode) {
-        for (LabelNode l : ((LookupSwitchInsnNode) node).labels) {
+
+        final LookupSwitchInsnNode lookupSwitchInsnNode = (LookupSwitchInsnNode) node;
+        if (handlerLabelNodes.contains(lookupSwitchInsnNode.dflt)) {
+          inlineExceptionLabels.add(lookupSwitchInsnNode.dflt);
+          continue;
+        }
+        for (LabelNode l : lookupSwitchInsnNode.labels) {
           if (handlerLabelNodes.contains(l)) {
             inlineExceptionLabels.add(l);
             break;
@@ -1830,7 +1840,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         }
       } else if (node instanceof TableSwitchInsnNode) {
 
-        for (LabelNode l : ((TableSwitchInsnNode) node).labels) {
+        final TableSwitchInsnNode tableSwitchInsnNode = (TableSwitchInsnNode) node;
+        if (handlerLabelNodes.contains(tableSwitchInsnNode.dflt)) {
+          inlineExceptionLabels.add(tableSwitchInsnNode.dflt);
+          continue;
+        }
+        for (LabelNode l : tableSwitchInsnNode.labels) {
           if (handlerLabelNodes.contains(l)) {
             inlineExceptionLabels.add(l);
             break;
