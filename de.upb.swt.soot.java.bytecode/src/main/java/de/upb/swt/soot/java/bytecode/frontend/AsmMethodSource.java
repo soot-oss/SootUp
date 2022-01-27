@@ -1682,15 +1682,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     List<ClassType> traps = new ArrayList<>();
     ArrayDeque<BranchedInsnInfo> worklist = new ArrayDeque<>();
 
-    for (LabelNode handlerNode : trapHandler.keySet()) {
-      // TODO: [ms] is there a less expensive way O( #Stmts )* trapAmount.. ->
-      // checkInlineExceptionHandler(...)
+    indexInlineExceptionHandlers();
 
-      // If this label is reachable through an exception and through normal
-      // code, we have to split the exceptional case (with the exception on
-      // the stack) from the normal fall-through case without anything on the
-      // stack.
-      if (checkInlineExceptionHandler(handlerNode)) {
+    // If this label is reachable through an exception and through normal
+    // code, we have to split the exceptional case (with the exception on
+    // the stack) from the normal fall-through case without anything on the
+    // stack.
+    for (LabelNode handlerNode : trapHandler.keySet()) {
+      if (inlineExceptionLabels.contains(handlerNode)) {
         // Catch the exception
         JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
         Local local = newStackLocal();
@@ -1810,27 +1809,35 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     } while (!worklist.isEmpty());
   }
 
-  private boolean checkInlineExceptionHandler(@Nonnull LabelNode ln) {
-
+  // inline exceptionhandler := exceptionhandler thats reachable through unexceptional "normal" flow
+  // and exceptional flow
+  private void indexInlineExceptionHandlers() {
+    // FIXME: [ms] shouldnt we check the dflt LabelNode of both switcheIsnNode types too?!
+    final Set<LabelNode> handlerLabelNodes = trapHandler.keySet();
     for (AbstractInsnNode node : instructions) {
       if (node instanceof JumpInsnNode) {
-        if (((JumpInsnNode) node).label == ln) {
-          inlineExceptionLabels.add(ln);
-          return true;
+        final LabelNode handlerLabel = ((JumpInsnNode) node).label;
+        if (handlerLabelNodes.contains(handlerLabel)) {
+          inlineExceptionLabels.add(handlerLabel);
+          ;
         }
       } else if (node instanceof LookupSwitchInsnNode) {
-        if (((LookupSwitchInsnNode) node).labels.contains(ln)) {
-          inlineExceptionLabels.add(ln);
-          return true;
+        for (LabelNode l : ((LookupSwitchInsnNode) node).labels) {
+          if (handlerLabelNodes.contains(l)) {
+            inlineExceptionLabels.add(l);
+            break;
+          }
         }
       } else if (node instanceof TableSwitchInsnNode) {
-        if (((TableSwitchInsnNode) node).labels.contains(ln)) {
-          inlineExceptionLabels.add(ln);
-          return true;
+
+        for (LabelNode l : ((TableSwitchInsnNode) node).labels) {
+          if (handlerLabelNodes.contains(l)) {
+            inlineExceptionLabels.add(l);
+            break;
+          }
         }
       }
     }
-    return false;
   }
 
   private void buildLocals() {
@@ -1982,19 +1989,23 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
       // build traps for this block
       if (!danglingLabel.isEmpty()) {
+        IntervalTree<Trap> trapIntervals = new IntervalTree<>();
+        for (LabelNode inlineExceptionLabel : this.inlineExceptionLabels) {
+          if (true) {
+            trapIntervals.insert(inlineExceptionLabel.getLabel().getOffset());
+          }
+        }
         // TODO: [ms] sliding window of traps via bytecodeoffset
         // hint: if we have a new label -> indicates: traprange start/end (/handler) or branch
         // target -> check/adapt sliding window of traps
         // possible performance hint: verify: traprangestart|traprangeend|branchtarget <=>
         // !traphandler
 
-        /*if( range.contains(insn) ){
+        if (trapIntervals.contains(insn)) {
 
           // FIXME: implement
 
         }
-        */
-
       }
 
       // associate collected labels from danglingLabel with the following stmt
@@ -2079,6 +2090,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       rememberedStmt = newStmt;
     }
 
+    // TODO: [ms] bit expensive and called a lot?
     for (Entry<AbstractInsnNode, Stmt> entry : insnToStmt.entrySet()) {
       if (Objects.equals(oldStmt, entry.getValue())) {
         key = entry.getKey();
