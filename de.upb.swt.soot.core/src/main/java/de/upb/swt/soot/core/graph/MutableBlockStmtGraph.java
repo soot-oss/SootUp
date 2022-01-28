@@ -1,5 +1,7 @@
 package de.upb.swt.soot.core.graph;
 
+import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
@@ -27,6 +29,20 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Override
   public void clearExceptionalEdges(@Nonnull Stmt stmt) {
+    // FIXME implement
+    throw new IllegalArgumentException("cant handle trap removal yet.");
+  }
+
+  @Override
+  public void addExceptionalEdge(
+      @Nonnull Stmt stmt, @Nonnull JIdentityStmt<JCaughtExceptionRef> traphandlerStmt) {
+    // FIXME implement
+    throw new IllegalArgumentException("cant handle trap removal yet.");
+  }
+
+  @Override
+  public void removeExceptionalEdge(
+      @Nonnull Stmt stmt, @Nonnull JIdentityStmt<JCaughtExceptionRef> traphandlerStmt) {
     // FIXME implement
     throw new IllegalArgumentException("cant handle trap removal yet.");
   }
@@ -396,6 +412,12 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       List<Stmt> stmts = block.getStmts();
       return Collections.singletonList(stmts.get(stmts.indexOf(node) + 1));
     }
+  }
+
+  @Nonnull
+  @Override
+  public List<Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
+    return null;
   }
 
   @Override

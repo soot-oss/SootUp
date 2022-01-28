@@ -64,6 +64,8 @@ import javax.annotation.Nullable;
  * @author Zun Wang
  */
 public class LocalSplitter implements BodyInterceptor {
+  // hint: [ms] assumption names of Locals do not contain a '#' already -> could otherwise lead to
+  // problems
 
   @Override
   @Nonnull
@@ -361,8 +363,8 @@ public class LocalSplitter implements BodyInterceptor {
       final String name = ((Local) local).getName();
       final String origName = oriLocal.getName();
       final int origLength = origName.length();
-      return name.startsWith(origName)
-          && name.length() > origLength
+      return name.length() > origLength
+          && name.startsWith(origName)
           && name.charAt(origLength) == '#';
     }
     return false;
@@ -420,7 +422,7 @@ public class LocalSplitter implements BodyInterceptor {
       if (graph.predecessors(first).isEmpty()) {
         handlerStmts.add(first);
       } else {
-        graph.predecessors(first).forEach(pred -> queue.add(pred));
+        queue.addAll(graph.predecessors(first));
       }
     }
     return handlerStmts;

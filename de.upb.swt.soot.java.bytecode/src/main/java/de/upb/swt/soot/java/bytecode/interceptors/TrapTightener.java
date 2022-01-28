@@ -45,6 +45,7 @@ public class TrapTightener implements BodyInterceptor {
     List<Trap> traps = builder.getTraps();
     List<Trap> newTraps = new ArrayList<>();
     for (Trap trap : traps) {
+      // FIXME: check for java9 modules signature, too!
       boolean isCatchAll =
           trap.getExceptionType().getFullyQualifiedName().equals("java.lang.Throwable");
 
@@ -130,33 +131,20 @@ public class TrapTightener implements BodyInterceptor {
           monitoredStmts.add(monitorStmt);
           visitedStmts.add(monitorStmt);
           if (!(monitorStmt instanceof JExitMonitorStmt)) {
-            for (Stmt succ : getMixSuccessors(graph, monitorStmt)) {
+            for (Stmt succ : graph.getAllSuccessors(monitorStmt)) {
               if (!visitedStmts.contains(succ)) {
                 monitoredQueue.add(succ);
               }
             }
           } else {
-            queue.addAll(getMixSuccessors(graph, monitorStmt));
+            queue.addAll(graph.getAllSuccessors(monitorStmt));
           }
         }
       } else {
-        queue.addAll(getMixSuccessors(graph, stmt));
+        queue.addAll(graph.getAllSuccessors(stmt));
       }
     }
     return monitoredStmts;
-  }
-
-  /**
-   * Collect all successors (normal and exceptional) of a given stmt into a list.
-   *
-   * @param graph a ExceptionalStmtGraph
-   * @param stmt is a stmt in the given graph
-   * @return a list of successors(normal+exceptional) of the given stmt
-   */
-  private List<Stmt> getMixSuccessors(StmtGraph graph, Stmt stmt) {
-    List<Stmt> succs = new ArrayList<>(graph.successors(stmt));
-    succs.addAll(graph.exceptionalSuccessors(stmt));
-    return succs;
   }
 
   /**

@@ -72,6 +72,7 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
    * (aClass.isPresent() && AccessUtil.isAccessible(entryPackage, aClass.get()) ) { return
    * Optional.empty(); } return aClass; }
    */
+  @Override
   @Nonnull
   public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
     final Optional<T> aClass = getClass(signature.getDeclClassType());
@@ -81,6 +82,7 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
     return aClass.get().getMethod(signature.getSubSignature());
   }
 
+  @Override
   @Nonnull
   public Optional<? extends SootField> getField(@Nonnull FieldSignature signature) {
 

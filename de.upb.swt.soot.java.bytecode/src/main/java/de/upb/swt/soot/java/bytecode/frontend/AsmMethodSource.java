@@ -41,7 +41,6 @@ import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.*;
 import de.upb.swt.soot.core.frontend.BodySource;
-import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
@@ -109,6 +108,7 @@ import org.objectweb.asm.tree.*;
  */
 public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
+  @SuppressWarnings("ConstantConditions")
   static final Operand DWORD_DUMMY = new Operand(null, null, null);
 
   // private static final String METAFACTORY_SIGNATURE =
@@ -137,7 +137,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private int maxLineNumber = 0;
 
   @Nullable private JavaClassType declaringClass;
-  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+
+  @Nonnull
+  private final List<BodyInterceptor>
+      bodyInterceptors; // TODO: [ms] show them their place i.e. move them inside a View (same for
+                        // sourcecodefrontend)
 
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
@@ -240,7 +244,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       try {
         bodyInterceptor.interceptBody(bodyBuilder);
       } catch (Exception e) {
-        throw new RuntimeException(
+        throw new IllegalStateException(
             "Failed to apply " + bodyInterceptor + " to " + lazyMethodSignature.get(), e);
       }
     }
@@ -303,7 +307,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   void setStmt(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
     Stmt overwrittenStmt = insnToStmt.put(insn, stmt);
     if (overwrittenStmt != null) {
-      throw new AssertionError(
+      throw new IllegalArgumentException(
           insn.getOpcode() + " already has an associated Stmt: " + overwrittenStmt);
     }
   }
@@ -487,7 +491,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       } else if (op == DCONST_0 || op == DCONST_1) {
         v = DoubleConstant.getInstance(op - DCONST_0);
       } else {
-        throw new AssertionError("Unknown constant opcode: " + op);
+        throw new UnsupportedOperationException("Unknown constant opcode: " + op);
       }
       opr = new Operand(insn, v, this);
       frame.setOut(opr);
@@ -695,7 +699,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       } else if (op == FCMPG || op == DCMPG) {
         binop = Jimple.newCmpgExpr(v1, v2);
       } else {
-        throw new AssertionError("Unknown binop: " + op);
+        throw new UnsupportedOperationException("Unknown binop: " + op);
       }
       opr = new Operand(insn, binop, this);
       op1.addUsageInExpr(binop);
@@ -738,7 +742,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       } else if (op == ARRAYLENGTH) {
         unop = Jimple.newLengthExpr((Immediate) v1);
       } else {
-        throw new AssertionError("Unknown unop: " + op);
+        throw new UnsupportedOperationException("Unknown unop: " + op);
       }
       op1.addUsageInExpr(unop);
       opr = new Operand(insn, unop, this);
@@ -795,7 +799,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           totype = PrimitiveType.getChar();
           break;
         default:
-          throw new AssertionError("Unknonw prim cast op: " + op);
+          throw new IllegalStateException("Unknonw prim cast op: " + op);
       }
       Operand val = fromd ? operandStack.popImmediateDual() : operandStack.popImmediate();
       JCastExpr cast = Jimple.newCastExpr((Immediate) val.stackOrValue(), totype);
@@ -911,7 +915,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         frame.mergeIn(operandStack.pop());
       }
     } else {
-      throw new AssertionError("Unknown insn op: " + op);
+      throw new UnsupportedOperationException("Unknown insn op: " + op);
     }
   }
 
@@ -953,7 +957,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             type = PrimitiveType.getLong();
             break;
           default:
-            throw new AssertionError("Unknown NEWARRAY type!");
+            throw new UnsupportedOperationException("Unknown NEWARRAY type!");
         }
         Operand size = operandStack.popImmediate();
         JNewArrayExpr anew =
@@ -1018,7 +1022,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             cond = Jimple.newLeExpr(v1, v);
             break;
           default:
-            throw new AssertionError("Unknown if op: " + op);
+            throw new UnsupportedOperationException("Unknown if op: " + op);
         }
         val1.addUsageInExpr(cond);
         val.addUsageInExpr(cond);
@@ -1050,7 +1054,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             cond = Jimple.newNeExpr(v, NullConstant.getInstance());
             break;
           default:
-            throw new AssertionError("Unknown if op: " + op);
+            throw new UnsupportedOperationException("Unknown if op: " + op);
         }
         val.addUsageInExpr(cond);
         frame.setIn(val);
@@ -1092,7 +1096,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  private Immediate toSootValue(@Nonnull Object val) throws AssertionError {
+  private Immediate toSootValue(@Nonnull Object val) throws IllegalStateException {
     Immediate v;
     if (val instanceof Integer) {
       v = IntConstant.getInstance((Integer) val);
@@ -1128,7 +1132,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
                 .newMethodHandle(toSootFieldRef((Handle) val), ((Handle) val).getTag());
       }
     } else {
-      throw new AssertionError("Unknown constant type: " + val.getClass());
+      throw new UnsupportedOperationException("Unknown constant type: " + val.getClass());
     }
     return v;
   }
@@ -1246,7 +1250,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             iinvoke = Jimple.newInterfaceInvokeExpr(base, methodSignature, argList);
             break;
           default:
-            throw new AssertionError("Unknown invoke op:" + op);
+            throw new UnsupportedOperationException("Unknown invoke op:" + op);
         }
 
         invoke = iinvoke;
@@ -1512,7 +1516,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               break;
             }
           default:
-            throw new AssertionError("Unknown type op: " + op);
+            throw new UnsupportedOperationException("Unknown type op: " + op);
         }
         op1.addUsageInExpr(val);
         frame.setIn(op1);
@@ -1580,7 +1584,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             Jimple.newRetStmt(getOrCreateLocal(insn.var), new StmtPositionInfo(currentLineNumber)));
       }
     } else {
-      throw new AssertionError("Unknown var op: " + op);
+      throw new UnsupportedOperationException("Unknown var op: " + op);
     }
   }
 
@@ -1655,12 +1659,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       List<Operand> stackTemp = edge.getOperandStack();
       if (stackTemp != null) {
         if (stackTemp.size() != stackss.length) {
-          throw new AssertionError("Multiple un-equal stacks!");
+          throw new IllegalStateException("Multiple un-equal stacks!");
         }
         int j = 0;
         for (Operand operand : stackTemp) {
           if (!operand.equivTo(stackss[j++])) {
-            throw new AssertionError("Multiple un-equal stacks!");
+            throw new IllegalStateException("Multiple un-equal stacks!");
           }
         }
         continue;
@@ -1746,7 +1750,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               convertJumpInsn(jmp);
               int op = jmp.getOpcode();
               if (op == JSR) {
-                throw new UnsupportedOperationException("JSR!");
+                throw new IllegalStateException(
+                    "JSR!"); // should already be handled/converted by the asm library
               }
               if (op != GOTO) {
                 /* ifX opcode, i.e. two successors */
@@ -1787,7 +1792,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             break;
           case VAR_INSN:
             if (insn.getOpcode() == RET) {
-              // TODO: [ms] check: but we do have JRetStmt
+              // TODO: [ms] check: but we do still have a JRetStmt in Jimple..
               throw new UnsupportedOperationException("RET!");
             }
             convertVarInsn((VarInsnNode) insn);
@@ -1901,32 +1906,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   private void buildTraps() {
     List<Trap> traps = new ArrayList<>();
-
-    List<TryCatchBlockNode> trapList = new ArrayList<>(tryCatchBlocks);
-    trapList.sort(
-        (a, b) -> {
-          int aStart = a.start.getLabel().getOffset();
-          int bStart = b.start.getLabel().getOffset();
-          int aEnd = a.end.getLabel().getOffset();
-          int bEnd = b.end.getLabel().getOffset();
-
-          if (aStart > bStart) {
-            return 1;
-          } else if (aStart < bStart) {
-            return -1;
-          } else if (aEnd > bEnd) {
-            return 1;
-          } else if (aEnd < bEnd) {
-            return -1;
-          } else {
-            return 0;
-          }
-        });
-
     for (TryCatchBlockNode trycatch : tryCatchBlocks) {
       Stmt handler = trapHandler.get(trycatch.handler);
       if (handler == null) {
-        throw new ResolveException(
+        throw new IllegalStateException(
             "Label for the TrapHandler "
                 + trycatch.handler
                 + " has no associated Stmt to jump to.");
@@ -2002,10 +1985,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         continue;
       }
 
-      // build traps for this block
+      /* build traps for this block
       if (!danglingLabel.isEmpty()) {
         IntervalTree<Trap> trapIntervals = new IntervalTree<>();
-        for (LabelNode inlineExceptionLabel : this.inlineExceptionLabels) {
+        for (LabelNode inlineExceptionLabel : this.trapHandler) {
           if (true) {
             trapIntervals.insert(inlineExceptionLabel.getLabel().getOffset());
           }
@@ -2022,6 +2005,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
         }
       }
+      */
 
       // associate collected labels from danglingLabel with the following stmt
       if (!danglingLabel.isEmpty()) {
@@ -2061,7 +2045,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       final Stmt fromStmt = entry.getKey();
       final Stmt targetStmt = labelsToStmt.get(entry.getValue());
       if (targetStmt == null) {
-        throw new ResolveException(
+        throw new IllegalStateException(
             "targetStmt not found for fromStmt"
                 + fromStmt
                 + " "
@@ -2087,7 +2071,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return null;
   }
 
-  public Stmt getLatestVersionOfStmt(Stmt oldStmt) {
+  @Nonnull
+  Stmt getLatestVersionOfStmt(@Nonnull Stmt oldStmt) {
     while (true) {
       final Stmt replacedVersion = replacedStmt.get(oldStmt);
       if (replacedVersion != null) {
@@ -2098,14 +2083,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  public void replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+  void replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
     AbstractInsnNode key = null;
 
+    // TODO: [ms] check: rememberedStmt becomes relevant *after* all replaceStmt() calls are
+    // happening and does not need to be checked/updated
     if (rememberedStmt == oldStmt) {
       rememberedStmt = newStmt;
     }
 
-    // TODO: [ms] bit expensive and called a lot?
+    // TODO: [ms] bit expensive and called a lot? -> find better solution!
     for (Entry<AbstractInsnNode, Stmt> entry : insnToStmt.entrySet()) {
       if (Objects.equals(oldStmt, entry.getValue())) {
         key = entry.getKey();
@@ -2113,14 +2100,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
 
     if (key == null) {
-      throw new AssertionError("Could not replace value in insn map because it is absent");
+      throw new IllegalStateException("Could not replace value in insn map because it is absent");
     }
 
     insnToStmt.put(key, newStmt);
     replacedStmt.put(oldStmt, newStmt);
 
     List<LabelNode> branchLabels = stmtsThatBranchToLabel.get(oldStmt);
-
     if (branchLabels != null) {
       branchLabels.forEach(bl -> stmtsThatBranchToLabel.put(newStmt, bl));
       stmtsThatBranchToLabel.removeAll(oldStmt);
@@ -2132,7 +2118,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    *
    * @param expr which is used to filter associated Stmts
    */
-  public Stream<Stmt> getStmtsThatUse(@Nonnull Expr expr) {
+  @Nonnull
+  protected Stream<Stmt> getStmtsThatUse(@Nonnull Expr expr) {
     Stream<Stmt> currentUses =
         insnToStmt.values().stream().filter(stmt -> stmt.getUses().contains(expr));
 

@@ -36,7 +36,7 @@ import org.objectweb.asm.tree.AbstractInsnNode;
  *
  * @author Aaloan Miftah
  */
-final class Operand {
+class Operand {
 
   @Nonnull protected final AbstractInsnNode insn;
   @Nonnull protected final Value value;

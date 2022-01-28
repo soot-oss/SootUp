@@ -2,6 +2,7 @@ package de.upb.swt.soot.core.graph;
 
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -12,8 +13,16 @@ public interface BasicBlock {
   @Nonnull
   List<? extends BasicBlock> getSuccessors();
 
-  // hint: theres no getExceptionalPredecessorBlocks() as it makes no sense in that direction -> use
-  // getPredecessors() ;-)
+  default List<? extends BasicBlock> getExceptionalPredecessorBlocks() {
+    List<BasicBlock> exceptionalPredecessorBlocks = new ArrayList<>();
+    for (BasicBlock pb : getPredecessors()) {
+      if (pb.getExceptionalSuccessors().contains(this)) {
+        exceptionalPredecessorBlocks.add(pb);
+      }
+    }
+    return exceptionalPredecessorBlocks;
+  }
+
   @Nonnull
   List<? extends BasicBlock> getExceptionalSuccessors();
 

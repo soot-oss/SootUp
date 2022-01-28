@@ -2,6 +2,7 @@ package de.upb.swt.soot.core.graph;
 
 import de.upb.swt.soot.core.graph.iterator.StmtGraphBlockIterator;
 import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import java.util.*;
@@ -40,9 +41,46 @@ public abstract class StmtGraph implements Iterable<Stmt> {
   @Nonnull
   public abstract List<Stmt> predecessors(@Nonnull Stmt node);
 
+  @Nonnull
+  public List<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
+    if (!(node instanceof JIdentityStmt
+        && ((JIdentityStmt<?>) node).getRightOp() instanceof JCaughtExceptionRef)) {
+      // only an exception handler stmt can have exceptional predecessors
+      return Collections.emptyList();
+    }
+
+    List<Stmt> exceptionalPred = new ArrayList<>();
+    for (Stmt predecessor : predecessors(node)) {
+      if (!successors(predecessor).contains(node)) {
+        exceptionalPred.add(predecessor);
+      }
+    }
+    return exceptionalPred;
+  }
+
   /** returns the outgoing flows of node as ordered List. The List can have duplicate entries! */
   @Nonnull
   public abstract List<Stmt> successors(@Nonnull Stmt node);
+
+  @Nonnull
+  public abstract List<Stmt> exceptionalSuccessors(@Nonnull Stmt node);
+
+  /**
+   * Collects all successors i.e. unexceptional and exceptional successors of a given stmt into a
+   * list.
+   *
+   * @param stmt in the given graph
+   * @return a list containing the unexceptional+exceptional successors of the given stmt
+   */
+  @Nonnull
+  public List<Stmt> getAllSuccessors(@Nonnull Stmt stmt) {
+    final List<Stmt> successors = successors(stmt);
+    final List<Stmt> exSuccessors = exceptionalSuccessors(stmt);
+    List<Stmt> allSuccessors = new ArrayList<>(successors.size() + exSuccessors.size());
+    allSuccessors.addAll(successors);
+    allSuccessors.addAll(exSuccessors);
+    return allSuccessors;
+  }
 
   /** returns the amount of ingoing flows into node */
   public abstract int inDegree(@Nonnull Stmt node);
@@ -97,7 +135,7 @@ public abstract class StmtGraph implements Iterable<Stmt> {
             || getTraps().stream()
                 .map(Trap::getHandlerStmt)
                 .anyMatch(handler -> handler == stmt))) {
-          throw new RuntimeException(
+          throw new IllegalStateException(
               "Stmt '"
                   + stmt
                   + "' which is neither the StartingStmt nor a TrapHandler is missing a predecessor!");
@@ -108,13 +146,13 @@ public abstract class StmtGraph implements Iterable<Stmt> {
 
         for (Stmt target : successors) {
           if (target == stmt) {
-            throw new RuntimeException(stmt + ": a Stmt cannot branch to itself.");
+            throw new IllegalStateException(stmt + ": a Stmt cannot branch to itself.");
           }
         }
 
         if (stmt instanceof JSwitchStmt) {
           if (successorCount != ((JSwitchStmt) stmt).getValueCount()) {
-            throw new RuntimeException(
+            throw new IllegalStateException(
                 stmt
                     + ": size of outgoing flows (i.e. "
                     + successorCount
@@ -129,7 +167,7 @@ public abstract class StmtGraph implements Iterable<Stmt> {
           }
         } else if (stmt instanceof JGotoStmt) {
           if (successorCount != 1) {
-            throw new RuntimeException(
+            throw new IllegalStateException(
                 stmt + ": Goto must have '1' outgoing flow but has '" + successorCount + "'.");
           }
         }
@@ -138,12 +176,12 @@ public abstract class StmtGraph implements Iterable<Stmt> {
           || stmt instanceof JReturnVoidStmt
           || stmt instanceof JThrowStmt) {
         if (successorCount != 0) {
-          throw new RuntimeException(
+          throw new IllegalStateException(
               stmt + ": must have '0' outgoing flow but has '" + successorCount + "'.");
         }
       } else {
         if (successorCount != 1) {
-          throw new RuntimeException(
+          throw new IllegalStateException(
               stmt + ": must have '1' outgoing flow but has '" + successorCount + "'.");
         }
       }
