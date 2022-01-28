@@ -189,15 +189,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     bodyBuilder.setModifiers(AsmUtil.getModifiers(access));
 
     /* initialize */
-    int nrInsn = instructions.size();
     nextLocal = maxLocals;
     locals =
         new NonIndexOutofBoundsArrayList<>(
             maxLocals
                 + Math.max((maxLocals / 2), 5)); // [ms] initial capacity is just roughly estimated.
     stmtsThatBranchToLabel = LinkedListMultimap.create();
-    insnToStmt = new LinkedHashMap<>(nrInsn);
-    operandStack = new OperandStack(this, nrInsn);
+    insnToStmt = new LinkedHashMap<>(instructions.size());
+    operandStack = new OperandStack(this, instructions.size());
     trapHandler = new LinkedHashMap<>(tryCatchBlocks.size());
 
     /* retrieve all trap handlers */
@@ -336,15 +335,17 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   private void assignReadOps(@Nullable Local local) {
     for (Operand operand : operandStack.getStack()) {
-      if (operand == DWORD_DUMMY
-          || operand.stackLocal != null
-          || (local == null && operand.value instanceof Local)) {
+      final Value opValue = operand.value;
+      if (operand == DWORD_DUMMY || operand.stackLocal != null) {
         continue;
       }
-      if (local != null && !operand.value.equivTo(local)) {
-        List<Value> uses = operand.value.getUses();
+      if (local == null) {
+        if (opValue instanceof Local) {
+          continue;
+        }
+      } else if (!opValue.equivTo(local)) {
         boolean noRef = true;
-        for (Value use : uses) {
+        for (Value use : opValue.getUses()) {
           if (use.equivTo(local)) {
             noRef = false;
             break;
@@ -365,7 +366,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       Local stackLocal = newStackLocal();
       operand.stackLocal = stackLocal;
       JAssignStmt<Local, ?> asssignStmt =
-          Jimple.newAssignStmt(stackLocal, operand.value, new StmtPositionInfo(currentLineNumber));
+          Jimple.newAssignStmt(stackLocal, opValue, new StmtPositionInfo(currentLineNumber));
 
       setStmt(operand.insn, asssignStmt);
       operand.updateUsages();
@@ -1637,7 +1638,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       @Nonnull List<ClassType> traps,
       @Nonnull Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges,
       @Nonnull ArrayDeque<BranchedInsnInfo> conversionWorklist,
-      @Nonnull AbstractInsnNode cur, /*  branching instruction node */
+      @Nonnull AbstractInsnNode branchingInsn, /*  branching instruction node */
       @Nonnull
           AbstractInsnNode
               tgt, /* "default" targets i.e. LabelNode or fallsthrough "target" of if  */
@@ -1647,12 +1648,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     int i = 0;
     outer_loop:
     do {
-      BranchedInsnInfo edge = edges.get(cur, tgt);
+      BranchedInsnInfo edge = edges.get(branchingInsn, tgt);
       if (edge == null) {
         // [ms] check why this edge could be already there
         edge = new BranchedInsnInfo(traps, tgt, operandStack.getStack());
         edge.addToPrevStack(stackss);
-        edges.put(cur, tgt, edge);
+        edges.put(branchingInsn, tgt, edge);
         conversionWorklist.add(edge);
         continue;
       }
