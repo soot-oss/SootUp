@@ -141,7 +141,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Nonnull
   private final List<BodyInterceptor>
       bodyInterceptors; // TODO: [ms] show them their place i.e. move them inside a View (same for
-                        // sourcecodefrontend)
+  // sourcecodefrontend)
 
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
@@ -2085,12 +2085,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   void replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
     AbstractInsnNode key = null;
-
-    // TODO: [ms] check: rememberedStmt becomes relevant *after* all replaceStmt() calls are
-    // happening and does not need to be checked/updated
-    if (rememberedStmt == oldStmt) {
-      rememberedStmt = newStmt;
-    }
 
     // TODO: [ms] bit expensive and called a lot? -> find better solution!
     for (Entry<AbstractInsnNode, Stmt> entry : insnToStmt.entrySet()) {

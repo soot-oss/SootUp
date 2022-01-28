@@ -95,11 +95,11 @@ class Operand {
       oldUsage = methodSource.getLatestVersionOfStmt(oldUsage);
 
       oldUsage.accept(replaceStmtVisitor);
-      Stmt newUsage = replaceStmtVisitor.getResult();
+      Stmt stmtWithNewUsage = replaceStmtVisitor.getResult();
 
-      if (oldUsage != newUsage) {
-        methodSource.replaceStmt(oldUsage, newUsage);
-        usedByStmts.set(i, newUsage);
+      if (oldUsage != stmtWithNewUsage) {
+        methodSource.replaceStmt(oldUsage, stmtWithNewUsage);
+        usedByStmts.set(i, stmtWithNewUsage);
       }
     }
   }
