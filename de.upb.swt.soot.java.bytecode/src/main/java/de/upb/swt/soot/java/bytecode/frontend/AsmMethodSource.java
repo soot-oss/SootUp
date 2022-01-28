@@ -343,6 +343,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         if (opValue instanceof Local) {
           continue;
         }
+        int op = operand.insn.getOpcode();
+        if (op != GETFIELD && op != GETSTATIC && !(op >= IALOAD && op <= SALOAD)) {
+          continue;
+        }
       } else if (!opValue.equivTo(local)) {
         boolean noRef = true;
         for (Value use : opValue.getUses()) {
@@ -354,11 +358,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         if (noRef) {
           continue;
         }
-      }
-      int op = operand.insn.getOpcode();
-
-      if (local == null && op != GETFIELD && op != GETSTATIC && !(IALOAD <= op && op <= SALOAD)) {
-        continue;
       }
 
       Local stackLocal = newStackLocal();
