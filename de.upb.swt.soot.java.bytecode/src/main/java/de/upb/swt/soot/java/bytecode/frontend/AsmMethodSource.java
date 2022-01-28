@@ -333,7 +333,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return (A) insnToStmt.get(insn);
   }
 
-  private void assignReadOps(@Nullable Local local) {
+  private void addExplicitReadOpAssignments(@Nullable Local local) {
+    // determine which Operand(s) from the stack needs explicit assignments in Jimple
     for (Operand operand : operandStack.getStack()) {
       final Value opValue = operand.value;
       if (operand == DWORD_DUMMY || operand.stackLocal != null) {
@@ -450,7 +451,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
      * in case any static field or array is read from, and the static constructor or the field this instruction writes to,
      * modifies that field, write out any previous read from field/array
      */
-    assignReadOps(null);
+    addExplicitReadOpAssignments(null);
   }
 
   private void convertFieldInsn(@Nonnull FieldInsnNode insn) {
@@ -464,7 +465,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   private void convertIincInsn(@Nonnull IincInsnNode insn) {
     Local local = getOrCreateLocal(insn.var);
-    assignReadOps(local);
+    addExplicitReadOpAssignments(local);
     if (!insnToStmt.containsKey(insn)) {
       JAddExpr add = Jimple.newAddExpr(local, IntConstant.getInstance(insn.incr));
       setStmt(insn, Jimple.newAssignStmt(local, add, new StmtPositionInfo(currentLineNumber)));
@@ -1300,7 +1301,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     /*
      * assign all read ops in case the methodRef modifies any of the fields
      */
-    assignReadOps(null);
+    addExplicitReadOpAssignments(null);
   }
 
   private void convertInvokeDynamicInsn(@Nonnull InvokeDynamicInsnNode insn) {
@@ -1394,7 +1395,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     /*
      * assign all read ops in case the method modifies any of the fields
      */
-    assignReadOps(null);
+    addExplicitReadOpAssignments(null);
   }
 
   // private @Nonnull MethodRef toSootMethodRef(@Nonnull Handle methodHandle) {
@@ -1565,7 +1566,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
       frame.mergeIn(opr);
     }
-    assignReadOps(local);
+    addExplicitReadOpAssignments(local);
   }
 
   private void convertVarInsn(@Nonnull VarInsnNode insn) {
