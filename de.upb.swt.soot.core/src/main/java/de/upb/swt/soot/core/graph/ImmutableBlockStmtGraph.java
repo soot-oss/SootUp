@@ -61,6 +61,13 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
     throw new IllegalStateException("Not implemented yet!");
   }
 
+  @Nonnull
+  @Override
+  public List<Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
+    // FIXME! implement
+    throw new RuntimeException("not implemented");
+  }
+
   @Override
   public int inDegree(@Nonnull Stmt node) {
     throw new IllegalStateException("Not implemented yet!");

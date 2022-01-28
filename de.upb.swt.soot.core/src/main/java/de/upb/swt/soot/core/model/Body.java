@@ -455,6 +455,10 @@ public class Body implements Copyable {
     return new BodyBuilder();
   }
 
+  public static BodyBuilder builder(@Nonnull MutableStmtGraph graph) {
+    return new BodyBuilder(graph);
+  }
+
   public static BodyBuilder builder(@Nonnull Body body, Set<Modifier> modifiers) {
     return new BodyBuilder(body, modifiers);
   }
@@ -491,6 +495,10 @@ public class Body implements Copyable {
 
     BodyBuilder() {
       graph = new MutableBlockStmtGraph();
+    }
+
+    BodyBuilder(@Nonnull MutableStmtGraph graph) {
+      this.graph = graph;
     }
 
     BodyBuilder(@Nonnull Body body, @Nonnull Set<Modifier> modifiers) {

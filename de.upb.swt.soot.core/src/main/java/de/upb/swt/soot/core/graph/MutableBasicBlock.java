@@ -4,6 +4,7 @@ import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -76,25 +77,25 @@ public class MutableBasicBlock implements BasicBlock {
   @Nonnull
   @Override
   public List<MutableBasicBlock> getPredecessors() {
-    return predecessorBlocks;
+    return Collections.unmodifiableList(predecessorBlocks);
   }
 
   @Nonnull
   @Override
   public List<MutableBasicBlock> getSuccessors() {
-    return successorBlocks;
+    return Collections.unmodifiableList(successorBlocks);
   }
 
   @Nonnull
   @Override
-  public List<? extends BasicBlock> getExceptionalSuccessors() {
-    return exceptionalSuccessorBlocks;
+  public List<MutableBasicBlock> getExceptionalSuccessors() {
+    return Collections.unmodifiableList(exceptionalSuccessorBlocks);
   }
 
   @Nonnull
   @Override
   public List<Stmt> getStmts() {
-    return stmts;
+    return Collections.unmodifiableList(stmts);
   }
 
   public int getStmtCount() {
@@ -104,9 +105,9 @@ public class MutableBasicBlock implements BasicBlock {
   @Nonnull
   @Override
   public Stmt getHead() {
-    /*if (stmts.size() < 1) {
-      throw new IllegalStateException("Cant get a head - this block has no assigned Stmts.");
-    }*/
+    if (stmts.size() < 1) {
+      throw new IndexOutOfBoundsException("Cant get the head - this Block has no assigned Stmts.");
+    }
     return stmts.get(0);
   }
 
@@ -114,9 +115,9 @@ public class MutableBasicBlock implements BasicBlock {
   @Override
   public Stmt getTail() {
     int size = stmts.size();
-    /*if (size < 1) {
-      throw new IllegalStateException("Cant get a tail - this block has no assigned Stmts.");
-    }*/
+    if (size < 1) {
+      throw new IndexOutOfBoundsException("Cant get the tail - this Block has no assigned Stmts.");
+    }
     return stmts.get(size - 1);
   }
 

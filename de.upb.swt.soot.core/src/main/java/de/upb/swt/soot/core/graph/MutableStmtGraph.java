@@ -37,6 +37,10 @@ public abstract class MutableStmtGraph extends StmtGraph {
 
   public abstract void setStartingStmt(@Nonnull Stmt firstStmt);
 
+  public void setStartingStmtBlock(@Nonnull BasicBlock firstBlock) {
+    setStartingStmt(firstBlock.getHead());
+  }
+
   public void addNode(@Nonnull Stmt node) {
     addNode(node, Collections.emptyList());
   }

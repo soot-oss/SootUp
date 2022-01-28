@@ -13,7 +13,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Nullable private Stmt startingStmt = null;
   @Nonnull private final Map<Stmt, Integer> stmtToBlock = new HashMap<>();
-  @Nonnull private final ArrayList<MutableBasicBlock> blocks = new ArrayList<>();
+
+  @Nonnull
+  private final ArrayList<MutableBasicBlock> blocks =
+      new ArrayList<>(); // remove mapping: integerIdx->block and use a set here
 
   public MutableBlockStmtGraph() {}
 
@@ -23,8 +26,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     for (Stmt stmt : graph) {
       setEdges(stmt, successors(stmt));
     }
-    // FIXME: setTraps(graph.getTraps());
-    throw new IllegalArgumentException("cant handle trap conversion ");
+    // FIXME:
+    setTraps(graph.getTraps());
   }
 
   @Override
@@ -49,7 +52,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Override
   @Nonnull
-  // FIXME: return them in post-reverse-order for ssa?
   public List<? extends BasicBlock> getBlocks() {
     return blocks.stream().filter(Objects::nonNull).collect(Collectors.toList());
   }
@@ -67,28 +69,30 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
   }
 
+  /**
+   * caution: handle direct manipulation of MutableBasicBlocks after calling addBlock(..) with care!
+   * those changes are not necessarily reflected in the graphs datastructure.
+   */
   @Override
   public void addBlock(@Nonnull MutableBasicBlock block) {
     // check if the block is already existing in blocks
-    // TODO: [ms] -> performance! its currently an ArrayList
-    for (MutableBasicBlock mutableBasicBlock : blocks) {
-      if (mutableBasicBlock == block) {
-        return;
-      }
+    if (blocks.contains(block)) {
+      return;
     }
 
     int newIdx = blocks.size();
     blocks.add(block);
-    block
-        .getStmts()
-        .forEach(
-            stmt -> {
-              final Integer exists = stmtToBlock.put(stmt, newIdx);
-              if (exists != null) {
-                throw new IllegalArgumentException(
-                    "Stmt \"" + stmt + "\" of the given Block exists already in the graph!");
-              }
-            });
+    for (Stmt stmt : block.getStmts()) {
+      final Integer exists = stmtToBlock.put(stmt, newIdx);
+      if (exists != null) {
+        // duplicate stmt in the same block?
+        throw new IllegalArgumentException(
+            "Stmt \"" + stmt + "\" of the given Block exists already in the graph!");
+      }
+    }
+
+    // TODO: check predecessorBlocks/successorBlocks ?
+
   }
 
   protected MutableBasicBlock addNodeInternal(@Nonnull Stmt stmt) {

@@ -74,6 +74,12 @@ public class ForwardingStmtGraph extends StmtGraph {
     return backingGraph.successors(stmt);
   }
 
+  @Nonnull
+  @Override
+  public List<Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
+    return backingGraph.exceptionalSuccessors(node);
+  }
+
   @Override
   public int degree(@Nonnull Stmt stmt) {
     return backingGraph.degree(stmt);

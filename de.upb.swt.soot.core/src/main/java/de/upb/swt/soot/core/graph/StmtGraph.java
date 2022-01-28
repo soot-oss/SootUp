@@ -292,7 +292,7 @@ public abstract class StmtGraph implements Iterable<Stmt> {
 
       @Override
       public boolean hasNext() {
-        return !(nextElement instanceof BranchingStmt);
+        return !nextElement.branches();
       }
 
       @Override

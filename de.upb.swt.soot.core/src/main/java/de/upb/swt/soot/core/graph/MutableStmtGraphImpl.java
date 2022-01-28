@@ -21,7 +21,9 @@ package de.upb.swt.soot.core.graph;
  * #L%
  */
 import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
@@ -167,7 +169,22 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
 
   @Override
   public void clearExceptionalEdges(@Nonnull Stmt stmt) {
+    // FIXME: implement
     throw new IllegalArgumentException("removal of traps is not implemented, yet.");
+  }
+
+  @Override
+  public void addExceptionalEdge(
+      @Nonnull Stmt stmt, @Nonnull JIdentityStmt<JCaughtExceptionRef> traphandlerStmt) {
+    // FIXME: implement
+    throw new RuntimeException("not implemented");
+  }
+
+  @Override
+  public void removeExceptionalEdge(
+      @Nonnull Stmt stmt, @Nonnull JIdentityStmt<JCaughtExceptionRef> traphandlerStmt) {
+    // FIXME: implement
+    throw new RuntimeException("not implemented");
   }
 
   @Override
@@ -240,6 +257,12 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
       return Collections.emptyList();
     }
     return Collections.unmodifiableList(stmts);
+  }
+
+  @Nonnull
+  @Override
+  public List<Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
+    return null;
   }
 
   @Override

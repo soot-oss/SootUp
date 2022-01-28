@@ -41,6 +41,9 @@ import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.*;
 import de.upb.swt.soot.core.frontend.BodySource;
+import de.upb.swt.soot.core.graph.MutableBasicBlock;
+import de.upb.swt.soot.core.graph.MutableBlockStmtGraph;
+import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
@@ -147,10 +150,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
 
   @Nonnull private final Map<LabelNode, Stmt> labelsToStmt = new HashMap<>();
-  @Nonnull private final Body.BodyBuilder bodyBuilder = Body.builder();
-
-  Stmt rememberedStmt = null;
-  boolean isFirstStmtSet = false;
+  @Nonnull private final Body.BodyBuilder bodyBuilder;
+  @Nonnull private final MutableStmtGraph graph;
 
   private final Supplier<MethodSignature> lazyMethodSignature =
       Suppliers.memoize(
@@ -171,6 +172,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
     this.bodyInterceptors = bodyInterceptors;
+    this.graph = new MutableBlockStmtGraph();
+    bodyBuilder = Body.builder(graph);
   }
 
   @Override
@@ -213,9 +216,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
 
     /* build body (add stmts, locals, traps, etc.) */
-    buildLocals();
-    buildStmts();
+    final List<MutableBasicBlock> stmtBlocks = buildStmts();
     buildTraps();
+
+    // add blocks/stmts into the graph
+    if (!stmtBlocks.isEmpty()) {
+      stmtBlocks.forEach(graph::addBlock);
+      graph.setStartingStmtBlock(stmtBlocks.get(0));
+    } else {
+      // no stmts/code in this method -> abstract|interface|empty static
+    }
 
     if (bodyBuilder.getStmtGraph().nodes().size() > 0) {
       Position firstStmtPos =
@@ -1600,7 +1610,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (!insnToStmt.containsKey(ln)) {
         JNopStmt nop = Jimple.newNopStmt(new StmtPositionInfo(currentLineNumber));
         setStmt(ln, nop);
-        emitStmt(nop);
       }
       return;
     }
@@ -1859,8 +1868,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  private void buildLocals() {
+  private MutableBasicBlock buildPreambleLocals() {
 
+    MutableBasicBlock preambleBlock = new MutableBasicBlock();
     MethodSignature methodSignature = lazyMethodSignature.get();
 
     int localIdx = 0;
@@ -1870,7 +1880,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       final JIdentityStmt<JThisRef> stmt =
           Jimple.newIdentityStmt(
               l, Jimple.newThisRef(declaringClass), new StmtPositionInfo(currentLineNumber));
-      emitStmt(stmt);
+      preambleBlock.addStmt(stmt);
     }
 
     // add parameter Locals
@@ -1885,11 +1895,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
                   invisibleParameterAnnotations == null ? null : invisibleParameterAnnotations[i]));
       locals.set(localIdx, local);
 
-      emitStmt(
+      final JIdentityStmt<JParameterRef> stmt =
           Jimple.newIdentityStmt(
               local,
               Jimple.newParameterRef(parameterType, i),
-              StmtPositionInfo.createNoStmtPositionInfo()));
+              StmtPositionInfo.createNoStmtPositionInfo());
+      preambleBlock.addStmt(stmt);
 
       // see https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.6.1
       if (AsmUtil.isDWord(parameterType)) {
@@ -1901,6 +1912,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     Set<Local> bodyLocals = new LinkedHashSet<>(locals);
     bodyBuilder.setLocals(bodyLocals);
+    return preambleBlock;
   }
 
   private void buildTraps() {
@@ -1935,37 +1947,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     bodyBuilder.setTraps(traps);
   }
 
-  private void emitStmt(@Nonnull Stmt stmt) {
-    if (rememberedStmt != null) {
-      if (rememberedStmt.fallsThrough()) {
-        // determine whether successive emitted Stmts have a flow between them
-        bodyBuilder.addFlow(rememberedStmt, stmt);
-      }
-    } else if (!isFirstStmtSet) {
-      // determine first stmt to execute
-      bodyBuilder.setStartingStmt(stmt);
-      isFirstStmtSet = true;
-    }
-    rememberedStmt = stmt;
-  }
-
-  private void emitStmts(@Nonnull Stmt stmt) {
-    if (stmt instanceof StmtContainer) {
-      for (Stmt u : ((StmtContainer) stmt).getStmts()) {
-        emitStmt(u);
-      }
-    } else {
-      emitStmt(stmt);
-    }
-  }
-
-  private void buildStmts() {
+  private List<MutableBasicBlock> buildStmts() {
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
 
-    // TODO: [ms] improve - every label denotes a border of a Block! implement adding the Blocks
-    // directly into StmtGraph
-    // MutableBasicBlock block = new MutableBasicBlock();
+    // every LabelNode denotes a border of a Block
+    List<MutableBasicBlock> blocks = new ArrayList<>();
+    MutableBasicBlock block = buildPreambleLocals();
 
     do {
 
@@ -1982,6 +1970,21 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       Stmt stmt = insnToStmt.get(insn);
       if (stmt == null) {
         continue;
+      }
+
+      if (!danglingLabel.isEmpty()) {
+        // there is (at least) a LabelNode -> Block border -> create another block or use the empty
+        // existing one
+        if (!block.isEmpty()) {
+
+          final MutableBasicBlock tmpBlock = new MutableBasicBlock();
+          if (block.getTail().fallsThrough()) {
+            block.addSuccessorBlock(tmpBlock);
+            tmpBlock.addPredecessorBlock(block);
+          }
+          graph.addBlock(block);
+          block = tmpBlock;
+        }
       }
 
       /* build traps for this block
@@ -2013,7 +2016,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         danglingLabel.forEach(l -> labelsToStmt.put(l, targetStmt));
         if (isLabelNode) {
           // If the targetStmt is an exception handler, register the starting Stmt for it
-          JIdentityStmt<?> identityRef = findIdentityRefInContainer(stmt);
+          JIdentityStmt<?> identityRef = findIdentityRefInStmtContainer(stmt);
           if (identityRef != null && identityRef.getRightOp() instanceof JCaughtExceptionRef) {
             danglingLabel.forEach(label -> trapHandler.put(label, identityRef));
           }
@@ -2021,22 +2024,44 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         danglingLabel.clear();
       }
 
-      emitStmts(stmt);
+      if (stmt instanceof StmtContainer) {
+        for (Stmt u : ((StmtContainer) stmt).getStmts()) {
+          block.addStmt(u);
+        }
+      } else {
+        block.addStmt(stmt);
+      }
 
     } while ((insn = insn.getNext()) != null);
 
+    // is there a dangling block thats not assigned in the loop?
+    if (!block.isEmpty()) {
+      graph.addBlock(block);
+    }
+
     // Emit the inline exception handler blocks
     for (LabelNode ln : inlineExceptionHandlers.keySet()) {
+      block = new MutableBasicBlock();
+
       Stmt handler = inlineExceptionHandlers.get(ln);
-      emitStmts(handler);
+
+      if (handler instanceof StmtContainer) {
+        for (Stmt u : ((StmtContainer) handler).getStmts()) {
+          block.addStmt(u);
+        }
+      } else {
+        block.addStmt(handler);
+      }
 
       trapHandler.put(ln, handler);
 
       // jump back to the original implementation
       Stmt targetStmt = insnToStmt.get(ln);
       JGotoStmt gotoStmt = Jimple.newGotoStmt(new StmtPositionInfo(currentLineNumber));
-      emitStmt(gotoStmt);
-      bodyBuilder.addFlow(gotoStmt, targetStmt);
+      block.addStmt(gotoStmt);
+
+      graph.addBlock(block);
+      graph.putEdge(gotoStmt, targetStmt);
     }
 
     // connect branching stmts with its targets
@@ -2052,12 +2077,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
                 + " in method "
                 + lazyMethodSignature.get());
       }
-      bodyBuilder.addFlow(fromStmt, targetStmt);
+      graph.putEdge(fromStmt, targetStmt);
     }
+
+    return blocks;
   }
 
   @Nullable
-  private JIdentityStmt<?> findIdentityRefInContainer(@Nonnull Stmt stmt) {
+  private JIdentityStmt<?> findIdentityRefInStmtContainer(@Nonnull Stmt stmt) {
     if (stmt instanceof JIdentityStmt) {
       return (JIdentityStmt<?>) stmt;
     } else if (stmt instanceof StmtContainer) {

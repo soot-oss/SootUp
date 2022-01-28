@@ -460,13 +460,33 @@ public class MutableBlockStmtGraphTest {
     graph.addBlock(block);
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void testBlockAddStmtInvalidDuplicateStmtObjectViaGraph() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     MutableBasicBlock block = new MutableBasicBlock();
+    graph.addNode(firstNop);
     block.addStmt(firstNop);
-    graph.addNode(firstNop); // ignores adding as it already exists
     graph.addBlock(block);
+  }
+
+  @Test
+  public void testBlockAddStmtInvalidDuplicateStmtObjectViaGraphDirectManiupaltionAfterwards() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    MutableBasicBlock block = new MutableBasicBlock();
+    graph.addNode(firstNop);
+    graph.addBlock(block);
+    block.addStmt(firstNop); // BAD! don't do that!
+  }
+
+  @Test
+  public void testDuplicateStmtsViaDifferentLevelsOfResponsibility() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    MutableBasicBlock block = new MutableBasicBlock();
+    graph.addNode(firstNop);
+    graph.addBlock(block);
+    block.addStmt(secondNop); // BAD! don't do that!
+    graph.addBlock(block); // block is currently ignored if added again and not reindexed!
+    assertFalse(graph.containsNode(secondNop));
   }
 
   @Test(expected = IllegalArgumentException.class)

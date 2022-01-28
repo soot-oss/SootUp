@@ -23,7 +23,6 @@ package de.upb.swt.soot.java.bytecode.frontend;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
 
 // FIXME: [AD] is it reasonable to get rid of it?
@@ -35,7 +34,7 @@ class BranchedInsnInfo {
   /* previous stacks at edge */
   @Nonnull private final LinkedList<Operand[]> prevStacks;
   /* current stack at edge */
-  @Nullable private List<Operand> operandStack;
+  @Nonnull private List<Operand> operandStack;
 
   BranchedInsnInfo(
       @Nonnull List<ClassType> traps,
@@ -48,24 +47,25 @@ class BranchedInsnInfo {
   }
 
   @Nonnull
-  public AbstractInsnNode getInsn() {
+  AbstractInsnNode getInsn() {
     return insn;
   }
 
-  public List<Operand> getOperandStack() {
+  @Nonnull
+  List<Operand> getOperandStack() {
     return operandStack;
   }
 
-  public void setOperandStack(@Nullable List<Operand> operandStack) {
+  void setOperandStack(@Nonnull List<Operand> operandStack) {
     this.operandStack = new ArrayList<>(operandStack);
   }
 
   @Nonnull
-  public List<Operand[]> getPrevStacks() {
+  List<Operand[]> getPrevStacks() {
     return Collections.unmodifiableList(prevStacks);
   }
 
-  public void addToPrevStack(@Nonnull Operand[] stacksOperands) {
+  void addToPrevStack(@Nonnull Operand[] stacksOperands) {
     prevStacks.add(stacksOperands);
   }
 }

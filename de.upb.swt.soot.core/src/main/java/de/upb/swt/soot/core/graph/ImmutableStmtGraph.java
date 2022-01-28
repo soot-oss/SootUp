@@ -163,6 +163,13 @@ public class ImmutableStmtGraph extends StmtGraph {
     return (List<Stmt>) successors[idx];
   }
 
+  @Nonnull
+  @Override
+  public List<Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
+    // FIXME! implement
+    throw new UnsupportedOperationException("not implemented");
+  }
+
   @Override
   public int inDegree(@Nonnull Stmt node) {
     return predecessors(node).size();
