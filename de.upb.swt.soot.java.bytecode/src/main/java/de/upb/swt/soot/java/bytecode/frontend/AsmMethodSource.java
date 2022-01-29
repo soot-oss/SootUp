@@ -240,8 +240,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       bodyBuilder.setPosition(NoPositionInformation.getInstance());
     }
 
-    // TODO: [ms] cleanup is not necessary or check if it is intended for GC
-    /* clean up */
+    /* clean up for gc */
     locals = null;
     stmtsThatBranchToLabel = null;
     insnToStmt = null;

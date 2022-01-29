@@ -1,21 +1,19 @@
 package de.upb.swt.soot.core.graph;
 
-import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import de.upb.swt.soot.core.types.ClassType;
+import java.util.*;
 import javax.annotation.Nonnull;
 
 public class MutableBasicBlock implements BasicBlock {
   @Nonnull private final List<MutableBasicBlock> predecessorBlocks = new ArrayList<>();
   @Nonnull private final List<MutableBasicBlock> successorBlocks = new ArrayList<>();
 
-  @Nonnull private final List<MutableBasicBlock> exceptionalSuccessorBlocks = new ArrayList<>();
+  @Nonnull
+  private final Map<ClassType, MutableBasicBlock> exceptionalSuccessorBlocks = new HashMap<>();
 
   @Nonnull private List<Stmt> stmts = new ArrayList<>();
-  @Nonnull private List<Trap> traps = new ArrayList<>();
 
   public MutableBasicBlock() {}
 
@@ -50,14 +48,6 @@ public class MutableBasicBlock implements BasicBlock {
     this.stmts = stmts;
   }
 
-  public void addTrap(@Nonnull Trap trap) {
-    traps.add(trap);
-  }
-
-  public void setTraps(@Nonnull List<Trap> traps) {
-    this.traps = traps;
-  }
-
   public void addPredecessorBlock(@Nonnull MutableBasicBlock block) {
     predecessorBlocks.add(block);
   }
@@ -88,8 +78,8 @@ public class MutableBasicBlock implements BasicBlock {
 
   @Nonnull
   @Override
-  public List<MutableBasicBlock> getExceptionalSuccessors() {
-    return Collections.unmodifiableList(exceptionalSuccessorBlocks);
+  public Map<ClassType, MutableBasicBlock> getExceptionalSuccessors() {
+    return Collections.unmodifiableMap(exceptionalSuccessorBlocks);
   }
 
   @Nonnull
@@ -119,12 +109,6 @@ public class MutableBasicBlock implements BasicBlock {
       throw new IndexOutOfBoundsException("Cant get the tail - this Block has no assigned Stmts.");
     }
     return stmts.get(size - 1);
-  }
-
-  @Nonnull
-  @Override
-  public List<Trap> getTraps() {
-    return traps;
   }
 
   /**
@@ -165,7 +149,7 @@ public class MutableBasicBlock implements BasicBlock {
     }
 
     // copy traps
-    secondBlock.setTraps(getTraps());
+    secondBlock.exceptionalSuccessorBlocks.putAll(getExceptionalSuccessors());
 
     return secondBlock;
   }

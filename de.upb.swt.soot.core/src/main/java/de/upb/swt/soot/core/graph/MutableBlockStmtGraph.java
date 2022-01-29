@@ -289,7 +289,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       if (blockOfFrom.getPredecessors().size() == 1) {
         MutableBasicBlock singlePreviousBlock = blockOfFrom.getPredecessors().get(0);
         if (!singlePreviousBlock.getTail().branches() && singlePreviousBlock != blockOfFrom) {
-          if (singlePreviousBlock.getTraps().equals(blockOfFrom.getTraps())) {
+          if (singlePreviousBlock
+              .getExceptionalSuccessors()
+              .equals(blockOfFrom.getExceptionalSuccessors())) {
             blockOfFrom
                 .getStmts()
                 .forEach(
@@ -312,7 +314,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           MutableBasicBlock singleSuccessorBlock = blockOfFrom.getSuccessors().get(0);
           if (singleSuccessorBlock.getPredecessors().size() == 1
               && singleSuccessorBlock.getPredecessors().get(0) == blockOfFrom) {
-            if (singleSuccessorBlock.getTraps().equals(blockOfFrom.getTraps())) {
+            if (singleSuccessorBlock
+                .getExceptionalSuccessors()
+                .equals(blockOfFrom.getExceptionalSuccessors())) {
               singleSuccessorBlock
                   .getStmts()
                   .forEach(

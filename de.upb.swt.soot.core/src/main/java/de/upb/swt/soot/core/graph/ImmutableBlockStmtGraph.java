@@ -3,6 +3,7 @@ package de.upb.swt.soot.core.graph;
 import com.google.common.collect.Lists;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -123,7 +124,7 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
 
     @Nonnull
     @Override
-    public List<? extends BasicBlock> getExceptionalSuccessors() {
+    public Map<? extends ClassType, ? extends BasicBlock> getExceptionalSuccessors() {
       throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -147,12 +148,6 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
     @Nonnull
     @Override
     public Stmt getTail() {
-      throw new UnsupportedOperationException();
-    }
-
-    @Nonnull
-    @Override
-    public List<? extends Trap> getTraps() {
       throw new UnsupportedOperationException();
     }
   }

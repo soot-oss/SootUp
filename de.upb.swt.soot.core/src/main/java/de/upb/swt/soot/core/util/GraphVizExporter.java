@@ -5,6 +5,7 @@ import de.upb.swt.soot.core.graph.BasicBlock;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
+import de.upb.swt.soot.core.types.ClassType;
 import java.net.URLEncoder;
 import java.util.*;
 import javax.annotation.Nonnull;
@@ -18,7 +19,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
  */
 public class GraphVizExporter {
 
-  public static String export(@Nonnull StmtGraph graph) {
+  public static String buildGraph(@Nonnull StmtGraph graph) {
 
     // TODO: hint: use edge weight to have a better top->down code like linear layouting with
     // starting stmt at the top;
@@ -138,16 +139,19 @@ public class GraphVizExporter {
       }
 
       /* add exceptional edges */
-      List<? extends BasicBlock> exceptionalSuccessors = block.getExceptionalSuccessors();
+      Map<? extends ClassType, ? extends BasicBlock> exceptionalSuccessors =
+          block.getExceptionalSuccessors();
       if (exceptionalSuccessors.size() > 0) {
         sb.append("\t//exceptional edges \n");
-        for (BasicBlock successorBlock : exceptionalSuccessors) {
+        for (Map.Entry<? extends ClassType, ? extends BasicBlock> successorBlock :
+            exceptionalSuccessors.entrySet()) {
           sb.append("\t")
               .append(block.getTail().hashCode())
               .append(":e -> ")
-              // TODO: [ms] add exception label with signature
-              .append(successorBlock.getHead().hashCode())
-              .append(":n [color=red,ltail=\"cluster_")
+              .append(successorBlock.getValue().getHead().hashCode())
+              .append(":n [label=\"\t")
+              .append(successorBlock.getKey().toString())
+              .append("\"color=red,ltail=\"cluster_")
               .append(block.hashCode())
               .append("\"]\n");
         }
@@ -166,6 +170,6 @@ public class GraphVizExporter {
   }
 
   public static String createUrlToWebeditor(@Nonnull StmtGraph graph) {
-    return "http://magjac.com/graphviz-visual-editor/?dot=" + URLEncoder.encode(export(graph));
+    return "http://magjac.com/graphviz-visual-editor/?dot=" + URLEncoder.encode(buildGraph(graph));
   }
 }
