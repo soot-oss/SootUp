@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.graph;
 
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
 import javax.annotation.Nonnull;
 
@@ -39,7 +40,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraphImpl {
 
   @Nonnull private final ArrayList<List<Stmt>> exceptionalPreds = new ArrayList<>();
   @Nonnull private final ArrayList<List<Stmt>> exceptionalSuccs = new ArrayList<>();
-  @Nonnull private final ArrayList<List<Trap>> exceptionalTargetTraps = new ArrayList<>();
+  @Nonnull private final ArrayList<Map<ClassType, Stmt>> exceptionalTargetTraps = new ArrayList<>();
 
   /** creates an empty instance of ExceptionalStmtGraph */
   public MutableExceptionalStmtGraph() {
@@ -53,11 +54,12 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraphImpl {
     // initialize exceptionalPreds and exceptionalSuccs
     int size = oriStmtGraph.nodes().size();
 
-    for (int i = 0; i < size; i++) {
-      exceptionalPreds.add(Collections.emptyList());
-      exceptionalSuccs.add(Collections.emptyList());
-      exceptionalTargetTraps.add(Collections.emptyList());
-    }
+    /*    for (int i = 0; i < size; i++) {
+          exceptionalPreds.add(Collections.emptyList());
+          exceptionalSuccs.add(Collections.emptyList());
+          exceptionalTargetTraps.add(Collections.emptyMap());
+        }
+    */
 
     // if there're traps, then infer every stmt's exceptional succs
     if (!oriStmtGraph.getTraps().isEmpty()) {
@@ -74,11 +76,11 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraphImpl {
           .forEach(trap -> handlerStmtToPreds.put(trap.getHandlerStmt(), new ArrayList<>()));
 
       // set exceptional successors for each stmt
-      for (Stmt stmt : oriStmtGraph.nodes()) {
-        List<Stmt> inferedSuccs = inferExceptionalSuccs(stmt, stmtToPosInBody, traps);
-        Integer idx = stmtToIdx.get(stmt);
-        exceptionalSuccs.set(idx, inferedSuccs);
-        inferedSuccs.forEach(handlerStmt -> handlerStmtToPreds.get(handlerStmt).add(stmt));
+      for (Map.Entry<Stmt, Integer> entry : stmtToIdx.entrySet()) {
+        List<Stmt> inferedSuccs = inferExceptionalSuccs(entry.getKey(), stmtToPosInBody, traps);
+        exceptionalSuccs.set(entry.getValue(), inferedSuccs);
+        inferedSuccs.forEach(
+            handlerStmt -> handlerStmtToPreds.get(handlerStmt).add(entry.getKey()));
       }
 
       // set exceptional predecessors for the stmt which is a handlerStmt
@@ -104,7 +106,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraphImpl {
   }
 
   @Nonnull
-  public List<Stmt> exceptionalSuccessors(@Nonnull Stmt stmt) {
+  public Map<ClassType, Stmt> exceptionalSuccessors(@Nonnull Stmt stmt) {
     int idx = getNodeIdx(stmt);
     List<Stmt> stmts = exceptionalSuccs.get(idx);
     return Collections.unmodifiableList(stmts);

@@ -216,16 +216,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
 
     /* build body (add stmts, locals, traps, etc.) */
-    final List<MutableBasicBlock> stmtBlocks = buildStmts();
+    buildStmts();
     buildTraps();
-
-    // add blocks/stmts into the graph
-    if (!stmtBlocks.isEmpty()) {
-      stmtBlocks.forEach(graph::addBlock);
-      graph.setStartingStmtBlock(stmtBlocks.get(0));
-    } else {
-      // no stmts/code in this method -> abstract|interface|empty static
-    }
 
     if (bodyBuilder.getStmtGraph().nodes().size() > 0) {
       Position firstStmtPos =
@@ -1867,6 +1859,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
+  @Nonnull
   private MutableBasicBlock buildPreambleLocals() {
 
     MutableBasicBlock preambleBlock = new MutableBasicBlock();
@@ -1946,12 +1939,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     bodyBuilder.setTraps(traps);
   }
 
-  private List<MutableBasicBlock> buildStmts() {
+  private void buildStmts() {
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
 
     // every LabelNode denotes a border of a Block
-    List<MutableBasicBlock> blocks = new ArrayList<>();
     MutableBasicBlock block = buildPreambleLocals();
 
     do {
@@ -1976,13 +1968,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         // existing one
         if (!block.isEmpty()) {
 
-          final MutableBasicBlock tmpBlock = new MutableBasicBlock();
+          final MutableBasicBlock newBlock = new MutableBasicBlock();
           if (block.getTail().fallsThrough()) {
-            block.addSuccessorBlock(tmpBlock);
-            tmpBlock.addPredecessorBlock(block);
+            block.addSuccessorBlock(newBlock);
+            newBlock.addPredecessorBlock(block);
           }
           graph.addBlock(block);
-          block = tmpBlock;
+          if (graph.getStartingStmt() == null) {
+            graph.setStartingStmtBlock(block);
+          }
+          block = newBlock;
         }
       }
 
@@ -2023,36 +2018,27 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         danglingLabel.clear();
       }
 
-      if (stmt instanceof StmtContainer) {
-        for (Stmt u : ((StmtContainer) stmt).getStmts()) {
-          block.addStmt(u);
-        }
-      } else {
-        block.addStmt(stmt);
-      }
+      emitStmt(stmt, block);
 
     } while ((insn = insn.getNext()) != null);
 
     // is there a dangling block thats not assigned in the loop?
     if (!block.isEmpty()) {
       graph.addBlock(block);
+      if (graph.getStartingStmt() == null) {
+        graph.setStartingStmtBlock(block);
+      }
     }
 
     // Emit the inline exception handler blocks
     for (LabelNode ln : inlineExceptionHandlers.keySet()) {
       block = new MutableBasicBlock();
 
-      Stmt handler = inlineExceptionHandlers.get(ln);
+      Stmt handlerStmt = inlineExceptionHandlers.get(ln);
 
-      if (handler instanceof StmtContainer) {
-        for (Stmt u : ((StmtContainer) handler).getStmts()) {
-          block.addStmt(u);
-        }
-      } else {
-        block.addStmt(handler);
-      }
+      emitStmt(handlerStmt, block);
 
-      trapHandler.put(ln, handler);
+      trapHandler.put(ln, handlerStmt);
 
       // jump back to the original implementation
       Stmt targetStmt = insnToStmt.get(ln);
@@ -2078,8 +2064,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
       graph.putEdge(fromStmt, targetStmt);
     }
+  }
 
-    return blocks;
+  private void emitStmt(@Nonnull Stmt handlerStmt, @Nonnull MutableBasicBlock block) {
+    if (handlerStmt instanceof StmtContainer) {
+      for (Stmt u : ((StmtContainer) handlerStmt).getStmts()) {
+        block.addStmt(u);
+      }
+    } else {
+      block.addStmt(handlerStmt);
+    }
   }
 
   @Nullable

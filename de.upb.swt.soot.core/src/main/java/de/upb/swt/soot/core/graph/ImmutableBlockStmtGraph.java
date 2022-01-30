@@ -64,7 +64,7 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
 
   @Nonnull
   @Override
-  public List<Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
+  public Map<ClassType, Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
     // FIXME! implement
     throw new RuntimeException("not implemented");
   }

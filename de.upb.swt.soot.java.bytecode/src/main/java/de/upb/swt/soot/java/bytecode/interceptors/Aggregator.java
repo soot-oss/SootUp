@@ -38,6 +38,9 @@ import javax.annotation.Nonnull;
 
 public class Aggregator implements BodyInterceptor {
 
+  // TODO[MN]: incorporate as a config parameter
+  boolean onlyStackVars = false;
+
   /**
    * Traverse the statements in the given body, looking for aggregation possibilities; that is,
    * given a def d and a use u, d has no other uses, u has no other defs, collapse d and u.
@@ -49,8 +52,6 @@ public class Aggregator implements BodyInterceptor {
 
     StmtGraph graph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
-    // TODO[MN]: config parameter
-    boolean onlyStackVars = false;
 
     builder.enableDeferredStmtGraphChanges();
     for (Stmt stmt : stmts) {
@@ -59,7 +60,8 @@ public class Aggregator implements BodyInterceptor {
         Value lhs = assignStmt.getLeftOp();
         if (lhs instanceof Local) {
           Local lhsLocal = (Local) lhs;
-          // FIXME[ms]: inspection says: always trues
+          // FIXME: [ms] the onlyStackVars... kind of enable/disables ***everything*** thats doing
+          // something in this Interceptor.. makes no sense - maybe a bracket typo?
           if (!(onlyStackVars && !lhsLocal.getName().startsWith("$"))) {
             for (Value val : assignStmt.getUses()) {
               if (val instanceof Local) {

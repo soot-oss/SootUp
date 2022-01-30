@@ -1,7 +1,5 @@
 package de.upb.swt.soot.core.graph;
 
-import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
-import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
@@ -38,14 +36,13 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Override
   public void addExceptionalEdge(
-      @Nonnull Stmt stmt, @Nonnull JIdentityStmt<JCaughtExceptionRef> traphandlerStmt) {
+      @Nonnull Stmt stmt, @Nonnull ClassType exceptionType, @Nonnull Stmt traphandlerStmt) {
     // FIXME implement
     throw new IllegalArgumentException("cant handle trap removal yet.");
   }
 
   @Override
-  public void removeExceptionalEdge(
-      @Nonnull Stmt stmt, @Nonnull JIdentityStmt<JCaughtExceptionRef> traphandlerStmt) {
+  public void removeExceptionalEdge(@Nonnull Stmt stmt, @Nonnull ClassType exceptionType) {
     // FIXME implement
     throw new IllegalArgumentException("cant handle trap removal yet.");
   }
@@ -424,8 +421,17 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Nonnull
   @Override
-  public List<Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
-    return null;
+  public Map<ClassType, Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
+    Integer blockIdx = stmtToBlock.get(node);
+    if (blockIdx == null) {
+      throw new IllegalArgumentException("Stmt is not contained in the BlockStmtGraph: " + node);
+    }
+    MutableBasicBlock block = blocks.get(blockIdx);
+    Map<ClassType, Stmt> map = new HashMap<>();
+    for (Map.Entry<ClassType, MutableBasicBlock> b : block.getExceptionalSuccessors().entrySet()) {
+      map.put(b.getKey(), b.getValue().getHead());
+    }
+    return map;
   }
 
   @Override
@@ -474,7 +480,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         throw new IllegalArgumentException(
             "target Stmt is not contained in the BlockStmtGraph: " + source);
       }
-      MutableBasicBlock blockB = blocks.get(blockBIdx);
       return blockA.getSuccessors().stream()
           .anyMatch(
               successorBlock -> /*successorBlock == blockB && */

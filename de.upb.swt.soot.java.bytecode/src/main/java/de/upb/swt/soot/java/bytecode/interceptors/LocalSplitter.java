@@ -31,6 +31,7 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Body.BodyBuilder;
 import de.upb.swt.soot.core.model.BodyUtils;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -228,9 +229,9 @@ public class LocalSplitter implements BodyInterceptor {
             for (Stmt handlerStmt : handlerStmts) {
               List<Stmt> exceptionalPreds = graph.exceptionalPredecessors(handlerStmt);
               for (Stmt exceptionalPred : exceptionalPreds) {
-                List<Trap> dests = graph.getDestTraps(exceptionalPred);
+                Map<ClassType, Stmt> dests = graph.exceptionalSuccessors(exceptionalPred);
                 List<Stmt> destHandlerStmts = new ArrayList<>();
-                dests.forEach(dest -> destHandlerStmts.add(dest.getHandlerStmt()));
+                dests.forEach((key, dest) -> destHandlerStmts.add(dest));
                 if (destHandlerStmts.contains(handlerStmt)) {
                   stmtsWithDests.add(exceptionalPred);
                 }

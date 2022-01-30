@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.graph;
  */
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -165,7 +166,7 @@ public class ImmutableStmtGraph extends StmtGraph {
 
   @Nonnull
   @Override
-  public List<Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
+  public Map<ClassType, Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
     // FIXME! implement
     throw new UnsupportedOperationException("not implemented");
   }

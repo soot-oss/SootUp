@@ -261,7 +261,7 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
 
   @Nonnull
   @Override
-  public List<Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
+  public Map<ClassType, Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
     return null;
   }
 

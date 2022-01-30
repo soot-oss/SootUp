@@ -22,8 +22,10 @@ package de.upb.swt.soot.core.graph;
  */
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nonnull;
 
 /**
@@ -76,7 +78,7 @@ public class ForwardingStmtGraph extends StmtGraph {
 
   @Nonnull
   @Override
-  public List<Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
+  public Map<ClassType, Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
     return backingGraph.exceptionalSuccessors(node);
   }
 

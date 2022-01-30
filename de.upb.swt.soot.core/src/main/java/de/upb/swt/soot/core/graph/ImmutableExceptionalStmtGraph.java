@@ -23,9 +23,11 @@ package de.upb.swt.soot.core.graph;
 
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nonnull;
 
 /** @author Zun Wang */
@@ -95,7 +97,7 @@ public final class ImmutableExceptionalStmtGraph extends ImmutableStmtGraph {
   }
 
   @Nonnull
-  public List<Stmt> exceptionalSuccessors(@Nonnull Stmt stmt) {
+  public Map<ClassType, Stmt> exceptionalSuccessors(@Nonnull Stmt stmt) {
     final Integer idx = this.nodeToIndex.get(stmt);
     if (idx == null) {
       throw new RuntimeException("The given Stmt is not a node in the Graph.");

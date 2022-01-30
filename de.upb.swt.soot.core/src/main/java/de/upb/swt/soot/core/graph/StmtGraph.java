@@ -5,9 +5,11 @@ import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Interface for control flow graphs on Jimple Stmts. A StmtGraph is directed and connected (except
@@ -63,7 +65,7 @@ public abstract class StmtGraph implements Iterable<Stmt> {
   public abstract List<Stmt> successors(@Nonnull Stmt node);
 
   @Nonnull
-  public abstract List<Stmt> exceptionalSuccessors(@Nonnull Stmt node);
+  public abstract Map<ClassType, Stmt> exceptionalSuccessors(@Nonnull Stmt node);
 
   /**
    * Collects all successors i.e. unexceptional and exceptional successors of a given stmt into a
@@ -75,10 +77,10 @@ public abstract class StmtGraph implements Iterable<Stmt> {
   @Nonnull
   public List<Stmt> getAllSuccessors(@Nonnull Stmt stmt) {
     final List<Stmt> successors = successors(stmt);
-    final List<Stmt> exSuccessors = exceptionalSuccessors(stmt);
+    final Map<ClassType, Stmt> exSuccessors = exceptionalSuccessors(stmt);
     List<Stmt> allSuccessors = new ArrayList<>(successors.size() + exSuccessors.size());
     allSuccessors.addAll(successors);
-    allSuccessors.addAll(exSuccessors);
+    allSuccessors.addAll(exSuccessors.values());
     return allSuccessors;
   }
 
@@ -196,6 +198,7 @@ public abstract class StmtGraph implements Iterable<Stmt> {
    * @param to end point for the path.
    * @return null if there is no such path.
    */
+  @Nullable
   public List<Stmt> getExtendedBasicBlockPathBetween(@Nonnull Stmt from, @Nonnull Stmt to) {
 
     // if this holds, we're doomed to failure!!!
@@ -211,7 +214,7 @@ public abstract class StmtGraph implements Iterable<Stmt> {
     pathStack.add(from);
     pathStackIndex.add(0);
 
-    int psiMax = (outDegree(pathStack.get(0)));
+    int psiMax = outDegree(pathStack.get(0));
     int level = 0;
     while (pathStackIndex.get(0) != psiMax) {
       int p = pathStackIndex.get(level);
