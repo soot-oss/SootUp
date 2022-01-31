@@ -91,7 +91,7 @@ public class DexFileProvider implements ClassProvider<JavaSootClass> {
   /**
    * Mapping of filesystem file (apk, dex, etc.) to mapping of dex name to dex file
    */
-  private final Map<String, Map<Path, DexContainer<? extends DexFile>>> dexMap = new HashMap<>();
+  private final Map<Path, Map<Path, DexContainer<? extends DexFile>>> dexMap = new HashMap<>();
 
 
   /**
@@ -121,6 +121,8 @@ public class DexFileProvider implements ClassProvider<JavaSootClass> {
     updateIndex(allSources);
 
     for (Path theSource : allSources) {
+      dexMap.get(theSource);
+      dexMap.get(theSource).values();
       resultList.addAll(dexMap.get(theSource).values());
     }
 
@@ -181,7 +183,7 @@ public class DexFileProvider implements ClassProvider<JavaSootClass> {
       if (dexFiles == null) {
         try {
           dexFiles = mappingForFile(theSource);
-          dexMap.put(theSource.toString(), dexFiles);
+          dexMap.put(theSource, dexFiles);
         } catch (IOException e) {
           throw new ResolveException("Error parsing dex source ", theSource, e);
         }

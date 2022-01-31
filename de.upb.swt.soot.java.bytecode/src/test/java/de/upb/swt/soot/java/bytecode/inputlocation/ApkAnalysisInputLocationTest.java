@@ -16,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 
 public class ApkAnalysisInputLocationTest {
 
-    private final String testPath = "../shared-test-resources/dexpler-apk/zng.apk";
+    private final String testPath = "../shared-test-resources/droidbench/Aliasing/Merge1.apk";
     private final Path path = Paths.get(testPath);
 
     @Test
