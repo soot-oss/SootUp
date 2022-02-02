@@ -28,7 +28,7 @@ jobs:
       run: mvn verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     - name: Prepare Coverage and Test Reports
       env: 
-        SUBMODULES: de.upb.swt.soot.java.core de.upb.swt.soot.java.bytecode de.upb.swt.soot.java.sourcecode de.upb.swt.soot.callgraph examples tests
+        SUBMODULES: de.upb.swt.soot.java.core de.upb.swt.soot.java.bytecode de.upb.swt.soot.java.sourcecode de.upb.swt.soot.callgraph examples de.upb.swt.soot.tests
       run: |
            sudo mkdir target/coverage-reports-jdk8
            sudo mkdir target/test-reports-jdk8
