@@ -20,52 +20,46 @@ package de.upb.swt.soot.java.bytecode.frontend;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
 
 // FIXME: [AD] is it reasonable to get rid of it?
 class BranchedInsnInfo {
-  /* Traps associated with the current block */
-  @Nonnull private List<ClassType> traps;
   /* edge endpoint */
   @Nonnull private final AbstractInsnNode insn;
   /* previous stacks at edge */
   @Nonnull private final LinkedList<Operand[]> prevStacks;
   /* current stack at edge */
-  @Nonnull private List<Operand> operandStack;
+  @Nullable private final List<List<Operand>> operandStacks = new ArrayList<>();
 
-  BranchedInsnInfo(
-      @Nonnull List<ClassType> traps,
-      @Nonnull AbstractInsnNode insn,
-      @Nonnull List<Operand> operands) {
-    this.traps = new ArrayList<>(traps);
+  BranchedInsnInfo(@Nonnull AbstractInsnNode insn, @Nonnull List<Operand> operands) {
     this.insn = insn;
     this.prevStacks = new LinkedList<>();
-    this.operandStack = operands;
+    this.operandStacks.add(operands);
   }
 
   @Nonnull
-  AbstractInsnNode getInsn() {
+  public AbstractInsnNode getInsn() {
     return insn;
   }
 
   @Nonnull
-  List<Operand> getOperandStack() {
-    return operandStack;
+  public List<List<Operand>> getOperandStacks() {
+    return operandStacks;
   }
 
-  void setOperandStack(@Nonnull List<Operand> operandStack) {
-    this.operandStack = new ArrayList<>(operandStack);
+  public void addOperandStack(@Nullable List<Operand> operandStack) {
+    operandStacks.add(operandStack);
   }
 
   @Nonnull
-  List<Operand[]> getPrevStacks() {
-    return Collections.unmodifiableList(prevStacks);
+  public LinkedList<Operand[]> getPrevStacks() {
+    return prevStacks;
   }
 
-  void addToPrevStack(@Nonnull Operand[] stacksOperands) {
+  public void addToPrevStack(@Nonnull Operand[] stacksOperands) {
     prevStacks.add(stacksOperands);
   }
 }

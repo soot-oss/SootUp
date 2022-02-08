@@ -1631,7 +1631,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   /* Conversion */
   private void addEdges(
-      @Nonnull List<ClassType> traps,
       @Nonnull Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges,
       @Nonnull ArrayDeque<BranchedInsnInfo> conversionWorklist,
       @Nonnull AbstractInsnNode branchingInsn, /*  branching instruction node */
@@ -1647,32 +1646,28 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       BranchedInsnInfo edge = edges.get(branchingInsn, tgt);
       if (edge == null) {
         // [ms] check why this edge could be already there
-        edge = new BranchedInsnInfo(traps, tgt, operandStack.getStack());
+        edge = new BranchedInsnInfo(tgt, operandStack.getStack());
         edge.addToPrevStack(stackss);
         edges.put(branchingInsn, tgt, edge);
         conversionWorklist.add(edge);
         continue;
       }
-      List<Operand> stackTemp = edge.getOperandStack();
-      if (stackTemp != null) {
-        if (stackTemp.size() != stackss.length) {
-          throw new IllegalStateException("Multiple un-equal stacks!");
-        }
-        int j = 0;
-        for (Operand operand : stackTemp) {
-          if (!operand.equivTo(stackss[j++])) {
-            throw new IllegalStateException("Multiple un-equal stacks!");
+      for (List<Operand> stackTemp : edge.getOperandStacks()) {
+        if (stackTemp.size() == stackss.length) {
+          int j = 0;
+          for (; j != stackss.length && stackTemp.get(j).equivTo(stackss[j]); j++) {}
+          if (j == stackss.length) {
+            continue outer_loop;
           }
         }
-        continue;
       }
-      final List<Operand[]> prevStacks = edge.getPrevStacks();
+      final LinkedList<Operand[]> prevStacks = edge.getPrevStacks();
       for (Operand[] ps : prevStacks) {
         if (Arrays.equals(ps, stackss)) {
           continue outer_loop;
         }
       }
-      edge.setOperandStack(operandStack.getStack());
+      edge.addOperandStack(operandStack.getStack());
       edge.addToPrevStack(stackss);
       conversionWorklist.add(edge);
       tgt = tgts.get(i++);
@@ -1700,22 +1695,21 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         Operand opr = new Operand(handlerNode, ref, this);
         opr.stackLocal = local;
 
-        worklist.add(new BranchedInsnInfo(traps, handlerNode, Collections.singletonList(opr)));
+        worklist.add(new BranchedInsnInfo(handlerNode, Collections.singletonList(opr)));
 
         // Save the statements
         inlineExceptionHandlers.put(handlerNode, as);
       } else {
-        worklist.add(new BranchedInsnInfo(traps, handlerNode, new ArrayList<>()));
+        worklist.add(new BranchedInsnInfo(handlerNode, new ArrayList<>()));
       }
     }
-    worklist.add(new BranchedInsnInfo(traps, instructions.getFirst(), Collections.emptyList()));
+    worklist.add(new BranchedInsnInfo(instructions.getFirst(), Collections.emptyList()));
     Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges = HashBasedTable.create(1, 1);
-
     do {
-      BranchedInsnInfo edge =
-          worklist.removeLast(); // TODO: [ms] simplify: make use of the do-while!
+      BranchedInsnInfo edge = worklist.pollLast();
       AbstractInsnNode insn = edge.getInsn();
-      operandStack.setOperandStack(edge.getOperandStack());
+      operandStack.setOperandStack(
+          new ArrayList<>(edge.getOperandStacks().get(edge.getOperandStacks().size() - 1)));
       label:
       do {
         int type = insn.getType();
@@ -1747,15 +1741,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               convertJumpInsn(jmp);
               int op = jmp.getOpcode();
               if (op == JSR) {
-                throw new IllegalStateException(
-                    "JSR!"); // should already be handled/converted by the asm library
+                throw new UnsupportedOperationException("JSR!");
               }
               if (op != GOTO) {
                 /* ifX opcode, i.e. two successors */
                 AbstractInsnNode next = insn.getNext();
-                addEdges(traps, edges, worklist, insn, next, Collections.singletonList(jmp.label));
+                addEdges(edges, worklist, insn, next, Collections.singletonList(jmp.label));
               } else {
-                addEdges(traps, edges, worklist, insn, jmp.label, Collections.emptyList());
+                addEdges(edges, worklist, insn, jmp.label, null);
               }
               break label;
             }
@@ -1764,7 +1757,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               LookupSwitchInsnNode swtch = (LookupSwitchInsnNode) insn;
               convertLookupSwitchInsn(swtch);
               LabelNode dflt = swtch.dflt;
-              addEdges(traps, edges, worklist, insn, dflt, swtch.labels);
+              addEdges(edges, worklist, insn, dflt, swtch.labels);
               break label;
             }
           case METHOD_INSN:
@@ -1781,7 +1774,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               TableSwitchInsnNode swtch = (TableSwitchInsnNode) insn;
               convertTableSwitchInsn(swtch);
               LabelNode dflt = swtch.dflt;
-              addEdges(traps, edges, worklist, insn, dflt, swtch.labels);
+              addEdges(edges, worklist, insn, dflt, swtch.labels);
               break label;
             }
           case TYPE_INSN:
@@ -1789,7 +1782,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             break;
           case VAR_INSN:
             if (insn.getOpcode() == RET) {
-              // TODO: [ms] check: but we do still have a JRetStmt in Jimple..
               throw new UnsupportedOperationException("RET!");
             }
             convertVarInsn((VarInsnNode) insn);
@@ -1802,10 +1794,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             break;
             //noinspection StatementWithEmptyBody
           case FRAME:
-            // we can ignore it -> skip
+            // we can ignore it
             break;
           default:
-            throw new UnsupportedOperationException("Unknown instruction type: " + type);
+            throw new RuntimeException("Unknown instruction type: " + type);
         }
       } while ((insn = insn.getNext()) != null);
     } while (!worklist.isEmpty());
@@ -2126,16 +2118,22 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    *
    * @param expr which is used to filter associated Stmts
    */
-  @Nonnull
-  protected Stream<Stmt> getStmtsThatUse(@Nonnull Expr expr) {
+  public Stream<Stmt> getStmtsThatUse(@Nonnull Expr expr) {
     Stream<Stmt> currentUses =
-        insnToStmt.values().stream().filter(stmt -> stmt.getUses().contains(expr));
+        insnToStmt.values().stream()
+            .flatMap(
+                stmt ->
+                    stmt instanceof StmtContainer
+                        ? ((StmtContainer) stmt).getStmts().stream()
+                        : Stream.of(stmt))
+            .filter(stmt -> stmt.getUses().contains(expr));
 
     Stream<Stmt> oldMappedUses =
         replacedStmt.entrySet().stream()
             .filter(stmt -> stmt.getKey().getUses().contains(expr))
-            .map(stmt -> getLatestVersionOfStmt(stmt.getValue()));
+            .map(stmt -> getLatestVersionOfStmt(stmt.getValue()))
+            .filter(Objects::nonNull);
 
-    return Stream.concat(currentUses, oldMappedUses).map(this::getLatestVersionOfStmt);
+    return Stream.concat(currentUses, oldMappedUses);
   }
 }
