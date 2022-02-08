@@ -89,7 +89,7 @@ public class LocalSplitter implements BodyInterceptor {
       }
     }
 
-    StmtGraph graph = builder.getStmtGraph();
+    StmtGraph<?> graph = builder.getStmtGraph();
 
     // Create a new Local-Set for the modified new body.
     Set<Local> newLocals = new LinkedHashSet<>(builder.getLocals());

@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
  */
 public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
-  @Nonnull private final StmtGraph graph;
+  @Nonnull private final StmtGraph<?> graph;
   @Nonnull private final List<Trap> traps;
   private int trapIdx = 0;
 

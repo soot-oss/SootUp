@@ -65,7 +65,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
-    StmtGraph originalGraph = builder.getStmtGraph();
+    StmtGraph<?> originalGraph = builder.getStmtGraph();
 
     builder.enableDeferredStmtGraphChanges();
     for (Stmt stmt : originalGraph.nodes()) {
@@ -79,7 +79,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
       if (!(successorOfGoto instanceof JAssignStmt)) {
         continue;
       }
-      JAssignStmt assign = (JAssignStmt) successorOfGoto;
+      JAssignStmt<?, ?> assign = (JAssignStmt) successorOfGoto;
 
       if (!(assign.getRightOp() instanceof JCastExpr)) {
         continue;

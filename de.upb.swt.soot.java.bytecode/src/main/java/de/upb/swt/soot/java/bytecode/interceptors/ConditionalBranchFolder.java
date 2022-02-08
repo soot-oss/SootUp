@@ -46,8 +46,8 @@ public class ConditionalBranchFolder implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
-    final StmtGraph builderStmtGraph = builder.getStmtGraph();
-    final StmtGraph stmtGraph = builder.getStmtGraph();
+    final StmtGraph<?> builderStmtGraph = builder.getStmtGraph();
+    final StmtGraph<?> stmtGraph = builder.getStmtGraph();
 
     builder.enableDeferredStmtGraphChanges();
     for (Stmt stmt : stmtGraph.nodes()) {

@@ -29,13 +29,13 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /** @author Markus Schmidt */
-public abstract class MutableStmtGraph extends StmtGraph {
+public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   @Nonnull
-  public abstract StmtGraph unmodifiableStmtGraph();
+  public abstract StmtGraph<?> unmodifiableStmtGraph();
 
   public abstract void setStartingStmt(@Nonnull Stmt firstStmt);
 
-  public void setStartingStmtBlock(@Nonnull BasicBlock firstBlock) {
+  public void setStartingStmtBlock(@Nonnull MutableBasicBlock firstBlock) {
     setStartingStmt(firstBlock.getHead());
   }
 

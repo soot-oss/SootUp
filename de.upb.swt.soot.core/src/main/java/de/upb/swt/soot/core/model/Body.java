@@ -52,7 +52,7 @@ public class Body implements Copyable {
   /** The locals for this Body. */
   private final Set<Local> locals;
 
-  @Nonnull private final StmtGraph graph;
+  @Nonnull private final StmtGraph<?> graph;
 
   /** The Position Information in the Source for this Body. */
   @Nonnull private final Position position;
@@ -82,7 +82,7 @@ public class Body implements Copyable {
   private Body(
       @Nonnull MethodSignature methodSignature,
       @Nonnull Set<Local> locals,
-      @Nonnull StmtGraph stmtGraph,
+      @Nonnull StmtGraph<?> stmtGraph,
       @Nonnull Position position) {
     this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
@@ -98,7 +98,7 @@ public class Body implements Copyable {
    *
    * @return The this local
    */
-  public static Local getThisLocal(StmtGraph stmtGraph) {
+  public static Local getThisLocal(StmtGraph<?> stmtGraph) {
     for (Stmt stmt : stmtGraph.nodes()) {
       if (stmt instanceof JIdentityStmt
           && ((JIdentityStmt) stmt).getRightOp() instanceof JThisRef) {
@@ -275,7 +275,8 @@ public class Body implements Copyable {
   }
 
   @Nonnull
-  public StmtGraph getStmtGraph() {
+  // TODO: [ms] should be an ImmutableStmtGraph!
+  public StmtGraph<?> getStmtGraph() {
     return graph;
   }
 
@@ -512,7 +513,7 @@ public class Body implements Copyable {
     }
 
     @Nonnull
-    public StmtGraph getStmtGraph() {
+    public StmtGraph<?> getStmtGraph() {
       return graph.unmodifiableStmtGraph();
     }
 

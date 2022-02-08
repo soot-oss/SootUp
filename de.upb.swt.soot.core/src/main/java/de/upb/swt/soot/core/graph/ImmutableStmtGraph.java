@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
 // [ms] possible performance improvement: on instantiation assign: Collection.singleTonList()
 // directly and not on demand -> change type of sucessors/predecessors to List<Stmt> this removes
 // additional checks in successor()/predecessor()
-public class ImmutableStmtGraph extends StmtGraph {
+public class ImmutableStmtGraph extends StmtGraph<ImmutableBasicBlock> {
 
   @Nonnull
   protected final Map<Stmt, Integer>
@@ -48,7 +48,7 @@ public class ImmutableStmtGraph extends StmtGraph {
   @Nonnull private final List<Trap> traps;
 
   /** creates an immutable copy of the given stmtGraph. */
-  protected ImmutableStmtGraph(StmtGraph originalStmtGraph) {
+  protected ImmutableStmtGraph(StmtGraph<?> originalStmtGraph) {
     final Collection<Stmt> nodes = originalStmtGraph.nodes();
     final int nodeSize = nodes.size();
     nodeToIndex = new HashMap<>(nodeSize);
@@ -92,7 +92,7 @@ public class ImmutableStmtGraph extends StmtGraph {
   /**
    * creates an immutable copy of the given stmtGraph if necessary and validates the starting Stmt
    */
-  public static ImmutableStmtGraph copyOf(StmtGraph stmtGraph) {
+  public static ImmutableStmtGraph copyOf(StmtGraph<?> stmtGraph) {
     if (stmtGraph instanceof ImmutableStmtGraph) {
       return (ImmutableStmtGraph) stmtGraph;
     }
@@ -117,8 +117,8 @@ public class ImmutableStmtGraph extends StmtGraph {
   }
 
   @Override
-  public BasicBlock getBlockOf(@Nonnull Stmt stmt) {
-    final Optional<? extends BasicBlock> any =
+  public ImmutableBasicBlock getBlockOf(@Nonnull Stmt stmt) {
+    final Optional<ImmutableBasicBlock> any =
         getBlocks().stream().filter(b -> b.getStmts().contains(stmt)).findAny();
     if (!any.isPresent()) {
       throw new IllegalArgumentException("Stmt is not in any Block of this Graph.");
@@ -134,7 +134,7 @@ public class ImmutableStmtGraph extends StmtGraph {
 
   @Nonnull
   @Override
-  public List<? extends BasicBlock> getBlocks() {
+  public List<ImmutableBasicBlock> getBlocks() {
     // FIXME: implement
     throw new IllegalStateException("Not implemented yet!");
   }

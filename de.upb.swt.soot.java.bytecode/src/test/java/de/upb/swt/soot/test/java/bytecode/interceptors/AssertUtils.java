@@ -34,8 +34,8 @@ public class AssertUtils {
 
   // assert whether two bodys have the same stmtGraphs
   public static void assertStmtGraphEquiv(Body expected, Body actual) {
-    StmtGraph expected_SG = expected.getStmtGraph();
-    StmtGraph actual_SG = actual.getStmtGraph();
+    StmtGraph<?> expected_SG = expected.getStmtGraph();
+    StmtGraph<?> actual_SG = actual.getStmtGraph();
     assertNotNull(expected_SG);
     assertNotNull(actual_SG);
     final boolean condition = expected_SG.equals(actual_SG);

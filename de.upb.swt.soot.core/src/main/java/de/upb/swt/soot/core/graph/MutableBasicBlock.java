@@ -6,7 +6,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
 import javax.annotation.Nonnull;
 
-public class MutableBasicBlock implements BasicBlock {
+public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   @Nonnull private final List<MutableBasicBlock> predecessorBlocks = new ArrayList<>();
   @Nonnull private final List<MutableBasicBlock> successorBlocks = new ArrayList<>();
 
@@ -56,12 +56,20 @@ public class MutableBasicBlock implements BasicBlock {
     successorBlocks.add(block);
   }
 
-  public void removePredecessorBlock(MutableBasicBlock b) {
+  public void removePredecessorBlock(@Nonnull MutableBasicBlock b) {
     predecessorBlocks.remove(b);
   }
 
-  public void removeSuccessorBlock(MutableBasicBlock b) {
+  public void removeSuccessorBlock(@Nonnull MutableBasicBlock b) {
     successorBlocks.remove(b);
+  }
+
+  public void addExceptionalSuccessorBlock(@Nonnull ClassType exception, MutableBasicBlock b) {
+    exceptionalSuccessorBlocks.put(exception, b);
+  }
+
+  public void removeExceptionalSuccessorBlock(@Nonnull ClassType exception) {
+    exceptionalSuccessorBlocks.remove(exception);
   }
 
   @Nonnull
@@ -74,6 +82,11 @@ public class MutableBasicBlock implements BasicBlock {
   @Override
   public List<MutableBasicBlock> getSuccessors() {
     return Collections.unmodifiableList(successorBlocks);
+  }
+
+  @Override
+  public List<MutableBasicBlock> getExceptionalPredecessors() {
+    throw new UnsupportedOperationException("not implemented.");
   }
 
   @Nonnull

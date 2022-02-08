@@ -33,11 +33,11 @@ import javax.annotation.Nonnull;
  *
  * @author Markus Schmidt
  */
-public class ForwardingStmtGraph extends StmtGraph {
+public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
 
-  @Nonnull protected final StmtGraph backingGraph;
+  @Nonnull protected final StmtGraph<V> backingGraph;
 
-  public ForwardingStmtGraph(@Nonnull StmtGraph backingGraph) {
+  public ForwardingStmtGraph(@Nonnull StmtGraph<V> backingGraph) {
     this.backingGraph = backingGraph;
   }
 
@@ -47,12 +47,12 @@ public class ForwardingStmtGraph extends StmtGraph {
   }
 
   @Override
-  public BasicBlock getStartingStmtBlock() {
+  public V getStartingStmtBlock() {
     return backingGraph.getStartingStmtBlock();
   }
 
   @Override
-  public BasicBlock getBlockOf(@Nonnull Stmt stmt) {
+  public V getBlockOf(@Nonnull Stmt stmt) {
     return backingGraph.getBlockOf(stmt);
   }
 
@@ -64,7 +64,7 @@ public class ForwardingStmtGraph extends StmtGraph {
 
   @Nonnull
   @Override
-  public List<? extends BasicBlock> getBlocks() {
+  public List<V> getBlocks() {
     // FIXME: implement
     throw new IllegalStateException("Not implemented yet!");
   }

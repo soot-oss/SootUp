@@ -21,7 +21,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   public MutableBlockStmtGraph() {}
 
   /** copies a StmtGraph into this Mutable instance */
-  public MutableBlockStmtGraph(@Nonnull StmtGraph graph) {
+  public MutableBlockStmtGraph(@Nonnull StmtGraph<?> graph) {
     setStartingStmt(graph.getStartingStmt());
     for (Stmt stmt : graph) {
       setEdges(stmt, successors(stmt));
@@ -51,7 +51,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Override
   @Nonnull
-  public List<? extends BasicBlock> getBlocks() {
+  public List<MutableBasicBlock> getBlocks() {
     return blocks.stream().filter(Objects::nonNull).collect(Collectors.toList());
   }
 
@@ -359,12 +359,12 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   @Override
-  public BasicBlock getStartingStmtBlock() {
+  public MutableBasicBlock getStartingStmtBlock() {
     return getBlockOf(startingStmt);
   }
 
   @Override
-  public BasicBlock getBlockOf(@Nonnull Stmt stmt) {
+  public MutableBasicBlock getBlockOf(@Nonnull Stmt stmt) {
     final Integer blockIdx = stmtToBlock.get(stmt);
     if (blockIdx == null) {
       return null;
@@ -374,8 +374,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Nonnull
   @Override
-  public StmtGraph unmodifiableStmtGraph() {
-    return new ForwardingStmtGraph(this);
+  public StmtGraph<?> unmodifiableStmtGraph() {
+    return new ForwardingStmtGraph<>(this);
   }
 
   public void setStartingStmt(@Nonnull Stmt startingStmt) {

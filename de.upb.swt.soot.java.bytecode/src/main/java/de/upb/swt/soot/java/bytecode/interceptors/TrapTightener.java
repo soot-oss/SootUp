@@ -115,7 +115,7 @@ public class TrapTightener implements BodyInterceptor {
    * @param graph a given exceptionalStmtGraph
    * @return a list of monitored stmts
    */
-  private Set<Stmt> monitoredStmts(StmtGraph graph) {
+  private Set<Stmt> monitoredStmts(StmtGraph<?> graph) {
     Set<Stmt> monitoredStmts = new HashSet<>();
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(graph.getStartingStmt());
@@ -158,10 +158,10 @@ public class TrapTightener implements BodyInterceptor {
    * @return If trap-destinations of the given stmt contain the given trap, return true, otherwise
    *     return false
    */
-  private boolean mightThrow(StmtGraph graph, Stmt stmt, Trap trap) {
-    final BasicBlock block = graph.getBlockOf(stmt);
+  private boolean mightThrow(StmtGraph<?> graph, Stmt stmt, Trap trap) {
+    final BasicBlock<?> block = graph.getBlockOf(stmt);
 
-    for (Map.Entry<? extends ClassType, ? extends BasicBlock> dest :
+    for (Map.Entry<? extends ClassType, ? extends BasicBlock<?>> dest :
         block.getExceptionalSuccessors().entrySet()) {
       if (dest.getKey().equals(trap.getExceptionType())
           && dest.getValue().getHead().equals(trap.getHandlerStmt())) {

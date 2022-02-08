@@ -14,7 +14,7 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
   private final List<Stmt> stmts;
   private final List<ImmutableBasicBlock> blocks;
 
-  public ImmutableBlockStmtGraph(@Nonnull StmtGraph graph) {
+  public ImmutableBlockStmtGraph(@Nonnull StmtGraph<?> graph) {
     stmts = Lists.newArrayListWithExpectedSize(graph.nodes().size());
     // linearize..
     // TODO: add blocks in linearized order!
@@ -22,7 +22,7 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
       stmts.add(stmt);
     }
 
-    final List<? extends BasicBlock> blocks = graph.getBlocks();
+    final List<? extends BasicBlock<?>> blocks = graph.getBlocks();
     this.blocks = new ArrayList<>(blocks.size());
     // TODO: copy
   }
@@ -34,12 +34,12 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
   }
 
   @Override
-  public BasicBlock getStartingStmtBlock() {
+  public BasicBlock<ImmutableBasicBlock> getStartingStmtBlock() {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
   @Override
-  public BasicBlock getBlockOf(@Nonnull Stmt stmt) {
+  public BasicBlock<ImmutableBasicBlock> getBlockOf(@Nonnull Stmt stmt) {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
@@ -106,7 +106,7 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
-  private class ImmutableBasicBlock implements BasicBlock {
+  private class ImmutableBasicBlock implements BasicBlock<ImmutableBasicBlock> {
     private final ImmutableStmtGraph graph;
     private final int startIdx;
     private final int endIdx;
@@ -128,19 +128,24 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
 
     @Nonnull
     @Override
-    public List<? extends BasicBlock> getPredecessors() {
+    public List<ImmutableBasicBlock> getPredecessors() {
       return predecessors;
     }
 
     @Nonnull
     @Override
-    public List<? extends BasicBlock> getSuccessors() {
+    public List<ImmutableBasicBlock> getSuccessors() {
       return successors;
+    }
+
+    @Override
+    public List<ImmutableBasicBlock> getExceptionalPredecessors() {
+      return null;
     }
 
     @Nonnull
     @Override
-    public Map<? extends ClassType, ? extends BasicBlock> getExceptionalSuccessors() {
+    public Map<? extends ClassType, ImmutableBasicBlock> getExceptionalSuccessors() {
       throw new UnsupportedOperationException("not implemented yet");
     }
 

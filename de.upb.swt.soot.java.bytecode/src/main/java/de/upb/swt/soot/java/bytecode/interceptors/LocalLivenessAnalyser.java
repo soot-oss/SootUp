@@ -39,7 +39,7 @@ public class LocalLivenessAnalyser {
   // e.g: a = b + c; live-in={b,c}  live-out={a,b,c}
   private final Map<Stmt, Set<Local>> liveOut = new HashMap<>();
 
-  public LocalLivenessAnalyser(@Nonnull StmtGraph graph) {
+  public LocalLivenessAnalyser(@Nonnull StmtGraph<?> graph) {
     // initial liveIn and liveOut
     List<Stmt> startingStmts = new ArrayList<>();
     for (Stmt stmt : graph.nodes()) {

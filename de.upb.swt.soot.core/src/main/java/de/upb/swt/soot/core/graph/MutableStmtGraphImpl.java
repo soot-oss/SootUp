@@ -87,7 +87,7 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
 
   @Nonnull
   @Override
-  public StmtGraph unmodifiableStmtGraph() {
+  public StmtGraph<?> unmodifiableStmtGraph() {
     return new ForwardingStmtGraph(this);
   }
 
@@ -102,12 +102,12 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
   }
 
   @Override
-  public BasicBlock getStartingStmtBlock() {
+  public MutableBasicBlock getStartingStmtBlock() {
     throw new RuntimeException("not yet implemented");
   }
 
   @Override
-  public BasicBlock getBlockOf(@Nonnull Stmt stmt) {
+  public MutableBasicBlock getBlockOf(@Nonnull Stmt stmt) {
     throw new RuntimeException("not yet implemented");
   }
 
@@ -236,7 +236,7 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
 
   @Nonnull
   @Override
-  public List<? extends BasicBlock> getBlocks() {
+  public List<MutableBasicBlock> getBlocks() {
     // FIXME: implement
     throw new IllegalStateException("Not implemented yet!");
   }

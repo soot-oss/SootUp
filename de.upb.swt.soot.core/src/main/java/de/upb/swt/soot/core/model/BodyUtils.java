@@ -105,7 +105,7 @@ public class BodyUtils {
    * @param stmt a stmt which uses the given local.
    * @return
    */
-  public static List<Stmt> getDefsForLocalUse(StmtGraph graph, Local use, Stmt stmt) {
+  public static List<Stmt> getDefsForLocalUse(StmtGraph<?> graph, Local use, Stmt stmt) {
     if (!stmt.getUses().contains(use)) {
       throw new RuntimeException(stmt + " doesn't use the local " + use.toString());
     }

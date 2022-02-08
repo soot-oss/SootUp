@@ -45,7 +45,7 @@ public class NopEliminator implements BodyInterceptor {
    */
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    StmtGraph graph = builder.getStmtGraph();
+    StmtGraph<?> graph = builder.getStmtGraph();
     Collection<Stmt> stmtSet = graph.nodes();
 
     builder.enableDeferredStmtGraphChanges();

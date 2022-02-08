@@ -48,7 +48,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraphImpl {
   }
 
   /** creates a mutable copy(!) of originalStmtGraph with exceptional info */
-  public MutableExceptionalStmtGraph(@Nonnull StmtGraph oriStmtGraph) {
+  public MutableExceptionalStmtGraph(@Nonnull StmtGraph<?> oriStmtGraph) {
     super(oriStmtGraph);
 
     // initialize exceptionalPreds and exceptionalSuccs
@@ -191,7 +191,7 @@ public class MutableExceptionalStmtGraph extends MutableStmtGraphImpl {
    * @param stmtGraph an instance of StmtGraph
    * @return a map with key: stmt value: the corresponding position number
    */
-  private Map<Stmt, Integer> getStmtToPosInBody(StmtGraph stmtGraph) {
+  private Map<Stmt, Integer> getStmtToPosInBody(StmtGraph<?> stmtGraph) {
     Map<Stmt, Integer> stmtToPos = new HashMap<>();
     Integer pos = 0;
     for (Stmt stmt : stmtGraph) {

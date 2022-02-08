@@ -213,7 +213,7 @@ public class LocalPacker implements BodyInterceptor {
   private Map<Local, Set<Local>> buildLocalInterferenceMap(Body.BodyBuilder builder) {
     // Maps local to its interfering locals
     Map<Local, Set<Local>> localToLocals = new HashMap<>();
-    StmtGraph graph = builder.getStmtGraph();
+    StmtGraph<?> graph = builder.getStmtGraph();
     LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(graph);
 
     for (Stmt stmt : builder.getStmts()) {

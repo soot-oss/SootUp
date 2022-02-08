@@ -1930,6 +1930,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
 
+    Map<LabelNode, MutableBasicBlock> trapRangeBlock = new HashMap<>();
+
     // every LabelNode denotes a border of a Block
     MutableBasicBlock block = buildPreambleLocals();
 
@@ -1966,32 +1968,15 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           }
           block = newBlock;
         }
-      }
 
-      /* build traps for this block
-      if (!danglingLabel.isEmpty()) {
-        IntervalTree<Trap> trapIntervals = new IntervalTree<>();
-        for (LabelNode inlineExceptionLabel : this.trapHandler) {
-          if (true) {
-            trapIntervals.insert(inlineExceptionLabel.getLabel().getOffset());
+        // add traprange info into blocks
+        for (Entry<LabelNode, Stmt> entry : this.trapHandler.entrySet()) {
+          if (danglingLabel.contains(entry.getKey())) {
+            trapRangeBlock.put(entry.getKey(), block);
           }
         }
-        // TODO: [ms] sliding window of traps via bytecodeoffset
-        // hint: if we have a new label -> indicates: traprange start/end (/handler) or branch
-        // target -> check/adapt sliding window of traps
-        // possible performance hint: verify: traprangestart|traprangeend|branchtarget <=>
-        // !traphandler
 
-        if (trapIntervals.contains(insn)) {
-
-          // FIXME: implement
-
-        }
-      }
-      */
-
-      // associate collected labels from danglingLabel with the following stmt
-      if (!danglingLabel.isEmpty()) {
+        // associate collected labels from danglingLabel with the following stmt
         Stmt targetStmt =
             stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt;
         danglingLabel.forEach(l -> labelsToStmt.put(l, targetStmt));
@@ -2020,11 +2005,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // Emit the inline exception handler blocks
     for (LabelNode ln : inlineExceptionHandlers.keySet()) {
       block = new MutableBasicBlock();
-
       Stmt handlerStmt = inlineExceptionHandlers.get(ln);
-
       emitStmt(handlerStmt, block);
-
       trapHandler.put(ln, handlerStmt);
 
       // jump back to the original implementation
@@ -2032,8 +2014,19 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       JGotoStmt gotoStmt = Jimple.newGotoStmt(new StmtPositionInfo(currentLineNumber));
       block.addStmt(gotoStmt);
 
+      // add block into graph
       graph.addBlock(block);
+      // connect tail of block with its target
       graph.putEdge(gotoStmt, targetStmt);
+    }
+
+    // link exceptions: traprange to handler
+    for (Entry<LabelNode, MutableBasicBlock> entry : trapRangeBlock.entrySet()) {
+      final Stmt handlerStmt = trapHandler.get(entry.getKey());
+      // FIXME: do it via StmtGraph! bad performance: possible merge/split of blocks..
+      // FIXME:
+      ClassType exception = javaIdentifierFactory.getClassType("java.lang.Throwable");
+      entry.getValue().addExceptionalSuccessorBlock(exception, graph.getBlockOf(handlerStmt));
     }
 
     // connect branching stmts with its targets

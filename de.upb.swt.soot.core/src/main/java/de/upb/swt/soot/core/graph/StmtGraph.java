@@ -19,14 +19,14 @@ import javax.annotation.Nullable;
  *
  * @author Markus Schmidt
  */
-public abstract class StmtGraph implements Iterable<Stmt> {
+public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stmt> {
 
   @Deprecated // hint: please use information for exceptional flows from BasicBlocks
   protected List<Trap> traps;
 
   public abstract Stmt getStartingStmt();
 
-  public BasicBlock getStartingStmtBlock() {
+  public V getStartingStmtBlock() {
     return getBlockOf(getStartingStmt());
   }
 
@@ -38,9 +38,9 @@ public abstract class StmtGraph implements Iterable<Stmt> {
   public abstract Collection<Stmt> nodes();
 
   @Nonnull
-  public abstract List<? extends BasicBlock> getBlocks();
+  public abstract List<V> getBlocks();
 
-  public abstract BasicBlock getBlockOf(@Nonnull Stmt stmt);
+  public abstract V getBlockOf(@Nonnull Stmt stmt);
 
   public abstract boolean containsNode(@Nonnull Stmt node);
 
@@ -324,6 +324,7 @@ public abstract class StmtGraph implements Iterable<Stmt> {
   @Override
   @Nonnull
   public Iterator<Stmt> iterator() {
+    // TODO: remove comment   return new StmtGraphBlockIterator(this, Collections.emptyList());
     return new BlockStmtGraphIterator(this);
   }
 
@@ -332,24 +333,27 @@ public abstract class StmtGraph implements Iterable<Stmt> {
   // assumption: a Block has at least 1 Stmt
   private static class BlockStmtGraphIterator implements Iterator<Stmt> {
 
-    @Nonnull private final StmtGraph graph;
-    @Nonnull private final ArrayDeque<Map.Entry<ClassType, BasicBlock>> traps = new ArrayDeque<>();
-    @Nonnull private final ArrayDeque<BasicBlock> nestedBlocks = new ArrayDeque<>();
-    @Nonnull private final ArrayDeque<BasicBlock> otherBlocks = new ArrayDeque<>();
+    @Nonnull private final StmtGraph<? extends BasicBlock<?>> graph;
+
+    @Nonnull
+    private final ArrayDeque<Map.Entry<ClassType, BasicBlock<?>>> traps = new ArrayDeque<>();
+
+    @Nonnull private final ArrayDeque<BasicBlock<?>> nestedBlocks = new ArrayDeque<>();
+    @Nonnull private final ArrayDeque<BasicBlock<?>> otherBlocks = new ArrayDeque<>();
 
     // caching the next Stmt to implement a simple hasNext() and skipping already returned Stmts
-    @Nonnull private final Set<BasicBlock> iteratedBlocks;
+    @Nonnull private final Set<BasicBlock<?>> iteratedBlocks;
     @Nonnull private Iterator<Stmt> currentBlockIt;
-    @Nullable private BasicBlock currentBlock;
+    @Nullable private BasicBlock<?> currentBlock;
     private final List<Trap> collectedTraps = new ArrayList<>();
 
-    public BlockStmtGraphIterator(@Nonnull StmtGraph graph) {
+    public BlockStmtGraphIterator(@Nonnull StmtGraph<? extends BasicBlock<?>> graph) {
       this.graph = graph;
-      final List<? extends BasicBlock> blocks = graph.getBlocks();
+      final List<? extends BasicBlock<?>> blocks = graph.getBlocks();
       iteratedBlocks = new HashSet<>(blocks.size(), 1);
       Stmt startingStmt = graph.getStartingStmt();
       if (startingStmt != null) {
-        final BasicBlock startingBlock = graph.getStartingStmtBlock();
+        final BasicBlock<?> startingBlock = graph.getStartingStmtBlock();
         iteratedBlocks.add(startingBlock);
         currentBlockIt = startingBlock.getStmts().iterator();
         currentBlock = startingBlock;
@@ -360,8 +364,8 @@ public abstract class StmtGraph implements Iterable<Stmt> {
     }
 
     @Nullable
-    private BasicBlock retrieveNextBlock() {
-      BasicBlock nextBlock;
+    private BasicBlock<?> retrieveNextBlock() {
+      BasicBlock<?> nextBlock;
       do {
         if (!nestedBlocks.isEmpty()) {
           nextBlock = nestedBlocks.pollFirst();
@@ -404,7 +408,7 @@ public abstract class StmtGraph implements Iterable<Stmt> {
                   // }
                 });
 
-        final List<? extends BasicBlock> successors = currentBlock.getSuccessors();
+        final List<? extends BasicBlock<?>> successors = currentBlock.getSuccessors();
 
         for (int i = successors.size() - 1; i >= 0; i--) {
           if (i == 0 && tailStmt.fallsThrough()) {
@@ -414,11 +418,12 @@ public abstract class StmtGraph implements Iterable<Stmt> {
           } else {
 
             // create the most unbranched block from basicblocks as possible
-            BasicBlock leaderOfUnbranchedBlocks = successors.get(0);
+            BasicBlock<?> leaderOfUnbranchedBlocks = successors.get(0);
             while (true) {
               boolean flag = true;
-              final List<? extends BasicBlock> itPreds = leaderOfUnbranchedBlocks.getPredecessors();
-              for (BasicBlock pred : itPreds) {
+              final List<? extends BasicBlock<?>> itPreds =
+                  leaderOfUnbranchedBlocks.getPredecessors();
+              for (BasicBlock<?> pred : itPreds) {
                 if (pred.getTail().fallsThrough()
                     && pred.getSuccessors().get(0) == leaderOfUnbranchedBlocks) {
                   leaderOfUnbranchedBlocks = pred;
@@ -465,7 +470,7 @@ public abstract class StmtGraph implements Iterable<Stmt> {
       if (currentBlockIt.hasNext()) {
         hasIteratorMoreElements = true;
       } else {
-        BasicBlock b = retrieveNextBlock();
+        BasicBlock<?> b = retrieveNextBlock();
         if (b != null) {
           // reinsert at FIRST position -> not great for performance! but easier handling in next()
           nestedBlocks.addFirst(b);

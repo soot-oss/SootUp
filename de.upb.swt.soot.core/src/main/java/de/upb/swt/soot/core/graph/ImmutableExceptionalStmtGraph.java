@@ -34,7 +34,7 @@ public final class ImmutableExceptionalStmtGraph extends ImmutableStmtGraph {
   @Nonnull private final Object[] exceptionalSuccs;
   @Nonnull private final Object[] exceptionalDestinationTraps;
 
-  public ImmutableExceptionalStmtGraph(@Nonnull StmtGraph graph) {
+  public ImmutableExceptionalStmtGraph(@Nonnull StmtGraph<?> graph) {
     super(graph);
     // initialize exceptionalPreds and exceptionalSuccs
     int size = graph.nodes().size();

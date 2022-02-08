@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
 /** @author Zun Wang */
 public class BackwardsStmtGraph extends ForwardingStmtGraph {
 
-  public BackwardsStmtGraph(@Nonnull StmtGraph stmtGraph) {
+  public BackwardsStmtGraph(@Nonnull StmtGraph<?> stmtGraph) {
     super(stmtGraph);
   }
 
