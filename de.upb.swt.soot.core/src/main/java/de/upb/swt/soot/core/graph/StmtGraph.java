@@ -4,6 +4,7 @@ import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.util.GraphVizExporter;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -123,65 +124,72 @@ public abstract class StmtGraph implements Iterable<Stmt> {
 
   /** validates whether the each Stmt has the correct amount of outgoing flows. */
   public void validateStmtConnectionsInGraph() {
-    for (Stmt stmt : nodes()) {
-      final List<Stmt> successors = successors(stmt);
-      final int successorCount = successors.size();
+    try {
 
-      if (predecessors(stmt).size() == 0) {
-        if (!(stmt == getStartingStmt()
-            || getTraps().stream()
-                .map(Trap::getHandlerStmt)
-                .anyMatch(handler -> handler == stmt))) {
-          throw new IllegalStateException(
-              "Stmt '"
-                  + stmt
-                  + "' which is neither the StartingStmt nor a TrapHandler is missing a predecessor!");
-        }
-      }
+      for (Stmt stmt : nodes()) {
+        final List<Stmt> successors = successors(stmt);
+        final int successorCount = successors.size();
 
-      if (stmt instanceof BranchingStmt) {
-
-        for (Stmt target : successors) {
-          if (target == stmt) {
-            throw new IllegalStateException(stmt + ": a Stmt cannot branch to itself.");
+        if (predecessors(stmt).size() == 0) {
+          if (!(stmt == getStartingStmt()
+              || getTraps().stream()
+                  .map(Trap::getHandlerStmt)
+                  .anyMatch(handler -> handler == stmt))) {
+            throw new IllegalStateException(
+                "Stmt '"
+                    + stmt
+                    + "' which is neither the StartingStmt nor a TrapHandler is missing a predecessor!");
           }
         }
 
-        if (stmt instanceof JSwitchStmt) {
-          if (successorCount != ((JSwitchStmt) stmt).getValueCount()) {
-            throw new IllegalStateException(
-                stmt
-                    + ": size of outgoing flows (i.e. "
-                    + successorCount
-                    + ") does not match the amount of switch statements case labels (i.e. "
-                    + ((JSwitchStmt) stmt).getValueCount()
-                    + ").");
+        if (stmt instanceof BranchingStmt) {
+
+          for (Stmt target : successors) {
+            if (target == stmt) {
+              throw new IllegalStateException(stmt + ": a Stmt cannot branch to itself.");
+            }
           }
-        } else if (stmt instanceof JIfStmt) {
-          if (successorCount != 2) {
-            throw new IllegalStateException(
-                stmt + ": must have '2' outgoing flow but has '" + successorCount + "'.");
+
+          if (stmt instanceof JSwitchStmt) {
+            if (successorCount != ((JSwitchStmt) stmt).getValueCount()) {
+              throw new IllegalStateException(
+                  stmt
+                      + ": size of outgoing flows (i.e. "
+                      + successorCount
+                      + ") does not match the amount of switch statements case labels (i.e. "
+                      + ((JSwitchStmt) stmt).getValueCount()
+                      + ").");
+            }
+          } else if (stmt instanceof JIfStmt) {
+            if (successorCount != 2) {
+              throw new IllegalStateException(
+                  stmt + ": must have '2' outgoing flow but has '" + successorCount + "'.");
+            }
+          } else if (stmt instanceof JGotoStmt) {
+            if (successorCount != 1) {
+              throw new IllegalStateException(
+                  stmt + ": Goto must have '1' outgoing flow but has '" + successorCount + "'.");
+            }
           }
-        } else if (stmt instanceof JGotoStmt) {
+
+        } else if (stmt instanceof JReturnStmt
+            || stmt instanceof JReturnVoidStmt
+            || stmt instanceof JThrowStmt) {
+          if (successorCount != 0) {
+            throw new IllegalStateException(
+                stmt + ": must have '0' outgoing flow but has '" + successorCount + "'.");
+          }
+        } else {
           if (successorCount != 1) {
             throw new IllegalStateException(
-                stmt + ": Goto must have '1' outgoing flow but has '" + successorCount + "'.");
+                stmt + ": must have '1' outgoing flow but has '" + successorCount + "'.");
           }
         }
-
-      } else if (stmt instanceof JReturnStmt
-          || stmt instanceof JReturnVoidStmt
-          || stmt instanceof JThrowStmt) {
-        if (successorCount != 0) {
-          throw new IllegalStateException(
-              stmt + ": must have '0' outgoing flow but has '" + successorCount + "'.");
-        }
-      } else {
-        if (successorCount != 1) {
-          throw new IllegalStateException(
-              stmt + ": must have '1' outgoing flow but has '" + successorCount + "'.");
-        }
       }
+
+    } catch (Exception e) {
+      throw new IllegalStateException(
+          "visualize invalid StmtGraph: " + GraphVizExporter.createUrlToWebeditor(this), e);
     }
   }
 
