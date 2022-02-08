@@ -351,7 +351,7 @@ public class JimpleConverter {
 
       private class StmtVisitor extends JimpleBaseVisitor<Stmt> {
         @Nonnull private final Body.BodyBuilder builder;
-        @Nullable private Stmt lastStmt = null;
+        @Nullable private Stmt previousStmt = null;
         final ValueVisitor valueVisitor = new ValueVisitor();
 
         private StmtVisitor(@Nonnull Body.BodyBuilder builder) {
@@ -371,15 +371,15 @@ public class JimpleConverter {
             labeledStmts.put(labelname, stmt);
           }
 
-          if (lastStmt == null) {
+          if (previousStmt == null) {
             builder.setStartingStmt(stmt);
           } else {
-            if (lastStmt.fallsThrough()) {
-              builder.addFlow(lastStmt, stmt);
+            if (previousStmt.fallsThrough()) {
+              builder.addFlow(previousStmt, stmt);
             }
           }
 
-          lastStmt = stmt;
+          previousStmt = stmt;
           return stmt;
         }
 

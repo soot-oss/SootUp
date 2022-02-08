@@ -1,5 +1,7 @@
 package de.upb.swt.soot.core.graph;
 
+import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
@@ -44,7 +46,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   @Override
   public void removeExceptionalEdge(@Nonnull Stmt stmt, @Nonnull ClassType exceptionType) {
     // FIXME implement
-    throw new IllegalArgumentException("cant handle trap removal yet.");
+    throw new UnsupportedOperationException("cant handle trap removal yet.");
   }
 
   @Override
@@ -56,6 +58,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   @Override
   public void addNode(@Nonnull Stmt node, @Nonnull List<ClassType> exceptions) {
     final MutableBasicBlock block = addNodeInternal(node);
+
+    if (exceptions.size() > 0) {
+      throw new UnsupportedOperationException("not yet implemented");
+    }
 
     if (block.getExceptionalSuccessors().size() == exceptions.size()) {
 
@@ -352,6 +358,20 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     return startingStmt;
   }
 
+  @Override
+  public BasicBlock getStartingStmtBlock() {
+    return getBlockOf(startingStmt);
+  }
+
+  @Override
+  public BasicBlock getBlockOf(@Nonnull Stmt stmt) {
+    final Integer blockIdx = stmtToBlock.get(stmt);
+    if (blockIdx == null) {
+      return null;
+    }
+    return blocks.get(blockIdx);
+  }
+
   @Nonnull
   @Override
   public StmtGraph unmodifiableStmtGraph() {
@@ -396,6 +416,32 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       List<Stmt> stmts = block.getStmts();
       return Collections.singletonList(stmts.get(stmts.indexOf(node) - 1));
     }
+  }
+
+  @Nonnull
+  @Override
+  public List<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
+
+    final Integer blockIdx = stmtToBlock.get(node);
+    if (blockIdx == null) {
+      throw new IllegalArgumentException("Stmt is not in the StmtGraph.");
+    }
+    BasicBlock currentBlock = blocks.get(blockIdx);
+
+    if (currentBlock.getHead() != node
+        || !(node instanceof JIdentityStmt
+            && ((JIdentityStmt<?>) node).getRightOp() instanceof JCaughtExceptionRef)) {
+      // only an exception handler stmt can have exceptional predecessors
+      return Collections.emptyList();
+    }
+
+    List<Stmt> exceptionalPred = new ArrayList<>();
+    for (BasicBlock block : getBlocks()) {
+      if (block.getExceptionalSuccessors().containsValue(currentBlock)) {
+        exceptionalPred.addAll(block.getStmts());
+      }
+    }
+    return exceptionalPred;
   }
 
   @Nonnull

@@ -73,7 +73,7 @@ public abstract class MutableStmtGraph extends StmtGraph {
 
   // FIXME: legacy/remove!
   @Deprecated
-  public void setTraps(@Nonnull List<Trap> traps) {
-    throw new UnsupportedOperationException("Deprecated");
+  public void setTraps(List<Trap> traps) {
+    this.traps = traps;
   }
 }

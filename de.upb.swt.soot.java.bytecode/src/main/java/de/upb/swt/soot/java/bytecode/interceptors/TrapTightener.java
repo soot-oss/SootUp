@@ -22,6 +22,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #L%
  */
 
+import de.upb.swt.soot.core.graph.BasicBlock;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -29,6 +30,7 @@ import de.upb.swt.soot.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
 import javax.annotation.Nonnull;
 
@@ -157,8 +159,12 @@ public class TrapTightener implements BodyInterceptor {
    *     return false
    */
   private boolean mightThrow(StmtGraph graph, Stmt stmt, Trap trap) {
-    for (Trap dest : graph.getDestTraps(stmt)) {
-      if (dest == trap) {
+    final BasicBlock block = graph.getBlockOf(stmt);
+
+    for (Map.Entry<? extends ClassType, ? extends BasicBlock> dest :
+        block.getExceptionalSuccessors().entrySet()) {
+      if (dest.getKey().equals(trap.getExceptionType())
+          && dest.getValue().getHead().equals(trap.getHandlerStmt())) {
         return true;
       }
     }

@@ -17,20 +17,30 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
   public ImmutableBlockStmtGraph(@Nonnull StmtGraph graph) {
     stmts = Lists.newArrayListWithExpectedSize(graph.nodes().size());
     // linearize..
-    // TODO: add blocks in matching order!
+    // TODO: add blocks in linearized order!
     for (Stmt stmt : graph) {
       stmts.add(stmt);
     }
 
-    // TODO: traps
-
-    throw new IllegalStateException("implement it!");
+    final List<? extends BasicBlock> blocks = graph.getBlocks();
+    this.blocks = new ArrayList<>(blocks.size());
+    // TODO: copy
   }
 
   @Nullable
   @Override
   public Stmt getStartingStmt() {
     return stmts.isEmpty() ? null : stmts.get(0);
+  }
+
+  @Override
+  public BasicBlock getStartingStmtBlock() {
+    throw new UnsupportedOperationException("Not implemented yet!");
+  }
+
+  @Override
+  public BasicBlock getBlockOf(@Nonnull Stmt stmt) {
+    throw new UnsupportedOperationException("Not implemented yet!");
   }
 
   @Nonnull
@@ -47,19 +57,25 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
 
   @Override
   public boolean containsNode(@Nonnull Stmt node) {
-    throw new IllegalStateException("Not implemented yet!");
+    throw new UnsupportedOperationException("Not implemented yet!");
   }
 
   @Nonnull
   @Override
   public List<Stmt> predecessors(@Nonnull Stmt node) {
-    throw new IllegalStateException("Not implemented yet!");
+    throw new UnsupportedOperationException("Not implemented yet!");
+  }
+
+  @Nonnull
+  @Override
+  public List<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
+    throw new UnsupportedOperationException("not implemented");
   }
 
   @Nonnull
   @Override
   public List<Stmt> successors(@Nonnull Stmt node) {
-    throw new IllegalStateException("Not implemented yet!");
+    throw new UnsupportedOperationException("Not implemented yet!");
   }
 
   @Nonnull
@@ -71,23 +87,23 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
 
   @Override
   public int inDegree(@Nonnull Stmt node) {
-    throw new IllegalStateException("Not implemented yet!");
+    throw new UnsupportedOperationException("Not implemented yet!");
   }
 
   @Override
   public int outDegree(@Nonnull Stmt node) {
-    throw new IllegalStateException("Not implemented yet!");
+    throw new UnsupportedOperationException("Not implemented yet!");
   }
 
   @Override
   public boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target) {
-    throw new IllegalStateException("Not implemented yet!");
+    throw new UnsupportedOperationException("Not implemented yet!");
   }
 
   @Nonnull
   @Override
   public List<Trap> getTraps() {
-    throw new IllegalStateException("Not implemented yet!");
+    throw new UnsupportedOperationException("Not implemented yet!");
   }
 
   private class ImmutableBasicBlock implements BasicBlock {

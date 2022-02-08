@@ -24,10 +24,7 @@ package de.upb.swt.soot.core.graph;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.annotation.Nonnull;
 
 /** @author Zun Wang */
@@ -61,7 +58,7 @@ public final class ImmutableExceptionalStmtGraph extends ImmutableStmtGraph {
           default:
             exceptionalPreds[idx] = Collections.unmodifiableList(new ArrayList<>(preds));
         }
-        List<Stmt> succs = mutableGraph.exceptionalSuccessors(stmt);
+        Map<ClassType, Stmt> succs = mutableGraph.exceptionalSuccessors(stmt);
         switch (succs.size()) {
           case 0:
             exceptionalSuccs[idx] = Collections.emptyList();
@@ -70,7 +67,7 @@ public final class ImmutableExceptionalStmtGraph extends ImmutableStmtGraph {
             exceptionalSuccs[idx] = Collections.singletonList(succs.get(0));
             break;
           default:
-            exceptionalSuccs[idx] = Collections.unmodifiableList(new ArrayList<>(succs));
+            exceptionalSuccs[idx] = Collections.unmodifiableMap(new HashMap<>(succs));
         }
         List<Trap> dests = mutableGraph.getDestTraps(stmt);
         switch (dests.size()) {
@@ -102,7 +99,7 @@ public final class ImmutableExceptionalStmtGraph extends ImmutableStmtGraph {
     if (idx == null) {
       throw new RuntimeException("The given Stmt is not a node in the Graph.");
     }
-    return (List<Stmt>) exceptionalSuccs[idx];
+    return (HashMap<ClassType, Stmt>) exceptionalSuccs[idx];
   }
 
   @Nonnull

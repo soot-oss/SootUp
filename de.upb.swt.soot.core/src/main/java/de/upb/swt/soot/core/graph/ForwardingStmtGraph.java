@@ -46,6 +46,16 @@ public class ForwardingStmtGraph extends StmtGraph {
     return backingGraph.getStartingStmt();
   }
 
+  @Override
+  public BasicBlock getStartingStmtBlock() {
+    return backingGraph.getStartingStmtBlock();
+  }
+
+  @Override
+  public BasicBlock getBlockOf(@Nonnull Stmt stmt) {
+    return backingGraph.getBlockOf(stmt);
+  }
+
   @Nonnull
   @Override
   public Collection<Stmt> nodes() {
@@ -68,6 +78,12 @@ public class ForwardingStmtGraph extends StmtGraph {
   @Nonnull
   public List<Stmt> predecessors(@Nonnull Stmt stmt) {
     return backingGraph.predecessors(stmt);
+  }
+
+  @Nonnull
+  @Override
+  public List<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
+    return backingGraph.exceptionalPredecessors(node);
   }
 
   @Override

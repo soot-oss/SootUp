@@ -22,7 +22,7 @@ package de.upb.swt.soot.core.util.printer;
  * #L%
  */
 
-import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -307,7 +307,7 @@ public class Printer {
   private void printStatementsInBody(Body body, LabeledStmtPrinter printer) {
     Iterable<Stmt> linearizedStmtGraph = printer.initializeSootMethod(body);
 
-    ImmutableStmtGraph stmtGraph = body.getStmtGraph();
+    StmtGraph stmtGraph = body.getStmtGraph();
     Stmt previousStmt;
 
     final Map<Stmt, String> labels = printer.getLabels();

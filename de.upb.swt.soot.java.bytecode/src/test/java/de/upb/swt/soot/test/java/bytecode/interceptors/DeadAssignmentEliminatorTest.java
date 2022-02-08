@@ -2,7 +2,7 @@ package de.upb.swt.soot.test.java.bytecode.interceptors;
 
 import static org.junit.Assert.assertEquals;
 
-import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
@@ -27,8 +27,8 @@ public class DeadAssignmentEliminatorTest {
     Body testBody = testBuilder.build();
     new DeadAssignmentEliminator().interceptBody(testBuilder);
     Body processedBody = testBuilder.build();
-    ImmutableStmtGraph expectedGraph = testBody.getStmtGraph();
-    ImmutableStmtGraph actualGraph = processedBody.getStmtGraph();
+    StmtGraph expectedGraph = testBody.getStmtGraph();
+    StmtGraph actualGraph = processedBody.getStmtGraph();
 
     assertEquals(expectedGraph.nodes().size() - 1, actualGraph.nodes().size());
   }
@@ -39,8 +39,8 @@ public class DeadAssignmentEliminatorTest {
     Body testBody = testBuilder.build();
     new DeadAssignmentEliminator().interceptBody(testBuilder);
     Body processedBody = testBuilder.build();
-    ImmutableStmtGraph expectedGraph = testBody.getStmtGraph();
-    ImmutableStmtGraph actualGraph = processedBody.getStmtGraph();
+    StmtGraph expectedGraph = testBody.getStmtGraph();
+    StmtGraph actualGraph = processedBody.getStmtGraph();
 
     assertEquals(expectedGraph.nodes().size(), actualGraph.nodes().size());
   }

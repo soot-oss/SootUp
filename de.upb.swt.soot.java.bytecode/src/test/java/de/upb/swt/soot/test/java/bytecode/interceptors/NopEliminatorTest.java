@@ -3,7 +3,7 @@ package de.upb.swt.soot.test.java.bytecode.interceptors;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.graph.ImmutableStmtGraph;
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -39,8 +39,8 @@ public class NopEliminatorTest {
     new NopEliminator().interceptBody(builder);
     Body processedBody = builder.build();
 
-    ImmutableStmtGraph expectedGraph = testBody.getStmtGraph();
-    ImmutableStmtGraph actualGraph = processedBody.getStmtGraph();
+    StmtGraph expectedGraph = testBody.getStmtGraph();
+    StmtGraph actualGraph = processedBody.getStmtGraph();
 
     assertEquals(expectedGraph.nodes().size() - 1, actualGraph.nodes().size());
   }

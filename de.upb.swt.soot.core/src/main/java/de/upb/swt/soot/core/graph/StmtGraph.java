@@ -1,8 +1,6 @@
 package de.upb.swt.soot.core.graph;
 
-import de.upb.swt.soot.core.graph.iterator.StmtGraphBlockIterator;
 import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.types.ClassType;
@@ -22,7 +20,14 @@ import javax.annotation.Nullable;
  */
 public abstract class StmtGraph implements Iterable<Stmt> {
 
+  @Deprecated // hint: please use information for exceptional flows from BasicBlocks
+  protected List<Trap> traps;
+
   public abstract Stmt getStartingStmt();
+
+  public BasicBlock getStartingStmtBlock() {
+    return getBlockOf(getStartingStmt());
+  }
 
   /**
    * returns the nodes in this graph in no deterministic order (->Set) to get a linearized flow use
@@ -34,31 +39,20 @@ public abstract class StmtGraph implements Iterable<Stmt> {
   @Nonnull
   public abstract List<? extends BasicBlock> getBlocks();
 
+  public abstract BasicBlock getBlockOf(@Nonnull Stmt stmt);
+
   public abstract boolean containsNode(@Nonnull Stmt node);
 
   /**
    * returns the ingoing flows to node as an List with no reliable/specific order and possibly
-   * duplicate entries (like successors(Stmt).
+   * duplicate entries i.e. if a JSwitchStmt has multiple cases that brnach to `node`
    */
   @Nonnull
   public abstract List<Stmt> predecessors(@Nonnull Stmt node);
 
+  /** it is possible to reach traphandlers through inline code i.e. without any exceptional flow */
   @Nonnull
-  public List<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
-    if (!(node instanceof JIdentityStmt
-        && ((JIdentityStmt<?>) node).getRightOp() instanceof JCaughtExceptionRef)) {
-      // only an exception handler stmt can have exceptional predecessors
-      return Collections.emptyList();
-    }
-
-    List<Stmt> exceptionalPred = new ArrayList<>();
-    for (Stmt predecessor : predecessors(node)) {
-      if (!successors(predecessor).contains(node)) {
-        exceptionalPred.add(predecessor);
-      }
-    }
-    return exceptionalPred;
-  }
+  public abstract List<Stmt> exceptionalPredecessors(@Nonnull Stmt node);
 
   /** returns the outgoing flows of node as ordered List. The List can have duplicate entries! */
   @Nonnull
@@ -102,7 +96,8 @@ public abstract class StmtGraph implements Iterable<Stmt> {
   @Nonnull
   @Deprecated
   public List<Trap> getTraps() {
-    throw new RuntimeException("deprecated");
+    /* ms: makes no sense without stmt/block information */
+    return traps;
   }
 
   /**
@@ -232,7 +227,7 @@ public abstract class StmtGraph implements Iterable<Stmt> {
         continue;
       }
 
-      Stmt betweenStmt = (succs.get(p));
+      Stmt betweenStmt = succs.get(p);
 
       // we win!
       if (betweenStmt == to) {
@@ -310,9 +305,191 @@ public abstract class StmtGraph implements Iterable<Stmt> {
     };
   }
 
+  /**
+   * you're lazy - create your algorithm modifications more clean/precise for better performance ;-)
+   */
+  public boolean purgeUnconnectedEdges() {
+    // TODO: implement pruning graph to remove unconnected edges
+    throw new UnsupportedOperationException("not implemented yet");
+  }
+
   @Override
   @Nonnull
   public Iterator<Stmt> iterator() {
-    return new StmtGraphBlockIterator(this, getTraps());
+    return new BlockStmtGraphIterator(this);
+  }
+
+  // FIXME: adapt to iterate over blocks and adapt traps at the end so that the list is not
+  // enormously big i.e. merge same traps with neighbouring blocks
+  // assumption: a Block has at least 1 Stmt
+  private static class BlockStmtGraphIterator implements Iterator<Stmt> {
+
+    @Nonnull private final StmtGraph graph;
+    @Nonnull private final ArrayDeque<Map.Entry<ClassType, BasicBlock>> traps = new ArrayDeque<>();
+    @Nonnull private final ArrayDeque<BasicBlock> nestedBlocks = new ArrayDeque<>();
+    @Nonnull private final ArrayDeque<BasicBlock> otherBlocks = new ArrayDeque<>();
+
+    // caching the next Stmt to implement a simple hasNext() and skipping already returned Stmts
+    @Nonnull private final Set<BasicBlock> iteratedBlocks;
+    @Nonnull private Iterator<Stmt> currentBlockIt;
+    @Nullable private BasicBlock currentBlock;
+    private final List<Trap> collectedTraps = new ArrayList<>();
+
+    public BlockStmtGraphIterator(@Nonnull StmtGraph graph) {
+      this.graph = graph;
+      final List<? extends BasicBlock> blocks = graph.getBlocks();
+      iteratedBlocks = new HashSet<>(blocks.size(), 1);
+      Stmt startingStmt = graph.getStartingStmt();
+      if (startingStmt != null) {
+        final BasicBlock startingBlock = graph.getStartingStmtBlock();
+        iteratedBlocks.add(startingBlock);
+        currentBlockIt = startingBlock.getStmts().iterator();
+        currentBlock = startingBlock;
+      } else {
+        currentBlockIt = Collections.emptyIterator();
+        currentBlock = null;
+      }
+    }
+
+    @Nullable
+    private BasicBlock retrieveNextBlock() {
+      BasicBlock nextBlock;
+      do {
+        if (!nestedBlocks.isEmpty()) {
+          nextBlock = nestedBlocks.pollFirst();
+        } else if (!traps.isEmpty()) {
+          nextBlock = traps.pollFirst().getValue();
+        } else if (!otherBlocks.isEmpty()) {
+          nextBlock = otherBlocks.pollFirst();
+        } else {
+          return null;
+        }
+
+        // skip retrieved nextBlock if its already returned
+      } while (iteratedBlocks.contains(nextBlock));
+      iteratedBlocks.add(nextBlock);
+
+      return nextBlock;
+    }
+
+    @Override
+    @Nonnull
+    public Stmt next() {
+
+      if (!currentBlockIt.hasNext()) {
+        currentBlock = retrieveNextBlock();
+        if (currentBlock == null) {
+          throw new NoSuchElementException("Iterator has no more Stmts.");
+        }
+        currentBlockIt = currentBlock.getStmts().iterator();
+
+        // collect traps
+        final Stmt tailStmt = currentBlock.getTail();
+        currentBlock
+            .getExceptionalSuccessors()
+            .forEach(
+                (k, v) -> {
+                  collectedTraps.add(new Trap(k, currentBlock.getHead(), tailStmt, v.getHead()));
+                  // integrate trapHandler Block into 'queue'
+                  // if (!iteratedBlocks.contains(v)) {
+                  nestedBlocks.addFirst(v);
+                  // }
+                });
+
+        final List<? extends BasicBlock> successors = currentBlock.getSuccessors();
+
+        for (int i = successors.size() - 1; i >= 0; i--) {
+          if (i == 0 && tailStmt.fallsThrough()) {
+            // non-branching successors i.e. not a BranchingStmt or is the first successor of
+            // JIfStmt
+            nestedBlocks.addFirst(successors.get(i));
+          } else {
+
+            // create the most unbranched block from basicblocks as possible
+            BasicBlock leaderOfUnbranchedBlocks = successors.get(0);
+            while (true) {
+              boolean flag = true;
+              final List<? extends BasicBlock> itPreds = leaderOfUnbranchedBlocks.getPredecessors();
+              for (BasicBlock pred : itPreds) {
+                if (pred.getTail().fallsThrough()
+                    && pred.getSuccessors().get(0) == leaderOfUnbranchedBlocks) {
+                  leaderOfUnbranchedBlocks = pred;
+                  flag = false;
+                  break;
+                }
+              }
+              if (flag) {
+                break;
+              }
+            }
+
+            // find a return Stmt inside the current Block
+            Stmt succTailStmt = successors.get(i).getTail();
+            boolean isReturnBlock =
+                succTailStmt instanceof JReturnVoidStmt || succTailStmt instanceof JReturnStmt;
+
+            // remember branching successors
+            if (tailStmt instanceof JGotoStmt) {
+              if (isReturnBlock) {
+                nestedBlocks.removeFirstOccurrence(currentBlock.getHead());
+                otherBlocks.addLast(leaderOfUnbranchedBlocks);
+              } else {
+                otherBlocks.addFirst(leaderOfUnbranchedBlocks);
+              }
+            } else if (!nestedBlocks.contains(leaderOfUnbranchedBlocks)) {
+              // JSwitchStmt, JIfStmt
+              if (isReturnBlock) {
+                nestedBlocks.addLast(leaderOfUnbranchedBlocks);
+              } else {
+                nestedBlocks.addFirst(leaderOfUnbranchedBlocks);
+              }
+            }
+          }
+        }
+      }
+
+      return currentBlockIt.next();
+    }
+
+    @Override
+    public boolean hasNext() {
+      final boolean hasIteratorMoreElements;
+      if (currentBlockIt.hasNext()) {
+        hasIteratorMoreElements = true;
+      } else {
+        BasicBlock b = retrieveNextBlock();
+        if (b != null) {
+          // reinsert at FIRST position -> not great for performance! but easier handling in next()
+          nestedBlocks.addFirst(b);
+          hasIteratorMoreElements = true;
+        } else {
+          hasIteratorMoreElements = false;
+        }
+      }
+
+      if (!hasIteratorMoreElements) {
+        final int returnedSize = iteratedBlocks.size();
+        final int actualSize = graph.getBlocks().size();
+        if (returnedSize != actualSize) {
+          String info =
+              graph.getBlocks().stream()
+                  .filter(n -> !iteratedBlocks.contains(n))
+                  .map(BasicBlock::getStmts)
+                  .collect(Collectors.toList())
+                  .toString();
+          throw new IllegalStateException(
+              "There are "
+                  + (actualSize - returnedSize)
+                  + " Blocks (and their containing Stmts) that are not iterated! The StmtGraph is not connected from its startingStmt!"
+                  + info);
+        }
+      }
+      return hasIteratorMoreElements;
+    }
+
+    // for jimple serialization -> this is the info for the end of the method
+    public List<Trap> getTraps() {
+      return collectedTraps;
+    }
   }
 }

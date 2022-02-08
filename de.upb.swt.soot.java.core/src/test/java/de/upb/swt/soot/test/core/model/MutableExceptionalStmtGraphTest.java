@@ -88,7 +88,8 @@ public class MutableExceptionalStmtGraphTest {
     MutableExceptionalStmtGraph exceptionalStmtGraph = new MutableExceptionalStmtGraph(graph);
 
     Map<Stmt, List<Stmt>> expectedExceptionalPreds = expectedPredsForGraphWithNestedTraps_1();
-    Map<Stmt, List<Stmt>> expectedExceptionalSuccs = expectedSuccsForGraphWithNestedTraps_1();
+    HashMap<Stmt, Map<ClassType, Stmt>> expectedExceptionalSuccs =
+        expectedSuccsForGraphWithNestedTraps_1();
     Map<Stmt, List<Trap>> expectedExceptionalDests = expectedDestsForGraphWithNestedTraps_1();
 
     for (Stmt stmt : expectedExceptionalPreds.keySet()) {
@@ -106,7 +107,8 @@ public class MutableExceptionalStmtGraphTest {
     MutableExceptionalStmtGraph exceptionalStmtGraph = new MutableExceptionalStmtGraph(graph);
 
     Map<Stmt, List<Stmt>> expectedExceptionalPreds = expectedPredsForGraphWithNestedTraps_2();
-    Map<Stmt, List<Stmt>> expectedExceptionalSuccs = expectedSuccsForGraphWithNestedTraps_2();
+    Map<Stmt, Map<ClassType, Stmt>> expectedExceptionalSuccs =
+        expectedSuccsForGraphWithNestedTraps_2();
     Map<Stmt, List<Trap>> expectedExceptionalDests = expectedDestsForGraphWithNestedTraps_2();
 
     for (Stmt stmt : expectedExceptionalPreds.keySet()) {
@@ -124,7 +126,8 @@ public class MutableExceptionalStmtGraphTest {
     MutableExceptionalStmtGraph exceptionalStmtGraph = new MutableExceptionalStmtGraph(graph);
 
     Map<Stmt, List<Stmt>> expectedExceptionalPreds = expectedPredsForGraphWithChainedTraps();
-    Map<Stmt, List<Stmt>> expectedExceptionalSuccs = expectedSuccsForGraphWithChainedTraps();
+    Map<Stmt, Map<ClassType, Stmt>> expectedExceptionalSuccs =
+        expectedSuccsForGraphWithChainedTraps();
     Map<Stmt, List<Trap>> expectedExceptionalDests = expectedDestsForGraphWithChainedTraps();
 
     for (Stmt stmt : expectedExceptionalPreds.keySet()) {
@@ -182,11 +185,11 @@ public class MutableExceptionalStmtGraphTest {
     return predsMap;
   }
 
-  private Map<Stmt, List<Stmt>> expectedSuccsForGraphWithNestedTraps_1() {
+  private HashMap<Stmt, Map<ClassType, Stmt>> expectedSuccsForGraphWithNestedTraps_1() {
 
-    Map<Stmt, List<Stmt>> succsMap = new HashMap<>();
-    List<Stmt> succs_0 = ImmutableUtils.immutableList(label6Stmt);
-    List<Stmt> succs_1 = ImmutableUtils.immutableList(label7Stmt);
+    HashMap<Stmt, Map<ClassType, Stmt>> succsMap = new HashMap<>();
+    Map<ClassType, Stmt> succs_0 = Collections.singletonMap(exception1, label6Stmt);
+    Map<ClassType, Stmt> succs_1 = Collections.singletonMap(exception2, label7Stmt);
 
     StmtGraph graph = createGraphWithNestedTraps_1();
     for (Stmt stmt : graph) {
@@ -195,7 +198,7 @@ public class MutableExceptionalStmtGraphTest {
       } else if (stmt == label2Stmt || stmt == stmtInLabel2) {
         succsMap.put(stmt, succs_1);
       } else {
-        succsMap.put(stmt, Collections.emptyList());
+        succsMap.put(stmt, Collections.emptyMap());
       }
     }
     return succsMap;
@@ -265,11 +268,13 @@ public class MutableExceptionalStmtGraphTest {
     return predsMap;
   }
 
-  private Map<Stmt, List<Stmt>> expectedSuccsForGraphWithNestedTraps_2() {
+  private Map<Stmt, Map<ClassType, Stmt>> expectedSuccsForGraphWithNestedTraps_2() {
 
-    Map<Stmt, List<Stmt>> succsMap = new HashMap<>();
-    List<Stmt> succs_0 = ImmutableUtils.immutableList(label6Stmt);
-    List<Stmt> succs_1 = ImmutableUtils.immutableList(label6Stmt, label7Stmt);
+    Map<Stmt, Map<ClassType, Stmt>> succsMap = new HashMap<>();
+    Map<ClassType, Stmt> succs_0 = Collections.singletonMap(exception1, label6Stmt);
+    Map<ClassType, Stmt> succs_1 = new HashMap<>();
+    succs_1.put(exception1, label6Stmt);
+    succs_1.put(exception2, label7Stmt);
 
     StmtGraph graph = createGraphWithNestedTraps_1();
     for (Stmt stmt : graph) {
@@ -278,7 +283,7 @@ public class MutableExceptionalStmtGraphTest {
       } else if (stmt == label2Stmt || stmt == stmtInLabel2) {
         succsMap.put(stmt, succs_1);
       } else {
-        succsMap.put(stmt, Collections.emptyList());
+        succsMap.put(stmt, Collections.emptyMap());
       }
     }
     return succsMap;
@@ -350,12 +355,17 @@ public class MutableExceptionalStmtGraphTest {
     return predsMap;
   }
 
-  private Map<Stmt, List<Stmt>> expectedSuccsForGraphWithChainedTraps() {
+  private Map<Stmt, Map<ClassType, Stmt>> expectedSuccsForGraphWithChainedTraps() {
 
-    Map<Stmt, List<Stmt>> succsMap = new HashMap<>();
-    List<Stmt> succs_0 = ImmutableUtils.immutableList(label6Stmt, label7Stmt, label9Stmt);
-    List<Stmt> succs_1 = ImmutableUtils.immutableList(label7Stmt, label9Stmt);
-    List<Stmt> succs_2 = ImmutableUtils.immutableList(label9Stmt);
+    Map<Stmt, Map<ClassType, Stmt>> succsMap = new HashMap<>();
+    Map<ClassType, Stmt> succs_0 = new HashMap<>();
+    succs_0.put(exception1, label6Stmt);
+    succs_0.put(exception2, label7Stmt);
+    succs_0.put(exception2, label9Stmt);
+    Map<ClassType, Stmt> succs_1 = new HashMap<>();
+    succs_1.put(exception1, label7Stmt);
+    succs_1.put(exception2, label9Stmt);
+    Map<ClassType, Stmt> succs_2 = Collections.singletonMap(exception2, label9Stmt);
 
     StmtGraph graph = createGraphWithChainedTraps();
     for (Stmt stmt : graph) {
@@ -366,7 +376,7 @@ public class MutableExceptionalStmtGraphTest {
       } else if (stmt == label7Stmt) {
         succsMap.put(stmt, succs_2);
       } else {
-        succsMap.put(stmt, Collections.emptyList());
+        succsMap.put(stmt, Collections.emptyMap());
       }
     }
     return succsMap;

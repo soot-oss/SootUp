@@ -116,6 +116,16 @@ public class ImmutableStmtGraph extends StmtGraph {
     return startingStmt;
   }
 
+  @Override
+  public BasicBlock getBlockOf(@Nonnull Stmt stmt) {
+    final Optional<? extends BasicBlock> any =
+        getBlocks().stream().filter(b -> b.getStmts().contains(stmt)).findAny();
+    if (!any.isPresent()) {
+      throw new IllegalArgumentException("Stmt is not in any Block of this Graph.");
+    }
+    return any.get();
+  }
+
   @Nonnull
   @Override
   public Set<Stmt> nodes() {
@@ -147,6 +157,12 @@ public class ImmutableStmtGraph extends StmtGraph {
       return stmts;
     }
     return (List<Stmt>) predecessors[idx];
+  }
+
+  @Nonnull
+  @Override
+  public List<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
+    throw new UnsupportedOperationException("not implemented");
   }
 
   @Nonnull

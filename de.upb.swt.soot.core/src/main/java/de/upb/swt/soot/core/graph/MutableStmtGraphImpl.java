@@ -21,9 +21,7 @@ package de.upb.swt.soot.core.graph;
  * #L%
  */
 import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
@@ -104,6 +102,16 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
   }
 
   @Override
+  public BasicBlock getStartingStmtBlock() {
+    throw new RuntimeException("not yet implemented");
+  }
+
+  @Override
+  public BasicBlock getBlockOf(@Nonnull Stmt stmt) {
+    throw new RuntimeException("not yet implemented");
+  }
+
+  @Override
   public void addNode(@Nonnull Stmt node, @Nonnull List<ClassType> traps) {
     addNodeInternal(node);
     // FIXME add traps!
@@ -175,16 +183,13 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
 
   @Override
   public void addExceptionalEdge(
-      @Nonnull Stmt stmt, @Nonnull JIdentityStmt<JCaughtExceptionRef> traphandlerStmt) {
-    // FIXME: implement
-    throw new RuntimeException("not implemented");
+      @Nonnull Stmt stmt, @Nonnull ClassType exception, @Nonnull Stmt traphandlerStmt) {
+    throw new IllegalArgumentException("removal of traps is not implemented, yet.");
   }
 
   @Override
-  public void removeExceptionalEdge(
-      @Nonnull Stmt stmt, @Nonnull JIdentityStmt<JCaughtExceptionRef> traphandlerStmt) {
-    // FIXME: implement
-    throw new RuntimeException("not implemented");
+  public void removeExceptionalEdge(@Nonnull Stmt stmt, @Nonnull ClassType exception) {
+    throw new IllegalArgumentException("removal of traps is not implemented, yet.");
   }
 
   @Override
@@ -245,6 +250,12 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
       return Collections.emptyList();
     }
     return Collections.unmodifiableList(stmts);
+  }
+
+  @Nonnull
+  @Override
+  public List<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
+    throw new UnsupportedOperationException("not implemented");
   }
 
   @Override

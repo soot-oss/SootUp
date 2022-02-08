@@ -52,7 +52,7 @@ public class Body implements Copyable {
   /** The locals for this Body. */
   private final Set<Local> locals;
 
-  @Nonnull private final ImmutableExceptionalStmtGraph graph;
+  @Nonnull private final StmtGraph graph;
 
   /** The Position Information in the Source for this Body. */
   @Nonnull private final Position position;
@@ -86,7 +86,8 @@ public class Body implements Copyable {
       @Nonnull Position position) {
     this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
-    this.graph = new ImmutableExceptionalStmtGraph(stmtGraph);
+    this.graph = /* FIXME: [ms] make immutable when availabe new ImmutableExceptionalStmtGraph(*/
+        stmtGraph;
     this.position = position;
     // FIXME: [JMP] Virtual method call in constructor
     checkInit();
@@ -274,7 +275,7 @@ public class Body implements Copyable {
   }
 
   @Nonnull
-  public ImmutableExceptionalStmtGraph getStmtGraph() {
+  public StmtGraph getStmtGraph() {
     return graph;
   }
 
