@@ -141,16 +141,6 @@ public class Body implements Copyable {
     runValidation(new LocalsValidator());
   }
 
-  /** Verifies that the begin, end and handler units of each trap are in this body. */
-  public void validateTraps() {
-    runValidation(new TrapsValidator());
-  }
-
-  /** Verifies that the Stmts of this Body all point to a Stmt contained within this body. */
-  public void validateStmts() {
-    runValidation(new StmtsValidator());
-  }
-
   /** Verifies that each use in this Body has a def. */
   public void validateUses() {
     runValidation(new UsesValidator());
