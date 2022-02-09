@@ -136,7 +136,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   private OperandStack operandStack;
   private Map<LabelNode, Stmt> trapHandler;
-  private Map<LabelNode, ClassType> trapException;
+  private Map<LabelNode, ClassType> trapException = new HashMap<>();
 
   private int currentLineNumber = -1;
   private int maxLineNumber = 0;
@@ -214,7 +214,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // FIXME: adapt signature for java9/modules!
       final String exceptionName =
           (tc.type != null) ? AsmUtil.toQualifiedName(tc.type) : "java.lang.Throwable";
-      trapException.put(tc.handler, javaIdentifierFactory.getClassType(exceptionName));
+      final JavaClassType classType = javaIdentifierFactory.getClassType(exceptionName);
+      trapException.put(tc.handler, classType);
     }
 
     /* convert instructions */
@@ -1647,8 +1648,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               tgt, /* "default" targets i.e. LabelNode or fallsthrough "target" of if  */
       @Nonnull List<LabelNode> tgts /* other branch target(s) */) {
     Operand[] stackss = operandStack.getStack().toArray(new Operand[0]);
-    /* iterate over possible following instructions which is: combined(tgt, tgts) */
+    /* iterate over possible following/successing instructions which is: combined(tgt, tgts) */
     int i = 0;
+    int lastIdx = tgts.size();
     outer_loop:
     do {
       BranchedInsnInfo edge = edges.get(branchingInsn, tgt);
@@ -1663,7 +1665,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       for (List<Operand> stackTemp : edge.getOperandStacks()) {
         if (stackTemp.size() == stackss.length) {
           int j = 0;
-          for (; j != stackss.length && stackTemp.get(j).equivTo(stackss[j]); j++) {}
+          while (j < stackss.length && stackTemp.get(j).equivTo(stackss[j])) {
+            j++;
+          }
           if (j == stackss.length) {
             continue outer_loop;
           }
@@ -1678,12 +1682,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       edge.addOperandStack(operandStack.getStack());
       edge.addToPrevStack(stackss);
       conversionWorklist.add(edge);
-      tgt = tgts.get(i++);
-    } while (i < tgts.size());
+      } while (i < lastIdx && (tgt = tgts.get(i++)) != null);
   }
 
   private void convert() {
-    List<ClassType> traps = new ArrayList<>();
     ArrayDeque<BranchedInsnInfo> worklist = new ArrayDeque<>();
 
     indexInlineExceptionHandlers();
@@ -1756,7 +1758,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
                 AbstractInsnNode next = insn.getNext();
                 addEdges(edges, worklist, insn, next, Collections.singletonList(jmp.label));
               } else {
-                addEdges(edges, worklist, insn, jmp.label, null);
+                addEdges(edges, worklist, insn, jmp.label, Collections.emptyList());
               }
               break label;
             }
@@ -1805,7 +1807,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             // we can ignore it
             break;
           default:
-            throw new RuntimeException("Unknown instruction type: " + type);
+            throw new UnsupportedOperationException("Unknown instruction type: " + type);
         }
       } while ((insn = insn.getNext()) != null);
     } while (!worklist.isEmpty());
@@ -2030,7 +2032,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       graph.putEdge(gotoStmt, targetStmt);
     }
 
-    // integrate trap exceptions
+    // integrate traps/exceptions into the blocks
     for (Entry<MutableBasicBlock, List<LabelNode>> b : blockToTrapHandler.entrySet()) {
       for (LabelNode handlerLabel : b.getValue()) {
         ClassType exceptionType = trapException.get(handlerLabel);
