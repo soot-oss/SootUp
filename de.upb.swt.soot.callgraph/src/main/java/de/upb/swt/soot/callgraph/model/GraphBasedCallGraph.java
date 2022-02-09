@@ -121,6 +121,11 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
     return graph.edgeSet().size();
   }
 
+  @Override
+  public boolean isEmpty() {
+    return signatureToVertex.keySet().isEmpty();
+  }
+
   @SuppressWarnings("unchecked") // (graph.clone() preserves generic properties)
   @Nonnull
   @Override
