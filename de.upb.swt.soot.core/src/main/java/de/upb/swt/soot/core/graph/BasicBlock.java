@@ -24,7 +24,7 @@ public interface BasicBlock<V extends BasicBlock<V>> {
   int getStmtCount();
 
   default boolean isEmpty() {
-    return getStmtCount() > 0;
+    return getStmtCount() <= 0;
   }
 
   @Nonnull

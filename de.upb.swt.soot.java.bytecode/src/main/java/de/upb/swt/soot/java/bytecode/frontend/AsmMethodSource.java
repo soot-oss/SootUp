@@ -136,6 +136,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   private OperandStack operandStack;
   private Map<LabelNode, Stmt> trapHandler;
+  private Map<LabelNode, ClassType> trapException;
+
   private int currentLineNumber = -1;
   private int maxLineNumber = 0;
 
@@ -208,7 +210,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     for (TryCatchBlockNode tc : tryCatchBlocks) {
       // reserve space/ insert labels in datastructure
       trapHandler.put(tc.handler, null);
+
+      // FIXME: adapt signature for java9/modules!
+      final String exceptionName =
+          (tc.type != null) ? AsmUtil.toQualifiedName(tc.type) : "java.lang.Throwable";
+      trapException.put(tc.handler, javaIdentifierFactory.getClassType(exceptionName));
     }
+
     /* convert instructions */
     try {
       convert();
@@ -1930,7 +1938,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
 
-    Map<LabelNode, MutableBasicBlock> trapRangeBlock = new HashMap<>();
+    Map<MutableBasicBlock, List<LabelNode>> blockToTrapHandler = new HashMap<>();
 
     // every LabelNode denotes a border of a Block
     MutableBasicBlock block = buildPreambleLocals();
@@ -1969,11 +1977,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           block = newBlock;
         }
 
-        // add traprange info into blocks
+        // add trapRange info for blocks
         for (Entry<LabelNode, Stmt> entry : this.trapHandler.entrySet()) {
+          ArrayList<LabelNode> ex = new ArrayList<>();
           if (danglingLabel.contains(entry.getKey())) {
-            trapRangeBlock.put(entry.getKey(), block);
+            ex.add(entry.getKey());
           }
+          blockToTrapHandler.put(block, ex);
         }
 
         // associate collected labels from danglingLabel with the following stmt
@@ -2020,13 +2030,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       graph.putEdge(gotoStmt, targetStmt);
     }
 
-    // link exceptions: traprange to handler
-    for (Entry<LabelNode, MutableBasicBlock> entry : trapRangeBlock.entrySet()) {
-      final Stmt handlerStmt = trapHandler.get(entry.getKey());
-      // FIXME: do it via StmtGraph! bad performance: possible merge/split of blocks..
-      // FIXME:
-      ClassType exception = javaIdentifierFactory.getClassType("java.lang.Throwable");
-      entry.getValue().addExceptionalSuccessorBlock(exception, graph.getBlockOf(handlerStmt));
+    // integrate trap exceptions
+    for (Entry<MutableBasicBlock, List<LabelNode>> b : blockToTrapHandler.entrySet()) {
+      for (LabelNode handlerLabel : b.getValue()) {
+        ClassType exceptionType = trapException.get(handlerLabel);
+        b.getKey()
+            .addExceptionalSuccessorBlock(
+                exceptionType, graph.getBlockOf(trapHandler.get(handlerLabel)));
+      }
     }
 
     // connect branching stmts with its targets

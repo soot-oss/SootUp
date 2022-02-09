@@ -324,7 +324,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   @Override
   @Nonnull
   public Iterator<Stmt> iterator() {
-    // TODO: remove comment   return new StmtGraphBlockIterator(this, Collections.emptyList());
+    // TODO: remove comment
+    //  return new StmtGraphBlockIterator(this, Collections.emptyList());
     return new BlockStmtGraphIterator(this);
   }
 
