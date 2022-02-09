@@ -146,7 +146,7 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder("GraphBasedCallGraph(" + callCount() + ")");
-    if (signatureToVertex.keySet().isEmpty()) {
+    if (this.isEmpty()) {
       sb.append(" is empty");
     } else {
       sb.append(":\n");
