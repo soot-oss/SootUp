@@ -5,22 +5,19 @@ import benchmark.objects.O;
 
 public class AliasProp {
 
-    public void test() {
+    public static void  main(String [] args) {
+        boolean condition = true;
+        O o1 = new O();
+        O o2 = new O();
+        B b = new B();
 
-        //boolean condition = true;
-        O o1 = new O(); //r1 = o1;
-        O o2 = new O(); //r2 = o2
-        B b = new B(); //r3 = b;
-
-        O p, q;
-        //if(condition){
-        if(Math.random()<1){
+        O p;
+        if(condition){
             p = o1;
         }else{
             p = o2;
         }
-        q = o1;
-        p.f = b; //p = u0;
-        B s = q.f; //q = u1;
+        p.f = b;
+        B s = o1.f;
     }
 }
