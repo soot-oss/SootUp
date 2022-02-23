@@ -23,10 +23,7 @@ package de.upb.swt.soot.callgraph.spark.solver;
  */
 
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
-import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
-import de.upb.swt.soot.callgraph.spark.pag.nodes.FieldReferenceNode;
-import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
-import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
+import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
 import de.upb.swt.soot.core.model.Field;
 import java.util.*;
 
@@ -48,9 +45,10 @@ public class AliasPropagator implements Propagator {
   // map contains the node which has new point-to info to propagate
   private HashMap<Node, Set<Node>> nodeToNewPoint2Set = new HashMap<>();
 
+  private Map<FieldReferenceNode, Set<Node>> newloadSets = new HashMap<>();
   private Map<FieldReferenceNode, Set<Node>> oldLoadSets = new HashMap<>();
-  private Map<FieldReferenceNode, Set<Node>> newLoadSets = new HashMap<>();
 
+  List<Node> nodes = new ArrayList<>();
   // todo: a field OnFlyCallGraph ofcg
   public AliasPropagator(PointerAssignmentGraph pag) {
     this.pag = pag;
@@ -99,14 +97,15 @@ public class AliasPropagator implements Propagator {
     }
   }
 
+  /** add alias-edges between p.f and q.f, if p, q are alias */
   protected void handleAliasWorkList() {
     for (VariableNode source : aliasWorkList) {
       for (FieldReferenceNode srcFr : source.getAllFieldReferences()) {
         Field field = srcFr.getField();
         Set<VariableNode> targets = fieldToBases.get(field);
         if (targets != null && !targets.isEmpty()) {
-          for (VariableNode target : fieldToBases.get(field)) {
-            if (intersect(source.getPointsToSet(), getFullP2Set(target))) {
+          for (VariableNode target : targets) {
+            if (intersect(getFullP2Set(source), getFullP2Set(target))) {
               FieldReferenceNode tgtFr = target.getField(field);
               if (!aliasEdges.containsKey(srcFr)) {
                 aliasEdges.put(srcFr, new HashSet<>());
@@ -119,15 +118,15 @@ public class AliasPropagator implements Propagator {
               inFieldRefWorkList.add(srcFr);
               inFieldRefWorkList.add(tgtFr);
               if (addNewP2Info(
-                  getOrCreateOutFrNewP2Set(tgtFr),
+                  getOrCreateFrNewLoadSet(tgtFr),
                   srcFr.getOrCreatePointsToSet(),
-                  getOrCreateOutFrOldP2Set(tgtFr))) {
+                  getOrCreateFrOldLoadSet(tgtFr))) {
                 outFieldRefWorkList.add(tgtFr);
               }
               if (addNewP2Info(
-                  getOrCreateOutFrNewP2Set(srcFr),
+                  getOrCreateFrNewLoadSet(srcFr),
                   tgtFr.getOrCreatePointsToSet(),
-                  getOrCreateOutFrOldP2Set(srcFr))) {
+                  getOrCreateFrOldLoadSet(srcFr))) {
                 outFieldRefWorkList.add(srcFr);
               }
             }
@@ -137,43 +136,45 @@ public class AliasPropagator implements Propagator {
     }
   }
 
+  /** Propagate the load P2Set Info along to alias-edges */
   protected void handleFieldRefWorkList() {
     for (FieldReferenceNode source : inFieldRefWorkList) {
+      Set<Node> newInfo = nodeToNewPoint2Set.get(source);
+      if (newInfo == null) {
+        newInfo = Collections.emptySet();
+      }
       Set<FieldReferenceNode> targets = aliasEdges.get(source);
       if (targets != null && !targets.isEmpty()) {
         for (FieldReferenceNode target : aliasEdges.get(source)) {
           if (addNewP2Info(
-              getOrCreateOutFrNewP2Set(target),
-              source.getOrCreatePointsToSet(),
-              getOrCreateOutFrOldP2Set(target))) {
+              getOrCreateFrNewLoadSet(target), newInfo, getOrCreateFrOldLoadSet(target))) {
             outFieldRefWorkList.add(target);
           }
         }
       }
-      Set<Node> newInfo = nodeToNewPoint2Set.get(source);
-      if (newInfo != null && !newInfo.isEmpty()) {
-        flushNew(source, nodeToNewPoint2Set.get(source));
-      }
+      flushNew(source, newInfo);
     }
     inFieldRefWorkList = new HashSet<>();
 
     for (FieldReferenceNode source : outFieldRefWorkList) {
-      Set<Node> p2Set = getOrCreateOutFrNewP2Set(source);
+      Set<Node> p2Set = getOrCreateFrNewLoadSet(source);
       if (p2Set.isEmpty()) {
         continue;
       }
       Set<VariableNode> targets = pag.loadLookup(source);
       if (targets != null && !targets.isEmpty()) {
         for (VariableNode target : targets) {
-          if (addNewP2Info(
-              nodeToNewPoint2Set.get(target), p2Set, target.getOrCreatePointsToSet())) {
+          Set<Node> newTargetP2Set = nodeToNewPoint2Set.get(target);
+          if (newTargetP2Set == null) {
+            newTargetP2Set = new HashSet<>();
+            nodeToNewPoint2Set.put(target, newTargetP2Set);
+          }
+          if (addNewP2Info(newTargetP2Set, p2Set, target.getOrCreatePointsToSet())) {
             varNodeWorkList.add(target);
           }
         }
       }
-      Set<Node> p2SetOld = getOrCreateOutFrOldP2Set(source);
-      p2SetOld.addAll(p2Set);
-      p2Set.clear();
+      flushNewLoad(source);
     }
     outFieldRefWorkList = new HashSet<>();
   }
@@ -253,6 +254,9 @@ public class AliasPropagator implements Propagator {
 
   /** Add all new point to Info into its P2Set (after propagation), and flush new P2-info */
   private void flushNew(Node node, Set<Node> newP2Set) {
+    if (newP2Set.isEmpty()) {
+      return;
+    }
     Set<Node> p2Set = node.getOrCreatePointsToSet();
     p2Set.addAll(newP2Set);
     nodeToNewPoint2Set.get(node).clear();
@@ -283,7 +287,16 @@ public class AliasPropagator implements Propagator {
     return fullP2Set;
   }
 
-  private Set<Node> getOrCreateOutFrOldP2Set(FieldReferenceNode frN) {
+  private Set<Node> getOrCreateFrNewLoadSet(FieldReferenceNode frN) {
+    Set<Node> p2S = newloadSets.get(frN);
+    if (p2S == null) {
+      p2S = new HashSet<>();
+      newloadSets.put(frN, p2S);
+    }
+    return p2S;
+  }
+
+  private Set<Node> getOrCreateFrOldLoadSet(FieldReferenceNode frN) {
     Set<Node> p2S = oldLoadSets.get(frN);
     if (p2S == null) {
       p2S = new HashSet<>();
@@ -292,12 +305,22 @@ public class AliasPropagator implements Propagator {
     return p2S;
   }
 
-  private Set<Node> getOrCreateOutFrNewP2Set(FieldReferenceNode frN) {
-    Set<Node> p2S = newLoadSets.get(frN);
-    if (p2S == null) {
-      p2S = new HashSet<>();
-      newLoadSets.put(frN, p2S);
+  /** Move new point to Info from newLoadSet to oldLoadSet(after propagation) */
+  private void flushNewLoad(FieldReferenceNode node) {
+    Set<Node> newP2Set = newloadSets.get(node);
+    if (newP2Set == null && newP2Set.isEmpty()) {
+      return;
     }
-    return p2S;
+    Set<Node> oldP2Set = oldLoadSets.get(node);
+    if (newP2Set == null) {
+      oldP2Set = new HashSet<>();
+      oldLoadSets.put(node, oldP2Set);
+    }
+    oldP2Set.addAll(newP2Set);
+    newP2Set.clear();
+  }
+
+  public PointerAssignmentGraph getPag() {
+    return this.pag;
   }
 }
