@@ -11,8 +11,12 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.signatures.MethodSubSignature;
+import de.upb.swt.soot.core.signatures.PackageName;
+import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.PrimitiveType.IntType;
+import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.JavaSootClass;
@@ -20,6 +24,7 @@ import de.upb.swt.soot.java.core.JavaSootClassSource;
 import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -85,7 +90,8 @@ public class MutatingSootClass {
     Body newBody = oldBody.withLocals(Collections.singleton(newLocal));
 
     // Modify body source
-    OverridingBodySource newBodySource = overridingBodySource.withBody(newBody);
+    OverridingBodySource newBodySource =
+        new OverridingBodySource(method.getBodySource()).withBody(newBody);
 
     // Create OverridingClassSource
     OverridingJavaClassSource overridingJavaClassSource =
@@ -103,24 +109,37 @@ public class MutatingSootClass {
     // assert that only our newly created local exists
     assertEquals(
         newLocal,
-        newClass.getMethods().stream()
-            .findFirst()
-            .get()
-            .getBody()
-            .getLocals()
-            .stream()
+        newClass
+            .getMethod(
+                new MethodSubSignature(
+                    "main",
+                    Collections.singletonList(
+                        new ArrayType(
+                            new JavaClassType("String", new PackageName("java.lang")), 1)),
+                    VoidType.getInstance()))
+            .get().getBody().getLocals().stream()
             .findFirst()
             .get());
 
     // assert that old soot class remains unchanged
-    assertFalse(sootClass.getMethods().stream().findFirst().get().getBody().getLocals().isEmpty());
-    assertTrue(
-        sootClass.getMethods().stream()
-            .findFirst()
+    assertFalse(
+        sootClass
+            .getMethod(
+                new MethodSubSignature("<init>", Collections.emptyList(), VoidType.getInstance()))
             .get()
             .getBody()
             .getLocals()
-            .stream()
+            .isEmpty());
+    assertTrue(
+        sootClass
+            .getMethod(
+                new MethodSubSignature(
+                    "main",
+                    Collections.singletonList(
+                        new ArrayType(
+                            new JavaClassType("String", new PackageName("java.lang")), 1)),
+                    VoidType.getInstance()))
+            .get().getBody().getLocals().stream()
             .noneMatch(local -> local.equals(newLocal)));
 
     // Please note that the jimple code of our newly modified method is not correct anymore, as we
