@@ -1682,7 +1682,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       edge.addOperandStack(operandStack.getStack());
       edge.addToPrevStack(stackss);
       conversionWorklist.add(edge);
-      } while (i < lastIdx && (tgt = tgts.get(i++)) != null);
+    } while (i < lastIdx && (tgt = tgts.get(i++)) != null);
   }
 
   private void convert() {
@@ -1942,6 +1942,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     Map<MutableBasicBlock, List<LabelNode>> blockToTrapHandler = new HashMap<>();
 
+    Map<LabelNode, TryCatchBlockNode> trapRangeBorders = new HashMap<>();
+    for (TryCatchBlockNode tryCatchBlock : tryCatchBlocks) {
+      trapRangeBorders.put(tryCatchBlock.end, tryCatchBlock);
+    }
+
+    Map<ClassType, LabelNode> currentblocksTraps = new HashMap<>();
+
     // every LabelNode denotes a border of a Block
     MutableBasicBlock block = buildPreambleLocals();
 
@@ -1965,7 +1972,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (!danglingLabel.isEmpty()) {
         // there is (at least) a LabelNode -> Block border -> create another block or use the empty
         // existing one
-        if (!block.isEmpty()) {
+        if (!block.isEmpty()
+            && (insn.getPrevious() != null && !labelsToStmt.containsKey(block.getHead()))) {
 
           final MutableBasicBlock newBlock = new MutableBasicBlock();
           if (block.getTail().fallsThrough()) {
