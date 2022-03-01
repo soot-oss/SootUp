@@ -125,10 +125,11 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
             Value leftOp = stmt.getLeftOp();
             Value rightOp = stmt.getRightOp();
             // TODO: After implementation of TypeAssigner, delete the UnknownType checker
-            if (!(leftOp.getType() instanceof UnknownType)) {
-              if (!(leftOp.getType() instanceof ReferenceType)) {
-                return;
-              }
+            /*if (!(leftOp.getType() instanceof UnknownType)) {
+
+            }*/
+            if (!(leftOp.getType() instanceof ReferenceType)) {
+              return;
             }
             // TODO: After implementation of TypeAssigner, delete the UnknownType checker
             if (!(rightOp.getType() instanceof ReferenceType
