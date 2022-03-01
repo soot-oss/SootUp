@@ -1,6 +1,5 @@
 package de.upb.swt.soot.test.callgraph.spark.propagater;
 
-
 import de.upb.swt.soot.callgraph.algorithm.CallGraphAlgorithm;
 import de.upb.swt.soot.callgraph.algorithm.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.model.CallGraph;
