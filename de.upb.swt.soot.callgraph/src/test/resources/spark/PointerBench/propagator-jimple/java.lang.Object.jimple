@@ -1,0 +1,11 @@
+public class java.lang.Object
+{
+    public void <init>()
+    {
+        java.lang.Object l0;
+
+        l0 := @this: java.lang.Object;
+
+        return;
+    }
+}
