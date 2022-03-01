@@ -28,17 +28,17 @@ jobs:
       run: mvn verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     - name: Prepare Coverage and Test Reports
       env: 
-        SUBMODULES: java.core java.bytecode java.sourcecode callgraph
+        SUBMODULES: de.upb.swt.soot.java.core de.upb.swt.soot.java.bytecode de.upb.swt.soot.java.sourcecode de.upb.swt.soot.callgraph examples de.upb.swt.soot.tests
       run: |
            sudo mkdir target/coverage-reports-jdk8
            sudo mkdir target/test-reports-jdk8
            sudo chmod -R 777 target 
            for item in $SUBMODULES
            do 
-             sudo mv de.upb.swt.soot.${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports-jdk8/jacoco-ut-${item}-jdk8.exec
-             sudo [ ! -f de.upb.swt.soot.${item}/target/surefire-reports ] || mv de.upb.swt.soot.${item}/target/surefire-reports target/test-reports-jdk8/test-report-${item}/
+             sudo mv ${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports-jdk8/jacoco-ut-${item}-jdk8.exec
+             sudo [ ! -f ${item}/target/surefire-reports ] || mv ${item}/target/surefire-reports target/test-reports-jdk8/test-report-${item}/
              sudo mkdir target/coverage-reports-jdk8/${item}-site
-             sudo mv de.upb.swt.soot.${item}/target/site/jacoco-ut/* target/coverage-reports-jdk8/${item}-site
+             sudo mv ${item}/target/site/jacoco-ut/* target/coverage-reports-jdk8/${item}-site
            done
      
     - uses: actions/upload-artifact@v2
