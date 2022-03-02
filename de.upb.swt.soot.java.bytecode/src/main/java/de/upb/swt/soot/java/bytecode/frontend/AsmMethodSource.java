@@ -1944,6 +1944,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     Map<LabelNode, TryCatchBlockNode> trapRangeBorders = new HashMap<>();
     for (TryCatchBlockNode tryCatchBlock : tryCatchBlocks) {
+      // FIXME: [ms] handle start/end collisions of multiple tryCatchBlocks!
+      trapRangeBorders.put(tryCatchBlock.start, tryCatchBlock);
       trapRangeBorders.put(tryCatchBlock.end, tryCatchBlock);
     }
 

@@ -30,6 +30,29 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     setTraps(graph.getTraps());
   }
 
+  public static MutableStmtGraph fromBlocks(@Nonnull Collection<MutableBasicBlock> blocks) {
+    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+
+    final HashSet<MutableBasicBlock> checkExists = new HashSet<>();
+    for (MutableBasicBlock block : blocks) {
+      block.getExceptionalSuccessors().values().forEach(exb -> checkExists.add(exb));
+      block.getSuccessors().forEach(exb -> checkExists.add(exb));
+    }
+
+    for (BasicBlock block : blocks) {
+      if (block.isEmpty()) {
+        return null;
+      }
+
+      if (true) {
+        // FIXME
+      }
+    }
+
+    graph.blocks.addAll(blocks);
+    return graph;
+  }
+
   @Override
   public void clearExceptionalEdges(@Nonnull Stmt stmt) {
     // FIXME implement
@@ -81,6 +104,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     // check if the block is already existing in blocks
     if (blocks.contains(block)) {
       return;
+    }
+
+    if (block.isEmpty()) {
+      throw new IllegalArgumentException("You cannot add an empty Block.");
     }
 
     int newIdx = blocks.size();

@@ -346,7 +346,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     @Nonnull private final Set<BasicBlock<?>> iteratedBlocks;
     @Nonnull private Iterator<Stmt> currentBlockIt;
     @Nullable private BasicBlock<?> currentBlock;
-    private final List<Trap> collectedTraps = new ArrayList<>();
+    @Nonnull private final List<Trap> collectedTraps = new ArrayList<>();
 
     public BlockStmtGraphIterator(@Nonnull StmtGraph<? extends BasicBlock<?>> graph) {
       this.graph = graph;
@@ -358,6 +358,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
         iteratedBlocks.add(startingBlock);
         currentBlockIt = startingBlock.getStmts().iterator();
         currentBlock = startingBlock;
+        updateFollowingBlocks();
       } else {
         currentBlockIt = Collections.emptyIterator();
         currentBlock = null;
@@ -395,74 +396,78 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
           throw new NoSuchElementException("Iterator has no more Stmts.");
         }
         currentBlockIt = currentBlock.getStmts().iterator();
+        updateFollowingBlocks();
+      }
 
-        // collect traps
-        final Stmt tailStmt = currentBlock.getTail();
-        currentBlock
-            .getExceptionalSuccessors()
-            .forEach(
-                (k, v) -> {
-                  collectedTraps.add(new Trap(k, currentBlock.getHead(), tailStmt, v.getHead()));
-                  // integrate trapHandler Block into 'queue'
-                  // if (!iteratedBlocks.contains(v)) {
-                  nestedBlocks.addFirst(v);
-                  // }
-                });
+      return currentBlockIt.next();
+    }
 
-        final List<? extends BasicBlock<?>> successors = currentBlock.getSuccessors();
+    //
+    private void updateFollowingBlocks() {
+      // collect traps
+      final Stmt tailStmt = currentBlock.getTail();
+      currentBlock
+          .getExceptionalSuccessors()
+          .forEach(
+              (k, v) -> {
+                collectedTraps.add(new Trap(k, currentBlock.getHead(), tailStmt, v.getHead()));
+                // integrate trapHandler Block into 'queue'
+                // if (!iteratedBlocks.contains(v)) {
+                nestedBlocks.addFirst(v);
+                // }
+              });
 
-        for (int i = successors.size() - 1; i >= 0; i--) {
-          if (i == 0 && tailStmt.fallsThrough()) {
-            // non-branching successors i.e. not a BranchingStmt or is the first successor of
-            // JIfStmt
-            nestedBlocks.addFirst(successors.get(i));
-          } else {
+      final List<? extends BasicBlock<?>> successors = currentBlock.getSuccessors();
 
-            // create the most unbranched block from basicblocks as possible
-            BasicBlock<?> leaderOfUnbranchedBlocks = successors.get(0);
-            while (true) {
-              boolean flag = true;
-              final List<? extends BasicBlock<?>> itPreds =
-                  leaderOfUnbranchedBlocks.getPredecessors();
-              for (BasicBlock<?> pred : itPreds) {
-                if (pred.getTail().fallsThrough()
-                    && pred.getSuccessors().get(0) == leaderOfUnbranchedBlocks) {
-                  leaderOfUnbranchedBlocks = pred;
-                  flag = false;
-                  break;
-                }
-              }
-              if (flag) {
+      for (int i = successors.size() - 1; i >= 0; i--) {
+        if (i == 0 && tailStmt.fallsThrough()) {
+          // non-branching successors i.e. not a BranchingStmt or is the first successor of
+          // JIfStmt
+          nestedBlocks.addFirst(successors.get(i));
+        } else {
+
+          // create the most unbranched block from basicblocks as possible
+          BasicBlock<?> leaderOfUnbranchedBlocks = successors.get(0);
+          while (true) {
+            boolean flag = true;
+            final List<? extends BasicBlock<?>> itPreds =
+                leaderOfUnbranchedBlocks.getPredecessors();
+            for (BasicBlock<?> pred : itPreds) {
+              if (pred.getTail().fallsThrough()
+                  && pred.getSuccessors().get(0) == leaderOfUnbranchedBlocks) {
+                leaderOfUnbranchedBlocks = pred;
+                flag = false;
                 break;
               }
             }
+            if (flag) {
+              break;
+            }
+          }
 
-            // find a return Stmt inside the current Block
-            Stmt succTailStmt = successors.get(i).getTail();
-            boolean isReturnBlock =
-                succTailStmt instanceof JReturnVoidStmt || succTailStmt instanceof JReturnStmt;
+          // find a return Stmt inside the current Block
+          Stmt succTailStmt = successors.get(i).getTail();
+          boolean isReturnBlock =
+              succTailStmt instanceof JReturnVoidStmt || succTailStmt instanceof JReturnStmt;
 
-            // remember branching successors
-            if (tailStmt instanceof JGotoStmt) {
-              if (isReturnBlock) {
-                nestedBlocks.removeFirstOccurrence(currentBlock.getHead());
-                otherBlocks.addLast(leaderOfUnbranchedBlocks);
-              } else {
-                otherBlocks.addFirst(leaderOfUnbranchedBlocks);
-              }
-            } else if (!nestedBlocks.contains(leaderOfUnbranchedBlocks)) {
-              // JSwitchStmt, JIfStmt
-              if (isReturnBlock) {
-                nestedBlocks.addLast(leaderOfUnbranchedBlocks);
-              } else {
-                nestedBlocks.addFirst(leaderOfUnbranchedBlocks);
-              }
+          // remember branching successors
+          if (tailStmt instanceof JGotoStmt) {
+            if (isReturnBlock) {
+              nestedBlocks.removeFirstOccurrence(currentBlock.getHead());
+              otherBlocks.addLast(leaderOfUnbranchedBlocks);
+            } else {
+              otherBlocks.addFirst(leaderOfUnbranchedBlocks);
+            }
+          } else if (!nestedBlocks.contains(leaderOfUnbranchedBlocks)) {
+            // JSwitchStmt, JIfStmt
+            if (isReturnBlock) {
+              nestedBlocks.addLast(leaderOfUnbranchedBlocks);
+            } else {
+              nestedBlocks.addFirst(leaderOfUnbranchedBlocks);
             }
           }
         }
       }
-
-      return currentBlockIt.next();
     }
 
     @Override
@@ -481,12 +486,14 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
         }
       }
 
+      // "assertion" that all elements are iterated
       if (!hasIteratorMoreElements) {
         final int returnedSize = iteratedBlocks.size();
-        final int actualSize = graph.getBlocks().size();
+        final List<? extends BasicBlock<?>> blocks = graph.getBlocks();
+        final int actualSize = blocks.size();
         if (returnedSize != actualSize) {
           String info =
-              graph.getBlocks().stream()
+              blocks.stream()
                   .filter(n -> !iteratedBlocks.contains(n))
                   .map(BasicBlock::getStmts)
                   .collect(Collectors.toList())
@@ -495,7 +502,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
               "There are "
                   + (actualSize - returnedSize)
                   + " Blocks (and their containing Stmts) that are not iterated! The StmtGraph is not connected from its startingStmt!"
-                  + info);
+                  + info
+                  + GraphVizExporter.createUrlToWebeditor(graph));
         }
       }
       return hasIteratorMoreElements;
