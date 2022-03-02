@@ -1972,9 +1972,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (!danglingLabel.isEmpty()) {
         // there is (at least) a LabelNode -> Block border -> create another block or use the empty
         // existing one
+        //noinspection SuspiciousMethodCalls <=> !isEmpty => block.getHead()!=null
         if (!block.isEmpty()
-            && (insn.getPrevious() != null && !labelsToStmt.containsKey(block.getHead()))) {
-
+            && (insn.getPrevious() != null || labelsToStmt.containsKey(block.getHead()))) {
           final MutableBasicBlock newBlock = new MutableBasicBlock();
           if (block.getTail().fallsThrough()) {
             block.addSuccessorBlock(newBlock);
