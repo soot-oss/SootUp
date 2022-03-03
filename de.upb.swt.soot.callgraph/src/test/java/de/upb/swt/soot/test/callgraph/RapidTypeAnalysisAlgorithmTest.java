@@ -124,4 +124,40 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
     assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetB));
     assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetC));
   }
+
+  @Test
+  public void testRecursiveRevisitMethod() {
+    /* We expect a call edge from RecursiveRevisitedMethod.alreadyVisitedMethod to A.newTarget, B.newTarget and C.newTarget*/
+    CallGraph cg = loadCallGraph("Misc", "revisitrecur.RecursiveRevisitedMethod");
+
+    MethodSignature alreadyVisitedMethod =
+        identifierFactory.getMethodSignature(
+            "recursiveAlreadyVisitedMethod",
+            identifierFactory.getClassType("revisitrecur.RecursiveRevisitedMethod"),
+            "void",
+            Collections.singletonList("revisitrecur.A"));
+
+    MethodSignature newTargetA =
+        identifierFactory.getMethodSignature(
+            "newTarget",
+            identifierFactory.getClassType("revisitrecur.A"),
+            "int",
+            Collections.emptyList());
+    MethodSignature newTargetB =
+        identifierFactory.getMethodSignature(
+            "newTarget",
+            identifierFactory.getClassType("revisitrecur.B"),
+            "int",
+            Collections.emptyList());
+    MethodSignature newTargetC =
+        identifierFactory.getMethodSignature(
+            "newTarget",
+            identifierFactory.getClassType("revisitrecur.C"),
+            "int",
+            Collections.emptyList());
+
+    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetA));
+    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetB));
+    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetC));
+  }
 }
