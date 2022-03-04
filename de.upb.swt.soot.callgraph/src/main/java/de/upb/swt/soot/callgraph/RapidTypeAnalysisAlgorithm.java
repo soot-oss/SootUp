@@ -22,6 +22,7 @@ package de.upb.swt.soot.callgraph;
  * #L%
  */
 
+import com.google.common.collect.Sets;
 import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.jimple.common.expr.*;
@@ -102,11 +103,26 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return result;
     } else {
+      Set<MethodSignature> notInstantiatedCallTargets= Sets.newHashSet();
+      Set<MethodSignature> implAndOverrides =
+          MethodDispatchResolver.resolveAbstractDispatchInClasses(
+              view, targetMethodSignature, instantiatedClasses, notInstantiatedCallTargets);
+
+      notInstantiatedCallTargets.forEach(ignoredMethodSignature -> {
+            List<Call> calls=ignoredCalls.get(ignoredMethodSignature.getDeclClassType());
+            if(calls==null){
+              calls=new ArrayList<>();
+              calls.add(new Call(method.getSignature(),ignoredMethodSignature));
+              ignoredCalls.put(ignoredMethodSignature.getDeclClassType(), calls);
+            }
+            else {
+              calls.add(new Call(method.getSignature(),ignoredMethodSignature));
+            }
+      });
+
       return Stream.concat(
           result,
-          MethodDispatchResolver.resolveAbstractDispatchInClasses(
-              view, targetMethodSignature, instantiatedClasses)
-              .stream());
+          implAndOverrides.stream());
     }
   }
 }
