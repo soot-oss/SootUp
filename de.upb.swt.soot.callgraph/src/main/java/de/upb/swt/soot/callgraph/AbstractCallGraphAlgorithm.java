@@ -93,6 +93,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             }
           });
       processed.add(currentMethodSignature);
+
+      postProcessingMethod(view,currentMethodSignature,workList,cg);
     }
   }
 
@@ -146,6 +148,20 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       logger.trace("Could not find \"" + sig.getDeclClassType() + "\" in view");
     }
     return null;
+  }
+
+  /**
+   * This method enables optional post processing of a method in the call graph algorithm
+   *
+   * @param view view
+   * @param sourceMethod the processed method
+   * @param workList the current worklist that might be extended
+   * @param cg the current cg that might be extended
+   */
+
+  public void postProcessingMethod(View<? extends SootClass<?>> view, MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList , @Nonnull MutableCallGraph cg){
+    //is only implemented if it is needed in the call graph algorithm
   }
 
   @Nonnull
