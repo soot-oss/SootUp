@@ -90,26 +90,29 @@ public final class MethodDispatchResolver {
    * Searches the view for classes that implement or override the method <code>m</code> and returns
    * the set of method signatures that a method call could resolve to within the given classes.
    *
-   * @param filteredSignatures all resolvable method signatures that are not within the given classes are added to this set
+   * @param filteredSignatures all resolvable method signatures that are not within the given
+   *     classes are added to this set
    */
   @Nonnull
   public static Set<MethodSignature> resolveAbstractDispatchInClasses(
-      View<? extends SootClass<?>> view, MethodSignature m, Set<ClassType> classes, Set<MethodSignature> filteredSignatures) {
+      View<? extends SootClass<?>> view,
+      MethodSignature m,
+      Set<ClassType> classes,
+      Set<MethodSignature> filteredSignatures) {
 
-    Set<MethodSignature> allSignatures= resolveAbstractDispatch(view,m);
-    Set<MethodSignature> signatureInClasses= Sets.newHashSet();
-    allSignatures.forEach(methodSignature -> {
-      if(classes.contains(methodSignature.getDeclClassType())){
-        signatureInClasses.add(methodSignature);
-      }
-      else {
-        filteredSignatures.add(methodSignature);
-      }
-    });
+    Set<MethodSignature> allSignatures = resolveAbstractDispatch(view, m);
+    Set<MethodSignature> signatureInClasses = Sets.newHashSet();
+    allSignatures.forEach(
+        methodSignature -> {
+          if (classes.contains(methodSignature.getDeclClassType())) {
+            signatureInClasses.add(methodSignature);
+          } else {
+            filteredSignatures.add(methodSignature);
+          }
+        });
 
     return signatureInClasses;
   }
-
 
   /**
    * <b>Warning!</b> Assumes that for an abstract dispatch, <code>potentialTarget</code> is declared

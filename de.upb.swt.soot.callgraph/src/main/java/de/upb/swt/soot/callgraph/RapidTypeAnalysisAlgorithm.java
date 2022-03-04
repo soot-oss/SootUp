@@ -41,14 +41,14 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     @Nonnull final MethodSignature source;
     @Nonnull final MethodSignature target;
 
-    private Call(@Nonnull MethodSignature source,MethodSignature target) {
+    private Call(@Nonnull MethodSignature source, MethodSignature target) {
       this.source = source;
       this.target = target;
     }
   }
 
   @Nonnull private Set<ClassType> instantiatedClasses = new HashSet<>();
-  @Nonnull private HashMap<ClassType,List<Call>> ignoredCalls = new HashMap<>();
+  @Nonnull private HashMap<ClassType, List<Call>> ignoredCalls = new HashMap<>();
   @Nonnull private CallGraph chaGraph;
 
   public RapidTypeAnalysisAlgorithm(@Nonnull View view, @Nonnull TypeHierarchy typeHierarchy) {
@@ -103,33 +103,32 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return result;
     } else {
-      Set<MethodSignature> notInstantiatedCallTargets= Sets.newHashSet();
+      Set<MethodSignature> notInstantiatedCallTargets = Sets.newHashSet();
       Set<MethodSignature> implAndOverrides =
           MethodDispatchResolver.resolveAbstractDispatchInClasses(
               view, targetMethodSignature, instantiatedClasses, notInstantiatedCallTargets);
 
-      notInstantiatedCallTargets.forEach(ignoredMethodSignature -> {
-            List<Call> calls=ignoredCalls.get(ignoredMethodSignature.getDeclClassType());
-            if(calls==null){
-              calls=new ArrayList<>();
-              calls.add(new Call(method.getSignature(),ignoredMethodSignature));
+      notInstantiatedCallTargets.forEach(
+          ignoredMethodSignature -> {
+            List<Call> calls = ignoredCalls.get(ignoredMethodSignature.getDeclClassType());
+            if (calls == null) {
+              calls = new ArrayList<>();
+              calls.add(new Call(method.getSignature(), ignoredMethodSignature));
               ignoredCalls.put(ignoredMethodSignature.getDeclClassType(), calls);
+            } else {
+              calls.add(new Call(method.getSignature(), ignoredMethodSignature));
             }
-            else {
-              calls.add(new Call(method.getSignature(),ignoredMethodSignature));
-            }
-      });
+          });
 
-      return Stream.concat(
-          result,
-          implAndOverrides.stream());
+      return Stream.concat(result, implAndOverrides.stream());
     }
   }
 
-  /** Post processing of a method in the RTA call graph algorithm
+  /**
+   * Post processing of a method in the RTA call graph algorithm
    *
-   * <p>RTA has to add previously ignored calls since a later found instantiation of the class
-   * could enables a call to the ignored method.</p>
+   * <p>RTA has to add previously ignored calls since a later found instantiation of the class could
+   * enables a call to the ignored method.
    *
    * @param view view
    * @param sourceMethod the processed method
@@ -137,27 +136,30 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    * @param cg the current cg is extended by new call targets and calls
    */
   @Override
-  public void postProcessingMethod(View<? extends SootClass<?>> view,
-      MethodSignature sourceMethod, @Nonnull Deque<MethodSignature> workList,
+  public void postProcessingMethod(
+      View<? extends SootClass<?>> view,
+      MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {
-    instantiatedClasses.forEach(instantiatedClassType ->{
-      List<Call> newEdges=ignoredCalls.get(instantiatedClassType);
-      if (newEdges!=null){
-        newEdges.forEach(call ->{
-          if (cg.containsMethod(call.target)){
-            //method is already analyzed or is in the work list, simply add the call
-            cg.addCall(call.source,call.target);
-          }
-          else {
-            //new target method found that has to be analyzed
-            cg.addMethod(call.target);
-            cg.addCall(call.source,call.target);
-            workList.push(call.target);
+    instantiatedClasses.forEach(
+        instantiatedClassType -> {
+          List<Call> newEdges = ignoredCalls.get(instantiatedClassType);
+          if (newEdges != null) {
+            newEdges.forEach(
+                call -> {
+                  if (cg.containsMethod(call.target)) {
+                    // method is already analyzed or is in the work list, simply add the call
+                    cg.addCall(call.source, call.target);
+                  } else {
+                    // new target method found that has to be analyzed
+                    cg.addMethod(call.target);
+                    cg.addCall(call.source, call.target);
+                    workList.push(call.target);
+                  }
+                });
+            // can be removed because the instantiated class will be considered in future resolves
+            ignoredCalls.remove(instantiatedClassType);
           }
         });
-        //can be removed because the instantiated class will be considered in future resolves
-        ignoredCalls.remove(instantiatedClassType);
-      }
-    });
   }
 }
