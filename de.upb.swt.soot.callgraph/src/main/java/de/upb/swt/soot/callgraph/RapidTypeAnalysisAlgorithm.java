@@ -4,7 +4,7 @@ package de.upb.swt.soot.callgraph;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2020 Kadiray Karakaya
+ * Copyright (C) 2019-2022 Kadiray Karakaya, Jonas Klauke
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -35,6 +35,17 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
+
+  private static class Call {
+    @Nonnull final MethodSignature source;
+    @Nonnull final MethodSignature target;
+
+    private Call(@Nonnull MethodSignature source,MethodSignature target) {
+      this.source = source;
+      this.target = target;
+    }
+  }
+
   @Nonnull private Set<ClassType> instantiatedClasses = new HashSet<>();
   @Nonnull private CallGraph chaGraph;
 
