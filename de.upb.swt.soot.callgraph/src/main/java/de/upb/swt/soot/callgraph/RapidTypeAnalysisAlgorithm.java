@@ -125,4 +125,39 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
           implAndOverrides.stream());
     }
   }
+
+  /** Post processing of a method in the RTA call graph algorithm
+   *
+   * <p>RTA has to add previously ignored calls since a later found instantiation of the class
+   * could enables a call to the ignored method.</p>
+   *
+   * @param view view
+   * @param sourceMethod the processed method
+   * @param workList the current worklist that is extended by methods that have to be analyzed.
+   * @param cg the current cg is extended by new call targets and calls
+   */
+  @Override
+  public void postProcessingMethod(View<? extends SootClass<?>> view,
+      MethodSignature sourceMethod, @Nonnull Deque<MethodSignature> workList,
+      @Nonnull MutableCallGraph cg) {
+    instantiatedClasses.forEach(instantiatedClassType ->{
+      List<Call> newEdges=ignoredCalls.get(instantiatedClassType);
+      if (newEdges!=null){
+        newEdges.forEach(call ->{
+          if (cg.containsMethod(call.target)){
+            //method is already analyzed or is in the work list, simply add the call
+            cg.addCall(call.source,call.target);
+          }
+          else {
+            //new target method found that has to be analyzed
+            cg.addMethod(call.target);
+            cg.addCall(call.source,call.target);
+            workList.push(call.target);
+          }
+        });
+        //can be removed because the instantiated class will be considered in future resolves
+        ignoredCalls.remove(instantiatedClassType);
+      }
+    });
+  }
 }
