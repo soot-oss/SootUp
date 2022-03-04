@@ -47,6 +47,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   }
 
   @Nonnull private Set<ClassType> instantiatedClasses = new HashSet<>();
+  @Nonnull private HashMap<ClassType,List<Call>> ignoredCalls = new HashMap<>();
   @Nonnull private CallGraph chaGraph;
 
   public RapidTypeAnalysisAlgorithm(@Nonnull View view, @Nonnull TypeHierarchy typeHierarchy) {
