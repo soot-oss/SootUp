@@ -3,7 +3,7 @@ package de.upb.swt.soot.callgraph.typehierarchy;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2020 Christian Brüggemann
+ * Copyright (C) 2019-2022 Christian Brüggemann, Jonas Klauke
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,6 +21,7 @@ package de.upb.swt.soot.callgraph.typehierarchy;
  * #L%
  */
 
+import com.google.common.collect.Sets;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.swt.soot.core.model.Method;
@@ -84,6 +85,31 @@ public final class MethodDispatchResolver {
         .map(Method::getSignature)
         .collect(Collectors.toSet());
   }
+
+  /**
+   * Searches the view for classes that implement or override the method <code>m</code> and returns
+   * the set of method signatures that a method call could resolve to within the given classes.
+   *
+   * @param filteredSignatures all resolvable method signatures that are not within the given classes are added to this set
+   */
+  @Nonnull
+  public static Set<MethodSignature> resolveAbstractDispatchInClasses(
+      View<? extends SootClass<?>> view, MethodSignature m, Set<ClassType> classes, Set<MethodSignature> filteredSignatures) {
+
+    Set<MethodSignature> allSignatures= resolveAbstractDispatch(view,m);
+    Set<MethodSignature> signatureInClasses= Sets.newHashSet();
+    allSignatures.forEach(methodSignature -> {
+      if(classes.contains(methodSignature.getDeclClassType())){
+        signatureInClasses.add(methodSignature);
+      }
+      else {
+        filteredSignatures.add(methodSignature);
+      }
+    });
+
+    return signatureInClasses;
+  }
+
 
   /**
    * <b>Warning!</b> Assumes that for an abstract dispatch, <code>potentialTarget</code> is declared
