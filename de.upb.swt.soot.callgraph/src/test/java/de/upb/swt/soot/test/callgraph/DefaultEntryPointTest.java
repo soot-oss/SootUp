@@ -26,10 +26,8 @@ import org.junit.Test;
 
 public class DefaultEntryPointTest {
 
-  /**
-   * Method to check java version.
-   */
-  private void checkVersion(){
+  /** Method to check java version. */
+  private void checkVersion() {
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
     if (version > 1.8) {
       fail("The rt.jar is not available after Java 8. You are using version " + version);
@@ -38,22 +36,24 @@ public class DefaultEntryPointTest {
 
   /**
    * The method returns the view for input java source path and rt.jar file.
+   *
    * @param classPath - The location of java source files.
    * @return - Java view
    */
-  private JavaView getView(String classPath){
+  private JavaView getView(String classPath) {
     JavaProject javaProject =
-            JavaProject.builder(new JavaLanguage(8))
-                    .addInputLocation(
-                            new JavaClassPathAnalysisInputLocation(
-                                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
-                    .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
-                    .build();
+        JavaProject.builder(new JavaLanguage(8))
+            .addInputLocation(
+                new JavaClassPathAnalysisInputLocation(
+                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
+            .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
+            .build();
     return javaProject.createOnDemandView();
   }
 
   /**
-   * Test to create call graph for CHA without specifying entry point. It uses main method present in input java files as entry point.
+   * Test to create call graph for CHA without specifying entry point. It uses main method present
+   * in input java files as entry point.
    */
   @Test
   public void CHADefaultEntryPoint() {
@@ -69,8 +69,7 @@ public class DefaultEntryPointTest {
             "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
 
     ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    CallGraphAlgorithm algorithm =
-        new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+    CallGraphAlgorithm algorithm = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
     CallGraph cg = algorithm.initialize();
     assertTrue(
         mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
@@ -142,8 +141,8 @@ public class DefaultEntryPointTest {
   }
 
   /**
-   * Test uses initialize() method to create call graph, but multiple main methods are present in input java source files.
-   * Expected result is RuntimeException.
+   * Test uses initialize() method to create call graph, but multiple main methods are present in
+   * input java source files. Expected result is RuntimeException.
    */
   @Test
   public void CHAMultipleMainMethod() {
@@ -164,8 +163,8 @@ public class DefaultEntryPointTest {
   }
 
   /**
-   * Test uses initialize() method to create call graph, but no main method is present in input java source files.
-   * Expected result is RuntimeException.
+   * Test uses initialize() method to create call graph, but no main method is present in input java
+   * source files. Expected result is RuntimeException.
    */
   @Test
   public void CHANoMainMethod() {
@@ -188,7 +187,8 @@ public class DefaultEntryPointTest {
   }
 
   /**
-   * Test to create call graph for RTA without specifying entry point. It uses main method present in input java files as entry point.
+   * Test to create call graph for RTA without specifying entry point. It uses main method present
+   * in input java files as entry point.
    */
   @Test
   public void RTADefaultEntryPoint() {
