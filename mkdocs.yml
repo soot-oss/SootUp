@@ -6,13 +6,9 @@ nav:
     - Home: index.md
     - Installation: installation.md
     - Getting started: getting-started.md
-
-#  - 'Knowledge':
-#    - Goal: goal.md
+    - Call Graph Construction: call-graph-construction.md
     - Jimple: jimple.md
-    - Body Interceptors: BodyInterceptor.md
-    - Tools: Tools.md
-#    - CallGraph: callgraph.md
+    - Advanced Topics: advanced-topics.md
 #    - Analyses: analyses.md
 
 #  - About: about.md
@@ -45,3 +41,8 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - pymdownx.details
+  - admonition
+  - pymdownx.tabbed:
+      alternate_style: true
+
