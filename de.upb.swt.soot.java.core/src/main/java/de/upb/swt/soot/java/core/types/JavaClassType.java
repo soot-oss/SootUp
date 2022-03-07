@@ -39,7 +39,7 @@ public class JavaClassType extends ClassType {
    */
   private static final Pattern LIBRARY_CLASS_PATTERN =
       Pattern.compile(
-          "^(?:java\\.|sun\\.|javax\\.|com\\.sun\\.|org\\.omg\\.|org\\.xml\\.|org\\.w3c\\.dom)");
+          "^(?:java\\.|sun\\.|javax\\.|com\\.sun\\.|org\\.omg\\.|org\\.xml\\.|org\\.w3c\\.dom|jdk|com\\.oracle\\.|org\\.ietf\\.|org\\.jcp\\.)");
 
   @Nonnull private final String className;
   @Nonnull private final PackageName packageName;
@@ -128,6 +128,6 @@ public class JavaClassType extends ClassType {
       String moduleName = ((ModulePackageName) packageName).getModuleSignature().toString();
       return moduleName.startsWith("java.") || moduleName.startsWith("jdk.");
     }
-    return LIBRARY_CLASS_PATTERN.matcher(getClassName()).find();
+    return LIBRARY_CLASS_PATTERN.matcher(packageName.getPackageName()).find();
   }
 }
