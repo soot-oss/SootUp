@@ -3,6 +3,7 @@ package de.upb.swt.soot.test.callgraph;
 import static junit.framework.TestCase.*;
 
 import de.upb.swt.soot.callgraph.CallGraph;
+import de.upb.swt.soot.callgraph.CallGraphAlgorithm;
 import de.upb.swt.soot.callgraph.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.RapidTypeAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
@@ -25,21 +26,40 @@ import org.junit.Test;
 
 public class DefaultEntryPointTest {
 
-  @Test
-  public void CHADefaultEntryPoint() {
+  /**
+   * Method to check java version.
+   */
+  private void checkVersion(){
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
     if (version > 1.8) {
       fail("The rt.jar is not available after Java 8. You are using version " + version);
     }
-    String classPath = "src/test/resources/callgraph/DefaultEntryPoint";
+  }
+
+  /**
+   * The method returns the view for input java source path and rt.jar file.
+   * @param classPath - The location of java source files.
+   * @return - Java view
+   */
+  private JavaView getView(String classPath){
     JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
-            .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
-            .build();
-    JavaView view = javaProject.createOnDemandView();
+            JavaProject.builder(new JavaLanguage(8))
+                    .addInputLocation(
+                            new JavaClassPathAnalysisInputLocation(
+                                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
+                    .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
+                    .build();
+    return javaProject.createOnDemandView();
+  }
+
+  /**
+   * Test to create call graph for CHA without specifying entry point. It uses main method present in input java files as entry point.
+   */
+  @Test
+  public void CHADefaultEntryPoint() {
+    checkVersion();
+
+    JavaView view = getView("src/test/resources/callgraph/DefaultEntryPoint");
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
@@ -49,7 +69,7 @@ public class DefaultEntryPointTest {
             "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
 
     ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    ClassHierarchyAnalysisAlgorithm algorithm =
+    CallGraphAlgorithm algorithm =
         new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
     CallGraph cg = algorithm.initialize();
     assertTrue(
@@ -121,21 +141,15 @@ public class DefaultEntryPointTest {
     assertEquals(0, cg.callsFrom(methodD).size());
   }
 
+  /**
+   * Test uses initialize() method to create call graph, but multiple main methods are present in input java source files.
+   * Expected result is RuntimeException.
+   */
   @Test
   public void CHAMultipleMainMethod() {
-    double version = Double.parseDouble(System.getProperty("java.specification.version"));
-    if (version > 1.8) {
-      fail("The rt.jar is not available after Java 8. You are using version " + version);
-    }
-    String classPath = "src/test/resources/callgraph/Misc";
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
-            .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
-            .build();
-    JavaView view = javaProject.createOnDemandView();
+    checkVersion();
+
+    JavaView view = getView("src/test/resources/callgraph/Misc");
 
     ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
     ClassHierarchyAnalysisAlgorithm algorithm =
@@ -149,21 +163,15 @@ public class DefaultEntryPointTest {
     }
   }
 
+  /**
+   * Test uses initialize() method to create call graph, but no main method is present in input java source files.
+   * Expected result is RuntimeException.
+   */
   @Test
   public void CHANoMainMethod() {
-    double version = Double.parseDouble(System.getProperty("java.specification.version"));
-    if (version > 1.8) {
-      fail("The rt.jar is not available after Java 8. You are using version " + version);
-    }
-    String classPath = "src/test/resources/callgraph/NoMainMethod";
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
-            .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
-            .build();
-    JavaView view = javaProject.createOnDemandView();
+    checkVersion();
+
+    JavaView view = getView("src/test/resources/callgraph/NoMainMethod");
 
     ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
     ClassHierarchyAnalysisAlgorithm algorithm =
@@ -179,21 +187,14 @@ public class DefaultEntryPointTest {
     }
   }
 
+  /**
+   * Test to create call graph for RTA without specifying entry point. It uses main method present in input java files as entry point.
+   */
   @Test
   public void RTADefaultEntryPoint() {
-    double version = Double.parseDouble(System.getProperty("java.specification.version"));
-    if (version > 1.8) {
-      fail("The rt.jar is not available after Java 8. You are using version " + version);
-    }
-    String classPath = "src/test/resources/callgraph/DefaultEntryPoint";
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
-            .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
-            .build();
-    JavaView view = javaProject.createOnDemandView();
+    checkVersion();
+
+    JavaView view = getView("src/test/resources/callgraph/DefaultEntryPoint");
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
@@ -203,7 +204,7 @@ public class DefaultEntryPointTest {
             "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
 
     ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    RapidTypeAnalysisAlgorithm algorithm = new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
+    CallGraphAlgorithm algorithm = new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
     CallGraph cg = algorithm.initialize();
     assertTrue(
         mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
@@ -278,10 +279,8 @@ public class DefaultEntryPointTest {
    */
   @Test
   public void specifyBuiltInInputSourcePath() {
-    double version = Double.parseDouble(System.getProperty("java.specification.version"));
-    if (version > 1.8) {
-      fail("The rt.jar is not available after Java 8. You are using version " + version);
-    }
+    checkVersion();
+
     String classPath = "src/test/resources/callgraph/DefaultEntryPoint";
     JavaProject javaProject =
         JavaProject.builder(new JavaLanguage(8))
@@ -308,10 +307,7 @@ public class DefaultEntryPointTest {
    */
   @Test
   public void specifyBuiltInInputClassPath() {
-    double version = Double.parseDouble(System.getProperty("java.specification.version"));
-    if (version > 1.8) {
-      fail("The rt.jar is not available after Java 8. You are using version " + version);
-    }
+    checkVersion();
 
     JavaProject javaProject =
         JavaProject.builder(new JavaLanguage(8))
@@ -335,12 +331,14 @@ public class DefaultEntryPointTest {
     assertEquals("User Defined class found, expected none", 0, classes.size());
   }
 
+  /**
+   * Test for JimpleAnalysisInputLocation. Specifying jimple file with source type as Library.
+   * Expected - All input classes are of source type Library.
+   */
   @Test
   public void specifyBuiltInInputJimplePath() {
-    double version = Double.parseDouble(System.getProperty("java.specification.version"));
-    if (version > 1.8) {
-      fail("The rt.jar is not available after Java 8. You are using version " + version);
-    }
+    checkVersion();
+
     String classPath = "src/test/resources/callgraph/jimple";
     AnalysisInputLocation<JavaSootClass> jimpleInputLocation =
         new JimpleAnalysisInputLocation<>(Paths.get(classPath), SourceType.Library);
