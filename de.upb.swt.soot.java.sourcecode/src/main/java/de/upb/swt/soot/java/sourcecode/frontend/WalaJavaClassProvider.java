@@ -44,6 +44,7 @@ import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -229,6 +230,25 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
       classSources = new ArrayList<>();
     }
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
+    while (it.hasNext()) {
+      JavaSourceLoaderImpl.JavaClass walaClass = (JavaSourceLoaderImpl.JavaClass) it.next();
+      SootClassSource<JavaSootClass> sootClass = walaToSoot.convertToClassSource(walaClass);
+      classSources.add(sootClass);
+    }
+    return classSources;
+  }
+
+  /**
+   * Return ClassSources converted from WALA classes.
+   *
+   * @return list of classes
+   */
+  public List<SootClassSource<JavaSootClass>> getClassSources(SourceType srcType) {
+    Iterator<IClass> it = iterateWalaClasses();
+    if (classSources == null) {
+      classSources = new ArrayList<>();
+    }
+    WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath, srcType);
     while (it.hasNext()) {
       JavaSourceLoaderImpl.JavaClass walaClass = (JavaSourceLoaderImpl.JavaClass) it.next();
       SootClassSource<JavaSootClass> sootClass = walaToSoot.convertToClassSource(walaClass);

@@ -25,6 +25,7 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaSootClass;
@@ -54,6 +55,11 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
   @Nullable private final String exclusionFilePath;
 
   /**
+   * Variable to track if user has specified the SourceType. By default, it will be set to false.
+   */
+  private SourceType srcType = null;
+
+  /**
    * Create a {@link JavaSourcePathAnalysisInputLocation} which locates java source code in the
    * given source path.
    *
@@ -80,10 +86,73 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
     this.classProvider = new WalaJavaClassProvider(sourcePaths, exclusionFilePath);
   }
 
+  /**
+   * Create a {@link JavaSourcePathAnalysisInputLocation} which locates java source code in the
+   * given source path.
+   *
+   * @param srcType the source type for the path can be Library, Application, Phantom.
+   * @param sourcePaths the source code path to search in
+   */
+  public JavaSourcePathAnalysisInputLocation(
+      @Nullable SourceType srcType, @Nonnull Set<String> sourcePaths) {
+    this(sourcePaths, null);
+    setSpecifiedAsBuiltInByUser(srcType);
+    // this.classProvider = new WalaJavaClassProvider(sourcePaths, exclusionFilePath,
+    // DefaultSourceTypeSpecifier.getInstance());
+  }
+
+  /**
+   * Create a {@link JavaSourcePathAnalysisInputLocation} which locates java source code in the
+   * given source path.
+   *
+   * @param srcType the source type for the path can be Library, Application, Phantom.
+   * @param sourcePath the source code path to search in
+   */
+  public JavaSourcePathAnalysisInputLocation(
+      @Nullable SourceType srcType, @Nonnull String sourcePath) {
+    this(Collections.singleton(sourcePath), null);
+    setSpecifiedAsBuiltInByUser(srcType);
+  }
+
+  /**
+   * Create a {@link JavaSourcePathAnalysisInputLocation} which locates java source code in the
+   * given source path.
+   *
+   * @param srcType the source type for the path can be Library, Application, Phantom.
+   * @param sourcePaths the source code path to search in
+   */
+  public JavaSourcePathAnalysisInputLocation(
+      @Nonnull SourceType srcType,
+      @Nonnull Set<String> sourcePaths,
+      @Nullable String exclusionFilePath) {
+    this.sourcePaths = sourcePaths;
+    this.exclusionFilePath = exclusionFilePath;
+    this.classProvider = new WalaJavaClassProvider(sourcePaths, exclusionFilePath);
+    setSpecifiedAsBuiltInByUser(srcType);
+  }
+
+  /**
+   * The method sets the value of the variable srcType.
+   *
+   * @param srcType the source type for the path can be Library, Application, Phantom.
+   */
+  public void setSpecifiedAsBuiltInByUser(@Nullable SourceType srcType) {
+    this.srcType = srcType;
+  }
+
+  @Override
+  public SourceType getSourceType() {
+    return srcType;
+  }
+
   @Override
   @Nonnull
   public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
       @Nonnull View<?> view) {
+    if (srcType != null) {
+      return classProvider.getClassSources(srcType);
+    }
+
     return classProvider.getClassSources();
   }
 
