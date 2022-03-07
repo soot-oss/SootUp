@@ -21,8 +21,8 @@ package de.upb.swt.soot.core.inputlocation;
  * #L%
  */
 import de.upb.swt.soot.core.SourceTypeSpecifier;
+import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.SourceType;
-import de.upb.swt.soot.core.types.ClassType;
 import javax.annotation.Nonnull;
 
 /**
@@ -43,8 +43,14 @@ public class DefaultSourceTypeSpecifier implements SourceTypeSpecifier {
   private DefaultSourceTypeSpecifier() {}
 
   @Nonnull
-  public SourceType sourceTypeFor(ClassType type) {
-    if (type.isBuiltInClass()) {
+  public SourceType sourceTypeFor(AbstractClassSource clsSource) {
+    SourceType sourceType = clsSource.getSrcNamespace().getSourceType();
+    if (sourceType != null) { // Check if source type is specified in AnalysisInputLocation.
+      return sourceType;
+    } else if (clsSource
+        .getClassType()
+        .isBuiltInClass()) { // Call builtInClass() method which uses package name to validate
+      // whether the class is inbuilt or not.
       return SourceType.Library;
     }
     return SourceType.Application;
