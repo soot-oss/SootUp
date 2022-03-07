@@ -39,7 +39,6 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractClassSource<T extends AbstractClass> {
 
-  // TODO: [ms] I dont see the necessity of the AnalysisInputLocation in this class?
   protected final AnalysisInputLocation<? extends SootClass<?>> srcNamespace;
   protected final Path sourcePath;
   protected ClassType classSignature;
@@ -55,6 +54,10 @@ public abstract class AbstractClassSource<T extends AbstractClass> {
 
   public ClassType getClassType() {
     return classSignature;
+  }
+
+  public AnalysisInputLocation<? extends SootClass<?>> getSrcNamespace() {
+    return srcNamespace;
   }
 
   public abstract T buildClass(@Nonnull SourceType sourceType);
