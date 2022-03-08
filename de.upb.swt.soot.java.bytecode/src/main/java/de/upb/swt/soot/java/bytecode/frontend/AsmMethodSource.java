@@ -96,6 +96,7 @@ import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -345,32 +346,43 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return (A) insnToStmt.get(insn);
   }
 
-  private void addReadOperandAssignments(@Nullable Local local) {
+  private void addReadOperandAssignments() {
+    addReadOperandAssignments_internal(
+        (opValue, operand) -> {
+          if (opValue instanceof Local) {
+            return true;
+          }
+          int op = operand.insn.getOpcode();
+          return op != GETFIELD && op != GETSTATIC && (op < IALOAD || op > SALOAD);
+        });
+  }
+
+  private void addReadOperandAssignments(@Nonnull Local local) {
+    addReadOperandAssignments_internal(
+        (opValue, operand) -> {
+          if (!opValue.equivTo(local)) {
+            boolean noRef = true;
+            for (Value use : opValue.getUses()) {
+              if (use.equivTo(local)) {
+                noRef = false;
+                break;
+              }
+            }
+            return noRef;
+          }
+          return false;
+        });
+  }
+
+  private void addReadOperandAssignments_internal(BiFunction<Value, Operand, Boolean> func) {
     // determine which Operand(s) from the stack needs explicit assignments in Jimple
     for (Operand operand : operandStack.getStack()) {
       final Value opValue = operand.value;
       if (operand == DWORD_DUMMY || operand.stackLocal != null) {
         continue;
       }
-      if (local == null) {
-        if (opValue instanceof Local) {
-          continue;
-        }
-        int op = operand.insn.getOpcode();
-        if (op != GETFIELD && op != GETSTATIC && (op < IALOAD || op > SALOAD)) {
-          continue;
-        }
-      } else if (!opValue.equivTo(local)) {
-        boolean noRef = true;
-        for (Value use : opValue.getUses()) {
-          if (use.equivTo(local)) {
-            noRef = false;
-            break;
-          }
-        }
-        if (noRef) {
-          continue;
-        }
+      if (func.apply(opValue, operand)) {
+        continue;
       }
 
       Local stackLocal = newStackLocal();
@@ -463,7 +475,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
      * in case any static field or array is read from, and the static constructor or the field this instruction writes to,
      * modifies that field, write out any previous read from field/array
      */
-    addReadOperandAssignments(null);
+    addReadOperandAssignments();
   }
 
   private void convertFieldInsn(@Nonnull FieldInsnNode insn) {
@@ -1309,9 +1321,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       opr.addUsageInStmt(stmt);
     }
     /*
-     * assign all read ops in case the methodRef modifies any of the fields
+     * assign all read ops in case the method modifies any of the fields
      */
-    addReadOperandAssignments(null);
+    addReadOperandAssignments();
   }
 
   private void convertInvokeDynamicInsn(@Nonnull InvokeDynamicInsnNode insn) {
@@ -1403,7 +1415,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     /*
      * assign all read ops in case the method modifies any of the fields
      */
-    addReadOperandAssignments(null);
+    addReadOperandAssignments();
   }
 
   // private @Nonnull MethodRef toSootMethodRef(@Nonnull Handle methodHandle) {
@@ -1571,7 +1583,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       setStmt(insn, as);
       opr.addUsageInStmt(as);
     } else {
-
       frame.mergeIn(opr);
     }
     addReadOperandAssignments(local);
