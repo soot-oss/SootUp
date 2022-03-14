@@ -1963,7 +1963,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Map<ClassType, LabelNode> currentblocksTraps = new HashMap<>();
 
     // every LabelNode denotes a border of a Block
-    MutableBasicBlock block = buildPreambleLocals();
+    MutableBasicBlock preambleBlock = buildPreambleLocals();
+    MutableBasicBlock block = preambleBlock;
 
     do {
 
@@ -1973,7 +1974,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // between!)
       final boolean isLabelNode = insn instanceof LabelNode;
       if (isLabelNode) {
-        // Save the label to assign it to the next real Stmt
+        // Save the label to assign it then to the next real Stmt
         danglingLabel.add((LabelNode) insn);
       }
 
@@ -1985,9 +1986,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (!danglingLabel.isEmpty()) {
         // there is (at least) a LabelNode -> Block border -> create another block or use the empty
         // existing one
-        //noinspection SuspiciousMethodCalls <=> !isEmpty => block.getHead()!=null
-        if (!block.isEmpty()
-            && (insn.getPrevious() != null || labelsToStmt.containsKey(block.getHead()))) {
+        if (!block.isEmpty()) {
           final MutableBasicBlock newBlock = new MutableBasicBlock();
           if (block.getTail().fallsThrough()) {
             block.addSuccessorBlock(newBlock);
@@ -2000,7 +1999,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           block = newBlock;
         }
 
-        // add trapRange info for blocks
+        // FIXME: add trapRange info for blocks
         for (Entry<LabelNode, Stmt> entry : this.trapHandler.entrySet()) {
           ArrayList<LabelNode> ex = new ArrayList<>();
           if (danglingLabel.contains(entry.getKey())) {
@@ -2078,6 +2077,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
       graph.putEdge(fromStmt, targetStmt);
     }
+
+    graph.hintMergeBlocks(preambleBlock, preambleBlock.getSuccessors().get(0));
   }
 
   private void emitStmt(@Nonnull Stmt handlerStmt, @Nonnull MutableBasicBlock block) {

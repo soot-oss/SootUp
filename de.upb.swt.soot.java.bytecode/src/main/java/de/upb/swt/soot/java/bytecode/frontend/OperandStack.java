@@ -28,9 +28,7 @@ import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.types.Type;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.annotation.Nonnull;
 import org.objectweb.asm.tree.AbstractInsnNode;
 
@@ -40,8 +38,8 @@ import org.objectweb.asm.tree.AbstractInsnNode;
  */
 public class OperandStack {
 
-  private final AsmMethodSource methodSource;
-  @Nonnull private List<Operand> stack;
+  @Nonnull private final AsmMethodSource methodSource;
+  private List<Operand> stack;
   @Nonnull public Map<AbstractInsnNode, StackFrame> frames;
 
   public OperandStack(@Nonnull AsmMethodSource methodSource, int nrInsn) {
@@ -59,20 +57,24 @@ public class OperandStack {
     return frame;
   }
 
-  public void push(Operand opr) {
+  public void push(@Nonnull Operand opr) {
     stack.add(opr);
   }
 
-  public void pushDual(Operand opr) {
+  public void pushDual(@Nonnull Operand opr) {
     stack.add(AsmMethodSource.DWORD_DUMMY);
     stack.add(opr);
   }
 
+  @Nonnull
   public Operand peek() {
+    if (stack.isEmpty()) {
+      throw new RuntimeException("Stack underrun");
+    }
     return stack.get(stack.size() - 1);
   }
 
-  public void push(Type t, Operand opr) {
+  public void push(@Nonnull Type t, @Nonnull Operand opr) {
     if (AsmUtil.isDWord(t)) {
       pushDual(opr);
     } else {
@@ -80,6 +82,7 @@ public class OperandStack {
     }
   }
 
+  @Nonnull
   public Operand pop() {
     if (stack.isEmpty()) {
       throw new RuntimeException("Stack underrun");
@@ -87,6 +90,7 @@ public class OperandStack {
     return stack.remove(stack.size() - 1);
   }
 
+  @Nonnull
   public Operand popDual() {
     Operand o = pop();
     Operand o2 = pop();

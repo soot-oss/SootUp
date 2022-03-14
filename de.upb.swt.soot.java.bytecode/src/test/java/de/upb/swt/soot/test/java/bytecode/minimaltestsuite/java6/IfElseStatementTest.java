@@ -16,26 +16,44 @@ import org.junit.experimental.categories.Category;
 public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
-  public void test() {
+  public void ifStatementTest() {
     SootMethod method = loadMethod(getMethodSignature("ifStatement"));
     assertJimpleStmts(method, expectedBodyStmtsIfStatement());
+  }
 
-    method = loadMethod(getMethodSignature("ifElseStatement"));
+  @Test
+  public void ifElseStatementTest() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseStatement"));
     assertJimpleStmts(method, expectedBodyStmtsIfElseStatement());
+  }
 
-    method = loadMethod(getMethodSignature("ifElseIfStatement"));
+  @Test
+  public void ifElseIfStatementTest() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseIfStatement"));
     assertJimpleStmts(method, expectedBodyStmtsIfElseIfStatement());
+  }
 
-    method = loadMethod(getMethodSignature("ifElseCascadingStatement"));
+  @Test
+  public void ifElseCascadingStatementTest() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingStatement"));
     assertJimpleStmts(method, expectedBodyStmtsIfElseCascadingStatement());
+  }
 
-    method = loadMethod(getMethodSignature("ifElseCascadingInElseStatement"));
+  @Test
+  public void ifElseCascadingInElseStatementTest() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingInElseStatement"));
     assertJimpleStmts(method, expectedBodyStmtsIfElseCascadingInElseStatement());
+  }
 
-    method = loadMethod(getMethodSignature("ifElseCascadingElseIfStatement"));
+  @Test
+  public void ifElseCascadingElseIfStatementTest() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingElseIfStatement"));
     assertJimpleStmts(method, expectedBodyStmtsIfElseCascadingElseIfStatement());
+  }
 
-    method = loadMethod(getMethodSignature("ifElseCascadingElseIfInElseStatement"));
+  @Test
+  public void ifElseCascadingElseIfInElseStatementTest() {
+    SootMethod method = loadMethod(getMethodSignature("ifElseCascadingElseIfInElseStatement"));
     assertJimpleStmts(method, expectedBodyStmtsIfElseCascadingElseIfInElseStatement());
   }
 

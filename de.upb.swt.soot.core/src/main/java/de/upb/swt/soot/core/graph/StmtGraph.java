@@ -381,8 +381,6 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
         // skip retrieved nextBlock if its already returned
       } while (iteratedBlocks.contains(nextBlock));
-      iteratedBlocks.add(nextBlock);
-
       return nextBlock;
     }
 
@@ -397,6 +395,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
         }
         currentBlockIt = currentBlock.getStmts().iterator();
         updateFollowingBlocks();
+        iteratedBlocks.add(currentBlock);
       }
 
       return currentBlockIt.next();
@@ -423,7 +422,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
         if (i == 0 && tailStmt.fallsThrough()) {
           // non-branching successors i.e. not a BranchingStmt or is the first successor of
           // JIfStmt
-          nestedBlocks.addFirst(successors.get(i));
+          nestedBlocks.addFirst(successors.get(0));
         } else {
 
           // create the most unbranched block from basicblocks as possible
@@ -478,7 +477,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       } else {
         BasicBlock<?> b = retrieveNextBlock();
         if (b != null) {
-          // reinsert at FIRST position -> not great for performance! but easier handling in next()
+          // reinsert at FIRST position -> not great for performance - but easier handling in next()
           nestedBlocks.addFirst(b);
           hasIteratorMoreElements = true;
         } else {

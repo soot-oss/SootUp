@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
  */
 public class GraphVizExporter {
 
-  public static String buildGraph(@Nonnull StmtGraph graph) {
+  public static String buildGraph(@Nonnull StmtGraph<?> graph) {
 
     // TODO: hint: use edge weight to have a better top->down code like linear layouting with
     // starting stmt at the top;
@@ -52,10 +52,10 @@ public class GraphVizExporter {
 
     /* print a block in a subgraph */
     int i = 0;
-    final Collection<? extends BasicBlock> blocks = graph.getBlocks();
-    Set<BasicBlock> drawnBlocks = Sets.newHashSetWithExpectedSize(blocks.size());
+    final Collection<? extends BasicBlock<?>> blocks = graph.getBlocks();
+    Set<BasicBlock<?>> drawnBlocks = Sets.newHashSetWithExpectedSize(blocks.size());
 
-    for (BasicBlock block : blocks) {
+    for (BasicBlock<?> block : blocks) {
 
       sb.append("\tsubgraph cluster_")
           .append(block.hashCode())
@@ -90,7 +90,7 @@ public class GraphVizExporter {
       sb.append("\t}\n");
 
       /* add edges to other blocks */
-      List<? extends BasicBlock> successors = block.getSuccessors();
+      List<? extends BasicBlock<?>> successors = block.getSuccessors();
       if (successors.size() > 0) {
         Stmt tailStmt = block.getTail();
 
@@ -109,7 +109,7 @@ public class GraphVizExporter {
           labelIt = Collections.emptyIterator();
         }
 
-        for (BasicBlock successorBlock : successors) {
+        for (BasicBlock<?> successorBlock : successors) {
           sb.append("\t").append(tailStmt.hashCode());
           final boolean successorIsAlreadyDrawn = drawnBlocks.contains(successorBlock);
           if (successorIsAlreadyDrawn) {
@@ -139,11 +139,11 @@ public class GraphVizExporter {
       }
 
       /* add exceptional edges */
-      Map<? extends ClassType, ? extends BasicBlock> exceptionalSuccessors =
+      Map<? extends ClassType, ? extends BasicBlock<?>> exceptionalSuccessors =
           block.getExceptionalSuccessors();
       if (exceptionalSuccessors.size() > 0) {
         sb.append("\t//exceptional edges \n");
-        for (Map.Entry<? extends ClassType, ? extends BasicBlock> successorBlock :
+        for (Map.Entry<? extends ClassType, ? extends BasicBlock<?>> successorBlock :
             exceptionalSuccessors.entrySet()) {
           sb.append("\t")
               .append(block.getTail().hashCode())
@@ -169,7 +169,7 @@ public class GraphVizExporter {
     return StringEscapeUtils.escapeXml10(str);
   }
 
-  public static String createUrlToWebeditor(@Nonnull StmtGraph graph) {
+  public static String createUrlToWebeditor(@Nonnull StmtGraph<?> graph) {
     return "http://magjac.com/graphviz-visual-editor/?dot=" + URLEncoder.encode(buildGraph(graph));
   }
 }

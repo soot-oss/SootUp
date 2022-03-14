@@ -76,4 +76,35 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   public void setTraps(List<Trap> traps) {
     this.traps = traps;
   }
+
+  protected boolean isMergeable(MutableBasicBlock firstBlock, MutableBasicBlock followingBlock) {
+    if (firstBlock.getSuccessors().size() != 1
+        || firstBlock.getSuccessors().get(0) != followingBlock) {
+      return false;
+    }
+    if (followingBlock.getPredecessors().size() != 1
+        || followingBlock.getPredecessors().get(0) != firstBlock) {
+      return false;
+    }
+    if (!firstBlock.getExceptionalSuccessors().equals(followingBlock.getExceptionalSuccessors())) {
+      // TODO: check if equals considers order
+      return false;
+    }
+    return true;
+  }
+
+  /** merges Blocks of the Datastructure */
+  protected void mergeBlocks(MutableBasicBlock firstBlock, MutableBasicBlock followingBlock) {
+    // FIXME: implement
+
+  }
+
+  /** hints the Datastructure that two following blocks could be possibly merged */
+  public boolean hintMergeBlocks(MutableBasicBlock firstBlock, MutableBasicBlock followingBlock) {
+    final boolean mergeable = isMergeable(firstBlock, followingBlock);
+    if (mergeable) {
+      mergeBlocks(firstBlock, followingBlock);
+    }
+    return mergeable;
+  }
 }
