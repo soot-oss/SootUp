@@ -110,7 +110,7 @@ grammar Jimple;
   BLANK :
     [ \t\r\n] ->skip;
 
-  UNKNOWN : . ;
+  // UNKNOWN_TOKEN : . ;
 
  /*
   * Parser Rules

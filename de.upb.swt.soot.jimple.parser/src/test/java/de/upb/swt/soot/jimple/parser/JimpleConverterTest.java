@@ -12,12 +12,11 @@ import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.core.util.StringTools;
+import de.upb.swt.soot.jimple.JimpleLexer;
 import de.upb.swt.soot.jimple.JimpleParser;
 import java.nio.file.Paths;
 import java.util.Collections;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CodePointCharStream;
+import org.antlr.v4.runtime.*;
 import org.junit.Test;
 
 public class JimpleConverterTest {
@@ -696,5 +695,98 @@ public class JimpleConverterTest {
                 + "private void anotherChair(){} \n"
                 + "} \n");
     parseJimpleClass(cs);
+  }
+
+  /*   parse partial contents - at least for syntax highlighting */
+  @Test
+  public void testPartial_JustMethod() {
+    CharStream cs =
+        CharStreams.fromString(" public void <init>(){} \n" + "private void another(){} \n");
+
+    JimpleLexer lexer = new JimpleLexer(cs);
+    assertEquals(14, lexer.getAllTokens().size());
+  }
+
+  @Test
+  public void testPartial_JustStmt() {
+    CharStream cs =
+        CharStreams.fromString(
+            "r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"something \"; \n");
+
+    JimpleLexer lexer = new JimpleLexer(cs);
+    assertEquals(11, lexer.getAllTokens().size());
+  }
+
+  @Test
+  public void testPartial_JustStmts() {
+    CharStream cs =
+        CharStreams.fromString(
+            "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"something \"; \n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"stupid\"; \n");
+
+    JimpleLexer lexer = new JimpleLexer(cs);
+    assertEquals(22, lexer.getAllTokens().size());
+  }
+
+  @Test
+  public void testPartial_FirstHalfOfClass() {
+    CharStream cs =
+        CharStreams.fromString(
+            "class de.upb.soot.concrete.fieldReference.A extends java.lang.Object\n"
+                + "  {\n"
+                + "    public java.lang.String j;\n"
+                + "    public void previously_declared_method(){\n} \n"
+                + "    void <init>()\n"
+                + "    {\n"
+                + "      de.upb.soot.concrete.fieldReference.A r0;\n"
+                + "      r0 := @this: de.upb.soot.concrete.fieldReference.A; \n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"something \"; \n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"stupid\"; \n"
+                + "      return;\n"
+                + "    }\n");
+
+    JimpleLexer lexer = new JimpleLexer(cs);
+    assertEquals(54, lexer.getAllTokens().size());
+  }
+
+  @Test
+  public void testPartial_SecondHalfOfClass() {
+    CharStream cs =
+        CharStreams.fromString(
+            "       r0 := @this: de.upb.soot.concrete.fieldReference.A; \n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"something \"; \n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"stupid\"; \n"
+                + "      return;\n"
+                + "    }\n"
+                + "    public void another_method(){\n}\n"
+                + "  }\n"
+                + "\n");
+
+    JimpleLexer lexer = new JimpleLexer(cs);
+    assertEquals(38, lexer.getAllTokens().size());
+  }
+
+  @Test
+  public void testPartial_InvalidStmt() {
+    CharStream cs =
+        CharStreams.fromString(
+            "class de.upb.soot.concrete.fieldReference.A extends java.lang.Object\n"
+                + "  {\n"
+                + "    public java.lang.String j;\n"
+                + "    public void previously_declared_method(){\n}\n"
+                + "    void <init>()\n"
+                + "    {\n"
+                + "      de.upb.soot.concrete.fieldReference.A r0;\n"
+                + "      r0 := @this: de.upb.soot.concrete.fieldReference.A; \n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = // missing assignment\n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"stupid\"; \n"
+                + "      return;\n"
+                + "    }\n"
+                + "public void another_method(){\n}\n"
+                + "  }\n"
+                + "\n");
+
+    JimpleLexer lexer = new JimpleLexer(cs);
+    assertEquals(60, lexer.getAllTokens().size());
   }
 }
