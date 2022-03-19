@@ -224,25 +224,6 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
    *
    * @return list of classes
    */
-  public List<SootClassSource<JavaSootClass>> getClassSources() {
-    Iterator<IClass> it = iterateWalaClasses();
-    if (classSources == null) {
-      classSources = new ArrayList<>();
-    }
-    WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
-    while (it.hasNext()) {
-      JavaSourceLoaderImpl.JavaClass walaClass = (JavaSourceLoaderImpl.JavaClass) it.next();
-      SootClassSource<JavaSootClass> sootClass = walaToSoot.convertToClassSource(walaClass);
-      classSources.add(sootClass);
-    }
-    return classSources;
-  }
-
-  /**
-   * Return ClassSources converted from WALA classes.
-   *
-   * @return list of classes
-   */
   public List<SootClassSource<JavaSootClass>> getClassSources(SourceType srcType) {
     Iterator<IClass> it = iterateWalaClasses();
     if (classSources == null) {
