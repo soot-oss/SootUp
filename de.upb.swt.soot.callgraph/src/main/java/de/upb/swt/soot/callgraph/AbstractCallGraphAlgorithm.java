@@ -32,6 +32,7 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -218,7 +219,16 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     Collection<SootMethod> mainMethods = new HashSet<>(); /* Set to store the methods */
     for (SootClass<?> aClass : classes) {
       for (SootMethod method : aClass.getMethods()) {
-        if (method.getName().equals("main")) {
+        if (method.isStatic()
+            && method
+                .getSignature()
+                .equals(
+                    JavaIdentifierFactory.getInstance()
+                        .getMethodSignature(
+                            "main",
+                            aClass.getType(),
+                            "void",
+                            Collections.singletonList("java.lang.String[]")))) {
           mainMethods.add(method);
         }
       }
