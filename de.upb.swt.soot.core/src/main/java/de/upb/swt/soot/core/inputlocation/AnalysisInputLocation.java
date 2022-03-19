@@ -30,6 +30,7 @@ import de.upb.swt.soot.core.views.View;
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Public interface to an input location. <code>AnalysisInputLocation</code>s are sources for {@link
@@ -69,9 +70,10 @@ public interface AnalysisInputLocation<T extends AbstractClass> {
    * that specific SourceType. This is the default implementation and it returns null when no source
    * type is specified.
    *
-   * @return
+   * @return returns null as source type
    */
-  public default SourceType getSourceType() {
+  @Nullable
+  default SourceType getSourceType() {
     return null;
   }
 }
