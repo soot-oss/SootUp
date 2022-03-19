@@ -149,11 +149,8 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
   @Nonnull
   public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
       @Nonnull View<?> view) {
-    if (srcType != null) {
-      return classProvider.getClassSources(srcType);
-    }
 
-    return classProvider.getClassSources();
+    return classProvider.getClassSources(srcType);
   }
 
   @Override
