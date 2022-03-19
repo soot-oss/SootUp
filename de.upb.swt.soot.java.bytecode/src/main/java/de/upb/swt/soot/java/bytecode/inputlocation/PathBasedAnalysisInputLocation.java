@@ -78,10 +78,6 @@ public abstract class PathBasedAnalysisInputLocation
     implements AnalysisInputLocation<JavaSootClass> {
   protected final Path path;
 
-  private PathBasedAnalysisInputLocation(@Nonnull Path path) {
-    this.path = path;
-  }
-
   /**
    * Variable to track if user has specified the SourceType. By default, it will be set to false.
    */
@@ -107,36 +103,14 @@ public abstract class PathBasedAnalysisInputLocation
   }
 
   /**
-   * Creates a {@link PathBasedAnalysisInputLocation} depending on the given {@link Path}, e.g.,
-   * differs between directories, archives (and possibly network path's in the future).
+   *  Creates a {@link PathBasedAnalysisInputLocation} depending on the given {@link Path}, e.g.,
+   *  differs between directories, archives (and possibly network path's in the future).
    *
    * @param path The path to search in
+   * @param srcType the source type for the path can be Library, Application, Phantom.
    * @return A {@link PathBasedAnalysisInputLocation} implementation dependent on the given {@link
-   *     Path}'s FileSystem
+   *    Path}'s FileSystem
    */
-  public static @Nonnull PathBasedAnalysisInputLocation createForClassContainer(
-      @Nonnull Path path) {
-
-    if (Files.isDirectory(path)) {
-      return new DirectoryBasedAnalysisInputLocation(path);
-    } else if (PathUtils.isArchive(path)) {
-      if (PathUtils.hasExtension(path, FileType.WAR)) {
-        return new WarArchiveAnalysisInputLocation(path);
-      }
-
-      // check if mainfest contains multi release flag
-      if (isMultiReleaseJar(path)) {
-        return new MultiReleaseJarAnalysisInputLocation(path);
-      }
-      return new ArchiveBasedAnalysisInputLocation(path);
-    } else {
-      throw new IllegalArgumentException(
-          "Path '"
-              + path.toAbsolutePath()
-              + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
-    }
-  }
-
   public static @Nonnull PathBasedAnalysisInputLocation createForClassContainer(
       @Nonnull Path path, SourceType srcType) {
 
@@ -232,10 +206,6 @@ public abstract class PathBasedAnalysisInputLocation
 
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
-    private DirectoryBasedAnalysisInputLocation(@Nonnull Path path) {
-      super(path);
-    }
-
     private DirectoryBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
       super(path, srcType);
     }
@@ -279,28 +249,6 @@ public abstract class PathBasedAnalysisInputLocation
 
     boolean isResolved = false;
 
-    private MultiReleaseJarAnalysisInputLocation(@Nonnull Path path) {
-      super(path);
-
-      int[] tmp;
-      try {
-        FileSystem fs = fileSystemCache.get(path);
-        final Path archiveRoot = fs.getPath("/");
-        tmp =
-            Files.list(archiveRoot.getFileSystem().getPath("/META-INF/versions/"))
-                .map(dir -> dir.getFileName().toString().replace("/", ""))
-                .mapToInt(Integer::new)
-                .sorted()
-                .toArray();
-      } catch (IOException | ExecutionException e) {
-        e.printStackTrace();
-        tmp = new int[] {};
-      }
-      availableVersions = tmp;
-
-      discoverInputLocations();
-    }
-
     private MultiReleaseJarAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
       super(path, srcType);
 
@@ -320,11 +268,11 @@ public abstract class PathBasedAnalysisInputLocation
       }
       availableVersions = tmp;
 
-      discoverInputLocations();
+      discoverInputLocations(srcType);
     }
 
     /** Discovers all input locations for different java versions in this multi release jar */
-    private void discoverInputLocations() {
+    private void discoverInputLocations(@Nullable SourceType srcType) {
       FileSystem fs = null;
       try {
         fs = fileSystemCache.get(path);
@@ -334,7 +282,7 @@ public abstract class PathBasedAnalysisInputLocation
       final Path archiveRoot = fs.getPath("/");
       final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
 
-      baseInputLocations.add(PathBasedAnalysisInputLocation.createForClassContainer(archiveRoot));
+      baseInputLocations.add(PathBasedAnalysisInputLocation.createForClassContainer(archiveRoot, srcType));
 
       String sep = archiveRoot.getFileSystem().getSeparator();
 
@@ -393,7 +341,7 @@ public abstract class PathBasedAnalysisInputLocation
           if (inputLocations.get(availableVersions[i]).size() == 0) {
             inputLocations
                 .get(availableVersions[i])
-                .add(PathBasedAnalysisInputLocation.createForClassContainer(versionRoot));
+                .add(PathBasedAnalysisInputLocation.createForClassContainer(versionRoot, srcType));
           }
         }
       }
@@ -585,10 +533,6 @@ public abstract class PathBasedAnalysisInputLocation
                       }
                     }));
 
-    private ArchiveBasedAnalysisInputLocation(@Nonnull Path path) {
-      super(path);
-    }
-
     private ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
       super(path, srcType);
     }
@@ -633,38 +577,6 @@ public abstract class PathBasedAnalysisInputLocation
     public static int maxAllowedBytesToExtract =
         1024 * 1024 * 500; // limit of extracted file size to protect against archive bombs
 
-    private WarArchiveAnalysisInputLocation(@Nonnull Path warPath) {
-      super(
-          Paths.get(
-              System.getProperty("java.io.tmpdir")
-                  + File.separator
-                  + "sootOutput"
-                  + "-war"
-                  + warPath.hashCode()
-                  + "/"));
-      extractWarFile(warPath, path);
-
-      Path webInfPath = path.resolve("WEB-INF");
-      // directorystructre as specified in SRV.9.5 of
-      // https://download.oracle.com/otn-pub/jcp/servlet-2.4-fr-spec-oth-JSpec/servlet-2_4-fr-spec.pdf?AuthParam=1625059899_16c705c72f7db7f85a8a7926558701fe
-      Path classDir = webInfPath.resolve("classes");
-      if (Files.exists(classDir)) {
-        containedInputLocations.add(
-            new PathBasedAnalysisInputLocation.DirectoryBasedAnalysisInputLocation(classDir));
-      }
-
-      Path libDir = webInfPath.resolve("lib");
-      if (Files.exists(libDir)) {
-        try {
-          Files.walk(libDir)
-              .filter(f -> PathUtils.hasExtension(f, FileType.JAR))
-              .forEach(f -> containedInputLocations.add(new ArchiveBasedAnalysisInputLocation(f)));
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-      }
-    }
-
     private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nullable SourceType srcType) {
       super(
           Paths.get(
@@ -673,7 +585,7 @@ public abstract class PathBasedAnalysisInputLocation
                   + "sootOutput"
                   + "-war"
                   + warPath.hashCode()
-                  + "/"));
+                  + "/"), srcType);
       extractWarFile(warPath, path);
 
       Path webInfPath = path.resolve("WEB-INF");
