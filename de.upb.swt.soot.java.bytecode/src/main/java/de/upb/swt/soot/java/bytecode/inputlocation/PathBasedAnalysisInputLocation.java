@@ -103,13 +103,13 @@ public abstract class PathBasedAnalysisInputLocation
   }
 
   /**
-   *  Creates a {@link PathBasedAnalysisInputLocation} depending on the given {@link Path}, e.g.,
-   *  differs between directories, archives (and possibly network path's in the future).
+   * Creates a {@link PathBasedAnalysisInputLocation} depending on the given {@link Path}, e.g.,
+   * differs between directories, archives (and possibly network path's in the future).
    *
    * @param path The path to search in
    * @param srcType the source type for the path can be Library, Application, Phantom.
    * @return A {@link PathBasedAnalysisInputLocation} implementation dependent on the given {@link
-   *    Path}'s FileSystem
+   *     Path}'s FileSystem
    */
   public static @Nonnull PathBasedAnalysisInputLocation createForClassContainer(
       @Nonnull Path path, SourceType srcType) {
@@ -282,7 +282,8 @@ public abstract class PathBasedAnalysisInputLocation
       final Path archiveRoot = fs.getPath("/");
       final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
 
-      baseInputLocations.add(PathBasedAnalysisInputLocation.createForClassContainer(archiveRoot, srcType));
+      baseInputLocations.add(
+          PathBasedAnalysisInputLocation.createForClassContainer(archiveRoot, srcType));
 
       String sep = archiveRoot.getFileSystem().getSeparator();
 
@@ -585,7 +586,8 @@ public abstract class PathBasedAnalysisInputLocation
                   + "sootOutput"
                   + "-war"
                   + warPath.hashCode()
-                  + "/"), srcType);
+                  + "/"),
+          srcType);
       extractWarFile(warPath, path);
 
       Path webInfPath = path.resolve("WEB-INF");

@@ -75,7 +75,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     final JavaProject project_min =
         JavaProject.builder(new JavaLanguage(Integer.MIN_VALUE))
-            .addInputLocation(PathBasedAnalysisInputLocation.createForClassContainer(mrj,null))
+            .addInputLocation(PathBasedAnalysisInputLocation.createForClassContainer(mrj, null))
             .build();
     final JavaView view_min = project_min.createOnDemandView();
 
@@ -99,7 +99,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     final JavaProject project_max =
         JavaProject.builder(new JavaLanguage(Integer.MAX_VALUE))
-            .addInputLocation(PathBasedAnalysisInputLocation.createForClassContainer(mrj,null))
+            .addInputLocation(PathBasedAnalysisInputLocation.createForClassContainer(mrj, null))
             .build();
     final JavaView view_max = project_max.createOnDemandView();
 
@@ -189,7 +189,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     final JavaProject project_8 =
         JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(PathBasedAnalysisInputLocation.createForClassContainer(mmrj,null))
+            .addInputLocation(PathBasedAnalysisInputLocation.createForClassContainer(mmrj, null))
             .build();
     final JavaView view_8 = project_8.createOnDemandView();
 
@@ -199,7 +199,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                 .enableModules()
                 .addInputLocation(
                     (ModuleInfoAnalysisInputLocation)
-                        PathBasedAnalysisInputLocation.createForClassContainer(mmrj,null))
+                        PathBasedAnalysisInputLocation.createForClassContainer(mmrj, null))
                 .build();
 
     final JavaModuleView view_9 = project_9.createOnDemandView();
