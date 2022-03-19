@@ -39,15 +39,15 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractClassSource<T extends AbstractClass> {
 
-  protected final AnalysisInputLocation<? extends SootClass<?>> srcNamespace;
+  protected final AnalysisInputLocation<? extends SootClass<?>> classSource;
   protected final Path sourcePath;
   protected ClassType classSignature;
 
   public AbstractClassSource(
-      @Nonnull AnalysisInputLocation<? extends SootClass<?>> srcNamespace,
+      @Nonnull AnalysisInputLocation<? extends SootClass<?>> classSource,
       @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
-    this.srcNamespace = srcNamespace;
+    this.classSource = classSource;
     this.classSignature = classSignature;
     this.sourcePath = sourcePath;
   }
@@ -56,8 +56,8 @@ public abstract class AbstractClassSource<T extends AbstractClass> {
     return classSignature;
   }
 
-  public AnalysisInputLocation<? extends SootClass<?>> getSrcNamespace() {
-    return srcNamespace;
+  public AnalysisInputLocation<? extends SootClass<?>> getClassSource() {
+    return classSource;
   }
 
   public abstract T buildClass(@Nonnull SourceType sourceType);
@@ -87,12 +87,12 @@ public abstract class AbstractClassSource<T extends AbstractClass> {
     }
     AbstractClassSource<? extends SootClass<?>> that =
         (AbstractClassSource<? extends SootClass<?>>) o;
-    return Objects.equal(srcNamespace, that.srcNamespace)
+    return Objects.equal(classSource, that.classSource)
         && Objects.equal(sourcePath, that.sourcePath);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(srcNamespace, sourcePath);
+    return Objects.hashCode(classSource, sourcePath);
   }
 }
