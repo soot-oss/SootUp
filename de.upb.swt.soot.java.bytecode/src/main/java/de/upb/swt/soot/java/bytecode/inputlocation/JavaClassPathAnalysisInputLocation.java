@@ -22,8 +22,6 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
  * #L%
  */
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.SourceType;
@@ -69,7 +67,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param classPath The class path to search in
    */
   public JavaClassPathAnalysisInputLocation(@Nonnull String classPath) {
-    if (isNullOrEmpty(classPath)) {
+    if (classPath.length() <= 0) {
       throw new IllegalStateException("Empty class path given");
     }
 
@@ -89,7 +87,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    */
   public JavaClassPathAnalysisInputLocation(
       @Nonnull String classPath, @Nullable SourceType srcType) {
-    if (isNullOrEmpty(classPath)) {
+    if (classPath.length() <= 0) {
       throw new IllegalStateException("Empty class path given");
     }
     setSpecifiedAsBuiltInByUser(srcType);
@@ -206,10 +204,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
   @Nonnull
   private Optional<AnalysisInputLocation<JavaSootClass>> inputLocationForPath(@Nonnull Path path) {
     if (Files.exists(path) && (Files.isDirectory(path) || PathUtils.isArchive(path))) {
-      if (srcType != null) {
         return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path, srcType));
-      }
-      return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
       return Optional.empty();
