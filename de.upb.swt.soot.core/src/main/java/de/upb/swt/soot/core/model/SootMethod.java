@@ -380,7 +380,8 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
   @Override
   public int hashCode() {
-    return getBodySource().getSignature().hashCode();
+    return Objects.hash(
+        getBodySource(), getBodySource().getSignature(), getModifiers(), getParameterTypes());
   }
 
   @Override
@@ -388,6 +389,9 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     if (!(obj instanceof SootMethod)) {
       return false;
     }
-    return getBodySource() == ((SootMethod) obj).getBodySource();
+    return getBodySource() == ((SootMethod) obj).getBodySource()
+        && getBodySource().getSignature() == ((SootMethod) obj).getBodySource().getSignature()
+        && getModifiers() == ((SootMethod) obj).getModifiers()
+        && getParameterTypes() == ((SootMethod) obj).getParameterTypes();
   }
 }

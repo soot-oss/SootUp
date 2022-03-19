@@ -1,7 +1,59 @@
 # Jimple
 What is Jimple? Jimple is the intermediate representation [**IR**]{A data structure which represents (source) code} of Soot.
-Soots intention is to provide a simplified way to analyze JVM bytecode. For this 
-purpose Jimple was designed as a representation of JVM bytecode which is human readable.
+Soot's intention is to provide a simplified way to analyze JVM bytecode. JVM bytecode is stack-based, which makes it difficult for program analysis.
+Java source code, on the other hand, is also not quite suitable for program analysis, due to its nested structures.
+Therefore, Jimple aims to bring the best of both worlds, a non-stack-based and flat (non-nested) representation.
+For this purpose Jimple was designed as a representation of JVM bytecode which is human readable.
+
+!!! info
+
+    To learn more about jimple, refer to the [thesis](https://courses.cs.washington.edu/courses/cse501/01wi/project/sable-thesis.pdf) by Raja Vallee-Rai.
+
+
+It might help to visualize how the Jimple version of a Java code looks like. Have a look at the following example on the `HelloWorld` class.
+
+=== "Jimple"
+
+    ```jimple
+    public class HelloWorld extends java.lang.Object
+    {
+        public void <init>()
+        {
+            HelloWorld r0;
+            r0 := @this: HelloWorld;
+            specialinvoke r0.<java.lang.Object: void <init>()>();
+            return;
+        }
+    
+        public static void main(java.lang.String[])
+        {
+            java.lang.String[] r0;
+            java.io.PrintStream $r1;
+            
+            r0 := @parameter0: java.lang.String[];
+            $r1 = <java.lang.System: java.io.PrintStream out>;
+            virtualinvoke $r1.<java.io.PrintStream: 
+                    void println(java.lang.String)>("Hello world!");
+            return;
+        }
+    }
+    ```
+
+=== "Java"
+
+    ```java
+    public class HelloWorld {
+    
+      public HelloWorld() {
+      
+      }
+    
+      public static void main(String[] var0) {
+        System.out.println("Hello World!");
+      }
+      
+    }
+    ```
 
 ## Jimple Grammar Structure
 Jimple mimics the JVMs class file structure.
@@ -27,8 +79,8 @@ It is referenced by its MethodSignature and contains a [**StmtGraph**]{a control
 
 
 ### Signatures
-Everything that we can reference across a method (e.g. a Class, Interface, Method or Field) - which is basically every item//TODO:wording that is not a Local - has a Signature.
-
+Signatures are required for identifying or referencing things across a method, such as Classes, Interfaces, Methods or Fields. 
+Locals, on the other hand, do not need signatures, since they are referenced within method boundaries.
 
 ### Trap
 A Trap is a mechanism to model exceptional flow.
@@ -67,9 +119,10 @@ transfers the control flow to another method until the called method returns.
 
 
 ##### JAssignStmt
-assigns a Value from the right handside to the left handside.
-On the left handside can occure a Local referencing a variable (i.e. a Local) or a FieldRef referencing a Field.
-On the right handside can be an expression (Expr), a Local, a FieldRef or a Constant.
+assigns a Value from the right hand-side to the left hand-side.
+Left hand-side of an assignment can be a Local referencing a variable (i.e. a Local) or a FieldRef referencing a Field.
+Right hand-side of an assignment can be an expression (Expr), a Local, a FieldRef or a Constant.
+
 ##### JIdentityStmt
 is semantically like the JAssignStmt and handles assignments of IdentityRef's to make implicit assignments explicit into the StmtGraph. 
 
@@ -83,7 +136,7 @@ models a Breakpoint set by a Debugger (usually not relevant for static analyses)
 
 
 ### Immediate
-An Immediate has a [**given**]{as in constant or immutable} Type and consists of a Local ("a Variable", "Sth that contains a Value") or a Constant ("Sth that is a Value").
+An Immediate has a [**given**]{as in constant or immutable} Type and consists of a Local ("a Variable", "Something that contains a Value") or a Constant ("Something that is a Value").
 
 
 ### Type
@@ -100,7 +153,7 @@ NullType
 ```jimple
 $i0 
 ```
-[Whats this?](https://www.youtube.com/watch?v=_FLhO7ZnKHs&t=54s)
+[What's this?](https://www.youtube.com/watch?v=_FLhO7ZnKHs&t=54s)
 A Local is a variable and its scope is inside its method i.e. no referencing from outside a method.
 Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
 
@@ -110,8 +163,9 @@ represents a value itself. don't confuse it with a variable/Local which has a im
 
 There exists a constant entity for every Type - that way all value types can have a representation.
 
+
 ### Expr
-// TODO
+An expression is a language construct that returns a value. E.g. a binary operation such as addition.
 
 
 ### Ref
