@@ -42,11 +42,12 @@ public class JimpleConverter {
       @Nonnull AnalysisInputLocation<?> inputlocation,
       @Nonnull Path sourcePath,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
-    return run(
-        JimpleConverterUtil.createJimpleParser(charStream, sourcePath),
-        inputlocation,
-        sourcePath,
-        bodyInterceptors);
+
+    final JimpleParser jimpleParser =
+        JimpleConverterUtil.createJimpleParser(charStream, sourcePath);
+    parser.setErrorHandler(new BailErrorStrategy());
+
+    return run(jimpleParser, inputlocation, sourcePath, bodyInterceptors);
   }
 
   public OverridingClassSource run(
@@ -252,8 +253,11 @@ public class JimpleConverter {
 
           // declare locals
           locals = new HashMap<>();
-          if (ctx.method_body().declaration() != null) {
-            for (JimpleParser.DeclarationContext it : ctx.method_body().declaration()) {
+          final JimpleParser.Method_body_contentsContext method_body_contentsContext =
+              ctx.method_body().method_body_contents();
+          if (method_body_contentsContext.declarations() != null) {
+            for (JimpleParser.DeclarationContext it :
+                method_body_contentsContext.declarations().declaration()) {
               final String typeStr = it.type().getText();
               Type localtype =
                   typeStr.equals("unknown") ? UnknownType.getInstance() : util.getType(typeStr);
@@ -288,14 +292,16 @@ public class JimpleConverter {
 
           // statements
           StmtVisitor stmtVisitor = new StmtVisitor(builder);
-          if (ctx.method_body().statement() != null) {
-            ctx.method_body().statement().forEach(stmtVisitor::visitStatement);
+          final JimpleParser.StatementsContext statements =
+              method_body_contentsContext.statements();
+          if (statements != null && statements.statement() != null) {
+            statements.statement().forEach(stmtVisitor::visitStatement);
           }
 
           // catch_clause
           List<Trap> traps = new ArrayList<>();
           final List<JimpleParser.Trap_clauseContext> trap_clauseContexts =
-              ctx.method_body().trap_clause();
+              method_body_contentsContext.trap_clauses().trap_clause();
           if (trap_clauseContexts != null) {
             for (JimpleParser.Trap_clauseContext it : trap_clauseContexts) {
               ClassType exceptionType = util.getClassType(it.exceptiontype.getText());
