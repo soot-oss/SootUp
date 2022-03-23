@@ -789,4 +789,102 @@ public class JimpleConverterTest {
     JimpleLexer lexer = new JimpleLexer(cs);
     assertEquals(60, lexer.getAllTokens().size());
   }
+
+  /*   parse partial contents - at least for syntax highlighting */
+  @Test
+  public void testPartial_JustMethod() {
+    CharStream cs =
+        CharStreams.fromString(" public void <init>(){} \n" + "private void another(){} \n");
+
+    JimpleLexer lexer = new JimpleLexer(cs);
+    assertEquals(14, lexer.getAllTokens().size());
+  }
+
+  @Test
+  public void testPartial_JustStmt() {
+    CharStream cs =
+        CharStreams.fromString(
+            "r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"something \"; \n");
+
+    JimpleLexer lexer = new JimpleLexer(cs);
+    assertEquals(11, lexer.getAllTokens().size());
+  }
+
+  @Test
+  public void testPartial_JustStmts() {
+    CharStream cs =
+        CharStreams.fromString(
+            "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"something \"; \n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"stupid\"; \n");
+
+    JimpleLexer lexer = new JimpleLexer(cs);
+    assertEquals(22, lexer.getAllTokens().size());
+  }
+
+  @Test
+  public void testPartial_FirstHalfOfClass() {
+    CharStream cs =
+        CharStreams.fromString(
+            "class de.upb.soot.concrete.fieldReference.A extends java.lang.Object\n"
+                + "  {\n"
+                + "    public java.lang.String j;\n"
+                + "    public void previously_declared_method(){\n} \n"
+                + "    void <init>()\n"
+                + "    {\n"
+                + "      de.upb.soot.concrete.fieldReference.A r0;\n"
+                + "      r0 := @this: de.upb.soot.concrete.fieldReference.A; \n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"something \"; \n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"stupid\"; \n"
+                + "      return;\n"
+                + "    }\n");
+
+    JimpleLexer lexer = new JimpleLexer(cs);
+    assertEquals(54, lexer.getAllTokens().size());
+  }
+
+  @Test
+  public void testPartial_SecondHalfOfClass() {
+    CharStream cs =
+        CharStreams.fromString(
+            "       r0 := @this: de.upb.soot.concrete.fieldReference.A; \n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"something \"; \n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"stupid\"; \n"
+                + "      return;\n"
+                + "    }\n"
+                + "    public void another_method(){\n}\n"
+                + "  }\n"
+                + "\n");
+
+    JimpleLexer lexer = new JimpleLexer(cs);
+    assertEquals(38, lexer.getAllTokens().size());
+  }
+
+  @Test
+  public void testPartial_InvalidStmt() {
+    CharStream cs =
+        CharStreams.fromString(
+            "class de.upb.soot.concrete.fieldReference.A extends java.lang.Object\n"
+                + "  {\n"
+                + "    public java.lang.String j;\n"
+                + "    public void previously_declared_method(){\n}\n"
+                + "    void <init>()\n"
+                + "    {\n"
+                + "      de.upb.soot.concrete.fieldReference.A r0;\n"
+                + "      r0 := @this: de.upb.soot.concrete.fieldReference.A; \n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = // missing assignment\n"
+                + "      r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = \"stupid\"; \n"
+                + "      return;\n"
+                + "    }\n"
+                + "public void another_method(){\n}\n"
+                + "  }\n"
+                + "\n");
+
+    JimpleLexer lexer = new JimpleLexer(cs);
+    assertEquals(60, lexer.getAllTokens().size());
+
+    final JimpleParser jp = JimpleConverterUtil.createJimpleParser(cs, Paths.get("nonexistent"));
+    System.out.println(jp.getTokenStream());
+
+    assertEquals(60, jp.getInputStream().size());
+  }
 }
