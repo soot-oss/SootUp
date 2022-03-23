@@ -45,15 +45,17 @@ public class DefaultSourceTypeSpecifier implements SourceTypeSpecifier {
   @Nonnull
   public SourceType sourceTypeFor(AbstractClassSource clsSource) {
     SourceType sourceType = clsSource.getClassSource().getSourceType();
-    if (sourceType != null) { // Check if source type is specified in AnalysisInputLocation.
+    if (sourceType != null) {
+      // Check if source type is specified in AnalysisInputLocation.
       return sourceType;
-    } else if (clsSource
-        .getClassType()
-        .isBuiltInClass()) { // Call builtInClass() method which uses package name to validate
-      // whether the class is inbuilt or not.
-      return SourceType.Library;
-    } else {
-      return SourceType.Application;
     }
+
+    if (clsSource.getClassType().isBuiltInClass()) {
+      // Call builtInClass() method which uses package name to validate whether the class is inbuilt
+      // or not.
+      return SourceType.Library;
+    }
+
+    return SourceType.Application;
   }
 }
