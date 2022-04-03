@@ -9,6 +9,7 @@ import de.upb.swt.soot.callgraph.spark.pag.nodes.FieldReferenceNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
 import de.upb.swt.soot.callgraph.spark.solver.AliasPropagator;
+import de.upb.swt.soot.callgraph.spark.solver.Propagator;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
@@ -24,7 +25,7 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class AliasPropagatorTest {
+public class AliasPropagatorTest extends PropagatorTest {
 
   @Test
   public void test() {
@@ -72,28 +73,5 @@ public class AliasPropagatorTest {
         }
       }
     }
-  }
-
-  private PointerAssignmentGraph buildPAG(String className) {
-
-    String resourceDir = "src/test/resources/spark/PointerBench/propagator-jimple/";
-    JimpleAnalysisInputLocation location = new JimpleAnalysisInputLocation(Paths.get(resourceDir));
-    JimpleView view = new JimpleProject(location).createOnDemandView();
-    System.out.println(view.getClasses());
-
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaClassType mainClassType = identifierFactory.getClassType(className);
-
-    List<String> parameters = new ArrayList<>();
-    parameters.add("java.lang.String[]");
-    MethodSignature methodSignature =
-        identifierFactory.getMethodSignature("main", mainClassType, "void", parameters);
-
-    final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    CallGraphAlgorithm algorithm = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
-    CallGraph callGraph = algorithm.initialize(Collections.singletonList(methodSignature));
-    PointerAssignmentGraph pag = new PointerAssignmentGraph(view, callGraph, new SparkOptions());
-
-    return pag;
   }
 }
