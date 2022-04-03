@@ -12,7 +12,6 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.jimple.parser.JimpleAnalysisInputLocation;
 import de.upb.swt.soot.jimple.parser.JimpleProject;
 import de.upb.swt.soot.jimple.parser.JimpleView;
-
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,25 +19,25 @@ import java.util.List;
 
 public class PropagatorTest {
 
-    PointerAssignmentGraph buildPAG(String className) {
+  PointerAssignmentGraph buildPAG(String className) {
 
-        String resourceDir = "src/test/resources/spark/PointerBench/propagator-jimple/";
-        JimpleAnalysisInputLocation location = new JimpleAnalysisInputLocation(Paths.get(resourceDir));
-        JimpleView view = new JimpleProject(location).createOnDemandView();
+    String resourceDir = "src/test/resources/spark/PointerBench/propagator-jimple/";
+    JimpleAnalysisInputLocation location = new JimpleAnalysisInputLocation(Paths.get(resourceDir));
+    JimpleView view = new JimpleProject(location).createOnDemandView();
 
-        JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-        JavaClassType mainClassType = identifierFactory.getClassType(className);
+    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+    JavaClassType mainClassType = identifierFactory.getClassType(className);
 
-        List<String> parameters = new ArrayList<>();
-        parameters.add("java.lang.String[]");
-        MethodSignature methodSignature =
-                identifierFactory.getMethodSignature("main", mainClassType, "void", parameters);
+    List<String> parameters = new ArrayList<>();
+    parameters.add("java.lang.String[]");
+    MethodSignature methodSignature =
+        identifierFactory.getMethodSignature("main", mainClassType, "void", parameters);
 
-        final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-        CallGraphAlgorithm algorithm = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
-        CallGraph callGraph = algorithm.initialize(Collections.singletonList(methodSignature));
-        PointerAssignmentGraph pag = new PointerAssignmentGraph(view, callGraph, new SparkOptions());
+    final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
+    CallGraphAlgorithm algorithm = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+    CallGraph callGraph = algorithm.initialize(Collections.singletonList(methodSignature));
+    PointerAssignmentGraph pag = new PointerAssignmentGraph(view, callGraph, new SparkOptions());
 
-        return pag;
-    }
+    return pag;
+  }
 }

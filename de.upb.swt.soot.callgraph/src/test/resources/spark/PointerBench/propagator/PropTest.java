@@ -3,7 +3,7 @@ package propagator;
 import benchmark.objects.B;
 import benchmark.objects.O;
 
-public class AliasProp {
+public class PropTest {
 
     public static void  main(String [] args) {
         boolean condition = true;

@@ -1,4 +1,4 @@
-public class propagator.AliasProp extends java.lang.Object
+public class propagator.PropTest extends java.lang.Object
 {
     public static void main(java.lang.String[])
     {
@@ -45,10 +45,10 @@ public class propagator.AliasProp extends java.lang.Object
 
     void <init>()
     {
-        propagator.AliasProp r0;
+        propagator.PropTest r0;
 
 
-        r0 := @this: propagator.AliasProp;
+        r0 := @this: propagator.PropTest;
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
 

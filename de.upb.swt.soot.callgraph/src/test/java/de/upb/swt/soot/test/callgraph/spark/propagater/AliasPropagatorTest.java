@@ -1,26 +1,10 @@
 package de.upb.swt.soot.test.callgraph.spark.propagater;
 
-import de.upb.swt.soot.callgraph.algorithm.CallGraphAlgorithm;
-import de.upb.swt.soot.callgraph.algorithm.ClassHierarchyAnalysisAlgorithm;
-import de.upb.swt.soot.callgraph.model.CallGraph;
-import de.upb.swt.soot.callgraph.spark.builder.SparkOptions;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.FieldReferenceNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
 import de.upb.swt.soot.callgraph.spark.solver.AliasPropagator;
-import de.upb.swt.soot.callgraph.spark.solver.Propagator;
-import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
-import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.types.JavaClassType;
-import de.upb.swt.soot.jimple.parser.JimpleAnalysisInputLocation;
-import de.upb.swt.soot.jimple.parser.JimpleProject;
-import de.upb.swt.soot.jimple.parser.JimpleView;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,7 +14,7 @@ public class AliasPropagatorTest extends PropagatorTest {
   @Test
   public void test() {
 
-    PointerAssignmentGraph pag = buildPAG("propagator.AliasProp");
+    PointerAssignmentGraph pag = buildPAG("propagator.PropTest");
     AliasPropagator propagator = new AliasPropagator(pag);
     propagator.propagate();
     pag = propagator.getPag();
