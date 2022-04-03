@@ -48,7 +48,6 @@ public class AliasPropagator implements Propagator {
   private Map<FieldReferenceNode, Set<Node>> newloadSets = new HashMap<>();
   private Map<FieldReferenceNode, Set<Node>> oldLoadSets = new HashMap<>();
 
-  List<Node> nodes = new ArrayList<>();
   // todo: a field OnFlyCallGraph ofcg
   public AliasPropagator(PointerAssignmentGraph pag) {
     this.pag = pag;
@@ -183,15 +182,17 @@ public class AliasPropagator implements Propagator {
   protected void handleAllocationNode(AllocationNode source) {
 
     Set<VariableNode> targets = pag.allocLookup(source);
-    for (VariableNode target : targets) {
-      if (!nodeToNewPoint2Set.containsKey(target)) {
-        nodeToNewPoint2Set.put(target, new HashSet<>());
-      }
-      Set<Node> oldP2Set = target.getOrCreatePointsToSet();
-      Set<Node> newP2Set = nodeToNewPoint2Set.get(target);
-      if ((!oldP2Set.contains(source)) && (!newP2Set.contains(source))) {
-        newP2Set.add(source);
-        varNodeWorkList.add(target);
+    if(targets != null && !targets.isEmpty()){
+      for (VariableNode target : targets) {
+        if (!nodeToNewPoint2Set.containsKey(target)) {
+          nodeToNewPoint2Set.put(target, new HashSet<>());
+        }
+        Set<Node> oldP2Set = target.getOrCreatePointsToSet();
+        Set<Node> newP2Set = nodeToNewPoint2Set.get(target);
+        if ((!oldP2Set.contains(source)) && (!newP2Set.contains(source))) {
+          newP2Set.add(source);
+          varNodeWorkList.add(target);
+        }
       }
     }
   }
@@ -320,6 +321,7 @@ public class AliasPropagator implements Propagator {
     newP2Set.clear();
   }
 
+  /** This getter used for test*/
   public PointerAssignmentGraph getPag() {
     return this.pag;
   }
