@@ -182,7 +182,7 @@ public class AliasPropagator implements Propagator {
   protected void handleAllocationNode(AllocationNode source) {
 
     Set<VariableNode> targets = pag.allocLookup(source);
-    if(targets != null && !targets.isEmpty()){
+    if (targets != null && !targets.isEmpty()) {
       for (VariableNode target : targets) {
         if (!nodeToNewPoint2Set.containsKey(target)) {
           nodeToNewPoint2Set.put(target, new HashSet<>());
@@ -321,7 +321,7 @@ public class AliasPropagator implements Propagator {
     newP2Set.clear();
   }
 
-  /** This getter used for test*/
+  /** This getter used for test */
   public PointerAssignmentGraph getPag() {
     return this.pag;
   }
