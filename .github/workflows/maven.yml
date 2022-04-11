@@ -28,7 +28,7 @@ jobs:
       run: mvn verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     - name: Prepare Coverage and Test Reports
       env: 
-        SUBMODULES: de.upb.swt.soot.java.core de.upb.swt.soot.java.bytecode de.upb.swt.soot.java.sourcecode de.upb.swt.soot.callgraph examples de.upb.swt.soot.tests
+        SUBMODULES: de.upb.swt.soot.java.core de.upb.swt.soot.java.bytecode de.upb.swt.soot.java.sourcecode de.upb.swt.soot.callgraph examples
       run: |
            sudo mkdir target/coverage-reports-jdk8
            sudo mkdir target/test-reports-jdk8
@@ -94,3 +94,39 @@ jobs:
 
    
       
+  SLOWTEST:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Build (JDK8)
+        run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      - name: Test (JDK8)
+        run: mvn verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      - name: Prepare Coverage and Test Reports
+        run: |
+          sudo mkdir target/coverage-reports-slowtest
+          sudo mkdir target/test-reports-slowtest
+          sudo chmod -R 777 target 
+          sudo mv de.upb.swt.soot.tests/target/coverage-reports/jacoco-ut.exec target/coverage-reports-jdk8/jacoco-ut-de.upb.swt.soot.tests-slowtest.exec
+          sudo [ ! -f de.upb.swt.soot.tests/target/surefire-reports ] || mv de.upb.swt.soot.tests/target/surefire-reports target/test-reports-jdk8/test-report-de.upb.swt.soot.tests/
+          sudo mkdir target/coverage-reports-slowtest/de.upb.swt.soot.tests-site
+          sudo mv de.upb.swt.soot.tests/target/site/jacoco-ut/* target/coverage-reports-slowtest/de.upb.swt.soot.tests-site
+          
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: coverage-reports-slowtest
+          path: target/coverage-reports-slowtest
+
+      - uses: actions/upload-artifact@v2
+        with:
+          if: always()
+          name: test-reports-slowtest
+          path: target/test-reports-slowtest
+
