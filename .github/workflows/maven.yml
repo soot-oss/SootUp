@@ -9,26 +9,26 @@ on:
   pull_request:
     branches: [ develop ]
 
-jobs: 
+jobs:
   JDK8:
 
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
-    - name: Check Format
-      run: mvn com.coveo:fmt-maven-plugin:check -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-    - name: Build (JDK8)
-      run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-    - name: Test (JDK8)
-      run: mvn verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-    - name: Prepare Coverage and Test Reports
-      env:
-        SUBMODULES: de.upb.swt.soot.java.core de.upb.swt.soot.java.bytecode de.upb.swt.soot.java.sourcecode de.upb.swt.soot.callgraph examples de.upb.swt.soot.tests
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Check Format
+        run: mvn com.coveo:fmt-maven-plugin:check -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      - name: Build (JDK8)
+        run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      - name: Test (JDK8)
+        run: mvn verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      - name: Prepare Coverage and Test Reports
+        env:
+          SUBMODULES: de.upb.swt.soot.java.core de.upb.swt.soot.java.bytecode de.upb.swt.soot.java.sourcecode de.upb.swt.soot.callgraph examples de.upb.swt.soot.tests
         run: |
           sudo mkdir target/coverage-reports-jdk8
           sudo mkdir target/test-reports-jdk8
@@ -40,17 +40,17 @@ jobs:
             sudo mkdir target/coverage-reports-jdk8/${item}-site
             sudo mv ${item}/target/site/jacoco-ut/* target/coverage-reports-jdk8/${item}-site
           done
-     
-    - uses: actions/upload-artifact@v2
-      with:
-        name: coverage-reports-jdk8
-        path: target/coverage-reports-jdk8
 
-    - uses: actions/upload-artifact@v2
-      with:
-        if: always()
-        name: test-reports-jdk8
-        path: target/test-reports-jdk8
+      - uses: actions/upload-artifact@v2
+        with:
+          name: coverage-reports-jdk8
+          path: target/coverage-reports-jdk8
+
+      - uses: actions/upload-artifact@v2
+        with:
+          if: always()
+          name: test-reports-jdk8
+          path: target/test-reports-jdk8
 
 
   JDK9:
@@ -104,24 +104,24 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build (JDK8)
+      - name: Build (SLOWTEST)
         run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-      - name: Test (JDK8)
+      - name: Test (SLOWTEST)
         run: mvn verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       - name: Prepare Coverage and Test Reports
         env:
           SUBMODULES: de.upb.swt.soot.tests
-          run: |
-            sudo mkdir target/coverage-reports-jdk8
-            sudo mkdir target/test-reports-jdk8
-            sudo chmod -R 777 target 
-            for item in $SUBMODULES
-            do 
-              sudo mv ${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports-jdk8/jacoco-ut-${item}-jdk8.exec
-              sudo [ ! -f ${item}/target/surefire-reports ] || mv ${item}/target/surefire-reports target/test-reports-jdk8/test-report-${item}/
-              sudo mkdir target/coverage-reports-jdk8/${item}-site
-              sudo mv ${item}/target/site/jacoco-ut/* target/coverage-reports-jdk8/${item}-site
-            done  
+        run: |
+          sudo mkdir target/coverage-reports-slowtest
+          sudo mkdir target/test-reports-slowtest
+          sudo chmod -R 777 target 
+          for item in $SUBMODULES
+          do 
+            sudo mv ${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports-slowtest/jacoco-ut-${item}-jdk8.exec
+            sudo [ ! -f ${item}/target/surefire-reports ] || mv ${item}/target/surefire-reports target/test-reports-slowtest/test-report-${item}/
+            sudo mkdir target/coverage-reports-slowtest/${item}-site
+            sudo mv ${item}/target/site/jacoco-ut/* target/coverage-reports-slowtest/${item}-site
+          done
 
       - uses: actions/upload-artifact@v2
         with:
