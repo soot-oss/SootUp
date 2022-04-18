@@ -5,6 +5,7 @@ import static junit.framework.TestCase.*;
 import categories.SlowTest;
 import de.upb.swt.soot.callgraph.AbstractCallGraphAlgorithm;
 import de.upb.swt.soot.callgraph.CallGraph;
+import de.upb.swt.soot.callgraph.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.RapidTypeAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
@@ -31,9 +32,14 @@ public class CallGraphTest {
   protected JavaClassType mainClassSignature;
   protected MethodSignature mainMethodSignature;
   private AbstractCallGraphAlgorithm algorithm;
+  private String algorithmName;
 
-  protected RapidTypeAnalysisAlgorithm createAlgorithm(JavaView view, TypeHierarchy typeHierarchy) {
-    return new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
+  protected AbstractCallGraphAlgorithm createAlgorithm(JavaView view, TypeHierarchy typeHierarchy) {
+    if(algorithmName.equals("RTA")){
+      return new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
+    }else{
+      return new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+    }
   }
 
   private JavaView createViewForClassPath(String classPath) {
@@ -80,6 +86,7 @@ public class CallGraphTest {
 
   @Test
   public void testRTA() {
+    algorithmName = "RTA";
     CallGraph cg = loadCallGraph("Misc", "HelloWorld");
 
     ClassType clazzType = JavaIdentifierFactory.getInstance().getClassType("java.io.PrintStream");
@@ -87,6 +94,20 @@ public class CallGraphTest {
     MethodSignature method =
         identifierFactory.getMethodSignature(
             "println", clazzType, "void", Collections.singletonList("java.lang.String"));
+
+    assertTrue(cg.containsCall(mainMethodSignature, method));
+  }
+
+  @Test
+  public void testCHA() {
+    algorithmName = "CHA";
+    CallGraph cg = loadCallGraph("Misc", "HelloWorld");
+
+    ClassType clazzType = JavaIdentifierFactory.getInstance().getClassType("java.io.PrintStream");
+
+    MethodSignature method =
+            identifierFactory.getMethodSignature(
+                    "println", clazzType, "void", Collections.singletonList("java.lang.String"));
 
     assertTrue(cg.containsCall(mainMethodSignature, method));
   }
