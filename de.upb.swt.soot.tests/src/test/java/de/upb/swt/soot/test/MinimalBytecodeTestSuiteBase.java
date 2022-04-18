@@ -1,6 +1,7 @@
 package de.upb.swt.soot.test;
 
-import categories.Java8Test;
+import static org.junit.Assert.*;
+
 import categories.SlowTest;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.model.Body;
@@ -17,20 +18,17 @@ import de.upb.swt.soot.java.core.JavaSootMethod;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
-import org.junit.ClassRule;
-import org.junit.experimental.categories.Category;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
-
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.junit.Assert.*;
+import javax.annotation.Nonnull;
+import org.junit.ClassRule;
+import org.junit.experimental.categories.Category;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 
 /**
  * @author Markus Schmidt,

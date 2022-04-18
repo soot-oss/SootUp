@@ -35,9 +35,9 @@ public class CallGraphTest {
   private String algorithmName;
 
   protected AbstractCallGraphAlgorithm createAlgorithm(JavaView view, TypeHierarchy typeHierarchy) {
-    if(algorithmName.equals("RTA")){
+    if (algorithmName.equals("RTA")) {
       return new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
-    }else{
+    } else {
       return new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
     }
   }
@@ -106,8 +106,8 @@ public class CallGraphTest {
     ClassType clazzType = JavaIdentifierFactory.getInstance().getClassType("java.io.PrintStream");
 
     MethodSignature method =
-            identifierFactory.getMethodSignature(
-                    "println", clazzType, "void", Collections.singletonList("java.lang.String"));
+        identifierFactory.getMethodSignature(
+            "println", clazzType, "void", Collections.singletonList("java.lang.String"));
 
     assertTrue(cg.containsCall(mainMethodSignature, method));
   }
