@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
+import org.junit.Test;
 
 /** @author Kaustubh Kelkar */
 public class ThrowExceptionMethodTest extends MinimalSourceTestSuiteBase {
@@ -64,13 +65,20 @@ public class ThrowExceptionMethodTest extends MinimalSourceTestSuiteBase {
   }
 
   @Ignore
-  public void test() {
+  @Test
+  public void testArithException() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
     assertTrue(
         method.getExceptionSignatures().stream()
             .anyMatch(classType -> classType.getClassName().equals("ArithmeticException")));
-    method = loadMethod(getMethodSignature1());
+  }
+
+  @Test
+  @Ignore
+  public void testCustomException() {
+
+    SootMethod method = loadMethod(getMethodSignature1());
     assertJimpleStmts(method, expectedBodyStmts1());
     assertTrue(
         method.getExceptionSignatures().stream()
