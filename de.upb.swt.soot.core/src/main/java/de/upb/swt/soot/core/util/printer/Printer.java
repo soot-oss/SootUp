@@ -113,7 +113,7 @@ public class Printer {
     }
   }
 
-  public void printTo(SootClass cl, PrintWriter out) {
+  public void printTo(SootClass<?> cl, PrintWriter out) {
 
     LabeledStmtPrinter printer = determinePrinter();
     printer.enableImports(options.contains(Option.UseImports));
@@ -153,7 +153,7 @@ public class Printer {
 
     // Print extension
     {
-      Optional<ClassType> superclassSignature = cl.getSuperclass();
+      Optional<? extends ClassType> superclassSignature = cl.getSuperclass();
 
       superclassSignature.ifPresent(
           javaClassSignature -> {
@@ -164,7 +164,7 @@ public class Printer {
 
     // Print interfaces
     {
-      Iterator<ClassType> interfaceIt = cl.getInterfaces().iterator();
+      Iterator<? extends ClassType> interfaceIt = cl.getInterfaces().iterator();
 
       if (interfaceIt.hasNext()) {
 
@@ -227,7 +227,7 @@ public class Printer {
     out.println(printer.toString());
   }
 
-  private void printMethods(SootClass cl, LabeledStmtPrinter printer, PrintWriter out) {
+  private void printMethods(SootClass<?> cl, LabeledStmtPrinter printer, PrintWriter out) {
     Iterator<? extends Method> methodIt = cl.getMethods().iterator();
     if (methodIt.hasNext()) {
       printer.incIndent();
@@ -307,7 +307,7 @@ public class Printer {
   private void printStatementsInBody(Body body, LabeledStmtPrinter printer) {
     Iterable<Stmt> linearizedStmtGraph = printer.initializeSootMethod(body);
 
-    StmtGraph stmtGraph = body.getStmtGraph();
+    StmtGraph<?> stmtGraph = body.getStmtGraph();
     Stmt previousStmt;
 
     final Map<Stmt, String> labels = printer.getLabels();
@@ -318,21 +318,17 @@ public class Printer {
       {
         // Put an empty line if:
         // a) the previous stmt was a branch node
-        // b) the current stmt is a join node
-        // c) the previous stmt does not have stmt as a successor
-        // d) if the current stmt has a label on it
+        // b) the current stmt is a join node (i.e. multiple predecessors)
+        // c) the previous stmt does not have a successor stmt
+        // d) if the current stmt has a label on it (i.e. branch-target/trap-handler or begin/end of
+        // a trap)
 
         final boolean currentStmtHasLabel = labels.get(currentStmt) != null;
-        if (stmtGraph.successors(previousStmt).size() != 1
+        if (previousStmt.branches()
             || stmtGraph.predecessors(currentStmt).size() != 1
+            || previousStmt.getSuccessorCount() == 0
             || currentStmtHasLabel) {
           printer.newline();
-        } else {
-          // Or if the previous node does not have statement as a successor.
-          final Iterator<Stmt> succIterator = stmtGraph.successors(previousStmt).iterator();
-          if (succIterator.hasNext() && succIterator.next() != currentStmt) {
-            printer.newline();
-          }
         }
 
         if (currentStmtHasLabel) {
@@ -340,6 +336,8 @@ public class Printer {
           printer.literal(":");
           printer.newline();
         }
+        // TODO: [ms] improve this as getReferences() and currentStmtHasLabel seems to be mutual
+        // exclusive! otherwise a stmt would be printed twice ;-)
 
         if (printer.getReferences().containsKey(currentStmt)) {
           printer.stmtRef(currentStmt, false);

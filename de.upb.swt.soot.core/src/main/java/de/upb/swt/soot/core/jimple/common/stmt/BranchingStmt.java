@@ -30,6 +30,8 @@ import javax.annotation.Nonnull;
 /**
  * Interface for Stmts at which the execution does not necessarily continue with the following Stmt
  * in the List
+ *
+ * <p>mandatory: branches() needs to be true!
  */
 public abstract class BranchingStmt extends Stmt {
   public BranchingStmt(@Nonnull StmtPositionInfo positionInfo) {

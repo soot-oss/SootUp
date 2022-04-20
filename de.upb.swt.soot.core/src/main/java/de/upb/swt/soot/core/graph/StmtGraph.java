@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stmt> {
 
   @Deprecated // hint: please use information for exceptional flows from BasicBlocks
-  protected List<Trap> traps;
+  protected List<Trap> traps = new ArrayList<>();
 
   public abstract Stmt getStartingStmt();
 
@@ -97,7 +97,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   @Nonnull
   @Deprecated
   public List<Trap> getTraps() {
-    /* ms: makes no sense without stmt/block information */
+    /* ms: makes no sense (i.e. no guarantee!) that it matches the stmt ranges without associated stmt/block information */
     return traps;
   }
 
@@ -107,7 +107,9 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
    */
   @Nonnull
   public List<Stmt> getTails() {
-    return nodes().stream().filter(stmt -> outDegree(stmt) == 0).collect(Collectors.toList());
+    return nodes().stream()
+        .filter(stmt -> stmt.getSuccessorCount() == 0)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -298,7 +300,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
       @Override
       public boolean hasNext() {
-        return !nextElement.branches();
+        return nextElement != null && !nextElement.branches();
       }
 
       @Override
@@ -315,12 +317,10 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
   /**
    * you're lazy - create your algorithm modifications more clean/precise for better performance ;-)
+   *
+   * <p>public boolean purgeUnconnectedEdges() { // TODO: implement pruning graph to remove
+   * unconnected edges throw new UnsupportedOperationException("not implemented yet"); }
    */
-  public boolean purgeUnconnectedEdges() {
-    // TODO: implement pruning graph to remove unconnected edges
-    throw new UnsupportedOperationException("not implemented yet");
-  }
-
   @Override
   @Nonnull
   public Iterator<Stmt> iterator() {

@@ -112,7 +112,7 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
   }
 
   @Override
-  public void addNode(@Nonnull Stmt node, @Nonnull List<ClassType> traps) {
+  public void addNode(@Nonnull Stmt node, @Nonnull Map<ClassType, Stmt> traps) {
     addNodeInternal(node);
     // FIXME add traps!
     throw new RuntimeException("not yet implemented");
@@ -273,7 +273,7 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
   @Nonnull
   @Override
   public Map<ClassType, Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
-    return null;
+    throw new UnsupportedOperationException("not implemented yet");
   }
 
   @Override

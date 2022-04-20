@@ -26,6 +26,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nonnull;
 
 /** @author Markus Schmidt */
@@ -40,10 +41,10 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   }
 
   public void addNode(@Nonnull Stmt node) {
-    addNode(node, Collections.emptyList());
+    addNode(node, Collections.emptyMap());
   }
 
-  public abstract void addNode(@Nonnull Stmt node, @Nonnull List<ClassType> traps);
+  public abstract void addNode(@Nonnull Stmt node, @Nonnull Map<ClassType, Stmt> traps);
 
   // maybe refactor addBlock into MutableBlockStmtGraph..
   public abstract void addBlock(@Nonnull MutableBasicBlock block);
@@ -52,7 +53,11 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   // MutableBasicBlock newBlock);
 
   /** Modification of nodes (without manipulating any flows) */
-  public abstract void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt);
+  public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+    // if possible please implement a better approach in your subclass
+    removeNode(oldStmt);
+    addNode(newStmt);
+  }
 
   public abstract void removeNode(@Nonnull Stmt node);
 
@@ -71,13 +76,8 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
 
   public abstract void removeExceptionalEdge(@Nonnull Stmt stmt, @Nonnull ClassType exception);
 
-  // FIXME: legacy/remove!
-  @Deprecated
-  public void setTraps(List<Trap> traps) {
-    this.traps = traps;
-  }
-
-  protected boolean isMergeable(MutableBasicBlock firstBlock, MutableBasicBlock followingBlock) {
+  protected boolean isMergeable(
+      @Nonnull MutableBasicBlock firstBlock, @Nonnull MutableBasicBlock followingBlock) {
     if (firstBlock.getSuccessors().size() != 1
         || firstBlock.getSuccessors().get(0) != followingBlock) {
       return false;
@@ -93,18 +93,36 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
     return true;
   }
 
-  /** merges Blocks of the Datastructure */
-  protected void mergeBlocks(MutableBasicBlock firstBlock, MutableBasicBlock followingBlock) {
-    // FIXME: implement
+  /** merges Blocks of the Datastructure: merges stmts and traps! */
+  protected void mergeBlockIntoFirst(
+      @Nonnull MutableBasicBlock firstBlock, @Nonnull MutableBasicBlock followingBlock) {
 
+    if (firstBlock.getTail().branches()) {
+      throw new IllegalArgumentException(
+          "firstBlock ends with an BranchingStmt. Can't add more Stmts to a Block after a BranchingStmt!");
+    }
+
+    for (Stmt stmt : followingBlock.getStmts()) {
+      firstBlock.addStmt(stmt);
+    }
+
+    for (Map.Entry<ClassType, MutableBasicBlock> entry :
+        followingBlock.getExceptionalSuccessors().entrySet()) {
+      firstBlock.addExceptionalSuccessorBlock(entry.getKey(), entry.getValue());
+    }
   }
 
   /** hints the Datastructure that two following blocks could be possibly merged */
-  public boolean hintMergeBlocks(MutableBasicBlock firstBlock, MutableBasicBlock followingBlock) {
+  public boolean hintMergeBlocks(
+      @Nonnull MutableBasicBlock firstBlock, @Nonnull MutableBasicBlock followingBlock) {
     final boolean mergeable = isMergeable(firstBlock, followingBlock);
     if (mergeable) {
-      mergeBlocks(firstBlock, followingBlock);
+      mergeBlockIntoFirst(firstBlock, followingBlock);
     }
     return mergeable;
+  }
+
+  public void setTraps(List<Trap> newTraps) {
+    throw new UnsupportedOperationException("deprecated");
   }
 }

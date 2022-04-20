@@ -221,7 +221,7 @@ public class Body implements Copyable {
    *
    * <p>This method was typically used for pointer patching, e.g. when the unit chain is cloned.
    *
-   * @return A collection of all the Stmts
+   * @return A collection of all the Stmts that are targets of a BranchingStmt
    */
   @Nonnull
   public Collection<Stmt> getTargetStmtsInBody() {
@@ -298,6 +298,7 @@ public class Body implements Copyable {
   public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
     final List<Stmt> predecessors = graph.predecessors(targetStmt);
     if (predecessors.size() > 1) {
+      // join node i.e. at least one is a branch
       return true;
     }
 
@@ -499,7 +500,6 @@ public class Body implements Copyable {
       setLocals(body.getLocals());
       setPosition(body.getPosition());
       graph = new MutableBlockStmtGraph(body.getStmtGraph());
-      setTraps(body.getTraps());
     }
 
     @Nonnull
@@ -545,8 +545,8 @@ public class Body implements Copyable {
     @Deprecated
     @Nonnull
     public BodyBuilder setTraps(@Nonnull List<Trap> traps) {
-      graph.setTraps(traps);
-      return this;
+      // FIXME !
+      throw new UnsupportedOperationException("deprecated!");
     }
 
     /** replace the oldStmt with newStmt in stmtGraph and branches */
