@@ -33,7 +33,6 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.Nonnull;
 
 public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
@@ -134,21 +133,5 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
 
   public StmtPositionInfo getPositionInfo() {
     return positionInfo;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof Stmt)) {
-      return false;
-    }
-    Stmt stmt = (Stmt) o;
-    // [ms] not so sure about equaling over the positionInfo, too
-    return equivTo(stmt) && Objects.equals(positionInfo, stmt.positionInfo);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(positionInfo);
   }
 }
