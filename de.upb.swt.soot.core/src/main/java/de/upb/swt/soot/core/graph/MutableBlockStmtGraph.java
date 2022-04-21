@@ -335,7 +335,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           // stmtB is at the beginning of the second Block -> connect blockA and blockB
           blockB.addPredecessorBlock(blockA);
           blockA.addSuccessorBlock(blockB);
-
         } else {
 
           MutableBasicBlock newBlock = blockB.splitBlockLinked(stmtB, true);

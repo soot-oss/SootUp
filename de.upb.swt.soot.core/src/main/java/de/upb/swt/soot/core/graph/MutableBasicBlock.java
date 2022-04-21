@@ -20,7 +20,7 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   public void addStmt(@Nonnull Stmt stmt) {
     if (getStmtCount() > 0 && getTail() instanceof BranchingStmt) {
       throw new IllegalArgumentException(
-          "you can't add another Stmt after a BranchingStmt to the same Block.");
+          "Can't add another Stmt to a Block after a BranchingStmt.");
     }
     stmts.add(stmt);
   }
@@ -136,7 +136,7 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
           "Can not split by that Stmt - it is not contained in this Block.");
     }
     if (stmts.get(splitIdx + 1) != newHead) {
-      throw new IllegalArgumentException("Can not split - those Stmts are not connected.");
+      throw new IllegalArgumentException("Can't split - the given Stmts are not connected.");
     }
     return splitBlockUnlinked(splitIdx + 1);
   }
@@ -156,8 +156,8 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
       secondBlock.addStmt(stmts.get(i));
     }
 
-    // remove stmt refernces from current i.e. first block
-    if (stmts.size() > splitIdx) {
+    // remove stmt references from current i.e. first block
+    if (splitIdx < stmts.size()) {
       stmts.subList(splitIdx, stmts.size()).clear();
     }
 
@@ -187,12 +187,20 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
       splitIdx++;
     }
 
-    MutableBasicBlock secondBlock = splitBlockUnlinked(splitIdx);
-    secondBlock.addPredecessorBlock(this);
-    successorBlocks.forEach(secondBlock::addSuccessorBlock);
+    MutableBasicBlock newBlock = splitBlockUnlinked(splitIdx);
+    newBlock.addPredecessorBlock(this);
+    successorBlocks.forEach(
+        succBlock -> {
+          // copy successors to the newBlock
+          newBlock.addSuccessorBlock(succBlock);
+          // and relink predecessors of the successors to newblock as well
+          succBlock.removePredecessorBlock(this);
+          succBlock.addPredecessorBlock(newBlock);
+        });
     successorBlocks.clear();
-    successorBlocks.add(secondBlock);
-    return secondBlock;
+    successorBlocks.add(newBlock);
+
+    return newBlock;
   }
 
   public void clearSuccessorBlocks() {
