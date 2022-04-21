@@ -268,7 +268,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     if (!(o instanceof StmtGraph)) {
       return false;
     }
-    StmtGraph otherGraph = (StmtGraph) o;
+    StmtGraph<?> otherGraph = (StmtGraph<?>) o;
 
     if (getStartingStmt() != otherGraph.getStartingStmt()) {
       return false;
@@ -307,9 +307,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       public Stmt next() {
         final Stmt tmpElement = nextElement;
         final List<Stmt> successors = successors(nextElement);
-        if (successors.size() > 0) {
-          nextElement = successors.get(0);
-        }
+        nextElement = (successors.size() > 0) ? successors.get(0) : null;
         return tmpElement;
       }
     };
@@ -326,35 +324,34 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   public Iterator<Stmt> iterator() {
     // TODO: remove comment
     //  return new StmtGraphBlockIterator(this, Collections.emptyList());
-    return new BlockStmtGraphIterator(this);
+    return new BlockStmtGraphIterator<>(this);
   }
 
   // FIXME: adapt to iterate over blocks and adapt traps at the end so that the list is not
   // enormously big i.e. merge same traps with neighbouring blocks
   // assumption: a Block has at least 1 Stmt
-  private static class BlockStmtGraphIterator implements Iterator<Stmt> {
+  private static class BlockStmtGraphIterator<B extends BasicBlock<B>> implements Iterator<Stmt> {
 
-    @Nonnull private final StmtGraph<? extends BasicBlock<?>> graph;
+    @Nonnull private final StmtGraph<B> graph;
 
-    @Nonnull
-    private final ArrayDeque<Map.Entry<ClassType, BasicBlock<?>>> traps = new ArrayDeque<>();
+    @Nonnull private final ArrayDeque<Map.Entry<? extends ClassType, B>> traps = new ArrayDeque<>();
 
-    @Nonnull private final ArrayDeque<BasicBlock<?>> nestedBlocks = new ArrayDeque<>();
-    @Nonnull private final ArrayDeque<BasicBlock<?>> otherBlocks = new ArrayDeque<>();
+    @Nonnull private final ArrayDeque<B> nestedBlocks = new ArrayDeque<>();
+    @Nonnull private final ArrayDeque<B> otherBlocks = new ArrayDeque<>();
 
     // caching the next Stmt to implement a simple hasNext() and skipping already returned Stmts
-    @Nonnull private final Set<BasicBlock<?>> iteratedBlocks;
+    @Nonnull private final Set<B> iteratedBlocks;
     @Nonnull private Iterator<Stmt> currentBlockIt;
-    @Nullable private BasicBlock<?> currentBlock;
+    @Nullable private B currentBlock;
     @Nonnull private final List<Trap> collectedTraps = new ArrayList<>();
 
-    public BlockStmtGraphIterator(@Nonnull StmtGraph<? extends BasicBlock<?>> graph) {
+    public BlockStmtGraphIterator(@Nonnull StmtGraph<B> graph) {
       this.graph = graph;
-      final List<? extends BasicBlock<?>> blocks = graph.getBlocks();
+      final List<B> blocks = graph.getBlocks();
       iteratedBlocks = new HashSet<>(blocks.size(), 1);
       Stmt startingStmt = graph.getStartingStmt();
       if (startingStmt != null) {
-        final BasicBlock<?> startingBlock = graph.getStartingStmtBlock();
+        final B startingBlock = graph.getStartingStmtBlock();
         iteratedBlocks.add(startingBlock);
         currentBlockIt = startingBlock.getStmts().iterator();
         currentBlock = startingBlock;
@@ -366,8 +363,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     }
 
     @Nullable
-    private BasicBlock<?> retrieveNextBlock() {
-      BasicBlock<?> nextBlock;
+    private B retrieveNextBlock() {
+      B nextBlock;
       do {
         if (!nestedBlocks.isEmpty()) {
           nextBlock = nestedBlocks.pollFirst();
@@ -391,6 +388,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       if (!currentBlockIt.hasNext()) {
         currentBlock = retrieveNextBlock();
         if (currentBlock == null) {
+
           throw new NoSuchElementException("Iterator has no more Stmts.");
         }
         currentBlockIt = currentBlock.getStmts().iterator();
@@ -405,33 +403,40 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     private void updateFollowingBlocks() {
       // collect traps
       final Stmt tailStmt = currentBlock.getTail();
-      currentBlock
-          .getExceptionalSuccessors()
-          .forEach(
-              (k, v) -> {
-                collectedTraps.add(new Trap(k, currentBlock.getHead(), tailStmt, v.getHead()));
-                // integrate trapHandler Block into 'queue'
-                // if (!iteratedBlocks.contains(v)) {
-                nestedBlocks.addFirst(v);
-                // }
-              });
+      for (Map.Entry<? extends ClassType, B> entry :
+          currentBlock.getExceptionalSuccessors().entrySet()) {
+        ClassType k = entry.getKey();
+        B trapHandlerBlock = entry.getValue();
+        if (traps.stream().noneMatch(i -> i.getKey() == k && i.getValue() == trapHandlerBlock)) {
+          traps.addLast(entry);
+        }
 
-      final List<? extends BasicBlock<?>> successors = currentBlock.getSuccessors();
+        collectedTraps.add(
+            new Trap(k, currentBlock.getHead(), tailStmt, trapHandlerBlock.getHead()));
+        // integrate trapHandlerBlock Block into 'queue'
+        // if (!iteratedBlocks.contains(trapHandlerBlock)) {
+        nestedBlocks.addFirst(trapHandlerBlock);
+        // }
+      }
+
+      final List<B> successors = currentBlock.getSuccessors();
 
       for (int i = successors.size() - 1; i >= 0; i--) {
         if (i == 0 && tailStmt.fallsThrough()) {
-          // non-branching successors i.e. not a BranchingStmt or is the first successor of
+          // non-branching successors i.e. not a BranchingStmt or is the first successor (i.e. its
+          // false successor) of
           // JIfStmt
           nestedBlocks.addFirst(successors.get(0));
         } else {
 
-          // create the most unbranched block from basicblocks as possible
-          BasicBlock<?> leaderOfUnbranchedBlocks = successors.get(0);
+          // create the most fallsthrough block of basicblocks as possible -> go to the top until
+          // predecessor is not a fallsthrough stmt
+          final B successorBlock = successors.get(i);
+          B leaderOfUnbranchedBlocks = successorBlock;
           while (true) {
             boolean flag = true;
-            final List<? extends BasicBlock<?>> itPreds =
-                leaderOfUnbranchedBlocks.getPredecessors();
-            for (BasicBlock<?> pred : itPreds) {
+            final List<B> itPreds = leaderOfUnbranchedBlocks.getPredecessors();
+            for (B pred : itPreds) {
               if (pred.getTail().fallsThrough()
                   && pred.getSuccessors().get(0) == leaderOfUnbranchedBlocks) {
                 leaderOfUnbranchedBlocks = pred;
@@ -445,7 +450,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
           }
 
           // find a return Stmt inside the current Block
-          Stmt succTailStmt = successors.get(i).getTail();
+          Stmt succTailStmt = successorBlock.getTail();
           boolean isReturnBlock =
               succTailStmt instanceof JReturnVoidStmt || succTailStmt instanceof JReturnStmt;
 
@@ -475,7 +480,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       if (currentBlockIt.hasNext()) {
         hasIteratorMoreElements = true;
       } else {
-        BasicBlock<?> b = retrieveNextBlock();
+        B b = retrieveNextBlock();
         if (b != null) {
           // reinsert at FIRST position -> not great for performance - but easier handling in next()
           nestedBlocks.addFirst(b);
@@ -488,7 +493,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       // "assertion" that all elements are iterated
       if (!hasIteratorMoreElements) {
         final int returnedSize = iteratedBlocks.size();
-        final List<? extends BasicBlock<?>> blocks = graph.getBlocks();
+        final List<B> blocks = graph.getBlocks();
         final int actualSize = blocks.size();
         if (returnedSize != actualSize) {
           String info =

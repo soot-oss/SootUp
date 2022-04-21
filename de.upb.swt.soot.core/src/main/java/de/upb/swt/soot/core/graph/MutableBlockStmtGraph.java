@@ -199,6 +199,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       for (Map.Entry<ClassType, Stmt> exceptionMap : exceptions.entrySet()) {
         Integer targetBlockIdx = stmtToBlock.get(exceptionMap.getValue());
         if (targetBlockIdx == null) {
+
           targetBlockIdx = createStmtsBlock(exceptionMap.getValue());
         }
         blocks
@@ -209,30 +210,33 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     } else {
       // check if parameter exceptions are equal to those in the Block of the existing Stmt:
       // otherwise fail.
-      boolean different = false;
-      if (block.getExceptionalSuccessors().size() == exceptions.size()) {
-        for (Map.Entry<ClassType, MutableBasicBlock> entry :
-            block.getExceptionalSuccessors().entrySet()) {
-          final Stmt targetStmt = exceptions.get(entry.getKey());
-          if (targetStmt == null) {
-            different = true;
-            break;
-          } else if (targetStmt != entry.getValue().getHead()) {
-            different = true;
-            break;
+      if (exceptions.size() > 0) {
+        boolean different = false;
+        if (block.getExceptionalSuccessors().size() == exceptions.size()) {
+          for (Map.Entry<ClassType, MutableBasicBlock> entry :
+              block.getExceptionalSuccessors().entrySet()) {
+            final Stmt targetStmt = exceptions.get(entry.getKey());
+            if (targetStmt == null) {
+              different = true;
+              break;
+            } else if (targetStmt != entry.getValue().getHead()) {
+              different = true;
+              break;
+            }
           }
+        } else {
+          different = true;
         }
-      } else {
-        different = true;
-      }
 
-      if (different) {
-        throw new IllegalArgumentException(
-            "Cant intuitively handle adding/merging exceptions to an already existing node with already assigned exceptions into the graph.");
+        if (different) {
+          throw new IllegalArgumentException(
+              "Cant intuitively handle adding/merging exceptions to an already existing node with already assigned exceptions into the graph.");
+        }
       }
     }
   }
 
+  /** creates a Block and inserts the given Stmt. */
   protected int createStmtsBlock(@Nonnull Stmt stmt) {
     // add Block to graph, add+register Stmt to Block
     MutableBasicBlock block = new MutableBasicBlock();
@@ -242,6 +246,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     return idx;
   }
 
+  /** Adds a Stmt to the end of a block i.e. stmt will become the new tail. */
   protected void addNodeToBlock(
       @Nonnull MutableBasicBlock block, int blockIdx, @Nonnull Stmt stmt) {
     block.addStmt(stmt);
