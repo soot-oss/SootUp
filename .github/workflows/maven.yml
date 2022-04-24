@@ -91,3 +91,46 @@ jobs:
       with:
         name: test-reports-jdk9
         path: target/test-reports-jdk9
+
+
+  SLOWTEST:
+    if: github.event.pull_request.merged == 'true'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Build (SLOWTEST)
+        run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      - name: Test (SLOWTEST)
+        run: mvn -pl de.upb.swt.soot.tests -am verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      - name: Prepare Coverage and Test Reports
+        env:
+          SUBMODULES: de.upb.swt.soot.tests
+        run: |
+          sudo mkdir target/coverage-reports-slowtest
+          sudo mkdir target/test-reports-slowtest
+          sudo chmod -R 777 target 
+          for item in $SUBMODULES
+          do 
+            sudo mv ${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports-slowtest/jacoco-ut-${item}-jdk8.exec
+            sudo [ ! -f ${item}/target/surefire-reports ] || mv ${item}/target/surefire-reports target/test-reports-slowtest/test-report-${item}/
+            sudo mkdir target/coverage-reports-slowtest/${item}-site
+            sudo mv ${item}/target/site/jacoco-ut/* target/coverage-reports-slowtest/${item}-site
+          done
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: coverage-reports-slowtest
+          path: target/coverage-reports-slowtest
+
+      - uses: actions/upload-artifact@v2
+        with:
+          if: always()
+          name: test-reports-slowtest
+          path: target/test-reports-slowtest
+
