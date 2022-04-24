@@ -2,8 +2,11 @@ package de.upb.swt.soot.core.graph;
 
 import static org.junit.Assert.*;
 
+import categories.Java8Test;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category(Java8Test.class)
 public class BlockGraphTest {
 
   @Test
