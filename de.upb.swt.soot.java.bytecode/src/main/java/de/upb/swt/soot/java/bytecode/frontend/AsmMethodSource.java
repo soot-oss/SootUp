@@ -1722,7 +1722,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     worklist.add(new BranchedInsnInfo(instructions.getFirst(), Collections.emptyList()));
     Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges = HashBasedTable.create(1, 1);
     do {
-      BranchedInsnInfo edge = worklist.pollLast();
+      BranchedInsnInfo edge = worklist.getLast();
       AbstractInsnNode insn = edge.getInsn();
       operandStack.setOperandStack(
           new ArrayList<>(edge.getOperandStacks().get(edge.getOperandStacks().size() - 1)));
@@ -2050,14 +2050,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         graph.addBlock(block, currentTraps);
         block.clear();
       }
-      // TODO: update currentTraps
+      // TODO: update currentTraps?
 
       Stmt handlerStmt = inlineExceptionHandlers.get(ln);
       emitStmt(handlerStmt, block);
       trapHandler.put(ln, handlerStmt);
 
       // jump back to the original implementation
-      JGotoStmt gotoStmt = Jimple.newGotoStmt(new StmtPositionInfo(currentLineNumber));
+      JGotoStmt gotoStmt = Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
       block.add(gotoStmt);
 
       // add block to graph
