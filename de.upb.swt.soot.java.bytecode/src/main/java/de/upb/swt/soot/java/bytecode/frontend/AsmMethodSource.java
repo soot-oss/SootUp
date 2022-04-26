@@ -41,7 +41,6 @@ import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.*;
 import de.upb.swt.soot.core.frontend.BodySource;
-import de.upb.swt.soot.core.graph.MutableBasicBlock;
 import de.upb.swt.soot.core.graph.MutableBlockStmtGraph;
 import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.jimple.Jimple;
@@ -136,8 +135,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Nonnull private final Map<Stmt, Stmt> replacedStmt = new HashMap<>();
 
   private OperandStack operandStack;
+
+  // merge those two following fields into a table?
   private Map<LabelNode, Stmt> trapHandler;
-  private Map<LabelNode, ClassType> trapException = new HashMap<>();
 
   private int currentLineNumber = -1;
   private int maxLineNumber = 0;
@@ -209,14 +209,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     /* retrieve all trap handlers */
     for (TryCatchBlockNode tc : tryCatchBlocks) {
-      // reserve space/ insert labels in datastructure
+      // reserve space/ insert labels in datastructure  - necessary?! its useless if not assigned
+      // later.. -> check the meaning of that containsKey() check
       trapHandler.put(tc.handler, null);
-
-      // FIXME: adapt signature for java9/modules!
-      final String exceptionName =
-          (tc.type != null) ? AsmUtil.toQualifiedName(tc.type) : "java.lang.Throwable";
-      final JavaClassType classType = javaIdentifierFactory.getClassType(exceptionName);
-      trapException.put(tc.handler, classType);
     }
 
     /* convert instructions */
@@ -228,7 +223,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
 
     /* build body (add stmts, locals, traps, etc.) */
-    buildStmts();
+    arrangeStmts();
     buildTraps();
 
     if (bodyBuilder.getStmtGraph().nodes().size() > 0) {
@@ -1871,9 +1866,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @Nonnull
-  private MutableBasicBlock buildPreambleLocals() {
+  private List<Stmt> buildPreambleLocals() {
 
-    MutableBasicBlock preambleBlock = new MutableBasicBlock();
+    List<Stmt> preambleBlock = new ArrayList<>();
     MethodSignature methodSignature = lazyMethodSignature.get();
 
     int localIdx = 0;
@@ -1883,7 +1878,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       final JIdentityStmt<JThisRef> stmt =
           Jimple.newIdentityStmt(
               l, Jimple.newThisRef(declaringClass), new StmtPositionInfo(currentLineNumber));
-      preambleBlock.addStmt(stmt);
+      preambleBlock.add(stmt);
     }
 
     // add parameter Locals
@@ -1903,7 +1898,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               local,
               Jimple.newParameterRef(parameterType, i),
               StmtPositionInfo.createNoStmtPositionInfo());
-      preambleBlock.addStmt(stmt);
+      preambleBlock.add(stmt);
 
       // see https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.6.1
       if (AsmUtil.isDWord(parameterType)) {
@@ -1947,24 +1942,18 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     bodyBuilder.setTraps(traps);
   }
 
-  private void buildStmts() {
+  /** all Instructions are converted. Now they can be arranged into the StmtGraph. */
+  private void arrangeStmts() {
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
 
-    Map<MutableBasicBlock, List<LabelNode>> blockToTrapHandler = new HashMap<>();
+    Map<ClassType, Stmt> currentTraps = new HashMap<>();
 
-    Map<LabelNode, TryCatchBlockNode> trapRangeBorders = new HashMap<>();
-    for (TryCatchBlockNode tryCatchBlock : tryCatchBlocks) {
-      // FIXME: [ms] handle start/end collisions of multiple tryCatchBlocks!
-      trapRangeBorders.put(tryCatchBlock.start, tryCatchBlock);
-      trapRangeBorders.put(tryCatchBlock.end, tryCatchBlock);
-    }
-
-    Map<ClassType, LabelNode> currentblocksTraps = new HashMap<>();
+    // (n, n+1) := (from, to)
+    List<Stmt> connectBlocks = new ArrayList<>();
 
     // every LabelNode denotes a border of a Block
-    MutableBasicBlock preambleBlock = buildPreambleLocals();
-    MutableBasicBlock block = preambleBlock;
+    List<Stmt> block = buildPreambleLocals();
 
     do {
 
@@ -1987,25 +1976,45 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         // there is (at least) a LabelNode -> Block border -> create another block or use the empty
         // existing one
         if (!block.isEmpty()) {
-          final MutableBasicBlock newBlock = new MutableBasicBlock();
-          if (block.getTail().fallsThrough()) {
-            block.addSuccessorBlock(newBlock);
-            newBlock.addPredecessorBlock(block);
+          final Stmt tailStmt = block.get(block.size() - 1);
+          if (tailStmt.fallsThrough()) {
+            connectBlocks.add(tailStmt);
           }
-          graph.addBlock(block);
+
+          graph.addBlock(block, currentTraps);
           if (graph.getStartingStmt() == null) {
-            graph.setStartingStmtBlock(block);
+            graph.setStartingStmt(block.get(0));
           }
-          block = newBlock;
+          block.clear();
         }
 
-        // FIXME: add trapRange info for blocks
-        for (Entry<LabelNode, Stmt> entry : this.trapHandler.entrySet()) {
-          ArrayList<LabelNode> ex = new ArrayList<>();
-          if (danglingLabel.contains(entry.getKey())) {
-            ex.add(entry.getKey());
+        // FIXME: update current "active" trapRanges information for the block
+        boolean isTrapBorder = false;
+        boolean isStartOfTrapRange = false;
+        for (TryCatchBlockNode tc : super.tryCatchBlocks) {
+
+          if (danglingLabel.contains(tc.start)) {
+            isTrapBorder = true;
+            isStartOfTrapRange = true;
           }
-          blockToTrapHandler.put(block, ex);
+
+          if (danglingLabel.contains(tc.end)) {
+            isTrapBorder = true;
+          }
+
+          if (isTrapBorder) {
+            // FIXME: adapt signature for java9/modules!
+            final String exceptionName =
+                (tc.type != null) ? AsmUtil.toQualifiedName(tc.type) : "java.lang.Throwable";
+            final JavaClassType classType = javaIdentifierFactory.getClassType(exceptionName);
+            if (isStartOfTrapRange) {
+              currentTraps.put(classType, insnToStmt.get(tc.handler));
+            } else {
+              // tc.end is exclusive -> the Stmt following this label is not included in the
+              // TrapRange
+              currentTraps.remove(classType);
+            }
+          }
         }
 
         // associate collected labels from danglingLabel with the following stmt
@@ -2028,31 +2037,39 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     // is there a dangling block thats not assigned in the loop?
     if (!block.isEmpty()) {
-      graph.addBlock(block);
+      graph.addBlock(block, currentTraps);
       if (graph.getStartingStmt() == null) {
-        graph.setStartingStmtBlock(block);
+        graph.setStartingStmt(block.get(0));
       }
     }
 
-    // Emit the inline exception handler blocks
+    // Emit the inline exception handler blocks i.e. those that are reachable without exceptional
+    // flow
     for (LabelNode ln : inlineExceptionHandlers.keySet()) {
-      block = new MutableBasicBlock();
+      if (block.isEmpty()) {
+        graph.addBlock(block, currentTraps);
+        block.clear();
+      }
+      // TODO: update currentTraps
+
       Stmt handlerStmt = inlineExceptionHandlers.get(ln);
       emitStmt(handlerStmt, block);
       trapHandler.put(ln, handlerStmt);
 
       // jump back to the original implementation
-      Stmt targetStmt = insnToStmt.get(ln);
       JGotoStmt gotoStmt = Jimple.newGotoStmt(new StmtPositionInfo(currentLineNumber));
-      block.addStmt(gotoStmt);
+      block.add(gotoStmt);
 
-      // add block into graph
-      graph.addBlock(block);
+      // add block to graph
+      graph.addBlock(block, currentTraps);
+      block.clear();
+
       // connect tail of block with its target
+      Stmt targetStmt = insnToStmt.get(ln);
       graph.putEdge(gotoStmt, targetStmt);
     }
 
-    // integrate traps/exceptions into the blocks
+    /* integrate traps/exceptions into the blocks
     for (Entry<MutableBasicBlock, List<LabelNode>> b : blockToTrapHandler.entrySet()) {
       for (LabelNode handlerLabel : b.getValue()) {
         ClassType exceptionType = trapException.get(handlerLabel);
@@ -2061,6 +2078,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
                 exceptionType, graph.getBlockOf(trapHandler.get(handlerLabel)));
       }
     }
+    */
+
+    // connect added blocks
 
     // connect branching stmts with its targets
     for (Map.Entry<Stmt, LabelNode> entry : stmtsThatBranchToLabel.entries()) {
@@ -2077,17 +2097,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
       graph.putEdge(fromStmt, targetStmt);
     }
-
-    graph.hintMergeBlocks(preambleBlock, preambleBlock.getSuccessors().get(0));
   }
 
-  private void emitStmt(@Nonnull Stmt handlerStmt, @Nonnull MutableBasicBlock block) {
+  private void emitStmt(@Nonnull Stmt handlerStmt, @Nonnull List<Stmt> block) {
     if (handlerStmt instanceof StmtContainer) {
-      for (Stmt u : ((StmtContainer) handlerStmt).getStmts()) {
-        block.addStmt(u);
-      }
+      block.addAll(((StmtContainer) handlerStmt).getStmts());
     } else {
-      block.addStmt(handlerStmt);
+      block.add(handlerStmt);
     }
   }
 
