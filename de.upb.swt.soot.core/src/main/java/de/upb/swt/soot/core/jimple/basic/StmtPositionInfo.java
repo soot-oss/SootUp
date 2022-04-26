@@ -31,6 +31,8 @@ import javax.annotation.Nonnull;
  *
  * @author Linghui Luo
  */
+// TODO: [ms] please redesign it more memory efficient! -> there are a lot of Stmts without any of
+// this information available!
 public final class StmtPositionInfo implements Copyable {
   private final Position stmtPosition;
   private final Position[] operandPositions;

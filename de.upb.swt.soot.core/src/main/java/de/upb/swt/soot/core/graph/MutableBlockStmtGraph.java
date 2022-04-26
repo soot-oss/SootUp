@@ -31,16 +31,16 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   /**
    * Creates a Graph representation from the 'legacy' representation i.e. a List of Stmts and Traps.
    */
-  public static MutableStmtGraph from(
+  public void initializeWith(
       @Nonnull List<Stmt> stmts,
       @Nonnull Map<BranchingStmt, List<Stmt>> branchingMap,
       @Nonnull List<Trap> traps) {
-    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+
     if (stmts.isEmpty()) {
-      return graph;
+      return;
     }
 
-    graph.setStartingStmt(stmts.get(0));
+    setStartingStmt(stmts.get(0));
 
     Map<ClassType, Stmt> currentTrapMap = new HashMap<>();
     for (int i = 0, stmtsSize = stmts.size(); i < stmtsSize; i++) {
@@ -63,7 +63,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       }
 
       // if(trapsChanged) => new Block
-      graph.addNode(stmt, currentTrapMap);
+      addNode(stmt, currentTrapMap);
 
       if (stmt.fallsThrough()) {
         // bad performance if not stmts is not instanceof RandomAccess
@@ -73,7 +73,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                   + stmt
                   + "') which has no follower - so it can't fall through.");
         }
-        graph.putEdge(stmt, stmts.get(i + 1));
+        putEdge(stmt, stmts.get(i + 1));
       }
 
       if (stmt.branches()) {
@@ -89,12 +89,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
         for (Stmt target : targets) {
           // a possible fallsthrough is not in branchingMap
-          graph.putEdge(stmt, target);
+          putEdge(stmt, target);
         }
       }
     }
-
-    return graph;
   }
 
   public static MutableStmtGraph from(@Nonnull Collection<MutableBasicBlock> blocks) {
@@ -235,7 +233,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     // add Block to graph, add+register Stmt to Block
     MutableBasicBlock block = new MutableBasicBlock();
     final int idx = blocks.size();
-    if (addNodeToBlock(block, idx, stmt) != null) {
+    if (addNodeToBlock(block, idx, stmt) == null) {
       blocks.add(block);
       return idx;
     }

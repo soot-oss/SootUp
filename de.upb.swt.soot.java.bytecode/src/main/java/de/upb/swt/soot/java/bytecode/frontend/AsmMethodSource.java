@@ -42,7 +42,6 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.*;
 import de.upb.swt.soot.core.frontend.BodySource;
 import de.upb.swt.soot.core.graph.MutableBlockStmtGraph;
-import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
@@ -65,16 +64,7 @@ import de.upb.swt.soot.core.jimple.common.expr.JNewArrayExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNewMultiArrayExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.*;
-import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.AbstractOpStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JInvokeStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
@@ -129,7 +119,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   /* -state fields- */
   private int nextLocal;
   private List<JavaLocal> locals;
-  private LinkedListMultimap<Stmt, LabelNode> stmtsThatBranchToLabel;
+  private LinkedListMultimap<BranchingStmt, LabelNode> stmtsThatBranchToLabel;
   private Map<AbstractInsnNode, Stmt> insnToStmt;
 
   @Nonnull private final Map<Stmt, Stmt> replacedStmt = new HashMap<>();
@@ -153,8 +143,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
 
   @Nonnull private final Map<LabelNode, Stmt> labelsToStmt = new HashMap<>();
-  @Nonnull private final Body.BodyBuilder bodyBuilder;
-  @Nonnull private final MutableStmtGraph graph;
 
   // FIXME: [ms] or JavaModuleIdentifierFactory if needed..
   private JavaIdentifierFactory javaIdentifierFactory = JavaIdentifierFactory.getInstance();
@@ -177,8 +165,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
     this.bodyInterceptors = bodyInterceptors;
-    this.graph = new MutableBlockStmtGraph();
-    bodyBuilder = Body.builder(graph);
   }
 
   @Override
@@ -193,8 +179,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Override
   @Nonnull
-  public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) {
-    bodyBuilder.setModifiers(AsmUtil.getModifiers(access));
+  public Body resolveBody(@Nonnull Iterable<Modifier> modifierIt) {
 
     /* initialize */
     nextLocal = maxLocals;
@@ -223,8 +208,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
 
     /* build body (add stmts, locals, traps, etc.) */
-    arrangeStmts();
-    buildTraps();
+    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder bodyBuilder = Body.builder(graph);
+
+    bodyBuilder.setModifiers(AsmUtil.getModifiers(access));
+    arrangeStmts(graph, bodyBuilder);
 
     if (bodyBuilder.getStmtGraph().nodes().size() > 0) {
       Position firstStmtPos =
@@ -999,7 +987,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     int op = insn.getOpcode();
     if (op == GOTO) {
       if (!insnToStmt.containsKey(insn)) {
-        Stmt gotoStmt = Jimple.newGotoStmt(new StmtPositionInfo(currentLineNumber));
+        BranchingStmt gotoStmt = Jimple.newGotoStmt(new StmtPositionInfo(currentLineNumber));
         stmtsThatBranchToLabel.put(gotoStmt, insn.label);
         setStmt(insn, gotoStmt);
       }
@@ -1077,7 +1065,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         val.addUsageInExpr(cond);
         frame.setIn(val);
       }
-      Stmt ifStmt = Jimple.newIfStmt(cond, new StmtPositionInfo(currentLineNumber));
+      BranchingStmt ifStmt = Jimple.newIfStmt(cond, new StmtPositionInfo(currentLineNumber));
       stmtsThatBranchToLabel.put(ifStmt, insn.label);
       setStmt(insn, ifStmt);
       if (isCmp) {
@@ -1721,99 +1709,78 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
     worklist.add(new BranchedInsnInfo(instructions.getFirst(), Collections.emptyList()));
     Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges = HashBasedTable.create(1, 1);
+
     do {
-      BranchedInsnInfo edge = worklist.getLast();
+      BranchedInsnInfo edge = worklist.pollLast();
       AbstractInsnNode insn = edge.getInsn();
       operandStack.setOperandStack(
           new ArrayList<>(edge.getOperandStacks().get(edge.getOperandStacks().size() - 1)));
-      label:
       do {
         int type = insn.getType();
-        switch (type) {
-          case FIELD_INSN:
-            convertFieldInsn((FieldInsnNode) insn);
+        if (type == FIELD_INSN) {
+          convertFieldInsn((FieldInsnNode) insn);
+        } else if (type == IINC_INSN) {
+          convertIincInsn((IincInsnNode) insn);
+        } else if (type == INSN) {
+          convertInsn((InsnNode) insn);
+          int op = insn.getOpcode();
+          if ((op >= IRETURN && op <= RETURN) || op == ATHROW) {
             break;
-          case IINC_INSN:
-            convertIincInsn((IincInsnNode) insn);
-            break;
-          case INSN:
-            {
-              convertInsn((InsnNode) insn);
-              int op = insn.getOpcode();
-              if ((op >= IRETURN && op <= RETURN) || op == ATHROW) {
-                break label;
-              }
-              break;
-            }
-          case INT_INSN:
-            convertIntInsn((IntInsnNode) insn);
-            break;
-          case LDC_INSN:
-            convertLdcInsn((LdcInsnNode) insn);
-            break;
-          case JUMP_INSN:
-            {
-              JumpInsnNode jmp = (JumpInsnNode) insn;
-              convertJumpInsn(jmp);
-              int op = jmp.getOpcode();
-              if (op == JSR) {
-                throw new UnsupportedOperationException("JSR!");
-              }
-              if (op != GOTO) {
-                /* ifX opcode, i.e. two successors */
-                AbstractInsnNode next = insn.getNext();
-                addEdges(edges, worklist, insn, next, Collections.singletonList(jmp.label));
-              } else {
-                addEdges(edges, worklist, insn, jmp.label, Collections.emptyList());
-              }
-              break label;
-            }
-          case LOOKUPSWITCH_INSN:
-            {
-              LookupSwitchInsnNode swtch = (LookupSwitchInsnNode) insn;
-              convertLookupSwitchInsn(swtch);
-              LabelNode dflt = swtch.dflt;
-              addEdges(edges, worklist, insn, dflt, swtch.labels);
-              break label;
-            }
-          case METHOD_INSN:
-            convertMethodInsn((MethodInsnNode) insn);
-            break;
-          case INVOKE_DYNAMIC_INSN:
-            convertInvokeDynamicInsn((InvokeDynamicInsnNode) insn);
-            break;
-          case MULTIANEWARRAY_INSN:
-            convertMultiANewArrayInsn((MultiANewArrayInsnNode) insn);
-            break;
-          case TABLESWITCH_INSN:
-            {
-              TableSwitchInsnNode swtch = (TableSwitchInsnNode) insn;
-              convertTableSwitchInsn(swtch);
-              LabelNode dflt = swtch.dflt;
-              addEdges(edges, worklist, insn, dflt, swtch.labels);
-              break label;
-            }
-          case TYPE_INSN:
-            convertTypeInsn((TypeInsnNode) insn);
-            break;
-          case VAR_INSN:
-            if (insn.getOpcode() == RET) {
-              throw new UnsupportedOperationException("RET!");
-            }
-            convertVarInsn((VarInsnNode) insn);
-            break;
-          case LABEL:
-            convertLabel((LabelNode) insn);
-            break;
-          case LINE:
-            convertLine((LineNumberNode) insn);
-            break;
-            //noinspection StatementWithEmptyBody
-          case FRAME:
-            // we can ignore it
-            break;
-          default:
-            throw new UnsupportedOperationException("Unknown instruction type: " + type);
+          }
+        } else if (type == INT_INSN) {
+          convertIntInsn((IntInsnNode) insn);
+        } else if (type == LDC_INSN) {
+          convertLdcInsn((LdcInsnNode) insn);
+        } else if (type == JUMP_INSN) {
+          JumpInsnNode jmp = (JumpInsnNode) insn;
+          convertJumpInsn(jmp);
+          int op = jmp.getOpcode();
+          if (op == JSR) {
+            throw new UnsupportedOperationException("JSR!");
+          }
+          if (op != GOTO) {
+            /* ifX opcode, i.e. two successors */
+            AbstractInsnNode next = insn.getNext();
+            addEdges(edges, worklist, insn, next, Collections.singletonList(jmp.label));
+          } else {
+            addEdges(edges, worklist, insn, jmp.label, Collections.emptyList());
+          }
+          break;
+        } else if (type == LOOKUPSWITCH_INSN) {
+          LookupSwitchInsnNode swtch = (LookupSwitchInsnNode) insn;
+          convertLookupSwitchInsn(swtch);
+          LabelNode dflt = swtch.dflt;
+          addEdges(edges, worklist, insn, dflt, swtch.labels);
+          break;
+        } else if (type == METHOD_INSN) {
+          convertMethodInsn((MethodInsnNode) insn);
+        } else if (type == INVOKE_DYNAMIC_INSN) {
+          convertInvokeDynamicInsn((InvokeDynamicInsnNode) insn);
+        } else if (type == MULTIANEWARRAY_INSN) {
+          convertMultiANewArrayInsn((MultiANewArrayInsnNode) insn);
+        } else if (type == TABLESWITCH_INSN) {
+          TableSwitchInsnNode swtch = (TableSwitchInsnNode) insn;
+          convertTableSwitchInsn(swtch);
+          LabelNode dflt = swtch.dflt;
+          addEdges(edges, worklist, insn, dflt, swtch.labels);
+          break;
+        } else if (type == TYPE_INSN) {
+          convertTypeInsn((TypeInsnNode) insn);
+        } else if (type == VAR_INSN) {
+          if (insn.getOpcode() == RET) {
+            throw new UnsupportedOperationException("RET!");
+          }
+          convertVarInsn((VarInsnNode) insn);
+        } else if (type == LABEL) {
+          convertLabel((LabelNode) insn);
+        } else if (type == LINE) {
+          convertLine((LineNumberNode) insn);
+        } else
+        //noinspection StatementWithEmptyBody
+        if (type == FRAME) {
+          // we can ignore it
+        } else {
+          throw new RuntimeException("Unknown instruction type: " + type);
         }
       } while ((insn = insn.getNext()) != null);
     } while (!worklist.isEmpty());
@@ -1866,7 +1833,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @Nonnull
-  private List<Stmt> buildPreambleLocals() {
+  private List<Stmt> buildPreambleLocals(Body.BodyBuilder bodyBuilder) {
 
     List<Stmt> preambleBlock = new ArrayList<>();
     MethodSignature methodSignature = lazyMethodSignature.get();
@@ -1913,7 +1880,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return preambleBlock;
   }
 
-  private void buildTraps() {
+  private List<Trap> buildTraps() {
     List<Trap> traps = new ArrayList<>();
     for (TryCatchBlockNode trycatch : tryCatchBlocks) {
       Stmt handler = trapHandler.get(trycatch.handler);
@@ -1938,22 +1905,22 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               handler);
       traps.add(trap);
     }
-
-    bodyBuilder.setTraps(traps);
+    return traps;
   }
 
   /** all Instructions are converted. Now they can be arranged into the StmtGraph. */
-  private void arrangeStmts() {
+  private void arrangeStmts(MutableBlockStmtGraph graph, Body.BodyBuilder builder) {
+
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
 
     Map<ClassType, Stmt> currentTraps = new HashMap<>();
 
     // (n, n+1) := (from, to)
-    List<Stmt> connectBlocks = new ArrayList<>();
+    // List<Stmt> connectBlocks = new ArrayList<>();
 
     // every LabelNode denotes a border of a Block
-    List<Stmt> block = buildPreambleLocals();
+    List<Stmt> block = buildPreambleLocals(builder);
 
     do {
 
@@ -1975,7 +1942,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (!danglingLabel.isEmpty()) {
         // there is (at least) a LabelNode -> Block border -> create another block or use the empty
         // existing one
-        if (!block.isEmpty()) {
+
+        /*if (!block.isEmpty()) {
           final Stmt tailStmt = block.get(block.size() - 1);
           if (tailStmt.fallsThrough()) {
             connectBlocks.add(tailStmt);
@@ -2016,6 +1984,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             }
           }
         }
+        */
 
         // associate collected labels from danglingLabel with the following stmt
         Stmt targetStmt =
@@ -2035,22 +2004,47 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     } while ((insn = insn.getNext()) != null);
 
-    // is there a dangling block thats not assigned in the loop?
+    /* is there a dangling block thats not assigned in the loop?
     if (!block.isEmpty()) {
       graph.addBlock(block, currentTraps);
       if (graph.getStartingStmt() == null) {
         graph.setStartingStmt(block.get(0));
       }
+    }*/
+
+    Map<BranchingStmt, List<Stmt>> branchingMap = new HashMap<>();
+    for (Map.Entry<BranchingStmt, Collection<LabelNode>> entry :
+        stmtsThatBranchToLabel.asMap().entrySet()) {
+      final BranchingStmt fromStmt = entry.getKey();
+      List<Stmt> targets = new ArrayList<>();
+      for (LabelNode labelNode : entry.getValue()) {
+        final Stmt targetStmt = labelsToStmt.get(labelNode);
+        if (targetStmt == null) {
+          throw new IllegalStateException(
+              "targetStmt not found for fromStmt"
+                  + fromStmt
+                  + " "
+                  + entry.getValue()
+                  + " in method "
+                  + lazyMethodSignature.get());
+        }
+        targets.add(targetStmt);
+      }
+      branchingMap.put(fromStmt, targets);
     }
+
+    final List<Trap> traps = buildTraps();
+    graph.initializeWith(block, branchingMap, traps);
 
     // Emit the inline exception handler blocks i.e. those that are reachable without exceptional
     // flow
     for (LabelNode ln : inlineExceptionHandlers.keySet()) {
-      if (block.isEmpty()) {
+      /*if (block.isEmpty()) {
         graph.addBlock(block, currentTraps);
         block.clear();
       }
       // TODO: update currentTraps?
+      */
 
       Stmt handlerStmt = inlineExceptionHandlers.get(ln);
       emitStmt(handlerStmt, block);
@@ -2069,21 +2063,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       graph.putEdge(gotoStmt, targetStmt);
     }
 
-    /* integrate traps/exceptions into the blocks
-    for (Entry<MutableBasicBlock, List<LabelNode>> b : blockToTrapHandler.entrySet()) {
-      for (LabelNode handlerLabel : b.getValue()) {
-        ClassType exceptionType = trapException.get(handlerLabel);
-        b.getKey()
-            .addExceptionalSuccessorBlock(
-                exceptionType, graph.getBlockOf(trapHandler.get(handlerLabel)));
-      }
-    }
-    */
+    // TODO connect added blocks
 
-    // connect added blocks
-
-    // connect branching stmts with its targets
-    for (Map.Entry<Stmt, LabelNode> entry : stmtsThatBranchToLabel.entries()) {
+    /* connect branching stmts with its targets
+    for (Map.Entry<BranchingStmt, LabelNode> entry : stmtsThatBranchToLabel.entries()) {
       final Stmt fromStmt = entry.getKey();
       final Stmt targetStmt = labelsToStmt.get(entry.getValue());
       if (targetStmt == null) {
@@ -2096,7 +2079,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
                 + lazyMethodSignature.get());
       }
       graph.putEdge(fromStmt, targetStmt);
-    }
+
+    }*/
   }
 
   private void emitStmt(@Nonnull Stmt handlerStmt, @Nonnull List<Stmt> block) {
@@ -2150,10 +2134,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     insnToStmt.put(key, newStmt);
     replacedStmt.put(oldStmt, newStmt);
 
-    List<LabelNode> branchLabels = stmtsThatBranchToLabel.get(oldStmt);
-    if (branchLabels != null) {
-      branchLabels.forEach(bl -> stmtsThatBranchToLabel.put(newStmt, bl));
-      stmtsThatBranchToLabel.removeAll(oldStmt);
+    if (oldStmt instanceof BranchingStmt) {
+      List<LabelNode> branchLabels = stmtsThatBranchToLabel.get((BranchingStmt) oldStmt);
+      if (branchLabels != null) {
+        branchLabels.forEach(bl -> stmtsThatBranchToLabel.put((BranchingStmt) newStmt, bl));
+        stmtsThatBranchToLabel.removeAll(oldStmt);
+      }
     }
   }
 

@@ -5,7 +5,6 @@ import de.upb.swt.soot.core.frontend.OverridingBodySource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.graph.MutableBlockStmtGraph;
-import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
@@ -342,7 +341,8 @@ public class JimpleConverter {
         final Body build;
         try {
 
-          MutableStmtGraph graph = MutableBlockStmtGraph.from(stmtList, branchingMap, traps);
+          MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+          graph.initializeWith(stmtList, branchingMap, traps);
           Body.BodyBuilder builder = Body.builder(graph);
 
           builder.setModifiers(modifiers);
