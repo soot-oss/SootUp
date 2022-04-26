@@ -20,6 +20,7 @@ package de.upb.swt.soot.core.graph;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.graph.iterator.StmtGraphBlockIterator;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.types.ClassType;
@@ -206,5 +207,11 @@ public class ImmutableStmtGraph extends StmtGraph<ImmutableBasicBlock> {
   @Override
   public List<Trap> getTraps() {
     return Collections.unmodifiableList(traps);
+  }
+
+  @Nonnull
+  @Override
+  public Iterator<Stmt> iterator() {
+    return new StmtGraphBlockIterator(this, getTraps());
   }
 }

@@ -20,6 +20,7 @@ package de.upb.swt.soot.core.graph;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.graph.iterator.StmtGraphBlockIterator;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -119,7 +120,7 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
   }
 
   @Override
-  public void addBlock(@Nonnull MutableBasicBlock block) {
+  public void addBlock(@Nonnull List<Stmt> stmts, @Nonnull Map<ClassType, Stmt> traps) {
     throw new RuntimeException("not implemented yet!");
   }
 
@@ -398,5 +399,11 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
     succs.forEach(succ -> predecessors.get(getNodeIdx(succ)).remove(node));
     // invalidate entry for node itself to allow gc
     successors.set(nodeIdx, null);
+  }
+
+  @Override
+  @Nonnull
+  public Iterator<Stmt> iterator() {
+    return new StmtGraphBlockIterator(this, getTraps());
   }
 }

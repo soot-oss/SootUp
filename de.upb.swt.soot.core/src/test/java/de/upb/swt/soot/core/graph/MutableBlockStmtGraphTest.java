@@ -355,10 +355,10 @@ public class MutableBlockStmtGraphTest {
     MutableBasicBlock blockC = new MutableBasicBlock();
     blockC.addStmt(thirdNop);
 
-    graph.addBlock(blockA);
+    graph.addBlock(blockA.getStmts(), Collections.emptyMap());
     assertEquals(1, graph.getBlocks().size());
 
-    graph.addBlock(blockB);
+    graph.addBlock(blockB.getStmts(), Collections.emptyMap());
     assertEquals(2, graph.getBlocks().size());
   }
 
@@ -373,9 +373,9 @@ public class MutableBlockStmtGraphTest {
     MutableBasicBlock blockC = new MutableBasicBlock();
     blockC.addStmt(thirdNop);
 
-    graph.addBlock(blockA);
-    graph.addBlock(blockB);
-    graph.addBlock(blockC);
+    graph.addBlock(blockA.getStmts(), Collections.emptyMap());
+    graph.addBlock(blockB.getStmts(), Collections.emptyMap());
+    graph.addBlock(blockC.getStmts(), Collections.emptyMap());
 
     graph.putEdge(firstNop, secondNop);
     graph.putEdge(secondNop, thirdNop);
@@ -457,7 +457,7 @@ public class MutableBlockStmtGraphTest {
     block.addStmt(firstNop);
     block.addStmt(firstNop);
     /* possible but is a problem in the graph! */
-    graph.addBlock(block);
+    graph.addBlock(block.getStmts(), Collections.emptyMap());
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -466,7 +466,7 @@ public class MutableBlockStmtGraphTest {
     MutableBasicBlock block = new MutableBasicBlock();
     graph.addNode(firstNop);
     block.addStmt(firstNop);
-    graph.addBlock(block);
+    graph.addBlock(block.getStmts(), Collections.emptyMap());
   }
 
   @Test
@@ -474,7 +474,7 @@ public class MutableBlockStmtGraphTest {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     MutableBasicBlock block = new MutableBasicBlock();
     graph.addNode(firstNop);
-    graph.addBlock(block);
+    graph.addBlock(block.getStmts(), Collections.emptyMap());
     block.addStmt(firstNop); // BAD! don't do that!
   }
 
@@ -483,15 +483,16 @@ public class MutableBlockStmtGraphTest {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     MutableBasicBlock block = new MutableBasicBlock();
     graph.addNode(firstNop);
-    graph.addBlock(block);
+    graph.addBlock(block.getStmts(), Collections.emptyMap());
     block.addStmt(secondNop); // BAD! don't do that!
-    graph.addBlock(block); // block is currently ignored if added again and not reindexed!
+    graph.addBlock(
+        block.getStmts(),
+        Collections.emptyMap()); // block is currently ignored if added again and not reindexed!
     assertFalse(graph.containsNode(secondNop));
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testBlockStmtValidity() {
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     MutableBasicBlock block = new MutableBasicBlock();
     block.addStmt(conditionalStmt);
     block.addStmt(firstNop);

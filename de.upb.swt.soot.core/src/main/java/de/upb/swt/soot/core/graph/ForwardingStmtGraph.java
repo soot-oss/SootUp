@@ -24,6 +24,7 @@ import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -116,6 +117,12 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
   @Override
   public boolean hasEdgeConnecting(@Nonnull Stmt from, @Nonnull Stmt to) {
     return backingGraph.hasEdgeConnecting(from, to);
+  }
+
+  @Nonnull
+  @Override
+  public Iterator<Stmt> iterator() {
+    return backingGraph.iterator();
   }
 
   @Nonnull

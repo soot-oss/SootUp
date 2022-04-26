@@ -2,10 +2,9 @@ package de.upb.swt.soot.core.graph;
 
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
-import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.util.GraphVizExporter;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -25,13 +24,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   /** copies a StmtGraph into this Mutable instance */
   public MutableBlockStmtGraph(@Nonnull StmtGraph<?> graph) {
     setStartingStmt(graph.getStartingStmt());
-    for (Stmt stmt : graph) {
-      setEdges(stmt, successors(stmt));
-    }
-
-    // FIXME: add traps
-    // FIXME: add
-
+    // FIXME:    graph.getBlocks().forEach( b -> addBlock(b.getStmts(), b.getExceptionalSuccessors()
+    // ) );
   }
 
   /**
@@ -108,11 +102,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
     final HashSet<MutableBasicBlock> checkExists = new HashSet<>();
     for (MutableBasicBlock block : blocks) {
-      block.getExceptionalSuccessors().values().forEach(exb -> checkExists.add(exb));
-      block.getSuccessors().forEach(exb -> checkExists.add(exb));
+      checkExists.addAll(block.getExceptionalSuccessors().values());
+      checkExists.addAll(block.getSuccessors());
     }
 
-    for (BasicBlock block : blocks) {
+    for (BasicBlock<MutableBasicBlock> block : blocks) {
       if (block.isEmpty()) {
         return null;
       }
@@ -129,12 +123,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   @Override
-  public void clearExceptionalEdges(@Nonnull Stmt stmt) {
-    // FIXME implement
-    throw new IllegalArgumentException("cant handle trap removal yet.");
-  }
-
-  @Override
   public void addExceptionalEdge(
       @Nonnull Stmt stmt, @Nonnull ClassType exceptionType, @Nonnull Stmt traphandlerStmt) {
     // FIXME implement
@@ -143,8 +131,22 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Override
   public void removeExceptionalEdge(@Nonnull Stmt stmt, @Nonnull ClassType exceptionType) {
-    // FIXME implement
-    throw new UnsupportedOperationException("cant handle trap removal yet.");
+    Integer blockIdx = stmtToBlock.get(stmt);
+    if (blockIdx == null) {
+      return;
+    }
+    final MutableBasicBlock block = blocks.get(blockIdx);
+    block.removeExceptionalSuccessorBlock(exceptionType);
+  }
+
+  @Override
+  public void clearExceptionalEdges(@Nonnull Stmt node) {
+    Integer blockIdx = stmtToBlock.get(node);
+    if (blockIdx == null) {
+      return;
+    }
+    final MutableBasicBlock block = blocks.get(blockIdx);
+    block.clearExceptionalSuccessorBlocks();
   }
 
   @Override
@@ -154,33 +156,21 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   /**
-   * caution: handle direct manipulation of MutableBasicBlocks after calling addBlock(..) with care!
-   * those changes are not necessarily reflected in the graphs datastructure.
+   * The list of Stmts must contain only fallsthrough Stmts; A flow manipulating Stmt
+   * (BranchingStmt, return, throw) is only allowed at the Tail. (like the conditions of a Block)
    */
   @Override
-  public void addBlock(@Nonnull MutableBasicBlock block) {
-    // check if the block is already existing in blocks
-    if (blocks.contains(block)) {
+  public void addBlock(@Nonnull List<Stmt> stmts, @Nonnull Map<ClassType, Stmt> trapMap) {
+    final Iterator<Stmt> iterator = stmts.iterator();
+    if (!iterator.hasNext()) {
       return;
     }
-
-    if (block.isEmpty()) {
-      throw new IllegalArgumentException("You cannot add an empty Block.");
+    final Stmt node = iterator.next();
+    int blockIdx = createStmtsBlock(node);
+    if (blockIdx < 0) {
+      throw new IllegalArgumentException("Stmt is already in the Graph!");
     }
-
-    int newIdx = blocks.size();
-    blocks.add(block);
-    for (Stmt stmt : block.getStmts()) {
-      final Integer exists = stmtToBlock.put(stmt, newIdx);
-      if (exists != null) {
-        // duplicate stmt in the same block?
-        throw new IllegalArgumentException(
-            "Stmt \"" + stmt + "\" of the given Block exists already in the graph!");
-      }
-    }
-
-    // TODO: check predecessorBlocks/successorBlocks ?
-
+    iterator.forEachRemaining(stmt -> addNodeToBlock(blocks.get(blockIdx), blockIdx, stmt));
   }
 
   @Override
@@ -236,21 +226,28 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
   }
 
-  /** creates a Block and inserts the given Stmt. */
+  /**
+   * creates a Block and inserts the given Stmt.
+   *
+   * @return -1 if Stmt is already in the graph!
+   */
   protected int createStmtsBlock(@Nonnull Stmt stmt) {
     // add Block to graph, add+register Stmt to Block
     MutableBasicBlock block = new MutableBasicBlock();
     final int idx = blocks.size();
-    blocks.add(block);
-    addNodeToBlock(block, idx, stmt);
-    return idx;
+    if (addNodeToBlock(block, idx, stmt) != null) {
+      blocks.add(block);
+      return idx;
+    }
+    ;
+    return -1;
   }
 
   /** Adds a Stmt to the end of a block i.e. stmt will become the new tail. */
-  protected void addNodeToBlock(
+  protected Integer addNodeToBlock(
       @Nonnull MutableBasicBlock block, int blockIdx, @Nonnull Stmt stmt) {
     block.addStmt(stmt);
-    stmtToBlock.put(stmt, blockIdx);
+    return stmtToBlock.putIfAbsent(stmt, blockIdx);
   }
 
   public void removeNode(@Nonnull Stmt stmt) {
@@ -401,34 +398,40 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     removeEdgeInternal(from, to, blockOfFromIdx);
   }
 
-  protected void removeEdgeInternal(
+  protected boolean removeEdgeInternal(
       @Nonnull Stmt from, @Nonnull Stmt to, @Nonnull Integer blockIdxOfFrom) {
     MutableBasicBlock blockOfFrom = blocks.get(blockIdxOfFrom);
     MutableBasicBlock blockOfTo = blocks.get(stmtToBlock.get(to));
-    removeBlockBorderEdgesInternal(from, blockOfFrom, blockIdxOfFrom);
+
+    boolean ret = removeBlockBorderEdgesInternal(from, blockOfFrom, blockIdxOfFrom);
 
     // divide block if from and to are from the same block
     if (blockOfFrom == blockOfTo) {
       // divide block and don't link them
-      int fromIdx = blockOfFrom.getStmts().indexOf(from);
-      if (blockOfFrom.getStmts().get(fromIdx + 1) == to) {
+      final List<Stmt> stmtsOfBlock = blockOfFrom.getStmts();
+      int fromIdx = stmtsOfBlock.indexOf(from);
+      if (stmtsOfBlock.get(fromIdx + 1) == to) {
         MutableBasicBlock newBlock = blockOfFrom.splitBlockUnlinked(from, to);
         Integer newBlockIdx = blocks.size();
         blocks.add(newBlock);
         newBlock.getStmts().forEach(s -> stmtToBlock.put(s, newBlockIdx));
+        return true;
       } else {
-        // TODO: check: do we need to do sth here? i.e. in the case that: ...
+        return false;
+        // throw new IllegalArgumentException("Can't seperate the flow from '"+from+"' to '"+to+"'.
+        // The Stmts are not connected in this graph!");
       }
     }
+
+    return ret;
   }
 
-  protected void removeBlockBorderEdgesInternal(
+  protected boolean removeBlockBorderEdgesInternal(
       @Nonnull Stmt from, @Nonnull MutableBasicBlock blockOfFrom, @Nonnull Integer blockIdxOfFrom) {
     // TODO: is it intuitive to remove connections to the BasicBlock in the case we cant merge the
     // blocks?
 
-    // merge previous block if possible i.e. previous block has no branchingstmt as tail && same
-    // traps
+    // add BlockB to BlockA if blockA has no branchingstmt as tail && same traps
     if (blockOfFrom.getStmts().size() > 0 && from == blockOfFrom.getTail()) {
       if (blockOfFrom.getPredecessors().size() == 1) {
         MutableBasicBlock singlePreviousBlock = blockOfFrom.getPredecessors().get(0);
@@ -443,14 +446,12 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                       singlePreviousBlock.addStmt(k);
                       stmtToBlock.put(k, blockIdxOfFrom);
                     });
+            return true;
           }
         }
       }
-    }
 
-    // remove outgoing connections from block if from stmt is the tail
-    if (from == blockOfFrom.getTail()) {
-
+      // remove outgoing connections from blockA if from stmt is the tail
       if (!from.branches()) {
         if (blockOfFrom.getStmts().size() > 0 && blockOfFrom.getSuccessors().size() == 1) {
           // merge previous block if possible i.e. no branchingstmt as tail && same traps && no
@@ -468,13 +469,18 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                         blockOfFrom.addStmt(k);
                         stmtToBlock.put(k, blockIdxOfFrom);
                       });
+
+              return true;
             }
           }
         }
       } else {
         blockOfFrom.clearSuccessorBlocks();
+        return true;
       }
     }
+
+    return false;
   }
 
   @Override
@@ -676,6 +682,205 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     } else {
       List<Stmt> stmtsA = blockA.getStmts();
       return stmtsA.get(stmtsA.indexOf(source) + 1) == target;
+    }
+  }
+
+  @Nonnull
+  public Iterator<Stmt> iterator() {
+    return new BlockStmtGraphIterator<>(this);
+  }
+
+  // FIXME: adapt to iterate over blocks and adapt traps at the end so that the list is not
+  // growing enormously big i.e. merge same traps with neighbouring blocks
+  // assumption: a Block has at least 1 Stmt
+  private static class BlockStmtGraphIterator<B extends BasicBlock<B>> implements Iterator<Stmt> {
+
+    @Nonnull private final StmtGraph<B> graph;
+
+    @Nonnull private final ArrayDeque<B> traps = new ArrayDeque<>();
+
+    @Nonnull private final ArrayDeque<B> nestedBlocks = new ArrayDeque<>();
+    @Nonnull private final ArrayDeque<B> otherBlocks = new ArrayDeque<>();
+
+    // caching the next Stmt to implement a simple hasNext() and skipping already returned Stmts
+    @Nonnull private final Set<B> iteratedBlocks;
+    @Nonnull private Iterator<Stmt> currentBlockIt;
+    @Nullable private B currentBlock;
+    @Nonnull private final List<Trap> collectedTraps = new ArrayList<>();
+
+    public BlockStmtGraphIterator(@Nonnull StmtGraph<B> graph) {
+      this.graph = graph;
+      final List<B> blocks = graph.getBlocks();
+      iteratedBlocks = new HashSet<>(blocks.size(), 1);
+      Stmt startingStmt = graph.getStartingStmt();
+      if (startingStmt != null) {
+        final B startingBlock = graph.getStartingStmtBlock();
+        iteratedBlocks.add(startingBlock);
+        currentBlockIt = startingBlock.getStmts().iterator();
+        currentBlock = startingBlock;
+        updateFollowingBlocks();
+      } else {
+        currentBlockIt = Collections.emptyIterator();
+        currentBlock = null;
+      }
+    }
+
+    @Nullable
+    private B retrieveNextBlock() {
+      B nextBlock;
+      do {
+        if (!nestedBlocks.isEmpty()) {
+          nextBlock = nestedBlocks.pollFirst();
+        } else if (!traps.isEmpty()) {
+          nextBlock = traps.pollFirst();
+        } else if (!otherBlocks.isEmpty()) {
+          nextBlock = otherBlocks.pollFirst();
+        } else {
+          return null;
+        }
+
+        // skip retrieved nextBlock if its already returned
+      } while (iteratedBlocks.contains(nextBlock));
+      return nextBlock;
+    }
+
+    @Override
+    @Nonnull
+    public Stmt next() {
+
+      if (!currentBlockIt.hasNext()) {
+        currentBlock = retrieveNextBlock();
+        if (currentBlock == null) {
+
+          throw new NoSuchElementException("Iterator has no more Stmts.");
+        }
+        currentBlockIt = currentBlock.getStmts().iterator();
+        updateFollowingBlocks();
+        iteratedBlocks.add(currentBlock);
+      }
+
+      return currentBlockIt.next();
+    }
+
+    //
+    private void updateFollowingBlocks() {
+      // collect traps
+      final Stmt tailStmt = currentBlock.getTail();
+      for (Map.Entry<? extends ClassType, B> entry :
+          currentBlock.getExceptionalSuccessors().entrySet()) {
+        B trapHandlerBlock = entry.getValue();
+        traps.addLast(trapHandlerBlock);
+
+        collectedTraps.add(
+            new Trap(entry.getKey(), currentBlock.getHead(), tailStmt, trapHandlerBlock.getHead()));
+        // integrate trapHandlerBlock Block into 'queue'
+        // if (!iteratedBlocks.contains(trapHandlerBlock)) {
+        nestedBlocks.addFirst(trapHandlerBlock);
+        // }
+      }
+
+      final List<B> successors = currentBlock.getSuccessors();
+
+      for (int i = successors.size() - 1; i >= 0; i--) {
+        if (i == 0 && tailStmt.fallsThrough()) {
+          // non-branching successors i.e. not a BranchingStmt or is the first successor (i.e. its
+          // false successor) of
+          // JIfStmt
+          nestedBlocks.addFirst(successors.get(0));
+        } else {
+
+          // create the most biggest fallsthrough sequence of basicblocks as possible -> go to the
+          // top until
+          // predecessor is not a fallsthrough stmt anymore and then the iterator will iterate down
+          // from there.
+          final B successorBlock = successors.get(i);
+          B leaderOfUnbranchedBlocks = successorBlock;
+          boolean anotherCheck;
+          do {
+            anotherCheck = false;
+            final List<B> itPreds = leaderOfUnbranchedBlocks.getPredecessors();
+            for (B pred : itPreds) {
+              if (pred.getTail().fallsThrough()
+                  && pred.getSuccessors().get(0) == leaderOfUnbranchedBlocks) {
+                leaderOfUnbranchedBlocks = pred;
+                anotherCheck = true;
+                break;
+              }
+            }
+          } while (anotherCheck);
+
+          // find a return Stmt inside the current Block
+          Stmt succTailStmt = successorBlock.getTail();
+          boolean isReturnBlock =
+              succTailStmt instanceof JReturnVoidStmt || succTailStmt instanceof JReturnStmt;
+
+          // remember branching successors
+          if (tailStmt instanceof JGotoStmt) {
+            if (isReturnBlock) {
+              nestedBlocks.removeFirstOccurrence(currentBlock.getHead());
+              otherBlocks.addLast(leaderOfUnbranchedBlocks);
+            } else {
+              otherBlocks.addFirst(leaderOfUnbranchedBlocks);
+            }
+          } else if (!nestedBlocks.contains(leaderOfUnbranchedBlocks)) {
+            // JSwitchStmt, JIfStmt
+            if (isReturnBlock) {
+              nestedBlocks.addLast(leaderOfUnbranchedBlocks);
+            } else {
+              nestedBlocks.addFirst(leaderOfUnbranchedBlocks);
+            }
+          }
+        }
+      }
+    }
+
+    @Override
+    public boolean hasNext() {
+      final boolean hasIteratorMoreElements;
+      if (currentBlockIt.hasNext()) {
+        hasIteratorMoreElements = true;
+      } else {
+        B b = retrieveNextBlock();
+        if (b != null) {
+          // reinsert at FIRST position -> not great for performance - but easier handling in next()
+          nestedBlocks.addFirst(b);
+          hasIteratorMoreElements = true;
+        } else {
+          hasIteratorMoreElements = false;
+        }
+      }
+
+      // "assertion" that all elements are iterated
+      if (!hasIteratorMoreElements) {
+        final int returnedSize = iteratedBlocks.size();
+        final List<B> blocks = graph.getBlocks();
+        final int actualSize = blocks.size();
+        if (returnedSize != actualSize) {
+          String info =
+              blocks.stream()
+                  .filter(n -> !iteratedBlocks.contains(n))
+                  .map(BasicBlock::getStmts)
+                  .collect(Collectors.toList())
+                  .toString();
+          throw new IllegalStateException(
+              "There are "
+                  + (actualSize - returnedSize)
+                  + " Blocks (and their containing Stmts) that are not iterated! The StmtGraph is not connected from its startingStmt!"
+                  + info
+                  + GraphVizExporter.createUrlToWebeditor(graph));
+        }
+      }
+      return hasIteratorMoreElements;
+    }
+
+    /**
+     * for jimple serialization -> this is the info for the end of the method contains only
+     * valid/useful information when all stmts are iterated i.e. hasNext() == false!
+     *
+     * @return List of Traps
+     */
+    public List<Trap> getTraps() {
+      return collectedTraps;
     }
   }
 }

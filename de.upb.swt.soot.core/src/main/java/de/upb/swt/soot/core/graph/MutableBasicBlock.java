@@ -17,6 +17,12 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
 
   public MutableBasicBlock() {}
 
+  public MutableBasicBlock(
+      @Nonnull List<Stmt> stmts, @Nonnull Map<ClassType, MutableBasicBlock> trapMap) {
+    this.stmts.addAll(stmts);
+    this.exceptionalSuccessorBlocks.putAll(trapMap);
+  }
+
   public void addStmt(@Nonnull Stmt stmt) {
     if (getStmtCount() > 0 && getTail() instanceof BranchingStmt) {
       throw new IllegalArgumentException(
@@ -206,6 +212,11 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   public void clearSuccessorBlocks() {
     successorBlocks.forEach(b -> b.removePredecessorBlock(this));
     successorBlocks.clear();
+  }
+
+  public void clearExceptionalSuccessorBlocks() {
+    exceptionalSuccessorBlocks.forEach((e, b) -> b.removePredecessorBlock(this));
+    exceptionalSuccessorBlocks.clear();
   }
 }
 

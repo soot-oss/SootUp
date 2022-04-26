@@ -106,6 +106,30 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
+  @Nonnull
+  @Override
+  public Iterator<Stmt> iterator() {
+    return new Iterator<Stmt>() {
+      final Iterator<ImmutableBasicBlock> blockIt = blocks.iterator();
+      Iterator<Stmt> stmtIt = blockIt.next().getStmts().iterator();
+
+      @Override
+      public boolean hasNext() {
+        // hint: there are no empty blocks!
+        return stmtIt.hasNext() || blockIt.hasNext();
+      }
+
+      @Override
+      public Stmt next() {
+        if (stmtIt.hasNext()) {
+          return stmtIt.next();
+        }
+        stmtIt = blockIt.next().getStmts().iterator();
+        return stmtIt.next();
+      }
+    };
+  }
+
   private class ImmutableBasicBlock implements BasicBlock<ImmutableBasicBlock> {
     private final ImmutableStmtGraph graph;
     private final int startIdx;

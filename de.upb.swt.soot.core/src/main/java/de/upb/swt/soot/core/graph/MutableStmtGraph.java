@@ -47,7 +47,7 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   public abstract void addNode(@Nonnull Stmt node, @Nonnull Map<ClassType, Stmt> traps);
 
   // maybe refactor addBlock into MutableBlockStmtGraph..
-  public abstract void addBlock(@Nonnull MutableBasicBlock block);
+  public abstract void addBlock(@Nonnull List<Stmt> stmts, @Nonnull Map<ClassType, Stmt> traps);
 
   // public abstract void replaceBlock(@Nonnull MutableBasicBlock oldBlock, @Nonnull
   // MutableBasicBlock newBlock);
@@ -97,11 +97,6 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   protected void mergeBlockIntoFirst(
       @Nonnull MutableBasicBlock firstBlock, @Nonnull MutableBasicBlock followingBlock) {
 
-    if (firstBlock.getTail().branches()) {
-      throw new IllegalArgumentException(
-          "firstBlock ends with an BranchingStmt. Can't add more Stmts to a Block after a BranchingStmt!");
-    }
-
     for (Stmt stmt : followingBlock.getStmts()) {
       firstBlock.addStmt(stmt);
     }
@@ -113,7 +108,7 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   }
 
   /** hints the Datastructure that two following blocks could be possibly merged */
-  public boolean hintMergeBlocks(
+  public boolean tryMergeBlocks(
       @Nonnull MutableBasicBlock firstBlock, @Nonnull MutableBasicBlock followingBlock) {
     final boolean mergeable = isMergeable(firstBlock, followingBlock);
     if (mergeable) {
