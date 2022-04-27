@@ -37,6 +37,7 @@ import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import de.upb.swt.soot.core.frontend.OverridingBodySource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
+import de.upb.swt.soot.core.graph.MutableBlockStmtGraph;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
@@ -44,6 +45,7 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -82,9 +84,6 @@ public class WalaIRToJimpleConverter {
   private final HashMap<String, Integer> clsWithInnerCls;
   private final HashMap<String, String> walaToSootNameTable;
   private Set<SootField> sootFields;
-
-  private Stmt rememberedStmt;
-  private boolean isFirstStmtSet;
 
   public WalaIRToJimpleConverter(@Nonnull Set<String> sourceDirPath) {
     srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath);
@@ -405,35 +404,16 @@ public class WalaIRToJimpleConverter {
     return modifiers;
   }
 
-  private void emitStmt(@Nonnull Body.BodyBuilder bodyBuilder, @Nonnull Stmt stmt) {
-    if (rememberedStmt != null) {
-      if (rememberedStmt.fallsThrough()) {
-        // determine whether successive emitted Stmts have a flow between them
-        bodyBuilder.addFlow(rememberedStmt, stmt);
-      }
-    } else if (!isFirstStmtSet) {
-      // determine first stmt to execute
-      bodyBuilder.setStartingStmt(stmt);
-      isFirstStmtSet = true;
-    }
-    rememberedStmt = stmt;
-  }
-
   @Nonnull
   private Body createBody(
       MethodSignature methodSignature, EnumSet<Modifier> modifiers, AstMethod walaMethod) {
 
-    // reset linking information
-    rememberedStmt = null;
-    isFirstStmtSet = false;
-
-    final Body.BodyBuilder builder = Body.builder();
-    builder.setMethodSignature(methodSignature);
-    List<Trap> traps = new ArrayList<>();
-
     if (walaMethod.isAbstract()) {
-      return builder.build();
+      return Body.builder().setMethodSignature(methodSignature).build();
     }
+
+    List<Trap> traps = new ArrayList<>();
+    List<Stmt> stmtList = new ArrayList<>();
 
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
@@ -456,7 +436,7 @@ public class WalaIRToJimpleConverter {
                   thisLocal,
                   Jimple.newThisRef(thisType),
                   convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-          emitStmt(builder, stmt);
+          stmtList.add(stmt);
         }
 
         // wala's first parameter is the "this" reference for non-static methods
@@ -470,7 +450,7 @@ public class WalaIRToJimpleConverter {
                     paraLocal,
                     Jimple.newParameterRef(type, i),
                     convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-            emitStmt(builder, stmt);
+            stmtList.add(stmt);
           }
         } else {
           for (int i = 1; i < walaMethod.getNumberOfParameters(); i++) {
@@ -482,7 +462,7 @@ public class WalaIRToJimpleConverter {
                     paraLocal,
                     Jimple.newParameterRef(type, i - 1),
                     convertPositionInfo(debugInfo.getInstructionPosition(0), null));
-            emitStmt(builder, stmt);
+            stmtList.add(stmt);
           }
         }
 
@@ -495,12 +475,12 @@ public class WalaIRToJimpleConverter {
           if (!retStmts.isEmpty()) {
             final int retStmtsSize = retStmts.size();
             stmt = retStmts.get(0);
-            emitStmt(builder, stmt);
+            stmtList.add(stmt);
             index2Stmt.put(inst.iIndex(), stmt);
 
             for (int i = 1; i < retStmtsSize; i++) {
               stmt = retStmts.get(i);
-              emitStmt(builder, stmt);
+              stmtList.add(stmt);
             }
           }
         }
@@ -518,7 +498,7 @@ public class WalaIRToJimpleConverter {
             ret =
                 Jimple.newReturnVoidStmt(
                     convertPositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
-            emitStmt(builder, ret);
+            stmtList.add(stmt);
           } else {
             ret = stmt;
           }
@@ -526,7 +506,7 @@ public class WalaIRToJimpleConverter {
           index2Stmt.put(-1, ret);
         }
 
-        instConverter.setUpTargets(index2Stmt, builder);
+        final Map<BranchingStmt, List<Stmt>> branchingMap = instConverter.setUpTargets(index2Stmt);
 
         // calculate trap information
         for (Map.Entry<IBasicBlock<SSAInstruction>, TypeReference[]> catchBlockEntry :
@@ -591,8 +571,11 @@ public class WalaIRToJimpleConverter {
           }
         }
 
-        return builder
-            .setTraps(traps)
+        MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+        graph.initializeWith(stmtList, branchingMap, traps);
+
+        return Body.builder(graph)
+            .setMethodSignature(methodSignature)
             .setLocals(localGenerator.getLocals())
             .setPosition(convertPosition(bodyPos))
             .build();
