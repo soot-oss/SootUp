@@ -158,35 +158,51 @@ public class Body implements Copyable {
   }
 
   /** Return unit containing the \@this-assignment * */
+  @Nullable
   public Stmt getThisStmt() {
     for (Stmt u : getStmts()) {
-      if (u instanceof JIdentityStmt && ((JIdentityStmt<?>) u).getRightOp() instanceof JThisRef) {
-        return u;
+      if (u instanceof JIdentityStmt) {
+        if (((JIdentityStmt<?>) u).getRightOp() instanceof JThisRef) {
+          return u;
+        }
+      } else {
+        // TODO: possible optimization see getParameterLocals()
+        //  break;
       }
     }
-
-    throw new RuntimeException("couldn't find this-assignment!" + " in " + getMethodSignature());
+    return null;
+    //    throw new RuntimeException("couldn't find this-assignment!" + " in " +
+    // getMethodSignature());
   }
 
   /** Return LHS of the first identity stmt assigning from \@this. */
+  @Nullable
   public Local getThisLocal() {
-    return (Local) (((JIdentityStmt<?>) getThisStmt()).getLeftOp());
+    final JIdentityStmt<?> thisStmt = (JIdentityStmt<?>) getThisStmt();
+    if (thisStmt == null) {
+      return null;
+    }
+    return thisStmt.getLeftOp();
   }
 
   /** Return LHS of the first identity stmt assigning from \@parameter i. */
+  @Nullable
   public Local getParameterLocal(int i) {
     for (Stmt s : getStmts()) {
-      if (s instanceof JIdentityStmt
-          && ((JIdentityStmt<?>) s).getRightOp() instanceof JParameterRef) {
-        JIdentityStmt<?> idStmt = (JIdentityStmt<?>) s;
-        JParameterRef pr = (JParameterRef) idStmt.getRightOp();
-        if (pr.getIndex() == i) {
-          return idStmt.getLeftOp();
+      if (s instanceof JIdentityStmt) {
+        if (((JIdentityStmt<?>) s).getRightOp() instanceof JParameterRef) {
+          JIdentityStmt<?> idStmt = (JIdentityStmt<?>) s;
+          JParameterRef pr = (JParameterRef) idStmt.getRightOp();
+          if (pr.getIndex() == i) {
+            return idStmt.getLeftOp();
+          }
         }
+      } else {
+        // TODO: possible optimization see getParameterLocals()
+        //  break;
       }
     }
-
-    throw new RuntimeException("couldn't find JParameterRef" + i + "! in " + getMethodSignature());
+    return null;
   }
 
   /**
@@ -209,6 +225,12 @@ public class Body implements Copyable {
           retVal.add(pr.getIndex(), idStmt.getLeftOp());
         }
       }
+      /*  if we restrict/define that IdentityStmts MUST be at the beginnging.
+      else{
+        break;
+      }
+      * */
+
     }
     return Collections.unmodifiableCollection(retVal);
   }
@@ -224,8 +246,8 @@ public class Body implements Copyable {
    * @return A collection of all the Stmts that are targets of a BranchingStmt
    */
   @Nonnull
-  public Collection<Stmt> getTargetStmtsInBody() {
-    List<Stmt> stmtList = new ArrayList<>();
+  public Collection<Stmt> getLabeledStmts() {
+    Set<Stmt> stmtList = new HashSet<>();
     for (Stmt stmt : graph.nodes()) {
       if (stmt instanceof BranchingStmt) {
         if (stmt instanceof JIfStmt) {
@@ -238,16 +260,13 @@ public class Body implements Copyable {
       }
     }
 
-    /*
     for (Trap trap : getTraps()) {
-      // TODO: [ms] check: is this necessary? seems to be a duplicate addition to the list as
-      // start/end/handler should already added while iterating ".nodes()"
       stmtList.add(trap.getBeginStmt());
       stmtList.add(trap.getEndStmt());
       stmtList.add(trap.getHandlerStmt());
     }
-    */
-    return Collections.unmodifiableCollection(stmtList);
+
+    return stmtList;
   }
 
   /**

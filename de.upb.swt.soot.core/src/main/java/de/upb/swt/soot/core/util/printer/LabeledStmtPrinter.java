@@ -107,7 +107,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   public Iterable<Stmt> initializeSootMethod(Body body) {
     this.body = body;
 
-    final Collection<Stmt> targetStmtsOfBranches = body.getTargetStmtsInBody();
+    final Collection<Stmt> targetStmtsOfBranches = body.getLabeledStmts();
     final List<Trap> traps = body.getTraps();
 
     final int maxEstimatedSize = targetStmtsOfBranches.size() + traps.size() * 3;
