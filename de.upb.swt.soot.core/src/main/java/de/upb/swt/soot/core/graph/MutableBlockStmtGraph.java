@@ -758,28 +758,16 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
   }
 
+  /** little expensive getter - its more of a build/create */
   @Override
   public List<Trap> getTraps() {
-    List<Trap> traps = new ArrayList<>();
-
-    Map<ClassType, List<MutableBasicBlock>> traphandler = new HashMap<>();
-    Map<MutableBasicBlock, List<MutableBasicBlock>> trappedBlocks = new HashMap<>();
-
-    // collect all traps from the blocks
-    for (MutableBasicBlock block : blocks) {
-      block
-          .getExceptionalSuccessors()
-          .forEach(
-              (type, trapBlock) -> {
-                // FIXME: Tail is not exclusive ! trapendRange is exclusive!
-                traps.add(new Trap(type, block.getHead(), block.getTail(), trapBlock.getHead()));
-                // trappedBlocks.put(type, trapBlock);
-              });
+    BlockGraphIteratorAndTrapCollector<MutableBasicBlock> it =
+        new BlockGraphIteratorAndTrapCollector<>(this);
+    // it.getTraps() is valid/completely build when the iterator is done.
+    while (it.hasNext()) {
+      it.next();
     }
-
-    // TODO: merge traps where possible
-
-    return traps;
+    return it.getTraps();
   }
 
   @Nonnull
@@ -982,18 +970,18 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
           // create the most biggest fallsthrough sequence of basicblocks as possible -> go to the
           // top until
-          // predecessor is not a fallsthrough stmt anymore and then the iterator will iterate down
+          // predecessor is not a fallsthrough stmt anymore and then the iterator will iterate
           // from there.
           final MutableBasicBlock successorBlock = successors.get(i);
-          MutableBasicBlock leaderOfUnbranchedBlocks = successorBlock;
+          MutableBasicBlock leaderOfFallsthroughBlocks = successorBlock;
           boolean anotherCheck;
           do {
             anotherCheck = false;
-            final List<MutableBasicBlock> itPreds = leaderOfUnbranchedBlocks.getPredecessors();
+            final List<MutableBasicBlock> itPreds = leaderOfFallsthroughBlocks.getPredecessors();
             for (MutableBasicBlock pred : itPreds) {
               if (pred.getTail().fallsThrough()
-                  && pred.getSuccessors().get(0) == leaderOfUnbranchedBlocks) {
-                leaderOfUnbranchedBlocks = pred;
+                  && pred.getSuccessors().get(0) == leaderOfFallsthroughBlocks) {
+                leaderOfFallsthroughBlocks = pred;
                 anotherCheck = true;
                 break;
               }
@@ -1009,16 +997,16 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           if (tailStmt instanceof JGotoStmt) {
             if (isReturnBlock) {
               nestedBlocks.removeFirstOccurrence(currentBlock.getHead());
-              otherBlocks.addLast(leaderOfUnbranchedBlocks);
+              otherBlocks.addLast(leaderOfFallsthroughBlocks);
             } else {
-              otherBlocks.addFirst(leaderOfUnbranchedBlocks);
+              otherBlocks.addFirst(leaderOfFallsthroughBlocks);
             }
-          } else if (!nestedBlocks.contains(leaderOfUnbranchedBlocks)) {
+          } else if (!nestedBlocks.contains(leaderOfFallsthroughBlocks)) {
             // JSwitchStmt, JIfStmt
             if (isReturnBlock) {
-              nestedBlocks.addLast(leaderOfUnbranchedBlocks);
+              nestedBlocks.addLast(leaderOfFallsthroughBlocks);
             } else {
-              nestedBlocks.addFirst(leaderOfUnbranchedBlocks);
+              nestedBlocks.addFirst(leaderOfFallsthroughBlocks);
             }
           }
         }
