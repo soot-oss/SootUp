@@ -179,7 +179,8 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
    * @param shouldBeNewHead if true: splitStmt is the Head of the second BasicBlock if false
    *     splitStmt is the tail of the first BasicBlock
    * @param splitStmt the stmt which determines where to split the BasicBlock
-   * @return second half with splitStmt as the head of the second BasicBlock
+   * @return second half with splitStmt as the head of the second BasicBlock; otherwise its the tail
+   *     of the first basicblock
    */
   @Nonnull
   public MutableBasicBlock splitBlockLinked(@Nonnull Stmt splitStmt, boolean shouldBeNewHead) {

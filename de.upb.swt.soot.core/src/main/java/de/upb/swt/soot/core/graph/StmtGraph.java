@@ -21,9 +21,6 @@ import javax.annotation.Nullable;
  */
 public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stmt> {
 
-  @Deprecated // hint: please use information for exceptional flows from BasicBlocks
-  protected List<Trap> traps = new ArrayList<>();
-
   public abstract Stmt getStartingStmt();
 
   public V getStartingStmtBlock() {
@@ -94,12 +91,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
 
   /** returns a list of associated traps */
-  @Nonnull
-  @Deprecated
-  public List<Trap> getTraps() {
-    /* ms: makes no sense (i.e. no guarantee!) that it matches the stmt ranges without associated stmt/block information */
-    return traps;
-  }
+  public abstract List<Trap> getTraps();
 
   /**
    * returns a Collection of Stmts that leave the body (i.e. JReturnVoidStmt, JReturnStmt and

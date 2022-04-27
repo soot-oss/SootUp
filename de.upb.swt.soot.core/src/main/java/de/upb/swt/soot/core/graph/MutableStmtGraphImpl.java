@@ -401,6 +401,16 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
     successors.set(nodeIdx, null);
   }
 
+  @Deprecated protected List<Trap> traps = new ArrayList<>();
+
+  @Nonnull
+  @Override
+  /* ms: possible problem: ordered/iterated graph does not match th trap ranges! */
+  // FIXME: adapt the traps when they are mutated!
+  public List<Trap> getTraps() {
+    return traps;
+  }
+
   @Override
   @Nonnull
   public Iterator<Stmt> iterator() {
