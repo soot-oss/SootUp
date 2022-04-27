@@ -22,7 +22,9 @@ package de.upb.swt.soot.core.graph;
  */
 import de.upb.swt.soot.core.graph.iterator.StmtGraphBlockIterator;
 import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
@@ -64,7 +66,7 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
   }
 
   /** creates a mutable copy(!) of originalStmtGraph */
-  public MutableStmtGraphImpl(@Nonnull StmtGraph originalStmtGraph) {
+  public MutableStmtGraphImpl(@Nonnull StmtGraph<?> originalStmtGraph) {
     setStartingStmt(originalStmtGraph.getStartingStmt());
 
     // FIXME: copy traps!
@@ -89,7 +91,7 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
   @Nonnull
   @Override
   public StmtGraph<?> unmodifiableStmtGraph() {
-    return new ForwardingStmtGraph(this);
+    return new ForwardingStmtGraph<>(this);
   }
 
   @Override
@@ -179,18 +181,18 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
   @Override
   public void clearExceptionalEdges(@Nonnull Stmt stmt) {
     // FIXME: implement
-    throw new IllegalArgumentException("removal of traps is not implemented, yet.");
+    throw new UnsupportedOperationException("removal of traps is not implemented, yet.");
   }
 
   @Override
   public void addExceptionalEdge(
       @Nonnull Stmt stmt, @Nonnull ClassType exception, @Nonnull Stmt traphandlerStmt) {
-    throw new IllegalArgumentException("removal of traps is not implemented, yet.");
+    throw new UnsupportedOperationException("removal of traps is not implemented, yet.");
   }
 
   @Override
   public void removeExceptionalEdge(@Nonnull Stmt stmt, @Nonnull ClassType exception) {
-    throw new IllegalArgumentException("removal of traps is not implemented, yet.");
+    throw new UnsupportedOperationException("removal of traps is not implemented, yet.");
   }
 
   @Override
@@ -239,7 +241,7 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
   @Override
   public List<MutableBasicBlock> getBlocks() {
     // FIXME: implement
-    throw new IllegalStateException("Not implemented yet!");
+    throw new UnsupportedOperationException("Not implemented yet!");
   }
 
   @Override
@@ -256,6 +258,11 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
   @Nonnull
   @Override
   public List<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
+    if (!(node instanceof JIdentityStmt
+        && ((JIdentityStmt<?>) node).getRightOp() instanceof JCaughtExceptionRef)) {
+      return Collections.emptyList();
+    }
+    // FIXME List<Stmt> preds = predecessors(node);
     throw new UnsupportedOperationException("not implemented");
   }
 

@@ -761,8 +761,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   /** little expensive getter - its more of a build/create */
   @Override
   public List<Trap> getTraps() {
-    BlockGraphIteratorAndTrapCollector<MutableBasicBlock> it =
-        new BlockGraphIteratorAndTrapCollector<>(this);
+    BlockGraphIteratorAndTrapCollector it = new BlockGraphIteratorAndTrapCollector(this);
     // it.getTraps() is valid/completely build when the iterator is done.
     while (it.hasNext()) {
       it.next();
@@ -772,19 +771,17 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Nonnull
   public Iterator<Stmt> iterator() {
-    return new BlockStmtGraphIterator<>(this);
+    return new BlockStmtGraphIterator(this);
   }
 
   /** Iterates the Stmts according to the jimple output order. */
-  private static class BlockStmtGraphIterator<
-          MutableBasicBlock extends BasicBlock<MutableBasicBlock>>
-      implements Iterator<Stmt> {
+  private static class BlockStmtGraphIterator implements Iterator<Stmt> {
 
-    private final BlockGraphIterator<MutableBasicBlock> blockIt;
+    private final BlockGraphIterator blockIt;
     @Nonnull private Iterator<Stmt> currentBlockIt = Collections.emptyIterator();
 
     public BlockStmtGraphIterator(@Nonnull StmtGraph<MutableBasicBlock> graph) {
-      blockIt = new BlockGraphIterator<>(graph);
+      blockIt = new BlockGraphIterator(graph);
     }
 
     @Override
@@ -807,9 +804,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   /** Iterates over the Blocks and collects/aggregates Trap information */
-  public static class BlockGraphIteratorAndTrapCollector<
-          MutableBasicBlock extends BasicBlock<MutableBasicBlock>>
-      extends BlockGraphIterator<MutableBasicBlock> {
+  public static class BlockGraphIteratorAndTrapCollector extends BlockGraphIterator {
 
     @Nonnull private final List<Trap> collectedTraps = new ArrayList<>();
 
@@ -891,12 +886,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   /** Iterates over the blocks */
-  private static class BlockGraphIterator<MutableBasicBlock extends BasicBlock<MutableBasicBlock>>
-      implements Iterator<MutableBasicBlock> {
+  private static class BlockGraphIterator implements Iterator<MutableBasicBlock> {
 
     @Nonnull private final StmtGraph<MutableBasicBlock> graph;
 
-    @Nonnull private final ArrayDeque<MutableBasicBlock> traps = new ArrayDeque<>();
+    @Nonnull private final ArrayDeque<MutableBasicBlock> trapHandlerBlocks = new ArrayDeque<>();
 
     @Nonnull private final ArrayDeque<MutableBasicBlock> nestedBlocks = new ArrayDeque<>();
     @Nonnull private final ArrayDeque<MutableBasicBlock> otherBlocks = new ArrayDeque<>();
@@ -922,8 +916,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       do {
         if (!nestedBlocks.isEmpty()) {
           nextBlock = nestedBlocks.pollFirst();
-        } else if (!traps.isEmpty()) {
-          nextBlock = traps.pollFirst();
+        } else if (!trapHandlerBlocks.isEmpty()) {
+          nextBlock = trapHandlerBlocks.pollFirst();
         } else if (!otherBlocks.isEmpty()) {
           nextBlock = otherBlocks.pollFirst();
         } else {
@@ -954,7 +948,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       for (Map.Entry<? extends ClassType, MutableBasicBlock> entry :
           currentBlock.getExceptionalSuccessors().entrySet()) {
         MutableBasicBlock trapHandlerBlock = entry.getValue();
-        traps.addLast(trapHandlerBlock);
+        trapHandlerBlocks.addLast(trapHandlerBlock);
         nestedBlocks.addFirst(trapHandlerBlock);
       }
 
