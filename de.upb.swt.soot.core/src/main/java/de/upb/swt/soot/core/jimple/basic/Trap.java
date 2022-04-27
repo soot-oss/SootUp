@@ -33,9 +33,6 @@ import javax.annotation.Nonnull;
  *
  * <p>Prefer to use the factory methods in {@link Jimple}.
  */
-// TODO: still really necessary as its just wrapping a classType as traprange+handlerstmt are in the
-// stmtgraph now..
-@Deprecated
 public final class Trap implements Copyable {
 
   /** The exception being caught. */

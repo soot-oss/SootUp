@@ -818,6 +818,90 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
   }
 
+  /** Iterates over the Blocks and collects/aggregates Trap information */
+  public static class BlockGraphIteratorAndTrapCollector<
+          MutableBasicBlock extends BasicBlock<MutableBasicBlock>>
+      extends BlockGraphIterator<MutableBasicBlock> {
+
+    @Nonnull private final List<Trap> collectedTraps = new ArrayList<>();
+
+    Map<ClassType, Stmt> trapStarts = new HashMap<>();
+    MutableBasicBlock lastBlock = null;
+
+    public BlockGraphIteratorAndTrapCollector(@Nonnull StmtGraph<MutableBasicBlock> graph) {
+      super(graph);
+    }
+
+    @Nonnull
+    @Override
+    public MutableBasicBlock next() {
+      final MutableBasicBlock block = super.next();
+
+      final Map<? extends ClassType, MutableBasicBlock> currentBlocksExceptions =
+          block.getExceptionalSuccessors();
+      // former trap info is not in the block blocks info? -> add it to the trap collection
+      final Map<? extends ClassType, MutableBasicBlock> lastBlocksExceptionalSuccessors;
+      if (lastBlock != null) {
+        lastBlocksExceptionalSuccessors = lastBlock.getExceptionalSuccessors();
+
+        lastBlocksExceptionalSuccessors.forEach(
+            (type, trapHandlerBlock) -> {
+              final MutableBasicBlock mutableBasicBlock = currentBlocksExceptions.get(type);
+              if (mutableBasicBlock == null) {
+                final Stmt remove = trapStarts.remove(type);
+                if (remove == null) {
+                  throw new IllegalStateException(
+                      "Trap start for '" + type + "' is not in the Map!");
+                }
+                collectedTraps.add(
+                    new Trap(type, remove, lastBlock.getTail(), trapHandlerBlock.getHead()));
+              }
+            });
+      } else {
+        lastBlocksExceptionalSuccessors = Collections.emptyMap();
+      }
+
+      // theres a new trap in this block? add it to currentTraps
+      block
+          .getExceptionalSuccessors()
+          .forEach(
+              (type, trapHandlerBlock) -> {
+                if (!lastBlocksExceptionalSuccessors.containsKey(type)) {
+                  trapStarts.put(type, block.getHead());
+                }
+              });
+
+      lastBlock = block;
+      return block;
+    }
+
+    /**
+     * for jimple serialization -> this is the info for the end of the method contains only
+     * valid/useful information when all stmts are iterated i.e. hasNext() == false!
+     *
+     * @return List of Traps
+     */
+    public List<Trap> getTraps() {
+      // aggregate dangling trap data
+      trapStarts.forEach(
+          (type, trapStart) -> {
+            final MutableBasicBlock mutableBasicBlock =
+                lastBlock.getExceptionalSuccessors().get(type);
+            if (mutableBasicBlock == null) {
+              final Stmt remove = trapStarts.remove(type);
+              if (remove == null) {
+                throw new IllegalStateException(
+                    "No matching Trap info found for '"
+                        + type
+                        + "' in ExceptionalSucessors() of the last iterated Block!");
+              }
+              collectedTraps.add(new Trap(type, remove, lastBlock.getTail(), trapStart));
+            }
+          });
+      return collectedTraps;
+    }
+  }
+
   /** Iterates over the blocks */
   private static class BlockGraphIterator<MutableBasicBlock extends BasicBlock<MutableBasicBlock>>
       implements Iterator<MutableBasicBlock> {
@@ -831,8 +915,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
     // caching the next Stmt to implement a simple hasNext() and skipping already returned Stmts
     @Nonnull private final Set<MutableBasicBlock> iteratedBlocks;
-
-    @Nonnull private final List<Trap> collectedTraps = new ArrayList<>();
 
     public BlockGraphIterator(@Nonnull StmtGraph<MutableBasicBlock> graph) {
       this.graph = graph;
@@ -885,13 +967,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           currentBlock.getExceptionalSuccessors().entrySet()) {
         MutableBasicBlock trapHandlerBlock = entry.getValue();
         traps.addLast(trapHandlerBlock);
-
-        collectedTraps.add(
-            new Trap(entry.getKey(), currentBlock.getHead(), tailStmt, trapHandlerBlock.getHead()));
-        // integrate trapHandlerBlock Block into 'queue'
-        // if (!iteratedBlocks.contains(trapHandlerBlock)) {
         nestedBlocks.addFirst(trapHandlerBlock);
-        // }
       }
 
       final List<MutableBasicBlock> successors = currentBlock.getSuccessors();
@@ -982,16 +1058,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         }
       }
       return hasIteratorMoreElements;
-    }
-
-    /**
-     * for jimple serialization -> this is the info for the end of the method contains only
-     * valid/useful information when all stmts are iterated i.e. hasNext() == false!
-     *
-     * @return List of Traps
-     */
-    public List<Trap> getTraps() {
-      return collectedTraps;
     }
   }
 }
