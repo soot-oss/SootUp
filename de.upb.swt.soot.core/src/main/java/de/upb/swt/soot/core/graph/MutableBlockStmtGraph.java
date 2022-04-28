@@ -709,9 +709,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
   }
 
-  /** little expensive getter - its more of a build/create */
+  /** hint: little expensive getter - its more of a build/create */
   @Override
   public List<Trap> getTraps() {
+    // [ms] try to incorporate it into the serialisation of jimple printing so the other half of
+    // iteration information is not wasted..
     BlockGraphIteratorAndTrapAggregator it = new BlockGraphIteratorAndTrapAggregator();
     // it.getTraps() is valid/completely build when the iterator is done.
     while (it.hasNext()) {
@@ -732,7 +734,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     @Nonnull private Iterator<Stmt> currentBlockIt = Collections.emptyIterator();
 
     public BlockStmtGraphIterator() {
-      blockIt = new BlockGraphIterator();
+      this(new BlockGraphIterator());
+    }
+
+    public BlockStmtGraphIterator(@Nonnull BlockGraphIterator blockIterator) {
+      blockIt = blockIterator;
     }
 
     @Override
