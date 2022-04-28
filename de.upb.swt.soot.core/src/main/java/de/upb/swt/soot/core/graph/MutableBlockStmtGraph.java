@@ -760,7 +760,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     @Nonnull private final List<Trap> collectedTraps = new ArrayList<>();
 
     Map<ClassType, Stmt> trapStarts = new HashMap<>();
-    MutableBasicBlock lastBlock = null;
+    MutableBasicBlock lastBlock =
+        new MutableBasicBlock(); // dummy value to remove n-1 unnecessary null-checks
 
     public BlockGraphIteratorAndTrapCollector(@Nonnull StmtGraph<MutableBasicBlock> graph) {
       super(graph);
@@ -775,25 +776,20 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           block.getExceptionalSuccessors();
       // former trap info is not in the block blocks info? -> add it to the trap collection
       final Map<? extends ClassType, MutableBasicBlock> lastBlocksExceptionalSuccessors;
-      if (lastBlock != null) {
-        lastBlocksExceptionalSuccessors = lastBlock.getExceptionalSuccessors();
+      lastBlocksExceptionalSuccessors = lastBlock.getExceptionalSuccessors();
 
-        lastBlocksExceptionalSuccessors.forEach(
-            (type, trapHandlerBlock) -> {
-              final MutableBasicBlock mutableBasicBlock = currentBlocksExceptions.get(type);
-              if (mutableBasicBlock == null) {
-                final Stmt remove = trapStarts.remove(type);
-                if (remove == null) {
-                  throw new IllegalStateException(
-                      "Trap start for '" + type + "' is not in the Map!");
-                }
-                collectedTraps.add(
-                    new Trap(type, remove, lastBlock.getTail(), trapHandlerBlock.getHead()));
+      lastBlocksExceptionalSuccessors.forEach(
+          (type, trapHandlerBlock) -> {
+            final MutableBasicBlock mutableBasicBlock = currentBlocksExceptions.get(type);
+            if (mutableBasicBlock == null) {
+              final Stmt remove = trapStarts.remove(type);
+              if (remove == null) {
+                throw new IllegalStateException("Trap start for '" + type + "' is not in the Map!");
               }
-            });
-      } else {
-        lastBlocksExceptionalSuccessors = Collections.emptyMap();
-      }
+              collectedTraps.add(
+                  new Trap(type, remove, lastBlock.getTail(), trapHandlerBlock.getHead()));
+            }
+          });
 
       // theres a new trap in this block? add it to currentTraps
       block
