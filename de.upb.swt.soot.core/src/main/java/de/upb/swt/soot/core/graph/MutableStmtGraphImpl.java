@@ -179,7 +179,7 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
   }
 
   @Override
-  public void clearExceptionalEdges(@Nonnull Stmt stmt) {
+  public void clearExceptionalEdges(@Nonnull Stmt node) {
     // FIXME: implement
     throw new UnsupportedOperationException("removal of traps is not implemented, yet.");
   }
@@ -191,7 +191,7 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
   }
 
   @Override
-  public void removeExceptionalEdge(@Nonnull Stmt stmt, @Nonnull ClassType exception) {
+  public void removeExceptionalEdge(@Nonnull Stmt node, @Nonnull ClassType exception) {
     throw new UnsupportedOperationException("removal of traps is not implemented, yet.");
   }
 

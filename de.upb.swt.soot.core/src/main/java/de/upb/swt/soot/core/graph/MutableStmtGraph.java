@@ -66,12 +66,12 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   public abstract void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to);
 
   /** Modifications of exceptional flows */
-  public abstract void clearExceptionalEdges(@Nonnull Stmt stmt);
+  public abstract void clearExceptionalEdges(@Nonnull Stmt node);
 
   public abstract void addExceptionalEdge(
       @Nonnull Stmt stmt, @Nonnull ClassType exception, @Nonnull Stmt traphandlerStmt);
 
-  public abstract void removeExceptionalEdge(@Nonnull Stmt stmt, @Nonnull ClassType exception);
+  public abstract void removeExceptionalEdge(@Nonnull Stmt node, @Nonnull ClassType exception);
 
   protected boolean isMergeable(
       @Nonnull MutableBasicBlock firstBlock, @Nonnull MutableBasicBlock followingBlock) {
