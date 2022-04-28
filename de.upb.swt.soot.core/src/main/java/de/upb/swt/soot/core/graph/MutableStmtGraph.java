@@ -29,16 +29,16 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 
-/** @author Markus Schmidt */
+/**
+ * @author Markus Schmidt
+ *     <p>performance suggestions for multiple operations on sequential Stmts: addNode(): top->down
+ *     removeNode(s): bottom->up as then there is no need for copying inside the MutableBasicBlock
+ */
 public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   @Nonnull
   public abstract StmtGraph<?> unmodifiableStmtGraph();
 
   public abstract void setStartingStmt(@Nonnull Stmt firstStmt);
-
-  public void setStartingStmtBlock(@Nonnull MutableBasicBlock firstBlock) {
-    setStartingStmt(firstBlock.getHead());
-  }
 
   public void addNode(@Nonnull Stmt node) {
     addNode(node, Collections.emptyMap());
@@ -48,9 +48,6 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
 
   // maybe refactor addBlock into MutableBlockStmtGraph..
   public abstract void addBlock(@Nonnull List<Stmt> stmts, @Nonnull Map<ClassType, Stmt> traps);
-
-  // public abstract void replaceBlock(@Nonnull MutableBasicBlock oldBlock, @Nonnull
-  // MutableBasicBlock newBlock);
 
   /** Modification of nodes (without manipulating any flows) */
   public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
@@ -87,7 +84,6 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
       return false;
     }
     if (!firstBlock.getExceptionalSuccessors().equals(followingBlock.getExceptionalSuccessors())) {
-      // TODO: check if equals considers order
       return false;
     }
     return true;
@@ -108,7 +104,7 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   }
 
   /** hints the Datastructure that two following blocks could be possibly merged */
-  public boolean tryMergeBlocks(
+  protected boolean tryMergeBlocks(
       @Nonnull MutableBasicBlock firstBlock, @Nonnull MutableBasicBlock followingBlock) {
     final boolean mergeable = isMergeable(firstBlock, followingBlock);
     if (mergeable) {
