@@ -4,15 +4,17 @@ import static org.junit.Assert.*;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JLeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.types.PrimitiveType;
+import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.core.util.GraphVizExporter;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 import org.junit.Test;
 
 public class MutableBlockStmtGraphTest {
@@ -520,7 +522,235 @@ public class MutableBlockStmtGraphTest {
   }
 
   @Test
-  public void testSth() {
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+  public void testTrapAggregation() {
+    final ClassType exception1 =
+        new ClassType() {
+          @Override
+          public boolean isBuiltInClass() {
+            return false;
+          }
+
+          @Override
+          public String getFullyQualifiedName() {
+            return getPackageName() + "." + getClassName();
+          }
+
+          @Override
+          public String getClassName() {
+            return "ball";
+          }
+
+          @Override
+          public PackageName getPackageName() {
+            return new PackageName("some.object");
+          }
+        };
+
+    final ClassType exception2 =
+        new ClassType() {
+          @Override
+          public boolean isBuiltInClass() {
+            return false;
+          }
+
+          @Override
+          public String getFullyQualifiedName() {
+            return getPackageName() + "." + getClassName();
+          }
+
+          @Override
+          public String getClassName() {
+            return "javelin";
+          }
+
+          @Override
+          public PackageName getPackageName() {
+            return new PackageName("some.object");
+          }
+        };
+
+    Local exc = new Local("ex", UnknownType.getInstance());
+    // hint: applied types make no sense in this test!
+    Stmt catchStmt1 =
+        new JIdentityStmt<>(
+            exc,
+            new JCaughtExceptionRef(UnknownType.getInstance()),
+            StmtPositionInfo.createNoStmtPositionInfo());
+    Stmt catchStmt2 =
+        new JIdentityStmt<>(
+            exc,
+            new JCaughtExceptionRef(PrimitiveType.getInt()),
+            StmtPositionInfo.createNoStmtPositionInfo());
+    final JReturnVoidStmt returnStmt =
+        new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+
+    final JGotoStmt stmt1 = new JGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    final JGotoStmt stmt2 = new JGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    final JGotoStmt stmt3 = new JGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
+
+    // test same trap merging simple
+    MutableBlockStmtGraph graph0 = new MutableBlockStmtGraph();
+    graph0.setStartingStmt(stmt1);
+    graph0.addNode(stmt1, Collections.singletonMap(exception1, catchStmt1));
+    graph0.addNode(stmt2, Collections.singletonMap(exception1, catchStmt1));
+
+    graph0.putEdge(stmt1, stmt2);
+    graph0.putEdge(stmt2, returnStmt);
+
+    {
+      final List<Trap> traps = graph0.getTraps();
+      assertEquals(1, traps.size());
+      assertEquals(stmt1, traps.get(0).getBeginStmt());
+      assertEquals(returnStmt, traps.get(0).getEndStmt());
+      assertEquals(catchStmt1, traps.get(0).getHandlerStmt());
+    }
+
+    // test merging traps from sequential blocks with the same trap
+    MutableBlockStmtGraph graph1 = new MutableBlockStmtGraph();
+    graph1.setStartingStmt(stmt1);
+    graph1.addNode(stmt1, Collections.emptyMap());
+    graph1.addNode(stmt2, Collections.singletonMap(exception1, catchStmt1));
+    graph1.addNode(stmt3, Collections.singletonMap(exception1, catchStmt1));
+
+    graph1.putEdge(stmt1, stmt2);
+    graph1.putEdge(stmt2, returnStmt);
+
+    {
+      final List<Trap> traps = graph1.getTraps();
+      assertTrue(traps.contains(new Trap(exception1, stmt2, returnStmt, catchStmt1)));
+      assertEquals(1, traps.size());
+    }
+
+    // test "dont merge exceptional successors" keeping trap split as the traphandler differs
+    MutableBlockStmtGraph graph2 = new MutableBlockStmtGraph();
+    graph2.setStartingStmt(stmt1);
+    graph2.addNode(stmt1, Collections.singletonMap(exception1, catchStmt1));
+    graph2.addNode(stmt2, Collections.singletonMap(exception1, catchStmt2));
+
+    graph2.putEdge(stmt1, stmt2);
+    graph2.putEdge(stmt2, returnStmt);
+
+    {
+      final List<Trap> traps = graph2.getTraps();
+      assertTrue(traps.contains(new Trap(exception1, stmt1, stmt2, catchStmt1)));
+      assertTrue(traps.contains(new Trap(exception1, stmt2, returnStmt, catchStmt2)));
+      assertEquals(2, traps.size());
+    }
+
+    // dont merge as the exceptiontype is different
+    MutableBlockStmtGraph graph3 = new MutableBlockStmtGraph();
+    graph3.setStartingStmt(stmt1);
+    graph3.addNode(stmt1, Collections.singletonMap(exception2, catchStmt1));
+    graph3.addNode(stmt2, Collections.singletonMap(exception1, catchStmt1));
+    graph3.addNode(stmt3, Collections.emptyMap());
+
+    graph3.putEdge(stmt1, stmt2);
+    graph3.putEdge(stmt2, stmt3);
+    graph3.putEdge(stmt3, returnStmt);
+
+    {
+      final List<Trap> traps = graph3.getTraps();
+      assertTrue(traps.contains(new Trap(exception2, stmt1, stmt2, catchStmt1)));
+      assertTrue(traps.contains(new Trap(exception1, stmt2, stmt3, catchStmt1)));
+      assertEquals(2, traps.size());
+    }
+
+    // mixed 1
+    MutableBlockStmtGraph graph4 = new MutableBlockStmtGraph();
+    graph4.setStartingStmt(stmt1);
+    graph4.addNode(
+        stmt1,
+        new HashMap<ClassType, Stmt>() {
+          {
+            put(exception1, catchStmt1);
+            put(exception2, catchStmt1);
+          }
+        });
+    graph4.addNode(stmt2, Collections.singletonMap(exception1, catchStmt1));
+    graph4.addNode(stmt3, Collections.emptyMap());
+
+    graph4.putEdge(stmt1, stmt2);
+    graph4.putEdge(stmt2, stmt3);
+    graph4.putEdge(stmt3, returnStmt);
+
+    assertEquals(2, graph4.getTraps().size());
+
+    // mixed 2
+    MutableBlockStmtGraph graph5 = new MutableBlockStmtGraph();
+    graph5.setStartingStmt(stmt1);
+    graph5.addNode(
+        stmt1,
+        new HashMap<ClassType, Stmt>() {
+          {
+            put(exception1, catchStmt1);
+            put(exception2, catchStmt1);
+          }
+        });
+    graph5.addNode(
+        stmt2,
+        new HashMap<ClassType, Stmt>() {
+          {
+            put(exception2, catchStmt1);
+            put(exception1, catchStmt2);
+          }
+        });
+    graph5.addNode(
+        stmt3,
+        new HashMap<ClassType, Stmt>() {
+          {
+            put(exception2, catchStmt1);
+            put(exception1, catchStmt2);
+          }
+        });
+
+    graph5.putEdge(stmt1, stmt2);
+    graph5.putEdge(stmt2, stmt3);
+    graph5.putEdge(stmt3, returnStmt);
+
+    {
+      final List<Trap> traps = graph5.getTraps();
+      assertTrue(traps.contains(new Trap(exception1, stmt1, stmt2, catchStmt1)));
+      assertTrue(traps.contains(new Trap(exception2, stmt1, returnStmt, catchStmt1)));
+      assertTrue(traps.contains(new Trap(exception1, stmt2, returnStmt, catchStmt2)));
+      assertEquals(3, traps.size());
+    }
+
+    // mixed 3
+    MutableBlockStmtGraph graph6 = new MutableBlockStmtGraph();
+    graph6.setStartingStmt(stmt1);
+    graph6.addNode(
+        stmt1,
+        new HashMap<ClassType, Stmt>() {
+          {
+            put(exception1, catchStmt1);
+            put(exception2, catchStmt1);
+          }
+        });
+    graph6.addNode(
+        stmt2,
+        new HashMap<ClassType, Stmt>() {
+          {
+            put(exception2, catchStmt1);
+            put(exception1, catchStmt2);
+          }
+        });
+    graph6.addNode(
+        stmt3,
+        new HashMap<ClassType, Stmt>() {
+          {
+            put(exception1, catchStmt2);
+          }
+        });
+
+    graph6.putEdge(stmt1, stmt2);
+    graph6.putEdge(stmt2, stmt3);
+    graph6.putEdge(stmt3, returnStmt);
+    {
+      final List<Trap> traps = graph6.getTraps();
+      assertTrue(traps.contains(new Trap(exception1, stmt1, stmt2, catchStmt1)));
+      assertTrue(traps.contains(new Trap(exception2, stmt1, stmt3, catchStmt1)));
+      assertTrue(traps.contains(new Trap(exception1, stmt2, stmt3, catchStmt2)));
+      assertEquals(3, traps.size());
+    }
   }
 }

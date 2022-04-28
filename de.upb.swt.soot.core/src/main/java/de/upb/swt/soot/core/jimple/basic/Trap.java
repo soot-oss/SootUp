@@ -26,6 +26,7 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.Copyable;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 
 /**
@@ -117,5 +118,21 @@ public final class Trap implements Copyable {
   @Nonnull
   public ClassType getExceptionType() {
     return exception;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getExceptionType(), getBeginStmt(), getEndStmt(), getHandlerStmt());
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Trap trap = (Trap) o;
+    return exception.equals(trap.exception)
+        && beginStmt.equals(trap.beginStmt)
+        && endStmt.equals(trap.endStmt)
+        && handlerStmt.equals(trap.handlerStmt);
   }
 }
