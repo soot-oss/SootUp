@@ -237,13 +237,22 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       if (exceptions.size() > 0) {
         if (block.getStmtCount() != 1) {
           final MutableBasicBlock secondBlock = block.splitBlockLinked(stmt, true);
-          int secondBlockIdx = blocks.size();
-          blocks.add(secondBlock);
           if (secondBlock.getStmtCount() > 1) {
             final MutableBasicBlock thirdBlock = secondBlock.splitBlockLinked(stmt, false);
             blocks.add(thirdBlock);
             thirdBlock.getStmts().forEach(node -> stmtToBlock.put(node, thirdBlock));
           }
+          exceptions.forEach(
+              (type, trapHandler) -> {
+                MutableBasicBlock trapHandlerBlock = getBlockOf(trapHandler);
+                if (trapHandlerBlock == null) {
+                  // traphandlerStmt does not exist in the graph -> create
+                  trapHandlerBlock = createStmtsBlock(trapHandler);
+                }
+                secondBlock.addExceptionalSuccessorBlock(type, trapHandlerBlock);
+                trapHandlerBlock.addPredecessorBlock(secondBlock);
+              });
+          blocks.add(secondBlock);
           secondBlock.getStmts().forEach(node -> stmtToBlock.put(node, secondBlock));
         }
 
