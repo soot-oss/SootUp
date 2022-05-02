@@ -167,9 +167,6 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
       stmts.subList(splitIdx, stmts.size()).clear();
     }
 
-    // copy traps
-    secondBlock.exceptionalSuccessorBlocks.putAll(getExceptionalSuccessors());
-
     return secondBlock;
   }
 
@@ -208,6 +205,11 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     successorBlocks.add(newBlock);
 
     return newBlock;
+  }
+
+  public void copyExceptionalFlowFrom(MutableBasicBlock sourceBlock) {
+    // copy trap info
+    exceptionalSuccessorBlocks.putAll(sourceBlock.getExceptionalSuccessors());
   }
 
   public void clearSuccessorBlocks() {
