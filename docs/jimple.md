@@ -54,6 +54,46 @@ It might help to visualize how the Jimple version of a Java code looks like. Hav
       
     }
     ```
+=== "Byte Code"
+
+    ```byte code
+    // class version 52.0 (52)
+    // access flags 0x21
+    public class analysis/HelloWorld {
+
+    // compiled from: HelloWorld.java
+
+    // access flags 0x1
+    public <init>()V
+    L0
+    LINENUMBER 4 L0
+    ALOAD 0
+    INVOKESPECIAL java/lang/Object.<init> ()V
+    L1
+    LINENUMBER 6 L1
+    RETURN
+    L2
+    LOCALVARIABLE this Lanalysis/HelloWorld; L0 L2 0
+    MAXSTACK = 1
+    MAXLOCALS = 1
+
+    // access flags 0x9
+    public static main([Ljava/lang/String;)V
+    L0
+    LINENUMBER 9 L0
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Hello World!"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    L1
+    LINENUMBER 10 L1
+    RETURN
+    L2
+    LOCALVARIABLE var0 [Ljava/lang/String; L0 L2 0
+    MAXSTACK = 2
+    MAXLOCALS = 1
+    }
+
+    ```
 
 ## Jimple Grammar Structure
 Jimple mimics the JVMs class file structure.
