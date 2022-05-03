@@ -11,7 +11,8 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   @Nonnull private final List<MutableBasicBlock> successorBlocks = new ArrayList<>();
 
   @Nonnull
-  private final Map<ClassType, MutableBasicBlock> exceptionalSuccessorBlocks = new HashMap<>();
+  private final Map<ClassType, MutableBasicBlock> exceptionalSuccessorBlocks =
+      new LinkedHashMap<>();
 
   @Nonnull private List<Stmt> stmts = new ArrayList<>();
 
