@@ -75,12 +75,14 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
 
   protected boolean isMergeable(
       @Nonnull MutableBasicBlock firstBlock, @Nonnull MutableBasicBlock followingBlock) {
-    if (firstBlock.getSuccessors().size() != 1
-        || firstBlock.getSuccessors().get(0) != followingBlock) {
+    final List<MutableBasicBlock> fBlocksuccessors = firstBlock.getSuccessors();
+    if (firstBlock.getTail().branches()
+        || fBlocksuccessors.size() != 1
+        || fBlocksuccessors.get(0) != followingBlock) {
       return false;
     }
-    if (followingBlock.getPredecessors().size() != 1
-        || followingBlock.getPredecessors().get(0) != firstBlock) {
+    final List<MutableBasicBlock> sBlockPredecessors = followingBlock.getPredecessors();
+    if (sBlockPredecessors.size() != 1 || sBlockPredecessors.get(0) != firstBlock) {
       return false;
     }
     if (!firstBlock.getExceptionalSuccessors().equals(followingBlock.getExceptionalSuccessors())) {
