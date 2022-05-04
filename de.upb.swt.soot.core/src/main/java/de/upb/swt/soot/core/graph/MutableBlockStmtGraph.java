@@ -311,6 +311,21 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   /** Merges block into Predecessor/Successor if possible. */
   private void tryMergeIntoSurroundingBlocks(@Nonnull MutableBasicBlock block) {
     // merge with predecessor?
+    block = tryMergeWithPredecessorBlock(block);
+    // and/or merge with successorBlock
+    tryMergeWithSuccessorBlock(block);
+  }
+
+  private void tryMergeWithSuccessorBlock(@Nonnull MutableBasicBlock block) {
+    final List<MutableBasicBlock> successors = block.getSuccessors();
+    if (successors.size() == 1) {
+      final MutableBasicBlock singleSuccessor = successors.get(0);
+      tryMergeBlocks(block, singleSuccessor);
+    }
+  }
+
+  @Nonnull
+  private MutableBasicBlock tryMergeWithPredecessorBlock(@Nonnull MutableBasicBlock block) {
     final List<MutableBasicBlock> predecessors = block.getPredecessors();
     if (predecessors.size() == 1) {
       final MutableBasicBlock singlePredecessor = predecessors.get(0);
@@ -318,12 +333,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         block = singlePredecessor;
       }
     }
-    // and/or merge with successorBlock
-    final List<MutableBasicBlock> successors = block.getSuccessors();
-    if (successors.size() == 1) {
-      final MutableBasicBlock singleSuccessor = successors.get(0);
-      tryMergeBlocks(block, singleSuccessor);
-    }
+    return block;
   }
 
   @Nonnull
@@ -334,6 +344,48 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       trapHandlerBlock = createStmtsBlock(stmt);
     }
     return trapHandlerBlock;
+  }
+
+  protected boolean isMergeable(
+      @Nonnull MutableBasicBlock firstBlock, @Nonnull MutableBasicBlock followingBlock) {
+    if (firstBlock.getTail().branches()) {
+      return false;
+    }
+    final List<MutableBasicBlock> fBlocksuccessors = firstBlock.getSuccessors();
+    if (fBlocksuccessors.size() != 1 || fBlocksuccessors.get(0) != followingBlock) {
+      return false;
+    }
+    // if we are here the datastructure should have managed that the next if is true..
+    final List<MutableBasicBlock> sBlockPredecessors = followingBlock.getPredecessors();
+    if (sBlockPredecessors.size() != 1 || sBlockPredecessors.get(0) != firstBlock) {
+      return false;
+    }
+    // check if the same traps are applied to both blocks
+    if (!firstBlock.getExceptionalSuccessors().equals(followingBlock.getExceptionalSuccessors())) {
+      return false;
+    }
+    return true;
+  }
+
+  /** trys to merge the second block into the first one if possible */
+  protected boolean tryMergeBlocks(
+      @Nonnull MutableBasicBlock firstBlock, @Nonnull MutableBasicBlock followingBlock) {
+    final boolean mergeable = isMergeable(firstBlock, followingBlock);
+    if (mergeable) {
+      for (Stmt stmt : followingBlock.getStmts()) {
+        firstBlock.addStmt(stmt);
+      }
+
+      // update linking info into firstBlock
+      firstBlock.removeSuccessorBlock(followingBlock);
+      followingBlock.getSuccessors().forEach(firstBlock::addSuccessorBlock);
+
+      blocks.remove(followingBlock);
+
+      // cleanup old block..not really necessary?
+      followingBlock.removePredecessorBlock(firstBlock);
+    }
+    return mergeable;
   }
 
   /**
@@ -361,20 +413,39 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   public void removeNode(@Nonnull Stmt stmt) {
 
-    // do edges from or to this node exist? remove them
-    // TODO: [ms] implement more performant solution based on datastructure implications
-    predecessors(stmt).forEach(p -> removeEdge(p, stmt));
-    successors(stmt).forEach(s -> removeEdge(stmt, s));
-
     MutableBasicBlock blockOfRemovedStmt = stmtToBlock.remove(stmt);
     if (blockOfRemovedStmt == null) {
-      return;
+      throw new IllegalArgumentException("Stmt is not in the StmtGraph!");
     }
 
-    blockOfRemovedStmt.removeStmt(stmt);
+    // do edges from or to this node exist? remove them
+    // TODO: [ms] implement more performant solution based on datastructure implications
+    /*
+        if (blockOfRemovedStmt.getHead() == stmt && predecessors.size() == 1){
+          tryMergeBlocks(predecessors.get(0), blockOfRemovedStmt);
+        }
+        if (successors.size() == 1) {
+          tryMergeIntoSurroundingBlocks(blockOfRemovedStmt);
+        }
+    */
+    if (blockOfRemovedStmt.getStmtCount() > 1) {
+      final boolean wasHead = blockOfRemovedStmt.getHead() == stmt;
+      final boolean wasTail = blockOfRemovedStmt.getTail() == stmt;
+      blockOfRemovedStmt.removeStmt(stmt);
 
-    if (blockOfRemovedStmt.getStmts().size() <= 0) {
+      if (wasHead) {
+        blockOfRemovedStmt = tryMergeWithPredecessorBlock(blockOfRemovedStmt);
+      }
+      if (wasTail) {
+        tryMergeWithSuccessorBlock(blockOfRemovedStmt);
+      }
+
+    } else {
+      // cleanup block as its not needed in the graph anymore if it only contains stmt - which is
+      // now deleted
       blocks.remove(blockOfRemovedStmt);
+      // not really necessary - but just if theres still somewhere a reference in use..don't!
+      blockOfRemovedStmt.removeStmt(stmt);
     }
   }
 

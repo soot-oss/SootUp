@@ -73,48 +73,6 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
 
   public abstract void removeExceptionalEdge(@Nonnull Stmt node, @Nonnull ClassType exception);
 
-  protected boolean isMergeable(
-      @Nonnull MutableBasicBlock firstBlock, @Nonnull MutableBasicBlock followingBlock) {
-    final List<MutableBasicBlock> fBlocksuccessors = firstBlock.getSuccessors();
-    if (firstBlock.getTail().branches()
-        || fBlocksuccessors.size() != 1
-        || fBlocksuccessors.get(0) != followingBlock) {
-      return false;
-    }
-    final List<MutableBasicBlock> sBlockPredecessors = followingBlock.getPredecessors();
-    if (sBlockPredecessors.size() != 1 || sBlockPredecessors.get(0) != firstBlock) {
-      return false;
-    }
-    if (!firstBlock.getExceptionalSuccessors().equals(followingBlock.getExceptionalSuccessors())) {
-      return false;
-    }
-    return true;
-  }
-
-  /** merges Blocks of the Datastructure: merges stmts and traps! */
-  protected void mergeBlockIntoFirst(
-      @Nonnull MutableBasicBlock firstBlock, @Nonnull MutableBasicBlock followingBlock) {
-
-    for (Stmt stmt : followingBlock.getStmts()) {
-      firstBlock.addStmt(stmt);
-    }
-
-    for (Map.Entry<ClassType, MutableBasicBlock> entry :
-        followingBlock.getExceptionalSuccessors().entrySet()) {
-      firstBlock.addExceptionalSuccessorBlock(entry.getKey(), entry.getValue());
-    }
-  }
-
-  /** hints the Datastructure that two following blocks could be possibly merged */
-  protected boolean tryMergeBlocks(
-      @Nonnull MutableBasicBlock firstBlock, @Nonnull MutableBasicBlock followingBlock) {
-    final boolean mergeable = isMergeable(firstBlock, followingBlock);
-    if (mergeable) {
-      mergeBlockIntoFirst(firstBlock, followingBlock);
-    }
-    return mergeable;
-  }
-
   public void setTraps(List<Trap> newTraps) {
     throw new UnsupportedOperationException("deprecated");
   }
