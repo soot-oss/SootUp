@@ -49,6 +49,7 @@ import javax.annotation.Nullable;
  *
  * @author Markus Schmidt
  */
+@Deprecated
 public class MutableStmtGraphImpl extends MutableStmtGraph {
 
   @Nonnull protected final ArrayList<List<Stmt>> predecessors;
@@ -106,24 +107,27 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
 
   @Override
   public MutableBasicBlock getStartingStmtBlock() {
-    throw new RuntimeException("not yet implemented");
+    throw new UnsupportedOperationException("not yet implemented");
   }
 
   @Override
   public MutableBasicBlock getBlockOf(@Nonnull Stmt stmt) {
-    throw new RuntimeException("not yet implemented");
+    throw new UnsupportedOperationException("not yet implemented");
   }
 
   @Override
   public void addNode(@Nonnull Stmt node, @Nonnull Map<ClassType, Stmt> traps) {
     addNodeInternal(node);
-    // FIXME add traps!
-    throw new RuntimeException("not yet implemented");
+
+    if (traps.size() > 0) {
+      // FIXME add traps!
+      throw new UnsupportedOperationException("not yet implemented");
+    }
   }
 
   @Override
   public void addBlock(@Nonnull List<Stmt> stmts, @Nonnull Map<ClassType, Stmt> traps) {
-    throw new RuntimeException("not implemented yet!");
+    throw new UnsupportedOperationException("not implemented yet!");
   }
 
   protected int addNodeInternal(@Nonnull Stmt node) {
@@ -140,7 +144,8 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
   protected int getNodeIdx(@Nonnull Stmt node) {
     Integer idx = stmtToIdx.get(node);
     if (idx == null) {
-      throw new RuntimeException("'" + node + "' is currently not a Node in this StmtGraph.");
+      throw new UnsupportedOperationException(
+          "'" + node + "' is currently not a Node in this StmtGraph.");
     }
     return idx;
   }
@@ -203,7 +208,7 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
         target -> {
           if (!containsNode(target)) {
             if (from == target) {
-              throw new RuntimeException("A Stmt can't flow to itself.");
+              throw new UnsupportedOperationException("A Stmt can't flow to itself.");
             }
             addNodeInternal(target);
           }
@@ -316,7 +321,7 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
   public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
 
     if (oldStmt.getSuccessorCount() != newStmt.getSuccessorCount()) {
-      throw new RuntimeException(
+      throw new UnsupportedOperationException(
           "You can only use replaceNode if newStmt has the same amount of branches/outgoing flows.");
     }
 
@@ -325,7 +330,7 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
     }
     final Integer integer = stmtToIdx.get(oldStmt);
     if (integer == null) {
-      throw new RuntimeException("The StmtGraph does not contain" + oldStmt);
+      throw new UnsupportedOperationException("The StmtGraph does not contain" + oldStmt);
     }
     int idx = integer;
     stmtToIdx.remove(oldStmt, idx);
@@ -371,6 +376,14 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
     if (trapIsChanged) {
       setTraps(newTraps);
     }
+  }
+
+  @Override
+  public void insertBefore(
+      @Nonnull Stmt beforeStmt,
+      @Nonnull List<Stmt> stmts,
+      @Nonnull Map<ClassType, Stmt> exceptionMap) {
+    throw new UnsupportedOperationException("not implemented");
   }
 
   /**

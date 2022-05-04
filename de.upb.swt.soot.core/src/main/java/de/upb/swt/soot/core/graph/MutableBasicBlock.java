@@ -33,21 +33,23 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   }
 
   public void removeStmt(@Nonnull Stmt stmt) {
+    /*
     if (stmt == getHead()) {
       // TODO: [ms] whats intuitive? removing the flows to the block too? or is deleting a stmt
       // keeping the flows to it
-      // is the answer it different if its the tail?
-      predecessorBlocks.forEach(b -> b.removeSuccessorBlock(this));
+      // is the answer different if its the tail?
+      predecessorBlocks.forEach(b -> {b.removeSuccessorBlock(this); removePredecessorBlock(b);});
       predecessorBlocks.clear();
     }
     if (stmt == getTail()) {
       // TODO: [ms] see question above..
       // switch, if, goto vs. usual stmt
       if (stmt.branches()) {
-        successorBlocks.forEach(b -> b.removePredecessorBlock(this));
+        successorBlocks.forEach(b -> {b.removePredecessorBlock(this); removeSuccessorBlock(b);});
         successorBlocks.clear();
       }
     }
+    */
     stmts.remove(stmt);
   }
 
@@ -174,11 +176,10 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   /**
    * splits a BasicBlock into first|second
    *
-   * @param shouldBeNewHead if true: splitStmt is the Head of the second BasicBlock if false
-   *     splitStmt is the tail of the first BasicBlock
+   * @param shouldBeNewHead if true: splitStmt is the Head of the second BasicBlock. if
+   *     shouldBeNewHead is false splitStmt is the tail of the first BasicBlock
    * @param splitStmt the stmt which determines where to split the BasicBlock
-   * @return second half with splitStmt as the head of the second BasicBlock; otherwise its the tail
-   *     of the first basicblock
+   * @return BasicBlock with the second part of Stmts
    */
   @Nonnull
   public MutableBasicBlock splitBlockLinked(@Nonnull Stmt splitStmt, boolean shouldBeNewHead) {
@@ -193,7 +194,6 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     }
 
     MutableBasicBlock newBlock = splitBlockUnlinked(splitIdx);
-    newBlock.addPredecessorBlock(this);
     successorBlocks.forEach(
         succBlock -> {
           // copy successors to the newBlock
@@ -203,7 +203,9 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
           succBlock.addPredecessorBlock(newBlock);
         });
     successorBlocks.clear();
-    successorBlocks.add(newBlock);
+
+    newBlock.addPredecessorBlock(this);
+    addSuccessorBlock(newBlock);
 
     return newBlock;
   }
@@ -221,6 +223,11 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   public void clearExceptionalSuccessorBlocks() {
     exceptionalSuccessorBlocks.forEach((e, b) -> b.removePredecessorBlock(this));
     exceptionalSuccessorBlocks.clear();
+  }
+
+  public void clearPredecessorBlocks() {
+    predecessorBlocks.forEach(b -> b.removeSuccessorBlock(this));
+    predecessorBlocks.clear();
   }
 }
 
