@@ -1,5 +1,6 @@
 package de.upb.swt.soot.core.graph;
 
+import com.google.common.collect.ComparisonChain;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
@@ -525,11 +526,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         addNodeToBlock(blockA, stmtB);
       } else {
         if (blockB.getHead() == stmtB) {
-          // stmtB is at the beginning of the second Block -> connect blockA and blockB?
-          // is stmtB already a branch target?
-          // FIXME: do their blocks have the same traps?
-          if (blockB.getPredecessors().isEmpty()) {
-            // merge and remove now obsolete Block B
+          // stmtB is at the beginning of the second Block -> try to connect blockA and blockB
+          // is stmtB already a branch target and do their blocks have the same traps?
+          if (blockB.getPredecessors().isEmpty()
+              && blockA.getExceptionalSuccessors().equals(blockB.getExceptionalSuccessors())) {
+            // merge blockB into blockA and remove now obsolete Block B
             MutableBasicBlock finalBlockA = blockA;
             blockB
                 .getStmts()
@@ -546,7 +547,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           }
         } else {
           throw new IllegalArgumentException(
-              "Stmt is already in the Graph: a) remove StmtB or b) StmtA must be a branching Stmt that branches to StmtB ");
+              "StmtB is already in the Graph and has a already a non-branching predecessor!");
         }
       }
     }
@@ -554,14 +555,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Override
   public void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
-    removeEdgeInternal(from, to);
-  }
-
-  protected boolean removeEdgeInternal(@Nonnull Stmt from, @Nonnull Stmt to) {
     MutableBasicBlock blockOfFrom = stmtToBlock.get(from);
     MutableBasicBlock blockOfTo = stmtToBlock.get(to);
 
-    boolean ret = removeBlockBorderEdgesInternal(from, blockOfFrom);
+    removeBlockBorderEdgesInternal(from, blockOfFrom);
 
     // divide block if from and to are from the same block
     if (blockOfFrom == blockOfTo) {
@@ -573,15 +570,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         newBlock.copyExceptionalFlowFrom(blockOfFrom);
         blocks.add(newBlock);
         newBlock.getStmts().forEach(s -> stmtToBlock.put(s, newBlock));
-        return true;
       } else {
-        return false;
         // throw new IllegalArgumentException("Can't seperate the flow from '"+from+"' to '"+to+"'.
         // The Stmts are not connected in this graph!");
       }
     }
-
-    return ret;
   }
 
   protected boolean removeBlockBorderEdgesInternal(
@@ -839,10 +832,23 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     // iteration information is not wasted..
     BlockGraphIteratorAndTrapAggregator it = new BlockGraphIteratorAndTrapAggregator();
     // it.getTraps() is valid/completely build when the iterator is done.
+    HashMap<Stmt, Integer> stmtsBlockIdx = new HashMap<>();
+    int i = 0;
     while (it.hasNext()) {
-      it.next();
+      final MutableBasicBlock nextBlock = it.next();
+      stmtsBlockIdx.put(nextBlock.getHead(), i++);
     }
-    return it.getTraps();
+    final List<Trap> traps = it.getTraps();
+
+    traps.sort(
+        (a, b) ->
+            ComparisonChain.start()
+                .compare(stmtsBlockIdx.get(a.getBeginStmt()), stmtsBlockIdx.get(b.getBeginStmt()))
+                .compare(stmtsBlockIdx.get(a.getEndStmt()), stmtsBlockIdx.get(b.getEndStmt()))
+                // [ms] would be nice to have the traps ordered by exception hierarchy as well
+                .compare(a.getExceptionType().toString(), b.getExceptionType().toString())
+                .result());
+    return traps;
   }
 
   @Nonnull
