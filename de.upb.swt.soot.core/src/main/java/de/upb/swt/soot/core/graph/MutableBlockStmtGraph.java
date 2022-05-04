@@ -973,7 +973,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       iteratedBlocks = new HashSet<>(blocks.size(), 1);
       Stmt startingStmt = getStartingStmt();
       if (startingStmt != null) {
-        final MutableBasicBlock startingBlock = getStartingStmtBlock();
+        final MutableBasicBlock startingBlock = getBlockOf(startingStmt);
         updateFollowingBlocks(startingBlock);
         nestedBlocks.addFirst(startingBlock);
       }
@@ -1037,19 +1037,19 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           // from there.
           final MutableBasicBlock successorBlock = successors.get(i);
           MutableBasicBlock leaderOfFallsthroughBlocks = successorBlock;
-          boolean andAgain;
-          do {
-            andAgain = false;
+          while (true) {
             final List<MutableBasicBlock> itPreds = leaderOfFallsthroughBlocks.getPredecessors();
-            for (MutableBasicBlock pred : itPreds) {
-              if (pred.getTail().fallsThrough()
-                  && pred.getSuccessors().get(0) == leaderOfFallsthroughBlocks) {
-                leaderOfFallsthroughBlocks = pred;
-                andAgain = true;
-                break;
-              }
+            if (itPreds.size() != 1) {
+              break;
             }
-          } while (andAgain);
+            MutableBasicBlock predecessorBlock = itPreds.get(0);
+            if (predecessorBlock.getTail().fallsThrough()
+                && predecessorBlock.getSuccessors().get(0) == leaderOfFallsthroughBlocks) {
+              leaderOfFallsthroughBlocks = predecessorBlock;
+            } else {
+              break;
+            }
+          }
 
           // find a return Stmt inside the current Block
           Stmt succTailStmt = successorBlock.getTail();
