@@ -336,7 +336,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             return true;
           }
           int op = operand.insn.getOpcode();
-          return op != GETFIELD && op != GETSTATIC && (op < IALOAD || op > SALOAD);
+          // FIXME: assumed fixed condition check does (strange?) things in minimaltestsuite -
+          // investigate! so for now just return false (again as previously the expr was always
+          // false)..
+          // return op != GETFIELD && op != GETSTATIC && (op < IALOAD || op > SALOAD);
+          return false;
         });
   }
 
