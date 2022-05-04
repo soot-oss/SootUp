@@ -48,21 +48,37 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
     setStartingStmt(stmts.get(0));
     Map<ClassType, Stmt> currentTrapMap = new HashMap<>();
+    Map<ClassType, List<Stmt>> overlappingTraps = new HashMap<>();
     for (int i = 0, stmtsSize = stmts.size(); i < stmtsSize; i++) {
       Stmt stmt = stmts.get(i);
 
-      // possibly bad performance.. O(n * m)... sort it once: use some kind of -> O(1)*n with 2*m
+      // possibly bad performance.. O(n * m)... sort trap data once: use some kind of -> O(1)*n with
+      // 2*m
       // additional memory
       boolean trapsChanged = false;
       for (Trap trap : traps) {
-        if (stmt == trap.getBeginStmt()) {
-          currentTrapMap.put(trap.getExceptionType(), trap.getHandlerStmt());
+        // endStmt is exclusive! -> trap ends before this stmt -> remove
+        if (stmt == trap.getEndStmt()) {
+          final ClassType exceptionType = trap.getExceptionType();
+          final boolean remove = currentTrapMap.remove(exceptionType, trap.getHandlerStmt());
+          final List<Stmt> overridenTrapHandlers = overlappingTraps.get(exceptionType);
+          if (overridenTrapHandlers != null && overridenTrapHandlers.size() > 0) {
+            currentTrapMap.put(
+                exceptionType, overridenTrapHandlers.remove(overridenTrapHandlers.size() - 1));
+          }
           trapsChanged = true;
         }
+      }
 
-        // endStmt is exclusive!
-        if (stmt == trap.getEndStmt()) {
-          currentTrapMap.remove(trap.getExceptionType(), trap.getHandlerStmt());
+      for (Trap trap : traps) {
+        if (stmt == trap.getBeginStmt()) {
+          final Stmt overridenExFlow =
+              currentTrapMap.put(trap.getExceptionType(), trap.getHandlerStmt());
+          if (overridenExFlow != null) {
+            final List<Stmt> overridenTrapHandlers =
+                overlappingTraps.computeIfAbsent(trap.getExceptionType(), k -> new ArrayList<>());
+            overridenTrapHandlers.add(overridenExFlow);
+          }
           trapsChanged = true;
         }
       }
@@ -171,11 +187,12 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
 
     // TODO: do sth with it
-    block.addExceptionalSuccessorBlock(exceptionType, getBlockOf(traphandlerStmt));
+    block.addExceptionalSuccessorBlock(exceptionType, getOrCreateBlock(traphandlerStmt));
 
     if (numberOfSuccessors != 0) {
       // TODO: do it for the numberOfSuccessors as well
-      throw new IllegalArgumentException("cant handle trap removal yet for numberOfSuccessors");
+      throw new UnsupportedOperationException(
+          "cant handle trap removal yet for numberOfSuccessors");
     }
   }
 
@@ -185,10 +202,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     if (block == null) {
       return;
     }
-    block.removeExceptionalSuccessorBlock(exceptionType);
-
     // FIXME: possibly merge this block if possible
-    throw new IllegalArgumentException("cant handle trap removal yet for numberOfSuccessors");
+    //    block.removeExceptionalSuccessorBlock(exceptionType);
+
+    throw new UnsupportedOperationException("cant handle trap removal yet");
   }
 
   @Override
@@ -200,7 +217,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     block.clearExceptionalSuccessorBlocks();
 
     // FIXME: possibly merge this block if possible
-    throw new IllegalArgumentException("cant handle trap removal yet for numberOfSuccessors");
+    throw new UnsupportedOperationException("cant handle trap removal yet for numberOfSuccessors");
   }
 
   @Override
@@ -247,12 +264,12 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     } else {
       isExceptionalFlowDifferent = true;
     }
+    final MutableBasicBlock excludeFromOrigBlock;
     if (isExceptionalFlowDifferent) {
       if (block.getStmtCount() > 1) {
         final List<Stmt> blockStmts = block.getStmts();
         int stmtIdx = blockStmts.indexOf(stmt);
 
-        final MutableBasicBlock excludeFromOrigBlock;
         if (stmtIdx < 1) {
           // stmt is the head -> just a split is necessary
           excludeFromOrigBlock = block;
@@ -325,30 +342,31 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           excludeFromOrigBlock.addPredecessorBlock(block);
         }
 
-        // apply exceptional flow info to seperated block
-        exceptions.forEach(
-            (type, trapHandler) -> {
-              MutableBasicBlock trapHandlerBlock = getBlockOf(trapHandler);
-              if (trapHandlerBlock == null) {
-                // traphandlerStmt does not exist in the graph -> create
-                trapHandlerBlock = createStmtsBlock(trapHandler);
-              }
-              excludeFromOrigBlock.addExceptionalSuccessorBlock(type, trapHandlerBlock);
-              trapHandlerBlock.addPredecessorBlock(excludeFromOrigBlock);
-            });
         blocks.add(excludeFromOrigBlock);
 
       } else {
-        // just add exception info to the block with just a single stmt
-        for (Map.Entry<ClassType, Stmt> exceptionMap : exceptions.entrySet()) {
-          MutableBasicBlock targetBlock = stmtToBlock.get(exceptionMap.getValue());
-          if (targetBlock == null) {
-            targetBlock = createStmtsBlock(exceptionMap.getValue());
-          }
-          block.addExceptionalSuccessorBlock(exceptionMap.getKey(), targetBlock);
-        }
+        // just a single stmt in the block -> its the block we add the exception info
+        excludeFromOrigBlock = block;
       }
+
+      // apply exceptional flow info to seperated block
+      exceptions.forEach(
+          (type, trapHandler) -> {
+            MutableBasicBlock trapHandlerBlock = getOrCreateBlock(trapHandler);
+            excludeFromOrigBlock.addExceptionalSuccessorBlock(type, trapHandlerBlock);
+            trapHandlerBlock.addPredecessorBlock(excludeFromOrigBlock);
+          });
     }
+  }
+
+  @Nonnull
+  private MutableBasicBlock getOrCreateBlock(@Nonnull Stmt stmt) {
+    MutableBasicBlock trapHandlerBlock = getBlockOf(stmt);
+    if (trapHandlerBlock == null) {
+      // traphandlerStmt does not exist in the graph -> create
+      trapHandlerBlock = createStmtsBlock(stmt);
+    }
+    return trapHandlerBlock;
   }
 
   /**
@@ -891,8 +909,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                       + type
                       + "' in ExceptionalSucessors() of the last iterated Block!");
             }
-            // FIXME: what happens if the trapEnd is AFTER the last stmt i.e. covers until the end
-            // -> trapENd is exclusive..?!
             collectedTraps.add(
                 new Trap(type, trapStart, lastBlock.getTail(), trapHandler.getTail()));
           });
