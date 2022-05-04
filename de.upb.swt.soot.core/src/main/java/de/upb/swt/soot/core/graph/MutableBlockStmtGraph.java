@@ -488,10 +488,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // branching A indicates the end of BlockA and connects to another BlockB: reuse or create new
       // one
       if (blockB == null) {
-        blockB = new MutableBasicBlock();
-        blocks.add(blockB);
-        blockB.addStmt(stmtB);
-        stmtToBlock.put(stmtB, blockB);
+        blockB = createStmtsBlock(stmtB);
         blockB.addPredecessorBlock(blockA);
         blockA.addSuccessorBlock(blockB);
 
@@ -503,6 +500,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         } else {
 
           MutableBasicBlock newBlock = blockB.splitBlockLinked(stmtB, true);
+          newBlock.copyExceptionalFlowFrom(blockB);
           blocks.add(newBlock);
           newBlock.getStmts().forEach(stmt -> stmtToBlock.put(stmt, newBlock));
 
