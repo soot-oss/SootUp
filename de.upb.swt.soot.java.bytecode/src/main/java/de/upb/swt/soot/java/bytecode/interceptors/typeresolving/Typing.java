@@ -2,6 +2,7 @@ package de.upb.swt.soot.java.bytecode.interceptors.typeresolving;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.types.BottomType;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;

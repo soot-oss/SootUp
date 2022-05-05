@@ -81,5 +81,9 @@ public class TypeResolver {
         }
         bitSet.set(id);
     }
+
+    public void inferTypes(){
+
+    }
 }
 
