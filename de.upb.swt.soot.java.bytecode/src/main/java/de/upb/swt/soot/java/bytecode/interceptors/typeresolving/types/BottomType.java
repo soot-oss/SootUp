@@ -1,4 +1,4 @@
-package de.upb.swt.soot.java.bytecode.interceptors.typeresolving;
+package de.upb.swt.soot.java.bytecode.interceptors.typeresolving.types;
 
 import de.upb.swt.soot.core.jimple.visitor.TypeVisitor;
 import de.upb.swt.soot.core.types.Type;
@@ -23,6 +23,6 @@ public class BottomType extends Type {
 
     @Override
     public void accept(@Nonnull TypeVisitor v) {
-        //todo: add bottom type
+        //todo: add bottom type case
     }
 }
