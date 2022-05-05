@@ -190,6 +190,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     final Stmt node = iterator.next();
     MutableBasicBlock block = createStmtsBlock(node);
     iterator.forEachRemaining(stmt -> addNodeToBlock(block, stmt));
+    trapMap.forEach(
+        (type, handlerStmt) ->
+            block.addExceptionalSuccessorBlock(type, getOrCreateBlock(handlerStmt)));
     return block;
   }
 
@@ -252,8 +255,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       if (stmtIdx < blockStmts.size() - 1) {
         final MutableBasicBlock restOfOrigBlock = new MutableBasicBlock();
         for (int i = 0; i < stmtIdx; i++) {
-          final Stmt blockStmt = blockStmts.get(i);
-          addNodeToBlock(restOfOrigBlock, blockStmt);
+          // stmtToBlock is already updated while inserting each Stmt into another Block
+          addNodeToBlock(restOfOrigBlock, blockStmts.get(i));
         }
 
         // copy successors of block which are now the successors of the third block
@@ -388,6 +391,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     if (mergeable) {
       for (Stmt stmt : followingBlock.getStmts()) {
         firstBlock.addStmt(stmt);
+        stmtToBlock.put(stmt, firstBlock);
       }
 
       // update linking info into firstBlock
@@ -432,19 +436,43 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       throw new IllegalArgumentException("Stmt is not in the StmtGraph!");
     }
 
-    // do edges from or to this node exist? remove them
-    // TODO: [ms] implement more performant solution based on datastructure implications
-    /*
-        if (blockOfRemovedStmt.getHead() == stmt && predecessors.size() == 1){
-          tryMergeBlocks(predecessors.get(0), blockOfRemovedStmt);
-        }
-        if (successors.size() == 1) {
-          tryMergeIntoSurroundingBlocks(blockOfRemovedStmt);
-        }
-    */
+    final boolean wasHead = blockOfRemovedStmt.getHead() == stmt;
+    final boolean wasTail = blockOfRemovedStmt.getTail() == stmt;
+
+    // do edges from or to this node exist -> remove them
+    if (wasHead) {
+      // TODO: [ms] whats intuitive? removing the flows to the block too? or is deleting a stmt
+      // keeping the flows to it
+      // is the answer different if its the tail?
+      final MutableBasicBlock finalBlockOfRemovedStmt = blockOfRemovedStmt;
+      blockOfRemovedStmt
+          .getPredecessors()
+          .forEach(
+              b -> {
+                b.removeSuccessorBlock(finalBlockOfRemovedStmt);
+                finalBlockOfRemovedStmt.removePredecessorBlock(b);
+              });
+      blockOfRemovedStmt.clearPredecessorBlocks();
+    }
+
+    if (wasTail) {
+      // TODO: [ms] see question above..
+      // switch, if, goto vs. usual stmt
+      if (stmt.branches()) {
+        final MutableBasicBlock finalBlockOfRemovedStmt = blockOfRemovedStmt;
+        blockOfRemovedStmt
+            .getSuccessors()
+            .forEach(
+                b -> {
+                  b.removePredecessorBlock(finalBlockOfRemovedStmt);
+                  finalBlockOfRemovedStmt.removeSuccessorBlock(b);
+                });
+        blockOfRemovedStmt.clearSuccessorBlocks();
+      }
+    }
+
+    // cleanup or merge blocks if necesssary (stmt itself is not removed from the block yet)
     if (blockOfRemovedStmt.getStmtCount() > 1) {
-      final boolean wasHead = blockOfRemovedStmt.getHead() == stmt;
-      final boolean wasTail = blockOfRemovedStmt.getTail() == stmt;
       blockOfRemovedStmt.removeStmt(stmt);
 
       if (wasHead) {
@@ -467,9 +495,12 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
 
     final MutableBasicBlock block = getBlockOf(oldStmt);
+    stmtToBlock.remove(oldStmt);
+
     if (block.getTail() == oldStmt) {
       block.removeStmt(oldStmt);
       block.addStmt(newStmt);
+      stmtToBlock.put(newStmt, block);
       // tail could not be branching anymore -> try to merge
       tryMergeWithSuccessorBlock(block);
     } else if (block.getHead() == oldStmt) {
@@ -498,12 +529,14 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       block.clearSuccessorBlocks();
 
       newBlock.copyExceptionalFlowFrom(block);
+      stmtToBlock.put(newStmt, newBlock);
     } else {
       // [ms] possibility to use performance implications of the datastructure to improve
       // unnecessary BasicBlock allocation/stmt copying/removal
       final MutableBasicBlock excludedBlock = excludeStmtFromBlock(oldStmt, block);
       excludedBlock.removeStmt(oldStmt);
       excludedBlock.addStmt(newStmt);
+      stmtToBlock.put(newStmt, block);
       tryMergeIntoSurroundingBlocks(excludedBlock);
     }
   }

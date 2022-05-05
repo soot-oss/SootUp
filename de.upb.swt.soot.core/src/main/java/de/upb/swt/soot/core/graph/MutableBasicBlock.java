@@ -33,23 +33,6 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   }
 
   public void removeStmt(@Nonnull Stmt stmt) {
-    /*
-    if (stmt == getHead()) {
-      // TODO: [ms] whats intuitive? removing the flows to the block too? or is deleting a stmt
-      // keeping the flows to it
-      // is the answer different if its the tail?
-      predecessorBlocks.forEach(b -> {b.removeSuccessorBlock(this); removePredecessorBlock(b);});
-      predecessorBlocks.clear();
-    }
-    if (stmt == getTail()) {
-      // TODO: [ms] see question above..
-      // switch, if, goto vs. usual stmt
-      if (stmt.branches()) {
-        successorBlocks.forEach(b -> {b.removePredecessorBlock(this); removeSuccessorBlock(b);});
-        successorBlocks.clear();
-      }
-    }
-    */
     stmts.remove(stmt);
   }
 
