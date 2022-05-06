@@ -80,7 +80,9 @@ public class JavaSootMethod extends SootMethod {
     for (AnnotationUsage annotationUsage : annotationUsages) {
       annotationUsage.getAnnotation().getDefaultValues(view);
       for (Object value : annotationUsage.getValuesWithDefaults().values()) {
-        if (value instanceof ArrayList) {
+        if (value instanceof ArrayList
+            && !((ArrayList<?>) value).isEmpty()
+            && ((ArrayList<?>) value).get(0) instanceof AnnotationUsage) {
           resolveDefaultsForAnnotationTypes(view, (ArrayList<AnnotationUsage>) value);
         }
       }

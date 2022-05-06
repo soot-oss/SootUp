@@ -306,8 +306,9 @@ public final class AsmUtil {
           final Object annotationValue = e.values.get(++j);
 
           // repeatable annotations will have annotations (as a ArrayList) as value!
-          if (annotationValue instanceof ArrayList) {
-
+          if (annotationValue instanceof ArrayList
+              && !((ArrayList<?>) annotationValue).isEmpty()
+              && ((ArrayList<?>) annotationValue).get(0) instanceof AnnotationNode) {
             final ArrayList<AnnotationNode> annotationValueList =
                 (ArrayList<AnnotationNode>) annotationValue;
 
@@ -318,7 +319,14 @@ public final class AsmUtil {
               paramMap.put(
                   annotationName, JavaJimple.getInstance().newClassConstant(typ.toString()));
             } else {
-              paramMap.put(annotationName, ConstantUtil.fromObject(annotationValue));
+              if (annotationValue instanceof ArrayList) {
+                paramMap.put(
+                    annotationName,
+                    ((ArrayList<?>) annotationValue)
+                        .stream().map(ConstantUtil::fromObject).collect(Collectors.toList()));
+              } else {
+                paramMap.put(annotationName, ConstantUtil.fromObject(annotationValue));
+              }
             }
           }
         }
