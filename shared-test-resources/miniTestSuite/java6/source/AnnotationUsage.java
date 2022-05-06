@@ -42,6 +42,10 @@ import java.lang.annotation.Inherited;
   OnMethodRepeatable[] value() default {@OnMethodRepeatable(countOnMe = 1337)};
 }
 
+@interface ArrayConstant{
+  String [] value() default {"first","second"};
+}
+
 @NonInheritableOnClass
 @OnClass(sthBlue=42, author = "GeorgeLucas")
 public class AnnotationUsage{
@@ -67,6 +71,16 @@ public class AnnotationUsage{
     @OnLocal
     String s = "(String) Math.random().toString()";
     System.out.println(s);
+  }
+
+  @ArrayConstant
+  public void defaultArrayConstant(){
+
+  }
+
+  @ArrayConstant({"test","test1"})
+  public void arrayConstant(){
+
   }
 
 }
