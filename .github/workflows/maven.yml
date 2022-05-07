@@ -8,6 +8,11 @@ on:
     branches: [ develop ]
   pull_request:
     branches: [ develop ]
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
 
 jobs:
   JDK8:
