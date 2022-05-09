@@ -1,0 +1,32 @@
+public class benchmark.objects.O extends java.lang.Object
+
+{
+    public benchmark.objects.B f;
+
+    public benchmark.objects.B g;
+
+    public void <init>()
+    {
+        benchmark.objects.O r0;
+        benchmark.objects.B $r1, $r2;
+
+
+        r0 := @this: benchmark.objects.O;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        $r1 = new benchmark.objects.B;
+
+        specialinvoke $r1.<benchmark.objects.B: void <init>()>();
+
+        r0.<benchmark.objects.O: benchmark.objects.B f> = $r1;
+
+        $r2 = new benchmark.objects.B;
+
+        specialinvoke $r2.<benchmark.objects.B: void <init>()>();
+
+        r0.<benchmark.objects.O: benchmark.objects.B g> = $r2;
+
+        return;
+    }
+}

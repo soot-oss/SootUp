@@ -380,6 +380,10 @@ public class PointerAssignmentGraph {
     return internalEdges.storeEdges;
   }
 
+  public Map<FieldReferenceNode, Set<VariableNode>> getStoreEdgesInv() {
+    return internalEdges.storeEdgesInv;
+  }
+
   public Map<FieldReferenceNode, Set<VariableNode>> getLoadEdges() {
     return internalEdges.loadEdges;
   }
@@ -395,6 +399,15 @@ public class PointerAssignmentGraph {
   public Set<VariableNode> storeInvLookup(FieldReferenceNode key) {
     // TODO: somethingMerged?
     return internalEdges.storeEdgesInv.get(key);
+  }
+
+  public Set<FieldReferenceNode> storeLookup(VariableNode key) {
+    // TODO: somethingMerged?
+    return internalEdges.storeEdges.get(key);
+  }
+
+  public Set<VariableNode> simpleLookup(VariableNode key) {
+    return internalEdges.simpleEdges.get(key);
   }
 
   public Set<VariableNode> simpleInvLookup(VariableNode key) {

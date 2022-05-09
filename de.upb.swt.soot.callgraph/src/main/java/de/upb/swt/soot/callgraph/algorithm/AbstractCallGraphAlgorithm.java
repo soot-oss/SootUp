@@ -144,7 +144,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               + sig.getDeclClassType().getClassName()
               + " and in its superclasses");
     } else {
-      logger.warn("Could not find \"" + sig.getDeclClassType() + "\" in view");
+      logger.trace("Could not find \"" + sig.getDeclClassType() + "\" in view");
     }
     return null;
   }

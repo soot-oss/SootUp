@@ -142,8 +142,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
 
-  private Map<LabelNode, Stmt> labelsToStmt;
-  @Nonnull private final Body.BodyBuilder bodyBuilder = Body.builder();
+  @Nonnull private Map<LabelNode, Stmt> labelsToStmt = new HashMap<>();
+  private Body.BodyBuilder bodyBuilder = null;
 
   Stmt rememberedStmt = null;
   boolean isFirstStmtSet = false;
@@ -182,6 +182,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Override
   @Nonnull
   public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) {
+    if (bodyBuilder != null) {
+      return bodyBuilder.build();
+    }
+    bodyBuilder = Body.builder();
+
     bodyBuilder.setModifiers(AsmUtil.getModifiers(access));
 
     /* initialize */
@@ -1898,7 +1903,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   private void buildStmts() {
     AbstractInsnNode insn = instructions.getFirst();
-    labelsToStmt = new HashMap<>();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
 
     do {
@@ -2024,7 +2028,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     List<LabelNode> branchLabels = stmtsThatBranchToLabel.get(oldStmt);
 
     if (branchLabels != null) {
-      branchLabels.forEach(bl -> stmtsThatBranchToLabel.put(newStmt, bl));
+      branchLabels.forEach(
+          bl -> {
+            stmtsThatBranchToLabel.put(newStmt, bl);
+          });
       stmtsThatBranchToLabel.removeAll(oldStmt);
     }
   }

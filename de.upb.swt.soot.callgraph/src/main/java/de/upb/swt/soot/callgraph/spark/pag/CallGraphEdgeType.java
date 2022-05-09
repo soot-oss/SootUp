@@ -32,6 +32,8 @@ public enum CallGraphEdgeType {
   INTERFACE("INTERFACE"),
   /** Due to explicit invokespecial instruction. */
   SPECIAL("SPECIAL"),
+  /** Due to explicit invokedynamic instruction. */
+  DYNAMIC("DYNAMIC"),
   /** Implicit call to static initializer. */
   CLINIT("CLINIT"),
   /** Fake edges from our generic callback model. */
@@ -122,6 +124,11 @@ public enum CallGraphEdgeType {
   /** Returns true if the call is due to an explicit static invoke statement. */
   public boolean isStatic() {
     return this == STATIC;
+  }
+
+  /** Returns true if the call is due to an explicit dynamic invoke statement. */
+  public boolean isDynamic() {
+    return this == DYNAMIC;
   }
 
   public boolean isThread() {
