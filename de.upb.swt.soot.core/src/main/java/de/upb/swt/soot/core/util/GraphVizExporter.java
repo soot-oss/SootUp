@@ -74,7 +74,7 @@ public class GraphVizExporter {
             .append(escape(stmt.toString()))
             .append("\"");
         // mark startingstmt itself
-        if (startingStmt == stmt || stmt.getSuccessorCount() == 0) {
+        if (startingStmt == stmt || stmt.getExpectedSuccessorCount() == 0) {
           sb.append(",shape=Mdiamond,color=grey50,fillcolor=white");
         }
         sb.append("]\n");

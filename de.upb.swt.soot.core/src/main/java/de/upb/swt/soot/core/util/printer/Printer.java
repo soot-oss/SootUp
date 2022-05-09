@@ -326,7 +326,7 @@ public class Printer {
         final boolean currentStmtHasLabel = labels.get(currentStmt) != null;
         if (previousStmt.branches()
             || stmtGraph.predecessors(currentStmt).size() != 1
-            || previousStmt.getSuccessorCount() == 0
+            || previousStmt.getExpectedSuccessorCount() == 0
             || currentStmtHasLabel) {
           printer.newline();
         }

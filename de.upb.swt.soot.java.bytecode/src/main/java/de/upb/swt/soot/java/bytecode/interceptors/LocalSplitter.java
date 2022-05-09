@@ -24,7 +24,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
@@ -69,7 +68,6 @@ public class LocalSplitter implements BodyInterceptor {
   // problems
 
   @Override
-  @Nonnull
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
     // Find all Locals that must be split
@@ -148,6 +146,10 @@ public class LocalSplitter implements BodyInterceptor {
           else if (hasModifiedUse(head, oriLocal)) {
 
             Local modifiedLocal = getModifiedUse(head, oriLocal);
+            if (modifiedLocal == null) {
+              throw new IllegalStateException("Modified Use is not found.");
+            }
+
             // if modifed name is not same as the newLocal's name then -> conflict arises -> trace
             // backwards
             if (!modifiedLocal.getName().equals(newLocal.getName())) {
@@ -270,9 +272,12 @@ public class LocalSplitter implements BodyInterceptor {
    * @param newStmt
    */
   private void replaceStmtInBuilder(
-      BodyBuilder builder, List<Stmt> stmts, Stmt oldStmt, Stmt newStmt) {
+      @Nonnull BodyBuilder builder,
+      @Nonnull List<Stmt> stmts,
+      @Nonnull Stmt oldStmt,
+      @Nonnull Stmt newStmt) {
     builder.replaceStmt(oldStmt, newStmt);
-    adaptTraps(builder, oldStmt, newStmt);
+    // adaptTraps(builder, oldStmt, newStmt);
     adaptVisitList(stmts, oldStmt, newStmt);
   }
   /**
@@ -281,22 +286,14 @@ public class LocalSplitter implements BodyInterceptor {
    * @param builder a bodybuilder, use it to modify Trap
    * @param oldStmt a Stmt which maybe a beginStmt or endStmt in a Trap
    * @param newStmt a modified stmt to replace the oldStmt.
+   *     <p>private void adaptTraps( @Nonnull BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull
+   *     Stmt newStmt) { List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps()); for
+   *     (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) { Trap trap =
+   *     iterator.next(); if (oldStmt.equivTo(trap.getBeginStmt())) { Trap newTrap =
+   *     trap.withBeginStmt(newStmt); iterator.set(newTrap); } else if
+   *     (oldStmt.equivTo(trap.getEndStmt())) { Trap newTrap = trap.withEndStmt(newStmt);
+   *     iterator.set(newTrap); } } builder.setTraps(traps); }
    */
-  private void adaptTraps(
-      @Nonnull BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-    List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
-    for (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) {
-      Trap trap = iterator.next();
-      if (oldStmt.equivTo(trap.getBeginStmt())) {
-        Trap newTrap = trap.withBeginStmt(newStmt);
-        iterator.set(newTrap);
-      } else if (oldStmt.equivTo(trap.getEndStmt())) {
-        Trap newTrap = trap.withEndStmt(newStmt);
-        iterator.set(newTrap);
-      }
-    }
-    builder.setTraps(traps);
-  }
 
   /**
    * Fit the modified Stmt in visitedList
@@ -358,7 +355,6 @@ public class LocalSplitter implements BodyInterceptor {
    * @param oriLocal: the given oriLocal
    * @return if so, return true, else return false.
    */
-  @Nonnull
   private boolean isLocalFromSameOrigin(@Nonnull Local oriLocal, Value local) {
     if (local instanceof Local) {
       final String name = ((Local) local).getName();
@@ -414,7 +410,7 @@ public class LocalSplitter implements BodyInterceptor {
 
     Set<Stmt> handlerStmts = new HashSet<>();
 
-    StmtGraph graph = bodyBuilder.getStmtGraph();
+    StmtGraph<?> graph = bodyBuilder.getStmtGraph();
 
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(stmt);

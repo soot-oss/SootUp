@@ -25,7 +25,6 @@ import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -51,19 +50,7 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   public abstract void addBlock(@Nonnull List<Stmt> stmts, @Nonnull Map<ClassType, Stmt> traps);
 
   /** Modification of nodes (without manipulating any flows) */
-  public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-    // if possible please implement a better approach in your subclass
-    final MutableBasicBlock blockOf = getBlockOf(oldStmt);
-    if (blockOf == null) {
-      throw new IllegalArgumentException("oldStmt does not exist in the StmtGraph!");
-    }
-    final Map<ClassType, Stmt> exceptionMap = new HashMap<>();
-    blockOf
-        .getExceptionalSuccessors()
-        .forEach((type, handlerBlock) -> exceptionMap.put(type, handlerBlock.getHead()));
-    insertBefore(oldStmt, Collections.singletonList(newStmt), exceptionMap);
-    removeNode(oldStmt);
-  }
+  public abstract void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt);
 
   public abstract void insertBefore(
       @Nonnull Stmt beforeStmt,

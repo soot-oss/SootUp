@@ -66,7 +66,7 @@ public final class JThrowStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Override
-  public int getSuccessorCount() {
+  public int getExpectedSuccessorCount() {
     return 0;
   }
 

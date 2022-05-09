@@ -63,7 +63,7 @@ public class JGotoStmt extends BranchingStmt implements Copyable {
   }
 
   @Override
-  public int getSuccessorCount() {
+  public int getExpectedSuccessorCount() {
     return 1;
   }
 

@@ -6,6 +6,28 @@ import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
 import javax.annotation.Nonnull;
 
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2021 Markus Schmidt
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   @Nonnull private final List<MutableBasicBlock> predecessorBlocks = new ArrayList<>();
   @Nonnull private final List<MutableBasicBlock> successorBlocks = new ArrayList<>();
@@ -17,12 +39,6 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   @Nonnull private List<Stmt> stmts = new ArrayList<>();
 
   public MutableBasicBlock() {}
-
-  public MutableBasicBlock(
-      @Nonnull List<Stmt> stmts, @Nonnull Map<ClassType, MutableBasicBlock> trapMap) {
-    this.stmts.addAll(stmts);
-    this.exceptionalSuccessorBlocks.putAll(trapMap);
-  }
 
   public void addStmt(@Nonnull Stmt stmt) {
     if (getStmtCount() > 0 && getTail() instanceof BranchingStmt) {
@@ -220,7 +236,7 @@ class ImmmutableBasicBlock implements BasicBlock{
     @Nonnull private final List<BasicBlock> predecessorBlocks;
     @Nonnull private final List<BasicBlock> successorBlocks;
     @Nonnull private final List<Stmt> stmts;
-    @Nonnull private final List<Trap> traps;
+    @Nonnull private final Map<ClassType, BasicBlock> exceptionalSuccessorBlocks;
 
 
     public ImmmutableBasicBlock(@Nonnull List<BasicBlock> predecessorBlocks, @Nonnull List<BasicBlock> successorBlocks, @Nonnull List<Stmt> stmts, @Nonnull List<Trap> traps) {

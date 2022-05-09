@@ -37,7 +37,6 @@ import javax.annotation.Nonnull;
 public class LocalPacker implements BodyInterceptor {
 
   @Override
-  @Nonnull
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
     Map<Local, Integer> localToColor = assignLocalsColor(builder);
@@ -285,7 +284,7 @@ public class LocalPacker implements BodyInterceptor {
     builder.setTraps(traps);
   }
 
-  private class TypeColorPair {
+  private static class TypeColorPair {
     public Type type;
     public int color;
 

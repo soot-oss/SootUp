@@ -522,8 +522,8 @@ public class Body implements Copyable {
     }
 
     @Nonnull
-    public StmtGraph<?> getStmtGraph() {
-      return graph.unmodifiableStmtGraph();
+    public MutableStmtGraph getStmtGraph() {
+      return graph;
     }
 
     @Nonnull
@@ -588,11 +588,8 @@ public class Body implements Copyable {
     }
 
     @Nonnull
-    public BodyBuilder removeTargetTrapsOf(@Nonnull Stmt stmt) {
-      // TODO: move containsNode check into ds directly
-      if (graph.containsNode(stmt)) {
-        graph.clearExceptionalEdges(stmt);
-      }
+    public BodyBuilder clearExceptionEdgesOf(@Nonnull Stmt stmt) {
+      graph.clearExceptionalEdges(stmt);
       return this;
     }
 
@@ -695,13 +692,13 @@ public class Body implements Copyable {
       final Stmt startingStmt = graph.getStartingStmt();
       final Collection<Stmt> nodes = graph.nodes();
       if (nodes.size() > 0 && !nodes.contains(startingStmt)) {
-        throw new RuntimeException(
+        // TODO: already handled in MutableBlockStmtGraph.. check the others as well
+        throw new IllegalStateException(
             methodSig
                 + ": The given startingStmt '"
                 + startingStmt
                 + "' does not exist in the StmtGraph.");
       }
-
       // validate statements
       try {
         graph.validateStmtConnectionsInGraph();

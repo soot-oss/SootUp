@@ -82,7 +82,7 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
   }
 
   @Override
-  public int getSuccessorCount() {
+  public int getExpectedSuccessorCount() {
     return 2;
   }
 

@@ -137,7 +137,7 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
         new ArrayList<>(1)); // [ms] hint: wastes an entry if its a TrapHandler or the first Stmt
 
     // sets successors at successors[idx]
-    successors.add(new ArrayList<>(node.getSuccessorCount()));
+    successors.add(new ArrayList<>(node.getExpectedSuccessorCount()));
     return idx;
   }
 
@@ -320,7 +320,7 @@ public class MutableStmtGraphImpl extends MutableStmtGraph {
   @Override
   public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
 
-    if (oldStmt.getSuccessorCount() != newStmt.getSuccessorCount()) {
+    if (oldStmt.getExpectedSuccessorCount() != newStmt.getExpectedSuccessorCount()) {
       throw new UnsupportedOperationException(
           "You can only use replaceNode if newStmt has the same amount of branches/outgoing flows.");
     }

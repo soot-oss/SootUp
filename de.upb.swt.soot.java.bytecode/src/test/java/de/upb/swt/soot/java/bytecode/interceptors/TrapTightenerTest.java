@@ -109,8 +109,8 @@ public class TrapTightenerTest {
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
     // modify exceptionalStmtGraph
-    builder.removeTargetTrapsOf(stmt1);
-    builder.removeTargetTrapsOf(stmt10);
+    builder.clearExceptionEdgesOf(stmt1);
+    builder.clearExceptionEdgesOf(stmt10);
 
     TrapTightener trapTightener = new TrapTightener();
     trapTightener.interceptBody(builder);
@@ -149,8 +149,8 @@ public class TrapTightenerTest {
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
     // modify exceptionalStmtGraph
-    builder.removeTargetTrapsOf(stmt2);
-    builder.removeTargetTrapsOf(stmt4);
+    builder.clearExceptionEdgesOf(stmt2);
+    builder.clearExceptionEdgesOf(stmt4);
 
     TrapTightener trapTightener = new TrapTightener();
     trapTightener.interceptBody(builder);

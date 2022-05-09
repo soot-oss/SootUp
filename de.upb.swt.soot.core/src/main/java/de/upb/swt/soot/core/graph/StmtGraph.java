@@ -100,7 +100,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   @Nonnull
   public List<Stmt> getTails() {
     return nodes().stream()
-        .filter(stmt -> stmt.getSuccessorCount() == 0)
+        .filter(stmt -> stmt.getExpectedSuccessorCount() == 0)
         .collect(Collectors.toList());
   }
 

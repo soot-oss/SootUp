@@ -1,6 +1,8 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.graph.MutableBlockStmtGraph;
+import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
@@ -233,7 +235,8 @@ public class LocalSplitterTest {
 
   /** bodycreater for BinaryBranches */
   private Body createBBBody() {
-    Body.BodyBuilder builder = Body.builder();
+    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -257,7 +260,16 @@ public class LocalSplitterTest {
             l1, JavaJimple.newAddExpr(l1, IntConstant.getInstance(2)), noStmtPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(l1, noStmtPositionInfo);
 
-    // set graph
+    graph.addBlock(Arrays.asList(startingStmt, stmt1, stmt2), Collections.emptyMap());
+    graph.setEdges(stmt2, Arrays.asList(stmt3, stmt5));
+    graph.addBlock(Arrays.asList(stmt3, stmt4), Collections.emptyMap());
+    graph.addBlock(Arrays.asList(stmt5, stmt6), Collections.emptyMap());
+    graph.putEdge(stmt4, ret);
+    graph.putEdge(stmt6, ret);
+
+    graph.setStartingStmt(startingStmt);
+
+    /* set graph
     builder.addFlow(startingStmt, stmt1);
     builder.addFlow(stmt1, stmt2);
     builder.addFlow(stmt2, stmt3);
@@ -269,6 +281,7 @@ public class LocalSplitterTest {
 
     // build startingStmt
     builder.setStartingStmt(startingStmt);
+    */
 
     // build position
     Position position = NoPositionInformation.getInstance();
@@ -279,7 +292,8 @@ public class LocalSplitterTest {
 
   private Body createExpectedBBBody() {
 
-    Body.BodyBuilder builder = Body.builder();
+    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -309,19 +323,28 @@ public class LocalSplitterTest {
             noStmtPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(l1hash2, noStmtPositionInfo);
 
-    // set graph
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, stmt2);
-    builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, stmt4);
-    builder.addFlow(stmt4, ret);
-    builder.addFlow(stmt2, stmt5);
-    builder.addFlow(stmt5, stmt6);
-    builder.addFlow(stmt6, ret);
+    graph.addBlock(Arrays.asList(startingStmt, stmt1, stmt2), Collections.emptyMap());
+    graph.setEdges(stmt2, Arrays.asList(stmt3, stmt5));
+    graph.putEdge(stmt4, ret);
+    graph.addBlock(Arrays.asList(stmt3, stmt4), Collections.emptyMap());
+    graph.addBlock(Arrays.asList(stmt5, stmt6), Collections.emptyMap());
+    graph.putEdge(stmt6, ret);
 
-    // build startingStmt
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
+    /* set graph
+        builder.addFlow(startingStmt, stmt1);
+        builder.addFlow(stmt1, stmt2);
+        builder.addFlow(stmt2, stmt3);
+        builder.addFlow(stmt3, stmt4);
+        builder.addFlow(stmt4, ret);
+        builder.addFlow(stmt2, stmt5);
+        builder.addFlow(stmt5, stmt6);
+        builder.addFlow(stmt6, ret);
+
+        // build startingStmt
+        builder.setStartingStmt(startingStmt);
+    */
     // build position
     Position position = NoPositionInformation.getInstance();
     builder.setPosition(position);
@@ -332,7 +355,8 @@ public class LocalSplitterTest {
   /** bodycreater for multilocals */
   private Body createMultilocalsBody() {
 
-    Body.BodyBuilder builder = Body.builder();
+    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -350,15 +374,20 @@ public class LocalSplitterTest {
             l2, JavaJimple.newAddExpr(l2, IntConstant.getInstance(1)), noStmtPositionInfo);
     Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
-    // set graph
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, stmt2);
-    builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, stmt4);
-    builder.addFlow(stmt4, ret);
+    graph.addBlock(
+        Arrays.asList(startingStmt, stmt1, stmt2, stmt3, stmt4, ret), Collections.emptyMap());
+    graph.setStartingStmt(startingStmt);
 
-    // set first stmt
-    builder.setStartingStmt(startingStmt);
+    /* set graph
+        builder.addFlow(startingStmt, stmt1);
+        builder.addFlow(stmt1, stmt2);
+        builder.addFlow(stmt2, stmt3);
+        builder.addFlow(stmt3, stmt4);
+        builder.addFlow(stmt4, ret);
+
+        // set first stmt
+        builder.setStartingStmt(startingStmt);
+    */
 
     // build position
     Position position = NoPositionInformation.getInstance();
@@ -369,7 +398,8 @@ public class LocalSplitterTest {
 
   private Body createExpectedMuiltilocalsBody() {
 
-    Body.BodyBuilder builder = Body.builder();
+    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -391,7 +421,11 @@ public class LocalSplitterTest {
             noStmtPositionInfo);
     Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
-    // set graph
+    graph.addBlock(
+        Arrays.asList(startingStmt, stmt1, stmt2, stmt3, stmt4, ret), Collections.emptyMap());
+    graph.setStartingStmt(startingStmt);
+
+    /* set graph
     builder.addFlow(startingStmt, stmt1);
     builder.addFlow(stmt1, stmt2);
     builder.addFlow(stmt2, stmt3);
@@ -400,6 +434,7 @@ public class LocalSplitterTest {
 
     // set first stmt
     builder.setStartingStmt(startingStmt);
+    */
 
     // build position
     Position position = NoPositionInformation.getInstance();
@@ -411,7 +446,8 @@ public class LocalSplitterTest {
   /** bodycreater for Loop */
   private Body createLoopBody() {
 
-    Body.BodyBuilder builder = Body.builder();
+    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -437,20 +473,28 @@ public class LocalSplitterTest {
     Stmt stmt8 = JavaJimple.newGotoStmt(noStmtPositionInfo); // goto stmt2
     Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
-    // set graph
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, stmt2);
-    builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, stmt4);
-    builder.addFlow(stmt4, stmt5);
-    builder.addFlow(stmt4, ret);
-    builder.addFlow(stmt5, stmt6);
-    builder.addFlow(stmt6, stmt7);
-    builder.addFlow(stmt7, stmt8);
-    builder.addFlow(stmt8, stmt2);
+    graph.addBlock(Arrays.asList(startingStmt, stmt1, stmt2, stmt3, stmt4), Collections.emptyMap());
+    graph.setEdges(stmt4, Arrays.asList(stmt5, ret));
+    graph.addBlock(Arrays.asList(stmt5, stmt6, stmt7, stmt8), Collections.emptyMap());
+    graph.putEdge(stmt8, stmt2);
 
-    // build startingStmt
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
+
+    /* set graph
+      builder.addFlow(startingStmt, stmt1);
+      builder.addFlow(stmt1, stmt2);
+      builder.addFlow(stmt2, stmt3);
+      builder.addFlow(stmt3, stmt4);
+      builder.addFlow(stmt4, stmt5);
+      builder.addFlow(stmt4, ret);
+      builder.addFlow(stmt5, stmt6);
+      builder.addFlow(stmt6, stmt7);
+      builder.addFlow(stmt7, stmt8);
+      builder.addFlow(stmt8, stmt2);
+
+      // build startingStmt
+      builder.setStartingStmt(startingStmt);
+    */
 
     // build position
     Position position = NoPositionInformation.getInstance();
@@ -461,7 +505,8 @@ public class LocalSplitterTest {
 
   private Body createExpectedLoopBody() {
 
-    Body.BodyBuilder builder = Body.builder();
+    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -489,17 +534,25 @@ public class LocalSplitterTest {
     Stmt stmt8 = JavaJimple.newGotoStmt(noStmtPositionInfo); // goto stmt2
     Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
-    // set graph
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, stmt2);
-    builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, stmt4);
-    builder.addFlow(stmt4, stmt5);
-    builder.addFlow(stmt4, ret);
-    builder.addFlow(stmt5, stmt6);
-    builder.addFlow(stmt6, stmt7);
-    builder.addFlow(stmt7, stmt8);
-    builder.addFlow(stmt8, stmt2);
+    graph.addBlock(Arrays.asList(startingStmt, stmt1, stmt2, stmt3, stmt4), Collections.emptyMap());
+    graph.setEdges(stmt4, Arrays.asList(stmt5, ret));
+    graph.addBlock(Arrays.asList(stmt5, stmt6, stmt7, stmt8), Collections.emptyMap());
+    graph.putEdge(stmt8, stmt2);
+
+    graph.setStartingStmt(startingStmt);
+
+    /* set graph
+        builder.addFlow(startingStmt, stmt1);
+        builder.addFlow(stmt1, stmt2);
+        builder.addFlow(stmt2, stmt3);
+        builder.addFlow(stmt3, stmt4);
+        builder.addFlow(stmt4, stmt5);
+        builder.addFlow(stmt4, ret);
+        builder.addFlow(stmt5, stmt6);
+        builder.addFlow(stmt6, stmt7);
+        builder.addFlow(stmt7, stmt8);
+        builder.addFlow(stmt8, stmt2);
+    */
 
     // build startingStmt
     builder.setStartingStmt(startingStmt);
@@ -512,7 +565,8 @@ public class LocalSplitterTest {
   }
 
   private Body createTrapBody() {
-    Body.BodyBuilder builder = Body.builder();
+    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -528,33 +582,33 @@ public class LocalSplitterTest {
     Stmt stmt6 = JavaJimple.newGotoStmt(noStmtPositionInfo);
     Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
-    // set graph
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, stmt2);
-    builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, ret);
-    builder.addFlow(stmt4, stmt5);
-    builder.addFlow(stmt5, stmt6);
-    builder.addFlow(stmt6, ret);
+    // build graph
+    graph.addBlock(
+        Arrays.asList(startingStmt, stmt1, stmt2), Collections.singletonMap(exception, stmt4));
+    graph.addBlock(Arrays.asList(stmt4, stmt5, stmt6), Collections.emptyMap());
+    graph.putEdge(stmt2, stmt3);
+    graph.putEdge(stmt3, ret);
+    graph.putEdge(stmt6, ret);
 
-    // build startingStmt
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
     // build position
-    Position position = NoPositionInformation.getInstance();
-    builder.setPosition(position);
+    builder.setPosition(NoPositionInformation.getInstance());
 
-    // build trap
+    /* build trap
     Trap trap = new Trap(exception, stmt1, stmt3, stmt4);
     List<Trap> traps = new ArrayList<>();
     traps.add(trap);
     builder.setTraps(traps);
+    */
 
     return builder.build();
   }
 
   private Body createExpectedTrapBody() {
-    Body.BodyBuilder builder = Body.builder();
+
+    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -570,27 +624,25 @@ public class LocalSplitterTest {
     Stmt stmt6 = JavaJimple.newGotoStmt(noStmtPositionInfo);
     Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
-    // set graph
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, stmt2);
-    builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, ret);
-    builder.addFlow(stmt4, stmt5);
-    builder.addFlow(stmt5, stmt6);
-    builder.addFlow(stmt6, ret);
+    graph.addBlock(
+        Arrays.asList(startingStmt, stmt1, stmt2), Collections.singletonMap(exception, stmt4));
+    graph.addBlock(Arrays.asList(stmt4, stmt5, stmt6), Collections.emptyMap());
+    graph.putEdge(stmt2, stmt3);
+    graph.putEdge(stmt3, ret);
+    graph.putEdge(stmt6, ret);
 
-    // build startingStmt
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
     // build position
     Position position = NoPositionInformation.getInstance();
     builder.setPosition(position);
 
-    // build trap
+    /* build trap
     Trap trap = new Trap(exception, stmt1, stmt3, stmt4);
     List<Trap> traps = new ArrayList<>();
     traps.add(trap);
     builder.setTraps(traps);
+    */
 
     return builder.build();
   }
