@@ -10,12 +10,12 @@ package de.upb.swt.soot.java.core.tag;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -27,8 +27,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Represents an inner class attribute which can be attached to implementations of Host. It can be directly used to add
- * attributes to class files.
+ * Represents an inner class attribute which can be attached to implementations of Host. It can be
+ * directly used to add attributes to class files.
  */
 public class InnerClassAttribute implements Tag {
 
@@ -90,11 +90,16 @@ public class InnerClassAttribute implements Tag {
         if (newt_inner.equals(ict.getInnerClass())) {
           int ict_accessFlags = ict.getAccessFlags();
           if (ict_accessFlags != 0 && newt_accessFlags > 0 && ict_accessFlags != newt_accessFlags) {
-            throw new RuntimeException("Error: trying to add an InnerClassTag twice with different access flags! ("
-                + ict_accessFlags + " and " + newt_accessFlags + ")");
+            throw new RuntimeException(
+                "Error: trying to add an InnerClassTag twice with different access flags! ("
+                    + ict_accessFlags
+                    + " and "
+                    + newt_accessFlags
+                    + ")");
           }
           if (ict_accessFlags == 0 && newt_accessFlags != 0) {
-            // The Dalvik parser may find an InnerClass annotation without accessFlags in the outer class
+            // The Dalvik parser may find an InnerClass annotation without accessFlags in the outer
+            // class
             // and then an annotation with the accessFlags in the inner class.
             // When we have more information about the accessFlags we update the InnerClassTag.
             this_list.remove(ict);

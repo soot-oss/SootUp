@@ -238,6 +238,7 @@ public interface IdentifierFactory {
 
   /**
    * Gets the types of given list of type names
+   *
    * @param typeName
    * @return List of types
    */

@@ -24,38 +24,38 @@ package de.upb.swt.soot.java.core.tag;
 
 public class LineNumberTag implements Tag {
 
-    public static final String IDENTIFIER = "LineNumberTag";
+  public static final String IDENTIFIER = "LineNumberTag";
 
-    /* it is a u2 value representing line number. */
-    protected int line_number;
+  /* it is a u2 value representing line number. */
+  protected int line_number;
 
-    public LineNumberTag(int ln) {
-        this.line_number = ln;
-    }
+  public LineNumberTag(int ln) {
+    this.line_number = ln;
+  }
 
-    @Override
-    public String getName() {
-        return IDENTIFIER;
-    }
+  @Override
+  public String getName() {
+    return IDENTIFIER;
+  }
 
-    @Override
-    public byte[] getValue() {
-        byte[] v = new byte[2];
-        v[0] = (byte) (line_number / 256);
-        v[1] = (byte) (line_number % 256);
-        return v;
-    }
+  @Override
+  public byte[] getValue() {
+    byte[] v = new byte[2];
+    v[0] = (byte) (line_number / 256);
+    v[1] = (byte) (line_number % 256);
+    return v;
+  }
 
-    public int getLineNumber() {
-        return line_number;
-    }
+  public int getLineNumber() {
+    return line_number;
+  }
 
-    public void setLineNumber(int value) {
-        line_number = value;
-    }
+  public void setLineNumber(int value) {
+    line_number = value;
+  }
 
-    @Override
-    public String toString() {
-        return String.valueOf(line_number);
-    }
+  @Override
+  public String toString() {
+    return String.valueOf(line_number);
+  }
 }

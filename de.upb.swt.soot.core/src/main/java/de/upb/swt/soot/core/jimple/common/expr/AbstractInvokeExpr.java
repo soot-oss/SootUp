@@ -27,12 +27,11 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractInvokeExpr implements Expr {
 
@@ -108,5 +107,4 @@ public abstract class AbstractInvokeExpr implements Expr {
 
   @Nonnull
   public abstract AbstractInvokeExpr withArgs(@Nonnull List<Immediate> args);
-
 }

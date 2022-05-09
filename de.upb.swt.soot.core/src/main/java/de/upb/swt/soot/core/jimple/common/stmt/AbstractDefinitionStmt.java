@@ -25,11 +25,10 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.types.Type;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> extends Stmt {
 
@@ -83,7 +82,7 @@ public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> e
     return false;
   }
 
-  abstract public AbstractDefinitionStmt<L, R> withLeftOp(@Nonnull L left);
+  public abstract AbstractDefinitionStmt<L, R> withLeftOp(@Nonnull L left);
 
-  abstract public AbstractDefinitionStmt<L, R> withRightOp(@Nonnull R right);
+  public abstract AbstractDefinitionStmt<L, R> withRightOp(@Nonnull R right);
 }

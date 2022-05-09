@@ -22,7 +22,6 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * #L%
  */
 
-
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
@@ -45,55 +44,54 @@ import de.upb.swt.soot.core.types.Type;
  */
 public abstract class AbstractNullTransformer extends DexTransformer {
 
-    /**
-     * Examine expr if it is a comparison with 0.
-     *
-     * @param expr
-     *          the ConditionExpr to examine
-     */
-    protected boolean isZeroComparison(Expr expr) {
-        if (expr instanceof JEqExpr || expr instanceof JNeExpr) {
-            if (((AbstractConditionExpr) expr).getOp2() instanceof IntConstant && ((IntConstant) ((AbstractConditionExpr) expr).getOp2()).getValue() == 0) {
-                return true;
-            }
-            if (((AbstractConditionExpr) expr).getOp2() instanceof LongConstant && ((LongConstant) ((AbstractConditionExpr) expr).getOp2()).getValue() == 0) {
-                return true;
-            }
+  /**
+   * Examine expr if it is a comparison with 0.
+   *
+   * @param expr the ConditionExpr to examine
+   */
+  protected boolean isZeroComparison(Expr expr) {
+    if (expr instanceof JEqExpr || expr instanceof JNeExpr) {
+      if (((AbstractConditionExpr) expr).getOp2() instanceof IntConstant
+          && ((IntConstant) ((AbstractConditionExpr) expr).getOp2()).getValue() == 0) {
+        return true;
+      }
+      if (((AbstractConditionExpr) expr).getOp2() instanceof LongConstant
+          && ((LongConstant) ((AbstractConditionExpr) expr).getOp2()).getValue() == 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Replace 0 with null in the given unit.
+   *
+   * @param u the unit where 0 will be replaced with null.
+   */
+  protected void replaceWithNull(Stmt u) {
+    if (u instanceof JIfStmt) {
+      JIfStmt jIfStmt = (JIfStmt) u;
+      AbstractConditionExpr expr = jIfStmt.getCondition();
+      if (isZeroComparison(expr)) {
+        jIfStmt.withCondition(expr.withOp2(NullConstant.getInstance()));
+      }
+    } else if (u instanceof JAssignStmt) {
+      JAssignStmt s = (JAssignStmt) u;
+      Value v = s.getRightOp();
+      if ((v instanceof IntConstant && ((IntConstant) v).getValue() == 0)
+          || (v instanceof LongConstant && ((LongConstant) v).getValue() == 0)) {
+        // If this is a field assignment, double-check the type. We
+        // might have a.f = 2 with a being a null candidate, but a.f
+        // being an int.
+        if (!(s.getLeftOp() instanceof JInstanceFieldRef)
+            || s.getLeftOp() instanceof JInstanceFieldRef) {
+          s.withRightOp(NullConstant.getInstance());
         }
-        return false;
+      }
     }
+  }
 
-    /**
-     * Replace 0 with null in the given unit.
-     *
-     * @param u
-     *          the unit where 0 will be replaced with null.
-     */
-    protected void replaceWithNull(Stmt u) {
-        if (u instanceof JIfStmt) {
-            JIfStmt jIfStmt = (JIfStmt) u;
-            AbstractConditionExpr expr = jIfStmt.getCondition();
-            if (isZeroComparison(expr)) {
-                jIfStmt.withCondition(expr.withOp2(NullConstant.getInstance()));
-            }
-        } else if (u instanceof JAssignStmt) {
-            JAssignStmt s = (JAssignStmt) u;
-            Value v = s.getRightOp();
-            if ((v instanceof IntConstant && ((IntConstant) v).getValue() == 0)
-                    || (v instanceof LongConstant && ((LongConstant) v).getValue() == 0)) {
-                // If this is a field assignment, double-check the type. We
-                // might have a.f = 2 with a being a null candidate, but a.f
-                // being an int.
-                if (!(s.getLeftOp() instanceof JInstanceFieldRef)
-                        || s.getLeftOp() instanceof JInstanceFieldRef) {
-                    s.withRightOp(NullConstant.getInstance());
-                }
-            }
-        }
-    }
-
-    protected static boolean isObject(Type t) {
-        return t instanceof ReferenceType;
-    }
-
+  protected static boolean isObject(Type t) {
+    return t instanceof ReferenceType;
+  }
 }

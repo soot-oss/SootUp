@@ -10,12 +10,12 @@ package de.upb.swt.soot.java.core.tag;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -40,11 +40,15 @@ public class InnerClassTag implements Tag {
     this.accessFlags = accessFlags;
     if (innerClass != null && (innerClass.startsWith("L") && innerClass.endsWith(";"))) {
       throw new RuntimeException(
-          "InnerClass annotation type string must be of the form a/b/ClassName not '" + innerClass + "'");
+          "InnerClass annotation type string must be of the form a/b/ClassName not '"
+              + innerClass
+              + "'");
     }
     if (outerClass != null && (outerClass.startsWith("L") && outerClass.endsWith(";"))) {
       throw new RuntimeException(
-          "OuterType annotation type string must be of the form a/b/ClassName not '" + innerClass + "'");
+          "OuterType annotation type string must be of the form a/b/ClassName not '"
+              + innerClass
+              + "'");
     }
     if (name != null && name.endsWith(";")) {
       throw new RuntimeException("InnerClass name cannot end with ';', got '" + name + "'");
@@ -57,8 +61,8 @@ public class InnerClassTag implements Tag {
   }
 
   /**
-   * Returns the inner class name (only) encoded in UTF8. There is no obvious standalone byte[] encoding for this attribute
-   * because it contains embedded constant pool indices.
+   * Returns the inner class name (only) encoded in UTF8. There is no obvious standalone byte[]
+   * encoding for this attribute because it contains embedded constant pool indices.
    */
   @Override
   public byte[] getValue() {
@@ -87,6 +91,14 @@ public class InnerClassTag implements Tag {
 
   @Override
   public String toString() {
-    return "[inner=" + innerClass + ", outer=" + outerClass + ", name=" + name + ",flags=" + accessFlags + "]";
+    return "[inner="
+        + innerClass
+        + ", outer="
+        + outerClass
+        + ", name="
+        + name
+        + ",flags="
+        + accessFlags
+        + "]";
   }
 }

@@ -80,5 +80,4 @@ public final class JIdentityStmt<T extends IdentityRef> extends AbstractDefiniti
   public JIdentityStmt<T> withRightOp(@Nonnull T right) {
     return new JIdentityStmt<T>(getLeftOp(), right, getPositionInfo());
   }
-
 }

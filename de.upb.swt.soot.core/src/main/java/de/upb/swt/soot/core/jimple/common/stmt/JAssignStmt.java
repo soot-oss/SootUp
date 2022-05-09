@@ -222,7 +222,7 @@ public final class JAssignStmt<L extends Value, R extends Value>
   }
 
   @Nonnull
-  public JAssignStmt withArrayRef(JArrayRef arrayRef){
+  public JAssignStmt withArrayRef(JArrayRef arrayRef) {
     if (getLeftOp() instanceof JArrayRef) {
       return new JAssignStmt(arrayRef, getRightOp(), getPositionInfo());
     } else if (getRightOp() instanceof JArrayRef) {

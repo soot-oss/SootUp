@@ -22,7 +22,6 @@ package de.upb.swt.soot.java.core.toolkits.scalar;
  * #L%
  */
 
-
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
@@ -33,13 +32,12 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.views.View;
-
-import javax.annotation.Nonnull;
 import java.util.Optional;
+import javax.annotation.Nonnull;
 
 /**
- * Transformer that checks whether a static field is used like an instance field. If this is the case, all instance
- * references are replaced by static field references.
+ * Transformer that checks whether a static field is used like an instance field. If this is the
+ * case, all instance references are replaced by static field references.
  *
  * @author Steven Arzt
  */
@@ -64,7 +62,7 @@ public class FieldStaticnessCorrector implements BodyInterceptor {
 
           if (ref instanceof JInstanceFieldRef) {
             Optional<? extends SootField> field = view.getField(ref.getFieldSignature());
-            if(field.isPresent()){
+            if (field.isPresent()) {
               SootField fld = field.get();
               if (fld.isStatic()) {
                 if (assignStmt.getLeftOp() == ref) {

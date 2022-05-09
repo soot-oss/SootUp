@@ -27,6 +27,4 @@ import de.upb.swt.soot.core.jimple.visitor.Acceptor;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 
 /*   An Expression is a Language construct that returns a Value  */
-public interface Expr extends Value, Acceptor<ExprVisitor> {
-
-}
+public interface Expr extends Value, Acceptor<ExprVisitor> {}

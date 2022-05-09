@@ -26,10 +26,9 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import java.util.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.*;
 
 /**
  * Analysis that implements the LocalUses interface. Uses for a Local defined at a given Stmt are
@@ -41,12 +40,12 @@ public class SimpleLocalUses implements LocalUses {
   final Collection<Local> locals;
   private final Map<Stmt, List<Pair<Stmt, Value>>> stmtToUses;
 
-  public SimpleLocalUses(Body body, LocalDefs localDefs){
-    this(body.getLocals(), body.getStmts(),localDefs);
+  public SimpleLocalUses(Body body, LocalDefs localDefs) {
+    this(body.getLocals(), body.getStmts(), localDefs);
   }
 
-  public SimpleLocalUses(Body.BodyBuilder bodyBuilder, LocalDefs localDefs){
-    this(bodyBuilder.getLocals(), bodyBuilder.getStmts(),localDefs);
+  public SimpleLocalUses(Body.BodyBuilder bodyBuilder, LocalDefs localDefs) {
+    this(bodyBuilder.getLocals(), bodyBuilder.getStmts(), localDefs);
   }
 
   /**

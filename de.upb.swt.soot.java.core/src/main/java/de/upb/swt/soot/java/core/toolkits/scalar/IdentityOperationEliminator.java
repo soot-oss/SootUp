@@ -10,18 +10,17 @@ package de.upb.swt.soot.java.core.toolkits.scalar;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-
 
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -36,19 +35,18 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
-
-import javax.annotation.Nonnull;
 import java.util.Iterator;
+import javax.annotation.Nonnull;
 
 /**
  * Transformer that eliminates unnecessary logic operations such as
- * 
- * $z0 = a | 0
- * 
- * which can more easily be represented as
- * 
- * $z0 = a
- * 
+ *
+ * <p>$z0 = a | 0
+ *
+ * <p>which can more easily be represented as
+ *
+ * <p>$z0 = a
+ *
  * @author Steven Arzt
  */
 public class IdentityOperationEliminator implements BodyInterceptor {
@@ -98,7 +96,7 @@ public class IdentityOperationEliminator implements BodyInterceptor {
     }
 
     // In a second step, we remove assingments such as <a = a>
-    for (Iterator<Stmt> stmtIt = stmts.iterator(); stmtIt.hasNext();) {
+    for (Iterator<Stmt> stmtIt = stmts.iterator(); stmtIt.hasNext(); ) {
       Stmt stmt = stmtIt.next();
       if (stmt instanceof JAssignStmt) {
         JAssignStmt assignStmt = (JAssignStmt) stmt;
@@ -111,9 +109,8 @@ public class IdentityOperationEliminator implements BodyInterceptor {
 
   /**
    * Gets the constant value 0 with the given type (integer, float, etc.)
-   * 
-   * @param type
-   *          The type for which to get the constant zero value
+   *
+   * @param type The type for which to get the constant zero value
    * @return The constant zero value of the given type
    */
   private static Value getZeroConst(Type type) {
@@ -131,13 +128,11 @@ public class IdentityOperationEliminator implements BodyInterceptor {
 
   /**
    * Checks whether the given value is the constant integer 0
-   * 
-   * @param op
-   *          The value to check
+   *
+   * @param op The value to check
    * @return True if the given value is the constant integer 0, otherwise false
    */
   private static boolean isConstZero(Value op) {
     return (op instanceof IntConstant) && (((IntConstant) op).getValue() == 0);
   }
-
 }

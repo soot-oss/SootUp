@@ -10,12 +10,12 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -35,7 +35,6 @@ import java.util.*;
  * Simplistic caching, flow-insensitive def/use analysis
  *
  * @author Steven Arzt
- *
  */
 public class DexDefUseAnalysis implements LocalDefs {
 
@@ -70,7 +69,7 @@ public class DexDefUseAnalysis implements LocalDefs {
 
       // Record the definitions
       if (u instanceof AbstractDefinitionStmt) {
-        Value val = ((AbstractDefinitionStmt ) u).getLeftOp();
+        Value val = ((AbstractDefinitionStmt) u).getLeftOp();
         if (val instanceof Local) {
           final int localIdx = localToNumber.get((Local) val);
           BitSet bs = localToDefsBits[localIdx];
@@ -111,13 +110,12 @@ public class DexDefUseAnalysis implements LocalDefs {
   }
 
   /**
-   * Collect definitions of l in body including the definitions of aliases of l. This analysis exploits that the problem is
-   * flow-insensitive anyway.
+   * Collect definitions of l in body including the definitions of aliases of l. This analysis
+   * exploits that the problem is flow-insensitive anyway.
    *
-   * In this context an alias is a local that propagates its value to l.
+   * <p>In this context an alias is a local that propagates its value to l.
    *
-   * @param l
-   *          the local whose definitions are to collect
+   * @param l the local whose definitions are to collect
    */
   protected Set<Stmt> collectDefinitionsWithAliases(Local l) {
     Set<Stmt> defs = localToDefsWithAliases.get(l);
@@ -138,7 +136,8 @@ public class DexDefUseAnalysis implements LocalDefs {
             defs.add(u);
 
             AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) u;
-            if (defStmt.getRightOp() instanceof Local && seenLocals.add((Local) defStmt.getRightOp())) {
+            if (defStmt.getRightOp() instanceof Local
+                && seenLocals.add((Local) defStmt.getRightOp())) {
               newLocals.add((Local) defStmt.getRightOp());
             }
           }
@@ -151,7 +150,8 @@ public class DexDefUseAnalysis implements LocalDefs {
             Stmt use = unitList.get(i);
             if (use instanceof JAssignStmt) {
               JAssignStmt assignUse = (JAssignStmt) use;
-              if (assignUse.getRightOp() == curLocal && assignUse.getLeftOp() instanceof Local
+              if (assignUse.getRightOp() == curLocal
+                  && assignUse.getLeftOp() instanceof Local
                   && seenLocals.add((Local) assignUse.getLeftOp())) {
                 newLocals.add((Local) assignUse.getLeftOp());
               }
@@ -169,7 +169,6 @@ public class DexDefUseAnalysis implements LocalDefs {
   public List<Stmt> getDefsOfAt(Local l, Stmt s) {
     return getDefsOf(l);
   }
-
 
   @Override
   public List<Stmt> getDefsOf(Local l) {

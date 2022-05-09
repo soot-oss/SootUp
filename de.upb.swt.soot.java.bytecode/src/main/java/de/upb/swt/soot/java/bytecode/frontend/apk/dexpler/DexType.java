@@ -15,31 +15,27 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 
+import de.upb.swt.soot.core.types.PrimitiveType.*;
+import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.types.UnknownType;
+import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import org.jf.dexlib2.iface.reference.TypeReference;
 import org.jf.dexlib2.immutable.reference.ImmutableTypeReference;
 
-import de.upb.swt.soot.core.types.UnknownType;
-import de.upb.swt.soot.core.types.VoidType;
-import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.types.PrimitiveType.*;
-
-/**
- * Wrapper for a dexlib TypeIdItem.
- *
- */
+/** Wrapper for a dexlib TypeIdItem. */
 public class DexType {
 
   protected String name;
@@ -86,8 +82,7 @@ public class DexType {
   /**
    * Return the appropriate Soot Type for the given TypeReference.
    *
-   * @param type
-   *          the TypeReference to convert
+   * @param type the TypeReference to convert
    * @return the Soot Type
    */
   public static Type toSoot(TypeReference type) {
@@ -101,8 +96,7 @@ public class DexType {
   /**
    * Return if the given TypeIdItem is wide (i.e. occupies 2 registers).
    *
-   * @param typeReference
-   *          the TypeIdItem to analyze
+   * @param typeReference the TypeIdItem to analyze
    * @return if type is wide
    */
   public static boolean isWide(TypeReference typeReference) {
@@ -114,10 +108,7 @@ public class DexType {
     return type.startsWith("J") || type.startsWith("D");
   }
 
-  /**
-   * Determine the soot type from a byte code type descriptor.
-   *
-   */
+  /** Determine the soot type from a byte code type descriptor. */
   private static Type toSoot(String typeDescriptor, int pos) {
     Type type;
     char typeDesignator = typeDescriptor.charAt(pos);
@@ -154,7 +145,10 @@ public class DexType {
         type = VoidType.getInstance();
         break;
       case '[': // array
-        type = JavaIdentifierFactory.getInstance().getArrayType(JavaIdentifierFactory.getInstance().getClassType(typeDescriptor), pos+1);
+        type =
+            JavaIdentifierFactory.getInstance()
+                .getArrayType(
+                    JavaIdentifierFactory.getInstance().getClassType(typeDescriptor), pos + 1);
         break;
       default:
         type = UnknownType.getInstance();
@@ -164,13 +158,15 @@ public class DexType {
   }
 
   /**
-   * Seems that representation of Annotation type in Soot is not consistent with the normal type representation. Normal type
-   * representation would be a.b.c.ClassName Java bytecode representation is La/b/c/ClassName; Soot Annotation type
-   * representation (and Jasmin's) is a/b/c/ClassName.
+   * Seems that representation of Annotation type in Soot is not consistent with the normal type
+   * representation. Normal type representation would be a.b.c.ClassName Java bytecode
+   * representation is La/b/c/ClassName; Soot Annotation type representation (and Jasmin's) is
+   * a/b/c/ClassName.
    *
-   * This method transforms the Java bytecode representation into the Soot annotation type representation.
+   * <p>This method transforms the Java bytecode representation into the Soot annotation type
+   * representation.
    *
-   * Ljava/lang/Class<Ljava/lang/Enum<*>;>; becomes java/lang/Class<java/lang/Enum<*>>
+   * <p>Ljava/lang/Class<Ljava/lang/Enum<*>;>; becomes java/lang/Class<java/lang/Enum<*>>
    *
    * @param type
    * @return
@@ -204,8 +200,8 @@ public class DexType {
   }
 
   /**
-   * Types read from annotations should be converted to Soot type. However, to maintain compatibility with Soot code most
-   * type will not be converted.
+   * Types read from annotations should be converted to Soot type. However, to maintain
+   * compatibility with Soot code most type will not be converted.
    *
    * @param type
    * @return

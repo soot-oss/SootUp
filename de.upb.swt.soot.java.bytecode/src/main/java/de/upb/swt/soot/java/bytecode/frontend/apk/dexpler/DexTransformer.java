@@ -1,5 +1,5 @@
-// 
-// (c) 2012 University of Luxembourg - Interdisciplinary Centre for 
+//
+// (c) 2012 University of Luxembourg - Interdisciplinary Centre for
 // Security Reliability and Trust (SnT) - All rights reserved
 //
 // Author: Alexandre Bartel
@@ -15,7 +15,7 @@
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
 package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
@@ -30,12 +30,12 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -61,28 +61,25 @@ import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.NullType;
 import de.upb.swt.soot.core.types.Type;
-import org.apache.commons.lang3.tuple.Pair;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
 
 public abstract class DexTransformer implements BodyInterceptor {
 
   /**
    * Collect definitions of l in bodyBuilder including the definitions of aliases of l.
-   * 
-   * In this context an alias is a local that propagates its value to l.
-   * 
-   * @param l
-   *          the local whose definitions are to collect
-   * @param localDefs
-   *          the LocalDefs object
-   * @param bodyBuilder
-   *          the bodyBuilder that contains the local
+   *
+   * <p>In this context an alias is a local that propagates its value to l.
+   *
+   * @param l the local whose definitions are to collect
+   * @param localDefs the LocalDefs object
+   * @param bodyBuilder the bodyBuilder that contains the local
    */
-  protected List<Stmt> collectDefinitionsWithAliases(Local l, LocalDefs localDefs, LocalUses localUses, Body.BodyBuilder bodyBuilder) {
+  protected List<Stmt> collectDefinitionsWithAliases(
+      Local l, LocalDefs localDefs, LocalUses localUses, Body.BodyBuilder bodyBuilder) {
     Set<Local> seenLocals = new HashSet<Local>();
     List<Local> newLocals = new ArrayList<Local>();
     List<Stmt> defs = new ArrayList<Stmt>();
@@ -120,17 +117,16 @@ public abstract class DexTransformer implements BodyInterceptor {
 
   /**
    * Convenience method that collects all definitions of l.
-   * 
-   * @param l
-   *          the local whose definitions are to collect
-   * @param localDefs
-   *          the LocalDefs object
+   *
+   * @param l the local whose definitions are to collect
+   * @param localDefs the LocalDefs object
    */
   private List<Stmt> collectDefinitions(Local l, LocalDefs localDefs) {
     return localDefs.getDefsOf(l);
   }
 
-  protected Type findArrayType(LocalDefs localDefs, Stmt arrayStmt, int depth, Set<Stmt> alreadyVisitedDefs) {
+  protected Type findArrayType(
+      LocalDefs localDefs, Stmt arrayStmt, int depth, Set<Stmt> alreadyVisitedDefs) {
     JArrayRef jArrayRef = null;
     if (arrayStmt.containsArrayRef()) {
       jArrayRef = arrayStmt.getArrayRef();
@@ -183,10 +179,13 @@ public abstract class DexTransformer implements BodyInterceptor {
           }
         } else if (r instanceof JArrayRef) {
           JArrayRef ar = (JArrayRef) r;
-          if (ar.getType().toString().equals(".unknown") || ar.getType().toString().equals("unknown")) { // ||
+          if (ar.getType().toString().equals(".unknown")
+              || ar.getType().toString().equals("unknown")) { // ||
             // ar.getType())
             // {
-            Type t = findArrayType(localDefs, stmt, ++depth, newVisitedDefs); // TODO: which type should be
+            Type t =
+                findArrayType(
+                    localDefs, stmt, ++depth, newVisitedDefs); // TODO: which type should be
             // returned?
             if (t instanceof ArrayType) {
               ArrayType at = (ArrayType) t;
@@ -268,8 +267,10 @@ public abstract class DexTransformer implements BodyInterceptor {
           // a[12] = 42;
           nullDefCount++;
         } else {
-          throw new RuntimeException(String.format("ERROR: def statement not possible! Statement: %s, right side: %s",
-              stmt.toString(), r.getClass().getName()));
+          throw new RuntimeException(
+              String.format(
+                  "ERROR: def statement not possible! Statement: %s, right side: %s",
+                  stmt.toString(), r.getClass().getName()));
         }
 
       } else if (baseDef instanceof JIdentityStmt) {
@@ -283,7 +284,8 @@ public abstract class DexTransformer implements BodyInterceptor {
           return t;
         }
       } else {
-        throw new RuntimeException("ERROR: base local def must be AssignStmt or IdentityStmt! " + baseDef);
+        throw new RuntimeException(
+            "ERROR: base local def must be AssignStmt or IdentityStmt! " + baseDef);
       }
 
       if (aType != null) {
@@ -295,11 +297,11 @@ public abstract class DexTransformer implements BodyInterceptor {
       if (nullDefCount == defsOfaBaseList.size()) {
         return NullType.getInstance();
       } else {
-        throw new RuntimeException("ERROR: could not find type of array from statement '" + arrayStmt + "'");
+        throw new RuntimeException(
+            "ERROR: could not find type of array from statement '" + arrayStmt + "'");
       }
     } else {
       return aType;
     }
   }
-
 }

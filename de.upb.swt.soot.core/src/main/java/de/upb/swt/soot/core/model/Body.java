@@ -472,6 +472,30 @@ public class Body implements Copyable {
       ecfg = new MutableExceptionalStmtGraph();
     }
 
+    @Nullable
+    public MethodSignature getMethodSignature() {
+      return methodSig;
+    }
+
+    // FIXME see Body
+    public Collection<Value> getUses() {
+      ArrayList<Value> useList = new ArrayList<>();
+
+      for (Stmt stmt : ecfg.nodes()) {
+        useList.addAll(stmt.getUses());
+      }
+      return useList;
+    }
+    // FIXME see Body
+    public Collection<Value> getDefs() {
+      ArrayList<Value> defList = new ArrayList<>();
+
+      for (Stmt stmt : ecfg.nodes()) {
+        defList.addAll(stmt.getDefs());
+      }
+      return defList;
+    }
+
     public BodyBuilder(@Nonnull Body body, @Nonnull Set<Modifier> modifiers) {
       setModifiers(modifiers);
       setMethodSignature(body.getMethodSignature());

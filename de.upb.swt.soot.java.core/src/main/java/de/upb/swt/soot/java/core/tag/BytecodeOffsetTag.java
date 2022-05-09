@@ -23,57 +23,46 @@ package de.upb.swt.soot.java.core.tag;
  */
 
 /**
- * This class represents a tag for byte-code offset of instructions that correspond to Jimple statements.
+ * This class represents a tag for byte-code offset of instructions that correspond to Jimple
+ * statements.
  *
  * @author Roman Manevich.
  * @since October 3 2002 Initial creation.
  */
 public class BytecodeOffsetTag implements Tag {
-    /**
-     * The index of the last byte-code instruction.
-     */
-    protected final int offset;
+  /** The index of the last byte-code instruction. */
+  protected final int offset;
 
-    /**
-     * Constructs a tag from the index offset.
-     */
-    public BytecodeOffsetTag(int offset) {
-        this.offset = offset;
-    }
+  /** Constructs a tag from the index offset. */
+  public BytecodeOffsetTag(int offset) {
+    this.offset = offset;
+  }
 
-    /**
-     * Returns the name of this tag.
-     */
-    @Override
-    public String getName() {
-        return "BytecodeOffsetTag";
-    }
+  /** Returns the name of this tag. */
+  @Override
+  public String getName() {
+    return "BytecodeOffsetTag";
+  }
 
-    /**
-     * Returns the offset in a four byte array.
-     */
-    @Override
-    public byte[] getValue() {
-        byte[] v = new byte[4];
-        v[0] = (byte) ((offset >> 24) % 256);
-        v[1] = (byte) ((offset >> 16) % 256);
-        v[2] = (byte) ((offset >> 8) % 256);
-        v[3] = (byte) (offset % 256);
-        return v;
-    }
+  /** Returns the offset in a four byte array. */
+  @Override
+  public byte[] getValue() {
+    byte[] v = new byte[4];
+    v[0] = (byte) ((offset >> 24) % 256);
+    v[1] = (byte) ((offset >> 16) % 256);
+    v[2] = (byte) ((offset >> 8) % 256);
+    v[3] = (byte) (offset % 256);
+    return v;
+  }
 
-    /**
-     * Returns the offset as an int.
-     */
-    public int getBytecodeOffset() {
-        return offset;
-    }
+  /** Returns the offset as an int. */
+  public int getBytecodeOffset() {
+    return offset;
+  }
 
-    /**
-     * Returns the offset in a string.
-     */
-    @Override
-    public String toString() {
-        return Integer.toString(offset);
-    }
+  /** Returns the offset in a string. */
+  @Override
+  public String toString() {
+    return Integer.toString(offset);
+  }
 }

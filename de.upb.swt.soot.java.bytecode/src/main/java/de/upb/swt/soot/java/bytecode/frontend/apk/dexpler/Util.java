@@ -15,12 +15,12 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -38,14 +38,14 @@ import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.types.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Util {
   /**
-   * Return the dotted class name of a type descriptor, i.e. change Ljava/lang/Object; to java.lang.Object.
+   * Return the dotted class name of a type descriptor, i.e. change Ljava/lang/Object; to
+   * java.lang.Object.
    *
    * @raises IllegalArgumentException if classname is not of the form Lpath; or [Lpath;
    * @return the dotted name.
@@ -59,12 +59,20 @@ public class Util {
         idx++;
       }
       String c = t.substring(idx);
-      if (c.length() == 1 && (c.startsWith("I") || c.startsWith("B") || c.startsWith("C") || c.startsWith("S")
-          || c.startsWith("J") || c.startsWith("D") || c.startsWith("F") || c.startsWith("Z"))) {
+      if (c.length() == 1
+          && (c.startsWith("I")
+              || c.startsWith("B")
+              || c.startsWith("C")
+              || c.startsWith("S")
+              || c.startsWith("J")
+              || c.startsWith("D")
+              || c.startsWith("F")
+              || c.startsWith("Z"))) {
         Type ty = getType(t);
         return ty == null ? "" : getType(t).toString();
       }
-      throw new IllegalArgumentException("typeDescriptor is not a class typedescriptor: '" + typeDescriptor + "'");
+      throw new IllegalArgumentException(
+          "typeDescriptor is not a class typedescriptor: '" + typeDescriptor + "'");
     }
     String t = typeDescriptor;
     int idx = 0;
@@ -96,7 +104,7 @@ public class Util {
             idx++;
           }
           continue;
-        // break;
+          // break;
 
         case 'L':
           String objectName = type.replaceAll("^[^L]*L", "").replaceAll(";$", "");
@@ -164,21 +172,19 @@ public class Util {
   /**
    * Check if passed class name is a byte code classname.
    *
-   * @param className
-   *          the classname to check.
+   * @param className the classname to check.
    */
   public static boolean isByteCodeClassName(String className) {
-    return ((className.startsWith("L") || className.startsWith("[")) && className.endsWith(";")
+    return ((className.startsWith("L") || className.startsWith("["))
+        && className.endsWith(";")
         && ((className.indexOf('/') != -1 || className.indexOf('.') == -1)));
   }
 
   /**
    * Concatenate two arrays.
    *
-   * @param first
-   *          first array
-   * @param second
-   *          second array.
+   * @param first first array
+   * @param second second array.
    */
   public static <T> T[] concat(T[] first, T[] second) {
     T[] result = Arrays.copyOf(first, first.length + second.length);
@@ -189,16 +195,15 @@ public class Util {
   /**
    * Returns if the type is a floating point type.
    *
-   * @param t
-   *          the type to test
+   * @param t the type to test
    */
   public static boolean isFloatLike(Type t) {
     return false;
   }
 
   /**
-   * Remove all statements except from IdentityStatements for parameters. Return default value (null or zero or nothing
-   * depending on the return type).
+   * Remove all statements except from IdentityStatements for parameters. Return default value (null
+   * or zero or nothing depending on the return type).
    *
    * @param bodyBuilder
    */
@@ -231,10 +236,10 @@ public class Util {
 
     Type rType = bodyBuilder.getMethodSignature().getType();
 
-    //bodyBuilder.getStmts().add(Jimple.newNopStmt());
+    // bodyBuilder.getStmts().add(Jimple.newNopStmt());
 
     if (rType instanceof VoidType) {
-      //bodyBuilder.getStmts().add(Jimple.newReturnVoidStmt());
+      // bodyBuilder.getStmts().add(Jimple.newReturnVoidStmt());
     } else {
       Type t = bodyBuilder.getMethodSignature().getType();
       Local l = lg.generateLocal(t);
@@ -250,7 +255,10 @@ public class Util {
         ass = Jimple.newAssignStmt(l, IntConstant.getInstance(0), ass.getPositionInfo());
       } else if (t instanceof PrimitiveType.DoubleType) {
         ass = Jimple.newAssignStmt(l, DoubleConstant.getInstance(0), ass.getPositionInfo());
-      } else if (t instanceof PrimitiveType.BooleanType || t instanceof PrimitiveType.ByteType || t instanceof PrimitiveType.CharType || t instanceof PrimitiveType.ShortType) {
+      } else if (t instanceof PrimitiveType.BooleanType
+          || t instanceof PrimitiveType.ByteType
+          || t instanceof PrimitiveType.CharType
+          || t instanceof PrimitiveType.ShortType) {
         ass = Jimple.newAssignStmt(l, IntConstant.getInstance(0), ass.getPositionInfo());
       } else {
         throw new RuntimeException("error: return type unknown: " + t + " class: " + t.getClass());
@@ -258,16 +266,15 @@ public class Util {
       bodyBuilder.getStmts().add(ass);
       bodyBuilder.getStmts().add(Jimple.newReturnStmt(l, ass.getPositionInfo()));
     }
-
   }
 
   /**
-   * Insert a runtime exception before unit stmt of body bodyBuilder. Useful to analyze broken code (which make reference to inexisting
-   * class for instance) exceptionType: e.g., "java.lang.RuntimeException"
+   * Insert a runtime exception before unit stmt of body bodyBuilder. Useful to analyze broken code
+   * (which make reference to inexisting class for instance) exceptionType: e.g.,
+   * "java.lang.RuntimeException"
    */
-  public static void addExceptionAfterUnit(Body.BodyBuilder bodyBuilder, String exceptionType, Stmt stmt, String m) {
-
-  }
+  public static void addExceptionAfterUnit(
+      Body.BodyBuilder bodyBuilder, String exceptionType, Stmt stmt, String m) {}
 
   public static List<String> splitParameters(String parameters) {
     List<String> pList = new ArrayList<String>();
@@ -280,16 +287,16 @@ public class Util {
       char c = parameters.charAt(idx);
       curr += c;
       switch (c) {
-        // array
+          // array
         case '[':
           break;
-        // end of object
+          // end of object
         case ';':
           object = false;
           pList.add(curr);
           curr = "";
           break;
-        // start of object
+          // start of object
         case 'L':
           object = true;
           break;
@@ -301,7 +308,6 @@ public class Util {
             curr = "";
           }
           break;
-
       }
       idx++;
     }

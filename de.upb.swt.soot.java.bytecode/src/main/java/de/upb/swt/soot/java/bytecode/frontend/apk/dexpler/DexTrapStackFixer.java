@@ -10,12 +10,12 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -35,24 +35,23 @@ import de.upb.swt.soot.core.transform.BodyInterceptor;
 import javax.annotation.Nonnull;
 
 /**
- * Transformer to ensure that all exception handlers pull the exception object. In other words, if an exception handler must
- * always have a unit like
+ * Transformer to ensure that all exception handlers pull the exception object. In other words, if
+ * an exception handler must always have a unit like
  *
- * $r10 = @caughtexception
+ * <p>$r10 = @caughtexception
  *
- * This is especially important if the dex code is later to be translated into Java bytecode. If no one ever accesses the
- * exception object, it will reside on the stack forever, potentially leading to mismatching stack heights.
+ * <p>This is especially important if the dex code is later to be translated into Java bytecode. If
+ * no one ever accesses the exception object, it will reside on the stack forever, potentially
+ * leading to mismatching stack heights.
  *
  * @author Steven Arzt
- *
  */
 public class DexTrapStackFixer implements BodyInterceptor {
 
   /**
    * Checks whether the given statement stores an exception reference
    *
-   * @param handlerUnit
-   *          The statement to check
+   * @param handlerUnit The statement to check
    * @return True if the given statement stores an exception reference, otherwise false
    */
   private boolean isCaughtExceptionRef(Stmt handlerUnit) {
@@ -76,12 +75,15 @@ public class DexTrapStackFixer implements BodyInterceptor {
 
       // Add the exception reference
       Local l = new LocalGenerator(builder.getLocals()).generateLocal(t.getExceptionType());
-      Stmt caughtStmt = Jimple.newIdentityStmt(l, new JCaughtExceptionRef(t.getExceptionType()), StmtPositionInfo.createNoStmtPositionInfo());
+      Stmt caughtStmt =
+          Jimple.newIdentityStmt(
+              l,
+              new JCaughtExceptionRef(t.getExceptionType()),
+              StmtPositionInfo.createNoStmtPositionInfo());
       builder.getStmts().add(caughtStmt);
       builder.getStmts().add(Jimple.newGotoStmt(t.getHandlerStmt().getPositionInfo()));
       // FIXME - should I add a setter or not in de.upb.swt.soot.core.jimple.basic.Trap?
       t.withHandlerStmt(caughtStmt);
     }
-
   }
 }

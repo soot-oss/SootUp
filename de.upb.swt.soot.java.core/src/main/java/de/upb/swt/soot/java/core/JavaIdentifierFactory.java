@@ -183,7 +183,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
   @Override
   public List<Type> getTypes(List<String> typeName) {
-    return typeName.stream().map(t->getType(t)).collect(Collectors.toList());
+    return typeName.stream().map(t -> getType(t)).collect(Collectors.toList());
   }
 
   @Override

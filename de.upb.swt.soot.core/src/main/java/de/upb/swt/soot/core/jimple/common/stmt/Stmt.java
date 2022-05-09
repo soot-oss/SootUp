@@ -32,11 +32,10 @@ import de.upb.swt.soot.core.jimple.visitor.Acceptor;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
 
@@ -137,8 +136,4 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
   public StmtPositionInfo getPositionInfo() {
     return positionInfo;
   }
-
-
-
-
 }
