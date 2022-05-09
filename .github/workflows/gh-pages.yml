@@ -3,6 +3,7 @@ on:
   push:
     branches: 
       - develop
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -11,5 +12,10 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.x
-      - run: pip install mkdocs-material 
+      - run: pip install mkdocs-material
+      - run: pip install mkdocs-tooltips
+      - run: pip install git+https://github.com/RedisLabs/mkdocs-include.git
+      - run: pip install git+https://github.com/swissiety/LspLexer4Pygments.git
+      # grab latest release url of the JimpleLSP jar and download it
+      - run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
       - run: mkdocs gh-deploy --force

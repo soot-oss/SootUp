@@ -265,10 +265,11 @@ public interface IdentifierFactory {
   ArrayType getArrayType(Type baseType, int dim);
 
   /**
-   * From path.
+   * Builds class type from path.
    *
    * @param file the file
+   * @param rootDirectory root directory in which the file is.
    * @return the class type
    */
-  ClassType fromPath(Path file);
+  ClassType fromPath(Path rootDirectory, Path file);
 }

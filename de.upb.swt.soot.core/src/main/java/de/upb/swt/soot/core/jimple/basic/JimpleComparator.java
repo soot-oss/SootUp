@@ -22,27 +22,10 @@ package de.upb.swt.soot.core.jimple.basic;
  * #L%
  */
 
+import de.upb.swt.soot.core.graph.Block;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.expr.AbstractBinopExpr;
-import de.upb.swt.soot.core.jimple.common.expr.AbstractInstanceInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JDynamicInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JEqExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JGeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JGtExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JInstanceOfExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JInterfaceInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JLeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JLengthExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JLtExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNegExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNewArrayExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNewMultiArrayExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JVirtualInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
@@ -52,6 +35,7 @@ import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class contains the equivalence implementations for the individual {@link
@@ -107,6 +91,50 @@ public class JimpleComparator {
     }
     Local local = (Local) o;
     return obj.getName().equals(local.getName()) && obj.getType().equals(local.getType());
+  }
+
+  public boolean caseBlock(Block block, Object o) {
+    if (!(o instanceof Block)) {
+      return false;
+    }
+    Block obj = (Block) o;
+    return caseStmt(block.getHead(), obj.getHead()) && caseStmt(block.getTail(), obj.getTail());
+  }
+
+  public boolean caseStmt(Stmt stmt, Object o) {
+    if (!(o instanceof Stmt)) {
+      return false;
+    } else if (stmt instanceof JBreakpointStmt) {
+      return caseBreakpointStmt((JBreakpointStmt) stmt, o);
+    } else if (stmt instanceof JInvokeStmt) {
+      return caseInvokeStmt((JInvokeStmt) stmt, o);
+    } else if (stmt instanceof JAssignStmt) {
+      return caseAssignStmt((JAssignStmt) stmt, o);
+    } else if (stmt instanceof JIdentityStmt) {
+      return caseIdentityStmt((JIdentityStmt) stmt, o);
+    } else if (stmt instanceof JEnterMonitorStmt) {
+      return caseEnterMonitorStmt((JEnterMonitorStmt) stmt, o);
+    } else if (stmt instanceof JExitMonitorStmt) {
+      return caseExitMonitorStmt((JExitMonitorStmt) stmt, o);
+    } else if (stmt instanceof JGotoStmt) {
+      return caseGotoStmt((JGotoStmt) stmt, o);
+    } else if (stmt instanceof JIfStmt) {
+      return caseIfStmt((JIfStmt) stmt, o);
+    } else if (stmt instanceof JSwitchStmt) {
+      return caseSwitchStmt((JSwitchStmt) stmt, o);
+    } else if (stmt instanceof JNopStmt) {
+      return caseNopStmt((JNopStmt) stmt, o);
+    } else if (stmt instanceof JRetStmt) {
+      return caseRetStmt((JRetStmt) stmt, o);
+    } else if (stmt instanceof JReturnStmt) {
+      return caseReturnStmt((JReturnStmt) stmt, o);
+    } else if (stmt instanceof JReturnVoidStmt) {
+      return caseReturnVoidStmt((JReturnVoidStmt) stmt, o);
+    } else if (stmt instanceof JThrowStmt) {
+      return caseThrowStmt((JThrowStmt) stmt, o);
+    } else {
+      return false;
+    }
   }
 
   public boolean caseBreakpointStmt(JBreakpointStmt stmt, Object o) {
@@ -342,6 +370,26 @@ public class JimpleComparator {
     }
     JNewMultiArrayExpr ae = (JNewMultiArrayExpr) o;
     return v.getBaseType().equals(ae.getBaseType()) && v.getSizeCount() == ae.getSizeCount();
+  }
+
+  public boolean caseJPhiExpr(JPhiExpr v, Object o) {
+    if (!(o instanceof JPhiExpr)) {
+      return false;
+    }
+    JPhiExpr ae = (JPhiExpr) o;
+    for (int i = 0; i < v.getArgsSize(); i++) {
+      if (!v.getArg(i).equivTo(ae.getArg(i), this)) {
+        return false;
+      }
+    }
+    List<Block> blocksV = v.getBlocks();
+    List<Block> blocksAe = ae.getBlocks();
+    for (int i = 0; i < v.getArgsSize(); i++) {
+      if (!caseBlock(blocksV.get(i), blocksAe.get(i))) {
+        return false;
+      }
+    }
+    return true;
   }
 
   public boolean caseNewExpr(JNewExpr v, Object o) {

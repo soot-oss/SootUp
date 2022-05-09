@@ -125,7 +125,8 @@ public class JimpleView extends AbstractView<SootClass<?>> {
         cache.computeIfAbsent(
             classSource.getClassType(),
             type ->
-                classSource.buildClass(getProject().getSourceTypeSpecifier().sourceTypeFor(type)));
+                classSource.buildClass(
+                    getProject().getSourceTypeSpecifier().sourceTypeFor(classSource)));
     return Optional.of(theClass);
   }
 

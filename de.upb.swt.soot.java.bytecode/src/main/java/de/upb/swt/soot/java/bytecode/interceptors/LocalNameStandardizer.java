@@ -20,9 +20,12 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.BodyUtils;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.NullType;
 import de.upb.swt.soot.core.types.PrimitiveType;
@@ -68,6 +71,7 @@ public class LocalNameStandardizer implements BodyInterceptor {
     int errorCount = 0;
     int nullCount = 0;
 
+    Map<Local, Local> localToNewLocal = new HashMap<>();
     for (Local local : localsList) {
       String prefix = "";
       boolean hasDollar = local.getName().startsWith("$");
@@ -76,45 +80,68 @@ public class LocalNameStandardizer implements BodyInterceptor {
       }
       Type type = local.getType();
       int index = localsList.indexOf(local);
+      Local newLocal;
 
       if (type.equals(PrimitiveType.getByte())) {
-        localsList.set(index, local.withName(prefix + "b" + longCount));
+        newLocal = local.withName(prefix + "b" + longCount);
         longCount++;
       } else if (type.equals(PrimitiveType.getShort())) {
-        localsList.set(index, local.withName(prefix + "s" + longCount));
+        newLocal = local.withName(prefix + "s" + longCount);
         longCount++;
       } else if (type.equals(PrimitiveType.getInt())) {
-        localsList.set(index, local.withName(prefix + "i" + longCount));
+        newLocal = local.withName(prefix + "i" + longCount);
         longCount++;
       } else if (type.equals(PrimitiveType.getLong())) {
-        localsList.set(index, local.withName(prefix + "l" + longCount));
+        newLocal = local.withName(prefix + "l" + longCount);
         longCount++;
       } else if (type.equals(PrimitiveType.getFloat())) {
-        localsList.set(index, local.withName(prefix + "f" + floatCount));
+        newLocal = local.withName(prefix + "f" + floatCount);
         floatCount++;
       } else if (type.equals(PrimitiveType.getDouble())) {
-        localsList.set(index, local.withName(prefix + "d" + doubleCount));
+        newLocal = local.withName(prefix + "d" + doubleCount);
         doubleCount++;
       } else if (type.equals(PrimitiveType.getChar())) {
-        localsList.set(index, local.withName(prefix + "c" + charCount));
+        newLocal = local.withName(prefix + "c" + charCount);
         charCount++;
       } else if (type.equals(PrimitiveType.getBoolean())) {
-        localsList.set(index, local.withName(prefix + "z" + booleanCount));
+        newLocal = local.withName(prefix + "z" + booleanCount);
         booleanCount++;
       } else if (type instanceof UnknownType) {
-        localsList.set(index, local.withName(prefix + "e" + errorCount));
+        newLocal = local.withName(prefix + "e" + errorCount);
         errorCount++;
       } else if (type instanceof NullType) {
-        localsList.set(index, local.withName(prefix + "n" + nullCount));
+        newLocal = local.withName(prefix + "n" + nullCount);
         nullCount++;
       } else {
-        localsList.set(index, local.withName(prefix + "r" + refCount));
+        newLocal = local.withName(prefix + "r" + refCount);
         refCount++;
       }
+      localsList.set(index, newLocal);
+      localToNewLocal.put(local, newLocal);
     }
 
     Set<Local> sortedLocals = new LinkedHashSet<>(localsList);
     builder.setLocals(sortedLocals);
+
+    // modify locals in stmtGraph with new locals
+    ExceptionalStmtGraph graph = builder.getStmtGraph();
+    for (Stmt stmt : builder.getStmtGraph()) {
+      Stmt newStmt = stmt;
+      if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
+        Local def = (Local) stmt.getDefs().get(0);
+        Local newLocal = localToNewLocal.get(def);
+        newStmt = BodyUtils.withNewDef(newStmt, newLocal);
+      }
+      for (Value use : stmt.getUses()) {
+        if (use instanceof Local) {
+          Local newLocal = localToNewLocal.get(use);
+          newStmt = BodyUtils.withNewUse(newStmt, use, newLocal);
+        }
+      }
+      if (!stmt.equals(newStmt)) {
+        BodyUtils.replaceStmtInBuilder(builder, stmt, newStmt);
+      }
+    }
   }
 
   private class LocalComparator implements Comparator<Local> {

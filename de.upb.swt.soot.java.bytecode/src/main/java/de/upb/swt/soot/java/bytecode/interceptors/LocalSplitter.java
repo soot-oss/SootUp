@@ -270,30 +270,8 @@ public class LocalSplitter implements BodyInterceptor {
   private void replaceStmtInBuilder(
       BodyBuilder builder, List<Stmt> stmts, Stmt oldStmt, Stmt newStmt) {
     builder.replaceStmt(oldStmt, newStmt);
-    adaptTraps(builder, oldStmt, newStmt);
+    BodyUtils.adaptTraps(builder, oldStmt, newStmt);
     adaptVisitList(stmts, oldStmt, newStmt);
-  }
-  /**
-   * Fit the modified stmt in Traps
-   *
-   * @param builder a bodybuilder, use it to modify Trap
-   * @param oldStmt a Stmt which maybe a beginStmt or endStmt in a Trap
-   * @param newStmt a modified stmt to replace the oldStmt.
-   */
-  private void adaptTraps(
-      @Nonnull BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-    List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
-    for (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) {
-      Trap trap = iterator.next();
-      if (oldStmt.equivTo(trap.getBeginStmt())) {
-        Trap newTrap = trap.withBeginStmt(newStmt);
-        iterator.set(newTrap);
-      } else if (oldStmt.equivTo(trap.getEndStmt())) {
-        Trap newTrap = trap.withEndStmt(newStmt);
-        iterator.set(newTrap);
-      }
-    }
-    builder.setTraps(traps);
   }
 
   /**

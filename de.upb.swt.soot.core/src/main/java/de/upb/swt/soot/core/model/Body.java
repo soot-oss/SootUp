@@ -36,12 +36,11 @@ import de.upb.swt.soot.core.util.EscapedWriter;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.Printer;
 import de.upb.swt.soot.core.validation.*;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class that models the Jimple body (code attribute) of a method.
@@ -463,6 +462,7 @@ public class Body implements Copyable {
 
     @Nullable private Position position = null;
     @Nonnull private final MutableExceptionalStmtGraph ecfg;
+    @Nonnull private BlockGraph bg;
     @Nullable private MethodSignature methodSig = null;
 
     @Nullable private StmtGraphManipulationQueue changeQueue = null;
@@ -472,37 +472,20 @@ public class Body implements Copyable {
       ecfg = new MutableExceptionalStmtGraph();
     }
 
-    @Nullable
-    public MethodSignature getMethodSignature() {
-      return methodSig;
-    }
-
-    // FIXME see Body
-    public Collection<Value> getUses() {
-      ArrayList<Value> useList = new ArrayList<>();
-
-      for (Stmt stmt : ecfg.nodes()) {
-        useList.addAll(stmt.getUses());
-      }
-      return useList;
-    }
-    // FIXME see Body
-    public Collection<Value> getDefs() {
-      ArrayList<Value> defList = new ArrayList<>();
-
-      for (Stmt stmt : ecfg.nodes()) {
-        defList.addAll(stmt.getDefs());
-      }
-      return defList;
-    }
-
-    BodyBuilder(@Nonnull Body body, @Nonnull Set<Modifier> modifiers) {
+    public BodyBuilder(@Nonnull Body body, @Nonnull Set<Modifier> modifiers) {
       setModifiers(modifiers);
       setMethodSignature(body.getMethodSignature());
       setLocals(body.getLocals());
       setPosition(body.getPosition());
-      ecfg = new MutableExceptionalStmtGraph(body.getStmtGraph());
+      bg = new BlockGraph(body.getStmtGraph());
+      ecfg = bg.getStmtGraph();
       setTraps(body.getTraps());
+    }
+
+    @Nonnull
+    // TODO: should return bg.unmodifiableBlockGraph
+    public BlockGraph getBlockGraph() {
+      return this.bg;
     }
 
     @Nonnull
@@ -575,6 +558,12 @@ public class Body implements Copyable {
       if (ecfg.containsNode(stmt)) {
         ecfg.removeDestinations(stmt);
       }
+      return this;
+    }
+
+    @Nonnull
+    public BodyBuilder removeTrap(@Nonnull Trap trap) {
+      ecfg.removeTrap(trap);
       return this;
     }
 

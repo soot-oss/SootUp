@@ -4,7 +4,7 @@ package de.upb.swt.soot.callgraph;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2020 Kadiray Karakaya
+ * Copyright (C) 2019-2022 Kadiray Karakaya, Jonas Klauke
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,6 +22,7 @@ package de.upb.swt.soot.callgraph;
  * #L%
  */
 
+import com.google.common.collect.Sets;
 import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.jimple.common.expr.*;
@@ -35,11 +36,32 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
+
+  private static class Call {
+    @Nonnull final MethodSignature source;
+    @Nonnull final MethodSignature target;
+
+    private Call(@Nonnull MethodSignature source, MethodSignature target) {
+      this.source = source;
+      this.target = target;
+    }
+  }
+
   @Nonnull private Set<ClassType> instantiatedClasses = new HashSet<>();
+  @Nonnull private HashMap<ClassType, List<Call>> ignoredCalls = new HashMap<>();
   @Nonnull private CallGraph chaGraph;
 
   public RapidTypeAnalysisAlgorithm(@Nonnull View view, @Nonnull TypeHierarchy typeHierarchy) {
     super(view, typeHierarchy);
+  }
+
+  @Nonnull
+  @Override
+  public CallGraph initialize() {
+    ClassHierarchyAnalysisAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+    List<MethodSignature> entryPoints = Collections.singletonList(findMainMethod());
+    chaGraph = cha.initialize(entryPoints);
+    return constructCompleteCallGraph(view, entryPoints);
   }
 
   @Nonnull
@@ -60,7 +82,9 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
     // add also found classes' super classes
     instantiated.stream()
-        .map(s -> (SootClass<?>) view.getClass(s).get())
+        .map(s -> view.getClass(s))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
         .map(s -> s.getSuperclass())
         .filter(s -> s.isPresent())
         .map(s -> s.get())
@@ -83,15 +107,68 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
             .flatMap(clazz -> clazz.getMethod(targetMethodSignature.getSubSignature()))
             .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
 
-    if (Modifier.isStatic(targetMethod.getModifiers())
+    if (targetMethod == null
+        || Modifier.isStatic(targetMethod.getModifiers())
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return result;
     } else {
-      return Stream.concat(
-          result,
+      Set<MethodSignature> notInstantiatedCallTargets = Sets.newHashSet();
+      Set<MethodSignature> implAndOverrides =
           MethodDispatchResolver.resolveAbstractDispatchInClasses(
-              view, targetMethodSignature, instantiatedClasses)
-              .stream());
+              view, targetMethodSignature, instantiatedClasses, notInstantiatedCallTargets);
+
+      notInstantiatedCallTargets.forEach(
+          ignoredMethodSignature -> {
+            List<Call> calls = ignoredCalls.get(ignoredMethodSignature.getDeclClassType());
+            if (calls == null) {
+              calls = new ArrayList<>();
+              calls.add(new Call(method.getSignature(), ignoredMethodSignature));
+              ignoredCalls.put(ignoredMethodSignature.getDeclClassType(), calls);
+            } else {
+              calls.add(new Call(method.getSignature(), ignoredMethodSignature));
+            }
+          });
+
+      return Stream.concat(result, implAndOverrides.stream());
     }
+  }
+
+  /**
+   * Post processing of a method in the RTA call graph algorithm
+   *
+   * <p>RTA has to add previously ignored calls since a later found instantiation of the class could
+   * enables a call to the ignored method.
+   *
+   * @param view view
+   * @param sourceMethod the processed method
+   * @param workList the current worklist that is extended by methods that have to be analyzed.
+   * @param cg the current cg is extended by new call targets and calls
+   */
+  @Override
+  public void postProcessingMethod(
+      View<? extends SootClass<?>> view,
+      MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull MutableCallGraph cg) {
+    instantiatedClasses.forEach(
+        instantiatedClassType -> {
+          List<Call> newEdges = ignoredCalls.get(instantiatedClassType);
+          if (newEdges != null) {
+            newEdges.forEach(
+                call -> {
+                  if (cg.containsMethod(call.target)) {
+                    // method is already analyzed or is in the work list, simply add the call
+                    cg.addCall(call.source, call.target);
+                  } else {
+                    // new target method found that has to be analyzed
+                    cg.addMethod(call.target);
+                    cg.addCall(call.source, call.target);
+                    workList.push(call.target);
+                  }
+                });
+            // can be removed because the instantiated class will be considered in future resolves
+            ignoredCalls.remove(instantiatedClassType);
+          }
+        });
   }
 }

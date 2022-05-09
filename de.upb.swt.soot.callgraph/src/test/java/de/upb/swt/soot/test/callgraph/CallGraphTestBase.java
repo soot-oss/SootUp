@@ -32,23 +32,29 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   protected abstract T createAlgorithm(JavaView view, TypeHierarchy typeHierarchy);
 
-  CallGraph loadCallGraph(String testDirectory, String className) {
-    String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
+  // private static Map<String, JavaView> viewToClassPath = new HashMap<>();
 
-    double version = Double.parseDouble(System.getProperty("java.specification.version"));
-    if (version > 1.8) {
-      fail("The rt.jar is not available after Java 8. You are using version " + version);
-    }
-
+  private JavaView createViewForClassPath(String classPath) {
     JavaProject javaProject =
         JavaProject.builder(new JavaLanguage(8))
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))
-            .addInputLocation(new JavaSourcePathAnalysisInputLocation(walaClassPath))
+            .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
             .build();
+    return javaProject.createOnDemandView();
+  }
 
-    JavaView view = javaProject.createOnDemandView();
+  CallGraph loadCallGraph(String testDirectory, String className) {
+    double version = Double.parseDouble(System.getProperty("java.specification.version"));
+    if (version > 1.8) {
+      fail("The rt.jar is not available after Java 8. You are using version " + version);
+    }
+
+    String classPath = "src/test/resources/callgraph/" + testDirectory;
+
+    // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
+    JavaView view = createViewForClassPath(classPath);
 
     mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =
@@ -367,7 +373,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertTrue(cg.containsCall(mainMethodSignature, method));
   }
 
-  @Test
+  /** Ignored because takes too long to analyze whole rt.jar */
+  @Ignore
   public void testHelloWorld() {
     CallGraph cg = loadCallGraph("Misc", "HelloWorld");
 

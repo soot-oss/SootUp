@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.jimple;
  */
 
 import de.upb.swt.soot.core.IdentifierFactory;
+import de.upb.swt.soot.core.graph.Block;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.expr.*;
@@ -105,6 +106,7 @@ public abstract class Jimple {
   public static final String WITH = "with";
   public static final String TRUE = "true";
   public static final String FALSE = "false";
+  public static final String PHI = "phi";
 
   /**
    * Returns a list of keywords for Jimple. This list has to be in sync with the tokens for the
@@ -162,7 +164,8 @@ public abstract class Jimple {
             TO,
             WITH,
             TRUE,
-            FALSE);
+            FALSE,
+            PHI);
     return l;
   }
 
@@ -331,6 +334,10 @@ public abstract class Jimple {
   /** Constructs a NewArrayExpr(Type, Immediate) grammar chunk. */
   public JNewArrayExpr newNewArrayExpr(Type type, Immediate size) {
     return new JNewArrayExpr(type, size, getIdentifierFactory());
+  }
+
+  public static JPhiExpr newPhiExpr(List<Local> args, Map<Local, Block> argToBlock) {
+    return new JPhiExpr(args, argToBlock);
   }
 
   /** Constructs a NewStaticInvokeExpr(ArrayType, List of Immediate) grammar chunk. */

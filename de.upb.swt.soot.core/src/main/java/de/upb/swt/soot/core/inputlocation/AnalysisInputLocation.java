@@ -24,11 +24,13 @@ package de.upb.swt.soot.core.inputlocation;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Public interface to an input location. <code>AnalysisInputLocation</code>s are sources for {@link
@@ -62,4 +64,16 @@ public interface AnalysisInputLocation<T extends AbstractClass> {
    */
   @Nonnull
   Collection<? extends AbstractClassSource<T>> getClassSources(@Nonnull View<?> view);
+
+  /**
+   * If the AnalysisInputLocation is initialized with the SourceType then this method should return
+   * that specific SourceType. This is the default implementation and it returns null when no source
+   * type is specified.
+   *
+   * @return returns null as source type
+   */
+  @Nullable
+  default SourceType getSourceType() {
+    return null;
+  }
 }
