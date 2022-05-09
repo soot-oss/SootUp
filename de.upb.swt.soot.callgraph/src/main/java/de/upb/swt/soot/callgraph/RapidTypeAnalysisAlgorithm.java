@@ -57,6 +57,15 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
   @Nonnull
   @Override
+  public CallGraph initialize() {
+    ClassHierarchyAnalysisAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+    List<MethodSignature> entryPoints = Collections.singletonList(findMainMethod());
+    chaGraph = cha.initialize(entryPoints);
+    return constructCompleteCallGraph(view, entryPoints);
+  }
+
+  @Nonnull
+  @Override
   public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
     ClassHierarchyAnalysisAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
     chaGraph = cha.initialize(entryPoints);

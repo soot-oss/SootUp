@@ -140,7 +140,8 @@ public class JavaView extends AbstractView<JavaSootClass> {
         cache.computeIfAbsent(
             classSource.getClassType(),
             type ->
-                classSource.buildClass(getProject().getSourceTypeSpecifier().sourceTypeFor(type)));
+                classSource.buildClass(
+                    getProject().getSourceTypeSpecifier().sourceTypeFor(classSource)));
 
     if (theClass.getType() instanceof AnnotationType) {
       JavaAnnotationSootClass jasc = (JavaAnnotationSootClass) theClass;
