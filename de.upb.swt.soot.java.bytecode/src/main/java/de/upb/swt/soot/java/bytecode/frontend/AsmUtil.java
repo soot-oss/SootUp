@@ -20,8 +20,10 @@ package de.upb.swt.soot.java.bytecode.frontend;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.model.Modifier;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
@@ -323,9 +325,11 @@ public final class AsmUtil {
                 paramMap.put(
                     annotationName,
                     ((ArrayList<?>) annotationValue)
-                        .stream().map(ConstantUtil::fromObject).collect(Collectors.toList()));
+                        .stream()
+                            .map(AsmUtil::convertAnnotationValue)
+                            .collect(Collectors.toList()));
               } else {
-                paramMap.put(annotationName, ConstantUtil.fromObject(annotationValue));
+                paramMap.put(annotationName, convertAnnotationValue(annotationValue));
               }
             }
           }
@@ -338,6 +342,18 @@ public final class AsmUtil {
     }
 
     return annotationUsages;
+  }
+
+  public static Object convertAnnotationValue(Object annotationValue) {
+    if (annotationValue instanceof String[]) {
+      // is an enum
+      String[] enumData = (String[]) annotationValue;
+      IdentifierFactory identifierFactory = JavaJimple.getInstance().getIdentifierFactory();
+      ClassType enumClass = identifierFactory.getClassType(AsmUtil.toQualifiedName(enumData[0]));
+      return JavaJimple.newStaticFieldRef(
+          identifierFactory.getFieldSignature(enumData[1], enumClass, enumClass));
+    }
+    return ConstantUtil.fromObject(annotationValue);
   }
 
   @Nonnull
