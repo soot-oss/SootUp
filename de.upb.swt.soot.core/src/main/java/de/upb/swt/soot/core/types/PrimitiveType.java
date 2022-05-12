@@ -104,6 +104,21 @@ public abstract class PrimitiveType extends Type {
     return BooleanType.getInstance();
   }
 
+  @Nonnull
+  public static Integer1Type getInteger1() {
+    return Integer1Type.getInstance();
+  }
+
+  @Nonnull
+  public static Integer127Type getInteger127() {
+    return Integer127Type.getInstance();
+  }
+
+  @Nonnull
+  public static Integer32767Type getInteger32767() {
+    return Integer32767Type.getInstance();
+  }
+
   public static class ByteType extends PrimitiveType implements IntegerType{
     private static final ByteType INSTANCE = new ByteType();
 
