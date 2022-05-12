@@ -19,6 +19,9 @@ public class WeakObjectType extends ReferenceType {
         return INSTANCE;
     }
 
+    private WeakObjectType(){
+    }
+
     @Override
     public void accept(@Nonnull TypeVisitor v) {
         //todo: weak objects type case
