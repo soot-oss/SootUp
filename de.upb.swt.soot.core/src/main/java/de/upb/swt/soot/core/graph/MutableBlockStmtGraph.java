@@ -308,7 +308,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                 });
         block.clearSuccessorBlocks();
 
-        // link with previous stmts fromt he block
+        // link with previous stmts from the block
         linkBlocks(excludeFromOrigBlock, restOfOrigBlock);
         block.clearSuccessorBlocks();
 
@@ -1020,7 +1020,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     int i = 0;
     while (it.hasNext()) {
       final MutableBasicBlock nextBlock = it.next();
-      stmtsBlockIdx.put(nextBlock.getHead(), i++);
+      stmtsBlockIdx.put(nextBlock.getHead(), i);
+      stmtsBlockIdx.put(nextBlock.getTail(), i);
+      i++;
     }
     final List<Trap> traps = it.getTraps();
 
@@ -1088,7 +1090,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // former trap info is not in the current blocks info -> add it to the trap collection
       lastBlocksExceptions.forEach(
           (type, trapHandlerBlock) -> {
-            if (trapHandlerBlock != currentBlocksExceptions.get(type)) {
+            if (trapHandlerBlock != block.getExceptionalSuccessors().get(type)) {
               final Stmt trapBeginStmt = trapStarts.remove(type);
               if (trapBeginStmt == null) {
                 throw new IllegalStateException("Trap start for '" + type + "' is not in the Map!");

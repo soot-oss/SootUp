@@ -32,7 +32,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-/** Represents the deprecated JVM <code>ret</code> statement */
+/**
+ * Represents the deprecated JVM <code>ret</code> statement - which is used in JSR Context - which
+ * is deprecated as well
+ */
 public final class JRetStmt extends Stmt implements Copyable {
 
   @Nonnull private final Value stmtAddress;

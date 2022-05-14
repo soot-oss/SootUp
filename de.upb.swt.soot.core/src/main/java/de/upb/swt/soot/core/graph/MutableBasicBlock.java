@@ -228,6 +228,11 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     predecessorBlocks.forEach(b -> b.removeSuccessorBlock(this));
     predecessorBlocks.clear();
   }
+
+  @Override
+  public String toString() {
+    return "Block " + getStmts();
+  }
 }
 
 /*

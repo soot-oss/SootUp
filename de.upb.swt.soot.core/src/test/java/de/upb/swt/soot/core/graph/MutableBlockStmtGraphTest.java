@@ -599,10 +599,10 @@ public class MutableBlockStmtGraphTest {
 
     {
       final List<Trap> traps = graph0.getTraps();
-      assertEquals(1, traps.size());
-      assertEquals(stmt1, traps.get(0).getBeginStmt());
-      assertEquals(returnStmt, traps.get(0).getEndStmt());
-      assertEquals(catchStmt1, traps.get(0).getHandlerStmt());
+      assertEquals(2, traps.size()); // as @caughtexception gets currently in their way.
+      assertEquals(stmt2, traps.get(1).getBeginStmt());
+      assertEquals(returnStmt, traps.get(1).getEndStmt());
+      assertEquals(catchStmt1, traps.get(1).getHandlerStmt());
     }
 
     // test merging traps from sequential blocks with the same trap

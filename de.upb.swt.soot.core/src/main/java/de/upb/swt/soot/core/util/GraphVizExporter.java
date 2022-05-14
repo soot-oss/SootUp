@@ -38,17 +38,6 @@ public class GraphVizExporter {
 
     /* entrypoint */
     Stmt startingStmt = graph.getStartingStmt();
-    /*
-    if (startingStmt != null) {
-        sb.append("\tstart [shape=Mdiamond, color=grey80];\n");
-        BasicBlock startingStmtBlock =
-                graph.getBlocks().stream().filter(b -> b.getHead() == startingStmt).findFirst().get();
-        sb.append("\tstart:s -> ")
-                .append(graph.getStartingStmt().hashCode())
-                .append(":n [lhead=\"cluster_" + startingStmtBlock.hashCode() + "\"];\n");
-    }
-    sb.append("\n");
-    */
 
     /* print a block in a subgraph */
     int i = 0;
