@@ -45,7 +45,7 @@ public class JimpleConverter {
 
     final JimpleParser jimpleParser =
         JimpleConverterUtil.createJimpleParser(charStream, sourcePath);
-    parser.setErrorHandler(new BailErrorStrategy());
+    jimpleParser.setErrorHandler(new BailErrorStrategy());
 
     return run(jimpleParser, inputlocation, sourcePath, bodyInterceptors);
   }
