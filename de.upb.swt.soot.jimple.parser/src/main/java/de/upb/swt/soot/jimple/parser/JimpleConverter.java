@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 public class JimpleConverter {
 
@@ -63,8 +64,13 @@ public class JimpleConverter {
       @Nonnull Path sourcePath,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
 
-    ClassVisitor classVisitor = new ClassVisitor(sourcePath);
-    classVisitor.visit(parser.file());
+    ClassVisitor classVisitor;
+    try {
+      classVisitor = new ClassVisitor(sourcePath);
+      classVisitor.visit(parser.file());
+    } catch (ParseCancellationException ex) {
+      throw new ResolveException("Syntax Error", sourcePath, ex);
+    }
 
     return new OverridingClassSource(
         classVisitor.methods,
