@@ -6,6 +6,8 @@ import static org.junit.Assert.assertTrue;
 import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.java.core.AnnotationUsage;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
@@ -109,9 +111,8 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
      */
 
     JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
-    final Optional<JavaSootMethod> method =
-        sootClass.getMethod("defaultArrayConstant", Collections.emptyList());
-    assertTrue(method.isPresent());
+    final Optional<JavaSootField> arrayDefault = sootClass.getField("arrayDefault");
+    assertTrue(arrayDefault.isPresent());
 
     class AnnotationUsageStub extends AnnotationUsage {
 
@@ -138,11 +139,11 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
                 new AnnotationUsageStub(
                     new AnnotationType("ArrayConstant", new PackageName(""), false)))
             .toString(),
-        method.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())).toString());
+        arrayDefault.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())).toString());
   }
 
   @Test
-  public void testAnnotationWithArrayOnMethod() {
+  public void testEnumDefaultValues() {
     /*
      * Use a Stub class for annotation usage, so default values are not resolved against the AnnotationType, which would make the test useless.
      * Default values are already contained in every other test, but as they are implicit, they are the same for expected and actual test result
@@ -150,10 +151,13 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
      */
 
     JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
-    final Optional<JavaSootMethod> method =
-        sootClass.getMethod("arrayConstant", Collections.emptyList());
-    assertTrue(method.isPresent());
-
+    final Optional<JavaSootField> enumDefault = sootClass.getField("enumDefault");
+    assertTrue(enumDefault.isPresent());
+    SootClass enumClass =
+        loadClass(
+            JavaIdentifierFactory.getInstance()
+                .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$Enums"));
+    assertTrue(enumClass.isEnum());
     class AnnotationUsageStub extends AnnotationUsage {
 
       public AnnotationUsageStub(@Nonnull AnnotationType annotation) {
@@ -165,10 +169,16 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
         Map<String, Object> map = new HashMap<>();
 
         map.put(
-            "value",
+            "array",
             Arrays.asList(
-                JavaJimple.getInstance().newStringConstant("test"),
-                JavaJimple.getInstance().newStringConstant("test1")));
+                JavaJimple.newStaticFieldRef(
+                    new FieldSignature(enumClass.getType(), "ENUM1", enumClass.getType())),
+                JavaJimple.newStaticFieldRef(
+                    new FieldSignature(enumClass.getType(), "ENUM2", enumClass.getType()))));
+        map.put(
+            "single",
+            JavaJimple.newStaticFieldRef(
+                new FieldSignature(enumClass.getType(), "ENUM3", enumClass.getType())));
 
         return map;
       }
@@ -177,9 +187,9 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     assertEquals(
         Collections.singletonList(
                 new AnnotationUsageStub(
-                    new AnnotationType("ArrayConstant", new PackageName(""), false)))
+                    new AnnotationType("EnumAnnotation", new PackageName(""), false)))
             .toString(),
-        method.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())).toString());
+        enumDefault.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())).toString());
   }
 
   @Test
@@ -255,6 +265,97 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
           Collections.singletonList(new AnnotationUsage(at2, annotationParamMap)),
           someMethod.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())));
     }
+  }
+
+  @Test
+  public void testAnnotationWithArrayOnMethod() {
+    /*
+     * Use a Stub class for annotation usage, so default values are not resolved against the AnnotationType, which would make the test useless.
+     * Default values are already contained in every other test, but as they are implicit, they are the same for expected and actual test result
+     * This test just makes sure, that default values are correctly resolved. The logic is the same for fields, methods or classes, so this test suffices.
+     */
+
+    JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
+    final Optional<JavaSootMethod> method =
+        sootClass.getMethod("arrayConstant", Collections.emptyList());
+    assertTrue(method.isPresent());
+
+    class AnnotationUsageStub extends AnnotationUsage {
+
+      public AnnotationUsageStub(@Nonnull AnnotationType annotation) {
+        super(annotation, Collections.emptyMap());
+      }
+
+      @Override
+      public Map<String, Object> getValuesWithDefaults() {
+        Map<String, Object> map = new HashMap<>();
+
+        map.put(
+            "value",
+            Arrays.asList(
+                JavaJimple.getInstance().newStringConstant("test"),
+                JavaJimple.getInstance().newStringConstant("test1")));
+
+        return map;
+      }
+    }
+
+    assertEquals(
+        Collections.singletonList(
+                new AnnotationUsageStub(
+                    new AnnotationType("ArrayConstant", new PackageName(""), false)))
+            .toString(),
+        method.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())).toString());
+  }
+
+  @Test
+  public void testAnnotationWithEnumOnMethod() {
+    /*
+     * Use a Stub class for annotation usage, so default values are not resolved against the AnnotationType, which would make the test useless.
+     * Default values are already contained in every other test, but as they are implicit, they are the same for expected and actual test result
+     * This test just makes sure, that default values are correctly resolved. The logic is the same for fields, methods or classes, so this test suffices.
+     */
+
+    JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
+    final Optional<JavaSootMethod> method = sootClass.getMethod("enums", Collections.emptyList());
+    assertTrue(method.isPresent());
+    SootClass enumClass =
+        loadClass(
+            JavaIdentifierFactory.getInstance()
+                .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$Enums"));
+    assertTrue(enumClass.isEnum());
+    class AnnotationUsageStub extends AnnotationUsage {
+
+      public AnnotationUsageStub(@Nonnull AnnotationType annotation) {
+        super(annotation, Collections.emptyMap());
+      }
+
+      @Override
+      public Map<String, Object> getValuesWithDefaults() {
+        Map<String, Object> map = new HashMap<>();
+
+        map.put(
+            "array",
+            Arrays.asList(
+                JavaJimple.newStaticFieldRef(
+                    new FieldSignature(enumClass.getType(), "ENUM3", enumClass.getType())),
+                JavaJimple.newStaticFieldRef(
+                    new FieldSignature(enumClass.getType(), "ENUM2", enumClass.getType()))));
+        map.put(
+            "single",
+            JavaJimple.newStaticFieldRef(
+                new FieldSignature(enumClass.getType(), "ENUM1", enumClass.getType())));
+
+        return map;
+      }
+    }
+
+    assertEquals(
+        Collections.singletonList(
+                new AnnotationUsageStub(
+                    new AnnotationType("EnumAnnotation", new PackageName(""), false)))
+            .toString(),
+        method.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())).toString());
   }
 
   @Test

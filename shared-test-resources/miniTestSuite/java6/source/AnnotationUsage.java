@@ -46,12 +46,27 @@ import java.lang.annotation.Inherited;
   String [] value() default {"first","second"};
 }
 
+@interface EnumAnnotation{
+  AnnotationUsage.Enums[] array() default {AnnotationUsage.Enums.ENUM1,AnnotationUsage.Enums.ENUM2};
+  AnnotationUsage.Enums single() default AnnotationUsage.Enums.ENUM3;
+}
+
 @NonInheritableOnClass
 @OnClass(sthBlue=42, author = "GeorgeLucas")
 public class AnnotationUsage{
 
+  public static enum Enums{
+    ENUM1,
+    ENUM2,
+    ENUM3
+  }
+
   @OnField(isRipe = "true")
   private Object agent;
+  @ArrayConstant
+  private Object arrayDefault;
+  @EnumAnnotation
+  private Object enumDefault;
 
   @OnMethodRepeatables(containerValue = "betterValue", value = {
       @OnMethodRepeatable(countOnMe = 42)
@@ -73,14 +88,13 @@ public class AnnotationUsage{
     System.out.println(s);
   }
 
-  @ArrayConstant
-  public void defaultArrayConstant(){
-
-  }
-
   @ArrayConstant({"test","test1"})
   public void arrayConstant(){
 
   }
 
+  @EnumAnnotation(array = {AnnotationUsage.Enums.ENUM3,AnnotationUsage.Enums.ENUM2}, single=AnnotationUsage.Enums.ENUM1)
+  public void enums(){
+
+  }
 }
