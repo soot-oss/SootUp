@@ -97,10 +97,10 @@ jobs:
                 !target/coverage-reports-jdk9/jacoco-ut-*.exec
 
     - uses: actions/upload-artifact@v3
-            if: ${{ always() }}
-            with:
-              name: coverage-exec-jdk9
-              path: target/coverage-reports-jdk9/jacoco-ut-*.exec
+      if: ${{ always() }}
+      with:
+        name: coverage-exec-jdk9
+        path: target/coverage-reports-jdk9/jacoco-ut-*.exec
 
     - uses: actions/upload-artifact@v3
       if: ${{ always() }}
@@ -180,7 +180,7 @@ jobs:
         with:
           paths: |
 #                ${{ github.workspace }}/coverage-reports-jdk8,
-                  ${{ github.workspace }}/coverage-reports-jdk9/jacoco-ut-*.exec
+                  ${{ github.workspace }}/coverage-reports-jdk9/jacoco-ut-de.upb.swt.soot.java.core-jdk8.exec
 #,                  ${{ github.workspace }}/test-reports-slowtest
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
