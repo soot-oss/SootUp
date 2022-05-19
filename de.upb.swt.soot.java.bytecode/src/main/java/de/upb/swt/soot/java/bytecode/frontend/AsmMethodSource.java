@@ -358,8 +358,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
       int op = operand.insn.getOpcode();
 
-      // FIXME: [JMP] The IF condition is always false. --> [ms]: *ALOAD are array load instructions
-      // -> seems someone wanted to include or exclude the array instructions?
       if (local == null && op != GETFIELD && op != GETSTATIC && (op < IALOAD || op > SALOAD)) {
         continue;
       }
