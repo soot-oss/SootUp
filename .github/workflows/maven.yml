@@ -92,7 +92,15 @@ jobs:
       if: ${{ always() }}
       with:
         name: coverage-reports-jdk9
-        path: target/coverage-reports-jdk9
+        path: |
+                target/coverage-reports-jdk9
+                !target/coverage-reports-jdk9/jacoco-ut-*.exec
+
+    - uses: actions/upload-artifact@v3
+            if: ${{ always() }}
+            with:
+              name: coverage-exec-jdk9
+              path: target/coverage-reports-jdk9/jacoco-ut-*.exec
 
     - uses: actions/upload-artifact@v3
       if: ${{ always() }}
@@ -145,19 +153,19 @@ jobs:
 
 
   CoverageComment:
-    needs: [JDK8, JDK9] #, SLOWTEST]
+    needs: [JDK9] #, JDK8, SLOWTEST]
     runs-on: ubuntu-latest
     steps:
-      - name: Download uploaded artifacts jdk8
-        uses: actions/download-artifact@v3
-        with:
-          name: coverage-reports-jdk8
-          path: coverage-reports-jdk8
+ #     - name: Download uploaded artifacts jdk8
+ #       uses: actions/download-artifact@v3
+ #       with:
+ #         name: coverage-reports-jdk8
+ #         path: coverage-reports-jdk8
 
       - name: Download uploaded artifacts jdk9
         uses: actions/download-artifact@v3
         with:
-          name: coverage-reports-jdk9
+          name: coverage-exec-jdk9
           path: coverage-reports-jdk9
 
 #      - name: Download uploaded artifacts slowtest
@@ -171,8 +179,8 @@ jobs:
         uses: madrapps/jacoco-report@v1.2
         with:
           paths: |
-                  ${{ github.workspace }}/coverage-reports-jdk8,
-                  ${{ github.workspace }}/coverage-reports-jdk9
+#                ${{ github.workspace }}/coverage-reports-jdk8,
+                  ${{ github.workspace }}/coverage-reports-jdk9/jacoco-ut-*.exec
 #,                  ${{ github.workspace }}/test-reports-slowtest
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
