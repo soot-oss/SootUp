@@ -148,8 +148,23 @@ jobs:
     needs: [JDK8, JDK9] #, SLOWTEST]
     runs-on: ubuntu-latest
     steps:
-      - name: Download uploaded artifacts
+      - name: Download uploaded artifacts jdk8
         uses: actions/download-artifact@v3
+        with:
+          name: coverage-reports-jdk8
+          path: coverage-reports-jdk8
+
+      - name: Download uploaded artifacts jdk9
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-reports-jdk9
+          path: coverage-reports-jdk9
+
+#      - name: Download uploaded artifacts slowtest
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: coverage-reports-slowtest
+#          path: coverage-reports-slowtest
 
       - name: Add coverage comment to PR
         id: jacoco
@@ -157,8 +172,8 @@ jobs:
         with:
           paths: |
                   ${{ github.workspace }}/coverage-reports-jdk8,
-                  ${{ github.workspace }}/coverage-reports-jdk9,
-                  ${{ github.workspace }}/test-reports-slowtest
+                  ${{ github.workspace }}/coverage-reports-jdk9
+#,                  ${{ github.workspace }}/test-reports-slowtest
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
           min-coverage-changed-files: 60
