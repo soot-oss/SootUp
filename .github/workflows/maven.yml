@@ -139,3 +139,17 @@ jobs:
           name: test-reports-slowtest
           path: target/test-reports-slowtest
 
+
+  CoverageComment:
+    needs: [JDK8, JDK9, SLOWTEST]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.2
+        with:
+          paths: ${{ github.workspace }}/target/coverage-reports-jdk8 #, ${{ github.workspace }}/target/coverage-reports-jdk9, ${{ github.workspace }}/target/test-reports-slowtest
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 40
+          min-coverage-changed-files: 60
