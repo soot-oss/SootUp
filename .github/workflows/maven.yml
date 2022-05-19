@@ -174,7 +174,7 @@ jobs:
   CoverageComment:
     needs: [JDK9] #, JDK8, SLOWTEST]
     runs-on: ubuntu-latest
-#    steps:
+    steps:
       #      - name: Download uploaded artifacts jdk8
       #  uses: actions/download-artifact@v3
       #  with:
@@ -202,7 +202,7 @@ jobs:
         with:
           # theres no prefix! "de.upb.swt.soot."
           paths: ${{ github.workspace }}/coverage-reports-jdk9/jacoco-ut-java.bytecode-jdk9.exec
-          # TODO: add other files and jobs!
+          # TODO: add and download other files and jobs!
 
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
