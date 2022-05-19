@@ -52,15 +52,14 @@ public class ReflectionTest extends MinimalBytecodeTestSuiteBase {
             "$stack5 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack5.<java.io.PrintStream: void println(java.lang.Object)>(l2)",
             "$stack6 = newarray (java.lang.Class)[0]",
-            "$stack7 = virtualinvoke l2.<java.lang.Class: java.lang.reflect.Constructor getConstructor(java.lang.Class[])>($stack6)",
-            "l3 = $stack7",
-            "$stack8 = <java.lang.System: java.io.PrintStream out>",
-            "$stack9 = virtualinvoke l3.<java.lang.reflect.Constructor: java.lang.String getName()>()",
-            "virtualinvoke $stack8.<java.io.PrintStream: void println(java.lang.String)>($stack9)",
-            "$stack10 = <java.lang.System: java.io.PrintStream out>",
-            "$stack11 = virtualinvoke l2.<java.lang.Class: java.lang.reflect.Method[] getMethods()>()",
-            "$stack12 = lengthof $stack11",
-            "virtualinvoke $stack10.<java.io.PrintStream: void println(int)>($stack12)",
+            "l3 = virtualinvoke l2.<java.lang.Class: java.lang.reflect.Constructor getConstructor(java.lang.Class[])>($stack6)",
+            "$stack7 = <java.lang.System: java.io.PrintStream out>",
+            "$stack8 = virtualinvoke l3.<java.lang.reflect.Constructor: java.lang.String getName()>()",
+            "virtualinvoke $stack7.<java.io.PrintStream: void println(java.lang.String)>($stack8)",
+            "$stack9 = <java.lang.System: java.io.PrintStream out>",
+            "$stack10 = virtualinvoke l2.<java.lang.Class: java.lang.reflect.Method[] getMethods()>()",
+            "$stack11 = lengthof $stack10",
+            "virtualinvoke $stack9.<java.io.PrintStream: void println(int)>($stack11)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
