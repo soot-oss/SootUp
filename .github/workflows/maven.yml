@@ -174,12 +174,12 @@ jobs:
   CoverageComment:
     needs: [JDK9] #, JDK8, SLOWTEST]
     runs-on: ubuntu-latest
-    steps:
-      - name: Download uploaded artifacts jdk8
-        uses: actions/download-artifact@v3
-        with:
-          name: coverage-reports-jdk8
-          path: coverage-reports-jdk8
+#    steps:
+      #      - name: Download uploaded artifacts jdk8
+      #  uses: actions/download-artifact@v3
+      #  with:
+      #    name: coverage-reports-jdk8
+      #    path: coverage-reports-jdk8
 
       - name: Download uploaded artifacts jdk9
         uses: actions/download-artifact@v3
@@ -187,11 +187,11 @@ jobs:
           name: coverage-exec-jdk9
           path: coverage-reports-jdk9
 
-      - name: Download uploaded artifacts slowtest
-        uses: actions/download-artifact@v3
-        with:
-          name: coverage-reports-slowtest
-          path: coverage-reports-slowtest
+        #  - name: Download uploaded artifacts slowtest
+        #  uses: actions/download-artifact@v3
+          # with:
+          #  name: coverage-reports-slowtest
+        #  path: coverage-reports-slowtest
 
       - name: show debug info
         run: ls; tree
