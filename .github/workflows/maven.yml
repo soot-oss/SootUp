@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
         with:
@@ -46,12 +46,12 @@ jobs:
             sudo mv ${item}/target/site/jacoco-ut/* target/coverage-reports-jdk8/${item}-site
           done
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: coverage-reports-jdk8
           path: target/coverage-reports-jdk8
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           if: always()
           name: test-reports-jdk8
@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up JDK 1.9
       uses: actions/setup-java@v1
       with:
@@ -86,12 +86,12 @@ jobs:
              sudo mkdir target/coverage-reports-jdk9/${item}-site
              sudo mv de.upb.swt.soot.${item}/target/site/jacoco-ut/* target/coverage-reports-jdk9/${item}-site
            done
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: coverage-reports-jdk9
         path: target/coverage-reports-jdk9
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       if: always()
       with:
         name: test-reports-jdk9
@@ -104,7 +104,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
         with:
@@ -128,12 +128,12 @@ jobs:
             sudo mv ${item}/target/site/jacoco-ut/* target/coverage-reports-slowtest/${item}-site
           done
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: coverage-reports-slowtest
           path: target/coverage-reports-slowtest
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           if: always()
           name: test-reports-slowtest
@@ -143,9 +143,11 @@ jobs:
   CoverageComment:
     needs: [JDK8, JDK9, SLOWTEST]
     runs-on: ubuntu-latest
-
     steps:
-      - name: Add coverage to PR
+      - name: Download uploaded artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Add coverage comment to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.2
         with:
