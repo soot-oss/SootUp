@@ -179,9 +179,7 @@ jobs:
         uses: madrapps/jacoco-report@v1.2
         with:
           paths: |
-#                ${{ github.workspace }}/coverage-reports-jdk8,
                   ${{ github.workspace }}/coverage-reports-jdk9/jacoco-ut-*.exec
-#,                  ${{ github.workspace }}/test-reports-slowtest
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
           min-coverage-changed-files: 60
