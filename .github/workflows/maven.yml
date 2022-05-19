@@ -48,12 +48,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: coverage-reports-jdk8
-          path: target/coverage-reports-jdk8
-
-      - uses: actions/upload-artifact@v3
-        with:
-          if: always()
+          if: ${{ always() }}
           name: test-reports-jdk8
           path: target/test-reports-jdk8
 
@@ -86,13 +81,9 @@ jobs:
              sudo mkdir target/coverage-reports-jdk9/${item}-site
              sudo mv de.upb.swt.soot.${item}/target/site/jacoco-ut/* target/coverage-reports-jdk9/${item}-site
            done
-    - uses: actions/upload-artifact@v3
-      with:
-        name: coverage-reports-jdk9
-        path: target/coverage-reports-jdk9
 
     - uses: actions/upload-artifact@v3
-      if: always()
+      if: ${{ always() }}
       with:
         name: test-reports-jdk9
         path: target/test-reports-jdk9
@@ -130,12 +121,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: coverage-reports-slowtest
-          path: target/coverage-reports-slowtest
-
-      - uses: actions/upload-artifact@v3
-        with:
-          if: always()
+          if: ${{ always() }}
           name: test-reports-slowtest
           path: target/test-reports-slowtest
 
@@ -151,7 +137,17 @@ jobs:
         id: jacoco
         uses: madrapps/jacoco-report@v1.2
         with:
-          paths: ${{ github.workspace }}/target/coverage-reports-jdk8 #, ${{ github.workspace }}/target/coverage-reports-jdk9, ${{ github.workspace }}/target/test-reports-slowtest
+          paths: |
+                  ${{ github.workspace }}/target/coverage-reports-jdk8,
+                  ${{ github.workspace }}/target/coverage-reports-jdk9,
+                  ${{ github.workspace }}/target/test-reports-slowtest
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
           min-coverage-changed-files: 60
+          title: Code Coverage
+          debug-mode: false
+
+      - name: Get the Coverage info
+        run: |
+          echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}"
+          echo "Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}"
