@@ -176,6 +176,9 @@ jobs:
 #          name: coverage-reports-slowtest
 #          path: coverage-reports-slowtest
 
+      - name: show debug info
+        run: ls; tree
+
       - name: Add coverage comment to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.2
