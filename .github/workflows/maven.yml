@@ -16,6 +16,8 @@ on:
 
 jobs:
   JDK8:
+    if: ${{ false }}      #TODO: remove if!
+
 
     runs-on: ubuntu-latest
     
@@ -110,7 +112,7 @@ jobs:
 
 
   SLOWTEST:
-    if: ${{ !github.event.pull_request.draft }}
+    if: ${{ !github.event.pull_request.draft && false }}      #TODO: remove false!
 
     runs-on: ubuntu-latest
 
@@ -178,8 +180,9 @@ jobs:
         id: jacoco
         uses: madrapps/jacoco-report@v1.2
         with:
-          paths: |
-                  ${{ github.workspace }}/coverage-reports-jdk9/jacoco-ut-*.exec
+          paths: ${{ github.workspace }}/coverage-reports-jdk9/jacoco-ut-de.upb.swt.soot.java.bytecode-jdk9.exec
+          # TODO: add other files and jobs! adapt upload/download as well
+
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
           min-coverage-changed-files: 60
