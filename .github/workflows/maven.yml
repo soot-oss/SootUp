@@ -52,7 +52,15 @@ jobs:
         if: ${{ always() }}
         with:
           name: coverage-reports-jdk8
-          path: target/coverage-reports-jdk8
+          path: |
+            target/coverage-reports-jdk8
+            !target/coverage-reports-jdk8/jacoco-ut-*.exec
+
+      - uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: coverage-exec-jdk8
+          path: target/coverage-reports-jdk8/jacoco-ut-*.exec
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -146,9 +154,18 @@ jobs:
         if: ${{ always() }}
         with:
           name: coverage-reports-slowtest
-          path: target/coverage-reports-slowtest
+          path: |
+            target/coverage-reports-slowtest
+            !target/coverage-reports-slowtest/jacoco-ut-*.exec
 
       - uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: coverage-exec-slowtest
+          path: target/coverage-reports-slowtest/jacoco-ut-*.exec
+
+      - uses: actions/upload-artifact@v3
+        if: ${{ always() }}
         with:
           name: test-reports-slowtest
           path: target/test-reports-slowtest
@@ -158,11 +175,11 @@ jobs:
     needs: [JDK9] #, JDK8, SLOWTEST]
     runs-on: ubuntu-latest
     steps:
- #     - name: Download uploaded artifacts jdk8
- #       uses: actions/download-artifact@v3
- #       with:
- #         name: coverage-reports-jdk8
- #         path: coverage-reports-jdk8
+      - name: Download uploaded artifacts jdk8
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-reports-jdk8
+          path: coverage-reports-jdk8
 
       - name: Download uploaded artifacts jdk9
         uses: actions/download-artifact@v3
@@ -170,11 +187,11 @@ jobs:
           name: coverage-exec-jdk9
           path: coverage-reports-jdk9
 
-#      - name: Download uploaded artifacts slowtest
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: coverage-reports-slowtest
-#          path: coverage-reports-slowtest
+      - name: Download uploaded artifacts slowtest
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-reports-slowtest
+          path: coverage-reports-slowtest
 
       - name: show debug info
         run: ls; tree
@@ -183,8 +200,9 @@ jobs:
         id: jacoco
         uses: madrapps/jacoco-report@v1.2
         with:
-          paths: ${{ github.workspace }}/coverage-reports-jdk9/jacoco-ut-de.upb.swt.soot.java.bytecode-jdk9.exec
-          # TODO: add other files and jobs! adapt upload/download as well
+          # theres no prefix! "de.upb.swt.soot."
+          paths: ${{ github.workspace }}/coverage-reports-jdk9/jacoco-ut-java.bytecode-jdk9.exec
+          # TODO: add other files and jobs!
 
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
