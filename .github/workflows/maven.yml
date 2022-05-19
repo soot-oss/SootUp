@@ -47,8 +47,8 @@ jobs:
           done
 
       - uses: actions/upload-artifact@v3
+        if: ${{ always() }}
         with:
-          if: ${{ always() }}
           name: test-reports-jdk8
           path: target/test-reports-jdk8
 
@@ -67,8 +67,8 @@ jobs:
       run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     - name: Test (JDK9)
       run: mvn -pl de.upb.swt.soot.core,de.upb.swt.soot.java.core,de.upb.swt.soot.java.bytecode,de.upb.swt.soot.java.sourcecode,de.upb.swt.soot.callgraph,de.upb.swt.soot.jimple.parser,examples -am verify -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -PJava9
-    - name: Prepare Coverage Reports      
-      env: 
+    - name: Prepare Coverage Reports
+      env:
         SUBMODULES: java.core java.bytecode java.sourcecode callgraph
       run: |
            sudo mkdir target/coverage-reports-jdk9
@@ -105,6 +105,7 @@ jobs:
       - name: Test (SLOWTEST)
         run: mvn -pl de.upb.swt.soot.tests -am verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       - name: Prepare Coverage and Test Reports
+        if: ${{ always() }}
         env:
           SUBMODULES: de.upb.swt.soot.tests
         run: |
@@ -121,7 +122,6 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          if: ${{ always() }}
           name: test-reports-slowtest
           path: target/test-reports-slowtest
 
