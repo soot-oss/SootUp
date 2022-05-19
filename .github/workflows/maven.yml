@@ -49,6 +49,12 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
+          name: coverage-reports-jdk8
+          path: target/coverage-reports-jdk8
+
+      - uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
           name: test-reports-jdk8
           path: target/test-reports-jdk8
 
@@ -81,6 +87,12 @@ jobs:
              sudo mkdir target/coverage-reports-jdk9/${item}-site
              sudo mv de.upb.swt.soot.${item}/target/site/jacoco-ut/* target/coverage-reports-jdk9/${item}-site
            done
+
+    - uses: actions/upload-artifact@v3
+      if: ${{ always() }}
+      with:
+        name: coverage-reports-jdk9
+        path: target/coverage-reports-jdk9
 
     - uses: actions/upload-artifact@v3
       if: ${{ always() }}
@@ -121,13 +133,19 @@ jobs:
           done
 
       - uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: coverage-reports-slowtest
+          path: target/coverage-reports-slowtest
+
+      - uses: actions/upload-artifact@v3
         with:
           name: test-reports-slowtest
           path: target/test-reports-slowtest
 
 
   CoverageComment:
-    needs: [JDK8, JDK9, SLOWTEST]
+    needs: [JDK8, JDK9] #, SLOWTEST]
     runs-on: ubuntu-latest
     steps:
       - name: Download uploaded artifacts
