@@ -7,7 +7,6 @@ import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.java.core.AnnotationUsage;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
@@ -171,11 +170,14 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
         map.put(
             "array",
             Arrays.asList(
-                JavaJimple.getInstance().newEnumConstant("ENUM1", enumClass.getType().getFullyQualifiedName()),
-                JavaJimple.getInstance().newEnumConstant("ENUM2", enumClass.getType().getFullyQualifiedName())));
+                JavaJimple.getInstance()
+                    .newEnumConstant("ENUM1", enumClass.getType().getFullyQualifiedName()),
+                JavaJimple.getInstance()
+                    .newEnumConstant("ENUM2", enumClass.getType().getFullyQualifiedName())));
         map.put(
             "single",
-            JavaJimple.getInstance().newEnumConstant("ENUM3", enumClass.getType().getFullyQualifiedName()));
+            JavaJimple.getInstance()
+                .newEnumConstant("ENUM3", enumClass.getType().getFullyQualifiedName()));
 
         return map;
       }
@@ -216,9 +218,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
             Arrays.asList(
                 JavaJimple.getInstance().newClassConstant("Ljava/lang/Boolean;"),
                 JavaJimple.getInstance().newClassConstant("Ljava/lang/Double;")));
-        map.put(
-            "single",
-            JavaJimple.getInstance().newClassConstant("Ljava/lang/Integer;"));
+        map.put("single", JavaJimple.getInstance().newClassConstant("Ljava/lang/Integer;"));
 
         return map;
       }
@@ -377,11 +377,14 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
         map.put(
             "array",
             Arrays.asList(
-                JavaJimple.getInstance().newEnumConstant("ENUM3", enumClass.getType().getFullyQualifiedName()),
-                JavaJimple.getInstance().newEnumConstant("ENUM2", enumClass.getType().getFullyQualifiedName())));
+                JavaJimple.getInstance()
+                    .newEnumConstant("ENUM3", enumClass.getType().getFullyQualifiedName()),
+                JavaJimple.getInstance()
+                    .newEnumConstant("ENUM2", enumClass.getType().getFullyQualifiedName())));
         map.put(
             "single",
-            JavaJimple.getInstance().newEnumConstant("ENUM1", enumClass.getType().getFullyQualifiedName()));
+            JavaJimple.getInstance()
+                .newEnumConstant("ENUM1", enumClass.getType().getFullyQualifiedName()));
 
         return map;
       }
@@ -422,9 +425,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
             Arrays.asList(
                 JavaJimple.getInstance().newClassConstant("Ljava/lang/Integer;"),
                 JavaJimple.getInstance().newClassConstant("Ljava/lang/String;")));
-        map.put(
-            "single",
-            JavaJimple.getInstance().newClassConstant("Ljava/lang/Double;"));
+        map.put("single", JavaJimple.getInstance().newClassConstant("Ljava/lang/Double;"));
 
         return map;
       }

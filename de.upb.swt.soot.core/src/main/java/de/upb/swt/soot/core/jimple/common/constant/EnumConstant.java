@@ -67,6 +67,6 @@ public class EnumConstant implements Constant {
 
   @Override
   public String toString() {
-    return "enum "+type+"." + Jimple.escape(value);
+    return "enum " + type + "." + Jimple.escape(value);
   }
 }
