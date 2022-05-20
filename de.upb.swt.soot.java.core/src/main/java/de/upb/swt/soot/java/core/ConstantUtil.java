@@ -27,6 +27,7 @@ import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
 import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 
 public class ConstantUtil {
@@ -61,7 +62,10 @@ public class ConstantUtil {
       return JavaJimple.getInstance().newEnumConstant(enumData[1], enumData[0]);
     }
 
-    // TODO: [bh] implement MethodHandle, MethodType, ClassConstant?
+    if (obj instanceof ClassType) {
+      return JavaJimple.getInstance().newClassConstant(obj.toString());
+    }
+    // TODO: [bh] implement MethodHandle, MethodType?
 
     throw new IllegalArgumentException("cannot convert Object to (Soot-)Constant.");
   }

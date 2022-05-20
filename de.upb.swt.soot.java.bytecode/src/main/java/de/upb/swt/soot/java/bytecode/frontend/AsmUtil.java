@@ -22,6 +22,7 @@ package de.upb.swt.soot.java.bytecode.frontend;
  */
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.model.Modifier;
+import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
@@ -314,21 +315,13 @@ public final class AsmUtil {
 
             paramMap.put(annotationName, createAnnotationUsage(annotationValueList));
           } else {
-            if (annotationValue instanceof org.objectweb.asm.Type) {
-              org.objectweb.asm.Type typ = (org.objectweb.asm.Type) annotationValue;
+            if (annotationValue instanceof ArrayList) {
               paramMap.put(
-                  annotationName, JavaJimple.getInstance().newClassConstant(typ.toString()));
+                  annotationName,
+                  ((ArrayList<?>) annotationValue)
+                      .stream().map(AsmUtil::convertAnnotationValue).collect(Collectors.toList()));
             } else {
-              if (annotationValue instanceof ArrayList) {
-                paramMap.put(
-                    annotationName,
-                    ((ArrayList<?>) annotationValue)
-                        .stream()
-                            .map(AsmUtil::convertAnnotationValue)
-                            .collect(Collectors.toList()));
-              } else {
-                paramMap.put(annotationName, convertAnnotationValue(annotationValue));
-              }
+              paramMap.put(annotationName, convertAnnotationValue(annotationValue));
             }
           }
         }
@@ -351,6 +344,15 @@ public final class AsmUtil {
       String[] enumData = (String[]) annotationValue;
       enumData[0] = AsmUtil.toQualifiedName(enumData[0]);
       return ConstantUtil.fromObject(enumData);
+    } else {
+      if (annotationValue instanceof org.objectweb.asm.Type) {
+        // is a class constant
+        // transform asm Type to ClassType
+        ClassType type =
+            new JavaClassType(
+                ((org.objectweb.asm.Type) annotationValue).toString(), PackageName.DEFAULT_PACKAGE);
+        return ConstantUtil.fromObject(type);
+      }
     }
     return ConstantUtil.fromObject(annotationValue);
   }
