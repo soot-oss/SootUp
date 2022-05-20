@@ -53,6 +53,14 @@ public class ConstantUtil {
       return JavaJimple.getInstance().newStringConstant((String) obj);
     }
 
+    if (obj instanceof String[]) {
+      // is an enum
+      // [0] is the fully qualified name of the enum
+      // [1] is the value of the enum
+      String[] enumData = (String[]) obj;
+      return JavaJimple.getInstance().newEnumConstant(enumData[1], enumData[0]);
+    }
+
     // TODO: [bh] implement MethodHandle, MethodType, ClassConstant?
 
     throw new IllegalArgumentException("cannot convert Object to (Soot-)Constant.");

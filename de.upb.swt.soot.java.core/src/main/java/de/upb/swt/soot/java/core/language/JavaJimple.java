@@ -25,6 +25,7 @@ package de.upb.swt.soot.java.core.language;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
+import de.upb.swt.soot.core.jimple.common.constant.EnumConstant;
 import de.upb.swt.soot.core.jimple.common.constant.MethodHandle;
 import de.upb.swt.soot.core.jimple.common.constant.MethodType;
 import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
@@ -71,6 +72,10 @@ public class JavaJimple extends Jimple {
 
   public ClassConstant newClassConstant(String value) {
     return new ClassConstant(value, getIdentifierFactory().getType("java.lang.Class"));
+  }
+
+  public EnumConstant newEnumConstant(String value, String type) {
+    return new EnumConstant(value, getIdentifierFactory().getType(type));
   }
 
   public StringConstant newStringConstant(String value) {

@@ -171,14 +171,11 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
         map.put(
             "array",
             Arrays.asList(
-                JavaJimple.newStaticFieldRef(
-                    new FieldSignature(enumClass.getType(), "ENUM1", enumClass.getType())),
-                JavaJimple.newStaticFieldRef(
-                    new FieldSignature(enumClass.getType(), "ENUM2", enumClass.getType()))));
+                JavaJimple.getInstance().newEnumConstant("ENUM1", enumClass.getType().getFullyQualifiedName()),
+                JavaJimple.getInstance().newEnumConstant("ENUM2", enumClass.getType().getFullyQualifiedName())));
         map.put(
             "single",
-            JavaJimple.newStaticFieldRef(
-                new FieldSignature(enumClass.getType(), "ENUM3", enumClass.getType())));
+            JavaJimple.getInstance().newEnumConstant("ENUM3", enumClass.getType().getFullyQualifiedName()));
 
         return map;
       }
@@ -337,14 +334,11 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
         map.put(
             "array",
             Arrays.asList(
-                JavaJimple.newStaticFieldRef(
-                    new FieldSignature(enumClass.getType(), "ENUM3", enumClass.getType())),
-                JavaJimple.newStaticFieldRef(
-                    new FieldSignature(enumClass.getType(), "ENUM2", enumClass.getType()))));
+                JavaJimple.getInstance().newEnumConstant("ENUM3", enumClass.getType().getFullyQualifiedName()),
+                JavaJimple.getInstance().newEnumConstant("ENUM2", enumClass.getType().getFullyQualifiedName())));
         map.put(
             "single",
-            JavaJimple.newStaticFieldRef(
-                new FieldSignature(enumClass.getType(), "ENUM1", enumClass.getType())));
+            JavaJimple.getInstance().newEnumConstant("ENUM1", enumClass.getType().getFullyQualifiedName()));
 
         return map;
       }
