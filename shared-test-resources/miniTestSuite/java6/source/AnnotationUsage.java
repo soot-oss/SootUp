@@ -51,6 +51,11 @@ import java.lang.annotation.Inherited;
   AnnotationUsage.Enums single() default AnnotationUsage.Enums.ENUM3;
 }
 
+@interface ClassAnnotation{
+  Class[] array() default {Boolean.class,Double.class};
+  Class single() default Integer.class;
+}
+
 @NonInheritableOnClass
 @OnClass(sthBlue=42, author = "GeorgeLucas")
 public class AnnotationUsage{
@@ -67,6 +72,8 @@ public class AnnotationUsage{
   private Object arrayDefault;
   @EnumAnnotation
   private Object enumDefault;
+  @ClassAnnotation
+  private Object classDefault;
 
   @OnMethodRepeatables(containerValue = "betterValue", value = {
       @OnMethodRepeatable(countOnMe = 42)
@@ -95,6 +102,10 @@ public class AnnotationUsage{
 
   @EnumAnnotation(array = {AnnotationUsage.Enums.ENUM3,AnnotationUsage.Enums.ENUM2}, single=AnnotationUsage.Enums.ENUM1)
   public void enums(){
+
+  }
+  @ClassAnnotation(array = {Integer.class,String.class}, single=Double.class)
+  public void classes(){
 
   }
 }
