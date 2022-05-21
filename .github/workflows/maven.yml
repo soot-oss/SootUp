@@ -170,7 +170,7 @@ jobs:
 
 
   CoverageReport:
-    #TODO: merge JDK9 test
+    #TODO: need and merge SLOWTEST
     needs: [ JDK9, JDK8 ] #, SLOWTEST]
     runs-on: ubuntu-latest
     steps:
@@ -198,14 +198,17 @@ jobs:
 #           name: coverage-reports-slowtest
 #           path: coverage-reports-slowtest
 
+      #debug
+      - run: tree ${{ github.workspace }}
+
       # merge reports from java8,java9
-      - run:  mvn jacoco:merge@merge-results
+      - run:  mvn -B jacoco:merge@merge-results
 
       # aggregtate reports
-      - run: mvn jacoco:report@generate-coverage-report
+      - run: mvn -B jacoco:report@generate-coverage-report
 
       #debug
-      - run: ls ${{ github.workspace }}/target/jacoco-aggregate/
+      - run: tree ${{ github.workspace }}
 
       - name: Add coverage comment to PR
         id: jacoco
