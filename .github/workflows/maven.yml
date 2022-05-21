@@ -203,7 +203,7 @@ jobs:
 
       # merge reports from java8,java9
       - run:  mvn jacoco:merge@merge-results
-        -
+
       # aggregtate reports
       - run: mvn jacoco:aggregate-reports@aggregate-results
 
