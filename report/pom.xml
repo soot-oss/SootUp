@@ -22,11 +22,12 @@
                         <id>generate-coverage-report</id>
                         <phase>none</phase>
                         <goals>
-                            <goal>report</goal>
+                            <goal>report-aggregate</goal>
                         </goals>
                         <configuration>
                             <!-- path from merge destFile -->
-                            <dataFile>${reactorRootsTarget}/coverage-reports/aggregate.exec</dataFile>
+                            <dataFileIncludes>
+                                <dataFileInclude>${reactorRootsTarget}/coverage-reports/aggregate.exec</dataFileInclude></dataFileIncludes>
                             <!--
                             <dataFileIncludes>de.upb.swt.soot.core/target/coverage-reports/jacoco-ut.exec
                             </dataFileIncludes>
