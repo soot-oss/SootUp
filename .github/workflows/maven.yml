@@ -170,9 +170,8 @@ jobs:
 
 
   CoverageReport:
-    #TODO: merge JDK8,JDK9 test
-
-    needs: [ JDK9 ] #, JDK8, SLOWTEST]
+    #TODO: merge JDK9 test
+    needs: [ JDK9, JDK8 ] #, SLOWTEST]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -212,7 +211,7 @@ jobs:
         id: jacoco
         uses: madrapps/jacoco-report@v1.2
         with:
-          # theres no prefix! "de.upb.swt.soot."
+          # theres no package-prefix in the articact filenames! "de.upb.swt.soot."
           paths: ${{ github.workspace }}/target/jacoco-aggregate/aggregate.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
