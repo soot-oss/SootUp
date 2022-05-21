@@ -215,8 +215,7 @@ jobs:
         id: jacoco
         uses: madrapps/jacoco-report@v1.2
         with:
-          # theres no package-prefix in the articact filenames! "de.upb.swt.soot."
-          paths: ${{ github.workspace }}/target/jacoco-aggregate/aggregate.xml
+          paths: ${{ github.workspace }}/target/coverage-reports/aggregate.exec
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
           min-coverage-changed-files: 60

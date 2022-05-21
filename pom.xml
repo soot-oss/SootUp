@@ -217,7 +217,6 @@
                                     </fileSet>
 -->
                             </fileSets>
-
                             <destFile>${reactorRootsTarget}/coverage-reports/aggregate.exec</destFile>
                         </configuration>
                     </execution>
@@ -247,7 +246,6 @@
                             <dataFileIncludes>de.upb.swt.soot.tests/target/coverage-reports/jacoco-ut.exec
                             </dataFileIncludes>
                             -->
-
                             <outputDirectory>${reactorRootsTarget}/jacoco-aggregate</outputDirectory>
                         </configuration>
                     </execution>
