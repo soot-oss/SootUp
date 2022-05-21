@@ -211,6 +211,13 @@ jobs:
       #debug
       - run: tree ${{ github.workspace }}
 
+      - uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: aggregate-exec
+          path: ${{ github.workspace }}/target/coverage-reports/aggregate.exec
+
+
       - name: Add coverage comment to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.2
