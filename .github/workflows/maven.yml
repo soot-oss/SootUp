@@ -15,10 +15,8 @@ on:
       - ready_for_review
 
 jobs:
+
   JDK8:
-    if: ${{ false }}      #TODO: remove if!
-
-
     runs-on: ubuntu-latest
     
     steps:
@@ -195,17 +193,17 @@ jobs:
           name: coverage-exec-jdk9
           path: coverage-reports-jdk9
 
-      - name: Download uploaded artifacts slowtest
-        uses: actions/download-artifact@v3
-        with:
-           name: coverage-reports-slowtest
-           path: coverage-reports-slowtest
+#      - name: Download uploaded artifacts slowtest
+#        uses: actions/download-artifact@v3
+#        with:
+#           name: coverage-reports-slowtest
+#           path: coverage-reports-slowtest
 
       # merge reports from java8,java9
       - run:  mvn jacoco:merge@merge-results
 
       # aggregtate reports
-      - run: mvn jacoco:aggregate-reports@aggregate-results
+      - run: mvn jacoco:report@generate-coverage-report
 
       #debug
       - run: ls ${{ github.workspace }}/target/jacoco-aggregate/

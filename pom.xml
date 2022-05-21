@@ -175,7 +175,7 @@
                         <configuration>
                             <fileSets>
                                 <fileSet>
-                                    <!-- path refers to artifact download folder from maven.yml -->
+                                    <!-- path refers to artifact download folder specified in maven.yml -->
                                     <directory>${basedir}/coverage-reports</directory>
                                     <includes><include>jacoco-ut-*.exec</include></includes>
                                 </fileSet>
@@ -222,7 +222,8 @@
                             <goal>report</goal>
                         </goals>
                         <configuration>
-                            <dataFile>${basedir}/target/coverage-reports/aggregate.exec</dataFile>
+                            <!-- path from merge destFile -->
+                            <dataFile>${reactorRootsTarget}/coverage-reports/aggregate.exec</dataFile>
                             <!--
                             <dataFileIncludes>de.upb.swt.soot.core/target/coverage-reports/jacoco-ut.exec
                             </dataFileIncludes>
