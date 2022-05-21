@@ -111,7 +111,7 @@ jobs:
           path: target/coverage-reports-jdk9/*.exec
 
       - uses: actions/upload-artifact@v3
-        if: ${{ failed() }}
+        if: ${{ failure() }}
         with:
           name: test-reports-jdk9
           path: target/test-reports-jdk9
@@ -163,7 +163,7 @@ jobs:
           path: target/coverage-reports-slowtest/*.exec
 
       - uses: actions/upload-artifact@v3
-        if: ${{ failed() }}
+        if: ${{ failure() }}
         with:
           name: test-reports-slowtest
           path: target/test-reports-slowtest
@@ -204,7 +204,7 @@ jobs:
 
       # merge reports from java8,java9
       - run:  mvn -B jacoco:merge@merge-results
-
+      - run: test -f ${{ github.workspace }}/target/coverage-reports/aggregate.exec || echo "failure to merge coverage into a file."; exit 1
       # aggregtate reports
       - run: mvn -B jacoco:report@generate-coverage-report
 
