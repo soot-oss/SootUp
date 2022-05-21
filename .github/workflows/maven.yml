@@ -102,16 +102,16 @@ jobs:
           name: coverage-reports-jdk9
           path: |
             target/coverage-reports-jdk9
-            !target/coverage-reports-jdk9/jacoco-ut-*.exec
+            !target/coverage-reports-jdk9/*.exec
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
           name: coverage-exec-jdk9
-          path: target/coverage-reports-jdk9/jacoco-ut-*.exec
+          path: target/coverage-reports-jdk9/*.exec
 
       - uses: actions/upload-artifact@v3
-        if: ${{ always() }}
+        if: ${{ failed() }}
         with:
           name: test-reports-jdk9
           path: target/test-reports-jdk9
@@ -154,16 +154,16 @@ jobs:
           name: coverage-reports-slowtest
           path: |
             target/coverage-reports-slowtest
-            !target/coverage-reports-slowtest/jacoco-ut-*.exec
+            !target/coverage-reports-slowtest/*.exec
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
           name: coverage-exec-slowtest
-          path: target/coverage-reports-slowtest/jacoco-ut-*.exec
+          path: target/coverage-reports-slowtest/*.exec
 
       - uses: actions/upload-artifact@v3
-        if: ${{ always() }}
+        if: ${{ failed() }}
         with:
           name: test-reports-slowtest
           path: target/test-reports-slowtest
@@ -174,16 +174,10 @@ jobs:
     needs: [ JDK9, JDK8 ] #, SLOWTEST]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-
       - name: Download uploaded artifacts jdk8
         uses: actions/download-artifact@v3
         with:
-          name: coverage-reports-jdk8
+          name: coverage-exec-jdk8
           path: coverage-reports-jdk8
 
       - name: Download uploaded artifacts jdk9
@@ -200,6 +194,13 @@ jobs:
 
       #debug
       - run: tree ${{ github.workspace }}
+
+      - uses: actions/checkout@v3
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
 
       # merge reports from java8,java9
       - run:  mvn -B jacoco:merge@merge-results

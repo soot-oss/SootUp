@@ -176,9 +176,16 @@
                             <fileSets>
                                 <fileSet>
                                     <!-- path refers to artifact download folder specified in maven.yml -->
-                                    <directory>${basedir}/coverage-reports</directory>
+                                    <directory>${basedir}/coverage-reports-jdk8</directory>
                                     <includes><include>jacoco-ut-*.exec</include></includes>
                                 </fileSet>
+
+                                <fileSet>
+                                    <!-- path refers to artifact download folder specified in maven.yml -->
+                                    <directory>${basedir}/coverage-reports-jdk9</directory>
+                                    <includes><include>jacoco-ut-*.exec</include></includes>
+                                </fileSet>
+
                                 <!--
                                     <fileSet>
                                         <directory>${basedir}/de.upb.swt.soot.core/target/coverage-reports</directory>
