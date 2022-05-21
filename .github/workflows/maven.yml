@@ -206,7 +206,7 @@ jobs:
       - run:  mvn jacoco:merge@merge-results -B
   #    - run: test -f ${{ github.workspace }}/target/coverage-reports/aggregate.exec || echo "failure to merge coverage into a file."; exit 1
       # aggregtate reports
-      - run: mvn jacoco:report@generate-coverage-report -B
+      - run: cd report && mvn jacoco:report@generate-coverage-report -B
 
       #debug
       - run: tree ${{ github.workspace }}

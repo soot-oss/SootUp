@@ -26,6 +26,7 @@
         <module>de.upb.swt.soot.tests</module>
         <module>de.upb.swt.soot.callgraph</module>
         <module>examples</module>
+        <module>report</module>
     </modules>
 
     <!-- Shared Configuration -->
