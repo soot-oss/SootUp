@@ -217,6 +217,11 @@ jobs:
           name: aggregate-exec
           path: ${{ github.workspace }}/target/coverage-reports/aggregate.exec
 
+      - uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: aggregated-coverage-report
+          path: ${{ github.workspace }}/target/jacoco-aggregate/
 
       - name: Add coverage comment to PR
         id: jacoco
