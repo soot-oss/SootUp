@@ -170,10 +170,16 @@ jobs:
 
 
   CoverageReport:
+    runs-on: ubuntu-latest
     #TODO: need and merge SLOWTEST
     needs: [ JDK9, JDK8 ] #, SLOWTEST]
-    runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
       - name: Download uploaded artifacts jdk8
         uses: actions/download-artifact@v3
         with:
@@ -185,28 +191,22 @@ jobs:
         with:
           name: coverage-exec-jdk9
           path: coverage-reports-jdk9
-
 #      - name: Download uploaded artifacts slowtest
 #        uses: actions/download-artifact@v3
 #        with:
 #           name: coverage-reports-slowtest
+
 #           path: coverage-reports-slowtest
-
       #debug
-      - run: tree ${{ github.workspace }}
 
-      - uses: actions/checkout@v3
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
+      - run: tree ${{ github.workspace }}
 
 
       # merge reports from java8,java9
-      - run:  mvn -B jacoco:merge@merge-results
-      - run: test -f ${{ github.workspace }}/target/coverage-reports/aggregate.exec || echo "failure to merge coverage into a file."; exit 1
+      - run:  mvn jacoco:merge@merge-results -B
+  #    - run: test -f ${{ github.workspace }}/target/coverage-reports/aggregate.exec || echo "failure to merge coverage into a file."; exit 1
       # aggregtate reports
-      - run: mvn -B jacoco:report@generate-coverage-report
+      - run: mvn jacoco:report@generate-coverage-report -B
 
       #debug
       - run: tree ${{ github.workspace }}
