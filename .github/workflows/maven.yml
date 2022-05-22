@@ -36,7 +36,7 @@ jobs:
           name: coverage-reports-jdk8
           path: |
                   **/target/coverage-reports-jdk8
-                  !**/target/coverage-reports-jdk8/jacoco-ut-*.exec
+                  !**/target/coverage-reports-jdk8/jacoco-ut-jdk8.exec
                   !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
@@ -44,7 +44,7 @@ jobs:
         with:
           name: coverage-exec-jdk8
           path: |
-                  **/target/coverage-reports-jdk8/jacoco-ut-*.exec
+                  **/target/coverage-reports-jdk8/jacoco-ut-jdk8.exec
                   !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
@@ -72,43 +72,37 @@ jobs:
         run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       - name: Test (JDK9)
         run: mvn -pl '!de.upb.swt.soot.tests' -am verify -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -PJava9
-      - name: Prepare Coverage Reports
-        env:
-          SUBMODULES: java.core java.bytecode java.sourcecode callgraph
-        run: |
-          sudo mkdir target/coverage-reports-jdk9
-          sudo mkdir target/test-reports-jdk9
-          sudo chmod -R 777 target 
-          for item in $SUBMODULES
-          do 
-            sudo mv de.upb.swt.soot.${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports-jdk9/jacoco-ut-${item}-jdk9.exec
-            sudo [ ! -f de.upb.swt.soot.${item}/target/surefire-reports ] || mv de.upb.swt.soot.${item}/target/surefire-reports target/test-reports-jdk9/test-report-${item}/
-            sudo mkdir target/coverage-reports-jdk9/${item}-site
-            sudo mv de.upb.swt.soot.${item}/target/site/jacoco-ut/* target/coverage-reports-jdk9/${item}-site
-          done
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
           name: coverage-reports-jdk9
           path: |
-            target/coverage-reports-jdk9
-            !target/coverage-reports-jdk9/*.exec
+            **/target/coverage-reports-jdk9
+            !**/target/coverage-reports-jdk9/jacoco-ut-jdk9.exec
+            !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
           name: coverage-exec-jdk9
-          path: target/coverage-reports-jdk9/*.exec
+          path: |
+            **/target/coverage-reports-jdk9/jacoco-ut-jdk9.exec
+            !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
-        if: ${{ failure() }}
+        if: ${{ always() }}
         with:
           name: test-reports-jdk9
-          path: target/test-reports-jdk9
+          path: |
+            **/target/surefire-reports
+            !de.upb.swt.soot.tests/
+    
+    
+    
 
-
-  SLOWTEST:
+    # takes a long time to run - so just run them when PR is not draft anymore
+  IntegrationTest:
     if: ${{ !github.event.pull_request.draft && false }}      #TODO: remove false!
 
     runs-on: ubuntu-latest
@@ -119,51 +113,40 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build (SLOWTEST)
+      - name: Build (IntegrationTest)
         run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-      - name: Test (SLOWTEST)
-        run: mvn -pl de.upb.swt.soot.tests -am verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-      - name: Prepare Coverage and Test Reports
-        if: ${{ always() }}
-        env:
-          SUBMODULES: de.upb.swt.soot.tests
-        run: |
-          sudo mkdir target/coverage-reports-slowtest
-          sudo mkdir target/test-reports-slowtest
-          sudo chmod -R 777 target 
-          for item in $SUBMODULES
-          do 
-            sudo mv ${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports-slowtest/jacoco-ut-${item}-jdk8.exec
-            sudo [ ! -f ${item}/target/surefire-reports ] || mv ${item}/target/surefire-reports target/test-reports-slowtest/test-report-${item}/
-            sudo mkdir target/coverage-reports-slowtest/${item}-site
-            sudo mv ${item}/target/site/jacoco-ut/* target/coverage-reports-slowtest/${item}-site
-          done
+      - name: Test (IntegrationTest)
+        run: mvn -pl de.upb.swt.soot.tests -am verify -B -Dfmt.skip -PIntegrationTest -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
-          name: coverage-reports-slowtest
+          name: coverage-reports-integrationtest
           path: |
-            target/coverage-reports-slowtest
-            !target/coverage-reports-slowtest/*.exec
+            **/target/coverage-reports-integrationtest
+            !**/target/coverage-reports-integrationtest/jacoco-ut-integrationtest.exec
+            !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
-          name: coverage-exec-slowtest
-          path: target/coverage-reports-slowtest/*.exec
+          name: coverage-exec-integrationtest
+          path: |
+            **/target/coverage-reports-integrationtest/jacoco-ut-integrationtest.exec
+            !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
-        if: ${{ failure() }}
+        if: ${{ always() }}
         with:
-          name: test-reports-slowtest
-          path: target/test-reports-slowtest
-
+          name: test-reports-integrationtest
+          path: |
+            **/target/surefire-reports
+            !de.upb.swt.soot.tests/
 
   CoverageReport:
     runs-on: ubuntu-latest
-    #TODO: need and merge SLOWTEST
-    needs: [ JDK9, JDK8 ] #, SLOWTEST]
+    #TODO: need and merge IntegrationTest
+    needs: [ JDK9, JDK8 ] #, IntegrationTest]
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 1.8
@@ -175,19 +158,16 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: coverage-exec-jdk8
-          path: coverage-reports-jdk8
 
       - name: Download uploaded artifacts jdk9
         uses: actions/download-artifact@v3
         with:
           name: coverage-exec-jdk9
-          path: coverage-reports-jdk9
-#      - name: Download uploaded artifacts slowtest
+#      - name: Download uploaded artifacts integrationtest
 #        uses: actions/download-artifact@v3
 #        with:
-#           name: coverage-reports-slowtest
+#           name: coverage-reports-integrationtest
 
-#           path: coverage-reports-slowtest
       #debug
 
       - run: tree ${{ github.workspace }}
@@ -205,13 +185,8 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: aggregate-exec
-          path: ${{ github.workspace }}/target/coverage-reports/aggregate.exec
-
-      - uses: actions/upload-artifact@v3
-        with:
           name: aggregated-coverage-report
-          path: ${{ github.workspace }}/target/jacoco-aggregate/
+          path: ${{ github.workspace }}/report/target/site/jacoco-aggregate/
 
       - name: Add coverage comment to PR
         id: jacoco
