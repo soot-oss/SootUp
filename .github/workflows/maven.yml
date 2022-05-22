@@ -209,13 +209,13 @@ jobs:
 #          debug-mode: false
 
       - name: Log Coverage info
-      uses: marocchino/sticky-pull-request-comment@v2
-      with:
-        header: coverage-pr-message
-        delete: true
-        message: |
-          Total coverage ${{ steps.jacoco.outputs.coverage-overall }} 
-          Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: coverage-pr-message
+          delete: true
+          message: |
+            Total coverage ${{ steps.jacoco.outputs.coverage-overall }} 
+            Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}
 
 
       - name: jacoco-badge-generator
