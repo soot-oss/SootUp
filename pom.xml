@@ -186,7 +186,7 @@
                             <fileSets>
                                 <fileSet>
                                     <!-- path refers to artifact download folder structure in maven.yml -->
-                                    <directory>coverage-reports</directory>
+                                    <directory>${project.build.directory}/coverage-reports/</directory>
                                     <includes>
                                         <include>jacoco-ut-jdk8.exec</include>
                                         <include>jacoco-ut-jk9.exec</include>
@@ -194,7 +194,7 @@
                                     </includes>
                                 </fileSet>
                             </fileSets>
-                            <destFile>coverage-reports/aggregated.exec</destFile>
+                            <destFile>${project.build.directory}/coverage-reports/aggregated.exec</destFile>
                         </configuration>
                     </execution>
                     <!--

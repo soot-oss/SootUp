@@ -181,7 +181,7 @@ jobs:
  #     - run: test -f ${{ github.workspace }}/target/coverage-reports/aggregate.exec || echo "::error file=aggregate.exec,::Merged coverage file was not created."
 
       # aggregtate reports
-      - run: mvn -ntp jacoco:report@generate-coverage-report
+      - run: mvn -ntp jacoco:report-aggregate@generate-coverage-report
 
       #debug
       - run: tree ${{ github.workspace }}

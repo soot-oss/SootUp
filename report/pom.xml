@@ -21,33 +21,35 @@
                     <execution>
                         <id>generate-coverage-report</id>
                         <phase>none</phase>
+                        <configuration>
+                            <dataFileIncludes>
+                               <!-- <dataFileInclude>${project.build.directory}/coverage-reports/aggregated.exec</dataFileInclude> -->
+                                                                <dataFileInclude>${project.build.directory}/coverage-reports/jacoco-ut-jdk8.exec</dataFileInclude>
+                                                                <dataFileInclude>${project.build.directory}/coverage-reports/jacoco-ut-jdk9.exec</dataFileInclude>
+                            </dataFileIncludes>
+                            <!--                            <dataFileIncludes>target/coverage-reports/jacoco-ut-integrationtest.exec</dataFileIncludes>-->
+
+
+                            <!--                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.core/target/coverage-reports/jacoco-ut.exec
+                                                                                        </dataFileIncludes>
+                                                                                    <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.jimple.parser/target/coverage-reports/jacoco-ut.exec
+                                                                                    </dataFileIncludes>
+                                                                                    <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.java.core/target/coverage-reports/jacoco-ut.exec
+                                                                                    </dataFileIncludes>
+                                                                                    <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.java.bytecode/target/coverage-reports/jacoco-ut.exec
+                                                                                    </dataFileIncludes>
+                                                                                    <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.java.sourcecode/target/coverage-reports/jacoco-ut.exec
+                                                                                    </dataFileIncludes>
+                                                                                    <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.callgraph/target/coverage-reports/jacoco-ut.exec
+                                                                                    </dataFileIncludes>
+                                                                                    <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.tests/target/coverage-reports/jacoco-ut.exec
+                                                                                    </dataFileIncludes>
+                                                                                    -->
+                            <outputDirectory>${reactorRootsTarget}/jacoco-aggregate</outputDirectory>
+                        </configuration>
                         <goals>
                             <goal>report-aggregate</goal>
                         </goals>
-                        <configuration>
-                            <dataFileIncludes>target/coverage-reports/aggregated.exec</dataFileIncludes>
- <!--                           <dataFileIncludes>target/coverage-reports/jacoco-ut-jdk8.exec</dataFileIncludes> -->
-                   <!--         <dataFileIncludes>target/coverage-reports/jacoco-ut-jdk9.exec</dataFileIncludes> -->
-<!--                            <dataFileIncludes>target/coverage-reports/jacoco-ut-integrationtest.exec</dataFileIncludes>-->
-
-
-<!--                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.core/target/coverage-reports/jacoco-ut.exec
-                                                            </dataFileIncludes>
-                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.jimple.parser/target/coverage-reports/jacoco-ut.exec
-                                                        </dataFileIncludes>
-                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.java.core/target/coverage-reports/jacoco-ut.exec
-                                                        </dataFileIncludes>
-                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.java.bytecode/target/coverage-reports/jacoco-ut.exec
-                                                        </dataFileIncludes>
-                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.java.sourcecode/target/coverage-reports/jacoco-ut.exec
-                                                        </dataFileIncludes>
-                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.callgraph/target/coverage-reports/jacoco-ut.exec
-                                                        </dataFileIncludes>
-                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.tests/target/coverage-reports/jacoco-ut.exec
-                                                        </dataFileIncludes>
-                                                        -->
-                            <outputDirectory>${reactorRootsTarget}/jacoco-aggregate</outputDirectory>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
