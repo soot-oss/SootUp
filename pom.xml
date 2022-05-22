@@ -77,6 +77,13 @@
             </activation>
         </profile>
         <profile>
+            <id>IntegrationTest</id>
+            <properties>
+                <testcase.groups>categories.Java8Test</testcase.groups>
+                <testCoverageType>integrationtest</testCoverageType>
+            </properties>
+        </profile>
+        <profile>
             <id>skipTestProfile</id>
             <activation>
                 <property>
@@ -86,13 +93,6 @@
             </activation>
             <properties>
                 <jacoco-badge-phase>none</jacoco-badge-phase>
-            </properties>
-        </profile>
-        <profile>
-            <id>IntegrationTest</id>
-            <properties>
-                <testcase.groups>categories.Java8Test</testcase.groups>
-                <testCoverageType>integrationtest</testCoverageType>
             </properties>
         </profile>
     </profiles>
