@@ -191,6 +191,7 @@ jobs:
 
       #debug
       - run: tree ${{ github.workspace }}
+      - run: stat /home/runner/work/soot-reloaded/soot-reloaded/report/target/jacoco-aggregate/jacoco.csv
 
       - uses: actions/upload-artifact@v3
         with:
@@ -217,6 +218,8 @@ jobs:
             Total coverage ${{ steps.jacoco.outputs.coverage-overall }} 
             Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}
 
+
+      - run: stat /home/runner/work/soot-reloaded/soot-reloaded/report/target/jacoco-aggregate/jacoco.csv
 
       - name: jacoco-badge-generator
         uses: cicirello/jacoco-badge-generator@v2.6.1
