@@ -178,7 +178,7 @@ jobs:
       - name: merge coverage reports
         run:  mvn -ntp jacoco:merge@merge-results
 
-      - name aggregtate coverage reports across java versions
+      - name: aggregtate coverage reports across java versions
         run: mvn -ntp jacoco:report-aggregate@generate-coverage-report
 
       - name: upload aggregated coverage artifact
