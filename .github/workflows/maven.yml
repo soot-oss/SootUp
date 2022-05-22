@@ -128,7 +128,6 @@ jobs:
           path: |
             */target/coverage-reports
             !*/target/coverage-reports/jacoco-ut-integrationtest.exec
-            !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -136,7 +135,6 @@ jobs:
           name: coverage-exec-integrationtest
           path: |
             */target/coverage-reports/jacoco-ut-integrationtest.exec
-            !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -144,7 +142,6 @@ jobs:
           name: test-reports-integrationtest
           path: |
             */target/surefire-reports
-            !de.upb.swt.soot.tests/
 
 
 
