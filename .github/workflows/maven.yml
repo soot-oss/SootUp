@@ -35,8 +35,8 @@ jobs:
         with:
           name: coverage-reports-jdk8
           path: |
-                  **/target/coverage-reports-jdk8
-                  !**/target/coverage-reports-jdk8/jacoco-ut-jdk8.exec
+                  */target/coverage-reports-jdk8
+                  !*/target/coverage-reports-jdk8/jacoco-ut-jdk8.exec
                   !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
@@ -44,7 +44,7 @@ jobs:
         with:
           name: coverage-exec-jdk8
           path: |
-                  **/target/coverage-reports-jdk8/jacoco-ut-jdk8.exec
+                  */target/coverage-reports-jdk8/jacoco-ut-jdk8.exec
                   !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
@@ -52,7 +52,7 @@ jobs:
         with:
           name: test-reports-jdk8
           path: |
-                  **/target/surefire-reports
+                  */target/surefire-reports
                   !de.upb.swt.soot.tests/
 
 
@@ -78,8 +78,8 @@ jobs:
         with:
           name: coverage-reports-jdk9
           path: |
-            **/target/coverage-reports-jdk9
-            !**/target/coverage-reports-jdk9/jacoco-ut-jdk9.exec
+            */target/coverage-reports-jdk9
+            !*/target/coverage-reports-jdk9/jacoco-ut-jdk9.exec
             !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
@@ -87,7 +87,7 @@ jobs:
         with:
           name: coverage-exec-jdk9
           path: |
-            **/target/coverage-reports-jdk9/jacoco-ut-jdk9.exec
+            */target/coverage-reports-jdk9/jacoco-ut-jdk9.exec
             !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
@@ -95,7 +95,7 @@ jobs:
         with:
           name: test-reports-jdk9
           path: |
-            **/target/surefire-reports
+            */target/surefire-reports
             !de.upb.swt.soot.tests/
     
     
@@ -123,8 +123,8 @@ jobs:
         with:
           name: coverage-reports-integrationtest
           path: |
-            **/target/coverage-reports-integrationtest
-            !**/target/coverage-reports-integrationtest/jacoco-ut-integrationtest.exec
+            */target/coverage-reports-integrationtest
+            !*/target/coverage-reports-integrationtest/jacoco-ut-integrationtest.exec
             !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
@@ -132,7 +132,7 @@ jobs:
         with:
           name: coverage-exec-integrationtest
           path: |
-            **/target/coverage-reports-integrationtest/jacoco-ut-integrationtest.exec
+            */target/coverage-reports-integrationtest/jacoco-ut-integrationtest.exec
             !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
@@ -140,7 +140,7 @@ jobs:
         with:
           name: test-reports-integrationtest
           path: |
-            **/target/surefire-reports
+            */target/surefire-reports
             !de.upb.swt.soot.tests/
 
   CoverageReport:

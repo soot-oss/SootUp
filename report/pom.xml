@@ -28,6 +28,7 @@
                             <!--<dataFileIncludes>target/coverage-reports/aggregated.exec</dataFileIncludes>-->
                             <dataFileIncludes>target/coverage-reports/jacoco-ut-jdk8.exec</dataFileIncludes>
                             <dataFileIncludes>target/coverage-reports/jacoco-ut-jdk9.exec</dataFileIncludes>
+<!--                            <dataFileIncludes>target/coverage-reports/jacoco-ut-integrationtest.exec</dataFileIncludes>-->
 
 
 <!--                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.core/target/coverage-reports/jacoco-ut.exec
