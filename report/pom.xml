@@ -30,7 +30,7 @@
                                  <dataFileIncludes>target/coverage-reports/jacoco-ut-integrationtest.exec</dataFileIncludes>
 -->
 
-                            <outputDirectory>${reactorRootsTarget}/jacoco-aggregate</outputDirectory>
+                            <outputDirectory>target/jacoco-aggregate</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

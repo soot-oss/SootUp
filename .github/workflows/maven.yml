@@ -158,7 +158,7 @@ jobs:
           java-version: 1.8
 
       # needed to match coverage with its "classid"s..
-      - run: mvn -ntp -PJava8 compile
+      - run: mvn -ntp -Dfmt.skip -PJava8 compile
 
       - name: Download uploaded artifacts jdk8
         uses: actions/download-artifact@v3
@@ -192,13 +192,13 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: aggregated-coverage-report
-          path: ${{ github.workspace }}/report/target/site/jacoco-aggregate/
+          path: ${{ github.workspace }}/report/target/jacoco-aggregate/
 
       - name: Add coverage comment to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.2
         with:
-          paths: ${{ github.workspace }}/report/target/site/jacoco-aggregate/jacoco.xml
+          paths: ${{ github.workspace }}/report/target/jacoco-aggregate/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
           min-coverage-changed-files: 60
