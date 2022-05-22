@@ -21,13 +21,14 @@
                     <execution>
                         <id>generate-coverage-report</id>
                         <phase>none</phase>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
                         <configuration>
-                            <dataFileIncludes>
                                <!-- <dataFileInclude>${project.build.directory}/coverage-reports/aggregated.exec</dataFileInclude> -->
-                                                                <dataFileInclude>${project.build.directory}/coverage-reports/jacoco-ut-jdk8.exec</dataFileInclude>
-                                                                <dataFileInclude>${project.build.directory}/coverage-reports/jacoco-ut-jdk9.exec</dataFileInclude>
-                            </dataFileIncludes>
-                            <!--                            <dataFileIncludes>target/coverage-reports/jacoco-ut-integrationtest.exec</dataFileIncludes>-->
+                                <dataFileIncludes>${project.build.directory}/**/aggregated.exec</dataFileIncludes>
+                                <!-- <dataFileIncludes>target/coverage-reports/jacoco-ut-integrationtest.exec</dataFileIncludes> -->
+                            <dataFileIncludes>**/jacoco-ut-jdk9.exec</dataFileIncludes>
 
 
                             <!--                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.core/target/coverage-reports/jacoco-ut.exec
@@ -47,9 +48,6 @@
                                                                                     -->
                             <outputDirectory>${reactorRootsTarget}/jacoco-aggregate</outputDirectory>
                         </configuration>
-                        <goals>
-                            <goal>report-aggregate</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
