@@ -175,7 +175,6 @@
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
                         </configuration>
                     </execution>
-
                     <execution>
                         <id>merge-results</id>
                         <phase>none</phase>
@@ -189,7 +188,7 @@
                                     <directory>${project.build.directory}/coverage-reports/</directory>
                                     <includes>
                                         <include>jacoco-ut-jdk8.exec</include>
-                                        <include>jacoco-ut-jk9.exec</include>
+                                        <include>jacoco-ut-jdk9.exec</include>
                                         <include>jacoco-ut-integrationtest.exec</include>
                                     </includes>
                                 </fileSet>
