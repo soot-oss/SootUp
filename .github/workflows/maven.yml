@@ -208,20 +208,20 @@ jobs:
 #          title: Code Coverage
 #          debug-mode: false
 
-#      - name: Log Coverage info
-#        uses: marocchino/sticky-pull-request-comment@v2
-#        with:
-#          header: coverage-pr-message
-#          delete: true
-#          message: |
-#            Total coverage ${{ steps.jacoco.outputs.coverage-overall }}
-#            Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}
-
-
       - name: jacoco-badge-generator
+        id: jacoco
         uses: cicirello/jacoco-badge-generator@v2.6.1
         with:
           jacoco-csv-file: report/target/jacoco-aggregate/jacoco.csv
+
+      - name: Log Coverage info
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: coverage-pr-message
+          delete: true
+          message: |
+            Total coverage ${{ steps.jacoco.outputs.coverage }}
+            Changed Files coverage ${{ steps.jacoco.outputs.branches }}
 
       - name: Commit the badge (if it changed)
         run: |
