@@ -227,5 +227,5 @@ jobs:
           header: coverage-pr-message
           delete: true
           message: |
-            Total coverage ${{ (int) steps.jacoco.outputs.coverage }}
-            Changed Files coverage ${{ (int) steps.jacoco.outputs.branches }}
+            Total coverage ${{ steps.jacoco.outputs.coverage }}
+            Changed Files coverage ${{ steps.jacoco.outputs.branches }}
