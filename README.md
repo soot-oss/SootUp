@@ -1,4 +1,4 @@
-# Future Soot core library !![Coverage](.github/badges/jacoco.svg)
+# Future Soot core library !! [Java CI with Maven](https://github.com/secure-software-engineering/soot-reloaded/workflows/Java%20CI%20with%20Maven/badge.svg?branch=develop) [Coverage](.github/badges/jacoco.svg)
 
 ![Logo](logo.png)
 

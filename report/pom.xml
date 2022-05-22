@@ -29,7 +29,6 @@
 <!--                            <dataFileIncludes>**/jacoco-ut-jdk8.exec, **/jacoco-ut-jdk9</dataFileIncludes>
                                  <dataFileIncludes>target/coverage-reports/jacoco-ut-integrationtest.exec</dataFileIncludes>
 -->
-
                             <outputDirectory>target/jacoco-aggregate</outputDirectory>
                         </configuration>
                     </execution>

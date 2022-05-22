@@ -107,8 +107,7 @@ jobs:
 
     # takes a long time to run - so just run them when PR is not draft anymore
   IntegrationTest:
-    if: ${{ !github.event.pull_request.draft && false }}      #TODO: remove false!
-
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
 
     steps:
@@ -151,8 +150,7 @@ jobs:
 
   CoverageReport:
     runs-on: ubuntu-latest
-    #TODO: need and merge IntegrationTest
-    needs: [ JDK9, JDK8 ] #, IntegrationTest]
+    needs: [ JDK9, JDK8, IntegrationTest]
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 1.8
@@ -172,41 +170,21 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: coverage-exec-jdk9
-#      - name: Download uploaded artifacts integrationtest
-#        uses: actions/download-artifact@v3
-#        with:
-#           name: coverage-reports-integrationtest
+      - name: Download uploaded artifacts integrationtest
+        uses: actions/download-artifact@v3
+        with:
+           name: coverage-reports-integrationtest
 
-      #debug
-
-      - run: tree ${{ github.workspace }}
-
-
-      # merge reports from java8,java9
+      - name: merge reports
       - run:  mvn -ntp jacoco:merge@merge-results
- #     - run: test -f ${{ github.workspace }}/target/coverage-reports/aggregate.exec || echo "::error file=aggregate.exec,::Merged coverage file was not created."
 
-      # aggregtate reports
+      - name: aggregtate reports
       - run: mvn -ntp jacoco:report-aggregate@generate-coverage-report
-
-      #debug
-      - run: tree ${{ github.workspace }}
 
       - uses: actions/upload-artifact@v3
         with:
           name: aggregated-coverage-report
           path: ${{ github.workspace }}/report/target/jacoco-aggregate/
-
-#      - name: Add coverage comment to PR
-#        id: jacoco
-#        uses: madrapps/jacoco-report@v1.2
-#        with:
-#          paths: ${{ github.workspace }}/report/target/jacoco-aggregate/jacoco.xml
-#          token: ${{ secrets.GITHUB_TOKEN }}
-#          min-coverage-overall: 40
-#          min-coverage-changed-files: 60
-#          title: Code Coverage
-#          debug-mode: false
 
       - name: jacoco-badge-generator
         id: jacoco
@@ -214,18 +192,19 @@ jobs:
         with:
           jacoco-csv-file: report/target/jacoco-aggregate/jacoco.csv
 
+      - name: Comment Coverage info
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: coverage-pr-message
+          recreate: true
+          message: |
+            ***Test Coverage***
+            Total coverage ${{ steps.jacoco.outputs.coverage }}
+            Changed Files coverage ${{ steps.jacoco.outputs.branches }}
+
       - name: Commit the badge (if it changed)
         uses: EndBug/add-and-commit@v7
         with:
           default_author: github_actions
           message: 'commit badge'
           add: '**/badges/jacoco.svg'
-
-      - name: Log Coverage info
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: coverage-pr-message
-          delete: true
-          message: |
-            Total coverage ${{ steps.jacoco.outputs.coverage }}
-            Changed Files coverage ${{ steps.jacoco.outputs.branches }}
