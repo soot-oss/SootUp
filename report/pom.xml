@@ -25,25 +25,26 @@
                             <goal>report-aggregate</goal>
                         </goals>
                         <configuration>
-                            <!-- path from merge destFile -->
-                            <dataFileIncludes>
-                                <dataFileInclude>${reactorRootsTarget}/coverage-reports/aggregate.exec</dataFileInclude></dataFileIncludes>
-                            <!--
-                            <dataFileIncludes>de.upb.swt.soot.core/target/coverage-reports/jacoco-ut.exec
-                            </dataFileIncludes>
-                            <dataFileIncludes>de.upb.swt.soot.jimple.parser/target/coverage-reports/jacoco-ut.exec
-                            </dataFileIncludes>
-                            <dataFileIncludes>de.upb.swt.soot.java.core/target/coverage-reports/jacoco-ut.exec
-                            </dataFileIncludes>
-                            <dataFileIncludes>de.upb.swt.soot.java.bytecode/target/coverage-reports/jacoco-ut.exec
-                            </dataFileIncludes>
-                            <dataFileIncludes>de.upb.swt.soot.java.sourcecode/target/coverage-reports/jacoco-ut.exec
-                            </dataFileIncludes>
-                            <dataFileIncludes>de.upb.swt.soot.callgraph/target/coverage-reports/jacoco-ut.exec
-                            </dataFileIncludes>
-                            <dataFileIncludes>de.upb.swt.soot.tests/target/coverage-reports/jacoco-ut.exec
-                            </dataFileIncludes>
-                            -->
+                            <!--<dataFileIncludes>target/coverage-reports/aggregated.exec</dataFileIncludes>-->
+                            <dataFileIncludes>target/coverage-reports/jacoco-ut-jdk8.exec</dataFileIncludes>
+                            <dataFileIncludes>target/coverage-reports/jacoco-ut-jdk9.exec</dataFileIncludes>
+
+
+<!--                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.core/target/coverage-reports/jacoco-ut.exec
+                                                            </dataFileIncludes>
+                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.jimple.parser/target/coverage-reports/jacoco-ut.exec
+                                                        </dataFileIncludes>
+                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.java.core/target/coverage-reports/jacoco-ut.exec
+                                                        </dataFileIncludes>
+                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.java.bytecode/target/coverage-reports/jacoco-ut.exec
+                                                        </dataFileIncludes>
+                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.java.sourcecode/target/coverage-reports/jacoco-ut.exec
+                                                        </dataFileIncludes>
+                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.callgraph/target/coverage-reports/jacoco-ut.exec
+                                                        </dataFileIncludes>
+                                                        <dataFileIncludes>${reactorRootsTarget}/../de.upb.swt.soot.tests/target/coverage-reports/jacoco-ut.exec
+                                                        </dataFileIncludes>
+                                                        -->
                             <outputDirectory>${reactorRootsTarget}/jacoco-aggregate</outputDirectory>
                         </configuration>
                     </execution>
@@ -59,31 +60,37 @@
             <groupId>de.upb.swt</groupId>
             <artifactId>soot.core</artifactId>
             <version>4.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>de.upb.swt</groupId>
             <artifactId>soot.jimple.parser</artifactId>
             <version>4.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>de.upb.swt</groupId>
             <artifactId>soot.java.core</artifactId>
             <version>4.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>de.upb.swt</groupId>
             <artifactId>soot.java.bytecode</artifactId>
             <version>4.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>de.upb.swt</groupId>
             <artifactId>soot.java.sourcecode</artifactId>
             <version>4.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>de.upb.swt</groupId>
             <artifactId>soot.callgraph</artifactId>
             <version>4.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

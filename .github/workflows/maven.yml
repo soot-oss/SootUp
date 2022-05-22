@@ -29,40 +29,31 @@ jobs:
         run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       - name: Test (JDK8)
         run: mvn -pl '!de.upb.swt.soot.tests' -am verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-      - name: Prepare Coverage and Test Reports
-        env:
-          SUBMODULES: de.upb.swt.soot.java.core de.upb.swt.soot.java.bytecode de.upb.swt.soot.java.sourcecode de.upb.swt.soot.callgraph examples
-        run: |
-          sudo mkdir target/coverage-reports-jdk8
-          sudo mkdir target/test-reports-jdk8
-          sudo chmod -R 777 target 
-          for item in $SUBMODULES
-          do 
-            sudo mv ${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports-jdk8/jacoco-ut-${item}-jdk8.exec
-            sudo [ ! -f ${item}/target/surefire-reports ] || mv ${item}/target/surefire-reports target/test-reports-jdk8/test-report-${item}/
-            sudo mkdir target/coverage-reports-jdk8/${item}-site
-            sudo mv ${item}/target/site/jacoco-ut/* target/coverage-reports-jdk8/${item}-site
-          done
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
           name: coverage-reports-jdk8
           path: |
-            target/coverage-reports-jdk8
-            !target/coverage-reports-jdk8/jacoco-ut-*.exec
+                  **/target/coverage-reports-jdk8
+                  !**/target/coverage-reports-jdk8/jacoco-ut-*.exec
+                  !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
           name: coverage-exec-jdk8
-          path: target/coverage-reports-jdk8/jacoco-ut-*.exec
+          path: |
+                  **/target/coverage-reports-jdk8/jacoco-ut-*.exec
+                  !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
           name: test-reports-jdk8
-          path: target/test-reports-jdk8
+          path: |
+                  **/target/surefire-reports
+                  !de.upb.swt.soot.tests/
 
 
   JDK9:
@@ -203,10 +194,11 @@ jobs:
 
 
       # merge reports from java8,java9
-      - run:  mvn jacoco:merge@merge-results -B
-  #    - run: test -f ${{ github.workspace }}/target/coverage-reports/aggregate.exec || echo "failure to merge coverage into a file."; exit 1
+ #     - run:  mvn jacoco:merge@merge-results -B
+ #     - run: test -f ${{ github.workspace }}/target/coverage-reports/aggregate.exec || echo "::error file=aggregate.exec,::Merged coverage file was not created."
+
       # aggregtate reports
-      - run: mvn -pl report jacoco:report@generate-coverage-report -B
+      - run: mvn jacoco:report@generate-coverage-report -B
 
       #debug
       - run: tree ${{ github.workspace }}
@@ -225,7 +217,7 @@ jobs:
         id: jacoco
         uses: madrapps/jacoco-report@v1.2
         with:
-          paths: ${{ github.workspace }}/target/jacoco-aggregate/jacoco-ut*.xml
+          paths: ${{ github.workspace }}/report/target/site/jacoco-aggregate/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
           min-coverage-changed-files: 60
