@@ -172,7 +172,7 @@ jobs:
       - name: Download uploaded artifacts integrationtest
         uses: actions/download-artifact@v3
         with:
-           name: coverage-reports-integrationtest
+           name: coverage-exec-integrationtest
 
       - name: merge coverage reports
         run:  mvn -ntp jacoco:merge@merge-results

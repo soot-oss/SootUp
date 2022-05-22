@@ -230,26 +230,6 @@
 
             </plugin>
             <plugin>
-                <groupId>com.sigpwned</groupId>
-                <artifactId>jacoco-badge-maven-plugin</artifactId>
-                <version>${jacoco-badge-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>generate-jacoco-badge</id>
-                        <phase>${jacoco-badge-phase}</phase>
-                        <goals>
-                            <goal>badge</goal>
-                        </goals>
-                        <configuration>
-                            <reportFile>${project.reporting.outputDirectory}/jacoco-ut/jacoco.csv</reportFile>
-                            <!-- <passing>70</passing> Legal values: instruction, branch, line,
-                                method. Optional, default instruction. -->
-                            <metric>method</metric>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
