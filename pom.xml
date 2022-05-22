@@ -196,38 +196,7 @@
                             <destFile>${project.build.directory}/coverage-reports/aggregated.exec</destFile>
                         </configuration>
                     </execution>
-                    <!--
-                    <execution>
-                        <id>generate-coverage-report</id>
-                        <phase>none</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <!- - path from merge destFile - ->
-                            <dataFile>${reactorRootsTarget}/coverage-reports/aggregate.exec</dataFile>
-                            <!- -
-                            <dataFileIncludes>de.upb.swt.soot.core/target/coverage-reports/jacoco-ut.exec
-                            </dataFileIncludes>
-                            <dataFileIncludes>de.upb.swt.soot.jimple.parser/target/coverage-reports/jacoco-ut.exec
-                            </dataFileIncludes>
-                            <dataFileIncludes>de.upb.swt.soot.java.core/target/coverage-reports/jacoco-ut.exec
-                            </dataFileIncludes>
-                            <dataFileIncludes>de.upb.swt.soot.java.bytecode/target/coverage-reports/jacoco-ut.exec
-                            </dataFileIncludes>
-                            <dataFileIncludes>de.upb.swt.soot.java.sourcecode/target/coverage-reports/jacoco-ut.exec
-                            </dataFileIncludes>
-                            <dataFileIncludes>de.upb.swt.soot.callgraph/target/coverage-reports/jacoco-ut.exec
-                            </dataFileIncludes>
-                            <dataFileIncludes>de.upb.swt.soot.tests/target/coverage-reports/jacoco-ut.exec
-                            </dataFileIncludes>
-                            - ->
-                            <outputDirectory>${reactorRootsTarget}/jacoco-aggregate</outputDirectory>
-                        </configuration>
-                    </execution>
-                -->
                 </executions>
-
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -237,6 +206,14 @@
                     <!-- Sets the VM argument line used when unit tests are run. -->
                     <argLine>-Xmx4096M ${surefireArgLine}</argLine>
                     <groups>${testcase.groups}</groups>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>3.0.0-M6</version>
+                <configuration>
+                    <showSuccess>false</showSuccess>
                 </configuration>
             </plugin>
             <plugin>

@@ -36,15 +36,6 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
-          name: coverage-reports-jdk8
-          path: |
-                  */target/coverage-reports
-                  !*/target/coverage-reports/jacoco-ut-jdk8.exec
-                  !de.upb.swt.soot.tests/
-
-      - uses: actions/upload-artifact@v3
-        if: ${{ always() }}
-        with:
           name: coverage-exec-jdk8
           path: |
                   */target/coverage-reports/jacoco-ut-jdk8.exec
@@ -75,16 +66,6 @@ jobs:
         run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       - name: Test (JDK9)
         run: mvn -pl '!de.upb.swt.soot.tests' -am verify -B -Dfmt.skip -PJava9 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-
-      - run: tree
-      - uses: actions/upload-artifact@v3
-        if: ${{ always() }}
-        with:
-          name: coverage-reports-jdk9
-          path: |
-            */target/coverage-reports
-            !*/target/coverage-reports/jacoco-ut-jdk9.exec
-            !de.upb.swt.soot.tests/
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -122,14 +103,6 @@ jobs:
         run: mvn -pl de.upb.swt.soot.tests -am verify -B -Dfmt.skip -PIntegrationTest -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - run: tree
-
-      - uses: actions/upload-artifact@v3
-        if: ${{ always() }}
-        with:
-          name: coverage-reports-integrationtest
-          path: |
-            */target/coverage-reports
-            !*/target/coverage-reports/jacoco-ut-integrationtest.exec
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
