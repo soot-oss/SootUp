@@ -144,6 +144,8 @@ jobs:
             */target/surefire-reports
             !de.upb.swt.soot.tests/
 
+
+
   CoverageReport:
     runs-on: ubuntu-latest
     #TODO: need and merge IntegrationTest
@@ -175,11 +177,11 @@ jobs:
 
 
       # merge reports from java8,java9
- #     - run:  mvn jacoco:merge@merge-results -B
+      - run:  mvn -ntp jacoco:merge@merge-results
  #     - run: test -f ${{ github.workspace }}/target/coverage-reports/aggregate.exec || echo "::error file=aggregate.exec,::Merged coverage file was not created."
 
       # aggregtate reports
-      - run: mvn jacoco:report@generate-coverage-report -B
+      - run: mvn -ntp jacoco:report@generate-coverage-report
 
       #debug
       - run: tree ${{ github.workspace }}

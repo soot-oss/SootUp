@@ -185,47 +185,14 @@
                         <configuration>
                             <fileSets>
                                 <fileSet>
-                                    <!-- path refers to artifact download folder specified in maven.yml -->
-                                    <directory>${basedir}/coverage-reports-jdk8</directory>
-                                    <includes><include>jacoco-ut-*.exec</include></includes>
+                                    <!-- path refers to artifact download folder structure in maven.yml -->
+                                    <directory>coverage-reports</directory>
+                                    <includes>
+                                        <include>jacoco-ut-jdk8.exec</include>
+                                        <include>jacoco-ut-jk9.exec</include>
+                                        <include>jacoco-ut-integrationtest.exec</include>
+                                    </includes>
                                 </fileSet>
-
-                                <fileSet>
-                                    <!-- path refers to artifact download folder specified in maven.yml -->
-                                    <directory>${basedir}/coverage-reports-jdk9</directory>
-                                    <includes><include>jacoco-ut-*.exec</include></includes>
-                                </fileSet>
-
-                                <!--
-                                    <fileSet>
-                                        <directory>${basedir}/de.upb.swt.soot.core/target/coverage-reports</directory>
-                                        <includes><include>*.exec</include></includes>
-                                    </fileSet>
-                                    <fileSet>
-                                        <directory>${basedir}/de.upb.swt.soot.jimple.parser/target/coverage-reports</directory>
-                                        <includes><include>*.exec</include></includes>
-                                    </fileSet>
-                                    <fileSet>
-                                        <directory>${basedir}/de.upb.swt.soot.java.core/target/coverage-reports</directory>
-                                        <includes><include>*.exec</include></includes>
-                                    </fileSet>
-                                    <fileSet>
-                                        <directory>${basedir}/de.upb.swt.soot.java.bytecode/target/coverage-reports</directory>
-                                        <includes><include>*.exec</include></includes>
-                                    </fileSet>
-                                    <fileSet>
-                                        <directory>${basedir}/de.upb.swt.soot.java.sourcecode/target/coverage-reports</directory>
-                                        <includes><include>*.exec</include></includes>
-                                    </fileSet>
-                                    <fileSet>
-                                        <directory>${basedir}/de.upb.swt.soot.callgraph/target/coverage-reports</directory>
-                                        <includes><include>*.exec</include></includes>
-                                    </fileSet>
-                                    <fileSet>
-                                        <directory>${basedir}/de.upb.swt.soot.tests/target/coverage-reports</directory>
-                                        <includes><include>*.exec</include></includes>
-                                    </fileSet>
--->
                             </fileSets>
                             <destFile>coverage-reports/aggregated.exec</destFile>
                         </configuration>
