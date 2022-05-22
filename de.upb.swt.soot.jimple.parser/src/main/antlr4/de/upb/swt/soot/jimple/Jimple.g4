@@ -110,7 +110,7 @@ grammar Jimple;
   BLANK :
     [ \t\r\n] ->skip;
 
-  UNKNOWN : . ;
+  // UNKNOWN_TOKEN : . ;
 
  /*
   * Parser Rules
@@ -163,7 +163,19 @@ grammar Jimple;
 
   method_body :
     /*empty*/    SEMICOLON |
-    /*full*/     L_BRACE declaration* statement* trap_clause* R_BRACE;
+    /*full*/     L_BRACE method_body_contents R_BRACE;
+
+  method_body_contents:
+    declarations statements trap_clauses;
+
+  trap_clauses :
+    trap_clause*;
+
+  statements :
+    statement*;
+
+  declarations :
+      declaration*;
 
   declaration :
     type arg_list SEMICOLON;
