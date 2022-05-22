@@ -157,6 +157,9 @@ jobs:
         with:
           java-version: 1.8
 
+      # needed to match coverage with its "classid"s..
+      - run: mvn -ntp -PJava8 compile
+
       - name: Download uploaded artifacts jdk8
         uses: actions/download-artifact@v3
         with:
