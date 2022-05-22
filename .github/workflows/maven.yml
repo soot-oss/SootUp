@@ -25,12 +25,10 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Check Format
-        run: mvn com.coveo:fmt-maven-plugin:check -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       - name: Build (JDK8)
         run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       - name: Test (JDK8)
-        run: mvn -pl de.upb.swt.soot.core,de.upb.swt.soot.java.core,de.upb.swt.soot.java.bytecode,de.upb.swt.soot.java.sourcecode,de.upb.swt.soot.callgraph,de.upb.swt.soot.jimple.parser,examples -am verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+        run: mvn -pl '!de.upb.swt.soot.tests' -am verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       - name: Prepare Coverage and Test Reports
         env:
           SUBMODULES: de.upb.swt.soot.java.core de.upb.swt.soot.java.bytecode de.upb.swt.soot.java.sourcecode de.upb.swt.soot.callgraph examples
@@ -77,10 +75,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.9
+      - name: Check Format
+        run: mvn com.coveo:fmt-maven-plugin:check -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       - name: Build (JDK9)
         run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       - name: Test (JDK9)
-        run: mvn -pl de.upb.swt.soot.core,de.upb.swt.soot.java.core,de.upb.swt.soot.java.bytecode,de.upb.swt.soot.java.sourcecode,de.upb.swt.soot.callgraph,de.upb.swt.soot.jimple.parser,examples -am verify -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -PJava9
+        run: mvn -pl '!de.upb.swt.soot.tests' -am verify -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -PJava9
       - name: Prepare Coverage Reports
         env:
           SUBMODULES: java.core java.bytecode java.sourcecode callgraph
@@ -212,13 +212,11 @@ jobs:
       - run: tree ${{ github.workspace }}
 
       - uses: actions/upload-artifact@v3
-        if: ${{ always() }}
         with:
           name: aggregate-exec
           path: ${{ github.workspace }}/target/coverage-reports/aggregate.exec
 
       - uses: actions/upload-artifact@v3
-        if: ${{ always() }}
         with:
           name: aggregated-coverage-report
           path: ${{ github.workspace }}/target/jacoco-aggregate/
