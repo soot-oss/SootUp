@@ -121,6 +121,8 @@ jobs:
       - name: Test (IntegrationTest)
         run: mvn -pl de.upb.swt.soot.tests -am verify -B -Dfmt.skip -PIntegrationTest -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
+      - run: tree
+
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
