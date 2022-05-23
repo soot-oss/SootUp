@@ -22,18 +22,21 @@ package de.upb.swt.soot.core.jimple.common.constant;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
+import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import javax.annotation.Nonnull;
 
 public class EnumConstant implements Constant {
   private final String value;
-  private final Type type;
+  private final ClassType type;
+  private final FieldSignature signature;
 
-  public EnumConstant(@Nonnull String value, @Nonnull Type type) {
+  public EnumConstant(@Nonnull String value, @Nonnull ClassType type) {
     this.value = value;
     this.type = type;
+    this.signature = new FieldSignature(type, value, type);
   }
 
   @Override
@@ -67,6 +70,6 @@ public class EnumConstant implements Constant {
 
   @Override
   public String toString() {
-    return "enum " + type + "." + Jimple.escape(value);
+    return signature.toString();
   }
 }
