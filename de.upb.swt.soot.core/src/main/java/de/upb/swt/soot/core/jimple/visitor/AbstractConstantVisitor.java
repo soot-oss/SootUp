@@ -63,6 +63,11 @@ public class AbstractConstantVisitor<V> extends AbstractVisitor<V> implements Co
   }
 
   @Override
+  public void caseEnumConstant(@Nonnull EnumConstant constant) {
+    defaultCaseConstant(constant);
+  }
+
+  @Override
   public void caseClassConstant(@Nonnull ClassConstant constant) {
     defaultCaseConstant(constant);
   }

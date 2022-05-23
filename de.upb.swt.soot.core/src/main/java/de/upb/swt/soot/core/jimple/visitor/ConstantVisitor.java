@@ -41,6 +41,8 @@ public interface ConstantVisitor extends Visitor {
 
   void caseStringConstant(@Nonnull StringConstant constant);
 
+  void caseEnumConstant(@Nonnull EnumConstant constant);
+
   void caseClassConstant(@Nonnull ClassConstant constant);
 
   void caseMethodHandle(@Nonnull MethodHandle handle);

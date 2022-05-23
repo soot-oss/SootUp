@@ -65,7 +65,7 @@ public class EnumConstant implements Constant {
 
   @Override
   public void accept(@Nonnull ConstantVisitor v) {
-    //    v.caseClassConstant(this);
+    v.caseEnumConstant(this);
   }
 
   @Override
