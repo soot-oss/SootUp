@@ -59,8 +59,6 @@
             <version>4.0.0-SNAPSHOT</version>
         </dependency>
 
-
-        <!-- FIXME: parser should be language independent - think how to integrate the specific identifierfactory-->
         <dependency>
             <groupId>de.upb.swt</groupId>
             <artifactId>soot.java.core</artifactId>

@@ -43,8 +43,7 @@ public class GenericTypeParamOnClassTest extends MinimalBytecodeTestSuiteBase {
             "staticinvoke <GenericTypeParamOnClass$A: void access$000(GenericTypeParamOnClass$A,java.lang.Object)>(l1, $stack4)",
             "$stack5 = virtualinvoke l1.<GenericTypeParamOnClass$A: java.lang.Object get()>()",
             "$stack6 = (java.lang.Integer) $stack5",
-            "$stack7 = virtualinvoke $stack6.<java.lang.Integer: int intValue()>()",
-            "l2 = $stack7",
+            "l2 = virtualinvoke $stack6.<java.lang.Integer: int intValue()>()",
             "return")
         .collect(Collectors.toList());
   }

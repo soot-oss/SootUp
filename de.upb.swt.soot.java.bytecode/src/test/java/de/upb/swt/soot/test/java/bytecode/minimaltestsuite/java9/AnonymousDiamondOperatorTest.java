@@ -52,9 +52,9 @@ public class AnonymousDiamondOperatorTest extends MinimalBytecodeTestSuiteBase {
             "$stack3 = new AnonymousDiamondOperator$1",
             "specialinvoke $stack3.<AnonymousDiamondOperator$1: void <init>(AnonymousDiamondOperator)>(l0)",
             "l1 = $stack3",
-            "$stack4 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(22)",
-            "$stack5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(23)",
-            "$stack6 = virtualinvoke l1.<MyClass: java.lang.Object add(java.lang.Object,java.lang.Object)>($stack4, $stack5)",
+            "$stack5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(22)",
+            "$stack4 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(23)",
+            "$stack6 = virtualinvoke l1.<MyClass: java.lang.Object add(java.lang.Object,java.lang.Object)>($stack5, $stack4)",
             "l2 = (java.lang.Integer) $stack6",
             "$stack7 = virtualinvoke l2.<java.lang.Integer: int intValue()>()",
             "return $stack7")

@@ -28,6 +28,10 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public interface CallGraphAlgorithm {
+
+  @Nonnull
+  CallGraph initialize();
+
   @Nonnull
   CallGraph initialize(@Nonnull List<MethodSignature> entryPoints);
 

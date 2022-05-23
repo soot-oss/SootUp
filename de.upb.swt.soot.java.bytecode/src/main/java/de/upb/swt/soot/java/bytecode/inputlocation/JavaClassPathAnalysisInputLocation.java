@@ -22,10 +22,9 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
  * #L%
  */
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
@@ -39,6 +38,7 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +57,9 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
 
   @Nonnull private final Collection<AnalysisInputLocation<JavaSootClass>> cpEntries;
 
+  /** Variable to track if user has specified the SourceType. By default, it will be set to null. */
+  private SourceType srcType = null;
+
   /**
    * Creates a {@link JavaClassPathAnalysisInputLocation} which locates classes in the given class
    * path.
@@ -64,7 +67,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param classPath The class path to search in
    */
   public JavaClassPathAnalysisInputLocation(@Nonnull String classPath) {
-    if (isNullOrEmpty(classPath)) {
+    if (classPath.length() <= 0) {
       throw new IllegalStateException("Empty class path given");
     }
 
@@ -73,6 +76,40 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
     if (cpEntries.isEmpty()) {
       throw new IllegalStateException("Empty class path is given.");
     }
+  }
+
+  /**
+   * Creates a {@link JavaClassPathAnalysisInputLocation} which locates classes in the given class
+   * path.
+   *
+   * @param classPath the class path to search in
+   * @param srcType the source type for the path can be Library, Application, Phantom.
+   */
+  public JavaClassPathAnalysisInputLocation(
+      @Nonnull String classPath, @Nullable SourceType srcType) {
+    if (classPath.length() <= 0) {
+      throw new IllegalStateException("Empty class path given");
+    }
+    setSpecifiedAsBuiltInByUser(srcType);
+    cpEntries = explodeClassPath(classPath);
+
+    if (cpEntries.isEmpty()) {
+      throw new IllegalStateException("Empty class path is given.");
+    }
+  }
+
+  /**
+   * The method sets the value of the variable srcType.
+   *
+   * @param srcType the source type for the path can be Library, Application, Phantom.
+   */
+  public void setSpecifiedAsBuiltInByUser(@Nullable SourceType srcType) {
+    this.srcType = srcType;
+  }
+
+  @Override
+  public SourceType getSourceType() {
+    return srcType;
   }
 
   /**
@@ -167,7 +204,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
   @Nonnull
   private Optional<AnalysisInputLocation<JavaSootClass>> inputLocationForPath(@Nonnull Path path) {
     if (Files.exists(path) && (Files.isDirectory(path) || PathUtils.isArchive(path))) {
-      return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path));
+      return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path, srcType));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
       return Optional.empty();

@@ -20,8 +20,8 @@ package de.upb.swt.soot.core;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.SourceType;
-import de.upb.swt.soot.core.types.ClassType;
 import javax.annotation.Nonnull;
 
 /**
@@ -33,9 +33,9 @@ public interface SourceTypeSpecifier {
   /**
    * Specifies which {@link SourceType} a specific ClassType maps to.
    *
-   * @param type the type
+   * @param clsSource the type
    * @return the source type
    */
   @Nonnull
-  SourceType sourceTypeFor(ClassType type);
+  SourceType sourceTypeFor(AbstractClassSource clsSource);
 }
