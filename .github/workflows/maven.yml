@@ -19,7 +19,8 @@ on:
 
 jobs:
 
-  JDK8:
+  # Code coverage (i.e. jacoco) needs the same classes for its test otherwise its classids can possibly not match
+  Compilation:
     runs-on: ubuntu-latest
     
     steps:
@@ -28,8 +29,39 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build (JDK8)
-        run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+      - name: Cache compilation
+        id: cache-compilation
+        uses: actions/cache@v3
+        with:
+          path: target/
+          key: cache-compilation
+
+      - name: clear cache if exists
+        if: ${{ steps.cache-compilation.outputs.cache-hit == true }}
+        run: mvn clean
+
+      - name: Build with JDK8
+        run: mvn compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  JDK8:
+    needs: Compilation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: get cached compilation
+        id: cache-compilation
+        uses: actions/cache@v3
+        with:
+          path: target/
+          key: cache-compilation
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
       - name: Test (JDK8)
         run: mvn -pl '!de.upb.swt.soot.tests' -am verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
@@ -51,19 +83,23 @@ jobs:
 
 
   JDK9:
-
+    needs: Compilation
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+      - name: get cached compilation
+        id: cache-compilation
+        uses: actions/cache@v3
+        with:
+          path: target/
+          key: cache-compilation
+
       - name: Set up JDK 1.9
         uses: actions/setup-java@v1
         with:
           java-version: 1.9
-      - name: Check Format
-        run: mvn com.coveo:fmt-maven-plugin:check -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-      - name: Build (JDK9)
-        run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
       - name: Test (JDK9)
         run: mvn -pl '!de.upb.swt.soot.tests' -am verify -B -Dfmt.skip -PJava9 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
@@ -89,6 +125,7 @@ jobs:
     # takes a long time to run - so just run them when PR is not draft anymore
   IntegrationTest:
     if: ${{ !github.event.pull_request.draft }}
+    needs: Compilation
     runs-on: ubuntu-latest
 
     steps:
@@ -97,12 +134,16 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build (IntegrationTest)
-        run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+      - name: get cached compilation
+        id: cache-compilation
+        uses: actions/cache@v3
+        with:
+          path: target/
+          key: cache-compilation
+
       - name: Test (IntegrationTest)
         run: mvn -pl de.upb.swt.soot.tests -am verify -B -Dfmt.skip -PIntegrationTest -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-
-      - run: tree
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -130,8 +171,8 @@ jobs:
         with:
           java-version: 1.8
 
-      # needed to match coverage with its "classid"s.. FIXME: classids  can(and do sometimes) not match i.e. are currently ignored/skipped in the report for jdk9 coverage!
-      - run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      - name: Check Format
+        run: mvn com.coveo:fmt-maven-plugin:check -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: Download uploaded artifacts jdk8
         uses: actions/download-artifact@v3
