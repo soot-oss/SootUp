@@ -3,6 +3,11 @@ on:
   push:
     branches: 
       - develop
+    # only trigger workflow if one of these paths are affected as well
+    paths:
+      - 'mkdocs.yml'
+      - 'examples/'
+      - 'docs/'
 
 jobs:
   deploy:
