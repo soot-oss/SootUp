@@ -116,8 +116,6 @@ public class DexFileProvider implements ClassProvider<JavaSootClass> {
     updateIndex(allSources);
 
     for (Path theSource : allSources) {
-      dexMap.get(theSource);
-      dexMap.get(theSource).values();
       resultList.addAll(dexMap.get(theSource).values());
     }
 
