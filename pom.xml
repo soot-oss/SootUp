@@ -140,6 +140,20 @@
                 </executions>
             </plugin>
             <plugin>
+                <!-- just define the Java version to be used for compiling and plugins -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <compilerArgs>
+                        <!-- Prevents recompilation due to missing package-info.class, see MCOMPILER-205 -->
+                        <arg>-Xpkginfo:always</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco-maven-plugin.version}</version>
