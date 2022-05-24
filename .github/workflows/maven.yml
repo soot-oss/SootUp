@@ -210,6 +210,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: get cached compilation
+        id: cache-compilation
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/target/
+          key: cache-compilation-${{ github.sha }}
+
       - name: Check Format
         run: mvn com.coveo:fmt-maven-plugin:check -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
