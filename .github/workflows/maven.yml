@@ -77,7 +77,7 @@ jobs:
           java-version: 1.8
 
       - name: Test (JDK8)
-        run: mvn -pl '!de.upb.swt.soot.tests' -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -X
+        run: mvn -pl '!de.upb.swt.soot.tests' -am verify -B -Dfmt.skip -Dmaven.main.skip=true -DlastModGranularityMs=3600000 -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -X
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -127,7 +127,7 @@ jobs:
           java-version: 1.9
 
       - name: Test (JDK9)
-        run: mvn -pl '!de.upb.swt.soot.tests' -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava9 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -X
+        run: mvn -pl '!de.upb.swt.soot.tests' -am verify -B -Dfmt.skip -Dmaven.main.skip=true -DlastModGranularityMs=3600000 -PJava9 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -X
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -177,7 +177,7 @@ jobs:
             ${{ runner.os }}-maven-    
 
       - name: Test (IntegrationTest)
-        run: mvn -pl de.upb.swt.soot.tests -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PIntegrationTest -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+        run: mvn -pl de.upb.swt.soot.tests -am verify -B -Dfmt.skip -Dmaven.main.skip=true -DlastModGranularityMs=3600000 -PIntegrationTest -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
