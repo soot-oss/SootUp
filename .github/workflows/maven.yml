@@ -78,7 +78,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
-          name: coverage-exec-jdk8
+          name: coverage-exec
           path: |
                   */target/coverage-reports/jacoco-ut-jdk8.exec
                   !de.upb.swt.soot.tests/
@@ -123,7 +123,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
-          name: coverage-exec-jdk9
+          name: coverage-exec
           path: |
             */target/coverage-reports/jacoco-ut-jdk9.exec
             !de.upb.swt.soot.tests/
@@ -172,7 +172,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
-          name: coverage-exec-integrationtest
+          name: coverage-exec
           path: |
             */target/coverage-reports/jacoco-ut-integrationtest.exec
 
@@ -208,16 +208,7 @@ jobs:
       - name: Download uploaded artifacts jdk8
         uses: actions/download-artifact@v3
         with:
-          name: coverage-exec-jdk8
-
-      - name: Download uploaded artifacts jdk9
-        uses: actions/download-artifact@v3
-        with:
-          name: coverage-exec-jdk9
-      - name: Download uploaded artifacts integrationtest
-        uses: actions/download-artifact@v3
-        with:
-           name: coverage-exec-integrationtest
+          name: coverage-exec
 
       - name: merge coverage reports
         run:  mvn -ntp jacoco:merge@merge-results
