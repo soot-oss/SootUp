@@ -110,6 +110,7 @@ jobs:
                 **/target/
           key: cache-compilation-${{ github.sha }}
 
+      - name: debug info
         run: tree **/target
 
       - name: cache maven dependencies
