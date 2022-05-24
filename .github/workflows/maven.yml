@@ -42,11 +42,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: target/
-          key: cache-compilation
-
-      - name: clear cache if exists
-        if: ${{ steps.cache-compilation.outputs.cache-hit == true }}
-        run: mvn clean
+          key: cache-compilation-${{GITHUB_SHA}}
 
       - name: Build with JDK8
         run: mvn compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
@@ -62,7 +58,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: target/
-          key: cache-compilation
+          key: cache-compilation-${{GITHUB_SHA}}
 
       - uses: actions/cache@v3
         with:
@@ -107,7 +103,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: target/
-          key: cache-compilation
+          key: cache-compilation-${{GITHUB_SHA}}
 
       - uses: actions/cache@v3
         with:
@@ -161,7 +157,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: target/
-          key: cache-compilation
+          key: cache-compilation-${{GITHUB_SHA}}
 
       - uses: actions/cache@v3
         with:
