@@ -110,6 +110,8 @@ jobs:
                 **/target/
           key: cache-compilation-${{ github.sha }}
 
+        run: tree **/target
+
       - name: cache maven dependencies
         uses: actions/cache@v3
         with:
