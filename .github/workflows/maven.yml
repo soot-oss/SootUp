@@ -162,11 +162,11 @@ jobs:
         id: cache-compilation
         uses: actions/cache@v3
         with:
-          path: | 
-                **/target/
-          key: cache-compilation-${{ github.sha }}
+            path: | 
+                  **/target/
+            key: cache-compilation-${{ github.sha }}
 
-      -uses: actions/cache@v3
+      - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
