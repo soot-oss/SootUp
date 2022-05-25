@@ -255,7 +255,7 @@ jobs:
           message: |
             ***Test Coverage***
             Total coverage ${{ steps.jacoco.outputs.coverage }}
-            Changed Files coverage ${{ steps.jacoco.outputs.branches }}
+            Amount of covered (bytecode-)branches ${{ steps.jacoco.outputs.branches }}
 
       - name: Commit the badge (if it changed)
         uses: EndBug/add-and-commit@v7
