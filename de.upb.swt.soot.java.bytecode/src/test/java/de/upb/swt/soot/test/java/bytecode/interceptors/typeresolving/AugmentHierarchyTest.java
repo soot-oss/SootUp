@@ -1,6 +1,7 @@
 package de.upb.swt.soot.test.java.bytecode.interceptors.typeresolving;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.AugmentHierarchy;
@@ -19,7 +20,7 @@ public class AugmentHierarchyTest {
 
     Type bt = BottomType.getInstance();
     Type bt2 = BottomType.getInstance();
-    Type wot = WeakObjectType.getInstance();
+    Type wot = new WeakObjectType("Object", new PackageName("java.lang"));
     Type boo = PrimitiveType.getBoolean();
     Type i = PrimitiveType.getInt();
     Type i1 = PrimitiveType.getInteger1();
