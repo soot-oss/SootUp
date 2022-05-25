@@ -311,7 +311,12 @@ public class Body implements Copyable {
   /** returns a List of Branch targets of Branching Stmts */
   @Nonnull
   public List<Stmt> getBranchTargetsOf(@Nonnull BranchingStmt fromStmt) {
-    return graph.successors(fromStmt);
+    final List<Stmt> successors = graph.successors(fromStmt);
+    if (fromStmt instanceof JIfStmt) {
+      // remove the first successor as if its a fallsthrough stmt and not a branch target
+      return Collections.singletonList(successors.get(1));
+    }
+    return successors;
   }
 
   public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
