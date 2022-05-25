@@ -3,8 +3,8 @@ package de.upb.swt.soot.test.callgraph.typehierarchy.viewtypehierarchytestcase;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
-import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
+import de.upb.swt.soot.core.typehierarchy.TypeHierarchy;
+import de.upb.swt.soot.core.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;

@@ -1,4 +1,4 @@
-package de.upb.swt.soot.callgraph.typehierarchy;
+package de.upb.swt.soot.core.typehierarchy;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -20,22 +20,16 @@ package de.upb.swt.soot.callgraph.typehierarchy;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.views.View.ModuleDataKey;
-import java.util.function.Supplier;
+import de.upb.swt.soot.core.model.SootClass;
 
-/**
- * Used to store a caching supplier of the {@link TypeHierarchy} in a {@link
- * de.upb.swt.soot.core.views.View} without the core module needing a dependency on this module.
- *
- * @see #getInstance()
- * @author Christian Brüggemann
- */
-class TypeHierarchyKey extends ModuleDataKey<Supplier<MutableTypeHierarchy>> {
-  private static final TypeHierarchyKey instance = new TypeHierarchyKey();
+/** For internal use only. */
+public interface MutableTypeHierarchy extends TypeHierarchy {
 
-  static TypeHierarchyKey getInstance() {
-    return instance;
-  }
-
-  private TypeHierarchyKey() {}
+  /**
+   * Adds the type to the hierarchy, updating all structures to reflect its presence as if it had
+   * been a member of the hierarchy from the beginning.
+   *
+   * <p>For internal use only.
+   */
+  void addType(SootClass sootClass);
 }
