@@ -20,7 +20,7 @@ public class SwitchCaseStatementWithStringTest extends MinimalSourceTestSuiteBas
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "switchCaseStatementString", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "switchCaseStatementString", "void", Collections.emptyList());
   }
 
   @Override
@@ -55,7 +55,7 @@ public class SwitchCaseStatementWithStringTest extends MinimalSourceTestSuiteBas
 
   public MethodSignature getMethodSignature2() {
     return identifierFactory.getMethodSignature(
-        "switchCaseStatementInt", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "switchCaseStatementInt", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts2() {
@@ -89,7 +89,7 @@ public class SwitchCaseStatementWithStringTest extends MinimalSourceTestSuiteBas
 
   public MethodSignature getMethodSignature3() {
     return identifierFactory.getMethodSignature(
-        "switchCaseStatementEnum", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "switchCaseStatementEnum", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts3() {

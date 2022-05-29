@@ -380,7 +380,7 @@ public class InstructionConverter {
     stmts.add(newAssignStmt);
     MethodSignature methodSig =
         identifierFactory.getMethodSignature(
-            "<init>", "java.lang.AssertionError", "void", Collections.emptyList());
+            "java.lang.AssertionError", "<init>", "void", Collections.emptyList());
     JSpecialInvokeExpr invoke = Jimple.newSpecialInvokeExpr(failureLocal, methodSig);
     JInvokeStmt invokeStmt =
         Jimple.newInvokeStmt(
@@ -796,7 +796,7 @@ public class InstructionConverter {
 
     MethodSignature methodSig =
         identifierFactory.getMethodSignature(
-            target.getName().toString(), declaringClassSignature, returnType, parameters);
+            declaringClassSignature, target.getName().toString(), returnType, parameters);
 
     if (!callee.isStatic()) {
       int receiver = invokeInst.getReceiver();
@@ -941,8 +941,8 @@ public class InstructionConverter {
 
     MethodSignature initMethod =
         identifierFactory.getMethodSignature(
-            "<init>",
             sbType.getFullyQualifiedName(),
+            "<init>",
             VoidType.getInstance().toString(),
             Collections.singletonList(type.toString()));
     CAstSourcePositionMap.Position[] pos1 = new CAstSourcePositionMap.Position[2];
@@ -958,8 +958,8 @@ public class InstructionConverter {
 
     MethodSignature appendMethod =
         identifierFactory.getMethodSignature(
-            "append",
             sbType.getFullyQualifiedName(),
+            "append",
             sbType.toString(),
             Collections.singletonList(type.toString()));
     Local strBuilderLocal2 = localGenerator.generateLocal(sbType);
@@ -977,7 +977,7 @@ public class InstructionConverter {
 
     MethodSignature toStringMethod =
         identifierFactory.getMethodSignature(
-            "toString", sbType.getFullyQualifiedName(), sbType.toString(), Collections.emptyList());
+            sbType.getFullyQualifiedName(), "toString", sbType.toString(), Collections.emptyList());
 
     Stmt toStringStmt =
         Jimple.newAssignStmt(

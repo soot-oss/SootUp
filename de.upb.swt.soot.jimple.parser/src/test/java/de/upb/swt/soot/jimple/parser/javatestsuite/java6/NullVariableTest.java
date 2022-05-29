@@ -17,7 +17,7 @@ public class NullVariableTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "nullVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "nullVariable", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

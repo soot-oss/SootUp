@@ -21,7 +21,7 @@ import org.junit.experimental.categories.Category;
 public class TransientVariableTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "transientVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "transientVariable", "void", Collections.emptyList());
   }
 
   @Test

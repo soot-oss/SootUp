@@ -18,7 +18,7 @@ public class FinalVariableTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "finalVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "finalVariable", "void", Collections.emptyList());
   }
 
   /**

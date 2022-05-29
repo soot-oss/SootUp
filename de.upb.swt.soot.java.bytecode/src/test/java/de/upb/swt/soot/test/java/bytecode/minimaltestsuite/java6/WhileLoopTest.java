@@ -18,7 +18,7 @@ public class WhileLoopTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "whileLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "whileLoop", "void", Collections.emptyList());
   }
 
   /**  <pre>

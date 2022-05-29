@@ -21,7 +21,7 @@ public class PrivateMethodInterfaceImplTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "methodInterfaceImpl", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "methodInterfaceImpl", "void", Collections.emptyList());
   }
 
   @Test

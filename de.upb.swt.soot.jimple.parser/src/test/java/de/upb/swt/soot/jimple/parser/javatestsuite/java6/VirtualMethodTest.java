@@ -18,7 +18,7 @@ public class VirtualMethodTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "virtualMethodDemo", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "virtualMethodDemo", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

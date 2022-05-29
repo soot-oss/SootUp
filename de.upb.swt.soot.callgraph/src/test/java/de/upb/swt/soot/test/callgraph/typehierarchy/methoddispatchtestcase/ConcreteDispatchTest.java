@@ -21,13 +21,13 @@ public class ConcreteDispatchTest extends MethodDispatchBase {
 
     MethodSignature sootMethod1 =
         identifierFactory.getMethodSignature(
-            "method", sootClassTypeA, "void", Collections.emptyList());
+            sootClassTypeA, "method", "void", Collections.emptyList());
     MethodSignature sootMethod2 =
         identifierFactory.getMethodSignature(
-            "method2", sootClassTypeA, "void", Collections.emptyList());
+            sootClassTypeA, "method2", "void", Collections.emptyList());
     MethodSignature sootMethod3 =
         identifierFactory.getMethodSignature(
-            "method2", sootClassTypeB, "void", Collections.emptyList());
+            sootClassTypeB, "method2", "void", Collections.emptyList());
 
     MethodSignature candidate1 =
         MethodDispatchResolver.resolveConcreteDispatch(customTestWatcher.getView(), sootMethod1);

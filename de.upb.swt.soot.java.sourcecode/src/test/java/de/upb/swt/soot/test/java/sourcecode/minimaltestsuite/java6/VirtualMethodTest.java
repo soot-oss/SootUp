@@ -16,7 +16,7 @@ public class VirtualMethodTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "virtualMethodDemo", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "virtualMethodDemo", "void", Collections.emptyList());
   }
 
   /**

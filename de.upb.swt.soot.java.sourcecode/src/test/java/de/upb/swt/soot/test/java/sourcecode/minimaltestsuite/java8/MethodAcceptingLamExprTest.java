@@ -16,7 +16,7 @@ public class MethodAcceptingLamExprTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "lambdaAsParamMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "lambdaAsParamMethod", "void", Collections.emptyList());
   }
 
   @org.junit.Test

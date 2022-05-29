@@ -18,7 +18,7 @@ public class BreakInWhileLoopTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "breakInWhileLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "breakInWhileLoop", "void", Collections.emptyList());
   }
 
   /**  <pre>

@@ -31,7 +31,7 @@ public class AbstractClassTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "abstractClass", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "abstractClass", "void", Collections.emptyList());
   }
 
   /**

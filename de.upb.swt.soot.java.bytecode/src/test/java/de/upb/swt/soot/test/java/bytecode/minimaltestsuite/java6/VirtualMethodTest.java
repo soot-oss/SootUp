@@ -19,7 +19,7 @@ public class VirtualMethodTest extends MinimalBytecodeTestSuiteBase {
   // @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "virtualMethodDemo", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "virtualMethodDemo", "void", Collections.emptyList());
   }
 
   /**

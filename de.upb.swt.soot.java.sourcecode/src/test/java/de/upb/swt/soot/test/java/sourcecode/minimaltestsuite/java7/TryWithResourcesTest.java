@@ -16,7 +16,7 @@ public class TryWithResourcesTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "printFile", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "printFile", "void", Collections.emptyList());
   }
 
   @Override

@@ -20,7 +20,7 @@ public class SynchronizedMethodTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "run", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "run", "void", Collections.emptyList());
   }
 
   @Test

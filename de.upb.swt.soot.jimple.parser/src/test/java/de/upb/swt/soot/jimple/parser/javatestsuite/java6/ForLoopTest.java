@@ -17,7 +17,7 @@ public class ForLoopTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "forLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "forLoop", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

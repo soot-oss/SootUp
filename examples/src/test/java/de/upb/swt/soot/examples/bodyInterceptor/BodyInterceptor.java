@@ -51,7 +51,7 @@ public class BodyInterceptor {
     MethodSignature methodSignature =
         project
             .getIdentifierFactory()
-            .getMethodSignature("someMethod", classType, "void", Collections.emptyList());
+            .getMethodSignature(classType, "someMethod", "void", Collections.emptyList());
 
     // Create a view for project, which allows us to retrieve classes
     // add class loading options, which can specify body interceptors

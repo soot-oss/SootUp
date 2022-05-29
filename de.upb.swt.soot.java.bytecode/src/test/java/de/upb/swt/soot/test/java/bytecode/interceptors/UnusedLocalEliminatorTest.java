@@ -84,7 +84,7 @@ public class UnusedLocalEliminatorTest {
 
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("test", "a.b.c", "void", Collections.emptyList()));
+            .getMethodSignature("a.b.c", "test", "void", Collections.emptyList()));
     return builder;
   }
 }

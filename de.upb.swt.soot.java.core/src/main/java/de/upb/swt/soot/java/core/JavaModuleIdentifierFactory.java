@@ -214,12 +214,12 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
 
     @Override
     public MethodSignature getMethodSignature(
-        String methodName,
         String fullyQualifiedNameDeclClass,
+        String methodName,
         String fqReturnType,
         List<String> parameters) {
       return super.getMethodSignature(
-          methodName, fullyQualifiedNameDeclClass, fqReturnType, parameters);
+          fullyQualifiedNameDeclClass, methodName, fqReturnType, parameters);
     }
   }
 }

@@ -17,7 +17,7 @@ public class CreateNewInstanceTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "createNewInstance", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "createNewInstance", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

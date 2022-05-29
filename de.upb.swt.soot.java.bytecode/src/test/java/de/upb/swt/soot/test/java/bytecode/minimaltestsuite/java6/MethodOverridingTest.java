@@ -19,8 +19,8 @@ public class MethodOverridingTest extends MinimalBytecodeTestSuiteBase {
   public MethodSignature getMethodSignature() {
 
     return identifierFactory.getMethodSignature(
-        "calculateArea",
         identifierFactory.getClassType("MethodOverridingSubclass"),
+        "calculateArea",
         "void",
         Collections.emptyList());
   }

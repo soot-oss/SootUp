@@ -21,7 +21,7 @@ import org.junit.experimental.categories.Category;
 public class VolatileVariableTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "increaseCounter", getDeclaredClassSignature(), "int", Collections.emptyList());
+        getDeclaredClassSignature(), "increaseCounter", "int", Collections.emptyList());
   }
 
   @Test

@@ -106,7 +106,7 @@ public class ConditionalBranchFolderTest {
     bodyBuilder.addFlow(ifStmt, ret2);
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
     return bodyBuilder;
   }
 }

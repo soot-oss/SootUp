@@ -74,6 +74,6 @@ public class NestedClassShadowTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "printInfo", nestedClass, "void", Collections.singletonList("java.lang.String"));
+        nestedClass, "printInfo", "void", Collections.singletonList("java.lang.String"));
   }
 }

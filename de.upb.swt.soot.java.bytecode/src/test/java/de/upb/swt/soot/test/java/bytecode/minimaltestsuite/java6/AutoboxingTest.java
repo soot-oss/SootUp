@@ -17,7 +17,7 @@ public class AutoboxingTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "autoboxing", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "autoboxing", "void", Collections.emptyList());
   }
 
   /**

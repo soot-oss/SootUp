@@ -18,7 +18,7 @@ public class ReferencingThisTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "thisMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "thisMethod", "void", Collections.emptyList());
   }
 
   /**

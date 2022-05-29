@@ -26,7 +26,7 @@ public class FinalMethodTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "finalMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "finalMethod", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

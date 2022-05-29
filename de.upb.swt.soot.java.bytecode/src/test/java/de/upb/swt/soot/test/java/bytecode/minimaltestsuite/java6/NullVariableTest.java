@@ -18,7 +18,7 @@ public class NullVariableTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "nullVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "nullVariable", "void", Collections.emptyList());
   }
 
   /**

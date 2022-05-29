@@ -61,7 +61,7 @@ public class MutatingSootClass {
         project
             .getIdentifierFactory()
             .getMethodSignature(
-                "main", classType, "void", Collections.singletonList("java.lang.String[]"));
+                classType, "main", "void", Collections.singletonList("java.lang.String[]"));
 
     // Create a view for project, which allows us to retrieve classes
     JavaView view = project.createOnDemandView();
