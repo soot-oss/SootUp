@@ -157,7 +157,7 @@ Like the classes, methods also have an identifier which we call `MethodSignature
                 Collections.singletonList("java.lang.String[]")); // args
     ```
 
-Once we have a `MethodSignature` that identifies the `main` method of the `HelloWorld` class, we can use it to retrueve the corresponding `SootMethod` object from the `view` as shown below:
+Once we have a `MethodSignature` that identifies the `main` method of the `HelloWorld` class, we can use it to retrieve the corresponding `SootMethod` object from the `view` as shown below:
 
 !!! example "Retrieving a SootMethod from the View"
 
@@ -182,7 +182,7 @@ Alternatively, we can also retrieve a `SootMethod` from `SootClass` that contain
 
 ## Retrieving the Control-Flow Graph of a Method
 
-Each `SootMethod` contain a Control-Flow Graph (CFG), or as we name here a `StmtGraph`, that is usually used for program analysis. You can retrieve the CFG of a `SootMethod` as follows:
+Each `SootMethod` contains a Control-Flow Graph (CFG), or as we name here a `StmtGraph`, that is usually used for program analysis. You can retrieve the CFG of a `SootMethod` as follows:
 
 !!! example "Retrieving the CFG of a SootMethod"
 
