@@ -53,22 +53,20 @@ Below, we show how to create a type hierarchy:
     ```
 
 ## Defining an Entry Method
-All the call graph construction algorithm require an entry method to start with. In java application, you usually define the main method. However, it is possible to define arbitrary entry methods depending on your needs. Below, we show how to define such an entry method:
+All the call graph construction algorithms require an entry method to start with. In java application, you usually define the main method. However, it is possible to define arbitrary entry methods depending on your needs. Below, we show how to define such an entry method:
 
 === "FutureSoot"
 
     ```java
     ClassType classTypeA = project.getIdentifierFactory().getClassType("A");
-    
+
     MethodSignature entryMethodSignature =
         JavaIdentifierFactory.getInstance()
             .getMethodSignature(
                 classTypeA,
                 JavaIdentifierFactory.getInstance()
                     .getMethodSubSignature(
-                        "calc",
-                        VoidType.getInstance(),
-                        Collections.singletonList(classTypeA)));    
+                        "calc", VoidType.getInstance(), Collections.singletonList(classTypeA)));    
     ```
     
 === "Soot"
@@ -113,11 +111,11 @@ You can construct a call graph with RTA as follows:
 === "FutureSoot"
 
     ```java
-    CallGraphAlgorithm cha = 
+    CallGraphAlgorithm rta = 
             new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
     
     CallGraph cg = 
-            cha.initialize(Collections.singletonList(entryMethodSignature));
+            rta.initialize(Collections.singletonList(entryMethodSignature));
 
     cg.callsFrom(entryMethodSignature).forEach(System.out::println);
     ```
