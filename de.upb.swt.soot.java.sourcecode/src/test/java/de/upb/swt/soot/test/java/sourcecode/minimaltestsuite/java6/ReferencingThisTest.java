@@ -14,7 +14,7 @@ public class ReferencingThisTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "thisMethod", "void", Collections.emptyList());
+        "thisMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

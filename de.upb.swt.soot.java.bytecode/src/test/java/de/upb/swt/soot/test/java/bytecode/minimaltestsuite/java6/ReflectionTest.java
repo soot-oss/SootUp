@@ -19,7 +19,7 @@ public class ReflectionTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "checkReflection", "void", Collections.emptyList());
+        "checkReflection", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

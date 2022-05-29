@@ -17,7 +17,7 @@ import org.junit.Test;
 public class MultiInterfaceImplClassTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "interfaceMethod", "void", Collections.emptyList());
+        "interfaceMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test

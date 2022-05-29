@@ -16,7 +16,7 @@ public class TypeInferenceLambdaTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "lambda", "void", Collections.emptyList());
+        "lambda", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

@@ -21,7 +21,7 @@ import org.junit.experimental.categories.Category;
 public class TransientVariableTest extends MinimalBytecodeTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "transientVariable", "void", Collections.emptyList());
+        "transientVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test

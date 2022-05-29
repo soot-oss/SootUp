@@ -18,7 +18,7 @@ public class UncheckedCastTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "uncheckedCastDisplay", "void", Collections.emptyList());
+        "uncheckedCastDisplay", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

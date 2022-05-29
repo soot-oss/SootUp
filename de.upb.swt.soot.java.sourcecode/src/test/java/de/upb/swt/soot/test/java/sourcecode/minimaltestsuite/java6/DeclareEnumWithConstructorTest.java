@@ -20,34 +20,34 @@ public class DeclareEnumWithConstructorTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getInitMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "<init>", "void", Collections.emptyList());
+        "<init>", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "getValue", "int", Collections.emptyList());
+        "getValue", getDeclaredClassSignature(), "int", Collections.emptyList());
   }
 
   public MethodSignature getMainMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(),
         "main",
+        getDeclaredClassSignature(),
         "void",
         Collections.singletonList("java.lang.String[]"));
   }
 
   public MethodSignature getEnumConstructorSignature() {
     return identifierFactory.getMethodSignature(
-        identifierFactory.getClassType("DeclareEnumWithConstructor$Number"),
         "<clinit>",
+        identifierFactory.getClassType("DeclareEnumWithConstructor$Number"),
         "void",
         Collections.emptyList());
   }
 
   public MethodSignature getEnumGetValueSignature() {
     return identifierFactory.getMethodSignature(
-        identifierFactory.getClassType("DeclareEnumWithConstructor$Number"),
         "getValue",
+        identifierFactory.getClassType("DeclareEnumWithConstructor$Number"),
         "int",
         Collections.emptyList());
   }

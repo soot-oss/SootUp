@@ -239,6 +239,6 @@ public class AccessArraysTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature(String methodName) {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), methodName, "void", Collections.emptyList());
+        methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 }

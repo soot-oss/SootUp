@@ -18,8 +18,8 @@ public class EvaluationOrderWithParenthesesTest extends MinimalSourceTestSuiteBa
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(),
         "evaluationOrderWithParentheses",
+        getDeclaredClassSignature(),
         "void",
         Collections.emptyList());
   }

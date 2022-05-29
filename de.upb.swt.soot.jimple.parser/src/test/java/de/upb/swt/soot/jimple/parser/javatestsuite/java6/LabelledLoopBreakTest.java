@@ -17,7 +17,7 @@ public class LabelledLoopBreakTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "labelledLoopBreak", "void", Collections.emptyList());
+        "labelledLoopBreak", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

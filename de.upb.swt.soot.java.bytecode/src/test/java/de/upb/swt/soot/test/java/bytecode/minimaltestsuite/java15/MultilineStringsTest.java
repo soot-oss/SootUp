@@ -16,7 +16,7 @@ public class MultilineStringsTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "multi", "void", Collections.emptyList());
+        "multi", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

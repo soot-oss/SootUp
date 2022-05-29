@@ -17,7 +17,7 @@ public class NamedClassInsideMethodTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "namedClassInsideMethod", "void", Collections.emptyList());
+        "namedClassInsideMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**  <pre>

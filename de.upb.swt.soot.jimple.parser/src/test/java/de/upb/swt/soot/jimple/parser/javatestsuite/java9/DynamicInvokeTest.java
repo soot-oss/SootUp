@@ -14,7 +14,7 @@ public class DynamicInvokeTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "stringConcatenation", "void", Collections.emptyList());
+        "stringConcatenation", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test

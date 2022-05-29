@@ -17,7 +17,7 @@ import org.junit.experimental.categories.Category;
 public class DeclareIntTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "declareIntMethod", "void", Collections.emptyList());
+        "declareIntMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

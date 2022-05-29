@@ -63,7 +63,7 @@ public class PrinterTest {
     String className = "some.package.SomeClass";
     MethodSignature methodSignatureOne =
         view.getIdentifierFactory()
-            .getMethodSignature(className, "main", "void", Collections.emptyList());
+            .getMethodSignature("main", className, "void", Collections.emptyList());
 
     StmtPositionInfo noPosInfo = StmtPositionInfo.createNoStmtPositionInfo();
     final JReturnVoidStmt returnVoidStmt = new JReturnVoidStmt(noPosInfo);
@@ -87,7 +87,7 @@ public class PrinterTest {
 
     MethodSignature methodSignatureTwo =
         view.getIdentifierFactory()
-            .getMethodSignature(className, "otherMethod", "int", Collections.emptyList());
+            .getMethodSignature("otherMethod", className, "int", Collections.emptyList());
     bodyBuilder
         .setMethodSignature(methodSignatureTwo)
         .setPosition(NoPositionInformation.getInstance());

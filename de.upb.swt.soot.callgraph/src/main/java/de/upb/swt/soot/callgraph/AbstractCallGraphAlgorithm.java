@@ -243,8 +243,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                 .equals(
                     JavaIdentifierFactory.getInstance()
                         .getMethodSignature(
-                            aClass.getType(),
                             "main",
+                            aClass.getType(),
                             "void",
                             Collections.singletonList("java.lang.String[]")))) {
           mainMethods.add(method);

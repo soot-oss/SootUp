@@ -74,6 +74,6 @@ public class LocalClassShadowTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        localClass, "printInfo", "void", Collections.singletonList("java.lang.String"));
+        "printInfo", localClass, "void", Collections.singletonList("java.lang.String"));
   }
 }

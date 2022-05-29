@@ -30,7 +30,7 @@ public class DeclareEnumTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "declareEnum", "void", Collections.emptyList());
+        "declareEnum", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**  <pre>

@@ -18,7 +18,7 @@ public class EmptyStatementTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "emptyStatement", "void", Collections.emptyList());
+        "emptyStatement", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

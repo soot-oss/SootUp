@@ -20,17 +20,17 @@ public class AssertStatementTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "assertStatement", "void", Collections.emptyList());
+        "assertStatement", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public MethodSignature getMethodSignatureExtend() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "assertStatementExtend", "void", Collections.emptyList());
+        "assertStatementExtend", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public MethodSignature getMethodSignatureExtend2() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "assertStatementExtend2", "void", Collections.emptyList());
+        "assertStatementExtend2", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

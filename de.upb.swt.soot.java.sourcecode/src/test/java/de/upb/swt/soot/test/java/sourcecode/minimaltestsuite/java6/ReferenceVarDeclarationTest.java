@@ -18,7 +18,7 @@ public class ReferenceVarDeclarationTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "stringVariable", "void", Collections.emptyList());
+        "stringVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

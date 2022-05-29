@@ -19,7 +19,7 @@ public class TypeInferenceTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "printFile", "void", Collections.emptyList());
+        "printFile", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

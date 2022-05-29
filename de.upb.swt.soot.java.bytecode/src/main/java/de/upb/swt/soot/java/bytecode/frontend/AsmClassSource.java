@@ -93,7 +93,7 @@ class AsmClassSource extends JavaSootClassSource {
               Type retType = sigTypes.remove(sigTypes.size() - 1);
 
               MethodSignature methodSignature =
-                  signatureFactory.getMethodSignature(cs, methodName, retType, sigTypes);
+                  signatureFactory.getMethodSignature(methodName, cs, retType, sigTypes);
 
               // TODO: position/line numbers if possible
               return new JavaSootMethod(

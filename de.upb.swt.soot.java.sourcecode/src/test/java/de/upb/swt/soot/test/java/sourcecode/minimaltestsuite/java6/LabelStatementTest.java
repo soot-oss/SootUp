@@ -18,7 +18,7 @@ public class LabelStatementTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "labelStatement", "void", Collections.emptyList());
+        "labelStatement", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**  <pre>

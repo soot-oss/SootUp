@@ -36,6 +36,6 @@ public class NoModifierClassTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature(String modifier) {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), modifier + "Method", "void", Collections.emptyList());
+        modifier + "Method", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 }

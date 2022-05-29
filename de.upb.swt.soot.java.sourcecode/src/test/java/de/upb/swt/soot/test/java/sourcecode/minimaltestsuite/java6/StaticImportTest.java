@@ -14,7 +14,7 @@ public class StaticImportTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "mathFunctions", "void", Collections.emptyList());
+        "mathFunctions", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test

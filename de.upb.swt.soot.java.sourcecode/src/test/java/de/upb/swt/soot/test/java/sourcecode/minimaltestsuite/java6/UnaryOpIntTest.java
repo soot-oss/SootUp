@@ -14,7 +14,7 @@ public class UnaryOpIntTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "methodUnaryOpInt", "void", Collections.emptyList());
+        "methodUnaryOpInt", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test

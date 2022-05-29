@@ -17,7 +17,7 @@ import org.junit.experimental.categories.Category;
 public class DeclareFloatTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "declareFloatMethod", "void", Collections.emptyList());
+        "declareFloatMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

@@ -68,7 +68,7 @@ public class CastAndReturnInlinerTest {
     bodyBuilder.addFlow(bToA, ret);
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
+            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
     Body testBody = bodyBuilder.build();
 
     new CastAndReturnInliner().interceptBody(bodyBuilder);
@@ -124,7 +124,7 @@ public class CastAndReturnInlinerTest {
     bodyBuilder.addFlow(bToA, ret);
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
+            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
     Body testBody = bodyBuilder.build();
 
     new CastAndReturnInliner().interceptBody(bodyBuilder);

@@ -12,7 +12,7 @@ public class NativeMethodTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "returnResult", "int", Collections.singletonList("int"));
+        "returnResult", getDeclaredClassSignature(), "int", Collections.singletonList("int"));
   }
 
   @Test

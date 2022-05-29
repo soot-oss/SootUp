@@ -155,7 +155,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             Type retType = sigTypes.remove(sigTypes.size() - 1);
 
             return JavaIdentifierFactory.getInstance()
-                .getMethodSignature(declaringClass, name, retType, sigTypes);
+                .getMethodSignature(name, declaringClass, retType, sigTypes);
           });
 
   AsmMethodSource(
@@ -1168,7 +1168,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     List<Type> bsmSigTypes = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc());
     Type returnType = bsmSigTypes.remove(bsmSigTypes.size() - 1);
     return JavaIdentifierFactory.getInstance()
-        .getMethodSignature(bsmCls, methodHandle.getName(), returnType, bsmSigTypes);
+        .getMethodSignature(methodHandle.getName(), bsmCls, returnType, bsmSigTypes);
   }
 
   private void convertLookupSwitchInsn(@Nonnull LookupSwitchInsnNode insn) {
@@ -1215,7 +1215,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       returnType = sigTypes.remove((sigTypes.size() - 1));
       MethodSignature methodSignature =
           JavaIdentifierFactory.getInstance()
-              .getMethodSignature(cls, insn.name, returnType, sigTypes);
+              .getMethodSignature(insn.name, cls, returnType, sigTypes);
       int nrArgs = sigTypes.size();
       final Operand[] args;
       List<Immediate> argList = Collections.emptyList();
@@ -1356,7 +1356,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // of methods on the type SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME
       MethodSignature methodRef =
           JavaIdentifierFactory.getInstance()
-              .getMethodSignature(bclass, insn.name, returnType, parameterTypes);
+              .getMethodSignature(insn.name, bclass, returnType, parameterTypes);
 
       JDynamicInvokeExpr indy =
           Jimple.newDynamicInvokeExpr(

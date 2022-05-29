@@ -32,7 +32,7 @@ public class AbstractClassTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "abstractClass", "void", Collections.emptyList());
+        "abstractClass", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

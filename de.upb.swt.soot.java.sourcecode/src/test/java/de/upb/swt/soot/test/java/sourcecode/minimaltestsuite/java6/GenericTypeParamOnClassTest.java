@@ -17,7 +17,7 @@ public class GenericTypeParamOnClassTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "genericTypeParamOnClass", "void", Collections.emptyList());
+        "genericTypeParamOnClass", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

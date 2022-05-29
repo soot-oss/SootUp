@@ -17,7 +17,7 @@ public class StatementEvalTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "statementEval", "void", Collections.emptyList());
+        "statementEval", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

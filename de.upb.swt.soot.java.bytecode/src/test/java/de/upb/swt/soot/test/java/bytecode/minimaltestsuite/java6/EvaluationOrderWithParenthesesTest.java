@@ -18,8 +18,8 @@ public class EvaluationOrderWithParenthesesTest extends MinimalBytecodeTestSuite
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(),
         "evaluationOrderWithParentheses",
+        getDeclaredClassSignature(),
         "void",
         Collections.emptyList());
   }

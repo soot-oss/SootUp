@@ -16,7 +16,7 @@ import org.junit.experimental.categories.Category;
 public class VariableShadowingTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "variableShadowing", "void", Collections.emptyList());
+        "variableShadowing", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

@@ -17,8 +17,8 @@ public class EvaluationOrderWithParenthesesTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(),
         "evaluationOrderWithParentheses",
+        getDeclaredClassSignature(),
         "void",
         Collections.emptyList());
   }

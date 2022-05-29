@@ -17,7 +17,7 @@ public class AnonymousClassInsideMethodTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "anonymousClassInsideMethod", "void", Collections.emptyList());
+        "anonymousClassInsideMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

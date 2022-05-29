@@ -18,7 +18,7 @@ public class CreateNewInstanceTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "createNewInstance", "void", Collections.emptyList());
+        "createNewInstance", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

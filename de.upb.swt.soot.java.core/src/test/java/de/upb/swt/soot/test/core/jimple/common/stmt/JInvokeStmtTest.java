@@ -90,7 +90,7 @@ public class JInvokeStmtTest {
     // JStaticInvokeExpr
     MethodSignature statMethodSig =
         dif.getMethodSignature(
-            "java.system.Out", "print", "void", Collections.singletonList("String"));
+            "print", "java.system.Out", "void", Collections.singletonList("String"));
     Stmt staticInvokeStmt =
         new JInvokeStmt(
             new JStaticInvokeExpr(
@@ -109,7 +109,7 @@ public class JInvokeStmtTest {
 
     // JSpecialInvoke
     MethodSignature smethodSig =
-        dif.getMethodSignature("java.lang.Object", "<init>", "void", Collections.emptyList());
+        dif.getMethodSignature("<init>", "java.lang.Object", "void", Collections.emptyList());
     Stmt specialInvokeStmt =
         new JInvokeStmt(
             new JSpecialInvokeExpr(
@@ -126,7 +126,7 @@ public class JInvokeStmtTest {
 
     // JInterfaceInvoke
     MethodSignature imethodSig =
-        dif.getMethodSignature("java.util.Iterator", "remove", "void", Collections.emptyList());
+        dif.getMethodSignature("remove", "java.util.Iterator", "void", Collections.emptyList());
     Stmt interfaceInvokeStmt =
         new JInvokeStmt(
             new JInterfaceInvokeExpr(
@@ -144,12 +144,12 @@ public class JInvokeStmtTest {
     // JDynamicInvoke
     MethodSignature dmethodSig =
         dif.getMethodSignature(
-            JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME,
             "mylambda",
+            JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME,
             "void",
             Collections.emptyList());
     MethodSignature bootstrapMethodSig =
-        dif.getMethodSignature("Runnable", "run", "void", Collections.emptyList());
+        dif.getMethodSignature("run", "Runnable", "void", Collections.emptyList());
     List<Immediate> bootstrapArgs = Collections.emptyList();
     List<Immediate> methodArgs = Collections.emptyList();
 

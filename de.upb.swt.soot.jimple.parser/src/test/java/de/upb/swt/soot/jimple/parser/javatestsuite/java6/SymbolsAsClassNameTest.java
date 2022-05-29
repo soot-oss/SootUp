@@ -17,7 +17,7 @@ import org.junit.experimental.categories.Category;
 public class SymbolsAsClassNameTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "αρετηAsClassName", "void", Collections.emptyList());
+        "αρετηAsClassName", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Ignore

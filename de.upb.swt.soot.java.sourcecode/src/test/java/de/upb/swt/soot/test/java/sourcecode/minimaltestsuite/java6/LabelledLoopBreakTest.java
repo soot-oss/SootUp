@@ -18,7 +18,7 @@ public class LabelledLoopBreakTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "labelledLoopBreak", "void", Collections.emptyList());
+        "labelledLoopBreak", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**  <pre>

@@ -15,7 +15,7 @@ public class MultiTryCatchTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "printFile", "void", Collections.emptyList());
+        "printFile", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Override

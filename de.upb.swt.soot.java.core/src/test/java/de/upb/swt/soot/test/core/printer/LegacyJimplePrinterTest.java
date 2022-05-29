@@ -36,7 +36,7 @@ public class LegacyJimplePrinterTest {
 
     MethodSignature methodSignature =
         view.getIdentifierFactory()
-            .getMethodSignature("dummyMain", "main", "void", Collections.emptyList());
+            .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
     Body body =
         builder
             .setMethodSignature(methodSignature)

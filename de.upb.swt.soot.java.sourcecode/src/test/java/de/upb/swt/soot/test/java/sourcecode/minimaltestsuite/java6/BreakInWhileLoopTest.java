@@ -18,7 +18,7 @@ public class BreakInWhileLoopTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "breakInWhileLoop", "void", Collections.emptyList());
+        "breakInWhileLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**  <pre>

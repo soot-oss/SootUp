@@ -16,7 +16,7 @@ import org.junit.experimental.categories.Category;
 public class GenericTypeParamOnClassTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "genericTypeParamOnClass", "void", Collections.emptyList());
+        "genericTypeParamOnClass", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

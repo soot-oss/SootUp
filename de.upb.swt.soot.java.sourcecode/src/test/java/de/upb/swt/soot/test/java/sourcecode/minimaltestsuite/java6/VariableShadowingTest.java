@@ -17,7 +17,7 @@ public class VariableShadowingTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "variableShadowing", "void", Collections.emptyList());
+        "variableShadowing", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

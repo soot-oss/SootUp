@@ -23,7 +23,7 @@ public class RepeatingAnnotationsTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "annotaionMethod", "void", Collections.emptyList());
+        "annotaionMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Ignore

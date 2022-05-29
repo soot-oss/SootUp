@@ -20,13 +20,13 @@ import org.junit.experimental.categories.Category;
 public class SubClassTest extends MinimalBytecodeTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "subclassMethod", "void", Collections.emptyList());
+        "subclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /** @returns the method signature needed for second method in testCase */
   public MethodSignature getMethodSignature1() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "superclassMethod", "void", Collections.emptyList());
+        "superclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test

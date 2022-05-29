@@ -18,7 +18,7 @@ public class UnaryOpIntTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "methodUnaryOpInt", "void", Collections.emptyList());
+        "methodUnaryOpInt", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test

@@ -17,7 +17,7 @@ public class SwitchCaseStatementWithStringTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "switchCaseStatementString", "void", Collections.emptyList());
+        "switchCaseStatementString", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

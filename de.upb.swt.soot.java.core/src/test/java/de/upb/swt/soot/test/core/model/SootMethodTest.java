@@ -47,7 +47,7 @@ public class SootMethodTest {
     LocalGenerator generator = new LocalGenerator(new LinkedHashSet<>());
     MethodSignature methodSignature =
         view.getIdentifierFactory()
-            .getMethodSignature("dummyMain", "main", "void", Collections.emptyList());
+            .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
     Body.BodyBuilder bodyBuilder = Body.builder();
 
     final JIdentityStmt firstStmt =

@@ -18,7 +18,7 @@ public class FinalVariableTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "finalVariable", "void", Collections.emptyList());
+        "finalVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

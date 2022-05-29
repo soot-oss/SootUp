@@ -22,17 +22,17 @@ import org.junit.experimental.categories.Category;
 public class MethodOverloadingTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "calculate", "int", Arrays.asList("int", "int"));
+        "calculate", getDeclaredClassSignature(), "int", Arrays.asList("int", "int"));
   }
   /** @returns the method signature needed for second method in testCase */
   public MethodSignature getMethodSignatureSingleParam() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "calculate", "int", Collections.singletonList("int"));
+        "calculate", getDeclaredClassSignature(), "int", Collections.singletonList("int"));
   }
 
   public MethodSignature getMethodSignatureInit() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "<init>", "void", Collections.emptyList());
+        "<init>", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test

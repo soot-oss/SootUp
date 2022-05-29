@@ -43,7 +43,7 @@ public class InheritDataWithPublicMethodTest extends JavaTypeHierarchyTestBase {
         sootClass
             .getMethod(
                 identifierFactory
-                    .getMethodSignature(sootClassType, "method", "void", Collections.emptyList())
+                    .getMethodSignature("method", sootClassType, "void", Collections.emptyList())
                     .getSubSignature())
             .get();
     Body body = sootMethod.getBody();

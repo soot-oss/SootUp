@@ -20,7 +20,7 @@ public class ThrowExceptionMethodTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "divideByZero", "void", Collections.emptyList());
+        "divideByZero", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {
@@ -30,7 +30,7 @@ public class ThrowExceptionMethodTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature1() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "throwCustomException", "void", Collections.emptyList());
+        "throwCustomException", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts1() {

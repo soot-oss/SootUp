@@ -16,8 +16,8 @@ public class MethodOverridingTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
 
     return identifierFactory.getMethodSignature(
-        identifierFactory.getClassType("MethodOverridingSubclass"),
         "calculateArea",
+        identifierFactory.getClassType("MethodOverridingSubclass"),
         "void",
         Collections.emptyList());
   }

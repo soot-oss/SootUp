@@ -88,8 +88,8 @@ public class MethodAcceptingVarTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature(String datatype) {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(),
         datatype + "Variable",
+        getDeclaredClassSignature(),
         "void",
         Collections.singletonList(datatype));
   }

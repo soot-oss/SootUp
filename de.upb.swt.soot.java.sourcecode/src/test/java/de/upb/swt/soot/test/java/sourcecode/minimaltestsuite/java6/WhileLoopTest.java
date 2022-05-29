@@ -18,7 +18,7 @@ public class WhileLoopTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "whileLoop", "void", Collections.emptyList());
+        "whileLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**  <pre>

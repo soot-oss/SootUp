@@ -16,7 +16,7 @@ import org.junit.experimental.categories.Category;
 public class AutomaticWideningTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "automaticWidening", "void", Collections.emptyList());
+        "automaticWidening", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

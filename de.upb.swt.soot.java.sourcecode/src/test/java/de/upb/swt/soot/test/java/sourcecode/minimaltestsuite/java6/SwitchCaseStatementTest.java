@@ -249,7 +249,7 @@ public class SwitchCaseStatementTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature(String methodName) {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), methodName, "void", Collections.emptyList());
+        methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmtsSwitchCaseStatementEnum() {

@@ -17,7 +17,7 @@ public class BinaryLiteralInIntTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "binaryLiteralInInt", "void", Collections.emptyList());
+        "binaryLiteralInInt", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

@@ -19,7 +19,7 @@ public class StaticMethodTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "staticMethod", "void", Collections.emptyList());
+        "staticMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test

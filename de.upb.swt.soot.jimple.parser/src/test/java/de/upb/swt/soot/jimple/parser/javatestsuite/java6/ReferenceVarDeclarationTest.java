@@ -17,7 +17,7 @@ public class ReferenceVarDeclarationTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "stringVariable", "void", Collections.emptyList());
+        "stringVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

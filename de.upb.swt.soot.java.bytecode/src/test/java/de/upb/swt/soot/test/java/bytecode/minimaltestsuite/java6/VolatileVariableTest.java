@@ -21,7 +21,7 @@ import org.junit.experimental.categories.Category;
 public class VolatileVariableTest extends MinimalBytecodeTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "increaseCounter", "int", Collections.emptyList());
+        "increaseCounter", getDeclaredClassSignature(), "int", Collections.emptyList());
   }
 
   @Test

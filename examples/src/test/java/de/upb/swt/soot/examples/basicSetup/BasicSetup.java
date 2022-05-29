@@ -75,7 +75,7 @@ public class BasicSetup {
         project
             .getIdentifierFactory()
             .getMethodSignature(
-                classType, "main", "void", Collections.singletonList("java.lang.String[]"));
+                "main", classType, "void", Collections.singletonList("java.lang.String[]"));
 
     // Create a view for project, which allows us to retrieve classes
     View view = project.createOnDemandView();

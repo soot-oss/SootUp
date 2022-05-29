@@ -17,7 +17,7 @@ public class StringWithUnicodeCharTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "stringWithUnicodeChar", "void", Collections.emptyList());
+        "stringWithUnicodeChar", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

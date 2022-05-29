@@ -237,7 +237,7 @@ public class JimpleConverter {
         List<Type> params = util.getTypeList(method_subsignatureContext.type_list());
 
         MethodSignature methodSignature =
-            identifierFactory.getMethodSignature(clazz, Jimple.unescape(methodname), type, params);
+            identifierFactory.getMethodSignature(Jimple.unescape(methodname), clazz, type, params);
         builder.setMethodSignature(methodSignature);
 
         List<ClassType> exceptions =

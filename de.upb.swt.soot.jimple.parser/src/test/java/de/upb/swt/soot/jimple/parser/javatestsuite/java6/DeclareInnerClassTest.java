@@ -23,12 +23,12 @@ public class DeclareInnerClassTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "methodDisplayOuter", "void", Collections.emptyList());
+        "methodDisplayOuter", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public MethodSignature getInnerMethodSignature() {
     return identifierFactory.getMethodSignature(
-        innerClassType, "methodDisplayInner", "void", Collections.emptyList());
+        "methodDisplayInner", innerClassType, "void", Collections.emptyList());
   }
 
   @Test

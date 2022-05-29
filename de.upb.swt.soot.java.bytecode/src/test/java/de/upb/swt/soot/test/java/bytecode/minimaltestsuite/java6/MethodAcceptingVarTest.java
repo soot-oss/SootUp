@@ -41,8 +41,8 @@ public class MethodAcceptingVarTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getMethodSignature(String datatype) {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(),
         datatype + "Variable",
+        getDeclaredClassSignature(),
         "void",
         Collections.singletonList(datatype));
   }

@@ -18,7 +18,7 @@ public class MethodAcceptingLamExprTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "lambdaAsParamMethod", "void", Collections.emptyList());
+        "lambdaAsParamMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test

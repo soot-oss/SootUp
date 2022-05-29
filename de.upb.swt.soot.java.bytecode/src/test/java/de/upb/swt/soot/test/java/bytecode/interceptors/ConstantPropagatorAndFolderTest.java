@@ -102,7 +102,7 @@ public class ConstantPropagatorAndFolderTest {
     builder.setStartingStmt(assignA);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
+            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
     builder.addFlow(assignA, assignB);
     builder.addFlow(assignB, assignC);

@@ -18,7 +18,7 @@ public class DoWhileLoopTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "doWhileLoop", "void", Collections.emptyList());
+        "doWhileLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**  <pre>

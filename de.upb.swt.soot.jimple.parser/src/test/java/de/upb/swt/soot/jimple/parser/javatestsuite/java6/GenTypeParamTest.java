@@ -18,7 +18,7 @@ public class GenTypeParamTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "geneTypeParamDisplay", "void", Collections.emptyList());
+        "geneTypeParamDisplay", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

@@ -54,7 +54,7 @@ public class StmtPositionInfoTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                declaringClassSignature, methodName, fqReturnType, parameters));
+                methodName, declaringClassSignature, fqReturnType, parameters));
     assertTrue(m.isPresent());
     method = m.get();
   }

@@ -58,7 +58,7 @@ public class SwitchConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             typeFactory.getMethodSignature(
-                declareClassSig, "tableSwitch", "void", Collections.singletonList("int")));
+                "tableSwitch", declareClassSig, "void", Collections.singletonList("int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -116,7 +116,7 @@ public class SwitchConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             typeFactory.getMethodSignature(
-                declareClassSig, "tableSwitchDefault", "void", Collections.emptyList()));
+                "tableSwitchDefault", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -173,7 +173,7 @@ public class SwitchConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             typeFactory.getMethodSignature(
-                declareClassSig, "tableSwitchNoDefault", "void", Collections.singletonList("int")));
+                "tableSwitchNoDefault", declareClassSig, "void", Collections.singletonList("int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -230,8 +230,8 @@ public class SwitchConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             typeFactory.getMethodSignature(
-                declareClassSig,
                 "lookupSwitch",
+                declareClassSig,
                 typeFactory.getType("void"),
                 Collections.singletonList(typeFactory.getClassType("java.lang.String"))));
     assertTrue(m.isPresent());
@@ -288,8 +288,8 @@ public class SwitchConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             typeFactory.getMethodSignature(
-                declareClassSig,
                 "lookupSwitchDefault",
+                declareClassSig,
                 typeFactory.getType("void"),
                 Collections.singletonList(typeFactory.getClassType("java.lang.String"))));
     assertTrue(m.isPresent());
@@ -344,8 +344,8 @@ public class SwitchConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             typeFactory.getMethodSignature(
-                declareClassSig,
                 "lookupSwitchNoDefault",
+                declareClassSig,
                 typeFactory.getType("void"),
                 Collections.singletonList(typeFactory.getClassType("java.lang.String"))));
     assertTrue(m.isPresent());

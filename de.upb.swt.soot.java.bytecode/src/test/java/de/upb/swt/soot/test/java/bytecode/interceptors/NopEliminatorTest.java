@@ -92,7 +92,7 @@ public class NopEliminatorTest {
     builder.setStartingStmt(strToA);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
+            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
     builder.addFlow(strToA, jump);
     builder.addFlow(jump, bToA);

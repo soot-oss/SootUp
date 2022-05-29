@@ -16,7 +16,7 @@ import org.junit.experimental.categories.Category;
 public class InfiniteLoopTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "stmtLoop", "void", Collections.emptyList());
+        "stmtLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

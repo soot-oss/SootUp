@@ -19,7 +19,7 @@ import org.junit.experimental.categories.Category;
 public class InstanceOfCheckTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "instanceOfCheckMethod", "void", Collections.emptyList());
+        "instanceOfCheckMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @org.junit.Test

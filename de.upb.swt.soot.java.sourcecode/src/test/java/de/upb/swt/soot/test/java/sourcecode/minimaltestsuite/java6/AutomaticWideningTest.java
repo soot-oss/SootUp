@@ -17,7 +17,7 @@ public class AutomaticWideningTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "automaticWidening", "void", Collections.emptyList());
+        "automaticWidening", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

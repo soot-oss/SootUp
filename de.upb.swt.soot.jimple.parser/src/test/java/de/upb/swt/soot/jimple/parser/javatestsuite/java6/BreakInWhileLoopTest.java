@@ -17,7 +17,7 @@ public class BreakInWhileLoopTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "breakInWhileLoop", "void", Collections.emptyList());
+        "breakInWhileLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

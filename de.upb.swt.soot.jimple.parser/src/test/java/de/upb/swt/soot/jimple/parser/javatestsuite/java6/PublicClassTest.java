@@ -46,7 +46,7 @@ public class PublicClassTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature(String modifier) {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), modifier + "Method", "void", Collections.emptyList());
+        modifier + "Method", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

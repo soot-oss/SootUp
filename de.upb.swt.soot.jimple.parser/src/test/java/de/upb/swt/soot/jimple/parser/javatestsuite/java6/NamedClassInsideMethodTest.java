@@ -16,7 +16,7 @@ import org.junit.experimental.categories.Category;
 public class NamedClassInsideMethodTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "namedClassInsideMethod", "void", Collections.emptyList());
+        "namedClassInsideMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

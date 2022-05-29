@@ -257,16 +257,16 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   /**
    * Always creates a new MethodSignature AND a new ClassSignature.
    *
-   * @param fullyQualifiedNameDeclClass the fully-qualified name of the declaring class
    * @param methodName the method's name
-   * @param fqReturnType the fully-qualified name of the return type or a primitive's name
+   * @param fullyQualifiedNameDeclClass the fully-qualified name of the declaring class
    * @param parameters the methods parameters fully-qualified name or a primitive's name
+   * @param fqReturnType the fully-qualified name of the return type or a primitive's name
    * @return a MethodSignature
    */
   @Override
   public MethodSignature getMethodSignature(
-      final String fullyQualifiedNameDeclClass,
       final String methodName,
+      final String fullyQualifiedNameDeclClass,
       final String fqReturnType,
       final List<String> parameters) {
     JavaClassType declaringClass = getClassType(fullyQualifiedNameDeclClass);
@@ -282,16 +282,16 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   /**
    * Always creates a new MethodSignature reusing the given ClassSignature.
    *
-   * @param declaringClassSignature the ClassSignature of the declaring class
    * @param methodName the method's name
-   * @param fqReturnType the fully-qualified name of the return type or a primitive's name
+   * @param declaringClassSignature the ClassSignature of the declaring class
    * @param parameters the methods parameters fully-qualified name or a primitive's name
+   * @param fqReturnType the fully-qualified name of the return type or a primitive's name
    * @return a MethodSignature
    */
   @Override
   public MethodSignature getMethodSignature(
-      final ClassType declaringClassSignature,
       final String methodName,
+      final ClassType declaringClassSignature,
       final String fqReturnType,
       final List<String> parameters) {
     Type returnType = getType(fqReturnType);
@@ -306,8 +306,8 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
   @Override
   public MethodSignature getMethodSignature(
-      final ClassType declaringClassSignature,
       final String methodName,
+      final ClassType declaringClassSignature,
       final Type fqReturnType,
       final List<Type> parameters) {
 
@@ -418,7 +418,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
                     })
                 .collect(Collectors.toList());
 
-    return getMethodSignature(className, methodName, returnName, argsList);
+    return getMethodSignature(methodName, className, returnName, argsList);
   }
 
   @Nonnull

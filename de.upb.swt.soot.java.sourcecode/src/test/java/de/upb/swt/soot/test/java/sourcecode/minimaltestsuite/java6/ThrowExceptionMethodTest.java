@@ -17,12 +17,12 @@ public class ThrowExceptionMethodTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "divideByZero", "void", Collections.emptyList());
+        "divideByZero", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public MethodSignature getThrowCustomExceptionSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "throwCustomException", "void", Collections.emptyList());
+        "throwCustomException", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**
@@ -42,7 +42,7 @@ public class ThrowExceptionMethodTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature1() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "throwCustomException", "void", Collections.emptyList());
+        "throwCustomException", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

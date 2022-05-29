@@ -18,7 +18,7 @@ import org.junit.Test;
 public class VolatileVariableTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "increaseCounter", "int", Collections.emptyList());
+        "increaseCounter", getDeclaredClassSignature(), "int", Collections.emptyList());
   }
 
   @Test

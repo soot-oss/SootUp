@@ -25,19 +25,19 @@ public class AbstractDispatchTest extends MethodDispatchBase {
 
     MethodSignature sootMethodA =
         identifierFactory.getMethodSignature(
-            sootClassTypeA, "method", "void", Collections.emptyList());
+            "method", sootClassTypeA, "void", Collections.emptyList());
     MethodSignature sootMethodB =
         identifierFactory.getMethodSignature(
-            sootClassTypeB, "method", "void", Collections.emptyList());
+            "method", sootClassTypeB, "void", Collections.emptyList());
     MethodSignature sootMethodC =
         identifierFactory.getMethodSignature(
-            sootClassTypeC, "method", "void", Collections.emptyList());
+            "method", sootClassTypeC, "void", Collections.emptyList());
 
     Set<MethodSignature> candidatesAbstract =
         MethodDispatchResolver.resolveAbstractDispatch(
             customTestWatcher.getView(),
             identifierFactory.getMethodSignature(
-                sootClassTypeAbstract, "method", "void", Collections.emptyList()));
+                "method", sootClassTypeAbstract, "void", Collections.emptyList()));
     assertTrue(candidatesAbstract.contains(sootMethodA));
     assertTrue(candidatesAbstract.contains(sootMethodB));
     assertTrue(candidatesAbstract.contains(sootMethodC));
@@ -46,7 +46,7 @@ public class AbstractDispatchTest extends MethodDispatchBase {
         MethodDispatchResolver.resolveAbstractDispatch(
             customTestWatcher.getView(),
             identifierFactory.getMethodSignature(
-                sootClassTypeA, "method", "void", Collections.emptyList()));
+                "method", sootClassTypeA, "void", Collections.emptyList()));
     assertTrue(candidatesSuper.contains(sootMethodB));
     assertTrue(candidatesSuper.contains(sootMethodC));
   }

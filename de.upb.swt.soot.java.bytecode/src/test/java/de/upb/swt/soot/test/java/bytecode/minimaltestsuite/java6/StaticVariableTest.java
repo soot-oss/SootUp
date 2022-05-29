@@ -21,7 +21,7 @@ public class StaticVariableTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "staticVariable", "void", Collections.emptyList());
+        "staticVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test

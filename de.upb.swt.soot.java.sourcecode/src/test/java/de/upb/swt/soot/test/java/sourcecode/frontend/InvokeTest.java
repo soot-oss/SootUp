@@ -45,7 +45,7 @@ public class InvokeTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                declareClassSig, "specialInvokeInstanceInit", "void", Collections.emptyList()));
+                "specialInvokeInstanceInit", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -73,7 +73,7 @@ public class InvokeTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                declareClassSig, "specialInvokePrivateMethod", "void", Collections.emptyList()));
+                "specialInvokePrivateMethod", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -99,8 +99,8 @@ public class InvokeTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                declareClassSig,
                 "specialInvokeSupperClassMethod",
+                declareClassSig,
                 "java.lang.String",
                 Collections.emptyList()));
     assertTrue(m.isPresent());
@@ -128,7 +128,7 @@ public class InvokeTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                declareClassSig, "<clinit>", "void", Collections.emptyList()));
+                "<clinit>", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -156,8 +156,8 @@ public class InvokeTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                declareClassSig,
                 "repro",
+                declareClassSig,
                 "void",
                 Arrays.asList("int", "java.lang.String", "boolean")));
     assertTrue(m.isPresent());
@@ -186,7 +186,7 @@ public class InvokeTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                declareClassSig, "repro1", "void", Collections.singletonList("java.lang.Object")));
+                "repro1", declareClassSig, "void", Collections.singletonList("java.lang.Object")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -213,7 +213,7 @@ public class InvokeTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                declareClassSig, "repro2", "void", Collections.singletonList("java.lang.Object")));
+                "repro2", declareClassSig, "void", Collections.singletonList("java.lang.Object")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -254,7 +254,7 @@ public class InvokeTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                declareClassSig, "equals", "boolean", Collections.singletonList("InvokeVirtual")));
+                "equals", declareClassSig, "boolean", Collections.singletonList("InvokeVirtual")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -282,7 +282,7 @@ public class InvokeTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                declareClassSig, "interfaceMethod", "void", Collections.emptyList()));
+                "interfaceMethod", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -309,7 +309,7 @@ public class InvokeTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                declareClassSig, "doStuf", "void", Collections.emptyList()));
+                "doStuf", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 

@@ -17,7 +17,7 @@ public class UnderscoreInIntTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "underscoreInInt", "void", Collections.emptyList());
+        "underscoreInInt", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

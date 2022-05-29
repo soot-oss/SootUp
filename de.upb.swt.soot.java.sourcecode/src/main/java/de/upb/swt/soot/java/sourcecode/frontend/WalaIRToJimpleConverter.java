@@ -275,7 +275,7 @@ public class WalaIRToJimpleConverter {
     DebuggingInformation debugInfo = walaMethod.debugInfo();
     MethodSignature methodSig =
         identifierFactory.getMethodSignature(
-            classSig, walaMethod.getName().toString(), returnType.toString(), sigs);
+            walaMethod.getName().toString(), classSig, returnType.toString(), sigs);
 
     Body body = createBody(methodSig, modifiers, walaMethod);
     return new WalaSootMethod(

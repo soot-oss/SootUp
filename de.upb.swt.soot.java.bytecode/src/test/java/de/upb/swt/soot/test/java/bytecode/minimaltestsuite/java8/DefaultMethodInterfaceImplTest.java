@@ -22,12 +22,12 @@ public class DefaultMethodInterfaceImplTest extends MinimalBytecodeTestSuiteBase
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "interfaceMethod", "void", Collections.emptyList());
+        "interfaceMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public MethodSignature getDefaultMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "defaultInterfaceMethod", "void", Collections.emptyList());
+        "defaultInterfaceMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test

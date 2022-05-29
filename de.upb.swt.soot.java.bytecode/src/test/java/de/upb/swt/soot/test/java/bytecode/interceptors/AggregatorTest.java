@@ -92,7 +92,7 @@ public class AggregatorTest {
     builder.setStartingStmt(intToA);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
+            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
     builder.addFlow(intToA, intToB);
     builder.addFlow(intToB, ret);

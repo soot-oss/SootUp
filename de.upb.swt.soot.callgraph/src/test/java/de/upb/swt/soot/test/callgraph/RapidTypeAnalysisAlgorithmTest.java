@@ -28,43 +28,43 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
 
     MethodSignature constructorB =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.B"),
             "<init>",
+            identifierFactory.getClassType("example1.B"),
             "void",
             Collections.emptyList());
 
     MethodSignature constructorC =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.C"),
             "<init>",
+            identifierFactory.getClassType("example1.C"),
             "void",
             Collections.emptyList());
 
     MethodSignature methodA =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.A"),
             "print",
+            identifierFactory.getClassType("example1.A"),
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodB =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.B"),
             "print",
+            identifierFactory.getClassType("example1.B"),
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodC =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.C"),
             "print",
+            identifierFactory.getClassType("example1.C"),
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodD =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.D"),
             "print",
+            identifierFactory.getClassType("example1.D"),
             "void",
             Collections.singletonList("java.lang.Object"));
 
@@ -96,27 +96,27 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
 
     MethodSignature alreadyVisitedMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("revisit.RevisitedMethod"),
             "alreadyVisitedMethod",
+            identifierFactory.getClassType("revisit.RevisitedMethod"),
             "void",
             Collections.singletonList("revisit.A"));
 
     MethodSignature newTargetA =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("revisit.A"),
             "newTarget",
+            identifierFactory.getClassType("revisit.A"),
             "int",
             Collections.emptyList());
     MethodSignature newTargetB =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("revisit.B"),
             "newTarget",
+            identifierFactory.getClassType("revisit.B"),
             "int",
             Collections.emptyList());
     MethodSignature newTargetC =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("revisit.C"),
             "newTarget",
+            identifierFactory.getClassType("revisit.C"),
             "int",
             Collections.emptyList());
 
@@ -132,27 +132,27 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
 
     MethodSignature alreadyVisitedMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("revisitrecur.RecursiveRevisitedMethod"),
             "recursiveAlreadyVisitedMethod",
+            identifierFactory.getClassType("revisitrecur.RecursiveRevisitedMethod"),
             "void",
             Collections.singletonList("revisitrecur.A"));
 
     MethodSignature newTargetA =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("revisitrecur.A"),
             "newTarget",
+            identifierFactory.getClassType("revisitrecur.A"),
             "int",
             Collections.emptyList());
     MethodSignature newTargetB =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("revisitrecur.B"),
             "newTarget",
+            identifierFactory.getClassType("revisitrecur.B"),
             "int",
             Collections.emptyList());
     MethodSignature newTargetC =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("revisitrecur.C"),
             "newTarget",
+            identifierFactory.getClassType("revisitrecur.C"),
             "int",
             Collections.emptyList());
 

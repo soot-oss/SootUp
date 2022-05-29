@@ -16,7 +16,7 @@ public class SwitchExprWithoutBreakTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "switchSomething", "void", Collections.emptyList());
+        "switchSomething", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

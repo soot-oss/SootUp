@@ -19,7 +19,7 @@ public class MethodReferenceTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "methodRefMethod", "void", Collections.emptyList());
+        "methodRefMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /** TODO Update the source code when WALA supports lambda expression */

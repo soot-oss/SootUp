@@ -17,7 +17,7 @@ public class αρετηTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "αρετηAsClassName", "void", Collections.emptyList());
+        "αρετηAsClassName", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /**

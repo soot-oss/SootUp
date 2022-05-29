@@ -19,7 +19,7 @@ public class MethodAcceptingLamExprTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "lambdaAsParamMethod", "void", Collections.emptyList());
+        "lambdaAsParamMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test
