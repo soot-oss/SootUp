@@ -6,8 +6,6 @@ name: Java CI with Maven
 on:
   push:
     branches: [ develop ]
-    paths-ignore:
-      - '**/badges/jacoco.svg'  # don't loop infinitely  ;-)
 
   pull_request:
     branches: [ develop ]
@@ -144,6 +142,10 @@ jobs:
           path: |
             */target/surefire-reports
             !de.upb.swt.soot.tests/
+
+      # style check is not clean here but does not consume additional time as the other parallel running tests take (way) longer
+      - name: Check Format
+        run: mvn com.coveo:fmt-maven-plugin:check -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     
     
     
@@ -197,6 +199,7 @@ jobs:
 
   CoverageReport:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
     needs: [ JDK9, JDK8, IntegrationTest]
     steps:
       - uses: actions/checkout@v3
@@ -220,9 +223,6 @@ jobs:
           path: |
             **/target/
           key: cache-compilation-${{ github.sha }}
-
-      - name: Check Format
-        run: mvn com.coveo:fmt-maven-plugin:check -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: Download uploaded exec artifacts
         uses: actions/download-artifact@v3
