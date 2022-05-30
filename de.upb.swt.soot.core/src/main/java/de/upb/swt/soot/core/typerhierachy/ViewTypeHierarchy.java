@@ -1,4 +1,4 @@
-package de.upb.swt.soot.callgraph.typehierarchy;
+package de.upb.swt.soot.core.typerhierachy;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -21,12 +21,12 @@ package de.upb.swt.soot.callgraph.typehierarchy;
  * #L%
  */
 import com.google.common.base.Suppliers;
-import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.Edge;
-import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.EdgeType;
-import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.Vertex;
-import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.VertexType;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy.ScanResult.Edge;
+import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy.ScanResult.EdgeType;
+import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy.ScanResult.Vertex;
+import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy.ScanResult.VertexType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import java.util.ArrayList;
