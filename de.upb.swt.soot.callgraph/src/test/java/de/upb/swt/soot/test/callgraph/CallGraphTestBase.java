@@ -3,8 +3,8 @@ package de.upb.swt.soot.test.callgraph;
 import static junit.framework.TestCase.*;
 
 import de.upb.swt.soot.callgraph.*;
-import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
-import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
+import de.upb.swt.soot.core.typehierarchy.TypeHierarchy;
+import de.upb.swt.soot.core.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
