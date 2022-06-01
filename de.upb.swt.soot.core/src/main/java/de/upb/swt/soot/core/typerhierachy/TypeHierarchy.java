@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.typehierarchy;
+package de.upb.swt.soot.core.typerhierachy;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -41,6 +41,7 @@ public interface TypeHierarchy {
 
   static TypeHierarchy fromView(View<? extends SootClass> view) {
     return view.computeModuleDataIfAbsent(
+            // todo: could be removed later
             TypeHierarchyKey.getInstance(),
             () -> Suppliers.memoize(() -> new ViewTypeHierarchy(view)))
         .get();

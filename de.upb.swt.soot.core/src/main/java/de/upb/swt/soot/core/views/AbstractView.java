@@ -30,6 +30,8 @@ import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
+import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -47,8 +49,11 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
 
   @Nonnull private final Map<ModuleDataKey<?>, Object> moduleData = new HashMap<>();
 
+  @Nonnull private final TypeHierarchy typeHierarchy;
+
   public AbstractView(@Nonnull Project<?, ? extends View<?>> project) {
     this.project = (Project<T, ? extends View<T>>) project;
+    this.typeHierarchy = new ViewTypeHierarchy(this);
   }
 
   @Override

@@ -22,13 +22,13 @@ package de.upb.swt.soot.callgraph;
  * #L%
  */
 
-import de.upb.swt.soot.core.typehierarchy.MethodDispatchResolver;
-import de.upb.swt.soot.core.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JDynamicInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.typerhierachy.MethodDispatchResolver;
+import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
 import de.upb.swt.soot.core.views.View;
 import java.util.*;
 import java.util.stream.Stream;

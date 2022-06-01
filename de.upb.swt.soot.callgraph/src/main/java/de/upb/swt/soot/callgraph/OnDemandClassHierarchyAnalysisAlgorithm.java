@@ -23,9 +23,9 @@ package de.upb.swt.soot.callgraph;
  */
 
 import com.google.common.annotations.Beta;
-import de.upb.swt.soot.core.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
 import de.upb.swt.soot.core.views.View;
 import java.util.List;
 import javax.annotation.Nonnull;

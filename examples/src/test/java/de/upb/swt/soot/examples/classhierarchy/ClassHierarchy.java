@@ -1,7 +1,7 @@
 package de.upb.swt.soot.examples.classhierarchy;
 
-import de.upb.swt.soot.core.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
