@@ -34,7 +34,7 @@ public class BodyInterceptor {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
     AnalysisInputLocation<JavaSootClass> inputLocation =
-        PathBasedAnalysisInputLocation.createForClassContainer(
+        new PathBasedAnalysisInputLocation(
             Paths.get("src/test/resources/BodyInterceptor/binary"), null);
 
     // Specify the language of the JavaProject. This is especially relevant for Multi-release jars,
