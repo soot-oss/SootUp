@@ -10,6 +10,7 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Optional;
 import org.junit.Test;
 
@@ -26,6 +27,8 @@ public class ApkAnalysisInputLocationTest {
             .build();
 
     JavaView view = project.createOnDemandView();
+
+    Collection<JavaSootClass> classes = view.getClasses();
 
     JavaClassType targetClass =
         JavaIdentifierFactory.getInstance().getClassType("de.ecspride.MainActivity");

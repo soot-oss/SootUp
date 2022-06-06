@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Manuel Benz created on 16.10.17
  */
-public class DexFileProvider implements ClassProvider<JavaSootClass> {
+public class DexFileProvider {
   private static final Logger logger = LoggerFactory.getLogger(DexFileProvider.class);
   private boolean process_multiple_dex = true;
   private boolean search_dex_in_archives = true;
@@ -268,19 +268,6 @@ public class DexFileProvider implements ClassProvider<JavaSootClass> {
     } catch (IOException e) {
       throw new ResolveException("Error while finding .dex file", path, e);
     }
-  }
-
-  @Override
-  public AbstractClassSource<JavaSootClass> createClassSource(
-      AnalysisInputLocation<? extends SootClass<?>> inputLocation,
-      Path sourcePath,
-      ClassType classSignature) {
-    return null;
-  }
-
-  @Override
-  public FileType getHandledFileType() {
-    return FileType.DEX;
   }
 
   public static final class DexContainer<T extends DexFile> {
