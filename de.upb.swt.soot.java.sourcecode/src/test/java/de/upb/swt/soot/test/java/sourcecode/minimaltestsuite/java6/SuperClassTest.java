@@ -14,7 +14,7 @@ import org.junit.Test;
 public class SuperClassTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "superclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "superclassMethod", "void", Collections.emptyList());
   }
 
   /**

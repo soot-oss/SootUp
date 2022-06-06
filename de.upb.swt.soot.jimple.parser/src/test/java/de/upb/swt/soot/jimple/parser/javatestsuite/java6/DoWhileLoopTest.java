@@ -16,7 +16,7 @@ import org.junit.experimental.categories.Category;
 public class DoWhileLoopTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "doWhileLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "doWhileLoop", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

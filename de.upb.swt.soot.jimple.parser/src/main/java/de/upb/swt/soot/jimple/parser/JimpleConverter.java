@@ -237,7 +237,7 @@ public class JimpleConverter {
         List<Type> params = util.getTypeList(method_subsignatureContext.type_list());
 
         MethodSignature methodSignature =
-            identifierFactory.getMethodSignature(Jimple.unescape(methodname), clazz, type, params);
+            identifierFactory.getMethodSignature(clazz, Jimple.unescape(methodname), type, params);
         builder.setMethodSignature(methodSignature);
 
         List<ClassType> exceptions =
@@ -633,9 +633,9 @@ public class JimpleConverter {
             List<Type> bootstrapMethodRefParams = util.getTypeList(ctx.type_list());
             MethodSignature bootstrapMethodRef =
                 identifierFactory.getMethodSignature(
-                    ctx.unnamed_method_name.getText(),
                     identifierFactory.getClassType(
                         JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
+                    ctx.unnamed_method_name.getText(),
                     util.getType(ctx.name.getText()),
                     bootstrapMethodRefParams);
 

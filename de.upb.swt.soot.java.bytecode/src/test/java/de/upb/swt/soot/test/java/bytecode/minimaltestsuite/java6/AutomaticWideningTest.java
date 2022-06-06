@@ -17,7 +17,7 @@ public class AutomaticWideningTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "automaticWidening", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "automaticWidening", "void", Collections.emptyList());
   }
 
   /**

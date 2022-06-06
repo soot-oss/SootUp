@@ -17,7 +17,7 @@ public class InstanceOfCheckTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "instanceOfCheckMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "instanceOfCheckMethod", "void", Collections.emptyList());
   }
 
   @org.junit.Test

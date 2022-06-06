@@ -15,7 +15,7 @@ public class ReflectionTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "checkReflection", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "checkReflection", "void", Collections.emptyList());
   }
 
   /**

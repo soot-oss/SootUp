@@ -16,7 +16,7 @@ import org.junit.experimental.categories.Category;
 public class AutoboxingTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "autoboxing", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "autoboxing", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

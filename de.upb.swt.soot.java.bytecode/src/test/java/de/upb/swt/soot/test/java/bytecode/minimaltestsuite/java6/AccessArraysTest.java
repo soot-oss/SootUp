@@ -48,7 +48,7 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getMethodSignature(String methodName) {
     return identifierFactory.getMethodSignature(
-        methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), methodName, "void", Collections.emptyList());
   }
 
   /**

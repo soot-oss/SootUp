@@ -17,7 +17,7 @@ import org.junit.Ignore;
 public class TransientVariableTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "transientVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "transientVariable", "void", Collections.emptyList());
   }
 
   @Ignore

@@ -44,8 +44,8 @@ public class AsmMethodSourceTest {
     MethodSignature mainMethodSignature =
         JavaIdentifierFactory.getInstance()
             .getMethodSignature(
-                "<init>",
                 mainClassSignature,
+                "<init>",
                 "void",
                 Arrays.asList(
                     "java.util.concurrent.Executor", "javax.management.MBeanNotificationInfo[]"));

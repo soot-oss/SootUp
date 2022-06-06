@@ -16,7 +16,7 @@ import org.junit.experimental.categories.Category;
 public class StaticMethodInvocationTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "staticMethodInvocation", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "staticMethodInvocation", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

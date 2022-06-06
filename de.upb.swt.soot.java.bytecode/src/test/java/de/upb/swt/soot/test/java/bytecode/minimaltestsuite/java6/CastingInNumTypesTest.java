@@ -18,7 +18,7 @@ public class CastingInNumTypesTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "displayNum", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "displayNum", "void", Collections.emptyList());
   }
 
   /**

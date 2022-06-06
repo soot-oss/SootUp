@@ -33,6 +33,6 @@ public class NoModifierClassTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getMethodSignature(String modifier) {
     return identifierFactory.getMethodSignature(
-        modifier + "Method", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), modifier + "Method", "void", Collections.emptyList());
   }
 }

@@ -41,7 +41,7 @@ public class MethodReturningVarTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getMethodSignature(String datatype) {
     return identifierFactory.getMethodSignature(
-        datatype + "Variable", getDeclaredClassSignature(), datatype, Collections.emptyList());
+        getDeclaredClassSignature(), datatype + "Variable", datatype, Collections.emptyList());
   }
 
   /**

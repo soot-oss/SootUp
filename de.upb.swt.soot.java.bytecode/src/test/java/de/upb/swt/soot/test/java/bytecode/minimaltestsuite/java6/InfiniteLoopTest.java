@@ -17,7 +17,7 @@ public class InfiniteLoopTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "stmtLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "stmtLoop", "void", Collections.emptyList());
   }
 
   /**

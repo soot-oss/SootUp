@@ -18,7 +18,7 @@ public class StaticMethodTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "staticMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "staticMethod", "void", Collections.emptyList());
   }
 
   @Test

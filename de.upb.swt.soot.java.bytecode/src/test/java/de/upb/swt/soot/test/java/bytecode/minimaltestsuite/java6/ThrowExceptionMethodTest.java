@@ -20,7 +20,7 @@ public class ThrowExceptionMethodTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "divideByZero", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "divideByZero", "void", Collections.emptyList());
   }
 
   /**
@@ -45,7 +45,7 @@ public class ThrowExceptionMethodTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getMethodSignature1() {
     return identifierFactory.getMethodSignature(
-        "throwCustomException", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "throwCustomException", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts1() {

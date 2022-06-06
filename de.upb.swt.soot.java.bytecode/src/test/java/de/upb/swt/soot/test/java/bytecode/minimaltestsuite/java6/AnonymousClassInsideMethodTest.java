@@ -17,7 +17,7 @@ public class AnonymousClassInsideMethodTest extends MinimalBytecodeTestSuiteBase
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "anonymousClassInsideMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "anonymousClassInsideMethod", "void", Collections.emptyList());
   }
 
   /**

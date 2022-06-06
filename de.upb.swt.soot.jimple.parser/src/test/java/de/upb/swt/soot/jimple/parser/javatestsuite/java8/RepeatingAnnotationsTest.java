@@ -22,7 +22,7 @@ public class RepeatingAnnotationsTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "annotaionMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "annotaionMethod", "void", Collections.emptyList());
   }
 
   @Ignore

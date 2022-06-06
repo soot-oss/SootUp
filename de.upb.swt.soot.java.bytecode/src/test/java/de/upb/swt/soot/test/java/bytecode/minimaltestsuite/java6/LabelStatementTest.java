@@ -18,7 +18,7 @@ public class LabelStatementTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "labelStatement", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "labelStatement", "void", Collections.emptyList());
   }
 
   /**  <pre>

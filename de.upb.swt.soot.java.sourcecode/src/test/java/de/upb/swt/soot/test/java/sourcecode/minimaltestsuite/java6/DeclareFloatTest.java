@@ -14,7 +14,7 @@ public class DeclareFloatTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "declareFloatMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "declareFloatMethod", "void", Collections.emptyList());
   }
 
   /**

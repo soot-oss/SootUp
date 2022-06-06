@@ -237,7 +237,7 @@ public class JavaIdentifierFactoryTest {
     List<String> parameters = Collections.emptyList();
     ClassType classSignature = identifierFactory.getClassType("java.lang.System");
     MethodSignature methodSignature =
-        identifierFactory.getMethodSignature("foo", classSignature, "void", parameters);
+        identifierFactory.getMethodSignature(classSignature, "foo", "void", parameters);
     assertEquals("<java.lang.System: void foo()>", methodSignature.toString());
     assertSame(methodSignature.getDeclClassType(), classSignature);
   }

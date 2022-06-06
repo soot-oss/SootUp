@@ -17,17 +17,17 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "assertStatement", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "assertStatement", "void", Collections.emptyList());
   }
 
   public MethodSignature getMethodSignatureExtend() {
     return identifierFactory.getMethodSignature(
-        "assertStatementExtend", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "assertStatementExtend", "void", Collections.emptyList());
   }
 
   public MethodSignature getMethodSignatureExtend2() {
     return identifierFactory.getMethodSignature(
-        "assertStatementExtend2", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "assertStatementExtend2", "void", Collections.emptyList());
   }
 
   /**

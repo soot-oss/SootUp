@@ -14,7 +14,7 @@ public class GenTypeParamTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "geneTypeParamDisplay", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "geneTypeParamDisplay", "void", Collections.emptyList());
   }
 
   /** Jimple code will change when Generics are incorporated */

@@ -19,12 +19,12 @@ public class DeclareConstructorTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignatureInitOneParam() {
     return identifierFactory.getMethodSignature(
-        "<init>", getDeclaredClassSignature(), "void", Collections.singletonList("int"));
+        getDeclaredClassSignature(), "<init>", "void", Collections.singletonList("int"));
   }
 
   public MethodSignature getMethodSignatureInitTwoParam() {
     return identifierFactory.getMethodSignature(
-        "<init>", getDeclaredClassSignature(), "void", Arrays.asList("int", "int"));
+        getDeclaredClassSignature(), "<init>", "void", Arrays.asList("int", "int"));
   }
 
   @Test

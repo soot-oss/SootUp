@@ -111,8 +111,8 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
           sootClass.getMethod(
               JavaIdentifierFactory.getInstance()
                   .getMethodSignature(
-                      "someMethod",
                       sootClass.getType(),
+                      "someMethod",
                       "void",
                       Arrays.asList("int", "boolean", "int", "boolean"))
                   .getSubSignature());
@@ -187,8 +187,8 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
           sootClass.getMethod(
               JavaIdentifierFactory.getInstance()
                   .getMethodSignature(
-                      "someMethod",
                       sootClass.getType(),
+                      "someMethod",
                       "void",
                       Arrays.asList("int", "boolean", "int", "boolean"))
                   .getSubSignature());

@@ -24,7 +24,7 @@ public class MultiTryCatchTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "printFile", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "printFile", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

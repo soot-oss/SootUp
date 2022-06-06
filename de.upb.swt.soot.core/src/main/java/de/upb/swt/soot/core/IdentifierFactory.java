@@ -69,30 +69,30 @@ public interface IdentifierFactory {
   /**
    * Gets the method signature.
    *
-   * @param methodName the method name
    * @param declaringClassSignature the declaring class signature
+   * @param methodName the method name
    * @param fqReturnType the fq return type
    * @param parameters the parameters
    * @return the method signature
    */
   MethodSignature getMethodSignature(
-      String methodName,
       ClassType declaringClassSignature,
+      String methodName,
       String fqReturnType,
       List<String> parameters);
 
   /**
    * Gets the method signature.
    *
-   * @param methodName the method name
    * @param declaringClassSignature the declaring class signature
+   * @param methodName the method name
    * @param fqReturnType the fq return type
    * @param parameters the parameters
    * @return the method signature
    */
   MethodSignature getMethodSignature(
-      String methodName,
       ClassType declaringClassSignature,
+      String methodName,
       Type fqReturnType,
       List<Type> parameters);
 

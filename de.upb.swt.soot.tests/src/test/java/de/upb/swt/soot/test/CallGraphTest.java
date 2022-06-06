@@ -67,7 +67,7 @@ public class CallGraphTest {
     mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =
         identifierFactory.getMethodSignature(
-            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
     SootClass<?> sc = view.getClass(mainClassSignature).get();
     Optional<SootMethod> m =
@@ -93,7 +93,7 @@ public class CallGraphTest {
 
     MethodSignature method =
         identifierFactory.getMethodSignature(
-            "println", clazzType, "void", Collections.singletonList("java.lang.String"));
+            clazzType, "println", "void", Collections.singletonList("java.lang.String"));
 
     assertTrue(cg.containsCall(mainMethodSignature, method));
   }
@@ -107,7 +107,7 @@ public class CallGraphTest {
 
     MethodSignature method =
         identifierFactory.getMethodSignature(
-            "println", clazzType, "void", Collections.singletonList("java.lang.String"));
+            clazzType, "println", "void", Collections.singletonList("java.lang.String"));
 
     assertTrue(cg.containsCall(mainMethodSignature, method));
   }

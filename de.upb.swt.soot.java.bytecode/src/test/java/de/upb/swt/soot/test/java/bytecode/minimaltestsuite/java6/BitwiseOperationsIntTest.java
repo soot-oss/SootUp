@@ -153,6 +153,6 @@ public class BitwiseOperationsIntTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getMethodSignature(String methodName) {
     return identifierFactory.getMethodSignature(
-        methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), methodName, "void", Collections.emptyList());
   }
 }

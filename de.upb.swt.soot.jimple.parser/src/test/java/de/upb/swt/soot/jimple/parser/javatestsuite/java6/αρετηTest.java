@@ -16,7 +16,7 @@ import org.junit.experimental.categories.Category;
 public class αρετηTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "αρετηAsClassName", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "αρετηAsClassName", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

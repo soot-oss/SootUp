@@ -17,7 +17,7 @@ import org.junit.experimental.categories.Category;
 public class SuperClassTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "superclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "superclassMethod", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

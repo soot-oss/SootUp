@@ -18,7 +18,7 @@ public class UnicodeMethodNameTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "αρετηAsClassName", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "αρετηAsClassName", "void", Collections.emptyList());
   }
 
   /**

@@ -16,7 +16,7 @@ import org.junit.experimental.categories.Category;
 public class SymbolsAsMethodNameTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "αρετη", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "αρετη", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

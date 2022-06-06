@@ -18,12 +18,12 @@ public class DefaultMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "interfaceMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "interfaceMethod", "void", Collections.emptyList());
   }
 
   public MethodSignature getDefaultMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "defaultInterfaceMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "defaultInterfaceMethod", "void", Collections.emptyList());
   }
 
   /**

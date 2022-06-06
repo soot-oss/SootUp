@@ -18,7 +18,7 @@ public class ForEachLoopTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "forEachLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "forEachLoop", "void", Collections.emptyList());
   }
 
   /**  <pre>
