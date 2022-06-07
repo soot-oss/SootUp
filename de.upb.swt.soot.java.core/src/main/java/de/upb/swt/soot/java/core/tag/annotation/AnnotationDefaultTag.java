@@ -1,0 +1,63 @@
+package de.upb.swt.soot.java.core.tag.annotation;
+
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2005 Jennifer Lhotak
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
+import de.upb.swt.soot.java.core.tag.Tag;
+import de.upb.swt.soot.java.core.tag.annotation.elem.AnnotationElem;
+
+/**
+ * Represents the annotation default attribute attached method - could have at most one annotation default each for Java 1.5.
+ */
+public class AnnotationDefaultTag implements Tag {
+
+  private final AnnotationElem defaultVal;
+
+  public AnnotationDefaultTag(AnnotationElem def) {
+    this.defaultVal = def;
+  }
+
+  @Override
+  public String toString() {
+    return "Annotation Default: " + defaultVal;
+  }
+
+  /** Returns the tag name. */
+  @Override
+  public String getName() {
+    return "AnnotationDefaultTag";
+  }
+
+  public String getInfo() {
+    return "AnnotationDefault";
+  }
+
+  public AnnotationElem getDefaultVal() {
+    return defaultVal;
+  }
+
+  /** Returns the tag raw data. */
+  @Override
+  public byte[] getValue() {
+    throw new RuntimeException("AnnotationDefaultTag has no value for bytecode");
+  }
+}
