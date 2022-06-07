@@ -24,6 +24,7 @@ package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
 
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.java.bytecode.frontend.apk.toDex.SootToDexUtils;
 import de.upb.swt.soot.java.core.JavaTaggedSootClass;
 import de.upb.swt.soot.java.core.JavaTaggedSootMethod;
 import de.upb.swt.soot.java.core.tag.*;
