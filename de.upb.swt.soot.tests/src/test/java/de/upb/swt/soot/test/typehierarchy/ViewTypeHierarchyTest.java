@@ -1,4 +1,4 @@
-package de.upb.swt.soot.test.callgraph.typehierarchy;
+package de.upb.swt.soot.test.typehierarchy;
 
 import static de.upb.swt.soot.core.util.ImmutableUtils.immutableList;
 import static de.upb.swt.soot.core.util.ImmutableUtils.immutableSet;

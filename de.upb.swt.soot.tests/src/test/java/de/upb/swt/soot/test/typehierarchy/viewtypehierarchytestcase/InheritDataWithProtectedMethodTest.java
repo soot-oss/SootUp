@@ -1,4 +1,4 @@
-package de.upb.swt.soot.test.callgraph.typehierarchy.viewtypehierarchytestcase;
+package de.upb.swt.soot.test.typehierarchy.viewtypehierarchytestcase;
 
 import static org.junit.Assert.*;
 
@@ -10,7 +10,7 @@ import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
 import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.Utils;
-import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyTestBase;
+import de.upb.swt.soot.test.typehierarchy.JavaTypeHierarchyTestBase;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;

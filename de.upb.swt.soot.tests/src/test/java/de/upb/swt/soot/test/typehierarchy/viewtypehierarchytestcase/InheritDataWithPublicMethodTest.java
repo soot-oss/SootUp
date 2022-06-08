@@ -1,4 +1,4 @@
-package de.upb.swt.soot.test.callgraph.typehierarchy.viewtypehierarchytestcase;
+package de.upb.swt.soot.test.typehierarchy.viewtypehierarchytestcase;
 
 import static org.junit.Assert.*;
 
@@ -9,14 +9,18 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
 import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyTestBase;
+import de.upb.swt.soot.core.util.Utils;
+import de.upb.swt.soot.test.typehierarchy.JavaTypeHierarchyTestBase;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author: Hasitha Rajapakse * */
+/** @author Hasitha Rajapakse * */
 @Category(Java8Test.class)
-public class MethodOverridingTest extends JavaTypeHierarchyTestBase {
+public class InheritDataWithPublicMethodTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {
     ViewTypeHierarchy typeHierarchy =
@@ -45,19 +49,14 @@ public class MethodOverridingTest extends JavaTypeHierarchyTestBase {
     Body body = sootMethod.getBody();
     assertNotNull(body);
 
-    SootClass<?> superClass =
-        customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
-    SootMethod superMethod =
-        superClass
-            .getMethod(
-                identifierFactory
-                    .getMethodSignature(
-                        "method", superClass.getType(), "void", Collections.emptyList())
-                    .getSubSignature())
-            .get();
-    Body superBody = superMethod.getBody();
-    assertNotNull(superBody);
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
+    List<String> expectedStmts =
+        Stream.of(
+                "r0 := @this: InheritDataWithPublicMethod",
+                "$i0 = specialinvoke r0.<SuperClass: int getnum()>()",
+                "return")
+            .collect(Collectors.toList());
 
-    assertNotEquals(body, superBody);
+    assertEquals(expectedStmts, actualStmts);
   }
 }

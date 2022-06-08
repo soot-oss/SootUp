@@ -1,4 +1,4 @@
-package de.upb.swt.soot.test.callgraph.typehierarchy;
+package de.upb.swt.soot.test.typehierarchy;
 
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
