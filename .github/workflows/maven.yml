@@ -6,6 +6,7 @@ name: Java CI with Maven
 on:
   push:
     branches: [ develop ]
+
   pull_request:
     branches: [ develop ]
     types:
@@ -15,127 +16,250 @@ on:
       - ready_for_review
 
 jobs:
-  JDK8:
 
+  # Code coverage (i.e. jacoco) needs the same classes for its test otherwise its classids can possibly not match
+  Compilation:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Check Format
-        run: mvn com.coveo:fmt-maven-plugin:check -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-      - name: Build (JDK8)
-        run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+      - name: cache maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Cache compilation
+        id: cache-compilation
+        uses: actions/cache@v3
+        with:
+          path: | 
+                **/target/
+          key: cache-compilation-${{ github.sha }}
+
+      - name: Build with JDK8
+        run: mvn compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  JDK8:
+    needs: Compilation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: get cached compilation
+        id: cache-compilation
+        uses: actions/cache@v3
+        with:
+          path: | 
+                **/target/
+          key: cache-compilation-${{ github.sha }}
+
+      - name: cache maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
       - name: Test (JDK8)
-        run: mvn -pl de.upb.swt.soot.core,de.upb.swt.soot.java.core,de.upb.swt.soot.java.bytecode,de.upb.swt.soot.java.sourcecode,de.upb.swt.soot.callgraph,de.upb.swt.soot.jimple.parser,examples -am verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-      - name: Prepare Coverage and Test Reports
-        env:
-          SUBMODULES: de.upb.swt.soot.java.core de.upb.swt.soot.java.bytecode de.upb.swt.soot.java.sourcecode de.upb.swt.soot.callgraph examples
-        run: |
-          sudo mkdir target/coverage-reports-jdk8
-          sudo mkdir target/test-reports-jdk8
-          sudo chmod -R 777 target 
-          for item in $SUBMODULES
-          do 
-            sudo mv ${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports-jdk8/jacoco-ut-${item}-jdk8.exec
-            sudo [ ! -f ${item}/target/surefire-reports ] || mv ${item}/target/surefire-reports target/test-reports-jdk8/test-report-${item}/
-            sudo mkdir target/coverage-reports-jdk8/${item}-site
-            sudo mv ${item}/target/site/jacoco-ut/* target/coverage-reports-jdk8/${item}-site
-          done
+        run: mvn -pl '!de.upb.swt.soot.tests' -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -X
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
+        if: ${{ always() }}
         with:
-          name: coverage-reports-jdk8
-          path: target/coverage-reports-jdk8
+          name: coverage-exec
+          path: |
+                  */target/coverage-reports/jacoco-ut-jdk8.exec
+                  !de.upb.swt.soot.tests/
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
+        if: ${{ always() }}
         with:
-          if: always()
           name: test-reports-jdk8
-          path: target/test-reports-jdk8
+          path: |
+                  */target/surefire-reports
+                  !de.upb.swt.soot.tests/
 
 
   JDK9:
-
+    needs: Compilation
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 1.9
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.9
-    - name: Build (JDK9)
-      run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-    - name: Test (JDK9)
-      run: mvn -pl de.upb.swt.soot.core,de.upb.swt.soot.java.core,de.upb.swt.soot.java.bytecode,de.upb.swt.soot.java.sourcecode,de.upb.swt.soot.callgraph,de.upb.swt.soot.jimple.parser,examples -am verify -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -PJava9
-    - name: Prepare Coverage Reports      
-      env: 
-        SUBMODULES: java.core java.bytecode java.sourcecode callgraph
-      run: |
-           sudo mkdir target/coverage-reports-jdk9
-           sudo mkdir target/test-reports-jdk9
-           sudo chmod -R 777 target 
-           for item in $SUBMODULES
-           do 
-             sudo mv de.upb.swt.soot.${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports-jdk9/jacoco-ut-${item}-jdk9.exec
-             sudo [ ! -f de.upb.swt.soot.${item}/target/surefire-reports ] || mv de.upb.swt.soot.${item}/target/surefire-reports target/test-reports-jdk9/test-report-${item}/
-             sudo mkdir target/coverage-reports-jdk9/${item}-site
-             sudo mv de.upb.swt.soot.${item}/target/site/jacoco-ut/* target/coverage-reports-jdk9/${item}-site
-           done
-    - uses: actions/upload-artifact@v2
-      with:
-        name: coverage-reports-jdk9
-        path: target/coverage-reports-jdk9
+      - uses: actions/checkout@v3
+      - name: get cached compilation
+        id: cache-compilation
+        uses: actions/cache@v3
+        with:
+          path: | 
+                **/target/
+          key: cache-compilation-${{ github.sha }}
 
-    - uses: actions/upload-artifact@v2
-      if: always()
-      with:
-        name: test-reports-jdk9
-        path: target/test-reports-jdk9
+      - name: debug info
+        run: tree **/target
 
+      - name: cache maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
-  SLOWTEST:
+      - name: Set up JDK 1.9
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.9
+
+      - name: Test (JDK9)
+        run: mvn -pl '!de.upb.swt.soot.tests' -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava9 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -X
+
+      - uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: coverage-exec
+          path: |
+            */target/coverage-reports/jacoco-ut-jdk9.exec
+            !de.upb.swt.soot.tests/
+
+      - uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: test-reports-jdk9
+          path: |
+            */target/surefire-reports
+            !de.upb.swt.soot.tests/
+
+      # style check is not clean here but does not consume additional time as the other parallel running tests take (way) longer
+      - name: Check Format
+        run: mvn com.coveo:fmt-maven-plugin:check -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+    
+    
+    
+
+    # takes a long time to run - so just run them when PR is not draft anymore
+  IntegrationTest:
     if: ${{ !github.event.pull_request.draft }}
-
+    needs: Compilation
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build (SLOWTEST)
-        run: mvn clean compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-      - name: Test (SLOWTEST)
-        run: mvn -pl de.upb.swt.soot.tests -am verify -B -Dfmt.skip -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-      - name: Prepare Coverage and Test Reports
-        env:
-          SUBMODULES: de.upb.swt.soot.tests
-        run: |
-          sudo mkdir target/coverage-reports-slowtest
-          sudo mkdir target/test-reports-slowtest
-          sudo chmod -R 777 target 
-          for item in $SUBMODULES
-          do 
-            sudo mv ${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports-slowtest/jacoco-ut-${item}-jdk8.exec
-            sudo [ ! -f ${item}/target/surefire-reports ] || mv ${item}/target/surefire-reports target/test-reports-slowtest/test-report-${item}/
-            sudo mkdir target/coverage-reports-slowtest/${item}-site
-            sudo mv ${item}/target/site/jacoco-ut/* target/coverage-reports-slowtest/${item}-site
-          done
 
-      - uses: actions/upload-artifact@v2
+      - name: get cached compilation
+        id: cache-compilation
+        uses: actions/cache@v3
         with:
-          name: coverage-reports-slowtest
-          path: target/coverage-reports-slowtest
+            path: | 
+                  **/target/
+            key: cache-compilation-${{ github.sha }}
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/cache@v3
         with:
-          if: always()
-          name: test-reports-slowtest
-          path: target/test-reports-slowtest
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-    
 
+      - name: Test (IntegrationTest)
+        run: mvn -pl de.upb.swt.soot.tests -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PIntegrationTest -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+      - uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: coverage-exec
+          path: |
+            */target/coverage-reports/jacoco-ut-integrationtest.exec
+
+      - uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: test-reports-integrationtest
+          path: |
+            */target/surefire-reports
+
+
+
+  CoverageReport:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
+    needs: [ JDK9, JDK8, IntegrationTest]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: cache maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: get cached compilation
+        id: cache-compilation
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/target/
+          key: cache-compilation-${{ github.sha }}
+
+      - name: Download uploaded exec artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-exec
+
+      - name: merge coverage reports
+        run:  mvn -ntp jacoco:merge@merge-results
+
+      - name: aggregate coverage reports across java versions
+        run: mvn -ntp jacoco:report-aggregate@generate-coverage-report
+
+      - name: upload aggregated coverage artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: aggregated-coverage-report
+          path: ${{ github.workspace }}/report/target/jacoco-aggregate/
+
+      - name: jacoco-badge-generator
+        id: jacoco
+        uses: cicirello/jacoco-badge-generator@v2.6.1
+        with:
+          jacoco-csv-file: report/target/jacoco-aggregate/jacoco.csv
+
+      - name: Comment Coverage info
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: coverage-pr-message
+          recreate: true
+          message: |
+            ***Test Coverage***
+            Total coverage ${{ steps.jacoco.outputs.coverage }}
+            Amount of covered (bytecode-)branches ${{ steps.jacoco.outputs.branches }}
+
+      - name: Commit the badge (if it changed)
+        uses: EndBug/add-and-commit@v7
+        with:
+          default_author: github_actions
+          message: 'commit badge'
+          add: '**/badges/jacoco.svg'

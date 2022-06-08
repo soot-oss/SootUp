@@ -3,44 +3,77 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>Soot Examples</name>
-    <artifactId>examples</artifactId>
+    <name>Futuresoot Coverage Report Module</name>
+    <artifactId>report</artifactId>
     <parent>
         <groupId>de.upb.swt</groupId>
         <artifactId>soot</artifactId>
         <version>4.0.0-SNAPSHOT</version>
     </parent>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-coverage-report</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
+                        <configuration>
+                            <dataFileIncludes>**/aggregated.exec</dataFileIncludes>
+<!--                            <dataFileIncludes>**/jacoco-ut-jdk8.exec, **/jacoco-ut-jdk9, **/jacoco-ut-integrationtest.exec</dataFileIncludes>
+-->
+                            <outputDirectory>target/jacoco-aggregate</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
     <dependencies>
-        <dependency>
-            <groupId>de.upb.swt</groupId>
-            <artifactId>soot.callgraph</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
-        </dependency>
+        <!-- needs a dependency to all codes for coverage -->
         <dependency>
             <groupId>de.upb.swt</groupId>
             <artifactId>soot.core</artifactId>
             <version>4.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>de.upb.swt</groupId>
-            <artifactId>soot.java.bytecode</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>de.upb.swt</groupId>
-            <artifactId>soot.java.core</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>de.upb.swt</groupId>
-            <artifactId>soot.java.sourcecode</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>de.upb.swt</groupId>
             <artifactId>soot.jimple.parser</artifactId>
             <version>4.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.upb.swt</groupId>
+            <artifactId>soot.java.core</artifactId>
+            <version>4.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.upb.swt</groupId>
+            <artifactId>soot.java.bytecode</artifactId>
+            <version>4.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.upb.swt</groupId>
+            <artifactId>soot.java.sourcecode</artifactId>
+            <version>4.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.upb.swt</groupId>
+            <artifactId>soot.callgraph</artifactId>
+            <version>4.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
@@ -55,4 +88,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+
 </project>
