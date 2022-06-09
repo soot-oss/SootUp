@@ -49,7 +49,16 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
 
   @Nonnull private final Map<ModuleDataKey<?>, Object> moduleData = new HashMap<>();
 
-  @Nonnull private final TypeHierarchy typeHierarchy;
+  @Nullable private TypeHierarchy typeHierarchy;
+
+  @Override
+  @Nonnull
+  public TypeHierarchy getTypeHierarchy() {
+    if (this.typeHierarchy == null) {
+      typeHierarchy = new ViewTypeHierarchy(this);
+    }
+    return typeHierarchy;
+  }
 
   public AbstractView(@Nonnull Project<?, ? extends View<?>> project) {
     this.project = (Project<T, ? extends View<T>>) project;

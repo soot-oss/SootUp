@@ -33,6 +33,7 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
 import java.util.List;
@@ -81,6 +82,9 @@ public interface View<T extends SootClass> {
    */
   @Nonnull
   Optional<Scope> getScope();
+
+  @Nonnull
+  TypeHierarchy getTypeHierarchy();
 
   /** Returns the {@link IdentifierFactory} for this view. */
   @Nonnull

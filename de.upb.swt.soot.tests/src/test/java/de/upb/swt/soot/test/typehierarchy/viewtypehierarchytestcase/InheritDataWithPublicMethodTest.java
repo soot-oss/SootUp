@@ -6,7 +6,6 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
 import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.Utils;
@@ -24,7 +23,7 @@ public class InheritDataWithPublicMethodTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {
     ViewTypeHierarchy typeHierarchy =
-        (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
+        (ViewTypeHierarchy) customTestWatcher.getView().getTypeHierarchy();
     ClassType sootClassType = getClassType(customTestWatcher.getClassName());
 
     assertEquals(typeHierarchy.superClassOf(sootClassType), getClassType("SuperClass"));

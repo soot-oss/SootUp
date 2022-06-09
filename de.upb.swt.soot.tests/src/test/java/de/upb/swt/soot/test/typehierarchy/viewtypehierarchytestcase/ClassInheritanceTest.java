@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
 import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.test.typehierarchy.JavaTypeHierarchyTestBase;
@@ -19,7 +18,7 @@ public class ClassInheritanceTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {
     ViewTypeHierarchy typeHierarchy =
-        (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
+        (ViewTypeHierarchy) customTestWatcher.getView().getTypeHierarchy();
     assertEquals(
         typeHierarchy.superClassOf(getClassType("ClassInheritance")), getClassType("SuperClass"));
 
