@@ -131,10 +131,7 @@ public interface TypeHierarchy {
 
       assert superArrayType.getBaseType() instanceof ReferenceType;
 
-      if (superArrayType.getBaseType().equals(potentialSubArrayType.getBaseType())) {
-        // Object[] x = new Object[0][0];
-        return potentialSubArrayType.getDimension() > superArrayType.getDimension();
-      } else if (isSubtype(superArrayType.getBaseType(), potentialSubArrayType.getBaseType())
+      if (isSubtype(superArrayType.getBaseType(), potentialSubArrayType.getBaseType())
           && potentialSubArrayType.getDimension() == superArrayType.getDimension()) {
         // Arrays are covariant: Object[] x = new String[0];
         return true;
@@ -150,14 +147,6 @@ public interface TypeHierarchy {
                   .equals("java.lang.Cloneable"))) {
         // Special case: Object[] x = new double[0][0], Object[][] y = new double[0][0][0], ...
         return potentialSubArrayType.getDimension() > superArrayType.getDimension();
-      } else if (superArrayType.getDimension() > 1
-          && potentialSubArrayType.getDimension() == superArrayType.getDimension()) {
-        ArrayType superArrayTypeLessDim =
-            new ArrayType(superArrayType.getBaseType(), superArrayType.getDimension() - 1);
-        ArrayType potentialSubArrayTypeLessDim =
-            new ArrayType(
-                potentialSubArrayType.getBaseType(), potentialSubArrayType.getDimension() - 1);
-        return isSubtype(superArrayTypeLessDim, potentialSubArrayTypeLessDim);
       } else {
         return false;
       }
