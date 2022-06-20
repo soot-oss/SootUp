@@ -172,20 +172,23 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
     } else {
       stringBuilder.append(":\n");
       signatureToVertex.keySet().stream()
-          .sorted(Comparator.comparing(SootClassMemberSignature::toString))
+          .sorted(
+              Comparator.comparing((MethodSignature o) -> o.getDeclClassType().toString())
+                  .thenComparing(SootClassMemberSignature::getName)
+                  .thenComparing(o -> o.getParameterTypes().toString()))
           .forEach(
               method -> {
                 stringBuilder.append(method).append(":\n");
                 callsFrom(method).stream()
                     .sorted(
                         Comparator.comparing((MethodSignature o) -> o.getDeclClassType().toString())
-                            .thenComparing(o -> o.getName())
+                            .thenComparing(SootClassMemberSignature::getName)
                             .thenComparing(o -> o.getParameterTypes().toString()))
                     .forEach(m -> stringBuilder.append("\tto ").append(m).append("\n"));
                 callsTo(method).stream()
                     .sorted(
                         Comparator.comparing((MethodSignature o) -> o.getDeclClassType().toString())
-                            .thenComparing(o -> o.getName())
+                            .thenComparing(SootClassMemberSignature::getName)
                             .thenComparing(o -> o.getParameterTypes().toString()))
                     .forEach(m -> stringBuilder.append("\tfrom ").append(m).append("\n"));
                 stringBuilder.append("\n");
