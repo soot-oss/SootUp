@@ -24,7 +24,9 @@ package de.upb.swt.soot.callgraph;
 
 import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.signatures.SootClassMemberSignature;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -160,5 +162,35 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
       }
     }
     return sb.toString();
+  }
+
+  @Override
+  public String toStringSorted() {
+    StringBuilder stringBuilder = new StringBuilder("GraphBasedCallGraph(" + callCount() + ")");
+    if (signatureToVertex.keySet().isEmpty()) {
+      stringBuilder.append(" is empty");
+    } else {
+      stringBuilder.append(":\n");
+      signatureToVertex.keySet().stream()
+          .sorted(Comparator.comparing(SootClassMemberSignature::toString))
+          .forEach(
+              method -> {
+                stringBuilder.append(method).append(":\n");
+                callsFrom(method).stream()
+                    .sorted(
+                        Comparator.comparing((MethodSignature o) -> o.getDeclClassType().toString())
+                            .thenComparing(o -> o.getName())
+                            .thenComparing(o -> o.getParameterTypes().toString()))
+                    .forEach(m -> stringBuilder.append("\tto ").append(m).append("\n"));
+                callsTo(method).stream()
+                    .sorted(
+                        Comparator.comparing((MethodSignature o) -> o.getDeclClassType().toString())
+                            .thenComparing(o -> o.getName())
+                            .thenComparing(o -> o.getParameterTypes().toString()))
+                    .forEach(m -> stringBuilder.append("\tfrom ").append(m).append("\n"));
+                stringBuilder.append("\n");
+              });
+    }
+    return stringBuilder.toString();
   }
 }
