@@ -718,5 +718,14 @@ public class Body implements Copyable {
     public Set<Modifier> getModifiers() {
       return modifiers;
     }
+
+    @Override
+    public String toString() {
+      if (methodSig != null) {
+        return "BodyBuilder for " + methodSig;
+      } else {
+        return super.toString();
+      }
+    }
   }
 }

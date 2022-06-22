@@ -182,8 +182,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       }
 
     } catch (Exception e) {
-      throw new IllegalStateException(
-          "visualize invalid StmtGraph: " + GraphVizExporter.createUrlToWebeditor(this), e);
+      final String urlToWebeditor = GraphVizExporter.createUrlToWebeditor(this);
+      throw new IllegalStateException("visualize invalid StmtGraph: " + urlToWebeditor, e);
     }
   }
 

@@ -348,18 +348,17 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         linkBlocks(block, excludeFromOrigBlock);
       }
 
-      blocks.add(excludeFromOrigBlock);
       return excludeFromOrigBlock;
 
     } else {
-      // just a single stmt in the block -> its the block we add the exception info
+      // just a single stmt in the block -> e.g. its the block we add the exception info
       return block;
     }
   }
 
   /** Merges block into Predecessor/Successor if possible. */
   private void tryMergeIntoSurroundingBlocks(@Nonnull MutableBasicBlock block) {
-    // merge with predecessor?
+    // merge with predecessor if possible
     block = tryMergeWithPredecessorBlock(block);
     // and/or merge with successorBlock
     tryMergeWithSuccessorBlock(block);
@@ -429,9 +428,12 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         addNodeToBlock(firstBlock, stmt);
       }
 
+      // i.e. can just be the single followingblock which we merge now
+      firstBlock.clearSuccessorBlocks();
+
       // update linking info into firstBlock
-      firstBlock.removeSuccessorBlock(followingBlock);
-      followingBlock.getSuccessors().forEach(firstBlock::addSuccessorBlock);
+      // done in clearPredecessorBlock      firstBlock.removeSuccessorBlock(followingBlock);
+      followingBlock.getSuccessors().forEach(succ -> linkBlocks(firstBlock, succ));
       followingBlock.clearSuccessorBlocks();
 
       blocks.remove(followingBlock);
@@ -534,15 +536,16 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     if (blockOfOldStmt == null) {
       throw new IllegalArgumentException("oldStmt does not exist in the StmtGraph!");
     }
-    stmtToBlock.remove(oldStmt);
 
     if (blockOfOldStmt.getTail() == oldStmt) {
+      stmtToBlock.remove(oldStmt);
       blockOfOldStmt.removeStmt(oldStmt);
       blockOfOldStmt.addStmt(newStmt);
       stmtToBlock.put(newStmt, blockOfOldStmt);
       // tail could not be branching anymore -> try to merge
       tryMergeWithSuccessorBlock(blockOfOldStmt);
     } else if (blockOfOldStmt.getHead() == oldStmt) {
+      stmtToBlock.remove(oldStmt);
       final MutableBasicBlock newBlock = createStmtsBlock(newStmt);
       final Iterator<Stmt> iterator = blockOfOldStmt.getStmts().stream().skip(1).iterator();
       iterator.forEachRemaining(
@@ -577,10 +580,21 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // [ms] possibility to use performance implications of the datastructure to improve
       // unnecessary BasicBlock allocation/stmt copying/removal
       final MutableBasicBlock excludedBlock = excludeStmtFromBlock(oldStmt, blockOfOldStmt);
+      stmtToBlock.remove(oldStmt);
       excludedBlock.removeStmt(oldStmt);
       excludedBlock.addStmt(newStmt);
-      stmtToBlock.put(newStmt, blockOfOldStmt);
+      stmtToBlock.put(newStmt, excludedBlock);
       tryMergeIntoSurroundingBlocks(excludedBlock);
+    }
+  }
+
+  public void validateBlocks() {
+    for (MutableBasicBlock block : getBlocks()) {
+      for (Stmt stmt : block.getStmts()) {
+        if (stmtToBlock.get(stmt) != block) {
+          throw new IllegalStateException("wrong stmt to block mapping");
+        }
+      }
     }
   }
 
@@ -882,7 +896,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // argh indexOf.. possibly expensive..
       List<Stmt> stmts = block.getStmts();
       final int i = stmts.indexOf(node);
-      assert (i > 0);
+      assert (stmts.size() > 0) : "no stmts in " + block + " " + block.hashCode();
+      ;
+      assert (i > 0) : " stmt not found in " + block;
       return Collections.singletonList(stmts.get(i - 1));
     }
   }
