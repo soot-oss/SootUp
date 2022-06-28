@@ -27,7 +27,6 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import java.util.Iterator;
 import javax.annotation.Nonnull;
 
 /**
@@ -42,10 +41,8 @@ public class EmptySwitchEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     // Iterate all stmts in the body
-    Iterator<Stmt> stmts = builder.getStmtGraph().iterator();
 
-    while (stmts.hasNext()) {
-      Stmt stmt = stmts.next();
+    for (Stmt stmt : builder.getStmtGraph()) {
       // If the observed stmt an instance of JSwitchStmt
       if (stmt instanceof JSwitchStmt) {
         Body body = builder.build();

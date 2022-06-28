@@ -51,14 +51,23 @@ import javax.annotation.Nonnull;
  */
 public class DeadAssignmentEliminator implements BodyInterceptor {
 
+  // eliminateOnlyStackLocals: locals which are: nulltype or not referencing a field (ms: possibly
+  // more?)
+  boolean eliminateOnlyStackLocals;
+
+  public DeadAssignmentEliminator() {
+    this(false);
+  }
+
+  public DeadAssignmentEliminator(boolean eliminateOnlyStackLocals) {
+    this.eliminateOnlyStackLocals = eliminateOnlyStackLocals;
+  }
+
   Map<Local, List<Stmt>> allDefs = new HashMap<>();
   Map<Local, List<Stmt>> allUses = new HashMap<>();
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    // eliminateOnlyStackLocals: locals which are: nulltype or not referencing a field
-    // TODO[MN]: config parameter
-    boolean eliminateOnlyStackLocals = false;
     StmtGraph<?> stmtGraph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());

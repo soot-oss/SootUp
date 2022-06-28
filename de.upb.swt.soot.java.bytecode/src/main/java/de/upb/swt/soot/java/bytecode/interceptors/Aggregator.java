@@ -38,8 +38,15 @@ import javax.annotation.Nonnull;
 
 public class Aggregator implements BodyInterceptor {
 
-  // TODO[MN]: incorporate as a config parameter
-  boolean onlyStackVars = false;
+  boolean onlyStackVars;
+
+  public Aggregator() {
+    this(false);
+  }
+
+  public Aggregator(boolean onlyStackVars) {
+    this.onlyStackVars = onlyStackVars;
+  }
 
   /**
    * Traverse the statements in the given body, looking for aggregation possibilities; that is,
@@ -50,7 +57,7 @@ public class Aggregator implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
-    StmtGraph graph = builder.getStmtGraph();
+    StmtGraph<?> graph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
 
     builder.enableDeferredStmtGraphChanges();
