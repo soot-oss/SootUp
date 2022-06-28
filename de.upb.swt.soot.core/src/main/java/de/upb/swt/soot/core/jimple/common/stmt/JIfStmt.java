@@ -67,6 +67,7 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
     stmtPrinter.stmtRef(getTargetStmts(stmtPrinter.getBody()).get(0), true);
   }
 
+  @Nonnull
   public AbstractConditionExpr getCondition() {
     return condition;
   }

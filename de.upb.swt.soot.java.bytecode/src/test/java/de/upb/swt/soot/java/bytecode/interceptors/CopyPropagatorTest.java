@@ -1,6 +1,6 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -121,7 +121,7 @@ public class CopyPropagatorTest {
 
   @Test
   public void testEqualStmt() {
-    assertEquals(eestmt4, eestmt4.withRValue(NullConstant.getInstance()));
+    assertTrue(eestmt4.equivTo(eestmt4.withRValue(NullConstant.getInstance())));
   }
 
   @Test

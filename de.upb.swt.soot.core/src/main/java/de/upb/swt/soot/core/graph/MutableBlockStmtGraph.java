@@ -224,16 +224,43 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       throw new IllegalArgumentException(
           "The first Stmt in the List is already in the StmtGraph and has at least one (fallsthrough) successor in its Block.");
     }
-    iterator.forEachRemaining(
-        stmt -> {
-          final MutableBasicBlock overwrittenBlock = addNodeToBlock(block, stmt);
-          if (overwrittenBlock != null) {
+
+    while (iterator.hasNext()) {
+      Stmt stmt = iterator.next();
+      final MutableBasicBlock overwrittenBlock = addNodeToBlock(block, stmt);
+      if (overwrittenBlock != null) {
+        if (iterator.hasNext()) {
+          throw new IllegalArgumentException(
+              "the Stmt '"
+                  + stmt
+                  + "' you want to add as a Stmt of a whole Block is already in this StmtGraph.");
+        } else {
+          // existing is last element of stmtlist
+          // TODO: hint: we can allow other n-th elements as well e.g. if a sequence of stmts exists
+          // already and can/should be inside that added block as well.
+
+          if (overwrittenBlock.getHead() == stmt) {
+            // last stmt is head of another block
+
+            // cleanup started add action
+            stmtToBlock.put(stmt, overwrittenBlock);
+            block.removeStmt(stmt);
+
+            // try to merge
+            if (!tryMergeBlocks(block, overwrittenBlock)) {
+              // otherwise link them
+              linkBlocks(block, overwrittenBlock);
+            }
+          } else {
             throw new IllegalArgumentException(
                 "the Stmt '"
                     + stmt
-                    + "' we want to add as a Stmt of a whole Block is already in this StmtGraph.");
+                    + "' you want to add as a Stmt of a whole Block is already in this StmtGraph.");
           }
-        });
+        }
+      }
+    }
+
     trapMap.forEach(
         (type, handlerStmt) ->
             block.addExceptionalSuccessorBlock(type, getOrCreateBlock(handlerStmt)));
