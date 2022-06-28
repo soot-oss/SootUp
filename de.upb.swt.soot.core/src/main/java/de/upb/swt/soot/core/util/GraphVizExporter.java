@@ -44,6 +44,8 @@ public class GraphVizExporter {
     final Collection<? extends BasicBlock<?>> blocks = graph.getBlocks();
     Set<BasicBlock<?>> drawnBlocks = Sets.newHashSetWithExpectedSize(blocks.size());
 
+    List<BasicBlock<?>> hiddenSuccessors = new ArrayList<>();
+
     for (BasicBlock<?> block : blocks) {
 
       sb.append("\tsubgraph cluster_")
@@ -105,19 +107,121 @@ public class GraphVizExporter {
             sb.append(":e -> ");
           } else {
             sb.append(":s -> ");
+            hiddenSuccessors.add(successorBlock);
           }
           sb.append(successorBlock.getHead().hashCode()).append(":n");
 
-          boolean drawSideWays = successorIsAlreadyDrawn || block == successorBlock;
-          if (labelIt.hasNext() || drawSideWays) {
+          if (labelIt.hasNext()) {
             sb.append("[");
             if (labelIt.hasNext()) {
-              sb.append("label=\"").append(labelIt.next()).append("\",");
+              sb.append("label=\"").append(labelIt.next()).append("\"");
             }
-            if (drawSideWays) {
-              sb.append("constraint=false");
-            } else {
-              sb.setLength(sb.length() - 1);
+            sb.append("]");
+          }
+          //          sb.append("ltail=\"cluster_").append(block.hashCode()).append("\",
+          // lhead=\"cluster_").append(successorBlock.hashCode()).append("\"]");
+          sb.append("\n");
+        }
+      }
+
+      /* add exceptional edges */
+      Map<? extends ClassType, ? extends BasicBlock<?>> exceptionalSuccessors =
+          block.getExceptionalSuccessors();
+      if (exceptionalSuccessors.size() > 0) {
+        sb.append("\t//exceptional edges \n");
+        for (Map.Entry<? extends ClassType, ? extends BasicBlock<?>> successorBlock :
+            exceptionalSuccessors.entrySet()) {
+          sb.append("\t")
+              .append(block.getTail().hashCode())
+              .append(":e -> ")
+              .append(successorBlock.getValue().getHead().hashCode())
+              .append(":n [label=\"\t")
+              .append(successorBlock.getKey().toString())
+              .append("\"color=red,ltail=\"cluster_")
+              .append(block.hashCode())
+              .append("\"]\n");
+        }
+      }
+
+      sb.append("\n");
+    }
+
+    sb.append(
+        "// not anymore existing blocks with references to it - i.e. not wanted, faulty behaviour!\n");
+
+    // FIXME: remove DEBUG stuff!
+    for (BasicBlock<?> block : hiddenSuccessors) {
+      if (drawnBlocks.contains(block)) {
+        continue;
+      }
+
+      sb.append("\tsubgraph cluster_")
+          .append(block.hashCode())
+          .append(" { \n")
+          .append("color=red;\n")
+          .append("\t\tlabel = \"Bad Block #")
+          .append(++i)
+          .append("\"\n");
+
+      /* print stmts in a block*/
+      List<Stmt> stmts = block.getStmts();
+      drawnBlocks.add(block);
+      for (Stmt stmt : stmts) {
+        sb.append("\t\t")
+            .append(stmt.hashCode())
+            .append("[label=\"")
+            .append(escape(stmt.toString()))
+            .append("\"");
+        // mark startingstmt itself
+        if (startingStmt == stmt || stmt.getExpectedSuccessorCount() == 0) {
+          sb.append(",shape=Mdiamond,color=grey50,fillcolor=white");
+        }
+        sb.append("]\n");
+      }
+      if (stmts.size() > 1) {
+        sb.append("\n\t\t");
+        for (Stmt stmt : stmts) {
+          sb.append(stmt.hashCode()).append(" -> ");
+        }
+        sb.delete(sb.length() - 4, sb.length());
+        sb.append("\n");
+      }
+      sb.append("\t}\n");
+
+      /* add edges to other blocks */
+      List<? extends BasicBlock<?>> successors = block.getSuccessors();
+      if (successors.size() > 0) {
+        Stmt tailStmt = block.getTail();
+
+        Iterator<String> labelIt;
+        // build edge labels for branching stmts
+        if (tailStmt instanceof BranchingStmt) {
+          if (tailStmt instanceof JIfStmt) {
+            labelIt = Arrays.asList("false", "true").iterator();
+          } else if (tailStmt instanceof JSwitchStmt) {
+            labelIt =
+                ((JSwitchStmt) tailStmt).getValues().stream().map(s -> "case " + s).iterator();
+          } else {
+            labelIt = Collections.emptyIterator();
+          }
+        } else {
+          labelIt = Collections.emptyIterator();
+        }
+
+        for (BasicBlock<?> successorBlock : successors) {
+          sb.append("\t").append(tailStmt.hashCode());
+          final boolean successorIsAlreadyDrawn = drawnBlocks.contains(successorBlock);
+          if (successorIsAlreadyDrawn) {
+            sb.append(":e -> ");
+          } else {
+            sb.append(":s -> ");
+          }
+          sb.append(successorBlock.getHead().hashCode()).append(":n");
+
+          if (labelIt.hasNext()) {
+            sb.append("[");
+            if (labelIt.hasNext()) {
+              sb.append("label=\"").append(labelIt.next()).append("\"");
             }
             sb.append("]");
           }

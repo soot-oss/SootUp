@@ -48,12 +48,8 @@ public class JGotoStmt extends BranchingStmt implements Copyable {
   public void toString(@Nonnull StmtPrinter stmtPrinter) {
     stmtPrinter.literal(Jimple.GOTO);
     stmtPrinter.literal(" ");
-    stmtPrinter.stmtRef(getTarget(stmtPrinter.getBody()), true);
-  }
-
-  public Stmt getTarget(@Nonnull Body body) {
     // [ms] bounds are validated in Body if its a valid StmtGraph
-    return getTargetStmts(body).get(0);
+    stmtPrinter.stmtRef(getTargetStmts(stmtPrinter.getBody()).get(0), true);
   }
 
   @Override

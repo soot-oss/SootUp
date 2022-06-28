@@ -277,7 +277,12 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     }
 
     for (Stmt node : nodes) {
-      if (!otherNodes.contains(node) || !successors(node).equals(otherGraph.successors(node))) {
+      if (!otherNodes.contains(node)) {
+        return false;
+      }
+      final List<Stmt> successors = successors(node);
+      final List<Stmt> otherSuccessors = otherGraph.successors(node);
+      if (!successors.equals(otherSuccessors)) {
         return false;
       }
     }
@@ -285,12 +290,6 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     return true;
   }
 
-  /**
-   * you're lazy - create your algorithm modifications more clean/precise for better performance ;-)
-   *
-   * <p>public boolean purgeUnconnectedEdges() { // TODO: implement pruning graph to remove
-   * unconnected edges throw new UnsupportedOperationException("not implemented yet"); }
-   */
   @Override
   @Nonnull
   public abstract Iterator<Stmt> iterator();

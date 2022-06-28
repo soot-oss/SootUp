@@ -1304,8 +1304,9 @@ public class BinaryOpInstructionConversionTest {
           assertEquiv(
               new JEqExpr(new Local("$z0", PrimitiveType.getBoolean()), IntConstant.getInstance(0)),
               stmt.getCondition());
+          // [ms] bounds are validated in Body
           assertInstanceOfSatisfying(
-              stmt.getTarget(body),
+              stmt.getTargetStmts(body).get(0),
               JAssignStmt.class,
               target -> {
                 assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getLeftOp());
@@ -1326,7 +1327,7 @@ public class BinaryOpInstructionConversionTest {
         JGotoStmt.class,
         stmt ->
             assertInstanceOfSatisfying(
-                stmt.getTarget(body),
+                stmt.getTargetStmts(body).get(0),
                 JReturnStmt.class,
                 target ->
                     assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getOp())));
@@ -1396,8 +1397,9 @@ public class BinaryOpInstructionConversionTest {
           assertEquiv(
               new JEqExpr(new Local("$z0", PrimitiveType.getBoolean()), IntConstant.getInstance(0)),
               stmt.getCondition());
+          // [ms] bounds are validated in Body
           assertInstanceOfSatisfying(
-              stmt.getTarget(body),
+              stmt.getTargetStmts(body).get(0),
               JAssignStmt.class,
               target -> {
                 assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getLeftOp());
@@ -1418,7 +1420,7 @@ public class BinaryOpInstructionConversionTest {
         JGotoStmt.class,
         stmt ->
             assertInstanceOfSatisfying(
-                stmt.getTarget(body),
+                stmt.getTargetStmts(body).get(0),
                 JReturnStmt.class,
                 target ->
                     assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getOp())));

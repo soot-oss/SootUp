@@ -251,9 +251,11 @@ public class Body implements Copyable {
     for (Stmt stmt : graph.nodes()) {
       if (stmt instanceof BranchingStmt) {
         if (stmt instanceof JIfStmt) {
-          stmtList.add(((JIfStmt) stmt).getTarget(this));
+          // [ms] bounds are validated in Body
+          stmtList.add(((JIfStmt) stmt).getTargetStmts(this).get(0));
         } else if (stmt instanceof JGotoStmt) {
-          stmtList.add(((JGotoStmt) stmt).getTarget(this));
+          // [ms] bounds are validated in Body if its a valid StmtGraph
+          stmtList.add(((JGotoStmt) stmt).getTargetStmts(this).get(0));
         } else if (stmt instanceof JSwitchStmt) {
           stmtList.addAll(getBranchTargetsOf((BranchingStmt) stmt));
         }
@@ -331,7 +333,8 @@ public class Body implements Copyable {
       Stmt pred = iterator.next();
       if (pred.branches()) {
         if (pred instanceof JIfStmt) {
-          return ((JIfStmt) pred).getTarget(this) == targetStmt;
+          // [ms] bounds are validated in Body
+          return ((JIfStmt) pred).getTargetStmts(this).get(0) == targetStmt;
         }
         return true;
       }

@@ -36,7 +36,6 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import org.objectweb.asm.tree.*;
@@ -76,40 +75,6 @@ class AsmClassSource extends JavaSootClassSource {
         .collect(Collectors.toSet());
   }
 
-  private static Stream<JavaSootMethod> resolveMethods(
-      List<MethodNode> methodNodes, IdentifierFactory signatureFactory, ClassType cs) {
-    return methodNodes.stream()
-        .map(
-            methodSource -> {
-              AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
-              asmClassClassSourceContent.setDeclaringClass(cs);
-
-              List<ClassType> exceptions = new ArrayList<>();
-              exceptions.addAll(AsmUtil.asmIdToSignature(methodSource.exceptions));
-
-              String methodName = methodSource.name;
-              EnumSet<Modifier> modifiers = AsmUtil.getModifiers(methodSource.access);
-              List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(methodSource.desc);
-              Type retType = sigTypes.remove(sigTypes.size() - 1);
-
-              MethodSignature methodSignature =
-                  signatureFactory.getMethodSignature(methodName, cs, retType, sigTypes);
-
-              // TODO: position/line numbers if possible
-              return new JavaSootMethod(
-                  asmClassClassSourceContent,
-                  methodSignature,
-                  modifiers,
-                  exceptions,
-                  convertAnnotation(methodSource.invisibleAnnotations),
-                  NoPositionInformation.getInstance());
-            });
-  }
-
-  private static String convertAnnotation(TypeAnnotationNode node) {
-    return node.desc + node.typePath + node.typeRef;
-  }
-
   protected static List<AnnotationUsage> convertAnnotation(List<AnnotationNode> nodes) {
     if (nodes == null) {
       return Collections.emptyList();
@@ -145,7 +110,33 @@ class AsmClassSource extends JavaSootClassSource {
   @Nonnull
   public Collection<? extends SootMethod> resolveMethods() throws ResolveException {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    return resolveMethods(classNode.methods, identifierFactory, classSignature)
+    return classNode.methods.stream()
+        .map(
+            methodSource -> {
+              AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
+              asmClassClassSourceContent.setDeclaringClass(classSignature);
+
+              List<ClassType> exceptions = new ArrayList<>();
+              exceptions.addAll(AsmUtil.asmIdToSignature(methodSource.exceptions));
+
+              String methodName = methodSource.name;
+              EnumSet<Modifier> modifiers = AsmUtil.getModifiers(methodSource.access);
+              List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(methodSource.desc);
+              Type retType = sigTypes.remove(sigTypes.size() - 1);
+
+              MethodSignature methodSignature =
+                  identifierFactory.getMethodSignature(
+                      methodName, classSignature, retType, sigTypes);
+
+              // TODO: position/line numbers if possible
+              return new JavaSootMethod(
+                  asmClassClassSourceContent,
+                  methodSignature,
+                  modifiers,
+                  exceptions,
+                  convertAnnotation(methodSource.invisibleAnnotations),
+                  NoPositionInformation.getInstance());
+            })
         .collect(Collectors.toSet());
   }
 

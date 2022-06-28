@@ -92,11 +92,12 @@ public class LocalSplitterTest {
     localSplitter.interceptBody(builder);
     Body expectedBody = createExpectedBBBody();
 
+    final Body interceptedBody = builder.build();
     // check newBody's locals
-    AssertUtils.assertLocalsEquiv(expectedBody, builder.build());
+    AssertUtils.assertLocalsEquiv(expectedBody, interceptedBody);
 
     // check newBody's stmtGraph
-    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
+    AssertUtils.assertStmtGraphEquiv(expectedBody, interceptedBody);
   }
 
   /**
