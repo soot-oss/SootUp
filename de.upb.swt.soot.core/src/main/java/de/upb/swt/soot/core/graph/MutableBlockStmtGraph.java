@@ -224,7 +224,16 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       throw new IllegalArgumentException(
           "The first Stmt in the List is already in the StmtGraph and has at least one (fallsthrough) successor in its Block.");
     }
-    iterator.forEachRemaining(stmt -> addNodeToBlock(block, stmt));
+    iterator.forEachRemaining(
+        stmt -> {
+          final MutableBasicBlock overwrittenBlock = addNodeToBlock(block, stmt);
+          if (overwrittenBlock != null) {
+            throw new IllegalArgumentException(
+                "the Stmt '"
+                    + stmt
+                    + "' we want to add as a Stmt of a whole Block is already in this StmtGraph.");
+          }
+        });
     trapMap.forEach(
         (type, handlerStmt) ->
             block.addExceptionalSuccessorBlock(type, getOrCreateBlock(handlerStmt)));
@@ -670,7 +679,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       if (blockB == null) {
         blockB = createStmtsBlock(stmtB);
         linkBlocks(blockA, blockB);
-
       } else {
         if (blockB.getHead() == stmtB) {
           // stmtB is at the beginning of the second Block -> connect blockA and blockB

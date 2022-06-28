@@ -325,8 +325,8 @@ public class LocalSplitterTest {
 
     graph.addBlock(Arrays.asList(startingStmt, stmt1, stmt2), Collections.emptyMap());
     graph.setEdges(stmt2, Arrays.asList(stmt3, stmt5));
-    graph.putEdge(stmt4, ret);
     graph.addBlock(Arrays.asList(stmt3, stmt4), Collections.emptyMap());
+    graph.putEdge(stmt4, ret);
     graph.addBlock(Arrays.asList(stmt5, stmt6), Collections.emptyMap());
     graph.putEdge(stmt6, ret);
 

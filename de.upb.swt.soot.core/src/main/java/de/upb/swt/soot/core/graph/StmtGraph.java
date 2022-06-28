@@ -157,7 +157,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
           } else if (stmt instanceof JIfStmt) {
             if (successorCount != 2) {
               throw new IllegalStateException(
-                  stmt + ": must have '2' outgoing flow but has '" + successorCount + "'.");
+                  stmt + ": If must have '2' outgoing flow but has '" + successorCount + "'.");
             }
           } else if (stmt instanceof JGotoStmt) {
             if (successorCount != 1) {
