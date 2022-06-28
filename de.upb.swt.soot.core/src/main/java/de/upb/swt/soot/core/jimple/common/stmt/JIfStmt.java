@@ -72,7 +72,7 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
 
   public Stmt getTarget(Body body) {
     // [ms] bounds are validated in Body
-    return getTargetStmts(body).get(1);
+    return getTargetStmts(body).get(0);
   }
 
   @Override
