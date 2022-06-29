@@ -50,7 +50,8 @@ public class UnreachableCodeEliminatorTest {
   Stmt stmt2 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(2), noStmtPositionInfo);
   Stmt stmt3 = JavaJimple.newAssignStmt(l3, IntConstant.getInstance(3), noStmtPositionInfo);
 
-  Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
+  Stmt ret1 = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
+  Stmt ret2 = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
   Stmt handlerStmt = JavaJimple.newIdentityStmt(stack0, idRef, noStmtPositionInfo);
   Stmt beginStmt = JavaJimple.newAssignStmt(l3, stack0, noStmtPositionInfo);
@@ -78,9 +79,9 @@ public class UnreachableCodeEliminatorTest {
     // build stmtsGraph for the builder
     builder.addFlow(startingStmt, stmt1);
 
-    builder.addFlow(stmt1, ret);
+    builder.addFlow(stmt1, ret1);
     builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, ret);
+    builder.addFlow(stmt3, ret2);
 
     // set startingStmt
     builder.setStartingStmt(startingStmt);
@@ -91,7 +92,7 @@ public class UnreachableCodeEliminatorTest {
     UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
     eliminator.interceptBody(builder);
 
-    Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret);
+    Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
   }
 
@@ -114,7 +115,7 @@ public class UnreachableCodeEliminatorTest {
 
     // build stmtsGraph for the builder
     builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, ret);
+    builder.addFlow(stmt1, ret1);
     builder.addFlow(beginStmt, endStmt);
 
     List<Trap> traps = new ArrayList<>();
@@ -132,7 +133,7 @@ public class UnreachableCodeEliminatorTest {
 
     assertEquals(0, builder.getTraps().size());
 
-    Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret);
+    Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
   }
 
@@ -156,7 +157,7 @@ public class UnreachableCodeEliminatorTest {
 
     // build stmtsGraph for the builder
     builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, ret);
+    builder.addFlow(stmt1, ret1);
     builder.addFlow(handlerStmt, beginStmt);
 
     List<Trap> traps = new ArrayList<>();
@@ -174,7 +175,7 @@ public class UnreachableCodeEliminatorTest {
 
     assertEquals(0, builder.getTraps().size());
 
-    Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret);
+    Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
   }
 }

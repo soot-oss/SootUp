@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JAddExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -14,7 +13,6 @@ import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -33,11 +31,12 @@ public class AggregatorTest {
    */
   @Test
   public void testAggregation() {
-    Body.BodyBuilder testBuilder = createBody(true);
+    Body.BodyBuilder testBuilder = createBodyBuilder(true);
     Body testBody = testBuilder.build();
+    List<Stmt> originalStmts = testBody.getStmts();
+
     new Aggregator().interceptBody(testBuilder);
     Body processedBody = testBuilder.build();
-    List<Stmt> originalStmts = testBody.getStmts();
     List<Stmt> processedStmts = processedBody.getStmts();
 
     assertEquals(originalStmts.size() - 1, processedStmts.size());
@@ -54,7 +53,7 @@ public class AggregatorTest {
    */
   @Test
   public void testNoAggregation() {
-    Body.BodyBuilder testBuilder = createBody(false);
+    Body.BodyBuilder testBuilder = createBodyBuilder(false);
     Body testBody = testBuilder.build();
     new Aggregator().interceptBody(testBuilder);
     Body processedBody = testBuilder.build();
@@ -67,7 +66,7 @@ public class AggregatorTest {
     }
   }
 
-  private static Body.BodyBuilder createBody(boolean withAggregation) {
+  private static Body.BodyBuilder createBodyBuilder(boolean withAggregation) {
     StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
 
     Local a = JavaJimple.newLocal("a", PrimitiveType.getInt());
@@ -85,8 +84,6 @@ public class AggregatorTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
-    List<Trap> traps = new ArrayList<>();
-
     Body.BodyBuilder builder = Body.builder();
     builder.setStartingStmt(intToA);
     builder.setMethodSignature(
@@ -96,7 +93,6 @@ public class AggregatorTest {
     builder.addFlow(intToA, intToB);
     builder.addFlow(intToB, ret);
     builder.setLocals(locals);
-    builder.setTraps(traps);
     builder.setPosition(NoPositionInformation.getInstance());
 
     return builder;
