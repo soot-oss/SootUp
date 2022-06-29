@@ -38,10 +38,10 @@ public class NopEliminatorTest {
     new NopEliminator().interceptBody(builder);
     Body processedBody = builder.build();
 
-    StmtGraph expectedGraph = testBody.getStmtGraph();
-    StmtGraph actualGraph = processedBody.getStmtGraph();
+    StmtGraph<?> expectedGraph = testBody.getStmtGraph();
+    StmtGraph<?> actualGraph = processedBody.getStmtGraph();
 
-    assertEquals(expectedGraph.nodes().size() - 1, actualGraph.nodes().size());
+    assertEquals(expectedGraph.nodes().size(), actualGraph.nodes().size());
   }
 
   /**
@@ -85,8 +85,6 @@ public class NopEliminatorTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
-    List<Trap> traps = new ArrayList<>();
-
     Body.BodyBuilder builder = Body.builder();
     builder.setStartingStmt(strToA);
     builder.setMethodSignature(
@@ -104,7 +102,6 @@ public class NopEliminatorTest {
       builder.addFlow(nop, ret);
     }
     builder.setLocals(locals);
-    builder.setTraps(traps);
     builder.setPosition(NoPositionInformation.getInstance());
 
     return builder;

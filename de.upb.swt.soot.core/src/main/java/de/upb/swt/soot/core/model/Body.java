@@ -403,6 +403,9 @@ public class Body implements Copyable {
   // [ms] use/implement a snapshotiterator instead?
   private static class StmtGraphManipulationQueue {
 
+    // FIXME: ms: heavens - store lambdas.. -> no add/remove problem and we can just "re"play the
+    // applied changes when the iterator is done.
+
     @Nonnull private final List<Stmt> nodesToRemove = new ArrayList<>();
     @Nonnull private final List<Stmt> nodesToAdd = new ArrayList<>();
 

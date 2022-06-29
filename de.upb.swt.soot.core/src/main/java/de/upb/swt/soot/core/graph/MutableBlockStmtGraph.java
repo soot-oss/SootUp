@@ -530,7 +530,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
 
     if (isTail) {
-      // TODO: [ms] see question above..
+      // TODO: [ms] see question above.. i.e. shall we remove edges as well
       // switch, if, goto vs. usual stmt
       if (stmt.branches()) {
         final MutableBasicBlock finalBlockOfRemovedStmt = blockOfRemovedStmt;
@@ -685,10 +685,14 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       blockA = createStmtsBlock(stmtA);
     } else {
       if (blockA.getTail() != stmtA) {
-        // if StmtA is not at the end of the block -> it needs to branch to reach StmtB
-        // if StmtA branches -> it must at the end of a block
+        // if StmtA is not at the end of the block -> it needs to branch to reach StmtB or is
+        // falling through to another Block
         throw new IllegalArgumentException(
-            "StmtA is neither a BranchingStmt nor at the end of a block but it must be to reach StmtB.");
+            "StmtA '"
+                + stmtA
+                + "' is not at the end of a block but it must be to reach StmtB '"
+                + stmtB
+                + "'.");
       }
     }
 
@@ -696,8 +700,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       throw new IllegalArgumentException(
           "Can't add another flow - there are already enough flows i.e. "
               + stmtA.getExpectedSuccessorCount()
-              + " outgoing from StmtA "
-              + stmtA);
+              + " outgoing from StmtA '"
+              + stmtA
+              + "'");
     }
 
     if (stmtA.branches()) {
