@@ -1,14 +1,13 @@
-package de.upb.swt.soot.test.callgraph.typehierarchy.viewtypehierarchytestcase;
+package de.upb.swt.soot.test.typehierarchy.viewtypehierarchytestcase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
 import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyTestBase;
+import de.upb.swt.soot.test.typehierarchy.JavaTypeHierarchyTestBase;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.Test;
@@ -34,7 +33,7 @@ public class AbstractClassInheritanceTest extends JavaTypeHierarchyTestBase {
     assertTrue(superClass.isAbstract());
 
     ViewTypeHierarchy typeHierarchy =
-        (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
+        (ViewTypeHierarchy) customTestWatcher.getView().getTypeHierarchy();
     assertEquals(
         typeHierarchy.superClassOf(getClassType("AbstractClassInheritance")),
         getClassType("AbstractClass"));

@@ -1,4 +1,4 @@
-package de.upb.swt.soot.test.callgraph.typehierarchy.viewtypehierarchytestcase;
+package de.upb.swt.soot.test.typehierarchy.viewtypehierarchytestcase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -7,10 +7,9 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
-import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
 import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyTestBase;
+import de.upb.swt.soot.test.typehierarchy.JavaTypeHierarchyTestBase;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,7 +21,7 @@ import org.junit.experimental.categories.Category;
 public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyTestBase {
 
   ViewTypeHierarchy typeHierarchy =
-      (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
+      (ViewTypeHierarchy) customTestWatcher.getView().getTypeHierarchy();
   /**
    * Test: {@link java.lang.Object} is superclass of "SuperClass" and
    * "ClassInheritanceWithAdditionalMethod"

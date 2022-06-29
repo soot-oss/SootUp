@@ -1,4 +1,4 @@
-package de.upb.swt.soot.test.callgraph.typehierarchy;
+package de.upb.swt.soot.test.typehierarchy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

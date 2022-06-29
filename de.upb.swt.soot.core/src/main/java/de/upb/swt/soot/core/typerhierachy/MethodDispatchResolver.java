@@ -44,7 +44,7 @@ public final class MethodDispatchResolver {
   @Nonnull
   public static Set<MethodSignature> resolveAbstractDispatch(
       View<? extends SootClass<?>> view, MethodSignature m) {
-    TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
+    TypeHierarchy hierarchy = view.getTypeHierarchy();
 
     return hierarchy.subtypesOf(m.getDeclClassType()).stream()
         .map(
@@ -68,7 +68,7 @@ public final class MethodDispatchResolver {
   @Nonnull
   public static Set<MethodSignature> resolveAbstractDispatchInClasses(
       View<? extends SootClass<?>> view, MethodSignature m, Set<ClassType> classes) {
-    TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
+    TypeHierarchy hierarchy = view.getTypeHierarchy();
 
     return hierarchy.subtypesOf(m.getDeclClassType()).stream()
         .map(
@@ -140,7 +140,7 @@ public final class MethodDispatchResolver {
   @Nonnull
   public static MethodSignature resolveConcreteDispatch(
       View<? extends SootClass<?>> view, MethodSignature m) {
-    TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
+    TypeHierarchy hierarchy = view.getTypeHierarchy();
 
     ClassType superClassType = m.getDeclClassType();
     do {
@@ -189,7 +189,7 @@ public final class MethodDispatchResolver {
       return specialMethodSig;
     }
 
-    if (TypeHierarchy.fromView(view)
+    if (view.getTypeHierarchy()
         .isSubtype(container.getDeclClassType(), specialMethodSig.getDeclClassType())) {
       return resolveConcreteDispatch(view, specialMethodSig);
     }
