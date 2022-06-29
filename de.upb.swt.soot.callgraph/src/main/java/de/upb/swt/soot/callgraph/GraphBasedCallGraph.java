@@ -109,6 +109,9 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   @Override
   public boolean containsCall(
       @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
+    if (!containsMethod(sourceMethod) || !containsMethod(targetMethod)) {
+      return false;
+    }
     return graph.containsEdge(vertexOf(sourceMethod), vertexOf(targetMethod));
   }
 
