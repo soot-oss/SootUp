@@ -83,13 +83,14 @@ public class LocalGenerator {
   private Local generate(@Nonnull Type type, boolean isField) {
 
     StringBuilder name = new StringBuilder(7);
-    name.append("$");
     String localName;
     // determine locals name
     //noinspection SuspiciousMethodCalls
     do {
       // non-field Locals traditionally begin with "$"
-      name.setLength(isField ? 0 : 1);
+      if (!isField) {
+        name.append("$");
+      }
 
       if (type.equals(PrimitiveType.getInt())) {
         appendNextIntName(name);
