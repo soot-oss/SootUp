@@ -37,6 +37,8 @@ import javax.annotation.Nonnull;
 /** @author Zun Wang */
 public class LocalNameStandardizer implements BodyInterceptor {
 
+  // TODO: ms: why not reuse LocalGenerator to dry?
+
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
