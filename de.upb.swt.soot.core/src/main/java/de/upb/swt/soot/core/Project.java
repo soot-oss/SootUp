@@ -140,13 +140,4 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
           Function<AnalysisInputLocation<? extends S>, ClassLoadingOptions>
               classLoadingOptionsSpecifier);
 
-  /**
-   * Returns a partial view on the code based on the provided scope and all input locations in the
-   * project and scope.
-   *
-   * @param s A scope of interest for the view
-   * @return A scoped view of the provided code
-   */
-  @Nonnull
-  public abstract V createView(Scope s);
 }

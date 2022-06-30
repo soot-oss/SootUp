@@ -31,6 +31,8 @@ import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
+import de.upb.swt.soot.java.core.views.MutableJavaView;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -58,6 +60,11 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
   }
 
   @Nonnull
+  public MutableJavaView createMutableOnDemandView() {
+    return new MutableJavaView(this);
+  }
+
+  @Nonnull
   @Override
   public JavaView createOnDemandView(
       @Nonnull
@@ -75,9 +82,10 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
   }
 
   @Nonnull
-  @Override
-  public JavaView createView(Scope s) {
-    return createOnDemandView();
+  public MutableJavaView createMutableFullView() {
+    final MutableJavaView view = createMutableOnDemandView();
+    view.getClasses();
+    return view;
   }
 
   /**
