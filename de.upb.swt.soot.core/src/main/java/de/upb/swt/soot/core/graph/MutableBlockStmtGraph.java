@@ -706,7 +706,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
 
     if (stmtA.branches()) {
-      // branching A indicates the end of BlockA and connects to another BlockB: reuse or create new
+      // branching Stmt A indicates the end of BlockA and connects to another BlockB: reuse or
+      // create new
       // one
       if (blockB == null) {
         blockB = createStmtsBlock(stmtB);
@@ -755,7 +756,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                     });
 
           } else {
-            // stmtA does not branch but stmtB is already a branch target => link blocks
+            // stmtA does not branch but stmtB is already a branch target or has different traps =>
+            // link blocks
             linkBlocks(blockA, blockB);
           }
         } else {
@@ -1227,6 +1229,19 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         } else if (!otherBlocks.isEmpty()) {
           nextBlock = otherBlocks.pollFirst();
         } else {
+
+          if (iteratedBlocks.size() < blocks.size()) {
+            // graph is not connected! add all not connected blocks at the end!
+            for (MutableBasicBlock block : blocks) {
+              if (!iteratedBlocks.contains(block) && block.getPredecessors().size() == 0) {
+                nestedBlocks.addLast(block);
+              }
+            }
+            if (!nestedBlocks.isEmpty()) {
+              return nestedBlocks.pollFirst();
+            }
+          }
+
           return null;
         }
 
