@@ -20,6 +20,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import com.google.common.collect.Lists;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -62,8 +63,7 @@ public class Aggregator implements BodyInterceptor {
     StmtGraph<?> graph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
 
-    builder.enableDeferredStmtGraphChanges();
-    for (Stmt stmt : stmts) {
+    for (Stmt stmt : Lists.newArrayList(stmts)) {
       if (stmt instanceof JAssignStmt) {
         final JAssignStmt<?, ?> assignStmt = (JAssignStmt<?, ?>) stmt;
         Value lhs = assignStmt.getLeftOp();
@@ -186,7 +186,5 @@ public class Aggregator implements BodyInterceptor {
         }
       }
     }
-
-    builder.commitDeferredStmtGraphChanges();
   }
 }

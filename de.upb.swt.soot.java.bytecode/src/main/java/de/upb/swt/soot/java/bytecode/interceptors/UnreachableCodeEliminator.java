@@ -63,13 +63,15 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
     }
 
     // remove unreachable stmts from StmtGraph
-    builder.enableDeferredStmtGraphChanges();
+    Queue<Stmt> removeQ = new ArrayDeque<>();
     for (Stmt stmt : graph.nodes()) {
       if (!reachableStmts.contains(stmt)) {
-        builder.removeStmt(stmt);
+        removeQ.add(stmt);
       }
     }
-    builder.disableAndCommitDeferredStmtGraphChanges();
+    for (Stmt stmt : removeQ) {
+      builder.removeStmt(stmt);
+    }
 
     // cleanup invalid traps
     Iterator<Trap> trapIterator = traps.iterator();

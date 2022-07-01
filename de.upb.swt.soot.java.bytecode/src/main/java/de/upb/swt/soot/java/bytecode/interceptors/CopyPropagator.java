@@ -21,6 +21,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #L%
  */
 
+import com.google.common.collect.Lists;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
@@ -43,7 +44,7 @@ public class CopyPropagator implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    for (Stmt stmt : builder.getStmtGraph()) {
+    for (Stmt stmt : Lists.newArrayList(builder.getStmtGraph())) {
       for (Value use : stmt.getUses()) {
         if (use instanceof Local) {
           List<Stmt> defsOfUse =

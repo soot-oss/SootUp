@@ -21,6 +21,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #L%
  */
 
+import com.google.common.collect.Lists;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
@@ -49,8 +50,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
     final StmtGraph<?> builderStmtGraph = builder.getStmtGraph();
     final StmtGraph<?> stmtGraph = builder.getStmtGraph();
 
-    builder.enableDeferredStmtGraphChanges();
-    for (Stmt stmt : stmtGraph.nodes()) {
+    for (Stmt stmt : Lists.newArrayList(stmtGraph.nodes())) {
       if (stmt instanceof JIfStmt) {
         JIfStmt ifStmt = (JIfStmt) stmt;
         // check for constant-valued conditions
@@ -93,6 +93,5 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         }
       }
     }
-    builder.commitDeferredStmtGraphChanges();
   }
 }

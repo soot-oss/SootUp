@@ -20,8 +20,8 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import com.google.common.collect.Lists;
 import de.upb.swt.soot.core.graph.StmtGraph;
-import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
@@ -66,8 +66,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
 
     StmtGraph<?> originalGraph = builder.getStmtGraph();
 
-    builder.enableDeferredStmtGraphChanges();
-    for (Stmt stmt : originalGraph.nodes()) {
+    for (Stmt stmt : Lists.newArrayList(originalGraph.nodes())) {
       if (!(stmt instanceof JGotoStmt)) {
         continue;
       }
@@ -101,35 +100,12 @@ public class CastAndReturnInliner implements BodyInterceptor {
       // Redirect all flows coming into the GOTO to the new return
       List<Stmt> predecessors = originalGraph.predecessors(gotoStmt);
       for (Stmt pred : predecessors) {
-        builder.addFlow(pred, newStmt);
         builder.removeFlow(pred, gotoStmt);
+        builder.addFlow(pred, newStmt);
       }
       // cleanup now obsolete cast and return statements
       builder.removeFlow(gotoStmt, assign);
       builder.removeFlow(assign, retStmt);
-
-      List<Trap> traps = builder.getTraps();
-      // if used in a Trap replace occurences of goto by inlined return
-      for (int i = 0; i < traps.size(); i++) {
-        Trap trap = traps.get(i);
-        boolean modified = false;
-        if (trap.getBeginStmt() == gotoStmt) {
-          trap = trap.withBeginStmt(newStmt);
-          modified = true;
-        }
-        if (trap.getEndStmt() == gotoStmt) {
-          trap = trap.withEndStmt(newStmt);
-          modified = true;
-        }
-        if (trap.getHandlerStmt() == gotoStmt) {
-          trap = trap.withHandlerStmt(newStmt);
-          modified = true;
-        }
-        if (modified) {
-          traps.set(i, trap);
-        }
-      }
     }
-    builder.commitDeferredStmtGraphChanges();
   }
 }

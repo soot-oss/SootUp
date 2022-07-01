@@ -151,7 +151,7 @@ public class CopyPropagatorTest {
   }
 
   @Test
-  /** Test the copy propagation for castExpr */
+  /* Test the copy propagation for castExpr */
   public void testCastExprBody() {
 
     Body body = createCastExprBody();

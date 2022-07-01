@@ -46,14 +46,16 @@ public class NopEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     StmtGraph<?> graph = builder.getStmtGraph();
-    Collection<Stmt> stmtSet = graph.nodes();
 
-    builder.enableDeferredStmtGraphChanges();
-    for (Stmt stmt : stmtSet) {
+    Queue<Stmt> q = new ArrayDeque<>();
+    for (Stmt stmt : graph.nodes()) {
       if (stmt instanceof JNopStmt) {
-        builder.removeStmt(stmt);
+        q.add(stmt);
       }
     }
-    builder.commitDeferredStmtGraphChanges();
+
+    for (Stmt stmt : q) {
+      builder.removeStmt(stmt);
+    }
   }
 }

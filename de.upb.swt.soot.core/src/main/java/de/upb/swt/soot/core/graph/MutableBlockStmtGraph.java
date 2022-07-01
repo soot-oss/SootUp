@@ -531,6 +531,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                 finalBlockOfRemovedStmt.removePredecessorBlock(b);
               });
       blockOfRemovedStmt.clearPredecessorBlocks();
+
+      // TODO: remove exceptional flow if stmt is a traphandler
+      if (exceptionalPredecessors(blockOfRemovedStmt).size() > 0) {}
     }
 
     if (isTail) {
@@ -577,6 +580,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       throw new IllegalArgumentException("oldStmt does not exist in the StmtGraph!");
     }
 
+    // is oldStmt the startingStmt? replace startingStmt with newStmt
     if (oldStmt == startingStmt) {
       startingStmt = newStmt;
     }
@@ -789,6 +793,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     MutableBasicBlock blockOfFrom = stmtToBlock.get(from);
     MutableBasicBlock blockOfTo = stmtToBlock.get(to);
 
+    if (blockOfFrom == null || blockOfTo == null) {
+      // one of the Stmts is not existing anymore in this graph - so neither a connection.
+      return;
+    }
+
     removeBlockBorderEdgesInternal(from, blockOfFrom);
 
     // divide block if from and to are from the same block
@@ -957,22 +966,33 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   @Override
   public List<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
 
-    final MutableBasicBlock currentBlock = stmtToBlock.get(node);
-    if (currentBlock == null) {
+    final MutableBasicBlock block = stmtToBlock.get(node);
+    if (block == null) {
       throw new IllegalArgumentException("Stmt is not in the StmtGraph.");
     }
 
-    if (currentBlock.getHead() != node
-        || !(node instanceof JIdentityStmt
-            && ((JIdentityStmt<?>) node).getRightOp() instanceof JCaughtExceptionRef)) {
+    if (block.getHead() != node) {
+      // a traphandler is a blocks head and only an exception handler stmt can have exceptional
+      // predecessors
+      return Collections.emptyList();
+    }
+
+    return exceptionalPredecessors(block);
+  }
+
+  public List<Stmt> exceptionalPredecessors(@Nonnull MutableBasicBlock block) {
+
+    Stmt head = block.getHead();
+    if (!(head instanceof JIdentityStmt
+        && ((JIdentityStmt<?>) head).getRightOp() instanceof JCaughtExceptionRef)) {
       // only an exception handler stmt can have exceptional predecessors
       return Collections.emptyList();
     }
 
     List<Stmt> exceptionalPred = new ArrayList<>();
-    for (BasicBlock<?> block : getBlocks()) {
-      if (block.getExceptionalSuccessors().containsValue(currentBlock)) {
-        exceptionalPred.addAll(block.getStmts());
+    for (BasicBlock<?> pBlock : block.getPredecessors()) {
+      if (pBlock.getExceptionalSuccessors().containsValue(pBlock)) {
+        exceptionalPred.addAll(pBlock.getStmts());
       }
     }
     return exceptionalPred;

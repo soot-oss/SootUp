@@ -79,7 +79,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     boolean containsInvoke = false;
     Local thisLocal = null;
 
-    builder.enableDeferredStmtGraphChanges();
+    // FIXME[ms] iterator thingy.. looks nasty <-> stmt removla
     for (Iterator<Stmt> iterator = stmtGraph.nodes().iterator(); iterator.hasNext(); ) {
       Stmt stmt = iterator.next();
       boolean isEssential = true;
@@ -263,7 +263,5 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
         }
       }
     }
-
-    builder.commitDeferredStmtGraphChanges();
   }
 }

@@ -64,8 +64,9 @@ import javax.annotation.Nullable;
  * @author Zun Wang
  */
 public class LocalSplitter implements BodyInterceptor {
-  // hint: [ms] assumption names of Locals do not contain a '#' already -> could otherwise lead to
-  // problems
+  // FIXME: [ms] assumes that names of Locals do not contain a '#' already -> could lead to problems
+
+  // TODO: [ms] check equivTo()'s - I guess they can be equals()'s - or even: '=='s
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
@@ -76,8 +77,9 @@ public class LocalSplitter implements BodyInterceptor {
     Set<Local> visitedLocals = new LinkedHashSet<>();
     Set<Local> toSplitLocals = new LinkedHashSet<>();
     for (Stmt stmt : stmts) {
-      if (!stmt.getDefs().isEmpty()) {
-        Value def = stmt.getDefs().get(0);
+      final List<Value> defs = stmt.getDefs();
+      if (!defs.isEmpty()) {
+        Value def = defs.get(0);
         if (def instanceof Local) {
           if (visitedLocals.contains(def)) {
             toSplitLocals.add((Local) def);
@@ -93,7 +95,7 @@ public class LocalSplitter implements BodyInterceptor {
     Set<Local> newLocals = new LinkedHashSet<>(builder.getLocals());
     int localIndex = 1;
 
-    // Start to iterate stmts in BodyBuilder:
+    // iterate stmts
     while (!stmts.isEmpty()) {
       Stmt currentStmt = stmts.remove(0);
       // At first Check the definition(left side) of the currentStmt is a local which must be split:
@@ -113,7 +115,7 @@ public class LocalSplitter implements BodyInterceptor {
 
         // Build the forwardsQueue which is used to iterate all Stmts before the orilocal is defined
         // again.
-        // The direction of iteration is from root of the StmtGraph to leaves. So the successors of
+        // The direction of iteration is from root of the StmtGraph to leafs. So the successors of
         // the newStmt are added into the forwardsQueue.
         Deque<Stmt> forwardsQueue = new ArrayDeque<>(graph.successors(newStmt));
         // Create the visitedStmt to store the visited Stmts for the forwardsQueue, to avoid, a
@@ -231,7 +233,10 @@ public class LocalSplitter implements BodyInterceptor {
             for (Stmt handlerStmt : handlerStmts) {
               List<Stmt> exceptionalPreds = graph.exceptionalPredecessors(handlerStmt);
               for (Stmt exceptionalPred : exceptionalPreds) {
+
+                // FIXME: here changed sth from getDestTraps
                 Map<ClassType, Stmt> dests = graph.exceptionalSuccessors(exceptionalPred);
+
                 List<Stmt> destHandlerStmts = new ArrayList<>();
                 dests.forEach((key, dest) -> destHandlerStmts.add(dest));
                 if (destHandlerStmts.contains(handlerStmt)) {
@@ -267,46 +272,22 @@ public class LocalSplitter implements BodyInterceptor {
    * Replace corresponding oldStmt with newStmt in BodyBuilder and visitList
    *
    * @param builder
-   * @param stmts
+   * @param stmtIterationList
    * @param oldStmt
    * @param newStmt
    */
   private void replaceStmtInBuilder(
       @Nonnull BodyBuilder builder,
-      @Nonnull List<Stmt> stmts,
+      @Nonnull List<Stmt> stmtIterationList,
       @Nonnull Stmt oldStmt,
       @Nonnull Stmt newStmt) {
-    builder.replaceStmt(oldStmt, newStmt);
-    // adaptTraps(builder, oldStmt, newStmt);
-    adaptVisitList(stmts, oldStmt, newStmt);
-  }
-  /**
-   * Fit the modified stmt in Traps
-   *
-   * @param builder a bodybuilder, use it to modify Trap
-   * @param oldStmt a Stmt which maybe a beginStmt or endStmt in a Trap
-   * @param newStmt a modified stmt to replace the oldStmt.
-   *     <p>private void adaptTraps( @Nonnull BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull
-   *     Stmt newStmt) { List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps()); for
-   *     (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) { Trap trap =
-   *     iterator.next(); if (oldStmt.equivTo(trap.getBeginStmt())) { Trap newTrap =
-   *     trap.withBeginStmt(newStmt); iterator.set(newTrap); } else if
-   *     (oldStmt.equivTo(trap.getEndStmt())) { Trap newTrap = trap.withEndStmt(newStmt);
-   *     iterator.set(newTrap); } } builder.setTraps(traps); }
-   */
 
-  /**
-   * Fit the modified Stmt in visitedList
-   *
-   * @param visitList a list storing all Stmts which are not yet visited.
-   * @param oldStmt a stmt which is modified.
-   * @param newStmt a modified stmt to replace the oldStmt.
-   */
-  private void adaptVisitList(
-      @Nonnull List<Stmt> visitList, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-    final int index = visitList.indexOf(oldStmt);
+    builder.replaceStmt(oldStmt, newStmt);
+
+    // adapt VisitList
+    final int index = stmtIterationList.indexOf(oldStmt);
     if (index > -1) {
-      visitList.set(index, newStmt);
+      stmtIterationList.set(index, newStmt);
     }
   }
 
@@ -375,8 +356,9 @@ public class LocalSplitter implements BodyInterceptor {
    * @return if so, return true, else return false
    */
   private boolean hasModifiedDef(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
-    if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
-      return isLocalFromSameOrigin(oriLocal, stmt.getDefs().get(0));
+    final List<Value> defs = stmt.getDefs();
+    if (!defs.isEmpty() && defs.get(0) instanceof Local) {
+      return isLocalFromSameOrigin(oriLocal, defs.get(0));
     }
     return false;
   }
@@ -391,10 +373,10 @@ public class LocalSplitter implements BodyInterceptor {
   private boolean hasHigherLocalName(@Nonnull Local leftLocal, @Nonnull Local rightLocal) {
     String leftName = leftLocal.getName();
     String rightName = rightLocal.getName();
-    int i = leftName.lastIndexOf('#');
-    int j = rightName.lastIndexOf('#');
-    int leftNum = Integer.parseInt(leftName.substring(i + 1));
-    int rightNum = Integer.parseInt(rightName.substring(j + 1));
+    int lIdx = leftName.lastIndexOf('#');
+    int rIdx = rightName.lastIndexOf('#');
+    int leftNum = Integer.parseInt(leftName.substring(lIdx + 1));
+    int rightNum = Integer.parseInt(rightName.substring(rIdx + 1));
     return leftNum > rightNum;
   }
 
@@ -409,7 +391,6 @@ public class LocalSplitter implements BodyInterceptor {
   private Set<Stmt> traceHandlerStmts(@Nonnull BodyBuilder bodyBuilder, @Nonnull Stmt stmt) {
 
     Set<Stmt> handlerStmts = new HashSet<>();
-
     StmtGraph<?> graph = bodyBuilder.getStmtGraph();
 
     Deque<Stmt> queue = new ArrayDeque<>();

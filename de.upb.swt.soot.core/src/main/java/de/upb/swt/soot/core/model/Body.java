@@ -398,82 +398,6 @@ public class Body implements Copyable {
     return new Body(getMethodSignature(), locals, getStmtGraph(), getPosition());
   }
 
-  /** helps against ConcurrentModificationException; it queues changes until they are committed */
-  // TODO: think about same nodes/flows added AND removed
-  // [ms] use/implement a snapshotiterator instead?
-  private static class StmtGraphManipulationQueue {
-
-    // FIXME: ms: heavens - store lambdas.. -> no add/remove problem and we can just "re"play the
-    // applied changes when the iterator is done.
-
-    @Nonnull private final List<Stmt> nodesToRemove = new ArrayList<>();
-    @Nonnull private final List<Stmt> nodesToAdd = new ArrayList<>();
-
-    void addNode(@Nonnull Stmt node) {
-      nodesToAdd.add(node);
-    }
-
-    void removeNode(@Nonnull Stmt node) {
-      nodesToRemove.add(node);
-    }
-
-    // List sizes are a multiple of 2; even: from odd: to of an edge
-    @Nonnull private final List<Stmt> flowsToRemove = new ArrayList<>();
-    @Nonnull private final List<Stmt> flowsToAdd = new ArrayList<>();
-
-    void addFlow(@Nonnull Stmt from, @Nonnull Stmt to) {
-      flowsToAdd.add(from);
-      flowsToAdd.add(to);
-    }
-
-    void removeFlow(@Nonnull Stmt from, @Nonnull Stmt to) {
-      flowsToRemove.add(from);
-      flowsToRemove.add(to);
-    }
-
-    /** return true if there where queued changes */
-    public boolean commit(MutableStmtGraph graph) {
-
-      if (!flowsToAdd.isEmpty()
-          || !flowsToRemove.isEmpty()
-          || !nodesToAdd.isEmpty()
-          || !nodesToRemove.isEmpty()) {
-        for (Stmt stmt : nodesToAdd) {
-          graph.addNode(stmt);
-        }
-
-        for (Stmt stmt : nodesToRemove) {
-          graph.removeNode(stmt);
-        }
-
-        Iterator<Stmt> addIt = flowsToAdd.iterator();
-        while (addIt.hasNext()) {
-          final Stmt from = addIt.next();
-          final Stmt to = addIt.next();
-          graph.putEdge(from, to);
-        }
-
-        Iterator<Stmt> remIt = flowsToRemove.iterator();
-        while (remIt.hasNext()) {
-          final Stmt from = remIt.next();
-          final Stmt to = remIt.next();
-          graph.removeEdge(from, to);
-        }
-        clear();
-
-        return true;
-      }
-      return false;
-    }
-
-    public void clear() {
-      nodesToAdd.clear();
-      nodesToRemove.clear();
-      flowsToAdd.clear();
-      flowsToRemove.clear();
-    }
-  }
-
   public static BodyBuilder builder() {
     return new BodyBuilder();
   }
@@ -513,7 +437,6 @@ public class Body implements Copyable {
     @Nonnull private final MutableStmtGraph graph;
     @Nullable private MethodSignature methodSig = null;
 
-    @Nullable private StmtGraphManipulationQueue changeQueue = null;
     @Nullable private List<Stmt> cachedLinearizedStmts = null;
 
     BodyBuilder() {
@@ -589,12 +512,8 @@ public class Body implements Copyable {
     /** remove the a stmt from the graph and stmt */
     @Nonnull
     public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
-      if (changeQueue == null) {
-        graph.removeNode(stmt);
-        cachedLinearizedStmts = null;
-      } else {
-        changeQueue.removeNode(stmt);
-      }
+      graph.removeNode(stmt);
+      cachedLinearizedStmts = null;
       return this;
     }
 
@@ -612,23 +531,15 @@ public class Body implements Copyable {
 
     @Nonnull
     public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
-      if (changeQueue == null) {
-        graph.putEdge(fromStmt, toStmt);
-        cachedLinearizedStmts = null;
-      } else {
-        changeQueue.addFlow(fromStmt, toStmt);
-      }
+      graph.putEdge(fromStmt, toStmt);
+      cachedLinearizedStmts = null;
       return this;
     }
 
     @Nonnull
     public BodyBuilder removeFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
-      if (changeQueue == null) {
-        graph.removeEdge(fromStmt, toStmt);
-        cachedLinearizedStmts = null;
-      } else {
-        changeQueue.removeFlow(fromStmt, toStmt);
-      }
+      graph.removeEdge(fromStmt, toStmt);
+      cachedLinearizedStmts = null;
       return this;
     }
 
@@ -648,44 +559,6 @@ public class Body implements Copyable {
       return this;
     }
 
-    /**
-     * Queues changes to the StmtGraph (e.g. addFlow, removeFlow) until they are commited. helps to
-     * prevent ConcurrentModificationException
-     */
-    public BodyBuilder enableDeferredStmtGraphChanges() {
-      if (changeQueue == null) {
-        changeQueue = new StmtGraphManipulationQueue();
-      }
-      return this;
-    }
-
-    /**
-     * commits the changes that were added to the queue if that was enabled before AND disables
-     * further queueing of changes.
-     */
-    public BodyBuilder disableAndCommitDeferredStmtGraphChanges() {
-      commitDeferredStmtGraphChanges();
-      changeQueue = null;
-      return this;
-    }
-
-    /** commits the changes that were added to the queue if that was enabled before */
-    public BodyBuilder commitDeferredStmtGraphChanges() {
-      if (changeQueue != null) {
-        if (changeQueue.commit(graph)) {
-          cachedLinearizedStmts = null;
-        }
-      }
-      return this;
-    }
-    /** clears queued changes fot */
-    public BodyBuilder clearDeferredStmtGraphChanges() {
-      if (changeQueue != null) {
-        changeQueue.clear();
-      }
-      return this;
-    }
-
     @Nonnull
     public Body build() {
 
@@ -696,9 +569,6 @@ public class Body implements Copyable {
       if (position == null) {
         setPosition(NoPositionInformation.getInstance());
       }
-
-      // commit pending changes
-      commitDeferredStmtGraphChanges();
 
       final Stmt startingStmt = graph.getStartingStmt();
       final Collection<Stmt> nodes = graph.nodes();

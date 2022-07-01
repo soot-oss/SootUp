@@ -20,6 +20,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import com.google.common.collect.Lists;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -47,12 +48,10 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     List<Stmt> defs = new ArrayList<>();
-    List<Stmt> remainingStmts = builder.getStmts();
 
-    builder.enableDeferredStmtGraphChanges();
     // Perform a constant/local propagation pass
     // go through each use in each statement
-    for (Stmt stmt : remainingStmts) {
+    for (Stmt stmt : Lists.newArrayList(builder.getStmts())) {
       // propagation pass
       if (stmt instanceof JAssignStmt) {
         Value rhs = ((AbstractDefinitionStmt) stmt).getRightOp();
@@ -107,6 +106,5 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
         }
       }
     }
-    builder.commitDeferredStmtGraphChanges();
   }
 }
