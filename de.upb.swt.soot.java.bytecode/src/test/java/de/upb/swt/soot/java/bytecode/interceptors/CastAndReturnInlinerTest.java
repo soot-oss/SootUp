@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.ImmutableUtils;
@@ -57,10 +56,8 @@ public class CastAndReturnInlinerTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
-    List<Trap> traps = Collections.emptyList();
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
-    bodyBuilder.setTraps(traps);
     bodyBuilder.setStartingStmt(strToA);
     bodyBuilder.addFlow(strToA, jump);
     bodyBuilder.addFlow(jump, bToA);
@@ -111,11 +108,8 @@ public class CastAndReturnInlinerTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
-    List<Trap> traps = Collections.emptyList();
-
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
-    bodyBuilder.setTraps(traps);
     bodyBuilder.setStartingStmt(strToA);
     bodyBuilder.addFlow(strToA, strToC);
     bodyBuilder.addFlow(strToC, jump);

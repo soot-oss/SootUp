@@ -6,7 +6,6 @@ import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
@@ -60,8 +59,6 @@ public class DeadAssignmentEliminatorTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b, c);
 
-    List<Trap> traps = new ArrayList<>();
-
     Body.BodyBuilder builder = Body.builder();
     builder.setStartingStmt(strToA);
     builder.setMethodSignature(
@@ -78,7 +75,6 @@ public class DeadAssignmentEliminatorTest {
       builder.addFlow(intToC, ret);
     }
     builder.setLocals(locals);
-    builder.setTraps(traps);
     builder.setPosition(NoPositionInformation.getInstance());
 
     return builder;

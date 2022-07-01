@@ -3,6 +3,8 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.graph.MutableBlockStmtGraph;
+import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
@@ -57,7 +59,6 @@ public class UnreachableCodeEliminatorTest {
   Stmt beginStmt = JavaJimple.newAssignStmt(l3, stack0, noStmtPositionInfo);
   Stmt endStmt = JavaJimple.newAssignStmt(l4, IntConstant.getInstance(4), noStmtPositionInfo);
 
-  Trap trap1 = JavaJimple.newTrap(exception, beginStmt, endStmt, handlerStmt);
   Trap trap2 = JavaJimple.newTrap(exception, beginStmt, beginStmt, handlerStmt);
 
   @Test
@@ -105,7 +106,8 @@ public class UnreachableCodeEliminatorTest {
   public void testTrapedBody1() {
 
     // build an instance of BodyBuilder
-    Body.BodyBuilder builder = Body.builder();
+    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
@@ -114,16 +116,13 @@ public class UnreachableCodeEliminatorTest {
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, ret1);
-    builder.addFlow(beginStmt, endStmt);
-
-    List<Trap> traps = new ArrayList<>();
-    traps.add(trap1);
-    builder.setTraps(traps);
+    graph.putEdge(startingStmt, stmt1);
+    graph.putEdge(stmt1, ret1);
+    graph.addBlock(
+        Arrays.asList(beginStmt, endStmt), Collections.singletonMap(exception, handlerStmt));
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
@@ -147,7 +146,8 @@ public class UnreachableCodeEliminatorTest {
   public void testTrapedBody2() {
 
     // build an instance of BodyBuilder
-    Body.BodyBuilder builder = Body.builder();
+    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
@@ -156,13 +156,10 @@ public class UnreachableCodeEliminatorTest {
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, ret1);
-    builder.addFlow(handlerStmt, beginStmt);
-
-    List<Trap> traps = new ArrayList<>();
-    traps.add(trap2);
-    builder.setTraps(traps);
+    graph.putEdge(startingStmt, stmt1);
+    graph.putEdge(stmt1, ret1);
+    graph.addNode(beginStmt, Collections.singletonMap(exception, handlerStmt));
+    graph.putEdge(handlerStmt, beginStmt);
 
     // set startingStmt
     builder.setStartingStmt(startingStmt);

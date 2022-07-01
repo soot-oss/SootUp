@@ -587,6 +587,7 @@ public class LocalSplitterTest {
     graph.addBlock(
         Arrays.asList(startingStmt, stmt1, stmt2), Collections.singletonMap(exception, stmt4));
     graph.addBlock(Arrays.asList(stmt4, stmt5, stmt6), Collections.emptyMap());
+    graph.addNode(stmt3);
     graph.putEdge(stmt2, stmt3);
     graph.putEdge(stmt3, ret);
     graph.putEdge(stmt6, ret);
@@ -595,13 +596,6 @@ public class LocalSplitterTest {
 
     // build position
     builder.setPosition(NoPositionInformation.getInstance());
-
-    /* build trap
-    Trap trap = new Trap(exception, stmt1, stmt3, stmt4);
-    List<Trap> traps = new ArrayList<>();
-    traps.add(trap);
-    builder.setTraps(traps);
-    */
 
     return builder.build();
   }
@@ -633,17 +627,6 @@ public class LocalSplitterTest {
     graph.putEdge(stmt6, ret);
 
     graph.setStartingStmt(startingStmt);
-
-    // build position
-    Position position = NoPositionInformation.getInstance();
-    builder.setPosition(position);
-
-    /* build trap
-    Trap trap = new Trap(exception, stmt1, stmt3, stmt4);
-    List<Trap> traps = new ArrayList<>();
-    traps.add(trap);
-    builder.setTraps(traps);
-    */
 
     return builder.build();
   }

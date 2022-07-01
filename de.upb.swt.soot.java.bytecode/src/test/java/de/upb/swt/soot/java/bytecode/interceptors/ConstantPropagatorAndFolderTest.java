@@ -6,7 +6,6 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JAddExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -81,7 +80,6 @@ public class ConstantPropagatorAndFolderTest {
     Local c = JavaJimple.newLocal("c", PrimitiveType.getInt());
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b, c);
-    List<Trap> traps = Collections.emptyList();
 
     Stmt assignA = JavaJimple.newAssignStmt(a, IntConstant.getInstance(3), noPositionInfo);
     Stmt assignB = JavaJimple.newAssignStmt(b, IntConstant.getInstance(4), noPositionInfo);
@@ -108,7 +106,6 @@ public class ConstantPropagatorAndFolderTest {
     builder.addFlow(assignC, ret);
 
     builder.setLocals(locals);
-    builder.setTraps(traps);
     builder.setPosition(NoPositionInformation.getInstance());
 
     return builder;

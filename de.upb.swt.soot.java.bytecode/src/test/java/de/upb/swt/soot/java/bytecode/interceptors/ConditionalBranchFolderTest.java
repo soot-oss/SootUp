@@ -6,7 +6,6 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JEqExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -16,7 +15,6 @@ import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -93,11 +91,8 @@ public class ConditionalBranchFolderTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
-    List<Trap> traps = Collections.emptyList();
-
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
-    bodyBuilder.setTraps(traps);
     bodyBuilder.setStartingStmt(strToA);
     bodyBuilder.addFlow(strToA, strToB);
     bodyBuilder.addFlow(strToB, ifStmt);

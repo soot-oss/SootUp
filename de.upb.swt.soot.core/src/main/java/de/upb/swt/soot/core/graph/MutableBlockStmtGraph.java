@@ -510,6 +510,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       throw new IllegalArgumentException("Stmt is not in the StmtGraph!");
     }
 
+    if (stmt == startingStmt) {
+      startingStmt = null;
+    }
+
     final boolean isHead = blockOfRemovedStmt.getHead() == stmt;
     final boolean isTail = blockOfRemovedStmt.getTail() == stmt;
 
@@ -571,6 +575,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     final MutableBasicBlock blockOfOldStmt = getBlockOf(oldStmt);
     if (blockOfOldStmt == null) {
       throw new IllegalArgumentException("oldStmt does not exist in the StmtGraph!");
+    }
+
+    if (oldStmt == startingStmt) {
+      startingStmt = newStmt;
     }
 
     if (blockOfOldStmt.getTail() == oldStmt) {
@@ -1231,9 +1239,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         } else {
 
           if (iteratedBlocks.size() < blocks.size()) {
-            // graph is not connected! add all not connected blocks at the end!
+            // graph is not connected! iterate/append all not connected blocks at the end in no
+            // particular order.
             for (MutableBasicBlock block : blocks) {
-              if (!iteratedBlocks.contains(block) && block.getPredecessors().size() == 0) {
+              if (!iteratedBlocks.contains(block)) {
                 nestedBlocks.addLast(block);
               }
             }

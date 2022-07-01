@@ -1,6 +1,8 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.graph.MutableBlockStmtGraph;
+import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
@@ -14,10 +16,7 @@ import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -105,7 +104,7 @@ public class TrapTightenerTest {
   @Test
   public void testSimpleBody() {
 
-    Body body = creatSimpleBody();
+    Body body = createSimpleBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
     // modify exceptionalStmtGraph
@@ -145,12 +144,12 @@ public class TrapTightenerTest {
   @Test
   public void testMonitoredBody() {
 
-    Body body = creatBodyWithMonitor();
-    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
+    Body.BodyBuilder builder = Body.builder(creatBodyWithMonitor(), Collections.emptySet());
 
     // modify exceptionalStmtGraph
     builder.clearExceptionEdgesOf(stmt2);
     builder.clearExceptionEdgesOf(stmt4);
+    //  builder.addFlow(, stmt6);
 
     TrapTightener trapTightener = new TrapTightener();
     trapTightener.interceptBody(builder);
@@ -161,8 +160,9 @@ public class TrapTightenerTest {
     AssertUtils.assertTrapsEquiv(excepted, actual);
   }
 
-  private Body creatSimpleBody() {
-    Body.BodyBuilder builder = Body.builder();
+  private Body createSimpleBody() {
+    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -170,20 +170,19 @@ public class TrapTightenerTest {
     builder.setLocals(locals);
 
     // set graph
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, stmt7);
-    builder.addFlow(stmt7, stmt10);
-    builder.addFlow(stmt10, stmt5);
-    builder.addFlow(stmt6, stmt11);
-    builder.addFlow(stmt11, stmt9);
-    builder.addFlow(stmt5, ret);
+    graph.putEdge(startingStmt, stmt1);
+    graph.putEdge(stmt1, stmt7);
+    graph.putEdge(stmt7, stmt10);
+    graph.putEdge(stmt10, stmt5);
+    graph.putEdge(stmt6, stmt11);
+    graph.putEdge(stmt11, stmt9);
+    graph.putEdge(stmt5, ret);
 
     // build startingStmt
     builder.setStartingStmt(startingStmt);
 
     // build position
-    Position position = NoPositionInformation.getInstance();
-    builder.setPosition(position);
+    builder.setPosition(NoPositionInformation.getInstance());
 
     // build trap
     List<Trap> traps = new ArrayList<>();
@@ -194,7 +193,8 @@ public class TrapTightenerTest {
   }
 
   private Body creatBodyWithMonitor() {
-    Body.BodyBuilder builder = Body.builder();
+    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -202,15 +202,12 @@ public class TrapTightenerTest {
     builder.setLocals(locals);
 
     // set graph
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, stmt2);
-    builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, stmt4);
-    builder.addFlow(stmt4, stmt5);
-    builder.addFlow(stmt6, stmt7);
-    builder.addFlow(stmt7, stmt8);
-    builder.addFlow(stmt8, stmt9);
-    builder.addFlow(stmt5, ret);
+    graph.addBlock(Arrays.asList(stmt6, stmt7, stmt8, stmt9), Collections.emptyMap());
+    graph.addBlock(Arrays.asList(startingStmt, stmt1), Collections.emptyMap());
+    graph.addBlock(Arrays.asList(stmt2, stmt3, stmt4), Collections.singletonMap(exception, stmt6));
+    graph.putEdge(stmt1, stmt2);
+    graph.putEdge(stmt4, stmt5);
+    graph.putEdge(stmt5, ret);
 
     // build startingStmt
     builder.setStartingStmt(startingStmt);
@@ -218,11 +215,6 @@ public class TrapTightenerTest {
     // build position
     Position position = NoPositionInformation.getInstance();
     builder.setPosition(position);
-
-    // build trap
-    List<Trap> traps = new ArrayList<>();
-    traps.add(trap1);
-    builder.setTraps(traps);
 
     return builder.build();
   }

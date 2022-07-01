@@ -38,6 +38,8 @@ import javax.annotation.Nonnull;
  */
 public class BodyUtils {
 
+  // TODO: [ms] please refactor into respective classes or at least rename to.. StmtUtils?
+
   /**
    * Collects all defining statements of a Local from a list of statements
    *

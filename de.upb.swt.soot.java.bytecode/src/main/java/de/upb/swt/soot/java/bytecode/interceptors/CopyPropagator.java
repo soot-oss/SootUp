@@ -75,7 +75,8 @@ public class CopyPropagator implements BodyInterceptor {
     }
   }
 
-  private void replaceUse(@Nonnull Body.BodyBuilder builder, Stmt stmt, Value use, Value rhs) {
+  private void replaceUse(
+      @Nonnull Body.BodyBuilder builder, @Nonnull Stmt stmt, Value use, Value rhs) {
     Stmt newStmt = BodyUtils.withNewUse(stmt, use, rhs);
     if (!stmt.equals(newStmt)) {
       builder.replaceStmt(stmt, newStmt);
@@ -84,9 +85,9 @@ public class CopyPropagator implements BodyInterceptor {
 
   private boolean isPropagable(List<Stmt> defsOfUse) {
     // If local is defined just one time, then the propagation of this local available.
-    boolean propagable = false;
+    boolean isPropagateable = false;
     if (defsOfUse.size() == 1) {
-      propagable = true;
+      isPropagateable = true;
 
       // If local is defined two or more times, and each defStmt in form :
       // defLocal = constant and all constants are same,
@@ -101,17 +102,17 @@ public class CopyPropagator implements BodyInterceptor {
           if (con == null) {
             con = rhs;
           } else if (rhs.equals(con)) {
-            propagable = true;
+            isPropagateable = true;
           } else {
-            propagable = false;
+            isPropagateable = false;
             break;
           }
         } else {
-          propagable = false;
+          isPropagateable = false;
           break;
         }
       }
     }
-    return propagable;
+    return isPropagateable;
   }
 }

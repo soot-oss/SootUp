@@ -49,6 +49,10 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   // maybe refactor addBlock into MutableBlockStmtGraph..
   public abstract void addBlock(@Nonnull List<Stmt> stmts, @Nonnull Map<ClassType, Stmt> traps);
 
+  public void addBlock(@Nonnull List<Stmt> stmts) {
+    addBlock(stmts, Collections.emptyMap());
+  }
+
   /** Modification of nodes (without manipulating any flows) */
   public abstract void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt);
 

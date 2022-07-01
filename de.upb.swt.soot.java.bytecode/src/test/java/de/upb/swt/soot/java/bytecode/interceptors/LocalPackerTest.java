@@ -17,7 +17,6 @@ import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.junit.Test;
@@ -122,12 +121,10 @@ public class LocalPackerTest {
    */
   @Test
   public void testLocalPacker() {
-    Body body = createBody();
-    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
+    Body.BodyBuilder builder = createBodyBuilder();
 
-    LocalPacker localPacker = new LocalPacker();
-    localPacker.interceptBody(builder);
-    body = builder.build();
+    new LocalPacker().interceptBody(builder);
+    Body body = builder.build();
 
     Body expectedBody = createExpectedBody();
 
@@ -135,7 +132,7 @@ public class LocalPackerTest {
     AssertUtils.assertStmtGraphEquiv(expectedBody, body);
   }
 
-  private Body createBody() {
+  private Body.BodyBuilder createBodyBuilder() {
 
     Body.BodyBuilder builder = Body.builder();
 
@@ -166,11 +163,7 @@ public class LocalPackerTest {
 
     builder.setStartingStmt(startingStmt);
 
-    // build position
-    Position position = NoPositionInformation.getInstance();
-    builder.setPosition(position);
-
-    return builder.build();
+    return builder;
   }
 
   private Body createExpectedBody() {

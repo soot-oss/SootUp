@@ -21,7 +21,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #L%
  */
 import de.upb.swt.soot.core.graph.StmtGraph;
-import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
@@ -97,7 +96,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
 
       // We need to replace the GOTO with the return
       JCastExpr ce = (JCastExpr) assign.getRightOp();
-      JReturnStmt newStmt = retStmt.withReturnValue((Immediate) ce.getOp());
+      JReturnStmt newStmt = retStmt.withReturnValue(ce.getOp());
 
       // Redirect all flows coming into the GOTO to the new return
       List<Stmt> predecessors = originalGraph.predecessors(gotoStmt);
