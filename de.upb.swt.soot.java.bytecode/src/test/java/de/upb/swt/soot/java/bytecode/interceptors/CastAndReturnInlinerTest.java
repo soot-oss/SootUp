@@ -58,10 +58,12 @@ public class CastAndReturnInlinerTest {
 
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
+
     bodyBuilder.setStartingStmt(strToA);
     bodyBuilder.addFlow(strToA, jump);
     bodyBuilder.addFlow(jump, bToA);
     bodyBuilder.addFlow(bToA, ret);
+
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));

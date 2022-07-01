@@ -808,6 +808,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       if (stmtsOfBlock.get(fromIdx + 1) == to) {
         MutableBasicBlock newBlock = blockOfFrom.splitBlockUnlinked(from, to);
         newBlock.copyExceptionalFlowFrom(blockOfFrom);
+        blockOfFrom.getSuccessors().forEach(newBlock::addSuccessorBlock);
+        blockOfFrom.clearSuccessorBlocks();
         blocks.add(newBlock);
         newBlock.getStmts().forEach(s -> stmtToBlock.put(s, newBlock));
       } else {

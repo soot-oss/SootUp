@@ -29,7 +29,6 @@ import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
@@ -98,14 +97,11 @@ public class CastAndReturnInliner implements BodyInterceptor {
       JReturnStmt newStmt = retStmt.withReturnValue(ce.getOp());
 
       // Redirect all flows coming into the GOTO to the new return
-      List<Stmt> predecessors = originalGraph.predecessors(gotoStmt);
-      for (Stmt pred : predecessors) {
-        builder.removeFlow(pred, gotoStmt);
-        builder.addFlow(pred, newStmt);
-      }
+      builder.replaceStmt(gotoStmt, newStmt);
+
       // cleanup now obsolete cast and return statements
-      builder.removeFlow(gotoStmt, assign);
-      builder.removeFlow(assign, retStmt);
+      builder.removeStmt(assign);
+      builder.removeStmt(retStmt);
     }
   }
 }
