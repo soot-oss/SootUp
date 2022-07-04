@@ -61,11 +61,19 @@ public class JavaClassType extends ClassType {
     this.packageName = packageName;
   }
 
-  public JavaClassType(@Nonnull final String fullyQualifiedName) {
-    this(
-        fullyQualifiedName.substring(fullyQualifiedName.lastIndexOf(".") + 1),
-        new PackageName(fullyQualifiedName.substring(0, fullyQualifiedName.lastIndexOf("."))));
+  public static JavaClassType getInstance(String fullyQualifiedName){
+    String className;
+    PackageName packageName;
+    if(fullyQualifiedName.contains(".")){
+      className = fullyQualifiedName.substring(fullyQualifiedName.lastIndexOf(".") + 1);
+      packageName = new PackageName(fullyQualifiedName.substring(0, fullyQualifiedName.lastIndexOf(".")));
+    }else{
+      className = fullyQualifiedName;
+      packageName = PackageName.DEFAULT_PACKAGE;
+    }
+    return new JavaClassType(className, packageName);
   }
+
 
   @Override
   public boolean equals(Object o) {

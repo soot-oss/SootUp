@@ -14,8 +14,8 @@ public class JavaTaggedSootClass extends AbstractHost {
 
   private JavaSootClass sootClass;
 
-  public JavaTaggedSootClass(JavaSootClassSource classSource, SourceType sourceType) {
-    this.sootClass = new JavaSootClass(classSource, sourceType);
+  public JavaTaggedSootClass(JavaSootClass sootClass) {
+    this.sootClass = sootClass;
   }
 
   public JavaSootClass getSootClass() {

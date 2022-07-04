@@ -7,7 +7,10 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.AnnotationUsage;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.JavaSootClassSource;
+import de.upb.swt.soot.java.core.JavaTaggedSootClass;
+import de.upb.swt.soot.java.core.views.JavaView;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,8 +20,12 @@ import java.util.Optional;
 import java.util.Set;
 
 public class DexClassSource extends JavaSootClassSource {
-    public DexClassSource(@Nonnull AnalysisInputLocation<? extends SootClass<?>> srcNamespace, @Nonnull ClassType classSignature, @Nonnull Path sourcePath) {
+
+    private JavaView view;
+
+    public DexClassSource(@Nonnull AnalysisInputLocation<? extends SootClass<?>> srcNamespace, @Nonnull ClassType classSignature, @Nonnull Path sourcePath, JavaView view) {
         super(srcNamespace, classSignature, sourcePath);
+        this.view = view;
     }
 
     @Override
@@ -35,7 +42,10 @@ public class DexClassSource extends JavaSootClassSource {
     @Nonnull
     @Override
     public Collection<? extends SootField> resolveFields() throws ResolveException {
-        return null;
+        DexResolver dexResolver = new DexResolver();
+        DexlibWrapper wrapper = dexResolver.initializeDexFile(this.sourcePath.toFile(), view);
+        JavaTaggedSootClass javaTaggedSootClass = wrapper.makeSootClass(view.getClass(this.classSignature).get(), this.classSignature.getFullyQualifiedName());
+        return javaTaggedSootClass.getSootClass().getFields();
     }
 
     @Nonnull

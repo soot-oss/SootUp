@@ -1,11 +1,13 @@
 package de.upb.swt.soot.java.bytecode.frontend.apk.dexpler;
 
+import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.views.JavaView;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.DexFile;
 import org.slf4j.Logger;
@@ -22,6 +24,11 @@ public class DexClassProvider implements ClassProvider<JavaSootClass> {
 
     private static final Logger logger = LoggerFactory.getLogger(DexClassProvider.class);
 
+    private JavaView view;
+
+    public DexClassProvider(JavaView view){
+        this.view = view;
+    }
 
     @Override
     public DexClassSource createClassSource(AnalysisInputLocation<? extends SootClass<?>> inputLocation, Path sourcePath, ClassType classSignature) {
@@ -29,7 +36,7 @@ public class DexClassProvider implements ClassProvider<JavaSootClass> {
         if(file==null){
             return null;
         }else{
-            return new DexClassSource(inputLocation, classSignature, sourcePath);
+            return new DexClassSource(inputLocation, classSignature, sourcePath, view);
         }
     }
 

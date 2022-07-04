@@ -62,7 +62,7 @@ public class DexAnnotation {
     public static final String DALVIK_ANNOTATION_ENCLOSINGMETHOD = "dalvik.annotation.EnclosingMethod";
     public static final String DALVIK_ANNOTATION_ENCLOSINGCLASS = "dalvik.annotation.EnclosingClass";
     public static final String DALVIK_ANNOTATION_DEFAULT = "dalvik.annotation.AnnotationDefault";
-    private final Type ARRAY_TYPE = new JavaClassType("Array");
+    private final Type ARRAY_TYPE = JavaClassType.getInstance("java.lang.Array"); // TODO: KKwip
     private final JavaTaggedSootClass clazz;
 
     public DexAnnotation(JavaTaggedSootClass clazz) {
@@ -212,10 +212,10 @@ public class DexAnnotation {
                 }
                 break;
             case 's': // string
-                annotationType = new JavaClassType("java.lang.String");
+                annotationType = JavaClassType.getInstance("java.lang.String");
                 break;
             case 'c': // class
-                annotationType = new JavaClassType("java.lang.Class");
+                annotationType = JavaClassType.getInstance("java.lang.Class");
                 break;
             case 'e': // enum
                 AnnotationEnumElem enumElem = (AnnotationEnumElem) e;
@@ -455,7 +455,7 @@ public class DexAnnotation {
 
                     //TODO: KKwip
                     //deps.typesToSignature.add(RefType.v(outerClass));
-                    clazz.getSootClass().withOuterClass(Optional.of(new JavaClassType(outerClass)));
+                    clazz.getSootClass().withOuterClass(Optional.of(JavaClassType.getInstance(outerClass)));
                     if (clazz.getSootClass().getOuterClass().isPresent()) {
                         assert clazz.getSootClass().getOuterClass().get() != clazz.getSootClass().getType();
                     }
@@ -487,7 +487,7 @@ public class DexAnnotation {
                 t = new EnclosingMethodTag(classString, methodString, methodSigString);
                 String outerClass = classString.replace("/", ".");
                 //deps.typesToSignature.add(RefType.v(outerClass));
-                clazz.getSootClass().withOuterClass(Optional.of(new JavaClassType(outerClass)));
+                clazz.getSootClass().withOuterClass(Optional.of(JavaClassType.getInstance(outerClass)));
                 if (clazz.getSootClass().getOuterClass().isPresent()) {
                     assert clazz.getSootClass().getOuterClass().get() != clazz.getSootClass().getType();
                 }
@@ -538,7 +538,7 @@ public class DexAnnotation {
                 if (outerClass != null && !clazz.getSootClass().hasOuterClass()) {
                     String sootOuterClass = Util.dottedClassName(outerClass);
                     //deps.typesToSignature.add(RefType.v(sootOuterClass));
-                    clazz.getSootClass().withOuterClass(Optional.of(new JavaClassType(outerClass)));
+                    clazz.getSootClass().withOuterClass(Optional.of(JavaClassType.getInstance(outerClass)));
                     if (clazz.getSootClass().getOuterClass().isPresent()) {
                         assert clazz.getSootClass().getOuterClass().get() != clazz.getSootClass().getType();
                     }

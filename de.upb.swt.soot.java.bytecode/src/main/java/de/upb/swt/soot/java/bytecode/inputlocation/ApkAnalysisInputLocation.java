@@ -44,6 +44,7 @@ import java.util.zip.ZipFile;
 import javax.annotation.Nonnull;
 
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import de.upb.swt.soot.java.core.views.JavaView;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.MagicNumberFileFilter;
 import org.jf.dexlib2.iface.DexFile;
@@ -87,7 +88,7 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation<JavaSootC
     DexFileProvider.DexContainer<? extends DexFile> dexContainer;
     try {
       dexContainer = new DexFileProvider().getDexFromSource(this.apkPath, type.getFullyQualifiedName());
-      return Optional.ofNullable(new DexClassProvider().createClassSource(this, dexContainer.getFilePath(), type));
+      return Optional.ofNullable(new DexClassProvider((JavaView) view).createClassSource(this, dexContainer.getFilePath(), type));
     } catch (IOException e){
       e.printStackTrace();
     }
@@ -103,9 +104,9 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation<JavaSootC
     try {
       dexContainers = new DexFileProvider().getDexFromSource(this.apkPath);
       //TODO: KKwip
-      Set<String> classNames = new DexClassProvider().getClassNames(apkPath);
+      Set<String> classNames = new DexClassProvider((JavaView)view).getClassNames(apkPath);
       for (String className : classNames) {
-        DexClassSource classSource = new DexClassProvider().createClassSource(this, apkPath, new JavaClassType(className));
+        DexClassSource classSource = new DexClassProvider((JavaView) view).createClassSource(this, apkPath, JavaClassType.getInstance(className));
         found.add(classSource);
       }
     } catch (IOException e) {
