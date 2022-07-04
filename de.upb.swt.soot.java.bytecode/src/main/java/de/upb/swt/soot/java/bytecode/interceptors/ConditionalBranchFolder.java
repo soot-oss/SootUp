@@ -90,7 +90,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
       @Nonnull MutableStmtGraph stmtGraph, @Nonnull Stmt fallsThroughStmt) {
     Set<Stmt> visited =
         new HashSet<>(); // TODO: ms: there can be a more efficient solution! this has to work as a
-                         // fix for now.
+    // fix for now.
     Deque<Stmt> q = new ArrayDeque<>();
 
     q.addFirst(fallsThroughStmt);
