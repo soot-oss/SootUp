@@ -52,6 +52,14 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     stmts.remove(stmt);
   }
 
+  public void replaceStmt(Stmt oldStmt, Stmt newStmt) {
+    final int idx = stmts.indexOf(oldStmt);
+    if (idx < 0) {
+      throw new IllegalArgumentException("oldStmt does not exist in this Block!");
+    }
+    stmts.set(idx, newStmt);
+  }
+
   public void setStmts(@Nonnull List<Stmt> stmts) {
     this.stmts = stmts;
   }

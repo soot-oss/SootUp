@@ -141,8 +141,8 @@ public class CopyPropagatorTest {
   /** Test the copy propagation for loop */
   public void testLoopBody() {
 
-    Body body = createLoopBody();
-    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
+    Body.BodyBuilder builder = createLoopBody();
+
     CopyPropagator propagator = new CopyPropagator();
     propagator.interceptBody(builder);
 
@@ -223,7 +223,7 @@ public class CopyPropagatorTest {
    * l0 := @this Test; i1 = 5; i2 = 0; if i2 > i1 goto label2; i3 = i1 + 1; i2 = i2 + 1; goto
    * label1; return
    */
-  private Body createLoopBody() {
+  private Body.BodyBuilder createLoopBody() {
 
     // build an instance of BodyBuilder
     Body.BodyBuilder builder = Body.builder();
@@ -247,10 +247,7 @@ public class CopyPropagatorTest {
     // set startingStmt
     builder.setStartingStmt(startingStmt);
 
-    // set Position
-    builder.setPosition(NoPositionInformation.getInstance());
-
-    return builder.build();
+    return builder;
   }
 
   /**

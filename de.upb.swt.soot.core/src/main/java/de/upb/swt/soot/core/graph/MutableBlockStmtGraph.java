@@ -316,19 +316,24 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       final List<Stmt> blockStmts = block.getStmts();
       int stmtIdx = blockStmts.indexOf(splitStmt);
 
-      if (stmtIdx < 1) {
-        // stmt is the head -> just a split is necessary
+      if (stmtIdx < 0) {
+        throw new IllegalArgumentException("splitStmt does not exist in this block!");
+      }
+
+      if (stmtIdx == 0) {
+        // stmt is the head -> maybe just a single split is necessary
         excludeFromOrigBlock = block;
       } else {
-        // i.e. stmt != block.getHead() -> there is a "middle" Block containing Stmt which needs
+        // i.e. stmt != block.getHead() -> there is a "middle" or end Block containing the splitStmt
+        // which needs
         // to be seperated
         excludeFromOrigBlock = new MutableBasicBlock();
         addNodeToBlock(excludeFromOrigBlock, splitStmt);
         blocks.add(excludeFromOrigBlock);
       }
 
-      // copy last part - if there are more Stmts after stmt in Block block
       if (stmtIdx + 1 < blockStmts.size()) {
+        // "third"/after/leftover block is necessary as there are stmts after the splitElement
         final MutableBasicBlock restOfOrigBlock = new MutableBasicBlock();
         for (int i = stmtIdx + 1; i < blockStmts.size(); i++) {
           // stmtToBlock is already updated while inserting each Stmt into another Block
@@ -358,30 +363,26 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                 });
 
         blocks.add(restOfOrigBlock);
+
       } else {
-        // no third block necessary
-        if (stmtIdx < 1) {
+        // there are no more stmts after stmtIdx -> less than 3 blocks are necessary
+        if (stmtIdx == 1) {
           // i.e. stmt == block.getHead() -> copy successors to second block as its the last part
           // of the original block
           block
               .getSuccessors()
               .forEach(
-                  s -> {
-                    linkBlocks(excludeFromOrigBlock, s);
+                  successorBlock -> {
+                    linkBlocks(excludeFromOrigBlock, successorBlock);
                   });
           block.clearSuccessorBlocks();
+          linkBlocks(block, excludeFromOrigBlock);
         }
       }
 
       // cleanup original block -> "beforeBlock" -> remove now copied Stmts
       for (int i = blockStmts.size() - 1; i >= stmtIdx; i--) {
         block.removeStmt(blockStmts.get(i));
-      }
-
-      // if stmt != block.getHead() i.e. excludeFromOrigBlock is seperated from block -> block !=
-      // excludeFromOrigBlock -> link them
-      if (stmtIdx > 0) {
-        linkBlocks(block, excludeFromOrigBlock);
       }
 
       return excludeFromOrigBlock;
@@ -576,54 +577,16 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       startingStmt = newStmt;
     }
 
-    if (blockOfOldStmt.getTail() == oldStmt) {
-      stmtToBlock.remove(oldStmt);
-      blockOfOldStmt.removeStmt(oldStmt);
-      blockOfOldStmt.addStmt(newStmt);
-      stmtToBlock.put(newStmt, blockOfOldStmt);
-      // tail could not be branching anymore -> try to merge
-      tryMergeWithSuccessorBlock(blockOfOldStmt);
-    } else if (blockOfOldStmt.getHead() == oldStmt) {
-      stmtToBlock.remove(oldStmt);
-      final MutableBasicBlock newBlock = createStmtsBlock(newStmt);
-      final Iterator<Stmt> iterator = blockOfOldStmt.getStmts().stream().skip(1).iterator();
-      iterator.forEachRemaining(
-          stmt -> {
-            newBlock.addStmt(stmt);
-            stmtToBlock.put(stmt, newBlock);
-          });
-
-      blockOfOldStmt
-          .getPredecessors()
-          .forEach(
-              predBlock -> {
-                predBlock.removeSuccessorBlock(blockOfOldStmt);
-                linkBlocks(predBlock, newBlock);
-              });
-      blockOfOldStmt.clearPredecessorBlocks();
-
-      blockOfOldStmt
-          .getSuccessors()
-          .forEach(
-              succBlock -> {
-                succBlock.removePredecessorBlock(blockOfOldStmt);
-                linkBlocks(newBlock, succBlock);
-              });
-      blockOfOldStmt.clearSuccessorBlocks();
-      blocks.remove(blockOfOldStmt);
-
-      newBlock.copyExceptionalFlowFrom(blockOfOldStmt);
-      stmtToBlock.put(newStmt, newBlock);
-
-    } else {
-      // [ms] possibility to use performance implications of the datastructure to improve
-      // unnecessary BasicBlock allocation/stmt copying/removal
+    if (oldStmt.getExpectedSuccessorCount() != newStmt.getExpectedSuccessorCount()) {
       final MutableBasicBlock excludedBlock = excludeStmtFromBlock(oldStmt, blockOfOldStmt);
+      excludedBlock.replaceStmt(oldStmt, newStmt);
       stmtToBlock.remove(oldStmt);
-      excludedBlock.removeStmt(oldStmt);
-      excludedBlock.addStmt(newStmt);
       stmtToBlock.put(newStmt, excludedBlock);
-      tryMergeIntoSurroundingBlocks(excludedBlock);
+      System.out.println("d");
+    } else {
+      stmtToBlock.remove(oldStmt);
+      blockOfOldStmt.replaceStmt(oldStmt, newStmt);
+      stmtToBlock.put(newStmt, blockOfOldStmt);
     }
   }
 

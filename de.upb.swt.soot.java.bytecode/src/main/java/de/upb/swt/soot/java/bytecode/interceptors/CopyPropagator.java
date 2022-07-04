@@ -22,6 +22,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  */
 
 import com.google.common.collect.Lists;
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
@@ -44,11 +45,11 @@ public class CopyPropagator implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    for (Stmt stmt : Lists.newArrayList(builder.getStmtGraph())) {
+    final StmtGraph<?> stmtGraph = builder.getStmtGraph();
+    for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
       for (Value use : stmt.getUses()) {
         if (use instanceof Local) {
-          List<Stmt> defsOfUse =
-              BodyUtils.getDefsForLocalUse(builder.getStmtGraph(), (Local) use, stmt);
+          List<Stmt> defsOfUse = BodyUtils.getDefsForLocalUse(stmtGraph, (Local) use, stmt);
 
           if (isPropagable(defsOfUse)) {
             AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
@@ -79,7 +80,8 @@ public class CopyPropagator implements BodyInterceptor {
   private void replaceUse(
       @Nonnull Body.BodyBuilder builder, @Nonnull Stmt stmt, Value use, Value rhs) {
     Stmt newStmt = BodyUtils.withNewUse(stmt, use, rhs);
-    if (!stmt.equals(newStmt)) {
+    // TODO: [ms] check if the following check could be obsolete as checks are already done?
+    if (!stmt.equivTo(newStmt)) {
       builder.replaceStmt(stmt, newStmt);
     }
   }
