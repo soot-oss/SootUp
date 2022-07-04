@@ -22,16 +22,14 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  */
 
 import com.google.common.collect.Lists;
-import de.upb.swt.soot.core.graph.StmtGraph;
+import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 import javax.annotation.Nonnull;
 
 /**
@@ -47,52 +45,89 @@ public class ConditionalBranchFolder implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
-    final StmtGraph<?> builderStmtGraph = builder.getStmtGraph();
-    final StmtGraph<?> stmtGraph = builder.getStmtGraph();
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
 
     for (Stmt stmt : Lists.newArrayList(stmtGraph.nodes())) {
-      if (stmt instanceof JIfStmt) {
-        JIfStmt ifStmt = (JIfStmt) stmt;
-        // check for constant-valued conditions
-        Value condition = ifStmt.getCondition();
-        if (Evaluator.isConstantValue(condition)) {
-          condition = Evaluator.getConstantValueOf(condition);
+      if (!(stmt instanceof JIfStmt)) {
+        continue;
+      }
 
-          if (((IntConstant) condition).getValue() == 1) {
-            // the evaluated if condition is always true: redirect all predecessors to the successor
-            // of this if-statement and prune the "true"-block stmt tree until another branch flows
-            // to a Stmt
+      JIfStmt ifStmt = (JIfStmt) stmt;
+      // check for constant-valued conditions
+      Value condition = ifStmt.getCondition();
+      if (!Evaluator.isConstantValue(condition)) {
+        continue;
+      }
 
-            // link previous stmt with branch target of if-Stmt
-            final List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt);
-            final Stmt fallsThroughStmt = ifSuccessors.get(0);
-            final Stmt branchTarget = ifSuccessors.get(1);
+      condition = Evaluator.getConstantValueOf(condition);
 
-            builder.removeFlow(ifStmt, fallsThroughStmt);
-            builder.removeFlow(ifStmt, branchTarget);
+      // TODO: [ms] what about the always false case?
+      if (((IntConstant) condition).getValue() == 1) {
+        // the evaluated if condition is always true: redirect all predecessors to the successor
+        // of this if-statement and prune the "true"-block stmt tree until another branch flows
+        // to a Stmt
 
-            for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
-              builder.removeFlow(predecessor, ifStmt);
-              builder.addFlow(predecessor, branchTarget);
-            }
-            builder.removeStmt(ifStmt);
+        // link previous stmt with branch target of if-Stmt
+        final List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt);
+        final Stmt fallsThroughStmt = ifSuccessors.get(0);
+        final Stmt branchTarget = ifSuccessors.get(1);
 
-            Deque<Stmt> stack = new ArrayDeque<>();
-            stack.addFirst(fallsThroughStmt);
-            // FIXME: [ms] does not remove every now unreachable stmt if theres a cycle inside the
-            // stmts we want to remove
-            // remove all now unreachable stmts from "true"-block
-            while (!stack.isEmpty()) {
-              Stmt itStmt = stack.pollFirst();
-              if (builderStmtGraph.containsNode(itStmt)
-                  && builderStmtGraph.predecessors(itStmt).size() < 1) {
-                stack.addAll(stmtGraph.successors(itStmt));
-                builder.removeStmt(itStmt);
-              }
-            }
-          }
+        builder.removeFlow(ifStmt, fallsThroughStmt);
+        builder.removeFlow(ifStmt, branchTarget);
+
+        for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
+          builder.removeFlow(predecessor, ifStmt);
+          builder.addFlow(predecessor, branchTarget);
+        }
+        builder.removeStmt(ifStmt);
+
+        pruneExclusivelyReachableStmts(stmtGraph, fallsThroughStmt);
+      }
+    }
+  }
+
+  private void pruneExclusivelyReachableStmts(
+      @Nonnull MutableStmtGraph stmtGraph, @Nonnull Stmt fallsThroughStmt) {
+    Set<Stmt> visited =
+        new HashSet<>(); // TODO: ms: there can be a more efficient solution! this has to work as a
+                         // fix for now.
+    Deque<Stmt> q = new ArrayDeque<>();
+
+    q.addFirst(fallsThroughStmt);
+    // stmts we want to remove
+    // remove all now unreachable stmts from "true"-block
+    while (!q.isEmpty()) {
+      Stmt itStmt = q.pollFirst();
+      visited.add(itStmt);
+      if (stmtGraph.containsNode(itStmt)) {
+        final List<Stmt> predecessors = stmtGraph.predecessors(itStmt);
+        if (predecessors.size() < 1) {
+          q.addAll(stmtGraph.successors(itStmt));
         }
       }
     }
+    // now iterate again and remove if possible: ie predecessor.size() < 1
+    q.addFirst(fallsThroughStmt);
+    while (!q.isEmpty()) {
+      Stmt itStmt = q.pollFirst();
+      if (stmtGraph.containsNode(itStmt)) {
+        final List<Stmt> predecessors = stmtGraph.predecessors(itStmt);
+        // hint: predecessor could also be already removed
+        if (unvisitedPredecessorCount(predecessors, visited) == 0) {
+          q.addAll(stmtGraph.successors(itStmt));
+          stmtGraph.removeNode(itStmt);
+        }
+      }
+    }
+  }
+
+  private int unvisitedPredecessorCount(List<Stmt> predecessors, Set<Stmt> visited) {
+    int amount = predecessors.size();
+    for (Stmt predecessor : predecessors) {
+      if (visited.contains(predecessor)) {
+        amount--;
+      }
+    }
+    return amount;
   }
 }

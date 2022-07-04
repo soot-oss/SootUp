@@ -179,6 +179,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
                 IntConstant intConstant = (IntConstant) value;
                 isEssential = (intConstant.getValue() == 0);
               } else {
+                // [ms] oh the irony..
                 isEssential = true; // could be 0, we don't know
               }
             }
@@ -199,10 +200,10 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       allDefs = BodyUtils.collectDefs(builder.getStmts());
 
       if (!allEssential) {
-        Set<Stmt> essential = new HashSet<>(stmts.size());
+        Set<Stmt> essentialStmts = new HashSet<>(stmts.size());
         while (!deque.isEmpty()) {
           Stmt stmt = deque.removeFirst();
-          if (essential.add(stmt)) {
+          if (essentialStmts.add(stmt)) {
             for (Value value : stmt.getUses()) {
               if (value instanceof Local) {
                 Local local = (Local) value;
@@ -217,16 +218,8 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
 
         // Remove the dead statements
         for (Stmt stmt : stmts) {
-          if (!essential.contains(stmt)) {
-            for (Stmt predecessor : stmtGraph.predecessors(stmt)) {
-              builder.removeFlow(predecessor, stmt);
-              for (Stmt successor : stmtGraph.successors(stmt)) {
-                builder.addFlow(predecessor, successor);
-              }
-            }
-            for (Stmt successor : stmtGraph.successors(stmt)) {
-              builder.removeFlow(stmt, successor);
-            }
+          if (!essentialStmts.contains(stmt)) {
+            builder.removeStmt(stmt);
           }
         }
       }

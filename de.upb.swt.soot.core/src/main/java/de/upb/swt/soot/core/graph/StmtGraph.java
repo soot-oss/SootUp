@@ -112,6 +112,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   public Collection<Stmt> getEntrypoints() {
     final ArrayList<Stmt> stmts = new ArrayList<>();
     stmts.add(getStartingStmt());
+    // TODO: [ms] memory/performance: instead of gettraps(): iterate through all stmts and add
+    // startingStmt+@caughtexception/predecessors().size() == 0?
     getTraps().stream().map(Trap::getHandlerStmt).forEach(stmts::add);
     return stmts;
   }

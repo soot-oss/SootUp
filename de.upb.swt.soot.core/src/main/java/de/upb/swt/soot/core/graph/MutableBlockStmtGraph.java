@@ -504,6 +504,13 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   public void removeNode(@Nonnull Stmt stmt) {
+    // TODO: [ms] whats intuitive? removing the flows to the block too? or is deleting a stmt
+    // keeping the flows to it
+    // is the answer different if its the tail? consistency vs intuitivity..
+    removeNode(stmt, true);
+  }
+
+  public void removeNode(@Nonnull Stmt stmt, boolean keepFlow) {
 
     MutableBasicBlock blockOfRemovedStmt = stmtToBlock.remove(stmt);
     if (blockOfRemovedStmt == null) {
@@ -517,11 +524,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     final boolean isHead = blockOfRemovedStmt.getHead() == stmt;
     final boolean isTail = blockOfRemovedStmt.getTail() == stmt;
 
-    // do edges from or to this node exist -> remove them
-    if (isHead && false) {
-      // TODO: [ms] whats intuitive? removing the flows to the block too? or is deleting a stmt
-      // keeping the flows to it
-      // is the answer different if its the tail? consistency vs intuitivity..
+    // do edges from or to this node exist -> remove them?
+    if (isHead && !keepFlow) {
       final MutableBasicBlock finalBlockOfRemovedStmt = blockOfRemovedStmt;
       blockOfRemovedStmt
           .getPredecessors()
@@ -532,14 +536,24 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
               });
       blockOfRemovedStmt.clearPredecessorBlocks();
 
-      // TODO: remove exceptional flow if stmt is a traphandler
-      if (exceptionalPredecessors(blockOfRemovedStmt).size() > 0) {}
+      // remove exceptional flow if stmt is a traphandler
+      final List<Stmt> exPredecessors = exceptionalPredecessors(blockOfRemovedStmt);
+      for (Stmt exPredecessor : exPredecessors) {
+        final MutableBasicBlock exPredBlock = stmtToBlock.get(exPredecessor);
+        final Map<ClassType, MutableBasicBlock> exceptionalSuccessors =
+            exPredBlock.getExceptionalSuccessors();
+        Collection<ClassType> toRemove = new HashSet<>();
+        for (Map.Entry<ClassType, MutableBasicBlock> value : exceptionalSuccessors.entrySet()) {
+          toRemove.add(value.getKey());
+        }
+        for (ClassType classType : toRemove) {
+          exPredBlock.removeExceptionalSuccessorBlock(classType);
+        }
+      }
     }
 
     if (isTail) {
-      // TODO: [ms] see question above.. i.e. shall we remove edges as well
-      // switch, if, goto vs. usual stmt
-      if (stmt.branches()) {
+      if (stmt.getExpectedSuccessorCount() > 1 || !keepFlow) {
         blockOfRemovedStmt.clearSuccessorBlocks();
       }
     }
@@ -768,7 +782,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
   }
 
-  protected boolean removeBlockBorderEdgesInternal(
+  protected void removeBlockBorderEdgesInternal(
       @Nonnull Stmt from, @Nonnull MutableBasicBlock blockOfFrom) {
     // TODO: is it intuitive to remove connections to the BasicBlock in the case we cant merge the
     // blocks?
@@ -788,7 +802,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                       singlePreviousBlock.addStmt(k);
                       stmtToBlock.put(k, blockOfFrom);
                     });
-            return true;
+            return;
           }
         }
       }
@@ -811,18 +825,13 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                         blockOfFrom.addStmt(k);
                         stmtToBlock.put(k, blockOfFrom);
                       });
-
-              return true;
             }
           }
         }
       } else {
         blockOfFrom.clearSuccessorBlocks();
-        return true;
       }
     }
-
-    return false;
   }
 
   @Override

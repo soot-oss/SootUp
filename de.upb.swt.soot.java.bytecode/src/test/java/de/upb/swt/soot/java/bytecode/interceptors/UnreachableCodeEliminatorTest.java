@@ -19,6 +19,7 @@ import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -61,11 +62,11 @@ public class UnreachableCodeEliminatorTest {
 
   Trap trap2 = JavaJimple.newTrap(exception, beginStmt, beginStmt, handlerStmt);
 
-  @Test
   /**
    * Test the simpleBody l0:= @this Test -> l1 = 1 -> return l2 = 2 -> l3 = 3 -> return l2 = 2 and
    * l3 = 3 are unreachable
    */
+  @Test
   public void testSimpleBody() {
 
     // build an instance of BodyBuilder
@@ -97,13 +98,13 @@ public class UnreachableCodeEliminatorTest {
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
   }
 
-  @Test
   /**
    * Test the Body with unreachable trap l0:= @this Test -> l1 = 1 -> return
    *
    * <p>trap: stack0 := @caughtexception l3 = stack0 l4 = 4
    */
-  public void testTrapedBody1() {
+  @Test
+  public void testTrappedBody1() {
 
     // build an instance of BodyBuilder
     MutableStmtGraph graph = new MutableBlockStmtGraph();
@@ -127,8 +128,7 @@ public class UnreachableCodeEliminatorTest {
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
 
-    UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
-    eliminator.interceptBody(builder);
+    new UnreachableCodeEliminator().interceptBody(builder);
 
     assertEquals(0, builder.getTraps().size());
 
@@ -136,14 +136,13 @@ public class UnreachableCodeEliminatorTest {
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
   }
 
-  @Test
-
   /**
    * Test the Body with unreachable trap l0:= @this Test -> l1 = 1 -> return
    *
    * <p>trap: stack0 := @caughtexception l3 = stack0
    */
-  public void testTrapedBody2() {
+  @Test
+  public void testTrappedBody2() {
 
     // build an instance of BodyBuilder
     MutableStmtGraph graph = new MutableBlockStmtGraph();
@@ -164,15 +163,13 @@ public class UnreachableCodeEliminatorTest {
     // set startingStmt
     builder.setStartingStmt(startingStmt);
 
-    // set Position
-    builder.setPosition(NoPositionInformation.getInstance());
-
     UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
     eliminator.interceptBody(builder);
 
     assertEquals(0, builder.getTraps().size());
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
+    Assert.assertEquals(expectedStmtsSet, builder.getStmtGraph().nodes());
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
   }
 }

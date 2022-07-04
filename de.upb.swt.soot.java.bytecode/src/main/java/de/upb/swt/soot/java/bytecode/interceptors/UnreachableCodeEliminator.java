@@ -21,7 +21,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #L%
  */
 import de.upb.swt.soot.core.graph.StmtGraph;
-import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
@@ -39,16 +38,9 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
     StmtGraph<?> graph = builder.getStmtGraph();
-    List<Trap> traps = builder.getTraps();
 
     // get all valid starting stmts: startingStmt and handlerStmts(if they in stmtGraph)
-    Deque<Stmt> queue = new ArrayDeque<>();
-    queue.add(graph.getStartingStmt());
-    for (Trap trap : traps) {
-      if (graph.containsNode(trap.getHandlerStmt())) {
-        queue.addLast(trap.getHandlerStmt());
-      }
-    }
+    Deque<Stmt> queue = new ArrayDeque<>(graph.getEntrypoints());
 
     // calculate all reachable stmts
     Set<Stmt> reachableStmts = new HashSet<>();
@@ -71,28 +63,6 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
     }
     for (Stmt stmt : removeQ) {
       builder.removeStmt(stmt);
-    }
-
-    // cleanup invalid traps
-    Iterator<Trap> trapIterator = traps.iterator();
-    while (trapIterator.hasNext()) {
-      Trap trap = trapIterator.next();
-      // is the Traphandler Stmt (still) in the StmtGraph?
-      if (!graph.containsNode(trap.getHandlerStmt())) {
-        trapIterator.remove();
-      } else {
-        // has the trap a valid range? TODO: [ms] why don't we check that (i.e. trap range is empty)
-        // in trap instantiation?
-        /*      if (trap.getBeginStmt() == trap.getEndStmt()) {
-               trapIterator.remove();
-               // FIXME: [ms] do we really want to remove begin/end stmt if there is no trap..
-               // FIXME: [ms] check that the handlerstmt is just reachable via an exceptional flow before removing it! (and remove successing stmts without another predecessor, too)
-               builder.removeStmt(trap.getBeginStmt());
-               builder.removeStmt(trap.getEndStmt());
-               builder.removeStmt(trap.getHandlerStmt());
-             }
-        */
-      }
     }
   }
 }

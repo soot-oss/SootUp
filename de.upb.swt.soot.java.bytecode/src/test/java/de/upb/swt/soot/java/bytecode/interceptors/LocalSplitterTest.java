@@ -220,11 +220,8 @@ public class LocalSplitterTest {
   @Test
   public void testLocalSplitterInTraps() {
 
-    Body body = createTrapBody();
-    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
-    LocalSplitter localSplitter = new LocalSplitter();
-    localSplitter.interceptBody(builder);
-
+    Body.BodyBuilder builder = createTrapBody();
+    new LocalSplitter().interceptBody(builder);
     Body expectedBody = createExpectedTrapBody();
 
     // check newBody's locals
@@ -565,7 +562,7 @@ public class LocalSplitterTest {
     return builder.build();
   }
 
-  private Body createTrapBody() {
+  private Body.BodyBuilder createTrapBody() {
     MutableStmtGraph graph = new MutableBlockStmtGraph();
     Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
@@ -594,10 +591,7 @@ public class LocalSplitterTest {
 
     graph.setStartingStmt(startingStmt);
 
-    // build position
-    builder.setPosition(NoPositionInformation.getInstance());
-
-    return builder.build();
+    return builder;
   }
 
   private Body createExpectedTrapBody() {
