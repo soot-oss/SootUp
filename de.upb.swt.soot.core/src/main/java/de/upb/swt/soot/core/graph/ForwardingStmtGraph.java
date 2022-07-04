@@ -66,8 +66,7 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
   @Nonnull
   @Override
   public List<V> getBlocks() {
-    // FIXME: implement
-    throw new IllegalStateException("Not implemented yet!");
+    return backingGraph.getBlocks();
   }
 
   @Override

@@ -25,8 +25,8 @@ public class DeadAssignmentEliminatorTest {
     Body testBody = testBuilder.build();
     new DeadAssignmentEliminator().interceptBody(testBuilder);
     Body processedBody = testBuilder.build();
-    StmtGraph expectedGraph = testBody.getStmtGraph();
-    StmtGraph actualGraph = processedBody.getStmtGraph();
+    StmtGraph<?> expectedGraph = testBody.getStmtGraph();
+    StmtGraph<?> actualGraph = processedBody.getStmtGraph();
 
     assertEquals(expectedGraph.nodes().size() - 1, actualGraph.nodes().size());
   }
@@ -37,8 +37,8 @@ public class DeadAssignmentEliminatorTest {
     Body testBody = testBuilder.build();
     new DeadAssignmentEliminator().interceptBody(testBuilder);
     Body processedBody = testBuilder.build();
-    StmtGraph expectedGraph = testBody.getStmtGraph();
-    StmtGraph actualGraph = processedBody.getStmtGraph();
+    StmtGraph<?> expectedGraph = testBody.getStmtGraph();
+    StmtGraph<?> actualGraph = processedBody.getStmtGraph();
 
     assertEquals(expectedGraph.nodes().size(), actualGraph.nodes().size());
   }

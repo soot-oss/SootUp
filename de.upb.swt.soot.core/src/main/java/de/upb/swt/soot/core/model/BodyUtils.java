@@ -88,12 +88,12 @@ public class BodyUtils {
     return allUses;
   }
 
-  public static List<Stmt> getDefsOfLocal(Local local, List<Stmt> defs) {
-    List<Stmt> localDefs = new ArrayList<>();
+  public static List<AbstractDefinitionStmt> getDefsOfLocal(Local local, List<Stmt> defs) {
+    List<AbstractDefinitionStmt> localDefs = new ArrayList<>();
     for (Stmt stmt : defs) {
       if (stmt instanceof AbstractDefinitionStmt
           && ((AbstractDefinitionStmt) stmt).getLeftOp().equals(local)) {
-        localDefs.add(stmt);
+        localDefs.add((AbstractDefinitionStmt) stmt);
       }
     }
     return localDefs;

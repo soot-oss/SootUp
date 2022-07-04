@@ -86,8 +86,8 @@ public class Body implements Copyable {
       @Nonnull Position position) {
     this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
-    this.graph = /* FIXME: [ms] make immutable when availabe new ImmutableExceptionalStmtGraph(*/
-        stmtGraph;
+    this.graph = /* FIXME: [ms] make immutable when availabe */
+        new MutableBlockStmtGraph(stmtGraph).unmodifiableStmtGraph();
     this.position = position;
     // FIXME: [JMP] Virtual method call in constructor
     checkInit();

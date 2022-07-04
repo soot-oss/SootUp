@@ -25,6 +25,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.*;
 import de.upb.swt.soot.core.jimple.common.expr.*;
+import javax.annotation.Nullable;
 
 /**
  * Evaluates, whether a value is constant and computes its constant value, if possible.
@@ -33,29 +34,33 @@ import de.upb.swt.soot.core.jimple.common.expr.*;
  */
 public class Evaluator {
 
+  // TODO: [ms] please rewrite that huge elseif construct to a ExprVisitor
+
   /**
    * Checks whether the value of op is constant
    *
    * @param op The value to be evaluated
    * @return True, if op is constant. Otherwise, false.
    */
-  public static boolean isValueConstantValue(Value op) {
+  public static boolean isConstantValue(Value op) {
     if (op instanceof Constant) {
       return true;
-    } else if (op instanceof AbstractUnopExpr) {
+    }
+    if (op instanceof AbstractUnopExpr) {
       Value innerOp = ((AbstractUnopExpr) op).getOp();
       if (innerOp == NullConstant.getInstance()) {
         return false;
       }
-      return isValueConstantValue(innerOp);
-    } else if (op instanceof AbstractBinopExpr) {
+      return isConstantValue(innerOp);
+    }
+    if (op instanceof AbstractBinopExpr) {
       final AbstractBinopExpr binExpr = (AbstractBinopExpr) op;
       final Value op1 = binExpr.getOp1();
       final Value op2 = binExpr.getOp2();
 
       // Only evaluate these checks once and then use the result multiple times
-      final boolean isOp1Constant = isValueConstantValue(op1);
-      final boolean isOp2Constant = isValueConstantValue(op2);
+      final boolean isOp1Constant = isConstantValue(op1);
+      final boolean isOp2Constant = isConstantValue(op2);
 
       // Handle weird cases
       if (op instanceof JDivExpr || op instanceof JRemExpr) {
@@ -82,16 +87,17 @@ public class Evaluator {
    * @param op The value to be evaluated
    * @return The resulting constant or null
    */
+  @Nullable
   public static Value getConstantValueOf(Value op) {
-    if (!isValueConstantValue(op)) {
+    if (!isConstantValue(op)) {
       return null;
     }
 
     if (op instanceof Constant) {
       return op;
     } else if (op instanceof AbstractUnopExpr) {
-      Value constant = getConstantValueOf(((AbstractUnopExpr) op).getOp());
       if (op instanceof JNegExpr) {
+        Value constant = getConstantValueOf(((JNegExpr) op).getOp());
         return ((NumericConstant) constant).negate();
       }
     } else if (op instanceof AbstractBinopExpr) {

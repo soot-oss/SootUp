@@ -60,20 +60,15 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
           Value op2 = ((AbstractBinopExpr) rhs).getOp2();
 
           if (op1 instanceof NumericConstant && op2 instanceof NumericConstant) {
-            JAssignStmt assignStmt =
-                new JAssignStmt(
-                    ((AbstractDefinitionStmt) stmt).getLeftOp(), rhs, stmt.getPositionInfo());
-            builder.replaceStmt(stmt, assignStmt);
-            stmt = assignStmt;
-            defs.add(assignStmt);
+            defs.add(stmt);
           }
         }
       } else if (stmt instanceof JReturnStmt) {
         for (Value value : stmt.getUses()) {
           if (value instanceof Local) {
-            List<Stmt> defsOfUse = BodyUtils.getDefsOfLocal((Local) value, defs);
+            List<AbstractDefinitionStmt> defsOfUse = BodyUtils.getDefsOfLocal((Local) value, defs);
             if (defsOfUse.size() == 1) {
-              AbstractDefinitionStmt definitionStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
+              AbstractDefinitionStmt definitionStmt = defsOfUse.get(0);
               Value rhs = definitionStmt.getRightOp();
               if (rhs instanceof NumericConstant
                   || rhs instanceof StringConstant
@@ -91,7 +86,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
       // folding pass
       for (Value value : stmt.getUses()) {
         if (!(value instanceof Constant)) {
-          if (Evaluator.isValueConstantValue(value)) {
+          if (Evaluator.isConstantValue(value)) {
             value = Evaluator.getConstantValueOf(value);
             if (stmt instanceof JAssignStmt) {
               JAssignStmt assignStmt = ((JAssignStmt) stmt).withRValue(value);

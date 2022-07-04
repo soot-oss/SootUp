@@ -38,10 +38,10 @@ public class NopEliminatorTest {
     new NopEliminator().interceptBody(builder);
     Body processedBody = builder.build();
 
-    StmtGraph<?> expectedGraph = testBody.getStmtGraph();
+    StmtGraph<?> inputStmtGraph = testBody.getStmtGraph();
     StmtGraph<?> actualGraph = processedBody.getStmtGraph();
 
-    assertEquals(expectedGraph.nodes().size(), actualGraph.nodes().size());
+    assertEquals(inputStmtGraph.nodes().size() - 1, actualGraph.nodes().size());
   }
 
   /**
