@@ -11,9 +11,11 @@ import de.upb.swt.soot.core.jimple.common.expr.JEqExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.util.ImmutableUtils;
+import de.upb.swt.soot.core.util.Utils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import org.junit.Test;
@@ -34,14 +36,11 @@ public class ConditionalBranchFolderTest {
    */
   @Test
   public void testUnconditionalBranching() {
-    Body.BodyBuilder builder = createBody(true);
-    Body originalBody = builder.build();
+    Body.BodyBuilder builder = createBodyBuilder(true);
     new ConditionalBranchFolder().interceptBody(builder);
-    Body processedBody = builder.build();
-
     assertEquals(
-        originalBody.getStmtGraph().nodes().size() - 2,
-        processedBody.getStmtGraph().nodes().size());
+        Arrays.asList("a = \"str\"", "b = \"str\"", "return a"),
+        Utils.bodyStmtsAsStrings(builder.build()));
   }
 
   /**
@@ -52,7 +51,7 @@ public class ConditionalBranchFolderTest {
    */
   @Test
   public void testConditionalBranching() {
-    Body.BodyBuilder builder = createBody(false);
+    Body.BodyBuilder builder = createBodyBuilder(false);
     Body originalBody = builder.build();
     new ConditionalBranchFolder().interceptBody(builder);
     Body processedBody = builder.build();
@@ -66,7 +65,7 @@ public class ConditionalBranchFolderTest {
    * @param constantCondition indicates, whether the condition is constant.
    * @return the generated {@link Body}
    */
-  private static Body.BodyBuilder createBody(boolean constantCondition) {
+  private static Body.BodyBuilder createBodyBuilder(boolean constantCondition) {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
@@ -79,7 +78,7 @@ public class ConditionalBranchFolderTest {
     Stmt strToA = JavaJimple.newAssignStmt(a, stringConstant, noPositionInfo);
 
     Stmt strToB;
-    StringConstant anotherStringConstant = stringConstant;
+    StringConstant anotherStringConstant = javaJimple.newStringConstant("str");
     if (!constantCondition) {
       anotherStringConstant = javaJimple.newStringConstant("different string");
     }

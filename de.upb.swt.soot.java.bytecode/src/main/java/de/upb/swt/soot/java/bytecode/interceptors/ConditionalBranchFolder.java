@@ -55,7 +55,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         JIfStmt ifStmt = (JIfStmt) stmt;
         // check for constant-valued conditions
         Value condition = ifStmt.getCondition();
-        if (Evaluator.isValueConstantValue(condition)) {
+        if (Evaluator.isConstantValue(condition)) {
           condition = Evaluator.getConstantValueOf(condition);
 
           if (((IntConstant) condition).getValue() == 1) {
@@ -66,7 +66,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
             // link previous stmt with branch target of if-Stmt
             final List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt);
             final Stmt fallsThroughStmt = ifSuccessors.get(0);
-            Stmt branchTarget = ifSuccessors.get(1);
+            final Stmt branchTarget = ifSuccessors.get(1);
 
             builder.removeFlow(ifStmt, fallsThroughStmt);
             builder.removeFlow(ifStmt, branchTarget);
@@ -75,18 +75,19 @@ public class ConditionalBranchFolder implements BodyInterceptor {
               builder.removeFlow(predecessor, ifStmt);
               builder.addFlow(predecessor, branchTarget);
             }
+            builder.removeStmt(ifStmt);
 
             Deque<Stmt> stack = new ArrayDeque<>();
             stack.addFirst(fallsThroughStmt);
+            // FIXME: [ms] does not remove every now unreachable stmt if theres a cycle inside the
+            // stmts we want to remove
             // remove all now unreachable stmts from "true"-block
             while (!stack.isEmpty()) {
               Stmt itStmt = stack.pollFirst();
               if (builderStmtGraph.containsNode(itStmt)
                   && builderStmtGraph.predecessors(itStmt).size() < 1) {
-                for (Stmt succ : stmtGraph.successors(itStmt)) {
-                  builder.removeFlow(itStmt, succ);
-                  stack.add(succ);
-                }
+                stack.addAll(stmtGraph.successors(itStmt));
+                builder.removeStmt(itStmt);
               }
             }
           }

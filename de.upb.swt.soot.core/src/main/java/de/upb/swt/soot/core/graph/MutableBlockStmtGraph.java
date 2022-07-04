@@ -491,7 +491,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     MutableBasicBlock block = new MutableBasicBlock();
     if (addNodeToBlock(block, stmt) != null) {
       throw new IllegalArgumentException("Stmt is already in the graph!");
-      // return -1;
     }
     blocks.add(block);
     return block;
@@ -540,14 +539,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // TODO: [ms] see question above.. i.e. shall we remove edges as well
       // switch, if, goto vs. usual stmt
       if (stmt.branches()) {
-        final MutableBasicBlock finalBlockOfRemovedStmt = blockOfRemovedStmt;
-        blockOfRemovedStmt
-            .getSuccessors()
-            .forEach(
-                b -> {
-                  b.removePredecessorBlock(finalBlockOfRemovedStmt);
-                  finalBlockOfRemovedStmt.removeSuccessorBlock(b);
-                });
         blockOfRemovedStmt.clearSuccessorBlocks();
       }
     }
@@ -758,15 +749,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           if (blockB.getPredecessors().isEmpty()
               && blockA.getExceptionalSuccessors().equals(blockB.getExceptionalSuccessors())) {
             // merge blockB into blockA and remove now obsolete Block B
-            MutableBasicBlock finalBlockA = blockA;
-            blockB
-                .getStmts()
-                .forEach(
-                    stmt -> {
-                      finalBlockA.addStmt(stmt);
-                      stmtToBlock.put(stmt, finalBlockA);
-                    });
-
+            for (Stmt stmt : blockB.getStmts()) {
+              addNodeToBlock(blockA, stmt);
+            }
+            blocks.remove(blockB);
           } else {
             // stmtA does not branch but stmtB is already a branch target or has different traps =>
             // link blocks
@@ -945,7 +931,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   public List<Stmt> predecessors(@Nonnull Stmt node) {
     MutableBasicBlock block = stmtToBlock.get(node);
     if (block == null) {
-      throw new IllegalArgumentException("Stmt is not contained in the BlockStmtGraph: " + node);
+      throw new IllegalArgumentException(
+          "Stmt '" + node + "' is not contained in the BlockStmtGraph");
     }
 
     if (node == block.getHead()) {
@@ -1005,7 +992,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   public List<Stmt> successors(@Nonnull Stmt node) {
     MutableBasicBlock block = stmtToBlock.get(node);
     if (block == null) {
-      throw new IllegalArgumentException("Stmt is not contained in the BlockStmtGraph: " + node);
+      throw new IllegalArgumentException(
+          "Stmt '" + node + "' is not contained in the BlockStmtGraph");
     }
 
     if (node == block.getTail()) {
@@ -1025,7 +1013,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   public Map<ClassType, Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
     MutableBasicBlock block = stmtToBlock.get(node);
     if (block == null) {
-      throw new IllegalArgumentException("Stmt is not contained in the BlockStmtGraph: " + node);
+      throw new IllegalArgumentException(
+          "Stmt '" + node + "' is not contained in the BlockStmtGraph");
     }
     Map<ClassType, Stmt> map = new HashMap<>();
     for (Map.Entry<ClassType, MutableBasicBlock> b : block.getExceptionalSuccessors().entrySet()) {
@@ -1038,7 +1027,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   public int inDegree(@Nonnull Stmt node) {
     MutableBasicBlock block = stmtToBlock.get(node);
     if (block == null) {
-      throw new IllegalArgumentException("Stmt is not contained in the BlockStmtGraph: " + node);
+      throw new IllegalArgumentException(
+          "Stmt '" + node + "' is not contained in the BlockStmtGraph");
     }
 
     if (node == block.getHead()) {
@@ -1052,7 +1042,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   public int outDegree(@Nonnull Stmt node) {
     MutableBasicBlock block = stmtToBlock.get(node);
     if (block == null) {
-      throw new IllegalArgumentException("Stmt is not contained in the BlockStmtGraph: " + node);
+      throw new IllegalArgumentException(
+          "Stmt '" + node + "' is not contained in the BlockStmtGraph");
     }
 
     if (node == block.getTail()) {
