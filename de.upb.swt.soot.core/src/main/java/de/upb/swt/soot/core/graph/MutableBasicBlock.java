@@ -82,10 +82,27 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
 
   public void addExceptionalSuccessorBlock(@Nonnull ClassType exception, MutableBasicBlock b) {
     exceptionalSuccessorBlocks.put(exception, b);
+    b.addPredecessorBlock(this);
   }
 
   public void removeExceptionalSuccessorBlock(@Nonnull ClassType exception) {
-    exceptionalSuccessorBlocks.remove(exception);
+    final MutableBasicBlock removedHandlerBlock = exceptionalSuccessorBlocks.remove(exception);
+    if (removedHandlerBlock == null) {
+      throw new IllegalArgumentException(
+          "there is no handler for the given ClassType: " + exception);
+    }
+    removedHandlerBlock.removePredecessorBlock(this);
+  }
+
+  public Collection<ClassType> collectExceptionalSuccessorBlocks(@Nonnull MutableBasicBlock block) {
+    // hint: there can be multiple Exceptions pointing to a handler
+    Collection<ClassType> q = new ArrayDeque<>();
+    for (Map.Entry<ClassType, MutableBasicBlock> entry : exceptionalSuccessorBlocks.entrySet()) {
+      if (entry.getValue() == block) {
+        q.add(entry.getKey());
+      }
+    }
+    return q;
   }
 
   @Nonnull
@@ -220,6 +237,7 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   public void copyExceptionalFlowFrom(MutableBasicBlock sourceBlock) {
     // copy trap info
     exceptionalSuccessorBlocks.putAll(sourceBlock.getExceptionalSuccessors());
+    exceptionalSuccessorBlocks.forEach((type, exBlock) -> exBlock.addPredecessorBlock(this));
   }
 
   public void clearSuccessorBlocks() {
@@ -233,7 +251,20 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   }
 
   public void clearPredecessorBlocks() {
-    predecessorBlocks.forEach(b -> b.removeSuccessorBlock(this));
+    Map<MutableBasicBlock, Collection<ClassType>> toRemove = new HashMap<>();
+    predecessorBlocks.forEach(
+        pb -> {
+          pb.removeSuccessorBlock(this);
+          toRemove.put(pb, pb.collectExceptionalSuccessorBlocks(this));
+        });
+
+    toRemove.forEach(
+        (predBlock, cltypes) -> {
+          for (ClassType type : cltypes) {
+            predBlock.removeExceptionalSuccessorBlock(type);
+          }
+        });
+
     predecessorBlocks.clear();
   }
 

@@ -146,10 +146,10 @@ public class GraphVizExporter {
       sb.append("\n");
     }
 
+    // FIXME: remove DEBUG stuff!
     sb.append(
         "// not anymore existing blocks with references to it - i.e. not wanted, faulty behaviour!\n");
 
-    // FIXME: remove DEBUG stuff!
     for (BasicBlock<?> block : hiddenSuccessors) {
       if (drawnBlocks.contains(block)) {
         continue;

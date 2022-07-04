@@ -535,25 +535,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                 finalBlockOfRemovedStmt.removePredecessorBlock(b);
               });
       blockOfRemovedStmt.clearPredecessorBlocks();
-
-      // remove exceptional flow if stmt is a traphandler
-      final List<Stmt> exPredecessors = exceptionalPredecessors(blockOfRemovedStmt);
-      for (Stmt exPredecessor : exPredecessors) {
-        final MutableBasicBlock exPredBlock = stmtToBlock.get(exPredecessor);
-        final Map<ClassType, MutableBasicBlock> exceptionalSuccessors =
-            exPredBlock.getExceptionalSuccessors();
-        Collection<ClassType> toRemove = new HashSet<>();
-        for (Map.Entry<ClassType, MutableBasicBlock> value : exceptionalSuccessors.entrySet()) {
-          toRemove.add(value.getKey());
-        }
-        for (ClassType classType : toRemove) {
-          exPredBlock.removeExceptionalSuccessorBlock(classType);
-        }
-      }
     }
 
     if (isTail) {
-      if (stmt.getExpectedSuccessorCount() > 1 || !keepFlow) {
+      if (stmt.branches() && !keepFlow) {
         blockOfRemovedStmt.clearSuccessorBlocks();
       }
     }
@@ -570,10 +555,13 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       }
 
     } else {
-      // cleanup block as its not needed in the graph anymore if it only contains stmt - which is
+      // cleanup block (i.e. remove!) as its not needed in the graph anymore if it only contains
+      // stmt - which is
       // now deleted
       blocks.remove(blockOfRemovedStmt);
-      // not really necessary - but just if theres still somewhere a reference in use..don't!
+      blockOfRemovedStmt.clearPredecessorBlocks();
+      blockOfRemovedStmt.clearSuccessorBlocks();
+      blockOfRemovedStmt.clearExceptionalSuccessorBlocks();
       blockOfRemovedStmt.removeStmt(stmt);
     }
   }
@@ -737,7 +725,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           }
         } else {
           throw new IllegalArgumentException(
-              "StmtB is already in the Graph and has a already a non-branching predecessor!");
+              "StmtB '"
+                  + stmtB
+                  + "' is already in the Graph and has a already a non-branching predecessor!");
         }
       }
     }
@@ -786,6 +776,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       @Nonnull Stmt from, @Nonnull MutableBasicBlock blockOfFrom) {
     // TODO: is it intuitive to remove connections to the BasicBlock in the case we cant merge the
     // blocks?
+    // TODO: reuse tryMerge*Block?
 
     // add BlockB to BlockA if blockA has no branchingstmt as tail && same traps
     if (blockOfFrom.getStmts().size() > 0 && from == blockOfFrom.getTail()) {
@@ -799,8 +790,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                 .getStmts()
                 .forEach(
                     k -> {
-                      singlePreviousBlock.addStmt(k);
-                      stmtToBlock.put(k, blockOfFrom);
+                      addNodeToBlock(blockOfFrom, k);
                     });
             return;
           }
@@ -822,8 +812,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                   .getStmts()
                   .forEach(
                       k -> {
-                        blockOfFrom.addStmt(k);
-                        stmtToBlock.put(k, blockOfFrom);
+                        addNodeToBlock(blockOfFrom, k);
                       });
             }
           }
@@ -954,6 +943,24 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     for (BasicBlock<?> pBlock : block.getPredecessors()) {
       if (pBlock.getExceptionalSuccessors().containsValue(pBlock)) {
         exceptionalPred.addAll(pBlock.getStmts());
+      }
+    }
+    return exceptionalPred;
+  }
+
+  public List<MutableBasicBlock> exceptionalPredecessorBlocks(@Nonnull MutableBasicBlock block) {
+
+    Stmt head = block.getHead();
+    if (!(head instanceof JIdentityStmt
+        && ((JIdentityStmt<?>) head).getRightOp() instanceof JCaughtExceptionRef)) {
+      // only an exception handler stmt can have exceptional predecessors
+      return Collections.emptyList();
+    }
+
+    List<MutableBasicBlock> exceptionalPred = new ArrayList<>();
+    for (MutableBasicBlock pBlock : block.getPredecessors()) {
+      if (pBlock.getExceptionalSuccessors().containsValue(pBlock)) {
+        exceptionalPred.add(pBlock);
       }
     }
     return exceptionalPred;

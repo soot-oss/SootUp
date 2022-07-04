@@ -53,6 +53,8 @@ public class UnreachableCodeEliminatorTest {
   Stmt stmt2 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(2), noStmtPositionInfo);
   Stmt stmt3 = JavaJimple.newAssignStmt(l3, IntConstant.getInstance(3), noStmtPositionInfo);
 
+  Stmt jump = JavaJimple.newGotoStmt(noStmtPositionInfo);
+
   Stmt ret1 = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
   Stmt ret2 = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
@@ -125,9 +127,6 @@ public class UnreachableCodeEliminatorTest {
     // set startingStmt
     graph.setStartingStmt(startingStmt);
 
-    // set Position
-    builder.setPosition(NoPositionInformation.getInstance());
-
     new UnreachableCodeEliminator().interceptBody(builder);
 
     assertEquals(0, builder.getTraps().size());
@@ -171,5 +170,34 @@ public class UnreachableCodeEliminatorTest {
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
     Assert.assertEquals(expectedStmtsSet, builder.getStmtGraph().nodes());
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
+  }
+
+  @Test
+  public void testTrappedBody3() {
+    // stmts & traphandler are all reachable!
+
+    // build an instance of BodyBuilder
+    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
+    builder.setMethodSignature(methodSignature);
+
+    // add locals into builder
+    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l3, l4, stack0);
+
+    builder.setLocals(locals);
+
+    // build stmtsGraph for the builder
+    graph.addBlock(
+        Arrays.asList(startingStmt, stmt1, ret1), Collections.singletonMap(exception, handlerStmt));
+    graph.addBlock(Arrays.asList(handlerStmt, jump));
+    graph.putEdge(jump, ret1);
+
+    // set startingStmt
+    graph.setStartingStmt(startingStmt);
+
+    MutableStmtGraph inputGraph = new MutableBlockStmtGraph(builder.getStmtGraph());
+    new UnreachableCodeEliminator().interceptBody(builder);
+
+    assertEquals(inputGraph, builder.getStmtGraph());
   }
 }
