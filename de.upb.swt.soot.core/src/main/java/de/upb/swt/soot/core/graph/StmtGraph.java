@@ -17,6 +17,21 @@ import javax.annotation.Nullable;
  * each flow to the target Stmt. This can include duplicate flows to the same target e.g. for
  * JSwitchStmt, so that every label has its own flow to a target.
  *
+ * <p>THe StmtGraph structure keeps the edge insertion order of each node to store information about
+ * successor stmts in its edges for Branching. Ordered edges are necessary because we want to
+ * associate the i-th item with the i-th branch case of a {@link BranchingStmt}. In a valid
+ * StmtGraph it is not allowed to have unconnected Nodes.
+ *
+ * <pre>
+ *  Stmt stmt1, stmt2;
+ *  ...
+ *  MutableStmtGraph graph = new MutableBlockStmtGraph();
+ *  graph.setEntryPoint(stmt1);
+ *  graph.addNode(stmt1);
+ *  graph.addNode(stmt2);
+ *  graph.putEdge(stmt1, stmt2);
+ * </pre>
+ *
  * @author Markus Schmidt
  */
 public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stmt> {
@@ -28,8 +43,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   }
 
   /**
-   * returns the nodes in this graph in no deterministic order (->Set) to get a linearized flow use
-   * iterator().
+   * returns the nodes in this graph in a non-deterministic order (->Set) to get the nodes in
+   * linearized, ordered manner use iterator().
    */
   @Nonnull
   public abstract Collection<Stmt> nodes();

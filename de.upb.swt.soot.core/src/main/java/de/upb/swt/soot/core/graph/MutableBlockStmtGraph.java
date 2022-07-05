@@ -290,17 +290,18 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     } else {
       isExceptionalFlowDifferent = true;
     }
-    final MutableBasicBlock excludeFromOrigBlock;
+    final MutableBasicBlock seperatedBlock;
     if (isExceptionalFlowDifferent) {
-      excludeFromOrigBlock = excludeStmtFromBlock(stmt, block);
+      seperatedBlock = excludeStmtFromBlock(stmt, block);
+
       // apply exceptional flow info to seperated block
       exceptions.forEach(
           (type, trapHandler) -> {
             MutableBasicBlock trapHandlerBlock = getOrCreateBlock(trapHandler);
-            excludeFromOrigBlock.addExceptionalSuccessorBlock(type, trapHandlerBlock);
-            trapHandlerBlock.addPredecessorBlock(excludeFromOrigBlock);
+            seperatedBlock.addExceptionalSuccessorBlock(type, trapHandlerBlock);
+            trapHandlerBlock.addPredecessorBlock(seperatedBlock);
           });
-      tryMergeIntoSurroundingBlocks(excludeFromOrigBlock);
+      tryMergeIntoSurroundingBlocks(seperatedBlock);
     }
   }
 
@@ -311,7 +312,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
    */
   @Nonnull
   private MutableBasicBlock excludeStmtFromBlock(@Nonnull Stmt splitStmt, MutableBasicBlock block) {
-    final MutableBasicBlock excludeFromOrigBlock;
+    final MutableBasicBlock excludedFromOrigBlock;
     if (block.getStmtCount() > 1) {
       final List<Stmt> blockStmts = block.getStmts();
       int stmtIdx = blockStmts.indexOf(splitStmt);
@@ -322,14 +323,14 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
       if (stmtIdx == 0) {
         // stmt is the head -> maybe just a single split is necessary
-        excludeFromOrigBlock = block;
+        excludedFromOrigBlock = block;
       } else {
         // i.e. stmt != block.getHead() -> there is a "middle" or end Block containing the splitStmt
         // which needs
         // to be seperated
-        excludeFromOrigBlock = new MutableBasicBlock();
-        addNodeToBlock(excludeFromOrigBlock, splitStmt);
-        blocks.add(excludeFromOrigBlock);
+        excludedFromOrigBlock = new MutableBasicBlock();
+        addNodeToBlock(excludedFromOrigBlock, splitStmt);
+        blocks.add(excludedFromOrigBlock);
       }
 
       if (stmtIdx + 1 < blockStmts.size()) {
@@ -340,7 +341,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           addNodeToBlock(restOfOrigBlock, blockStmts.get(i));
         }
 
-        // copy successors of block which are now the successors of the third block
+        // copy successors of block which are now the successors of the "third"/leftover block
         block
             .getSuccessors()
             .forEach(
@@ -349,8 +350,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                 });
         block.clearSuccessorBlocks();
 
-        // link with previous stmts from the block
-        linkBlocks(excludeFromOrigBlock, restOfOrigBlock);
+        // link lthird/leftover block with previous stmts from the seperated block
+        linkBlocks(excludedFromOrigBlock, restOfOrigBlock);
         block.clearSuccessorBlocks();
 
         // add blocks exceptional flows
@@ -366,18 +367,15 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
       } else {
         // there are no more stmts after stmtIdx -> less than 3 blocks are necessary
-        if (stmtIdx == 1) {
-          // i.e. stmt == block.getHead() -> copy successors to second block as its the last part
-          // of the original block
-          block
-              .getSuccessors()
-              .forEach(
-                  successorBlock -> {
-                    linkBlocks(excludeFromOrigBlock, successorBlock);
-                  });
-          block.clearSuccessorBlocks();
-          linkBlocks(block, excludeFromOrigBlock);
-        }
+        // copy origin successors to second block as its the last part of the  block
+        block
+            .getSuccessors()
+            .forEach(
+                successorBlock -> {
+                  linkBlocks(excludedFromOrigBlock, successorBlock);
+                });
+        block.clearSuccessorBlocks();
+        linkBlocks(block, excludedFromOrigBlock);
       }
 
       // cleanup original block -> "beforeBlock" -> remove now copied Stmts
@@ -385,10 +383,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         block.removeStmt(blockStmts.get(i));
       }
 
-      return excludeFromOrigBlock;
+      return excludedFromOrigBlock;
 
     } else {
-      // just a single stmt in the block -> e.g. its the block we add the exception info
+      // just a single stmt in the block -> e.g. its already the block we want to seperate
       return block;
     }
   }

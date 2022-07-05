@@ -145,7 +145,8 @@ public class GraphVizExporter {
 
       sb.append("\n");
     }
-    return sb.toString();
+
+    return sb.append("}").toString();
   }
 
   private static String escape(String str) {

@@ -214,9 +214,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     bodyBuilder.setModifiers(AsmUtil.getModifiers(access));
     arrangeStmts(graph, bodyBuilder);
 
-    if (bodyBuilder.getStmtGraph().nodes().size() > 0) {
-      Position firstStmtPos =
-          bodyBuilder.getStmtGraph().getStartingStmt().getPositionInfo().getStmtPosition();
+    if (graph.nodes().size() > 0) {
+      Position firstStmtPos = graph.getStartingStmt().getPositionInfo().getStmtPosition();
       bodyBuilder.setPosition(
           new Position(
               firstStmtPos.getFirstLine(),
@@ -1924,7 +1923,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // List<Stmt> connectBlocks = new ArrayList<>();
 
     // every LabelNode denotes a border of a Block
-    List<Stmt> block = buildPreambleLocals(builder);
+    List<Stmt> stmtList = buildPreambleLocals(builder);
 
     do {
 
@@ -1944,23 +1943,24 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
 
       if (!danglingLabel.isEmpty()) {
-        // there is (at least) a LabelNode -> Block border -> create another block or use the empty
+        // there is (at least) a LabelNode -> Block border -> create another stmtList or use the
+        // empty
         // existing one
 
-        /*if (!block.isEmpty()) {
-          final Stmt tailStmt = block.get(block.size() - 1);
+        /*if (!stmtList.isEmpty()) {
+          final Stmt tailStmt = stmtList.get(stmtList.size() - 1);
           if (tailStmt.fallsThrough()) {
             connectBlocks.add(tailStmt);
           }
 
-          graph.addBlock(block, currentTraps);
+          graph.addBlock(stmtList, currentTraps);
           if (graph.getStartingStmt() == null) {
-            graph.setStartingStmt(block.get(0));
+            graph.setStartingStmt(stmtList.get(0));
           }
-          block.clear();
+          stmtList.clear();
         }
 
-        // FIXME: update current "active" trapRanges information for the block
+        // FIXME: update current "active" trapRanges information for the stmtList
         boolean isTrapBorder = false;
         boolean isStartOfTrapRange = false;
         for (TryCatchBlockNode tc : super.tryCatchBlocks) {
@@ -2004,15 +2004,15 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         danglingLabel.clear();
       }
 
-      emitStmt(stmt, block);
+      emitStmt(stmt, stmtList);
 
     } while ((insn = insn.getNext()) != null);
 
-    /* is there a dangling block thats not assigned in the loop?
-    if (!block.isEmpty()) {
-      graph.addBlock(block, currentTraps);
+    /* is there a dangling stmtList thats not assigned in the loop?
+    if (!stmtList.isEmpty()) {
+      graph.addBlock(stmtList, currentTraps);
       if (graph.getStartingStmt() == null) {
-        graph.setStartingStmt(block.get(0));
+        graph.setStartingStmt(stmtList.get(0));
       }
     }*/
 
@@ -2038,31 +2038,31 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
 
     final List<Trap> traps = buildTraps();
-    graph.initializeWith(block, branchingMap, traps);
+    graph.initializeWith(stmtList, branchingMap, traps);
 
     // Emit the inline exception handler blocks i.e. those that are reachable without exceptional
     // flow
     for (LabelNode ln : inlineExceptionHandlers.keySet()) {
-      /*if (block.isEmpty()) {
-        graph.addBlock(block, currentTraps);
-        block.clear();
+      /*if (stmtList.isEmpty()) {
+        graph.addBlock(stmtList, currentTraps);
+        stmtList.clear();
       }
       // TODO: update currentTraps?
       */
 
       Stmt handlerStmt = inlineExceptionHandlers.get(ln);
-      emitStmt(handlerStmt, block);
+      emitStmt(handlerStmt, stmtList);
       trapHandler.put(ln, handlerStmt);
 
       // jump back to the original implementation
       JGotoStmt gotoStmt = Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
-      block.add(gotoStmt);
+      stmtList.add(gotoStmt);
 
-      // add block to graph
-      graph.addBlock(block, currentTraps);
-      block.clear();
+      // add stmtList to graph
+      graph.addBlock(stmtList, currentTraps);
+      stmtList.clear();
 
-      // connect tail of block with its target
+      // connect tail of stmtList with its target
       Stmt targetStmt = insnToStmt.get(ln);
       graph.putEdge(gotoStmt, targetStmt);
     }

@@ -66,7 +66,6 @@ public class SootMethodTest {
             .addFlow(firstStmt, returnVoidStmt)
             .setMethodSignature(methodSignature)
             .setLocals(generator.getLocals())
-            .setTraps(Collections.emptyList())
             .build();
     assertEquals(1, body.getLocalCount());
 

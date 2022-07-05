@@ -78,6 +78,7 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
 
   public abstract void removeExceptionalEdge(@Nonnull Stmt node, @Nonnull ClassType exception);
 
+  @Deprecated
   public void setTraps(List<Trap> newTraps) {
     throw new UnsupportedOperationException("deprecated");
   }
