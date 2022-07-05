@@ -105,7 +105,8 @@ Three-Address-Code which means there are no nested expressions.
 
 ### Class (or Interface)
 A class consists of Fields and Methods.
-It is referenced by its ClassType.
+It is referenced by its ClassType.  
+
 === "Jimple"
 
     ```jimple
@@ -155,7 +156,8 @@ It is referenced by its ClassType.
 
 ### Field
 A Field is a piece of memory which can store a value that is accessible according to its visibility modifier.
-It is referenced by its FieldSignature.
+It is referenced by its FieldSignature.  
+
 === "Jimple"
 
     ```jimple
@@ -216,7 +218,8 @@ It is referenced by its FieldSignature.
 
 ### Method and the Body
 The interesting part is a method. A method is a "piece of code" that can be executed.
-It is referenced by its MethodSignature and contains a [**StmtGraph**]{a control flow graph} that models the sequence of single instructions/statements (Stmts).
+It is referenced by its MethodSignature and contains a [**StmtGraph**]{a control flow graph} that models the sequence of single instructions/statements (Stmts).  
+
 === "Jimple"
 
     ```jimple
@@ -311,7 +314,8 @@ It is referenced by its MethodSignature and contains a [**StmtGraph**]{a control
 
 ### Signatures
 Signatures are required for identifying or referencing things across a method, such as Classes, Interfaces, Methods or Fields. 
-Locals, on the other hand, do not need signatures, since they are referenced within method boundaries.
+Locals, on the other hand, do not need signatures, since they are referenced within method boundaries.  
+
 === "Jimple"
 
     ```jimple
@@ -444,7 +448,8 @@ Locals, on the other hand, do not need signatures, since they are referenced wit
     ```
 
 ### Trap
-A Trap is a mechanism to model exceptional flow.
+A Trap is a mechanism to model exceptional flow.  
+
 === "Jimple"
 
     ```jimple
@@ -578,7 +583,8 @@ A BranchingStmt's job is to model the flow between Stmts.
 
 
 ##### JGotoStmt
-for unconditional flow
+for unconditional flow.  
+
 === "Jimple"
 
     ```jimple
@@ -686,7 +692,8 @@ for unconditional flow
     ```
 
 ##### JIfStmt
-for conditional flow depending on boolean Expression (AbstractConditionExpr) so they have two successor Stmt's
+for conditional flow depending on boolean Expression (AbstractConditionExpr) so they have two successor Stmt's.  
+
 === "Jimple"
 
     ```jimple
@@ -800,7 +807,8 @@ for conditional flow depending on boolean Expression (AbstractConditionExpr) so 
 ##### JSwitchStmt
 for conditional flow that behaves like a switch-case. It has #numberOfCaseLabels+1 (for default) successor Stmt's. 
 
-All other Stmts are not manipulating the flow, which means they have a single successor Stmt as long as they are not exiting the flow inside a method.
+All other Stmts are not manipulating the flow, which means they have a single successor Stmt as long as they are not exiting the flow inside a method.  
+
 === "Jimple"
 
     ```jimple
@@ -963,7 +971,8 @@ All other Stmts are not manipulating the flow, which means they have a single su
 
 
 ##### JReturnStmt & JReturnVoidStmt
-They end the execution/flow inside the current method and return (a value) to its caller.
+They end the execution/flow inside the current method and return (a value) to its caller.  
+
 === "Jimple"
 
     ```jimple
@@ -1073,7 +1082,8 @@ They end the execution/flow inside the current method and return (a value) to it
 
 
 ##### JThrowStmt
-Ends the execution inside the current Method if the thrown exception is not caught by a Trap, which redirects the execution to an exceptionhandler
+Ends the execution inside the current Method if the thrown exception is not caught by a Trap, which redirects the execution to an exceptionhandler.  
+
 
 === "Jimple"
 
@@ -1211,7 +1221,8 @@ Ends the execution inside the current Method if the thrown exception is not caug
 
 
 ##### JInvokeStmt
-transfers the control flow to another method until the called method returns.
+transfers the control flow to another method until the called method returns.  
+
 === "Jimple"
 
     ```jimple
@@ -1359,7 +1370,7 @@ transfers the control flow to another method until the called method returns.
 ##### JAssignStmt
 assigns a Value from the right hand-side to the left hand-side.
 Left hand-side of an assignment can be a Local referencing a variable (i.e. a Local) or a FieldRef referencing a Field.
-Right hand-side of an assignment can be an expression (Expr), a Local, a FieldRef or a Constant.
+Right hand-side of an assignment can be an expression (Expr), a Local, a FieldRef or a Constant.  
 
 === "Jimple"
 
@@ -1464,7 +1475,7 @@ Right hand-side of an assignment can be an expression (Expr), a Local, a FieldRe
 
 
 ##### JIdentityStmt
-is semantically like the JAssignStmt and handles assignments of IdentityRef's to make implicit assignments explicit into the StmtGraph.
+is semantically like the JAssignStmt and handles assignments of IdentityRef's to make implicit assignments explicit into the StmtGraph.  
 
 === "Jimple"
 
@@ -1551,7 +1562,8 @@ is semantically like the JAssignStmt and handles assignments of IdentityRef's to
 
 
 #####JEnterMonitorStmt & JExitMonitorStmt
-marks synchronized blocks of code from JEnterMonitorStmt to JExitMonitorStmt.
+marks synchronized blocks of code from JEnterMonitorStmt to JExitMonitorStmt.  
+
 === "Jimple"
 
     ```jimple
@@ -1707,7 +1719,8 @@ An Immediate has a [**given**]{as in constant or immutable} Type and consists of
 
 
 ### Type
-VoidType
+VoidType  
+
 === "Jimple"
 
     ```jimple
@@ -1788,7 +1801,7 @@ VoidType
 
 
 #### PrimaryType
-BooleanType, ByteType, CharType, ShortType, IntType, LongType, DoubleType, FloatType
+BooleanType, ByteType, CharType, ShortType, IntType, LongType, DoubleType, FloatType  
 
 === "Jimple"
 
@@ -2038,7 +2051,7 @@ BooleanType, ByteType, CharType, ShortType, IntType, LongType, DoubleType, Float
 #### ReferenceType
 ClassType, 
 ArrayType
-NullType
+NullType  
 
 === "Jimple"
 
@@ -2235,7 +2248,7 @@ NullType
 $i0 
 ```
 A Local is a variable and its scope is inside its method i.e. no referencing from outside a method.
-Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
+Values can be assigned to Locals via JIdentityStmt or JAssignStmt.  
 
 === "Jimple"
 
