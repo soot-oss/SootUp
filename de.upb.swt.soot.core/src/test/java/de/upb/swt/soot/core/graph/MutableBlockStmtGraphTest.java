@@ -815,7 +815,7 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(stmt1, stmt2);
     graph.setStartingStmt(stmt1);
 
-    final StmtGraph graph2 = new MutableStmtGraphImpl(graph);
+    final StmtGraph graph2 = new MutableBlockStmtGraph(graph);
 
     assertEquals(graph.getStartingStmt(), graph2.getStartingStmt());
     assertEquals(graph.nodes().size(), graph2.nodes().size());
