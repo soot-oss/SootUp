@@ -110,16 +110,16 @@ It is referenced by its ClassType.
 === "Jimple"
 
     ```jimple
-    public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-      target.exercise1.DemoClass this;
-      this := @this: target.exercise1.DemoClass;
-      specialinvoke this.<java.lang.Object: void <init>()>();
-      return;
+      public void <init>()
+      {
+        target.exercise1.DemoClass this;
+        this := @this: target.exercise1.DemoClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+      }
     }
-    /* 
-      "target.exercise1.DemoClass" is SootClass
-    */
     ```
 
 === "Java"
