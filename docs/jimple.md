@@ -161,13 +161,16 @@ It is referenced by its FieldSignature.
 === "Jimple"
 
     ```jimple
-    public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-      target.exercise1.DemoClass this;
-      this := @this: target.exercise1.DemoClass;
-      specialinvoke this.<java.lang.Object: void <init>()>();
-      this.<target.exercise1.DemoClass: double pi> = 3.14;
-      return;
+      public void <init>()
+      {
+        target.exercise1.DemoClass this;
+        this := @this: target.exercise1.DemoClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        this.<target.exercise1.DemoClass: double pi> = 3.14;
+        return;
+      }
     }
     /*
       "this.<target.exercise1.DemoClass: double pi>" is JInstanceFieldRef
@@ -223,27 +226,30 @@ It is referenced by its MethodSignature and contains a [**StmtGraph**]{a control
 === "Jimple"
 
     ```jimple
-    public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-      target.exercise1.DemoClass this;
-      this := @this: target.exercise1.DemoClass;
-      specialinvoke this.<java.lang.Object: void <init>()>();
-      virtualinvoke this.<target.exercise1.DemoClass: 
-      void demoMethod()>();
-      return;
-    }
+      public void <init>()
+      {
+        target.exercise1.DemoClass this;
+        this := @this: target.exercise1.DemoClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        virtualinvoke this.<target.exercise1.DemoClass: 
+        void demoMethod()>();
+        return;
+      }
 
-    public void demoMethod()
-    {
-      java.io.PrintStream $stack1;
-      target.exercise1.DemoClass this;
+      public void demoMethod()
+      {
+        java.io.PrintStream $stack1;
+        target.exercise1.DemoClass this;
 
-      this := @this: target.exercise1.DemoClass;
-      $stack1 = <java.lang.System: java.io.PrintStream out>;
+        this := @this: target.exercise1.DemoClass;
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
 
-      virtualinvoke $stack1.<java.io.PrintStream: 
-      void println(java.lang.String)>("Inside method.");
-      return;
+        virtualinvoke $stack1.<java.io.PrintStream: 
+        void println(java.lang.String)>("Inside method.");
+        return;
+      }
     }
     /*
       "<target.exercise1.DemoClass: void demoMethod()>" 
@@ -319,43 +325,46 @@ Locals, on the other hand, do not need signatures, since they are referenced wit
 === "Jimple"
 
     ```jimple
-    public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-      target.exercise1.DemoClass this;
-      this := @this: target.exercise1.DemoClass;
+      public void <init>()
+      {
+        target.exercise1.DemoClass this;
+        this := @this: target.exercise1.DemoClass;
 
-      specialinvoke this.<java.lang.Object: void <init>()>();
-      this.<target.exercise1.DemoClass: double pi> = 3.14;
-      return;
-    }
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        this.<target.exercise1.DemoClass: double pi> = 3.14;
+        return;
+      }
 
-    public void demoMethod()
-    {
-      java.io.PrintStream $stack3, $stack5;
-      java.lang.StringBuilder $stack4, $stack6, $stack7;
-      java.lang.String $stack8;
-      target.exercise1.DemoClass this;
+      public void demoMethod()
+      {
+        java.io.PrintStream $stack3, $stack5;
+        java.lang.StringBuilder $stack4, $stack6, $stack7;
+        java.lang.String $stack8;
+        target.exercise1.DemoClass this;
 
-      this := @this: target.exercise1.DemoClass;
-      $stack3 = <java.lang.System: java.io.PrintStream out>;
+        this := @this: target.exercise1.DemoClass;
+        $stack3 = <java.lang.System: java.io.PrintStream out>;
 
-      virtualinvoke $stack3.<java.io.PrintStream: 
-        void println(java.lang.String)>("pi : 3.14");
-      $stack5 = <java.lang.System: java.io.PrintStream out>;
-      $stack4 = new java.lang.StringBuilder;
+        virtualinvoke $stack3.<java.io.PrintStream: 
+          void println(java.lang.String)>("pi : 3.14");
+        $stack5 = <java.lang.System: java.io.PrintStream out>;
+        $stack4 = new java.lang.StringBuilder;
 
-      specialinvoke $stack4.<java.lang.StringBuilder: void <init>()>();
-      $stack6 = virtualinvoke $stack4.<java.lang.StringBuilder: 
-        java.lang.StringBuilder append(java.lang.String)>
-          ("pi : ");
-      $stack7 = virtualinvoke $stack6.<java.lang.StringBuilder: 
-        java.lang.StringBuilder append(double)>(3.1415);
-      $stack8 = virtualinvoke $stack7.<java.lang.StringBuilder: 
-        java.lang.String toString()>();
+        specialinvoke $stack4.<java.lang.StringBuilder: void <init>()>();
+        $stack6 = virtualinvoke $stack4.<java.lang.StringBuilder: 
+          java.lang.StringBuilder append(java.lang.String)>
+            ("pi : ");
+        $stack7 = virtualinvoke $stack6.<java.lang.StringBuilder: 
+          java.lang.StringBuilder append(double)>(3.1415);
+        $stack8 = virtualinvoke $stack7.<java.lang.StringBuilder: 
+          java.lang.String toString()>();
 
-      virtualinvoke $stack5.<java.io.PrintStream:     
-        void println(java.lang.String)>($stack8);
-      return;
+        virtualinvoke $stack5.<java.io.PrintStream:     
+          void println(java.lang.String)>($stack8);
+        return;
+      }
     }
     /*
       For JInstanceFieldRef "this.<target.exercise1.DemoClass: double pi>" 
@@ -453,43 +462,46 @@ A Trap is a mechanism to model exceptional flow.
 === "Jimple"
 
     ```jimple
-    public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-      target.exercise1.DemoClass this;
-      this := @this: target.exercise1.DemoClass;
-      specialinvoke this.<java.lang.Object: void <init>()>();
-      return;
-    }
-
-    public void divideExample(int, int)
-    {
-      int x, y, $stack4;
-      java.io.PrintStream $stack5, $stack7;
-      java.lang.Exception $stack6;
-      target.exercise1.DemoClass this;
-
-      this := @this: target.exercise1.DemoClass;
-      x := @parameter0: int;
-      y := @parameter1: int;
-
-     label1:
-        $stack5 = <java.lang.System: java.io.PrintStream out>;
-        $stack4 = x / y;
-        virtualinvoke $stack5.<java.io.PrintStream: void println(int)>($stack4);
-
-     label2:
-        goto label4;
-
-     label3:
-        $stack6 := @caughtexception;
-        $stack7 = <java.lang.System: java.io.PrintStream out>;
-        virtualinvoke $stack7.<java.io.PrintStream: 
-          void println(java.lang.String)>("Exception caught");
-
-     label4:
+      public void <init>()
+      {
+        target.exercise1.DemoClass this;
+        this := @this: target.exercise1.DemoClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
         return;
+      }
 
-        catch java.lang.Exception from label1 to label2 with label3;
+      public void divideExample(int, int)
+      {
+        int x, y, $stack4;
+        java.io.PrintStream $stack5, $stack7;
+        java.lang.Exception $stack6;
+        target.exercise1.DemoClass this;
+
+        this := @this: target.exercise1.DemoClass;
+        x := @parameter0: int;
+        y := @parameter1: int;
+
+       label1:
+          $stack5 = <java.lang.System: java.io.PrintStream out>;
+          $stack4 = x / y;
+          virtualinvoke $stack5.<java.io.PrintStream: void println(int)>($stack4);
+
+       label2:
+          goto label4;
+
+       label3:
+          $stack6 := @caughtexception;
+          $stack7 = <java.lang.System: java.io.PrintStream out>;
+          virtualinvoke $stack7.<java.io.PrintStream: 
+            void println(java.lang.String)>("Exception caught");
+
+       label4:
+          return;
+
+          catch java.lang.Exception from label1 to label2 with label3;
+      }
     }
     /*
       By calling getTraps() method, we can get the Traip chain.
@@ -588,29 +600,32 @@ for unconditional flow.
 === "Jimple"
 
     ```jimple
-    public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-      target.exercise1.DemoClass this;
-      this := @this: target.exercise1.DemoClass;
-      specialinvoke this.<java.lang.Object: void <init>()>();
-      return;
-    }
-    public static void sampleMethod()
-    {
-      int i;
-      i = 0;
-
-      label1:
-        if i >= 5 goto label3;
-        if i != 3 goto label2;
-        goto label3;
-
-      label2:
-        i = i + 1;
-        goto label1;
-
-      label3:
+      public void <init>()
+      {
+        target.exercise1.DemoClass this;
+        this := @this: target.exercise1.DemoClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
         return;
+      }
+      public static void sampleMethod()
+      {
+        int i;
+        i = 0;
+
+        label1:
+          if i >= 5 goto label3;
+          if i != 3 goto label2;
+          goto label3;
+
+        label2:
+          i = i + 1;
+          goto label1;
+
+        label3:
+          return;
+      }
     }
     /*
       Here for statements "goto label3;" and "goto label1;", 
@@ -697,36 +712,39 @@ for conditional flow depending on boolean Expression (AbstractConditionExpr) so 
 === "Jimple"
 
     ```jimple
-     public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-      target.exercise1.DemoClass this;
-      this := @this: target.exercise1.DemoClass;
-      specialinvoke this.<java.lang.Object: void <init>()>();
-      return;
-    }
-
-    public static void sampleMethod(int)
-    {
-      int x, $stack1;
-      java.io.PrintStream $stack2, $stack3;
-
-      x := @parameter0: int;
-
-      $stack1 = x % 2;
-      if $stack1 != 0 goto label1;
-
-      $stack3 = <java.lang.System: java.io.PrintStream out>;
-      virtualinvoke $stack3.<java.io.PrintStream: 
-        void println(java.lang.String)>("Even");
-      goto label2;
-
-      label1:
-        $stack2 = <java.lang.System: java.io.PrintStream out>;
-        virtualinvoke $stack2.<java.io.PrintStream: 
-          void println(java.lang.String)>("Odd");
-
-      label2:
+       public void <init>()
+      {
+        target.exercise1.DemoClass this;
+        this := @this: target.exercise1.DemoClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
         return;
+      }
+
+      public static void sampleMethod(int)
+      {
+        int x, $stack1;
+        java.io.PrintStream $stack2, $stack3;
+
+        x := @parameter0: int;
+
+        $stack1 = x % 2;
+        if $stack1 != 0 goto label1;
+
+        $stack3 = <java.lang.System: java.io.PrintStream out>;
+        virtualinvoke $stack3.<java.io.PrintStream: 
+          void println(java.lang.String)>("Even");
+        goto label2;
+
+        label1:
+          $stack2 = <java.lang.System: java.io.PrintStream out>;
+          virtualinvoke $stack2.<java.io.PrintStream: 
+            void println(java.lang.String)>("Odd");
+
+        label2:
+          return;
+      }
     }
     /*
       For statement "if $stack1 != 0 goto label1;", 
@@ -812,49 +830,52 @@ All other Stmts are not manipulating the flow, which means they have a single su
 === "Jimple"
 
     ```jimple
-    public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-      target.exercise1.DemoClass this;
-      this := @this: target.exercise1.DemoClass;
-      specialinvoke this.<java.lang.Object: void <init>()>();
-      return;
-    }
-
-    public void switchExample(int)
-    {
-      int x;
-      java.io.PrintStream $stack2, $stack3, $stack4;
-      target.exercise1.DemoClass this;
-
-      this := @this: target.exercise1.DemoClass;
-      x := @parameter0: int;
-
-      lookupswitch(x)
+      public void <init>()
       {
-        case 1: goto label1;
-        case 2: goto label2;
-        default: goto label3;
-      };
-
-      label1:
-        $stack3 = <java.lang.System: java.io.PrintStream out>;
-        virtualinvoke $stack3.<java.io.PrintStream: 
-          void println(java.lang.String)>("Input 1");
-        goto label4;
-
-      label2:
-        $stack2 = <java.lang.System: java.io.PrintStream out>;
-        virtualinvoke $stack2.<java.io.PrintStream: 
-          void println(java.lang.String)>("Input 2");
-        goto label4;
-
-      label3:
-        $stack4 = <java.lang.System: java.io.PrintStream out>;
-        virtualinvoke $stack4.<java.io.PrintStream: 
-          void println(java.lang.String)>("Input more than 2");
-
-      label4:
+        target.exercise1.DemoClass this;
+        this := @this: target.exercise1.DemoClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
         return;
+      }
+
+      public void switchExample(int)
+      {
+        int x;
+        java.io.PrintStream $stack2, $stack3, $stack4;
+        target.exercise1.DemoClass this;
+
+        this := @this: target.exercise1.DemoClass;
+        x := @parameter0: int;
+
+        lookupswitch(x)
+        {
+          case 1: goto label1;
+          case 2: goto label2;
+          default: goto label3;
+        };
+
+        label1:
+          $stack3 = <java.lang.System: java.io.PrintStream out>;
+          virtualinvoke $stack3.<java.io.PrintStream: 
+            void println(java.lang.String)>("Input 1");
+          goto label4;
+
+        label2:
+          $stack2 = <java.lang.System: java.io.PrintStream out>;
+          virtualinvoke $stack2.<java.io.PrintStream: 
+            void println(java.lang.String)>("Input 2");
+          goto label4;
+
+        label3:
+          $stack4 = <java.lang.System: java.io.PrintStream out>;
+          virtualinvoke $stack4.<java.io.PrintStream: 
+            void println(java.lang.String)>("Input more than 2");
+
+        label4:
+          return;
+      }
     }
     /*
       Here for below statement:
@@ -976,37 +997,40 @@ They end the execution/flow inside the current method and return (a value) to it
 === "Jimple"
 
     ```jimple
-    public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-      target.exercise1.DemoClass this;
-      this := @this: target.exercise1.DemoClass;
-      specialinvoke this.<java.lang.Object: void <init>()>();
-      return;
-    }
+      public void <init>()
+      {
+        target.exercise1.DemoClass this;
+        this := @this: target.exercise1.DemoClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+      }
 
-    public int increment(int)
-    {
-      int x, $stack2;
-      target.exercise1.DemoClass this;
+      public int increment(int)
+      {
+        int x, $stack2;
+        target.exercise1.DemoClass this;
 
-      this := @this: target.exercise1.DemoClass;
-      x := @parameter0: int;
+        this := @this: target.exercise1.DemoClass;
+        x := @parameter0: int;
 
-      $stack2 = x + 1;
-      return $stack2;
-    }
+        $stack2 = x + 1;
+        return $stack2;
+      }
 
-    public void print()
-    {
-      java.io.PrintStream $stack1;
-      target.exercise1.DemoClass this;
+      public void print()
+      {
+        java.io.PrintStream $stack1;
+        target.exercise1.DemoClass this;
 
-      this := @this: target.exercise1.DemoClass;
-      $stack1 = <java.lang.System: java.io.PrintStream out>;
-      virtualinvoke $stack1.<java.io.PrintStream: 
-        void println(java.lang.String)>("Inside method print");
-      return;
-    }
+        this := @this: target.exercise1.DemoClass;
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+        virtualinvoke $stack1.<java.io.PrintStream: 
+          void println(java.lang.String)>("Inside method print");
+        return;
+     }
+   }
     /*
       "return $stack2" is JReturnStmt.
       "return" is JReturnVoidStmt.
@@ -1088,50 +1112,53 @@ Ends the execution inside the current Method if the thrown exception is not caug
 === "Jimple"
 
     ```jimple
-    public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-      target.exercise1.DemoClass this;
-      this := @this: target.exercise1.DemoClass;
-      specialinvoke this.<java.lang.Object: void <init>()>();
-      return;
-    }
-
-    public void divideExample(int, int)
-    {
-      int y, x, $stack6;
-      java.lang.StringBuilder $stack3, $stack5, $stack7;
-      java.io.PrintStream $stack4;
-      java.lang.String $stack8;
-      java.lang.RuntimeException $stack9;
-      target.exercise1.DemoClass this;
-
-      this := @this: target.exercise1.DemoClass;
-      x := @parameter0: int;
-      y := @parameter1: int;
-
-      if y != 0 goto label1;
-
-      $stack9 = new java.lang.RuntimeException;
-      specialinvoke $stack9.<java.lang.RuntimeException: 
-        void <init>(java.lang.String)>("Divide by zero error");
-      throw $stack9;
-
-      label1:
-        $stack4 = <java.lang.System: java.io.PrintStream out>;
-        $stack3 = new java.lang.StringBuilder;
-        specialinvoke $stack3.<java.lang.StringBuilder: void <init>()>();
-
-        $stack5 = virtualinvoke $stack3.<java.lang.StringBuilder: 
-          java.lang.StringBuilder append(java.lang.String)>("Divide result : ");
-        $stack6 = x / y;
-        $stack7 = virtualinvoke $stack5.<java.lang.StringBuilder: 
-          java.lang.StringBuilder append(int)>($stack6);
-        $stack8 = virtualinvoke $stack7.<java.lang.StringBuilder: 
-          java.lang.String toString()>();
-
-        virtualinvoke $stack4.<java.io.PrintStream: 
-          void println(java.lang.String)>($stack8);
+      public void <init>()
+      {
+        target.exercise1.DemoClass this;
+        this := @this: target.exercise1.DemoClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
         return;
+      }
+
+      public void divideExample(int, int)
+      {
+        int y, x, $stack6;
+        java.lang.StringBuilder $stack3, $stack5, $stack7;
+        java.io.PrintStream $stack4;
+        java.lang.String $stack8;
+        java.lang.RuntimeException $stack9;
+        target.exercise1.DemoClass this;
+
+        this := @this: target.exercise1.DemoClass;
+        x := @parameter0: int;
+        y := @parameter1: int;
+
+        if y != 0 goto label1;
+
+        $stack9 = new java.lang.RuntimeException;
+        specialinvoke $stack9.<java.lang.RuntimeException: 
+          void <init>(java.lang.String)>("Divide by zero error");
+        throw $stack9;
+
+        label1:
+          $stack4 = <java.lang.System: java.io.PrintStream out>;
+          $stack3 = new java.lang.StringBuilder;
+          specialinvoke $stack3.<java.lang.StringBuilder: void <init>()>();
+
+          $stack5 = virtualinvoke $stack3.<java.lang.StringBuilder: 
+            java.lang.StringBuilder append(java.lang.String)>("Divide result : ");
+          $stack6 = x / y;
+          $stack7 = virtualinvoke $stack5.<java.lang.StringBuilder: 
+            java.lang.StringBuilder append(int)>($stack6);
+          $stack8 = virtualinvoke $stack7.<java.lang.StringBuilder: 
+            java.lang.String toString()>();
+
+          virtualinvoke $stack4.<java.io.PrintStream: 
+            void println(java.lang.String)>($stack8);
+          return;
+      }
     }
     /*
       "throw $stack9" is JThrowStmt.
@@ -1226,48 +1253,51 @@ transfers the control flow to another method until the called method returns.
 === "Jimple"
 
     ```jimple
-    public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-      target.exercise1.DemoClass this;
-      this := @this: target.exercise1.DemoClass;
-      specialinvoke this.<java.lang.Object: void <init>()>();
-      return;
-    }
+      public void <init>()
+      {
+        target.exercise1.DemoClass this;
+        this := @this: target.exercise1.DemoClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+      }
 
-    public void print(int)
-    {
-      target.exercise1.DemoClass this;
-      int x, a;
-      java.io.PrintStream $stack4, $stack6;
+      public void print(int)
+      {
+        target.exercise1.DemoClass this;
+        int x, a;
+        java.io.PrintStream $stack4, $stack6;
 
-      this := @this: target.exercise1.DemoClass;
-      x := @parameter0: int;
+        this := @this: target.exercise1.DemoClass;
+        x := @parameter0: int;
 
-      a = virtualinvoke this.<target.exercise1.DemoClass: 
-        int increment(int)>(x);
-      $stack4 = <java.lang.System: java.io.PrintStream out>;
-      virtualinvoke $stack4.<java.io.PrintStream: 
-        void println(int)>(a);
+        a = virtualinvoke this.<target.exercise1.DemoClass: 
+          int increment(int)>(x);
+        $stack4 = <java.lang.System: java.io.PrintStream out>;
+        virtualinvoke $stack4.<java.io.PrintStream: 
+          void println(int)>(a);
 
-      a = virtualinvoke this.<target.exercise1.DemoClass: 
-        int increment(int)>(a);
-      $stack6 = <java.lang.System: java.io.PrintStream out>;
-      virtualinvoke $stack6.<java.io.PrintStream: 
-        void println(int)>(a);
+        a = virtualinvoke this.<target.exercise1.DemoClass: 
+          int increment(int)>(a);
+        $stack6 = <java.lang.System: java.io.PrintStream out>;
+        virtualinvoke $stack6.<java.io.PrintStream: 
+          void println(int)>(a);
 
-      return;
-    }
+        return;
+      }
 
-    public int increment(int)
-    {
-      int x, $stack2;
-      target.exercise1.DemoClass this;
+      public int increment(int)
+      {
+        int x, $stack2;
+        target.exercise1.DemoClass this;
 
-      this := @this: target.exercise1.DemoClass;
-      x := @parameter0: int;
+        this := @this: target.exercise1.DemoClass;
+        x := @parameter0: int;
 
-      $stack2 = x + 1;
-      return $stack2;
+        $stack2 = x + 1;
+        return $stack2;
+      }
     }
     /*
       "specialinvoke this.<java.lang.Object: void <init>()>()", 
@@ -1375,28 +1405,31 @@ Right hand-side of an assignment can be an expression (Expr), a Local, a FieldRe
 === "Jimple"
 
     ```jimple
-    public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-      target.exercise1.DemoClass this;
-      this := @this: target.exercise1.DemoClass;
-      specialinvoke this.<java.lang.Object: void <init>()>();
-      this.<target.exercise1.DemoClass: int counter> = 0;
-      return;
-    }
+      public void <init>()
+      {
+        target.exercise1.DemoClass this;
+        this := @this: target.exercise1.DemoClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        this.<target.exercise1.DemoClass: int counter> = 0;
+        return;
+      }
 
-    public int updateCounter()
-    {
-      target.exercise1.DemoClass this;
-      int $stack1, $stack2, $stack3;
+      public int updateCounter()
+      {
+        target.exercise1.DemoClass this;
+        int $stack1, $stack2, $stack3;
 
-      this := @this: target.exercise1.DemoClass;
+        this := @this: target.exercise1.DemoClass;
 
-      $stack1 = this.<target.exercise1.DemoClass: int counter>;
-      $stack2 = $stack1 + 1;
-      this.<target.exercise1.DemoClass: int counter> = $stack2;
-      $stack3 = this.<target.exercise1.DemoClass: int counter>;
+        $stack1 = this.<target.exercise1.DemoClass: int counter>;
+        $stack2 = $stack1 + 1;
+        this.<target.exercise1.DemoClass: int counter> = $stack2;
+        $stack3 = this.<target.exercise1.DemoClass: int counter>;
 
-      return $stack3;
+        return $stack3;
+      }
     }
     /*
       "this.<target.exercise1.DemoClass: int counter> = 0", 
@@ -1480,25 +1513,27 @@ is semantically like the JAssignStmt and handles assignments of IdentityRef's to
 === "Jimple"
 
     ```jimple
-    public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-      target.exercise1.DemoClass this;
-      this := @this: target.exercise1.DemoClass;
-      specialinvoke this.<java.lang.Object: void <init>()>();
-      return;
-    }
+      public void <init>()
+      {
+        target.exercise1.DemoClass this;
+        this := @this: target.exercise1.DemoClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+      }
 
-    public void DemoClass(int)
-    {
-      target.exercise1.DemoClass this;
-      int counter;
+      public void DemoClass(int)
+      {
+        target.exercise1.DemoClass this;
+        int counter;
 
-      this := @this: target.exercise1.DemoClass;
-      counter := @parameter0: int;
-      this.<target.exercise1.DemoClass: int counter> = counter;
-      return;
+        this := @this: target.exercise1.DemoClass;
+        counter := @parameter0: int;
+        this.<target.exercise1.DemoClass: int counter> = counter;
+        return;
+      }
     }
-    
     /*
       "this := @this: target.exercise1.DemoClass" and 
         "counter := @parameter0: int" are JIdentityStmts
@@ -1567,49 +1602,52 @@ marks synchronized blocks of code from JEnterMonitorStmt to JExitMonitorStmt.
 === "Jimple"
 
     ```jimple
-	public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-      target.exercise1.DemoClass this;
-      this := @this: target.exercise1.DemoClass;
-      specialinvoke this.<java.lang.Object: void <init>()>();
-      this.<target.exercise1.DemoClass: int counter> = 0;
-      return;
-    }
+      public void <init>()
+      {
+        target.exercise1.DemoClass this;
+        this := @this: target.exercise1.DemoClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        this.<target.exercise1.DemoClass: int counter> = 0;
+        return;
+      }
 
-    public int updateCounter()
-    {
-      target.exercise1.DemoClass this;
-      int $stack4, $stack5, $stack7;
-      java.lang.Throwable $stack8;
+      public int updateCounter()
+      {
+        target.exercise1.DemoClass this;
+        int $stack4, $stack5, $stack7;
+        java.lang.Throwable $stack8;
 
-      this := @this: target.exercise1.DemoClass;
+        this := @this: target.exercise1.DemoClass;
 
-      entermonitor this;
+        entermonitor this;
 
-      label1:
-        $stack4 = this.<target.exercise1.DemoClass: int counter>;
-        $stack5 = $stack4 + 1;
-        this.<target.exercise1.DemoClass: int counter> = $stack5;
+        label1:
+          $stack4 = this.<target.exercise1.DemoClass: int counter>;
+          $stack5 = $stack4 + 1;
+          this.<target.exercise1.DemoClass: int counter> = $stack5;
 
-        exitmonitor this;
+          exitmonitor this;
 
-      label2:
-        goto label5;
+        label2:
+          goto label5;
 
-      label3:
-        $stack8 := @caughtexception;
+        label3:
+          $stack8 := @caughtexception;
 
-        exitmonitor this;
+          exitmonitor this;
 
-      label4:
-        throw $stack8;
+        label4:
+          throw $stack8;
 
-      label5:
-        $stack7 = this.<target.exercise1.DemoClass: int counter>;
-        return $stack7;
+        label5:
+          $stack7 = this.<target.exercise1.DemoClass: int counter>;
+          return $stack7;
 
-        catch java.lang.Throwable from label1 to label2 with label3;
-        catch java.lang.Throwable from label3 to label4 with label3;
+          catch java.lang.Throwable from label1 to label2 with label3;
+          catch java.lang.Throwable from label3 to label4 with label3;
+      }
     }
     /*
       "entermonitor this" is JEnterMonitorStmt.
@@ -1724,25 +1762,27 @@ VoidType
 === "Jimple"
 
     ```jimple
-	public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-	  target.exercise1.DemoClass this;
-	  this := @this: target.exercise1.DemoClass;
-	  specialinvoke this.<java.lang.Object: void <init>()>();
-	  return;
-    }
+      public void <init>()
+      {
+      target.exercise1.DemoClass this;
+      this := @this: target.exercise1.DemoClass;
+      specialinvoke this.<java.lang.Object: void <init>()>();
+      return;
+      }
 
-    public void voidMethod()
-    {
-	  java.io.PrintStream $stack1;
-	  target.exercise1.DemoClass this;
-	  this := @this: target.exercise1.DemoClass;
-	  $stack1 = <java.lang.System: java.io.PrintStream out>;
-	  virtualinvoke $stack1.<java.io.PrintStream: 
-        void println(java.lang.String)>("In voidMethod().");
-	  return;
+      public void voidMethod()
+      {
+      java.io.PrintStream $stack1;
+      target.exercise1.DemoClass this;
+      this := @this: target.exercise1.DemoClass;
+      $stack1 = <java.lang.System: java.io.PrintStream out>;
+      virtualinvoke $stack1.<java.io.PrintStream: 
+          void println(java.lang.String)>("In voidMethod().");
+      return;
+      }
     }
-
     /*
       For the SootMethod - <target.exercise1.DemoClass: void voidMethod()>, 
         returnType is instance of VoidType.
@@ -1806,75 +1846,77 @@ BooleanType, ByteType, CharType, ShortType, IntType, LongType, DoubleType, Float
 === "Jimple"
 
     ```jimple
-    public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-        target.exercise1.DemoClass this;
-        this := @this: target.exercise1.DemoClass;
-        specialinvoke this.<java.lang.Object: void <init>()>();
-        return;
+      public void <init>()
+      {
+          target.exercise1.DemoClass this;
+          this := @this: target.exercise1.DemoClass;
+          specialinvoke this.<java.lang.Object: void <init>()>();
+          return;
+      }
+
+
+      public void display()
+      {
+          java.io.PrintStream $stack11, $stack13, $stack15, 
+            $stack17, $stack19, $stack21, $stack23, $stack25;
+          int $stack12, $stack14, $stack16, $stack18;
+          long $stack20;
+          double $stack22;
+          float $stack24;
+          target.exercise1.DemoClass this;
+          boolean $stack26;
+
+          this := @this: target.exercise1.DemoClass;
+
+          $stack11 = <java.lang.System: java.io.PrintStream out>;
+
+          goto label1;
+
+       label1:
+          $stack26 = 0;
+          virtualinvoke $stack11.<java.io.PrintStream: 
+            void println(boolean)>($stack26);
+
+          $stack13 = <java.lang.System: java.io.PrintStream out>;
+          $stack12 = 127 - 1;
+          virtualinvoke $stack13.<java.io.PrintStream: 
+            void println(int)>($stack12);
+
+          $stack15 = <java.lang.System: java.io.PrintStream out>;
+          $stack14 = 97 + 1;
+          virtualinvoke $stack15.<java.io.PrintStream: 
+            void println(int)>($stack14);
+
+          $stack17 = <java.lang.System: java.io.PrintStream out>;
+          $stack16 = 1123 + 1;
+          virtualinvoke $stack17.<java.io.PrintStream: 
+            void println(int)>($stack16);
+
+          $stack19 = <java.lang.System: java.io.PrintStream out>;
+          $stack18 = 123456 + 1;
+          virtualinvoke $stack19.<java.io.PrintStream: 
+            void println(int)>($stack18);
+
+          $stack21 = <java.lang.System: java.io.PrintStream out>;
+          $stack20 = 10L + 1L;
+          virtualinvoke $stack21.<java.io.PrintStream: 
+            void println(long)>($stack20);
+
+          $stack23 = <java.lang.System: java.io.PrintStream out>;
+          $stack22 = 10.1 + 1.0;
+          virtualinvoke $stack23.<java.io.PrintStream: 
+            void println(double)>($stack22);
+
+          $stack25 = <java.lang.System: java.io.PrintStream out>;
+          $stack24 = 10.1F + 1.0F;
+          virtualinvoke $stack25.<java.io.PrintStream: 
+            void println(float)>($stack24);
+
+          return;
+      }
     }
-
-
-    public void display()
-    {
-        java.io.PrintStream $stack11, $stack13, $stack15, 
-          $stack17, $stack19, $stack21, $stack23, $stack25;
-        int $stack12, $stack14, $stack16, $stack18;
-        long $stack20;
-        double $stack22;
-        float $stack24;
-        target.exercise1.DemoClass this;
-        boolean $stack26;
-
-        this := @this: target.exercise1.DemoClass;
-
-        $stack11 = <java.lang.System: java.io.PrintStream out>;
-
-        goto label1;
-
-     label1:
-        $stack26 = 0;
-        virtualinvoke $stack11.<java.io.PrintStream: 
-          void println(boolean)>($stack26);
-
-        $stack13 = <java.lang.System: java.io.PrintStream out>;
-        $stack12 = 127 - 1;
-        virtualinvoke $stack13.<java.io.PrintStream: 
-          void println(int)>($stack12);
-
-        $stack15 = <java.lang.System: java.io.PrintStream out>;
-        $stack14 = 97 + 1;
-        virtualinvoke $stack15.<java.io.PrintStream: 
-          void println(int)>($stack14);
-
-        $stack17 = <java.lang.System: java.io.PrintStream out>;
-        $stack16 = 1123 + 1;
-        virtualinvoke $stack17.<java.io.PrintStream: 
-          void println(int)>($stack16);
-
-        $stack19 = <java.lang.System: java.io.PrintStream out>;
-        $stack18 = 123456 + 1;
-        virtualinvoke $stack19.<java.io.PrintStream: 
-          void println(int)>($stack18);
-
-        $stack21 = <java.lang.System: java.io.PrintStream out>;
-        $stack20 = 10L + 1L;
-        virtualinvoke $stack21.<java.io.PrintStream: 
-          void println(long)>($stack20);
-
-        $stack23 = <java.lang.System: java.io.PrintStream out>;
-        $stack22 = 10.1 + 1.0;
-        virtualinvoke $stack23.<java.io.PrintStream: 
-          void println(double)>($stack22);
-
-        $stack25 = <java.lang.System: java.io.PrintStream out>;
-        $stack24 = 10.1F + 1.0F;
-        virtualinvoke $stack25.<java.io.PrintStream: 
-          void println(float)>($stack24);
-
-        return;
-    }
-    
     /*
       The JimpleLocal $stack12, $stack14, $stack16, $stack18 are of IntType. 
       Similarly, $stack20 is of LongType, $stack22 is of DoubleType and so on.
@@ -2056,61 +2098,63 @@ NullType
 === "Jimple"
 
     ```jimple
-	public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-	  target.exercise1.DemoClass this;
-	  this := @this: target.exercise1.DemoClass;
-	  specialinvoke this.<java.lang.Object: void <init>()>();
-	  return;
+    public void <init>()
+      {
+      target.exercise1.DemoClass this;
+      this := @this: target.exercise1.DemoClass;
+      specialinvoke this.<java.lang.Object: void <init>()>();
+      return;
+      }
+
+      public target.exercise1.DemoClass getObject(target.exercise1.DemoClass)
+      {
+      target.exercise1.DemoClass obj, this;
+      this := @this: target.exercise1.DemoClass;
+      obj := @parameter0: target.exercise1.DemoClass;
+      return obj;
+      }
+
+      public void compute(boolean)
+      {
+      int[] b;
+      java.io.PrintStream $stack5, $stack6;
+      boolean check;
+      target.exercise1.DemoClass this;
+      int i;
+      null_type $r0;
+      java.lang.NullPointerException soot0;
+      this := @this: target.exercise1.DemoClass;
+      check := @parameter0: boolean;
+      b = newarray (int)[5];
+      i = 0;
+
+      label1:
+        if i >= 5 goto label3;
+          if check == 0 goto label2;
+          $r0 = (null_type) i;
+          soot0 = new java.lang.NullPointerException;
+          specialinvoke soot0.<java.lang.NullPointerException: 
+            void <init>(java.lang.String)>
+              ("This statement would have triggered an Exception: a[i#1] = $r0");
+          throw soot0;
+
+      label2:
+      b[i] = i;
+          i = i + 1;
+          goto label1;
+
+      label3:
+          $stack5 = <java.lang.System: java.io.PrintStream out>;
+          virtualinvoke $stack5.<java.io.PrintStream: 
+            void println(java.lang.Object)>(b);
+          $stack6 = <java.lang.System: java.io.PrintStream out>;
+          virtualinvoke $stack6.<java.io.PrintStream: 
+            void println(java.lang.Object)>(null);
+          return;
+      }
     }
-
-    public target.exercise1.DemoClass getObject(target.exercise1.DemoClass)
-    {
-	  target.exercise1.DemoClass obj, this;
-	  this := @this: target.exercise1.DemoClass;
-	  obj := @parameter0: target.exercise1.DemoClass;
-	  return obj;
-    }
-
-    public void compute(boolean)
-    {
-	  int[] b;
-	  java.io.PrintStream $stack5, $stack6;
-	  boolean check;
-	  target.exercise1.DemoClass this;
-	  int i;
-	  null_type $r0;
-	  java.lang.NullPointerException soot0;
-	  this := @this: target.exercise1.DemoClass;
-	  check := @parameter0: boolean;
-	  b = newarray (int)[5];
-	  i = 0;
-
-	  label1:
-	    if i >= 5 goto label3;
-        if check == 0 goto label2;
-        $r0 = (null_type) i;
-        soot0 = new java.lang.NullPointerException;
-        specialinvoke soot0.<java.lang.NullPointerException: 
-          void <init>(java.lang.String)>
-            ("This statement would have triggered an Exception: a[i#1] = $r0");
-        throw soot0;
-
-	  label2:
-		b[i] = i;
-        i = i + 1;
-        goto label1;
-
-	  label3:
-        $stack5 = <java.lang.System: java.io.PrintStream out>;
-        virtualinvoke $stack5.<java.io.PrintStream: 
-          void println(java.lang.Object)>(b);
-        $stack6 = <java.lang.System: java.io.PrintStream out>;
-        virtualinvoke $stack6.<java.io.PrintStream: 
-          void println(java.lang.Object)>(null);
-        return;
-    }
-
     /*
       The JimpleLocal b is of ArrayType,
         and JimpleLocal $r0 is of NullType.
@@ -2253,30 +2297,32 @@ Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
 === "Jimple"
 
     ```jimple
-	public void <init>()
+    public class target.exercise1.DemoClass extends java.lang.Object
     {
-	  target.exercise1.DemoClass this;
-      this := @this: target.exercise1.DemoClass;
-      specialinvoke this.<java.lang.Object: void <init>()>();
-      return;
-    }
-
-    public void compute()
-    {
-      java.io.PrintStream $stack2, $stack3;
+    public void <init>()
+      {
       target.exercise1.DemoClass this;
-      int local#2;
+        this := @this: target.exercise1.DemoClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+      }
 
-      this := @this: target.exercise1.DemoClass;
-      $stack2 = <java.lang.System: java.io.PrintStream out>;
-      virtualinvoke $stack2.<java.io.PrintStream: void println(int)>(1);
-		
-      local#2 = this.<target.exercise1.DemoClass: int global>;
-      $stack3 = <java.lang.System: java.io.PrintStream out>;
-      virtualinvoke $stack3.<java.io.PrintStream: void println(int)>(local#2);
-      return;
+      public void compute()
+      {
+        java.io.PrintStream $stack2, $stack3;
+        target.exercise1.DemoClass this;
+        int local#2;
+
+        this := @this: target.exercise1.DemoClass;
+        $stack2 = <java.lang.System: java.io.PrintStream out>;
+        virtualinvoke $stack2.<java.io.PrintStream: void println(int)>(1);
+
+        local#2 = this.<target.exercise1.DemoClass: int global>;
+        $stack3 = <java.lang.System: java.io.PrintStream out>;
+        virtualinvoke $stack3.<java.io.PrintStream: void println(int)>(local#2);
+        return;
+      }
     }
-    
     /*
       $stack2, this, $stack3, local#2 are all JimpleLocal.
 
