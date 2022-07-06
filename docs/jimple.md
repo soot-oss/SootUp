@@ -2297,11 +2297,12 @@ Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
 === "Jimple"
 
     ```jimple
+    
     public class target.exercise1.DemoClass extends java.lang.Object
     {
-    public void <init>()
+      public void <init>()
       {
-      target.exercise1.DemoClass this;
+        target.exercise1.DemoClass this;
         this := @this: target.exercise1.DemoClass;
         specialinvoke this.<java.lang.Object: void <init>()>();
         return;
@@ -2333,7 +2334,7 @@ Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
           "$stack3 = <java.lang.System: java.io.PrintStream out>" 
             are JAssignStmt
 
-    */
+    */  
     ```
 
 === "Java"
