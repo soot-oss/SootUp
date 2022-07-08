@@ -76,7 +76,7 @@ import org.xml.sax.SAXException;
  */
 public abstract class PathBasedAnalysisInputLocation
     implements AnalysisInputLocation<JavaSootClass> {
-  protected final Path path;
+  protected Path path;
 
   /**
    * Variable to track if user has specified the SourceType. By default, it will be set to false.
@@ -117,6 +117,11 @@ public abstract class PathBasedAnalysisInputLocation
     if (Files.isDirectory(path)) {
       return new DirectoryBasedAnalysisInputLocation(path, srcType);
     } else if (PathUtils.isArchive(path)) {
+
+      if(PathUtils.hasExtension(path, FileType.APK)){
+        return new ApkAnalysisInputLocation(path, srcType);
+      }
+
       if (PathUtils.hasExtension(path, FileType.WAR)) {
         return new WarArchiveAnalysisInputLocation(path, srcType);
       }
@@ -505,6 +510,44 @@ public abstract class PathBasedAnalysisInputLocation
       return path.hashCode();
     }
   }
+
+
+  private static class ApkAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation{
+
+    private ApkAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+      super(path, srcType);
+      String jarPath = dex2jar(path);
+      this.path = Paths.get(jarPath);
+    }
+
+    private String dex2jar(Path path){
+      String apkPath = path.toAbsolutePath().toString();
+      String outDir = "./tmp/";
+      StringBuilder command = new StringBuilder();
+      command.append("java -Xms512m -Xmx2048m -jar lib/dex-tools-2.2-SNAPSHOT.jar");
+      command.append(" -f ");
+      command.append(apkPath);
+      command.append(" -o ");
+      int start = apkPath.lastIndexOf(File.separator);
+      int end = apkPath.lastIndexOf(".apk");
+      String outputFile =  outDir + apkPath.substring(start+1, end) + ".jar";
+      command.append(outputFile);
+
+      Process proc = null;
+      try {
+        proc = Runtime.getRuntime().exec(command.toString());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      try {
+        proc.waitFor();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      return outputFile;
+    }
+  }
+
 
   private static class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
