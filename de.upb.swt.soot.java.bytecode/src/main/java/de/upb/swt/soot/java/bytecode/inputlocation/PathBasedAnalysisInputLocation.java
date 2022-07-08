@@ -118,7 +118,7 @@ public abstract class PathBasedAnalysisInputLocation
       return new DirectoryBasedAnalysisInputLocation(path, srcType);
     } else if (PathUtils.isArchive(path)) {
 
-      if(PathUtils.hasExtension(path, FileType.APK)){
+      if (PathUtils.hasExtension(path, FileType.APK)) {
         return new ApkAnalysisInputLocation(path, srcType);
       }
 
@@ -511,8 +511,7 @@ public abstract class PathBasedAnalysisInputLocation
     }
   }
 
-
-  private static class ApkAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation{
+  private static class ApkAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
 
     private ApkAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
       super(path, srcType);
@@ -520,7 +519,7 @@ public abstract class PathBasedAnalysisInputLocation
       this.path = Paths.get(jarPath);
     }
 
-    private String dex2jar(Path path){
+    private String dex2jar(Path path) {
       String apkPath = path.toAbsolutePath().toString();
       String outDir = "./tmp/";
       StringBuilder command = new StringBuilder();
@@ -530,7 +529,7 @@ public abstract class PathBasedAnalysisInputLocation
       command.append(" -o ");
       int start = apkPath.lastIndexOf(File.separator);
       int end = apkPath.lastIndexOf(".apk");
-      String outputFile =  outDir + apkPath.substring(start+1, end) + ".jar";
+      String outputFile = outDir + apkPath.substring(start + 1, end) + ".jar";
       command.append(outputFile);
 
       Process proc = null;
@@ -547,7 +546,6 @@ public abstract class PathBasedAnalysisInputLocation
       return outputFile;
     }
   }
-
 
   private static class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
