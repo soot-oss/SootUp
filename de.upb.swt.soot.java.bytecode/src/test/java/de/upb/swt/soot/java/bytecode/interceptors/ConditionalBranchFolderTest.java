@@ -28,11 +28,11 @@ public class ConditionalBranchFolderTest {
   /**
    * Tests the correct deletion of an if-statement with a constant condition. Transforms from
    *
-   * <p>a = "str"; b = a; if(a == b) return a; else return b;
+   * <p>a = "str"; b = "str"; if(a == b) return a; else return b;
    *
    * <p>to
    *
-   * <p>a = "str"; b = a; return a;
+   * <p>a = "str"; b = "str"; return a;
    */
   @Test
   public void testUnconditionalBranching() {
@@ -85,8 +85,8 @@ public class ConditionalBranchFolderTest {
     strToB = JavaJimple.newAssignStmt(b, anotherStringConstant, noPositionInfo);
     JEqExpr jEqExpr = new JEqExpr(stringConstant, anotherStringConstant);
     Stmt ifStmt = Jimple.newIfStmt(jEqExpr, noPositionInfo);
-    Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
-    Stmt ret2 = JavaJimple.newReturnStmt(a, noPositionInfo);
+    Stmt reta = JavaJimple.newReturnStmt(a, noPositionInfo);
+    Stmt retb = JavaJimple.newReturnStmt(b, noPositionInfo);
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
@@ -95,8 +95,8 @@ public class ConditionalBranchFolderTest {
     bodyBuilder.setStartingStmt(strToA);
     bodyBuilder.addFlow(strToA, strToB);
     bodyBuilder.addFlow(strToB, ifStmt);
-    bodyBuilder.addFlow(ifStmt, ret);
-    bodyBuilder.addFlow(ifStmt, ret2);
+    bodyBuilder.addFlow(ifStmt, reta);
+    bodyBuilder.addFlow(ifStmt, retb);
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));

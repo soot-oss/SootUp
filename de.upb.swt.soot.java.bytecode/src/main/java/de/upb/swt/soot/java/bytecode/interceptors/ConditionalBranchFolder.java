@@ -23,6 +23,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 
 import com.google.common.collect.Lists;
 import de.upb.swt.soot.core.graph.MutableStmtGraph;
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
@@ -67,21 +68,23 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         // of this if-statement and prune the "true"-block stmt tree until another branch flows
         // to a Stmt
 
-        // link previous stmt with branch target of if-Stmt
         final List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt);
         final Stmt fallsThroughStmt = ifSuccessors.get(0);
         final Stmt branchTarget = ifSuccessors.get(1);
 
+        // link previous stmt with always-reached successor of the if-Stmt
+        for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
+          builder.removeFlow(predecessor, ifStmt);
+          builder.addFlow(predecessor, fallsThroughStmt);
+        }
+
+        // removeFlow calls should be obsolete as of following removeStmt
         builder.removeFlow(ifStmt, fallsThroughStmt);
         builder.removeFlow(ifStmt, branchTarget);
 
-        for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
-          builder.removeFlow(predecessor, ifStmt);
-          builder.addFlow(predecessor, branchTarget);
-        }
         builder.removeStmt(ifStmt);
 
-        pruneExclusivelyReachableStmts(stmtGraph, fallsThroughStmt);
+        pruneExclusivelyReachableStmts(stmtGraph, branchTarget);
       }
     }
   }
@@ -98,10 +101,14 @@ public class ConditionalBranchFolder implements BodyInterceptor {
     // remove all now unreachable stmts from "true"-block
     while (!q.isEmpty()) {
       Stmt itStmt = q.pollFirst();
-      visited.add(itStmt);
+      if (itStmt.branches()) {
+        // reachable branching stmts that may or may not branch to another reachable stmt is all we
+        // are actually interested in
+        visited.add(itStmt);
+      }
       if (stmtGraph.containsNode(itStmt)) {
         final List<Stmt> predecessors = stmtGraph.predecessors(itStmt);
-        if (predecessors.size() < 1) {
+        if (predecessors.size() <= 1) {
           q.addAll(stmtGraph.successors(itStmt));
         }
       }
@@ -111,9 +118,8 @@ public class ConditionalBranchFolder implements BodyInterceptor {
     while (!q.isEmpty()) {
       Stmt itStmt = q.pollFirst();
       if (stmtGraph.containsNode(itStmt)) {
-        final List<Stmt> predecessors = stmtGraph.predecessors(itStmt);
         // hint: predecessor could also be already removed
-        if (unvisitedPredecessorCount(predecessors, visited) == 0) {
+        if (unreachablePredecessorCount(stmtGraph, itStmt, visited) <= 1) {
           q.addAll(stmtGraph.successors(itStmt));
           stmtGraph.removeNode(itStmt);
         }
@@ -121,10 +127,16 @@ public class ConditionalBranchFolder implements BodyInterceptor {
     }
   }
 
-  private int unvisitedPredecessorCount(List<Stmt> predecessors, Set<Stmt> visited) {
-    int amount = predecessors.size();
-    for (Stmt predecessor : predecessors) {
-      if (visited.contains(predecessor)) {
+  /** reachedStmts contains all reached Stmts from entrypoint which ALSO do branch! */
+  private int unreachablePredecessorCount(
+      @Nonnull StmtGraph<?> graph, @Nonnull Stmt stmt, @Nonnull Set<Stmt> reachedStmts) {
+    final List<Stmt> predecessors = graph.predecessors(stmt);
+    final int size = predecessors.size();
+    int amount = size;
+    for (int i = 1; i < size; i++) {
+      Stmt predecessor = predecessors.get(i);
+      if ((predecessor.fallsThrough() && graph.successors(predecessor).get(0) == stmt)
+          || reachedStmts.contains(predecessor)) {
         amount--;
       }
     }
