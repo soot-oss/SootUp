@@ -91,9 +91,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
 
   private void pruneExclusivelyReachableStmts(
       @Nonnull MutableStmtGraph stmtGraph, @Nonnull Stmt fallsThroughStmt) {
-    Set<Stmt> visited =
-        new HashSet<>(); // TODO: ms: there can be a more efficient solution! this has to work as a
-    // fix for now.
+    Set<Stmt> reachedBranchingStmts = new HashSet<>();
     Deque<Stmt> q = new ArrayDeque<>();
 
     q.addFirst(fallsThroughStmt);
@@ -104,7 +102,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
       if (itStmt.branches()) {
         // reachable branching stmts that may or may not branch to another reachable stmt is all we
         // are actually interested in
-        visited.add(itStmt);
+        reachedBranchingStmts.add(itStmt);
       }
       if (stmtGraph.containsNode(itStmt)) {
         final List<Stmt> predecessors = stmtGraph.predecessors(itStmt);
@@ -119,7 +117,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
       Stmt itStmt = q.pollFirst();
       if (stmtGraph.containsNode(itStmt)) {
         // hint: predecessor could also be already removed
-        if (unreachablePredecessorCount(stmtGraph, itStmt, visited) <= 1) {
+        if (isExclusivelyReachable(stmtGraph, itStmt, reachedBranchingStmts)) {
           q.addAll(stmtGraph.successors(itStmt));
           stmtGraph.removeNode(itStmt);
         }
@@ -128,18 +126,37 @@ public class ConditionalBranchFolder implements BodyInterceptor {
   }
 
   /** reachedStmts contains all reached Stmts from entrypoint which ALSO do branch! */
-  private int unreachablePredecessorCount(
+  private boolean isExclusivelyReachable(
       @Nonnull StmtGraph<?> graph, @Nonnull Stmt stmt, @Nonnull Set<Stmt> reachedStmts) {
     final List<Stmt> predecessors = graph.predecessors(stmt);
-    final int size = predecessors.size();
-    int amount = size;
-    for (int i = 1; i < size; i++) {
-      Stmt predecessor = predecessors.get(i);
-      if ((predecessor.fallsThrough() && graph.successors(predecessor).get(0) == stmt)
-          || reachedStmts.contains(predecessor)) {
+    final int predecessorSize = predecessors.size();
+    int amount = predecessorSize;
+    if (predecessorSize <= 1) {
+      // we already reached this stmt somehow via reachable stmts so at least one predecessor was
+      // reachable which makes it exclusively reachable if there are no other ingoing flows
+      // hint: <= because a predecessor could already be removed
+      return true;
+    }
+    for (Stmt predecessor : predecessors) {
+      if (predecessor.fallsThrough()) {
+        if (predecessor instanceof JIfStmt) {
+          final List<Stmt> predsSuccessors = graph.successors(predecessor);
+          if (predsSuccessors.size() > 0 && predsSuccessors.get(0) == stmt) {
+            amount--;
+            continue;
+          }
+        } else {
+          // "usual" fallsthrough
+          amount--;
+          continue;
+        }
+      }
+      // was a branching predecessor reachable?
+      if (reachedStmts.contains(predecessor)) {
         amount--;
+        continue;
       }
     }
-    return amount;
+    return amount == 0;
   }
 }
