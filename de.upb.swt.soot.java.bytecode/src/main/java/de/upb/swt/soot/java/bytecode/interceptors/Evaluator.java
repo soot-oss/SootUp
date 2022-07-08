@@ -88,13 +88,13 @@ public class Evaluator {
    * @return The resulting constant or null
    */
   @Nullable
-  public static Value getConstantValueOf(Value op) {
+  public static Constant getConstantValueOf(Value op) {
     if (!isConstantValue(op)) {
       return null;
     }
 
     if (op instanceof Constant) {
-      return op;
+      return (Constant) op;
     } else if (op instanceof AbstractUnopExpr) {
       if (op instanceof JNegExpr) {
         Value constant = getConstantValueOf(((JNegExpr) op).getOp());

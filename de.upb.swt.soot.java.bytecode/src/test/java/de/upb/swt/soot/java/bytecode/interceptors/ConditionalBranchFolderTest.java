@@ -10,6 +10,8 @@ import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JEqExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.Utils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
@@ -36,7 +38,7 @@ public class ConditionalBranchFolderTest {
    */
   @Test
   public void testUnconditionalBranching() {
-    Body.BodyBuilder builder = createBodyBuilder(true);
+    Body.BodyBuilder builder = createBodyBuilder(0);
     new ConditionalBranchFolder().interceptBody(builder);
     assertEquals(
         Arrays.asList("a = \"str\"", "b = \"str\"", "return a"),
@@ -44,19 +46,31 @@ public class ConditionalBranchFolderTest {
   }
 
   /**
-   * Tests the correct handling of an if-statement with inconstant condition. Considers the
-   * following code, but does not change anything:
+   * Tests the correct handling of an if-statement with a always false condition. Consider the
+   * following code
    *
    * <p>a = "str"; b = "different string"; if(a == b) return a; else return b;
    */
   @Test
   public void testConditionalBranching() {
-    Body.BodyBuilder builder = createBodyBuilder(false);
+    Body.BodyBuilder builder = createBodyBuilder(1);
     Body originalBody = builder.build();
     new ConditionalBranchFolder().interceptBody(builder);
     Body processedBody = builder.build();
 
-    assertEquals(originalBody.getStmtGraph().nodes(), processedBody.getStmtGraph().nodes());
+    assertEquals(
+        Arrays.asList("a = \"str\"", "b = \"different string\"", "return b"),
+        Utils.bodyStmtsAsStrings(processedBody));
+  }
+
+  @Test
+  public void testConditionalBranchingWithNoConclusiveIfCondition() {
+    Body.BodyBuilder builder = createBodyBuilder(2);
+    Body originalBody = builder.build();
+    new ConditionalBranchFolder().interceptBody(builder);
+    Body processedBody = builder.build();
+
+    assertEquals(Utils.bodyStmtsAsStrings(originalBody), Utils.bodyStmtsAsStrings(processedBody));
   }
 
   /**
@@ -65,7 +79,7 @@ public class ConditionalBranchFolderTest {
    * @param constantCondition indicates, whether the condition is constant.
    * @return the generated {@link Body}
    */
-  private static Body.BodyBuilder createBodyBuilder(boolean constantCondition) {
+  private static Body.BodyBuilder createBodyBuilder(int constantCondition) {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
@@ -78,12 +92,39 @@ public class ConditionalBranchFolderTest {
     Stmt strToA = JavaJimple.newAssignStmt(a, stringConstant, noPositionInfo);
 
     Stmt strToB;
-    StringConstant anotherStringConstant = javaJimple.newStringConstant("str");
-    if (!constantCondition) {
-      anotherStringConstant = javaJimple.newStringConstant("different string");
+    StringConstant anotherStringConstant;
+    JEqExpr jEqExpr;
+    switch (constantCondition) {
+      case 0:
+        anotherStringConstant = javaJimple.newStringConstant("str");
+        strToB = JavaJimple.newAssignStmt(b, anotherStringConstant, noPositionInfo);
+        jEqExpr = new JEqExpr(stringConstant, anotherStringConstant);
+
+        break;
+      case 1:
+        anotherStringConstant = javaJimple.newStringConstant("different string");
+        strToB = JavaJimple.newAssignStmt(b, anotherStringConstant, noPositionInfo);
+        jEqExpr = new JEqExpr(stringConstant, anotherStringConstant);
+
+        break;
+      case 2:
+        final MethodSignature methodSignature =
+            JavaIdentifierFactory.getInstance()
+                .getMethodSignature(
+                    "toString", "java.lang.Object", "String", Collections.emptyList());
+        Local base =
+            new Local(
+                "someObjectThatHasSomethingToString",
+                new JavaClassType("StringBuilder", new PackageName("java.lang")));
+        strToB =
+            JavaJimple.newAssignStmt(
+                b, Jimple.newVirtualInvokeExpr(base, methodSignature), noPositionInfo);
+        jEqExpr = new JEqExpr(stringConstant, b);
+        break;
+      default:
+        throw new IllegalArgumentException();
     }
-    strToB = JavaJimple.newAssignStmt(b, anotherStringConstant, noPositionInfo);
-    JEqExpr jEqExpr = new JEqExpr(stringConstant, anotherStringConstant);
+
     Stmt ifStmt = Jimple.newIfStmt(jEqExpr, noPositionInfo);
     Stmt reta = JavaJimple.newReturnStmt(a, noPositionInfo);
     Stmt retb = JavaJimple.newReturnStmt(b, noPositionInfo);

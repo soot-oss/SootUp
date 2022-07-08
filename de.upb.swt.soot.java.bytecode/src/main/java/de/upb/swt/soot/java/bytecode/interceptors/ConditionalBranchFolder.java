@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -60,7 +61,11 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         continue;
       }
 
-      Value evaluatedCondition = Evaluator.getConstantValueOf(condition);
+      Constant evaluatedCondition = Evaluator.getConstantValueOf(condition);
+      if (evaluatedCondition == null) {
+        // not or not "easy" evaluatable
+        continue;
+      }
 
       final List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt);
       final Stmt tautologicSuccessor;
@@ -77,7 +82,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         tautologicSuccessor = ifSuccessors.get(1);
         neverReachedSucessor = ifSuccessors.get(0);
       } else {
-        // not or not "easy" evaluatable
+        // should not occur?
         continue;
       }
 
