@@ -60,32 +60,40 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         continue;
       }
 
-      condition = Evaluator.getConstantValueOf(condition);
+      Value evaluatedCondition = Evaluator.getConstantValueOf(condition);
 
-      // TODO: [ms] what about the always false case?
-      if (((IntConstant) condition).getValue() == 1) {
-        // the evaluated if condition is always true: redirect all predecessors to the successor
+      final List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt);
+      final Stmt tautologicSuccessor;
+      final Stmt neverReachedSucessor;
+      if (((IntConstant) evaluatedCondition).getValue() == 1) {
+        // the evaluated if evaluatedCondition is always true: redirect all predecessors to the
+        // successor
         // of this if-statement and prune the "true"-block stmt tree until another branch flows
         // to a Stmt
-
-        final List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt);
-        final Stmt fallsThroughStmt = ifSuccessors.get(0);
-        final Stmt branchTarget = ifSuccessors.get(1);
-
-        // link previous stmt with always-reached successor of the if-Stmt
-        for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
-          builder.removeFlow(predecessor, ifStmt);
-          builder.addFlow(predecessor, fallsThroughStmt);
-        }
-
-        // removeFlow calls should be obsolete as of following removeStmt
-        builder.removeFlow(ifStmt, fallsThroughStmt);
-        builder.removeFlow(ifStmt, branchTarget);
-
-        builder.removeStmt(ifStmt);
-
-        pruneExclusivelyReachableStmts(stmtGraph, branchTarget);
+        tautologicSuccessor = ifSuccessors.get(0);
+        neverReachedSucessor = ifSuccessors.get(1);
+      } else if (((IntConstant) evaluatedCondition).getValue() == 0) {
+        // the evaluated evaluatedCondition is always false remove the fallsthrough successor etc.
+        tautologicSuccessor = ifSuccessors.get(1);
+        neverReachedSucessor = ifSuccessors.get(0);
+      } else {
+        // not or not "easy" evaluatable
+        continue;
       }
+
+      // link previous stmt with always-reached successor of the if-Stmt
+      for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
+        builder.removeFlow(predecessor, ifStmt);
+        builder.addFlow(predecessor, tautologicSuccessor);
+      }
+
+      // removeFlow calls should be obsolete as of following removeStmt
+      builder.removeFlow(ifStmt, tautologicSuccessor);
+      builder.removeFlow(ifStmt, neverReachedSucessor);
+
+      builder.removeStmt(ifStmt);
+
+      pruneExclusivelyReachableStmts(stmtGraph, neverReachedSucessor);
     }
   }
 
@@ -142,6 +150,8 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         if (predecessor instanceof JIfStmt) {
           final List<Stmt> predsSuccessors = graph.successors(predecessor);
           if (predsSuccessors.size() > 0 && predsSuccessors.get(0) == stmt) {
+            // TODO: hint: possible problem occurs with partial removed targets as they change the
+            // idx positions..
             amount--;
             continue;
           }
