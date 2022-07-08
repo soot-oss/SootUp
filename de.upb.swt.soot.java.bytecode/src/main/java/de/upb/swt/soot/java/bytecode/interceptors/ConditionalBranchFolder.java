@@ -24,7 +24,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 import com.google.common.collect.Lists;
 import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.graph.StmtGraph;
-import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
@@ -56,12 +55,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
 
       JIfStmt ifStmt = (JIfStmt) stmt;
       // check for constant-valued conditions
-      Value condition = ifStmt.getCondition();
-      if (!Evaluator.isConstantValue(condition)) {
-        continue;
-      }
-
-      Constant evaluatedCondition = Evaluator.getConstantValueOf(condition);
+      Constant evaluatedCondition = Evaluator.getConstantValueOf(ifStmt.getCondition());
       if (evaluatedCondition == null) {
         // not or not "easy" evaluatable
         continue;
