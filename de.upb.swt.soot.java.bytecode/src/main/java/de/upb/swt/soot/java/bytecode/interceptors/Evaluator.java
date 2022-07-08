@@ -133,7 +133,8 @@ public class Evaluator {
           boolean truth = (op instanceof JEqExpr) == equality;
           return IntConstant.getInstance(truth ? 1 : 0);
         }
-        throw new RuntimeException("Constant neither numeric nor string");
+        return null;
+        // throw new RuntimeException("Constant neither numeric nor string");
       } else if (op instanceof JGtExpr) {
         return ((NumericConstant) c1).greaterThan((NumericConstant) c2);
       } else if (op instanceof JGeExpr) {
@@ -171,10 +172,12 @@ public class Evaluator {
           throw new IllegalArgumentException("CmpExpr: RealConstant(s) expected");
         }
       } else {
-        throw new RuntimeException("Unknown binary operator: " + op);
+        // throw new RuntimeException("Unknown binary operator: " + op);
+        return null;
       }
     }
 
-    throw new RuntimeException("couldn't getConstantValueOf of: " + op);
+    // throw new RuntimeException("couldn't getConstantValueOf of: " + op);
+    return null;
   }
 }
