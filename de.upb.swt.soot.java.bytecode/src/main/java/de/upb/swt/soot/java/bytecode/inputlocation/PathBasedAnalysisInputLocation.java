@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
+import com.googlecode.dex2jar.tools.Dex2jarCmd;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
@@ -522,27 +523,10 @@ public abstract class PathBasedAnalysisInputLocation
     private String dex2jar(Path path) {
       String apkPath = path.toAbsolutePath().toString();
       String outDir = "./tmp/";
-      StringBuilder command = new StringBuilder();
-      command.append("java -Xms512m -Xmx2048m -jar lib/dex-tools-2.2-SNAPSHOT.jar");
-      command.append(" -f ");
-      command.append(apkPath);
-      command.append(" -o ");
       int start = apkPath.lastIndexOf(File.separator);
       int end = apkPath.lastIndexOf(".apk");
       String outputFile = outDir + apkPath.substring(start + 1, end) + ".jar";
-      command.append(outputFile);
-
-      Process proc = null;
-      try {
-        proc = Runtime.getRuntime().exec(command.toString());
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-      try {
-        proc.waitFor();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+      new Dex2jarCmd().doMain("-f", apkPath, "-o", outputFile);
       return outputFile;
     }
   }
