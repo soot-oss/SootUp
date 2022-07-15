@@ -21,13 +21,13 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
+import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
 import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
 import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
-import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 
 public class ConstantUtil {
@@ -62,8 +62,8 @@ public class ConstantUtil {
       return JavaJimple.getInstance().newEnumConstant(enumData[1], enumData[0]);
     }
 
-    if (obj instanceof ClassType) {
-      return JavaJimple.getInstance().newClassConstant(obj.toString());
+    if (obj instanceof ClassConstant) {
+      return JavaJimple.getInstance().newClassConstant(((ClassConstant) obj).getValue());
     }
     // TODO: [bh] implement MethodHandle, MethodType?
 

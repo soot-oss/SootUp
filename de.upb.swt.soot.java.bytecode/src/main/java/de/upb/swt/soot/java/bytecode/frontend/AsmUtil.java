@@ -21,9 +21,8 @@ package de.upb.swt.soot.java.bytecode.frontend;
  * #L%
  */
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
@@ -31,6 +30,7 @@ import de.upb.swt.soot.java.core.AnnotationUsage;
 import de.upb.swt.soot.java.core.ConstantUtil;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.ModuleModifier;
+import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
@@ -347,11 +347,11 @@ public final class AsmUtil {
     } else {
       if (annotationValue instanceof org.objectweb.asm.Type) {
         // is a class constant
-        // transform asm Type to ClassType
-        ClassType type =
-            new JavaClassType(
-                ((org.objectweb.asm.Type) annotationValue).toString(), PackageName.DEFAULT_PACKAGE);
-        return ConstantUtil.fromObject(type);
+        // transform asm Type to ClassConstant
+        ClassConstant classConstant =
+            JavaJimple.getInstance()
+                .newClassConstant(((org.objectweb.asm.Type) annotationValue).toString());
+        return ConstantUtil.fromObject(classConstant);
       }
     }
     return ConstantUtil.fromObject(annotationValue);
