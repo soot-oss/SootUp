@@ -12,37 +12,6 @@
 		<version>4.0.0-SNAPSHOT</version>
 	</parent>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>3.0.0</version>
-				<inherited>false</inherited>
-				<executions>
-					<execution>
-						<id>install-dex2jar</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<executable>mvn</executable>
-					<arguments>
-						<argument>install:install-file</argument>
-						<argument>-Dfile=lib/dex-tools-2.2-SNAPSHOT.jar</argument>
-						<argument>-DgroupId=com.googlecode.d2j</argument>
-						<argument>-DartifactId=dex-tools</argument>
-						<argument>-Dversion=2.2-SNAPSHOT</argument>
-						<argument>-Dpackaging=jar</argument>
-					</arguments>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
 	<dependencies>
 		<dependency>
 			<groupId>de.upb.swt</groupId>
