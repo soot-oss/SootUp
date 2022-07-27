@@ -21,6 +21,7 @@ package de.upb.swt.soot.java.core;
  * #L%
  */
 import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
+import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
 import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
@@ -53,7 +54,18 @@ public class ConstantUtil {
       return JavaJimple.getInstance().newStringConstant((String) obj);
     }
 
-    // TODO: [bh] implement MethodHandle, MethodType, ClassConstant?
+    if (obj instanceof String[]) {
+      // is an enum
+      // [0] is the fully qualified name of the enum
+      // [1] is the value of the enum
+      String[] enumData = (String[]) obj;
+      return JavaJimple.getInstance().newEnumConstant(enumData[1], enumData[0]);
+    }
+
+    if (obj instanceof ClassConstant) {
+      return JavaJimple.getInstance().newClassConstant(((ClassConstant) obj).getValue());
+    }
+    // TODO: [bh] implement MethodHandle, MethodType?
 
     throw new IllegalArgumentException("cannot convert Object to (Soot-)Constant.");
   }
