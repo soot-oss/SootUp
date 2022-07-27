@@ -16,15 +16,15 @@ public class StaticMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "methodStaticMethodInterfaceImpl",
         getDeclaredClassSignature(),
+        "methodStaticMethodInterfaceImpl",
         "void",
         Collections.emptyList());
   }
 
   private MethodSignature getStaticMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "initStatic", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "initStatic", "void", Collections.emptyList());
   }
 
   /**

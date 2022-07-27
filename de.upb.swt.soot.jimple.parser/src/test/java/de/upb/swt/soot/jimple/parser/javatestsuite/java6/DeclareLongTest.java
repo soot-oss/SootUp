@@ -17,7 +17,7 @@ import org.junit.experimental.categories.Category;
 public class DeclareLongTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "declareLongMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "declareLongMethod", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

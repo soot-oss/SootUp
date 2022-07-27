@@ -20,7 +20,7 @@ import org.junit.experimental.categories.Category;
 public class MultiInterfaceImplClassTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "interfaceMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "interfaceMethod", "void", Collections.emptyList());
   }
 
   @Test

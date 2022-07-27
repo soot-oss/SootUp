@@ -19,7 +19,7 @@ public class AnonymousDiamondOperatorTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "innerClassDiamond", getDeclaredClassSignature(), "int", Collections.emptyList());
+        getDeclaredClassSignature(), "innerClassDiamond", "int", Collections.emptyList());
   }
 
   /**

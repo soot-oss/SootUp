@@ -18,7 +18,7 @@ public class AnonymousDiamondOperatorTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "innerClassDiamond", getDeclaredClassSignature(), "int", Collections.emptyList());
+        getDeclaredClassSignature(), "innerClassDiamond", "int", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

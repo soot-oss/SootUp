@@ -293,6 +293,6 @@ public class BooleanOperatorsTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature(String methodName) {
     return identifierFactory.getMethodSignature(
-        methodName, getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), methodName, "void", Collections.emptyList());
   }
 }

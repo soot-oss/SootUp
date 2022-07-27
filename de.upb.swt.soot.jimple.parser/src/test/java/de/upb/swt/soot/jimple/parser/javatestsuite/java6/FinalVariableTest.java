@@ -17,7 +17,7 @@ public class FinalVariableTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "finalVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "finalVariable", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

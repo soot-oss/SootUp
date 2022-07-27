@@ -18,7 +18,7 @@ public class StringWithUnicodeCharTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "stringWithUnicodeChar", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "stringWithUnicodeChar", "void", Collections.emptyList());
   }
 
   /**

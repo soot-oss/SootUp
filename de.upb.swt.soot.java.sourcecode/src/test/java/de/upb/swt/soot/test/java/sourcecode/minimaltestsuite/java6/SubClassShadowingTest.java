@@ -59,8 +59,8 @@ public class SubClassShadowingTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "printInfo",
         getDeclaredClassSignature(),
+        "printInfo",
         "void",
         Collections.singletonList("java.lang.String"));
   }

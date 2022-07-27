@@ -14,7 +14,7 @@ public class UncheckedCastTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "uncheckedCastDisplay", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "uncheckedCastDisplay", "void", Collections.emptyList());
   }
 
   /**

@@ -19,8 +19,8 @@ public class MethodOverridingTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
 
     return identifierFactory.getMethodSignature(
-        "calculateArea",
         identifierFactory.getClassType("MethodOverridingSubclass"),
+        "calculateArea",
         "void",
         Collections.emptyList());
   }

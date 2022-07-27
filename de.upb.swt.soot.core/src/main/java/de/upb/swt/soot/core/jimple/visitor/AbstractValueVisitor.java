@@ -46,6 +46,11 @@ public abstract class AbstractValueVisitor<V> extends AbstractVisitor<V> impleme
   }
 
   @Override
+  public void caseEnumConstant(@Nonnull EnumConstant constant) {
+    defaultCaseConstant(constant);
+  }
+
+  @Override
   public void caseClassConstant(@Nonnull ClassConstant constant) {
     defaultCaseConstant(constant);
   }

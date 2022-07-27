@@ -18,7 +18,7 @@ public class DeclareLongTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "declareLongMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "declareLongMethod", "void", Collections.emptyList());
   }
 
   /**

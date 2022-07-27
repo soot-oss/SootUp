@@ -41,7 +41,7 @@ public class IfElseStatementTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature(String methodName) {
     return identifierFactory.getMethodSignature(
-        methodName, getDeclaredClassSignature(), "int", Collections.singletonList("int"));
+        getDeclaredClassSignature(), methodName, "int", Collections.singletonList("int"));
   }
 
   /**
