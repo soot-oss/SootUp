@@ -17,7 +17,7 @@ public class EmptyStatementTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "emptyStatement", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "emptyStatement", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

@@ -19,7 +19,7 @@ public class PrivateMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "methodInterfaceImpl", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "methodInterfaceImpl", "void", Collections.emptyList());
   }
 
   @Ignore

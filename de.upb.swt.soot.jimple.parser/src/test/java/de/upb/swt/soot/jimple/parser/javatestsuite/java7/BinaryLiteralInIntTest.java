@@ -16,7 +16,7 @@ import org.junit.experimental.categories.Category;
 public class BinaryLiteralInIntTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "binaryLiteralInInt", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "binaryLiteralInInt", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

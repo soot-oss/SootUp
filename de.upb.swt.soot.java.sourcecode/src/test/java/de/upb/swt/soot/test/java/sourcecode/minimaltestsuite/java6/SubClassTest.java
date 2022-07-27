@@ -17,13 +17,13 @@ import org.junit.Test;
 public class SubClassTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "subclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "subclassMethod", "void", Collections.emptyList());
   }
 
   /** @returns the method signature needed for second method in testCase */
   public MethodSignature getMethodSignature1() {
     return identifierFactory.getMethodSignature(
-        "superclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "superclassMethod", "void", Collections.emptyList());
   }
 
   /**

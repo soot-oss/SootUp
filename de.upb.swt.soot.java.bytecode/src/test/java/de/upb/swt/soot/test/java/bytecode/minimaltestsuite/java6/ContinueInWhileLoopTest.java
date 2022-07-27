@@ -18,7 +18,7 @@ public class ContinueInWhileLoopTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "continueInWhileLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "continueInWhileLoop", "void", Collections.emptyList());
   }
 
   /**  <pre>

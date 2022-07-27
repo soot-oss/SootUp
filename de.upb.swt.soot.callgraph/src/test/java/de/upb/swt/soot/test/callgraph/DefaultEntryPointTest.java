@@ -66,7 +66,7 @@ public class DefaultEntryPointTest {
     JavaClassType mainClassSignature = identifierFactory.getClassType("example1.Example");
     MethodSignature mainMethodSignature =
         identifierFactory.getMethodSignature(
-            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
     ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
     CallGraphAlgorithm algorithm = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
@@ -77,43 +77,43 @@ public class DefaultEntryPointTest {
 
     MethodSignature constructorB =
         identifierFactory.getMethodSignature(
-            "<init>",
             identifierFactory.getClassType("example1.B"),
+            "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature constructorC =
         identifierFactory.getMethodSignature(
-            "<init>",
             identifierFactory.getClassType("example1.C"),
+            "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature methodA =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.A"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodB =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.B"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodC =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.C"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodD =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.D"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
@@ -201,7 +201,7 @@ public class DefaultEntryPointTest {
     JavaClassType mainClassSignature = identifierFactory.getClassType("example1.Example");
     MethodSignature mainMethodSignature =
         identifierFactory.getMethodSignature(
-            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
     ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
     CallGraphAlgorithm algorithm = new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
@@ -212,43 +212,43 @@ public class DefaultEntryPointTest {
 
     MethodSignature constructorB =
         identifierFactory.getMethodSignature(
-            "<init>",
             identifierFactory.getClassType("example1.B"),
+            "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature constructorC =
         identifierFactory.getMethodSignature(
-            "<init>",
             identifierFactory.getClassType("example1.C"),
+            "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature methodA =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.A"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodB =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.B"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodC =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.C"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodD =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.D"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 

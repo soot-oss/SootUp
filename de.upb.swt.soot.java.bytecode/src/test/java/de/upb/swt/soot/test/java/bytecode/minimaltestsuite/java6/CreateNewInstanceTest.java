@@ -18,7 +18,7 @@ public class CreateNewInstanceTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "createNewInstance", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "createNewInstance", "void", Collections.emptyList());
   }
 
   /**
