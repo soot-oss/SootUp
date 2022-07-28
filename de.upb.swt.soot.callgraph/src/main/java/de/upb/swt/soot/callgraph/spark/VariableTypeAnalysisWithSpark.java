@@ -75,8 +75,10 @@ public class VariableTypeAnalysisWithSpark extends AbstractCallGraphAlgorithm {
   @Nonnull
   @Override
   public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
-    ClassHierarchyAnalysisAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
-    chaGraph = cha.initialize(entryPoints);
+    if (chaGraph.isEmpty()) {
+      ClassHierarchyAnalysisAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+      chaGraph = cha.initialize(entryPoints);
+    }
     return constructCompleteCallGraph(view, entryPoints);
   }
 

@@ -45,6 +45,8 @@ public interface CallGraph {
 
   int callCount();
 
+  boolean isEmpty();
+
   @Nonnull
   List<MethodSignature> getEntryPoints();
 
