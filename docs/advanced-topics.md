@@ -1,6 +1,20 @@
+# Advanced Topics
+
+As a user of the FutureSoot framework, you can omit these topics which mostly explain how some of the concepts work internally.
+
+## Body Interceptors
+
+!!! info "Soot Equivalent"
+
+    [BodyTransformer](https://github.com/soot-oss/soot/blob/develop/src/main/java/soot/BodyTransformer.java)
 
 
-#### LocalSplitter
+Almost in all use-cases you can simply *ignore* body interceptors. They are applied to each `Body` *by default* to create their rather normalized or leaner versions, e.g. 
+by eliminating unreachable code (`UnreachableCodeEliminator`), standardizing names of locals (`LocalNameStandardizer`), or removing empty switch statements (`EmptySwitchEliminator`) etc. 
+
+Below, we show how these body interceptors work for the users who are interested in their internal workings.
+
+### LocalSplitter
 
 LocalSplitter is a<code>BodyInterceptor</code>that attempts to identify and separate uses of a local variable (as definition) that are independent of each other by renaming local variables.
 
@@ -12,6 +26,9 @@ As shown in the example above, the local variable<code>l1</code>is defined twice
 
 
 
+Look for foldable navigation and tabs for showing old vs new
+
+
 Example 2:
 
 ![LocalSplitter Example_2](./figures/LocalSplitter%20Example_2.png)
@@ -20,7 +37,7 @@ In the second example, the local variable<code>l2</code>is defined thrice. But i
 
 
 
-#### LocalPacker
+### LocalPacker
 
 LocalPacker is a<code>BodyInterceptor</code>that attempts to minimize the number of local variables which are used in body by reusing them, when it is possible. It corresponds to the inverse body transformation of LocalSplitter. Note: Every local variable's type should be assigned before running LocalPacker.
 
@@ -32,7 +49,7 @@ In the given example above, the local variables<code>l1</code>,<code>l3</code>ar
 
 
 
-#### TrapTightener
+### TrapTightener
 
 TrapTightener is a<code>BodyInterceptor</code>that shrinks the protected area covered by each Trap in a Body. 
 
@@ -44,7 +61,7 @@ We assume in the example above that only the<code>Stmt</code>:<code>l2 := 2</cod
 
 
 
-#### EmptySwitchEliminator
+### EmptySwitchEliminator
 
 EmptySwitchEliminator is a<code>BodyInterceptor</code>that removes empty switch statements which contain only the default case.
 
@@ -56,7 +73,7 @@ As shown in the example above, the switch statement in the jimple body always ta
 
 
 
-#### UnreachableCodeEliminator
+### UnreachableCodeEliminator
 
 UnreachableCodeEliminator is a<code>BodyInterceptor</code>that removes all unreachable statements.
 
@@ -68,7 +85,7 @@ Obviously, the code segment<code>l2 = 2; l3 = 3;</code>is unreachable. It will b
 
 
 
-#### CopyPropagator
+### CopyPropagator
 
 CopyPropagator is a<code>BodyInterceptor</code>that supports the global copy propagation and constant propagation. 
 
@@ -107,7 +124,7 @@ After perfoming the constant propagation, the statement<code>b = use(a)</code>ca
 
 Therefore, the first used<code>l1</code>in the second example can be replaced with the constant<code>1</code>, but the second used<code>l1</code>cannot be replaced with the constant<code>2</code>, because<code>l1</code>is redefined on the path from<code>l1 = 2</code>to<code>l4 = use(l1)</code>.  However, it can be replaced with local variable<code>l2</code>, because the both conditions of copy propagation are met. 
 
-#### LocalNameStandardizer
+### LocalNameStandardizer
 
 LocalNameStandardizer is a<code>BodyInterceptor</code>that assigns a generic name to each local variable. Firstly, it will sort the local variables' order alphabetically by the string representation of their type. If there are two local variables with the same type, then the LocalNameStandardizer will use the sequence of their occurrence in jimple body to determine their order.  Each assigned name consists of two parts:
 
@@ -131,7 +148,7 @@ The following table shows the letter corresponding to each type:
 | reference | r |
 
 
-#### StaticSingleAssignmentFormer
+### StaticSingleAssignmentFormer
 
 StaticSingleAssignmentFormer is a<code>BodyInterceptor</code>that transforms jimple body into SSA form, so that each local variable is assigned exactly once and defined before its first use.
 
@@ -143,3 +160,22 @@ Example:
 
 In the given example, the StaticSingleAssignmentFormer assigns each<code>IdentityStmt</code>and<code>AssignStmt</code>to a new local variable . And each use uses the local variable which is most recently defined. Sometimes, it is impossible to determine the most recently defined local variable for a use in a join block. In this case, the StaticSingleAssignmentFormer will insert a<code>PhiStmt</code>in the front of the join block to merge all most recently defined local variables and assign them a new local variable. 
 
+## Tools
+
+#### LocalLivenessAnalyser
+
+LocalLivenessAnalyser is used for querying for the list of live local variables before and after a given <code>Stmt</code>.
+
+Example:
+
+![LocalLiveness Example](./figures/LocalLiveness%20Example.png)
+
+The live local variables before and after each <code>Stmt</code> will be calculated after generating an instance of LocalLivenessAnalyser as shown the example above. They can be queried by using the methods <code>getLiveLocalsBeforeStmt</code> and <code>getLiveLocalsAfterStmt</code>.
+
+#### DominanceFinder
+
+DomianceFinder is used for querying for the immediate dominator and dominance frontiers for a given basic block.
+
+Example:  ![DominanceFinder Example](figures/DominanceFinder%20Example.png)
+
+After generating an instance of DominanceFinder for a <code>BlockGraph</code>, we will get the immediate dominator and dominance frontiers for each basic block. The both properties can be queried by using the methods<code>getImmediateDominator</code>and<code>getDominanceFrontiers</code>.

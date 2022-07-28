@@ -40,6 +40,7 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.types.JavaClassType;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -60,6 +61,15 @@ public class VariableTypeAnalysisWithSpark extends AbstractCallGraphAlgorithm {
     super(view, typeHierarchy);
     this.chaGraph = chaGraph;
     this.pag = pag;
+  }
+
+  @Nonnull
+  @Override
+  public CallGraph initialize() {
+    ClassHierarchyAnalysisAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+    List<MethodSignature> entryPoints = Collections.singletonList(findMainMethod());
+    chaGraph = cha.initialize(entryPoints);
+    return constructCompleteCallGraph(view, entryPoints);
   }
 
   @Nonnull

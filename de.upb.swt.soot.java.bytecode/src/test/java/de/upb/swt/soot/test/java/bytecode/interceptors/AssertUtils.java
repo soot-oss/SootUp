@@ -82,8 +82,8 @@ public class AssertUtils {
     assertTrue(condition);
   }
 
-  // assert whether two stmt lists are equal
-  public static void assertStmtsListsEquiv(List<Stmt> expected, List<Stmt> actual) {
+  // assert whether two lists are equal
+  public static void assertListsEquiv(List expected, List actual) {
 
     assertNotNull(expected);
     assertNotNull(actual);
@@ -94,9 +94,9 @@ public class AssertUtils {
     }
     assertEquals(expected.size(), actual.size());
     boolean condition = true;
-    for (Stmt stmt : actual) {
-      int idx = actual.indexOf(stmt);
-      if (!(expected.get(idx) == stmt)) {
+    for (Object o : actual) {
+      int idx = actual.indexOf(o);
+      if (!(expected.get(idx) == o)) {
         condition = false;
         break;
       }

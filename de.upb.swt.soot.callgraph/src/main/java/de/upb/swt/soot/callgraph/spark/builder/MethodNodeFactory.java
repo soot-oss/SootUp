@@ -346,6 +346,9 @@ public class MethodNodeFactory extends AbstractJimpleValueVisitor<Node> {
   }
 
   @Override
+  public void casePhiExpr(JPhiExpr v) {}
+
+  @Override
   public void caseNewMultiArrayExpr(JNewMultiArrayExpr expr) {
     ArrayType type = (ArrayType) expr.getType();
     AllocationNode prevAllocationNode =

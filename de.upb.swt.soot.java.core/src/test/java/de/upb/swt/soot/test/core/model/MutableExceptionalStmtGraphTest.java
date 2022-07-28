@@ -84,6 +84,7 @@ public class MutableExceptionalStmtGraphTest {
   @Test
   public void graphWithNestedTraps_1Test() {
     StmtGraph graph = createGraphWithNestedTraps_1();
+
     MutableExceptionalStmtGraph exceptionalStmtGraph = new MutableExceptionalStmtGraph(graph);
 
     Map<Stmt, List<Stmt>> expectedExceptionalPreds = expectedPredsForGraphWithNestedTraps_1();
@@ -343,9 +344,8 @@ public class MutableExceptionalStmtGraphTest {
 
     Map<Stmt, List<Stmt>> predsMap = new HashMap<>();
     List<Stmt> preds_0 = ImmutableUtils.immutableList(label1Stmt, label2Stmt);
-    List<Stmt> preds_1 = ImmutableUtils.immutableList(label1Stmt, label2Stmt, label6Stmt);
-    List<Stmt> preds_2 =
-        ImmutableUtils.immutableList(label1Stmt, label2Stmt, label6Stmt, label7Stmt);
+    List<Stmt> preds_1 = ImmutableUtils.immutableList(label6Stmt);
+    List<Stmt> preds_2 = ImmutableUtils.immutableList(label7Stmt);
 
     StmtGraph graph = createGraphWithChainedTraps();
     Iterator<Stmt> it = graph.iterator();
@@ -367,8 +367,8 @@ public class MutableExceptionalStmtGraphTest {
   private Map<Stmt, List<Stmt>> expectedSuccsForGraphWithChainedTraps() {
 
     Map<Stmt, List<Stmt>> succsMap = new HashMap<>();
-    List<Stmt> succs_0 = ImmutableUtils.immutableList(label6Stmt, label7Stmt, label9Stmt);
-    List<Stmt> succs_1 = ImmutableUtils.immutableList(label7Stmt, label9Stmt);
+    List<Stmt> succs_0 = ImmutableUtils.immutableList(label6Stmt);
+    List<Stmt> succs_1 = ImmutableUtils.immutableList(label7Stmt);
     List<Stmt> succs_2 = ImmutableUtils.immutableList(label9Stmt);
 
     StmtGraph graph = createGraphWithChainedTraps();

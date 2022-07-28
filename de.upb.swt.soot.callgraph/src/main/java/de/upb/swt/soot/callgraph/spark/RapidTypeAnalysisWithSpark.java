@@ -39,10 +39,7 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
@@ -60,6 +57,15 @@ public class RapidTypeAnalysisWithSpark extends AbstractCallGraphAlgorithm {
     super(view, typeHierarchy);
     this.chaGraph = chaGraph;
     this.pag = pag;
+  }
+
+  @Nonnull
+  @Override
+  public CallGraph initialize() {
+    ClassHierarchyAnalysisAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+    List<MethodSignature> entryPoints = Collections.singletonList(findMainMethod());
+    chaGraph = cha.initialize(entryPoints);
+    return constructCompleteCallGraph(view, entryPoints);
   }
 
   @Nonnull

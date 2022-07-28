@@ -1,0 +1,15 @@
+abstract synchronized class A extends java.lang.Object
+{
+    abstract void a();
+    void <init>()
+    {
+        unknown l0;
+
+        l0 := @this: A;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}
+

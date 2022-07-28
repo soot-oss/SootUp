@@ -94,6 +94,14 @@ public class WalaIRToJimpleConverter {
     walaToSootNameTable = new HashMap<>();
   }
 
+  public WalaIRToJimpleConverter(@Nonnull Set<String> sourceDirPath, @Nonnull SourceType srcType) {
+    srcNamespace = new JavaSourcePathAnalysisInputLocation(srcType, sourceDirPath);
+    // TODO: [ms] get identifierFactory from view - view can hold a different implementation
+    identifierFactory = JavaIdentifierFactory.getInstance();
+    clsWithInnerCls = new HashMap<>();
+    walaToSootNameTable = new HashMap<>();
+  }
+
   /**
    * Convert a wala {@link AstClass} to {@link SootClass}.
    *

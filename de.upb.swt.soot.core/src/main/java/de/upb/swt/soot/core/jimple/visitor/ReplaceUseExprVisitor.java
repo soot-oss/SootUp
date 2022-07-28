@@ -22,13 +22,16 @@ package de.upb.swt.soot.core.jimple.visitor;
  * #L%
  */
 
+import de.upb.swt.soot.core.graph.Block;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nonnull;
 
 /**
@@ -40,12 +43,20 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
 
   private Value oldUse;
   private Value newUse;
+  Block phiBlock = null;
 
   public ReplaceUseExprVisitor() {}
 
   public void init(@Nonnull Value oldUse, @Nonnull Value newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
+  }
+
+  /* This constructor is for PhiExpr. The phiBlock is a block which newUse belongs to.*/
+  public ReplaceUseExprVisitor(Value oldUse, Value newUse, Block phiBlock) {
+    this.oldUse = oldUse;
+    this.newUse = newUse;
+    this.phiBlock = phiBlock;
   }
 
   @Override
@@ -476,6 +487,33 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
   }
 
   @Override
+  public void casePhiExpr(JPhiExpr v) {
+    if (this.phiBlock != null
+        && newUse instanceof Local
+        && v.getArgs().contains(oldUse)
+        && newUse.getType().equals(v.getType())
+        && !v.getArgs().contains(newUse)) {
+      List<Local> argsList = new ArrayList<>(v.getArgs());
+      int index = argsList.indexOf(oldUse);
+      argsList.set(index, (Local) newUse);
+      v = v.withArgs(argsList);
+
+      Map<Local, Block> newArgToBlock = new HashMap<>();
+      List<Block> blocks = v.getBlocks();
+      for (int i = 0; i < v.getArgsSize(); i++) {
+        if (i == index) {
+          newArgToBlock.put((Local) newUse, phiBlock);
+        } else {
+          newArgToBlock.put(argsList.get(i), blocks.get(i));
+        }
+      }
+      setResult(v.withArgToBlockMap(newArgToBlock));
+    } else {
+      defaultCaseExpr(v);
+    }
+  }
+
+  @Override
   public void caseNewExpr(@Nonnull JNewExpr expr) {
     defaultCaseExpr(expr);
   }
@@ -487,9 +525,5 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
 
   public void errorHandler(@Nonnull Expr expr) {
     defaultCaseExpr(expr);
-    /*    throw new IllegalArgumentException(
-           "The given oldUse '"+ oldUse +"' which should be replaced is not a current use of " + expr + "!");
-
-    */
   }
 }

@@ -462,6 +462,7 @@ public class Body implements Copyable {
 
     @Nullable private Position position = null;
     @Nonnull private final MutableExceptionalStmtGraph ecfg;
+    @Nonnull private BlockGraph bg;
     @Nullable private MethodSignature methodSig = null;
 
     @Nullable private StmtGraphManipulationQueue changeQueue = null;
@@ -471,13 +472,20 @@ public class Body implements Copyable {
       ecfg = new MutableExceptionalStmtGraph();
     }
 
-    BodyBuilder(@Nonnull Body body, @Nonnull Set<Modifier> modifiers) {
+    public BodyBuilder(@Nonnull Body body, @Nonnull Set<Modifier> modifiers) {
       setModifiers(modifiers);
       setMethodSignature(body.getMethodSignature());
       setLocals(body.getLocals());
       setPosition(body.getPosition());
-      ecfg = new MutableExceptionalStmtGraph(body.getStmtGraph());
+      bg = new BlockGraph(body.getStmtGraph());
+      ecfg = bg.getStmtGraph();
       setTraps(body.getTraps());
+    }
+
+    @Nonnull
+    // TODO: should return bg.unmodifiableBlockGraph
+    public BlockGraph getBlockGraph() {
+      return this.bg;
     }
 
     @Nonnull

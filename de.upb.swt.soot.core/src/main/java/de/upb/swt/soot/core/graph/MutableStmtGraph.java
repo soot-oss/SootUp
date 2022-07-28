@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.graph;
  */
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
@@ -87,6 +88,7 @@ public class MutableStmtGraph extends StmtGraph {
       final List<Stmt> succ = originalStmtGraph.successors(node);
       successors.set(idx, new ArrayList<>(succ));
     }
+    nextFreeId = nodes.size();
   }
 
   public StmtGraph unmodifiableStmtGraph() {
@@ -123,13 +125,7 @@ public class MutableStmtGraph extends StmtGraph {
       calculatedSuccessorSize = ((JSwitchStmt) node).getValueCount();
     } else if (node instanceof JIfStmt) {
       calculatedSuccessorSize = 2;
-    }
-    /* memory- vs runtime+
-      else if( node instanceof JReturnStmt || node instanceof JThrowStmt ){
-      successors.add( Collections.emptyList());
-      return idx;
-    }*/
-    else {
+    } else {
       calculatedSuccessorSize = 1;
     }
 
@@ -329,6 +325,50 @@ public class MutableStmtGraph extends StmtGraph {
     }
   }
 
+  /**
+   * Add a stmt into StmtGraph before a given stmt that is already in StmtGraph
+   *
+   * @param node a stmt which should be inserted into StmtGraph, it should be not an instance or
+   *     JSwitchStmt or JIfStmt
+   * @param succNode a stmt that's already in the stmtGraph, it should be not an instance of
+   *     JIdentityStmt
+   */
+  public void insertNode(@Nonnull Stmt node, @Nonnull Stmt succNode) {
+    if (succNode instanceof JIdentityStmt) {
+      throw new RuntimeException(
+          "Before " + succNode.toString() + " can not insert the stmt: " + node.toString());
+    }
+    if (node instanceof JSwitchStmt || node instanceof JIfStmt) {
+      throw new RuntimeException(
+          "Before " + succNode.toString() + " can not insert the stmt: " + node.toString());
+    }
+    if (!containsNode(succNode)) {
+      throw new RuntimeException(
+          "The given stmt: " + succNode.toString() + " is not in StmtGraph!");
+    }
+    int idx = nextFreeId;
+    this.stmtToIdx.put(node, idx);
+    nextFreeId++;
+
+    List<Stmt> newPreds = new ArrayList<>();
+    List<Stmt> newSuccs = new ArrayList<>();
+    predecessors.add(newPreds);
+    successors.add(newSuccs);
+
+    List<Stmt> preds = predecessors(succNode);
+    newPreds.addAll(preds);
+    newSuccs.add(succNode);
+
+    for (Stmt pred : preds) {
+      int predIdx = getNodeIdx(pred);
+      successors.get(predIdx).remove(succNode);
+      successors.get(predIdx).add(node);
+    }
+
+    int succIdx = getNodeIdx(succNode);
+    predecessors.get(succIdx).clear();
+    predecessors.get(succIdx).add(node);
+  }
   /**
    * Remove a node from the graph. The succs and preds after the node removing don't have any
    * connection to each other. the removal of b in "a->b->c" does NOT connect "a->c"
