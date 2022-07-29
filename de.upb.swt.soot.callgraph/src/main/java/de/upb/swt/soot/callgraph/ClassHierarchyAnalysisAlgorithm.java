@@ -22,13 +22,13 @@ package de.upb.swt.soot.callgraph;
  * #L%
  */
 
-import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
-import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JDynamicInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.typerhierachy.MethodDispatchResolver;
+import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
 import de.upb.swt.soot.core.views.View;
 import java.util.*;
 import java.util.stream.Stream;
@@ -39,6 +39,12 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
   public ClassHierarchyAnalysisAlgorithm(
       @Nonnull View<? extends SootClass<?>> view, @Nonnull TypeHierarchy typeHierarchy) {
     super(view, typeHierarchy);
+  }
+
+  @Nonnull
+  @Override
+  public CallGraph initialize() {
+    return constructCompleteCallGraph(view, Collections.singletonList(findMainMethod()));
   }
 
   @Nonnull
@@ -58,12 +64,12 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
     Stream<MethodSignature> result = Stream.of(targetMethodSignature);
 
     SootMethod targetMethod =
-        (SootMethod)
-            view.getClass(targetMethodSignature.getDeclClassType())
-                .flatMap(clazz -> clazz.getMethod(targetMethodSignature.getSubSignature()))
-                .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
+        view.getClass(targetMethodSignature.getDeclClassType())
+            .flatMap(clazz -> clazz.getMethod(targetMethodSignature.getSubSignature()))
+            .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
 
-    if (Modifier.isStatic(targetMethod.getModifiers())
+    if (targetMethod == null
+        || Modifier.isStatic(targetMethod.getModifiers())
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return result;
     } else {

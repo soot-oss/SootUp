@@ -18,7 +18,7 @@ public class UncheckedCastTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "uncheckedCastDisplay", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "uncheckedCastDisplay", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

@@ -3,11 +3,12 @@ package de.upb.swt.soot.test.callgraph;
 import static junit.framework.TestCase.*;
 
 import de.upb.swt.soot.callgraph.*;
-import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
-import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
+import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
@@ -31,28 +32,34 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   protected abstract T createAlgorithm(JavaView view, TypeHierarchy typeHierarchy);
 
-  CallGraph loadCallGraph(String testDirectory, String className) {
-    String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
+  // private static Map<String, JavaView> viewToClassPath = new HashMap<>();
 
-    double version = Double.parseDouble(System.getProperty("java.specification.version"));
-    if (version > 1.8) {
-      fail("The rt.jar is not available after Java 8. You are using version " + version);
-    }
-
+  private JavaView createViewForClassPath(String classPath) {
     JavaProject javaProject =
         JavaProject.builder(new JavaLanguage(8))
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))
-            .addInputLocation(new JavaSourcePathAnalysisInputLocation(walaClassPath))
+            .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
             .build();
+    return javaProject.createOnDemandView();
+  }
 
-    JavaView view = javaProject.createOnDemandView();
+  CallGraph loadCallGraph(String testDirectory, String className) {
+    double version = Double.parseDouble(System.getProperty("java.specification.version"));
+    if (version > 1.8) {
+      fail("The rt.jar is not available after Java 8. You are using version " + version);
+    }
+
+    String classPath = "src/test/resources/callgraph/" + testDirectory;
+
+    // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
+    JavaView view = createViewForClassPath(classPath);
 
     mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =
         identifierFactory.getMethodSignature(
-            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
     SootClass<?> sc = view.getClass(mainClassSignature).get();
     Optional<SootMethod> m =
@@ -83,8 +90,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature(
-            "method",
             identifierFactory.getClassType("update.operation.cg.Class"),
+            "method",
             "void",
             Collections.emptyList());
 
@@ -105,11 +112,11 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     MethodSignature method =
         identifierFactory.getMethodSignature(
-            "method", mainClassSignature, "void", Collections.emptyList());
+            mainClassSignature, "method", "void", Collections.emptyList());
 
     MethodSignature uncalledMethod =
         identifierFactory.getMethodSignature(
-            "method", mainClassSignature, "void", Collections.singletonList("int"));
+            mainClassSignature, "method", "void", Collections.singletonList("int"));
 
     assertTrue(cg.containsMethod(mainMethodSignature));
     assertTrue(cg.containsMethod(method));
@@ -126,7 +133,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     CallGraph cg = loadCallGraph("NonVirtualCall", "nvc1.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            "method", mainClassSignature, "void", Collections.emptyList());
+            mainClassSignature, "method", "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
   }
 
@@ -135,7 +142,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     CallGraph cg = loadCallGraph("NonVirtualCall", "nvc2.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            "<init>", mainClassSignature, "void", Collections.emptyList());
+            mainClassSignature, "<init>", "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
   }
 
@@ -144,10 +151,10 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     CallGraph cg = loadCallGraph("NonVirtualCall", "nvc3.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            "method", mainClassSignature, "void", Collections.emptyList());
+            mainClassSignature, "method", "void", Collections.emptyList());
     MethodSignature uncalledMethod =
         identifierFactory.getMethodSignature(
-            "method", mainClassSignature, "void", Collections.singletonList("int"));
+            mainClassSignature, "method", "void", Collections.singletonList("int"));
     assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
     assertFalse(cg.containsMethod(uncalledMethod));
   }
@@ -157,13 +164,13 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     CallGraph cg = loadCallGraph("NonVirtualCall", "nvc4.Class");
     MethodSignature firstMethod =
         identifierFactory.getMethodSignature(
-            "method", mainClassSignature, "void", Collections.emptyList());
+            mainClassSignature, "method", "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, firstMethod));
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            "method",
             identifierFactory.getClassType("nvc4.Rootclass"),
+            "method",
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(firstMethod, targetMethod));
@@ -175,13 +182,13 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     MethodSignature firstMethod =
         identifierFactory.getMethodSignature(
-            "method", identifierFactory.getClassType("nvc5.Sub"), "void", Collections.emptyList());
+            identifierFactory.getClassType("nvc5.Sub"), "method", "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, firstMethod));
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            "method",
             identifierFactory.getClassType("nvc5.Middle"),
+            "method",
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(firstMethod, targetMethod));
@@ -193,7 +200,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            "target", mainClassSignature, "void", Collections.emptyList());
+            mainClassSignature, "target", "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
   }
 
@@ -204,17 +211,17 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     JavaClassType subClassSig = identifierFactory.getClassType("vc2.SubClass");
     MethodSignature constructorMethod =
         identifierFactory.getMethodSignature(
-            "<init>", subClassSig, "void", Collections.emptyList());
+            subClassSig, "<init>", "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, constructorMethod));
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            "callMethod", mainClassSignature, "void", Collections.singletonList("vc2.Class"));
+            mainClassSignature, "callMethod", "void", Collections.singletonList("vc2.Class"));
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            "method", identifierFactory.getClassType("vc2.Class"), "void", Collections.emptyList());
+            identifierFactory.getClassType("vc2.Class"), "method", "void", Collections.emptyList());
     assertTrue(cg.containsCall(callMethod, targetMethod));
   }
 
@@ -225,20 +232,20 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     JavaClassType subClassSig = identifierFactory.getClassType("vc3.ClassImpl");
     MethodSignature constructorMethod =
         identifierFactory.getMethodSignature(
-            "<init>", subClassSig, "void", Collections.emptyList());
+            subClassSig, "<init>", "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, constructorMethod));
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            "callOnInterface",
             mainClassSignature,
+            "callOnInterface",
             "void",
             Collections.singletonList("vc3.Interface"));
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            "method", subClassSig, "void", Collections.emptyList());
+            subClassSig, "method", "void", Collections.emptyList());
     assertTrue(cg.containsCall(callMethod, targetMethod));
   }
 
@@ -249,8 +256,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     // more precise its: declareClassSig
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            "method",
             identifierFactory.getClassType("vc4.Interface"),
+            "method",
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
@@ -261,8 +268,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim1.Class");
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            "method",
             identifierFactory.getClassType("j8dim1.Interface"),
+            "method",
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
@@ -274,8 +281,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            "method",
             identifierFactory.getClassType("j8dim2.Interface"),
+            "method",
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
@@ -287,7 +294,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            "method", mainClassSignature, "void", Collections.emptyList());
+            mainClassSignature, "method", "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
   }
 
@@ -297,8 +304,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            "method",
             identifierFactory.getClassType("j8dim4.Interface"),
+            "method",
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
@@ -310,15 +317,15 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     MethodSignature method =
         identifierFactory.getMethodSignature(
-            "method",
             identifierFactory.getClassType("j8dim5.DirectInterface"),
+            "method",
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, method));
 
     MethodSignature compute =
         identifierFactory.getMethodSignature(
-            "compute", mainClassSignature, "void", Collections.emptyList());
+            mainClassSignature, "compute", "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, compute));
   }
 
@@ -329,24 +336,24 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     MethodSignature combinedInterfaceMethod =
         identifierFactory.getMethodSignature(
-            "method",
             identifierFactory.getClassType("j8dim6.CombinedInterface"),
+            "method",
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, combinedInterfaceMethod));
 
     MethodSignature method =
         identifierFactory.getMethodSignature(
-            "method",
             identifierFactory.getClassType("j8dim6.SomeInterface"),
+            "method",
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(combinedInterfaceMethod, method));
 
     MethodSignature anotherMethod =
         identifierFactory.getMethodSignature(
-            "method",
             identifierFactory.getClassType("j8dim6.AnotherInterface"),
+            "method",
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(combinedInterfaceMethod, anotherMethod));
@@ -358,10 +365,24 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     MethodSignature method =
         identifierFactory.getMethodSignature(
-            "method",
             identifierFactory.getClassType("j8sim.Interface"),
+            "method",
             "void",
             Collections.emptyList());
+
+    assertTrue(cg.containsCall(mainMethodSignature, method));
+  }
+
+  /** Ignored because takes too long to analyze whole rt.jar */
+  @Ignore
+  public void testHelloWorld() {
+    CallGraph cg = loadCallGraph("Misc", "HelloWorld");
+
+    ClassType clazzType = JavaIdentifierFactory.getInstance().getClassType("java.io.PrintStream");
+
+    MethodSignature method =
+        identifierFactory.getMethodSignature(
+            clazzType, "println", "void", Collections.singletonList("java.lang.String"));
 
     assertTrue(cg.containsCall(mainMethodSignature, method));
   }

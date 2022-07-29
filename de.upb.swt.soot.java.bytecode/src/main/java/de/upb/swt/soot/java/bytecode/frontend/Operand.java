@@ -104,6 +104,9 @@ class Operand {
     }
   }
 
+    usedByStmts.removeAll(stmtsToDelete);
+  }
+
   /** @return either the stack local allocated for this operand, or its value. */
   @Nonnull
   Value stackOrValue() {
@@ -117,7 +120,10 @@ class Operand {
    * @return {@code true} if this operand is equal to another operand, {@code false} otherwise.
    */
   boolean equivTo(@Nonnull Operand other) {
-    return stackOrValue().equivTo(other.stackOrValue());
+    // care for DWORD comparison, as stackOrValue is null, which would result in a
+    // NullPointerException
+    return (this == other) || ( (this == DWORD_DUMMY) == (other == DWORD_DUMMY)
+            && stackOrValue().equivTo(other.stackOrValue());
   }
 
   @Override

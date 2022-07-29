@@ -24,6 +24,7 @@ package de.upb.swt.soot.core.jimple.visitor;
 
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.ref.*;
 import javax.annotation.Nonnull;
 
@@ -34,12 +35,12 @@ import javax.annotation.Nonnull;
  */
 public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
 
-  private Immediate oldUse;
-  private Immediate newUse;
+  private Value oldUse;
+  private Value newUse;
 
   public ReplaceUseRefVisitor() {}
 
-  public void init(@Nonnull Immediate oldUse, @Nonnull Immediate newUse) {
+  public void init(@Nonnull Value oldUse, @Nonnull Value newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
   }
@@ -58,7 +59,7 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
     if (ref.getBase() == oldUse) {
       setResult(ref.withBase((Local) newUse));
     } else if (ref.getIndex() == oldUse) {
-      setResult(ref.withIndex(newUse));
+      setResult(ref.withIndex((Immediate) newUse));
     } else {
       errorHandler(ref);
     }
@@ -71,6 +72,6 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
 
   public void errorHandler(@Nonnull Ref ref) {
     throw new IllegalArgumentException(
-        "The given oldUse which should be replaced is not a current use of" + ref + "!");
+        "The given oldUse which should be replaced is not a current use of " + ref + "!");
   }
 }

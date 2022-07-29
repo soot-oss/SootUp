@@ -78,7 +78,6 @@ import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.core.types.VoidType;
-import de.upb.swt.soot.java.core.ConstantUtil;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.jimple.basic.JavaLocal;
 import de.upb.swt.soot.java.core.language.JavaJimple;
@@ -101,9 +100,6 @@ import org.objectweb.asm.tree.*;
  */
 public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
-  @SuppressWarnings("ConstantConditions")
-  static final Operand DWORD_DUMMY = new Operand(null, null, null);
-
   // private static final String METAFACTORY_SIGNATURE =
   // "<java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite "
   // +
@@ -125,8 +121,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Nonnull private final Map<Stmt, Stmt> replacedStmt = new HashMap<>();
 
   private OperandStack operandStack;
-
-  // merge those two following fields into a table?
   private Map<LabelNode, Stmt> trapHandler;
 
   private int currentLineNumber = -1;
@@ -153,7 +147,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             Type retType = sigTypes.remove(sigTypes.size() - 1);
 
             return javaIdentifierFactory.getMethodSignature(
-                name, declaringClass, retType, sigTypes);
+                declaringClass, name, retType, sigTypes);
           });
 
   AsmMethodSource(
@@ -260,7 +254,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       ((ArrayList) a).forEach(e -> list.add(resolveAnnotationsInDefaultValue(e)));
       return list;
     }
-    return ConstantUtil.fromObject(a);
+    return AsmUtil.convertAnnotationValue(a);
   }
 
   @Nonnull
@@ -335,11 +329,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             return true;
           }
           int op = operand.insn.getOpcode();
-          // FIXME: assumed fixed condition check does (strange?) things in minimaltestsuite -
-          // investigate! so for now just return false (again as previously the expr was always
-          // false)..
-          // return op != GETFIELD && op != GETSTATIC && (op < IALOAD || op > SALOAD);
-          return false;
+          return op != GETFIELD && op != GETSTATIC && (op < IALOAD || op > SALOAD);
         });
   }
 
@@ -364,7 +354,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // determine which Operand(s) from the stack needs explicit assignments in Jimple
     for (Operand operand : operandStack.getStack()) {
       final Value opValue = operand.value;
-      if (operand == DWORD_DUMMY || operand.stackLocal != null) {
+      if (operand == Operand.DWORD_DUMMY || operand.stackLocal != null) {
         continue;
       }
       if (func.apply(opValue, operand)) {
@@ -587,7 +577,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // Some instructions allow operands that take two registers
     boolean dword = op == DUP2 || op == DUP2_X1 || op == DUP2_X2;
     if (dword) {
-      if (operandStack.peek() == DWORD_DUMMY) {
+      if (operandStack.peek() == Operand.DWORD_DUMMY) {
         operandStack.pop();
         dupd2 = dupd;
       } else {
@@ -610,7 +600,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // value3, value2, value1 -> value1, value3, value2, value1
       Operand o2 = operandStack.popImmediate();
       Operand o3 =
-          operandStack.peek() == DWORD_DUMMY ? operandStack.pop() : operandStack.popImmediate();
+          operandStack.peek() == Operand.DWORD_DUMMY
+              ? operandStack.pop()
+              : operandStack.popImmediate();
       operandStack.push(dupd);
       operandStack.push(o3);
       operandStack.push(o2);
@@ -635,7 +627,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // (value2, value1)
       Operand o2 = operandStack.popImmediate();
       Operand o2h =
-          operandStack.peek() == DWORD_DUMMY ? operandStack.pop() : operandStack.popImmediate();
+          operandStack.peek() == Operand.DWORD_DUMMY
+              ? operandStack.pop()
+              : operandStack.popImmediate();
       operandStack.push(dupd2);
       operandStack.push(dupd);
       operandStack.push(o2h);
@@ -808,7 +802,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           totype = PrimitiveType.getChar();
           break;
         default:
-          throw new IllegalStateException("Unknonw prim cast op: " + op);
+          throw new IllegalStateException("Unknown prim cast op: " + op);
       }
       Operand val = fromd ? operandStack.popImmediateDual() : operandStack.popImmediate();
       JCastExpr cast = Jimple.newCastExpr((Immediate) val.stackOrValue(), totype);
@@ -864,7 +858,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       operandStack.popImmediate();
     } else if (op == POP2) {
       operandStack.popImmediate();
-      if (operandStack.peek() == DWORD_DUMMY) {
+      if (operandStack.peek() == Operand.DWORD_DUMMY) {
         operandStack.pop();
       } else {
         operandStack.popImmediate();
@@ -1167,8 +1161,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     JavaClassType bsmCls = javaIdentifierFactory.getClassType(bsmClsName);
     List<Type> bsmSigTypes = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc());
     Type returnType = bsmSigTypes.remove(bsmSigTypes.size() - 1);
-    return javaIdentifierFactory.getMethodSignature(
-        methodHandle.getName(), bsmCls, returnType, bsmSigTypes);
+    return JavaIdentifierFactory.getInstance()
+        .getMethodSignature(bsmCls, methodHandle.getName(), returnType, bsmSigTypes);
   }
 
   private void convertLookupSwitchInsn(@Nonnull LookupSwitchInsnNode insn) {
@@ -1213,7 +1207,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(insn.desc);
       returnType = sigTypes.remove((sigTypes.size() - 1));
       MethodSignature methodSignature =
-          javaIdentifierFactory.getMethodSignature(insn.name, cls, returnType, sigTypes);
+          javaIdentifierFactory.getMethodSignature(cls, insn.name, returnType, sigTypes);
       int nrArgs = sigTypes.size();
       final Operand[] args;
       List<Immediate> argList = Collections.emptyList();
@@ -1352,7 +1346,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // we always model invokeDynamic method refs as static method references
       // of methods on the type SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME
       MethodSignature methodSig =
-          javaIdentifierFactory.getMethodSignature(insn.name, bclass, returnType, parameterTypes);
+          javaIdentifierFactory.getMethodSignature(bclass, insn.name, returnType, parameterTypes);
 
       JDynamicInvokeExpr indy =
           Jimple.newDynamicInvokeExpr(
@@ -1372,9 +1366,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       int nrArgs = types.size() - 1;
       final boolean isStaticInvokeExpr = expr instanceof JStaticInvokeExpr;
       if (isStaticInvokeExpr) {
-        oprs = (nrArgs == 0) ? null : new Operand[nrArgs];
+        oprs = (nrArgs <= 0) ? null : new Operand[nrArgs];
       } else {
-        oprs = new Operand[nrArgs + 1];
+        oprs = (nrArgs < 0) ? null : new Operand[nrArgs + 1];
       }
       if (oprs != null) {
         while (nrArgs-- > 0) {
@@ -2109,6 +2103,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return null;
   }
 
+  /**
+   * Returns the latest version of a statement that is used in this method source, or null if the
+   * statement is not used
+   *
+   * @param oldStmt
+   * @return
+   */
   @Nonnull
   Stmt getLatestVersionOfStmt(@Nonnull Stmt oldStmt) {
     while (true) {

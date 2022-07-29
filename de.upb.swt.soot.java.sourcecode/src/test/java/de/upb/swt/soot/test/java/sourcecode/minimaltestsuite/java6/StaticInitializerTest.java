@@ -16,12 +16,12 @@ import org.junit.Test;
 public class StaticInitializerTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "methodStaticInitializer", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "methodStaticInitializer", "void", Collections.emptyList());
   }
 
   public MethodSignature getStaticMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "<clinit>", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "<clinit>", "void", Collections.emptyList());
   }
 
   @Test

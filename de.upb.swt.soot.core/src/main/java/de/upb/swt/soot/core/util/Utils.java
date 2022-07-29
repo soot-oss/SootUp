@@ -28,10 +28,10 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.util.printer.Printer;
 import de.upb.swt.soot.core.util.printer.Printer.Option;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,10 +39,48 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 /** @author Linghui Luo */
 public class Utils {
+
+  @Nullable
+  Path compileJavaOTF(String className, String javaSourceContent) {
+    File sourceFile;
+    try {
+      Path root = Files.createTempDirectory("JavaOTFCompileTempDir");
+      root.toFile().deleteOnExit();
+
+      sourceFile = new File(root.toFile(), className + ".java");
+      if (!sourceFile.createNewFile()) {
+        return null;
+      }
+      sourceFile.deleteOnExit();
+
+      Path compileUnitPath = sourceFile.toPath();
+      Files.write(compileUnitPath, javaSourceContent.getBytes(StandardCharsets.UTF_8));
+      return compileJavaOTF(compileUnitPath);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  @Nullable
+  Path compileJavaOTF(Path sourceFile) {
+    // Compile source file.
+    JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+    final boolean b = 0 == compiler.run(null, null, null, sourceFile.toString());
+    if (b) {
+      final File file = new File(sourceFile.toString().replace(".java", ".class"));
+      file.deleteOnExit();
+      return file.toPath();
+    }
+    return null;
+  }
 
   public static void outputJimple(SootClass cl, boolean print) {
     if (print) {

@@ -26,6 +26,7 @@ import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import java.util.ArrayList;
 import javax.annotation.Nonnull;
@@ -157,11 +158,13 @@ final class StackFrame {
             src.setStmt(newOp.insn, as);
           } else {
             Stmt u = src.getStmt(newOp.insn);
-            AbstractDefinitionStmt<?, ?> as =
-                (AbstractDefinitionStmt<?, ?>)
-                    (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
-            Value lvb = as.getLeftOp();
-            assert lvb == newOp.stackLocal : "Invalid stack local!";
+            if (!(u instanceof JNopStmt)) {
+              AbstractDefinitionStmt<?, ?> as =
+                  (AbstractDefinitionStmt<?, ?>)
+                      (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
+              Value lvb = as.getLeftOp();
+              assert lvb == newOp.stackLocal : "Invalid stack local!";
+            }
             newOp.stackLocal = stack;
           }
           newOp.updateUsages();

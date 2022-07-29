@@ -30,6 +30,13 @@ class SwitchExprWithoutBreak {
       }
     };
 
+    switch (k) {
+      case 1:
+        s += "single";
+      default:
+        s += "somethingElse";
+    };
+
     System.out.println(s);
   }
 }

@@ -18,7 +18,7 @@ import org.junit.experimental.categories.Category;
 public class NativeMethodTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "returnResult", getDeclaredClassSignature(), "int", Collections.singletonList("int"));
+        getDeclaredClassSignature(), "returnResult", "int", Collections.singletonList("int"));
   }
 
   @Test

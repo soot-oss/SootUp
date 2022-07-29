@@ -18,7 +18,7 @@ public class NewCodeBlockInMethodTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "newCodeBlockInMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "newCodeBlockInMethod", "void", Collections.emptyList());
   }
 
   /**

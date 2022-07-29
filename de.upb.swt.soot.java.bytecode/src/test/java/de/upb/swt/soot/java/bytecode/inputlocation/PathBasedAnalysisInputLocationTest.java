@@ -73,31 +73,31 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     final JavaProject project_min =
         JavaProject.builder(new JavaLanguage(Integer.MIN_VALUE))
-            .addInputLocation(PathBasedAnalysisInputLocation.createForClassContainer(mrj))
+            .addInputLocation(new PathBasedAnalysisInputLocation(mrj, null))
             .build();
     final JavaView view_min = project_min.createOnDemandView();
 
     final JavaProject project_8 =
         JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(PathBasedAnalysisInputLocation.createForClassContainer(mrj))
+            .addInputLocation(new PathBasedAnalysisInputLocation(mrj, null))
             .build();
     final JavaView view_8 = project_8.createOnDemandView();
 
     final JavaProject project_9 =
         JavaProject.builder(new JavaLanguage(9))
-            .addInputLocation(PathBasedAnalysisInputLocation.createForClassContainer(mrj))
+            .addInputLocation(new PathBasedAnalysisInputLocation(mrj, null))
             .build();
     final JavaView view_9 = project_9.createOnDemandView();
 
     final JavaProject project_10 =
         JavaProject.builder(new JavaLanguage(10))
-            .addInputLocation(PathBasedAnalysisInputLocation.createForClassContainer(mrj))
+            .addInputLocation(new PathBasedAnalysisInputLocation(mrj, null))
             .build();
     final JavaView view_10 = project_10.createOnDemandView();
 
     final JavaProject project_max =
         JavaProject.builder(new JavaLanguage(Integer.MAX_VALUE))
-            .addInputLocation(PathBasedAnalysisInputLocation.createForClassContainer(mrj))
+            .addInputLocation(new PathBasedAnalysisInputLocation(mrj, null))
             .build();
     final JavaView view_max = project_max.createOnDemandView();
 
@@ -187,7 +187,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     final JavaProject project_8 =
         JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(PathBasedAnalysisInputLocation.createForClassContainer(mmrj))
+            .addInputLocation(new PathBasedAnalysisInputLocation(mmrj, null))
             .build();
     final JavaView view_8 = project_8.createOnDemandView();
 
@@ -197,7 +197,8 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                 .enableModules()
                 .addInputLocation(
                     (ModuleInfoAnalysisInputLocation)
-                        PathBasedAnalysisInputLocation.createForClassContainer(mmrj))
+                        new PathBasedAnalysisInputLocation(mmrj, null)
+                            .getPathBasedAnalysisInputLocationObj())
                 .build();
 
     final JavaModuleView view_9 = project_9.createOnDemandView();
@@ -274,7 +275,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.createForClassContainer(jar);
+        new PathBasedAnalysisInputLocation(jar, null);
 
     final ClassType class1 = getIdentifierFactory().getClassType("Employee", "ds");
     final ClassType mainClass = getIdentifierFactory().getClassType("MiniApp");
@@ -285,7 +286,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testWar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.createForClassContainer(war);
+        new PathBasedAnalysisInputLocation(war, null);
     final ClassType warClass1 = getIdentifierFactory().getClassType("SimpleWarRead");
     testClassReceival(pathBasedNamespace, warClass1, 2);
   }
@@ -406,8 +407,8 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testRuntimeJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.createForClassContainer(
-            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"));
+        new PathBasedAnalysisInputLocation(
+            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), null);
 
     JavaView v =
         JavaProject.builder(new JavaLanguage(8))

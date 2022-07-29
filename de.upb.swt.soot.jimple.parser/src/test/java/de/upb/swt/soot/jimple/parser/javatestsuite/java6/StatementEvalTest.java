@@ -16,7 +16,7 @@ import org.junit.experimental.categories.Category;
 public class StatementEvalTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "statementEval", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "statementEval", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

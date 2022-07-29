@@ -8,6 +8,7 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
@@ -22,11 +23,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /** @author Markus Schmidt */
 public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClassSource<T>>>
     implements AnalysisInputLocation<T> {
   final Path path;
+
+  /** Variable to track if user has specified the SourceType. By default, it will be set to null. */
+  private SourceType srcType = null;
 
   // TODO: allow pointing to a single file
   public JimpleAnalysisInputLocation(@Nonnull Path path) {
@@ -41,6 +46,33 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
     this.path = path;
   }
 
+  public JimpleAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    if (!Files.exists(path)) {
+      throw new IllegalArgumentException(
+          "The configured path '"
+              + path
+              + "' pointing to '"
+              + path.toAbsolutePath()
+              + "' does not exist.");
+    }
+    this.path = path;
+    setSpecifiedAsBuiltInByUser(srcType);
+  }
+
+  /**
+   * The method sets the value of the variable srcType.
+   *
+   * @param srcType the source type for the path can be Library, Application, Phantom.
+   */
+  public void setSpecifiedAsBuiltInByUser(@Nullable SourceType srcType) {
+    this.srcType = srcType;
+  }
+
+  @Override
+  public SourceType getSourceType() {
+    return srcType;
+  }
+
   @Nonnull
   List<AbstractClassSource<? extends AbstractClass<?>>> walkDirectory(
       @Nonnull Path dirPath,
@@ -53,7 +85,8 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
           .flatMap(
               p ->
                   StreamUtils.optionalToStream(
-                      Optional.of(classProvider.createClassSource(this, p, factory.fromPath(p)))))
+                      Optional.of(
+                          classProvider.createClassSource(this, p, factory.fromPath(dirPath, p)))))
           .collect(Collectors.toList());
 
     } catch (IOException e) {

@@ -17,7 +17,7 @@ public class StaticMethodInvocationTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "staticMethodInvocation", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "staticMethodInvocation", "void", Collections.emptyList());
   }
 
   /**

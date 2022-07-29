@@ -22,8 +22,6 @@ package de.upb.swt.soot.callgraph;
  * #L%
  */
 
-import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
-import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Method;
@@ -31,15 +29,21 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
+import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
+
+  private static final Logger logger = LoggerFactory.getLogger(AbstractCallGraphAlgorithm.class);
 
   @Nonnull protected final View<? extends SootClass<?>> view;
   @Nonnull protected final TypeHierarchy typeHierarchy;
@@ -90,6 +94,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             }
           });
       processed.add(currentMethodSignature);
+
+      postProcessingMethod(view, currentMethodSignature, workList, cg);
     }
   }
 
@@ -113,26 +119,52 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   /** finds the given method signature in class's superclasses */
   final <T extends Method> T findMethodInHierarchy(
-      @Nonnull View<? extends SootClass> view, @Nonnull MethodSignature sig) {
-    SootClass sc = view.getClass(sig.getDeclClassType()).get();
-    Optional<ClassType> optSuperclass = sc.getSuperclass();
+      @Nonnull View<? extends SootClass<?>> view, @Nonnull MethodSignature sig) {
+    Optional<? extends SootClass> optSc = view.getClass(sig.getDeclClassType());
 
-    Optional<SootMethod> optMethod;
-    while (optSuperclass.isPresent()) {
-      ClassType superClassType = optSuperclass.get();
-      SootClass superClass = view.getClass(superClassType).get();
-      optMethod = (Optional<SootMethod>) superClass.getMethod(sig.getSubSignature());
-      if (optMethod.isPresent()) {
-        return (T) optMethod.get();
+    if (optSc.isPresent()) {
+      SootClass sc = optSc.get();
+
+      List<ClassType> superClasses = typeHierarchy.superClassesOf(sc.getType());
+      Set<ClassType> interfaces = typeHierarchy.implementedInterfacesOf(sc.getType());
+      superClasses.addAll(interfaces);
+
+      for (ClassType superClassType : superClasses) {
+        Optional<? extends SootClass<?>> superClassOpt = view.getClass(superClassType);
+        if (superClassOpt.isPresent()) {
+          SootClass<?> superClass = superClassOpt.get();
+          Optional<? extends SootMethod> methodOpt = superClass.getMethod(sig.getSubSignature());
+          if (methodOpt.isPresent()) {
+            return (T) methodOpt.get();
+          }
+        }
       }
-      optSuperclass = superClass.getSuperclass();
+      logger.warn(
+          "Could not find \""
+              + sig.getSubSignature()
+              + "\" in "
+              + sig.getDeclClassType().getClassName()
+              + " and in its superclasses");
+    } else {
+      logger.trace("Could not find \"" + sig.getDeclClassType() + "\" in view");
     }
-    throw new ResolveException(
-        "Could not find \""
-            + sig.getSubSignature()
-            + "\" in "
-            + sig.getDeclClassType().getClassName()
-            + " and in its superclasses");
+    return null;
+  }
+
+  /**
+   * This method enables optional post processing of a method in the call graph algorithm
+   *
+   * @param view view
+   * @param sourceMethod the processed method
+   * @param workList the current worklist that might be extended
+   * @param cg the current cg that might be extended
+   */
+  public void postProcessingMethod(
+      View<? extends SootClass<?>> view,
+      MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull MutableCallGraph cg) {
+    // is only implemented if it is needed in the call graph algorithm
   }
 
   @Nonnull
@@ -182,6 +214,55 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             });
 
     return updated;
+  }
+
+  /**
+   * The method iterates over all classes present in view, and finds method with name main &
+   * SourceType - Library. This method is used by initialize() method used for creating call graph
+   * and the call graph is created by considering the main method as an entry point.
+   *
+   * <p>The method throws an exception if there is no main method in any of the classes or if there
+   * are more than one main method.
+   *
+   * @return - MethodSignature of main method.
+   */
+  public MethodSignature findMainMethod() {
+    Set<SootClass<?>> classes = new HashSet<>(); /* Set to track the classes to check */
+    for (SootClass<?> aClass : view.getClasses()) {
+      if (!aClass.isLibraryClass()) {
+        classes.add(aClass);
+      }
+    }
+
+    Collection<SootMethod> mainMethods = new HashSet<>(); /* Set to store the methods */
+    for (SootClass<?> aClass : classes) {
+      for (SootMethod method : aClass.getMethods()) {
+        if (method.isStatic()
+            && method
+                .getSignature()
+                .equals(
+                    JavaIdentifierFactory.getInstance()
+                        .getMethodSignature(
+                            aClass.getType(),
+                            "main",
+                            "void",
+                            Collections.singletonList("java.lang.String[]")))) {
+          mainMethods.add(method);
+        }
+      }
+    }
+
+    if (mainMethods.size() > 1) {
+      throw new RuntimeException(
+          "There are more than 1 main method present.\n Below main methods are found: \n"
+              + mainMethods
+              + "\n initialize() method can be used if only one main method exists. \n You can specify these main methods as entry points by passing them as parameter to initialize method.");
+    } else if (mainMethods.size() == 0) {
+      throw new RuntimeException(
+          "No main method is present in the input programs. initialize() method can be used if only one main method exists in the input program and that should be used as entry point for call graph. \n Please specify entry point as a parameter to initialize method.");
+    }
+
+    return mainMethods.stream().findFirst().get().getSignature();
   }
 
   @Nonnull

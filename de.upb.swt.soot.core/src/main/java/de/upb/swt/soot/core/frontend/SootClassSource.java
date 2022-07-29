@@ -67,7 +67,7 @@ public abstract class SootClassSource<S extends SootClass<? extends SootClassSou
   }
 
   protected SootClassSource(SootClassSource<S> delegate) {
-    super(delegate.srcNamespace, delegate.getClassType(), delegate.getSourcePath());
+    super(delegate.classSource, delegate.getClassType(), delegate.getSourcePath());
   }
 
   /** Reads from the source to retrieve its methods. This may be an expensive operation. */

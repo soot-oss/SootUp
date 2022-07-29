@@ -18,17 +18,17 @@ public class SwitchCaseStatementWithStringTest extends MinimalBytecodeTestSuiteB
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "switchCaseStatementString", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "switchCaseStatementString", "void", Collections.emptyList());
   }
 
   public MethodSignature getMethodSignature2() {
     return identifierFactory.getMethodSignature(
-        "switchCaseStatementInt", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "switchCaseStatementInt", "void", Collections.emptyList());
   }
 
   public MethodSignature getMethodSignature3() {
     return identifierFactory.getMethodSignature(
-        "switchCaseStatementEnum", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "switchCaseStatementEnum", "void", Collections.emptyList());
   }
 
   /**

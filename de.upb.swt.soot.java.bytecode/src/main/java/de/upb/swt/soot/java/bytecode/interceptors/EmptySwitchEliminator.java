@@ -45,9 +45,8 @@ public class EmptySwitchEliminator implements BodyInterceptor {
     for (Stmt stmt : builder.getStmtGraph()) {
       // If the observed stmt an instance of JSwitchStmt
       if (stmt instanceof JSwitchStmt) {
-        Body body = builder.build();
         JSwitchStmt sw = (JSwitchStmt) stmt;
-        // if there's only defaultStmt
+        // if there's only default case
         if (sw.getValueCount() == 1) {
           StmtPositionInfo positionInfo = sw.getPositionInfo();
           JGotoStmt gotoStmt = Jimple.newGotoStmt(positionInfo);

@@ -2,6 +2,7 @@ package de.upb.swt.soot.core.util.printer;
 
 import static org.junit.Assert.*;
 
+import categories.Java8Test;
 import com.google.common.base.Objects;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -11,7 +12,9 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.VoidType;
 import java.util.Collections;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category(Java8Test.class)
 public class AbstractStmtPrinterTest {
 
   @Test

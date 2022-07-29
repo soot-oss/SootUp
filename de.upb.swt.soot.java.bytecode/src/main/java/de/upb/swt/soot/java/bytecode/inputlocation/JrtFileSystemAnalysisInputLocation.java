@@ -26,7 +26,6 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.core.views.View;
@@ -46,6 +45,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,8 +67,9 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
       @Nonnull ClassType classType, @Nonnull View<?> view) {
     JavaClassType klassType = (JavaClassType) classType;
-    List<BodyInterceptor> bodyInterceptors = view.getBodyInterceptors();
-    ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
+
+    ClassProvider<JavaSootClass> classProvider =
+        new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this));
     Path filepath =
         theFileSystem.getPath(
             klassType.getFullyQualifiedName().replace('.', '/')
@@ -125,8 +126,8 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull View<?> view) {
 
-    List<BodyInterceptor> bodyInterceptors = view.getBodyInterceptors();
-    ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(bodyInterceptors);
+    ClassProvider<JavaSootClass> classProvider =
+        new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this));
 
     String moduleInfoFilename =
         JavaModuleIdentifierFactory.MODULE_INFO_FILE
@@ -151,7 +152,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
                         classProvider.createClassSource(
                             this,
                             p,
-                            fromPath(
+                            this.fromPath(
                                 p.subpath(2, p.getNameCount()),
                                 p.subpath(1, 2),
                                 identifierFactory))));
@@ -210,7 +211,8 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
       final Path filename, final Path moduleDir, final IdentifierFactory identifierFactory) {
 
     // else use the module system and create fully class signature
-    JavaClassType sig = (JavaClassType) identifierFactory.fromPath(filename);
+    // we do not have a base directory here, the moduleDir is actually not a directory
+    JavaClassType sig = (JavaClassType) identifierFactory.fromPath(Paths.get(""), filename);
 
     if (identifierFactory instanceof JavaModuleIdentifierFactory) {
       return ((JavaModuleIdentifierFactory) identifierFactory)

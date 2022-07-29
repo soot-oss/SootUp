@@ -30,7 +30,8 @@ import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
+import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -48,8 +49,20 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
 
   @Nonnull private final Map<ModuleDataKey<?>, Object> moduleData = new HashMap<>();
 
+  @Nullable private TypeHierarchy typeHierarchy;
+
+  @Override
+  @Nonnull
+  public TypeHierarchy getTypeHierarchy() {
+    if (this.typeHierarchy == null) {
+      typeHierarchy = new ViewTypeHierarchy(this);
+    }
+    return typeHierarchy;
+  }
+
   public AbstractView(@Nonnull Project<?, ? extends View<?>> project) {
     this.project = (Project<T, ? extends View<T>>) project;
+    this.typeHierarchy = new ViewTypeHierarchy(this);
   }
 
   @Override
@@ -85,29 +98,11 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
   @Override
   @Nonnull
   public Optional<? extends SootField> getField(@Nonnull FieldSignature signature) {
-
-    ClassType itSig = signature.getDeclClassType();
-
-    while (true) {
-      final Optional<T> scOpt = getClass(itSig);
-      if (!scOpt.isPresent()) {
-        break;
-      }
-      T sc = scOpt.get();
-
-      final Optional<? extends SootField> field = sc.getField(signature.getSubSignature());
-      if (field.isPresent()) {
-        return field;
-      }
-
-      final Optional<? extends ClassType> superclassType = sc.getSuperclass();
-      if (!superclassType.isPresent()) {
-        break;
-      }
-      itSig = superclassType.get();
+    final Optional<T> aClass = getClass(signature.getDeclClassType());
+    if (!aClass.isPresent()) {
+      return Optional.empty();
     }
-
-    return Optional.empty();
+    return aClass.get().getField(signature.getSubSignature());
   }
 
   @SuppressWarnings("unchecked") // Safe because we only put T in putModuleData

@@ -5,14 +5,14 @@ import static junit.framework.TestCase.*;
 import categories.Java8Test;
 import de.upb.swt.soot.callgraph.CallGraph;
 import de.upb.swt.soot.callgraph.RapidTypeAnalysisAlgorithm;
-import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Collections;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author Kadiray Karakaya */
+/** @author Kadiray Karakaya, Jonas Klauke */
 @Category(Java8Test.class)
 public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeAnalysisAlgorithm> {
 
@@ -28,43 +28,43 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
 
     MethodSignature constructorB =
         identifierFactory.getMethodSignature(
-            "<init>",
             identifierFactory.getClassType("example1.B"),
+            "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature constructorC =
         identifierFactory.getMethodSignature(
-            "<init>",
             identifierFactory.getClassType("example1.C"),
+            "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature methodA =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.A"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodB =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.B"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodC =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.C"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodD =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.D"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
@@ -87,5 +87,77 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
     assertEquals(0, cg.callsFrom(methodA).size());
     assertEquals(0, cg.callsFrom(methodB).size());
     assertEquals(0, cg.callsFrom(methodC).size());
+  }
+
+  @Test
+  public void testRevisitMethod() {
+    /* We expect a call edge from RevisitedMethod.alreadyVisitedMethod to A.newTarget, B.newTarget and C.newTarget*/
+    CallGraph cg = loadCallGraph("Misc", "revisit.RevisitedMethod");
+
+    MethodSignature alreadyVisitedMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("revisit.RevisitedMethod"),
+            "alreadyVisitedMethod",
+            "void",
+            Collections.singletonList("revisit.A"));
+
+    MethodSignature newTargetA =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("revisit.A"),
+            "newTarget",
+            "int",
+            Collections.emptyList());
+    MethodSignature newTargetB =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("revisit.B"),
+            "newTarget",
+            "int",
+            Collections.emptyList());
+    MethodSignature newTargetC =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("revisit.C"),
+            "newTarget",
+            "int",
+            Collections.emptyList());
+
+    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetA));
+    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetB));
+    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetC));
+  }
+
+  @Test
+  public void testRecursiveRevisitMethod() {
+    /* We expect a call edge from RecursiveRevisitedMethod.alreadyVisitedMethod to A.newTarget, B.newTarget and C.newTarget*/
+    CallGraph cg = loadCallGraph("Misc", "revisitrecur.RecursiveRevisitedMethod");
+
+    MethodSignature alreadyVisitedMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("revisitrecur.RecursiveRevisitedMethod"),
+            "recursiveAlreadyVisitedMethod",
+            "void",
+            Collections.singletonList("revisitrecur.A"));
+
+    MethodSignature newTargetA =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("revisitrecur.A"),
+            "newTarget",
+            "int",
+            Collections.emptyList());
+    MethodSignature newTargetB =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("revisitrecur.B"),
+            "newTarget",
+            "int",
+            Collections.emptyList());
+    MethodSignature newTargetC =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("revisitrecur.C"),
+            "newTarget",
+            "int",
+            Collections.emptyList());
+
+    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetA));
+    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetB));
+    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetC));
   }
 }
