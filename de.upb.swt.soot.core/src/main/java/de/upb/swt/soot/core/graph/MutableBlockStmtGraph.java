@@ -58,6 +58,94 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       return;
     }
 
+    /*
+     * handle duplicate catchall traps here - aka integrated "DuplicateCatchAllTrapRemover" Interceptor
+     *
+     * Some compilers generate duplicate traps:
+     *
+     * <p>Exception table: from to target type 9 30 37 Class java/lang/Throwable 9 30 44 any 37 46 44
+     * any
+     *
+     * <p>The semantics is as follows:
+     *
+     * <p>try { // block } catch { // handler 1 } finally { // handler 2 }
+     *
+     * <p>In this case, the first trap covers the block and jumps to handler 1. The second trap also
+     * covers the block and jumps to handler 2. The third trap covers handler 1 and jumps to handler 2.
+     * If we treat "any" as java.lang. Throwable, the second handler is clearly unnecessary. Worse, it
+     * violates Soot's invariant that there may only be one handler per combination of covered code
+     * region and jump target.
+     *
+     * <p>This interceptor detects and removes such unnecessary traps.
+     *
+     * @author Steven Arzt
+     */
+
+    if (traps.size() > 2) {
+      Map<Stmt, Integer> trapstmtToIdx = new HashMap<>();
+      traps.forEach(
+          trap -> {
+            trapstmtToIdx.put(trap.getBeginStmt(), stmts.indexOf(trap.getBeginStmt()));
+            trapstmtToIdx.put(trap.getEndStmt(), stmts.indexOf(trap.getEndStmt()));
+            trapstmtToIdx.put(trap.getHandlerStmt(), stmts.indexOf(trap.getHandlerStmt()));
+          });
+
+      // Find two traps that use java.lang.Throwable as their type and that span the same code
+      // region
+      for (int i = 0, trapsSize = traps.size(); i < trapsSize; i++) {
+        Trap trap1 = traps.get(i);
+        // FIXME(#430): [ms] adapt to work with java module, too
+        if (trap1.getExceptionType().getFullyQualifiedName().equals("java.lang.Throwable")) {
+          for (int j = 0; j < trapsSize; j++) {
+            Trap trap2 = traps.get(j);
+            if (trap1 != trap2
+                && trap1.getBeginStmt() == trap2.getBeginStmt()
+                && trap1.getEndStmt() == trap2.getEndStmt()
+                && trap2.getExceptionType().getFullyQualifiedName().equals("java.lang.Throwable")) {
+              // Both traps (t1, t2) span the same code and catch java.lang.Throwable.
+              // Check if one trap jumps to a target that then jumps to the target of the other trap
+              for (int k = 0; k < trapsSize; k++) {
+
+                Trap trap3 = traps.get(k);
+                final int trap3StartIdx = trapstmtToIdx.get(trap3.getBeginStmt());
+                final int trap3EndIdx =
+                    trapstmtToIdx.get(trap3.getEndStmt()); // endstmt is exclusive!
+
+                // FIXME(#430): [ms] adapt to work with java module, too
+                if (trap3 != trap1
+                    && trap3 != trap2
+                    && trap3
+                        .getExceptionType()
+                        .getFullyQualifiedName()
+                        .equals("java.lang.Throwable")) {
+                  int trap1HandlerIdx = trapstmtToIdx.get(trap1.getHandlerStmt());
+                  if (trap3StartIdx <= trap1HandlerIdx
+                      && trap1HandlerIdx < trap3EndIdx
+                      && trap3.getHandlerStmt() == trap2.getHandlerStmt()) {
+                    // c -> t1 -> t3 -> t2 && x -> t2
+                    traps.remove(trap2);
+                    j--;
+                    trapsSize--;
+                    break;
+                  } else {
+                    int trap2HandlerIdx = trapstmtToIdx.get(trap2.getHandlerStmt());
+                    if ((trap3StartIdx <= trap2HandlerIdx && trap2HandlerIdx < trap3EndIdx)
+                        && trap3.getHandlerStmt() == trap1.getHandlerStmt()) {
+                      // c -> t2 -> t3 -> t1 && c -> t1
+                      traps.remove(trap1);
+                      i--;
+                      trapsSize--;
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
     setStartingStmt(stmts.get(0));
     Map<ClassType, Stmt> currentTrapMap = new HashMap<>();
     Map<ClassType, List<Stmt>> overlappingTraps = new HashMap<>();
@@ -741,6 +829,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Override
   public void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
+    // FIXME: how to handle "partial" removals of targets of flows starting from a Branching Stmt..
+    // e.g. because one of the targets are removed.. that changes the whole logic there..
+
     MutableBasicBlock blockOfFrom = stmtToBlock.get(from);
     MutableBasicBlock blockOfTo = stmtToBlock.get(to);
 

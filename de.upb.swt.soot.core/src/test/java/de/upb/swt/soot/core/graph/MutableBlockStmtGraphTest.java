@@ -5,8 +5,10 @@ import static org.junit.Assert.*;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JLeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JNeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.signatures.PackageName;
@@ -436,11 +438,11 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(firstNop, secondNop);
     graph.putEdge(secondNop, thirdNop);
     graph.removeNode(secondNop);
-    assertEquals(2, graph.getBlocks().size());
-    assertEquals(0, graph.successors(firstNop).size());
+    assertEquals(1, graph.getBlocks().size());
+    assertEquals(1, graph.successors(firstNop).size());
     assertEquals(0, graph.successors(thirdNop).size());
     assertEquals(0, graph.predecessors(firstNop).size());
-    assertEquals(0, graph.predecessors(thirdNop).size());
+    assertEquals(1, graph.predecessors(thirdNop).size());
   }
 
   @Test
@@ -629,7 +631,8 @@ public class MutableBlockStmtGraphTest {
 
     {
       final List<Trap> traps = graph1.getTraps();
-      assertTrue(traps.contains(new Trap(exception1, stmt2, returnStmt, catchStmt1)));
+      final Trap containedTrap = new Trap(exception1, stmt2, returnStmt, catchStmt1);
+      assertTrue(traps.contains(containedTrap));
       assertEquals(1, traps.size());
     }
 
@@ -815,7 +818,7 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(stmt1, stmt2);
     graph.setStartingStmt(stmt1);
 
-    final StmtGraph graph2 = new MutableBlockStmtGraph(graph);
+    final StmtGraph<?> graph2 = new MutableBlockStmtGraph(graph);
 
     assertEquals(graph.getStartingStmt(), graph2.getStartingStmt());
     assertEquals(graph.nodes().size(), graph2.nodes().size());
@@ -840,7 +843,10 @@ public class MutableBlockStmtGraphTest {
 
   @Test
   public void setEdgesSimple() {
-    Stmt stmt1 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    Stmt stmt1 =
+        new JIfStmt(
+            new JNeExpr(BooleanConstant.getInstance(1), BooleanConstant.getInstance(0)),
+            StmtPositionInfo.createNoStmtPositionInfo());
     Stmt stmt2 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     Stmt stmt3 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
 

@@ -65,7 +65,6 @@ import javax.annotation.Nullable;
  */
 public class LocalSplitter implements BodyInterceptor {
   // FIXME: [ms] assumes that names of Locals do not contain a '#' already -> could lead to problems
-
   // TODO: [ms] check equivTo()'s - I guess they can be equals()'s - or even: '=='s
 
   @Override
@@ -227,7 +226,7 @@ public class LocalSplitter implements BodyInterceptor {
           // 4.step: Use this modified oriL to modify the visitedStmt
           if (currentStmt.getUses().contains(oriLocal)) {
             // 1.step:
-            Set<Stmt> handlerStmts = traceHandlerStmts(builder, currentStmt);
+            Set<Stmt> handlerStmts = traceHandlerStmts(graph, currentStmt);
             // 2.step:
             Set<Stmt> stmtsWithDests = new HashSet<>();
             for (Stmt handlerStmt : handlerStmts) {
@@ -381,26 +380,27 @@ public class LocalSplitter implements BodyInterceptor {
   }
 
   /**
-   * A given stmt maybe in one or several trapStmtGraphs, return these trapStmtGraphs' handlerStmt
+   * A given entryStmt may be in one or several trapStmtGraphs, return these trapStmtGraphs'
+   * handlerStmts
    *
-   * @param stmt a given stmt which is in one or several trapStmtGraphs
-   * @param bodyBuilder use its graph to trace handlerStmts
+   * @param entryStmt a given entryStmt which is in one or several trapStmtGraphs
+   * @param graph to trace handlerStmts
    * @return a set of handlerStmts
    */
   @Nonnull
-  private Set<Stmt> traceHandlerStmts(@Nonnull BodyBuilder bodyBuilder, @Nonnull Stmt stmt) {
+  private Set<Stmt> traceHandlerStmts(@Nonnull StmtGraph<?> graph, @Nonnull Stmt entryStmt) {
 
     Set<Stmt> handlerStmts = new HashSet<>();
-    StmtGraph<?> graph = bodyBuilder.getStmtGraph();
 
     Deque<Stmt> queue = new ArrayDeque<>();
-    queue.add(stmt);
+    queue.add(entryStmt);
     while (!queue.isEmpty()) {
-      Stmt first = queue.removeFirst();
-      if (graph.predecessors(first).isEmpty()) {
-        handlerStmts.add(first);
+      Stmt stmt = queue.removeFirst();
+      final List<Stmt> predecessors = graph.predecessors(stmt);
+      if (predecessors.isEmpty()) {
+        handlerStmts.add(stmt);
       } else {
-        queue.addAll(graph.predecessors(first));
+        queue.addAll(predecessors);
       }
     }
     return handlerStmts;
