@@ -49,6 +49,8 @@ import javax.annotation.Nonnull;
  */
 public class TrapTightener implements BodyInterceptor {
 
+  // FIXME: adapt to MutableBlockStmtGraph
+
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     MutableStmtGraph graph = builder.getStmtGraph();
@@ -120,8 +122,8 @@ public class TrapTightener implements BodyInterceptor {
       }
     }
 
-    // FIXME: deprecated!
-    builder.setTraps(newTraps);
+    // FIXME: deprecated / implement
+    // builder.setTraps(newTraps);
   }
 
   /**
