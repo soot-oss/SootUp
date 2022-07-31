@@ -73,7 +73,7 @@ public class PrimitiveHierarchy implements IHierarchy {
         } else if (ancestor instanceof ArrayType && child instanceof ArrayType) {
             //If both types are ArrayType with IntegerType, we may have intermediate type of their bases. Therefore, we may
             //need to check their ancestor-relationship for assign them final type.
-            // This ancestor-relationship checks are stricter than below checks, e.g. because a local with type int-array cannot be
+            // This ancestor-relationship checks are stricter than above checks, e.g. because a local with type int-array cannot be
             // assigned a local with type short-array
             Type ancestorBase = ((ArrayType) ancestor).getBaseType();
             Type childBase = ((ArrayType) child).getBaseType();
@@ -102,7 +102,7 @@ public class PrimitiveHierarchy implements IHierarchy {
     /**
      * Check whether the two given types are primitives or BottomType
      */
-    private static boolean arePrimitives(Type a, Type b){
+    public static boolean arePrimitives(Type a, Type b){
         if(a instanceof PrimitiveType || a instanceof BottomType){
             if(b instanceof PrimitiveType || b instanceof BottomType){
                 return true;

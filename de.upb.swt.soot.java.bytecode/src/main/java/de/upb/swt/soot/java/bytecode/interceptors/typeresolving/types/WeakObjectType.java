@@ -20,7 +20,7 @@ public class WeakObjectType extends JavaClassType {
             if(!packageName.toString().equals("java.lang")){
                 throw new RuntimeException(this + " is not an object with WeakObjectType");
             }
-        } else if(className.equals("Serializabel")){
+        } else if(className.equals("Serializable")){
             if(!packageName.toString().equals("java.io")){
                 throw new RuntimeException(this + " is not an object with WeakObjectType");
             }
