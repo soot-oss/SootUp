@@ -813,7 +813,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           throw new IllegalArgumentException(
               "StmtB '"
                   + stmtB
-                  + "' is already in the Graph and has a already a non-branching predecessor!");
+                  + "' is already in the Graph and has already a non-branching predecessor!");
         }
       }
     }

@@ -498,7 +498,6 @@ public class Body implements Copyable {
     @Deprecated
     @Nonnull
     public BodyBuilder setTraps(@Nonnull List<Trap> traps) {
-      // FIXME !
       throw new UnsupportedOperationException("deprecated!");
     }
 

@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.graph;
 
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,10 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   public abstract void putEdge(@Nonnull Stmt from, @Nonnull Stmt to);
 
   public abstract void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets);
+
+  public void setEdges(@Nonnull Stmt from, @Nonnull Stmt... targets) {
+    setEdges(from, Arrays.asList(targets));
+  }
 
   public abstract void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to);
 

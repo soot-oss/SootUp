@@ -7,9 +7,9 @@ import de.upb.swt.soot.core.graph.*;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
+import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.VoidType;
@@ -46,29 +46,29 @@ public class DominanceTest {
   Local stack4 = JavaJimple.newLocal("stack4", refType);
 
   Stmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
-  Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noStmtPositionInfo);
-  Stmt stmt2 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(1), noStmtPositionInfo);
-  Stmt stmt3 = JavaJimple.newAssignStmt(l3, IntConstant.getInstance(0), noStmtPositionInfo);
-  Stmt stmt4 =
+  Stmt l1assign1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noStmtPositionInfo);
+  Stmt l2assign1 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(1), noStmtPositionInfo);
+  Stmt l3assign0 = JavaJimple.newAssignStmt(l3, IntConstant.getInstance(0), noStmtPositionInfo);
+  BranchingStmt jIfStmt2 =
       JavaJimple.newIfStmt(
           JavaJimple.newLtExpr(l3, IntConstant.getInstance(100)), noStmtPositionInfo);
-  Stmt stmt5 =
+  BranchingStmt jIfStmt1 =
       JavaJimple.newIfStmt(
           JavaJimple.newLtExpr(l2, IntConstant.getInstance(20)), noStmtPositionInfo);
-  Stmt stmt6 = JavaJimple.newReturnStmt(l2, noStmtPositionInfo);
-  Stmt stmt7 = JavaJimple.newAssignStmt(l2, l1, noStmtPositionInfo);
-  Stmt stmt8 =
+  Stmt jReturnStmt = JavaJimple.newReturnStmt(l2, noStmtPositionInfo);
+  Stmt l2assignl1 = JavaJimple.newAssignStmt(l2, l1, noStmtPositionInfo);
+  Stmt l3assignl3plus1 =
       JavaJimple.newAssignStmt(
           l3, JavaJimple.newAddExpr(l3, IntConstant.getInstance(1)), noStmtPositionInfo);
-  Stmt stmt9 = JavaJimple.newAssignStmt(l2, l3, noStmtPositionInfo);
-  Stmt stmt10 =
+  Stmt l2assignl3 = JavaJimple.newAssignStmt(l2, l3, noStmtPositionInfo);
+  Stmt l3assignl3plus2 =
       JavaJimple.newAssignStmt(
           l3, JavaJimple.newAddExpr(l3, IntConstant.getInstance(2)), noStmtPositionInfo);
-  Stmt stmt11 = JavaJimple.newGotoStmt(noStmtPositionInfo);
-  Stmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
+  BranchingStmt jGotoStmt2 = JavaJimple.newGotoStmt(noStmtPositionInfo);
+  BranchingStmt jGotoStmt1 = JavaJimple.newGotoStmt(noStmtPositionInfo);
   Stmt stack4Stmt = JavaJimple.newIdentityStmt(stack4, caughtExceptionRef, noStmtPositionInfo);
-  Stmt stmt12 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(0), noStmtPositionInfo);
-  Trap trap = new Trap(exception, stmt7, stmt8, stack4Stmt);
+  Stmt l2assign0 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(0), noStmtPositionInfo);
+  Trap trap = new Trap(exception, l2assignl1, l3assignl3plus1, stack4Stmt);
 
   @Test
   public void testImmediateDominator() {
@@ -241,7 +241,7 @@ public class DominanceTest {
    *    l3 = 0
    * label1:
    *    if l3 < 100 goto label3
-   *    if l2 < 20 goto label 2
+   *    if l2 < 20 goto label2
    *    l2 = l1
    *    l3 = l3 + 1
    *    goto label1;
@@ -253,34 +253,35 @@ public class DominanceTest {
    * </pre>
    */
   private Body createBody() {
-    Body.BodyBuilder builder = Body.builder();
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
     builder.setLocals(locals);
 
-    // set graph
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, stmt2);
-    builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, stmt4);
-    builder.addFlow(stmt4, stmt5);
-    builder.addFlow(stmt4, stmt6);
-    builder.addFlow(stmt5, stmt7);
-    builder.addFlow(stmt5, stmt9);
-    builder.addFlow(stmt7, stmt8);
-    builder.addFlow(stmt9, stmt10);
-    builder.addFlow(stmt8, stmt11);
-    builder.addFlow(stmt10, stmt11);
-    builder.addFlow(stmt11, stmt4);
+    final HashMap<BranchingStmt, List<Stmt>> branchingMap = new HashMap<>();
+    branchingMap.put(jIfStmt2, Collections.singletonList(jReturnStmt));
+    branchingMap.put(jIfStmt1, Collections.singletonList(l2assignl3));
+    branchingMap.put(jGotoStmt1, Collections.singletonList(jIfStmt2));
 
-    // build startingStmt
-    builder.setStartingStmt(startingStmt);
-
-    // build position
-    Position position = NoPositionInformation.getInstance();
-    builder.setPosition(position);
+    graph.initializeWith(
+        Arrays.asList(
+            startingStmt,
+            l1assign1,
+            l2assign1,
+            l3assign0,
+            jIfStmt2,
+            jIfStmt1,
+            l2assignl1,
+            l3assignl3plus1,
+            jGotoStmt1,
+            l2assignl3,
+            l3assignl3plus2,
+            jReturnStmt),
+        branchingMap,
+        Collections.emptyList());
 
     return builder.build();
   }
@@ -315,41 +316,39 @@ public class DominanceTest {
    * </pre>
    */
   private Body createTrapBody() {
-    Body.BodyBuilder builder = Body.builder();
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3, stack4);
     builder.setLocals(locals);
 
-    // set graph
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, stmt2);
-    builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, stmt4);
-    builder.addFlow(stmt4, stmt5);
-    builder.addFlow(stmt4, stmt6);
-    builder.addFlow(stmt5, stmt7);
-    builder.addFlow(stmt5, stmt9);
-    builder.addFlow(stmt7, stmt8);
-    builder.addFlow(stmt9, stmt10);
-    builder.addFlow(stmt8, stmt11);
-    builder.addFlow(stmt10, stmt11);
-    builder.addFlow(stmt11, stmt4);
+    final HashMap<BranchingStmt, List<Stmt>> branchingMap = new HashMap<>();
+    branchingMap.put(jIfStmt2, Collections.singletonList(jReturnStmt));
+    branchingMap.put(jIfStmt1, Collections.singletonList(l2assignl3));
+    branchingMap.put(jGotoStmt1, Collections.singletonList(jIfStmt2));
+    branchingMap.put(jGotoStmt2, Collections.singletonList(l3assignl3plus1));
 
-    builder.addFlow(stack4Stmt, stmt12);
-    builder.addFlow(stmt12, gotoStmt);
-    builder.addFlow(gotoStmt, stmt8);
-
-    // build startingStmt
-    builder.setStartingStmt(startingStmt);
-
-    // build position
-    Position position = NoPositionInformation.getInstance();
-    builder.setPosition(position);
-
-    List<Trap> traps = ImmutableUtils.immutableList(trap);
-    builder.setTraps(traps);
+    graph.initializeWith(
+        Arrays.asList(
+            startingStmt,
+            l1assign1,
+            l2assign1,
+            l3assign0,
+            jIfStmt2,
+            jIfStmt1,
+            l2assignl1,
+            l3assignl3plus1,
+            jGotoStmt1,
+            stack4Stmt,
+            l2assign0,
+            jGotoStmt2,
+            l2assignl3,
+            l3assignl3plus2,
+            jReturnStmt),
+        branchingMap,
+        Collections.singletonList(trap));
 
     return builder.build();
   }

@@ -20,6 +20,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -46,7 +47,8 @@ public class LocalNameStandardizer implements BodyInterceptor {
     // Get the order of all Locals' occurrences and store them into a map
     Map<Local, Integer> localToFirstOccurrence = new HashMap<>();
     int defsCount = 0;
-    for (Stmt stmt : builder.getStmtGraph()) {
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    for (Stmt stmt : stmtGraph) {
       Local def = null;
       final List<Value> defs = stmt.getDefs();
       if (!defs.isEmpty() && defs.get(0) instanceof Local) {
@@ -126,7 +128,7 @@ public class LocalNameStandardizer implements BodyInterceptor {
     builder.setLocals(sortedLocals);
 
     // modify locals in stmtGraph with new locals
-    for (Stmt stmt : builder.getStmtGraph()) {
+    for (Stmt stmt : stmtGraph) {
       Stmt newStmt = stmt;
       if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
         Local def = (Local) stmt.getDefs().get(0);
@@ -140,7 +142,7 @@ public class LocalNameStandardizer implements BodyInterceptor {
         }
       }
       if (!stmt.equals(newStmt)) {
-        BodyUtils.replaceStmtInBuilder(builder, stmt, newStmt);
+        stmtGraph.replaceNode(stmt, newStmt);
       }
     }
   }

@@ -22,7 +22,6 @@ package de.upb.swt.soot.core.graph;
  * #L%
  */
 
-
 import java.util.*;
 import javax.annotation.Nonnull;
 
