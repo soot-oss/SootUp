@@ -21,7 +21,6 @@ package de.upb.swt.soot.core.graph;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collections;
@@ -81,9 +80,4 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
       @Nonnull Stmt stmt, @Nonnull ClassType exception, @Nonnull Stmt traphandlerStmt);
 
   public abstract void removeExceptionalEdge(@Nonnull Stmt node, @Nonnull ClassType exception);
-
-  @Deprecated
-  public void setTraps(List<Trap> newTraps) {
-    throw new UnsupportedOperationException("deprecated");
-  }
 }
