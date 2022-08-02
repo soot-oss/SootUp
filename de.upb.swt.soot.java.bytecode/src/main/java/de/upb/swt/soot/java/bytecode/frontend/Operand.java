@@ -38,6 +38,9 @@ import org.objectweb.asm.tree.AbstractInsnNode;
  */
 class Operand {
 
+  @SuppressWarnings("ConstantConditions")
+  static final Operand DWORD_DUMMY = new Operand(null, null, null);
+
   @Nonnull protected final AbstractInsnNode insn;
   @Nonnull protected final Value value;
   @Nullable protected Local stackLocal;
@@ -104,9 +107,6 @@ class Operand {
     }
   }
 
-    usedByStmts.removeAll(stmtsToDelete);
-  }
-
   /** @return either the stack local allocated for this operand, or its value. */
   @Nonnull
   Value stackOrValue() {
@@ -122,8 +122,9 @@ class Operand {
   boolean equivTo(@Nonnull Operand other) {
     // care for DWORD comparison, as stackOrValue is null, which would result in a
     // NullPointerException
-    return (this == other) || ( (this == DWORD_DUMMY) == (other == DWORD_DUMMY)
-            && stackOrValue().equivTo(other.stackOrValue());
+    return (this == other)
+        || ((this == Operand.DWORD_DUMMY) == (other == Operand.DWORD_DUMMY)
+            && stackOrValue().equivTo(other.stackOrValue()));
   }
 
   @Override

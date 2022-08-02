@@ -126,7 +126,7 @@ class AsmClassSource extends JavaSootClassSource {
 
               MethodSignature methodSignature =
                   identifierFactory.getMethodSignature(
-                      methodName, classSignature, retType, sigTypes);
+                      classSignature, methodName, retType, sigTypes);
 
               // TODO: position/line numbers if possible
               return new JavaSootMethod(

@@ -61,6 +61,10 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
       @Nonnull List<Stmt> stmts,
       @Nonnull Map<ClassType, Stmt> exceptionMap);
 
+  public void insertBefore(@Nonnull Stmt beforeStmt, @Nonnull Stmt stmt) {
+    insertBefore(beforeStmt, Collections.singletonList(stmt), Collections.emptyMap());
+  }
+
   public abstract void removeNode(@Nonnull Stmt node);
 
   /** Modifications of unexceptional flows */

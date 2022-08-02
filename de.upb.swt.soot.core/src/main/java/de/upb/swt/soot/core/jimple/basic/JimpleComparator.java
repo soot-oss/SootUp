@@ -22,7 +22,7 @@ package de.upb.swt.soot.core.jimple.basic;
  * #L%
  */
 
-import de.upb.swt.soot.core.graph.Block;
+import de.upb.swt.soot.core.graph.BasicBlock;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.expr.*;
@@ -93,11 +93,11 @@ public class JimpleComparator {
     return obj.getName().equals(local.getName()) && obj.getType().equals(local.getType());
   }
 
-  public boolean caseBlock(Block block, Object o) {
-    if (!(o instanceof Block)) {
+  public boolean caseBlock(BasicBlock<?> block, Object o) {
+    if (!(o instanceof BasicBlock<?>)) {
       return false;
     }
-    Block obj = (Block) o;
+    BasicBlock<?> obj = (BasicBlock<?>) o;
     return caseStmt(block.getHead(), obj.getHead()) && caseStmt(block.getTail(), obj.getTail());
   }
 
@@ -382,8 +382,8 @@ public class JimpleComparator {
         return false;
       }
     }
-    List<Block> blocksV = v.getBlocks();
-    List<Block> blocksAe = ae.getBlocks();
+    List<BasicBlock<?>> blocksV = v.getBlocks();
+    List<BasicBlock<?>> blocksAe = ae.getBlocks();
     for (int i = 0; i < v.getArgsSize(); i++) {
       if (!caseBlock(blocksV.get(i), blocksAe.get(i))) {
         return false;

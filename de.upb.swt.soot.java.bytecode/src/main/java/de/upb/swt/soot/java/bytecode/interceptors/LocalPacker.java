@@ -20,6 +20,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -221,7 +222,7 @@ public class LocalPacker implements BodyInterceptor {
         for (Stmt succ : graph.successors(stmt)) {
           aliveLocals.addAll(analyser.getLiveLocalsBeforeStmt(succ));
         }
-        for (Stmt esucc : graph.exceptionalSuccessors(stmt)) {
+        for (Stmt esucc : graph.exceptionalSuccessors(stmt).values()) {
           aliveLocals.addAll(analyser.getLiveLocalsBeforeStmt(esucc));
         }
         for (Local aliveLocal : aliveLocals) {

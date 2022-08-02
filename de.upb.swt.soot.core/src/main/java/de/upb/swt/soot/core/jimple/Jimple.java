@@ -23,7 +23,7 @@ package de.upb.swt.soot.core.jimple;
  */
 
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.graph.Block;
+import de.upb.swt.soot.core.graph.BasicBlock;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.expr.*;
@@ -336,7 +336,7 @@ public abstract class Jimple {
     return new JNewArrayExpr(type, size, getIdentifierFactory());
   }
 
-  public static JPhiExpr newPhiExpr(List<Local> args, Map<Local, Block> argToBlock) {
+  public static JPhiExpr newPhiExpr(List<Local> args, Map<Local, BasicBlock<?>> argToBlock) {
     return new JPhiExpr(args, argToBlock);
   }
 

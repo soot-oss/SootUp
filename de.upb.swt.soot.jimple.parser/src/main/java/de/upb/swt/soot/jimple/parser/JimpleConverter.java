@@ -242,7 +242,7 @@ public class JimpleConverter {
         List<Type> params = util.getTypeList(method_subsignatureContext.type_list());
 
         MethodSignature methodSignature =
-            identifierFactory.getMethodSignature(Jimple.unescape(methodname), clazz, type, params);
+            identifierFactory.getMethodSignature(clazz, Jimple.unescape(methodname), type, params);
 
         List<ClassType> exceptions =
             ctx.throws_clause() == null
@@ -297,7 +297,7 @@ public class JimpleConverter {
           }
 
           // statements
-          StmtVisitor stmtVisitor = new StmtVisitor(builder);
+          StmtVisitor stmtVisitor = new StmtVisitor();
           final JimpleParser.StatementsContext statements =
               method_body_contentsContext.statements();
           if (statements != null && statements.statement() != null) {

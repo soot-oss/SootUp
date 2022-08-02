@@ -1,5 +1,6 @@
 package de.upb.swt.soot.core.graph;
 
+import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.List;
@@ -32,4 +33,8 @@ public interface BasicBlock<V extends BasicBlock<V>> {
 
   @Nonnull
   Stmt getTail();
+
+  default boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+    return comparator.caseBlock(this, o);
+  }
 }

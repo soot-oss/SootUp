@@ -3,10 +3,7 @@ package de.upb.swt.soot.test.core.model;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.graph.Block;
-import de.upb.swt.soot.core.graph.BlockGraph;
-import de.upb.swt.soot.core.graph.DominanceFinder;
-import de.upb.swt.soot.core.graph.DominanceTree;
+import de.upb.swt.soot.core.graph.*;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
@@ -76,20 +73,20 @@ public class DominanceTest {
   @Test
   public void testImmediateDominator() {
     Body body = createBody();
-    BlockGraph graph = new BlockGraph(body.getStmtGraph());
-    List<Block> blocks = graph.getBlocks();
-    Block expectedBlock1 = blocks.get(0);
-    Block expectedBlock2 = blocks.get(1);
-    Block expectedBlock3 = blocks.get(3);
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    List<MutableBasicBlock> blocks = graph.getBlocks();
+    BasicBlock<?> expectedBlock1 = blocks.get(0);
+    BasicBlock<?> expectedBlock2 = blocks.get(1);
+    BasicBlock<?> expectedBlock3 = blocks.get(3);
     DominanceFinder df = new DominanceFinder(graph);
 
     for (int i = 0; i < graph.getBlocks().size(); i++) {
       if (i == 0 || i == 1) {
-        assertTrue(df.getImmediateDominator(blocks.get(i)) == expectedBlock1);
+        assertSame(df.getImmediateDominator(blocks.get(i)), expectedBlock1);
       } else if (i == 2 || i == 3) {
-        assertTrue(df.getImmediateDominator(blocks.get(i)) == expectedBlock2);
+        assertSame(df.getImmediateDominator(blocks.get(i)), expectedBlock2);
       } else {
-        assertTrue(df.getImmediateDominator(blocks.get(i)) == expectedBlock3);
+        assertSame(df.getImmediateDominator(blocks.get(i)), expectedBlock3);
       }
     }
   }
@@ -97,10 +94,10 @@ public class DominanceTest {
   @Test
   public void testDominanceFrontiers() {
     Body body = createBody();
-    BlockGraph graph = new BlockGraph(body.getStmtGraph());
-    List<Block> blocks = graph.getBlocks();
-    Block eblock1 = blocks.get(1);
-    Block eblock2 = blocks.get(6);
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    List<MutableBasicBlock> blocks = graph.getBlocks();
+    BasicBlock<?> eblock1 = blocks.get(1);
+    BasicBlock<?> eblock2 = blocks.get(6);
 
     DominanceFinder df = new DominanceFinder(graph);
 
@@ -109,11 +106,11 @@ public class DominanceTest {
         assertTrue(df.getDominanceFrontiers(blocks.get(i)).isEmpty());
       } else if (i == 4 || i == 5) {
 
-        assertTrue(df.getDominanceFrontiers(blocks.get(i)).size() == 1);
-        assertTrue(df.getDominanceFrontiers(blocks.get(i)).toArray()[0] == eblock2);
+        assertEquals(1, df.getDominanceFrontiers(blocks.get(i)).size());
+        assertSame(df.getDominanceFrontiers(blocks.get(i)).toArray()[0], eblock2);
       } else {
-        assertTrue(df.getDominanceFrontiers(blocks.get(i)).size() == 1);
-        assertTrue(df.getDominanceFrontiers(blocks.get(i)).toArray()[0] == eblock1);
+        assertEquals(1, df.getDominanceFrontiers(blocks.get(i)).size());
+        assertSame(df.getDominanceFrontiers(blocks.get(i)).toArray()[0], eblock1);
       }
     }
   }
@@ -121,29 +118,29 @@ public class DominanceTest {
   @Test
   public void testDominanceTree() {
     Body body = createBody();
-    BlockGraph graph = new BlockGraph(body.getStmtGraph());
-    List<Block> blocks = graph.getBlocks();
+    MutableStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    List<MutableBasicBlock> blocks = graph.getBlocks();
 
     DominanceFinder df = new DominanceFinder(graph);
     DominanceTree tree = new DominanceTree(df);
-    assertTrue(blocks.get(0) == tree.getRoot());
+    assertSame(blocks.get(0), tree.getRoot());
     for (int i = 0; i < blocks.size(); i++) {
-      Block block = blocks.get(i);
+      BasicBlock<?> block = blocks.get(i);
       if (i == 0) {
-        assertTrue(tree.getChildren(block).size() == 1);
-        assertTrue(tree.getParent(block) == null);
+        assertEquals(1, tree.getChildren(block).size());
+        assertNull(tree.getParent(block));
       } else if (i == 1) {
-        assertTrue(tree.getChildren(block).size() == 2);
-        assertTrue(tree.getParent(block) == blocks.get(0));
+        assertEquals(2, tree.getChildren(block).size());
+        assertSame(tree.getParent(block), blocks.get(0));
       } else if (i == 3) {
-        assertTrue(tree.getChildren(block).size() == 3);
-        assertTrue(tree.getParent(block) == blocks.get(1));
+        assertEquals(3, tree.getChildren(block).size());
+        assertSame(tree.getParent(block), blocks.get(1));
       } else if (i == 2) {
-        assertTrue(tree.getChildren(block).size() == 0);
-        assertTrue(tree.getParent(block) == blocks.get(1));
+        assertEquals(0, tree.getChildren(block).size());
+        assertSame(tree.getParent(block), blocks.get(1));
       } else {
-        assertTrue(tree.getChildren(block).size() == 0);
-        assertTrue(tree.getParent(block) == blocks.get(3));
+        assertEquals(0, tree.getChildren(block).size());
+        assertSame(tree.getParent(block), blocks.get(3));
       }
     }
   }
@@ -151,23 +148,23 @@ public class DominanceTest {
   @Test
   public void testImmediateDominatorWithTrap() {
     Body body = createTrapBody();
-    BlockGraph graph = new BlockGraph(body.getStmtGraph());
-    List<Block> blocks = graph.getBlocks();
-    Block expectedBlock1 = blocks.get(0);
-    Block expectedBlock2 = blocks.get(1);
-    Block expectedBlock3 = blocks.get(3);
-    Block expectedBlock4 = blocks.get(5);
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    List<MutableBasicBlock> blocks = graph.getBlocks();
+    BasicBlock<?> expectedBlock1 = blocks.get(0);
+    BasicBlock<?> expectedBlock2 = blocks.get(1);
+    BasicBlock<?> expectedBlock3 = blocks.get(3);
+    BasicBlock<?> expectedBlock4 = blocks.get(5);
     DominanceFinder df = new DominanceFinder(graph);
 
     for (int i = 0; i < graph.getBlocks().size(); i++) {
       if (i == 0 || i == 1) {
-        assertTrue(df.getImmediateDominator(blocks.get(i)) == expectedBlock1);
+        assertSame(df.getImmediateDominator(blocks.get(i)), expectedBlock1);
       } else if (i == 2 || i == 3) {
-        assertTrue(df.getImmediateDominator(blocks.get(i)) == expectedBlock2);
+        assertSame(df.getImmediateDominator(blocks.get(i)), expectedBlock2);
       } else if (i == 4 || i == 5 || i == 8) {
-        assertTrue(df.getImmediateDominator(blocks.get(i)) == expectedBlock3);
+        assertSame(df.getImmediateDominator(blocks.get(i)), expectedBlock3);
       } else {
-        assertTrue(df.getImmediateDominator(blocks.get(i)) == expectedBlock4);
+        assertSame(df.getImmediateDominator(blocks.get(i)), expectedBlock4);
       }
     }
   }
@@ -175,26 +172,25 @@ public class DominanceTest {
   @Test
   public void testDominanceFrontiersWithTrap() {
     Body body = createTrapBody();
-    BlockGraph graph = new BlockGraph(body.getStmtGraph());
-    List<Block> blocks = graph.getBlocks();
-    Block eblock1 = blocks.get(1);
-    Block eblock2 = blocks.get(7);
-    Block eblock3 = blocks.get(8);
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    List<MutableBasicBlock> blocks = graph.getBlocks();
+    BasicBlock<?> eblock1 = blocks.get(1);
+    BasicBlock<?> eblock2 = blocks.get(7);
+    BasicBlock<?> eblock3 = blocks.get(8);
     DominanceFinder df = new DominanceFinder(graph);
 
     for (int i = 0; i < graph.getBlocks().size(); i++) {
-      if (i == 0 || i == 2) {
-        assertTrue(df.getDominanceFrontiers(blocks.get(i)).isEmpty());
-      } else if (i == 1 || i == 3 || i == 8) {
+      if (i == 0 || i == 2) assertTrue(df.getDominanceFrontiers(blocks.get(i)).isEmpty());
+      else if (i == 1 || i == 3 || i == 8) {
 
-        assertTrue(df.getDominanceFrontiers(blocks.get(i)).size() == 1);
-        assertTrue(df.getDominanceFrontiers(blocks.get(i)).toArray()[0] == eblock1);
+        assertEquals(1, df.getDominanceFrontiers(blocks.get(i)).size());
+        assertSame(df.getDominanceFrontiers(blocks.get(i)).toArray()[0], eblock1);
       } else if (i == 6) {
-        assertTrue(df.getDominanceFrontiers(blocks.get(i)).size() == 1);
-        assertTrue(df.getDominanceFrontiers(blocks.get(i)).toArray()[0] == eblock2);
+        assertEquals(1, df.getDominanceFrontiers(blocks.get(i)).size());
+        assertSame(df.getDominanceFrontiers(blocks.get(i)).toArray()[0], eblock2);
       } else {
-        assertTrue(df.getDominanceFrontiers(blocks.get(i)).size() == 1);
-        assertTrue(df.getDominanceFrontiers(blocks.get(i)).toArray()[0] == eblock3);
+        assertEquals(1, df.getDominanceFrontiers(blocks.get(i)).size());
+        assertSame(df.getDominanceFrontiers(blocks.get(i)).toArray()[0], eblock3);
       }
     }
   }
@@ -202,35 +198,35 @@ public class DominanceTest {
   @Test
   public void testDominanceTreeWithTrap() {
     Body body = createTrapBody();
-    BlockGraph graph = new BlockGraph(body.getStmtGraph());
-    List<Block> blocks = graph.getBlocks();
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    List<MutableBasicBlock> blocks = graph.getBlocks();
 
     DominanceFinder df = new DominanceFinder(graph);
     DominanceTree tree = new DominanceTree(df);
-    assertTrue(blocks.get(0) == tree.getRoot());
+    assertSame(blocks.get(0), tree.getRoot());
     for (int i = 0; i < blocks.size(); i++) {
-      Block block = blocks.get(i);
+      BasicBlock<?> block = blocks.get(i);
       if (i == 0) {
-        assertTrue(tree.getChildren(block).size() == 1);
-        assertTrue(tree.getParent(block) == null);
+        assertEquals(1, tree.getChildren(block).size());
+        assertNull(tree.getParent(block));
       } else if (i == 1) {
-        assertTrue(tree.getChildren(block).size() == 2);
-        assertTrue(tree.getParent(block) == blocks.get(0));
+        assertEquals(2, tree.getChildren(block).size());
+        assertSame(tree.getParent(block), blocks.get(0));
       } else if (i == 2) {
-        assertTrue(tree.getChildren(block).size() == 0);
-        assertTrue(tree.getParent(block) == blocks.get(1));
+        assertEquals(0, tree.getChildren(block).size());
+        assertSame(tree.getParent(block), blocks.get(1));
       } else if (i == 3) {
-        assertTrue(tree.getChildren(block).size() == 3);
-        assertTrue(tree.getParent(block) == blocks.get(1));
+        assertEquals(3, tree.getChildren(block).size());
+        assertSame(tree.getParent(block), blocks.get(1));
       } else if (i == 4 || i == 8) {
-        assertTrue(tree.getChildren(block).size() == 0);
-        assertTrue(tree.getParent(block) == blocks.get(3));
+        assertEquals(0, tree.getChildren(block).size());
+        assertSame(tree.getParent(block), blocks.get(3));
       } else if (i == 5) {
-        assertTrue(tree.getChildren(block).size() == 2);
-        assertTrue(tree.getParent(block) == blocks.get(3));
+        assertEquals(2, tree.getChildren(block).size());
+        assertSame(tree.getParent(block), blocks.get(3));
       } else {
-        assertTrue(tree.getChildren(block).size() == 0);
-        assertTrue(tree.getParent(block) == blocks.get(5));
+        assertEquals(0, tree.getChildren(block).size());
+        assertSame(tree.getParent(block), blocks.get(5));
       }
     }
   }

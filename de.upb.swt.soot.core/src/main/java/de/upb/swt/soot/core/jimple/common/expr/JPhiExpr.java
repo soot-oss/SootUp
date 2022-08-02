@@ -22,7 +22,7 @@ package de.upb.swt.soot.core.jimple.common.expr;
  * #L%
  */
 
-import de.upb.swt.soot.core.graph.Block;
+import de.upb.swt.soot.core.graph.BasicBlock;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -33,16 +33,17 @@ import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.*;
 import javax.annotation.Nonnull;
+import jdk.nashorn.internal.ir.Block;
 
 /** @Zun Wang */
 public final class JPhiExpr implements Expr, Copyable {
 
-  private List<Local> args = new ArrayList<>();
-  private Map<Block, Local> blockToArg = new HashMap<>();
-  private Map<Local, Block> argToBlock = new HashMap<>();
+  private List<Local> args;
+  private Map<BasicBlock<?>, Local> blockToArg = new HashMap<>();
+  private Map<Local, BasicBlock<?>> argToBlock;
   private Type type = null;
 
-  public JPhiExpr(@Nonnull List<Local> args, @Nonnull Map<Local, Block> argToBlock) {
+  public JPhiExpr(@Nonnull List<Local> args, @Nonnull Map<Local, BasicBlock<?>> argToBlock) {
     this.args = args;
 
     this.argToBlock = argToBlock;
@@ -52,7 +53,7 @@ public final class JPhiExpr implements Expr, Copyable {
         this.type = arg.getType();
       } else {
         if (!arg.getType().equals(this.type)) {
-          throw new RuntimeException("The given args should have the same type!!");
+          throw new RuntimeException("The given args should have the same type!");
         }
       }
       blockToArg.put(argToBlock.get(arg), arg);
@@ -100,14 +101,14 @@ public final class JPhiExpr implements Expr, Copyable {
    *     index.
    */
   @Nonnull
-  public List<Block> getBlocks() {
-    List<Block> blocks = new ArrayList<>();
+  public List<BasicBlock<?>> getBlocks() {
+    List<BasicBlock<?>> blocks = new ArrayList<>();
     this.args.forEach(arg -> blocks.add(this.argToBlock.get(arg)));
     return blocks;
   }
 
   @Nonnull
-  public Block getBlock(@Nonnull Local arg) {
+  public BasicBlock<?> getBlock(@Nonnull Local arg) {
     if (!getArgs().contains(arg)) {
       throw new RuntimeException(
           "The given arg: " + arg.toString() + " is not contained by PhiExpr!");
@@ -116,7 +117,7 @@ public final class JPhiExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public Block getBlock(@Nonnull int index) {
+  public BasicBlock<?> getBlock(int index) {
     if (index >= this.getArgsSize()) {
       throw new RuntimeException("The given index is out of the bound!");
     }
@@ -124,7 +125,7 @@ public final class JPhiExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public Map<Local, Block> getArgToBlockMap() {
+  public Map<Local, BasicBlock<?>> getArgToBlockMap() {
     return new HashMap<>(this.argToBlock);
   }
 
@@ -187,7 +188,7 @@ public final class JPhiExpr implements Expr, Copyable {
   }
 
   @Nonnull
-  public JPhiExpr withArgToBlockMap(@Nonnull Map<Local, Block> argToBlock) {
+  public JPhiExpr withArgToBlockMap(@Nonnull Map<Local, BasicBlock<?>> argToBlock) {
     return new JPhiExpr(getArgs(), argToBlock);
   }
 

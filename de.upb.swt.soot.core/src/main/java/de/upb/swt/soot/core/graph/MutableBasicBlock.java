@@ -32,13 +32,19 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   @Nonnull private final List<MutableBasicBlock> predecessorBlocks = new ArrayList<>();
   @Nonnull private final List<MutableBasicBlock> successorBlocks = new ArrayList<>();
 
-  @Nonnull
-  private final Map<ClassType, MutableBasicBlock> exceptionalSuccessorBlocks =
-      new LinkedHashMap<>();
+  @Nonnull private final Map<ClassType, MutableBasicBlock> exceptionalSuccessorBlocks;
 
-  @Nonnull private List<Stmt> stmts = new ArrayList<>();
+  @Nonnull private final List<Stmt> stmts;
 
-  public MutableBasicBlock() {}
+  public MutableBasicBlock() {
+    exceptionalSuccessorBlocks = new HashMap<>();
+    stmts = new ArrayList<>();
+  }
+
+  public MutableBasicBlock(List<Stmt> stmts, Map<ClassType, MutableBasicBlock> exceptionMap) {
+    this.stmts = stmts;
+    this.exceptionalSuccessorBlocks = exceptionMap;
+  }
 
   public void addStmt(@Nonnull Stmt stmt) {
     if (getStmtCount() > 0 && getTail() instanceof BranchingStmt) {
@@ -58,10 +64,6 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
       throw new IllegalArgumentException("oldStmt does not exist in this Block!");
     }
     stmts.set(idx, newStmt);
-  }
-
-  public void setStmts(@Nonnull List<Stmt> stmts) {
-    this.stmts = stmts;
   }
 
   public void addPredecessorBlock(@Nonnull MutableBasicBlock block) {
@@ -176,15 +178,15 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
 
   /** @param splitIdx should be in [1, stmts.size()-1] */
   protected MutableBasicBlock splitBlockUnlinked(int splitIdx) {
-    MutableBasicBlock secondBlock = new MutableBasicBlock();
 
     if (splitIdx < 1 || splitIdx >= stmts.size()) {
       throw new IndexOutOfBoundsException(
           "splitIdx makes no sense. please copy/create a new block.");
     }
 
+    MutableBasicBlock secondBlock =
+        new MutableBasicBlock(new ArrayList<>(stmts.size() - splitIdx), new LinkedHashMap<>());
     // copy stmts from current i.e. first block to new i.e. second block
-    secondBlock.setStmts(new ArrayList<>(stmts.size() - splitIdx));
     for (int i = splitIdx; i < stmts.size(); i++) {
       secondBlock.addStmt(stmts.get(i));
     }

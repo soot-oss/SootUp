@@ -3,8 +3,6 @@ package de.upb.swt.soot.test.core.model;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.graph.Block;
-import de.upb.swt.soot.core.graph.BlockGraph;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;

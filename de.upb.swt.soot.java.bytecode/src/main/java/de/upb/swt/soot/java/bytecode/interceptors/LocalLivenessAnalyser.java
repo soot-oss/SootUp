@@ -22,6 +22,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * #L%
  */
 
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -62,7 +63,7 @@ public class LocalLivenessAnalyser {
         for (Stmt succ : graph.successors(stmt)) {
           out = merge(out, liveIn.get(succ));
         }
-        for (Stmt esucc : graph.exceptionalSuccessors(stmt)) {
+        for (Stmt esucc : graph.exceptionalSuccessors(stmt).values()) {
           out = merge(out, liveIn.get(esucc));
         }
         if (!isEqual(out, liveOut.get(stmt))) {
