@@ -5,6 +5,7 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import java.util.Collections;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;

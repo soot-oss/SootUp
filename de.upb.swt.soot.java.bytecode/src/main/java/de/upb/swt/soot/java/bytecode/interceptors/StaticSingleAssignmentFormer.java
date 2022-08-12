@@ -103,15 +103,14 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
     Set<BasicBlock<?>> visited = new HashSet<>();
 
     // rename each def-local and its corresponding name and add args and blocks into phiStmts
-    for (int i = 0; i < treeNodes.size(); i++) {
-      BasicBlock<?> block = treeNodes.get(i);
-
+    for (BasicBlock<?> block : treeNodes) {
       // replace use and def in each stmts in the current block
       Set<Stmt> newPhiStmts = new HashSet<>();
       for (Stmt stmt : block.getStmts()) {
         // replace use
-        if (!stmt.getUses().isEmpty() && !constainsPhiExpr(stmt)) {
-          for (Value use : stmt.getUses()) {
+        final List<Value> uses = stmt.getUses();
+        if (!uses.isEmpty() && !constainsPhiExpr(stmt)) {
+          for (Value use : uses) {
             if (use instanceof Local) {
               Local newUse = localToNameStack.get(use).peek();
               Stmt newStmt = BodyUtils.withNewUse(stmt, use, newUse);
@@ -121,8 +120,9 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
           }
         }
         // generate new def and replace with new def
-        if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
-          Local def = (Local) stmt.getDefs().get(0);
+        final List<Value> defs = stmt.getDefs();
+        if (!defs.isEmpty() && defs.get(0) instanceof Local) {
+          Local def = (Local) defs.get(0);
           Local newDef = def.withName(def.getName() + "#" + nextFreeIdx);
           newLocals.add(newDef);
           nextFreeIdx++;
@@ -216,11 +216,12 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
         Set<BasicBlock<?>> dfs = dominanceFinder.getDominanceFrontiers(block);
         // Only dominance frontiers of a block can add a phiStmt
         for (BasicBlock<?> df : dfs) {
-          if (!localToPhiBlocks.get(local).contains(df)) {
-            localToPhiBlocks.get(local).add(df);
+          final Set<BasicBlock<?>> basicBlocks = localToPhiBlocks.get(local);
+          if (!basicBlocks.contains(df)) {
+            basicBlocks.add(df);
 
             // create an empty phiStmt
-            JAssignStmt phiStmt = createEmptyPhiStmt(local);
+            JAssignStmt<?, ?> phiStmt = createEmptyPhiStmt(local);
 
             // store phiStmt into map
             if (blockToPhiStmts.containsKey(df)) {
@@ -328,9 +329,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
   }
 
   private JAssignStmt<?, ?> createEmptyPhiStmt(Local local) {
-    List<Local> args = new ArrayList<>();
-    Map<Local, BasicBlock<?>> argToBlock = new HashMap<>();
-    JPhiExpr phi = new JPhiExpr(args, argToBlock);
+    JPhiExpr phi = new JPhiExpr(Collections.emptyList(), Collections.emptyMap());
     return new JAssignStmt<>(local, phi, StmtPositionInfo.createNoStmtPositionInfo());
   }
 

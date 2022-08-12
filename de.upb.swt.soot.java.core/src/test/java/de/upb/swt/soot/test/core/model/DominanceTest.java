@@ -72,8 +72,7 @@ public class DominanceTest {
 
   @Test
   public void testImmediateDominator() {
-    Body body = createBody();
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(createGraph());
     List<MutableBasicBlock> blocks = graph.getBlocks();
     BasicBlock<?> expectedBlock1 = blocks.get(0);
     BasicBlock<?> expectedBlock2 = blocks.get(1);
@@ -93,8 +92,7 @@ public class DominanceTest {
 
   @Test
   public void testDominanceFrontiers() {
-    Body body = createBody();
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(createGraph());
     List<MutableBasicBlock> blocks = graph.getBlocks();
     BasicBlock<?> eblock1 = blocks.get(1);
     BasicBlock<?> eblock2 = blocks.get(6);
@@ -117,8 +115,7 @@ public class DominanceTest {
 
   @Test
   public void testDominanceTree() {
-    Body body = createBody();
-    MutableStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(createGraph());
     List<MutableBasicBlock> blocks = graph.getBlocks();
 
     DominanceFinder df = new DominanceFinder(graph);
@@ -252,14 +249,8 @@ public class DominanceTest {
    *    return l2
    * </pre>
    */
-  private Body createBody() {
+  private MutableBlockStmtGraph createGraph() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-    Body.BodyBuilder builder = Body.builder(graph);
-    builder.setMethodSignature(methodSignature);
-
-    // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
-    builder.setLocals(locals);
 
     final HashMap<BranchingStmt, List<Stmt>> branchingMap = new HashMap<>();
     branchingMap.put(jIfStmt2, Collections.singletonList(jReturnStmt));
@@ -283,7 +274,7 @@ public class DominanceTest {
         branchingMap,
         Collections.emptyList());
 
-    return builder.build();
+    return graph;
   }
 
   /**

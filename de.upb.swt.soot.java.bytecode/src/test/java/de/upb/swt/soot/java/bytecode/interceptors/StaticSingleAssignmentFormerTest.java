@@ -1,22 +1,21 @@
-package de.upb.swt.soot.test.java.bytecode.interceptors;
+package de.upb.swt.soot.java.bytecode.interceptors;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.graph.MutableBlockStmtGraph;
+import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import de.upb.swt.soot.java.bytecode.interceptors.StaticSingleAssignmentFormer;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
@@ -72,12 +71,10 @@ public class StaticSingleAssignmentFormerTest {
   Stmt l2eq0 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(0), noStmtPositionInfo);
   Stmt goTo = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
-  Trap trap = new Trap(exception, stmt7, stmt8, handlerStmt);
-
   @Test
   public void testSSA() {
     StaticSingleAssignmentFormer ssa = new StaticSingleAssignmentFormer();
-    Body.BodyBuilder builder = new Body.BodyBuilder(createBody(), Collections.emptySet());
+    Body.BodyBuilder builder = createBody();
     ssa.interceptBody(builder);
 
     String expectedBodyString =
@@ -127,8 +124,7 @@ public class StaticSingleAssignmentFormerTest {
   @Test
   public void testTrapedSSA() {
     StaticSingleAssignmentFormer ssa = new StaticSingleAssignmentFormer();
-    Body.BodyBuilder builder = new Body.BodyBuilder(createTrapedBody(), Collections.emptySet());
-
+    Body.BodyBuilder builder = createTrapBody();
     ssa.interceptBody(builder);
 
     String expectedBodyString =
@@ -210,7 +206,7 @@ public class StaticSingleAssignmentFormerTest {
    *    return l2
    * </pre>
    */
-  private Body createBody() {
+  private Body.BodyBuilder createBody() {
     Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(methodSignature);
 
@@ -236,11 +232,7 @@ public class StaticSingleAssignmentFormerTest {
     // build startingStmt
     builder.setStartingStmt(startingStmt);
 
-    // build position
-    Position position = NoPositionInformation.getInstance();
-    builder.setPosition(position);
-
-    return builder.build();
+    return builder;
   }
 
   /**
@@ -272,8 +264,9 @@ public class StaticSingleAssignmentFormerTest {
    * catch Exception from label2 to label3 with label4;
    * </pre>
    */
-  private Body createTrapedBody() {
-    Body.BodyBuilder builder = Body.builder();
+  private Body.BodyBuilder createTrapBody() {
+    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -282,6 +275,7 @@ public class StaticSingleAssignmentFormerTest {
 
     // set graph
     builder.addFlow(startingStmt, stmt1);
+    graph.addNode(stmt7, Collections.singletonMap(exception, handlerStmt));
     builder.addFlow(stmt1, stmt2);
     builder.addFlow(stmt2, stmt3);
     builder.addFlow(stmt3, stmt4);
@@ -302,13 +296,6 @@ public class StaticSingleAssignmentFormerTest {
     // build startingStmt
     builder.setStartingStmt(startingStmt);
 
-    // build position
-    Position position = NoPositionInformation.getInstance();
-    builder.setPosition(position);
-
-    List<Trap> traps = ImmutableUtils.immutableList(trap);
-    builder.setTraps(traps);
-
-    return builder.build();
+    return builder;
   }
 }

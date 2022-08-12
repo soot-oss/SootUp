@@ -41,21 +41,21 @@ public class DominanceFinder {
 
     // assign each block a integer id, startBlock's id must be 0
     blocks = new ArrayList<>(blockGraph.getBlocks());
+    final BasicBlock<?> startingStmtBlock = blockGraph.getStartingStmtBlock();
     {
-      int i = 0;
-      final BasicBlock<?> startingStmtBlock = blockGraph.getStartingStmtBlock();
+      int i = 1;
       for (BasicBlock<?> block : blocks) {
         if (startingStmtBlock == block) {
           blockToIdx.put(block, 0);
         } else {
           blockToIdx.put(block, i);
+          i++;
         }
-        i++;
       }
     }
 
     // initialize doms
-    doms = new int[blockGraph.getBlocks().size()];
+    doms = new int[blocks.size()];
     doms[0] = 0;
     for (int i = 1; i < doms.length; i++) {
       doms[i] = -1;
@@ -63,18 +63,20 @@ public class DominanceFinder {
 
     // calculate immediate dominator for each block
     boolean isChanged = true;
-    blocks.remove(blockGraph.getStartingStmtBlock());
     while (isChanged) {
       isChanged = false;
       for (BasicBlock<?> block : blocks) {
-        int blockIdx = this.blockToIdx.get(block);
+        if (block == startingStmtBlock) {
+          continue;
+        }
+        int blockIdx = blockToIdx.get(block);
         List<BasicBlock<?>> preds = new ArrayList<>(block.getPredecessors());
         // ms: should not be necessary preds.addAll(block.getExceptionalPredecessors());
         int newIdom = getFirstDefinedBlockPredIdx(preds);
         if (!preds.isEmpty() && newIdom != -1) {
           preds.remove(blocks.get(newIdom));
           for (BasicBlock<?> pred : preds) {
-            int predIdx = this.blockToIdx.get(pred);
+            int predIdx = blockToIdx.get(pred);
             if (this.doms[predIdx] != -1) {
               newIdom = isIntersecting(newIdom, predIdx);
             }
@@ -98,9 +100,9 @@ public class DominanceFinder {
       List<BasicBlock<?>> preds = new ArrayList<>(block.getPredecessors());
       // ms: should not be necessary  preds.addAll(block.getExceptionalPredecessors());
       if (preds.size() > 1) {
-        int blockId = this.blockToIdx.get(block);
+        int blockId = blockToIdx.get(block);
         for (BasicBlock<?> pred : preds) {
-          int predId = this.blockToIdx.get(pred);
+          int predId = blockToIdx.get(pred);
           while (predId != doms[blockId]) {
             domFrontiers[predId].add(blockId);
             predId = doms[predId];
@@ -114,9 +116,9 @@ public class DominanceFinder {
     if (!blockToIdx.containsKey(oldBlock)) {
       throw new RuntimeException("The given block: " + oldBlock + " is not in BlockGraph!");
     }
-    final Integer idx = this.blockToIdx.get(oldBlock);
-    this.blockToIdx.put(newBlock, idx);
-    this.blockToIdx.remove(oldBlock);
+    final Integer idx = blockToIdx.get(oldBlock);
+    blockToIdx.put(newBlock, idx);
+    blockToIdx.remove(oldBlock);
     blocks.set(idx, newBlock);
   }
 
@@ -125,7 +127,7 @@ public class DominanceFinder {
     if (!blockToIdx.containsKey(block)) {
       throw new RuntimeException("The given block: " + block + " is not in BlockGraph!");
     }
-    int idx = this.blockToIdx.get(block);
+    int idx = blockToIdx.get(block);
     int idomIdx = this.doms[idx];
     return blocks.get(idomIdx);
   }
@@ -135,7 +137,7 @@ public class DominanceFinder {
     if (!blockToIdx.containsKey(block)) {
       throw new RuntimeException("The given block: " + block + " is not in BlockGraph!");
     }
-    int idx = this.blockToIdx.get(block);
+    int idx = blockToIdx.get(block);
     Set<BasicBlock<?>> dFs = new HashSet<>();
     ArrayList<Integer> dFs_idx = this.domFrontiers[idx];
     for (Integer i : dFs_idx) {
@@ -151,7 +153,7 @@ public class DominanceFinder {
 
   @Nonnull
   public Map<BasicBlock<?>, Integer> getBlockToIdx() {
-    return this.blockToIdx;
+    return blockToIdx;
   }
 
   @Nonnull
@@ -161,24 +163,22 @@ public class DominanceFinder {
 
   private int getFirstDefinedBlockPredIdx(List<BasicBlock<?>> preds) {
     for (BasicBlock<?> block : preds) {
-      int idx = this.blockToIdx.get(block);
-      if (this.doms[idx] != -1) {
+      int idx = blockToIdx.get(block);
+      if (doms[idx] != -1) {
         return idx;
       }
     }
     return -1;
   }
 
-  private int isIntersecting(int b1, int b2) {
-    int f1 = b1;
-    int f2 = b2;
-    while (f1 != f2) {
-      if (f1 > f2) {
-        f1 = doms[f1];
-      } else if (f2 > f1) {
-        f2 = doms[f2];
+  private int isIntersecting(int a, int b) {
+    while (a != b) {
+      if (a > b) {
+        a = doms[a];
+      } else {
+        b = doms[b];
       }
     }
-    return f1;
+    return a;
   }
 }
