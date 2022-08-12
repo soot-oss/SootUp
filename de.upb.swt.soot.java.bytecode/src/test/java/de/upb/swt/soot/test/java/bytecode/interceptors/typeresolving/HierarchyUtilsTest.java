@@ -24,8 +24,12 @@ public class HierarchyUtilsTest {
         short s = 2;
         char c = 'a';
         boolean boo = true;
+        Boolean BOO = true;
+        boo = BOO;
+        BOO = BOO;
         byte by = 1;
         double[] darr = new double[10];
+        Double[] Darr = new Double[10];
         serializable = darr;
         cloneable = darr;
         d = c;
@@ -38,6 +42,11 @@ public class HierarchyUtilsTest {
         serializable = c;
         serializable = boo;
         serializable = by;
+        serializable = darr;
+        d = new Double(1.0);
+        Double D = new Double(1.0);
+        D = null;
+
 
 
 
@@ -61,8 +70,13 @@ public class HierarchyUtilsTest {
         c1 = c2;
         i3 = c3;
         C4 c4 = new C4();
+        C1[] c1ar = new C1[10];
+        C2[] c2arr = new C2[100];
+        c1ar = c2arr;
         C1[][] c1arr = new C1[10][10];
-        Cloneable[] obj = c1arr;
+        Cloneable[] cloneables = c1arr;
+        object = serializable;
+
 
 
 
