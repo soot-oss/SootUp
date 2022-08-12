@@ -23,10 +23,7 @@ package de.upb.swt.soot.core.graph;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.annotation.Nonnull;
 
 /**
@@ -65,8 +62,14 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
 
   @Nonnull
   @Override
-  public List<V> getBlocks() {
+  public Collection<V> getBlocks() {
     return backingGraph.getBlocks();
+  }
+
+  @Nonnull
+  @Override
+  public List<V> getBlocksSorted() {
+    return backingGraph.getBlocksSorted();
   }
 
   @Override

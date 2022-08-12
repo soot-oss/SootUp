@@ -50,7 +50,14 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   public abstract Collection<Stmt> nodes();
 
   @Nonnull
-  public abstract List<V> getBlocks();
+  public abstract Collection<V> getBlocks();
+
+  @Nonnull
+  public abstract List<V> getBlocksSorted();
+
+  public Iterator<V> getBlockIterator() {
+    return new BlockGraphIterator();
+  }
 
   public abstract V getBlockOf(@Nonnull Stmt stmt);
 
@@ -310,4 +317,274 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   @Override
   @Nonnull
   public abstract Iterator<Stmt> iterator();
+
+  /** Iterates the Stmts according to the jimple output order. */
+  private class BlockStmtGraphIterator implements Iterator<Stmt> {
+
+    private final BlockGraphIterator blockIt;
+    @Nonnull private Iterator<Stmt> currentBlockIt = Collections.emptyIterator();
+
+    public BlockStmtGraphIterator() {
+      this(new BlockGraphIterator());
+    }
+
+    public BlockStmtGraphIterator(@Nonnull BlockGraphIterator blockIterator) {
+      blockIt = blockIterator;
+    }
+
+    @Override
+    public boolean hasNext() {
+      // hint: a BasicBlock has at least 1 Stmt or should not be in a StmtGraph!
+      return currentBlockIt.hasNext() || blockIt.hasNext();
+    }
+
+    @Override
+    public Stmt next() {
+      if (!currentBlockIt.hasNext()) {
+        if (!blockIt.hasNext()) {
+          throw new NoSuchElementException("Iterator has no more Stmts.");
+        }
+        V currentBlock = blockIt.next();
+        currentBlockIt = currentBlock.getStmts().iterator();
+      }
+      return currentBlockIt.next();
+    }
+  }
+
+  /** Iterates over the Blocks and collects/aggregates Trap information */
+  public class BlockGraphIteratorAndTrapAggregator extends BlockGraphIterator {
+
+    @Nonnull private final List<Trap> collectedTraps = new ArrayList<>();
+
+    Map<ClassType, Stmt> trapStarts = new HashMap<>();
+    V lastIteratedBlock = null; // dummy value to remove n-1 unnecessary null-checks
+
+    @Nonnull
+    @Override
+    public V next() {
+      final V block = super.next();
+
+      final Map<? extends ClassType, V> currentBlocksExceptions = block.getExceptionalSuccessors();
+      final Map<? extends ClassType, V> lastBlocksExceptions =
+          lastIteratedBlock.getExceptionalSuccessors();
+
+      // former trap info is not in the current blocks info -> add it to the trap collection
+      lastBlocksExceptions.forEach(
+          (type, trapHandlerBlock) -> {
+            if (trapHandlerBlock != block.getExceptionalSuccessors().get(type)) {
+              final Stmt trapBeginStmt = trapStarts.remove(type);
+              if (trapBeginStmt == null) {
+                throw new IllegalStateException("Trap start for '" + type + "' is not in the Map!");
+              }
+              // trapend is exclusive!
+              collectedTraps.add(
+                  new Trap(type, trapBeginStmt, block.getHead(), trapHandlerBlock.getHead()));
+            }
+          });
+
+      // is there a new trap in the current block -> add it to currentTraps
+      block
+          .getExceptionalSuccessors()
+          .forEach(
+              (type, trapHandlerBlock) -> {
+                if (trapHandlerBlock != lastBlocksExceptions.get(type)) {
+                  trapStarts.put(type, block.getHead());
+                }
+              });
+
+      lastIteratedBlock = block;
+      return block;
+    }
+
+    /**
+     * for jimple serialization -> this is the info for the end of the method contains only
+     * valid/useful information when all stmts are iterated i.e. hasNext() == false!
+     *
+     * @return List of Traps
+     */
+    public List<Trap> getTraps() {
+      // aggregate dangling trap data
+      trapStarts.forEach(
+          (type, trapStart) -> {
+            final V trapHandler = lastIteratedBlock.getExceptionalSuccessors().get(type);
+            if (trapHandler == null) {
+              throw new IllegalStateException(
+                  "No matching Trap info found for '"
+                      + type
+                      + "' in ExceptionalSucessors() of the last iterated Block!");
+            }
+            collectedTraps.add(
+                new Trap(type, trapStart, lastIteratedBlock.getTail(), trapHandler.getTail()));
+          });
+      trapStarts.clear();
+      return collectedTraps;
+    }
+  }
+
+  /** Iterates over the blocks */
+  public class BlockGraphIterator implements Iterator<V> {
+
+    @Nonnull private final ArrayDeque<V> trapHandlerBlocks = new ArrayDeque<>();
+
+    @Nonnull private final ArrayDeque<V> nestedBlocks = new ArrayDeque<>();
+    @Nonnull private final ArrayDeque<V> otherBlocks = new ArrayDeque<>();
+    @Nonnull private final Set<V> iteratedBlocks;
+
+    public BlockGraphIterator() {
+      final Collection<V> blocks = getBlocks();
+      iteratedBlocks = new HashSet<>(blocks.size(), 1);
+      Stmt startingStmt = getStartingStmt();
+      if (startingStmt != null) {
+        final V startingBlock = getBlockOf(startingStmt);
+        updateFollowingBlocks(startingBlock);
+        nestedBlocks.addFirst(startingBlock);
+      }
+    }
+
+    @Nullable
+    private V retrieveNextBlock() {
+      V nextBlock;
+      do {
+        if (!nestedBlocks.isEmpty()) {
+          nextBlock = nestedBlocks.pollFirst();
+        } else if (!trapHandlerBlocks.isEmpty()) {
+          nextBlock = trapHandlerBlocks.pollFirst();
+        } else if (!otherBlocks.isEmpty()) {
+          nextBlock = otherBlocks.pollFirst();
+        } else {
+          Collection<V> blocks = getBlocks();
+          if (iteratedBlocks.size() < blocks.size()) {
+            // graph is not connected! iterate/append all not connected blocks at the end in no
+            // particular order.
+            for (V block : blocks) {
+              if (!iteratedBlocks.contains(block)) {
+                nestedBlocks.addLast(block);
+              }
+            }
+            if (!nestedBlocks.isEmpty()) {
+              return nestedBlocks.pollFirst();
+            }
+          }
+
+          return null;
+        }
+
+        // skip retrieved nextBlock if its already returned
+      } while (iteratedBlocks.contains(nextBlock));
+      return nextBlock;
+    }
+
+    @Override
+    @Nonnull
+    public V next() {
+      V currentBlock = retrieveNextBlock();
+      if (currentBlock == null) {
+        throw new NoSuchElementException("Iterator has no more Blocks.");
+      }
+      updateFollowingBlocks(currentBlock);
+      iteratedBlocks.add(currentBlock);
+      return currentBlock;
+    }
+
+    //
+    private void updateFollowingBlocks(V currentBlock) {
+      // collect traps
+      final Stmt tailStmt = currentBlock.getTail();
+      for (Map.Entry<? extends ClassType, V> entry :
+          currentBlock.getExceptionalSuccessors().entrySet()) {
+        V trapHandlerBlock = entry.getValue();
+        trapHandlerBlocks.addLast(trapHandlerBlock);
+        nestedBlocks.addFirst(trapHandlerBlock);
+      }
+
+      final List<V> successors = currentBlock.getSuccessors();
+
+      for (int i = successors.size() - 1; i >= 0; i--) {
+        if (i == 0 && tailStmt.fallsThrough()) {
+          // non-branching successors i.e. not a BranchingStmt or is the first successor (i.e. its
+          // false successor) of
+          // JIfStmt
+          nestedBlocks.addFirst(successors.get(0));
+        } else {
+
+          // create the most biggest fallsthrough sequence of basicblocks as possible -> go to the
+          // top until
+          // predecessor is not a fallsthrough stmt anymore and then the iterator will iterate
+          // from there.
+          final V successorBlock = successors.get(i);
+          V leaderOfFallsthroughBlocks = successorBlock;
+          while (true) {
+            final List<V> itPreds = leaderOfFallsthroughBlocks.getPredecessors();
+            if (itPreds.size() != 1) {
+              break;
+            }
+            V predecessorBlock = itPreds.get(0);
+            if (predecessorBlock.getTail().fallsThrough()
+                && predecessorBlock.getSuccessors().get(0) == leaderOfFallsthroughBlocks) {
+              leaderOfFallsthroughBlocks = predecessorBlock;
+            } else {
+              break;
+            }
+          }
+
+          // find a return Stmt inside the current Block
+          Stmt succTailStmt = successorBlock.getTail();
+          boolean isReturnBlock =
+              succTailStmt instanceof JReturnVoidStmt || succTailStmt instanceof JReturnStmt;
+
+          // remember branching successors
+          if (tailStmt instanceof JGotoStmt) {
+            if (isReturnBlock) {
+              nestedBlocks.removeFirstOccurrence(currentBlock.getHead());
+              otherBlocks.addLast(leaderOfFallsthroughBlocks);
+            } else {
+              otherBlocks.addFirst(leaderOfFallsthroughBlocks);
+            }
+          } else if (!nestedBlocks.contains(leaderOfFallsthroughBlocks)) {
+            // JSwitchStmt, JIfStmt
+            if (isReturnBlock) {
+              nestedBlocks.addLast(leaderOfFallsthroughBlocks);
+            } else {
+              nestedBlocks.addFirst(leaderOfFallsthroughBlocks);
+            }
+          }
+        }
+      }
+    }
+
+    @Override
+    public boolean hasNext() {
+      final boolean hasIteratorMoreElements;
+      V b = retrieveNextBlock();
+      if (b != null) {
+        // reinsert at FIRST position -> not great for performance - but easier handling in next()
+        nestedBlocks.addFirst(b);
+        hasIteratorMoreElements = true;
+      } else {
+        hasIteratorMoreElements = false;
+      }
+
+      // "assertion" that all elements are iterated
+      if (!hasIteratorMoreElements) {
+        final int returnedSize = iteratedBlocks.size();
+        final Collection<V> blocks = getBlocks();
+        final int actualSize = blocks.size();
+        if (returnedSize != actualSize) {
+          String info =
+              blocks.stream()
+                  .filter(n -> !iteratedBlocks.contains(n))
+                  .map(BasicBlock::getStmts)
+                  .collect(Collectors.toList())
+                  .toString();
+          throw new IllegalStateException(
+              "There are "
+                  + (actualSize - returnedSize)
+                  + " Blocks that are not iterated! i.e. the StmtGraph is not connected from its startingStmt!"
+                  + info
+                  + GraphVizExporter.createUrlToWebeditor(StmtGraph.this));
+        }
+      }
+      return hasIteratorMoreElements;
+    }
+  }
 }

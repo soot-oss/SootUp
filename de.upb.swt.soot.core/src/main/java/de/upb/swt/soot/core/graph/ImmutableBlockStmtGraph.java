@@ -11,26 +11,25 @@ import javax.annotation.Nullable;
 // FIXME: implement
 public class ImmutableBlockStmtGraph extends StmtGraph {
 
-  private final List<Stmt> stmts;
   private final List<ImmutableBasicBlock> blocks;
+  private final Map<Stmt, ImmutableBasicBlock> stmtToBlock = new HashMap<>();
 
-  public ImmutableBlockStmtGraph(@Nonnull StmtGraph<?> graph) {
-    stmts = Lists.newArrayListWithExpectedSize(graph.nodes().size());
-    // linearize..
-    // TODO: add blocks in linearized order!
-    for (Stmt stmt : graph) {
-      stmts.add(stmt);
+  public ImmutableBlockStmtGraph(@Nonnull MutableStmtGraph graph) {
+
+    final List<MutableBasicBlock> mblocks = graph.getBlocksSorted();
+    blocks = Lists.newArrayListWithExpectedSize(mblocks.size());
+    for (MutableBasicBlock block : mblocks) {
+      // TODO: link predecessors/successors as well..
+      final ImmutableBasicBlock ib = new ImmutableBasicBlock();
+      block.getStmts().forEach(stmt -> stmtToBlock.put(stmt, ib));
+      blocks.add(ib);
     }
-
-    final List<? extends BasicBlock<?>> blocks = graph.getBlocks();
-    this.blocks = new ArrayList<>(blocks.size());
-    // TODO: copy
   }
 
   @Nullable
   @Override
   public Stmt getStartingStmt() {
-    return stmts.isEmpty() ? null : stmts.get(0);
+    return blocks.isEmpty() ? null : blocks.get(0).getHead();
   }
 
   @Override
@@ -46,12 +45,26 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
   @Nonnull
   @Override
   public List<Stmt> nodes() {
+    int size = 0;
+    for (ImmutableBasicBlock block : blocks) {
+      size += block.getStmtCount();
+    }
+    final ArrayList<Stmt> stmts = new ArrayList<>(size);
+    for (ImmutableBasicBlock block : blocks) {
+      stmts.addAll(block.getStmts());
+    }
     return stmts;
   }
 
   @Nonnull
   @Override
-  public List<ImmutableBasicBlock> getBlocks() {
+  public Collection<ImmutableBasicBlock> getBlocks() {
+    return blocks;
+  }
+
+  @Nonnull
+  @Override
+  public List<ImmutableBasicBlock> getBlocksSorted() {
     return blocks;
   }
 
@@ -131,14 +144,14 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
   }
 
   private class ImmutableBasicBlock implements BasicBlock<ImmutableBasicBlock> {
-    private final ImmutableStmtGraph graph;
+    private final MutableBasicBlock graph;
     private final int startIdx;
     private final int endIdx;
     private final List<ImmutableBasicBlock> successors;
     private final List<ImmutableBasicBlock> predecessors;
 
     private ImmutableBasicBlock(
-        ImmutableStmtGraph graph,
+        MutableBasicBlock graph,
         int startIdx,
         int endIdx,
         List<ImmutableBasicBlock> successors,
