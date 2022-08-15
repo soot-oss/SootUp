@@ -196,6 +196,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   public Set<ClassType> directlyImplementedInterfacesOf(ClassType classType){
     Vertex vertex = lazyScanResult.get().typeToVertex.get(classType);
+    if(vertex.type != VertexType.Class){
+      throw new IllegalArgumentException(classType + " is not a class.");
+    }
     if (vertex == null) {
       throw new RuntimeException("Could not find " + classType + " in hierarchy.");
     }
@@ -204,6 +207,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   public Set<ClassType> directlyExtendedInterfacesOf(ClassType interfaceType){
     Vertex vertex = lazyScanResult.get().typeToVertex.get(interfaceType);
+    if(vertex.type != VertexType.Interface){
+      throw new IllegalArgumentException(interfaceType + " is not a class.");
+    }
     if (vertex == null) {
       throw new RuntimeException("Could not find " + interfaceType + " in hierarchy.");
     }
@@ -222,6 +228,8 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
     if(list.isEmpty()){
       return null;
+    }else if(list.size() > 1){
+      throw  new RuntimeException(classType + "cannot have multiple superclasses");
     }else{
       return list.get(0).javaClassType;
     }
