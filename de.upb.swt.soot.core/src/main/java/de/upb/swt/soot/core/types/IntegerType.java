@@ -5,5 +5,4 @@ package de.upb.swt.soot.core.types;
  *
  * @author Zun Wang
  */
-public interface IntegerType {
-}
+public interface IntegerType {}

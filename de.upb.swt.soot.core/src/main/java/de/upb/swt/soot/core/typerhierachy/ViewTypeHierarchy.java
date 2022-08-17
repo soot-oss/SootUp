@@ -42,8 +42,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import org.checkerframework.checker.units.qual.C;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.slf4j.Logger;
@@ -190,51 +188,56 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   private Stream<Vertex> directlySuperClassOf(Vertex classVertex) {
     Graph<Vertex, Edge> graph = lazyScanResult.get().graph;
     return graph.outgoingEdgesOf(classVertex).stream()
-            .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
-            .map(graph::getEdgeTarget);
+        .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
+        .map(graph::getEdgeTarget);
   }
 
-  public Set<ClassType> directlyImplementedInterfacesOf(ClassType classType){
+  public Set<ClassType> directlyImplementedInterfacesOf(ClassType classType) {
     Vertex vertex = lazyScanResult.get().typeToVertex.get(classType);
-    if(vertex.type != VertexType.Class){
+    if (vertex.type != VertexType.Class) {
       throw new IllegalArgumentException(classType + " is not a class.");
     }
     if (vertex == null) {
       throw new RuntimeException("Could not find " + classType + " in hierarchy.");
     }
-    return directlyImplementedInterfacesOf(vertex).map(v -> v.javaClassType).collect(Collectors.toSet());
+    return directlyImplementedInterfacesOf(vertex)
+        .map(v -> v.javaClassType)
+        .collect(Collectors.toSet());
   }
 
-  public Set<ClassType> directlyExtendedInterfacesOf(ClassType interfaceType){
+  public Set<ClassType> directlyExtendedInterfacesOf(ClassType interfaceType) {
     Vertex vertex = lazyScanResult.get().typeToVertex.get(interfaceType);
-    if(vertex.type != VertexType.Interface){
+    if (vertex.type != VertexType.Interface) {
       throw new IllegalArgumentException(interfaceType + " is not a class.");
     }
     if (vertex == null) {
       throw new RuntimeException("Could not find " + interfaceType + " in hierarchy.");
     }
-    return directlyExtendedInterfacesOf(vertex).map(v -> v.javaClassType).collect(Collectors.toSet());
+    return directlyExtendedInterfacesOf(vertex)
+        .map(v -> v.javaClassType)
+        .collect(Collectors.toSet());
   }
 
-  public ClassType directlySuperClassOf(ClassType classType){
+  public ClassType directlySuperClassOf(ClassType classType) {
     Vertex vertex = lazyScanResult.get().typeToVertex.get(classType);
     if (vertex == null) {
       throw new RuntimeException("Could not find " + classType + " in hierarchy.");
     }
     Graph<Vertex, Edge> graph = lazyScanResult.get().graph;
-    List<Vertex> list =  graph.outgoingEdgesOf(vertex).stream()
+    List<Vertex> list =
+        graph.outgoingEdgesOf(vertex).stream()
             .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
-            .map(graph::getEdgeTarget).collect(Collectors.toList());
+            .map(graph::getEdgeTarget)
+            .collect(Collectors.toList());
 
-    if(list.isEmpty()){
+    if (list.isEmpty()) {
       return null;
-    }else if(list.size() > 1){
-      throw  new RuntimeException(classType + "cannot have multiple superclasses");
-    }else{
+    } else if (list.size() > 1) {
+      throw new RuntimeException(classType + "cannot have multiple superclasses");
+    } else {
       return list.get(0).javaClassType;
     }
   }
-
 
   @Nonnull
   @Override
@@ -290,26 +293,26 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     return sootClassFor(classType).getSuperclass().orElse(null);
   }
 
-  public boolean isInterface(@Nonnull ClassType type){
+  public boolean isInterface(@Nonnull ClassType type) {
     Vertex vertex = lazyScanResult.get().typeToVertex.get(type);
     if (vertex == null) {
       throw new RuntimeException("Could not find " + type + " in hierarchy.");
     }
     if (vertex.type == VertexType.Interface) {
       return true;
-    }else {
+    } else {
       return false;
     }
   }
 
-  public boolean isClass(@Nonnull ClassType type){
+  public boolean isClass(@Nonnull ClassType type) {
     Vertex vertex = lazyScanResult.get().typeToVertex.get(type);
     if (vertex == null) {
       throw new RuntimeException("Could not find " + type + " in hierarchy.");
     }
     if (vertex.type == VertexType.Class) {
       return true;
-    }else {
+    } else {
       return false;
     }
   }
