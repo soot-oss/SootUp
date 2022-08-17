@@ -1,13 +1,12 @@
 package de.upb.swt.soot.java.bytecode.interceptors.typeresolving.types;
 
+import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.IHierarchy;
 import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.PrimitiveHierarchy;
-import de.upb.swt.soot.java.core.types.JavaClassType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,9 +15,17 @@ import java.util.*;
 public class BytecodeHierarchy implements IHierarchy {
 
     private ViewTypeHierarchy typeHierarchy;
+    private IdentifierFactory factory;
+    private ClassType object;
+    private ClassType serializable;
+    private ClassType cloneable;
 
     public BytecodeHierarchy(View<? extends SootClass> view){
         this.typeHierarchy = new ViewTypeHierarchy(view);
+        factory = view.getIdentifierFactory();
+        object = factory.getClassType("java.lang.Object");
+        serializable = factory.getClassType("java.io.Serializable");
+        cloneable = factory.getClassType("java.lang.Cloneable");
     }
 
     public boolean isAncestor (Type ancestor, Type child){
@@ -26,14 +33,21 @@ public class BytecodeHierarchy implements IHierarchy {
         boolean isAncestor = PrimitiveHierarchy.isAncestor(ancestor, child);
         if(!isAncestor && !(PrimitiveHierarchy.arePrimitives(ancestor, child))){
             if(ancestor.equals(child)){
-                isAncestor = true;
+                return true;
             // if one of them is PrimitiveType, and another one is ReferenceType
             } else if(ancestor instanceof PrimitiveType || child instanceof PrimitiveType){
+                if(ancestor instanceof ClassType){
+                    String name = ((ClassType) ancestor).getFullyQualifiedName();
+                    if(name.equals("java.lang.Object") || name.equals("java.io.Serializable")){
+                        return true;
+                    }
+                }
                 PrimitiveType prim = (PrimitiveType) ((ancestor instanceof PrimitiveType) ? ancestor : child);
                 ReferenceType ref = (ReferenceType) ((ancestor instanceof PrimitiveType) ? child : ancestor);
                 isAncestor = isBoxOrUnbox(ref, prim);
+
             } else if(ancestor instanceof NullType){
-                isAncestor = false;
+                return false;
             }else if(ancestor instanceof BottomType){
                 //todo: [zw] check later BottomType = NullType?
                 if(child instanceof NullType){
@@ -102,23 +116,25 @@ public class BytecodeHierarchy implements IHierarchy {
                 temp = getLeastCommonAncestor(base_a, base_b);
             }
             if(temp.isEmpty()){
-                ret.add(new JavaClassType("Serializable", new PackageName("java.io")));
-                ret.add(new JavaClassType("Cloneable", new PackageName("java.lang")));
+                ret.add(serializable);
+                ret.add(cloneable);
+            }else{
+                for(Type type : temp){
+                    ret.add(factory.getArrayType(type, dim_a));
+                }
             }
         }else if(a instanceof ArrayType || b instanceof ArrayType){
             ClassType nonArray = (ClassType) ((a instanceof ArrayType) ? b : a);
             if(!nonArray.getFullyQualifiedName().equals("java.lang.Object")){
-                Type ser = new JavaClassType("Serializable", new PackageName("java.io"));
-                Type clo = new JavaClassType("Cloneable", new PackageName("java.lang"));
-                if(isAncestor(ser, nonArray)){
-                    ret.add(ser);
+                if(isAncestor(serializable, nonArray)){
+                    ret.add(serializable);
                 }
-                if(isAncestor(clo, nonArray)){
-                    ret.add(clo);
+                if(isAncestor(cloneable, nonArray)){
+                    ret.add(cloneable);
                 }
             }
             if(ret.isEmpty()){
-                ret.add(new JavaClassType("Object", new PackageName("java.lang")));
+                ret.add(object);
             }
         }else{
             //if a and b are both ClassType
@@ -127,6 +143,9 @@ public class BytecodeHierarchy implements IHierarchy {
             for(AncestryPath pathA : pathsA){
                 for(AncestryPath pathB : pathsB){
                     ClassType lcn = leastCommonNode(pathA, pathB);
+                    if(lcn == null){
+                        continue;
+                    }
                     boolean isLcn = true;
                     for(Type l : ret){
                         if(isAncestor(lcn, l)){
@@ -143,7 +162,7 @@ public class BytecodeHierarchy implements IHierarchy {
                 }
             }
             if(ret.isEmpty()){
-                ret.add(new JavaClassType("Object", new PackageName("java.lang")));
+                ret.add(object);
             }
         }
         return ret;
@@ -206,9 +225,7 @@ public class BytecodeHierarchy implements IHierarchy {
                 if(typeHierarchy.isInterface(node.type)){
                     Set<ClassType> superInterfaces = typeHierarchy.directlyExtendedInterfacesOf(node.type);
                     if(superInterfaces.isEmpty()){
-                        JavaClassType objectType = new JavaClassType("Object", new PackageName("java.lang"));
-                        AncestryPath root = new AncestryPath(objectType, node);
-                        paths.add(root);
+                        paths.add(node);
                     }else{
                         for(ClassType superInterface : superInterfaces){
                             AncestryPath superNode = new AncestryPath(superInterface, node);
