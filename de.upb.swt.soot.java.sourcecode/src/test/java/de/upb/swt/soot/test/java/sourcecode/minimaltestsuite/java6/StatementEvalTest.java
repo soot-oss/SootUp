@@ -17,7 +17,7 @@ public class StatementEvalTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "statementEval", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "statementEval", "void", Collections.emptyList());
   }
 
   /**

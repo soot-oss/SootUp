@@ -18,7 +18,7 @@ public class ReferencingThisTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "thisMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "thisMethod", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

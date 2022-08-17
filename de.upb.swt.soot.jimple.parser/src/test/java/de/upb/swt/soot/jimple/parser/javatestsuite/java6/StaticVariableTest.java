@@ -21,7 +21,7 @@ public class StaticVariableTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "staticVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "staticVariable", "void", Collections.emptyList());
   }
 
   @Test
