@@ -41,7 +41,14 @@ public class GraphVizExporter {
 
     /* print a block in a subgraph */
     int i = 0;
-    final Collection<? extends BasicBlock<?>> blocks = graph.getBlocks();
+
+    Collection<? extends BasicBlock<?>> blocks;
+    try {
+      blocks = graph.getBlocksSorted();
+    } catch (Exception e) {
+      blocks = graph.getBlocks();
+    }
+
     Set<BasicBlock<?>> drawnBlocks = Sets.newHashSetWithExpectedSize(blocks.size());
 
     List<BasicBlock<?>> hiddenSuccessors = new ArrayList<>();
