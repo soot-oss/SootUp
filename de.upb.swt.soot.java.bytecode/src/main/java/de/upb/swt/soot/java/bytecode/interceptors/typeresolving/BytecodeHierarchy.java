@@ -25,10 +25,7 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.IHierarchy;
-import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.PrimitiveHierarchy;
 import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.types.BottomType;
-
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
