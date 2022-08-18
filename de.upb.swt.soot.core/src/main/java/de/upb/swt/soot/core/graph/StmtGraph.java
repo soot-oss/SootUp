@@ -113,6 +113,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
 
   /** returns a list of associated traps */
+  @Deprecated
   public abstract List<Trap> getTraps();
 
   /**
@@ -316,7 +317,9 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
   @Override
   @Nonnull
-  public abstract Iterator<Stmt> iterator();
+  public Iterator<Stmt> iterator() {
+    return new BlockStmtGraphIterator();
+  }
 
   /** Iterates the Stmts according to the jimple output order. */
   private class BlockStmtGraphIterator implements Iterator<Stmt> {

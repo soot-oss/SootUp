@@ -8,7 +8,7 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-// FIXME: implement
+// FIXME: implement!
 public class ImmutableBlockStmtGraph extends StmtGraph {
 
   private final List<ImmutableBasicBlock> blocks;
@@ -19,10 +19,11 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
     final List<MutableBasicBlock> mblocks = graph.getBlocksSorted();
     blocks = Lists.newArrayListWithExpectedSize(mblocks.size());
     for (MutableBasicBlock block : mblocks) {
-      // TODO: link predecessors/successors as well..
-      final ImmutableBasicBlock ib = new ImmutableBasicBlock();
+      /* TODO: link predecessors/successors as well..
+      // final ImmutableBasicBlock ib = new ImmutableBasicBlock();
       block.getStmts().forEach(stmt -> stmtToBlock.put(stmt, ib));
-      blocks.add(ib);
+
+      blocks.add(ib);*/
     }
   }
 
