@@ -9,7 +9,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 // FIXME: implement!
-public class ImmutableBlockStmtGraph extends StmtGraph {
+public class ImmutableBlockStmtGraph
+    extends StmtGraph<ImmutableBlockStmtGraph.ImmutableBasicBlock> {
 
   private final List<ImmutableBasicBlock> blocks;
   private final Map<Stmt, ImmutableBasicBlock> stmtToBlock = new HashMap<>();
@@ -34,7 +35,7 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
   }
 
   @Override
-  public BasicBlock<ImmutableBasicBlock> getStartingStmtBlock() {
+  public ImmutableBasicBlock getStartingStmtBlock() {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
@@ -144,7 +145,7 @@ public class ImmutableBlockStmtGraph extends StmtGraph {
     };
   }
 
-  private class ImmutableBasicBlock implements BasicBlock<ImmutableBasicBlock> {
+  public class ImmutableBasicBlock implements BasicBlock<ImmutableBasicBlock> {
     private final MutableBasicBlock graph;
     private final int startIdx;
     private final int endIdx;

@@ -1,5 +1,6 @@
 package de.upb.swt.soot.core.graph;
 
+import com.google.common.collect.Iterators;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
@@ -38,16 +39,19 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
   public abstract Stmt getStartingStmt();
 
-  public V getStartingStmtBlock() {
-    return getBlockOf(getStartingStmt());
-  }
-
+  public abstract V getStartingStmtBlock();
   /**
    * returns the nodes in this graph in a non-deterministic order (->Set) to get the nodes in
-   * linearized, ordered manner use iterator().
+   * linearized, ordered manner use iterator() or getStmts.
    */
   @Nonnull
   public abstract Collection<Stmt> nodes();
+
+  public Collection<Stmt> getStmts() {
+    final ArrayList<Stmt> res = new ArrayList<>();
+    Iterators.addAll(res, iterator());
+    return res;
+  }
 
   @Nonnull
   public abstract Collection<V> getBlocks();
@@ -59,7 +63,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     return new BlockGraphIterator();
   }
 
-  public abstract V getBlockOf(@Nonnull Stmt stmt);
+  public abstract BasicBlock<?> getBlockOf(@Nonnull Stmt stmt);
 
   public abstract boolean containsNode(@Nonnull Stmt node);
 
@@ -109,7 +113,10 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     return inDegree(node) + outDegree(node);
   }
 
-  /** returns true if there is a flow between source and target */
+  /**
+   * returns true if there is a flow between source and target throws an Exception if at least one
+   * of the parameters is not contained in the graph.
+   */
   public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
 
   /** returns a list of associated traps */
@@ -360,7 +367,15 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     @Nonnull private final List<Trap> collectedTraps = new ArrayList<>();
 
     Map<ClassType, Stmt> trapStarts = new HashMap<>();
-    V lastIteratedBlock = null; // dummy value to remove n-1 unnecessary null-checks
+    V lastIteratedBlock; // dummy value to remove n-1 unnecessary null-checks
+
+    /*
+     * @param dummyBlock is just an empty instantiation of type V - as neither BasicBlock nor V instantiable we need a concrete object from the using subclass itclass.
+     * */
+    public BlockGraphIteratorAndTrapAggregator(V dummyBlock) {
+      super();
+      lastIteratedBlock = dummyBlock;
+    }
 
     @Nonnull
     @Override
@@ -438,7 +453,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       iteratedBlocks = new HashSet<>(blocks.size(), 1);
       Stmt startingStmt = getStartingStmt();
       if (startingStmt != null) {
-        final V startingBlock = getBlockOf(startingStmt);
+        final V startingBlock = getStartingStmtBlock();
         updateFollowingBlocks(startingBlock);
         nestedBlocks.addFirst(startingBlock);
       }

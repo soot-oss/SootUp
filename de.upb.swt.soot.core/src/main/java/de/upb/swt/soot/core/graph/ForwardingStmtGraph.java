@@ -50,7 +50,7 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
   }
 
   @Override
-  public V getBlockOf(@Nonnull Stmt stmt) {
+  public BasicBlock<?> getBlockOf(@Nonnull Stmt stmt) {
     return backingGraph.getBlockOf(stmt);
   }
 

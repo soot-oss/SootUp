@@ -140,6 +140,12 @@ public class ImmutableStmtGraph extends StmtGraph<ImmutableBasicBlock> {
     throw new IllegalStateException("Not implemented yet!");
   }
 
+  @Override
+  public ImmutableBasicBlock getStartingStmtBlock() {
+    // FIXME: implement
+    throw new IllegalStateException("Not implemented yet!");
+  }
+
   @Nonnull
   @Override
   public List<ImmutableBasicBlock> getBlocksSorted() {

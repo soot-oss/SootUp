@@ -47,8 +47,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
             b -> {
               // getBlockOf is necessary to find the new existing/copied block which are refering to
               // the same a immutable Stmt
-              final MutableBasicBlock blockOf = getBlockOf(b.getTail());
-              b.getSuccessors().forEach(succ -> linkBlocks(blockOf, getBlockOf(succ.getHead())));
+              final MutableBasicBlock blockOf = stmtToBlock.get(b.getTail());
+              b.getSuccessors()
+                  .forEach(succ -> linkBlocks(blockOf, stmtToBlock.get(succ.getHead())));
             });
   }
 
@@ -532,7 +533,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Nonnull
   private MutableBasicBlock getOrCreateBlock(@Nonnull Stmt stmt) {
-    MutableBasicBlock trapHandlerBlock = getBlockOf(stmt);
+    MutableBasicBlock trapHandlerBlock = stmtToBlock.get(stmt);
     if (trapHandlerBlock == null) {
       // traphandlerStmt does not exist in the graph -> create
       trapHandlerBlock = createStmtsBlock(stmt);
@@ -674,7 +675,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   @Override
   public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
 
-    final MutableBasicBlock blockOfOldStmt = getBlockOf(oldStmt);
+    final MutableBasicBlock blockOfOldStmt = stmtToBlock.get(oldStmt);
     if (blockOfOldStmt == null) {
       throw new IllegalArgumentException("oldStmt does not exist in the StmtGraph!");
     }
@@ -720,7 +721,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     if (stmts.isEmpty()) {
       return;
     }
-    final MutableBasicBlock block = getBlockOf(beforeStmt);
+    final MutableBasicBlock block = stmtToBlock.get(beforeStmt);
     if (block.getHead() == beforeStmt) {
       // insert before a Stmt that is at the beginning of a Block? -> new block, reconnect, try to
       // merge blocks - performance hint: if exceptionMap equals the current blocks exception and
@@ -958,13 +959,13 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   @Override
   @Nullable
   public MutableBasicBlock getStartingStmtBlock() {
-    return getBlockOf(startingStmt);
+    return stmtToBlock.get(startingStmt);
   }
 
   @Override
   @Nullable
-  public MutableBasicBlock getBlockOf(@Nonnull Stmt stmt) {
-    return stmtToBlock.get(stmt);
+  public BasicBlock<?> getBlockOf(@Nonnull Stmt stmt) {
+    return new ForwardingBasicBlock<>(stmtToBlock.get(stmt));
   }
 
   @Nonnull
@@ -1180,7 +1181,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   public List<Trap> getTraps() {
     // [ms] try to incorporate it into the serialisation of jimple printing so the other half of
     // iteration information is not wasted..
-    BlockGraphIteratorAndTrapAggregator it = new BlockGraphIteratorAndTrapAggregator();
+    BlockGraphIteratorAndTrapAggregator it =
+        new BlockGraphIteratorAndTrapAggregator(new MutableBasicBlock());
     // it.getTraps() is valid/completely build when the iterator is done.
     HashMap<Stmt, Integer> stmtsBlockIdx = new HashMap<>();
     int i = 0;
