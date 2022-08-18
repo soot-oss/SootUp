@@ -7,7 +7,7 @@ import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.types.BottomType;
-import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.types.BytecodeHierarchy;
+import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.BytecodeHierarchy;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;

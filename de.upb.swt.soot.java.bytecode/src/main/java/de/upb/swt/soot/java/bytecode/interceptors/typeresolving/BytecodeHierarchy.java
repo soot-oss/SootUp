@@ -1,4 +1,4 @@
-package de.upb.swt.soot.java.bytecode.interceptors.typeresolving.types;
+package de.upb.swt.soot.java.bytecode.interceptors.typeresolving;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -27,6 +27,8 @@ import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.IHierarchy;
 import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.PrimitiveHierarchy;
+import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.types.BottomType;
+
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
