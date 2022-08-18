@@ -202,7 +202,7 @@ public class MutableBlockStmtGraphTest {
     assertEquals(3, graph.getBlocksSorted().size());
 
     graph.removeNode(conditionalStmt);
-    final List<MutableBasicBlock> blocksSorted = graph.getBlocksSorted();
+    final List<? extends BasicBlock<?>> blocksSorted = graph.getBlocksSorted();
     assertEquals(
         Collections.singletonList(firstNop).toString(), blocksSorted.get(0).getStmts().toString());
     assertEquals(
@@ -214,7 +214,7 @@ public class MutableBlockStmtGraphTest {
   @Test
   public void modifyStmtToBlockAtTail() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-    final List<MutableBasicBlock> blocksSorted = graph.getBlocksSorted();
+    final List<? extends BasicBlock<?>> blocksSorted = graph.getBlocksSorted();
     assertEquals(0, blocksSorted.size());
     assertEquals(0, graph.nodes().size());
 

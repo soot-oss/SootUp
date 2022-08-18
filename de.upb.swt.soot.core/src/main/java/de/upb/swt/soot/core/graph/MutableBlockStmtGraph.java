@@ -1,12 +1,13 @@
 package de.upb.swt.soot.core.graph;
 
 import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Iterators;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -292,16 +293,16 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Override
   @Nonnull
-  public Set<MutableBasicBlock> getBlocks() {
-    return Collections.unmodifiableSet(blocks);
+  public Set<? extends BasicBlock<?>> getBlocks() {
+    return blocks.stream().map(ForwardingBasicBlock::new).collect(Collectors.toSet());
   }
 
   @Nonnull
-  public List<MutableBasicBlock> getBlocksSorted() {
-    final BlockGraphIterator blockGraphIterator = new BlockGraphIterator();
-    final ArrayList<MutableBasicBlock> blocks = new ArrayList<>();
-    Iterators.addAll(blocks, blockGraphIterator);
-    return blocks;
+  public List<? extends BasicBlock<?>> getBlocksSorted() {
+    return StreamSupport.stream(
+            Spliterators.spliteratorUnknownSize(blocks.iterator(), Spliterator.ORDERED), false)
+        .map(ForwardingBasicBlock::new)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -699,7 +700,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   public void validateBlocks() {
-    for (MutableBasicBlock block : getBlocks()) {
+    for (MutableBasicBlock block : blocks) {
       for (Stmt stmt : block.getStmts()) {
         if (stmtToBlock.get(stmt) != block) {
           throw new IllegalStateException("wrong stmt to block mapping");
@@ -958,8 +959,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Override
   @Nullable
-  public MutableBasicBlock getStartingStmtBlock() {
-    return stmtToBlock.get(startingStmt);
+  public BasicBlock<?> getStartingStmtBlock() {
+    return getBlockOf(startingStmt);
   }
 
   @Override
@@ -1014,9 +1015,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // argh indexOf.. possibly expensive..
       List<Stmt> stmts = block.getStmts();
       final int i = stmts.indexOf(node);
-      assert (stmts.size() > 0) : "no stmts in " + block + " " + block.hashCode();
-      ;
-      assert (i > 0) : " stmt not found in " + block;
+      // assert (stmts.size() > 0) : "no stmts in " + block + " " + block.hashCode();
+      // assert (i > 0) : " stmt not found in " + block;
       return Collections.singletonList(stmts.get(i - 1));
     }
   }
@@ -1187,7 +1187,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     HashMap<Stmt, Integer> stmtsBlockIdx = new HashMap<>();
     int i = 0;
     while (it.hasNext()) {
-      final MutableBasicBlock nextBlock = it.next();
+      final BasicBlock<?> nextBlock = it.next();
       stmtsBlockIdx.put(nextBlock.getHead(), i);
       stmtsBlockIdx.put(nextBlock.getTail(), i);
       i++;

@@ -39,7 +39,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
   public abstract Stmt getStartingStmt();
 
-  public abstract V getStartingStmtBlock();
+  public abstract BasicBlock<?> getStartingStmtBlock();
   /**
    * returns the nodes in this graph in a non-deterministic order (->Set) to get the nodes in
    * linearized, ordered manner use iterator() or getStmts.
@@ -54,12 +54,12 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   }
 
   @Nonnull
-  public abstract Collection<V> getBlocks();
+  public abstract Collection<? extends BasicBlock<?>> getBlocks();
 
   @Nonnull
-  public abstract List<V> getBlocksSorted();
+  public abstract List<? extends BasicBlock<?>> getBlocksSorted();
 
-  public Iterator<V> getBlockIterator() {
+  public Iterator<BasicBlock<?>> getBlockIterator() {
     return new BlockGraphIterator();
   }
 
@@ -354,7 +354,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
         if (!blockIt.hasNext()) {
           throw new NoSuchElementException("Iterator has no more Stmts.");
         }
-        V currentBlock = blockIt.next();
+        BasicBlock<?> currentBlock = blockIt.next();
         currentBlockIt = currentBlock.getStmts().iterator();
       }
       return currentBlockIt.next();
@@ -367,7 +367,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     @Nonnull private final List<Trap> collectedTraps = new ArrayList<>();
 
     Map<ClassType, Stmt> trapStarts = new HashMap<>();
-    V lastIteratedBlock; // dummy value to remove n-1 unnecessary null-checks
+    BasicBlock<?> lastIteratedBlock; // dummy value to remove n-1 unnecessary null-checks
 
     /*
      * @param dummyBlock is just an empty instantiation of type V - as neither BasicBlock nor V instantiable we need a concrete object from the using subclass itclass.
@@ -379,11 +379,12 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
     @Nonnull
     @Override
-    public V next() {
-      final V block = super.next();
+    public BasicBlock<?> next() {
+      final BasicBlock<?> block = super.next();
 
-      final Map<? extends ClassType, V> currentBlocksExceptions = block.getExceptionalSuccessors();
-      final Map<? extends ClassType, V> lastBlocksExceptions =
+      final Map<? extends ClassType, ? extends BasicBlock<?>> currentBlocksExceptions =
+          block.getExceptionalSuccessors();
+      final Map<? extends ClassType, ? extends BasicBlock<?>> lastBlocksExceptions =
           lastIteratedBlock.getExceptionalSuccessors();
 
       // former trap info is not in the current blocks info -> add it to the trap collection
@@ -424,7 +425,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       // aggregate dangling trap data
       trapStarts.forEach(
           (type, trapStart) -> {
-            final V trapHandler = lastIteratedBlock.getExceptionalSuccessors().get(type);
+            final BasicBlock<?> trapHandler =
+                lastIteratedBlock.getExceptionalSuccessors().get(type);
             if (trapHandler == null) {
               throw new IllegalStateException(
                   "No matching Trap info found for '"
@@ -440,28 +442,28 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   }
 
   /** Iterates over the blocks */
-  public class BlockGraphIterator implements Iterator<V> {
+  public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
 
-    @Nonnull private final ArrayDeque<V> trapHandlerBlocks = new ArrayDeque<>();
+    @Nonnull private final ArrayDeque<BasicBlock<?>> trapHandlerBlocks = new ArrayDeque<>();
 
-    @Nonnull private final ArrayDeque<V> nestedBlocks = new ArrayDeque<>();
-    @Nonnull private final ArrayDeque<V> otherBlocks = new ArrayDeque<>();
-    @Nonnull private final Set<V> iteratedBlocks;
+    @Nonnull private final ArrayDeque<BasicBlock<?>> nestedBlocks = new ArrayDeque<>();
+    @Nonnull private final ArrayDeque<BasicBlock<?>> otherBlocks = new ArrayDeque<>();
+    @Nonnull private final Set<BasicBlock<?>> iteratedBlocks;
 
     public BlockGraphIterator() {
-      final Collection<V> blocks = getBlocks();
+      final Collection<? extends BasicBlock<?>> blocks = getBlocks();
       iteratedBlocks = new HashSet<>(blocks.size(), 1);
       Stmt startingStmt = getStartingStmt();
       if (startingStmt != null) {
-        final V startingBlock = getStartingStmtBlock();
+        final BasicBlock<?> startingBlock = getStartingStmtBlock();
         updateFollowingBlocks(startingBlock);
         nestedBlocks.addFirst(startingBlock);
       }
     }
 
     @Nullable
-    private V retrieveNextBlock() {
-      V nextBlock;
+    private BasicBlock<?> retrieveNextBlock() {
+      BasicBlock<?> nextBlock;
       do {
         if (!nestedBlocks.isEmpty()) {
           nextBlock = nestedBlocks.pollFirst();
@@ -470,11 +472,11 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
         } else if (!otherBlocks.isEmpty()) {
           nextBlock = otherBlocks.pollFirst();
         } else {
-          Collection<V> blocks = getBlocks();
+          Collection<? extends BasicBlock<?>> blocks = getBlocks();
           if (iteratedBlocks.size() < blocks.size()) {
             // graph is not connected! iterate/append all not connected blocks at the end in no
             // particular order.
-            for (V block : blocks) {
+            for (BasicBlock<?> block : blocks) {
               if (!iteratedBlocks.contains(block)) {
                 nestedBlocks.addLast(block);
               }
@@ -494,8 +496,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
     @Override
     @Nonnull
-    public V next() {
-      V currentBlock = retrieveNextBlock();
+    public BasicBlock<?> next() {
+      BasicBlock<?> currentBlock = retrieveNextBlock();
       if (currentBlock == null) {
         throw new NoSuchElementException("Iterator has no more Blocks.");
       }
@@ -505,17 +507,17 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     }
 
     //
-    private void updateFollowingBlocks(V currentBlock) {
+    private void updateFollowingBlocks(BasicBlock<?> currentBlock) {
       // collect traps
       final Stmt tailStmt = currentBlock.getTail();
-      for (Map.Entry<? extends ClassType, V> entry :
+      for (Map.Entry<? extends ClassType, ? extends BasicBlock<?>> entry :
           currentBlock.getExceptionalSuccessors().entrySet()) {
-        V trapHandlerBlock = entry.getValue();
+        BasicBlock<?> trapHandlerBlock = entry.getValue();
         trapHandlerBlocks.addLast(trapHandlerBlock);
         nestedBlocks.addFirst(trapHandlerBlock);
       }
 
-      final List<V> successors = currentBlock.getSuccessors();
+      final List<? extends BasicBlock<?>> successors = currentBlock.getSuccessors();
 
       for (int i = successors.size() - 1; i >= 0; i--) {
         if (i == 0 && tailStmt.fallsThrough()) {
@@ -529,14 +531,15 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
           // top until
           // predecessor is not a fallsthrough stmt anymore and then the iterator will iterate
           // from there.
-          final V successorBlock = successors.get(i);
-          V leaderOfFallsthroughBlocks = successorBlock;
+          final BasicBlock<?> successorBlock = successors.get(i);
+          BasicBlock<?> leaderOfFallsthroughBlocks = successorBlock;
           while (true) {
-            final List<V> itPreds = leaderOfFallsthroughBlocks.getPredecessors();
+            final List<? extends BasicBlock<?>> itPreds =
+                leaderOfFallsthroughBlocks.getPredecessors();
             if (itPreds.size() != 1) {
               break;
             }
-            V predecessorBlock = itPreds.get(0);
+            BasicBlock<?> predecessorBlock = itPreds.get(0);
             if (predecessorBlock.getTail().fallsThrough()
                 && predecessorBlock.getSuccessors().get(0) == leaderOfFallsthroughBlocks) {
               leaderOfFallsthroughBlocks = predecessorBlock;
@@ -573,7 +576,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     @Override
     public boolean hasNext() {
       final boolean hasIteratorMoreElements;
-      V b = retrieveNextBlock();
+      BasicBlock<?> b = retrieveNextBlock();
       if (b != null) {
         // reinsert at FIRST position -> not great for performance - but easier handling in next()
         nestedBlocks.addFirst(b);
@@ -585,7 +588,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       // "assertion" that all elements are iterated
       if (!hasIteratorMoreElements) {
         final int returnedSize = iteratedBlocks.size();
-        final Collection<V> blocks = getBlocks();
+        final Collection<? extends BasicBlock<?>> blocks = getBlocks();
         final int actualSize = blocks.size();
         if (returnedSize != actualSize) {
           String info =

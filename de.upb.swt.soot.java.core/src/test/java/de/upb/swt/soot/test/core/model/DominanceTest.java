@@ -68,7 +68,7 @@ public class DominanceTest {
   @Test
   public void testImmediateDominator() {
     MutableBlockStmtGraph graph = createGraph();
-    List<MutableBasicBlock> blocks = graph.getBlocksSorted();
+    List<? extends BasicBlock<?>> blocks = graph.getBlocksSorted();
     BasicBlock<?> expectedBlock1 = blocks.get(0);
     BasicBlock<?> expectedBlock2 = blocks.get(1);
     BasicBlock<?> expectedBlock3 = blocks.get(3);
@@ -100,7 +100,7 @@ public class DominanceTest {
   @Test
   public void testDominanceFrontiers() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph(createGraph());
-    List<MutableBasicBlock> blocks = graph.getBlocksSorted();
+    List<? extends BasicBlock<?>> blocks = graph.getBlocksSorted();
     DominanceFinder df = new DominanceFinder(graph);
 
     System.out.println(GraphVizExporter.createUrlToWebeditor(graph));
@@ -134,7 +134,7 @@ public class DominanceTest {
   @Test
   public void testDominanceTree() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph(createGraph());
-    List<MutableBasicBlock> blocks = graph.getBlocksSorted();
+    List<? extends BasicBlock<?>> blocks = graph.getBlocksSorted();
 
     DominanceFinder df = new DominanceFinder(graph);
     DominanceTree tree = new DominanceTree(df);
@@ -169,7 +169,7 @@ public class DominanceTest {
   @Test
   public void testImmediateDominatorWithTrap() {
     MutableBlockStmtGraph graph = createTrapGraph();
-    List<MutableBasicBlock> blocks = graph.getBlocksSorted();
+    List<? extends BasicBlock<?>> blocks = graph.getBlocksSorted();
     BasicBlock<?> expectedBlock1 = blocks.get(0);
     BasicBlock<?> expectedBlock2 = blocks.get(1);
     BasicBlock<?> expectedBlock3 = blocks.get(3);
@@ -201,7 +201,7 @@ public class DominanceTest {
   @Test
   public void testDominanceFrontiersWithTrap() {
     MutableBlockStmtGraph graph = createTrapGraph();
-    List<MutableBasicBlock> blocks = graph.getBlocksSorted();
+    List<? extends BasicBlock<?>> blocks = graph.getBlocksSorted();
     BasicBlock<?> eblock1 = blocks.get(1);
     BasicBlock<?> eblock2 = blocks.get(7);
     BasicBlock<?> eblock3 = blocks.get(8);
@@ -240,7 +240,7 @@ public class DominanceTest {
   @Test
   public void testDominanceTreeWithTrap() {
     MutableBlockStmtGraph graph = createTrapGraph();
-    List<MutableBasicBlock> blocks = graph.getBlocksSorted();
+    List<? extends BasicBlock<?>> blocks = graph.getBlocksSorted();
 
     DominanceFinder df = new DominanceFinder(graph);
     DominanceTree tree = new DominanceTree(df);

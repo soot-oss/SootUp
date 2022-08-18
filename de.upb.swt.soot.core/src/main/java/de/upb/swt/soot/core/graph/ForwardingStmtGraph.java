@@ -45,7 +45,7 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
   }
 
   @Override
-  public V getStartingStmtBlock() {
+  public BasicBlock<?> getStartingStmtBlock() {
     return backingGraph.getStartingStmtBlock();
   }
 
@@ -62,13 +62,13 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
 
   @Nonnull
   @Override
-  public Collection<V> getBlocks() {
+  public Collection<? extends BasicBlock<?>> getBlocks() {
     return backingGraph.getBlocks();
   }
 
   @Nonnull
   @Override
-  public List<V> getBlocksSorted() {
+  public List<? extends BasicBlock<?>> getBlocksSorted() {
     return backingGraph.getBlocksSorted();
   }
 

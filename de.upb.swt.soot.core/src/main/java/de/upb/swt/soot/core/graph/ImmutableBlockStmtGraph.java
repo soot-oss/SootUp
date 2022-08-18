@@ -17,9 +17,9 @@ public class ImmutableBlockStmtGraph
 
   public ImmutableBlockStmtGraph(@Nonnull MutableStmtGraph graph) {
 
-    final List<MutableBasicBlock> mblocks = graph.getBlocksSorted();
+    final List<? extends BasicBlock<?>> mblocks = graph.getBlocksSorted();
     blocks = Lists.newArrayListWithExpectedSize(mblocks.size());
-    for (MutableBasicBlock block : mblocks) {
+    for (BasicBlock<?> block : mblocks) {
       /* TODO: link predecessors/successors as well..
       // final ImmutableBasicBlock ib = new ImmutableBasicBlock();
       block.getStmts().forEach(stmt -> stmtToBlock.put(stmt, ib));
@@ -35,7 +35,7 @@ public class ImmutableBlockStmtGraph
   }
 
   @Override
-  public ImmutableBasicBlock getStartingStmtBlock() {
+  public BasicBlock<?> getStartingStmtBlock() {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
@@ -66,7 +66,7 @@ public class ImmutableBlockStmtGraph
 
   @Nonnull
   @Override
-  public List<ImmutableBasicBlock> getBlocksSorted() {
+  public List<? extends BasicBlock<?>> getBlocksSorted() {
     return blocks;
   }
 
