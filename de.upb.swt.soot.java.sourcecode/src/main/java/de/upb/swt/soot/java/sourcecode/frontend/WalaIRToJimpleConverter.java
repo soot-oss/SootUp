@@ -45,10 +45,7 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
@@ -516,7 +513,7 @@ public class WalaIRToJimpleConverter {
             ret =
                 Jimple.newReturnVoidStmt(
                     convertPositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
-            stmtList.add(stmt);
+            stmtList.add(ret);
           } else {
             ret = stmt;
           }
@@ -533,60 +530,19 @@ public class WalaIRToJimpleConverter {
           final IBasicBlock<SSAInstruction> block = catchBlockEntry.getKey();
           final TypeReference[] exceptionTypes = catchBlockEntry.getValue();
 
-          // find associated try block
-          boolean found = false;
-          IBasicBlock<?> itBlock = null;
-          int idx = block.getFirstInstructionIndex() - 1;
-          while (idx >= 0) {
-            itBlock = cfg.getBlockForInstruction(idx);
-            if (!itBlock.isCatchBlock()) {
-              for (int i = itBlock.getFirstInstructionIndex();
-                  i <= itBlock.getLastInstructionIndex();
-                  i++) {
-                final String instrString = insts[i].toString(walaMethod.symbolTable());
-                // find instructions that ends with: #[0-9]{0,}try
-                if (instrString.endsWith("try")) {
-                  int pos = instrString.length() - 4;
-                  while (pos > 0) {
-                    // skip numbers
-                    if (!('0' <= instrString.charAt(pos) && instrString.charAt(pos) <= '9')) {
-                      break;
+          /*          final Collection<IBasicBlock<SSAInstruction>> exceptionalPredecessors = cfg.getExceptionalPredecessors(block);
+
+                    for (IBasicBlock<SSAInstruction> exceptionalPredecessor : exceptionalPredecessors) {
+                      Stmt from = index2Stmt.get(exceptionalPredecessor.getFirstInstructionIndex());
+                      Stmt to = index2Stmt.get(exceptionalPredecessor.getLastInstructionIndex() + 1); // exclusive!
+
+                      Stmt handlerStmt = index2Stmt.get(block.getFirstInstructionIndex());
+                      for (TypeReference type : exceptionTypes) {
+                        ClassType exception = (ClassType) convertType(type);
+                        traps.add(new Trap(exception, from, to, handlerStmt));
+                      }
                     }
-                    pos--;
-                  }
-                  if (instrString.charAt(pos) == '#') {
-                    found = true;
-                    break;
-                  }
-                }
-              }
-              if (found) {
-                break;
-              }
-            }
-            idx = itBlock.getFirstInstructionIndex() - 1;
-          }
-
-          Stmt from;
-          if (found) {
-            from = index2Stmt.get(itBlock.getFirstInstructionIndex());
-          } else {
-            from = index2Stmt.get(0);
-          }
-
-          int iidx = block.getFirstInstructionIndex() - 1;
-          // search end of previous non catch block
-          while (iidx >= 0 && cfg.getBlockForInstruction(iidx).isCatchBlock()) {
-            iidx--;
-          }
-          assert (insts[iidx] instanceof SSAGotoInstruction);
-          Stmt to = index2Stmt.get(iidx + 1); // exclusive!
-
-          Stmt handlerStmt = index2Stmt.get(block.getFirstInstructionIndex());
-          for (TypeReference type : exceptionTypes) {
-            ClassType exception = (ClassType) convertType(type);
-            traps.add(new Trap(exception, from, to, handlerStmt));
-          }
+          */
         }
 
         MutableBlockStmtGraph graph = new MutableBlockStmtGraph();

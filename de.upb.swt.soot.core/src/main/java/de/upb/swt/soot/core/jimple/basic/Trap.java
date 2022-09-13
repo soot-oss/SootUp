@@ -70,14 +70,12 @@ public final class Trap implements Copyable {
 
   @Override
   public String toString() {
-    StringBuilder buf = new StringBuilder("Trap :");
-    buf.append("\nbegin  : ");
-    buf.append(getBeginStmt());
-    buf.append("\nend    : ");
-    buf.append(getEndStmt());
-    buf.append("\nhandler: ");
-    buf.append(getHandlerStmt());
-    return new String(buf);
+    StringBuilder sb = new StringBuilder("Trap: ");
+    sb.append("\nexception: ").append(exception);
+    sb.append("\nbegin: ").append(getBeginStmt());
+    sb.append("\nend: ").append(getEndStmt());
+    sb.append("\nhandler: ").append(getHandlerStmt());
+    return new String(sb);
   }
 
   @Nonnull

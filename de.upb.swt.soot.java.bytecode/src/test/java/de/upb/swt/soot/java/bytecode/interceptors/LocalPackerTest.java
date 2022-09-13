@@ -1,6 +1,7 @@
 package de.upb.swt.soot.java.bytecode.interceptors;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.graph.MutableBlockStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
@@ -207,8 +208,8 @@ public class LocalPackerTest {
 
     LocalPacker localPacker = new LocalPacker();
     localPacker.interceptBody(builder);
-    body = builder.build();
 
+    Body body = builder.build();
     Body expectedBody = createExpectedTrapBody().build();
 
     AssertUtils.assertLocalsEquiv(expectedBody, body);
@@ -217,7 +218,8 @@ public class LocalPackerTest {
 
   private Body.BodyBuilder createBodyBuilder() {
 
-    Body.BodyBuilder builder = Body.builder();
+    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
 
     List<Type> parameters = new ArrayList<>();
     parameters.add(intType);
@@ -232,17 +234,17 @@ public class LocalPackerTest {
     builder.setLocals(locals);
 
     // build stmtGraph
-    builder.addFlow(startingStmt, identityStmt0);
-    builder.addFlow(identityStmt0, identityStmt1);
-    builder.addFlow(identityStmt1, stmt1);
-    builder.addFlow(stmt1, stmt2);
-    builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, stmt4);
-    builder.addFlow(stmt4, stmt5);
-    builder.addFlow(stmt5, stmt6);
-    builder.addFlow(stmt6, gt);
-    builder.addFlow(gt, stmt5);
-    builder.addFlow(stmt6, ret);
+    graph.putEdge(startingStmt, identityStmt0);
+    graph.putEdge(identityStmt0, identityStmt1);
+    graph.putEdge(identityStmt1, stmt1);
+    graph.putEdge(stmt1, stmt2);
+    graph.putEdge(stmt2, stmt3);
+    graph.putEdge(stmt3, stmt4);
+    graph.putEdge(stmt4, stmt5);
+    graph.putEdge(stmt5, stmt6);
+    graph.putEdge(stmt6, gt);
+    graph.putEdge(gt, stmt5);
+    graph.putEdge(stmt6, ret);
 
     builder.setStartingStmt(startingStmt);
 
@@ -251,7 +253,8 @@ public class LocalPackerTest {
 
   private Body createExpectedBody() {
 
-    Body.BodyBuilder builder = Body.builder();
+    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
 
     List<Type> parameters = new ArrayList<>();
     parameters.add(intType);
@@ -265,17 +268,17 @@ public class LocalPackerTest {
     builder.setLocals(locals);
 
     // build stmtGraph
-    builder.addFlow(startingStmt, eidentityStmt0);
-    builder.addFlow(eidentityStmt0, eidentityStmt1);
-    builder.addFlow(eidentityStmt1, estmt1);
-    builder.addFlow(estmt1, estmt2);
-    builder.addFlow(estmt2, estmt3);
-    builder.addFlow(estmt3, estmt4);
-    builder.addFlow(estmt4, estmt5);
-    builder.addFlow(estmt5, estmt6);
-    builder.addFlow(estmt6, gt);
-    builder.addFlow(gt, estmt5);
-    builder.addFlow(estmt6, ret);
+    graph.putEdge(startingStmt, eidentityStmt0);
+    graph.putEdge(eidentityStmt0, eidentityStmt1);
+    graph.putEdge(eidentityStmt1, estmt1);
+    graph.putEdge(estmt1, estmt2);
+    graph.putEdge(estmt2, estmt3);
+    graph.putEdge(estmt3, estmt4);
+    graph.putEdge(estmt4, estmt5);
+    graph.putEdge(estmt5, estmt6);
+    graph.putEdge(estmt6, gt);
+    graph.putEdge(gt, estmt5);
+    graph.putEdge(estmt6, ret);
 
     builder.setStartingStmt(startingStmt);
 
@@ -288,7 +291,8 @@ public class LocalPackerTest {
 
   private Body.BodyBuilder createTrapBody() {
 
-    Body.BodyBuilder builder = Body.builder();
+    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
 
     List<Type> parameters = new ArrayList<>();
     parameters.add(intType);
@@ -304,29 +308,30 @@ public class LocalPackerTest {
     builder.setLocals(locals);
 
     // build stmtGraph
-    builder.addStmt(stmt5, Collections.singletonMap(exception, etrapHandler));
+    graph.addNode(stmt5, Collections.singletonMap(exception, etrapHandler));
 
-    builder.addFlow(startingStmt, identityStmt0);
-    builder.addFlow(identityStmt0, identityStmt1);
-    builder.addFlow(identityStmt1, stmt1);
-    builder.addFlow(stmt1, stmt2);
-    builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, stmt4);
-    builder.addFlow(stmt4, stmt5);
-    builder.addFlow(stmt5, stmt6);
-    builder.addFlow(stmt6, gt);
-    builder.addFlow(gt, stmt5);
-    builder.addFlow(stmt6, ret);
-    builder.addFlow(trapHandler, throwStmt);
+    graph.putEdge(startingStmt, identityStmt0);
+    graph.putEdge(identityStmt0, identityStmt1);
+    graph.putEdge(identityStmt1, stmt1);
+    graph.putEdge(stmt1, stmt2);
+    graph.putEdge(stmt2, stmt3);
+    graph.putEdge(stmt3, stmt4);
+    graph.putEdge(stmt4, stmt5);
+    graph.putEdge(stmt5, stmt6);
+    graph.putEdge(stmt6, gt);
+    graph.putEdge(gt, stmt5);
+    graph.putEdge(stmt6, ret);
+    graph.putEdge(trapHandler, throwStmt);
 
     builder.setStartingStmt(startingStmt);
 
-    return builder.build();
+    return builder;
   }
 
   private Body.BodyBuilder createExpectedTrapBody() {
 
-    Body.BodyBuilder builder = Body.builder();
+    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
 
     List<Type> parameters = new ArrayList<>();
     parameters.add(intType);
@@ -340,19 +345,19 @@ public class LocalPackerTest {
     builder.setLocals(locals);
 
     // build stmtGraph
-    builder.addFlow(startingStmt, eidentityStmt0);
-    builder.addFlow(eidentityStmt0, eidentityStmt1);
-    builder.addFlow(eidentityStmt1, estmt1);
-    builder.addFlow(estmt1, estmt2);
-    builder.addFlow(estmt2, estmt3);
-    builder.addFlow(estmt3, estmt4);
-    builder.addStmt(estmt5, Collections.singletonMap(exception, etrapHandler));
-    builder.addFlow(estmt4, estmt5);
+    graph.putEdge(startingStmt, eidentityStmt0);
+    graph.putEdge(eidentityStmt0, eidentityStmt1);
+    graph.putEdge(eidentityStmt1, estmt1);
+    graph.putEdge(estmt1, estmt2);
+    graph.putEdge(estmt2, estmt3);
+    graph.putEdge(estmt3, estmt4);
+    graph.addNode(estmt5, Collections.singletonMap(exception, etrapHandler));
+    graph.putEdge(estmt4, estmt5);
 
-    builder.addFlow(estmt6, gt);
-    builder.addFlow(gt, estmt5);
-    builder.addFlow(estmt6, ret);
-    builder.addFlow(etrapHandler, ethrowStmt);
+    graph.putEdge(estmt6, gt);
+    graph.putEdge(gt, estmt5);
+    graph.putEdge(estmt6, ret);
+    graph.putEdge(etrapHandler, ethrowStmt);
 
     builder.setStartingStmt(startingStmt);
 

@@ -1,5 +1,6 @@
 package de.upb.swt.soot.core.graph;
 
+import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
 import java.util.List;
@@ -79,5 +80,20 @@ public class ForwardingBasicBlock<V extends BasicBlock<V>> implements BasicBlock
   @Override
   public Stmt getTail() {
     return backingBlock.getTail();
+  }
+
+  @Override
+  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+    return backingBlock.equivTo(o, comparator);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return backingBlock.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return backingBlock.hashCode();
   }
 }

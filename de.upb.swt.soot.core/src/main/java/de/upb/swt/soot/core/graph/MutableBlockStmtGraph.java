@@ -1,10 +1,16 @@
 package de.upb.swt.soot.core.graph;
 
 import com.google.common.collect.ComparisonChain;
+import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.types.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -25,6 +31,31 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   @Nonnull private final Set<MutableBasicBlock> blocks = new HashSet<>();
 
   public MutableBlockStmtGraph() {}
+
+  public MutableBlockStmtGraph(boolean isStatic, MethodSignature sig, LocalGenerator localgen) {
+    final List<Stmt> stmts = new ArrayList<>(sig.getParameterTypes().size() + (isStatic ? 0 : 1));
+    if (!isStatic) {
+      ClassType thisType = sig.getDeclClassType();
+      Local thisLocal = localgen.generateThisLocal(thisType);
+      Stmt stmt =
+          Jimple.newIdentityStmt(
+              thisLocal, Jimple.newThisRef(thisType), StmtPositionInfo.createNoStmtPositionInfo());
+      stmts.add(stmt);
+    }
+    int i = 0;
+    for (Type parameterType : sig.getParameterTypes()) {
+      Stmt stmt =
+          Jimple.newIdentityStmt(
+              localgen.generateParameterLocal(parameterType, i),
+              Jimple.newParameterRef(parameterType, i++),
+              StmtPositionInfo.createNoStmtPositionInfo());
+      stmts.add(stmt);
+    }
+    if (!stmts.isEmpty()) {
+      setStartingStmt(stmts.get(0));
+      addBlock(stmts);
+    }
+  }
 
   /** copies a StmtGraph into this Mutable instance */
   public MutableBlockStmtGraph(@Nonnull StmtGraph<? extends BasicBlock<?>> graph) {
@@ -161,7 +192,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   private static void duplicateCatchAllTrapRemover(
       @Nonnull List<Stmt> stmts, @Nonnull List<Trap> traps) {
     /*
-     * handle duplicate catchall traps here - aka integrated "DuplicateCatchAllTrapRemover" Interceptor
+     * handle duplicate catchall traps here - aka integrated "DuplicateCatchAllTrapRemover" Transformer/Interceptor
      *
      * Some compilers generate duplicate traps:
      *
@@ -867,8 +898,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     if (blockOfFrom == blockOfTo) {
       // divide block and don't link them
       final List<Stmt> stmtsOfBlock = blockOfFrom.getStmts();
-      int fromIdx = stmtsOfBlock.indexOf(from);
-      if (stmtsOfBlock.get(fromIdx + 1) == to) {
+      int toIdx = stmtsOfBlock.indexOf(from) + 1;
+      // from is not the tail Stmt and the from-Stmt is directly before the to-Stmt
+      if (toIdx < stmtsOfBlock.size() && stmtsOfBlock.get(toIdx) == to) {
         MutableBasicBlock newBlock = blockOfFrom.splitBlockUnlinked(from, to);
         newBlock.copyExceptionalFlowFrom(blockOfFrom);
         blockOfFrom.getSuccessors().forEach(newBlock::addSuccessorBlock);
