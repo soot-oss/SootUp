@@ -32,6 +32,8 @@ import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.BytecodeHierarchy;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.*;
 
 /** @author Zun Wang */
@@ -40,11 +42,13 @@ public class TypeResolver {
   private Map<Integer, AbstractDefinitionStmt> id2assignments = new HashMap<>();
   private final Map<Local, BitSet> depends = new HashMap<>();
   private final LocalGenerator localGenerator;
+  private final JavaView view;
 
-  public TypeResolver(Body.BodyBuilder builder) {
+  public TypeResolver(Body.BodyBuilder builder, JavaView view) {
     this.builder = builder;
     // todo: maybe use withNewLocal(), not the local Generator
     localGenerator = new LocalGenerator(builder.getLocals());
+    this.view = view;
     init();
   }
 
@@ -101,5 +105,7 @@ public class TypeResolver {
     bitSet.set(id);
   }
 
-  public void inferTypes() {}
+  public void inferTypes() {
+    BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
+  }
 }

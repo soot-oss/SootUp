@@ -37,15 +37,11 @@ public class Typing {
     }
   }
 
-  public Typing(@Nonnull Typing typing) {
-    this.local2Type = new HashMap<>(typing.getMap());
+  public Type getType(Local local) {
+    return this.local2Type.get(local);
   }
 
-  public HashMap<Local, Type> getMap() {
-    return this.local2Type;
-  }
-
-  public void set(Local local, Type type) {
+  public void set(@Nonnull Local local, @Nonnull Type type) {
     this.local2Type.put(local, type);
   }
 
