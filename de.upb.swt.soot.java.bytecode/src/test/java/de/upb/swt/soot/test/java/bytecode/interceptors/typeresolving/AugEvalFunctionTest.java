@@ -44,7 +44,7 @@ public class AugEvalFunctionTest {
 
   @Before
   public void setup() {
-    String baseDir = "../shared-test-resources/bytecodeTestSuite/";
+    String baseDir = "../shared-test-resources/AugEvalFunctionTest/";
     JavaClassPathAnalysisInputLocation analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(baseDir);
     JavaClassPathAnalysisInputLocation rtJar =
