@@ -1,5 +1,6 @@
 package de.upb.swt.soot.java.bytecode.minimaltestsuite.java14;
 
+import categories.Java9Test;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
@@ -9,8 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /** @author Bastian Haverkamp */
+@Category(Java9Test.class)
 public class SwitchExprWithoutBreakTest extends MinimalBytecodeTestSuiteBase {
 
   @Override

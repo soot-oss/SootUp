@@ -21,7 +21,7 @@ import org.junit.experimental.categories.Category;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
-@Ignore("ms: FIX IT!")
+@Ignore("ms: FIX IT")
 public class DominanceTest {
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();

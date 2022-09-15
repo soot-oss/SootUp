@@ -211,7 +211,6 @@ public class MutableBlockStmtGraphTest {
         Collections.singletonList(thirdNop).toString(), blocksSorted.get(2).getStmts().toString());
   }
 
-  @Test
   public void modifyStmtToBlockAtTail() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     assertEquals(0, graph.getBlocksSorted().size());

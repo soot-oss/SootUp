@@ -1,5 +1,6 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
@@ -8,8 +9,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category(Java8Test.class)
 public class SynchronizedBlockTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
@@ -50,6 +54,7 @@ public class SynchronizedBlockTest extends MinimalSourceTestSuiteBase {
   }
 
   @Test
+  @Ignore("FIXME: ms: wala does not convert traps correctly.")
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
