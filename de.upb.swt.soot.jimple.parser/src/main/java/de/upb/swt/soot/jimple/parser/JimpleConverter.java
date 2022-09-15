@@ -301,7 +301,7 @@ public class JimpleConverter {
           final JimpleParser.StatementsContext statements =
               method_body_contentsContext.statements();
           if (statements != null && statements.statement() != null) {
-            statements.statement().forEach(stmtVisitor::visitStatement);
+            statements.statement().forEach(stmtCtx -> stmtList.add(stmtVisitor.visitStatement(stmtCtx)) );
           }
 
           // catch_clause
