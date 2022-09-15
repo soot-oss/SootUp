@@ -2161,7 +2161,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
                     stmt instanceof StmtContainer
                         ? ((StmtContainer) stmt).getStmts().stream()
                         : Stream.of(stmt))
-            .filter(stmt -> stmt.getUses().contains(expr));
+            .filter(stmt -> stmt != null && stmt.getUses().contains(expr));
 
     Stream<Stmt> oldMappedUses =
         replacedStmt.entrySet().stream()
