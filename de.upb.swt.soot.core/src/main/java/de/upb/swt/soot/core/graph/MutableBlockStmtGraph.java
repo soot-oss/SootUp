@@ -160,7 +160,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
       if (stmt.fallsThrough()) {
         // hint: possible bad performance if not stmts is not instanceof RandomAccess
-        if (i >= stmts.size()) {
+        if (i + 1 >= stmts.size()) {
           throw new IllegalArgumentException(
               "Theres a fallsthrough Stmt ('"
                   + stmt
