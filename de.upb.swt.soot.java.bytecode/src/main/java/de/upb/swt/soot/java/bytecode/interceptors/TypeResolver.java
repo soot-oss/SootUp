@@ -50,7 +50,7 @@ public class TypeResolver {
     init();
   }
 
-  /** observe all assignments, add all locals at right-hand-side into the map depends */
+  /** observe all definition assignments, add all locals at right-hand-side into the map depends */
   private void init() {
     int assignID = 0;
     for (Stmt stmt : builder.getStmts()) {
