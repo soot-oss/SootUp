@@ -60,7 +60,7 @@ public class BytecodeHierarchyTest {
       intArr_prim;
 
   public void setUp() {
-    String jarFile = "../shared-test-resources/miniHierarchy/MiniHierarchy.jar";
+    String jarFile = "../shared-test-resources/TypeResolverTestSuite/ByteCodeHierarchyTest/MiniHierarchy.jar";
     String currentClassPath =
         System.getProperty("java.class.path")
             + File.pathSeparator
