@@ -99,6 +99,14 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
     duplicateCatchAllTrapRemover(stmts, traps);
 
+    final Stmt lastStmt = stmts.get(stmts.size() - 1);
+    if (lastStmt.fallsThrough()) {
+      throw new IllegalArgumentException(
+          "Theres a fallsthrough Stmt at the end of the list of stmts ('"
+              + lastStmt
+              + "') which has no sucessor - which means it currently falls into the abyss i.e. it can't fall through to another Stmt.");
+    }
+
     setStartingStmt(stmts.get(0));
     Map<ClassType, Stmt> currentTrapMap = new HashMap<>();
     Map<ClassType, List<Stmt>> overlappingTraps = new HashMap<>();
@@ -160,12 +168,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
       if (stmt.fallsThrough()) {
         // hint: possible bad performance if not stmts is not instanceof RandomAccess
-        if (i + 1 >= stmts.size()) {
-          throw new IllegalArgumentException(
-              "Theres a fallsthrough Stmt ('"
-                  + stmt
-                  + "') which has no sucessor - which means it currently falls into the abyss i.e. can't fall through to another Stmt.");
-        }
         putEdge(stmt, stmts.get(i + 1));
       }
 
