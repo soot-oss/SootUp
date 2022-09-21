@@ -46,6 +46,14 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     this.exceptionalSuccessorBlocks = exceptionMap;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof ForwardingBasicBlock) {
+      return o.equals(this);
+    }
+    return super.equals(o);
+  }
+
   public void addStmt(@Nonnull Stmt stmt) {
     if (getStmtCount() > 0 && getTail() instanceof BranchingStmt) {
       throw new IllegalArgumentException(

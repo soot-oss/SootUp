@@ -206,7 +206,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Body.BodyBuilder bodyBuilder = Body.builder(graph);
 
     bodyBuilder.setModifiers(AsmUtil.getModifiers(access));
-    arrangeStmts(graph, bodyBuilder);
+    try {
+      arrangeStmts(graph, bodyBuilder);
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to convert " + lazyMethodSignature.get(), e);
+    }
 
     if (graph.nodes().size() > 0) {
       Position firstStmtPos = graph.getStartingStmt().getPositionInfo().getStmtPosition();
@@ -1610,7 +1614,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
       Local stack = newStackLocal();
       AbstractDefinitionStmt<Local, JCaughtExceptionRef> as =
-          Jimple.newIdentityStmt(stack, ref, StmtPositionInfo.createNoStmtPositionInfo());
+          Jimple.newIdentityStmt(stack, ref, new StmtPositionInfo(currentLineNumber));
       opr = new Operand(ln, ref, this);
       opr.stackLocal = stack;
       frame.setOut(opr);
@@ -2133,7 +2137,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
 
     if (key == null) {
-      throw new IllegalStateException("Could not replace value in insn map because it is absent");
+      throw new IllegalStateException(
+          "Could not replace value in insn map because oldStmt " + oldStmt + " it is absent");
     }
 
     insnToStmt.put(key, newStmt);

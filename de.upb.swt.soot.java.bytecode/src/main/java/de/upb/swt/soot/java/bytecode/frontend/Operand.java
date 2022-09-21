@@ -100,7 +100,7 @@ class Operand {
       oldUsage.accept(replaceStmtVisitor);
       Stmt stmtWithNewUsage = replaceStmtVisitor.getResult();
 
-      if (oldUsage != stmtWithNewUsage) {
+      if (stmtWithNewUsage != null && oldUsage != stmtWithNewUsage) {
         methodSource.replaceStmt(oldUsage, stmtWithNewUsage);
         usedByStmts.set(i, stmtWithNewUsage);
       }

@@ -57,7 +57,17 @@ public class Position implements Comparable<Position> {
   }
 
   public String toString() {
-    return "[" + firstLine + ":" + firstCol + "-" + lastLine + ":" + lastCol + "]";
+    final StringBuilder sb = new StringBuilder();
+    sb.append("[").append(firstLine);
+    if (firstCol >= 0) {
+      sb.append(":").append(firstCol);
+    }
+    sb.append("-").append(lastLine);
+    if (lastCol >= 0) {
+      sb.append(":").append(lastCol);
+    }
+    sb.append("]");
+    return sb.toString();
   }
 
   @Override

@@ -96,4 +96,9 @@ public class ForwardingBasicBlock<V extends BasicBlock<V>> implements BasicBlock
   public int hashCode() {
     return backingBlock.hashCode();
   }
+
+  @Override
+  public String toString() {
+    return backingBlock.toString();
+  }
 }

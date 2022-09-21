@@ -97,8 +97,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       return;
     }
 
-    duplicateCatchAllTrapRemover(stmts, traps);
-
     final Stmt lastStmt = stmts.get(stmts.size() - 1);
     if (lastStmt.fallsThrough()) {
       throw new IllegalArgumentException(
@@ -107,9 +105,22 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
               + "') which has no sucessor - which means it currently falls into the abyss i.e. it can't fall through to another Stmt.");
     }
 
+    HashMap<Stmt, Integer> trapstmtToIdx = new HashMap<>();
+    traps.forEach(
+        trap -> {
+          trapstmtToIdx.put(trap.getBeginStmt(), stmts.indexOf(trap.getBeginStmt()));
+          trapstmtToIdx.put(trap.getEndStmt(), stmts.indexOf(trap.getEndStmt()));
+          trapstmtToIdx.put(trap.getHandlerStmt(), stmts.indexOf(trap.getHandlerStmt()));
+        });
+
+    duplicateCatchAllTrapRemover(stmts, traps, trapstmtToIdx);
+
+    // traps.sort(getTrapComparator(trapstmtToIdx));
+
     setStartingStmt(stmts.get(0));
-    Map<ClassType, Stmt> currentTrapMap = new HashMap<>();
-    Map<ClassType, List<Stmt>> overlappingTraps = new HashMap<>();
+    Map<ClassType, Stmt> trapMap = new HashMap<>();
+    Map<ClassType, Trap> currentTrapMap = new HashMap<>();
+    Map<ClassType, List<Trap>> overlappingTraps = new HashMap<>();
     for (int i = 0, stmtsSize = stmts.size(); i < stmtsSize; i++) {
       Stmt stmt = stmts.get(i);
 
@@ -117,57 +128,85 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // 2*m
       // additional memory
       boolean trapsChanged = false;
-      for (Trap trap : traps) {
-        // endStmt is exclusive! -> trap ends before this stmt -> remove exception info here
-        if (stmt == trap.getEndStmt()) {
-          final ClassType exceptionType = trap.getExceptionType();
-          final boolean isRemoved = currentTrapMap.remove(exceptionType, trap.getHandlerStmt());
-          final List<Stmt> overridenTrapHandlers = overlappingTraps.get(exceptionType);
-          if (!isRemoved) {
-            // check if theres an overlapping trap that has a less specific TrapRange which is
-            // ending before it gets the active exception information again
-            // not logical as a compiler output... but possible.
-            if (overridenTrapHandlers != null && overridenTrapHandlers.size() > 0) {
-              final boolean overlappingTrapRemoved =
-                  overridenTrapHandlers.remove(trap.getHandlerStmt());
-              if (!overlappingTrapRemoved) {
-                throw new IllegalStateException(
-                    "There is a Trap that should end here which was not applied before nor was not active due to a more specific traprange for that exeption! \n "
-                        + trap);
+      if (trapstmtToIdx.containsValue(i)) {
+        for (Trap trap : traps) {
+          // endStmt is exclusive! -> trap ends before this stmt -> remove exception info here
+          if (stmt == trap.getEndStmt()) {
+            final ClassType exceptionType = trap.getExceptionType();
+            final boolean isRemoved = currentTrapMap.remove(exceptionType, trap);
+            final List<Trap> overridenTrapHandlers = overlappingTraps.get(exceptionType);
+            if (overridenTrapHandlers != null) {
+              if (overridenTrapHandlers.size() > 0) {
+                // check if theres an overlapping trap that has a less specific TrapRange which is
+                // ending before it gets the active exception information again
+                // not logical as a compiler output... but possible.
+                if (!isRemoved) {
+                  final boolean overlappingTrapRemoved = overridenTrapHandlers.remove(trap);
+                  if (false && !overlappingTrapRemoved) {
+                    throw new IllegalStateException(
+                        "There is a Trap that should end here which was not applied before nor was not active due to a more specific traprange for that exeption! \n "
+                            + trap);
+                  }
+                }
+              }
+
+              if (overridenTrapHandlers.size() > 0) {
+                currentTrapMap.put(
+                    exceptionType, overridenTrapHandlers.remove(overridenTrapHandlers.size() - 1));
               }
             }
-          }
 
-          if (overridenTrapHandlers != null && overridenTrapHandlers.size() > 0) {
-            currentTrapMap.put(
-                exceptionType, overridenTrapHandlers.remove(overridenTrapHandlers.size() - 1));
+            trapsChanged = true;
           }
+        }
 
-          trapsChanged = true;
+        for (Trap trap : traps) {
+          if (stmt == trap.getBeginStmt()) {
+            final Trap existingTrapForException = currentTrapMap.get(trap.getExceptionType());
+            if (existingTrapForException == null) {
+              currentTrapMap.put(trap.getExceptionType(), trap);
+            } else {
+              final List<Trap> overridenTraps =
+                  overlappingTraps.computeIfAbsent(
+                      trap.getExceptionType(),
+                      k -> {
+                        final ArrayList<Trap> traplist = new ArrayList<>();
+                        traplist.add(existingTrapForException);
+                        return traplist;
+                      });
+
+              // TODO: performance: dont insert new trap into overridenTraps and decide before i.e.
+              // circumvent the datastructure housekeeping overhead
+              // decide which element gets applied/overridden i.e. has to wait for its apllication
+              // add it sorted (descending by endStmt index) into overriddenTraps!
+              int index =
+                  Collections.binarySearch(
+                      overridenTraps,
+                      trap,
+                      (trapA, trapB) ->
+                          trapstmtToIdx.get(trapB.getEndStmt())
+                              - trapstmtToIdx.get(trapA.getEndStmt()));
+              if (index < 0) index = ~index;
+              overridenTraps.add(index, trap);
+
+              // remove and use last element which is the trap with the next ending traprange
+              Trap trapToApply = overridenTraps.remove(overridenTraps.size() - 1);
+              currentTrapMap.put(trap.getExceptionType(), trapToApply);
+            }
+            trapsChanged = true;
+          }
+        }
+
+        // TODO: [ms] use more performant addBlock() as we already know where the Blocks borders are
+        if (trapsChanged) {
+          trapMap.clear();
+          currentTrapMap.forEach((type, trap) -> trapMap.put(type, trap.getHandlerStmt()));
         }
       }
-
-      for (Trap trap : traps) {
-        if (stmt == trap.getBeginStmt()) {
-          final Stmt overridenExFlow =
-              currentTrapMap.put(trap.getExceptionType(), trap.getHandlerStmt());
-          if (overridenExFlow != null) {
-            final List<Stmt> overridenTrapHandlers =
-                overlappingTraps.computeIfAbsent(trap.getExceptionType(), k -> new ArrayList<>());
-            overridenTrapHandlers.add(overridenExFlow);
-          }
-          trapsChanged = true;
-        }
-      }
-
-      // TODO: [ms] implement via more performant addBlock() as we already know where Block borders
-      // are
-      // if(trapsChanged) => we need a new Block -> beware: currentTrapMap contains here the
-      // new/updated values!
-      addNode(stmt, currentTrapMap);
+      addNode(stmt, trapMap);
 
       if (stmt.fallsThrough()) {
-        // hint: possible bad performance if not stmts is not instanceof RandomAccess
+        // hint: possible bad performance if stmts is not instanceof RandomAccess
         putEdge(stmt, stmts.get(i + 1));
       }
 
@@ -192,14 +231,16 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   private static void duplicateCatchAllTrapRemover(
-      @Nonnull List<Stmt> stmts, @Nonnull List<Trap> traps) {
+      @Nonnull List<Stmt> stmts, @Nonnull List<Trap> traps, Map<Stmt, Integer> trapstmtToIdx) {
     /*
      * handle duplicate catchall traps here - aka integrated "DuplicateCatchAllTrapRemover" Transformer/Interceptor
      *
      * Some compilers generate duplicate traps:
      *
-     * <p>Exception table: from to target type 9 30 37 Class java/lang/Throwable 9 30 44 any 37 46 44
-     * any
+     * <p>Exception table: from to target type
+     *  9 30 37 Class java/lang/Throwable
+     *  9 30 44  any
+     *  37 46 44 any
      *
      * <p>The semantics is as follows:
      *
@@ -217,14 +258,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
      */
 
     if (traps.size() > 2) {
-      Map<Stmt, Integer> trapstmtToIdx = new HashMap<>();
-      traps.forEach(
-          trap -> {
-            trapstmtToIdx.put(trap.getBeginStmt(), stmts.indexOf(trap.getBeginStmt()));
-            trapstmtToIdx.put(trap.getEndStmt(), stmts.indexOf(trap.getEndStmt()));
-            trapstmtToIdx.put(trap.getHandlerStmt(), stmts.indexOf(trap.getHandlerStmt()));
-          });
-
       // Find two traps that use java.lang.Throwable as their type and that span the same code
       // region
       for (int i = 0, trapsSize = traps.size(); i < trapsSize; i++) {

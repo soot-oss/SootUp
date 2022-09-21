@@ -55,6 +55,13 @@ public class GraphVizExporter {
 
     for (BasicBlock<?> block : blocks) {
 
+      sb.append(
+          "//  lines ["
+              + block.getHead().getPositionInfo().getStmtPosition().getFirstLine()
+              + ": "
+              + block.getTail().getPositionInfo().getStmtPosition().getFirstLine()
+              + "] \n");
+
       sb.append("\tsubgraph cluster_")
           .append(block.hashCode())
           .append(" { \n")
@@ -77,6 +84,8 @@ public class GraphVizExporter {
         }
         sb.append("]\n");
       }
+
+      // add blocks internal connection
       if (stmts.size() > 1) {
         sb.append("\n\t\t");
         for (Stmt stmt : stmts) {
