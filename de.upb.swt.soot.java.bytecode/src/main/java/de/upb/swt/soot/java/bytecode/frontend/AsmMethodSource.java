@@ -1941,53 +1941,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
 
       if (!danglingLabel.isEmpty()) {
-        // there is (at least) a LabelNode -> Block border -> create another stmtList or use the
-        // empty
-        // existing one
-
-        /*if (!stmtList.isEmpty()) {
-          final Stmt tailStmt = stmtList.get(stmtList.size() - 1);
-          if (tailStmt.fallsThrough()) {
-            connectBlocks.add(tailStmt);
-          }
-
-          graph.addBlock(stmtList, currentTraps);
-          if (graph.getStartingStmt() == null) {
-            graph.setStartingStmt(stmtList.get(0));
-          }
-          stmtList.clear();
-        }
-
-        // FIXME: update current "active" trapRanges information for the stmtList
-        boolean isTrapBorder = false;
-        boolean isStartOfTrapRange = false;
-        for (TryCatchBlockNode tc : super.tryCatchBlocks) {
-
-          if (danglingLabel.contains(tc.start)) {
-            isTrapBorder = true;
-            isStartOfTrapRange = true;
-          }
-
-          if (danglingLabel.contains(tc.end)) {
-            isTrapBorder = true;
-          }
-
-          if (isTrapBorder) {
-            // FIXME: adapt signature for java9/modules!
-            final String exceptionName =
-                (tc.type != null) ? AsmUtil.toQualifiedName(tc.type) : "java.lang.Throwable";
-            final JavaClassType classType = javaIdentifierFactory.getClassType(exceptionName);
-            if (isStartOfTrapRange) {
-              currentTraps.put(classType, insnToStmt.get(tc.handler));
-            } else {
-              // tc.end is exclusive -> the Stmt following this label is not included in the
-              // TrapRange
-              currentTraps.remove(classType);
-            }
-          }
-        }
-        */
-
+        // there is (at least) a LabelNode ->
         // associate collected labels from danglingLabel with the following stmt
         Stmt targetStmt =
             stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt;
@@ -2005,14 +1959,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       emitStmt(stmt, stmtList);
 
     } while ((insn = insn.getNext()) != null);
-
-    /* is there a dangling stmtList thats not assigned in the loop?
-    if (!stmtList.isEmpty()) {
-      graph.addBlock(stmtList, currentTraps);
-      if (graph.getStartingStmt() == null) {
-        graph.setStartingStmt(stmtList.get(0));
-      }
-    }*/
 
     Map<BranchingStmt, List<Stmt>> branchingMap = new HashMap<>();
     for (Map.Entry<BranchingStmt, Collection<LabelNode>> entry :
@@ -2036,17 +1982,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
 
     final List<Trap> traps = buildTraps();
+    // TODO: performance: [ms] we already know Blocks borders from the label information -> use
+    // addBlocks+collect trap data and connect blocks afterwards via branching information +
+    // collected fallsthroughBlock information
     graph.initializeWith(stmtList, branchingMap, traps);
 
     // Emit the inline exception handler blocks i.e. those that are reachable without exceptional
     // flow
     for (LabelNode ln : inlineExceptionHandlers.keySet()) {
-      /*if (stmtList.isEmpty()) {
-        graph.addBlock(stmtList, currentTraps);
-        stmtList.clear();
-      }
-      // TODO: update currentTraps?
-      */
 
       Stmt handlerStmt = inlineExceptionHandlers.get(ln);
       emitStmt(handlerStmt, stmtList);
@@ -2064,25 +2007,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       Stmt targetStmt = insnToStmt.get(ln);
       graph.putEdge(gotoStmt, targetStmt);
     }
-
-    // TODO connect added blocks
-
-    /* connect branching stmts with its targets
-    for (Map.Entry<BranchingStmt, LabelNode> entry : stmtsThatBranchToLabel.entries()) {
-      final Stmt fromStmt = entry.getKey();
-      final Stmt targetStmt = labelsToStmt.get(entry.getValue());
-      if (targetStmt == null) {
-        throw new IllegalStateException(
-            "targetStmt not found for fromStmt"
-                + fromStmt
-                + " "
-                + entry.getValue()
-                + " in method "
-                + lazyMethodSignature.get());
-      }
-      graph.putEdge(fromStmt, targetStmt);
-
-    }*/
   }
 
   private void emitStmt(@Nonnull Stmt handlerStmt, @Nonnull List<Stmt> block) {
