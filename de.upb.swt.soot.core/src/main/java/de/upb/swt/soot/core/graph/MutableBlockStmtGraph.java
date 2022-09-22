@@ -138,18 +138,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
             final boolean isRemoved = currentTrapMap.remove(exceptionType, trap);
             final PriorityQueue<Trap> overridenTrapHandlers = overlappingTraps.get(exceptionType);
             if (overridenTrapHandlers != null) {
-              if (overridenTrapHandlers.size() > 0) {
+              if (!isRemoved && overridenTrapHandlers.size() > 0) {
                 // check if theres an overlapping trap that has a less specific TrapRange which is
                 // ending before it gets the active exception information again
                 // not logical as a compiler output... but possible.
-                if (!isRemoved) {
-                  final boolean overlappingTrapRemoved = overridenTrapHandlers.remove(trap);
-                  if (!overlappingTrapRemoved) {
-                    // throw new IllegalStateException(   "There is a Trap that should end here
-                    // which was not applied before nor was not active due to a more specific
-                    // traprange for that exeption! \n "+ trap);
-                  }
-                }
+                overridenTrapHandlers.remove(trap);
               }
 
               if (overridenTrapHandlers.size() > 0) {
@@ -173,9 +166,16 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                       k ->
                           new PriorityQueue<Trap>(
                               (trapA, trapB) -> {
-                                final Integer idxA = trapstmtToIdx.get(trapB.getEndStmt());
-                                final Integer idxB = trapstmtToIdx.get(trapA.getEndStmt());
-                                return idxB - idxA;
+                                final Integer idxA = trapstmtToIdx.get(trapA.getEndStmt());
+                                final Integer idxB = trapstmtToIdx.get(trapB.getEndStmt());
+                                final int compA = idxA - idxB;
+                                if (compA != 0) {
+                                  return compA;
+                                } else {
+                                  final Integer startIdxA = trapstmtToIdx.get(trapA.getBeginStmt());
+                                  final Integer startIdxB = trapstmtToIdx.get(trapB.getBeginStmt());
+                                  return startIdxB - startIdxA;
+                                }
                               }));
 
               overridenTraps.add(existingTrapForException);

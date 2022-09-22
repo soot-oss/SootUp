@@ -62,4 +62,10 @@ public class RuntimeJarConversionTests {
     execute(
         "<sun.print.UnixPrintJob$PrinterSpooler: void handleProcessFailure(java.lang.Process,java.lang.String[],int)>");
   }
+
+  @Test
+  public void testReplaceStmtm() {
+    execute(
+        "<java.lang.invoke.BoundMethodHandle$Factory: java.lang.Class generateConcreteBMHClass(java.lang.String)>");
+  }
 }
