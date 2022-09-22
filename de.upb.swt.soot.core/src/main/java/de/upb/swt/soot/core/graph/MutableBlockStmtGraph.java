@@ -116,11 +116,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     duplicateCatchAllTrapRemover(stmts, traps, trapstmtToIdx);
 
     traps.sort(getTrapComparator(trapstmtToIdx));
-    // debug print:
-    // traps.stream().sorted(getTrapComparator(trapstmtToIdx)).forEach(t ->  System.out.println(
-    // t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + " " +
-    // trapstmtToIdx.get(t.getEndStmt()) + " -> " + trapstmtToIdx.get(t.getHandlerStmt() )  ));
-
+    /* debug print:
+         traps.forEach(t ->  System.out.println(t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + " " + trapstmtToIdx.get(t.getEndStmt()) + " -> " + trapstmtToIdx.get(t.getHandlerStmt()) + " " + t.getHandlerStmt()  ));
+    */
     setStartingStmt(stmts.get(0));
     Map<ClassType, Stmt> exceptionToHandlerMap = new HashMap<>();
     Map<ClassType, Trap> currentTrapMap = new HashMap<>();
@@ -172,7 +170,20 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
             } else {
               final List<Trap> overridenTraps =
                   overlappingTraps.computeIfAbsent(trap.getExceptionType(), k -> new ArrayList<>());
-              overridenTraps.add(existingTrapForException);
+
+              int index =
+                  Collections.binarySearch(
+                      overridenTraps,
+                      trap,
+                      (trapA, trapB) -> {
+                        final Integer idxA = trapstmtToIdx.get(trapB.getEndStmt());
+                        final Integer idxB = trapstmtToIdx.get(trapA.getEndStmt());
+                        return idxB - idxA;
+                      });
+              if (index < 0) {
+                index = ~index;
+              }
+              overridenTraps.add(index, existingTrapForException);
 
               // TODO: performance: dont insert new trap into overridenTraps and decide before i.e.
               // circumvent the datastructure housekeeping overhead
@@ -185,7 +196,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                 overridenTraps.add(existingTrapForException);
               }else */
               {
-                int index =
+                index =
                     Collections.binarySearch(
                         overridenTraps,
                         trap,

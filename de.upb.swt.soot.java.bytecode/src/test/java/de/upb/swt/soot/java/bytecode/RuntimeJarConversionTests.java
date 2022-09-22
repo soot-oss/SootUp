@@ -52,8 +52,15 @@ public class RuntimeJarConversionTests {
 
   @Test
   public void testTrapsicwStubFactoryFactoryStaticImpl() {
-    // same exception range and type but different handler..
+    // same exception range and type but different handler.. ->  duplicateCatchAllTrapRemover
+    // adapted to handle java.lang.Exception as well
     execute(
         "<com.sun.corba.se.impl.presentation.rmi.StubFactoryFactoryStaticImpl: javax.rmi.CORBA.Tie getTie(java.lang.Class)>");
+  }
+
+  @Test
+  public void testTrapsicwUnixPrintJob$PrinterSpooler() {
+    execute(
+        "<sun.print.UnixPrintJob$PrinterSpooler: void handleProcessFailure(java.lang.Process,java.lang.String[],int)>");
   }
 }
