@@ -115,10 +115,14 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
     duplicateCatchAllTrapRemover(stmts, traps, trapstmtToIdx);
 
-    // traps.sort(getTrapComparator(trapstmtToIdx));
+    traps.sort(getTrapComparator(trapstmtToIdx));
+    // debug print: traps.stream().sorted(getTrapComparator(trapstmtToIdx)).forEach(t ->
+    // System.out.println(
+    // t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + " " +
+    // trapstmtToIdx.get(t.getEndStmt()) + " -> " + trapstmtToIdx.get(t.getHandlerStmt() )  ));
 
     setStartingStmt(stmts.get(0));
-    Map<ClassType, Stmt> trapMap = new HashMap<>();
+    Map<ClassType, Stmt> exceptionToHandlerMap = new HashMap<>();
     Map<ClassType, Trap> currentTrapMap = new HashMap<>();
     Map<ClassType, List<Trap>> overlappingTraps = new HashMap<>();
     for (int i = 0, stmtsSize = stmts.size(); i < stmtsSize; i++) {
@@ -183,13 +187,18 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                   Collections.binarySearch(
                       overridenTraps,
                       trap,
-                      (trapA, trapB) ->
-                          trapstmtToIdx.get(trapB.getEndStmt())
-                              - trapstmtToIdx.get(trapA.getEndStmt()));
-              if (index < 0) index = ~index;
-              overridenTraps.add(index, trap);
+                      (trapA, trapB) -> {
+                        final Integer idxA = trapstmtToIdx.get(trapB.getEndStmt());
+                        final Integer idxB = trapstmtToIdx.get(trapA.getEndStmt());
+                        return idxA - idxB;
+                      });
+              if (index < 0) {
+                index = ~index;
+              }
+              overridenTraps.add(overridenTraps.size() - index, trap);
 
-              // remove and use last element which is the trap with the next ending traprange
+              // remove and use last element (to avoid copying of the complete ArrayList) which is
+              // the trap with the next ending traprange
               Trap trapToApply = overridenTraps.remove(overridenTraps.size() - 1);
               currentTrapMap.put(trap.getExceptionType(), trapToApply);
             }
@@ -199,11 +208,19 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
         // TODO: [ms] use more performant addBlock() as we already know where the Blocks borders are
         if (trapsChanged) {
-          trapMap.clear();
-          currentTrapMap.forEach((type, trap) -> trapMap.put(type, trap.getHandlerStmt()));
+          exceptionToHandlerMap.clear();
+          currentTrapMap.forEach(
+              (type, trap) -> exceptionToHandlerMap.put(type, trap.getHandlerStmt()));
+
+          // debugprint
+          // System.out.println("-- "+ i +" --");
+          // currentTrapMap.values().stream().sorted(getTrapComparator(trapstmtToIdx)).forEach(t ->
+          // System.out.println( t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + "
+          // " + trapstmtToIdx.get(t.getEndStmt()) + " -> " +
+          // trapstmtToIdx.get(t.getHandlerStmt())));
         }
       }
-      addNode(stmt, trapMap);
+      addNode(stmt, exceptionToHandlerMap);
 
       if (stmt.fallsThrough()) {
         // hint: possible bad performance if stmts is not instanceof RandomAccess
